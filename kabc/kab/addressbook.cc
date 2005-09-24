@@ -230,7 +230,7 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
 	    } else {
 	      kdDebug(KAB_KDEBUG_AREA) 
 		<< "  " << Fields[counter] << " ("
-		<< (*pos).second.utf8() << ")" << endl;
+		<< (*pos).second.toUtf8() << ")" << endl;
 	    }
 	}
 #endif
@@ -359,7 +359,7 @@ bool AddressBook::Entry::nameOfField(const char* key, QString& value)
 	    } else {
 	      kdDebug(KAB_KDEBUG_AREA) 
 		<< "  " << Fields[counter] << " ("
-		<< (*pos).second.utf8() << ")" << endl;
+		<< (*pos).second.toUtf8() << ")" << endl;
 	    }
 	}
 #endif
@@ -713,10 +713,10 @@ AddressBook::literalName(const Entry& entry, QString& text, bool rev, bool init)
       return NoError;
     }
   // ----- prepare the strings:
-  firstname=entry.firstname.simplifyWhiteSpace();
-  middlename=entry.middlename.simplifyWhiteSpace();
-  lastname=entry.lastname.simplifyWhiteSpace();
-  nameprefix=entry.nameprefix.simplifyWhiteSpace();
+  firstname=entry.firstname.simplified();
+  middlename=entry.middlename.simplified();
+  lastname=entry.lastname.simplified();
+  nameprefix=entry.nameprefix.simplified();
   // ----- create the initials:
   if(init)
     {
@@ -1587,7 +1587,7 @@ AddressBook::createNew(const QString& filename)
   const QString KabTemplateFile=locate("data", "kab/template.kab");
   kdDebug(KAB_KDEBUG_AREA) 
     << "AddressBook::createNew: template file is \"" 
-    << (const char*)KabTemplateFile.utf8() << "\"." << endl;
+    << (const char*)KabTemplateFile.toUtf8() << "\"." << endl;
   QConfigDB db;
   // -----
   if(KabTemplateFile.isEmpty()
@@ -1638,7 +1638,7 @@ AddressBook::createConfigFile()
   const QString ConfigTemplateFile=locate("data", "kab/template.config");
   kdDebug(KAB_KDEBUG_AREA) 
     << "AddressBook::createConfigFile: config template file is \"" 
-    << (const char*)ConfigTemplateFile.utf8() << "\"." << endl;
+    << (const char*)ConfigTemplateFile.toUtf8() << "\"." << endl;
   const QString filename= locateLocal( "data", STD_CONFIGFILENAME);
   QConfigDB db;
   // -----

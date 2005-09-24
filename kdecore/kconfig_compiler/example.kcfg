@@ -35,7 +35,7 @@
     </entry>
     <entry name="MyPath" type="Path">
       <label>This is a path</label>
-      <default code="true">QDir::homeDirPath()+QString::fromLatin1(".hidden_file")</default>
+      <default code="true">QDir::homePath()+QString::fromLatin1(".hidden_file")</default>
     </entry>
     <entry name="MyPaths" type="PathList">
       <label>This is a list of paths</label>
@@ -43,7 +43,7 @@
     </entry>
     <entry name="MyPaths2" type="PathList">
       <label>This is a list of paths (test2)</label>
-      <default code="true">QStringList(QDir::homeDirPath())</default>
+      <default code="true">QStringList(QDir::homePath())</default>
     </entry>
     <entry name="AnotherOption2" type="Int" key="Another Option">
       <label>Another option</label>

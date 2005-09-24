@@ -46,7 +46,7 @@ ResourceEvolution::~ResourceEvolution() {
 }
 bool ResourceEvolution::doOpen() {
     mWrap = new DBWrapper;
-    if (!mWrap->open( QDir::homeDirPath() + "/evolution/local/Contacts/addressbook.db" ) ) {
+    if (!mWrap->open( QDir::homePath() + "/evolution/local/Contacts/addressbook.db" ) ) {
         return false;
     }
 
@@ -104,7 +104,7 @@ bool ResourceEvolution::save( Ticket* ticket ) {
 
     // just delete the summary so evolution will regenerate it 
     // on next start up
-    (void)QFile::remove( QDir::homeDirPath() + "/evolution/local/Contacts/addressbook.db.summary" );
+    (void)QFile::remove( QDir::homePath() + "/evolution/local/Contacts/addressbook.db.summary" );
 
 
     AddressBook::Iterator it;

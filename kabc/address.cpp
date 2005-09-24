@@ -549,7 +549,7 @@ QString Address::countryToISO( const QString &cname )
 QString Address::ISOtoCountry( const QString &ISOname )
 {
   // get country name from ISO country code (e.g. "no" -> i18n("Norway"))
-  if ( ISOname.simplifyWhiteSpace().isEmpty() )
+  if ( ISOname.simplified().isEmpty() )
     return QString::null;
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
@@ -558,13 +558,13 @@ QString Address::ISOtoCountry( const QString &ISOname )
   QFile file( mapfile );
   if ( file.open( QIODevice::ReadOnly ) ) {
     QTextStream s( &file );
-    QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
+    QString searchStr = "\t" + ISOname.simplified().lower();
     QString strbuf = s.readLine();
     int pos;
     while ( !strbuf.isEmpty() ) {
       if ( (pos = strbuf.find( searchStr )) != -1 ) {
         file.close();
-        return i18n( strbuf.left( pos ).utf8() );
+        return i18n( strbuf.left( pos ).toUtf8() );
       }
       strbuf = s.readLine();
     }

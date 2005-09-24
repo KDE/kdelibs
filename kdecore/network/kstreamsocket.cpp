@@ -89,7 +89,7 @@ void KStreamSocket::setTimeout(int msecs)
   d->timeout = msecs;
 
   if (state() == Connecting)
-    d->timer.changeInterval(msecs);
+    d->timer.start(msecs);
 }
 
 bool KStreamSocket::bind(const QString& node, const QString& service)

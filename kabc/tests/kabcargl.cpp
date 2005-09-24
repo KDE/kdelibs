@@ -55,7 +55,7 @@ int main(int argc,char **argv)
   QString text = t.read();
   f.close();
   
-  text = QString::fromUtf8( text.local8Bit() );
+  text = QString::fromUtf8( text.toLocal8Bit() );
   text.replace( "\n", "\r\n" );
   
   if ( !f.open( QIODevice::WriteOnly ) ) {

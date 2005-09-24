@@ -254,7 +254,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     QDir dir( kjava_class );
     dir.cdUp();
-    kdDebug(6100) << "dir = " << dir.absPath() << endl;
+    kdDebug(6100) << "dir = " << dir.absolutePath() << endl;
 
     const QStringList entries = dir.entryList( "*.jar" );
     kdDebug(6100) << "entries = " << entries.join( ":" ) << endl;

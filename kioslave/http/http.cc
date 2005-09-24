@@ -644,7 +644,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   {
     Q3CString request = "<?xml version=\"1.0\"?>\r\n";
     request.append( "<D:searchrequest xmlns:D=\"DAV:\">\r\n" );
-    request.append( query.utf8() );
+    request.append( query.toUtf8() );
     request.append( "</D:searchrequest>\r\n" );
 
     davSetRequest( request );
@@ -656,7 +656,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
     // insert additional XML request from the davRequestResponse metadata
     if ( hasMetaData( "davRequestResponse" ) )
-      request += metaData( "davRequestResponse" ).utf8();
+      request += metaData( "davRequestResponse" ).toUtf8();
     else {
       // No special request, ask for default properties
       request += "<D:prop>"
@@ -3183,7 +3183,7 @@ try_again:
       // path, thus we extract the filename only.
       if ( !disposition.isEmpty() )
       {
-        int pos = disposition.findRev( '/' );
+        int pos = disposition.lastIndexOf( '/' );
 
         if( pos > -1 )
           disposition = disposition.mid(pos+1);
@@ -3217,7 +3217,7 @@ try_again:
     }
     else if (strncasecmp(buf, "P3P:", 4) == 0) {
       QString p3pstr = buf;
-      p3pstr = p3pstr.mid(4).simplifyWhiteSpace();
+      p3pstr = p3pstr.mid(4).simplified();
       QStringList policyrefs, compact;
       QStringList policyfields = QStringList::split(QRegExp(",[ ]*"), p3pstr);
       for (QStringList::Iterator it = policyfields.begin();
@@ -3235,7 +3235,7 @@ try_again:
                // efficient but I'm going for correctness right now.
                QStringList cps = QStringList::split(" ",
                                         policy[1].replace(QRegExp("[\"\']"), "")
-                                                 .simplifyWhiteSpace());
+                                                 .simplified());
 
                for (QStringList::Iterator j = cps.begin(); j != cps.end(); ++j)
                  compact << *j;
@@ -4689,7 +4689,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
               return;
            QString date;
            date.setNum( time(0) );
-           date = date.leftJustify(16);
+           date = date.leftJustified(16);
            fputs(date.latin1(), fs);      // Creation date
            fputc('\n', fs);
         }
@@ -4709,7 +4709,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
             // it to the expiryDate
             date.setNum( creationDate + expireDate );
         }
-        date = date.leftJustify(16);
+        date = date.leftJustified(16);
         if (!ok || fseek(fs, m_request.cacheExpireDateOffset, SEEK_SET))
             return;
         fputs(date.latin1(), fs);      // Expire date
@@ -4721,7 +4721,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
 void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 {
    QString dir = m_request.cef;
-   int p = dir.findRev('/');
+   int p = dir.lastIndexOf('/');
    if (p == -1) return; // Error.
    dir.truncate(p);
 
@@ -4747,12 +4747,12 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    QString date;
    m_request.creationDate = time(0);
    date.setNum( m_request.creationDate );
-   date = date.leftJustify(16);
+   date = date.leftJustified(16);
    fputs(date.latin1(), m_request.fcache);      // Creation date
    fputc('\n', m_request.fcache);
 
    date.setNum( expireDate );
-   date = date.leftJustify(16);
+   date = date.leftJustified(16);
    fputs(date.latin1(), m_request.fcache);      // Expire date
    fputc('\n', m_request.fcache);
 

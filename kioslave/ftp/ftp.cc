@@ -589,7 +589,7 @@ bool Ftp::ftpLogin()
 
   QString sTmp = remoteEncoding()->decode( ftpResponse(3) );
   int iBeg = sTmp.find('"');
-  int iEnd = sTmp.findRev('"');
+  int iEnd = sTmp.lastIndexOf('"');
   if(iBeg > 0 && iBeg < iEnd)
   {
     m_initialPath = sTmp.mid(iBeg+1, iEnd-iBeg-1);
@@ -1085,7 +1085,7 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   // TODO honor overwrite
   assert( m_bLoggedOn );
 
-  int pos = src.findRev("/");
+  int pos = src.lastIndexOf("/");
   if( !ftpFolder(src.left(pos+1), false) )
       return false;
 
@@ -1275,7 +1275,7 @@ void Ftp::stat( const KURL &url)
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
-  QString path = QDir::cleanDirPath( url.path() );
+  QString path = QDir::cleanPath( url.path() );
   kdDebug(7102) << "Ftp::stat : cleaned path='" << path << "'" << endl;
 
   // We can't stat root, but we know it's a dir.
@@ -1637,7 +1637,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
         QByteArray tmp( p_name );
         if ( p_access[0] == 'l' )
         {
-          int i = tmp.findRev( " -> " );
+          int i = tmp.lastIndexOf( " -> " );
           if ( i != -1 ) {
             de.link = remoteEncoding()->decode(p_name + i + 4);
             tmp.truncate( i );

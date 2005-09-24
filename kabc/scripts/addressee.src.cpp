@@ -347,7 +347,7 @@ QString Addressee::assembledName() const
   QString name = prefix() + " " + givenName() + " " + additionalName() + " " +
               familyName() + " " + suffix();
 
-  return name.simplifyWhiteSpace();
+  return name.simplified();
 }
 
 QString Addressee::fullEmail( const QString &email ) const
@@ -376,7 +376,7 @@ QString Addressee::fullEmail( const QString &email ) const
 
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
-  if ( email.simplifyWhiteSpace().isEmpty() )
+  if ( email.simplified().isEmpty() )
     return;
 
   detach();
@@ -433,7 +433,7 @@ void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
       return;
     }
   }
-  if ( !phoneNumber.number().simplifyWhiteSpace().isEmpty() )
+  if ( !phoneNumber.number().simplified().isEmpty() )
     mData->phoneNumbers.append( phoneNumber );
 }
 
@@ -828,7 +828,7 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     return; // KPIM::AddressEmpty;
 
   // The code works on 8-bit strings, so convert the input to UTF-8.
-  Q3CString address = rawEmail.utf8();
+  Q3CString address = rawEmail.toUtf8();
 
   Q3CString displayName;
   Q3CString addrSpec;

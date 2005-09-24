@@ -253,7 +253,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
       if (!insidequote && (commentlevel == 0)) {
         addr = aStr.mid(addrstart, index-addrstart);
         if (!addr.isEmpty())
-          list += addr.simplifyWhiteSpace();
+          list += addr.simplified();
         addrstart = index+1;
       }
       break;
@@ -263,7 +263,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
   if (!insidequote && (commentlevel == 0)) {
     addr = aStr.mid(addrstart, aStr.length()-addrstart);
     if (!addr.isEmpty())
-      list += addr.simplifyWhiteSpace();
+      list += addr.simplified();
   }
   //else
   //  kdDebug() << "Error in address splitting: "
@@ -304,14 +304,14 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
        // put the whole address lists into RFC2047 encoded blobs; technically
        // this isn't correct, but KMail understands it nonetheless
        to = QString( "=?utf8?b?%1?=" )
-            .arg( (const char*)KCodecs::base64Encode( _to.utf8(), false ) );
+            .arg( (const char*)KCodecs::base64Encode( _to.toUtf8(), false ) );
      }
      if ( !_cc.isEmpty() )
        cc = QString( "=?utf8?b?%1?=" )
-            .arg( (const char*)KCodecs::base64Encode( _cc.utf8(), false ) );
+            .arg( (const char*)KCodecs::base64Encode( _cc.toUtf8(), false ) );
      if ( !_bcc.isEmpty() )
        bcc = QString( "=?utf8?b?%1?=" )
-             .arg( (const char*)KCodecs::base64Encode( _bcc.utf8(), false ) );
+             .arg( (const char*)KCodecs::base64Encode( _bcc.toUtf8(), false ) );
    } else {
      to = _to;
      cc = _cc;

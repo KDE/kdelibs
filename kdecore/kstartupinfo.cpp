@@ -940,7 +940,7 @@ QByteArray KStartupInfo::createNewStartupId()
     long qt_x_user_time = 0;
 #endif
     QByteArray id = QString( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
-        .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).utf8();
+        .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).toUtf8();
     kdDebug( 172 ) << "creating: " << id << ":" << qAppName() << endl;
     return id;
     }
@@ -1074,7 +1074,7 @@ unsigned long KStartupInfoId::timestamp() const
     {
     if( none())
         return 0;
-    int pos = d->id.findRev( "_TIME" );
+    int pos = d->id.lastIndexOf( "_TIME" );
     if( pos >= 0 )
         {
         bool ok;
@@ -1086,10 +1086,10 @@ unsigned long KStartupInfoId::timestamp() const
     // qsnprintf (s, len, "%s/%s/%lu/%d-%d-%s",
     //   canonicalized_launcher, canonicalized_launchee, (unsigned long) timestamp,
     //  (int) getpid (), (int) sequence_number, hostbuf);
-    int pos1 = d->id.findRev( '/' );
+    int pos1 = d->id.lastIndexOf( '/' );
     if( pos1 > 0 )
         {
-        int pos2 = d->id.findRev( '/', pos1 - 1 );
+        int pos2 = d->id.lastIndexOf( '/', pos1 - 1 );
         if( pos2 >= 0 )
             {
             bool ok;
@@ -1330,7 +1330,7 @@ const QByteArray KStartupInfoData::findWMClass() const
     {
     if( !WMClass().isEmpty() && WMClass() != "0" )
         return WMClass();
-    return bin().utf8();
+    return bin().toUtf8();
     }
 
 const QByteArray& KStartupInfoData::WMClass() const
@@ -1439,13 +1439,13 @@ QString get_str( const QString& item_P )
 static
 QByteArray get_cstr( const QString& item_P )
     {
-    return get_str( item_P ).utf8();
+    return get_str( item_P ).toUtf8();
     }
 
 static
 QStringList get_fields( const QString& txt_P )
     {
-    QString txt = txt_P.simplifyWhiteSpace();
+    QString txt = txt_P.simplified();
     QStringList ret;
     QString item = "";
     bool in = false;

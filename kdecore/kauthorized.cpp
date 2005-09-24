@@ -280,7 +280,7 @@ static void initUrlActionRestrictions()
 //  d->urlActionRestrictions.append(
 //	URLActionRule("list", Any, Any, Any, Any, Any, Any, false));
 //  d->urlActionRestrictions.append(
-//	URLActionRule("list", Any, Any, Any, "file", Any, QDir::homeDirPath(), true));
+//	URLActionRule("list", Any, Any, Any, "file", Any, QDir::homePath(), true));
   d->urlActionRestrictions.append(
 	URLActionRule("link", Any, Any, Any, ":internet", Any, Any, true));
   d->urlActionRestrictions.append(

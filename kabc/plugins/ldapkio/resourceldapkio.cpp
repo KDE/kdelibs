@@ -246,15 +246,15 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
 
   PhoneNumber number;
   number = addr.phoneNumber( PhoneNumber::Home );
-  tmp += addEntry( mAttributes[ "phoneNumber" ], number.number().utf8(), mod );
+  tmp += addEntry( mAttributes[ "phoneNumber" ], number.number().toUtf8(), mod );
   number = addr.phoneNumber( PhoneNumber::Work );
-  tmp += addEntry( mAttributes[ "telephoneNumber" ], number.number().utf8(), mod );
+  tmp += addEntry( mAttributes[ "telephoneNumber" ], number.number().toUtf8(), mod );
   number = addr.phoneNumber( PhoneNumber::Fax );
-  tmp += addEntry( mAttributes[ "facsimileTelephoneNumber" ], number.number().utf8(), mod );
+  tmp += addEntry( mAttributes[ "facsimileTelephoneNumber" ], number.number().toUtf8(), mod );
   number = addr.phoneNumber( PhoneNumber::Cell );
-  tmp += addEntry( mAttributes[ "mobile" ], number.number().utf8(), mod );
+  tmp += addEntry( mAttributes[ "mobile" ], number.number().toUtf8(), mod );
   number = addr.phoneNumber( PhoneNumber::Pager );
-  tmp += addEntry( mAttributes[ "pager" ], number.number().utf8(), mod );
+  tmp += addEntry( mAttributes[ "pager" ], number.number().toUtf8(), mod );
 
   tmp += addEntry( mAttributes[ "description" ], addr.note(), mod );
   tmp += addEntry( mAttributes[ "title" ], addr.title(), mod );

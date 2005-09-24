@@ -24,7 +24,7 @@ int main( int argc, char **argv )
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // Let's add $PWD (ideally $srcdir instead...) to it
-    KGlobal::dirs()->addResourceDir( "data", QDir::currentDirPath() );
+    KGlobal::dirs()->addResourceDir( "data", QDir::currentPath() );
 
     KMainWindow *mainwindow = new KMainWindow;
 
@@ -39,7 +39,7 @@ int main( int argc, char **argv )
 
     Client *shell = new Client;
     shell->setInstance( new KInstance( "konqueror" ) );
-    shell->instance()->dirs()->addResourceDir( "data", QDir::currentDirPath() );
+    shell->instance()->dirs()->addResourceDir( "data", QDir::currentPath() );
 
     (void)new KAction( "Split", "view_left_right", 0, 0, 0, shell->actionCollection(), "splitviewh" );
 

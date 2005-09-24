@@ -1051,7 +1051,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             d->m_mouseScrollTimer->stop();
         }
         else if (!d->m_mouseScrollTimer->isActive()) {
-            d->m_mouseScrollTimer->changeInterval( 20 );
+            d->m_mouseScrollTimer->start( 20 );
         }
     }
 

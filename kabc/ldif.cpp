@@ -43,7 +43,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   int i;
 
   if ( url ) {
-    result = fieldname.utf8() + ":< " + Q3CString( value.data(), value.size()+1 );
+    result = fieldname.toUtf8() + ":< " + Q3CString( value.data(), value.size()+1 );
   } else {
     isDn = fieldname.lower() == "dn";
     //SAFE-INIT-CHAR
@@ -66,9 +66,9 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
     if ( value.size() == 0 ) safe = true;
 
     if( safe ) {
-      result = fieldname.utf8() + ": " + Q3CString( value.data(), value.size()+1 );
+      result = fieldname.toUtf8() + ": " + Q3CString( value.data(), value.size()+1 );
     } else {
-      result = fieldname.utf8() + ":: " + KCodecs::base64Encode( value, false );
+      result = fieldname.toUtf8() + ":: " + KCodecs::base64Encode( value, false );
     }
 
     if ( linelen > 0 ) {
@@ -100,7 +100,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const Q3CString &value,
 Q3CString LDIF::assembleLine( const QString &fieldname, const QString &value,
   uint linelen, bool url )
 {
-  return assembleLine( fieldname, value.utf8(), linelen, url );
+  return assembleLine( fieldname, value.toUtf8(), linelen, url );
 }
 
 bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &value )

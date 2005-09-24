@@ -276,7 +276,7 @@ kimgio_jp2_write( QImageIO* io )
 	QTextStream ts( &rate, QIODevice::WriteOnly );
 	ts << "rate="
 		<< ( (io->quality() < 0) ? DEFAULT_RATE : io->quality() / 100.0F );
-	int i = jp2_encode( ji, stream, rate.utf8().data() );
+	int i = jp2_encode( ji, stream, rate.toUtf8().data() );
 
 	jas_image_destroy( ji );
 	jas_stream_close( stream );

@@ -83,7 +83,7 @@ int main( int argc, char **argv )
     text = converter.createVCards( list ); // uses version 3.0
   }
 
-  std::cout << text.utf8().data();
+  std::cout << text.toUtf8().data();
 
   return 0;
 }

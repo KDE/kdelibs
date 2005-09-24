@@ -259,7 +259,7 @@ KeyValueMap::save(const QString& filename, bool force)
     } else {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	    "KeyValueMap::save: could not open file -->%s<-- for saving." <<
-	    filename.utf8() << endl;
+	    filename.toUtf8() << endl;
       return false;
     }
   // ###########################################################################
@@ -653,7 +653,7 @@ KeyValueMap::insert(const Q3CString& key, const QString& value, bool force)
   // ###########################################################################
   Q3CString v;
   // -----
-  v=value.utf8();
+  v=value.toUtf8();
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[QString]: trying to "
       "insert \"" << (!value.isNull() ? "true" : "false")
 				  << "\" for key\n           -->"
@@ -1661,7 +1661,7 @@ Section::isBeginOfSection(Q3CString line)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  line=line.simplifyWhiteSpace();
+  line=line.simplified();
   if(line.isEmpty() || line.length()<2)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::isBeginOfSection: too short "
@@ -1693,7 +1693,7 @@ Section::isEndOfSection(Q3CString line)
   int first=1, second;
   Q3CString temp;
   // -----
-  line=line.simplifyWhiteSpace();
+  line=line.simplified();
   if(line.isEmpty() || line.length()<2)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::isBeginOfSection: too short "
@@ -1731,7 +1731,7 @@ Section::nameOfSection(const Q3CString& line)
   int first=1, second;
   Q3CString temp;
   // -----
-  temp=line.simplifyWhiteSpace();
+  temp=line.simplified();
   if(temp.isEmpty() || temp.length()<=2)
     { // empty section names are not allowed
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<

@@ -289,7 +289,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     QString prevAddr;
 
     QString s(text());
-    int n = s.findRev(',');
+    int n = s.lastIndexOf(',');
 
     if (n >= 0)
     {
@@ -461,7 +461,7 @@ void AddressLineEdit::startLoadingLDAPEntries()
     QString s( *s_LDAPText );
     // TODO cache last?
     QString prevAddr;
-    int n = s.findRev(',');
+    int n = s.lastIndexOf(',');
     if (n>= 0)
     {
         prevAddr = s.left(n+1) + ' ';
@@ -566,7 +566,7 @@ QStringList AddressLineEdit::addresses()
                 (*it).familyName() + space +
                 (*it).suffix();
 
-    n = n.simplifyWhiteSpace();
+    n = n.simplified();
 
     QStringList::ConstIterator mit;
 

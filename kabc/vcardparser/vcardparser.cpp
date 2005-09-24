@@ -130,7 +130,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         params = vCardLine.parameterList();
         if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
           QByteArray input, output;
-          input = value.local8Bit();
+          input = value.toLocal8Bit();
           if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
                vCardLine.parameter( "encoding" ).lower() == "base64" )
             KCodecs::base64Decode( input, output );
@@ -140,7 +140,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
               value = value.remove( value.length() - 1, 1 ) + (*it);
               ++it;
             }
-            input = value.local8Bit();
+            input = value.toLocal8Bit();
             KCodecs::quotedPrintableDecode( input, output );
           }
           if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
@@ -241,7 +241,7 @@ QString VCardParser::createVCards( const VCard::List& list )
               input = (*lineIt).value().toByteArray();
               KCodecs::base64Encode( input, output );
             } else if ( encodingType == "quoted-printable" ) {
-              input = (*lineIt).value().toString().utf8();
+              input = (*lineIt).value().toString().toUtf8();
               input.resize( input.size() - 1 ); // strip \0
               KCodecs::quotedPrintableEncode( input, output, false );
             }

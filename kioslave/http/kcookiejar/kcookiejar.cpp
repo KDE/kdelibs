@@ -706,7 +706,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         return KHttpCookieList();
     }
     QString defaultPath;
-    int i = path.findRev('/');
+    int i = path.lastIndexOf('/');
     if (i > 0)
        defaultPath = path.left(i);
 
@@ -1296,7 +1296,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 if (!domainPrinted)
                 {
                     domainPrinted = true;
-                    fprintf(fStream, "[%s]\n", domain.local8Bit().data());
+                    fprintf(fStream, "[%s]\n", domain.toLocal8Bit().data());
                 }
                 // Store persistent cookies
                 QString path = L1("\"");
@@ -1534,7 +1534,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     {
         const QString &value = *it++;
 
-        int sepPos = value.findRev(':');
+        int sepPos = value.lastIndexOf(':');
 
         if (sepPos <= 0)
           continue;

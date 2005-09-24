@@ -35,7 +35,7 @@
     </entry>
     <entry name="MyPath" type="Path">
       <label>This is a path</label>
-      <default code="true">QDir::homeDirPath()+QString::fromLatin1(".hidden_file")</default>
+      <default code="true">QDir::homePath()+QString::fromLatin1(".hidden_file")</default>
     </entry>
     <entry name="AnotherOption2" type="Int" key="Another Option">
       <label>Another option</label>

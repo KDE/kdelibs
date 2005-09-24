@@ -42,7 +42,7 @@ Test1::Test1(  const QString & transport, const QString & folder )
   itemMyString = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "MyString" ), mMyString, QString::fromLatin1( "Default String" ) );
   addItem( itemMyString, QString::fromLatin1( "MyString" ) );
   KConfigSkeleton::ItemPath  *itemMyPath;
-  itemMyPath = new KConfigSkeleton::ItemPath( currentGroup(), QString::fromLatin1( "MyPath" ), mMyPath, QDir::homeDirPath()+QString::fromLatin1(".hidden_file") );
+  itemMyPath = new KConfigSkeleton::ItemPath( currentGroup(), QString::fromLatin1( "MyPath" ), mMyPath, QDir::homePath()+QString::fromLatin1(".hidden_file") );
   addItem( itemMyPath, QString::fromLatin1( "MyPath" ) );
   KConfigSkeleton::ItemInt  *itemAnotherOption2;
   itemAnotherOption2 = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Another Option" ), mAnotherOption2, 10 );

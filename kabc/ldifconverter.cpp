@@ -87,11 +87,11 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   const Address workAddr = addr.address( Address::Work );
 
   ldif_out( t, "dn", QString( "cn=%1,mail=%2" )
-            .arg( addr.formattedName().simplifyWhiteSpace() )
+            .arg( addr.formattedName().simplified() )
             .arg( addr.preferredEmail() ) );
   ldif_out( t, "givenname", addr.givenName() );
   ldif_out( t, "sn", addr.familyName() );
-  ldif_out( t, "cn", addr.formattedName().simplifyWhiteSpace() );
+  ldif_out( t, "cn", addr.formattedName().simplified() );
   ldif_out( t, "uid", addr.uid() );
   ldif_out( t, "nickname", addr.nickName() );
   ldif_out( t, "xmozillanickname", addr.nickName() );
@@ -541,14 +541,14 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
 
   if (!printable && allowEncode) {
     // encode to base64
-    value = KCodecs::base64Encode( value.utf8() );
+    value = KCodecs::base64Encode( value.toUtf8() );
     int p = formatStr.find(':');
     if (p>=0)
       formatStr.insert(p, ':');
   }
 
   // generate the new string and split it to 72 chars/line
-  Q3CString txt = (formatStr.arg(value)).utf8();
+  Q3CString txt = (formatStr.arg(value)).toUtf8();
 
   if (allowEncode) {
     len = txt.length();

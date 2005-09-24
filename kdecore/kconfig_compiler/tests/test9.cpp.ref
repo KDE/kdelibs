@@ -25,7 +25,7 @@ Test9::Test9(  const QString & transport, const QString & folder )
   itemMyPathList = new KConfigSkeleton::ItemPathList( currentGroup(), QString::fromLatin1( "MyPathList" ), mMyPathList, defaultMyPathList );
   addItem( itemMyPathList, QString::fromLatin1( "MyPathList" ) );
   KConfigSkeleton::ItemPathList  *itemMyPathsList2;
-  itemMyPathsList2 = new KConfigSkeleton::ItemPathList( currentGroup(), QString::fromLatin1( "MyPathsList2" ), mMyPathsList2, QStringList(QString::fromLatin1("/usr/bin")) << QDir::homeDirPath() );
+  itemMyPathsList2 = new KConfigSkeleton::ItemPathList( currentGroup(), QString::fromLatin1( "MyPathsList2" ), mMyPathsList2, QStringList(QString::fromLatin1("/usr/bin")) << QDir::homePath() );
   addItem( itemMyPathsList2, QString::fromLatin1( "MyPathsList2" ) );
 }
 

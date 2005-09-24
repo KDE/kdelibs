@@ -47,7 +47,7 @@ static KCmdLineOptions options[] =
 
 static void FAIL(const QString &msg)
 {
-   qWarning("%s", msg.local8Bit().data());
+   qWarning("%s", msg.toLocal8Bit().data());
    exit(1);
 }
 
@@ -116,7 +116,7 @@ static void processCookie(QString &line)
    line.replace("%LASTYEAR%", *lastYear);
    line.replace("%NEXTYEAR%", *nextYear);
 
-   KHttpCookieList list = jar->makeCookies(urlStr, line.utf8(), 0);
+   KHttpCookieList list = jar->makeCookies(urlStr, line.toUtf8(), 0);
 
    if (list.isEmpty())
       FAIL(QString("Failed to make cookies from: '%1'").arg(line));
@@ -223,7 +223,7 @@ static void runRegression(const QString &filename)
       processLine(QString::fromUtf8(buf));
    }
    fclose( file );
-   qWarning("%s OK", filename.local8Bit().data());
+   qWarning("%s OK", filename.toLocal8Bit().data());
 }
 
 int main(int argc, char *argv[])

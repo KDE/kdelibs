@@ -1330,7 +1330,7 @@ void FileProtocol::unmount( const QString& _point )
 
 	if( volmgt_running() ) {
 		kdDebug(7101) << "VOLMGT: looking for "
-			<< _point.local8Bit() << endl;
+			<< _point.toLocal8Bit() << endl;
 
 		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
 			err = "couldn't open mnttab";
@@ -1348,7 +1348,7 @@ void FileProtocol::unmount( const QString& _point )
 		devname = NULL;
 		rewind( mnttab );
 		while( getmntent( mnttab, &mnt ) == 0 ) {
-			if( strcmp( _point.local8Bit(), mnt.mnt_mountp ) == 0 ){
+			if( strcmp( _point.toLocal8Bit(), mnt.mnt_mountp ) == 0 ){
 				devname = mnt.mnt_special;
 				break;
 			}
@@ -1379,7 +1379,7 @@ void FileProtocol::unmount( const QString& _point )
 		 *  from eject(1): exit status == 0 => need to manually eject
 		 *                 exit status == 4 => media was ejected
 		 */
-//		if( WEXITSTATUS( system( buffer.local8Bit() )) == 4 ) {
+//		if( WEXITSTATUS( system( buffer.toLocal8Bit() )) == 4 ) {
 		if( WEXITSTATUS( system( buffer.data() )) == 4 ) {  // Fix for QString -> QCString?
 			/*
 			 *  this is not an error, so skip "testLogFile()"

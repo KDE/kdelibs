@@ -50,7 +50,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
 {
   kdDebug() << "KMAILENTRY: " << kmailEntry << endl;
 
-  QString entry = kmailEntry.simplifyWhiteSpace();
+  QString entry = kmailEntry.simplified();
   if ( entry.isEmpty() ) return;
 
   QString email;
@@ -58,7 +58,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   QString comment;
 
   if ( entry.at( entry.length() -1 ) == ')' ) {
-    int br = entry.findRev( '(' );
+    int br = entry.lastIndexOf( '(' );
     if ( br >= 0 ) {
       comment = entry.mid( br + 1, entry.length() - br - 2 );
       entry.truncate( br );
@@ -68,7 +68,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
     }
   }
 
-  int posSpace = entry.findRev( ' ' );
+  int posSpace = entry.lastIndexOf( ' ' );
   if ( posSpace < 0 ) {
     email = entry;
     if ( !comment.isEmpty() ) {
@@ -91,7 +91,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   }
 
   if ( name.at( name.length() -1 ) == ')' ) {
-    int br = name.findRev( '(' );
+    int br = name.lastIndexOf( '(' );
     if ( br >= 0 ) {
       comment = name.mid( br + 1, name.length() - br - 2 ) + " " + comment;
       name.truncate( br );

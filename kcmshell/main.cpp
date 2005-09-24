@@ -223,7 +223,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     if (args->isSet("list"))
     {
-        cout << i18n("The following modules are available:").local8Bit().data() << endl;
+        cout << i18n("The following modules are available:").toLocal8Bit().data() << endl;
 
         listModules( "Settings/" );
 
@@ -240,11 +240,11 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         {
             QString entry("%1 - %2");
 
-            entry = entry.arg((*it)->desktopEntryName().leftJustify(maxLen, ' '))
+            entry = entry.arg((*it)->desktopEntryName().leftJustified(maxLen, ' '))
                          .arg(!(*it)->comment().isEmpty() ? (*it)->comment() 
                                  : i18n("No description available"));
 
-            cout << entry.local8Bit().data() << endl;
+            cout << entry.toLocal8Bit().data() << endl;
         }
         return 0;
     }

@@ -349,7 +349,7 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
                (len > 1 && path[len-2] == '/' && path[len-1] == '.');
 
   // The following code cleans up directory path much like
-  // QDir::cleanDirPath() except it can be made to ignore multiple
+  // QDir::cleanPath() except it can be made to ignore multiple
   // directory separators by setting the flag to false.  That fixes
   // bug# 15044, mail.altavista.com and other similar brain-dead server
   // implementations that do not follow what has been specified in

@@ -292,7 +292,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         codebase = khtml_codebase;
     if (baseurl.isEmpty ()) {
         // not embeded in khtml
-        QString pwd = QDir().absPath ();
+        QString pwd = QDir().absolutePath ();
         if (!pwd.endsWith ( QString(QDir::separator ())))
             pwd += QDir::separator ();
         baseurl = KURL (KURL (pwd), codebase).url ();
