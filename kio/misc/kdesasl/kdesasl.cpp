@@ -63,8 +63,8 @@ void KDESasl::setMethod(const QByteArray &aMethod)
 
 QByteArray KDESasl::getPlainResponse()
 {
-  QByteArray user = mUser.utf8();
-  QByteArray pass = mPass.utf8();
+  QByteArray user = mUser.toUtf8();
+  QByteArray pass = mPass.toUtf8();
   int userlen = user.length();
   int passlen = pass.length();
   // result = $user\0$user\0$pass (no trailing \0)
@@ -81,7 +81,7 @@ QByteArray KDESasl::getPlainResponse()
 
 QByteArray KDESasl::getLoginResponse()
 {
-  QByteArray result = (mFirst) ? mUser.utf8() : mPass.utf8();
+  QByteArray result = (mFirst) ? mUser.toUtf8() : mPass.toUtf8();
   mFirst = !mFirst;
   if (result.size()) result.resize(result.size() - 1);
   return result;
@@ -90,8 +90,8 @@ QByteArray KDESasl::getLoginResponse()
 QByteArray KDESasl::getCramMd5Response(const QByteArray &aChallenge)
 {
   uint i;
-  QByteArray secret = mPass.utf8();
-  int len = mPass.utf8().length();
+  QByteArray secret = mPass.toUtf8();
+  int len = mPass.toUtf8().length();
   secret.resize(len);
   if (secret.size() > 64)
   {
@@ -111,8 +111,8 @@ QByteArray KDESasl::getCramMd5Response(const QByteArray &aChallenge)
   KMD5 md5a;
   md5a.update(XorOpad);
   md5a.update(md5.rawDigest(), 16);
-  QByteArray result = mUser.utf8();
-  len = mUser.utf8().length();
+  QByteArray result = mUser.toUtf8();
+  len = mUser.toUtf8().length();
   result.resize(len + 33);
   result[len] = ' ';
   QByteArray ch = md5a.hexDigest();
@@ -169,11 +169,11 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   cnonce = KCodecs::base64Encode( cnonce );
 
   // Calculate H(A1)
-  QByteArray authStr = (utf8) ? mUser.utf8() : QByteArray(mUser.latin1());
+  QByteArray authStr = (utf8) ? mUser.toUtf8() : QByteArray(mUser.latin1());
   authStr += ':';
   authStr += realm;
   authStr += ':';
-  authStr += (utf8) ? mPass.utf8() : QByteArray(mPass.latin1());
+  authStr += (utf8) ? mPass.toUtf8() : QByteArray(mPass.latin1());
 
   md.update( authStr );
   authStr = "";
@@ -225,7 +225,7 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   QByteArray result;
   if (utf8)
   {
-    result = "charset=utf-8,username=\"" + mUser.utf8();
+    result = "charset=utf-8,username=\"" + mUser.toUtf8();
   } else {
     result = "charset=iso-8859-1,username=\"" + QByteArray(mUser.latin1());
   }

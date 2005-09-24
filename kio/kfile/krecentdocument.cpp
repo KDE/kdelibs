@@ -129,7 +129,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
         QStringList::Iterator it;
         it = list.begin();
         while(i > maxEntries-1){
-            QFile::remove(dir.absPath() + QLatin1String("/") + (*it));
+            QFile::remove(dir.absolutePath() + QLatin1String("/") + (*it));
             --i, ++it;
         }
     }

@@ -61,7 +61,7 @@ void KTimeout::addTimer(int id, int timeout) {
 void KTimeout::resetTimer(int id, int timeout) {
 	QTimer *t = _timers.find(id);
 	if (t) {
-		t->changeInterval(timeout);
+		t->start(timeout);
 	}
 }
 

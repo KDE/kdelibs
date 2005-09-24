@@ -379,7 +379,7 @@ void KDirWatchPrivate::useFreq(Entry* e, int newFreq)
   // a reasonable frequency for the global polling timer
   if (e->freq < freq) {
     freq = e->freq;
-    if (timer->isActive()) timer->changeInterval(freq);
+    if (timer->isActive()) timer->start(freq);
     kdDebug(7001) << "Global Poll Freq is now " << freq << " msec" << endl;
   }
 }
@@ -764,7 +764,7 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
   if (minfreq > freq) {
     // we can decrease the global polling frequency
     freq = minfreq;
-    if (timer->isActive()) timer->changeInterval(freq);
+    if (timer->isActive()) timer->start(freq);
     kdDebug(7001) << "Poll Freq now " << freq << " msec" << endl;
   }
 }
