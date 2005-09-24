@@ -464,7 +464,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      if (bMenuTest)
      {
         if (!menu->isDeleted && !it.current()->noDisplay())
-          printf("%s\t%s\t%s\n", caption.local8Bit().data(), it.current()->menuId().local8Bit().data(), locate("apps", it.current()->desktopEntryPath()).local8Bit().data());
+          printf("%s\t%s\t%s\n", caption.toLocal8Bit().data(), it.current()->menuId().toLocal8Bit().data(), locate("apps", it.current()->desktopEntryPath()).toLocal8Bit().data());
      }
      else
      {
@@ -491,11 +491,11 @@ bool KBuildSycoca::recreate()
   }
   if (database->status() != 0)
   {
-    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.local8Bit().data(),strerror(database->status()));
+    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.toLocal8Bit().data(),strerror(database->status()));
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
-      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
+      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.toLocal8Bit().data()), i18n("KBuildSycoca"));
 #endif
     return false;
   }
@@ -521,11 +521,11 @@ bool KBuildSycoca::recreate()
     m_str = 0L;
     if (!database->close())
     {
-      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database->name().local8Bit().data());
+      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database->name().toLocal8Bit().data());
       fprintf(stderr, "kbuildsycoca: Disk full?\n");
 #ifdef KBUILDSYCOCA_GUI
       if (!silent)
-        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
+        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.toLocal8Bit().data()), i18n("KBuildSycoca"));
 #endif
       return false;
     }

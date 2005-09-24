@@ -69,7 +69,7 @@ static void replaceNode(QDomElement &docElem, QDomNode &n, const QStringList &li
 
 void VFolderMenu::registerFile(const QString &file)
 {
-   int i = file.findRev('/');
+   int i = file.lastIndexOf('/');
    if (i < 0)
       return;
 
@@ -719,7 +719,7 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
       return;
    }
    int i;
-   i = baseName.findRev('/');
+   i = baseName.lastIndexOf('/');
    if (i > 0)
    {
       m_docInfo.baseDir = baseName.left(i+1);
@@ -739,7 +739,7 @@ VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
 
    m_docInfo.baseDir = baseDir;
 
-   QString fileName = basePath.mid(basePath.findRev('/')+1);
+   QString fileName = basePath.mid(basePath.lastIndexOf('/')+1);
    m_docInfo.baseName = fileName.left( fileName.length() - 5 );
    QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
 
@@ -1034,7 +1034,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
          {
             QString id = name;
             // Strip path from id
-            int i = id.findRev('/');
+            int i = id.lastIndexOf('/');
             if (i >= 0)
                id = id.mid(i+1);
 

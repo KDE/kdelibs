@@ -69,7 +69,7 @@ KSycocaEntry *
 KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 {
   QString name = file;
-  int pos = name.findRev('/');
+  int pos = name.lastIndexOf('/');
   if (pos != -1)
   {
      name = name.mid(pos+1);
@@ -176,8 +176,8 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
         for ( ; patit != pat.end() ; ++patit )
         {
            const QString &pattern = *patit;
-           if ( pattern.findRev('*') == 0
-                && pattern.findRev('.') == 1
+           if ( pattern.lastIndexOf('*') == 0
+                && pattern.lastIndexOf('.') == 1
                 && pattern.length() <= 6 )
               // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
               // => fast patttern
@@ -210,7 +210,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      int start = str.device()->at();
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
-     QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
+     QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
      //kdDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();

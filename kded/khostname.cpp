@@ -76,7 +76,7 @@ KHostName::KHostName()
    home = ::getenv("HOME");
    if (home.isEmpty())
    {
-      fprintf(stderr, "%s", i18n("Error: HOME environment variable not set.\n").local8Bit().data());
+      fprintf(stderr, "%s", i18n("Error: HOME environment variable not set.\n").toLocal8Bit().data());
       exit(1);
    }
 
@@ -85,7 +85,7 @@ KHostName::KHostName()
    display.replace(QRegExp("\\.[0-9]+$"), "");
    if (display.isEmpty())
    {
-      fprintf(stderr, "%s", i18n("Error: DISPLAY environment variable not set.\n").local8Bit().data());
+      fprintf(stderr, "%s", i18n("Error: DISPLAY environment variable not set.\n").toLocal8Bit().data());
       exit(1);
    }
 }
@@ -142,7 +142,7 @@ void KHostName::changeX()
       QByteArray authName = entries[1];
       QByteArray authKey = entries[2];
 
-      int i = netId.findRev(':');
+      int i = netId.lastIndexOf(':');
       if (i == -1)
          continue;
       QByteArray netDisplay = netId.mid(i);
@@ -196,7 +196,7 @@ void KHostName::changeDcop()
 
    if (!newName.isEmpty())
    {
-      int i = line1.findRev(':');
+      int i = line1.lastIndexOf(':');
       if (i == -1)
       {
          fprintf(stderr, "Warning: File '%s' has unexpected format.\n", fname.data());
@@ -324,7 +324,7 @@ void KHostName::changeSessionManager()
       fprintf(stderr, "Warning: No session management specified.\n");
       return;
    }
-   int i = sm.findRev(':');
+   int i = sm.lastIndexOf(':');
    if ((i == -1) || (sm.left(6) != "local/"))
    {
       fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.data());

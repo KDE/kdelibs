@@ -53,14 +53,14 @@ static bool bHighlight;
 static void result(const QString &txt)
 {
    if (utf8)
-      puts( txt.utf8() );
+      puts( txt.toUtf8() );
    else
-      puts( txt.local8Bit() );
+      puts( txt.toLocal8Bit() );
 }
 
 static void error(int exitCode, const QString &txt)
 {
-   qWarning("kde-menu: %s", txt.local8Bit().data());
+   qWarning("kde-menu: %s", txt.toLocal8Bit().data());
    exit(exitCode);
 }
 
@@ -96,7 +96,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
                DCOPRef kicker( "kicker", "kicker" );
                bool result = kicker.call( "highlightMenuItem", menuId );
                if (!result)
-                  error(3, i18n("Menu item '%1' could not be highlighted.").arg(menuId).local8Bit());
+                  error(3, i18n("Menu item '%1' could not be highlighted.").arg(menuId).toLocal8Bit());
             }
             exit(0);
          }
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
          qWarning("Can't talk to klauncher!");
          command = KGlobal::dirs()->findExe(command);
          command += " " + args.join(" ");
-         system(command.local8Bit());
+         system(command.toLocal8Bit());
       }
    }
 

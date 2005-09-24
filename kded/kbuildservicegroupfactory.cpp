@@ -94,7 +94,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      // Make sure parent dir exists.
      KServiceGroup *parentEntry = 0;
      QString parent = menuName.left(menuName.length()-1);
-     int i = parent.findRev('/');
+     int i = parent.lastIndexOf('/');
      if (i > 0) {
         parent = parent.left(i+1);
      } else {

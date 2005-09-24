@@ -67,7 +67,7 @@ KSycocaEntry *
 KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 {
   QString name = file;
-  int pos = name.findRev('/');
+  int pos = name.lastIndexOf('/');
   if (pos != -1)
   {
      name = name.mid(pos+1);
