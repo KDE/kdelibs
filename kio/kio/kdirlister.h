@@ -266,7 +266,7 @@ public:
    *
    * You can set more than one filter by separating them with whitespace, e.g
    * "*.cpp *.h".
-   * Note: the direcory is not automatically reloaded.
+   * Note: the directory is not automatically reloaded.
    *
    * @param filter the new filter, QString::null to disable filtering
    * @see matchesFilter
@@ -283,7 +283,7 @@ public:
   /**
    * Set mime-based filter to only list items matching the given mimetypes.
    *
-   * NOTE: setting the filter does not automatically reload direcory.
+   * NOTE: setting the filter does not automatically reload directory.
    * Also calling this function will not affect any named filter already set.
    *
    * @param mimeList a list of mime-types.
@@ -299,7 +299,7 @@ public:
    *
    * Set mime-based exclude filter to only list items not matching the given mimetypes
    *
-   * NOTE: setting the filter does not automatically reload direcory.
+   * NOTE: setting the filter does not automatically reload directory.
    * Also calling this function will not affect any named filter already set.
    *
    * @param mimeList a list of mime-types.
