@@ -17,7 +17,6 @@ def generate(env):
 
 		have_idn  = env.pkgConfig_findPackage('LIBIDN', 'libidn', '0.5.0')
 
-		if not os.path.exists( env['_BUILDDIR_'] ): os.mkdir(env['_BUILDDIR_'])
     		dest=open(env.join(env['_BUILDDIR_'], 'config-libidn.h'), 'w')
     		dest.write('/* libidn configuration */\n')
 		if have_idn: dest.write('#define HAVE_IDNA_H 1\n');

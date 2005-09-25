@@ -56,13 +56,16 @@ def generate(env):
 		('CPPPATH_QT', ''),
 		('LIBPATH_QT', ''),
 		('LIB_QT', ''),
+		('RPATH_QT', ''),
 
 		('CPPPATH_QT3SUPPORT', ''),
 		('CXXFLAGS_QT3SUPPORT', ''),
 		('LIB_QT3SUPPORT', ''),
+		('RPATH_QT3SUPPORT', ''),
 
 		('CPPPATH_QTCORE', ''),
 		('LIB_QTCORE', ''),
+		('RPATH_QTCORE', ''),
 
 		('CPPPATH_QTDESIGNER', ''),
 		('LIB_QTDESIGNER', ''),
@@ -71,18 +74,23 @@ def generate(env):
 			
 		('CPPPATH_QTNETWORK', ''),
 		('LIB_QTNETWORK', ''),
+		('RPATH_QTNETWORK', ''),
 
 		('CPPPATH_QTGUI', ''),
 		('LIB_QTGUI', ''),
+		('RPATH_QTGUI', ''),
 
 		('CPPPATH_QTOPENGL', ''),
 		('LIB_QTOPENGL', ''),
+		('RPATH_QTOPENGL', ''),
 
 		('CPPPATH_QTSQL', ''),
 		('LIB_QTSQL', ''),
+		('RPATH_QTSQL', ''),
 
 		('CPPPATH_QTXML', ''),
 		('LIB_QTXML', ''),
+		('RPATH_QTXML', ''),
 
 		# TODO remove
 		('QTPLUGINS', 'uic executable command'),

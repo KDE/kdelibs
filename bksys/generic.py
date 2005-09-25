@@ -11,7 +11,6 @@ from SCons.Options import Options, PathOption
 ## CONFIGURATION: write the config.h files
 def write_config_h(lenv):
 	# put the files into the builddir
-	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
 	dest=open(lenv.join(lenv['_BUILDDIR_'], 'config.h'), 'w')
 	dest.write('/* defines are added below */\n')
 
@@ -49,6 +48,10 @@ def configure(dict):
 		elif key == 'cachedir':  cache_dir  = dict[key]
 		elif key == 'colorfull': use_colors = 1
 		else: print 'unknown key: '+key
+
+	## make sure the build dir is available
+	## TODO what if it is in a non-existing subdirectory ? (ita)
+	if not os.path.exists(build_dir): os.mkdir(build_dir)
 
 	## now build the environment
 	if bootstrap:

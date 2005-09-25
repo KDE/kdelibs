@@ -68,7 +68,6 @@ def generate(env):
                         from detect_kde4 import detect
                 detect(env)
 
-		if not os.path.exists( env['_BUILDDIR_'] ): os.mkdir(env['_BUILDDIR_'])
 		dest=open(env.join(env['_BUILDDIR_'], 'config-kde.h'), 'w')
 		dest.write('/* kde configuration */\n')
 		dest.write(('#define KDELIBSUFF "%s"\n') % env['LIBSUFFIXEXT']);
