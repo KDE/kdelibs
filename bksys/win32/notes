@@ -25,3 +25,8 @@ Sources. if you want to build it: http://pkgconfig.freedesktop.org/releases/
 $ scons debug=full extraincludes=/cygdrive/f/oo/kw/kdelibs4/win
 
 #/cygdrive/f/oo/kw/kdelibs4/kdecore ?
+
+TODO:
+add KDECORE_SHARED_EXPORT (because e.g. KURL is compiled into dcop, so we need to avoid "inconsistent linking)
+for kdecore: ---> #define KDECORE_SHARED_EXPORT KDECORE_EXPORT
+for outside code: ---> #define KDECORE_SHARED_EXPORT
