@@ -49,7 +49,7 @@ KFileFilterCombo::KFileFilterCombo( QWidget *parent)
     : KComboBox(true, parent), d( new KFileFilterComboPrivate )
 {
     setTrapReturnKey( true );
-    setInsertionPolicy(NoInsertion);
+    setInsertPolicy(QComboBox::NoInsert);
     connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
     connect( this, SIGNAL( returnPressed() ), this, SIGNAL( filterChanged() ));
     connect( this, SIGNAL( filterChanged() ), SLOT( slotFilterChanged() ));
@@ -69,11 +69,11 @@ void KFileFilterCombo::setFilter(const QString& filter)
 
     if (!filter.isEmpty()) {
 	QString tmp = filter;
-	int index = tmp.find('\n');
+	int index = tmp.indexOf('\n');
 	while (index > 0) {
 	    filters.append(tmp.left(index));
 	    tmp = tmp.mid(index + 1);
-	    index = tmp.find('\n');
+	    index = tmp.indexOf('\n');
 	}
 	filters.append(tmp);
     } 
@@ -83,8 +83,8 @@ void KFileFilterCombo::setFilter(const QString& filter)
     QStringList::ConstIterator it;
 	QStringList::ConstIterator end(filters.end());
     for (it = filters.begin(); it != end; ++it) {
-	int tab = (*it).find('|');
-	insertItem((tab < 0) ? *it :
+	int tab = (*it).indexOf('|');
+	addItem((tab < 0) ? *it :
 		   (*it).mid(tab + 1));
     }
 
@@ -95,14 +95,14 @@ void KFileFilterCombo::setFilter(const QString& filter)
 QString KFileFilterCombo::currentFilter() const
 {
     QString f = currentText();
-    if (f == text(currentItem())) { // user didn't edit the text
-	f = filters.at(currentItem());
-        if ( d->isMimeFilter || (currentItem() == 0 && d->hasAllSupportedFiles) ) {
+    if (f == itemText(currentIndex())) { // user didn't edit the text
+	f = filters.at(currentIndex());
+        if ( d->isMimeFilter || (currentIndex() == 0 && d->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }
     }
 
-    int tab = f.find('|');
+    int tab = f.indexOf('|');
     if (tab < 0)
 	return f;
     else
@@ -111,7 +111,7 @@ QString KFileFilterCombo::currentFilter() const
 
 void KFileFilterCombo::setCurrentFilter( const QString& filter )
 {
-    setCurrentText( filter );
+    setEditText( filter );
     filterChanged();
 }
 
@@ -142,17 +142,17 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
             allTypes += type->name();
             allComments += type->comment();
         }
-        insertItem( type->comment() );
+        addItem( type->comment() );
         if ( type->name() == defaultType )
-            setCurrentItem( i );
+            setCurrentIndex( i );
     }
 
     if ( m_allTypes )
     {
         if ( i < 3 ) // show the mime-comments of at max 3 types
-            insertItem( allComments, 0 );
+            insertItem(0, allComments);
         else {
-            insertItem( i18n("All Supported Files"), 0 );
+            insertItem(0, i18n("All Supported Files"));
             d->hasAllSupportedFiles = true;
         }
 

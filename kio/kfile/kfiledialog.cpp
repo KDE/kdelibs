@@ -204,7 +204,7 @@ void KFileDialog::setLocationLabel(const QString& text)
 
 void KFileDialog::setFilter(const QString& filter)
 {
-    int pos = filter.find('/');
+    int pos = filter.indexOf('/');
 
     // Check for an un-escaped '/', if found
     // interpret as a MIME filter.
@@ -219,7 +219,7 @@ void KFileDialog::setFilter(const QString& filter)
     // escaped '/' characters.
 
     QString copy (filter);
-    for (pos = 0; (pos = copy.find("\\/", pos)) != -1; ++pos)
+    for (pos = 0; (pos = copy.indexOf("\\/", pos)) != -1; ++pos)
         copy.remove(pos, 1);
 
     ops->clearFilter();
@@ -1110,7 +1110,7 @@ void KFileDialog::slotFilterChanged()
     QString filter = filterWidget->currentFilter();
     ops->clearFilter();
 
-    if ( filter.find( '/' ) > -1 ) {
+    if ( filter.indexOf( '/' ) > -1 ) {
         QStringList types = QStringList::split( " ", filter );
         types.prepend( "inode/directory" );
         ops->setMimeFilter( types );
@@ -1472,8 +1472,8 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     int start = 0;
     int index1 = -1, index2 = -1;
     while ( true ) {
-        index1 = line.find( '"', start );
-        index2 = line.find( '"', index1 + 1 );
+        index1 = line.indexOf( '"', start );
+        index2 = line.indexOf( '"', index1 + 1 );
 
         if ( index1 < 0 )
             break;

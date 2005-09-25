@@ -65,10 +65,10 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
 
     if (found)
     {
-      d->encoding->insertItem (encodings[i]);
+      d->encoding->addItem (encodings[i]);
       if ( (codecForEnc->name() == sEncoding) || (encodings[i] == sEncoding) )
       {
-        d->encoding->setCurrentItem(insert);
+        d->encoding->setCurrentIndex(insert);
       }
 
       insert++;

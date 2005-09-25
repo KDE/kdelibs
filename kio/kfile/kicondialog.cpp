@@ -326,11 +326,11 @@ void KIconDialog::init()
     connect(this, SIGNAL(hidden()), mpCanvas, SLOT(stopLoading()));
 
     // The order must match the context definitions in KIcon.
-    mpCombo->insertItem(i18n("Actions"));
-    mpCombo->insertItem(i18n("Applications"));
-    mpCombo->insertItem(i18n("Devices"));
-    mpCombo->insertItem(i18n("Filesystems"));
-    mpCombo->insertItem(i18n("Mimetypes"));
+    mpCombo->addItem(i18n("Actions"));
+    mpCombo->addItem(i18n("Applications"));
+    mpCombo->addItem(i18n("Devices"));
+    mpCombo->addItem(i18n("Filesystems"));
+    mpCombo->addItem(i18n("Mimetypes"));
     mpCombo->setFixedSize(mpCombo->sizeHint());
     mpBrowseBut->setFixedWidth(mpCombo->width());
 
@@ -424,7 +424,7 @@ void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
     mpCombo->setEnabled(!user);
     mpBrowseBut->setEnabled(user);
     mContext = context;
-    mpCombo->setCurrentItem(mContext-1);
+    mpCombo->setCurrentIndex(mContext-1);
 }
 
 void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
@@ -443,7 +443,7 @@ void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
     mpCombo->setEnabled(!user);
     mpBrowseBut->setEnabled( user && !lockCustomDir );
     mContext = context;
-    mpCombo->setCurrentItem(mContext-1);
+    mpCombo->setCurrentIndex(mContext-1);
 }
 
 void KIconDialog::setCustomLocation( const QString& location )

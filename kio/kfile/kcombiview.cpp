@@ -73,7 +73,8 @@ void KCombiView::setRight(KFileView *view)
     Q3ValueList<int> lst;
     lst << left->gridX() + 2 * left->spacing();
     setSizes( lst );
-    setResizeMode( left, QSplitter::KeepSize );
+    setStretchFactor(indexOf(left),0); //setResizeMode( left, QSplitter::KeepSize );
+    
 
     right->setParentView( this );
     right->widget()->setAcceptDrops(acceptDrops());

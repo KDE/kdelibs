@@ -78,18 +78,18 @@ namespace KNotify
         //
         static void fill( KComboBox *combo )
         {
-            combo->insertItem( i18n("Sounds") );
-            combo->insertItem( i18n("Logging") );
-            combo->insertItem( i18n("Program Execution") );
-            combo->insertItem( i18n("Message Windows") );
-            combo->insertItem( i18n("Passive Windows") );
-            combo->insertItem( i18n("Standard Error Output") );
-            combo->insertItem( i18n("Taskbar") );
+            combo->addItem( i18n("Sounds") );
+            combo->addItem( i18n("Logging") );
+            combo->addItem( i18n("Program Execution") );
+            combo->addItem( i18n("Message Windows") );
+            combo->addItem( i18n("Passive Windows") );
+            combo->addItem( i18n("Standard Error Output") );
+            combo->addItem( i18n("Taskbar") );
         }
 
         static int type( KComboBox *combo )
         {
-            switch( combo->currentItem() )
+            switch( combo->currentIndex() )
             {
                 case 0:
                     return KNotifyClient::Sound;
@@ -995,7 +995,7 @@ void KNotifyWidget::enableAll( int what, bool enable )
 Application::Application( const QString &path )
 {
     QString config_file = path;
-    config_file[config_file.find('/')] = '.';
+    config_file[config_file.indexOf('/')] = '.';
     m_events = 0L;
     config = new KConfig(config_file, false, false);
     kc = new KConfig(path, true, false, "data");
@@ -1005,7 +1005,7 @@ Application::Application( const QString &path )
     m_description = kc->readEntry( QLatin1String("Comment"),
                                    i18n("No description available") );
 
-    int index = path.find( '/' );
+    int index = path.indexOf( '/' );
     if ( index >= 0 )
         m_appname = path.left( index );
     else

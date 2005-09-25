@@ -255,11 +255,11 @@ void KURLRequester::setKURL( const KURL& url )
         d->setText( url.pathOrURL() );
 }
 
-void KURLRequester::setCaption( const QString& caption )
+void KURLRequester::setDialogTitle( const QString& title )
 {
-   QWidget::setCaption( caption );
+   QWidget::setWindowTitle( title );
    if (myFileDialog)
-      myFileDialog->setCaption( caption );
+      myFileDialog->setWindowTitle( title );
 }
 
 QString KURLRequester::url() const
@@ -342,7 +342,7 @@ KFileDialog * KURLRequester::fileDialog() const
                                         "file dialog", true );
 
         myFileDialog->setMode( d->fileDialogMode );
-        myFileDialog->setCaption( caption() );
+        myFileDialog->setWindowTitle( windowTitle() );
     }
 
     return myFileDialog;

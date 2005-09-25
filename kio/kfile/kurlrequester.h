@@ -205,9 +205,9 @@ public slots:
 
     /**
      * Sets the caption of the file dialog.
-     * @since 3.1
+     * @since 4.0
      */
-    virtual void setCaption( const QString& caption );
+    virtual void setDialogTitle( const QString& title );
 
     /**
      * Clears the lineedit/combobox.

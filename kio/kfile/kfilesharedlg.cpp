@@ -157,13 +157,15 @@ void KFileSharePropsPlugin::init()
 
             // Some help text
             QLabel *label = new QLabel( i18n("Sharing this folder makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
-            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap );
+            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
+	    label->setWordWrap(true);
             vbox->addWidget( label, 0 );
 
 	    KSeparator* sep=new KSeparator(m_widget);
 	    vbox->addWidget( sep, 0 );
 	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
-            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap );
+            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
+	    label->setWordWrap(true);
 	    vbox->addWidget( label, 0 );
 	    m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
 	    connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
