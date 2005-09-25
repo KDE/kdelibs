@@ -104,7 +104,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_outputType = KProtocolInfo::T_NONE;
 
   d->docPath = config.readPathEntry( "DocPath" );
-  d->protClass = config.readEntry( "Class" ).lower();
+  d->protClass = config.readEntry( "Class" ).toLower();
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));
 
@@ -118,7 +118,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
 
-  tmp = config.readEntry( "URIMode", QString::null ).lower();
+  tmp = config.readEntry( "URIMode", QString::null ).toLower();
   if (tmp == "rawuri")
      d->uriMode = KURL::RawURI;
   else if (tmp == "mailto")

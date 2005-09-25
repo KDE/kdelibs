@@ -106,7 +106,7 @@ int main( int argc, char **argv ) {
     QString iconPath = "";
     if ( args->isSet( "p" ) )
         iconPath = args->getOption( "p" );
-    QString fileName = fi.absFilePath();
+    QString fileName = fi.absoluteFilePath();
 
     if ( args->isSet( "o" ) ) {
         QFile output( outputFile );

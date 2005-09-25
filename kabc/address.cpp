@@ -375,11 +375,11 @@ QString Address::formattedAddress( const QString &realName,
     entry.setGroup( "KCM Locale" );
     QString cpos = entry.readEntry( "AddressCountryPosition" );
     if ( "BELOW" == cpos || cpos.isEmpty() ) {
-      ret = ret + "\n\n" + country().upper();
+      ret = ret + "\n\n" + country().toUpper();
     } else if ( "below" == cpos ) {
       ret = ret + "\n\n" + country();
     } else if ( "ABOVE" == cpos ) {
-      ret = country().upper() + "\n\n" + ret;
+      ret = country().toUpper() + "\n\n" + ret;
     } else if ( "above" == cpos ) {
       ret = country() + "\n\n" + ret;
     }
@@ -448,17 +448,17 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
     } \
   }
   REPLTAG( KABC_FMTTAG_realname, realName );
-  REPLTAG( KABC_FMTTAG_REALNAME, realName.upper() );
+  REPLTAG( KABC_FMTTAG_REALNAME, realName.toUpper() );
   REPLTAG( KABC_FMTTAG_company, orgaName );
-  REPLTAG( KABC_FMTTAG_COMPANY, orgaName.upper() );
+  REPLTAG( KABC_FMTTAG_COMPANY, orgaName.toUpper() );
   REPLTAG( KABC_FMTTAG_pobox, postOfficeBox() );
   REPLTAG( KABC_FMTTAG_street, street() );
-  REPLTAG( KABC_FMTTAG_STREET, street().upper() );
+  REPLTAG( KABC_FMTTAG_STREET, street().toUpper() );
   REPLTAG( KABC_FMTTAG_zipcode, postalCode() );
   REPLTAG( KABC_FMTTAG_location, locality() );
-  REPLTAG( KABC_FMTTAG_LOCATION, locality().upper() );
+  REPLTAG( KABC_FMTTAG_LOCATION, locality().toUpper() );
   REPLTAG( KABC_FMTTAG_region, region() );
-  REPLTAG( KABC_FMTTAG_REGION, region().upper() );
+  REPLTAG( KABC_FMTTAG_REGION, region().toUpper() );
   result.replace( KABC_FMTTAG_newline, "\n" );
 #undef REPLTAG
  
@@ -558,7 +558,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
   QFile file( mapfile );
   if ( file.open( QIODevice::ReadOnly ) ) {
     QTextStream s( &file );
-    QString searchStr = "\t" + ISOname.simplified().lower();
+    QString searchStr = "\t" + ISOname.simplified().toLower();
     QString strbuf = s.readLine();
     int pos;
     while ( !strbuf.isEmpty() ) {

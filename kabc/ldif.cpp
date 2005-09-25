@@ -45,7 +45,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   if ( url ) {
     result = fieldname.toUtf8() + ":< " + Q3CString( value.data(), value.size()+1 );
   } else {
-    isDn = fieldname.lower() == "dn";
+    isDn = fieldname.toLower() == "dn";
     //SAFE-INIT-CHAR
     if ( value.size() > 0 && value[0] > 0 && value[0] != '\n' &&
       value[0] != '\r' && value[0] != ':' && value[0] != '<' ) safe = true;
@@ -204,7 +204,7 @@ LDIF::ParseVal LDIF::processLine()
 
   mUrl = splitLine( line, mAttr, mVal );
 
-  QString attrLower = mAttr.lower();
+  QString attrLower = mAttr.toLower();
 
   switch ( mEntryType ) {
     case Entry_None:

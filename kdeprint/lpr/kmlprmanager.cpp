@@ -84,7 +84,7 @@ void KMLprManager::listPrinters()
 
 		// try to open the printcap file and parse it
 		PrintcapReader	reader;
-		QFile	f(fi.absFilePath());
+		QFile	f(fi.absoluteFilePath());
 		PrintcapEntry	*entry;
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{

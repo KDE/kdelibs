@@ -741,7 +741,7 @@ VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
 
    QString fileName = basePath.mid(basePath.lastIndexOf('/')+1);
    m_docInfo.baseName = fileName.left( fileName.length() - 5 );
-   QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
+   QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
 
    QStringList result = KGlobal::dirs()->findAllResources("xdgconf-menu", baseName);
 
@@ -772,7 +772,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
       return QString::null;
    }
 
-   QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
+   QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
    QString result = locate("xdgconf-menu", baseName);
 
    return result;

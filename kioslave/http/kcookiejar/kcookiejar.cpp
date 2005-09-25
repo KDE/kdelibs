@@ -108,7 +108,7 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
     if (_str.isEmpty())
         return KCookieDunno;
 
-    QString advice = _str.lower();
+    QString advice = _str.toLower();
 
     if (advice == QLatin1String("accept"))
         return KCookieAccept;
@@ -577,7 +577,7 @@ bool KCookieJar::parseURL(const QString &_url,
     if (!kurl.isValid())
        return false;
 
-    _fqdn = kurl.host().lower();
+    _fqdn = kurl.host().toLower();
     if (kurl.port())
     {
        if (((kurl.protocol() == L1("http")) && (kurl.port() != 80)) ||
@@ -646,7 +646,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        if (partList.count() == 1)
          break; // We only have a TLD left.
        
-       if ((partList.count() == 2) && (m_twoLevelTLD[partList[1].lower()]))
+       if ((partList.count() == 2) && (m_twoLevelTLD[partList[1].toLower()]))
        {
           // This domain uses two-level TLDs in the form xxxx.yy
           break;
@@ -661,7 +661,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
           // Catch some TLDs that we miss with the previous check
           // e.g. com.au, org.uk, mil.co
-          const QString t = partList[0].lower();
+          const QString t = partList[0].toLower();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
               break;
        }
@@ -776,10 +776,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Name-Value pair follows
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
-            QString cName = Name.lower();
+            QString cName = Name.toLower();
             if (cName == "domain")
             {
-                QString dom = Value.lower();
+                QString dom = Value.toLower();
                 // RFC2965 3.2.2: If an explicitly specified value does not
                 // start with a dot, the user agent supplies a leading dot
                 if(dom.length() && dom[0] != '.')
@@ -817,12 +817,12 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 lastCookie->mProtocolVersion = Value.toInt();
             }
             else if ((cName == "secure") ||
-                     (cName.isEmpty() && Value.lower() == L1("secure")))
+                     (cName.isEmpty() && Value.toLower() == L1("secure")))
             {
                 lastCookie->mSecure = true;
             }
             else if ((cName == "httponly") ||
-                     (cName.isEmpty() && Value.lower() == L1("httponly")))
+                     (cName.isEmpty() && Value.toLower() == L1("httponly")))
             {
                 lastCookie->mHttpOnly = true;
             }

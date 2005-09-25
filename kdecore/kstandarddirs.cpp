@@ -1196,7 +1196,7 @@ static QString readEnvPath(const char *env)
       return QString::null;
 #ifdef Q_OS_WIN
    //win32 paths are case-insensitive: avoid duplicates on various dir lists
-   return QFile::decodeName(c_path).lower();
+   return QFile::decodeName(c_path).toLower();
 #else
    return QFile::decodeName(c_path);
 #endif

@@ -81,7 +81,7 @@ void KMRlprManager::listPrinters()
 	QFileInfo	pfi(printerFile());
 	if (pfi.exists() && (!m_checktime.isValid() || m_checktime < pfi.lastModified()))
 	{
-		loadPrintersConf(pfi.absFilePath());
+		loadPrintersConf(pfi.absoluteFilePath());
 		m_checktime = pfi.lastModified();
 	}
 	else

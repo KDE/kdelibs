@@ -260,13 +260,13 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KURL& _url) const
   KURL documentURL(doc->URL());
 
   // a local file can load anything
-  if (documentURL.protocol().lower() == "file") {
+  if (documentURL.protocol().toLower() == "file") {
     return true;
   }
 
   // but a remote document can only load from the same port on the server
-  if (documentURL.protocol().lower() == _url.protocol().lower() &&
-      documentURL.host().lower() == _url.host().lower() &&
+  if (documentURL.protocol().toLower() == _url.protocol().toLower() &&
+      documentURL.host().toLower() == _url.host().toLower() &&
       documentURL.port() == _url.port()) {
     return true;
   }
@@ -307,7 +307,7 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-  if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
+  if (method.toLower() == "post" && (url.protocol().toLower() == "http" || url.protocol().toLower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QByteArray(_body.toUtf8()), false );
       if(contentType.isNull())
@@ -384,11 +384,11 @@ void XMLHttpRequest::abort()
 void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
 {
   // Content-type needs to be set seperately from the other headers
-  if(name.lower() == "content-type") {
+  if(name.toLower() == "content-type") {
     contentType = "Content-type: " + value;
     return;
   }
-  if(name.lower() == "content-length") {
+  if(name.toLower() == "content-length") {
     return; // Denied - we set it ourselves.
   }
   requestHeaders[name] = value;

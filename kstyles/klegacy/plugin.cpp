@@ -25,5 +25,5 @@ int major_version()
 
 const char *description()
 {
-    return(i18n("KDE LegacyStyle plugin").utf8());
+    return(i18n("KDE LegacyStyle plugin").toUtf8());
 }

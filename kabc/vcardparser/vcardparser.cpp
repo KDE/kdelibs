@@ -104,10 +104,10 @@ VCard::List VCardParser::parseVCards( const QString& text )
             QStringList pair = QStringList::split( '=', *paramIt );
             if ( pair.size() == 1 ) {
               // correct the fucking 2.1 'standard'
-              if ( pair[0].lower() == "quoted-printable" ) {
+              if ( pair[0].toLower() == "quoted-printable" ) {
                 pair[0] = "encoding";
                 pair.append( "quoted-printable" );
-              } else if ( pair[0].lower() == "base64" ) {
+              } else if ( pair[0].toLower() == "base64" ) {
                 pair[0] = "encoding";
                 pair.append( "base64" );
               } else {
@@ -119,9 +119,9 @@ VCard::List VCardParser::parseVCards( const QString& text )
               const QStringList args = QStringList::split( ',', pair[ 1 ] );
               QStringList::ConstIterator argIt;
               for ( argIt = args.begin(); argIt != args.end(); ++argIt )
-                vCardLine.addParameter( pair[0].lower(), *argIt );
+                vCardLine.addParameter( pair[0].toLower(), *argIt );
             } else
-              vCardLine.addParameter( pair[0].lower(), pair[1] );
+              vCardLine.addParameter( pair[0].toLower(), pair[1] );
           }
         }
 
@@ -131,10 +131,10 @@ VCard::List VCardParser::parseVCards( const QString& text )
         if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
           QByteArray input, output;
           input = value.toLocal8Bit();
-          if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
-               vCardLine.parameter( "encoding" ).lower() == "base64" )
+          if ( vCardLine.parameter( "encoding" ).toLower() == "b" ||
+               vCardLine.parameter( "encoding" ).toLower() == "base64" )
             KCodecs::base64Decode( input, output );
-          else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" ) {
+          else if ( vCardLine.parameter( "encoding" ).toLower() == "quoted-printable" ) {
             // join any qp-folded lines
             while ( value.at( value.length() - 1 ) == '=' && it != linesEnd ) {
               value = value.remove( value.length() - 1, 1 ) + (*it);
@@ -143,12 +143,12 @@ VCard::List VCardParser::parseVCards( const QString& text )
             input = value.toLocal8Bit();
             KCodecs::quotedPrintableDecode( input, output );
           }
-          if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
+          if ( vCardLine.parameter( "charset" ).toLower() == "utf-8" ) {
             vCardLine.setValue( QString::fromUtf8( output.data(), output.size() ) );
           } else {
             vCardLine.setValue( output );
           }
-        } else if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
+        } else if ( vCardLine.parameter( "charset" ).toLower() == "utf-8" ) {
           vCardLine.setValue( QString::fromUtf8( value.ascii() ) );
         } else
           vCardLine.setValue( value );
@@ -157,14 +157,14 @@ VCard::List VCardParser::parseVCards( const QString& text )
       }
 
       // we do not save the start and end tag as vcardline
-      if ( (*it).lower().startsWith( "begin:vcard" ) ) {
+      if ( (*it).toLower().startsWith( "begin:vcard" ) ) {
         inVCard = true;
         currentLine.setLength( 0 );
         currentVCard.clear(); // flush vcard
         continue;
       }
 
-      if ( (*it).lower().startsWith( "end:vcard" ) ) {
+      if ( (*it).toLower().startsWith( "end:vcard" ) ) {
         inVCard = false;
         vCardList.append( currentVCard );
         currentLine.setLength( 0 );
@@ -223,12 +223,12 @@ QString VCardParser::createVCards( const VCard::List& list )
             for ( paramIt = params.begin(); paramIt != params.end(); ++paramIt ) {
               if ( (*paramIt) == "encoding" ) {
                 hasEncoding = true;
-                encodingType = (*lineIt).parameter( "encoding" ).lower();
+                encodingType = (*lineIt).parameter( "encoding" ).toLower();
               }
 
               values = (*lineIt).parameters( *paramIt );
               for ( valueIt = values.constBegin(); valueIt != values.constEnd(); ++valueIt ) {
-                textLine.append( ";" + (*paramIt).upper() );
+                textLine.append( ";" + (*paramIt).toUpper() );
                 if ( !(*valueIt).isEmpty() )
                   textLine.append( "=" + (*valueIt) );
               }

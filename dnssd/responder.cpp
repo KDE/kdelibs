@@ -80,16 +80,16 @@ bool Responder::isRunning() const
 
 bool domainIsLocal(const QString& domain)
 {
-	return domain.section('.',-1,-1).lower()=="local";
+	return domain.section('.',-1,-1).toLower()=="local";
 }
 
 QByteArray domainToDNS(const QString &domain)
 {
 #ifdef IDN_BROKEN_IN_MDNSRESPONDER
-	if (domainIsLocal(domain)) return domain.utf8();
+	if (domainIsLocal(domain)) return domain.toUtf8();
 		else return KIDNA::toAsciiCString(domain);
 #else
-	return domain.utf8();
+	return domain.toUtf8();
 #endif
 }
 

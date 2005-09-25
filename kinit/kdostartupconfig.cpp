@@ -110,9 +110,9 @@ int main()
                 {
                 QString key = it.key();
                 QString value = *it;
-                startupconfig << file.replace( ' ', '_' ).lower()
-                    << "_" << group.replace( ' ', '_' ).lower()
-                    << "_" << key.replace( ' ', '_' ).lower()
+                startupconfig << file.replace( ' ', '_' ).toLower()
+                    << "_" << group.replace( ' ', '_' ).toLower()
+                    << "_" << key.replace( ' ', '_' ).toLower()
                     << "=\"" << value.replace( "\"", "\\\"" ) << "\"\n";
                 }
             }
@@ -124,9 +124,9 @@ int main()
             cfg.setGroup( group );
             QString value = cfg.readEntry( key, def );
             startupconfig << "# " << line << "\n";
-            startupconfig << file.replace( ' ', '_' ).lower()
-                << "_" << group.replace( ' ', '_' ).lower()
-                << "_" << key.replace( ' ', '_' ).lower()
+            startupconfig << file.replace( ' ', '_' ).toLower()
+                << "_" << group.replace( ' ', '_' ).toLower()
+                << "_" << key.replace( ' ', '_' ).toLower()
                 << "=\"" << value.replace( "\"", "\\\"" ) << "\"\n";
             }
         startupconfigfiles << line << endl;

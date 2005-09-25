@@ -1393,8 +1393,8 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
         QString key, val;
         int pos = s.find('=');
         if (pos >= 0) {
-          key = s.left(pos).trimmed().lower();
-          val = s.mid(pos + 1).trimmed().lower();
+          key = s.left(pos).trimmed().toLower();
+          val = s.mid(pos + 1).trimmed().toLower();
           QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
@@ -1423,7 +1423,7 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
           continue;
         } else {
           // leaving away the value gives true
-          key = s.trimmed().lower();
+          key = s.trimmed().toLower();
           val = "1";
         }
       boolargs:
@@ -1447,26 +1447,26 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
     KParts::URLArgs uargs;
     uargs.frameName = frameName;
 
-    if ( uargs.frameName.lower() == "_top" )
+    if ( uargs.frameName.toLower() == "_top" )
     {
       while ( p->parentPart() )
         p = p->parentPart();
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.lower() == "_parent" )
+    if ( uargs.frameName.toLower() == "_parent" )
     {
       if ( p->parentPart() )
         p = p->parentPart();
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.lower() == "_self")
+    if ( uargs.frameName.toLower() == "_self")
     {
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.lower() == "replace" )
+    if ( uargs.frameName.toLower() == "replace" )
     {
       Window::retrieveWindow(p)->goURL(exec, url.url(), true /*lock history*/);
       return Window::retrieve(p);
@@ -1492,7 +1492,7 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
         }
       }
       uargs.serviceType = QString::null;
-      if (uargs.frameName.lower() == "_blank")
+      if (uargs.frameName.toLower() == "_blank")
         uargs.frameName = QString::null;
       if (!url.isEmpty())
         emit khtmlpart->browserExtension()->openURLRequest(url,uargs);

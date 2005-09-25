@@ -84,7 +84,7 @@ QDateTime KABC::VCardStringToDate( const QString &dateString )
   if ( d.length() >= 8 )
     date = QDate( d.mid( 0, 4 ).toUInt(), d.mid( 4, 2 ).toUInt(), d.mid( 6, 2 ).toUInt() );
 
-  if ( d.length() > 9 && d[ 8 ].upper() == 'T' )
+  if ( d.length() > 9 && d[ 8 ].toUpper() == 'T' )
     time = QTime( d.mid( 9, 2 ).toUInt(), d.mid( 11, 2 ).toUInt(), d.mid( 13, 2 ).toUInt() );
 
   return QDateTime( date, time );

@@ -21,21 +21,21 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 	TCHAR *lszValue;
 	DWORD dwType=REG_SZ;
 	DWORD dwSize;
-	if (ERROR_SUCCESS!=RegOpenKeyEx(key, subKey.ucs2(), NULL, KEY_READ, &hKey))
+	if (ERROR_SUCCESS!=RegOpenKeyEx(key, subKey.utf16(), NULL, KEY_READ, &hKey))
 		FAILURE;
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.ucs2(), NULL, NULL, NULL, &dwSize))
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.utf16(), NULL, NULL, NULL, &dwSize))
 		FAILURE;
 
 	lszValue = new TCHAR[dwSize];
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.ucs2(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.utf16(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
 		delete [] lszValue;
 		FAILURE;
 	}
 	RegCloseKey(hKey);
 
-	QString res = QString::fromUcs2(lszValue);
+	QString res = QString::fromUtf16(lszValue);
 	delete [] lszValue;
 	return res;
 }
@@ -43,15 +43,15 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 KDEWIN32_EXPORT
 bool showWin32FilePropertyDialog(const QString& fileName)
 {
-	QString path_ = QDir::convertSeparators(QFileInfo(fileName).absFilePath());
+	QString path_ = QDir::convertSeparators(QFileInfo(fileName).absoluteFilePath());
 
 	SHELLEXECUTEINFO execInfo;
 	memset(&execInfo,0,sizeof(execInfo));
 	execInfo.cbSize = sizeof(execInfo);
 	execInfo.fMask = SEE_MASK_INVOKEIDLIST | SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
 	const QString verb("properties");
-	execInfo.lpVerb = (TCHAR*)verb.ucs2();
-	execInfo.lpFile = (TCHAR*)path_.ucs2();
+	execInfo.lpVerb = (TCHAR*)verb.utf16();
+	execInfo.lpFile = (TCHAR*)path_.utf16();
 	return ShellExecuteEx(&execInfo);
 }
 

@@ -191,7 +191,7 @@ HelpWindow::~HelpWindow()
     for ( ; it != mHistory.end(); ++it )
 	history.append( *it );
 
-    QFile f( QDir::currentDirPath() + "/.history" );
+    QFile f( QDir::currentPath() + "/.history" );
     f.open( QIODevice::WriteOnly );
     QDataStream s( &f );
     s << history;
@@ -202,7 +202,7 @@ HelpWindow::~HelpWindow()
     for ( ; it2 != mBookmarks.end(); ++it2 )
 	bookmarks.append( *it2 );
 
-    QFile f2( QDir::currentDirPath() + "/.bookmarks" );
+    QFile f2( QDir::currentPath() + "/.bookmarks" );
     f2.open( QIODevice::WriteOnly );
     QDataStream s2( &f2 );
     s2 << bookmarks;
@@ -308,8 +308,8 @@ void HelpWindow::pathSelected( const QString &_path )
 
 void HelpWindow::readHistory()
 {
-    if ( QFile::exists( QDir::currentDirPath() + "/.history" ) ) {
-	QFile f( QDir::currentDirPath() + "/.history" );
+    if ( QFile::exists( QDir::currentPath() + "/.history" ) ) {
+	QFile f( QDir::currentPath() + "/.history" );
 	f.open( QIODevice::ReadOnly );
 	QDataStream s( &f );
 	s >> history;
@@ -321,8 +321,8 @@ void HelpWindow::readHistory()
 
 void HelpWindow::readBookmarks()
 {
-    if ( QFile::exists( QDir::currentDirPath() + "/.bookmarks" ) ) {
-	QFile f( QDir::currentDirPath() + "/.bookmarks" );
+    if ( QFile::exists( QDir::currentPath() + "/.bookmarks" ) ) {
+	QFile f( QDir::currentPath() + "/.bookmarks" );
 	f.open( QIODevice::ReadOnly );
 	QDataStream s( &f );
 	s >> bookmarks;

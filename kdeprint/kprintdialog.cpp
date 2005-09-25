@@ -314,7 +314,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_preview->setWhatsThis(whatsThisPreviewCheckBox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_filelabel->setWhatsThis(whatsThisOutputFileLabel);
-	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
+	d->m_file = new KURLRequester(QDir::homePath()+"/print.ps", m_pbox);
 	d->m_file->setWhatsThis(whatsThisOutputFileLineedit);
 	d->m_file->setEnabled(false);
 	d->m_filelabel->setBuddy(d->m_file);
@@ -728,7 +728,7 @@ bool KPrintDialog::checkOutputFile()
 		{
 			if (f.isWritable())
 			{
-				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
+				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absoluteFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
 				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->url(),
 						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest, true );
@@ -755,7 +755,7 @@ bool KPrintDialog::checkOutputFile()
 		}
 		else
 		{
-			QFileInfo d( f.dirPath( true ) );
+			QFileInfo d( f.absolutePath() );
 			if ( !d.exists() )
 				KMessageBox::error( this, i18n( "The output directory does not exist." ) );
 			else if ( !d.isWritable() )

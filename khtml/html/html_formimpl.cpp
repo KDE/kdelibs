@@ -249,7 +249,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     m_encCharset = codec->name();
     const unsigned int m_encCharsetLength = m_encCharset.length();
     for(unsigned int i=0; i < m_encCharsetLength; ++i)
-        m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
+        m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
 
     QStringList fileUploads, fileNotUploads;
 

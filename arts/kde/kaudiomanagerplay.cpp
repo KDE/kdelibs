@@ -51,7 +51,7 @@ bool KAudioManagerPlay::isNull() const
 
 void KAudioManagerPlay::setTitle( const QString & title )
 {
-	d->amanPlay.title( std::string( title.local8Bit() ) );
+	d->amanPlay.title( std::string( title.toLocal8Bit() ) );
 }
 
 QString KAudioManagerPlay::title()
@@ -61,7 +61,7 @@ QString KAudioManagerPlay::title()
 
 void KAudioManagerPlay::setAutoRestoreID( const QString & autoRestoreID )
 {
-	d->amanPlay.autoRestoreID( std::string( autoRestoreID.local8Bit() ) );
+	d->amanPlay.autoRestoreID( std::string( autoRestoreID.toLocal8Bit() ) );
 }
 
 QString KAudioManagerPlay::autoRestoreID()

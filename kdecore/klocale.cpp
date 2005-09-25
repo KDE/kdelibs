@@ -1511,7 +1511,7 @@ QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) co
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
   //kdDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
-  QString str = intstr.simplified().lower();
+  QString str = intstr.simplified().toLower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
   int year = calendar()->year(QDate::currentDate());
@@ -1549,7 +1549,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
             error = true;
       j = 1;
       while (error && (j < 8)) {
-        QString s = calendar()->weekDayName(j, c == 'a').lower();
+        QString s = calendar()->weekDayName(j, c == 'a').toLower();
         int len = s.length();
         if (str.mid(strpos, len) == s)
               {
@@ -1566,7 +1566,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       if (d->nounDeclension && d->dateMonthNamePossessive) {
         j = 1;
         while (error && (j < 13)) {
-          QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
+          QString s = calendar()->monthNamePossessive(j, year, c == 'b').toLower();
           int len = s.length();
           if (str.mid(strpos, len) == s) {
             month = j;
@@ -1578,7 +1578,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       }
       j = 1;
       while (error && (j < 13)) {
-        QString s = calendar()->monthName(j, year, c == 'b').lower();
+        QString s = calendar()->monthName(j, year, c == 'b').toLower();
         int len = s.length();
         if (str.mid(strpos, len) == s) {
           month = j;
@@ -1649,7 +1649,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 
   QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
   {
-    QString str = intstr.simplified().lower();
+    QString str = intstr.simplified().toLower();
     QString Format = timeFormat().simplified();
     if (flags & WithoutSeconds)
       Format.remove(QRegExp(".%S"));
@@ -1686,7 +1686,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	case 'p':
 	  {
 	    QString s;
-	    s = translate("pm").lower();
+	    s = translate("pm").toLower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s)
 	      {
@@ -1695,7 +1695,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	      }
 	    else
 	      {
-		s = translate("am").lower();
+		s = translate("am").toLower();
 		len = s.length();
 		if (str.mid(strpos, len) == s) {
 		  pm = false;
@@ -2248,7 +2248,7 @@ QString KLocale::twoAlphaToLanguageName(const QString &code) const
   QString groupName = code;
   int i = groupName.indexOf('_');
   if (i < 0) i = groupName.size();
-  groupName.replace(0, i, groupName.left(i).lower());
+  groupName.replace(0, i, groupName.left(i).toLower());
 
   d->languages->setGroup(groupName);
   return d->languages->readEntry("Name");
@@ -2270,7 +2270,7 @@ QStringList KLocale::allCountriesTwoAlpha() const
 
 QString KLocale::twoAlphaToCountryName(const QString &code) const
 {
-  KConfig cfg("l10n/"+code.lower()+"/entry.desktop", true, false, "locale");
+  KConfig cfg("l10n/"+code.toLower()+"/entry.desktop", true, false, "locale");
   cfg.setGroup("KCM Locale");
   return cfg.readEntry("Name");
 }

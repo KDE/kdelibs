@@ -115,7 +115,7 @@ void BrowserRun::scanFile()
 
   if ( m_part )
   {
-      QString proto = m_part->url().protocol().lower();
+      QString proto = m_part->url().protocol().toLower();
 
       if (proto == "https" || proto == "webdavs") {
           m_args.metaData().insert("main_frame_request", "TRUE" );
@@ -232,7 +232,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 m_sMimeType = mimeType;
                 QString extension;
                 QString fileName = m_suggestedFilename.isEmpty() ? m_strURL.fileName() : m_suggestedFilename;
-                int extensionPos = fileName.findRev( '.' );
+                int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
                 KTempFile tempFile( QString::null, extension );

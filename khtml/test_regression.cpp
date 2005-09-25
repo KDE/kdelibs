@@ -366,7 +366,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     switch (id) {
 	case Print: {
 	    UString str = args[0].toString(exec);
-            if ( str.qstring().lower().find( "failed!" ) >= 0 )
+            if ( str.qstring().toLower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
             QString res = str.qstring().replace('\007', "");
             m_regTest->m_currentOutput += res + "\n";

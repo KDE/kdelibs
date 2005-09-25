@@ -311,7 +311,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     config->setGroup( "HTML Settings" );
     khtml::Decoder::AutoDetectLanguage language;
     Q3CString name = QTextCodec::codecForLocale()->name();
-    name = name.lower();
+    name = name.toLower();
 
     if ( name == "cp1256" || name == "iso-8859-6" ) {
       language = khtml::Decoder::Arabic;
@@ -1029,7 +1029,7 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 {
   KHTMLPart* destpart = this;
 
-  QString trg = target.lower();
+  QString trg = target.toLower();
 
   if (target == "_top") {
     while (destpart->parentPart())
@@ -1849,7 +1849,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   if (d->m_frame && d->m_frame->m_jscript)
     d->m_frame->m_jscript->dataReceived();
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && m_url.protocol().lower().startsWith("http"))
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && m_url.protocol().toLower().startsWith("http"))
       KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KURL();
@@ -2512,7 +2512,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   d->m_doc->setCSSTarget(n); // Setting to null will clear the current target.
 
   // Implement the rule that "" and "top" both mean top of page as in other browsers.
-  bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
+  bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.toLower() == "top");
 
   if (quirkyName) {
       d->m_view->setContentsPos(0, 0);
@@ -3787,14 +3787,14 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   else
   {
     QString extra;
-    if (target.lower() == "_blank")
+    if (target.toLower() == "_blank")
     {
       extra = i18n(" (In new window)");
     }
     else if (!target.isEmpty() &&
-             (target.lower() != "_top") &&
-             (target.lower() != "_self") &&
-             (target.lower() != "_parent"))
+             (target.toLower() != "_top") &&
+             (target.toLower() != "_self") &&
+             (target.toLower() != "_parent"))
     {
       KHTMLPart *p = this;
       while (p->parentPart())
@@ -3833,7 +3833,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
         if (!hrefNode.isNull()) {
           DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
           if (!hreflangNode.isNull()) {
-            QString countryCode = hreflangNode.nodeValue().string().lower();
+            QString countryCode = hreflangNode.nodeValue().string().toLower();
             // Map the language code to an appropriate country code.
             if (countryCode == QLatin1String("en"))
               countryCode = QLatin1String("gb");
@@ -4815,7 +4815,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       while (nvp != nvpEnd) {
          const QStringList pair = QStringList::split("=", *nvp);
          if (pair.count() >= 2) {
-            if (pair.first().lower() == "attach") {
+            if (pair.first().toLower() == "attach") {
                nvp = nvps.remove(nvp);
                triedToAttach = true;
             } else {
@@ -4831,11 +4831,11 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
       // 2)  Append body=
       QString bodyEnc;
-      if (contentType.lower() == "multipart/form-data") {
+      if (contentType.toLower() == "multipart/form-data") {
          // FIXME: is this correct?  I suspect not
          bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(),
                                                            formData.size()));
-      } else if (contentType.lower() == "text/plain") {
+      } else if (contentType.toLower() == "text/plain") {
          // Convention seems to be to decode, and s/&/\n/
          QString tmpbody = QString::fromLatin1(formData.data(),
                                                formData.size());
@@ -4915,10 +4915,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     referrer = this->referrer();
 
     if (!(d->m_strSelectedURLTarget).isEmpty() &&
-           (d->m_strSelectedURLTarget.lower() != "_top") &&
-           (d->m_strSelectedURLTarget.lower() != "_self") &&
-	   (d->m_strSelectedURLTarget.lower() != "_parent")) {
-      if (d->m_strSelectedURLTarget.lower() == "_blank")
+           (d->m_strSelectedURLTarget.toLower() != "_top") &&
+           (d->m_strSelectedURLTarget.toLower() != "_self") &&
+	   (d->m_strSelectedURLTarget.toLower() != "_parent")) {
+      if (d->m_strSelectedURLTarget.toLower() == "_blank")
         args.setForcesNewWindow(true);
       else {
 	KHTMLPart *p = this;
@@ -5061,7 +5061,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       return;
   }
 
-  QString frameName = args.frameName.lower();
+  QString frameName = args.frameName.toLower();
   if ( !frameName.isEmpty() ) {
     if ( frameName == QLatin1String( "_top" ) )
     {

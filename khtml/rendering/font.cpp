@@ -140,7 +140,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	QFontMetrics sc_fm = fm;
 	if ( scFont ) {
 	    // draw in small caps
-	    upper = qstr.upper();
+	    upper = qstr.toUpper();
 	    sc_fm = QFontMetrics( *scFont );
 	}
 
@@ -306,7 +306,7 @@ int Font::width( QChar *chs, int, int pos, int len ) const
 
     const QString qstr = cstr.string();
     if ( scFont ) {
-	const QString upper = qstr.upper();
+	const QString upper = qstr.toUpper();
 	const QChar *uc = qstr.unicode();
 	const QFontMetrics sc_fm( *scFont );
 	for ( int i = 0; i < len; ++i ) {
@@ -338,7 +338,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
     int w;
 	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {
 	    QString str( chs, slen );
-	    str[pos] = chs[pos].upper();
+	    str[pos] = chs[pos].toUpper();
 	    w = QFontMetrics( *scFont ).charWidth( str, pos );
 	} else {
 	    const QConstString cstr( chs, slen );

@@ -186,7 +186,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     ret = ldif.nextItem();
     switch ( ret ) {
       case LDIF::Item: {
-        QString fieldname = ldif.attr().lower();
+        QString fieldname = ldif.attr().toLower();
         QString value = QString::fromUtf8( ldif.val(), ldif.val().size() );
         evaluatePair( a, homeAddr, workAddr, fieldname, value );
         break;

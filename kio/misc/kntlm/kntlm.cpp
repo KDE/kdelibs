@@ -185,7 +185,7 @@ QByteArray KNTLM::lmHash( const QString &password )
   const char *magic = "KGS!@#$%";
 
   keyBytes.fill( 0 );
-  strncpy( keyBytes.data(), password.upper().latin1(), 14 );
+  strncpy( keyBytes.data(), password.toUpper().latin1(), 14 );
 
   convertKey( (unsigned char*) keyBytes.data(), &ks );
   ntlm_des_ecb_encrypt( magic, 8, &ks, (unsigned char*) hash.data() );
@@ -265,7 +265,7 @@ QByteArray KNTLM::ntlmv2Hash( const QString &target, const QString &user, const 
 {
   QByteArray hash1 = ntlmHash( password );
   QByteArray key, ret;
-  QString id = user.upper() + target.upper();
+  QString id = user.toUpper() + target.toUpper();
   key = QString2UnicodeLE( id );
   ret = hmacMD5( key, hash1 );
   return ret;  

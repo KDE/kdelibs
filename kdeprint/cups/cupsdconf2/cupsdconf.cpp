@@ -155,7 +155,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 				else continue;
 			}
 			else if (line[0] == '#') continue;
-			else if (line.left(9).lower() == "<location")
+			else if (line.left(9).toLower() == "<location")
 			{
 				CupsLocation	*location = new CupsLocation();
 				locations_.append(location);
@@ -211,10 +211,10 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (classification_ != CLASS_NONE) t << "ClassifyOverride " << (classoverride_ ? "Yes" : "No") << endl;
 
 		t << endl << comments_["defaultcharset"] << endl;
-		t << "DefaultCharset " << charset_.upper() << endl;
+		t << "DefaultCharset " << charset_.toUpper() << endl;
 
 		t << endl << comments_["defaultlanguage"] << endl;
-		t << "DefaultLanguage " << language_.lower() << endl;
+		t << "DefaultLanguage " << language_.toLower() << endl;
 
 		t << endl << comments_["printcap"] << endl;
 		t << "Printcap " << printcap_ << endl;
@@ -411,7 +411,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		{
 			t << "BrowseProtocols ";
 			for (QStringList::ConstIterator it=browseprotocols_.begin(); it!=browseprotocols_.end(); ++it)
-				t << (*it).upper() << " ";
+				t << (*it).toUpper() << " ";
 			t << endl;
 		}
 
@@ -473,7 +473,7 @@ bool CupsdConf::parseLocation(CupsLocation *location, QTextStream& file)
 			else continue;
 		}
 		else if (line[0] == '#') continue;
-		else if (line.lower() == "</location>") done = true;
+		else if (line.toLower() == "</location>") done = true;
 		else value = location->parseOption(line);
 	}
 	return value;
@@ -486,22 +486,22 @@ bool CupsdConf::parseOption(const QString& line)
 
 	if ((p=l.find(' ')) != -1)
 	{
-		keyword = l.left(p).lower();
+		keyword = l.left(p).toLower();
 		value = l.mid(p+1);
 	}
 	else
 	{
-		keyword = l.lower();
+		keyword = l.toLower();
 	}
 
 	//kdDebug() << "cupsd.conf keyword=" << keyword << endl;
 	if (keyword == "accesslog") accesslog_ = value;
-	else if (keyword == "autopurgejobs") autopurgejobs_ = (value.lower() == "yes");
+	else if (keyword == "autopurgejobs") autopurgejobs_ = (value.toLower() == "yes");
 	else if (keyword == "browseaddress") browseaddresses_.append("Send "+value);
 	else if (keyword == "browseallow") browseaddresses_.append("Allow "+value);
 	else if (keyword == "browsedeny") browseaddresses_.append("Deny "+value);
 	else if (keyword == "browseinterval") browseinterval_ = value.toInt();
-	else if (keyword == "browseorder") browseorder_ = (value.lower() == "deny,allow" ? ORDER_DENY_ALLOW : ORDER_ALLOW_DENY);
+	else if (keyword == "browseorder") browseorder_ = (value.toLower() == "deny,allow" ? ORDER_DENY_ALLOW : ORDER_ALLOW_DENY);
 	else if (keyword == "browsepoll") browseaddresses_.append("Poll "+value);
 	else if (keyword == "browseport") browseport_ = value.toInt();
 	else if (keyword == "browseprotocols")
@@ -512,15 +512,15 @@ bool CupsdConf::parseOption(const QString& line)
 			browseprotocols_ << "CUPS" << "SLP";
 		else
 			for (QStringList::ConstIterator it=prots.begin(); it!=prots.end(); ++it)
-				browseprotocols_ << (*it).upper();
+				browseprotocols_ << (*it).toUpper();
 	}
 	else if (keyword == "browserelay") browseaddresses_.append("Relay "+value);
-	else if (keyword == "browseshortnames") useshortnames_ = (value.lower() != "no");
+	else if (keyword == "browseshortnames") useshortnames_ = (value.toLower() != "no");
 	else if (keyword == "browsetimeout") browsetimeout_ = value.toInt();
-	else if (keyword == "browsing") browsing_ = (value.lower() != "off");
+	else if (keyword == "browsing") browsing_ = (value.toLower() != "off");
 	else if (keyword == "classification")
 	{
-		QString	cl = value.lower();
+		QString	cl = value.toLower();
 		if (cl == "none") classification_ = CLASS_NONE;
 		else if (cl == "classified") classification_ = CLASS_CLASSIFIED;
 		else if (cl == "confidential") classification_ = CLASS_CONFIDENTIAL;
@@ -533,7 +533,7 @@ bool CupsdConf::parseOption(const QString& line)
 			otherclassname_ = cl;
 		}
 	}
-	else if (keyword == "classifyoverride") classoverride_ = (value.lower() == "yes");
+	else if (keyword == "classifyoverride") classoverride_ = (value.toLower() == "yes");
 	else if (keyword == "datadir") datadir_ = value;
 	else if (keyword == "defaultcharset") charset_ = value;
 	else if (keyword == "defaultlanguage") language_ = value;
@@ -542,22 +542,22 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "filterlimit") filterlimit_ = value.toInt();
 	else if (keyword == "fontpath") fontpath_ += QStringList::split(':', value, false);
 	else if (keyword == "group") group_ = value;
-	else if (keyword == "hideimplicitmembers") hideimplicitmembers_ = (value.lower() != "no");
+	else if (keyword == "hideimplicitmembers") hideimplicitmembers_ = (value.toLower() != "no");
 	else if (keyword == "hostnamelookups")
 	{
-		QString h = value.lower();
+		QString h = value.toLower();
 		if (h == "on") hostnamelookup_ = HOSTNAME_ON;
 		else if (h == "double") hostnamelookup_ = HOSTNAME_DOUBLE;
 		else hostnamelookup_ = HOSTNAME_OFF;
 	}
-	else if (keyword == "implicitclasses") useimplicitclasses_ = (value.lower() != "off");
-	else if (keyword == "implicitanyclasses") useanyclasses_ = (value.lower() == "on");
-	else if (keyword == "keepalive") keepalive_ = (value.lower() != "off");
+	else if (keyword == "implicitclasses") useimplicitclasses_ = (value.toLower() != "off");
+	else if (keyword == "implicitanyclasses") useanyclasses_ = (value.toLower() == "on");
+	else if (keyword == "keepalive") keepalive_ = (value.toLower() != "off");
 	else if (keyword == "keepalivetimeout") keepalivetimeout_ = value.toInt();
 	else if (keyword == "listen") listenaddresses_.append("Listen "+value);
 	else if (keyword == "loglevel")
 	{
-		QString ll = value.lower();
+		QString ll = value.toLower();
 		if (ll == "none") loglevel_ = LOGLEVEL_NONE;
 		else if (ll == "error") loglevel_ = LOGLEVEL_ERROR;
 		else if (ll == "warn") loglevel_ = LOGLEVEL_WARN;
@@ -581,7 +581,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "preservejobhistory") keepjobhistory_ = (value != "off");
 	else if (keyword == "preservejobfiles") keepjobfiles_ = (value == "on");
 	else if (keyword == "printcap") printcap_ = value;
-	else if (keyword == "printcapformat") printcapformat_ = (value.lower() == "solaris" ? PRINTCAP_SOLARIS : PRINTCAP_BSD);
+	else if (keyword == "printcapformat") printcapformat_ = (value.toLower() == "solaris" ? PRINTCAP_SOLARIS : PRINTCAP_BSD);
 	else if (keyword == "requestroot") requestdir_ = value;
 	else if (keyword == "remoteroot") remoteroot_ = value;
 	else if (keyword == "ripcache") ripcache_ = value;
@@ -734,24 +734,24 @@ bool CupsLocation::parseOption(const QString& line)
 
 	if ((p=l.find(' ')) != -1)
 	{
-		keyword = l.left(p).lower();
+		keyword = l.left(p).toLower();
 		value = l.mid(p+1);
 	}
 	else
 	{
-		keyword = l.lower();
+		keyword = l.toLower();
 	}
 
 	if (keyword == "authtype")
 	{
-		QString a = value.lower();
+		QString a = value.toLower();
 		if (a == "basic") authtype_ = AUTHTYPE_BASIC;
 		else if (a == "digest") authtype_ = AUTHTYPE_DIGEST;
 		else authtype_ = AUTHTYPE_NONE;
 	}
 	else if (keyword == "authclass")
 	{
-		QString a = value.lower();
+		QString a = value.toLower();
 		if (a == "user") authclass_ = AUTHCLASS_USER;
 		else if (a == "system") authclass_ = AUTHCLASS_SYSTEM;
 		else if (a == "group") authclass_ = AUTHCLASS_GROUP;
@@ -764,7 +764,7 @@ bool CupsLocation::parseOption(const QString& line)
 		if (p != -1)
 		{
 			authname_ = value.mid(p+1);
-			QString cl = value.left(p).lower();
+			QString cl = value.left(p).toLower();
 			if (cl == "user")
 				authclass_ = AUTHCLASS_USER;
 			else if (cl == "group")
@@ -773,16 +773,16 @@ bool CupsLocation::parseOption(const QString& line)
 	}
 	else if (keyword == "allow") addresses_.append("Allow "+value);
 	else if (keyword == "deny") addresses_.append("Deny "+value);
-	else if (keyword == "order") order_ = (value.lower() == "deny,allow" ? ORDER_DENY_ALLOW : ORDER_ALLOW_DENY);
+	else if (keyword == "order") order_ = (value.toLower() == "deny,allow" ? ORDER_DENY_ALLOW : ORDER_ALLOW_DENY);
 	else if (keyword == "encryption")
 	{
-		QString e = value.lower();
+		QString e = value.toLower();
 		if (e == "always") encryption_ = ENCRYPT_ALWAYS;
 		else if (e == "never") encryption_ = ENCRYPT_NEVER;
 		else if (e == "required") encryption_ = ENCRYPT_REQUIRED;
 		else encryption_ = ENCRYPT_IFREQUESTED;
 	}
-	else if (keyword == "satisfy") satisfy_ = (value.lower() == "any" ? SATISFY_ANY : SATISFY_ALL);
+	else if (keyword == "satisfy") satisfy_ = (value.toLower() == "any" ? SATISFY_ANY : SATISFY_ALL);
 	else return false;
 	return true;
 }

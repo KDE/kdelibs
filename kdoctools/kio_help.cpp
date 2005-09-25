@@ -262,7 +262,7 @@ void HelpProtocol::get( const KURL& url )
             // if we have a query, look if it contains an anchor
             if (!query.isEmpty())
                 if (query.left(8) == "?anchor=") {
-                    anchor = query.mid(8).lower();
+                    anchor = query.mid(8).toLower();
 
 			    KURL redirURL(url);
 
@@ -287,7 +287,7 @@ void HelpProtocol::get( const KURL& url )
                         break; // use whatever is the target, most likely index.html
                     }
 
-                    if ( mParsed.mid( index, 11 + anchor.length() ).lower() ==
+                    if ( mParsed.mid( index, 11 + anchor.length() ).toLower() ==
                          QString( "<a name=\"%1\">" ).arg( anchor ) )
                     {
                         index = mParsed.lastIndexOf( "<FILENAME filename=", index ) +

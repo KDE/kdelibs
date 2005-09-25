@@ -857,7 +857,7 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 	QStringList mails;
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
-		QString email = static_cast<const QString &>(*iter).lower();
+		QString email = static_cast<const QString &>(*iter).toLower();
 		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email);
 
 		if (it == skEmail.end())
@@ -888,7 +888,7 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 	QStringList mails;
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
-		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).lower());
+		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).toLower());
 
 		if (it == skEmail.end())
 		       break;
@@ -904,7 +904,7 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 
 QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 	QStringList rc;
-	QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email.lower());
+	QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email.toLower());
 
 	kdDebug() << "GETKDEKey " << email.latin1() << endl;
 

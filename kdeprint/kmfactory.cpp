@@ -304,7 +304,7 @@ Q3ValueList<KMFactory::PluginInfo> KMFactory::pluginList()
 	Q3ValueList<PluginInfo>	list;
 	for (uint i=0; i<d.count(); i++)
 	{
-		PluginInfo	info(pluginInfo(d.absFilePath(d[i])));
+		PluginInfo	info(pluginInfo(d.absoluteFilePath(d[i])));
 		if (info.name.isEmpty())
 			continue;
 		list.append(info);

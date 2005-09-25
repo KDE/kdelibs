@@ -234,7 +234,7 @@ QString Field::sortKey( const KABC::Addressee &a )
       } else
         return QString( "00-00" );
     default:
-      return value( a ).lower();
+      return value( a ).toLower();
   }
 }
 

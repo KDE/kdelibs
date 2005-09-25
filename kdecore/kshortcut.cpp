@@ -122,7 +122,7 @@ bool KKey::init( const QString& sSpec )
 	int i;
 	// Check for modifier keys first.
 	for( i = 0; i < rgs.size(); i++ ) {
-		QString s = rgs[i].lower();
+		QString s = rgs[i].toLower();
 		if( s == "shift" )     m_mod |= KKey::SHIFT;
 		else if( s == "ctrl" ) m_mod |= KKey::CTRL;
 		else if( s == "alt" )  m_mod |= KKey::ALT;

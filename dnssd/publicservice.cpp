@@ -138,15 +138,15 @@ void PublicService::publishAsync()
 	TXTRecordCreate(&txt,0,0);
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
-		QByteArray value = it.data().utf8();
-		if (TXTRecordSetValue(&txt,it.key().utf8(),value.length(),value)!=kDNSServiceErr_NoError) {
+		QByteArray value = it.data().toUtf8();
+		if (TXTRecordSetValue(&txt,it.key().toUtf8(),value.length(),value)!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);
 			return;
 		}
 	}
 	DNSServiceRef ref;
-	if (DNSServiceRegister(&ref,0,0,m_serviceName.utf8(),m_type.ascii(),domainToDNS(m_domain),NULL,
+	if (DNSServiceRegister(&ref,0,0,m_serviceName.toUtf8(),m_type.ascii(),domainToDNS(m_domain),NULL,
 	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(this)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);

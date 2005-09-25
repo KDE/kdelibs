@@ -79,7 +79,7 @@ QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
 	int p = addr.find(' ');
 	if (p != -1)
 	{
-		dlg.type_->setCurrentItem(addr.left(p).lower() == "deny" ? 1 : 0);
+		dlg.type_->setCurrentItem(addr.left(p).toLower() == "deny" ? 1 : 0);
 		dlg.address_->setText(addr.mid(p+1));
 	}
 	if (dlg.exec())

@@ -209,7 +209,7 @@ QStringList KStringHandler::capwords( const QStringList &list )
 {
     QStringList tmp = list;
     for ( QStringList::Iterator it = tmp.begin(); it != tmp.end(); ++it ) {
-        *it = ( *it )[ 0 ].upper() + ( *it ).mid( 1 );
+        *it = ( *it )[ 0 ].toUpper() + ( *it ).mid( 1 );
     }
     return tmp;
 }

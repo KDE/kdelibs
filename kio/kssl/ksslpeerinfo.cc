@@ -60,7 +60,7 @@ void KSSLPeerInfo::setPeerHost(QString realHost) {
 		d->peerHost.truncate(d->peerHost.length()-1);
 
 #ifdef Q_WS_WIN //TODO kresolver not ported
-	d->peerHost = d->peerHost.lower();
+	d->peerHost = d->peerHost.toLower();
 #else	
 	d->peerHost = QLatin1String(KNetwork::KResolver::domainToAscii(d->peerHost));
 #endif	
@@ -73,7 +73,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
 	cns += m_cert.subjAltNames();
 
 	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
-		if (cnMatchesAddress((*cn).trimmed().lower()))
+		if (cnMatchesAddress((*cn).trimmed().toLower()))
 			return true;
 	}
 
@@ -142,7 +142,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 	}
 
 	// We must have an exact match in this case (insensitive though)
-	// (note we already did .lower())
+	// (note we already did .toLower())
 	if (cn == d->peerHost)
 		return true;
 #endif

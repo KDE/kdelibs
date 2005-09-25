@@ -1139,7 +1139,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
                         We want to accept all the values that either of these browsers accept, but not other values.
                      */
-                    QString type = DOMString(a).string().trimmed().lower();
+                    QString type = DOMString(a).string().trimmed().toLower();
                     if( type.compare("text/javascript") != 0 &&
                         type.compare("text/javascript1.0") != 0 &&
                         type.compare("text/javascript1.1") != 0 &&
@@ -1161,7 +1161,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                      We want to accept all the values that either of these browsers accept, but not other values.
                      */
                     QString lang = DOMString(a).string();
-                    lang = lang.lower();
+                    lang = lang.toLower();
                     if( lang.compare("") != 0 &&
                         lang.compare("javascript") != 0 &&
                         lang.compare("javascript1.0") != 0 &&

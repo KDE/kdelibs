@@ -128,7 +128,7 @@ void KMWRlpr::updatePrinter(KMPrinter *p)
 void KMWRlpr::initialize()
 {
 	m_view->clear();
-	QFile	f(QDir::homeDirPath()+"/.rlprrc");
+	QFile	f(QDir::homePath()+"/.rlprrc");
 	if (!f.exists()) f.setName("/etc/rlprrc");
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{

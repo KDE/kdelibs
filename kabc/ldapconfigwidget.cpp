@@ -272,7 +272,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
   }
   do {
     ret = mLdif.nextItem();
-    if ( ret == LDIF::Item && mLdif.attr().lower() == mAttr ) {
+    if ( ret == LDIF::Item && mLdif.attr().toLower() == mAttr ) {
       mProg->progressBar()->advance( 1 );
       mQResult.push_back( QString::fromUtf8( mLdif.val(), mLdif.val().size() ) );
     }

@@ -1885,7 +1885,7 @@ void KFileDialog::updateAutoSelectExtension (void)
             // e.g. "*.cpp"
             if (filter.find ('/') < 0)
             {
-                d->extension = getExtensionFromPatternList (QStringList::split (" ", filter)).lower ();
+                d->extension = getExtensionFromPatternList (QStringList::split (" ", filter)).toLower ();
                 kdDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
                                     << d->extension << "\'" << endl;
             }
@@ -1898,7 +1898,7 @@ void KFileDialog::updateAutoSelectExtension (void)
                 QString nativeExtension = mime->property ("X-KDE-NativeExtension").toString ();
                 if (nativeExtension.at (0) == '.')
                 {
-                    d->extension = nativeExtension.lower ();
+                    d->extension = nativeExtension.toLower ();
                     kdDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
                                          << d->extension << "\'" << endl;
                 }
@@ -1906,7 +1906,7 @@ void KFileDialog::updateAutoSelectExtension (void)
                 // no X-KDE-NativeExtension
                 if (d->extension.isEmpty ())
                 {
-                    d->extension = getExtensionFromPatternList (mime->patterns ()).lower ();
+                    d->extension = getExtensionFromPatternList (mime->patterns ()).toLower ();
                     kdDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
                                          << d->extension << "\'" << endl;
                 }

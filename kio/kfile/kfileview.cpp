@@ -384,7 +384,7 @@ QString KFileView::sortingKey( const QString& value, bool isDir, int sortSpec )
     bool reverse   = sortSpec & QDir::Reversed;
     bool dirsFirst = sortSpec & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
-    QString result = (sortSpec & QDir::IgnoreCase) ? value.lower() : value;
+    QString result = (sortSpec & QDir::IgnoreCase) ? value.toLower() : value;
     return result.prepend( QLatin1Char(start) );
 }
 

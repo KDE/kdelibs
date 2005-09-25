@@ -102,7 +102,7 @@ void Shell::slotFileEdit()
   if ( !m_editorpart )
     embedEditor();
   // TODO use KFileDialog to allow testing remote files
-  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/kpartstest_shell.rc" ) )
+  if ( ! m_editorpart->openURL( QDir::current().absolutePath()+"/kpartstest_shell.rc" ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 

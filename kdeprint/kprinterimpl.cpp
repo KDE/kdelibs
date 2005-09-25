@@ -436,7 +436,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		QString	tmpfile = tempFile();
 		QString	cmd(filtercmd);
 		cmd.replace(rout,quote(tmpfile));
-		cmd.replace(rpsl,ps.lower());
+		cmd.replace(rpsl,ps.toLower());
 		cmd.replace(rpsu,ps);
 		cmd.replace(rin,quote(*it)); // Replace as last, filename could contain "%psl"
 		statusMessage(i18n("Filtering print data"), printer);
@@ -566,7 +566,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
 
 	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
-	s.replace("%psl", ps.lower());
+	s.replace("%psl", ps.toLower());
 	s.replace("%psu", ps);
 	s.replace("%out", "$out{" + p->outputFileName() + "}"); // Replace as last
 	cmd = s;

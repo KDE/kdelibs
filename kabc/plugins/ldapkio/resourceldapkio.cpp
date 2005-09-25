@@ -219,7 +219,7 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
       dn = olddn;
     }
 
-    if ( olddn.lower() != dn.lower() ) {
+    if ( olddn.toLower() != dn.toLower() ) {
       tmp = LDIF::assembleLine( "dn", olddn ) + "\n";
       tmp += "changetype: modrdn\n";
       tmp += LDIF::assembleLine( "newrdn", dn.section( ',', 0, 0 ) ) + "\n";
@@ -598,62 +598,62 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
         kdDebug(7125) << "new entry: " << d->mLdif.dn() << endl;
         break;
       case LDIF::Item:
-        name = d->mLdif.attr().lower();
+        name = d->mLdif.attr().toLower();
         value = d->mLdif.val();
-        if ( name == mAttributes[ "commonName" ].lower() ) {
+        if ( name == mAttributes[ "commonName" ].toLower() ) {
           if ( !d->mAddr.formattedName().isEmpty() ) {
             QString fn = d->mAddr.formattedName();
             d->mAddr.setNameFromString( QString::fromUtf8( value, value.size() ) );
             d->mAddr.setFormattedName( fn );
           } else
             d->mAddr.setNameFromString( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "formattedName" ].lower() ) {
+        } else if ( name == mAttributes[ "formattedName" ].toLower() ) {
           d->mAddr.setFormattedName( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "givenName" ].lower() ) {
+        } else if ( name == mAttributes[ "givenName" ].toLower() ) {
           d->mAddr.setGivenName( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "mail" ].lower() ) {
+        } else if ( name == mAttributes[ "mail" ].toLower() ) {
           d->mAddr.insertEmail( QString::fromUtf8( value, value.size() ), true );
-        } else if ( name == mAttributes[ "mailAlias" ].lower() ) {
+        } else if ( name == mAttributes[ "mailAlias" ].toLower() ) {
           d->mAddr.insertEmail( QString::fromUtf8( value, value.size() ), false );
-        } else if ( name == mAttributes[ "phoneNumber" ].lower() ) {
+        } else if ( name == mAttributes[ "phoneNumber" ].toLower() ) {
           PhoneNumber phone;
           phone.setNumber( QString::fromUtf8( value, value.size() ) );
           d->mAddr.insertPhoneNumber( phone );
-        } else if ( name == mAttributes[ "telephoneNumber" ].lower() ) {
+        } else if ( name == mAttributes[ "telephoneNumber" ].toLower() ) {
           PhoneNumber phone( QString::fromUtf8( value, value.size() ),
             PhoneNumber::Work );
           d->mAddr.insertPhoneNumber( phone );
-        } else if ( name == mAttributes[ "facsimileTelephoneNumber" ].lower() ) {
+        } else if ( name == mAttributes[ "facsimileTelephoneNumber" ].toLower() ) {
           PhoneNumber phone( QString::fromUtf8( value, value.size() ),
             PhoneNumber::Fax );
           d->mAddr.insertPhoneNumber( phone );
-        } else if ( name == mAttributes[ "mobile" ].lower() ) {
+        } else if ( name == mAttributes[ "mobile" ].toLower() ) {
           PhoneNumber phone( QString::fromUtf8( value, value.size() ),
             PhoneNumber::Cell );
           d->mAddr.insertPhoneNumber( phone );
-        } else if ( name == mAttributes[ "pager" ].lower() ) {
+        } else if ( name == mAttributes[ "pager" ].toLower() ) {
           PhoneNumber phone( QString::fromUtf8( value, value.size() ),
             PhoneNumber::Pager );
           d->mAddr.insertPhoneNumber( phone );
-        } else if ( name == mAttributes[ "description" ].lower() ) {
+        } else if ( name == mAttributes[ "description" ].toLower() ) {
           d->mAddr.setNote( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "title" ].lower() ) {
+        } else if ( name == mAttributes[ "title" ].toLower() ) {
           d->mAddr.setTitle( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "street" ].lower() ) {
+        } else if ( name == mAttributes[ "street" ].toLower() ) {
           d->mAd.setStreet( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "state" ].lower() ) {
+        } else if ( name == mAttributes[ "state" ].toLower() ) {
           d->mAd.setRegion( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "city" ].lower() ) {
+        } else if ( name == mAttributes[ "city" ].toLower() ) {
           d->mAd.setLocality( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "postalcode" ].lower() ) {
+        } else if ( name == mAttributes[ "postalcode" ].toLower() ) {
           d->mAd.setPostalCode( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "organization" ].lower() ) {
+        } else if ( name == mAttributes[ "organization" ].toLower() ) {
           d->mAddr.setOrganization( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "familyName" ].lower() ) {
+        } else if ( name == mAttributes[ "familyName" ].toLower() ) {
           d->mAddr.setFamilyName( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "uid" ].lower() ) {
+        } else if ( name == mAttributes[ "uid" ].toLower() ) {
           d->mAddr.setUid( QString::fromUtf8( value, value.size() ) );
-        } else if ( name == mAttributes[ "jpegPhoto" ].lower() ) {
+        } else if ( name == mAttributes[ "jpegPhoto" ].toLower() ) {
           KABC::Picture photo;
           QImage img( value );
           if ( !img.isNull() ) {

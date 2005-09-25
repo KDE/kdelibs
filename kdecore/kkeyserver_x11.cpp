@@ -479,7 +479,7 @@ bool Sym::init( const QString& s )
 		m_sym = XStringToKeysym( s.toLower().latin1() );
 		if( !m_sym ) {
 			QString s2 = s;
-			s2[0] = s2[0].upper();
+			s2[0] = s2[0].toUpper();
 			m_sym = XStringToKeysym( s2.latin1() );
 		}
 	}
@@ -593,7 +593,7 @@ uint Sym::getSymVariation() const
 
 void Sym::capitalizeKeyname( QString& s )
 {
-	s[0] = s[0].upper();
+	s[0] = s[0].toUpper();
 	int len = s.length();
 	if( s.endsWith( "left" ) )       s[len-4] = 'L';
 	else if( s.endsWith( "right" ) ) s[len-5] = 'R';
@@ -865,7 +865,7 @@ uint stringUserToMod( const QString& mod )
 
 			// Check for lower-case equalent first because most
 			//  X11 names are all lower-case.
-			keySymX = XStringToKeysym( sKeySym.lower().ascii() );
+			keySymX = XStringToKeysym( sKeySym.toLower().ascii() );
 			if( keySymX == 0 )
 				keySymX = XStringToKeysym( psKeySym );
 		}

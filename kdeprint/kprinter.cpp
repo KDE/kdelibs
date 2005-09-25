@@ -702,7 +702,7 @@ void reportError(KPrinter *p)
 
 KPrinter::PageSize pageNameToPageSize(const QString& _name)
 {
-	QString name = _name.upper();
+	QString name = _name.toUpper();
 	if (name == "LETTER") return KPrinter::Letter;
 	else if (name == "LEGAL") return KPrinter::Legal;
 	else if (name == "A4") return KPrinter::A4;
@@ -1040,7 +1040,7 @@ void KPrinter::setDocDirectory( const QString& s )
 { d->m_docdirectory = s; }
 
 QString KPrinter::docDirectory() const
-{ return ( d->m_docdirectory.isEmpty() ? QDir::homeDirPath() : d->m_docdirectory ); }
+{ return ( d->m_docdirectory.isEmpty() ? QDir::homePath() : d->m_docdirectory ); }
 
 void KPrinter::setResolution(int dpi)
 {

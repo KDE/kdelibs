@@ -654,7 +654,7 @@ static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service
   if ( supportedProtocols.find( "KIO" ) == supportedProtocols.end() ) {
     for( KURL::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
       const KURL url = *it;
-      bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().lower() ) != supportedProtocols.end();
+      bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().toLower() ) != supportedProtocols.end();
       kdDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
       if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
       {

@@ -142,8 +142,8 @@ namespace
         virtual Value call( ExecState* exec, Object&, const List& args )
         {
             if ( args.size() != 2 ) return Undefined();
-            QString host = args[ 0 ].toString( exec ).qstring().lower();
-            QString domain = args[ 1 ].toString( exec ).qstring().lower();
+            QString host = args[ 0 ].toString( exec ).qstring().toLower();
+            QString domain = args[ 1 ].toString( exec ).qstring().toLower();
             return Boolean( host.endsWith( domain ) );
         }
     };

@@ -653,7 +653,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   }
 
   // Don't print out the password...
-  bool isPassCmd = (cmd.left(4).lower() == "pass");
+  bool isPassCmd = (cmd.left(4).toLower() == "pass");
   if ( !isPassCmd )
     kdDebug(7102) << "send> " << cmd.data() << endl;
   else

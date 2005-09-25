@@ -150,7 +150,7 @@ public:
         if ( !key.isEmpty() )
         {
             QFileInfo fi( file );
-            return new KThemeStyle( fi.dirPath(), fi.fileName() );
+            return new KThemeStyle( fi.path(), fi.fileName() );
         }
 
         return 0;

@@ -297,11 +297,11 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
   {
     int i = 0;
     mReference = -1;
-    QString tmp = config->readEntry( mKey ).lower();
+    QString tmp = config->readEntry( mKey ).toLower();
     for(QList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
-      if ((*it).name.lower() == tmp)
+      if ((*it).name.toLower() == tmp)
       {
         mReference = i;
         break;

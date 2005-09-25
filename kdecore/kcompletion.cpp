@@ -603,9 +603,9 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
     // append the case insensitive matches, if available
     if ( ch1.isLetter() ) {
         // find out if we have to lower or upper it. Is there a better way?
-        QChar ch2 = ch1.lower();
+        QChar ch2 = ch1.toLower();
         if ( ch1 == ch2 )
-            ch2 = ch1.upper();
+            ch2 = ch1.toUpper();
         if ( ch1 != ch2 ) {
             child2 = node->find( ch2 );
             if ( child2 )

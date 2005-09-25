@@ -1331,7 +1331,7 @@ bool CSSParser::parseContent( int propId, bool important )
         } else if ( val->unit == Value::Function ) {
             // attr( X ) | counter( X [,Y] ) | counters( X, Y, [,Z] )
             ValueList *args = val->function->args;
-            QString fname = qString( val->function->name ).lower();
+            QString fname = qString( val->function->name ).toLower();
             if (!args) return false;
             if (fname == "attr(") {
             if ( args->numValues != 1)
@@ -1636,7 +1636,7 @@ bool CSSParser::parseShape( int propId, bool important )
 {
     Value *value = valueList->current();
     ValueList *args = value->function->args;
-    QString fname = qString( value->function->name ).lower();
+    QString fname = qString( value->function->name ).toLower();
     //qDebug( "parseShape: fname: %d", fname.latin1() );
     if ( fname != "rect(" || !args )
         return false;
@@ -1935,7 +1935,7 @@ static bool parseColor(int unit, const QString &name, QRgb& rgb)
     if ( unit == CSSPrimitiveValue::CSS_IDENT ) {
         // try a little harder
         QColor tc;
-        tc.setNamedColor(name.lower());
+        tc.setNamedColor(name.toLower());
         if ( tc.isValid() ) {
             rgb = tc.rgb();
             return true;
@@ -1969,7 +1969,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
     else if ( value->unit == Value::Function &&
 		value->function->args != 0 &&
                 value->function->args->numValues == 5 /* rgb + two commas */ &&
-                qString( value->function->name ).lower() == "rgb(" ) {
+                qString( value->function->name ).toLower() == "rgb(" ) {
         ValueList *args = value->function->args;
         Value *v = args->current();
         if ( !validUnit( v, FInteger|FPercent, true ) )
@@ -1997,7 +1997,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
     else if ( value->unit == Value::Function &&
               value->function->args != 0 &&
               value->function->args->numValues == 7 /* rgba + three commas */ &&
-              qString( value->function->name ).lower() == "rgba(" ) {
+              qString( value->function->name ).toLower() == "rgba(" ) {
         ValueList *args = value->function->args;
         Value *v = args->current();
         if ( !validUnit( v, FInteger|FPercent, true ) )

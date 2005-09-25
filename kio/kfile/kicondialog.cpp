@@ -151,7 +151,7 @@ void KIconCanvas::slotLoadFiles()
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString path= *it;
-	QString ext = path.right(3).upper();
+	QString ext = path.right(3).toUpper();
 
 	if (ext != "SVG" && ext != "VGZ")
 	    img.load(*it);

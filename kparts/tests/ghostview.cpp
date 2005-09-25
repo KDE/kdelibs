@@ -109,7 +109,7 @@ int main( int argc, char **argv )
   if ( args->count() == 1 )
   {
     // Allow full paths, but also simple filenames from current dir
-    KURL url( QDir::currentDirPath()+"/", args->arg(0) );
+    KURL url( QDir::currentPath()+"/", args->arg(0) );
     shell->openURL( url );
   }
   shell->show();

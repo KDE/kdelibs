@@ -78,7 +78,7 @@ KAudioRecordStream::KAudioRecordStream( KArtsServer * kserver, const QString & t
 	if( d->convert.isNull() )
 		kdFatal( 400 ) << "couldn't create a AudioToByteStream on the aRts server\n";
 
-	d->in.title( ( const char * ) d->title.local8Bit() );
+	d->in.title( ( const char * ) d->title.toLocal8Bit() );
 	Arts::connect( d->in, d->effectStack );
 	d->in.start();
 	d->effectStack.start();
@@ -194,7 +194,7 @@ void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 			d->convert.bits( bits );
 			Arts::connect( d->effectStack, d->convert );
 
-			d->receiver_base = new KByteSoundReceiver( samplingRate, bits, channels, d->title.local8Bit() );
+			d->receiver_base = new KByteSoundReceiver( samplingRate, bits, channels, d->title.toLocal8Bit() );
 			d->receiver = Arts::ByteSoundReceiver::_from_base( d->receiver_base );
 			connect( d->receiver_base, SIGNAL( data( const char *, unsigned int ) ),
 					SLOT( slotData( const char *, unsigned int ) ) );

@@ -260,7 +260,7 @@ public:
           return m_strName;
       else
           if ( m_strLowerCaseName.isNull() )
-              m_strLowerCaseName = m_strName.lower();
+              m_strLowerCaseName = m_strName.toLower();
       return m_strLowerCaseName;
   }
 

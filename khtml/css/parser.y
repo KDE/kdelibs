@@ -410,12 +410,12 @@ maybe_media_list:
 media_list:
     medium {
 	$$ = new MediaListImpl();
-	$$->appendMedium( domString($1).lower() );
+	$$->appendMedium( domString($1).toLower() );
     }
     | media_list ',' maybe_space medium {
 	$$ = $1;
 	if ($$)
-	    $$->appendMedium( domString($4).lower() );
+	    $$->appendMedium( domString($4).toLower() );
     }
     | media_list error {
        delete $1;
@@ -640,11 +640,11 @@ element_name:
 	QString tag = qString($1);
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		tag = tag.lower();
+		tag = tag.toLower();
 	    const DOMString dtag(tag);
             $$ = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
+	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.toLower().ascii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -705,7 +705,7 @@ attrib_id:
 	QString attr = qString($1);
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		attr = attr.lower();
+		attr = attr.toLower();
 	    const DOMString dattr(attr);
 #ifdef APPLE_CHANGES
             $$ = doc->attrId(0, dattr.implementation(), false);
@@ -713,7 +713,7 @@ attrib_id:
 	    $$ = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
-	    $$ = khtml::getAttrID(attr.lower().ascii(), attr.length());
+	    $$ = khtml::getAttrID(attr.toLower().ascii(), attr.length());
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert($$ != 0);
@@ -896,7 +896,7 @@ declaration:
 property:
     IDENT maybe_space {
 	QString str = qString($1);
-	$$ = getPropertyID( str.lower().latin1(), str.length() );
+	$$ = getPropertyID( str.toLower().latin1(), str.length() );
     }
   ;
 
@@ -945,7 +945,7 @@ term:
   | STRING maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
-      $$.id = getValueID( str.lower().latin1(), str.length() );
+      $$.id = getValueID( str.toLower().latin1(), str.length() );
       $$.unit = CSSPrimitiveValue::CSS_IDENT;
       $$.string = $1;
   }

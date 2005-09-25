@@ -325,7 +325,7 @@ PluginBase::PluginBase(ExecState *exec)
 
                     MimeClassInfo *mime = new MimeClassInfo;
                     QStringList::Iterator token = tokens.begin();
-                    mime->type = (*token).lower();
+                    mime->type = (*token).toLower();
                     //kdDebug(6070) << "mime->type=" << mime->type << endl;
                     ++token;
 

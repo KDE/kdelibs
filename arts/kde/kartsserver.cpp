@@ -68,7 +68,7 @@ Arts::SoundServerV2 KArtsServer::server(void)
 	bool x11Comm = config.readBoolEntry("X11GlobalComm", false);
 
 	// put the value of x11Comm into .mcoprc
-	KSimpleConfig X11CommConfig(QDir::homeDirPath()+"/.mcoprc");
+	KSimpleConfig X11CommConfig(QDir::homePath()+"/.mcoprc");
 
 	if(x11Comm)
 		X11CommConfig.writeEntry("GlobalComm", "Arts::X11GlobalComm");

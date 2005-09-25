@@ -226,7 +226,7 @@ KService::init( KDesktopFile *config )
     // Applications implement the service type "Application" ;-)
     m_lstServiceTypes += "Application";
 
-  QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").lower();
+  QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").toLower();
   entryMap.remove("X-DCOP-ServiceType");
   if (dcopServiceType == "unique")
      m_DCOPServiceType = DCOP_Unique;
@@ -237,7 +237,7 @@ KService::init( KDesktopFile *config )
   else
      m_DCOPServiceType = DCOP_None;
 
-  m_strDesktopEntryName = name.lower();
+  m_strDesktopEntryName = name.toLower();
 
   m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
   entryMap.remove("AllowDefault");
@@ -617,9 +617,9 @@ KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
-  KService * s = KServiceFactory::self()->findServiceByDesktopName( _name.lower() );
+  KService * s = KServiceFactory::self()->findServiceByDesktopName( _name.toLower() );
   if (!s && !_name.startsWith("kde-"))
-     s = KServiceFactory::self()->findServiceByDesktopName( "kde-"+_name.lower() );
+     s = KServiceFactory::self()->findServiceByDesktopName( "kde-"+_name.toLower() );
   return KService::Ptr( s );
 }
 
@@ -682,7 +682,7 @@ bool KService::noDisplay() const {
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "NoDisplay" );
   if ( (it != m_mapProps.end()) && (it.data().isValid()))
   {
-     QString aValue = it.data().toString().lower();
+     QString aValue = it.data().toString().toLower();
      if (aValue == "true" || aValue == "on" || aValue == "yes")
         return true;
   }

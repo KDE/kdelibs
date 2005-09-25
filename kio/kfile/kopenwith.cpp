@@ -118,7 +118,7 @@ int KAppTreeListItem::compare(Q3ListViewItem *i, int col, bool ascending) const
 // Ensure that case is ignored
 QString KAppTreeListItem::key(int column, bool /*ascending*/) const
 {
-        return text(column).upper();
+        return text(column).toUpper();
 }
 
 void KAppTreeListItem::activate()

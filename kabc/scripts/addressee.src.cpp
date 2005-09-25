@@ -219,7 +219,7 @@ void Addressee::setNameFromString( const QString &str )
     if ( rightOffset < 0 )
       return;
 
-    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
+    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].toLower() ) ) {
       setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
       rightOffset--;
     } else {
@@ -270,7 +270,7 @@ void Addressee::setNameFromString( const QString &str )
       }
       setSuffix( suffix );
 
-      if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
+      if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].toLower() ) ) {
         setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
         rightOffset--;
       } else

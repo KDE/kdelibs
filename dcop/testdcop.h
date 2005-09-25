@@ -63,7 +63,7 @@ public:
   MyDCOPObject(const DCOPCString &name) : DCOPObject(name) {}
   bool process(const DCOPCString &fun, const QByteArray &data,
 	       DCOPCString& replyType, QByteArray &replyData);
-  void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.utf8().data(), arg2); }
+  void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.toUtf8().data(), arg2); }
   bool gotRegister( const QByteArray& appName ) const {
     return m_registerReceived.find( appName ) != m_registerReceived.end();
   }

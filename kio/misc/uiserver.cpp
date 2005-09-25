@@ -1177,7 +1177,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
 
 void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, int mainwindow)
 {
-   KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
+   KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
    KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
    if (x) {
       // Set the chain back onto the certificate

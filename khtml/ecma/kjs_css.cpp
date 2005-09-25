@@ -42,7 +42,7 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
             prop.insert( i, '-' );
     }
 
-    prop = prop.lower();
+    prop = prop.toLower();
     hadPixelPrefix = false;
 
     if (prop.startsWith("css-")) {

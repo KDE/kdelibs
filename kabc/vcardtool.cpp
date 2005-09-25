@@ -368,7 +368,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
-        identifier = (*lineIt).identifier().lower();
+        identifier = (*lineIt).identifier().toLower();
         // ADR
         if ( identifier == "adr" ) {
           Address address;
@@ -392,7 +392,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           const QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
-            type += mAddressTypeMap[ (*it).lower() ];
+            type += mAddressTypeMap[ (*it).toLower() ];
 
           address.setType( type );
           addr.insertAddress( address );
@@ -447,7 +447,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           const QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
-            type += mAddressTypeMap[ (*it).lower() ];
+            type += mAddressTypeMap[ (*it).toLower() ];
 
           bool available = false;
           KABC::Address::List addressList = addr.addresses();
@@ -540,7 +540,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           const QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
-            type += mPhoneTypeMap[(*it).upper()];
+            type += mPhoneTypeMap[(*it).toUpper()];
 
           phone.setType( type );
 
@@ -640,7 +640,7 @@ Picture VCardTool::parsePicture( const VCardLine &line )
     img.loadFromData( line.value().asByteArray() );
     pic.setData( img );
   } else if ( params.findIndex( "value" ) != -1 ) {
-    if ( line.parameter( "value" ).lower() == "uri" )
+    if ( line.parameter( "value" ).toLower() == "uri" )
       pic.setUrl( line.value().asString() );
   }
 
@@ -680,7 +680,7 @@ Sound VCardTool::parseSound( const VCardLine &line )
   if ( params.findIndex( "encoding" ) != -1 )
     snd.setData( line.value().asByteArray() );
   else if ( params.findIndex( "value" ) != -1 ) {
-    if ( line.parameter( "value" ).lower() == "uri" )
+    if ( line.parameter( "value" ).toLower() == "uri" )
       snd.setUrl( line.value().asString() );
   }
 
@@ -721,9 +721,9 @@ Key VCardTool::parseKey( const VCardLine &line )
     key.setTextData( line.value().asString() );
 
   if ( params.findIndex( "type" ) != -1 ) {
-    if ( line.parameter( "type" ).lower() == "x509" )
+    if ( line.parameter( "type" ).toLower() == "x509" )
       key.setType( Key::X509 );
-    else if ( line.parameter( "type" ).lower() == "pgp" )
+    else if ( line.parameter( "type" ).toLower() == "pgp" )
       key.setType( Key::PGP );
     else {
       key.setType( Key::Custom );
@@ -760,11 +760,11 @@ Secrecy VCardTool::parseSecrecy( const VCardLine &line )
 {
   Secrecy secrecy;
 
-  if ( line.value().asString().lower() == "public" )
+  if ( line.value().asString().toLower() == "public" )
     secrecy.setType( Secrecy::Public );
-  if ( line.value().asString().lower() == "private" )
+  if ( line.value().asString().toLower() == "private" )
     secrecy.setType( Secrecy::Private );
-  if ( line.value().asString().lower() == "confidential" )
+  if ( line.value().asString().toLower() == "confidential" )
     secrecy.setType( Secrecy::Confidential );
 
   return secrecy;
@@ -792,7 +792,7 @@ Agent VCardTool::parseAgent( const VCardLine &line )
 
   const QStringList params = line.parameterList();
   if ( params.findIndex( "value" ) != -1 ) {
-    if ( line.parameter( "value" ).lower() == "uri" )
+    if ( line.parameter( "value" ).toLower() == "uri" )
       agent.setUrl( line.value().asString() );
   } else {
     QString str = line.value().asString();

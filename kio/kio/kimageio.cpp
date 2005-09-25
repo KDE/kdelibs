@@ -118,7 +118,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       QString funcName;
       if (bRead)
       {
-         funcName = "kimgio_"+mType.lower()+"_read";
+         funcName = "kimgio_"+mType.toLower()+"_read";
          lt_ptr func = lt_dlsym(libhandle, funcName.ascii());
 
          if (func == NULL) {
@@ -129,7 +129,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       }
       if (bWrite)
       {
-         funcName = "kimgio_"+mType.lower()+"_write";
+         funcName = "kimgio_"+mType.toLower()+"_write";
          lt_ptr func = lt_dlsym(libhandle, funcName.ascii());
 
          if (func == NULL) {

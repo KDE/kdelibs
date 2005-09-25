@@ -183,7 +183,7 @@ KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
         str.append(QLatin1Char('%'));
         ++i;
       }
-      else if ( _str[i+1]=='2' && (i+2<_str.length()) && _str[i+2].lower()=='f' ) // %2f -> /
+      else if ( _str[i+1]=='2' && (i+2<_str.length()) && _str[i+2].toLower()=='f' ) // %2f -> /
       {
         str.append(QLatin1Char('/'));
         i += 2;
@@ -1955,7 +1955,7 @@ bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
 
 KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
 {
-  QString tmp = cacheControl.lower();
+  QString tmp = cacheControl.toLower();
 
   if (tmp == "cacheonly")
      return KIO::CC_CacheOnly;

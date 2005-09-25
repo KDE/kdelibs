@@ -246,7 +246,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         else
         { // no user-setting, load plugin default setting
             QString relPath = QString( instance->instanceName() ) + "/" + (*pIt).m_relXMLFileName;
-            relPath.truncate( relPath.findRev( '.' ) ); // remove extension
+            relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
             //kdDebug(1000) << "looking for " << relPath << endl;
             const QString desktopfile = instance->dirs()->findResource( "data", relPath );

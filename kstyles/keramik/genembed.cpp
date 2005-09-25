@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 		int readJustID = 0;
 
 
-		if ((pos = s.findRev("-")) != -1)
+		if ((pos = s.lastIndexOf("-")) != -1)
 		{
 				int suffix = evalSuffix(s.mid(pos));
 				if (suffix !=-1 )

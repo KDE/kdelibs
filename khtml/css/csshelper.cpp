@@ -53,9 +53,9 @@ DOMString khtml::parseURL(const DOMString &url)
     while(l > 0 && (i->s[o+l-1] <= ' ')) l--;
 
     if(l >= 5 &&
-       (i->s[o].lower() == 'u') &&
-       (i->s[o+1].lower() == 'r') &&
-       (i->s[o+2].lower() == 'l') &&
+       (i->s[o].toLower() == 'u') &&
+       (i->s[o+1].toLower() == 'r') &&
+       (i->s[o+2].toLower() == 'l') &&
        i->s[o+3].latin1() == '(' &&
        i->s[o+l-1].latin1() == ')') {
         o += 4;

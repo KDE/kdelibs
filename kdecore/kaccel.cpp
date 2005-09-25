@@ -56,7 +56,7 @@
 //---------------------------------------------------------------------
 //
 // In KAccelEventHandler::x11Event we do our own X11 keyboard event handling
-// This allows us to map the Win key to Qt::MetaButton, Qt does not know about
+// This allows us to map the Win key to Qt::MetaModifier, Qt does not know about
 // the Win key.
 //
 // KAccelEventHandler::x11Event will generate an AccelOverride event. The

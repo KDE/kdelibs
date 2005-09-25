@@ -1082,7 +1082,7 @@ DCOPServer::DCOPServer(bool _suicide)
     memset( hostname_buffer, 0, sizeof( hostname_buffer ) );
     if ( gethostname( hostname_buffer, 255 ) < 0 )
       hostname_buffer[0] = '\0';
-    m_logger = new QFile( QString( "%1/.dcop-%2.log" ).arg( QDir::homeDirPath() ).arg( hostname_buffer ) );
+    m_logger = new QFile( QString( "%1/.dcop-%2.log" ).arg( QDir::homePath() ).arg( hostname_buffer ) );
     if ( m_logger->open( QIODevice::WriteOnly ) ) {
         m_stream = new QTextStream( m_logger );
     }

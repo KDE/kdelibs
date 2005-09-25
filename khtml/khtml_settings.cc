@@ -120,7 +120,7 @@ static KPerDomainSettings &setup_per_domain_policy(
   if (domain.isEmpty()) {
     kdWarning() << "setup_per_domain_policy: domain is empty" << endl;
   }
-  const QString ldomain = domain.lower();
+  const QString ldomain = domain.toLower();
   PolicyMap::iterator it = d->domainPolicy.find(ldomain);
   if (it == d->domainPolicy.end()) {
     // simply copy global domain settings (they should have been initialized
@@ -138,9 +138,9 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
   if (_str.isNull())
         ret = KJavaScriptDunno;
 
-  if (_str.lower() == QLatin1String("accept"))
+  if (_str.toLower() == QLatin1String("accept"))
         ret = KJavaScriptAccept;
-  else if (_str.lower() == QLatin1String("reject"))
+  else if (_str.toLower() == QLatin1String("reject"))
         ret = KJavaScriptReject;
 
   return ret;
@@ -164,13 +164,13 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
     int splitIndex = tmp.find(':');
     if ( splitIndex == -1)
     {
-        domain = configStr.lower();
+        domain = configStr.toLower();
         javaAdvice = KJavaScriptDunno;
         javaScriptAdvice = KJavaScriptDunno;
     }
     else
     {
-        domain = tmp.left(splitIndex).lower();
+        domain = tmp.left(splitIndex).toLower();
         QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
         int splitIndex2 = adviceString.find( ':' );
         if( splitIndex2 == -1 ) {
@@ -420,7 +420,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if ( reset || config->hasKey( "ShowAnimations" ) )
     {
-      QString value = config->readEntry( "ShowAnimations").lower();
+      QString value = config->readEntry( "ShowAnimations").toLower();
       if (value == "disabled")
          d->m_showAnimations = KAnimationDisabled;
       else if (value == "looponce")
@@ -515,7 +515,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	QStringList::ConstIterator it = dl.begin();
 	const QStringList::ConstIterator itEnd = dl.end();
 	for (; it != itEnd; ++it) {
-	  const QString domain = (*it).lower();
+	  const QString domain = (*it).toLower();
 	  QMap<QString,int>::Iterator pos = domainList.find(domain);
 	  if (pos == notfound) domainList.insert(domain,0);
 	}/*next it*/
@@ -789,12 +789,12 @@ void KHTMLSettings::addAdFilter( const QString &url )
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(d,hostname.lower()).m_bEnableJava;
+  return lookup_hostname_policy(d,hostname.toLower()).m_bEnableJava;
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(d,hostname.lower()).m_bEnableJavaScript;
+  return lookup_hostname_policy(d,hostname.toLower()).m_bEnableJavaScript;
 }
 
 bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
@@ -811,32 +811,32 @@ bool KHTMLSettings::isJavaScriptErrorReportingEnabled( const QString& /*hostname
 
 bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(d,hostname.lower()).m_bEnablePlugins;
+  return lookup_hostname_policy(d,hostname.toLower()).m_bEnablePlugins;
 }
 
 KHTMLSettings::KJSWindowOpenPolicy KHTMLSettings::windowOpenPolicy(
 				const QString& hostname) const {
-  return lookup_hostname_policy(d,hostname.lower()).m_windowOpenPolicy;
+  return lookup_hostname_policy(d,hostname.toLower()).m_windowOpenPolicy;
 }
 
 KHTMLSettings::KJSWindowMovePolicy KHTMLSettings::windowMovePolicy(
 				const QString& hostname) const {
-  return lookup_hostname_policy(d,hostname.lower()).m_windowMovePolicy;
+  return lookup_hostname_policy(d,hostname.toLower()).m_windowMovePolicy;
 }
 
 KHTMLSettings::KJSWindowResizePolicy KHTMLSettings::windowResizePolicy(
 				const QString& hostname) const {
-  return lookup_hostname_policy(d,hostname.lower()).m_windowResizePolicy;
+  return lookup_hostname_policy(d,hostname.toLower()).m_windowResizePolicy;
 }
 
 KHTMLSettings::KJSWindowStatusPolicy KHTMLSettings::windowStatusPolicy(
 				const QString& hostname) const {
-  return lookup_hostname_policy(d,hostname.lower()).m_windowStatusPolicy;
+  return lookup_hostname_policy(d,hostname.toLower()).m_windowStatusPolicy;
 }
 
 KHTMLSettings::KJSWindowFocusPolicy KHTMLSettings::windowFocusPolicy(
 				const QString& hostname) const {
-  return lookup_hostname_policy(d,hostname.lower()).m_windowFocusPolicy;
+  return lookup_hostname_policy(d,hostname.toLower()).m_windowFocusPolicy;
 }
 
 int KHTMLSettings::mediumFontSize() const

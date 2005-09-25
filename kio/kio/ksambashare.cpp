@@ -149,7 +149,7 @@ bool KSambaSharePrivate::readSmbConf() {
 
     if (i>-1)
     {
-      QString name = completeLine.left(i).trimmed().lower();
+      QString name = completeLine.left(i).trimmed().toLower();
       QString value = completeLine.mid(i+1).trimmed();
 
       if (name == KGlobal::staticQString("path")) {

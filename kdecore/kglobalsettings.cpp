@@ -639,7 +639,7 @@ bool KGlobalSettings::isMultiHead()
 #else
     QByteArray multiHead = getenv("KDE_MULTIHEAD");
     if (!multiHead.isEmpty()) {
-        return (multiHead.lower() == "true");
+        return (multiHead.toLower() == "true");
     }
     return false;
 #endif

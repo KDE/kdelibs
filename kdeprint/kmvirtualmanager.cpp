@@ -179,20 +179,20 @@ void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name, QWidget *
 
 void KMVirtualManager::refresh()
 {
-	QFileInfo	fi(QDir::homeDirPath() + QFile::decodeName("/.lpoptions"));
+	QFileInfo	fi(QDir::homePath() + QFile::decodeName("/.lpoptions"));
 	QFileInfo	fi2(QFile::decodeName("/etc/cups/lpoptions"));
 
 	// if root, then only use global file: trick -> use twice the same file
 	if (getuid() == 0)
-		fi.setFile(fi2.absFilePath());
+		fi.setFile(fi2.absoluteFilePath());
 
 	if (!m_checktime.isValid() || m_checktime < QMAX(fi.lastModified(),fi2.lastModified()))
 	{
                 m_defaultprinter = QString::null;
 		if (fi2.exists())
-			loadFile(fi2.absFilePath());
-		if (fi.exists() && fi.absFilePath() != fi2.absFilePath())
-                	loadFile(fi.absFilePath());
+			loadFile(fi2.absoluteFilePath());
+		if (fi.exists() && fi.absoluteFilePath() != fi2.absFilePath())
+                	loadFile(fi.absoluteFilePath());
 		m_checktime = QMAX(fi.lastModified(),fi2.lastModified());
 	}
         else
@@ -285,7 +285,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 				// add printer to the manager
 				addPrinter(printer);	// don't use "printer" after this point !!!
 				// check default state
-				if (words[0].lower().startsWith("default"))
+				if (words[0].toLower().startsWith("default"))
 					setDefault(findPrinter(KURL::decode_string(words[1])),false);
 			}
 		}
@@ -301,7 +301,7 @@ void KMVirtualManager::triggerSave()
 			filename = QFile::decodeName("/etc/cups/lpoptions");
 	}
 	else
-		filename = QDir::homeDirPath() + QFile::decodeName("/.lpoptions");
+		filename = QDir::homePath() + QFile::decodeName("/.lpoptions");
 	if (!filename.isEmpty())
 	{
 		saveFile(filename);

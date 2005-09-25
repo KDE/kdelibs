@@ -301,7 +301,7 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &pr
 
         configData["UseProxy"] = proxy;
 
-        QString autoLogin = configData["EnableAutoLogin"].lower();
+        QString autoLogin = configData["EnableAutoLogin"].toLower();
         if ( autoLogin == "true" )
         {
             NetRC::AutoLogin l;

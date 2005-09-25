@@ -122,7 +122,7 @@ DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyNam
 void CSSStyleDeclaration::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
 {
     if(!impl) return;
-    int id = getPropertyID(propName.string().lower().ascii(), propName.length());
+    int id = getPropertyID(propName.string().toLower().ascii(), propName.length());
     if (!id) return;
     bool important = false;
     QString str = priority.string();

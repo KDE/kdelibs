@@ -286,7 +286,7 @@ void SessionData::reset()
 
     d->language = languageList.join( ", " );
 
-    d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->mimeName()).lower();
+    d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->mimeName()).toLower();
     KProtocolManager::reparseConfiguration();
 }
 

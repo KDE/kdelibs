@@ -533,7 +533,7 @@ QChar KAccelString::accelerator() const
   if ((m_accel < 0) || (m_accel > (int)m_pureText.length()))
     return QChar();
 
-  return m_pureText[m_accel].lower();
+  return m_pureText[m_accel].toLower();
 }
 
 

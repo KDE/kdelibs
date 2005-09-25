@@ -1609,7 +1609,7 @@ void KHTMLView::findAhead(bool increase)
 		}
 	}
 
-	m_part->setStatusBarText(status.arg(d->findString.lower()),
+	m_part->setStatusBarText(status.arg(d->findString.toLower()),
 	                         KHTMLPart::BarDefaultText);
 }
 
@@ -2148,9 +2148,9 @@ void KHTMLView::displayAccessKeys()
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
             QString accesskey;
             if( s.length() == 1 )
-                accesskey = s.string()[ 0 ].upper();
+                accesskey = s.string()[ 0 ].toUpper();
             if( accesskey.isNull() && fallbacks.contains( en ))
-                accesskey = "<qt><i>" + QString( fallbacks[ en ].upper()) + "</i></qt>";
+                accesskey = "<qt><i>" + QString( fallbacks[ en ].toUpper()) + "</i></qt>";
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
 	        QLabel *lab=new QLabel(accesskey,viewport(),0,Qt::WDestructiveClose);
@@ -2505,7 +2505,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             ElementImpl* en = static_cast< ElementImpl* >( n );
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
             if( s.length() == 1 ) {
-                QChar c = s.string()[ 0 ].upper();
+                QChar c = s.string()[ 0 ].toUpper();
                 keys.remove( c ); // remove manually assigned accesskeys
             }
         }
@@ -2545,16 +2545,16 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 for( QStringList::ConstIterator it = words.begin();
                      it != words.end();
                      ++it ) {
-                    if( keys.contains( (*it)[ 0 ].upper())) {
-                        key = (*it)[ 0 ].upper();
+                    if( keys.contains( (*it)[ 0 ].toUpper())) {
+                        key = (*it)[ 0 ].toUpper();
                         break;
                     }
                 }
             }
             if( key.isNull() && !text.isEmpty()) {
                 for( int i = 0; i < text.length(); ++i ) {
-                    if( keys.contains( text[ i ].upper())) {
-                        key = text[ i ].upper();
+                    if( keys.contains( text[ i ].toUpper())) {
+                        key = text[ i ].toUpper();
                         break;
                     }
                 }

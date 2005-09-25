@@ -132,7 +132,7 @@ bool CupsdServerPage::loadConfig(CupsdConf *conf, QString&)
 		classoverride_->setChecked(conf_->classoverride_);
 	if (conf->classification_ == CLASS_OTHER)
 		otherclassname_->setText(conf_->otherclassname_);
-	int index = findComboItem(charset_, conf_->charset_.upper());
+	int index = findComboItem(charset_, conf_->charset_.toUpper());
 	if (index != -1)
 		charset_->setCurrentItem(index);
 	language_->setText(conf_->language_);

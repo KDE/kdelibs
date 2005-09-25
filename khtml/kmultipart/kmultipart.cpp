@@ -235,7 +235,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 }
                 else if ( !qstrnicmp( line.data(), "Content-Encoding:", 17 ) )
                 {
-                    QString encoding = QString::fromLatin1(line.data()+17).trimmed().lower();
+                    QString encoding = QString::fromLatin1(line.data()+17).trimmed().toLower();
                     if (encoding == "gzip" || encoding == "x-gzip") {
                         m_gzip = true;
                     } else {

@@ -48,9 +48,9 @@ QStringList LightStylePlugin::keys() const
 
 QStyle *LightStylePlugin::create(const QString &s)
 {
-    if (s.lower() == "light, 2nd revision")
+    if (s.toLower() == "light, 2nd revision")
 	return new LightStyleV2;
-    if (s.lower() == "light, 3rd revision")
+    if (s.toLower() == "light, 3rd revision")
 	return new LightStyleV3;
     return 0;
 }

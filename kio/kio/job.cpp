@@ -683,7 +683,7 @@ void MkdirJob::slotRedirection( const KURL &url)
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
-     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+     if (m_url.hasUser() && !url.hasUser() && (m_url.host().toLower() == url.host().toLower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
      // Tell the user that we haven't finished yet
      emit redirection(this, m_redirectionURL);
@@ -818,7 +818,7 @@ void StatJob::slotRedirection( const KURL &url)
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
-     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+     if (m_url.hasUser() && !url.hasUser() && (m_url.host().toLower() == url.host().toLower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
      // Tell the user that we haven't finished yet
      emit redirection(this, m_redirectionURL);
@@ -923,7 +923,7 @@ void TransferJob::slotRedirection( const KURL &url)
     else
     {
        m_redirectionURL = url; // We'll remember that when the job finishes
-       if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+       if (m_url.hasUser() && !url.hasUser() && (m_url.host().toLower() == url.host().toLower()))
           m_redirectionURL.setUser(m_url.user()); // Preserve user
        m_redirectionList.append(url);
        m_outgoingMetaData["ssl_was_in_use"] = m_incomingMetaData["ssl_in_use"];
@@ -2054,7 +2054,7 @@ void ListJob::slotRedirection( const KURL & url )
        return;
      }
     m_redirectionURL = url; // We'll remember that when the job finishes
-    if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+    if (m_url.hasUser() && !url.hasUser() && (m_url.host().toLower() == url.host().toLower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
     emit redirection( this, m_redirectionURL );
 }
@@ -3498,7 +3498,7 @@ void CopyJob::slotResultRenaming( Job* job )
         // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
         // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
         if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
-             m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
+             m_currentSrcURL.url(-1).toLower() == dest.url(-1).toLower() &&
              ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
         {
             kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
@@ -4342,7 +4342,7 @@ void MultiGetJob::slotRedirection( const KURL &url)
      return;
   }
   m_redirectionURL = url;
-  if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().lower() == url.host().lower()))
+  if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().toLower() == url.host().toLower()))
       m_redirectionURL.setUser(m_currentEntry->url.user()); // Preserve user
   get(m_currentEntry->id, m_redirectionURL, m_currentEntry->metaData); // Try again
 }
@@ -4432,7 +4432,7 @@ QString CacheInfo::cachedFileName()
       p = CEF.find('/', p);
    }
 
-   QString host = m_url.host().lower();
+   QString host = m_url.host().toLower();
    CEF = host + CEF + '_';
 
    QString dir = KProtocolManager::cacheDir();

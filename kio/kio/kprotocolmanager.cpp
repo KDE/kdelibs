@@ -220,7 +220,7 @@ QString KProtocolManager::noProxyFor()
 
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
-  QString scheme = protocol.lower();
+  QString scheme = protocol.toLower();
 
   if (scheme == "webdav")
     scheme = "http";
@@ -244,7 +244,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           if (!url.host().isEmpty())
           {
             KURL u (url);
-            QString p = u.protocol().lower();
+            QString p = u.protocol().toLower();
 
             // webdav is a KDE specific protocol. Look up proxy
             // information using HTTP instead...
@@ -358,9 +358,9 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
         if (!noProxy.isEmpty())
         {
-           QString qhost = url.host().lower();
+           QString qhost = url.host().toLower();
            const char *host = qhost.latin1();
-           QString qno_proxy = noProxy.trimmed().lower();
+           QString qno_proxy = noProxy.trimmed().toLower();
            const char *no_proxy = qno_proxy.latin1();
            isRevMatch = revmatch(host, no_proxy);
 
@@ -387,7 +387,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            {
               // The idea behind slave protocols is not applicable to http
               // and webdav protocols.
-              QString protocol = url.protocol().lower();
+              QString protocol = url.protocol().toLower();
               if (protocol.startsWith("http") || protocol.startsWith("webdav"))
                 d->protocol = protocol;
               else
@@ -414,11 +414,11 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
-  QString sendUserAgent = KIO::SlaveConfig::self()->configData("http", hostname.lower(), "SendUserAgent").lower();
+  QString sendUserAgent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "SendUserAgent").toLower();
   if (sendUserAgent == "false")
      return QString::null;
 
-  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.lower(), "UserAgent");
+  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "UserAgent");
 
   // Return the default user-agent if none is specified
   // for the requested host.
@@ -439,7 +439,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   if (!d)
      d = new KProtocolManagerPrivate;
 
-  QString modifiers = _modifiers.lower();
+  QString modifiers = _modifiers.toLower();
   if (modifiers.isEmpty())
      modifiers = DEFAULT_USER_AGENT_KEYS;
 

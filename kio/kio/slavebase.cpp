@@ -824,7 +824,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     DCOPReply reply;
 
-    if (metaData("no-auth-prompt").lower() == "true")
+    if (metaData("no-auth-prompt").toLower() == "true")
        reply = kps.call("queryAuthInfo(KIO::AuthInfo, QString, long int, long int)", info,
                 QString("<NoAuthPrompt>"), windowId, s_seqNr);
     else

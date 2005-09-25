@@ -296,7 +296,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             Observer_stub observer( observerAppId, "KIO::Observer" );
 
             KIO::MetaData meta = observer.metadata( progressId );
-            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
             KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate

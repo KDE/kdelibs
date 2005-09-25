@@ -402,7 +402,7 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
 			 const QFontDef &request, int )
 {
     QString xlfd;
-    QString family = request.family.lower();
+    QString family = request.family.toLower();
     if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
         xlfd = courier_pickxlfd( request.pixelSize, request.style == QFont::StyleItalic, request.weight > 50 );
     }

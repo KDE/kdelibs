@@ -573,7 +573,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	           "Save it if you accidentally deleted your data file.\n"
 	           "Close it if you intended to do so.\n"
 	           "Your file will be closed by default.")
-		 .arg(oldfile.absFilePath()),
+		 .arg(oldfile.absoluteFilePath()),
 	      i18n("File Error"),
 	      KStdGuiItem::close(), KStdGuiItem::save()))
 	    {
@@ -881,7 +881,7 @@ AddressBook::isSameFile(const QString& a, const QString& b)
   // ###########################################################################
   QFileInfo filea(a), fileb(b);
   // -----
-  return filea.absFilePath()==fileb.absFilePath();
+  return filea.absoluteFilePath()==fileb.absFilePath();
   // ###########################################################################
 }
 

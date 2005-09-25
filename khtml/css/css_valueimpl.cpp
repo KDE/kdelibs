@@ -829,7 +829,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
 #ifndef APPLE_CHANGES
     const QString &available = KHTMLSettings::availableFamilies();
 
-    parsedFontName = parsedFontName.lower();
+    parsedFontName = parsedFontName.toLower();
     // kdDebug(0) << "searching for face '" << parsedFontName << "'" << endl;
 
     int pos = available.find( ',' + parsedFontName + ',', 0, false );

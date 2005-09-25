@@ -100,7 +100,7 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "old encoding is:" << m_codec->name() << endl;
 #endif
-    enc = enc.lower();
+    enc = enc.toLower();
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "requesting:" << enc << endl;
 #endif
@@ -384,7 +384,7 @@ QString Decoder::decode(const char *data, int len)
                         while(*end != '>' && *end != '\0') end++;
                         if ( *end == '\0' ) break;
                         QByteArray str( ptr, (end-ptr)+1);
-                        str = str.lower();
+                        str = str.toLower();
                         int pos = 0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
                         //if( (pos = str.find("content-type", pos)) == -1) break;

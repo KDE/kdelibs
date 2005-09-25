@@ -291,7 +291,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 	{
 		if (itFile.fileName() == "." || itFile.fileName() == "..")
 			continue;
-		QFile	f(itFile.absFilePath() + "/configuration");
+		QFile	f(itFile.absoluteFilePath() + "/configuration");
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
@@ -346,7 +346,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 
 	foreach(const QFileInfo& itFile, prlist)
 	{
-		QFile	f(itFile.absFilePath());
+		QFile	f(itFile.absoluteFilePath());
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);

@@ -2382,7 +2382,7 @@ bool HTTPProtocol::httpOpen()
     header += "\r\n";
 
     QString cookieStr;
-    QString cookieMode = metaData("cookies").lower();
+    QString cookieMode = metaData("cookies").toLower();
     if (cookieMode == "none")
     {
       m_request.cookieMode = HTTPRequest::CookiesNone;
@@ -2607,7 +2607,7 @@ try_again:
         return false;
      }
 
-     m_request.strCharset = QString::fromUtf8( buffer).trimmed().lower();
+     m_request.strCharset = QString::fromUtf8( buffer).trimmed().toLower();
      setMetaData("charset", m_request.strCharset);
      if (!m_request.lastModified.isEmpty())
          setMetaData("modified", m_request.lastModified);
@@ -2940,7 +2940,7 @@ try_again:
           it != options.end();
           it++)
       {
-         QString option = (*it).trimmed().lower();
+         QString option = (*it).trimmed().toLower();
          if (option.startsWith("timeout="))
          {
             m_keepAliveTimeout = option.mid(8).toInt();
@@ -2998,7 +2998,7 @@ try_again:
       while ( *pos && *pos != ';' )  pos++;
 
       // Assign the mime-type.
-      m_strMimeType = QString::fromLatin1(start, pos-start).trimmed().lower();
+      m_strMimeType = QString::fromLatin1(start, pos-start).trimmed().toLower();
       kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
 
       // If we still have text, then it means we have a mime-type with a
@@ -3013,7 +3013,7 @@ try_again:
 
         if (*pos)
         {
-          mediaAttribute = QString::fromLatin1(start, pos-start).trimmed().lower();
+          mediaAttribute = QString::fromLatin1(start, pos-start).trimmed().toLower();
           mediaValue = QString::fromLatin1(pos+1, end-pos-1).trimmed();
 	  pos = end;
           if (mediaValue.length() &&
@@ -3028,7 +3028,7 @@ try_again:
 
           if ( mediaAttribute == "charset")
           {
-            mediaValue = mediaValue.lower();
+            mediaValue = mediaValue.toLower();
             m_request.strCharset = mediaValue;
           }
           else
@@ -3070,7 +3070,7 @@ try_again:
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      Q3CString pragma = Q3CString(trimLead(buf+7)).trimmed().lower();
+      Q3CString pragma = Q3CString(trimLead(buf+7)).trimmed().toLower();
       if (pragma == "no-cache")
       {
          m_request.bCachedWrite = false; // Don't put in cache
@@ -3208,7 +3208,7 @@ try_again:
         QString rel = link[1].trimmed();
         if (rel.startsWith("rel=\"")) {
           rel = rel.mid(5, rel.length() - 6);
-          if (rel.lower() == "pageservices") {
+          if (rel.toLower() == "pageservices") {
             QString url = link[0].replace(QRegExp("[<>]"),"").trimmed();
             setMetaData("PageServices", url);
           }
@@ -3226,10 +3226,10 @@ try_again:
          QStringList policy = QStringList::split("=", *it);
 
          if (policy.count() == 2) {
-            if (policy[0].lower() == "policyref") {
+            if (policy[0].toLower() == "policyref") {
                policyrefs << policy[1].replace(QRegExp("[\"\']"), "")
                                       .trimmed();
-            } else if (policy[0].lower() == "cp") {
+            } else if (policy[0].toLower() == "cp") {
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
                // efficient but I'm going for correctness right now.
@@ -3639,7 +3639,7 @@ try_again:
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
   else if ((m_strMimeType == "text/plain") || (m_strMimeType == "application/octet-stream"))
   {
-     QString ext = m_request.url.path().right(4).upper();
+     QString ext = m_request.url.path().right(4).toUpper();
      if (ext == ".BZ2")
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
      else if (ext == ".PEM")
@@ -3731,7 +3731,7 @@ try_again:
 
 void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 {
-  encoding = encoding.trimmed().lower();
+  encoding = encoding.trimmed().toLower();
   // Identity is the same as no encoding
   if (encoding == "identity") {
     return;
@@ -4534,7 +4534,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       p = CEF.find('/', p);
    }
 
-   QString host = m_request.hostname.lower();
+   QString host = m_request.hostname.toLower();
    CEF = host + CEF + '_';
 
    QString dir = m_strCacheDir;
@@ -5528,7 +5528,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, Q3CString& Response 
   authStr += info.password;
   md.update( authStr );
 
-  if ( info.algorithm.lower() == "md5-sess" )
+  if ( info.algorithm.toLower() == "md5-sess" )
   {
     authStr = md.hexDigest();
     authStr += ':';
@@ -5783,8 +5783,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     {
       KURL u ( info.digestURI.at(i) );
 
-      send &= (m_request.url.protocol().lower() == u.protocol().lower());
-      send &= (m_request.hostname.lower() == u.host().lower());
+      send &= (m_request.url.protocol().toLower() == u.protocol().toLower());
+      send &= (m_request.hostname.toLower() == u.host().toLower());
 
       if (m_request.port > 0 && u.port() > 0)
         send &= (m_request.port == u.port());

@@ -234,7 +234,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     for ( ; it != itEnd; ++it) {
         const int equalPos = (*it).find("=");
         if (equalPos > 0) {
-            const QString name = (*it).left (equalPos).upper ();
+            const QString name = (*it).left (equalPos).toUpper ();
             QString value = (*it).right ((*it).length () - equalPos - 1);
             if (value.at(0)=='\"')
                 value = value.right (value.length () - 1);
@@ -242,7 +242,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                 value.truncate (value.length () - 1);
             kdDebug(6100) << "name=" << name << " value=" << value << endl;
             if (!name.isEmpty()) {
-                const QString name_lower = name.lower ();
+                const QString name_lower = name.toLower ();
                 if (name == "__KHTML__PLUGINBASEURL") {
                     baseurl = KURL (KURL (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
@@ -252,7 +252,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                     if (!value.isEmpty ())
                         codebase = value;
                 } else if (name == "__KHTML__CLASSID")
-                //else if (name.lower()==QLatin1String("classid"))
+                //else if (name.toLower()==QLatin1String("classid"))
                     classid = value;
                 else if (name_lower == QLatin1String("code") ||
                          name_lower == QLatin1String("java_code"))

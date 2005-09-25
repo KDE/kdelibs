@@ -119,14 +119,14 @@ void HTMLElement::setClassName( const DOMString &value )
 
 void HTMLElement::removeCSSProperty( const DOMString &property )
 {
-    int id = getPropertyID(property.string().lower().ascii(), property.length());
+    int id = getPropertyID(property.string().toLower().ascii(), property.length());
     if(id && impl)
         static_cast<HTMLElementImpl*>(impl)->removeCSSProperty(id);
 }
 
 void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &value )
 {
-    int id = getPropertyID(property.string().lower().ascii(), property.length());
+    int id = getPropertyID(property.string().toLower().ascii(), property.length());
     if(id && impl)
         static_cast<HTMLElementImpl*>(impl)->addCSSProperty(id, value);
 }

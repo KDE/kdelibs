@@ -51,7 +51,7 @@ static QString processLocaleString( const QString& s )
 				else if ( cc.isDigit() )
 					_hc = cc.digitValue();
 				else
-					_hc = cc.lower().latin1() - 'a' + 10;
+					_hc = cc.toLower().latin1() - 'a' + 10;
 				if ( flag )
 				{
 					hc |= _hc;

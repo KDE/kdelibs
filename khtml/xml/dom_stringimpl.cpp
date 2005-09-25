@@ -329,7 +329,7 @@ bool DOMStringImpl::isLower() const
 {
     unsigned int i;
     for (i = 0; i < l; i++)
-	if (s[i].lower() != s[i])
+	if (s[i].toLower() != s[i])
 	    return false;
     return true;
 }
@@ -343,7 +343,7 @@ DOMStringImpl *DOMStringImpl::lower() const
     c->l = l;
 
     for (unsigned int i = 0; i < l; i++)
-	c->s[i] = s[i].lower();
+	c->s[i] = s[i].toLower();
 
     return c;
 }
@@ -357,7 +357,7 @@ DOMStringImpl *DOMStringImpl::upper() const
     c->l = l;
 
     for (unsigned int i = 0; i < l; i++)
-	c->s[i] = s[i].upper();
+	c->s[i] = s[i].toUpper();
 
     return c;
 }
@@ -375,7 +375,7 @@ DOMStringImpl *DOMStringImpl::capitalize() const
     {
         if (s[i].isLetterOrNumber() && canCapitalize)
         {
-            c->s[i]=s[i].upper();
+            c->s[i]=s[i].toUpper();
             canCapitalize=false;
         }
         else

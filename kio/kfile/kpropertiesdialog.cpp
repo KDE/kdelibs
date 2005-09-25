@@ -2990,7 +2990,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     m_startupBool = config.readBoolEntry( "StartupNotify", true );
   else
     m_startupBool = config.readBoolEntry( "X-KDE-StartupNotify", true );
-  m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").lower();
+  m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").toLower();
 
   QStringList mimeTypes = config.readListEntry( "MimeType", ';' );
 

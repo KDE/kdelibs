@@ -248,7 +248,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
     if (!old && !fName.isEmpty())
         return fName;
 
-    fName = QFile::encodeName( QDir::homeDirPath() );
+    fName = QFile::encodeName( QDir::homePath() );
 //    fName = ::getenv("HOME");
     if (fName.isEmpty())
     {

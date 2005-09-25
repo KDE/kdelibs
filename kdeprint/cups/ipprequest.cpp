@@ -493,7 +493,7 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 			continue;
 		QString	value = it.data().trimmed(), lovalue;
 		value.replace(re, "");
-		lovalue = value.lower();
+		lovalue = value.toLower();
 
 		// handles specific cases: boolean, empty strings, or option that has that boolean
 		// keyword as value (to prevent them from conversion to real boolean)

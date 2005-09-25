@@ -693,10 +693,10 @@ void KonfUpdate::gotOptions(const QString &_options)
        it != options.end();
        ++it)
    {
-       if ( (*it).lower().trimmed() == "copy")
+       if ( (*it).toLower().trimmed() == "copy")
           m_bCopy = true;
 
-       if ( (*it).lower().trimmed() == "overwrite")
+       if ( (*it).toLower().trimmed() == "overwrite")
           m_bOverwrite = true;
    }
 }

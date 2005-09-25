@@ -310,8 +310,8 @@ static bool containsString(const char* str, const QString& buffer, int offset)
     if (offset + startString.length() > buffer.length())
         return false;
 
-    QString bufferString = buffer.mid(offset, startString.length()).lower();
-    QString lowerStart = startString.lower();
+    QString bufferString = buffer.mid(offset, startString.length()).toLower();
+    QString lowerStart = startString.toLower();
 
     return bufferString.startsWith(lowerStart);
 }
@@ -466,7 +466,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         else {
             // We have to check a list of public IDs to see what we
             // should do.
-            QString lowerPubID = publicID.lower();
+            QString lowerPubID = publicID.toLower();
             const char* pubIDStr = lowerPubID.latin1();
 
             // Look up the entry in our gperf-generated table.

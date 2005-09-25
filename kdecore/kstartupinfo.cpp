@@ -711,15 +711,15 @@ bool KStartupInfo::find_wclass( QByteArray res_name, QByteArray res_class,
     {
     if( d == NULL )
         return false;
-    res_name = res_name.lower();
-    res_class = res_class.lower();
+    res_name = res_name.toLower();
+    res_class = res_class.toLower();
     kdDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          ++it )
         {
         const QByteArray wmclass = ( *it ).findWMClass();
-        if( wmclass.lower() == res_name || wmclass.lower() == res_class )
+        if( wmclass.toLower() == res_name || wmclass.toLower() == res_class )
             { // Found it !
             if( id_O != NULL )
                 *id_O = it.key();

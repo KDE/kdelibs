@@ -227,7 +227,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
         		.trimmed();
 
       // add attribute to map
-      header_info.attributes[attribute.lower()] = value;
+      header_info.attributes[attribute.toLower()] = value;
 
     }/*end if*/
     if (header_info.data_offset < raw_url_len

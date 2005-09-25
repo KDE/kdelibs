@@ -617,7 +617,7 @@ void RenderPartObject::updateWidget()
               aStr += QLatin1String("=\"");
               aStr += p->value();
               aStr += QLatin1String("\"");
-              QString name_lower = p->name().lower();
+              QString name_lower = p->name().toLower();
               if (name_lower == QLatin1String("type") && objbase->id() != ID_APPLET) {
                   objbase->setServiceType(p->value());
               } else if (url.isEmpty() &&

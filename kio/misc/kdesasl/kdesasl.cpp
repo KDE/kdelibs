@@ -58,7 +58,7 @@ QByteArray KDESasl::chooseMethod(const Q3StrIList aMethods)
 
 void KDESasl::setMethod(const QByteArray &aMethod)
 {
-  mMethod = aMethod.upper();
+  mMethod = aMethod.toUpper();
 }
 
 QByteArray KDESasl::getPlainResponse()

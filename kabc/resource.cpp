@@ -292,13 +292,13 @@ Addressee::List Resource::findByName( const QString &name )
 Addressee::List Resource::findByEmail( const QString &email )
 {
   Addressee::List results;
-  const QString lowerEmail = email.lower();
+  const QString lowerEmail = email.toLower();
 
   ConstIterator it;
   for ( it = begin(); it != end(); ++it ) {
     const QStringList mailList = (*it).emails();
     for ( QStringList::ConstIterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
-      if ( lowerEmail == (*ite).lower() )
+      if ( lowerEmail == (*ite).toLower() )
         results.append( *it );
     }
   }

@@ -188,7 +188,7 @@ void LDAPUrl::parseQuery()
   QString name,value;
   for ( QStringList::Iterator it = extensions.begin(); it != extensions.end(); ++it ) {
     ext.critical = false;
-    name = decode_string( (*it).section('=',0,0) ).lower();
+    name = decode_string( (*it).section('=',0,0) ).toLower();
     value = decode_string( (*it).section('=',1) );
     if ( name.startsWith("!") ) {
       ext.critical = true;

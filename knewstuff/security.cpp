@@ -231,7 +231,7 @@ void Security::slotCheckValidity()
      md5sum = context.hexDigest();
      file.close();
   }
-  file.setName(f.dirPath() + "/md5sum");
+  file.setName(f.path() + "/md5sum");
   if (file.open(QIODevice::ReadOnly))
   {
      QByteArray md5sum_file;
@@ -248,7 +248,7 @@ void Security::slotCheckValidity()
 
   //verify the signature
   KProcIO *verifyProcess=new KProcIO();
-  *verifyProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--verify" << f.dirPath() + "/signature"<< m_fileName;
+  *verifyProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--verify" << f.path() + "/signature"<< m_fileName;
   connect(verifyProcess, SIGNAL(processExited(KProcess *)),this, SLOT(slotProcessExited(KProcess *)));
   connect(verifyProcess, SIGNAL(readReady(KProcIO *)),this, SLOT(slotDataArrived(KProcIO *)));
   if (verifyProcess->start(KProcess::NotifyOnExit,true))
@@ -303,7 +303,7 @@ void Security::slotSignFile()
     md5sum = context.hexDigest();
     file.close();
   }
-  file.setName(f.dirPath() + "/md5sum");
+  file.setName(f.path() + "/md5sum");
   if (file.open(QIODevice::WriteOnly))
   {
     QTextStream stream(&file);
@@ -328,7 +328,7 @@ void Security::slotSignFile()
 
   //verify the signature
   KProcIO *signProcess=new KProcIO();
-  *signProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--no-tty"<<"--detach-sign" << "-u" << m_secretKey << "-o" << f.dirPath() + "/signature" << m_fileName;
+  *signProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--no-tty"<<"--detach-sign" << "-u" << m_secretKey << "-o" << f.path() + "/signature" << m_fileName;
   connect(signProcess, SIGNAL(processExited(KProcess *)),this, SLOT(slotProcessExited(KProcess *)));
   connect(signProcess, SIGNAL(readReady(KProcIO *)),this, SLOT(slotDataArrived(KProcIO *)));
   m_runMode = Sign;

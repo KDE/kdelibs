@@ -645,7 +645,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 QString KURLCompletion::finished()
 {
 	if ( d->last_compl_type == CTInfo )
-		return KCompletion::makeCompletion( d->compl_text.lower() );
+		return KCompletion::makeCompletion( d->compl_text.toLower() );
 	else
 		return KCompletion::makeCompletion( d->compl_text );
 }
