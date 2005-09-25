@@ -112,13 +112,13 @@ class LinearDocument;
  * @since 3.3
  * @internal
  */
-template<class T> class MassDeleter : public Q3ValueVector<T *> {
+template<class T> class MassDeleter : public QVector<T *> {
 public:
   MassDeleter(size_t reserved = 1) { this->reserve(reserved); }
   ~MassDeleter()
   {
-    typename Q3ValueVector<T *>::Iterator nd = this->end();
-    for (typename Q3ValueVector<T *>::Iterator it = this->begin(); it != nd; ++it)
+    typename QVector<T *>::Iterator nd = this->end();
+    for (typename QVector<T *>::Iterator it = this->begin(); it != nd; ++it)
       delete *it;
   }
 };

@@ -375,7 +375,7 @@ void CSSStyleSelector::computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics
     computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
 }
 
-void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, Q3ValueVector<int>& fontSizes, bool isFixed)
+void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QVector<int>& fontSizes, bool isFixed)
 {
 #ifdef APPLE_CHANGES
     // We don't want to scale the settings by the dpi.
@@ -1954,7 +1954,7 @@ static QColor colorForCSSValue( int css_value )
     return c;
 }
 
-static inline int nextFontSize(const Q3ValueVector<int>& a, int v, bool smaller)
+static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
 {
     // return the nearest bigger/smaller value in scale a, when v is in range.
     // otherwise increase/decrease value using a 1.2 fixed ratio
@@ -2985,10 +2985,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
 #ifdef APPLE_CHANGES
-	    const Q3ValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
+	    const QVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
 					 m_fixedFontSizes : m_fontSizes;
 #else
-	    const Q3ValueVector<int>& fontSizes = m_fontSizes;
+	    const QVector<int>& fontSizes = m_fontSizes;
 #endif
             switch(primitiveValue->getIdent())
             {

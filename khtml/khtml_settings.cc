@@ -106,7 +106,7 @@ public:
     QStringList fonts;
     QStringList defaultFonts;
 
-    Q3ValueVector<QRegExp> adFilters;
+    QVector<QRegExp> adFilters;
     Q3ValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
@@ -732,7 +732,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     {
         if (!url.startsWith("data:"))
         {
-	  Q3ValueVector<QRegExp>::iterator it;
+	  QVector<QRegExp>::iterator it;
 	  for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
             {
                 if ((*it).search(url) != -1)

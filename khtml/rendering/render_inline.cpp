@@ -278,7 +278,7 @@ void RenderInline::paint(PaintInfo& i,
  * @param pnt point to append
  * @return \c true if \c pnt has actually been appended
  */
-inline static bool appendIfNew(Q3ValueVector<QPoint> &pointArray, const QPoint &pnt)
+inline static bool appendIfNew(QVector<QPoint> &pointArray, const QPoint &pnt)
 {
 //   if (!pointArray.isEmpty()) kdDebug(6040) << "appifnew: " << pointArray.back() << " == " << pnt << ": " << (pointArray.back() == pnt) << endl;
 //   else kdDebug(6040) << "appifnew: " << pnt << " (unconditional)" << endl;
@@ -315,10 +315,10 @@ inline static bool appendIfNew(Q3ValueVector<QPoint> &pointArray, const QPoint &
  * If no spike is found, the point-array is left unchanged.
  * @return \c true if an actual reduction was done
  */
-inline static bool reduceSpike(Q3ValueVector<QPoint> &pointArray)
+inline static bool reduceSpike(QVector<QPoint> &pointArray)
 {
     if (pointArray.size() < 3) return false;
-    Q3ValueVector<QPoint>::Iterator it = pointArray.end();
+    QVector<QPoint>::Iterator it = pointArray.end();
     QPoint p0 = *--it;
     QPoint p1 = *--it;
     QPoint p2 = *--it;
@@ -381,10 +381,10 @@ inline static bool reduceSpike(Q3ValueVector<QPoint> &pointArray)
  * left unchanged.
  * @return \c true if a segment separator was actually reduced.
  */
-inline static bool reduceSegmentSeparator(Q3ValueVector<QPoint> &pointArray)
+inline static bool reduceSegmentSeparator(QVector<QPoint> &pointArray)
 {
     if (pointArray.size() < 3) return false;
-    Q3ValueVector<QPoint>::Iterator it = pointArray.end();
+    QVector<QPoint>::Iterator it = pointArray.end();
     QPoint p0 = *--it;
     QPoint p1 = *--it;
     QPoint p2 = *--it;
@@ -409,7 +409,7 @@ inline static bool reduceSegmentSeparator(Q3ValueVector<QPoint> &pointArray)
  * Appends the given point to the point-array, doing necessary reductions to
  * produce a path without spikes and segment separators.
  */
-static void appendPoint(Q3ValueVector<QPoint> &pointArray, QPoint &pnt)
+static void appendPoint(QVector<QPoint> &pointArray, QPoint &pnt)
 {
   if (!appendIfNew(pointArray, pnt)) return;
 //   kdDebug(6040) << "appendPoint: appended " << pnt << endl;
@@ -429,7 +429,7 @@ static void appendPoint(Q3ValueVector<QPoint> &pointArray, QPoint &pnt)
  *	the lowest for !\c bottom.
  */
 static void collectHorizontalBoxCoordinates(InlineBox *box,
-                                            Q3ValueVector<QPoint> &pointArray,
+                                            QVector<QPoint> &pointArray,
                                             bool bottom, int limit = -500000)
 {
 //   kdDebug(6000) << "collectHorizontalBoxCoordinates: " << endl;
@@ -504,7 +504,7 @@ inline static bool lineBoxesDisjoint(InlineRunBox *line, bool toBegin)
  * @param lastline if not 0, returns the pointer to the last line box traversed
  */
 static void collectVerticalBoxCoordinates(InlineRunBox *line,
-                                          Q3ValueVector<QPoint> &pointArray,
+                                          QVector<QPoint> &pointArray,
                                           bool left, InlineRunBox **lastline = 0)
 {
     InlineRunBox *last = 0;
@@ -544,7 +544,7 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
  * @param pointArray point-array
  * @return actual begin of point array
  */
-static QPoint *linkEndToBegin(Q3ValueVector<QPoint> &pointArray)
+static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
 {
     uint index = 0;
     Q_ASSERT(pointArray.size() >= 3);
@@ -582,7 +582,7 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
     // We may have to draw more than one outline path as they may be
     // disjoint.
     for (InlineRunBox *curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-        Q3ValueVector<QPoint> path;
+        QVector<QPoint> path;
 
         // collect topmost outline
         collectHorizontalBoxCoordinates(curr, path, false);

@@ -505,8 +505,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     if (r.isNull() || r.isEmpty() )
         return;
     QRegion blit(r);
-    Q3ValueVector<QWidget*> cw;
-    Q3ValueVector<QRect> cr;
+    QVector<QWidget*> cw;
+    QVector<QRect> cr;
 
     if (!widget->children().isEmpty()) {
         // build region
@@ -563,9 +563,9 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     // cleanup and recurse
     PaintBuffer::release();
-    Q3ValueVector<QWidget*>::iterator cwit = cw.begin();
-    Q3ValueVector<QWidget*>::iterator cwitEnd = cw.end();
-    Q3ValueVector<QRect>::const_iterator crit = cr.begin();
+    QVector<QWidget*>::iterator cwit = cw.begin();
+    QVector<QWidget*>::iterator cwitEnd = cw.end();
+    QVector<QRect>::const_iterator crit = cr.begin();
     for (; cwit != cwitEnd; ++cwit, ++crit)
         copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
 }

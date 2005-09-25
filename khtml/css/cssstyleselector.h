@@ -131,8 +131,8 @@ namespace khtml
 
 	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
-        Q3ValueVector<int> fontSizes() const { return m_fontSizes; }
-	Q3ValueVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
+        QVector<int> fontSizes() const { return m_fontSizes; }
+	QVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
 
 	bool strictParsing;
 	struct Encodedurl {
@@ -142,7 +142,7 @@ namespace khtml
 	} encodedurl;
 
         void computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
-	void computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, Q3ValueVector<int>& fontSizes, bool isFixed);
+	void computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QVector<int>& fontSizes, bool isFixed);
 
     protected:
 
@@ -243,8 +243,8 @@ public:
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
 	Q3PaintDeviceMetrics *paintDeviceMetrics;
-        Q3ValueVector<int>     m_fontSizes;
-	Q3ValueVector<int>     m_fixedFontSizes;
+        QVector<int>     m_fontSizes;
+	QVector<int>     m_fixedFontSizes;
 
 	bool fontDirty;
 
