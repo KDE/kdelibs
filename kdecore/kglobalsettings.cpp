@@ -59,7 +59,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
-QString* KGlobalSettings::s_trashPath = 0;
 QString* KGlobalSettings::s_documentPath = 0;
 QFont *KGlobalSettings::_generalFont = 0;
 QFont *KGlobalSettings::_fixedFont = 0;
@@ -427,19 +426,19 @@ QFont KGlobalSettings::largeFont(const QString &text)
     QStringList fam = db.families();
 
     // Move a bunch of preferred fonts to the front.
-    if (fam.remove("Arial"))
+    if (fam.removeAll("Arial")>0)
        fam.prepend("Arial");
-    if (fam.remove("Verdana"))
+    if (fam.removeAll("Verdana")>0)
        fam.prepend("Verdana");
-    if (fam.remove("Tahoma"))
+    if (fam.removeAll("Tahoma")>0)
        fam.prepend("Tahoma");
-    if (fam.remove("Lucida Sans"))
+    if (fam.removeAll("Lucida Sans")>0)
        fam.prepend("Lucida Sans");
-    if (fam.remove("Lucidux Sans"))
+    if (fam.removeAll("Lucidux Sans")>0)
        fam.prepend("Lucidux Sans");
-    if (fam.remove("Nimbus Sans"))
+    if (fam.removeAll("Nimbus Sans")>0)
        fam.prepend("Nimbus Sans");
-    if (fam.remove("Gothic I"))
+    if (fam.removeAll("Gothic I")>0)
        fam.prepend("Gothic I");
 
     if (_largeFont)
@@ -479,14 +478,13 @@ QFont KGlobalSettings::largeFont(const QString &text)
     return *_largeFont;
 }
 
-void KGlobalSettings::initStatic() // should be called initPaths(). Don't put anything else here.
+void KGlobalSettings::initPaths()
 {
     if ( s_desktopPath != 0 )
         return;
 
     s_desktopPath = new QString();
     s_autostartPath = new QString();
-    s_trashPath = new QString();
     s_documentPath = new QString();
 
     KConfigGroup g( KGlobal::config(), "Paths" );
@@ -497,19 +495,6 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     *s_desktopPath = QDir::cleanPath( *s_desktopPath );
     if ( !s_desktopPath->endsWith("/") )
       s_desktopPath->append(QLatin1Char('/'));
-
-    // Trash Path - TODO remove in KDE4 (kio_trash can't use it for interoperability reasons)
-    *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
-    *s_trashPath = g.readPathEntry( "Trash" , *s_trashPath);
-    *s_trashPath = QDir::cleanPath( *s_trashPath );
-    if ( !s_trashPath->endsWith("/") )
-      s_trashPath->append(QLatin1Char('/'));
-    // We need to save it in any case, in case the language changes later on,
-    if ( !g.hasKey( "Trash" ) )
-    {
-      g.writePathEntry( "Trash", *s_trashPath, true, true );
-      g.sync();
-    }
 
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
@@ -568,8 +553,6 @@ void KGlobalSettings::rereadPathSettings()
     kdDebug() << "KGlobalSettings::rereadPathSettings" << endl;
     delete s_autostartPath;
     s_autostartPath = 0L;
-    delete s_trashPath;
-    s_trashPath = 0L;
     delete s_desktopPath;
     s_desktopPath = 0L;
     delete s_documentPath;

@@ -195,9 +195,9 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	m_copieslabel->setBuddy(m_copies);
 	m_copieslabel->setWhatsThis(whatsThisNumberOfCopiesLabel);
 	m_pageset = new QComboBox(m_pagebox);
-	m_pageset->insertItem(i18n("All Pages"));
-	m_pageset->insertItem(i18n("Odd Pages"));
-	m_pageset->insertItem(i18n("Even Pages"));
+	m_pageset->addItem(i18n("All Pages"));
+	m_pageset->addItem(i18n("Odd Pages"));
+	m_pageset->addItem(i18n("Even Pages"));
 	m_pageset->setWhatsThis(whatsThisPageSetLabel);
 	QLabel	*m_pagesetlabel = new QLabel(i18n("Page &set:"), m_pagebox);
 	m_pagesetlabel->setBuddy(m_pageset);

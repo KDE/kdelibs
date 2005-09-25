@@ -684,7 +684,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
   bool hasRoot = isLocal && properties->kurl().path() == QString::fromLatin1("/");
-  QString iconStr = KMimeType::iconForURL(properties->kurl(), mode);
+  QString iconStr = KMimeType::iconNameForURL(properties->kurl(), mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
@@ -784,7 +784,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         bDesktopFile = false; // not all desktop files
       if ( (*it)->mode() != mode )
         mode = (mode_t)0;
-      if ( KMimeType::iconForURL(url, mode) != iconStr )
+      if ( KMimeType::iconNameForURL(url, mode) != iconStr )
         iconStr = "kmultiple";
       if ( url.directory() != directory )
         directory = QString::null;

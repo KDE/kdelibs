@@ -59,7 +59,7 @@ using namespace K3MDIPrivate;
 
 
 ToggleToolViewAction::ToggleToolViewAction( const QString& text, const KShortcut& cut, K3DockWidget *dw, K3MdiMainFrm *mdiMainFrm,
-        QObject* parent, const char* name )
+        KActionCollection* parent, const char* name )
 		: KToggleAction( text, cut, parent, name ), m_dw( dw ), m_mdiMainFrm( mdiMainFrm )
 {
 	if ( m_dw )

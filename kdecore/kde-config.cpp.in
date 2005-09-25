@@ -23,7 +23,7 @@ static KCmdLineOptions options[] =
     { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
     { "types",     I18N_NOOP("Available KDE resource types"), 0 },
     { "path type", I18N_NOOP("Search path for resource type"), 0 },
-    { "userpath type", I18N_NOOP("User path: desktop|autostart|trash|document"), 0 },
+    { "userpath type", I18N_NOOP("User path: desktop|autostart|document"), 0 },
     { "install type", I18N_NOOP("Prefix to install resource files to"), 0},
     { 0,0,0 }
 };
@@ -37,62 +37,62 @@ QString expandvars(const char *_input)
         return result;
 
     bool changed = false;
-    int index = result.find("${prefix}");
+    int index = result.indexOf("${prefix}");
     if (index >= 0) {
         result = result.replace(index, 9, "@prefix@");
         changed = true;
     }
-    index = result.find("$(prefix)");
+    index = result.indexOf("$(prefix)");
     if (index >= 0) {
         result = result.replace(index, 9, "@prefix@");
         changed = true;
     }
-    index = result.find("${datadir}");
+    index = result.indexOf("${datadir}");
     if (index >= 0) {
         result = result.replace(index, 10, "@datadir@");
         changed = true;
     }
-    index = result.find("$(datadir)");
+    index = result.indexOf("$(datadir)");
     if (index >= 0) {
         result = result.replace(index, 10, "@datadir@");
         changed = true;
     }
-    index = result.find("${exec_prefix}");
+    index = result.indexOf("${exec_prefix}");
     if (index >= 0) {
         result = result.replace(index, 14, "@exec_prefix@");
         changed = true;
     }
-    index = result.find("$(exec_prefix)");
+    index = result.indexOf("$(exec_prefix)");
     if (index >= 0) {
         result = result.replace(index, 14, "@exec_prefix@");
         changed = true;
     }
-    index = result.find("${libdir}");
+    index = result.indexOf("${libdir}");
     if (index >= 0) {
         result = result.replace(index, 9, "@libdir@");
         changed = true;
     }
-    index = result.find("$(libdir)");
+    index = result.indexOf("$(libdir)");
     if (index >= 0) {
         result = result.replace(index, 9, "@libdir@");
         changed = true;
     }
-    index = result.find("${includedir}");
+    index = result.indexOf("${includedir}");
     if (index >= 0) {
         result = result.replace(index, 20, "@includedir@");
         changed = true;
     }
-    index = result.find("$(includedir)");
+    index = result.indexOf("$(includedir)");
     if (index >= 0) {
         result = result.replace(index, 20, "@includedir@");
         changed = true;
     }
-    index = result.find("${sysconfdir}");
+    index = result.indexOf("${sysconfdir}");
     if (index >= 0) {
         result = result.replace(index, 13, "@sysconfdir@");
         changed = true;
     }
-    index = result.find("$(sysconfdir)");
+    index = result.indexOf("$(sysconfdir)");
     if (index >= 0) {
         result = result.replace(index, 13, "@sysconfdir@");
         changed = true;
@@ -220,8 +220,6 @@ int main(int argc, char **argv)
             printResult(KGlobalSettings::desktopPath());
         else if ( type == "autostart" )
             printResult(KGlobalSettings::autostartPath());
-        else if ( type == "trash" )
-            printResult(KGlobalSettings::trashPath());
         else if ( type == "document" )
             printResult(KGlobalSettings::documentPath());
         else

@@ -504,6 +504,11 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _
 
 QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
 {
+  return iconNameForURL(_url,_mode);
+}
+
+QString KMimeType::iconNameForURL( const KURL & _url, mode_t _mode )
+{
     const KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
                                          false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");

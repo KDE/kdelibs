@@ -882,7 +882,7 @@ const void * KFileItem::extraData( const void *key ) const
 {
     QMap<const void*,void*>::const_iterator it = m_extra.find( key );
     if ( it != m_extra.end() )
-        return it.data();
+        return it.value();
     return 0L;
 }
 
@@ -890,7 +890,7 @@ void * KFileItem::extraData( const void *key )
 {
     QMap<const void*,void*>::iterator it = m_extra.find( key );
     if ( it != m_extra.end() )
-        return it.data();
+        return it.value();
     return 0L;
 }
 

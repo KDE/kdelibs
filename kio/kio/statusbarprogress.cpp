@@ -44,7 +44,9 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   setStopOnClose(false);
 
   int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
-  box = new QHBoxLayout( this, 0, 0 );
+  box = new QHBoxLayout( this);
+  box->setMargin(0);
+  box->setSpacing(0);
 
   m_pButton = new QPushButton( "X", this );
   box->addWidget( m_pButton  );

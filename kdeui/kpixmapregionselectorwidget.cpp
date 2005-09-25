@@ -148,17 +148,18 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
     KMenu *popup=new KMenu(this );
+    KActionCollection *actions=new KActionCollection(popup);
     popup->setObjectName( "PixmapRegionSelectorPopup");
-   popup->addTitle(i18n("Image Operations"));
+    popup->addTitle(i18n("Image Operations"));
 
    KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
                                 0, this, SLOT(rotateClockwise()),
-                                popup, "rotateclockwise");
+                                actions, "rotateclockwise");
    action->plug(popup);
 
    action = new KAction(i18n("Rotate &Counterclockwise"), "rotate_ccw",
                                 0, this, SLOT(rotateCounterclockwise()),
-                                popup, "rotatecounterclockwise");
+                                actions, "rotatecounterclockwise");
    action->plug(popup);
 
 /*

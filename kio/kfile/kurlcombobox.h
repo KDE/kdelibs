@@ -22,7 +22,7 @@
 #include <qevent.h>
 #include <q3ptrlist.h>
 #include <qmap.h>
-#include <qpixmap.h>
+#include <qicon.h>
 #include <qstringlist.h>
 
 #include <kcombobox.h>
@@ -153,7 +153,7 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultURL( const KURL& url, const QPixmap& pix,
+    void addDefaultURL( const KURL& url, const QIcon& icon,
 			const QString& text = QString::null );
 
     /**
@@ -186,7 +186,7 @@ protected:
     struct _KURLComboItem {
 	QString text;
 	KURL url;
-	QPixmap pixmap;
+	QIcon icon;
     };
     typedef _KURLComboItem KURLComboItem;
     Q3PtrList<KURLComboItem> itemList;
@@ -200,16 +200,16 @@ protected:
      * Uses KMimeType::pixmapForURL() to return a proper pixmap for @p url.
      * In directory mode, a folder icon is always returned.
      */
-    QPixmap getPixmap( const KURL& url ) const;
+    QIcon getIcon( const KURL& url ) const;
 
     /**
      * Updates @p item with @p pixmap and sets the url instead of the text
      * of the KURLComboItem.
      * Also works around a Qt bug.
      */
-    void updateItem( const KURLComboItem *item, int index, const QPixmap& pix);
+    void updateItem( const KURLComboItem *item, int index, const QIcon& pix);
 
-    QPixmap opendirPix;
+    QIcon opendirIcon;
     int firstItemIndex;
 
 

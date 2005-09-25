@@ -142,8 +142,8 @@ QString splitOut(const QString &parsed, int index)
     QString filedata;
 
     while (true) {
-        int endindex = parsed.find("</FILENAME>", index);
-        int startindex = parsed.find("<FILENAME ", index) + 1;
+        int endindex = parsed.indexOf("</FILENAME>", index);
+        int startindex = parsed.indexOf("<FILENAME ", index) + 1;
 
 //        kdDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length() << endl;
 
@@ -168,7 +168,7 @@ QString splitOut(const QString &parsed, int index)
 
     }
 
-    index = filedata.find("<FILENAME ");
+    index = filedata.indexOf("<FILENAME ");
 
     if (index > 0) {
         int endindex = filedata.lastIndexOf("</FILENAME>");

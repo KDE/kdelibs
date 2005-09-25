@@ -27,7 +27,7 @@ class KDEPRINT_EXPORT PluginAction : public KAction
 	Q_OBJECT
 
 public:
-	PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent = 0, const char *name = 0);
+	PluginAction(int ID, const QString& txt, const QString& icon, int accel, KActionCollection *parent = 0, const char *name = 0);
 
 signals:
 	void activated(int);

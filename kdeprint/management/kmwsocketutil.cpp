@@ -74,10 +74,10 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	toutlabel->setBuddy(tout_);
 
 	mask_->setText(util->root_);
-	port_->insertItem("631");
-	port_->insertItem("9100");
-	port_->insertItem("9101");
-	port_->insertItem("9102");
+	port_->addItem("631");
+	port_->addItem("9100");
+	port_->addItem("9101");
+	port_->addItem("9102");
 	port_->setEditText(QString::number(util->port_));
 	tout_->setText(QString::number(util->timeout_));
 

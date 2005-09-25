@@ -217,22 +217,22 @@ bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) cons
 	int pos = 0;
 
 	if ( !force ) {
-		pos = text->find( m_word_break_char );
+		pos = text->indexOf( m_word_break_char );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->find( m_quote_char1 );
+		pos = text->indexOf( m_quote_char1 );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->find( m_quote_char2 );
+		pos = text->indexOf( m_quote_char2 );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->find( m_escape_char );
+		pos = text->indexOf( m_escape_char );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 

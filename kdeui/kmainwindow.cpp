@@ -797,7 +797,7 @@ void KMainWindow::createStandardStatusBarAction(){
   if(!d->showStatusBarAction){
     d->showStatusBarAction = KStdAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
     KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
-    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setShown(bool)));
+    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
     d->showStatusBarAction->setChecked(sb->isHidden());
   }
 }
@@ -816,7 +816,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
     // restore the object name (window role)
     if ( config->hasKey(QLatin1String("ObjectName" )) )
-        setName( config->readEntry(QLatin1String("ObjectName")).latin1()); // latin1 is right here
+        setObjectName( config->readEntry(QLatin1String("ObjectName")).latin1()); // latin1 is right here
 
     applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
 

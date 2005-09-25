@@ -148,74 +148,9 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
   setWhatsThis( item.whatsThis() );
 }
 
-#ifndef KDE_NO_COMPAT // KDE 4: remove
-KAction::KAction( const QString& text, const KShortcut& cut,
-                  QObject* parent, const char* name )
- : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, 0, 0, name );
-}
-
-KAction::KAction( const QString& text, const KShortcut& cut,
-                  const QObject* receiver,
-                  const char* slot, QObject* parent, const char* name )
- : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, receiver, slot, name );
-}
-
-KAction::KAction( const QString& text, const QIcon& pix,
-                  const KShortcut& cut,
-                  QObject* parent, const char* name )
- : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, 0, 0, name );
-    setIcon( pix );
-}
-
-KAction::KAction( const QString& text, const QString& pix,
-                  const KShortcut& cut,
-                  QObject* parent, const char* name )
-: QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, 0, 0, name );
-    d->setIconName( pix );
-}
-
-KAction::KAction( const QString& text, const QIcon& pix,
-                  const KShortcut& cut,
-                  const QObject* receiver, const char* slot, QObject* parent,
-                  const char* name )
- : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, receiver, slot, name );
-    setIcon( pix );
-}
-
-KAction::KAction( const QString& text, const QString& pix,
-                  const KShortcut& cut,
-                  const QObject* receiver, const char* slot, QObject* parent,
-                  const char* name )
-  : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( text, cut, receiver, slot, name );
-    d->setIconName(pix);
-}
-
-KAction::KAction( QObject* parent, const char* name )
- : QObject( parent ), d(new KActionPrivate)
-{
-    initPrivate( QString::null, KShortcut(), 0, 0, name );
-}
-#endif // KDE 4: remove end
-
 KAction::~KAction()
 {
     kdDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
-#ifndef KDE_NO_COMPAT
-     if (d->m_kaccel)
-       unplugAccel();
-#endif
 
     // If actionCollection hasn't already been destructed,
     if ( m_parentCollection ) {
@@ -414,10 +349,6 @@ bool KAction::setShortcut( const KShortcut& cut )
     insertKAccel( kaccel );
 
   if( bChanged ) {
-#ifndef KDE_NO_COMPAT    // KDE 4: remove
-    if ( d->m_kaccel )
-      d->m_kaccel->setShortcut( name(), cut );
-#endif    // KDE 4: remove end
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
@@ -474,13 +405,6 @@ void KAction::removeKAccel( KAccel* kaccel )
   }
 }
 
-#ifndef KDE_NO_COMPAT
-// KDE 4: remove
-void KAction::setAccel( int keyQt )
-{
-  setShortcut( KShortcut(keyQt) );
-}
-#endif // KDE 4: remove end
 
 void KAction::updateShortcut( int i )
 {
@@ -539,12 +463,6 @@ void KAction::setShortcutText( const QString& s )
   setShortcut( KShortcut(s) );
 }
 
-#ifndef KDE_NO_COMPAT // Remove in KDE 4
-int KAction::accel() const
-{
-  return d->m_cut.keyCodeQt();
-}
-#endif
 
 void KAction::setGroup( const QString& grp )
 {
@@ -801,11 +719,6 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
-#ifndef KDE_NO_COMPAT
-  // KDE 4: remove
-  if (d->m_kaccel)
-    d->m_kaccel->setEnabled(name(), enable);
-#endif  // KDE 4: remove end
 
   const char * const namePtr = name();
 
@@ -840,14 +753,6 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-#ifndef KDE_NO_COMPAT
-  // KDE 4: remove
-  if (d->m_kaccel) {
-    KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
-    if (pAction)
-      pAction->setLabel( text );
-  }
-#endif  // KDE 4: remove end
 
   const char * const namePtr = name();
 
@@ -1144,13 +1049,6 @@ void KAction::slotDestroyed()
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* const o = sender();
 
-#ifndef KDE_NO_COMPAT  // KDE 4: remove
-  if ( o == d->m_kaccel )
-  {
-    d->m_kaccel = 0;
-    return;
-  }
-#endif  // KDE 4: remove end
 
   foreach(KAccel *a, d->m_kaccelList)
   {

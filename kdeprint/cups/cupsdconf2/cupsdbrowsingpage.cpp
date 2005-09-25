@@ -50,8 +50,8 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
 	useshortnames_ = new QCheckBox(i18n("Use short names"), this);
 	useanyclasses_ = new QCheckBox(i18n("Use \"any\" classes"), this);
 
-	browseorder_->insertItem(i18n("Allow, Deny"));
-	browseorder_->insertItem(i18n("Deny, Allow"));
+	browseorder_->addItem(i18n("Allow, Deny"));
+	browseorder_->addItem(i18n("Deny, Allow"));
 
 	browseport_->setRange(0, 9999, 1, true);
 	browseport_->setSteps(1, 5);

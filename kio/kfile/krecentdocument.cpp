@@ -142,7 +142,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
     // If you change the line below, change the test in the above loop
     conf.writeEntry( QLatin1String("X-KDE-LastOpenedWith"), desktopEntryName );
     conf.writeEntry( QLatin1String("Name"), url.fileName() );
-    conf.writeEntry( QLatin1String("Icon"), KMimeType::iconForURL( url ) );
+    conf.writeEntry( QLatin1String("Icon"), KMimeType::iconNameForURL( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)

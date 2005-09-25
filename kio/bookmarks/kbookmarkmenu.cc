@@ -548,7 +548,7 @@ void KBookmarkMenu::addNewFolder()
                                        0,
                                        this,
                                        SLOT( slotNewFolder() ),
-                                       m_actionCollection );
+                                       m_actionCollection,"dummyname" );
 
   paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
 
@@ -1059,7 +1059,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString &
 {
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
-  KAction * action = new KBookmarkAction(_text, "html", 0, 0, "", m_actionCollection, 0);
+  KAction * action = new KBookmarkAction(_text, "html",0,m_actionCollection, 0);
   connect(action, SIGNAL( activated ( KAction::ActivationReason, Qt::ButtonState )),
           m_menu, SLOT( slotBookmarkSelected( KAction::ActivationReason, Qt::ButtonState ) ));
   action->setProperty( "url", url );

@@ -912,7 +912,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
-    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
+    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", coll, "extra menu" );
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"
@@ -1269,7 +1269,7 @@ QString KFileDialog::getOpenFileName(const QString& startDir,
     dlg.setOperationMode( Opening );
 
     dlg.setMode( KFile::File | KFile::LocalOnly );
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
 
     dlg.ops->clearHistory();
     dlg.exec();
@@ -1293,7 +1293,7 @@ QString KFileDialog::getOpenFileNameWId(const QString& startDir,
     dlg.setOperationMode( KFileDialog::Opening );
 
     dlg.setMode( KFile::File | KFile::LocalOnly );
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
 
     dlg.ops->clearHistory();
     dlg.exec();
@@ -1309,7 +1309,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& startDir,
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
     dlg.setOperationMode( Opening );
 
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files | KFile::LocalOnly);
     dlg.ops->clearHistory();
     dlg.exec();
@@ -1323,7 +1323,7 @@ KURL KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
     dlg.setOperationMode( Opening );
 
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode( KFile::File );
     dlg.ops->clearHistory();
     dlg.exec();
@@ -1339,7 +1339,7 @@ KURL::List KFileDialog::getOpenURLs(const QString& startDir,
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
     dlg.setOperationMode( Opening );
 
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
     dlg.ops->clearHistory();
     dlg.exec();
@@ -1379,7 +1379,7 @@ KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
                     mimetypes.join(" "),
                     parent, "filedialog", true);
     dlg.setOperationMode( Opening );
-    dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
+    dlg.setWindowTitle( caption.isNull() ? i18n("Open") : caption );
     dlg.setMode( KFile::File );
 
     KImageFilePreview *ip = new KImageFilePreview( &dlg );
@@ -1545,7 +1545,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
-    dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -1575,7 +1575,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
 
     dlg.setOperationMode( KFileDialog::Saving);
     dlg.setMode( KFile::File );
-    dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -1594,7 +1594,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
-    dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
 

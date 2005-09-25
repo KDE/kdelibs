@@ -42,12 +42,12 @@ CupsdLogPage::CupsdLogPage(QWidget *parent)
 	maxlogsize_ = new SizeWidget(this);
 	loglevel_ = new QComboBox(this);
 
-	loglevel_->insertItem(i18n("Detailed Debugging"));
-	loglevel_->insertItem(i18n("Debug Information"));
-	loglevel_->insertItem(i18n("General Information"));
-	loglevel_->insertItem(i18n("Warnings"));
-	loglevel_->insertItem(i18n("Errors"));
-	loglevel_->insertItem(i18n("No Logging"));
+	loglevel_->addItem(i18n("Detailed Debugging"));
+	loglevel_->addItem(i18n("Debug Information"));
+	loglevel_->addItem(i18n("General Information"));
+	loglevel_->addItem(i18n("Warnings"));
+	loglevel_->addItem(i18n("Errors"));
+	loglevel_->addItem(i18n("No Logging"));
 
 	/*maxlogsize_->setRange(0, 100, 1, true);
 	maxlogsize_->setSteps(1, 5);

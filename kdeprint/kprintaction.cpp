@@ -39,21 +39,22 @@ public:
 	QWidget *parentWidget;
 };
 
-KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *parentWidget, KActionCollection  *parent, const char *name)
 : KActionMenu(text, parent, name)
 {
 	d = new KPrintActionPrivate();
 	initialize(type, parentWidget);
 }
 
-KPrintAction::KPrintAction(const QString& text, const QIcon& icon, PrinterType type, QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction::KPrintAction(const QString& text, const QIcon& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char 
+*name)
 : KActionMenu(text, icon, parent, name)
 {
 	d = new KPrintActionPrivate();
 	initialize(type, parentWidget);
 }
 
-KPrintAction::KPrintAction(const QString& text, const QString& icon, PrinterType type, QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction::KPrintAction(const QString& text, const QString& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char *name)
 : KActionMenu(text, icon, parent, name)
 {
 	d = new KPrintActionPrivate();
@@ -112,17 +113,17 @@ void KPrintAction::slotActivated(int ID)
 	}
 }
 
-KPrintAction* KPrintAction::exportAll(QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction* KPrintAction::exportAll(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
 	return new KPrintAction(i18n("&Export..."), All, parentWidget, parent, (name ? name : "export_all"));
 }
 
-KPrintAction* KPrintAction::exportRegular(QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction* KPrintAction::exportRegular(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
 	return new KPrintAction(i18n("&Export..."), Regular, parentWidget, parent, (name ? name : "export_regular"));
 }
 
-KPrintAction* KPrintAction::exportSpecial(QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction* KPrintAction::exportSpecial(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
 	return new KPrintAction(i18n("&Export..."), Specials, parentWidget, parent, (name ? name : "export_special"));
 }

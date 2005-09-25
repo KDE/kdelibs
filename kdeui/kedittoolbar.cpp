@@ -931,9 +931,9 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
     }
   }
   bool showCombo = (count > 1);
-  d->m_comboLabel->setShown(showCombo);
-  d->m_comboSeparator->setShown(showCombo);
-  m_toolbarCombo->setShown(showCombo);
+  d->m_comboLabel->setVisible(showCombo);
+  d->m_comboSeparator->setVisible(showCombo);
+  m_toolbarCombo->setVisible(showCombo);
   if (defaultToolbarId == -1)
       defaultToolbarId = 0;
   // we want to the specified item selected and its actions loaded

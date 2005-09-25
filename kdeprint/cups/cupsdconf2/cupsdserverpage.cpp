@@ -53,31 +53,31 @@ CupsdServerPage::CupsdServerPage(QWidget *parent)
 	printcapformat_ = new QComboBox(this);
 	classoverride_ = new QCheckBox(i18n("Allow overrides"), this);
 
-	classification_->insertItem(i18n("None"));
-	classification_->insertItem(i18n("Classified"));
-	classification_->insertItem(i18n("Confidential"));
-	classification_->insertItem(i18n("Secret"));
-	classification_->insertItem(i18n("Top Secret"));
-	classification_->insertItem(i18n("Unclassified"));
-	classification_->insertItem(i18n("Other"));
+	classification_->addItem(i18n("None"));
+	classification_->addItem(i18n("Classified"));
+	classification_->addItem(i18n("Confidential"));
+	classification_->addItem(i18n("Secret"));
+	classification_->addItem(i18n("Top Secret"));
+	classification_->addItem(i18n("Unclassified"));
+	classification_->addItem(i18n("Other"));
 
-	charset_->insertItem("UTF-8");
-	charset_->insertItem("ISO-8859-1");
-	charset_->insertItem("ISO-8859-2");
-	charset_->insertItem("ISO-8859-3");
-	charset_->insertItem("ISO-8859-4");
-	charset_->insertItem("ISO-8859-5");
-	charset_->insertItem("ISO-8859-6");
-	charset_->insertItem("ISO-8859-7");
-	charset_->insertItem("ISO-8859-8");
-	charset_->insertItem("ISO-8859-9");
-	charset_->insertItem("ISO-8859-10");
-	charset_->insertItem("ISO-8859-13");
-	charset_->insertItem("ISO-8859-14");
-	charset_->insertItem("ISO-8859-15");
+	charset_->addItem("UTF-8");
+	charset_->addItem("ISO-8859-1");
+	charset_->addItem("ISO-8859-2");
+	charset_->addItem("ISO-8859-3");
+	charset_->addItem("ISO-8859-4");
+	charset_->addItem("ISO-8859-5");
+	charset_->addItem("ISO-8859-6");
+	charset_->addItem("ISO-8859-7");
+	charset_->addItem("ISO-8859-8");
+	charset_->addItem("ISO-8859-9");
+	charset_->addItem("ISO-8859-10");
+	charset_->addItem("ISO-8859-13");
+	charset_->addItem("ISO-8859-14");
+	charset_->addItem("ISO-8859-15");
 
-	printcapformat_->insertItem("BSD");
-	printcapformat_->insertItem("SOLARIS");
+	printcapformat_->addItem("BSD");
+	printcapformat_->addItem("SOLARIS");
 
 	QLabel *l1 = new QLabel(i18n("Server name:"), this);
 	QLabel *l2 = new QLabel(i18n("Server administrator:"), this);

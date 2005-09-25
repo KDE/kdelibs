@@ -285,41 +285,6 @@ public:
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const KShortcut& cut,
-		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-		QObject* parent = 0, const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-		QObject* parent = 0, const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( const QString& text, const QString& pix, const KShortcut& cut,
-		const QObject* receiver, const char* slot, QObject* parent,
-		const char* name = 0 );
-	/**
-	 * @obsolete
-	 */
-	KAction( QObject* parent = 0, const char* name = 0 );
-
     /**
      * Standard destructor
      */
@@ -403,9 +368,7 @@ public:
     uint kaccelCount() const;
 
     virtual bool hasIcon() const;
-#ifndef KDE_NO_COMPAT
-    bool hasIconSet() const { return hasIcon(); }
-#endif
+
     virtual QString plainText() const;
 
     /**
@@ -625,35 +588,6 @@ private:
     void insertKAccel( KAccel* );
     /** @internal To be used exclusively by KActionCollection::removeWidget(). */
     void removeKAccel( KAccel* );
-
-#ifndef KDE_NO_COMPAT
-public:
-    /**
-     * @deprecated.  Use shortcut().
-     * Get the keyboard accelerator associated with this action.
-     */
-    int accel() const KDE_DEPRECATED;
-
-    QString statusText() const
-        { return toolTip(); }
-
-    /**
-     * @deprecated.  Use setShortcut().
-     * Sets the keyboard accelerator associated with this action.
-     */
-    void setAccel( int key ) KDE_DEPRECATED;
-
-    /**
-     * @deprecated. Use setToolTip instead (they do the same thing now).
-     */
-    void setStatusText( const QString &text )
-         { setToolTip( text ); }
-
-    /**
-     * @deprecated. for backwards compatibility. Use itemId()
-     */
-    int menuId( int i ) { return itemId( i ); }
-#endif // !KDE_NO_COMPAT
 
 protected:
     virtual void virtual_hook( int id, void* data );

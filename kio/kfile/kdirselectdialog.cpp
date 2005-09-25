@@ -58,6 +58,7 @@ public:
         comboLocked = false;
     }
 
+    KActionCollection *actions;
     KFileSpeedBar *speedBar;
     KHistoryCombo *urlCombo;
     KFileTreeBranch *branch;
@@ -98,6 +99,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     QFrame *page = makeMainWidget();
     QHBoxLayout *hlay = new QHBoxLayout( page, 0, spacingHint() );
     m_mainLayout = new QVBoxLayout();
+    d->actions=new KActionCollection(this);
     d->speedBar = new KFileSpeedBar( page, "speedbar" );
     connect( d->speedBar, SIGNAL( activated( const KURL& )),
              SLOT( setCurrentURL( const KURL& )) );
@@ -122,11 +124,11 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
              SLOT( slotComboTextChanged( const QString& ) ));
 
     m_contextMenu = new QMenu( this );
-    KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), this);
+    KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), d->actions,0);
     newFolder->plug(m_contextMenu);
     m_contextMenu->insertSeparator();
     m_showHiddenFolders = new KToggleAction ( i18n( "Show Hidden Folders" ), 0, this,
-                                        SLOT( slotShowHiddenFoldersToggled() ), this);
+                                        SLOT( slotShowHiddenFoldersToggled() ), d->actions);
     m_showHiddenFolders->plug(m_contextMenu);
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );

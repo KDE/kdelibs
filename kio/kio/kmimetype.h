@@ -182,7 +182,23 @@ public:
    * @return the name of the icon. The name of a default icon if there is no icon
    *         for the mime type
    */
-  static QString iconForURL( const KURL & _url, mode_t _mode = 0 );
+  static QString iconNameForURL( const KURL & _url, mode_t _mode = 0 );
+
+
+  /**
+   * The same functionality as pixmapForURL(), but this method returns the name
+   * of the icon to load. You'll have to use KIconLoader to load the pixmap for it.
+   * The advantage of this method is that you can store the result, and then use it
+   * later on for any kind of size.
+   * @param _url URL for the file
+   * @param _mode the mode of the file. The mode may modify the icon
+   *              with overlays that show special properties of the
+   *              icon. Use 0 for default
+   * @return the name of the icon. The name of a default icon if there is no icon
+   *         for the mime type
+   * use iconNameForURL
+   */
+  static QString iconForURL( const KURL & _url, mode_t _mode = 0 ) KDE_DEPRECATED;
 
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,

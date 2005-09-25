@@ -372,7 +372,7 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 
 	// Assume "file:" or whatever is given by 'cwd' if there is
 	// no protocol.  (KURL does this only for absoute paths)
-	if ( protocol_regex.search( url_copy ) == 0 )
+	if ( protocol_regex.indexIn( url_copy ) == 0 )
     {
 		m_kurl = new KURL( url_copy );
 		m_isURL = true;
@@ -785,7 +785,7 @@ bool KURLCompletion::envCompletion(const MyURL &url, QString *match)
 		while ( *env ) {
 			QString s = QString::fromLocal8Bit( *env );
 
-			int pos = s.find('=');
+			int pos = s.indexOf('=');
 
 			if ( pos == -1 )
 				pos = s.length();
@@ -838,8 +838,8 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 	}
 	else if ( !url.file().isEmpty() ) {
 		// $PATH
-		dirList = QStringList::split(KPATH_SEPARATOR,
-					QString::fromLocal8Bit(::getenv("PATH")));
+		dirList = QString::fromLocal8Bit(::getenv("PATH")).split(
+				KPATH_SEPARATOR,QString::SkipEmptyParts);
 
 		QStringList::Iterator it = dirList.begin();
 
@@ -1395,7 +1395,7 @@ static bool expandEnv( QString &text )
 
 	bool expanded = false;
 
-	while ( (pos = text.find('$', pos)) != -1 ) {
+	while ( (pos = text.indexOf('$', pos)) != -1 ) {
 
 		// Skip escaped '$'
 		//
@@ -1407,8 +1407,8 @@ static bool expandEnv( QString &text )
 		else {
 			// Find the end of the variable = next '/' or ' '
 			//
-			int pos2 = text.find( ' ', pos+1 );
-			int pos_tmp = text.find( '/', pos+1 );
+			int pos2 = text.indexOf( ' ', pos+1 );
+			int pos_tmp = text.indexOf( '/', pos+1 );
 
 			if ( pos2 == -1 || (pos_tmp != -1 && pos_tmp < pos2) )
 				pos2 = pos_tmp;
@@ -1455,8 +1455,8 @@ static bool expandTilde(QString &text)
 
 	// Find the end of the user name = next '/' or ' '
 	//
-	int pos2 = text.find( ' ', 1 );
-	int pos_tmp = text.find( '/', 1 );
+	int pos2 = text.indexOf( ' ', 1 );
+	int pos_tmp = text.indexOf( '/', 1 );
 
 	if ( pos2 == -1 || (pos_tmp != -1 && pos_tmp < pos2) )
 		pos2 = pos_tmp;

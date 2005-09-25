@@ -31,10 +31,10 @@ class KURLComboBox::KURLComboBoxPrivate
 {
 public:
     KURLComboBoxPrivate() {
-	dirpix = SmallIcon(QLatin1String("folder"));
+	dirIcon = SmallIconSet(QLatin1String("folder"));
     }
 
-    QPixmap dirpix;
+    QIcon dirIcon;
 };
 
 
@@ -71,7 +71,7 @@ void KURLComboBox::init( Mode mode )
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
-    opendirPix = SmallIcon(QLatin1String("folder_open"));
+    opendirIcon = SmallIconSet(QLatin1String("folder_open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }
@@ -99,16 +99,16 @@ QStringList KURLComboBox::urls() const
 
 void KURLComboBox::addDefaultURL( const KURL& url, const QString& text )
 {
-    addDefaultURL( url, getPixmap( url ), text );
+    addDefaultURL( url, getIcon( url ), text );
 }
 
 
-void KURLComboBox::addDefaultURL( const KURL& url, const QPixmap& pix,
+void KURLComboBox::addDefaultURL( const KURL& url, const QIcon& icon,
                                   const QString& text )
 {
     KURLComboItem *item = new KURLComboItem;
     item->url = url;
-    item->pixmap = pix;
+    item->icon = icon;
     if ( text.isEmpty() )
         if ( url.isLocalFile() )
           item->text = url.path( myMode );
@@ -181,7 +181,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 
         item = new KURLComboItem;
         item->url = u;
-        item->pixmap = getPixmap( u );
+        item->icon = getIcon( u );
 
         if ( u.isLocalFile() )
             item->text = u.path( myMode ); // don't show file:/
@@ -206,11 +206,11 @@ void KURLComboBox::setURL( const KURL& url )
     QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
     QString urlToInsert = url.url(-1);
     while ( mit != itemMapper.end() ) {
-        if ( urlToInsert == mit.data()->url.url(-1) ) {
+        if ( urlToInsert == mit.value()->url.url(-1) ) {
             setCurrentItem( mit.key() );
 
             if ( myMode == Directories )
-                updateItem( mit.data(), mit.key(), opendirPix );
+                updateItem( mit.value(), mit.key(), opendirIcon );
 
             blockSignals( false );
             return;
@@ -234,7 +234,7 @@ void KURLComboBox::setURL( const KURL& url )
 
     KURLComboItem *item = new KURLComboItem;
     item->url = url;
-    item->pixmap = getPixmap( url );
+    item->icon = getIcon( url );
     if ( url.isLocalFile() )
         item->text = url.path( myMode );
     else
@@ -245,9 +245,9 @@ void KURLComboBox::setURL( const KURL& url )
     QString text = /*isEditable() ? item->url.prettyURL( myMode ) : */ item->text;
 
     if ( myMode == Directories )
-        KComboBox::insertItem( opendirPix, text, id );
+        KComboBox::insertItem( id,opendirIcon, text);
     else
-        KComboBox::insertItem( item->pixmap, text, id );
+        KComboBox::insertItem( id,item->icon, text);
     itemMapper.insert( id, item );
     itemList.append( item );
 
@@ -272,7 +272,7 @@ void KURLComboBox::insertURLItem( const KURLComboItem *item )
 {
 // kdDebug(250) << "insertURLItem " << item->text << endl;
     int id = count();
-    KComboBox::insertItem( item->pixmap, item->text, id );
+    KComboBox::insertItem(id, item->icon, item->text);
     itemMapper.insert( id, item );
 }
 
@@ -307,9 +307,9 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 {
     QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
-        if ( url.url(-1) == mit.data()->url.url(-1) ) {
-            if ( !itemList.remove( mit.data() ) && checkDefaultURLs )
-                defaultList.remove( mit.data() );
+        if ( url.url(-1) == mit.value()->url.url(-1) ) {
+            if ( !itemList.remove( mit.value() ) && checkDefaultURLs )
+                defaultList.remove( mit.value() );
         }
         ++mit;
     }
@@ -325,31 +325,33 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 }
 
 
-QPixmap KURLComboBox::getPixmap( const KURL& url ) const
+QIcon KURLComboBox::getIcon( const KURL& url ) const
 {
     if ( myMode == Directories )
-        return d->dirpix;
+        return d->dirIcon;
     else
-        return KMimeType::pixmapForURL( url, 0, KIcon::Small );
+        return SmallIconSet(KMimeType::iconNameForURL( url, 0)); 
 }
 
 
 // updates "item" with pixmap "pixmap" and sets the URL instead of text
 // works around a Qt bug.
 void KURLComboBox::updateItem( const KURLComboItem *item,
-                               int index, const QPixmap& pixmap )
+                               int index, const QIcon& icon)
 {
     // QComboBox::changeItem() doesn't honor the pixmap when
     // using an editable combobox, so we just remove and insert
     if ( editable() ) {
 	removeItem( index );
-	insertItem( pixmap,
+	insertItem( index,
+                    icon,
 		    item->url.isLocalFile() ? item->url.path( myMode ) :
-		                              item->url.prettyURL( myMode ),
-		    index );
+		                              item->url.prettyURL( myMode ));
     }
-    else
-        changeItem( pixmap, item->text, index );
+    else {
+        setItemIcon(index,icon);
+        setItemText(index,item->text);
+    }
 }
 
 

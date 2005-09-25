@@ -124,7 +124,7 @@ class KDE3SUPPORT_EXPORT ToggleToolViewAction: public KToggleAction
 public:
 
 	ToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(), K3DockWidget *dw = 0, K3MdiMainFrm *mdiMainFrm = 0,
-	                      QObject* parent = 0, const char* name = 0 );
+	                      KActionCollection* parent = 0, const char* name = 0 );
 
 	virtual ~ToggleToolViewAction();
 

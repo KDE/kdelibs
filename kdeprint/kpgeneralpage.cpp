@@ -54,7 +54,7 @@ static void initCombo(QComboBox *cb, DrListOption *opt)
 	Q3PtrListIterator<DrBase>	it(*(opt->choices()));
 	for (;it.current();++it)
 	{
-		cb->insertItem(it.current()->get("text"));
+		cb->addItem(it.current()->get("text"));
 		if (it.current() == opt->currentChoice())
 			cb->setCurrentItem(cb->count()-1);
 	}
@@ -430,13 +430,13 @@ void KPGeneralPage::initialize()
 	{
 		// PageSize
 		for (int i=SMALLSIZE_BEGIN+1;i<MEDIUMSIZE_BEGIN;i+=2)
-			m_pagesize->insertItem(i18n(default_size[i]));
+			m_pagesize->addItem(i18n(default_size[i]));
 		if ( printer()->printerCap() & KMPrinter::CapMedium )
 			for ( int i=MEDIUMSIZE_BEGIN+1; i<HIGHSIZE_BEGIN; i+=2 )
-				m_pagesize->insertItem(i18n(default_size[i]));
+				m_pagesize->addItem(i18n(default_size[i]));
 		if ( printer()->printerCap() & KMPrinter::CapLarge )
 			for ( int i=HIGHSIZE_BEGIN+1; i<DEFAULT_SIZE; i+=2 )
-				m_pagesize->insertItem(i18n(default_size[i]));
+				m_pagesize->addItem(i18n(default_size[i]));
 		// set default page size using locale settings
 		QString	psname = pageSizeToPageName((KPrinter::PageSize)(KGlobal::locale()->pageSize()));
 		int index = findOption(default_size, DEFAULT_SIZE, psname);
@@ -444,10 +444,10 @@ void KPGeneralPage::initialize()
 			m_pagesize->setCurrentItem(index);
 		// MediaType
 		for (int i=1;i<DEFAULT_TYPE;i+=2)
-			m_papertype->insertItem(i18n(default_type[i]));
+			m_papertype->addItem(i18n(default_type[i]));
 		// PageSize
 		for (int i=1;i<DEFAULT_SOURCE;i+=2)
-			m_inputslot->insertItem(i18n(default_source[i]));
+			m_inputslot->addItem(i18n(default_source[i]));
 
 		// Enable duplex setting if supported
 		m_duplexbox->setEnabled( printer()->printerCap() & KMPrinter::CapDuplex );
@@ -459,8 +459,8 @@ void KPGeneralPage::initialize()
 	{
 		for (QStringList::ConstIterator it = values.begin(); it != values.end(); ++it)
 		{
-			m_startbanner->insertItem(*it);
-			m_endbanner->insertItem(*it);
+			m_startbanner->addItem(*it);
+			m_endbanner->addItem(*it);
 		}
 		values = QStringList::split(',',printer()->option("kde-banners"),false);
 		while (values.count() < 2) values.append("none");

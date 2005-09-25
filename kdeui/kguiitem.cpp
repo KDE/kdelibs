@@ -133,7 +133,7 @@ QString KGuiItem::plainText() const
     QString stripped;
 
     int resultLength = 0;
-    stripped.setLength(len);
+    stripped.resize(len);
 
     const QChar* data    = d->m_text.unicode();
     for ( int pos = 0; pos < len; ++pos )

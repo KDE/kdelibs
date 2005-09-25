@@ -93,13 +93,14 @@ void DefaultProgress::init()
           KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 16 ) );
 #endif
 
-  QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
-                                            KDialog::spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout( this);
+  topLayout->setMargin(KDialog::marginHint());
+  topLayout->setSpacing(KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
 
   QGridLayout *grid = new QGridLayout( 2, 3 );
   topLayout->addLayout(grid);
-  grid->addColSpacing(1, KDialog::spacingHint());
+  grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1); //addColSpacing(1, KDialog::spacingHint());
   // filenames or action name
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
 
@@ -176,7 +177,7 @@ void DefaultProgress::init()
 
   d->keepOpenChecked = false;
   d->noCaptionYet = true;
-  setCaption(i18n("Progress Dialog")); // show something better than kio_uiserver
+  setWindowTitle(i18n("Progress Dialog")); // show something better than kio_uiserver
 }
 
 DefaultProgress::~DefaultProgress()
@@ -263,7 +264,7 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
     break;
   }
 
-  setCaption( caption );
+  setWindowTitle( caption );
   d->noCaptionYet = false;
 }
 
@@ -331,7 +332,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Copy File(s) Progress"));
+    setWindowTitle(i18n("Copy File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Copy;
@@ -345,7 +346,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Move File(s) Progress"));
+    setWindowTitle(i18n("Move File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Move;
@@ -359,7 +360,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Creating Folder"));
+    setWindowTitle(i18n("Creating Folder"));
     d->noCaptionYet = false;
   }
   mode = Create;
@@ -371,7 +372,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Delete File(s) Progress"));
+    setWindowTitle(i18n("Delete File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Delete;
@@ -382,7 +383,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Loading Progress"));
+    setWindowTitle(i18n("Loading Progress"));
     d->noCaptionYet = false;
   }
   sourceEdit->setText(url.prettyURL());
@@ -391,21 +392,21 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
-  setCaption(i18n("Examining File Progress"));
+  setWindowTitle(i18n("Examining File Progress"));
   sourceEdit->setText(url.prettyURL());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
-  setCaption(i18n("Mounting %1").arg(dev));
+  setWindowTitle(i18n("Mounting %1").arg(dev));
   sourceEdit->setText(point);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
-  setCaption(i18n("Unmounting"));
+  setWindowTitle(i18n("Unmounting"));
   sourceEdit->setText(point);
   setDestVisible( false );
 }

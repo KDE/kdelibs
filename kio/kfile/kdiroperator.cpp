@@ -1259,7 +1259,7 @@ void KDirOperator::setupActions()
                                                    "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, myActionCollection, "trash" );
+    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, 0,0,myActionCollection, "trash" );
     connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::ButtonState ) ),
 	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::ButtonState ) ) );
     new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,

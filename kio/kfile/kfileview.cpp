@@ -66,7 +66,7 @@ KFileView::KFileView()
     m_sorting  = KFileView::defaultSortSpec;
 
     sig = new KFileViewSignaler();
-    sig->setName("view-signaller");
+    sig->setObjectName("view-signaller");
 
     m_selectedList = 0L;
     filesNumber = 0;

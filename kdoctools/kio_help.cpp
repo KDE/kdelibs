@@ -224,9 +224,9 @@ void HelpProtocol::get( const KURL& url )
         if (mParsed.isEmpty()) {
             unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
         } else {
-            int pos1 = mParsed.find( "charset=" );
+            int pos1 = mParsed.indexOf( "charset=" );
             if ( pos1 > 0 ) {
-              int pos2 = mParsed.find( '"', pos1 );
+              int pos2 = mParsed.indexOf( '"', pos1 );
               if ( pos2 > 0 ) {
                 mParsed.replace( pos1, pos2 - pos1, "charset=UTF-8" );
               }
@@ -281,7 +281,7 @@ void HelpProtocol::get( const KURL& url )
             {
                 int index = 0;
                 while ( true ) {
-                    index = mParsed.find( QRegExp( "<a name=" ), index);
+                    index = mParsed.indexOf( QRegExp( "<a name=" ), index);
                     if ( index == -1 ) {
                         kdDebug( 7119 ) << "no anchor\n";
                         break; // use whatever is the target, most likely index.html
@@ -293,7 +293,7 @@ void HelpProtocol::get( const KURL& url )
                         index = mParsed.lastIndexOf( "<FILENAME filename=", index ) +
                                  strlen( "<FILENAME filename=\"" );
                         QString filename=mParsed.mid( index, 2000 );
-                        filename = filename.left( filename.find( '\"' ) );
+                        filename = filename.left( filename.indexOf( '\"' ) );
                         QString path = target.path();
                         path = path.left( path.lastIndexOf( '/' ) + 1) + filename;
                         kdDebug( 7119 ) << "anchor found in " << path <<endl;
@@ -316,7 +316,7 @@ void HelpProtocol::emitFile( const KURL& url )
 
     QString filename = url.path().mid(url.path().lastIndexOf('/') + 1);
 
-    int index = mParsed.find(QString("<FILENAME filename=\"%1\"").arg(filename));
+    int index = mParsed.indexOf(QString("<FILENAME filename=\"%1\"").arg(filename));
     if (index == -1) {
         if ( filename == "index.html" ) {
             data( fromUnicode( mParsed ) );

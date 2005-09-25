@@ -202,7 +202,7 @@ void KPQtPage::init()
 		for (int i=0; i<KPrinter::NPageSize-1; i++)
 			m_pagesize->insertItem(i18n(page_sizes[i].text));
 		// default page size to locale settings
-		m_pagesize->setCurrentItem(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
+		m_pagesize->setCurrentIndex(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
 	}
 	else
 	{
@@ -212,7 +212,7 @@ void KPQtPage::init()
 		{
 			m_pagesize->insertItem(it.current()->get("text"));
 			if (it.current() == lopt->currentChoice())
-				m_pagesize->setCurrentItem(m_pagesize->count()-1);
+				m_pagesize->setCurrentIndex(m_pagesize->count()-1);
 		}
 	}
 
@@ -261,11 +261,11 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 			DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
 			DrBase	*ch = opt->findChoice(val);
 			if (ch)
-				m_pagesize->setCurrentItem(opt->choices()->findRef(ch));
+				m_pagesize->setCurrentIndex(opt->choices()->findRef(ch));
 		}
 	}
 	else if (!opts["kde-pagesize"].isEmpty())
-		m_pagesize->setCurrentItem(findIndex(opts["kde-pagesize"].toInt()));
+		m_pagesize->setCurrentIndex(findIndex(opts["kde-pagesize"].toInt()));
 	ID = NUP_1;
 	if (opts["_kde-filters"].find("psnup") != -1)
 	{
@@ -298,7 +298,7 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
 		if (opt)
 		{
-			DrBase	*ch = opt->choices()->at(m_pagesize->currentItem());
+			DrBase	*ch = opt->choices()->at(m_pagesize->currentIndex());
 			if (ch && (incldef || ch->name() != opt->get("default")))
 			{
 				opts["PageSize"] = ch->name();
@@ -306,7 +306,7 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		}
 	}
 	else
-		opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentItem()].ID);
+		opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentIndex()].ID);
 	int	ID = m_nupbox->id(m_nupbox->selected());
 	QString	s = opts["_kde-filters"];
 	if (ID == NUP_1)

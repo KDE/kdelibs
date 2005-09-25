@@ -205,7 +205,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       updateFallbackSize();
       d->min_size = QSize( 0, 0 );
       if( parentWidget() && !parentWidget()->isTopLevel())
-          setShown( parentWidget()->isVisible());
+          setVisible( parentWidget()->isVisible());
       else if ( wasShown )
           show();
   } else
@@ -265,7 +265,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 #else
             //TODO: WIN32?
 #endif
-            setShown( parentWidget()->isTopLevel() || parentWidget()->isVisible());
+            setVisible( parentWidget()->isTopLevel() || parentWidget()->isVisible());
             }
         if( parentWidget() && !parentWidget()->isTopLevel() && obj == parentWidget())
         { // if the parent is not toplevel, KMenuBar needs to match its visibility status

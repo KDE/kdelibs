@@ -82,7 +82,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
+    KToggleAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -93,7 +93,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -103,7 +103,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-             QObject* parent = 0, const char* name = 0 );
+             KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -113,7 +113,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                   QObject* parent = 0, const char* name = 0 );
+                   KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -125,7 +125,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -138,13 +138,13 @@ public:
      */
     KToggleAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
-                   QObject* parent, const char* name = 0 );
+                   KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( QObject* parent = 0, const char* name = 0 );
+    KToggleAction( KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      * Destructor
@@ -241,7 +241,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
+    KRadioAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -252,7 +252,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const KShortcut& cut,
-                  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                  const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -262,7 +262,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                  QObject* parent = 0, const char* name = 0 );
+                  KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -272,7 +272,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                  QObject* parent = 0, const char* name = 0 );
+                  KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -284,7 +284,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                  const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -297,13 +297,13 @@ public:
      */
     KRadioAction( const QString& text, const QString& pix, const KShortcut& cut,
                   const QObject* receiver, const char* slot,
-                  QObject* parent, const char* name = 0 );
+                  KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( QObject* parent = 0, const char* name = 0 );
+    KRadioAction( KActionCollection* parent = 0, const char* name = 0 );
 
 protected:
     virtual void slotActivated();
@@ -347,7 +347,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
+    KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -358,7 +358,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -368,7 +368,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-             QObject* parent = 0, const char* name = 0 );
+             KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -378,7 +378,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                   QObject* parent = 0, const char* name = 0 );
+                   KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -390,7 +390,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -403,13 +403,13 @@ public:
      */
     KSelectAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
-                   QObject* parent, const char* name = 0 );
+                   KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( QObject* parent = 0, const char* name = 0 );
+    KSelectAction( KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      * Destructor
@@ -590,7 +590,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KListAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0,
+    KListAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                   const char* name = 0 );
 
     /**
@@ -602,7 +602,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const KShortcut& cut, const QObject* receiver,
-                  const char* slot, QObject* parent, const char* name = 0 );
+                  const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -612,7 +612,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                      QObject* parent = 0, const char* name = 0 );
+                      KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -622,7 +622,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                      QObject* parent = 0, const char* name = 0 );
+                      KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -634,7 +634,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                          const QObject* receiver, const char* slot, QObject* parent,
+                          const QObject* receiver, const char* slot, KActionCollection* parent,
                   const char* name = 0 );
 
     /**
@@ -647,14 +647,14 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QString& pix, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, QObject* parent,
+                 const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( QObject* parent = 0, const char* name = 0 );
+    KListAction( KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      * Destructor
@@ -704,7 +704,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KRecentFilesAction( const QString& text, const KShortcut& cut,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -719,7 +719,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -731,7 +731,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -743,7 +743,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -759,7 +759,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -775,7 +775,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      QObject* parent, const char* name = 0,
+                      KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -783,7 +783,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( QObject* parent = 0, const char* name = 0,
+  KRecentFilesAction( KActionCollection* parent = 0, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -889,33 +889,33 @@ class KDEUI_EXPORT KFontAction : public KSelectAction
     Q_OBJECT
     Q_PROPERTY( QString font READ font WRITE setFont )
 public:
-    KFontAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0,
+    KFontAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                  const char* name = 0 );
     KFontAction( const QString& text, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, QObject* parent,
+                 const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
     KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                 QObject* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                 QObject* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, QObject* parent,
+                 const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
     KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, QObject* parent,
+                 const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
 
 // The ctors with fontListCriteria were added after 3.3-beta1.
 // This define is used in koffice. Remove when koffice has a dependency on kdelibs-3.3 or more.
 #define KFONTACTION_HAS_CRITERIA_ARG
     KFontAction( uint fontListCriteria, const QString& text,
-                 const KShortcut& cut = KShortcut(), QObject* parent = 0,
+                 const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                  const char* name = 0 );
     KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
                  const KShortcut& cut = KShortcut(),
-                 QObject* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const char* name = 0 );
 
-    KFontAction( QObject* parent = 0, const char* name = 0 );
+    KFontAction( KActionCollection* parent = 0, const char* name = 0 );
     ~KFontAction();
 
     QString font() const {
@@ -939,21 +939,21 @@ class KDEUI_EXPORT KFontSizeAction : public KSelectAction
     Q_OBJECT
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 public:
-    KFontSizeAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0,
+    KFontSizeAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                      const char* name = 0 );
     KFontSizeAction( const QString& text, const KShortcut& cut, const QObject* receiver,
-                     const char* slot, QObject* parent, const char* name = 0 );
+                     const char* slot, KActionCollection* parent, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                     QObject* parent = 0, const char* name = 0 );
+                     KActionCollection* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                     QObject* parent = 0, const char* name = 0 );
+                     KActionCollection* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                      const QObject* receiver, const char* slot,
-                     QObject* parent, const char* name = 0 );
+                     KActionCollection* parent, const char* name = 0 );
     KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut,
                      const QObject* receiver, const char* slot,
-                     QObject* parent, const char* name = 0 );
-    KFontSizeAction( QObject* parent = 0, const char* name = 0 );
+                     KActionCollection* parent, const char* name = 0 );
+    KFontSizeAction( KActionCollection* parent = 0, const char* name = 0 );
 
     virtual ~KFontSizeAction();
 
@@ -999,13 +999,13 @@ class KDEUI_EXPORT KActionMenu : public KAction
   Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
 
 public:
-    KActionMenu( const QString& text, QObject* parent = 0,
+    KActionMenu( const QString& text, KActionCollection* parent = 0,
                  const char* name = 0 );
     KActionMenu( const QString& text, const QIcon& icon,
-                 QObject* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const char* name = 0 );
     KActionMenu( const QString& text, const QString& icon,
-                 QObject* parent = 0, const char* name = 0 );
-    KActionMenu( QObject* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const char* name = 0 );
+    KActionMenu( KActionCollection* parent = 0, const char* name = 0 );
     virtual ~KActionMenu();
 
     virtual void insert( KAction*, int index = -1 );
@@ -1085,7 +1085,7 @@ public:
      * @param name An internal name for this action.
      */
     KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut = KShortcut(),
-                         QObject* parent = 0, const char* name = 0 );
+                         KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      * Create a KToolBarPopupAction, with a text, an icon, an accelerator,
@@ -1104,7 +1104,7 @@ public:
      */
     KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
-                         QObject* parent = 0, const char* name = 0 );
+                         KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      * Create a KToolBarPopupAction, with a KGuiItem, an accelerator,
@@ -1248,7 +1248,7 @@ public:
      */
     KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
-                             QObject* parent, QWidget* window,
+                             KActionCollection* parent, QWidget* window,
                              const char* name );
     virtual ~KToggleFullScreenAction();
 
@@ -1325,7 +1325,7 @@ class KDEUI_EXPORT KActionSeparator : public KAction
 {
     Q_OBJECT
 public:
-    KActionSeparator( QObject* parent = 0, const char* name = 0 );
+    KActionSeparator( KActionCollection* parent = 0, const char* name = 0 );
     virtual ~KActionSeparator();
 
     virtual int plug( QWidget *widget, int index = -1 );
@@ -1368,7 +1368,7 @@ public:
      */
     KPasteTextAction( const QString& text, const QString& icon, const KShortcut& cut,
                   const QObject* receiver, const char* slot,
-                  QObject* parent = 0, const char* name = 0 );
+                  KActionCollection* parent = 0, const char* name = 0 );
 
     virtual ~KPasteTextAction();
 

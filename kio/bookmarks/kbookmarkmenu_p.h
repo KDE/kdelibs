@@ -111,17 +111,10 @@ private:
   QString m_url;
   QString m_address;
 public:
-  // KDE4: remove
-  KBookmarkAction(
-    const QString& text, const QString& sIconName, const KShortcut& cut,
-    const QObject* receiver, const char* slot,
-    KActionCollection* parent, const char* name)
-  : KAction(text, sIconName, cut, receiver, slot, parent, name) {
-  }
   KBookmarkAction(
     const QString& text, const QString& sIconName, const KShortcut& cut,
     KActionCollection* parent, const char* name)
-  : KAction(text, sIconName, cut, parent, name) {
+  : KAction(text, sIconName, cut, 0,0,parent, name) {
   }
 };
 

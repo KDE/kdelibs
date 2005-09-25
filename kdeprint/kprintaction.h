@@ -30,14 +30,14 @@ class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 public:
 	enum PrinterType { All, Regular, Specials };
 
-	KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
-	KPrintAction(const QString& text, const QIcon& icon, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
-	KPrintAction(const QString& text, const QString& icon, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
+	KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	KPrintAction(const QString& text, const QIcon& icon, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	KPrintAction(const QString& text, const QString& icon, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
 	virtual ~KPrintAction();
 
-	static KPrintAction* exportAll(QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
-	static KPrintAction* exportRegular(QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
-	static KPrintAction* exportSpecial(QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
+	static KPrintAction* exportAll(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	static KPrintAction* exportRegular(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	static KPrintAction* exportSpecial(QWidget *parentWidget = 0, KActionCollection  *parent = 0, const char *name = 0);
 
 signals:
 	void print(KPrinter*);

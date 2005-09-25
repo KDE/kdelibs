@@ -851,7 +851,7 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
                            this, SLOT( openSoundDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select Sound File") );
+    fileDialog->setWindowTitle( i18n("Select Sound File") );
     QStringList filters;
     filters << "audio/x-wav" << "audio/x-mp3" << "application/ogg"
             << "audio/x-adpcm";
@@ -887,7 +887,7 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
                            this, SLOT( openLogDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select Log File") );
+    fileDialog->setWindowTitle( i18n("Select Log File") );
     QStringList filters;
     filters << "text/x-log" << "text/plain";
     fileDialog->setMimeFilter( filters );
@@ -901,7 +901,7 @@ void KNotifyWidget::openExecDialog( KURLRequester *requester )
 
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select File to Execute") );
+    fileDialog->setWindowTitle( i18n("Select File to Execute") );
     QStringList filters;
     filters << "application/x-executable" << "application/x-shellscript"
             << "application/x-perl" << "application/x-python";

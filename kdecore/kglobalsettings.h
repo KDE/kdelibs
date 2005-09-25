@@ -226,28 +226,19 @@ class KDECORE_EXPORT KGlobalSettings
      * The path to the desktop directory of the current user.
      * @return the user's desktop directory
      */
-    static QString desktopPath() { initStatic(); return *s_desktopPath; }
+    static QString desktopPath() { initPaths(); return *s_desktopPath; }
 
     /**
      * The path to the autostart directory of the current user.
      * @return the path of the autostart directory
      */
-    static QString autostartPath() { initStatic(); return *s_autostartPath; }
-
-    /**
-     * DEPRECATED (starting from kde-3.4).
-     * This isn't where the trash contents is, anymore.
-     * Use KIO::trash() to trash files, "trash:/" to list the trash contents.
-     */
-    static QString trashPath() { initStatic(); return *s_trashPath; }
-    // KDE4: if you want to remove the above, move it to kdesktop/init.cc, which needs
-    // to know the old location of the trash
+    static QString autostartPath() { initPaths(); return *s_autostartPath; }
 
     /**
      * The path where documents are stored of the current user.
      * @return the path of the document directory
      */
-    static QString documentPath() { initStatic(); return *s_documentPath; }
+    static QString documentPath() { initPaths(); return *s_documentPath; }
 
 
     /**
@@ -523,7 +514,7 @@ private:
     /**
      * reads in all paths from kdeglobals
      */
-    static void initStatic();
+    static void initPaths();
     /**
      * initialize colors
      */
@@ -544,7 +535,6 @@ private:
 
     static QString* s_desktopPath;
     static QString* s_autostartPath;
-    static QString* s_trashPath;
     static QString* s_documentPath;
     static QFont *_generalFont;
     static QFont *_fixedFont;

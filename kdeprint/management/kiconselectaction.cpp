@@ -36,7 +36,7 @@ public:
 	QMenu*	m_menu;
 };
 
-KIconSelectAction::KIconSelectAction(const QString& text, int accel, QObject* parent, const char* name)
+KIconSelectAction::KIconSelectAction(const QString& text, int accel, KActionCollection* parent, const char* name)
 : KSelectAction(text, accel, parent, name)
 {
 	d = new KIconSelectActionPrivate;

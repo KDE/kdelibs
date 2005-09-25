@@ -502,7 +502,7 @@ KDatePicker::setFontSize(int s)
   opt.init(this);
   opt.font      = selectMonth->font();
   opt.icon      = selectMonth->icon();
-  opt.text      = selectMonth->textLabel();
+  opt.text      = selectMonth->text();
   opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
   opt.subControls       = QStyle::SC_All;
   opt.activeSubControls = 0; //### FIXME: !!

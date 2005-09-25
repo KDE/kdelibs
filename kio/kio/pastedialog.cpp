@@ -48,7 +48,7 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
 
     layout->addWidget( new QLabel( i18n( "Data format:" ), frame ) );
     m_comboBox = new QComboBox( frame );
-    m_comboBox->insertStringList( items );
+    m_comboBox->addItems( items );
     layout->addWidget( m_comboBox );
 
     layout->addStretch();

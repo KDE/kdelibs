@@ -49,6 +49,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
   kaccelmanager.h =&gt; kacceleratormanager.h
 </UL>
 
+<H4>KGlobalSettings</H4>
+<ul>
+<li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO:trash instead</li>
+</ul>
+
 <H4>KAccel</H4>
 <li>Removed methods that were marked deprecated from KDE2</li>
 
@@ -393,6 +398,17 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 <li>void b6Pressed() renamed to void resumePressed()
 <li>void b7Pressed() renamed to void resumeAllPressed()
 <li>void b8Pressed() renamed to void suggestNewNamePressed()
+
+<H4>KURLCombo</H4>
+<ul>
+<li>All usage of QPixmap has been replaced by usage of QIcon</li>
+<li>getPixmap() --&gt; getIcon()</li>
+</ul>
+
+<H4>KMimeType</H4>
+<ul>
+<li>iconForURL has been deprecated, will possily removed for KDE 4.0 final, use iconNameForURL instead</li>
+</ul>
 
 <H4>KFileDialog</H4>
 <li>void toolbarCallback(int) was removed

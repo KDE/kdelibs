@@ -154,10 +154,10 @@ class KHTMLZoomFactorAction : public KAction
     Q_OBJECT
 public:
     //BCI: remove in KDE 4
-    KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name );
+    KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, KActionCollection *parent, const char *name );
     KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text,
             const QString &icon, const KShortcut& cut, const QObject *receiver,
-            const char *slot, QObject *parent, const char *name );
+            const char *slot, KActionCollection *parent, const char *name );
     virtual ~KHTMLZoomFactorAction();
 
     virtual int plug( QWidget *w, int index );

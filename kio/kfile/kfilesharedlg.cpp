@@ -83,9 +83,12 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
         // We only support local dirs
         if ( !(*it)->isDir() || !isLocal )
             return false;
+#warning look for a way which works sanely with the new xdg trash implementation
+#if 0
         // And sharing the trash doesn't make sense
         if ( isLocal && (*it)->url().path( 1 ) == KGlobalSettings::trashPath() )
             return false;
+#endif
     }
     return true;
 }

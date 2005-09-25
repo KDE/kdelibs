@@ -217,10 +217,11 @@ bool KDataToolInfo::isValid() const
  *************************************************/
 KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command,
                                     QObject * parent, const char * name )
-    : KAction( text, info.iconName(), 0, parent, name ),
+    : KAction( text, info.iconName(), 0,0,0,0/*parent*/, name ),
       m_command( command ),
       m_info( info )
 {
+    setParent(parent);
 }
 
 void KDataToolAction::slotActivated()

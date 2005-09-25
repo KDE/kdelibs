@@ -959,13 +959,13 @@ extern const int KDE_NO_EXPORT fastZoomSizes[];
 extern const int KDE_NO_EXPORT fastZoomSizeCount;
 
 // BCI: remove in KDE 4
-KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, KActionCollection *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
 {
     init(part, direction);
 }
 
-KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, KActionCollection *parent, const char *name )
     : KAction( text, icon, cut, receiver, slot, parent, name )
 {
     init(part, direction);

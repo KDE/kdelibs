@@ -78,7 +78,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     KConfigGroupSaver saver( cfg, "Passwords" );
 
     d->layout = new QGridLayout( main, 9, 3, spacingHint(), marginHint());
-    d->layout->addColSpacing(1, 5);
+    d->layout->addItem(new QSpacerItem(5,0),0,1); //addColSpacing(1, 5);
 
     // Row 0: pixmap  prompt
     QLabel* lbl;
@@ -92,7 +92,8 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         d->layout->addWidget( lbl, 0, 0, Qt::AlignLeft );
     }
     d->prompt = new QLabel( main );
-    d->prompt->setAlignment( Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap );
+    d->prompt->setAlignment( Qt::AlignLeft|Qt::AlignVCenter);
+    d->prompt->setWordWrap( true);
     d->layout->addWidget( d->prompt, 0, 2, Qt::AlignLeft );
     if ( prompt.isEmpty() )
         setPrompt( i18n( "You need to supply a username and a password" ) );
@@ -100,7 +101,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         setPrompt( prompt );
 
     // Row 1: Row Spacer
-    d->layout->addRowSpacing( 1, 7 );
+    d->layout->addItem(new QSpacerItem(0,7),1,0); //addRowSpacing( 1, 7 );
 
     // Row 2-3: Reserved for an additional comment
 
@@ -119,7 +120,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->layout->addWidget( d->userNameHBox, 4, 2 );
 
     // Row 5: Row spacer
-    d->layout->addRowSpacing( 5, 4 );
+    d->layout->addItem(new QSpacerItem(0,4),5,0); //addRowSpacing( 5, 4 );
 
     // Row 6: Password field
     lbl = new QLabel( i18n("&Password:"), main );
@@ -141,7 +142,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     if ( enableKeep )
     {
         // Row 7: Add spacer
-        d->layout->addRowSpacing( 7, 4 );
+        d->layout->addItem(new QSpacerItem(0,4),7,0); //addRowSpacing( 7, 4 );
         // Row 8: Keep Password
         hbox = new Q3HBox( main );
         d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
@@ -243,10 +244,11 @@ void PasswordDialog::addCommentLine( const QString& label,
     lbl->setFixedSize( lbl->sizeHint() );
     d->layout->addWidget( lbl, d->nRow+2, 0, Qt::AlignLeft );
     lbl = new QLabel( comment, main);
-    lbl->setAlignment( Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap );
+    lbl->setAlignment( Qt::AlignVCenter|Qt::AlignLeft);
+    lbl->setWordWrap(true);
     calculateLabelSize(lbl);
     d->layout->addWidget( lbl, d->nRow+2, 2, Qt::AlignLeft );
-    d->layout->addRowSpacing( 3, 10 ); // Add a spacer
+    d->layout->addItem(new QSpacerItem(0,10),3,0); //addRowSpacing( 3, 10 ); // Add a spacer
     d->nRow++;
 }
 
@@ -260,7 +262,7 @@ static QString qrichtextify( const QString& text )
   if ( text.isEmpty() || text[0] == '<' )
     return text;
 
-  QStringList lines = QStringList::split('\n', text);
+  QStringList lines = text.split('\n', QString::SkipEmptyParts);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
     *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
@@ -295,7 +297,7 @@ void PasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins )
         return;
     if ( nr == 1 ) {
         d->userEdit->setText( knownLogins.begin().key() );
-        setPassword( knownLogins.begin().data() );
+        setPassword( knownLogins.begin().value() );
         return;
     }
 
@@ -312,7 +314,7 @@ void PasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins )
     }
 
     d->knownLogins = knownLogins;
-    d->userEditCombo->insertStringList( knownLogins.keys() );
+    d->userEditCombo->addItems( knownLogins.keys() );
     d->userEditCombo->setFocus();
 
     connect( d->userEditCombo, SIGNAL( activated( const QString& ) ),
@@ -323,7 +325,7 @@ void PasswordDialog::slotActivated( const QString& userName )
 {
     QMap<QString, QString>::ConstIterator it = d->knownLogins.find( userName );
     if ( it != d->knownLogins.end() )
-        setPassword( it.data() );
+        setPassword( it.value() );
 }
 
 

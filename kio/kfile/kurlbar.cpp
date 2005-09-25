@@ -939,7 +939,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_iconButton = new KIconButton( grid, "icon button" );
     m_iconButton->setIconSize( iconSize );
     if ( icon.isEmpty() )
-        icon = KMimeType::iconForURL( url );
+        icon = KMimeType::iconNameForURL( url );
     m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
     label->setWhatsThis(whatsThisText );
