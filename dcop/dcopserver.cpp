@@ -1688,7 +1688,7 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 	else if (strcmp(argv[i], "--serverid") == 0)
 	    serverid = true;
 	else {
-	    fprintf(stdout, ABOUT );
+	    fprintf(stdout, "%s", ABOUT );
 	    return 0;
 	}
     }
