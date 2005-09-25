@@ -13,19 +13,18 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KSAVEFILE_H_
-#define _KSAVEFILE_H_
+#ifndef KSAVEFILE_H
+#define KSAVEFILE_H
 
-#include <qstring.h>
 #include <stdio.h>
-#include <errno.h>
-#include <ktempfile.h>
 
-class KSaveFilePrivate;
+class QString;
+class QTextStream;
+class QDataStream;
 
 /**
  * The KSaveFile class has been made to write out changes to an existing
@@ -65,8 +64,7 @@ public:
     * the file has indeed been written correctly.
     * @return the errno status, 0 means ok
     **/
-   int status() const
-   	{ return mTempFile.status(); }
+   int status() const;
 
    /**
     * The name of the file as passed to the constructor.
@@ -80,40 +78,35 @@ public:
     * @return The file descriptor, or a negative number if opening
     *         the temporary file failed
     **/
-   int handle()	const
-   	{ return mTempFile.handle(); }
+   int handle()	const;
 
    /**
     * A FILE* stream open for writing to the file.
     * @return FILE* stream open for writing to the file, or 0
     *         if opening the temporary file failed
     **/
-   FILE *fstream()
-   	{ return mTempFile.fstream(); }
+   FILE *fstream();
 
    /**
     * A QFile* open for writing to the file.
     * @return A QFile open for writing to the file, or 0 if
     *         opening the temporary file failed.
     **/
-   QFile *file()
-   	{ return mTempFile.file(); }
+   QFile *file();
 
    /**
     * A QTextStream* open for writing to the file.
     * @return A QTextStream that is open for writing to the file, or 0
     *         if opening the temporary file failed
     **/
-   QTextStream *textStream()
-   	{ return mTempFile.textStream(); }
+   QTextStream *textStream();
 
    /**
     * A QDataStream* open for writing to the file.
     * @return A QDataStream that is open for writing to the file, or 0
     *         if opening the file failed
     **/
-   QDataStream *dataStream()
-   	{ return mTempFile.dataStream(); }
+   QDataStream *dataStream();
 
    /**
     * Aborts the write operation and removes any intermediate files
@@ -143,10 +136,11 @@ public:
                            const QString& backupExtension = QLatin1String( "~" ) );
 
 private:
-   QString mFileName;
-   KTempFile mTempFile;
 
-   KSaveFilePrivate *d;
+   Q_DISABLE_COPY(KSaveFile)
+
+   class Private;
+   Private *const d;
 };
 
 #endif

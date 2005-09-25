@@ -13,13 +13,15 @@
 
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301, USA.
 */
 
+#undef QT3_SUPPORT
 #include <config.h>
 
 #include <sys/types.h>
+#include <errno.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -32,17 +34,29 @@
 #include <test.h>
 #endif
 
-#include <qdatetime.h>
 #include <qdir.h>
+#include <qstring.h>
 
 #include <kde_file.h>
 #include "kapplication.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
+#include "ktempfile.h"
+
+struct KSaveFile::Private
+{
+   QString _fileName;
+#define mFileName d->_fileName
+   KTempFile *_tempFile;
+#define mTempFile d->_tempFile
+   ~Private() { delete _tempFile; }
+};
 
 KSaveFile::KSaveFile(const QString &filename, int mode)
- : mTempFile(true)
+ : d(new Private)
 {
+   mTempFile = new KTempFile(true);
+
    // follow symbolic link, if any
    QString real_filename = KStandardDirs::realFilePath(filename);
 
@@ -51,11 +65,11 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
    // with the contents of our tempfile
    if (!checkAccess(real_filename, W_OK))
    {
-      mTempFile.setError(EACCES);
+      mTempFile->setError(EACCES);
       return;
    }
 
-   if (mTempFile.create(real_filename, QLatin1String(".new"), mode))
+   if (mTempFile->create(real_filename, QLatin1String(".new"), mode))
    {
       mFileName = real_filename; // Set filename upon success
 
@@ -71,14 +85,14 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
             bool changePermission = true;
             if (stat_buf.st_gid != getgid())
       {
-               if (fchown(mTempFile.handle(), (uid_t) -1, stat_buf.st_gid) != 0)
+               if (fchown(mTempFile->handle(), (uid_t) -1, stat_buf.st_gid) != 0)
                {
                   // Use standard permission if we can't set the group
                   changePermission = false;
                }
             }
             if (changePermission)
-               fchmod(mTempFile.handle(), stat_buf.st_mode);
+               fchmod(mTempFile->handle(), stat_buf.st_mode);
          }
       }
    }
@@ -86,7 +100,7 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
 
 KSaveFile::~KSaveFile()
 {
-   if (mTempFile.bOpen)
+   if (mTempFile->isOpen())
       close(); // Close if we were still open
 }
 
@@ -99,28 +113,29 @@ KSaveFile::name() const
 void
 KSaveFile::abort()
 {
-   mTempFile.close();
-   mTempFile.unlink();
+   mTempFile->close();
+   mTempFile->unlink();
 }
 
 bool
 KSaveFile::close()
 {
-   if (mTempFile.name().isEmpty() || mTempFile.handle()==-1)
+   if (mTempFile->name().isEmpty() || mTempFile->handle()==-1)
       return false; // Save was aborted already
-   if (!mTempFile.sync())
+   if (!mTempFile->sync())
    {
       abort();
       return false;
    }
-   if (mTempFile.close())
+   if (mTempFile->close())
    {
-      if (0==KDE_rename(QFile::encodeName(mTempFile.name()), QFile::encodeName(mFileName)))
+      if (0==KDE_rename(QFile::encodeName(mTempFile->name()),
+                        QFile::encodeName(mFileName)))
          return true; // Success!
-      mTempFile.setError(errno);
+      mTempFile->setError(errno);
    }
    // Something went wrong, make sure to delete the interim file.
-   mTempFile.unlink();
+   mTempFile->unlink();
    return false;
 }
 
@@ -228,3 +243,36 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
         return false;
     return true;
 }
+
+int KSaveFile::status() const
+{
+   return mTempFile->status();
+}
+
+int KSaveFile::handle() const
+{
+   return mTempFile->handle();
+}
+
+FILE* KSaveFile::fstream()
+{
+   return mTempFile->fstream();
+}
+
+QFile* KSaveFile::file()
+{
+   return mTempFile->file();
+}
+
+QTextStream* KSaveFile::textStream()
+{
+   return mTempFile->textStream();
+}
+
+QDataStream* KSaveFile::dataStream()
+{
+   return mTempFile->dataStream();
+}
+
+#undef mFileName
+#undef mTempFile

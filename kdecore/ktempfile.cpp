@@ -13,10 +13,11 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
 
+#undef QT3_SUPPORT
 #include <config.h>
 
 #include <sys/types.h>
@@ -28,6 +29,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #ifdef HAVE_TEST
 #include <test.h>
@@ -40,6 +42,7 @@
 #define _PATH_TMP "/tmp"
 #endif
 
+#include <qstring.h>
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qdatastream.h>
@@ -53,8 +56,31 @@
 #include "kde_file.h"
 #include "kdebug.h"
 
-/* antlarr: KDE 4: make the parameters const QString & */
-KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode):d(0)
+struct KTempFile::Private
+{
+   int _Error;
+#define mError d->_Error
+   QString _TmpName;
+#define mTmpName d->_TmpName
+   int _Fd;
+#define mFd d->_Fd
+   FILE *_Stream;
+#define mStream d->_Stream
+   QFile *_File;
+#define mFile d->_File
+   QTextStream *_TextStream;
+#define mTextStream d->_TextStream
+   QDataStream *_DataStream;
+#define mDataStream d->_DataStream
+   bool _Open;
+#define bOpen d->_Open
+   bool _AutoDelete;
+#define bAutoDelete d->_AutoDelete
+};
+
+KTempFile::KTempFile(const QString& filePrefix,
+                     const QString& fileExtension, int mode)
+ : d(new Private)
 {
    bAutoDelete = false;
    mFd = -1;
@@ -64,16 +90,18 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode):d(0)
    mDataStream = 0;
    mError = 0;
    bOpen = false;
-   if (fileExtension.isEmpty())
-      fileExtension = ".tmp";
-   if (filePrefix.isEmpty())
+   QString extension = fileExtension;
+   QString prefix = filePrefix;
+   if (extension.isEmpty())
+      extension = QLatin1String(".tmp");
+   if (prefix.isEmpty())
    {
-      filePrefix = locateLocal("tmp", KGlobal::instance()->instanceName());
+      prefix = locateLocal("tmp", KGlobal::instance()->instanceName());
    }
-   (void) create(filePrefix, fileExtension, mode);
+   (void) create(prefix, extension, mode);
 }
 
-KTempFile::KTempFile(bool):d(0)
+KTempFile::KTempFile(bool):d(new Private)
 {
    bAutoDelete = false;
    mFd = -1;
@@ -97,7 +125,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    if((mFd = mkstemps(nme.data(), ext.length())) < 0)
    {
        // Recreate it for the warning, mkstemps emptied it
-       QByteArray nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
+       nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
        kdWarning() << "KTempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
        mError = errno;
        mTmpName = QString::null;
@@ -119,7 +147,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 
    // Set close on exec
    fcntl(mFd, F_SETFD, FD_CLOEXEC);
-   
+
    return true;
 }
 
@@ -128,6 +156,7 @@ KTempFile::~KTempFile()
    close();
    if (bAutoDelete)
       unlink();
+   delete d;
 }
 
 int
@@ -170,8 +199,8 @@ KTempFile::file()
    if ( !fstream() ) return 0;
 
    mFile = new QFile();
-   mFile->setName( name() );
-   mFile->open(QIODevice::ReadWrite, mStream);
+   mFile->setFileName( name() );
+   mFile->open(mStream, QIODevice::ReadWrite);
    return mFile;
 }
 
@@ -220,7 +249,7 @@ KTempFile::sync()
          result = fflush(mStream); // We need to flush first otherwise fsync may not have our data
       }
       while ((result == -1) && (errno == EINTR));
-      
+
       if (result)
       {
          kdWarning() << "KTempFile: Error trying to flush " << mTmpName << ": " << strerror(errno) << endl;
@@ -256,7 +285,7 @@ KTempFile::close()
       result = ferror(mStream);
       if (result)
          mError = ENOSPC; // Assume disk full.
-         
+
       result = fclose(mStream);
       mStream = 0;
       mFd = -1;
@@ -281,3 +310,30 @@ KTempFile::close()
    return (mError == 0);
 }
 
+void
+KTempFile::setAutoDelete(bool autoDelete)
+{
+   bAutoDelete = autoDelete;
+}
+
+void
+KTempFile::setError(int error)
+{
+   mError = error;
+}
+
+bool
+KTempFile::isOpen() const
+{
+   return bOpen;
+}
+
+#undef mError
+#undef mTmpName
+#undef mFd
+#undef mStream
+#undef mFile
+#undef mTextStream
+#undef mDataStream
+#undef bOpen
+#undef bAutoDelete
