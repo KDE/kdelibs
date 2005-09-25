@@ -7,6 +7,13 @@ that we would like to make for the next binary incompatible release.
 - There is no reason why KConfigBase should inherit from QObject, get rid of that.
   (Danimo)
 
+- KConfigBase: For all the read*Entry methods that take a QFont *, QPoint *, QSize *, etc.
+  for the default value, add overloads that use a const reference, so that one can write 
+  resize( config->readSizeEntry( "Bleh", size() ); for example. Constructing a null 
+  QFont/QPoint/QSize is cheap enough to justify a consistent and usable API (IMHO) .
+  Keep source compatibility.
+  (Simon)
+
 - Change all FooPrivate *d; -> Private * const d; and place initialization
   in the constructor (for classes that would benefit from this).  To help catch silly
   mistakes since d should never change. Also consider changing to use KStaticDeleter to
@@ -63,6 +70,19 @@ that we would like to make for the next binary incompatible release.
   the app quitting instead.
   (Martijn)
 
+- Sort out reference counting of applications and KMainWindows: Add a setRefCountEnabled()
+  function to KApplication; deref()ing the last reference should only quit the application
+  if reference counts are enabled, and the reference count should be disabled by default
+  so apps that don't use a KMainWindow mostly continue to work. Make the KMainWindow
+  constructor call setRefCountEnabled(true), and make each KMainWindow hold its own
+  reference to the application. The KMainWindow should drop its app reference on hide, and
+  regain it on show.
+
+  Make KSysTray also hold a reference to the app. Then apps that use more than one main
+  window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
+  hacks.
+  (Richard Smith)
+
 - Make some long-lasting operations threaded. There are some operations in KDE that
   take too long on at least ~500MHz hardware to be done using event loops. Examples
   are the use of KLibLoader to dlopen plugins and KRun to fire up other processes.
@@ -117,26 +137,6 @@ that we would like to make for the next binary incompatible release.
   (Contributors to that thread, please add specific items here.)
   (Waldo)
 
-- KConfigBase: For all the read*Entry methods that take a QFont *, QPoint *, QSize *, etc.
-  for the default value, add overloads that use a const reference, so that one can write 
-  resize( config->readSizeEntry( "Bleh", size() ); for example. Constructing a null 
-  QFont/QPoint/QSize is cheap enough to justify a consistent and usable API (IMHO) .
-  Keep source compatibility.
-  (Simon)
-
-- Sort out reference counting of applications and KMainWindows: Add a setRefCountEnabled()
-  function to KApplication; deref()ing the last reference should only quit the application
-  if reference counts are enabled, and the reference count should be disabled by default
-  so apps that don't use a KMainWindow mostly continue to work. Make the KMainWindow
-  constructor call setRefCountEnabled(true), and make each KMainWindow hold its own
-  reference to the application. The KMainWindow should drop its app reference on hide, and
-  regain it on show.
-
-  Make KSysTray also hold a reference to the app. Then apps that use more than one main
-  window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
-  hacks.
-  (Richard Smith)
-
 - Change classes that store bool data using strings ("true"/"false") to use bool 
   calls (readBoolEntry()).  Although not technicaly a binary incompatiblity... 
   just something to bring up for possible change (for the better)
@@ -169,6 +169,12 @@ that we would like to make for the next binary incompatible release.
   break many apps). The class needs a facelift - see the comments in kpassdlg.{h,cpp}
   (Frans)
 
+- Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
+  (Waldo)
+
+- Merge KPIM::ClickLineEdit with KLineEdit
+  (Danimo)
+
 - KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
   worry about legacy will certainly allow an overall cleaner solution.
   - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
@@ -179,7 +185,7 @@ that we would like to make for the next binary incompatible release.
   - add additional "channels" beyond std*, with the built-in capability of passing the fd on the
     command line
   - redirections, including piping multiple kprocesses together. this should make most cases of
-    reimplementing commSetupDone{P,C} superflous.
+    reimplementing commSetupDone{P,C} superfluous.
   - possibly create KForkProcess that covers most/all of the remaining commSetupDoneC
     reimplementations.
   - do something about the NoRead comm mode
@@ -243,12 +249,6 @@ that we would like to make for the next binary incompatible release.
 - Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
   an alternative help->contents action)
   (George Staikos)
-
-- Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
-  (Waldo)
-
-- Merge KPIM::ClickLineEdit with KLineEdit
-  (Danimo)
 
 - Merge all K*Label classes into one that offers all the features such as ellipsis (this time for 
   center, middle and right in order to allow for sqeezing the text), links and selectable text 
