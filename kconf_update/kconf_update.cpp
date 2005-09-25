@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <qdatetime.h>
 #include <qfile.h>
 #include <qtextstream.h>
 

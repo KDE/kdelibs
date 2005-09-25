@@ -26,6 +26,8 @@
 #include <dcopclient.h>
 #include <ktoolinvocation.h>
 
+#include <q3valuelist.h>
+
 static KStaticDeleter<KDCOPServiceStarter> dss_sd;
 KDCOPServiceStarter* KDCOPServiceStarter::s_self;
 

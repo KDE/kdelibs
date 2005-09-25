@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qlabel.h>
 #include <qlayout.h>

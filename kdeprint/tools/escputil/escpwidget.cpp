@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <q3accel.h>
+#include <q3cstring.h>
 #include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>

@@ -20,13 +20,15 @@
 #ifndef __slavebase_h
 #define __slavebase_h
 
-#include <kurl.h>
-#include <kconfigbase.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
 
+#include <q3cstring.h>
+
 class DCOPClient;
+class KConfigBase;
 class KRemoteEncoding;
+class KURL;
 
 namespace KIO {
 

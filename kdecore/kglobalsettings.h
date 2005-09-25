@@ -19,8 +19,6 @@
 #define _KGLOBALSETTINGS_H
 
 #include <qstring.h>
-#include <qcolor.h>
-#include <qfont.h>
 #include "kdelibs_export.h"
 
 #define KDE_DEFAULT_SINGLECLICK true
@@ -37,6 +35,12 @@
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
 class KURL;
+
+class QColor;
+class QFont;
+class QPoint;
+class QRect;
+class QWidget;
 
 /**
  * Access the KDE global configuration.

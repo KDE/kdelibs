@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <qdatetime.h>
 #include <qfile.h>
 #include <qtextstream.h>
 

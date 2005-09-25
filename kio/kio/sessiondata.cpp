@@ -18,6 +18,7 @@
    Suite 330, Boston, MA 02110-1301, USA.
 */
 
+#include <q3cstring.h>
 #include <q3ptrlist.h>
 #include <qtextcodec.h>
 

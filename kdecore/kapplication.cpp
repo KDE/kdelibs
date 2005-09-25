@@ -25,6 +25,7 @@
 #define QT_NO_TRANSLATION
 #include <q3stylesheet.h> // no equivilant in Qt4
 #include <qtextedit.h>
+#include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qicon.h>

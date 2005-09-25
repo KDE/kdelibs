@@ -29,6 +29,8 @@
 
 #include <kdatastream.h>
 
+#include <q3cstring.h>
+
 
 KDirNotify_stub::KDirNotify_stub( const Q3CString& app, const Q3CString& obj )
   : DCOPStub( app, obj )

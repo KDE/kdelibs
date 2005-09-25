@@ -6,6 +6,8 @@
 #include <ktrader.h>
 #include <klibloader.h>
 
+#include <q3valuelist.h>
+
 namespace KParts
 {
     class ComponentFactory

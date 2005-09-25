@@ -23,18 +23,21 @@
 
 #include <sys/types.h>
 
-#include <qpoint.h>
-#include <q3ptrlist.h>
-#include <qdatastream.h>
-#include <qstringlist.h>
-#include <qpair.h>
-
 #include <kparts/part.h>
 #include <kparts/event.h>
 
+template <class T1, class T2> struct QPair;
+template<typename T> class Q3PtrList;
+template <class Key, class T> class QMap;
+template<typename T> class Q3ValueList;
+
 class KFileItem;
 typedef Q3PtrList<KFileItem> KFileItemList;
+class Q3CString;
+class QDataStream;
+class QPoint;
 class QString;
+class QStringList;
 
 namespace KParts {
 

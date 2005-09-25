@@ -7,6 +7,7 @@
 #include <libxml/catalog.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <qdatetime.h>
 #include <qdir.h>
 #include <qregexp.h>
 #include <xslt.h>

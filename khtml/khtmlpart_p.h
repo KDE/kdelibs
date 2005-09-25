@@ -37,6 +37,7 @@
 #include <kwallet.h>
 #endif
 
+#include <qdatetime.h>
 #include <qpointer.h>
 #include <qmap.h>
 #include <qtimer.h>

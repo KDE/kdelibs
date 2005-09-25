@@ -43,6 +43,7 @@
 
 #include <kapplication.h>
 #include <kcrash.h>
+#include <kconfigbase.h>
 #include <kconfigdata.h>
 #include <kdesu/client.h>
 #include <klocale.h>

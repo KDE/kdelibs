@@ -45,6 +45,7 @@
 #include <assert.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <q3cstring.h>
 #include <q3intdict.h>
 #include <q3ptrlist.h>
 #include <qsocketnotifier.h>

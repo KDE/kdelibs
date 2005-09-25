@@ -38,6 +38,7 @@ extern "C" {
 #include <pwd.h>
 #include <grp.h>
 }
+#include <q3cstring.h>
 #include <qtimer.h>
 #include <qfile.h>
 

@@ -21,11 +21,13 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdatastream.h>
 
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
+
+class QDataStream;
+template<typename T> class Q3ValueList;
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.

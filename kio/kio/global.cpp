@@ -38,6 +38,9 @@
 #include <kprotocolmanager.h>
 #include <kde_file.h>
 
+#include <q3cstring.h>
+#include <qdatetime.h>
+
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
 #endif

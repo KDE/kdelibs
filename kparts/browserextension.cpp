@@ -23,10 +23,13 @@
 #include <qclipboard.h>
 #include <qtimer.h>
 #include <qobject.h>
+#include <qmap.h>
 #include <qmetaobject.h>
 #include <qregexp.h>
+#include <q3cstring.h>
 #include <q3strlist.h>
 #include <q3stylesheet.h>
+#include <q3valuelist.h>
 
 #include <kdebug.h>
 #include <klocale.h>

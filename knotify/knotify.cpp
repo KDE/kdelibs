@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 
 // QT headers
+#include <qdatetime.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qpixmap.h>

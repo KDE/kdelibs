@@ -22,6 +22,7 @@
 
 #include "../kio/kio/kprotocolinfo.h"
 
+#include <q3valuelist.h>
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>

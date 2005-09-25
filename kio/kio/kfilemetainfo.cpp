@@ -22,6 +22,7 @@
 
 #include <q3shared.h>
 #include <q3dict.h>
+#include <qdatetime.h>
 
 #include <ktrader.h>
 #include <kstaticdeleter.h>

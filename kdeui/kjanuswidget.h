@@ -20,25 +20,25 @@
 #ifndef _KJANUS_WIDGET_H_
 #define _KJANUS_WIDGET_H_
 
-#include <q3ptrlist.h>
-#include <qpixmap.h>
-#include <qsplitter.h>
 
 #include <klistbox.h>
-#include <qstringlist.h>
-#include <qmap.h>
 
+#include <q3ptrlist.h>
+#include <qmap.h>
+#include <qpixmap.h>
+
+class KGuiItem;
+class KHBox;
 class KListView;
+class KSeparator;
+class KVBox;
 
 class Q3Grid;
-class KHBox;
-class QLabel;
-class QTabWidget;
-class KVBox;
-class Q3WidgetStack;
-class KSeparator;
 class Q3ListViewItem;
-class KGuiItem;
+class Q3WidgetStack;
+class QLabel;
+class QStringList;
+class QTabWidget;
 
 /**
  * @short Easy to use widget with many layouts

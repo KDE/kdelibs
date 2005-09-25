@@ -21,6 +21,7 @@
 #include "factory.h"
 #include "part.h"
 
+#include <q3cstring.h>
 #include <qwidget.h>
 
 #include <klocale.h>

@@ -28,6 +28,7 @@
 #include <qstringlist.h>
 #include <q3dict.h>
 #include <q3ptrlist.h>
+#include <q3valuelist.h>
 #include <time.h>
 
 class KConfig;

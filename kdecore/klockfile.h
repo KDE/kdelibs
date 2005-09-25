@@ -20,10 +20,10 @@
 #ifndef KLOCKFILE_H
 #define KLOCKFILE_H
 
-#include <qstring.h>
-#include <qdatetime.h>
-
 #include <ksharedptr.h>
+
+class QString;
+
 /**
  * The KLockFile class provides NFS safe lockfiles.
  *

@@ -21,6 +21,7 @@
 #ifndef KPAC_PROXYSCOUT_H
 #define KPAC_PROXYSCOUT_H
 
+#include <q3valuelist.h>
 #include <qmap.h>
 
 #include <kdedmodule.h>

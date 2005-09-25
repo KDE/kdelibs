@@ -26,10 +26,11 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <kio/global.h>
+#include <kurl.h>
 
 class QStringList;
 class QWidget;
-class KURL;
+
 template<typename T, typename K> class QMap;
 
 namespace KIO {

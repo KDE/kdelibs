@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <q3cstring.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <qdir.h>

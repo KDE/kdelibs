@@ -21,6 +21,7 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
+#include <q3cstring.h>
 #include <q3progressdialog.h>
 #include <qfileinfo.h>
 #include <qdir.h>

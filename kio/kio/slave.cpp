@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qtimer.h>
 

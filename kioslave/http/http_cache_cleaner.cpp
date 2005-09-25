@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
+#include <q3cstring.h>
 #include <q3ptrlist.h>
 
 #include <kinstance.h>

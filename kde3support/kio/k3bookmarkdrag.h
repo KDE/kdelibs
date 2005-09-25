@@ -22,6 +22,7 @@
 #define __kebdrag_h
 
 #include <q3dragobject.h>
+#include <q3valuelist.h>
 #include <kbookmark.h>
 
 // Clipboard/dnd data : URLs + XML for bookmarks

@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <limits.h>
 
+#include <q3cstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <q3valuelist.h>

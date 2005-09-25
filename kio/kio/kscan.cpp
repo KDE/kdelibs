@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <q3valuelist.h>
 #include <qfile.h>
 
 #include <klocale.h>

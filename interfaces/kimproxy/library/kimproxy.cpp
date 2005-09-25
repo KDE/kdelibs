@@ -23,6 +23,8 @@
 
 #include <qglobal.h>
 #include <qpixmapcache.h>
+#include <q3valuelist.h>
+
 #include <dcopclient.h>
 #include <kapplication.h>
 #include <kdcopservicestarter.h> 

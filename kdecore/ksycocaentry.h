@@ -21,10 +21,12 @@
 
 #include "ksycocatype.h"
 
-#include <qstringlist.h>
-#include <q3valuelist.h>
+#include <qdatastream.h>
+#include <qlist.h>
+#include <qstring.h>
 #include <ksharedptr.h>
-class QDataStream;
+
+class QStringList;
 
 /**
  * Base class for all Sycoca entries.

@@ -23,6 +23,8 @@
 #include <kdialogbase.h>
 #include <knewstuff/provider.h>
 
+#include <qmap.h>
+
 namespace KIO
 {
   class Job;
@@ -31,6 +33,8 @@ namespace KIO
 class KListView;
 class Q3TextBrowser;
 class QFrame;
+template<typename T> class Q3ValueList;
+
 class KNewStuffGeneric;
 
 namespace KNS

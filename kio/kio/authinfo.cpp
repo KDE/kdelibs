@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <q3cstring.h>
 #include <qdir.h>
 #include <qfile.h>
 

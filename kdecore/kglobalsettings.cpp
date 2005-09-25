@@ -18,11 +18,14 @@
 #include "config.h"
 #include "kglobalsettings.h"
 
-#include <qdir.h>
-#include <qpixmap.h>
-#include <qfontdatabase.h>
+#include <qcolor.h>
 #include <qcursor.h>
 #include <qdesktopwidget.h>
+#include <qdir.h>
+#include <qfont.h>
+#include <qfontdatabase.h>
+#include <qfontinfo.h>
+#include <qpixmap.h>
 
 #include <kconfig.h>
 #include <ksimpleconfig.h>
@@ -47,7 +50,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kcharsets.h>
 #include <kaccel.h>
 #include <klocale.h>
-#include <qfontinfo.h>
 #include <stdlib.h>
 #include <kprotocolinfo.h>
 

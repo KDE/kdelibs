@@ -30,6 +30,7 @@
 #include <klibloader.h>
 #include <kstringhandler.h>
 #include <kstaticdeleter.h>
+#include <kurl.h>
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>

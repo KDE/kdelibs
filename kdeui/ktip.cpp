@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include <qcheckbox.h>
+#include <qdatetime.h>
 #include <qfile.h>
 #include <q3hbox.h>
 #include <qevent.h>

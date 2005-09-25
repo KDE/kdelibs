@@ -34,6 +34,7 @@
 #include <signal.h>
 #include <setjmp.h>
 
+#include <qdatetime.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>

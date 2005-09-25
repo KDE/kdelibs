@@ -21,9 +21,9 @@
 #define KWINDOW_INTERFACE_H
 
 #include <dcopobject.h>
-#include <qstringlist.h>
-#include <q3cstring.h>
 #include <dcopref.h>
+
+#include <qmap.h>
 
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;

@@ -27,14 +27,13 @@
 #include <kjanuswidget.h>
 #include <kguiitem.h>
 #include <kstdguiitem.h>
-#include <q3ptrlist.h>
 
 class KPushButton;
 class KSeparator;
 class KURLLabel;
 class QBoxLayout;
 class QPixmap;
-class KGuiItem;
+
 /**
  * Used internally by KDialogBase.
  * @internal

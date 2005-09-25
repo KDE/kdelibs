@@ -34,6 +34,7 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <qdatetime.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>

@@ -13,6 +13,8 @@
 #include <dcopobject.h>
 #include <kurl.h>
 
+class Q3CString;
+
 
 class KIO_EXPORT KDirNotify_stub : virtual public DCOPStub
 {

@@ -18,6 +18,7 @@
 */
 
 #include "k3urldrag.h"
+#include <q3cstring.h>
 #include <q3strlist.h>
 #include <q3dragobject.h>
 #include <qfont.h>

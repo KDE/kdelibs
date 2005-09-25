@@ -23,15 +23,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPOBJECT_H
 #define _DCOPOBJECT_H
 
-#include <qobject.h>
-#include <qmap.h>
-#include <qstring.h>
 #include <QList>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include "kdelibs_export.h"
 
 class DCOPClient;
 typedef QList<DCOPCString> DCOPCStringList;
+
+class QObject;
 
 // Makros for DCOP interfaces
 

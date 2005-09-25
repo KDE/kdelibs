@@ -22,6 +22,8 @@
 #include <qobject.h>
 #include <kservice.h>
 
+template<typename T> class Q3ValueListIterator;
+
 /**
  * A Trader interface, similar to the CORBA Trader.
  *

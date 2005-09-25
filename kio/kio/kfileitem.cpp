@@ -28,6 +28,7 @@
 
 #include "kfileitem.h"
 
+#include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qmap.h>

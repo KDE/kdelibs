@@ -18,14 +18,15 @@
 #ifndef __kio_global_h__
 #define __kio_global_h__
 
+#include <kdelibs_export.h>
+
 #include <qstring.h>
 #include <q3valuelist.h>
-#include <q3ptrlist.h>
-#include <qdatastream.h>
-#include <qdatetime.h>
 #include <qmap.h>
 
-#include <kurl.h>
+class KURL;
+
+class QTime;
 
 /**
  * @short A namespace for KIO globals

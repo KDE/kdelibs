@@ -24,6 +24,8 @@
 #include <qobject.h>
 #include <kio/global.h>
 
+class Q3CString;
+
 namespace KIO  {
 
 class SlaveConfig;

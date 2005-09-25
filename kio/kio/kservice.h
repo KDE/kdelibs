@@ -31,6 +31,7 @@ class QDataStream;
 class KDesktopFile;
 class KService;
 class KBuildSycoca;
+template<typename T> class Q3ValueList;
 class QWidget;
 
 /**

@@ -25,10 +25,13 @@
 
 #include <qobject.h>
 
-#include <kurl.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
 #include <kdatastream.h>
+
+class KURL;
+
+class Q3CString;
 
 namespace KIO {
 

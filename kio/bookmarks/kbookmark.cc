@@ -31,6 +31,8 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <kbookmarkmanager.h>
+
+#include <qdatetime.h>
 #include <qmimedata.h>
 
 KBookmarkGroup::KBookmarkGroup()
