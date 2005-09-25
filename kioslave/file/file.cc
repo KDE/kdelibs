@@ -1621,6 +1621,7 @@ bool FileProtocol::pumount(const QString &point)
     }
 
     if (dev.isEmpty()) return false;
+    if (dev.endsWith("/")) dev.truncate(dev.length()-1);
 
     QString epath = getenv("PATH");
     QString path = QString::fromLatin1("/sbin:/bin");
