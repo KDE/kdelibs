@@ -21,7 +21,7 @@
 #define KSAVEFILE_H
 
 #include <stdio.h>
-
+#include <QFile>
 class QString;
 class QTextStream;
 class QDataStream;
