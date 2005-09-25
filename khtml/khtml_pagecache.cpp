@@ -27,7 +27,7 @@
 #include <q3intdict.h>
 #include <qtimer.h>
 #include <qfile.h>
-
+#include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <assert.h>

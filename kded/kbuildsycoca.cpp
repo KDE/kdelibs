@@ -34,10 +34,11 @@
 #include <kbuildprotocolinfofactory.h>
 #include <kctimefactory.h>
 #include <kdatastream.h>
-
+#include <ktempfile.h>
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qtimer.h>
+#include <errno.h>
 
 #include <assert.h>
 #include <kapplication.h>

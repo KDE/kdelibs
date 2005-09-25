@@ -59,7 +59,7 @@
 #include <kdesktopfile.h>
 #include <kmultipledrag.h>
 #include <kinputdialog.h>
-
+#include <ktempfile.h>
 #include "khtml_factory.h"
 
 #include "dom/dom_element.h"
