@@ -46,7 +46,7 @@ def configure(dict):
 		elif key == 'rpath':     want_rpath = dict[key]
 		elif key == 'bootstrap': bootstrap  = 1
 		elif key == 'cachedir':  cache_dir  = dict[key]
-		elif key == 'colorfull': use_colors = 1
+		elif key == 'colorful':  use_colors = dict[key]
 		else: print 'unknown key: '+key
 
 	## make sure the build dir is available
@@ -609,13 +609,13 @@ def generate(env):
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
-        def build_empty_file(target, source, env):
-                """ Writes an empty file """
-                dest=open(target[0].path, 'w')
+	def build_empty_file(target, source, env):
+		""" Writes an empty file """
+		dest=open(target[0].path, 'w')
 		print target[0].path + " +++++"
 		dest.write("")
-                dest.close()
-        env['BUILDERS']['EmptyFile'] = env.Builder(action=env.Action(build_empty_file), prefix='dummy_', suffix='.cpp', src_suffix='')
+		dest.close()
+	env['BUILDERS']['EmptyFile'] = env.Builder(action=env.Action(build_empty_file), prefix='dummy_', suffix='.cpp', src_suffix='')
 
 	## Build symlinks
 	def symlink_command(target, source, env):
@@ -745,7 +745,7 @@ def generate(env):
 			lenv.Append(LIBPATH=[f.dir])
 			lenv.Append(LIBS=[f.name])
 
-        SConsEnvironment.bksys_install = bksys_install
+	SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
 	SConsEnvironment.bksys_shlib   = bksys_shlib
 	SConsEnvironment.subdirs       = subdirs
@@ -763,7 +763,7 @@ def generate(env):
 	if env.has_key('EXTRAINCLUDES'): env.AppendUnique( CPPPATH   = env['EXTRAINCLUDES'])
 	if env.has_key('EXTRALIBS'):     env.AppendUnique( LINKFLAGS = env['EXTRALIBS'])
 
-        if env.has_key('BKS_DEBUG'):
+	if env.has_key('BKS_DEBUG'):
                 if (env['BKS_DEBUG'] == "full"):
                         env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-Wall'])
                         if env['WINDOWS']:
