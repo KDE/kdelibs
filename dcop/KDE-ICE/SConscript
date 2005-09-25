@@ -10,6 +10,7 @@ authutil.c
 connect.c
 error.c
 getauth.c
+globals.c
 iceauth.c
 listen.c
 listenwk.c
@@ -22,9 +23,8 @@ register.c
 replywait.c
 setauth.c
 shutdown.c
-watch.c
 transport.c
-globals.c
+watch.c
 """
 
 obj          = env.genobj('convenience', env)

@@ -326,3 +326,73 @@ def generate(env):
 	from SCons.Script.SConscript import SConsEnvironment
 	SConsEnvironment.KDEicon = KDEicon
 	SConsEnvironment.kdeobj = kdeobj
+
+	class kdeinitobj(kdeobj):
+		def __init__(self, senv=None):
+			if not senv:
+				senv = env
+			SConsEnvironment.kdeobj.__init__(self, 'shlib', senv)
+			self.binary = kdeobj('program', senv)
+			self.kdeinitlib = kdeobj('shlib', senv)
+			self.kdeinitlib.it_is_a_kdelib()
+
+		def execute(self):
+			if self.executed: return
+
+			# 'dcopserver' is the real one
+			self.binary.target   = self.target
+			# 'libkdeinit_dcopserver'
+			self.kdeinitlib.target = 'libkdeinit_' + self.target
+			# 'dcopserver' (lib)
+			
+			self.kdeinitlib.libs     = self.libs
+			self.kdeinitlib.uselib   = self.uselib
+			self.kdeinitlib.source   = self.source
+			self.kdeinitlib.execute()
+					
+			self.binary.uselib       = self.uselib
+			self.binary.libs         = [self.kdeinitlib.target + ".la"] + self.orenv.make_list(self.libs)
+			self.binary.libdirs      = "build/dcop"
+			env.Depends(self.binary.target, self.kdeinitlib.target + ".la")
+
+			myname=None
+			myext=None
+			for source in self.kdeinitlib.source:
+				sext=SCons.Util.splitext(source)
+				if sext[0] == self.target or not myname:
+					myname = sext[0]
+					myext  = sext[1]
+					
+			def create_kdeinit_cpp(target, source, env):
+				""" Creates the dummy kdemain file for the binary"""
+				dest=open(target[0].path, 'w')
+				dest.write('extern \"C\" int kdemain(int, char* []);\n')
+				dest.write('int main( int argc, char* argv[] ) { return kdemain(argc, argv); }\n')
+				dest.close()
+			env['BUILDERS']['KdeinitCpp'] = env.Builder(action=env.Action(create_kdeinit_cpp),
+														prefix='kdeinit_', suffix='.cpp',
+														src_suffix=myext)
+			env.KdeinitCpp(myname)
+			self.binary.source = "./kdeinit_" + myname + '.cpp'
+			self.binary.execute()
+
+			def create_kdeinit_la_cpp(target, source, env):
+				""" Creates the dummy kdemain file for the module"""
+				dest=open(target[0].path, 'w')
+				print target[0].path + ' kdeinit.la'
+				dest.write('#include <kdemacros.h>\n')
+				dest.write('extern \"C\" int kdemain(int, char* []);\n')
+				dest.write('extern \"C\" KDE_EXPORT int kdeinitmain( int argc, char* argv[] ) { return kdemain(argc, argv); }\n')
+				dest.close()
+			env['BUILDERS']['KdeinitLaCpp'] = env.Builder(action=env.Action(create_kdeinit_la_cpp),
+														  prefix='kdeinit_', suffix='.la.cpp',
+														  src_suffix=myext)
+			env.KdeinitLaCpp(myname)
+			self.source = 'kdeinit_' + self.target + '.la.cpp'
+			# TODO scons clean?
+						
+			SConsEnvironment.kdeobj.execute(self)
+
+			
+			
+	SConsEnvironment.kdeinitobj = kdeinitobj
