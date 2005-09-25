@@ -124,7 +124,7 @@ protected:
 
 	// internal members
 	QString	m_uri;
-	Q3ValueVector<QString>	m_attributes;
+	QVector<QString>	m_attributes;
 };
 
 #endif

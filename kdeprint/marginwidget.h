@@ -67,8 +67,8 @@ private:
 	QComboBox		*m_units;
 	QCheckBox		*m_custom;
 	bool			m_symetric, m_block;
-	Q3ValueVector<float>	m_default;
-	Q3ValueVector<float>	m_pagesize;
+	QVector<float>	m_default;
+	QVector<float>	m_pagesize;
 	bool			m_landscape;
 };
 
