@@ -1906,7 +1906,11 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameContentWindow:       {
-        KHTMLView *view = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle())->view();
+        DOM::DocumentImpl* contentDoc = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle());
+        if (!contentDoc)
+            return Undefined();
+            
+        KHTMLView *view = contentDoc->view();
         if (view && view->part())
             return Value(Window::retrieveWindow(view->part()));
         else
