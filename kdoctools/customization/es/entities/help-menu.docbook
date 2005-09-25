@@ -5,7 +5,7 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
+<guimenu>Ayuda</guimenu>
 <guimenuitem>Contenidos...</guimenuitem>
 </menuchoice>
 </term>
@@ -19,7 +19,7 @@ mostrando las páginas de información de &kappname;.
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
+<guimenu>Ayuda</guimenu>
 <guimenuitem>¿Qué es esto?</guimenuitem>
 </menuchoice>
 </term>
@@ -33,7 +33,7 @@ describiendo la función de dicho elemento.</para></listitem>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
+<guimenu>Ayuda</guimenu>
 <guimenuitem>Informar de fallo...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Abre un cuadro de diálogo de informe de fallos</action>

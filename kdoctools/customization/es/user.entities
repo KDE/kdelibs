@@ -7,12 +7,13 @@
  -->
 
 <!ENTITY Alt "<keycap>Alt</keycap>">
+<!ENTITY amarok "<application>amaroK</application>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
 <!ENTITY Ctrl "<keycap>Ctrl</keycap>">
-<!ENTITY Tab  "<keycap>Tab</keycap>">
-<!ENTITY Enter "<keycap>Intro</keycap>">
+<!ENTITY digikam "<application>digiKam</application>">
 <!ENTITY dpi    "<acronym>ppp</acronym>">
 <!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
+<!ENTITY Enter "<keycap>Intro</keycap>">
 <!ENTITY Esc "<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ    "<acronym>PFs</acronym>">
@@ -27,11 +28,15 @@
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
    </guiicon> icon'><!-- if image is localised, then entityref should be used instead of fileref -->
+<!ENTITY kiosktool "<application>Herramienta de administración KIOSK</application>">
+<!ENTITY konversation "<application>Konversation</application>">
+<!ENTITY kubuntu "<application>Kubuntu</application>">
 <!ENTITY kmenu  "menú <guimenu>K</guimenu>">
 <!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
 <!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
 <!ENTITY OS "Sistema operativo">
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
-<!ENTITY X-Windows      "Sistema de ventanas X">
+<!ENTITY Tab  "<keycap>Tab</keycap>">
 <!ENTITY TODO "Pendiente">
+<!ENTITY X-Windows      "Sistema de ventanas X">
