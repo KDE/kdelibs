@@ -113,7 +113,7 @@ protected:
 
 private:
   QStringList m_patterns;
-  Q3ValueVector<Q_INT32> m_pattern_offsets;
+  QVector<Q_INT32> m_pattern_offsets;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

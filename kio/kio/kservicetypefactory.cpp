@@ -186,7 +186,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    QStringList::const_iterator it = m_patterns.begin();
    QStringList::const_iterator end = m_patterns.end();
-   Q3ValueVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
+   QVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
 
   for ( ; it != end; ++it, ++it_offset )
    {
