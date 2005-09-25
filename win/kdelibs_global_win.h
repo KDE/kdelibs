@@ -51,10 +51,21 @@ int kde_start
 # define HAVE_SYS_PARAM_H 1
 #endif
 
-#define KDE_DISTRIBUTION_TEXT "Qt-KDE Wrapper for MS Windows"
+#define KDE_DISTRIBUTION_TEXT "KDE Libraries for MS Windows"
 #define KDE_COMPILING_OS "win32"
-#define KDE_COMPILER_VERSION "MSVC++ 7.1"
-
+#ifdef _MSC_VER
+# if _MSC_VER < 1300
+#  define KDE_COMPILER_VERSION "MSVC++ 6.0"
+# elif _MSC_VER <= 1300
+#  define KDE_COMPILER_VERSION "MSVC++ 7.0"
+# elif _MSC_VER <= 1310
+#  define KDE_COMPILER_VERSION "MSVC++ 7.1"
+# elif _MSC_VER <= 1400
+#  define KDE_COMPILER_VERSION "MSVC++ 8.0"
+# else 1400
+#  define KDE_COMPILER_VERSION "MSVC++ >8.0"
+# endif
+#endif
 
 #ifndef M_PI
 # define M_PI 3.14159265358979323846

@@ -1,1 +1,1 @@
-#include <kdemacros.h.in>
+#include "../kdecore/kdemacros.h.in"
