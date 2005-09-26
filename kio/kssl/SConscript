@@ -38,6 +38,9 @@ obj.includes = '../../kdecore/network ../../kwallet/client'
 obj.execute()
 #TODO other stuffs
 
+env.bksys_insttype('KDECONF', '', 'kssl/ksslcalist')
+env.bksys_insttype('KDEAPPS', 'kssl', 'kssl/caroot/ca-bundle.crt')
+
 """
 # don't change the order of this one. it breaks when openssl is in /usr/include 
 # and the distro's KDE is there too, but the current "devel" KDE prefix is 

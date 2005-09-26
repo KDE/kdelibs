@@ -18,8 +18,8 @@ obj.execute()
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]
 
-env.bksys_insttype('KDEDATA','servicetypes', servicetypes)
-env.bksys_insttype('KDEDATA','services', 'data.protocol')
-env.bksys_insttype('KDEDATA','services/kded', 'kpasswdserver.desktop')
-env.bksys_insttype('KDEDATA','apps/kconf_update', [ 'kioslave.upd', 'proxytype.pl', 'useragent.pl' ])
+env.bksys_insttype('KDESERVTYPES','', servicetypes)
+env.bksys_insttype('KDESERV','', 'data.protocol')
+env.bksys_insttype('KDESERV','kded', 'kpasswdserver.desktop')
+env.bksys_insttype('KDEAPPS','kconf_update', [ 'kioslave.upd', 'proxytype.pl', 'useragent.pl' ])
 env.bksys_insttype('KDEMIME','','magic')

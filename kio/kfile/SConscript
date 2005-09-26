@@ -30,6 +30,9 @@ obj.includes = '../../kdefx ../kio #/ ../../libltdl ../bookmarks'
 obj.execute()
 #TODO other stuffs
 
+env.bksys_insttype('KDESERVTYPES','', 'kpropsdlgplugin.desktop')
+
+
 """
 INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx \
     -I$(top_builddir)/kio/kio -I$(top_srcdir)/kio/bookmarks $(all_includes) $(LIBART_CFLAGS)
