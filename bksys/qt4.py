@@ -301,19 +301,6 @@ def generate(env):
 	configuration for re-use from an IDE """
 	import glob
 
-	def getInstDirForResType(lenv, restype):
-		if len(restype) == 0 or not lenv.has_key(restype):
-			lenv.pprint('RED',"unknown resource type "+restype)
-			lenv.Exit(1)
-		else: instdir = lenv[restype]
-
-		if env['ARGS'] and env['ARGS'].has_key('prefix'):
-			instdir = instdir.replace(lenv['PREFIX'], env['ARGS']['prefix'])
-		return instdir
-		#if restype == "QT4BIN":	return env['PREFIX']+'/bin'
-		#if restype == "QT4MODULE" or restype == "QT4LIB": return env['PREFIX']+'/lib'
-		#return env['PREFIX']
-
 	def QT4install(lenv, restype, subdir, files):
 		if not env['_INSTALL_']:
 			return
