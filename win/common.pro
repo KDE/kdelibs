@@ -147,16 +147,16 @@ win32-borland {
 win32-msvc* {
     QMAKE_CXXFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
     QMAKE_CFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
+
+    # Language Extensions
+    QMAKE_CXXFLAGS += /Ze
 }
 
 # enable Run-Time Type Information (needed by dynamic_cast)
-QMAKE_CXXFLAGS += QMAKE_CFLAGS_RTTI_ON  # /GR for msvc
+QMAKE_CXXFLAGS += $$QMAKE_CFLAGS_RTTI_ON  # /GR for msvc
 
 # enables synchronous exception 
-QMAKE_CXXFLAGS += QMAKE_CFLAGS_EXCEPTIONS_ON # /GX for msvc
-
-# Language Extensions)
-QMAKE_CXXFLAGS += /Ze
+QMAKE_CXXFLAGS += $$QMAKE_CFLAGS_EXCEPTIONS_ON # /GX for msvc
 
 # catch Release-Build Errors in Debug Build
 #DISABLED for msvc.net
