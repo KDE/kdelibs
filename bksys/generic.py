@@ -378,11 +378,21 @@ def find_path(lenv, file, path_list):
 
 def find_file(lenv, file, path_list):
 	for dir in path_list:
-                if os.path.exists( lenv.join(dir, file) ):
-                        return lenv.join(dir, file)
-        return ''
+		if os.path.exists( lenv.join(dir, file) ):
+			return lenv.join(dir, file)
+	return ''
 
-def find_program(lenv, prog):
+def find_program(lenv, file, path_list):
+	if lenv['WINDOWS']:
+		file += '.exe'
+	for dir in path_list:
+		if os.path.exists( lenv.join(dir, file) ):
+			return lenv.join(dir, file)
+	return ''
+
+def find_program_using_which(lenv, prog):
+	if lenv['WINDOWS']: # we're not depending on Cygwin
+		return ''
 	return os.popen("which %s 2>/dev/null" % prog).read().strip()
 
 ## Scons-specific function, do not remove
@@ -410,6 +420,11 @@ def generate(env):
 	'BLUE'  :"\033[94m",
 	'CYAN'  :"\033[96m",
 	'NORMAL':"\033[0m",}
+	if env['WINDOWS'] and not os.getenv("SHELL"): # downgrade for shells that don't support colors
+		colors = env['BKS_COLORS']
+		for c in colors.keys():
+			colors[c] = ""
+		env['BKS_COLORS'] = colors
 
 	## Bksys requires scons >= 0.96
 	try: env.EnsureSConsVersion(0, 96, 91)
@@ -459,7 +474,8 @@ def generate(env):
 	# This avoids recompiling the same files over and over again: 
 	# very handy when working with cvs
 	# TODO: not portable so add a win32 ifdef
-	if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
+	if env['WINDOWS'] or os.getuid() != 0:
+		env.CacheDir( env.join(os.getcwd(),'cache','objects') )
 
 	#  Avoid spreading .sconsign files everywhere - keep this line
 	env.SConsignFile( env['CACHEDIR']+'scons_signatures' )
@@ -755,6 +771,7 @@ def generate(env):
 	SConsEnvironment.find_path=find_path
 	SConsEnvironment.find_file=find_file
 	SConsEnvironment.find_program=find_program
+	SConsEnvironment.find_program_using_which=find_program_using_which
 	SConsEnvironment.getInstDirForResType=getInstDirForResType
 
 	if env.has_key('GENCXXFLAGS'):   env.AppendUnique( CPPFLAGS  = env['GENCXXFLAGS'] )

@@ -63,6 +63,10 @@ def generate(env):
 			#from detect_lowlevel import detect
 			env.pprint('RED', 'Not implemented, see bksys/osx/detect_lowlevel.py')
 			env.Exit(1)
+		elif env['WINDOWS']:
+			sys.path.append('bksys'+os.sep+'win32')
+			from detect_lowlevel import detect
+			detect(env)
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
 			from detect_lowlevel import detect

@@ -45,25 +45,27 @@ def detect(env):
 		# first use the qtdir
 		path=''
 		for prog in progs:
-			path=env.find_file(prog, [env.join(qtdir, 'bin')])
+			path=env.find_program(prog, [env.join(qtdir, 'bin')])
 			if path:
 				p('GREEN',"%s was found as %s" % (prog, path))
 				return path
 
-		# else use the environment
-		for prog in progs:
-			path=env.find_program(prog)
-			if path:
-				p('YELLOW',"%s was found as %s" % (prog, path))
-				return path
+		if not env['WINDOWS']: #(js) temp. check
+			# else use the environment
+			for prog in progs:
+				path=env.find_program_using_which(prog)
+				if path:
+					p('YELLOW',"%s was found as %s" % (prog, path))
+					return path
+			
+			# and then try to guess using common paths ..
+			common_paths=['/usr/bin', '/usr/local/bin', '/opt/bin', '/opt/local/bin']
+			for prog in progs:
+				path=env.find_program(prog, common_paths)
+				if path:
+					p('YELLOW',"%s was found as %s" % (prog, path))
+					return path
 
-		# and then try to guess using common paths ..
-		common_paths=['/usr/bin', '/usr/local/bin', '/opt/bin', '/opt/local/bin']
-		for prog in progs:
-			path=env.find_file(prog, common_paths)
-			if path:
-				p('YELLOW',"%s was found as %s" % (prog, path))
-				return path
 		# everything failed
 		p('RED',"%s was not found - make sure Qt4-devel is installed, or set $QTDIR or $PATH" % prog)
 		env.Exit(1)
