@@ -21,4 +21,5 @@ servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilte
 env.bksys_insttype('KDEDATA','servicetypes', servicetypes)
 env.bksys_insttype('KDEDATA','services', 'data.protocol')
 env.bksys_insttype('KDEDATA','services/kded', 'kpasswdserver.desktop')
+env.bksys_insttype('KDEDATA','apps/kconf_update', [ 'kioslave.upd', 'proxytype.pl', 'useragent.pl' ])
 env.bksys_insttype('KDEMIME','','magic')
