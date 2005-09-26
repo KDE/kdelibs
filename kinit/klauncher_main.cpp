@@ -54,7 +54,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       return 1;
    }
 
-   Q3CString cname = KApplication::launcher();
+   QByteArray cname = KApplication::launcher();
    char *name = cname.data();
    KCmdLineArgs::init(argc, argv, name, "KLauncher", "A service launcher.",
                        "v1.0");
@@ -70,7 +70,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    int maxTry = 3;
    while(true)
    {
-      Q3CString dcopName = KApplication::dcopClient()->registerAs(name, false);
+      DCOPCString dcopName = KApplication::dcopClient()->registerAs(name, false);
       if (dcopName.isEmpty())
       {
          kdWarning() << "DCOP communication problem!" << endl;
