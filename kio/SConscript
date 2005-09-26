@@ -14,3 +14,11 @@ obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 FAM'
 obj.libs     = 'kssl/libkssl.a kio/libkiocore.a  ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la'
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 obj.execute()
+
+servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
+'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]
+
+env.bksys_insttype('KDEDATA','servicetypes', servicetypes)
+env.bksys_insttype('KDEDATA','services', 'data.protocol')
+env.bksys_insttype('KDEDATA','services/kded', 'kpasswdserver.desktop')
+env.bksys_insttype('KDEMIME','','magic')
