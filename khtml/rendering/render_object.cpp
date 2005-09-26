@@ -438,15 +438,11 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
-    if (!style()->htmlHacks()) {
-        // match IE in strict mode
-        if (isRoot()||isBody())
-            return 0;
-        return containingBlock();
-    }
     bool skipTables = isPositioned() || isRelPositioned();
+    bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && !curr->isBody()) {
+    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && 
+                   !(strict && skipTables ? curr->isRoot() : curr->isBody())) {
         if (!skipTables && (curr->isTableCell() || curr->isTable()))
             break;
         curr = curr->parent();
