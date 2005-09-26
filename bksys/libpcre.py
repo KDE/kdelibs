@@ -24,7 +24,7 @@ def generate(env):
         optionFile = env['CACHEDIR'] + 'libpcre.cache.py'
         opts = Options(optionFile)
         opts.AddOptions(
-		('PCRE_ISCONFIGURED', 'If libart is already tested for'),
+		('PCRE_ISCONFIGURED', 'If libpcre is already tested for'),
 		('CXXFLAGS_PCRE',''),
 		('LINKFLAGS_PCRE',''),
 		)
