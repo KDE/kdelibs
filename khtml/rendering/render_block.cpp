@@ -1311,7 +1311,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (relayoutChildren || floatBottom() > m_y ||
+        if (relayoutChildren ||
             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
             (child->isRenderBlock() && child->style()->height().isPercent()))
             child->setChildNeedsLayout(true);
@@ -1340,7 +1340,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         // If an element might be affected by the presence of floats, then always mark it for
         // layout.
-        if ( child->flowAroundFloats() && child->usesLineWidth()) {
+        if ( !child->flowAroundFloats() || child->usesLineWidth() ) {
             int fb = floatBottom();
             if (fb > m_height || fb > yPosEstimate)
                 child->setChildNeedsLayout(true);
@@ -1350,7 +1350,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         child->setPos(child->xPos(), yPosEstimate);
         child->layoutIfNeeded();
 
-        // Now determine the correct ypos based off examination of collapsing margin
+        // Now determine the correct ypos based on examination of collapsing margin
         // values.
         collapseMargins(child, marginInfo, yPosEstimate);
 
@@ -2288,11 +2288,12 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
 int RenderBlock::getClearDelta(RenderObject *child)
 {
     //kdDebug( 6040 ) << "getClearDelta on child " << child << " oldheight=" << m_height << endl;
+    bool clearSet = child->style()->clear() != CNONE;
     int bottom = 0;
     switch(child->style()->clear())
     {
         case CNONE:
-            return 0;
+            break;
         case CLEFT:
             bottom = leftBottom();
             break;
@@ -2304,7 +2305,17 @@ int RenderBlock::getClearDelta(RenderObject *child)
             break;
     }
 
-    return kMax(0, bottom-(child->yPos()));
+    // We also clear floats if we are too big to sit on the same line as a float, and happen to flow around floats.
+    // FIXME: Note that the remaining space checks aren't quite accurate, since you should be able to clear only some floats (the minimum # needed
+    // to fit) and not all (we should be using nearestFloatBottom and looping).
+    int result = clearSet ? kMax(0, bottom - child->yPos()) : 0;
+    if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
+        if ((child->style()->width().isPercent() && child->width() > lineWidth(child->yPos())) ||
+            (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) && 
+              child->minWidth() <= contentWidth()))
+            result = kMax(0, floatBottom() - child->yPos());
+    }
+    return result;
 }
 
 bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
