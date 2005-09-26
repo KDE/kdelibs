@@ -104,9 +104,6 @@ def detect(lenv):
 /* Define is posix_fadvise is supported */
 #define HAVE_FADVISE 1
 
-/* Define if your system has libfam */
-#define HAVE_FAM 1
-
 /* Define to 1 if you have the <float.h> header file. */
 #define HAVE_FLOAT_H 1
 

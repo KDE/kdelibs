@@ -54,7 +54,7 @@ coreobj = env.kdeobj('convenience',env)
 coreobj.target   = 'libkiocore'
 coreobj.source   = kiocore_sources
 coreobj.iskdelib = 1
-coreobj.uselib   = 'QTCORE QT QT3SUPPORT KDE4'
+coreobj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 FAM'
 coreobj.includes = '../../kdecore/network ../kssl ../../interfaces ../misc'
 coreobj.execute()
 

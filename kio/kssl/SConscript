@@ -33,7 +33,7 @@ ksslcsessioncache.cc
 obj = env.qt4obj('convenience',env)
 obj.target   = 'libkssl'
 obj.source   = sources
-obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4'
+obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'
 obj.includes = '../../kdecore/network ../../kwallet/client'
 obj.execute()
 #TODO other stuffs

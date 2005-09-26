@@ -22,7 +22,7 @@ env.Moc("kbookmarkmenu_p.h")
 obj = env.kdeobj('convenience',env)
 obj.target   = 'libkbookmarks'
 obj.source   = sources
-obj.uselib   = 'QTCORE QT3SUPPORT QT KDE4'
+obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4'
 obj.execute()
 
 

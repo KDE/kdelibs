@@ -1,4 +1,4 @@
-/*
+/* 
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
  *
