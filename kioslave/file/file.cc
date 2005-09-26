@@ -150,7 +150,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         }
         acl = acl_from_text( ACLString.latin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
-            ret == acl_set_file( path, ACL_TYPE_ACCESS, acl );
+            ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
             ssize_t size = acl_size( acl );
             kdDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
         }
