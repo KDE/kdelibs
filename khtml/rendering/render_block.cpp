@@ -1527,7 +1527,7 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren )
+            if ( relayoutChildren || (r->hasStaticY() && r->parent() != this && r->parent()->isBlockFlow()) )
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
