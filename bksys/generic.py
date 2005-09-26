@@ -283,8 +283,7 @@ class genobj:
 
 		# and now add the libraries from uselib
 		if self.uselib:
-			#libs=self.env.make_list(self.uselib)
-			libs=SCons.Util.CLVar(self.uselib) # self.env.Split(self.uselib)
+			libs=SCons.Util.CLVar(self.uselib)
 			for lib in libs:
 				if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
 					raise genobj.WrongLibError(lib)
@@ -319,9 +318,8 @@ class genobj:
 				self.libprefix, self.vnum)
 		elif self.type=='program':
 			ret=self.env.Program(self.p_localtarget, self.p_localsource)
-			if not self.env.has_key('NOAUTOINSTALL'):
-				ins=self.env.bksys_install(self.instdir, ret)
-				if self.perms: self.env.AddPostAction(ins, self.env.Chmod(ins, self.perms))
+			if not self.env.has_key('NOAUTOINSTALL') and self.instdir:
+				ins=self.env.bksys_install(self.instdir, ret, perms=self.perms)
 		elif self.type=='staticlib' or self.type=='convenience':
 			ret=self.env.StaticLibrary(self.p_localtarget, self.p_localsource)
 

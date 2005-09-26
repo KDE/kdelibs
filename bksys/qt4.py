@@ -342,7 +342,8 @@ def generate(env):
 		def __init__(self, val, senv=None):
 			if senv: generic.genobj.__init__(self, val, senv)
 			else: generic.genobj.__init__(self, val, env)
-			self.iskdelib=0
+			if val == 'shlib':     self.instdir=senv.join(senv['PREFIX'], 'lib')
+			elif val == 'program': self.instdir=senv.join(senv['PREFIX'], 'bin')
 		def execute(self):
 			if self.executed: return
 			if self.orenv.has_key('DUMPCONFIG'):

@@ -197,10 +197,7 @@ def generate(env):
 				continue
 			lenv.bksys_install(destdir, iconfile, icon_filename)
 
-	kcfg_ext = ['.kcfgc']
 	header_ext = [".h", ".hxx", ".hpp", ".hh"]
-	skel_ext = [".skel", ".SKEL"]
-	stub_ext = [".stub", ".STUB"]
 
 	def KDEfiles(lenv, target, source):
 		""" Returns a list of files for scons (handles kde tricks like .skel) 
@@ -249,25 +246,24 @@ def generate(env):
 		# For each file, check wether it is a dcop file or not, and create the complete list of sources
 		for file in source_:
 
-			sfile=SCons.Node.FS.default_fs.File(str(file)) # why str(file) ? because ordinal not in range issues
+			sfile=SCons.Node.FS.default_fs.File(str(file))
+			# why str(file) ? because ordinal not in range issues (scons bug)
 			bs  = SCons.Util.splitext(file)[0]
 			ext = SCons.Util.splitext(file)[1]
-			if ext in skel_ext:
-				if not bs in kidl:
-					kidl.append(bs)
+			if ext == '.skel':
+				if not bs in kidl: kidl.append(bs)
 				lenv.Dcop(bs+'.kidl')
 				lenv.Depends(bs+'_skel.cpp', lenv['DCOPIDL2CPP'])
 				src.append(bs+'_skel.cpp')
-			elif ext in stub_ext:
-				if not bs in kidl:
-					kidl.append(bs)
+			elif ext == '.stub':
+				if not bs in kidl: kidl.append(bs)
 				lenv.Stub(bs+'.kidl')
 				lenv.Depends(bs+'_stub.cpp', lenv['DCOPIDL2CPP'])
 				src.append(bs+'_stub.cpp')
-			elif ext == ".moch":
+			elif ext == '.moch':
 				lenv.Moccpp(bs+'.h')
 				src.append(bs+'_moc.cpp')
-			elif ext in kcfg_ext:
+			elif ext == '.kcfgc': 
 				name=SCons.Util.splitext(sfile.name)[0]
 				hfile=lenv.Kcfg(file)
 				cppkcfgfile=sfile.dir.File(bs+'.cpp')
@@ -279,7 +275,7 @@ def generate(env):
 			else:
 				src.append(file)
 
-		for base in kidl: lenv.Kidl(base+'.h')
+		for base in kidl:lenv.Kidl(base+'.h')
 		
 		# Now check against typical newbie errors
 		for file in kcfg_files:
@@ -296,7 +292,7 @@ def generate(env):
 		def __init__(self, val, senv=None):
 			if senv: SConsEnvironment.qt4obj.__init__(self, val, senv)
 			else: SConsEnvironment.qt4obj.__init__(self, val, env)
-			#self.iskdelib=0
+			self.iskdelib=0
 		def it_is_a_kdelib(self): self.iskdelib=1
 		def execute(self):
 			if self.executed: return

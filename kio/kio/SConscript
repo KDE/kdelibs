@@ -5,7 +5,7 @@ Import('env')
 kiocore_sources = """
 authinfo.cpp
 kprotocolmanager.cpp
-slave.cpp slaveinterface.cpp observer.stub
+slave.cpp slaveinterface.cpp
 sessiondata.cpp scheduler.cpp
 connection.cpp
 job.cpp global.cpp
@@ -16,13 +16,14 @@ tcpslavebase.cpp slavebase.cpp passdlg.cpp
 forwardingslavebase.cpp
 progressbase.cpp defaultprogress.cpp
 statusbarprogress.cpp
-kdirnotify.cpp kdirnotify.skel kdirnotify_stub.cpp
-../misc/uiserver.stub observer.cpp observer.skel
+kdirnotify.cpp kdirnotify.skel kdirnotify.stub
+../misc/uiserver.stub observer.cpp observer.skel observer.stub
 kemailsettings.cpp
 kprotocolinfo.cpp
 renamedlg.cpp skipdlg.cpp kremoteencoding.cpp
 kmimetypechooser.cpp
 """
+# why kdirnotify_stub.cpp ?
 
 ksycoca_sources = """
 kdirwatch.cpp

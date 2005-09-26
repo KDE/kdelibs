@@ -15,6 +15,7 @@ def generate(env):
 		pkgs = Tool('pkgconfig', ['./bksys'])
 		pkgs.generate(env)
 
+		# TODO this will not work on opensuse 10 (ita) openssl-devel not installed
 		have_openssl  = env.pkgConfig_findPackage('OPENSSL', 'openssl', '0.9.6')
 
     		dest=open(env.join(env['_BUILDDIR_'], 'ksslconfig.h'), 'w')
