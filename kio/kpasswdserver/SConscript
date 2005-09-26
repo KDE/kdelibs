@@ -6,7 +6,7 @@ obj = env.kdeobj('shlib', env)
 obj.target   = 'kded_kpasswdserver'
 obj.source   = "kpasswdserver.cpp kpasswdserver.skel"
 #obj.iskdelib = 1
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIB_KIO LIB_KDED'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO'
 obj.libs     = '../../kwallet/client/libkwalletclient.la'
 obj.includes = '../../kwallet/client'
 obj.execute()

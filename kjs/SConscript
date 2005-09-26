@@ -42,7 +42,7 @@ obj.cxxflags += ' -DHAVE_CONFIG_H '
 obj.iskdelib = 1
 obj.includes = 'network'
 if env.has_key("LIBPCRE_ISCONFIGURED"): 
-	obj.uselib += ' LIBPCRE'
+	obj.uselib += 'PCRE'
 	obj.cxxflags += ' -DHAVE_PCREPOSIX '
 obj.execute()
 

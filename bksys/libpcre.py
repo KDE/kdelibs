@@ -10,10 +10,10 @@ def generate(env):
 	    	context.Message('Checking for libpcre ... ')
 		ret = context.TryAction('pcre-config --version')
 		if ret[0]: 
-			env['LIBPCRE_ISCONFIGURED'] = 1;
-			env['CXXFLAGS_LIBPCRE'] = SCons.Util.CLVar( 
+			env['PCRE_ISCONFIGURED'] = 1;
+			env['CXXFLAGS_PCRE'] = SCons.Util.CLVar( 
 					os.popen('pcre-config --cflags').read().strip() );
-			env['LINKFLAGS_LIBCPRE'] = SCons.Util.CLVar( 
+			env['LINKFLAGS_PCPRE'] = SCons.Util.CLVar( 
 					os.popen('pcre-config --libs').read().strip() );
 		context.Result(ret[0])
 		return ret[0]
@@ -24,12 +24,12 @@ def generate(env):
         optionFile = env['CACHEDIR'] + 'libpcre.cache.py'
         opts = Options(optionFile)
         opts.AddOptions(
-		('LIBPCRE_ISCONFIGURED', 'If libart is already tested for'),
-		('CXXFLAGS_LIBPCRE',''),
-		('LINKFLAGS_LIBPCRE',''),
+		('PCRE_ISCONFIGURED', 'If libart is already tested for'),
+		('CXXFLAGS_PCRE',''),
+		('LINKFLAGS_PCRE',''),
 		)
         opts.Update(env)
-	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('LIBPCRE_ISCONFIGURED')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('PCRE_ISCONFIGURED')):
 	    conf = env.Configure(custom_tests =	 { 'Check_libpcre' : Check_libpcre } )
 
 	    if not conf.Check_libpcre():

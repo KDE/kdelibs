@@ -228,6 +228,13 @@ class genobj:
 		os.chdir(self.not_orig_os_dir)
 		self.workdir_lock=None
 
+	class WrongLibError(Exception):
+		def __init__(self, value):
+			self.value = value
+		
+		def __str__(self):
+			return "No such library " + self.value
+
 	# When an object is created and the sources, targets, etc are given
 	# the execute command calls the SCons functions like Program, Library, etc
 	def execute(self):
@@ -279,6 +286,8 @@ class genobj:
 			#libs=self.env.make_list(self.uselib)
 			libs=SCons.Util.CLVar(self.uselib) # self.env.Split(self.uselib)
 			for lib in libs:
+				if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
+					raise genobj.WrongLibError(lib)
 				if self.env.has_key('LIB_'+lib):
 					self.env.AppendUnique(LIBS=self.env['LIB_'+lib])
 				if self.env.has_key('LIBPATH_'+lib):

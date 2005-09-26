@@ -6,8 +6,7 @@ Import('env')
 obj = env.genobj('convenience',env)
 obj.target   = 'libltdlc'
 obj.source   = 'ltdl.c'
-obj.uselib   = 'DL '
-obj.ccflags  = ['-DHAVE_CONFIG_H']
+obj.uselib   = 'DL'
 obj.execute()
 
 

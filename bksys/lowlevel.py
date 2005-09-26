@@ -36,7 +36,7 @@ def generate(env):
 	########## sm
 	env['LIB_SM']              = ['SM', 'ICE']
 
-	env['LINKFLAGS_DL']        = ['-ldl']
+	env['LIB_DL']              = ['dl']
 
 	########## X11
 	env['LIB_X11']             = ['X11']
