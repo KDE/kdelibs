@@ -39,13 +39,13 @@ def bootstrap(env):
 	env['LIB_KIO']     = ['kio']
 	env['LIB_KDEUI']   = ['kdeui']
 
-	env['LIBPATH_KDECORE'] = [ env.join(env['_BUILDDIR_'], 'kdecore') ]
-	env['LIBPATH_KIO']     = [ env.join(env['_BUILDDIR_'], 'kio') ]
-	env['LIBPATH_KDEUI']   = [ env.join(env['_BUILDDIR_'], 'kdeui') ]
+	env['LIBPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore') ]
+	env['LIBPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio') ]
+	env['LIBPATH_KDEUI']   = [ env.join(os,getcwd(), env['_BUILDDIR_'], 'kdeui') ]
 
-	env['CPPPATH_KDECORE'] = [ env.join(env['_BUILDDIR_'], 'kdecore'), '#kdecore' ]
-	env['CPPPATH_KIO']     = [ env.join(env['_BUILDDIR_'], 'kio'), '#kio' ]
-	env['CPPPATH_KDEUI']   = [ env.join(env['_BUILDDIR_'], 'kdeui'), '#kdeui' ]
+	env['CPPPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore'), '#kdecore' ]
+	env['CPPPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio'), '#kio' ]
+	env['CPPPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui'), '#kdeui' ]
 
 def detect(env):
 	"""

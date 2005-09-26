@@ -20,8 +20,8 @@ def generate(env):
 	    conf = env.Configure( )
 	    if conf.CheckCXXHeader('fam.h') and conf.CheckLib('fam','FAMOpen'):
 		env['FAM_ISCONFIGURED'] = 1;
-		env['CXXFLAGS_FAM']=' -DHAVE_FAM '
-		env['LINKFLAGS_FAM'] = ' -lfam'
+		env['CXXFLAGS_FAM']= ['-DHAVE_FAM']
+		env['LINKFLAGS_FAM'] = ['-lfam']
 	    else: print 'FAM not found.'
 
 	    env = conf.Finish()
