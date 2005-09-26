@@ -70,7 +70,7 @@ void RenderReplaced::calcMinMaxWidth()
 #endif
 
     m_width = calcReplacedWidth();
-    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    m_width = calcBoxWidth( m_width );
 
     if ( style()->width().isPercent() || style()->height().isPercent() || 
 		    style()->maxWidth().isPercent() || style()->maxHeight().isPercent() ||

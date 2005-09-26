@@ -1056,7 +1056,7 @@ short RenderBox::calcReplacedWidth() const
     if (width < minW)
         width = minW;
 
-    return calcContentWidth(width);
+    return width;
 }
 
 int RenderBox::calcReplacedWidthUsing(WidthType widthType) const
@@ -1098,7 +1098,7 @@ int RenderBox::calcReplacedHeight() const
     if (height < minH)
         height = minH;
 
-    return calcContentHeight(height);
+    return height;
 }
 
 int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
