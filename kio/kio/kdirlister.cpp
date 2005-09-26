@@ -761,10 +761,15 @@ void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
   KFileItem *fileitem = findByURL( 0, oldurl );
   if ( fileitem )
   {
-    aboutToRefreshItem( fileitem );
-    fileitem->setURL( dst );
-    fileitem->refreshMimeType();
-    emitRefreshItem( fileitem );
+    if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
+        FilesChanged( src );
+    else
+    {
+        aboutToRefreshItem( fileitem );
+        fileitem->setURL( dst );
+        fileitem->refreshMimeType();
+        emitRefreshItem( fileitem );
+    }
   }
 #ifdef DEBUG_CACHE
   printDebug();
