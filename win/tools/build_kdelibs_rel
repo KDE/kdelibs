@@ -8,6 +8,7 @@ fi
 
 update_kdelibs_pro_files || exit 1
 .copy_missing_headers || exit 1
+source .build_kdelibs_comon || exit 1
 
 cd "$KDELIBS"
 
@@ -21,9 +22,6 @@ if [ -n $noclean ] ; then
 fi
 echo "-------------------------------------------------"
 echo
-
-pwd=`pwd`
-make="nmake -nologo"
 
 # special
 cd win/9x || exit 1

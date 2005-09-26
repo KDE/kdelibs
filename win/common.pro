@@ -140,17 +140,20 @@ contains( TEMPLATE, lib ) {
 }
 
 # global definitions
-QMAKE_CXXFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
-QMAKE_CFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
+win32-borland {
+    QMAKE_CXXFLAGS += /I $(KDELIBS)/win/kdelibs_global_win.h
+    QMAKE_CFLAGS += /I $(KDELIBS)/win/kdelibs_global_win.h
+}
+win32-msvc* {
+    QMAKE_CXXFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
+    QMAKE_CFLAGS += /FI$(KDELIBS)/win/kdelibs_global_win.h
+}
 
 # enable Run-Time Type Information (needed by dynamic_cast)
-QMAKE_CXXFLAGS += /GR
+QMAKE_CXXFLAGS += QMAKE_CFLAGS_RTTI_ON  # /GR for msvc
 
 # enables synchronous exception 
-QMAKE_CXXFLAGS += /GX
-
-# enables synchronous exception 
-QMAKE_CXXFLAGS += /GX
+QMAKE_CXXFLAGS += QMAKE_CFLAGS_EXCEPTIONS_ON # /GX for msvc
 
 # Language Extensions)
 QMAKE_CXXFLAGS += /Ze
