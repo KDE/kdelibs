@@ -27,8 +27,17 @@ def bootstrap(env):
 	## install paths
 	env['KDEBIN']    = env.join( env['PREFIX'], 'bin')
 	env['KDEDATA']   = env.join( env['PREFIX'], 'share')
+	env['KDEAPPS']   = env.join( env['PREFIX'], 'share/apps')
+	env['KDEKCFG']   = env.join( env['PREFIX'], 'share/config.kcfg')
+	env['KDEICONS']   = env.join( env['PREFIX'], 'share/icons')
 	env['KDEMIME']   = env.join( env['PREFIX'], 'share/mimelnk')
+	env['KDEDOC']   = env.join( env['PREFIX'], 'share/doc')
+	env['KDESERV']   = env.join( env['PREFIX'], 'share/services')
+	env['KDELOCALE']   = env.join( env['PREFIX'], 'share/locale')
+	env['KDESERVTYPES']   = env.join( env['PREFIX'], 'share/servicetypes')
+	
 	env['KDELIB']    = env.join( env['PREFIX'], 'lib')
+	env['KDECONF']    = env.join( env['PREFIX'], 'share/config')
 	env['KDEMODULE'] = env.join( env['PREFIX'], 'lib/kde4')
 
 	env['KCONFIGCOMPILER']= env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore/kconfig_compiler/kconfig_compiler')

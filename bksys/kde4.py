@@ -33,7 +33,7 @@ def generate(env):
 		('KDELOCALE', ''), ('KDEDOC', ''), ('KDEKCFG', ''),
 		('KDEXDG', ''), ('KDEXDGDIR', ''), ('KDEMENU', ''),
 		('KDEMIME', ''), ('KDEICONS', ''), ('KDESERV', ''),
-		('KDESERVTYPES', ''), ('KDEAPPS', ''),
+		('KDESERVTYPES', ''), ('KDEAPPS', ''), ('KDECONF',''),
 		
 		# the main KDE libraries - the naming is important here, see genobj.uselib
 		('LIBPATH_KDECORE', ''),
