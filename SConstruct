@@ -77,6 +77,7 @@ kwallet
 kjs
 kio
 qttestlib
+kded
 """
 
 # TODO this will not stay like this ..
