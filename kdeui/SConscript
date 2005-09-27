@@ -34,7 +34,7 @@ kcolorcombo.cpp kpushbutton.cpp
 kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp
 kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp
 kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp
-kmainwindowiface_skel.cpp kguiitem.cpp kstdguiitem.cpp
+kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp
 kstringvalidator.cpp kactivelabel.cpp
 kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp
 ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp
@@ -48,18 +48,15 @@ ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp
 """
 
 for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kdatetable.h kwhatsthismanager_p.h kstdaction_p.h".split():
-	env.Moc(i)
+       env.Moc(i)
 
-env.Kidl("kmainwindowiface.h")
-env.Dcop("kmainwindowiface.kidl")
-env.Moc('kdatetable.h')
-
-obj = env.qt4obj('shlib', env)
+obj = env.kdeobj('shlib', env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdeui'
 obj.source   = ui_files
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.libs     = '../kdecore/libkdecore.la ../kdefx/libkdefx.la'
+obj.iskdelib = 1
 obj.execute()
 
 

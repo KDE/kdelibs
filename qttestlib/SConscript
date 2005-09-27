@@ -3,7 +3,7 @@
 import os
 Import('env')
 
-obj = env.qt4obj('shlib',env)
+obj = env.kdeobj('shlib',env)
 obj.vnum     = '2.0.1'
 obj.target   = 'libQtTest'
 obj.source   = Split("""qtestcase.cpp 

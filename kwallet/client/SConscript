@@ -4,7 +4,7 @@ Import('env')
 
 obj = env.kdeobj('shlib', env)
 obj.iskdelib = 1
-obj.vnum     = '1.1.0'
+obj.vnum     = '2.1.0'
 obj.target   = 'libkwalletclient'
 obj.source   = """
 kwallet.skel
