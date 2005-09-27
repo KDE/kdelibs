@@ -43,7 +43,7 @@
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT K3PopupMenu : public Q3PopupMenu {
+class KDE3SUPPORT_EXPORT K3PopupMenu : public Q3PopupMenu {
     Q_OBJECT
 public:
     /**
