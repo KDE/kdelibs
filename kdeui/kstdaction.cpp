@@ -336,4 +336,3 @@ KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* pa
 
 }
 
-#include "kstdaction.moc"
