@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KAPP_H
-#define _KAPP_H
+#ifndef KAPP_H
+#define KAPP_H
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"

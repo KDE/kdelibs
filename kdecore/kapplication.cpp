@@ -2046,16 +2046,16 @@ bool checkAccess(const QString& pathname, int mode)
 
 void KApplication::setTopWidget( QWidget *topWidget )
 {
-  if( !topWidget )
+    if( !topWidget )
       return;
 
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
-        topWidget->setCaption( caption() );
+        topWidget->setWindowTitle( caption() );
     }
-
     // set the specified icons
-    topWidget->setIcon( icon() ); //standard X11
+    topWidget->setWindowIcon( icon() );
+
 #if defined Q_WS_X11
 //#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
