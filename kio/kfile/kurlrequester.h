@@ -35,6 +35,7 @@ class KURLDragPushButton;
 
 class QString;
 class QTimer;
+class QEvent;
 
 /**
  * This class is a widget showing a lineedit and a button, which invokes a
@@ -204,12 +205,6 @@ public slots:
     void setKURL( const KURL& url );
 
     /**
-     * Sets the caption of the file dialog.
-     * @since 4.0
-     */
-    virtual void setDialogTitle( const QString& title );
-
-    /**
      * Clears the lineedit/combobox.
      */
     void clear();
@@ -277,6 +272,7 @@ private slots:
     void slotUpdateURL();
 
 protected:
+    virtual void changeEvent (QEvent *e);
     virtual void virtual_hook( int id, void* data );
 private:
     class KURLRequesterPrivate;

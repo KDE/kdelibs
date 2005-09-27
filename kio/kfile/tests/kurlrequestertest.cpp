@@ -8,11 +8,19 @@ int main( int argc, char **argv )
 {
     KCmdLineArgs::init(argc, argv, "kurlrequestertest","kurlrequestertest","test app","0");
     KApplication app;
+    app.setQuitOnLastWindowClosed(false);
+ 
     KURL url = KURLRequesterDlg::getURL( "ftp://ftp.kde.org" );
     qDebug( "Selected url: %s", url.url().latin1());
 
     KURLRequester *req = new KURLRequester();
     KEditListBox *el = new KEditListBox( QLatin1String("Test"), req->customEditor() );
     el->show();
+
+    KURLRequester *req1 = new KURLRequester();
+    req1->fileDialog();
+    req1->setWindowTitle("AAAAAAAAAAAA");
+    req1->show();
+   
     return app.exec();
 }

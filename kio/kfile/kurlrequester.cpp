@@ -32,6 +32,7 @@
 #include <kurlcompletion.h>
 #include <kprotocolinfo.h>
 
+#include <qevent.h>
 #include <qstring.h>
 #include <qdrag.h>
 #include <qmimedata.h>
@@ -255,11 +256,15 @@ void KURLRequester::setKURL( const KURL& url )
         d->setText( url.pathOrURL() );
 }
 
-void KURLRequester::setDialogTitle( const QString& title )
+void KURLRequester::changeEvent(QEvent *e)
 {
-   QWidget::setWindowTitle( title );
-   if (myFileDialog)
-      myFileDialog->setWindowTitle( title );
+   if (e->type()==QEvent::WindowTitleChange) {
+     if (myFileDialog) {
+	//kdDebug()<<"CHANGEEVENT"<<endl;
+        myFileDialog->setWindowTitle( windowTitle() );
+     }
+   }
+   Q3HBox::changeEvent(e);
 }
 
 QString KURLRequester::url() const
