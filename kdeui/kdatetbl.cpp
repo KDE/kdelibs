@@ -615,6 +615,7 @@ KDateInternalWeekSelector::weekEnteredSlot()
   if(!ok)
     {
       KNotifyClient::beep();
+      emit(closeMe(0));
       return;
     }
   result=week;
@@ -820,6 +821,7 @@ KDateInternalMonthPicker::contentsMouseReleaseEvent(QMouseEvent *e)
   if(row<0 || col<0)
     { // the user clicked on the frame of the table
       emit(closeMe(0));
+      return;
     }
 
   pos=3*row+col+1;
@@ -857,6 +859,7 @@ KDateInternalYearSelector::yearEnteredSlot()
   if(!ok)
     {
       KNotifyClient::beep();
+      emit(closeMe(0));
       return;
     }
   //date.setYMD(year, 1, 1);
@@ -864,6 +867,7 @@ KDateInternalYearSelector::yearEnteredSlot()
   if(!date.isValid())
     {
       KNotifyClient::beep();
+      emit(closeMe(0));
       return;
     }
   result=year;
@@ -885,13 +889,27 @@ KDateInternalYearSelector::setYear(int year)
   setText(temp);
 }
 
+class KPopupFrame::KPopupFramePrivate
+{
+    public:
+        KPopupFramePrivate() : exec(false) {}
+
+        bool exec;
+};
+
 KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
   : QFrame(parent, name, WType_Popup),
     result(0), // rejected
-    main(0)
+    main(0),
+    d(new KPopupFramePrivate)
 {
   setFrameStyle(QFrame::Box|QFrame::Raised);
   setMidLineWidth(2);
+}
+
+KPopupFrame::~KPopupFrame()
+{
+    delete d;
 }
 
 void
@@ -900,6 +918,7 @@ KPopupFrame::keyPressEvent(QKeyEvent* e)
   if(e->key()==Key_Escape)
     {
       result=0; // rejected
+      d->exec = false;
       qApp->exit_loop();
     }
 }
@@ -908,7 +927,17 @@ void
 KPopupFrame::close(int r)
 {
   result=r;
-  qApp->exit_loop();
+}
+
+void
+KPopupFrame::hide()
+{
+    QFrame::hide();
+    if (d->exec)
+    {
+        d->exec = false;
+        qApp->exit_loop();
+    }
 }
 
 void
@@ -960,6 +989,7 @@ KPopupFrame::exec(QPoint pos)
 {
   popup(pos);
   repaint();
+  d->exec = true;
   qApp->enter_loop();
   hide();
   return result;

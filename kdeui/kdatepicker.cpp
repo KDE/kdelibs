@@ -29,6 +29,7 @@
 #include <qfont.h>
 #include <qvalidator.h>
 #include <qpopupmenu.h>
+#include <qtimer.h>
 
 #include "kdatepicker.h"
 #include <kglobal.h>
@@ -415,8 +416,18 @@ KDatePicker::selectYearClicked()
     } else {
       KNotifyClient::beep();
     }
-  selectYear->setOn( false );
+
   delete popup;
+  QTimer::singleShot(0, this, SLOT(ensureSelectYearIsUp()));
+}
+
+void
+KDatePicker::ensureSelectYearIsUp()
+{
+  if (!selectYear->isDown())
+  {
+    selectYear->setOn( false );
+  }
 }
 
 void

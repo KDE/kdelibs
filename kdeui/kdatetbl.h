@@ -185,11 +185,20 @@ public slots:
    * @p r is the result returned from exec().
    */
   void close(int r);
+  /**
+   * Hides the widget. Reimplemented from QWidget
+   */
+  void hide();
+
 public:
   /**
    * The contructor. Creates a dialog without buttons.
    */
   KPopupFrame(QWidget* parent=0, const char*  name=0);
+  /**
+   * The destructor.
+   */
+  ~KPopupFrame();
   /**
    * Set the main widget. You cannot set the main widget from the constructor,
    * since it must be a child of the frame itselfes.

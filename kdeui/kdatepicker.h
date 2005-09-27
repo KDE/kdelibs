@@ -238,6 +238,9 @@ signals:
    */
   void tableClicked();
 
+private slots:
+  void ensureSelectYearIsUp();
+
 private:
   /// the font size for the widget
   int fontsize;
