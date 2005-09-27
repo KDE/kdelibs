@@ -335,3 +335,5 @@ KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* pa
 	{ return KStdAction::create( AboutKDE, name, recvr, slot, parent ); }
 
 }
+
+#include "kstdaction.moc"
