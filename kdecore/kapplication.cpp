@@ -568,7 +568,7 @@ int KApplication::xioErrhandler( Display* dpy )
 {
     if(kapp)
     {
-        emit shutDown();
+        emit aboutToQuit();
 #ifdef Q_WS_X11
         d->oldXIOErrorHandler( dpy );
 #else
@@ -594,7 +594,7 @@ int KApplication::xErrhandler( Display* dpy, void* err_ )
 
 void KApplication::iceIOErrorHandler( _IceConn *conn )
 {
-    emit shutDown();
+    emit aboutToQuit();
 
 #ifdef Q_WS_X11
     if ( d->oldIceIOErrorHandler != NULL )
@@ -696,8 +696,10 @@ void KApplication::init()
     d->oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
-
+    
+#ifdef QT3_SUPPORT
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
+#endif
 
     {
         QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );

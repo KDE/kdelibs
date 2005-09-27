@@ -189,16 +189,19 @@ public:
    */
   KConfig* sessionConfig();
 
-  /**
+#ifdef QT3_SUPPORT
+ /**
    * Is the application restored from the session manager?
    *
    * @return If true, this application was restored by the session manager.
    *    Note that this may mean the config object returned by
    * sessionConfig() contains data saved by a session closedown.
    * @see sessionConfig()
+   * @deprecated use QApplication::isSessionRestored()
    */
-  bool isRestored() const { return QApplication::isSessionRestored(); }
-
+  bool isRestored() const { return QApplication::isSessionRestored(); } KDE_DEPRECATED
+#endif
+  
   /**
    * Disables session management for this application.
    *
@@ -851,15 +854,18 @@ signals:
 
   */
   void saveYourself();
-
+  
+#ifdef QT3_SUPPORT
   /** Your application is killed. Either by your program itself,
       @p xkill or (the usual case) by KDE's logout.
 
       The signal is particularly useful if your application has to do some
       last-second cleanups. Note that no user interaction is possible at
       this state.
+   * @deprecated use QCoreApplication::aboutToQuit()
    */
-  void shutDown();
+  void shutDown(); 
+#endif
 
 private:
   void propagateSettings(SettingsCategory category);
