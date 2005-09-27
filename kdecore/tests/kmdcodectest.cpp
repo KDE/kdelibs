@@ -147,12 +147,11 @@ void testCodec (const char* msg, Codec type, bool isFile)
                 break;
         }
 
-        Q3CString result (output.data(), output.size()+1);
-        cout << "Result: " << endl << result.data() << endl;
+        cout << "Result: " << endl << output.data() << endl;
     }
     else
     {
-        Q3CString result;
+        QByteArray result;
 
         memcpy (output.data(), msg, strlen(msg));
 
@@ -244,7 +243,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
 
   if ( !isFile )
   {
-    context.update (Q3CString(input));
+    context.update (QByteArray(input));
     result = context.verify( digest );
     cout << "Input string: " << input << endl;
   }
@@ -294,7 +293,7 @@ void MD5_file (const char *filename, bool rawOutput )
 void MD5_string (const char *input, const char* expected, bool rawOutput )
 {
   KMD5 context;
-  context.update (Q3CString(input));
+  context.update (QByteArray(input));
 
   cout << "Checking MD5 for: " << input << endl;
 
@@ -371,7 +370,7 @@ int main (int argc, char *argv[])
        {
           const char* opt = args->getOption( "c" ).data();
           for ( int i=0 ; i < count; i++ )
-            MD5_verify ( Q3CString(args->arg(i)), opt, (isString || !isFile) );
+            MD5_verify ( QByteArray(args->arg(i)), opt, (isString || !isFile) );
        }
        else
        {
