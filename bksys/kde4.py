@@ -62,15 +62,9 @@ def generate(env):
 		env['_CONFIGURE_']=1
 		import sys
 		import os
-		if sys.platform == 'darwin':
-			#sys.path.append('bksys'+os.sep+'osx')
-			#from detect_kde4 import detect
-			env.pprint('RED', 'Not implemented, see bksys/osx/detect_kde4.py')
-			env.Exit(1)
-		else:
-			sys.path.append('bksys'+os.sep+'unix')
-			from detect_kde4 import detect
-			detect(env)
+		sys.path.append('bksys'+os.sep+'unix')
+		from detect_kde4 import detect
+		detect(env)
 
 		dest=open(env.join(env['_BUILDDIR_'], 'config-kde.h'), 'w')
 		dest.write('/* kde configuration */\n')

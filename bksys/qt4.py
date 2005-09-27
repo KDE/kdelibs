@@ -106,7 +106,9 @@ def generate(env):
 			if env.has_key(opt.key): env.__delitem__(opt.key)
 		import sys
 		if sys.platform == 'darwin':
-			sys.path.append('bksys'+os.sep+'osx')
+			# TODO: implement Qt .framework detection, rather than just the shared lib version
+			# sys.path.append('bksys'+os.sep+'osx')
+			sys.path.append('bksys'+os.sep+'unix')
 			from detect_qt4 import detect
 		else:
 			sys.path.append('bksys'+os.sep+'unix')

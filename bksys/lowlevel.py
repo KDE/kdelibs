@@ -59,10 +59,8 @@ def generate(env):
 		import sys
 		import os
 		if sys.platform == 'darwin':
-			#sys.path.append('bksys'+os.sep+'osx')
-			#from detect_lowlevel import detect
-			env.pprint('RED', 'Not implemented, see bksys/osx/detect_lowlevel.py')
-			env.Exit(1)
+			sys.path.append('bksys'+os.sep+'osx')
+			from detect_lowlevel import detect
 		elif env['WINDOWS']:
 			sys.path.append('bksys'+os.sep+'win32')
 			from detect_lowlevel import detect

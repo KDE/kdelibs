@@ -87,25 +87,13 @@ def configure(dict):
 def dist(env, appname, version=None):
 	import os
 	if 'dist' in sys.argv:
-                if sys.platform == 'darwin':
-                        #sys.path.append('bksys'+os.sep+'osx')
-                        #from detect_lowlevel import detect
-                        env.pprint('RED', 'Not implemented, see bksys/osx/detect_generic.py')
-                        env.Exit(1)
-                else:
-                        sys.path.append('bksys'+os.sep+'unix')
-                        from detect_generic import dist
+                sys.path.append('bksys'+os.sep+'unix')
+                from detect_generic import dist
                 dist(env)
 
 	if 'distclean' in sys.argv:
-                if sys.platform == 'darwin':
-                        #sys.path.append('bksys'+os.sep+'osx')
-                        #from detect_lowlevel import detect
-                        env.pprint('RED', 'Not implemented, see bksys/osx/detect_generic.py')
-                        env.Exit(1)
-                else:
-                        sys.path.append('bksys'+os.sep+'unix')
-                        from detect_generic import distclean
+                sys.path.append('bksys'+os.sep+'unix')
+                from detect_generic import distclean
                 distclean(env)
 
 def pprint(env, col, str, label=''):
@@ -272,12 +260,13 @@ class genobj:
 
 		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
-		lext=['.so', '.la']
+		lext=['.so', '.la', '.dylib']
 		sext=['.a']
 		for lib in llist:
 			sal=SCons.Util.splitext(lib)
 			if len(sal)>1:
-				if sal[1] in lext: self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
+				if (sal[-1] in lext) and (sys.platform == 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.dylib')[0]);
+				elif (sal[1] in lext) and (sys.platform != 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(lib)
 
@@ -285,8 +274,10 @@ class genobj:
 		if self.uselib:
 			libs=SCons.Util.CLVar(self.uselib)
 			for lib in libs:
-				if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
-					raise genobj.WrongLibError(lib)
+				# TODO: this doesn't work if the lib doesn't exist (eg, FAM on Mac OS X), we need to handle optional libraries nicely
+				# TODO: we need to mark in the cache that something is not there, rather than re-testing on every scons run
+				#if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
+				#	raise genobj.WrongLibError(lib)
 				if self.env.has_key('LIB_'+lib):
 					self.env.AppendUnique(LIBS=self.env['LIB_'+lib])
 				if self.env.has_key('LIBPATH_'+lib):
@@ -551,10 +542,8 @@ def generate(env):
 
 		import sys
 		if sys.platform == 'darwin':
-			#sys.path.append('bksys'+os.sep+'osx')
-			#from detect_lowlevel import detect
-			env.pprint('RED', 'Not implemented, see bksys/osx/lowlevel.py')
-			env.Exit(1)
+			sys.path.append('bksys'+os.sep+'osx')
+			from detect_lowlevel import detect
 		elif env['WINDOWS']:
 			sys.path.append('bksys'+os.sep+'win32')
 			from detect_generic import detect
@@ -677,13 +666,19 @@ def generate(env):
 		thisenv['SHLIBPREFIX']=libprefix
 
 		if len(vnum)>0:
-			thisenv['SHLIBSUFFIX']='.so.'+vnum
+			if sys.platform == 'darwin':
+				thisenv['SHLIBSUFFIX']='.'+vnum+'.dylib'
+			else:
+				thisenv['SHLIBSUFFIX']='.so.'+vnum
 			thisenv.Depends(target, thisenv.Value(vnum))
 			num=vnum.split('.')[0]
 			lst=target.split('/')
 			tname=lst[len(lst)-1]
 			libname=tname.split('.')[0]
-			thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libname, num)] )
+			if sys.platform == 'darwin':
+				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.%s.dylib" % (libname, num)] )
+			else:
+				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libname, num)] )
 
 		# Fix against a scons bug - shared libs and ordinal out of range(128)
 		if type(source) is types.ListType:
@@ -703,9 +698,14 @@ def generate(env):
 		if len(vnum)>0:
 			nums=vnum.split('.')
 			symlinkcom = ('cd $SOURCE.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
-			tg = target+'.so.'+vnum
-			nm1 = target+'.so'
-			nm2 = target+'.so.'+nums[0]
+			if sys.platform == 'darwin':
+				tg = target+'.'+vnum+'.dylib'
+				nm1 = target+'.dylib'
+				nm2 = target+'.'+nums[0]+'.dylib'
+			else:
+				tg = target+'.so.'+vnum
+				nm1 = target+'.so'
+				nm2 = target+'.so.'+nums[0]
 
 			thisenv.SymLink(target=nm1, source=library_list)
 			thisenv.SymLink(target=nm2, source=library_list)
@@ -737,10 +737,16 @@ def generate(env):
                 lst = lenv.make_list(str)
 		for file in lst:
 			import re
-			reg=re.compile("(.*)/lib(.*).(la|so)$")
+			if sys.platform == 'darwin':
+				reg=re.compile("(.*)/lib(.*).(la|so|dylib)$")
+			else:
+				reg=re.compile("(.*)/lib(.*).(la|so)$")
 			result=reg.match(file)
 			if not result:
-				reg = re.compile("(.*)/lib(.*).(la|so)\.(.)")
+				if sys.platform == 'darwin':
+					reg = re.compile("(.*)/lib(.*)\.(\d+)\.(la|so|dylib)")
+				else:
+					reg = re.compile("(.*)/lib(.*)\.(la|so)\.(\d+)")
 				result=reg.match(file)
 				if not result:
 					print "Unknown la file given "+file

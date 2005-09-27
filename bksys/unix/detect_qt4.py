@@ -1,7 +1,7 @@
 # Thomas Nagy, 2005
 
 
-import os, re, types
+import os, re, types, sys
 
 def detect(env):
 	def getpath(varname):
@@ -18,12 +18,17 @@ def detect(env):
 	qtlibs		= getpath('qtlibs')
 	libsuffix	= ''
 	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
+	if not libsuffix:
+		if sys.platform == 'darwin':
+			libsuffix='.dylib'
+		else:
+			libsuffix='.so'
 
 	p=env.pprint
 
 	# do our best to find the QTDIR (non-Debian systems)
 	qtdir = os.getenv("QTDIR")
-	if qtdir and env.find_file('lib/libqt-mt.so', [qtdir]): qtdir=None # qtdir for qt3, not qt4
+	if qtdir and env.find_file('lib/libqt-mt' + libsuffix, [qtdir]): qtdir=None # qtdir for qt3, not qt4
 	if not qtdir:
 		qtdir=env.find_path('include/', [ # lets find the qt include directory
 				'/usr/local/Trolltech/Qt-4.0.3/', # one never knows
