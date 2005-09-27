@@ -1,55 +1,116 @@
-#include <kshell.h>
+/* This file is part of the KDE libraries
+    Copyright (c) 2005 Thomas Braxton <brax108@cox.net>
 
-#include <iostream>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
 
-static QByteArray
-ps(const QString &s)
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#include "kshelltest.h"
+#include "QtTest/qttest_kde.h"
+
+#include "kshell.h"
+#include "kuser.h"
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qdir.h>
+
+#include "kshelltest.moc"
+
+void
+KShellTest::tildeExpand()
 {
-  if (s.isNull())
-    return "(null)";
-  else
-    return s.toLocal8Bit();
+	COMPARE(KShell::tildeExpand("~"), QDir::homePath());
+	COMPARE(KShell::tildeExpand("~/sulli"), QDir::homePath()+"/sulli");
+	COMPARE(KShell::tildeExpand("~root"), KUser("root").homeDir());
+	COMPARE(KShell::tildeExpand("~root/sulli"),
+		KUser("root").homeDir()+"/sulli");
+	COMPARE(KShell::tildeExpand("~sulli"), KUser("sulli").homeDir());
 }
 
-static void
-tx(const char *t)
+void
+KShellTest::joinArgs()
 {
-    std::cout << t << " -> " << ps(KShell::tildeExpand(t)).data() << std::endl;
+	QStringList list;
+
+	list << "this" << "is" << "a" << "test";
+	COMPARE(KShell::joinArgs(list), QString("this is a test"));
+	list.clear();
+
+	list << "this" << "is" << "with" << "a space";
+	COMPARE(KShell::joinArgs(list), QString("this is with 'a space'"));
+	list.clear();
 }
 
-static void
-sj(const char *t, int flg)
+static QString sj(const QString& str, int flags, int* ret)
 {
-    int err;
-    std::cout << t << " (" << flg << ") -> " << ps(KShell::joinArgsDQ(KShell::splitArgs(t, flg, &err))).data() << " (" << err << ")" << std::endl;
+	return KShell::joinArgsDQ(KShell::splitArgs(str, flags, ret));
 }
 
-int main()
+void
+KShellTest::splitJoinDQ()
 {
-#if 1
-    tx("~");
-    tx("~/sulli");
-    tx("~root");
-    tx("~root/sulli");
-    tx("~sulli");
-#endif
-#if 1
-    QStringList lst;
-    lst << "this" << "is" << "text";
-    std::cout << KShell::joinArgs(lst).latin1() << std::endl;
-#endif
-#if 1
-    sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\ca\\e\\x21' ha\\ lo ", KShell::NoOptions);
-    sj("\"~sulli\" 'text'", KShell::TildeExpand);
-    sj("~\"sulli\" 'text'", KShell::TildeExpand);
-    sj("~/\"sulli\" 'text'", KShell::TildeExpand);
-    sj("~ 'text' ~", KShell::TildeExpand);
-    sj("~sulli ~root", KShell::TildeExpand);
-#endif
-    sj("say \" error", KShell::NoOptions);
-    sj("say `echo no error`", KShell::NoOptions);
-    sj("say \" still error", KShell::AbortOnMeta);
-    sj("say `echo meta error`", KShell::AbortOnMeta);
-    sj("BLA=say echo meta", KShell::AbortOnMeta);
-    sj("B\"L\"A=say FOO=bar echo meta", KShell::AbortOnMeta);
+	int err=0;
+
+	COMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo ",KShell::NoOptions, &err),
+		QString("~sulli text jojo crap $'\\\\\\'\\e!' $'ha lo'"));
+	VERIFY(err == 0);
+
+	COMPARE(sj("\"~sulli\" 'text'", KShell::TildeExpand, &err),
+		QString("~sulli text"));
+	VERIFY(err == 0);
+
+	COMPARE(sj("~\"sulli\" 'text'", KShell::TildeExpand, &err),
+		QString("~sulli text"));
+	VERIFY(err == 0);
+
+	COMPARE(sj("~/\"sulli\" 'text'", KShell::TildeExpand, &err),
+		QDir::homePath() + "/sulli text");
+	VERIFY(err == 0);
+
+	COMPARE(sj("~ 'text' ~", KShell::TildeExpand, &err),
+		QDir::homePath() + " text " + QDir::homePath());
+	VERIFY(err == 0);
+
+	COMPARE(sj("~sulli ~root", KShell::TildeExpand, &err),
+		QString("~sulli ") + KUser("root").homeDir());
+	VERIFY(err == 0);
 }
+
+void
+KShellTest::abortOnMeta()
+{
+	int err1=0, err2=0;
+
+	COMPARE(sj("say \" error", KShell::NoOptions, &err1),
+		QString());
+	VERIFY(err1 != 0);
+
+	COMPARE(sj("say \" still error", KShell::AbortOnMeta, &err1),
+		QString());
+	VERIFY(err1 != 0);
+
+	VERIFY(sj("say `echo no error`", KShell::NoOptions, &err1) !=
+		sj("say `echo no error`", KShell::AbortOnMeta, &err2));
+	VERIFY(err1 != err2);
+
+	VERIFY(sj("BLA=say echo meta", KShell::NoOptions, &err1) !=
+		sj("BLA=say echo meta", KShell::AbortOnMeta, &err2));
+	VERIFY(err1 != err2);
+
+	VERIFY(sj("B\"L\"A=say FOO=bar echo meta", KShell::NoOptions, &err1) ==
+		sj("B\"L\"A=say FOO=bar echo meta", KShell::AbortOnMeta, &err2));
+	VERIFY(err1 == err2);
+}
+
+QTTEST_KDEMAIN(KShellTest, 0)
