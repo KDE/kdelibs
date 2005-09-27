@@ -204,38 +204,6 @@ def generate(env):
 		It also makes custom checks against double includes like : ['file.ui', 'file.cpp']
 		(file.cpp is already included because of file.ui) """
 
-		q_object_search = re.compile(r'[^A-Za-z0-9]Q_OBJECT[^A-Za-z0-9]')
-		def scan_moc(cppfile):
-			addfile=None
-
-			# try to find the header
-			orifile=cppfile.srcnode().name
-			bs=SCons.Util.splitext(orifile)[0]
-
-			h_file=''
-			dir=cppfile.dir
-			for n_h_ext in header_ext:
-				afile=dir.File(bs+n_h_ext)
-				if afile.rexists():
-					#h_ext=n_h_ext
-					h_file=afile
-					break
-			# We have the header corresponding to the cpp file
-			if h_file:
-				h_contents = h_file.get_contents()
-				if q_object_search.search(h_contents):
-					# we know now there is Q_OBJECT macro
-					reg = '\n\s*#include\s*("|<)'+str(bs)+'.moc("|>)'
-					meta_object_search = re.compile(reg)
-					#cpp_contents = open(file_cpp, 'rb').read()
-					cpp_contents=cppfile.get_contents()
-					if meta_object_search.search(cpp_contents):
-						lenv.Moc(h_file)
-					else:
-						lenv.Moccpp(h_file)
-						addfile=bs+'_moc.cpp'
-						print "WARNING: moc.cpp for "+h_file.name+" consider using #include <file.moc> instead"
-			return addfile
 		src=[]
 		kcfg_files=[]
 		other_files=[]
