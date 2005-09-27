@@ -44,7 +44,7 @@ void testAdjustPath()
     url2.adjustPath(0);
     check( "adjustPath(0)", url2.path(), "/home/kde//" );
     url2.adjustPath(-1);
-    check( "adjustPath(-1) removes all trailing slashes", url1.path(), "/home/kde" );
+    check( "adjustPath(-1) removes all trailing slashes", url2.path(), "/home/kde" );
     url2.adjustPath(1);
     check( "adjustPath(1)", url2.path(), "/home/kde/" );
 
@@ -892,13 +892,22 @@ int main(int argc, char *argv[])
   check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
   check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
 
-  KURL amantia( "http://%E1.foo" );
+  KURL amantia( "http://%E1.foo.de" );
   check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
 #ifdef HAVE_IDNA_H
-  check("amantia.url()", amantia.url(), "http://xn--80a.foo");   // Non-ascii is allowed in IDN domain names.
+  check("amantia.url()", amantia.url(), "http://xn--80a.foo.de");   // Non-ascii is allowed in IDN domain names.
 #else
-  check("amantia.url()", amantia.url(), "http://?.foo"); // why not
+  check("amantia.url()", amantia.url(), "http://?.foo.de"); // why not
 #endif
+
+  KURL thiago( "http://ä.de" );
+  check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
+#ifdef HAVE_IDNA_H
+  check("thiago.url()", thiago.url(), "http://xn--4ca.de");   // Non-ascii is allowed in IDN domain names.
+#else
+  check("thiago.url()", thiago.url(), "http://ä.de");
+#endif
+
 
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
