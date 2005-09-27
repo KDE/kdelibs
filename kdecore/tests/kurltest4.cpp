@@ -1165,9 +1165,14 @@ void KURLTest::testEncodeString()
 void KURLTest::testIdn()
 {
   kdDebug() << k_funcinfo << endl;
-  KURL amantia( "http://%E1.foo" );
+
+  KURL amantia( "http://%E1.foo.de" );
   check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
-  check("amantia.url()", amantia.url(), "http://xn--80a.foo");   // Non-ascii is allowed in IDN domain names.
+  check("amantia.url()", amantia.url(), "http://xn--80a.foo.de");   // Non-ascii is allowed in IDN domain names.
+
+  KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
+  check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
+  check("thiago.url()", thiago.url(), "http://xn--4ca.de");   // Non-ascii is allowed in IDN domain names.
 }
 
 void KURLTest::testUriMode()
