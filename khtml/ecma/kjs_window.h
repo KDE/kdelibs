@@ -232,6 +232,7 @@ namespace KJS {
     QPtrList<ScheduledAction> scheduledActions;
     int pausedTime;
     int lastTimerId;
+    bool currentlyDispatching;
   };
 
   class Location : public ObjectImp {

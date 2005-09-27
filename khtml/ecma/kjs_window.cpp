@@ -1930,6 +1930,7 @@ WindowQObject::WindowQObject(Window *w)
                this, SLOT( parentDestroyed() ) );
   pausedTime = 0;
   lastTimerId = 0;
+  currentlyDispatching = false;
 }
 
 WindowQObject::~WindowQObject()
@@ -2006,6 +2007,8 @@ void WindowQObject::timerEvent(QTimerEvent *)
   if (scheduledActions.isEmpty())
     return;
 
+  currentlyDispatching = true;
+
   QTime currentActual = QTime::currentTime();
   QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
 
@@ -2026,12 +2029,14 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
     action->executing = true; // prevent deletion in clearTimeout()
 
-    if (action->singleShot)
-      scheduledActions.removeRef(action);
     if (parent->part()) {
       bool ok = action->execute(parent);
       if ( !ok ) // e.g. JS disabled
         scheduledActions.removeRef( action );
+    }
+
+    if (action->singleShot) {
+      scheduledActions.removeRef(action);
     }
 
     action->executing = false;
@@ -2044,12 +2049,17 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   pausedTime += currentActual.msecsTo(QTime::currentTime());
 
+  currentlyDispatching = false;
+
   // Work out when next event is to occur
   setNextTimer();
 }
 
 void WindowQObject::setNextTimer()
 {
+  if (currentlyDispatching)
+    return; // Will schedule at the end 
+
   if (scheduledActions.isEmpty())
     return;
 
