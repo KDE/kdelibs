@@ -29,6 +29,57 @@ static bool check(QString txt, QString a, QString b)
   return true;
 }
 
+void testAdjustPath()
+{
+    KURL url1("file:///home/kde/");
+    url1.adjustPath(0);
+    check( "adjustPath(0)", url1.path(), "/home/kde/" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) removes last slash", url1.path(), "/home/kde" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) again", url1.path(), "/home/kde" );
+    url1.adjustPath(1);
+    check( "adjustPath(1)", url1.path(), "/home/kde/" );
+
+    KURL url2("file:///home/kde//");
+    url2.adjustPath(0);
+    check( "adjustPath(0)", url2.path(), "/home/kde//" );
+    url2.adjustPath(-1);
+    check( "adjustPath(-1) removes all trailing slashes", url2.path(), "/home/kde" );
+    url2.adjustPath(1);
+    check( "adjustPath(1)", url2.path(), "/home/kde/" );
+
+    KURL ftpurl1("ftp://ftp.kde.org/");
+    ftpurl1.adjustPath(0);
+    check( "adjustPath(0)", ftpurl1.path(), "/" );
+    ftpurl1.adjustPath(-1);
+    check( "adjustPath(-1) preserves last slash", ftpurl1.path(), "/" );
+
+    KURL ftpurl2("ftp://ftp.kde.org///");
+    ftpurl2.adjustPath(0);
+    check( "adjustPath(0)", ftpurl2.path(), "///" );
+    ftpurl2.adjustPath(-1);
+    check( "adjustPath(-1) removes all but last slash", ftpurl2.path(), "/" );
+    ftpurl2.adjustPath(1);
+    check( "adjustPath(1)", ftpurl2.path(), "/" );
+
+    // Equivalent tests written by the KDirLister maintainer :)
+
+    KURL u3( QByteArray("ftp://brade@ftp.kde.org///") );
+    u3.adjustPath(-1);
+    check("KURL::adjustPath()", u3.url(), "ftp://brade@ftp.kde.org/");
+
+    KURL u4( QByteArray("ftp://brade@ftp.kde.org/kde///") );
+    u4.adjustPath(-1);
+    check("KURL::adjustPath()", u4.url(), "ftp://brade@ftp.kde.org/kde");
+
+    // applying adjustPath(-1) twice should not yield two different urls
+    // (follows from the above test)
+    KURL u5 = u4;
+    u5.adjustPath(-1);
+    check("KURL::adjustPath()", u5.url(), u4.url());
+}
+
 int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
@@ -261,7 +312,7 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
-  KURL u2( Q3CString("/home/dfaure/") );
+  KURL u2( QByteArray("/home/dfaure/") );
   printf("\n* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
@@ -335,11 +386,11 @@ int main(int argc, char *argv[])
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "file:///specials/");
 
-  const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
-  printf("\n* URL is %s\n",u3);
-  check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
+  const char * u6 = "ftp://host/dir1/dir2/myfile.txt";
+  printf("\n* URL is %s\n",u6);
+  check("KURL::hasSubURL()", KURL(u6).hasSubURL() ? "yes" : "no", "no");
   lst.clear();
-  lst = KURL::split( KURL(u3) );
+  lst = KURL::split( KURL(u6) );
   check("KURL::split()", lst.count()==1 ? "1" : "error", "1");
   check("KURL::split()", lst.first().url(), "ftp://host/dir1/dir2/myfile.txt");
   // cdUp code
@@ -756,6 +807,7 @@ int main(int argc, char *argv[])
   uloc = KURL::fromPathOrURL( "/home/dfaure/file#with#hash" );
   check("pathOrURL local path with #", uloc.pathOrURL(), "/home/dfaure/file#with#hash" );
 
+  testAdjustPath();
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
@@ -824,13 +876,22 @@ int main(int argc, char *argv[])
   check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
   check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
 
-  KURL amantia( "http://%E1.foo" );
+  KURL amantia( "http://%E1.foo.de" );
   check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
 #ifdef HAVE_IDNA_H
-  check("amantia.url()", amantia.url(), "http://xn--80a.foo");   // Non-ascii is allowed in IDN domain names.
+  check("amantia.url()", amantia.url(), "http://xn--80a.foo.de");   // Non-ascii is allowed in IDN domain names.
 #else
-  check("amantia.url()", amantia.url(), "http://?.foo"); // why not
+  check("amantia.url()", amantia.url(), "http://?.foo.de"); // why not
 #endif
+
+  KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
+  check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
+#ifdef HAVE_IDNA_H
+  check("thiago.url()", thiago.url(), "http://xn--4ca.de");   // Non-ascii is allowed in IDN domain names.
+#else
+  check("thiago.url()", thiago.url(), QString::fromUtf8( "http://\303\244.de" ) );
+#endif
+
 
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");

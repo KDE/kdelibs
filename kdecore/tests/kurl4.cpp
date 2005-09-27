@@ -571,8 +571,11 @@ static QString trailingSlash( int _trailing, const QString &path )
     if ( result == "/" )
       return result;
     int len = result.length();
-    if ( (len != 0) && (result[ len - 1 ] == QLatin1Char('/')) )
-      result.truncate( len - 1 );
+    while (len > 1 && result[ len - 1 ] == QLatin1Char('/'))
+    {
+      len--;
+    }
+    result.truncate( len );
     return result;
   }
   else {

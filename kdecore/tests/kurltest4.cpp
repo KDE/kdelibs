@@ -429,7 +429,7 @@ void KURLTest::testDirectory()
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
-  KURL u2( Q3CString("file:///home/dfaure/") );
+  KURL u2( QByteArray("file:///home/dfaure/") );
   qDebug("* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
@@ -491,6 +491,57 @@ void KURLTest::testIsRelative()
   check("file: URL, is relative", KURL::isRelativeURL("file:///blah") ? "true" : "false", "false");
   check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "true"); // arguable, but necessary for KURL( baseURL, "//www1.foo.bar" );
   check("something, is relative", KURL::isRelativeURL("something") ? "true" : "false", "true");
+}
+
+void KURLTest::testAdjustPath()
+{
+    KURL url1("file:///home/kde/");
+    url1.adjustPath(0);
+    check( "adjustPath(0)", url1.path(), "/home/kde/" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) removes last slash", url1.path(), "/home/kde" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) again", url1.path(), "/home/kde" );
+    url1.adjustPath(1);
+    check( "adjustPath(1)", url1.path(), "/home/kde/" );
+
+    KURL url2("file:///home/kde//");
+    url2.adjustPath(0);
+    check( "adjustPath(0)", url2.path(), "/home/kde//" );
+    url2.adjustPath(-1);
+    check( "adjustPath(-1) removes all trailing slashes", url2.path(), "/home/kde" );
+    url2.adjustPath(1);
+    check( "adjustPath(1)", url2.path(), "/home/kde/" );
+
+    KURL ftpurl1("ftp://ftp.kde.org/");
+    ftpurl1.adjustPath(0);
+    check( "adjustPath(0)", ftpurl1.path(), "/" );
+    ftpurl1.adjustPath(-1);
+    check( "adjustPath(-1) preserves last slash", ftpurl1.path(), "/" );
+
+    KURL ftpurl2("ftp://ftp.kde.org///");
+    ftpurl2.adjustPath(0);
+    check( "adjustPath(0)", ftpurl2.path(), "///" );
+    ftpurl2.adjustPath(-1);
+    check( "adjustPath(-1) removes all but last slash", ftpurl2.path(), "/" );
+    ftpurl2.adjustPath(1);
+    check( "adjustPath(1)", ftpurl2.path(), "/" );
+
+    // Equivalent tests written by the KDirLister maintainer :)
+
+    KURL u3( QByteArray("ftp://brade@ftp.kde.org///") );
+    u3.adjustPath(-1);
+    check("KURL::adjustPath()", u3.url(), "ftp://brade@ftp.kde.org/");
+
+    KURL u4( QByteArray("ftp://brade@ftp.kde.org/kde///") );
+    u4.adjustPath(-1);
+    check("KURL::adjustPath()", u4.url(), "ftp://brade@ftp.kde.org/kde");
+
+    // applying adjustPath(-1) twice should not yield two different urls
+    // (follows from the above test)
+    KURL u5 = u4;
+    u5.adjustPath(-1);
+    check("KURL::adjustPath()", u5.url(), u4.url());
 }
 
 void KURLTest::testIPV6()

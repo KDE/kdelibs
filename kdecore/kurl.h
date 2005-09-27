@@ -456,7 +456,7 @@ public:
 
   /**
    * Add or remove a trailing slash to/from the path.
-   * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
+   * @param _trailing May be -1, 0, or +1. -1 strips any trailing '/', +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged. If the URL has no path, then no '/' is added
    *                  anyway. And on the other side: If the path is "/", then this

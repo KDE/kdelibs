@@ -36,6 +36,7 @@ private slots:
     void testSetFileName();
     void testPrettyURL();
     void testIsRelative();
+    void testAdjustPath();
     void testIPV6();
     void testBaseURL();
     void testSubURL();
