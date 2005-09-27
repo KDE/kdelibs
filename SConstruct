@@ -34,7 +34,7 @@ Documentation is in bksys/design
 ###################################################################
 
 ## We assume that 'bksys' is our admin directory
-import sys
+import sys, os
 sys.path.append('bksys')
 
 ## Import the main configuration tool
@@ -45,7 +45,7 @@ config = {
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
 	'bootstrap': 1, # incomplete
-	'colorful' : 1, # only with scons >= 0.96.91 - now miniscons
+	'colorful' : not os.environ.has_key('NOCOLORS'), # only with scons >= 0.96.91 - now miniscons
 }
 
 # and the config.h
