@@ -189,7 +189,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     mHelpMenu = 0;
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
-    connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
     if( !mMemberList )
         mMemberList = new Q3PtrList<KMainWindow>;
 
@@ -653,7 +653,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() && !kapp->sessionSaving() && !d->shuttingDown ) { // Yes, Quit app?
                 // don't call queryExit() twice
-                disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
+                disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
                 d->shuttingDown = true;
                 kapp->deref();             // ...and quit application.
             }  else {

@@ -763,7 +763,7 @@ protected:
     // would be useful only for the annoying 'really quit' dialog, which
     // also doesn't make sense in apps with multiple mainwindows.
     // And saving configuration in something called queryExit()? IMHO
-    // one can e.g. use KApplication::shutDown(), which if nothing else
+    // one can e.g. use QCoreApplication::aboutToQuit(), which if nothing else
     // has at least better fitting name.
     // See also KApplication::sessionSaving().
     // This stuff should get changed somehow, so that it at least doesn't
@@ -785,7 +785,7 @@ protected:
 
        If you need to do serious things on exit (like shutting a
        dial-up connection down), connect to the signal
- KApplication::shutDown().
+ QCoreApplication::aboutToQuit().
 
        Default implementation returns @p true. Returning @p false will
        cancel the exiting. In the latter case, the last window will
