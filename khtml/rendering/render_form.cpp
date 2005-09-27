@@ -1267,7 +1267,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : K3TextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setObjectName( "__khtml" );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
@@ -1307,7 +1307,7 @@ TextAreaWidget::~TextAreaWidget()
 
 Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
 {
-    Q3PopupMenu *popup = KTextEdit::createPopupMenu(pos);
+    Q3PopupMenu *popup = K3TextEdit::createPopupMenu(pos);
 
     if ( !popup ) {
         return 0L;
@@ -1593,7 +1593,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return KTextEdit::event( e );
+    return K3TextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------

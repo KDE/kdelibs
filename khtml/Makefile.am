@@ -57,6 +57,7 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(LIBTHAI) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
 	$(top_builddir)/kutils/libkutils.la \
+	$(top_builddir)/kde3support/libkde3support.la \
 	$(top_builddir)/kwallet/client/libkwalletclient.la
 
 # init_libkhtml is in libkhtml.so; init_libkhtmlpart needs to be in the part

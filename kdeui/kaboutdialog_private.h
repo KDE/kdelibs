@@ -25,7 +25,7 @@
 
 #include <qlabel.h>
 #include <Q3MemArray>
-class Q3Frame;
+class QFrame;
 class QTabWidget;
 class QVBoxLayout;
 
@@ -47,7 +47,7 @@ class KImageTrackLabel : public QLabel
     };
 
   public:
-    KImageTrackLabel( QWidget * parent, const char * name=0, Qt::WFlags f=0 );
+    KImageTrackLabel( QWidget * parent, Qt::WFlags f=0 );
 
   signals:
     void mouseTrack( int mode, const QMouseEvent *e );
@@ -100,16 +100,16 @@ class KAboutContainerBase : public QWidget
     void setProduct( const QString &appName, const QString &version,
 		     const QString &author, const QString &year );
 
-    Q3Frame *addTextPage( const QString &title, const QString &text,
+    QFrame *addTextPage( const QString &title, const QString &text,
 			 bool richText=false, int numLines=10 );
-    Q3Frame *addLicensePage( const QString &title, const QString &text,
+    QFrame *addLicensePage( const QString &title, const QString &text,
 			 int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
       Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
     KAboutContainer *addScrolledContainerPage( const QString &title,
       Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
-    Q3Frame *addEmptyPage( const QString &title );
+    QFrame *addEmptyPage( const QString &title );
 
     KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
@@ -133,9 +133,9 @@ class KAboutContainerBase : public QWidget
     QLabel  *mIconLabel;
     QLabel  *mVersionLabel;
     QLabel  *mAuthorLabel;
-    Q3Frame  *mImageFrame;
+    QFrame  *mImageFrame;
     QTabWidget *mPageTab;
-    Q3Frame  *mPlainSpace;
+    QFrame  *mPlainSpace;
 
     KAboutContainerBasePrivate* const d;
 };

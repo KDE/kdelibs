@@ -31,10 +31,10 @@
 #define _KABOUTDIALOG_H_
 
 #include <QList>
+#include <QFrame>
 #include <kdialogbase.h>
 #include <qstring.h>
 
-class Q3Frame;
 class QLabel;
 class QVBoxLayout;
 class QTabWidget;
@@ -48,13 +48,12 @@ class KAboutContainerPrivate;
 /**
  *  KAboutContainer can be used to make a application specific AboutDialog.
  */
-class KDEUI_EXPORT KAboutContainer : public Q3Frame
+class KDEUI_EXPORT KAboutContainer : public QFrame
 {
   Q_OBJECT
 
   public:
-  /// KDE4 remove name argument
-    KAboutContainer( QWidget *parent=0, const char *name=0,
+    KAboutContainer( QWidget *parent=0,
 		     int margin=0, int spacing=0,
 		     Qt::Alignment childAlignment = Qt::AlignCenter,
 		     Qt::Alignment innerAlignment = Qt::AlignCenter );
@@ -91,13 +90,12 @@ class KAboutContributorPrivate;
  * Used internally by KAboutWidget
  * @internal
  */
-class KDEUI_EXPORT KAboutContributor : public Q3Frame
+class KDEUI_EXPORT KAboutContributor : public QFrame
 {
   Q_OBJECT
 
   public:
-  /// KDE4 remove name argument
-    KAboutContributor( QWidget *parent=0, const char *name=0,
+    KAboutContributor( QWidget *parent=0,
 		       const QString &username=QString::null,
 		       const QString &email=QString::null,
 		       const QString &url=QString::null,
@@ -142,7 +140,7 @@ class KDEUI_EXPORT KAboutContributor : public Q3Frame
 
     KAboutContributorPrivate* const d;
 
-	virtual void setName(const char *_name) { Q3Frame::setName(_name); }
+	virtual void setName(const char *_name) { QFrame::setName(_name); }
 };
 
 /**
@@ -314,8 +312,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
      * addContributor(), or setVersion().
      * The dialog will be laid out automatically.
      */
-    /// KDE4 remove name argument
-    KAboutDialog( QWidget *parent=0, const char *name=0, bool modal=true );
+    KAboutDialog( QWidget *parent=0, bool modal=true );
 
    /**
     * The extended constructor. (Constructor II).
@@ -344,8 +341,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
     */
     /// KDE4 remove name argument
     KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
-		  ButtonCode defaultButton, QWidget *parent=0,
-		  const char *name=0, bool modal=false, bool separator = false,
+		  ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
 		  const QString &user1 = QString::null,
 		  const QString &user2 = QString::null,
 		  const QString &user3 = QString::null );
@@ -460,7 +456,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    *        is the minimum number of lines of text that are visible.
    * @return The frame that contains the page.
    */
-  Q3Frame *addTextPage( const QString &title, const QString &text,
+  QFrame *addTextPage( const QString &title, const QString &text,
                        bool richText=false, int numLines=10 );
 
   /**
@@ -473,7 +469,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    *        is the minimum number of lines of text that are visible.
    * @return The frame that contains the page.
    */
-  Q3Frame *addLicensePage( const QString &title, const QString &text,
+  QFrame *addLicensePage( const QString &title, const QString &text,
                           int numLines=10 );
 
   /**
@@ -525,7 +521,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @param title Tab name
    * @return The new page.
    */
-  Q3Frame *addPage( const QString &title );
+  QFrame *addPage( const QString &title );
 
 
   /**

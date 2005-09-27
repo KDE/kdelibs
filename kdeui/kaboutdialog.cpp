@@ -69,17 +69,15 @@ public:
 
 
 
-KAboutContributor::KAboutContributor( QWidget *_parent, const char *wname,
+KAboutContributor::KAboutContributor( QWidget *_parent, 
 			              const QString &_name,const QString &_email,
 			              const QString &_url, const QString &_work,
 			              bool showHeader, bool showFrame,
 				      bool showBold )
-  : Q3Frame( _parent, wname ), mShowHeader(showHeader), mShowBold(showBold), d(0)
+  : QFrame( _parent ), mShowHeader(showHeader), mShowBold(showBold), d(0)
 {
-  if( showFrame )
-  {
-    setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
-  }
+  if ( showFrame )
+    setFrameStyle( QFrame::Panel | QFrame::Raised );
 
   mLabel[0] = new QLabel( this );
   mLabel[1] = new QLabel( this );
@@ -352,7 +350,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     QVBoxLayout* vbox = new QVBoxLayout();
     hbox->addLayout(vbox);
     vbox->addSpacing(1);
-    mImageFrame = new Q3Frame( this );
+    mImageFrame = new QFrame( this );
     setImageFrame( true );
     vbox->addWidget( mImageFrame );
     vbox->addSpacing(1);
@@ -375,7 +373,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
   }
   else if( layoutType & AbtImageOnly )
   {
-    mImageFrame = new Q3Frame( this );
+    mImageFrame = new QFrame( this );
     setImageFrame( true );
     hbox->addWidget( mImageFrame, 10 );
 
@@ -393,7 +391,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
   }
   else
   {
-    mPlainSpace = new Q3Frame( this );
+    mPlainSpace = new QFrame( this );
     if( !mPlainSpace ) { return; }
     hbox->addWidget( mPlainSpace, 10 );
   }
@@ -403,7 +401,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     QVBoxLayout *vbox = new QVBoxLayout();
     hbox->addLayout(vbox);
     vbox->addSpacing(1);
-    mImageFrame = new Q3Frame( this );
+    mImageFrame = new QFrame( this );
     setImageFrame( true );
     vbox->addWidget( mImageFrame );
     vbox->addSpacing(1);
@@ -457,11 +455,11 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
   update();
 }
 
-Q3Frame *KAboutContainerBase::addTextPage( const QString &title,
+QFrame *KAboutContainerBase::addTextPage( const QString &title,
 					  const QString &text,
 					  bool richText, int numLines )
 {
-  Q3Frame* const page = addEmptyPage( title );
+  QFrame *const page = addEmptyPage( title );
   if( !page ) { return 0; }
   if( numLines <= 0 ) { numLines = 10; }
 
@@ -469,7 +467,7 @@ Q3Frame *KAboutContainerBase::addTextPage( const QString &title,
 
   if( richText )
   {
-    KTextBrowser* const browser = new KTextBrowser( page, "browser" );
+    KTextBrowser *const browser = new KTextBrowser( page, "browser" );
     browser->setHScrollBarMode( Q3ScrollView::AlwaysOff );
     browser->setText( text );
     browser->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
@@ -482,29 +480,31 @@ Q3Frame *KAboutContainerBase::addTextPage( const QString &title,
   }
   else
   {
-    KTextEdit* const textEdit = new KTextEdit( page, "text" );
+    KTextEdit *const textEdit = new KTextEdit( page );
+    textEdit->setObjectName( "text" );
     textEdit->setReadOnly( true );
     textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
-    textEdit->setWordWrap( Q3TextEdit::NoWrap );
+    textEdit->setLineWrapMode( QTextEdit::NoWrap );
     vbox->addWidget( textEdit );
   }
 
   return page;
 }
 
-Q3Frame *KAboutContainerBase::addLicensePage( const QString &title,
+QFrame *KAboutContainerBase::addLicensePage( const QString &title,
 					  const QString &text, int numLines)
 {
-  Q3Frame* const page = addEmptyPage( title );
+  QFrame *const page = addEmptyPage( title );
   if( !page ) { return 0; }
   if( numLines <= 0 ) { numLines = 10; }
 
   QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
 
-  KTextEdit* const textEdit = new KTextEdit( page, "license" );
+  KTextEdit* const textEdit = new KTextEdit( page );
+  textEdit->setObjectName( "license" );
   textEdit->setFont( KGlobalSettings::fixedFont() );
   textEdit->setReadOnly( true );
-  textEdit->setWordWrap( Q3TextEdit::NoWrap );
+  textEdit->setLineWrapMode( QTextEdit::NoWrap );
   textEdit->setText( text );
   textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
   vbox->addWidget( textEdit );
@@ -522,9 +522,10 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
     return 0;
   }
 
-  KAboutContainer* const container = new KAboutContainer( 0, "container",
+  KAboutContainer* const container = new KAboutContainer( mPageTab,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
 						  innerAlignment );
+  container->setObjectName( "container" );
   mPageTab->addTab( container, title );
 
   connect(container, SIGNAL(urlClick(const QString &)),
@@ -547,15 +548,16 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
     return 0;
   }
 
-  Q3Frame* const page = addEmptyPage( title );
+  QFrame *const page = addEmptyPage( title );
   QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
   Q3ScrollView* const scrollView = new Q3ScrollView( page );
   scrollView->viewport()->setBackgroundMode( Qt::PaletteBackground );
   vbox->addWidget( scrollView );
 
-  KAboutContainer* const container = new KAboutContainer( scrollView, "container",
+  KAboutContainer* const container = new KAboutContainer( scrollView,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
     innerAlignment );
+  container->setObjectName( "container" );
   scrollView->addChild( container );
 
   connect(container, SIGNAL(urlClick(const QString &)),
@@ -567,7 +569,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 }
 
 
-Q3Frame *KAboutContainerBase::addEmptyPage( const QString &title )
+QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
 {
   if( !mPageTab )
   {
@@ -575,8 +577,8 @@ Q3Frame *KAboutContainerBase::addEmptyPage( const QString &title )
     return 0;
   }
 
-  Q3Frame* const page = new Q3Frame( 0, title.latin1() );
-  page->setFrameStyle( Q3Frame::NoFrame );
+  QFrame *const page = new QFrame( mPageTab, title.latin1() ); // TODO: ?!???
+  page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );
   return page;
@@ -586,8 +588,9 @@ Q3Frame *KAboutContainerBase::addEmptyPage( const QString &title )
 KAboutContainer *KAboutContainerBase::addContainer( Qt::Alignment childAlignment,
 						    Qt::Alignment innerAlignment )
 {
-  KAboutContainer* const container = new KAboutContainer( this, "container",
+  KAboutContainer* const container = new KAboutContainer( this,
     0, KDialog::spacingHint(), childAlignment, innerAlignment );
+  container->setObjectName( "container" );
   mTopLayout->addWidget( container, 0, childAlignment );
 
   connect(container, SIGNAL(urlClick(const QString &)),
@@ -669,12 +672,12 @@ void KAboutContainerBase::setImageFrame( bool state )
   {
     if( state )
     {
-      mImageFrame->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+      mImageFrame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
       mImageFrame->setLineWidth(1);
     }
     else
     {
-      mImageFrame->setFrameStyle( Q3Frame::NoFrame );
+      mImageFrame->setFrameStyle( QFrame::NoFrame );
       mImageFrame->setLineWidth(0);
     }
   }
@@ -738,10 +741,10 @@ void KAboutContainerBase::slotMailClick( const QString &_name,
 
 
 
-KAboutContainer::KAboutContainer( QWidget *_parent, const char *_name,
+KAboutContainer::KAboutContainer( QWidget *_parent,
 				  int _margin, int _spacing,
 				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment )
-  : Q3Frame( _parent, _name ), d(0)
+  : QFrame( _parent ), d(0)
 {
   mAlignment = innerAlignment;
 
@@ -873,8 +876,9 @@ void KAboutContainer::addPerson( const QString &_name, const QString &_email,
 				 bool showHeader, bool showFrame,bool showBold)
 {
 
-  KAboutContributor* const cont = new KAboutContributor( this, "pers",
+  KAboutContributor* const cont = new KAboutContributor( this,
     _name, _email, _url, _task, showHeader, showFrame, showBold );
+  cont->setObjectName( "pers" );
   connect( cont, SIGNAL( openURL(const QString&)),
 	   this, SIGNAL( urlClick(const QString &)));
   connect( cont, SIGNAL( sendEmail(const QString &, const QString &)),
@@ -894,9 +898,8 @@ void KAboutContainer::addTitle( const QString &title, Qt::Alignment alignment,
     label->setFont( labelFont );
   }
   if( showFrame )
-  {
-    label->setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
-  }
+    label->setFrameStyle(QFrame::Panel | QFrame::Raised);
+
   label->setAlignment( alignment );
 }
 
@@ -908,7 +911,8 @@ void KAboutContainer::addImage( const QString &fileName, Qt::Alignment alignment
     return;
   }
 
-  KImageTrackLabel* const label = new KImageTrackLabel( this, "image" );
+  KImageTrackLabel* const label = new KImageTrackLabel( this );
+  label->setObjectName( "image" );
   const QImage logo( fileName );
   if( !logo.isNull() )
   {
@@ -1317,7 +1321,7 @@ KAboutWidget::KAboutWidget(QWidget *_parent)
   // -----
   cont->setText(i18n("Other Contributors:"));
   logo->setText(i18n("(No logo available)"));
-  logo->setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
+  logo->setFrameStyle(QFrame::Panel | QFrame::Raised);
   version->setAlignment(Qt::AlignCenter);
   // -----
   connect(author, SIGNAL(sendEmail(const QString&, const QString&)),
@@ -1489,8 +1493,8 @@ KAboutWidget::resizeEvent(QResizeEvent*)
   // ############################################################################
 }
 
-KAboutDialog::KAboutDialog(QWidget *_parent, const char *_name, bool modal)
-  : KDialogBase(_parent, _name, modal, QString::null, Ok, Ok ),
+KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
+  : KDialogBase(_parent, 0, modal, QString::null, Ok, Ok ),              // TODO: port KDialogBase
     about(new KAboutWidget(this)), mContainerBase(0), d(0)
 {
   // #################################################################
@@ -1511,10 +1515,10 @@ KAboutDialog::KAboutDialog(QWidget *_parent, const char *_name, bool modal)
 
 KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
 			    int buttonMask, ButtonCode defaultButton,
-			    QWidget *_parent, const char *_name, bool modal,
+			    QWidget *_parent, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
-  :KDialogBase( _parent, _name, modal, QString::null, buttonMask, defaultButton,
+  :KDialogBase( _parent, 0, modal, QString::null, buttonMask, defaultButton,  // TODO: port KDialogBase
 		separator, user1, user2, user3 ),
    about(0), d(0)
 {
@@ -1623,14 +1627,14 @@ void KAboutDialog::mouseTrackSlot( int /*mode*/, const QMouseEvent * /*e*/ )
 }
 
 
-Q3Frame *KAboutDialog::addTextPage( const QString &title, const QString &text,
+QFrame *KAboutDialog::addTextPage( const QString &title, const QString &text,
 				   bool richText, int numLines )
 {
   if( !mContainerBase ) { return 0; }
   return mContainerBase->addTextPage( title, text, richText, numLines );
 }
 
-Q3Frame *KAboutDialog::addLicensePage( const QString &title, const QString &text,
+QFrame *KAboutDialog::addLicensePage( const QString &title, const QString &text,
 				   int numLines )
 {
   if( !mContainerBase ) { return 0; }
@@ -1657,7 +1661,7 @@ KAboutContainer *KAboutDialog::addScrolledContainerPage( const QString &title,
 
 
 
-Q3Frame *KAboutDialog::addPage( const QString &title )
+QFrame *KAboutDialog::addPage( const QString &title )
 {
   if( !mContainerBase ) { return 0; }
   return mContainerBase->addEmptyPage( title );
@@ -1743,8 +1747,8 @@ void KAboutDialog::imageURL( QWidget *_parent, const QString &_caption,
 //
 // A class that can can monitor mouse movements on the image
 //
-KImageTrackLabel::KImageTrackLabel( QWidget *_parent, const char *_name, Qt::WFlags f )
-  : QLabel( _parent, _name, f )
+KImageTrackLabel::KImageTrackLabel( QWidget *_parent, Qt::WFlags f )
+  : QLabel( _parent, f )
 {
   setText( i18n("Image missing"));
 }

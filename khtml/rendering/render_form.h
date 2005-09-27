@@ -34,7 +34,7 @@ class QWidget;
 class QLineEdit;
 class QListboxItem;
 
-#include <ktextedit.h>
+#include <kde3support/kdeui/k3textedit.h>
 #include <kurlrequester.h>
 #include <klineedit.h>
 #include <qcheckbox.h>
@@ -416,7 +416,7 @@ protected slots:
 };
 
 // -------------------------------------------------------------------------
-class TextAreaWidget : public KTextEdit
+class TextAreaWidget : public K3TextEdit
 {
     Q_OBJECT
 public:
@@ -426,7 +426,7 @@ public:
 protected:
     virtual bool event (QEvent *e );
     virtual Q3PopupMenu *createPopupMenu(const QPoint& pos);
-    virtual Q3PopupMenu* createPopupMenu() { return KTextEdit::createPopupMenu(); }
+    virtual Q3PopupMenu* createPopupMenu() { return K3TextEdit::createPopupMenu(); }
 private slots:
     void slotFind();
     void slotDoFind();

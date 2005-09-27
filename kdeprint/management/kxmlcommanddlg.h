@@ -33,7 +33,7 @@ class Q3WidgetStack;
 class QToolButton;
 class KListBox;
 class Q3ListBoxItem;
-class Q3TextEdit;
+class QTextEdit;
 class QCheckBox;
 
 class DrGroup;
@@ -84,7 +84,7 @@ private:
 	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
 	QToolButton	*m_addval, *m_delval;
-	Q3TextEdit *m_comment;
+	QTextEdit   *m_comment;
 	QCheckBox *m_persistent;
 
 	KXmlCommand	*m_xmlcmd;
