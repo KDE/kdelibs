@@ -1616,12 +1616,6 @@ void KApplication::updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 
 #endif
 }
 
-void KApplication::invokeEditSlot( const char *slot )
-{
-  if ( focusWidget() );
-    QMetaObject::invokeMethod( focusWidget(), slot );
-}
-
 void KApplication::addKipcEventMask(int id)
 {
     if (id >= 32)
@@ -1942,31 +1936,6 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "QTabWidget", "currentPage" );
     Q3SqlPropertyMap::installDefaultMap( kdeMap );
 #endif
-}
-
-void KApplication::cut()
-{
-  invokeEditSlot( SLOT( cut() ) );
-}
-
-void KApplication::copy()
-{
-  invokeEditSlot( SLOT( copy() ) );
-}
-
-void KApplication::paste()
-{
-  invokeEditSlot( SLOT( paste() ) );
-}
-
-void KApplication::clear()
-{
-  invokeEditSlot( SLOT( clear() ) );
-}
-
-void KApplication::selectAll()
-{
-  invokeEditSlot( SLOT( selectAll() ) );
 }
 
 QByteArray

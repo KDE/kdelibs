@@ -230,6 +230,43 @@ KAction *editBookmarks( const QObject *recvr, const char *slot, KActionCollectio
 KAction *spelling( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( Spelling, name, recvr, slot, parent ); }
 
+
+KAction *buildAutomaticAction(KActionCollection* parent, StdAction id, const char* slot)
+{
+    const KStdActionInfo* p = infoPtr( id );
+    if (!p)
+        return 0;
+    KShortcut cut = KStdAccel::shortcut(p->idAccel);
+    AutomaticAction *action = new AutomaticAction(p->psLabel, p->psIconName, cut, slot, parent, p->psName);
+    action->setWhatsThis(p->psWhatsThis);
+    return action;
+}
+        
+KAction *cut(KActionCollection* parent)
+{
+    return buildAutomaticAction(parent, Cut, SLOT(cut()));
+}
+
+KAction *copy(KActionCollection* parent)
+{
+    return buildAutomaticAction(parent, Copy, SLOT(copy()));
+}     
+
+KAction *paste(KActionCollection* parent)
+{
+    return buildAutomaticAction(parent, Paste, SLOT(paste()));
+}     
+
+KAction *clear(KActionCollection* parent)
+{
+    return buildAutomaticAction(parent, Clear, SLOT(clear()));
+}     
+
+KAction *selectAll(KActionCollection* parent)
+{
+    return buildAutomaticAction(parent, SelectAll, SLOT(selectAll()));
+}     
+
 KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
     KToggleAction *ret;

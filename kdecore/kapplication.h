@@ -54,7 +54,6 @@ class KURL;
 *
 * Only one object of this class can be instantiated in a single app.
 * This instance is always accessible via the 'kapp' global variable.
-* See cut() for an example.
 *
 * This class provides the following services to all KDE applications.
 *
@@ -394,71 +393,6 @@ public:
    **/
   void setTopWidget( QWidget *topWidget );
 
-public slots:
-
-  /**
-   * If the widget with focus provides a cut() slot, call that slot.  Thus for a
-   * simple application cut can be implemented as:
-   * \code
-   * KStdAction::cut( kapp, SLOT( cut() ), actionCollection() );
-   * \endcode
-   */
-  void cut();
-
-  /**
-   * If the widget with focus provides a copy() slot, call that slot.  Thus for a
-   * simple application copy can be implemented as:
-   * \code
-   * KStdAction::copy( kapp, SLOT( copy() ), actionCollection() );
-   * \endcode
-   */
-  void copy();
-
-  /**
-   * If the widget with focus provides a paste() slot, call that slot.  Thus for a
-   * simple application copy can be implemented as:
-   * \code
-   * KStdAction::paste( kapp, SLOT( paste() ), actionCollection() );
-   * \endcode
-   */
-  void paste();
-
-  /**
-   * If the widget with focus provides a clear() slot, call that slot.  Thus for a
-   * simple application clear() can be implemented as:
-   * \code
-   * new KAction( i18n( "Clear" ), "editclear", 0, kapp, SLOT( clear() ), actionCollection(), "clear" );
-   * \endcode
-   *
-   * Note that for some widgets, this may not provide the intended bahavior.  For
-   * example if you make use of the code above and a KListView has the focus, clear()
-   * will clear all of the items in the list.  If this is not the intened behavior
-   * and you want to make use of this slot, you can subclass KListView and reimplement
-   * this slot.  For example the following code would implement a KListView without this
-   * behavior:
-   *
-   * \code
-   * class MyListView : public KListView {
-   *   Q_OBJECT
-   * public:
-   *   MyListView( QWidget * parent = 0, const char * name = 0, WFlags f = 0 ) : KListView( parent, name, f ) {}
-   *   virtual ~MyListView() {}
-   * public slots:
-   *   virtual void clear() {}
-   * };
-   * \endcode
-   */
-  void clear();
-
-  /**
-   * If the widget with focus provides a selectAll() slot, call that slot.  Thus for a
-   * simple application select all can be implemented as:
-   * \code
-   * KStdAction::selectAll( kapp, SLOT( selectAll() ), actionCollection() );
-   * \endcode
-   */
-  void selectAll();
-
 public:
   /**
    * Returns the DCOP name of the service launcher. This will be something like
@@ -721,39 +655,6 @@ protected:
   /// Current application object.
   static KApplication *KApp;
   int pArgc;
-
-  /**
-   * This method is used internally to determine which edit slots are implemented
-   * by the widget that has the focus, and to invoke those slots if available.
-   *
-   * @param slot is the slot as returned using the SLOT() macro, for example SLOT( cut() )
-   *
-   * This method can be used in KApplication subclasses to implement application wide
-   * edit actions not supported by the KApplication class.  For example (in your subclass):
-   *
-   * \code
-   * void MyApplication::deselect()
-   * {
-   *   invokeEditSlot( SLOT( deselect() ) );
-   * }
-   * \endcode
-   *
-   * Now in your application calls to MyApplication::deselect() will call this slot on the
-   * focused widget if it provides this slot.  You can combine this with KAction with:
-   *
-   * \code
-   * KStdAction::deselect( static_cast<MyApplication *>( kapp ), SLOT( cut() ), actionCollection() );
-   * \endcode
-   *
-   * @see cut()
-   * @see copy()
-   * @see paste()
-   * @see clear()
-   * @see selectAll()
-   *
-   * @since 3.2
-   */
-  void invokeEditSlot( const char *slot );
 
 private slots:
   void dcopFailure(const QString &);

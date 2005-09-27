@@ -16,11 +16,13 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KSTDACTION_PRIVATE_H_
-#define _KSTDACTION_PRIVATE_H_
+#ifndef KSTDACTION_PRIVATE_H
+#define KSTDACTION_PRIVATE_H
 
 #include <klocale.h>
 #include <kstdaccel.h>
+#include <qapplication.h>
+#include <kaction.h>
 
 namespace KStdAction
 {
@@ -132,6 +134,30 @@ static inline QStringList internal_stdNames()
             result.append(i18n(g_rgActionInfo[i].psLabel));
     return result;
 }
+class AutomaticAction : public KAction {
+
+Q_OBJECT
+
+public:
+    AutomaticAction(const QString &text, const QString &pix, const KShortcut &cut, const char *slot, KActionCollection *parent, const char *name) : KAction (text, pix, cut, 0, slot, parent, name){
+      connect(this, SIGNAL( activated() ), this, slot );
+    }
+    
+public slots:
+    inline void cut(){ invokeEditSlot("cut"); };
+    inline void copy(){ invokeEditSlot("copy"); };
+    inline void paste(){ invokeEditSlot("paste"); };
+    inline void clear(){ invokeEditSlot("clear"); };
+    inline void selectAll(){ invokeEditSlot("selectAll"); };
+
+    void invokeEditSlot( const char *slot )
+    {
+        if ( qApp->focusWidget() );
+            QMetaObject::invokeMethod( qApp->focusWidget(), slot );
+    }
+
+};
+
 
 }
 

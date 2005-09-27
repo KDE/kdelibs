@@ -279,6 +279,49 @@ namespace KStdAction
 		KActionCollection* parent, const char *name = 0 );
 
 	/**
+	* Cut selected area and store it in the clipboard.  Calls cut() on the widget with the current focus.
+	*/
+	KDEUI_EXPORT KAction *cut(KActionCollection* parent);
+	
+	/**
+	* Copy selected area and store it in the clipboard.  Calls copy() on the widget with the current focus.
+	*/
+	KDEUI_EXPORT KAction *copy(KActionCollection* parent);
+	
+	/**
+	* Paste the contents of clipboard at the current mouse or cursor
+	* Calls paste() on the widget with the current focus.
+	*/
+	KDEUI_EXPORT KAction *paste(KActionCollection* parent);
+ 
+	/**
+	* Clear selected area.  Calls clear() on the widget with the current focus.
+ 	* Note that for some widgets, this may not provide the intended bahavior.  For
+	* example if you make use of the code above and a KListView has the focus, clear()
+	* will clear all of the items in the list.  If this is not the intened behavior
+	* and you want to make use of this slot, you can subclass KListView and reimplement
+	* this slot.  For example the following code would implement a KListView without this
+	* behavior:
+	*
+	* \code
+	* class MyListView : public KListView {
+	*   Q_OBJECT
+	* public:
+	*   MyListView( QWidget * parent = 0, const char * name = 0, WFlags f = 0 ) : KListView( parent, name, f ) {}
+	*   virtual ~MyListView() {}
+	* public slots:
+	*   virtual void clear() {}
+	* };
+	* \endcode
+	*/
+	KDEUI_EXPORT KAction *clear(KActionCollection* parent);
+
+	/**
+	* Calls selectAll() on the widget with the current focus.
+	*/
+	KDEUI_EXPORT KAction *selectAll(KActionCollection* parent);
+	      
+	/**
 	* Cut selected area and store it in the clipboard.
 	*/
 	KDEUI_EXPORT KAction *cut(const QObject *recvr, const char *slot,
