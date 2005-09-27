@@ -107,6 +107,8 @@ public:
 
     void setStaticX(short staticX);
     void setStaticY(int staticY);
+    int staticX() const { return m_staticX; }
+    int staticY() const { return m_staticY; }
 
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
