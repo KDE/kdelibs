@@ -77,7 +77,7 @@ class KABC_EXPORT Addressee
   friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Addressee & );
 
   public:
-    typedef Q3ValueList<Addressee> List;
+    typedef QList<Addressee> List;
     typedef QMap<QString, Addressee> Map;
 
     /**

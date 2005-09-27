@@ -40,7 +40,7 @@ using namespace KABC;
 static bool matchBinaryPattern( int value, int pattern );
 
 template <class L>
-static bool listEquals( const Q3ValueList<L>&, const Q3ValueList<L>& );
+static bool listEquals( const QList<L>&, const QList<L>& );
 static bool listEquals( const QStringList&, const QStringList& );
 static bool emailsEquals( const QStringList&, const QStringList& );
 
@@ -1059,7 +1059,7 @@ bool matchBinaryPattern( int value, int pattern )
 }
 
 template <class L>
-bool listEquals( const Q3ValueList<L> &list, const Q3ValueList<L> &pattern )
+bool listEquals( const QList<L> &list, const QList<L> &pattern )
 {
   if ( list.count() != pattern.count() )
     return false;

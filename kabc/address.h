@@ -61,8 +61,8 @@ class KABC_EXPORT Address
     /**
       List of addresses.
     */
-    typedef Q3ValueList<Address> List;
-    typedef Q3ValueList<int> TypeList;
+    typedef QList<Address> List;
+    typedef QList<int> TypeList;
   
     /**
       Address types:

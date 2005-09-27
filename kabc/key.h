@@ -36,8 +36,8 @@ class KABC_EXPORT Key
   friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
 
 public:
-  typedef Q3ValueList<Key> List;
-  typedef Q3ValueList<int> TypeList;  
+  typedef QList<Key> List;
+  typedef QList<int> TypeList;  
 
   /**
    * Key types

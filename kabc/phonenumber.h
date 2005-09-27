@@ -41,8 +41,8 @@ class KABC_EXPORT PhoneNumber
     friend KABC_EXPORT QDataStream &operator>>( QDataStream &, PhoneNumber & );
 
   public:
-    typedef Q3ValueList<PhoneNumber> List;
-    typedef Q3ValueList<int> TypeList;
+    typedef QList<PhoneNumber> List;
+    typedef QList<int> TypeList;
 
     /**
       @li @p Home -  Home number
