@@ -62,6 +62,21 @@ void testAdjustPath()
     ftpurl2.adjustPath(1);
     check( "adjustPath(1)", ftpurl2.path(), "/" );
 
+    // Equivalent tests written by the KDirLister maintainer :)
+
+    KURL u3( QCString("ftp://brade@ftp.kde.org///") );
+    u3.adjustPath(-1);
+    check("KURL::adjustPath()", u3.url(), "ftp://brade@ftp.kde.org/");
+
+    KURL u4( QCString("ftp://brade@ftp.kde.org/kde///") );
+    u4.adjustPath(-1);
+    check("KURL::adjustPath()", u4.url(), "ftp://brade@ftp.kde.org/kde");
+
+    // applying adjustPath(-1) twice should not yield two different urls
+    // (follows from the above test)
+    KURL u5 = u4;
+    u5.adjustPath(-1);
+    check("KURL::adjustPath()", u5.url(), u4.url());
 }
 
 int main(int argc, char *argv[])
@@ -306,32 +321,6 @@ int main(int argc, char *argv[])
   // ignoring trailing slash
   check("KURL::directory(false,true)", u2.directory(false,true), "/home/");
   check("KURL::directory(true,true)", u2.directory(true,true), "/home");
-
-#if true
-  KURL u3( QCString("ftp://brade@ftp.kde.org///") );
-  printf("\n* URL is %s\n",u3.url().ascii());
-  // adjustPath()
-  u3.adjustPath(-1);
-  check("KURL::adjustPath()", u3.url(), "ftp://brade@ftp.kde.org/");
-  
-  KURL u4( QCString("ftp://brade@ftp.kde.org/kde///") );
-  printf("\n* URL is %s\n",u4.url().ascii());
-  u4.adjustPath(-1);
-  check("KURL::adjustPath()", u4.url(), "ftp://brade@ftp.kde.org/kde");
-
-  // applying adjustPath(-1) twice should not yield two different urls (follows
-  // from the above test)
-  KURL u5 = u4;
-  u5.adjustPath(-1);
-  check("KURL::adjustPath()", u5.url(), u4.url());
-#else
-  // cleanPath() should fix invalid urls as well in case adjustPath(-1) only 
-  // ever strips _one_ slash
-  KURL invalid( QCString("f::a///") );
-  printf("\n* URL is %s\n",invalid.url().ascii());
-  invalid.cleanPath();
-  check("KURL::cleanPath()", invalid.url(), "f::a/");
-#endif
 
   // cleanPath() tests (before cd() since cd uses that)
   u2.cleanPath();
@@ -900,12 +889,12 @@ int main(int argc, char *argv[])
   check("amantia.url()", amantia.url(), "http://?.foo.de"); // why not
 #endif
 
-  KURL thiago( "http://ä.de" );
+  KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
   check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
 #ifdef HAVE_IDNA_H
   check("thiago.url()", thiago.url(), "http://xn--4ca.de");   // Non-ascii is allowed in IDN domain names.
 #else
-  check("thiago.url()", thiago.url(), "http://ä.de");
+  check("thiago.url()", thiago.url(), QString::fromUtf8( "http://\303\244.de" ) );
 #endif
 
 
