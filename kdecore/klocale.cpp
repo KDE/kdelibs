@@ -17,11 +17,13 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
+#undef QT3_SUPPORT
+#include "config.h"
+#include "klocale.h"
 
 #include <stdlib.h> // getenv
 
@@ -41,7 +43,6 @@
 #include "kdebug.h"
 #include "kcalendarsystem.h"
 #include "kcalendarsystemfactory.h"
-#include "klocale.h"
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -51,28 +52,27 @@ static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalog = 0;
 
-class KLocalePrivate
+struct KLocale::Private
 {
-public:
   int weekStartDay;
-  bool nounDeclension;
-  bool dateMonthNamePossessive;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)
   QList<KCatalog> catalogs; // list of all loaded catalogs, contains one instance per catalog name and language
   QString encoding;
   QTextCodec * codecForEncoding;
-  KConfig * config;
-  bool formatInited;
-  int /*QPrinter::PageSize*/ pageSize;
+  KConfigBase * config;
+  int pageSize;
   KLocale::MeasureSystem measureSystem;
   QStringList langTwoAlpha;
-  KConfig *languages;
+  KConfigBase * languages;
 
   QString calendarType;
   KCalendarSystem * calendar;
-  bool utf8FileEncoding;
   QString appName;
+  bool nounDeclension:1;
+  bool dateMonthNamePossessive:1;
+  bool utf8FileEncoding:1;
+  bool formatInited:1;
 #ifdef Q_WS_WIN
   char win32SystemEncoding[3+7]; //"cp " + lang ID
 #endif
@@ -80,9 +80,9 @@ public:
 
 static KLocale *this_klocale = 0;
 
-KLocale::KLocale( const QString & catalog, KConfig * config )
+KLocale::KLocale( const QString & catalog, KConfigBase * config )
+	: d(new Private)
 {
-  d = new KLocalePrivate;
   d->config = config;
   d->languages = 0;
   d->calendar = 0;
@@ -91,7 +91,7 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
   initEncoding(0);
   initFileNameEncoding(0);
 
-  KConfig *cfg = d->config;
+  KConfigBase *cfg = d->config;
   this_klocale = this;
   if (!cfg) cfg = KGlobal::instance()->config();
   this_klocale = 0;
@@ -106,8 +106,7 @@ QString KLocale::_initLanguage(KConfigBase *config)
 {
   if (this_klocale)
   {
-     // ### HPB Why this cast??
-     this_klocale->initLanguageList((KConfig *) config, true);
+     this_klocale->initLanguageList(config, true);
      // todo: adapt current catalog list: remove unused languages, insert main catalogs, if not already found
      return this_klocale->language();
   }
@@ -135,7 +134,7 @@ void KLocale::initMainCatalogs(const QString & catalog)
   }
 }
 
-void KLocale::initLanguageList(KConfig * config, bool useEnv)
+void KLocale::initLanguageList(KConfigBase * config, bool useEnv)
 {
   KConfigGroupSaver saver(config, "Locale");
 
@@ -144,12 +143,11 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
     m_country = defaultCountry();
 
   // Reset the list and add the new languages
-  QStringList languageList;
+  QStringList list;
   if ( useEnv )
-    languageList += QStringList::split
-      (':', QFile::decodeName( ::getenv("KDE_LANG") ));
+    list += QFile::decodeName( ::getenv("KDE_LANG") ).split(':');
 
-  languageList += config->readListEntry("Language", ':');
+  list += config->readListEntry("Language", ':');
 
   // same order as setlocale use
   if ( useEnv )
@@ -163,21 +161,21 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
 
       foreach (QString lang, langs)
 	{
-	  QString ln, country, chrset;
-	  splitLocale(lang, ln, country, chrset);
+	  QString ln, aCountry, chrset;
+	  splitLocale(lang, ln, aCountry, chrset);
 
-	  if (!country.isEmpty()) {
-	    languageList += ln + '_' + country;
+	  if (!aCountry.isEmpty()) {
+	    list += ln + '_' + aCountry;
 	    if (!chrset.isEmpty())
-	      languageList += ln + '_' + country + '.' + chrset;
+	      list += ln + '_' + aCountry + '.' + chrset;
 	  }
-	  languageList += ln;
-	  languageList += lang;
+	  list += ln;
+	  list += lang;
 	}
     }
 
   // now we have a language list -- let's use the first OK language
-  setLanguage( languageList );
+  setLanguage( list );
 }
 
 void KLocale::initPluralTypes()
@@ -186,20 +184,17 @@ void KLocale::initPluralTypes()
     it != d->catalogs.end();
     ++it )
   {
-    QString language = (*it).language();
-    int pt = pluralType( language );
-    (*it).setPluralType( pt );
+    it->setPluralType( pluralType( it->language() ) );
   }
 }
 
-
-int KLocale::pluralType( const QString & language )
+int KLocale::pluralType( const QString & lang )
 {
   for ( QList<KCatalog>::ConstIterator it = d->catalogs.begin();
     it != d->catalogs.end();
     ++it )
   {
-    if ( ((*it).name() == SYSTEM_MESSAGES ) && ((*it).language() == language )) {
+    if ( ( it->name() == SYSTEM_MESSAGES ) && ( it->language() == lang )) {
       return pluralType( *it );
     }
   }
@@ -284,7 +279,7 @@ void KLocale::doFormatInit() const
 
 void KLocale::initFormat()
 {
-  KConfig *config = d->config;
+  KConfigBase *config = d->config;
   if (!config) config = KGlobal::instance()->config();
   Q_ASSERT( config );
 
@@ -341,7 +336,6 @@ void KLocale::initFormat()
   readConfigNumEntry("NegativeMonetarySignPosition", (int)ParensAround,
 		     m_negativeMonetarySignPosition, SignPosition);
 
-
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", m_timeFormat);
   readConfigEntry("DateFormat", "%A %d %B %Y", m_dateFormat);
@@ -349,7 +343,8 @@ void KLocale::initFormat()
   readConfigNumEntry("WeekStartDay", 1, d->weekStartDay, int);
 
   // other
-  readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize, int);
+  readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize,
+		     /*int*/QPrinter::PageSize);
   readConfigNumEntry("MeasureSystem", (int)Metric, d->measureSystem,
 		     MeasureSystem);
   readConfigEntry("CalendarSystem", "gregorian", d->calendarType);
@@ -358,13 +353,13 @@ void KLocale::initFormat()
 
   //Grammatical
   //Precedence here is l10n / i18n / config file
-  KSimpleConfig language(locate("locale",
-			        QString::fromLatin1("%1/entry.desktop")
-                                .arg(m_language)), true);
-  language.setGroup("KCM Locale");
+  KSimpleConfig lang(locate("locale",
+			     QString::fromLatin1("%1/entry.desktop")
+                             .arg(m_language)), true);
+  lang.setGroup("KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
   save = entry.readBoolEntry(key, default); \
-  save = language.readBoolEntry(key, save); \
+  save = lang.readBoolEntry(key, save); \
   save = config->readBoolEntry(key, save);
 
   read3ConfigBoolEntry("NounDeclension", false, d->nounDeclension);
@@ -375,13 +370,13 @@ void KLocale::initFormat()
   KGlobal::_locale = lsave;
 }
 
-bool KLocale::setCountry(const QString & country)
+bool KLocale::setCountry(const QString & aCountry)
 {
   // Check if the file exists too??
-  if ( country.isEmpty() )
+  if ( aCountry.isEmpty() )
     return false;
 
-  m_country = country;
+  m_country = aCountry;
 
   d->formatInited = false;
 
@@ -398,17 +393,17 @@ QString KLocale::catalogFileName(const QString & language,
   return locate( "locale", path );
 }
 
-bool KLocale::setLanguage(const QString & language)
+bool KLocale::setLanguage(const QString & _language)
 {
-  if ( d->languageList.contains( language ) ) {
- 	 d->languageList.remove( language );
+  if ( d->languageList.contains( _language ) ) {
+ 	 d->languageList.removeAll( _language );
   }
-  d->languageList.prepend( language ); // let us consider this language to be the most important one
+  d->languageList.prepend( _language ); // let us consider this language to be the most important one
 
-  m_language = language; // remember main language for shortcut evaluation
+  m_language = _language; // remember main language for shortcut evaluation
 
-  // important when called from the outside and harmless when called before populating the
-  // catalog name list
+  // important when called from the outside and harmless when called before
+  // populating the catalog name list
   updateCatalogs();
 
   d->formatInited = false;
@@ -418,7 +413,7 @@ bool KLocale::setLanguage(const QString & language)
 
 bool KLocale::setLanguage(const QStringList & languages)
 {
-  QStringList languageList( languages );
+  QStringList list( languages );
   // This list might contain
   // 1) some empty strings that we have to eliminate
   // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order
@@ -429,35 +424,35 @@ bool KLocale::setLanguage(const QStringList & languages)
   //    right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have kdelibs.mo
   //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
   //    That was considered to be a bug by the Hebrew translators.
-  for( QStringList::Iterator it = languageList.fromLast();
-    it != languageList.begin(); --it )
+  for( QStringList::Iterator it = --list.end();
+    it != list.begin(); --it )
   {
     // kdDebug(173) << "checking " << (*it) << endl;
     bool bIsTranslated = isApplicationTranslatedInto( *it );
-    if ( languageList.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
+    if ( list.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
       // kdDebug(173) << "removing " << (*it) << endl;
-      it = languageList.remove( it );
+      it = list.erase( it );
     }
   }
   // now this has left the first element of the list unchecked.
   // The question why this is the case is left as an exercise for the reader...
   // Besides the list might have been empty all the way, so check that too.
-  if ( languageList.begin() != languageList.end() ) {
-     QStringList::Iterator it = languageList.begin(); // now pointing to the first element
+  if ( list.begin() != list.end() ) {
+     QStringList::Iterator it = list.begin(); // now pointing to the first element
      // kdDebug(173) << "checking " << (*it) << endl;
      if( (*it).isEmpty() || !(isApplicationTranslatedInto( *it )) ) {
         // kdDebug(173) << "removing " << (*it) << endl;
-     	languageList.remove( it ); // that's what the iterator was for...
+     	list.erase( it ); // that's what the iterator was for...
      }
   }
 
-  if ( languageList.isEmpty() ) {
+  if ( list.isEmpty() ) {
 	// user picked no language, so we assume he/she speaks English.
-	languageList.append( defaultLanguage() );
+	list.append( defaultLanguage() );
   }
-  m_language = languageList.first(); // keep this for shortcut evaluations
+  m_language = list.first(); // keep this for shortcut evaluations
 
-  d->languageList = languageList; // keep this new list of languages to use
+  d->languageList = list; // keep this new list of languages to use
   d->langTwoAlpha.clear(); // Flush cache
 
   // important when called from the outside and harmless when called before populating the
@@ -467,13 +462,13 @@ bool KLocale::setLanguage(const QStringList & languages)
   return true; // we found something. Maybe it's only English, but we found something
 }
 
-bool KLocale::isApplicationTranslatedInto( const QString & language)
+bool KLocale::isApplicationTranslatedInto( const QString & lang)
 {
-  if ( language.isEmpty() ) {
+  if ( lang.isEmpty() ) {
     return false;
   }
 
-  if ( language == defaultLanguage() ) {
+  if ( lang == defaultLanguage() ) {
     // en_us is always "installed"
     return true;
   }
@@ -489,7 +484,7 @@ bool KLocale::isApplicationTranslatedInto( const QString & language)
   // a static method in KCataloge that can translate between these file names.
   // a stat
   QString sFileName = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
-    .arg( language )
+    .arg( lang )
     .arg( appName );
   // kdDebug(173) << "isApplicationTranslatedInto: filename " << sFileName << endl;
 
@@ -541,7 +536,6 @@ QString KLocale::country() const
   return m_country;
 }
 
-
 void KLocale::insertCatalog( const QString & catalog )
 {
   if ( !d->catalogNames.contains( catalog) ) {
@@ -565,11 +559,7 @@ void KLocale::updateCatalogs( )
   // 3.2) else create a new catalog.
   // but we will do this later.
 
-  for ( QList<KCatalog>::Iterator it = d->catalogs.begin();
-	it != d->catalogs.end(); )
-  {
-     it = d->catalogs.remove(it);
-  }
+  d->catalogs.clear();
 
   // now iterate over all languages and all wanted catalog names and append or create them in the right order
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
@@ -583,7 +573,7 @@ void KLocale::updateCatalogs( )
     {
       KCatalog cat( *itNames, *itLangs ); // create Catalog for this name and this language
       d->catalogs.append( cat );
-	}
+    }
   }
   initPluralTypes();  // evaluate the plural type for all languages and remember this in each KCatalog
 }
@@ -594,7 +584,7 @@ void KLocale::updateCatalogs( )
 void KLocale::removeCatalog(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog )) {
-    d->catalogNames.remove( catalog );
+    d->catalogNames.removeAll( catalog );
     if (KGlobal::_instance)
       updateCatalogs();  // walk through the KCatalog instances and weed out everything we no longer need
   }
@@ -603,7 +593,7 @@ void KLocale::removeCatalog(const QString &catalog)
 void KLocale::setActiveCatalog(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog ) ) {
-    d->catalogNames.remove( catalog );
+	d->catalogNames.removeAll( catalog );
 	d->catalogNames.prepend( catalog );
 	updateCatalogs();  // walk through the KCatalog instances and adapt to the new order
   }
@@ -614,16 +604,15 @@ KLocale::~KLocale()
   delete d->calendar;
   delete d->languages;
   delete d;
-  d = 0L;
 }
 
 QString KLocale::translate_priv(const char *msgid,
 				const char *fallback,
 				const char **translated,
-				int* pluralType ) const
+				int* plural_type ) const
 {
-  if ( pluralType) {
-  	*pluralType = -1; // unless we find something more precise
+  if ( plural_type) {
+  	*plural_type = -1; // unless we find something more precise
   }
   if (!msgid || !msgid[0])
     {
@@ -655,8 +644,8 @@ QString KLocale::translate_priv(const char *msgid,
 	  if (translated) {
 	    *translated = text;
 	  }
-	  if ( pluralType) {
-	  	*pluralType = (*it).pluralType(); // remember the plural type information from the catalog that was used
+	  if ( plural_type) {
+	  	*plural_type = (*it).pluralType(); // remember the plural type information from the catalog that was used
 	  }
 	  return QString::fromUtf8( text );
 	}
@@ -720,11 +709,11 @@ QString KLocale::translate( const char *singular, const char *plural,
   char *newstring = new char[strlen(singular) + strlen(plural) + 6];
   sprintf(newstring, "_n: %s\n%s", singular, plural);
   // as copying QString is very fast, it looks slower as it is ;/
-  int pluralType = -1;
-  QString r = translate_priv(newstring, 0, 0, &pluralType);
+  int plural_type = -1;
+  QString r = translate_priv(newstring, 0, 0, &plural_type);
   delete [] newstring;
 
-  if ( r.isEmpty() || useDefaultLanguage() || pluralType == -1) {
+  if ( r.isEmpty() || useDefaultLanguage() || plural_type == -1) {
     if ( n == 1 ) {
       return put_n_in( QString::fromUtf8( singular ),  n );
 	} else {
@@ -739,7 +728,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   }
 
   QStringList forms = r.split( "\n", QString::SkipEmptyParts);
-  switch ( pluralType ) {
+  switch ( plural_type ) {
   case 0: // NoPlural
     EXPECT_LENGTH( 1 );
     return put_n_in( forms[0], n);
@@ -885,9 +874,9 @@ QString KLocale::translateQt( const char *context, const char *source,
   QString r;
 
   if ( message && message[0]) {
-    char *newstring = new char[strlen(source) + strlen(message) + 5];
+    newstring = new char[strlen(source) + strlen(message) + 5];
     sprintf(newstring, "_: %s\n%s", source, message);
-    const char *translation = 0;
+    translation = 0;
     // as copying QString is very fast, it looks slower as it is ;/
     r = translate_priv(newstring, source, &translation);
     delete [] newstring;
@@ -1014,7 +1003,7 @@ static inline void put_it_in( QChar *buffer, int& index, int number )
   buffer[index++] = number % 10 + '0';
 }
 
-// insert (thousands)-"separator"s into the non-fractional part of str 
+// insert (thousands)-"separator"s into the non-fractional part of str
 static void _insertSeparator(QString &str, const QString &separator,
 			     const QString &decimalSymbol)
 {
@@ -1109,7 +1098,7 @@ static void _inc_by_one(QString &str, int position)
 {
   for (int i = position; i >= 0; i--)
     {
-      char last_char = str[i].latin1();
+      char last_char = str[i].toLatin1();
       switch(last_char)
 	{
 	case '0':
@@ -1167,7 +1156,7 @@ static void _round(QString &str, int precision)
   str.append(QString().fill('0', precision));
 
   // Now decide whether to round up or down
-  char last_char = str[decimalSymbolPos + precision + 1].latin1();
+  char last_char = str[decimalSymbolPos + precision + 1].toLatin1();
   switch (last_char)
     {
     case '0':
@@ -1190,7 +1179,7 @@ static void _round(QString &str, int precision)
 
   decimalSymbolPos = str.indexOf('.');
   str.truncate(decimalSymbolPos + precision + 1);
-  
+
   // if precision == 0 delete also '.'
   if (precision == 0) str = str.section('.', 0, 0);
 }
@@ -1203,7 +1192,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
       ! QRegExp("^[+-]?\\d+(\\.\\d+)*(e[+-]?\\d+)?$").exactMatch(tmpString))
     return numStr;
 
-  
+
   // Skip the sign (for now)
   bool neg = (tmpString[0] == '-');
   if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
@@ -1220,19 +1209,19 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 
   kdDebug(173)<<"mantString:"<<mantString<<endl;
   kdDebug(173)<<"expString:"<<expString<<endl;
-	
+
 
   if (round) _round(mantString, precision);
- 
+
   // Replace dot with locale decimal separator
   mantString.replace(QChar('.'), decimalSymbol());
-  
+
   // Insert the thousand separators
   _insertSeparator(mantString, thousandsSeparator(), decimalSymbol());
 
   // How can we know where we should put the sign?
   mantString.prepend(neg?negativeSign():positiveSign());
-  
+
   return mantString +  expString;
 }
 
@@ -1924,7 +1913,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
     {
       QStringList langs = KGlobal::locale()->languageList();
       langs.append( "en" );
-      langs.remove( defaultLanguage() );
+      langs.removeAll( defaultLanguage() );
       QStringList::ConstIterator lang;
       for (lang = langs.begin(); lang != langs.end(); ++lang)
 	search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
@@ -1949,7 +1938,7 @@ bool KLocale::useDefaultLanguage() const
   return language() == defaultLanguage();
 }
 
-void KLocale::initEncoding(KConfig *)
+void KLocale::initEncoding(KConfigBase *)
 {
   const int mibDefault = 4; // ISO 8859-1
 
@@ -1965,7 +1954,7 @@ void KLocale::initEncoding(KConfig *)
   Q_ASSERT( d->codecForEncoding );
 }
 
-void KLocale::initFileNameEncoding(KConfig *)
+void KLocale::initFileNameEncoding(KConfigBase *)
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
@@ -2120,11 +2109,11 @@ int KLocale::pageSize() const
   return d->pageSize;
 }
 
-void KLocale::setPageSize(int pageSize)
+void KLocale::setPageSize(int size)
 {
   // #### check if it's in range??
   doFormatInit();
-  d->pageSize = pageSize;
+  d->pageSize = size;
 }
 
 KLocale::MeasureSystem KLocale::measureSystem() const
@@ -2156,7 +2145,7 @@ const char * KLocale::encoding() const
   {
     //win32 returns "System" codec name here but KDE apps expect a real name:
     strcpy(d->win32SystemEncoding, "cp ");
-    if (GetLocaleInfoA( MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT), 
+    if (GetLocaleInfoA( MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT),
       LOCALE_IDEFAULTANSICODEPAGE, d->win32SystemEncoding+3, sizeof(d->win32SystemEncoding)-3-1 ))
     {
       return d->win32SystemEncoding;
@@ -2303,10 +2292,8 @@ const KCalendarSystem * KLocale::calendar() const
   return d->calendar;
 }
 
-KLocale::KLocale(const KLocale & rhs)
+KLocale::KLocale(const KLocale & rhs) : d(new Private)
 {
-  d = new KLocalePrivate;
-
   *this = rhs;
 }
 
@@ -2341,9 +2328,3 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 
   return *this;
 }
-
-
-// KDE4: remove
-#if 0
-void nothing() { i18n("&Next"); }
-#endif

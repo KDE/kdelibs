@@ -16,11 +16,11 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef _KLOCALE_H
-#define _KLOCALE_H
+#ifndef KLOCALE_H
+#define KLOCALE_H
 
 #include <qstring.h>
 #include <kdelibs_export.h>
@@ -32,9 +32,7 @@ class QTime;
 class QDateTime;
 
 class KGlobal;
-class KConfig;
 class KConfigBase;
-class KLocalePrivate;
 class KCatalog;
 class KCalendarSystem;
 
@@ -141,7 +139,7 @@ public:
    * @param catalog The name of the main language file
    * @param config The configuration file to use.
    */
-  KLocale( const QString& catalog, KConfig *config = 0 );
+  KLocale( const QString& catalog, KConfigBase *config = 0 );
 
   /**
    * Copy constructor.
@@ -1065,7 +1063,7 @@ private:
    *
    * @param config The configuration object used for init.
    */
-  void initFormat(KConfig *config);
+  void initFormat(KConfigBase *config);
 
   /**
    * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
@@ -1083,20 +1081,20 @@ private:
    * @param config The configuration object used for init
    * @param useEnv True if we should use environment variables
    */
-  void initLanguageList(KConfig * config, bool useEnv);
+  void initLanguageList(KConfigBase * config, bool useEnv);
 
   /**
    * @internal Figures out which encoding the user prefers.
    *
    * @param config The configuration object used for init
    */
-  void initEncoding(KConfig * config);
+  void initEncoding(KConfigBase * config);
 
   /**
    * @internal Figures out which encoding the user prefers for filenames
    * and sets up the appropriate QFile encoding and decoding functions.
    */
-  void initFileNameEncoding(KConfig *config);
+  void initFileNameEncoding(KConfigBase *config);
 
   /**
    * @internal A QFile filename encoding function (QFile::encodeFn).
@@ -1213,7 +1211,8 @@ private:
   bool m_positivePrefixCurrencySymbol;
   bool m_negativePrefixCurrencySymbol;
 
-  KLocalePrivate *d;
+  class Private;
+  Private *const d;
 };
 
 #endif
