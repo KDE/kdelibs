@@ -1096,6 +1096,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
+    QString tmpName = name.isEmpty() ?  url.fileName() : name;
     QString     file = url.pathOrURL();
     QStringList lst = items();
 
@@ -1123,53 +1124,12 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     }
 
     // add file to list
-    QString title = name + " [" + file + "]";
-    d->m_shortNames.insert( title, name );
+    QString title = tmpName + " [" + file + "]";
+    d->m_shortNames.insert( title, tmpName );
     d->m_urls.insert( title, url );
     lst.prepend( title );
     setItems( lst );
 }
-
-
-void KRecentFilesAction::addURL( const KURL& url )
-{
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
-       return;
-    QString     file = url.pathOrURL();
-    QStringList lst = items();
-
-    // remove file if already in list
-    QStringList::Iterator end = lst.end();
-    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
-    {
-      QString title = (*it);
-      if ( title.endsWith( file + "]" ) )
-      {
-        lst.remove( it );
-        d->m_urls.erase( title );
-        d->m_shortNames.erase( title );
-        break;
-      }
-    }
-
-    // remove last item if already maxitems in list
-    if( lst.count() == d->m_maxItems )
-    {
-        // remove last item
-        QString lastItem = lst.last();
-        d->m_shortNames.erase( lastItem );
-        d->m_urls.erase( lastItem );
-        lst.remove( lastItem );
-    }
-
-    // add file to list
-    QString title = url.fileName() + " [" + file + "]";
-    d->m_shortNames.insert( title, url.fileName() );
-    d->m_urls.insert( title, url );
-    lst.prepend( title );
-    setItems( lst );
-}
-
 
 void KRecentFilesAction::removeURL( const KURL& url )
 {
@@ -1871,7 +1831,7 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const KShortcut& cut,
                                           KActionCollection* parent, const char* name )
   : KAction( text, icon, cut, 0,0,parent, name )
-{ 
+{
   m_popup = 0;
   m_delayed = true;
   m_stickyMenu = true;

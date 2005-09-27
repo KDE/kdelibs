@@ -831,17 +831,10 @@ public slots:
    *  Add URL to recent files list.
    *
    *  @param url The URL of the file
-   */
-  void addURL( const KURL& url );
-
-  /**
-   *  Add URL to recent files list.
-   *
-   *  @param url The URL of the file
    *  @param name The user visible pretty name that appears before the URL
    *  @since 3.5
    */
-  void addURL( const KURL& url, const QString& name ); //KDE4: Combine the above two methods
+  void addURL( const KURL& url, const QString& name = QString::null ); 
 
 
   /**
