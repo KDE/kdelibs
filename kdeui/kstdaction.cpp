@@ -31,6 +31,7 @@
 #include <kstdaccel.h>
 #include <kmainwindow.h>
 #include "kstdaction_p.h"
+#include "kstdaction_p.moc"
 
 namespace KStdAction
 {
