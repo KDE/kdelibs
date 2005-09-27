@@ -307,6 +307,32 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,true)", u2.directory(false,true), "/home/");
   check("KURL::directory(true,true)", u2.directory(true,true), "/home");
 
+#if true
+  KURL u3( QCString("ftp://brade@ftp.kde.org///") );
+  printf("\n* URL is %s\n",u3.url().ascii());
+  // adjustPath()
+  u3.adjustPath(-1);
+  check("KURL::adjustPath()", u3.url(), "ftp://brade@ftp.kde.org/");
+  
+  KURL u4( QCString("ftp://brade@ftp.kde.org/kde///") );
+  printf("\n* URL is %s\n",u4.url().ascii());
+  u4.adjustPath(-1);
+  check("KURL::adjustPath()", u4.url(), "ftp://brade@ftp.kde.org/kde");
+
+  // applying adjustPath(-1) twice should not yield two different urls (follows
+  // from the above test)
+  KURL u5 = u4;
+  u5.adjustPath(-1);
+  check("KURL::adjustPath()", u5.url(), u4.url());
+#else
+  // cleanPath() should fix invalid urls as well in case adjustPath(-1) only 
+  // ever strips _one_ slash
+  KURL invalid( QCString("f::a///") );
+  printf("\n* URL is %s\n",invalid.url().ascii());
+  invalid.cleanPath();
+  check("KURL::cleanPath()", invalid.url(), "f::a/");
+#endif
+
   // cleanPath() tests (before cd() since cd uses that)
   u2.cleanPath();
   check("cleanPath(false)", u2.url(), "file:///home/dfaure/");
@@ -372,11 +398,11 @@ int main(int argc, char *argv[])
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "file:///specials/");
 
-  const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
-  printf("\n* URL is %s\n",u3);
-  check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
+  const char * u6 = "ftp://host/dir1/dir2/myfile.txt";
+  printf("\n* URL is %s\n",u6);
+  check("KURL::hasSubURL()", KURL(u6).hasSubURL() ? "yes" : "no", "no");
   lst.clear();
-  lst = KURL::split( KURL(u3) );
+  lst = KURL::split( KURL(u6) );
   check("KURL::split()", lst.count()==1 ? "1" : "error", "1");
   check("KURL::split()", lst.first().url(), "ftp://host/dir1/dir2/myfile.txt");
   // cdUp code
