@@ -674,7 +674,7 @@ private:
   bool useStyles;
   QWidget *smw;
 
-  void init( bool GUIenabled );
+  void init();
 
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
@@ -745,14 +745,6 @@ public:
    * instance.
    */
   static void installSigpipeHandler();
-
-  /**
-   * @internal
-   * Whether widgets can be used.
-   *
-   * @since 3.2
-   */
-  static bool guiEnabled();
 
 signals:
   /**

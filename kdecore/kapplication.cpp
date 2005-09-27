@@ -204,7 +204,7 @@ static void kde_ice_ioerrorhandler( IceConn conn )
 #endif
 
 #ifdef Q_WS_WIN
-void KApplication_init_windows(bool GUIenabled);
+void KApplication_init_windows();
 
 class QAssistantClient;
 #endif
@@ -241,7 +241,6 @@ public:
   }
 
 
-  bool guiEnabled : 1;
   /**
    * This counter indicates when to exit the application.
    * It starts at 1, is decremented in KMainWindow when the last window is closed, but
@@ -483,7 +482,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 
     installSigpipeHandler();
     parseCommandLine( );
-    init(GUIenabled);
+    init();
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
@@ -501,7 +500,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     setName( instanceName() );
     installSigpipeHandler();
     parseCommandLine( );
-    init( true );
+    init();
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
@@ -518,7 +517,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     setName( instanceName() );
     installSigpipeHandler();
     parseCommandLine( );
-    init( true );
+    init();
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 #endif
@@ -538,7 +537,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 
     installSigpipeHandler();
     parseCommandLine( );
-    init(GUIenabled);
+    init();
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
@@ -560,7 +559,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
-    init(GUIenabled);
+    init();
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 #endif
@@ -616,9 +615,8 @@ public:
   }
 };
 
-void KApplication::init(bool GUIenabled)
+void KApplication::init()
 {
-  d->guiEnabled = GUIenabled;
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
   {
@@ -637,10 +635,9 @@ void KApplication::init(bool GUIenabled)
   setApplicationName( KGlobal::instance()->aboutData()->appName());
 
 
-
 #ifdef Q_WS_X11 //FIXME(E)
   // create all required atoms in _one_ roundtrip to the X server
-  if ( GUIenabled ) {
+  if ( type() == GuiClient ) {
       const int max = 20;
       Atom* atoms[max];
       char* names[max];
@@ -690,7 +687,7 @@ void KApplication::init(bool GUIenabled)
        config->checkConfigFilesWritable(true);
   }
 
-  if (GUIenabled)
+  if (type() == GuiClient)
   {
 #ifdef Q_WS_X11
     // this is important since we fork() to launch the help (Matthias)
@@ -732,7 +729,7 @@ void KApplication::init(bool GUIenabled)
   }
 
 #ifdef Q_WS_MACX
-  if (GUIenabled) {
+  if (type() == GuiClient) {
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
               KIcon::NoGroup, KIcon::SizeLarge, KIcon::DefaultState, 0L, false );
       if (!pixmap.isNull()) {
@@ -777,7 +774,7 @@ void KApplication::init(bool GUIenabled)
 
 #ifdef Q_WS_X11
   // register a communication window for desktop changes (Matthias)
-  if (GUIenabled && kde_have_kipc )
+  if (type() == GuiClient && kde_have_kipc )
   {
     smw = new QWidget(0,0);
     long data = 1;
@@ -787,7 +784,7 @@ void KApplication::init(bool GUIenabled)
   }
   d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
 #elif defined(Q_WS_WIN)
-  KApplication_init_windows(GUIenabled);
+  KApplication_init_windows();
 #else
   // FIXME(E): Implement for Qt Embedded
 #endif
@@ -2183,11 +2180,6 @@ void KApplication::sigpipeHandler(int)
 
     // Do nothing.
     errno = saved_errno;
-}
-
-bool KApplication::guiEnabled()
-{
-    return kapp && kapp->d->guiEnabled;
 }
 
 void KApplication::virtual_hook( int id, void* data )
