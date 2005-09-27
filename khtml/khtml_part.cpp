@@ -1860,6 +1860,19 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
 void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
+  // No need to show this for a new page until an error is triggered
+  if (!parentPart()) {
+    removeJSErrorExtension();
+    setSuppressedPopupIndicator( false );
+    d->m_openableSuppressedPopups = 0;
+    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
+       KJS::Window *w = KJS::Window::retrieveWindow( part );
+       if (w)
+           w->forgetSuppressedWindows();
+    }
+    d->m_suppressedPopupOriginParts.clear();
+  }
+
   clear();
   d->m_bCleared = false;
   d->m_cacheId = 0;
@@ -1875,18 +1888,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
       }
   }
 
-  // No need to show this for a new page until an error is triggered
-  if (!parentPart()) {
-    removeJSErrorExtension();
-    setSuppressedPopupIndicator( false );
-    d->m_openableSuppressedPopups = 0;
-    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
-       KJS::Window *w = KJS::Window::retrieveWindow( part );
-       if (w)
-           w->forgetSuppressedWindows();
-    }
-    d->m_suppressedPopupOriginParts.clear();
-  }
 
   // ###
   //stopParser();
