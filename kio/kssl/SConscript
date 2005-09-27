@@ -30,7 +30,7 @@ ksmimecrypto.cc
 ksslcsessioncache.cc
 """
 
-obj = env.qt4obj('convenience',env)
+obj = env.kdeobj('convenience',env)
 obj.target   = 'libkssl'
 obj.source   = sources
 obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'

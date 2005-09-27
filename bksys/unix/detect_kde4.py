@@ -45,11 +45,13 @@ def bootstrap(env):
 	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp')
 
 	env['LIB_KDECORE'] = ['kdecore']
-	env['LIB_KIO']     = ['kio']
+	env['LIB_KIO']     = ['kio', 'kwalletclient', 'kdesu']
 	env['LIB_KDEUI']   = ['kdeui']
 
 	env['LIBPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore') ]
 	env['LIBPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio') ]
+	env['LIBPATH_KIO'].append( env.join(os.getcwd(), env['_BUILDDIR_'], 'kdesu'))
+	env['LIBPATH_KIO'].append( env.join(os.getcwd(), env['_BUILDDIR_'], 'kwallet', 'client'))
 	env['LIBPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui') ]
 
 	env['CPPPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore'), '#kdecore' ]
