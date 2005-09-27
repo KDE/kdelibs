@@ -15,15 +15,16 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef _KSHELL_H
-#define _KSHELL_H
+#ifndef KSHELL_H
+#define KSHELL_H
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
+
+class QStringList;
+class QString;
 
 /**
  * \namespace KShell
@@ -140,8 +141,6 @@ namespace KShell {
      * @return The user's home directory.
      */
     KDECORE_EXPORT QString homeDir( const QString &user );
-
 }
 
-
-#endif /* _KSHELL_H */
+#endif /* KSHELL_H */
