@@ -197,7 +197,7 @@ def generate(env):
 
 	def QT4files(lenv, target, source):
 		""" Returns a list of files for scons (handles qt4 tricks like .qrc) """
-		q_object_search = re.compile(r'[^A-Za-z0-9]Q_OBJECT[^A-Za-z0-9]')
+		q_object_search = re.compile(r'^\s*Q_OBJECT[^A-Za-z0-9]')
 		def scan_moc(cppfile):
 			addfile=None
 
