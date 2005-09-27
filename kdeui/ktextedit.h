@@ -1,7 +1,3 @@
-// DO NOT BOTHER PORTING THIS, I'M DOING IT CURRENTLY (MiB)
-
-//*******************************************************************//
-
 /* This file is part of the KDE libraries
     Copyright (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
@@ -24,7 +20,7 @@
 #ifndef KTEXTEDIT_H
 #define KTEXTEDIT_H
 
-#include <q3textedit.h>
+#include <QTextEdit>
 
 #include <kdelibs_export.h>
 
@@ -44,7 +40,7 @@ class KSpell;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
-class KDEUI_EXPORT KTextEdit : public Q3TextEdit
+class KDEUI_EXPORT KTextEdit : public QTextEdit
 {
     Q_OBJECT
 
@@ -53,15 +49,14 @@ public:
      * Constructs a KTextEdit object. See QTextEdit::QTextEdit
      * for details.
      */
-    KTextEdit( const QString& text,
-               const QString& context = QString::null,
-               QWidget * parent = 0, const char *name = 0 );
+    KTextEdit( const QString& text, QWidget *parent = 0 );
+
     /**
      * Constructs a KTextEdit object. See QTextEdit::QTextEdit
      * for details.
      */
+    KTextEdit( QWidget *parent = 0 );
 
-    KTextEdit( QWidget *parent = 0L, const char *name = 0 );
     /**
      * Destroys the KTextEdit object.
      */
@@ -70,12 +65,7 @@ public:
     /**
      * Reimplemented to set a proper "deactivated" background color.
      */
-    virtual void setReadOnly (bool readOnly);
-
-    /**
-     * Reimplemented for tracking custom palettes.
-     */
-    virtual void setPalette( const QPalette& palette );
+    virtual void setReadOnly( bool readOnly );
 
     /**
      * Turns spell checking for this text edit on or off.
@@ -121,7 +111,7 @@ protected:
      * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
      * or zoom.
      */
-    virtual void contentsWheelEvent( QWheelEvent * );
+    virtual void wheelEvent( QWheelEvent * );
 
     /**
      * Deletes a word backwards from the current cursor position,
@@ -139,17 +129,7 @@ protected:
      * Reimplemented from QTextEdit to add spelling related items
      * when appropriate.
      */
-    virtual Q3PopupMenu *createPopupMenu( const QPoint &pos );
-
-    /**
-     * This is just a reimplementation of a deprecated method from QTextEdit and
-     * is just here to keep source compatibility.  This should not be used in
-     * new code.  Specifically reimplementing this method will probably not do
-     * what you expect.  See the method above.
-     *
-     * @deprecated
-     */
-    virtual Q3PopupMenu *createPopupMenu();
+    virtual void contextMenuEvent( QContextMenuEvent *e );
 
 protected:
     virtual void virtual_hook( int id, void* data );

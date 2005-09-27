@@ -21,7 +21,7 @@
 #include <kcmdlineargs.h>
 #include <ktextedit.h>
 
-#include <qfile.h>
+#include <QFile>
 
 int main( int argc, char **argv )
 {
@@ -32,7 +32,7 @@ int main( int argc, char **argv )
     QFile file( "ktextedittest.cpp" );
     if ( file.open( QIODevice::ReadOnly ) )
     {
-        edit->setText( file.readAll() );
+        edit->setPlainText( file.readAll() );
         file.close();
     }
 
