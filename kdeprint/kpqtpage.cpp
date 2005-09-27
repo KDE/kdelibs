@@ -108,7 +108,7 @@ void KPQtPage::init()
                         " <li> <b>Portrait.</b>.Portrait is the default setting. </li> "
                         " <li> <b>Landscape.</b> </li> "
                         " </ul> "
-                        " The icon changes according to your selection." 
+                        " The icon changes according to your selection."
 			" </qt>" );
 	setTitle(i18n("Print Format"));
 
@@ -270,16 +270,22 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	ID = NUP_1;
 	if (opts["_kde-filters"].find("psnup") != -1)
 	{
-		ID = opts["_kde-psnup-nup"].toInt();
-		if (ID == 1 || ID == 2 || ID == 4)
-		{
-			if (ID == 4) ID = 3;
-			ID--;
-		}
-		else
-		{
-			ID = NUP_OTHER;
-		}
+               if (opts.contains("_kde-psnup-nup")) {
+                       ID = opts["_kde-psnup-nup"].toInt();
+                       if (ID == 1 || ID == 2 || ID == 4)
+                       {
+                               if (ID == 4) ID = 3;
+                               ID--;
+                       }
+                       else
+                       {
+                               ID = NUP_OTHER;
+                       }
+               }
+               else
+               {
+                       ID = NUP_1;
+               }
 	}
 	m_nupbox->setButton(ID);
 	slotNupChanged(ID);
