@@ -149,8 +149,7 @@ class KDialogBaseTile;
  * \code
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *                 const QString& urltext)
- *   : KDialogBase( parent, "urldialog", true, caption,
- *                  KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
+ *   : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
  * {
  *   QWidget *page = new QWidget( this );
  *   setMainWidget(page);
@@ -173,8 +172,7 @@ class KDialogBaseTile;
  * \code
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *                 const QString& urltext)
- * : KDialogBase( parent, "urldialog", true, caption,
- *                KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
+ * : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
  * {
  *   QVBox *page = makeVBoxMainWidget();
  *   QLabel *label = new QLabel( caption, page, "caption" );
