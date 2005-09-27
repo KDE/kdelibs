@@ -16,9 +16,11 @@ obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libk
 
 obj.execute()
 # For now ;(
+env.Depends('libkio.so.6.0.2', 'kio/libkiocore.a')
 env.Depends('libkio.so.6.0.2', 'kio/libksycoca.a')
 env.Depends('libkio.so.6.0.2', 'bookmarks/libkbookmarks.a')
 env.Depends('libkio.so.6.0.2', 'kfile/libkfile.a')
+env.Depends('libkio.so.6.0.2', 'kssl/libkssl.a')
 
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]

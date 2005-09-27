@@ -126,11 +126,6 @@ def generate(env):
 	def uic_processing(target, source, env):
 		comp_h   ='$QT_UIC -o %s %s' % (target[0].path, source[0].path)
 		return env.Execute(comp_h)
-	def uicEmitter(target, source, env):
-		adjustixes = SCons.Util.adjustixes
-		bs = SCons.Util.splitext(str(source[0].name))[0]
-		bs = os.path.join(str(target[0].get_dir()),bs)
-		return target, source
 
 	def uic3_processing(target, source, env):
 		inc_moc  ='#include "%s"\n' % target[2].name
@@ -160,8 +155,7 @@ def generate(env):
 
 	def uic3_string(target, source, env):
 		return "%screating%s %s" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'], target[0].name)
-	env['BUILDERS']['Uic']=Builder(action=env.Action(uic_processing, uic3_string),
-		emitter=uicEmitter,suffix='.h',src_suffix='.ui')
+	env['BUILDERS']['Uic']=Builder(action=env.Action(uic_processing, uic3_string),suffix='.h',src_suffix='.ui')
 	env['BUILDERS']['Uic3']=Builder(action=env.Action(uic3_processing, uic3_string),
 		emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
 

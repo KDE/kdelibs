@@ -94,7 +94,16 @@ def generate(env):
 	## STUB
 	stub_str='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-skel $SOURCE'
 	stub_action=env.Action(stub_str, creation_string)
-	env['BUILDERS']['Stub']=Builder(action=stub_action, suffix='_stub.cpp', src_suffix='.kidl')
+
+        def stubEmitter(target, source, env):
+		import os
+                adjustixes = SCons.Util.adjustixes
+                bs = SCons.Util.splitext(str(source[0].name))[0]
+                bs = os.path.join(str(target[0].get_dir()),bs)
+                target.append(bs+'_stub.h')
+                return target, source
+
+	env['BUILDERS']['Stub']=Builder(action=stub_action, suffix='_stub.cpp', src_suffix='.kidl', emitter=stubEmitter)
 
 	## DOCUMENTATION
 	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')
@@ -220,6 +229,7 @@ def generate(env):
 			elif ext == '.stub':
 				if not bs in kidl: kidl.append(bs)
 				lenv.Stub(bs+'.kidl')
+				lenv.Depends(bs+'_stub.h', lenv['DCOPIDL2CPP'])
 				lenv.Depends(bs+'_stub.cpp', lenv['DCOPIDL2CPP'])
 				src.append(bs+'_stub.cpp')
 			elif ext == '.moch':

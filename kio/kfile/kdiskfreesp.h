@@ -39,7 +39,8 @@ class KProcess;
  * information for a given partition (mount point).
  */
 class KIO_EXPORT KDiskFreeSp : public QObject
-{  Q_OBJECT
+{  
+Q_OBJECT
 public:
    KDiskFreeSp( QObject *parent=0);
    /**

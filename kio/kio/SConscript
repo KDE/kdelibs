@@ -54,7 +54,6 @@ env.Moc('kservice_p.h')
 coreobj = env.kdeobj('convenience',env)
 coreobj.target   = 'libkiocore'
 coreobj.source   = kiocore_sources
-coreobj.iskdelib = 1
 coreobj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 FAM'
 coreobj.includes = '../../kdecore/network ../kssl ../../interfaces ../misc'
 coreobj.execute()
@@ -62,7 +61,6 @@ coreobj.execute()
 sycocaobj = env.kdeobj('convenience',env)
 sycocaobj.target   = 'libksycoca'
 sycocaobj.source   = ksycoca_sources
-sycocaobj.iskdelib = 1
 sycocaobj.uselib   = coreobj.uselib
 sycocaobj.includes = coreobj.includes
 sycocaobj.execute()

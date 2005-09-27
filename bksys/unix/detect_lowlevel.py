@@ -637,9 +637,6 @@ def detect(lenv):
 /* Use Xft preinitialization in kdeinit */
 /* #undef KDEINIT_USE_XFT */
 
-/* Suffix for lib directories */
-#define KDELIBSUFF ""
-
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "/usr/etc"
 
