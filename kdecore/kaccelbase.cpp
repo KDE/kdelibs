@@ -304,7 +304,7 @@ bool KAccelBase::updateConnections()
 	kdDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
 	// Retrieve the list of keys to be connected, sorted by priority.
 	//  (key, variation, seq)
-	Q3ValueVector<X> rgKeys;
+	QVector<X> rgKeys;
 	createKeyList( rgKeys );
 	m_rgActionsNonUnique.clear();
 
@@ -405,7 +405,7 @@ bool KAccelBase::updateConnections()
 
 #ifdef Q_WS_X11
 // Construct a list of keys to be connected, sorted highest priority first.
-void KAccelBase::createKeyList( Q3ValueVector<struct X>& rgKeys )
+void KAccelBase::createKeyList( QVector<struct X>& rgKeys )
 {
 	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !isEnabledInternal())

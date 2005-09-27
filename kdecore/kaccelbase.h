@@ -195,7 +195,7 @@ class KDECORE_EXPORT KAccelBase
 	void slotRemoveAction( KAccelAction* );
 
 	struct X;
-	void createKeyList( Q3ValueVector<struct X>& rgKeys );
+	void createKeyList( QVector<struct X>& rgKeys );
 	bool insertConnection( KAccelAction* );
 	bool removeConnection( KAccelAction* );
 

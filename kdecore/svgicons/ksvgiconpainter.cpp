@@ -269,7 +269,7 @@ public:
 		// Filling
 		{
 			int index = -1;
-			Q3ValueVector<int> toCorrect;
+			QVector<int> toCorrect;
 			while(vec[++index].code != ART_END)
 			{
 				if(vec[index].code == ART_END2)
@@ -297,7 +297,7 @@ public:
 
 			art_svp_free(temp);
 
-			Q3ValueVector<int>::iterator it;
+			QVector<int>::iterator it;
 			for(it = toCorrect.begin(); it != toCorrect.end(); ++it)
 				vec[(*it)].code = (ArtPathcode)ART_END2;
 		}
