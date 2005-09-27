@@ -28,6 +28,42 @@ static bool check(QString txt, QString a, QString b)
   return true;
 }
 
+void testAdjustPath()
+{
+    KURL url1("file:///home/kde/");
+    url1.adjustPath(0);
+    check( "adjustPath(0)", url1.path(), "/home/kde/" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) removes last slash", url1.path(), "/home/kde" );
+    url1.adjustPath(-1);
+    check( "adjustPath(-1) again", url1.path(), "/home/kde" );
+    url1.adjustPath(1);
+    check( "adjustPath(1)", url1.path(), "/home/kde/" );
+
+    KURL url2("file:///home/kde//");
+    url2.adjustPath(0);
+    check( "adjustPath(0)", url2.path(), "/home/kde//" );
+    url2.adjustPath(-1);
+    check( "adjustPath(-1) removes all trailing slashes", url1.path(), "/home/kde" );
+    url2.adjustPath(1);
+    check( "adjustPath(1)", url2.path(), "/home/kde/" );
+
+    KURL ftpurl1("ftp://ftp.kde.org/");
+    ftpurl1.adjustPath(0);
+    check( "adjustPath(0)", ftpurl1.path(), "/" );
+    ftpurl1.adjustPath(-1);
+    check( "adjustPath(-1) preserves last slash", ftpurl1.path(), "/" );
+
+    KURL ftpurl2("ftp://ftp.kde.org///");
+    ftpurl2.adjustPath(0);
+    check( "adjustPath(0)", ftpurl2.path(), "///" );
+    ftpurl2.adjustPath(-1);
+    check( "adjustPath(-1) removes all but last slash", ftpurl2.path(), "/" );
+    ftpurl2.adjustPath(1);
+    check( "adjustPath(1)", ftpurl2.path(), "/" );
+
+}
+
 int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
@@ -761,6 +797,7 @@ int main(int argc, char *argv[])
   uloc = KURL::fromPathOrURL( "/home/dfaure/file#with#hash" );
   check("pathOrURL local path with #", uloc.pathOrURL(), "/home/dfaure/file#with#hash" );
 
+  testAdjustPath();
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
