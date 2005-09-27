@@ -264,6 +264,9 @@ class genobj:
 		sext=['.a']
 		for lib in llist:
 			sal=SCons.Util.splitext(lib)
+			# FIXME: uuuuugly!  What's a better way to handle this?  It will get unwieldy for platform-specific stuff soon
+			# maybe find a way to read qmake.conf and decide what the libraries look like based on CONFIG = lib_version_first ?
+			# also really need to handle libsuffix better
 			if len(sal)>1:
 				if (sal[-1] in lext) and (sys.platform == 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.dylib')[0]);
 				elif (sal[1] in lext) and (sys.platform != 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
