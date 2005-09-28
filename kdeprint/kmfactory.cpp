@@ -298,10 +298,10 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 		it.current()->reload();
 }
 
-Q3ValueList<KMFactory::PluginInfo> KMFactory::pluginList()
+QList<KMFactory::PluginInfo> KMFactory::pluginList()
 {
 	QDir	d(locate("data", "kdeprint/plugins/"), "*.print", QDir::Name, QDir::Files);
-	Q3ValueList<PluginInfo>	list;
+	QList<PluginInfo>	list;
 	for (uint i=0; i<d.count(); i++)
 	{
 		PluginInfo	info(pluginInfo(d.absoluteFilePath(d[i])));
@@ -357,7 +357,7 @@ void KMFactory::unregisterObject(KPReloadObject *obj)
 
 QString KMFactory::autoDetect()
 {
-	Q3ValueList<PluginInfo>	plugins = pluginList();
+	QList<PluginInfo>	plugins = pluginList();
 	int	pluginIndex(-1), currentPrecedence(0);
 	for (int i=0;i<plugins.count();i++)
 	{

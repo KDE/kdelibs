@@ -71,10 +71,10 @@ static QString processLocaleString( const QString& s )
 	return res;
 }
 
-static Q3ValueList<float> splitNumberString( const QString& _s )
+static QList<float> splitNumberString( const QString& _s )
 {
         QString s = _s.simplified();
-	Q3ValueList<float> l;
+	QList<float> l;
 	int p1 = 1, p2 = 0;
 	while ( true )
 	{
@@ -429,7 +429,7 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 
 bool PPDLoader::putPaperDimension( const QString& name, const QString& s )
 {
-	Q3ValueList<float> l = splitNumberString( s );
+	QList<float> l = splitNumberString( s );
 
 	PS_private *ps = m_ps.find( name );
 	if ( !ps )
@@ -446,7 +446,7 @@ bool PPDLoader::putPaperDimension( const QString& name, const QString& s )
 
 bool PPDLoader::putImageableArea( const QString& name, const QString& s )
 {
-	Q3ValueList<float> l = splitNumberString( s );
+	QList<float> l = splitNumberString( s );
 
 	PS_private *ps = m_ps.find( name );
 	if ( !ps )

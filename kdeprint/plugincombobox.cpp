@@ -52,9 +52,9 @@ PluginComboBox::PluginComboBox(QWidget *parent)
 	l0->addWidget(m_combo, 0, 1);
 	l0->addWidget(m_plugininfo, 1, 1);
 
-	Q3ValueList<KMFactory::PluginInfo>	list = KMFactory::self()->pluginList();
+	QList<KMFactory::PluginInfo>	list = KMFactory::self()->pluginList();
 	QString			currentPlugin = KMFactory::self()->printSystem();
-	for (Q3ValueList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (QList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		m_combo->insertItem((*it).comment);
 		if ((*it).name == currentPlugin)

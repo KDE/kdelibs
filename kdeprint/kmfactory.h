@@ -74,7 +74,7 @@ public:
 	KPrinterImpl* printerImplementation();
 	KConfig* printConfig(const QString& group = QString::null);
 	QString printSystem();
-	Q3ValueList<PluginInfo> pluginList();
+	QList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);
 	void saveConfig();
 
