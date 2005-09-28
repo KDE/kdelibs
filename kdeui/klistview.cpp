@@ -130,7 +130,7 @@ public:
   int dragDelay;
 
   KListViewLineEdit *editor;
-  Q3ValueList<int> renameable;
+  QList<int> renameable;
 
   bool cursorInExecuteArea:1;
   bool bUseSingle:1;
