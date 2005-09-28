@@ -41,7 +41,7 @@ def detect(env):
 
 	# if we have the QTDIR, finding the qtlibs and qtincludes is easy
 	if qtdir:
-		if not qtlibs:     qtlibs     = os.path.join(qtdir, 'lib' + libsuffix)
+		if not qtlibs:     qtlibs     = os.path.join(qtdir, 'lib')
 		if not qtincludes: qtincludes = os.path.join(qtdir, 'include')
 		#os.putenv('PATH', os.path.join(qtdir , 'bin') + ":" + os.getenv("PATH")) # TODO ita 
 
@@ -127,7 +127,7 @@ def detect(env):
 	## use the user-specified prefix
 	if not execprefix: execprefix = prefix
 	if not datadir:    datadir    = prefix+"/share"
-	if not libdir:     libdir     = execprefix+"/lib"+libsuffix
+	if not libdir:     libdir     = execprefix+"/lib"
 
 	subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
 			 .replace('${datadir}', datadir)\
@@ -141,7 +141,7 @@ def detect(env):
 
 	## qt libs and includes
 	env['QTINCLUDEPATH']=qtincludes
-	if not qtlibs: qtlibs=env.join(qtdir, 'lib', libsuffix)
+	if not qtlibs: qtlibs=env.join(qtdir, 'lib')
 	env['QTLIBPATH']=qtlibs
 
         ########## X11
