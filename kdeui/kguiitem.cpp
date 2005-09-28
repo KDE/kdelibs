@@ -156,15 +156,7 @@ QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) 
         if( !d->m_iconName.isEmpty())
         {
 // some caching here would(?) come handy
-            return instance->iconLoader()->loadIconSet( d->m_iconName, group, size );
-// here is a little problem that with delayed icon loading
-// we can't check if the icon really exists ... so what ...
-//            if( set.isNull() )
-//            {
-//                d->m_hasIcon = false;
-//                return QIconSet();
-//            }
-//            return set;
+            return instance->iconLoader()->loadIconSet( d->m_iconName, group, size, true, false );
         }
         else
         {

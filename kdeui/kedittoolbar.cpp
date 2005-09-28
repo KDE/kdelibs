@@ -966,6 +966,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QMap<QString, bool> active_list;
 
   // see if our current action is in this toolbar
+  KIconLoader *loader = KGlobal::instance()->iconLoader();
   QDomNode n = elem.lastChild();
   for( ; !n.isNull(); n = n.previousSibling() )
   {
@@ -1017,7 +1018,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         act->setText(1, action->plainText());
         if (action->hasIcon())
           if (!action->icon().isEmpty())
-            act->setPixmap(0, BarIcon(action->icon(), 16));
+            act->setPixmap(0, loader->loadIcon(action->icon(), KIcon::Toolbar, 16, KIcon::DefaultState, 0, true) );
           else // Has iconset
             act->setPixmap(0, action->iconSet(KIcon::Toolbar).pixmap());
 
@@ -1040,7 +1041,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     act->setText(1, action->plainText());
     if (action->hasIcon())
       if (!action->icon().isEmpty())
-        act->setPixmap(0, BarIcon(action->icon(), 16));
+        act->setPixmap(0, loader->loadIcon(action->icon(), KIcon::Toolbar, 16, KIcon::DefaultState, 0, true) );
       else // Has iconset
         act->setPixmap(0, action->iconSet(KIcon::Toolbar).pixmap());
   }

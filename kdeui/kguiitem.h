@@ -70,6 +70,9 @@ public:
     QString toolTip() const;
     QString whatsThis() const;
     bool isEnabled() const;
+    /**
+     * returns whether an icon is defined, doesn't tell if it really exists
+     */
     bool hasIcon() const;
 #ifndef KDE_NO_COMPAT
     bool hasIconSet() const { return hasIcon(); }

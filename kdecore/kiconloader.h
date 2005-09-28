@@ -142,6 +142,28 @@ public:
      * @param canReturnNull Can return a null iconset? If false, iconset
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
+     * @param immediateExistenceCheck If true on-demand icon loading will be
+     * disabled for canReturnNull and a null iconset may be returned immediately
+     * @return the icon set. Can be null when not found, depending on
+     *          @p canReturnNull.
+     * @since 3.5
+     */
+    QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
+                         bool canReturnNull, bool immediateExistenceCheck);
+
+    // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false,bool=true);
+    /**
+     * Creates an icon set, that will do on-demand loading of the icon.
+     * Loading itself is done by calling loadIcon .
+     *
+     * @param name The name of the icon, without extension.
+     * @param group The icon group. This will specify the size of and effects to
+     * be applied to the icon.
+     * @param size If nonzero, this overrides the size specified by @p group.
+     *             See KIcon::StdSizes.
+     * @param canReturnNull Can return a null iconset? If false, iconset
+     * containing the "unknown" pixmap is returned when no appropriate icon has
+     * been found.
      * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
      * @since 3.1
@@ -149,7 +171,7 @@ public:
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
                          bool canReturnNull);
 
-    // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
+    // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false,bool=true);
     /**
      * Creates an icon set, that will do on-demand loading of the icon.
      * Loading itself is done by calling loadIcon .

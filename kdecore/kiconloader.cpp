@@ -1138,6 +1138,11 @@ bool KIconLoader::alphaBlending(KIcon::Group group) const
     return d->mpGroups[group].alphaBlending;
 }
 
+QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size, bool canReturnNull)
+{
+    return loadIconSet( name, group, size, canReturnNull, true );
+}
+
 QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size)
 {
     return loadIconSet( name, group, size, false );
@@ -1151,17 +1156,20 @@ class KIconFactory
     public:
         KIconFactory( const QString& iconName_P, KIcon::Group group_P,
             int size_P, KIconLoader* loader_P );
+        KIconFactory( const QString& iconName_P, KIcon::Group group_P,
+            int size_P, KIconLoader* loader_P, bool canReturnNull );
         virtual QPixmap* createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode, QIconSet::State );
     private:
         QString iconName;
         KIcon::Group group;
         int size;
         KIconLoader* loader;
+        bool canReturnNull;
     };
 
 
 QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
-    bool canReturnNull)
+    bool canReturnNull, bool immediateExistenceCheck)
 {
     if ( !d->delayedLoading )
         return loadIconSetNonDelayed( name, g, s, canReturnNull );
@@ -1172,7 +1180,7 @@ QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
         abort();
     }
 
-    if(canReturnNull)
+    if(canReturnNull && immediateExistenceCheck)
     { // we need to find out if the icon actually exists
         QPixmap pm = loadIcon( name, g, s, KIcon::DefaultState, NULL, true );
         if( pm.isNull())
@@ -1184,7 +1192,7 @@ QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
     }
 
     QIconSet ret;
-    ret.installIconFactory( new KIconFactory( name, g, s, this ));
+    ret.installIconFactory( new KIconFactory( name, g, s, this, canReturnNull ));
     return ret;
 }
 
@@ -1209,6 +1217,15 @@ QIconSet KIconLoader::loadIconSetNonDelayed( const QString& name,
 KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     int size_P, KIconLoader* loader_P )
     : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
+{
+    canReturnNull = false;
+    setAutoDelete( true );
+}
+
+KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
+    int size_P, KIconLoader* loader_P, bool canReturnNull_P )
+    : iconName( iconName_P ), group( group_P ), size( size_P ), 
+      loader( loader_P ), canReturnNull( canReturnNull_P)
 {
     setAutoDelete( true );
 }
@@ -1270,7 +1287,7 @@ QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::
     }
     // ignore passed size
     // ignore passed state (i.e. on/off)
-    QPixmap pm = loader->loadIcon( iconName, group, size, state );
+    QPixmap pm = loader->loadIcon( iconName, group, size, state, 0, canReturnNull );
     return new QPixmap( pm );
     }
 
