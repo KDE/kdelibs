@@ -67,7 +67,7 @@
 #include <memory> // auto_ptr
 
 typedef Q3Dict<KSycocaEntry> KBSEntryDict;
-typedef Q3ValueList<KSycocaEntry::List> KSycocaEntryListList;
+typedef QList<KSycocaEntry::List> KSycocaEntryListList;
 
 static Q_UINT32 newTimestamp = 0;
 
