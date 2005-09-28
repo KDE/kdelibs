@@ -372,10 +372,6 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
          (_tx + m_width <= paintInfo.r.left()) || (_tx > paintInfo.r.right()) )
         return;
 
-    // add offset for relative positioning
-    if(isRelPositioned())
-        relativePositionOffset(_tx, _ty);
-
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
