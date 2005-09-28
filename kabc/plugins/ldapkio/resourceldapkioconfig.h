@@ -86,7 +86,7 @@ class AttributesDialog : public KDialogBase
     enum { UserMap, KolabMap, NetscapeMap, EvolutionMap, OutlookMap };
 
     KComboBox *mMapCombo, *mRDNCombo;
-    Q3ValueList< QMap<QString, QString> > mMapList;
+    QList< QMap<QString, QString> > mMapList;
     QMap<QString, QString> mDefaultMap;
     Q3Dict<KLineEdit> mLineEditDict;
     Q3Dict<QString> mNameDict;

@@ -56,7 +56,7 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 {
   Entry e( a, email );
 
-  Q3ValueList<Entry>::Iterator it;
+  QList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() ) {
       /**
@@ -76,7 +76,7 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 
 void DistributionList::removeEntry( const Addressee &a, const QString &email )
 {
-  Q3ValueList<Entry>::Iterator it;
+  QList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() && (*it).email == email ) {
       mEntries.remove( it );

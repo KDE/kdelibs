@@ -32,7 +32,7 @@ namespace KABC {
 class VCardLine
 {
   public:
-    typedef Q3ValueList<VCardLine> List;
+    typedef QList<VCardLine> List;
     typedef QMap<QString, QStringList> ParamMap;
 
     VCardLine();

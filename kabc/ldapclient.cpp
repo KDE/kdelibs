@@ -379,7 +379,7 @@ void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
 {
   QString search_text_upper = mSearchText.toUpper();
 
-  Q3ValueList< KABC::LdapObject >::ConstIterator it1;
+  QList< KABC::LdapObject >::ConstIterator it1;
   for ( it1 = mResults.begin(); it1 != mResults.end(); ++it1 ) {
     QString name, mail, givenname, sn;
 

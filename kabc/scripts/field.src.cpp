@@ -304,7 +304,7 @@ void Field::saveFields( const QString &identifier,
 void Field::saveFields( KConfig *cfg, const QString &identifier,
                         const Field::List &fields )
 {
-  Q3ValueList<int> fieldIds;
+  QList<int> fieldIds;
   
   int custom = 0;
   Field::List::ConstIterator it;
@@ -333,12 +333,12 @@ Field::List Field::restoreFields( const QString &identifier )
 
 Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
 {
-  const Q3ValueList<int> fieldIds = cfg->readIntListEntry( identifier );
+  const QList<int> fieldIds = cfg->readIntListEntry( identifier );
 
   Field::List fields;
 
   int custom = 0;
-  Q3ValueList<int>::ConstIterator it;
+  QList<int>::ConstIterator it;
   for( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
     FieldImpl *f = 0;
     if ( (*it) == FieldImpl::CustomField ) {

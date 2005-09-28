@@ -36,7 +36,7 @@
 namespace KABC {
 
 class LdapClient;
-typedef Q3ValueList<QByteArray> LdapAttrValue;
+typedef QList<QByteArray> LdapAttrValue;
 typedef QMap<QString,LdapAttrValue > LdapAttrMap;
 
 /**
@@ -194,7 +194,7 @@ struct LdapResult {
   QString email;    ///< email
   int clientNumber; ///< for sorting
 };
-typedef Q3ValueList<LdapResult> LdapResultList;
+typedef QList<LdapResult> LdapResultList;
 
 
 /**
@@ -238,7 +238,7 @@ class KABC_EXPORT LdapSearch : public QObject
     QTimer mDataTimer;
     int mActiveClients;
     bool mNoLDAPLookup;
-    Q3ValueList< LdapObject > mResults;
+    QList< LdapObject > mResults;
 
   private:
     class LdapSearchPrivate* d;

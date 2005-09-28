@@ -31,7 +31,7 @@ namespace KABC {
 class VCard
 {
   public:
-    typedef Q3ValueList<VCard> List;
+    typedef QList<VCard> List;
     typedef QMap< QString, VCardLine::List > LineMap;
 
     enum Version { v2_1, v3_0 };

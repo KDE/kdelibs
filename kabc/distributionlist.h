@@ -48,7 +48,7 @@ class KABC_EXPORT DistributionList
     */
     struct Entry
     {
-      typedef Q3ValueList<Entry> List;
+      typedef QList<Entry> List;
 
       Entry() {}
       Entry( const Addressee &_addressee, const QString &_email ) :
