@@ -261,12 +261,12 @@ KGuiItem KStdGuiItem::stop()
 
 KGuiItem KStdGuiItem::add()
 {
-  return KGuiItem(i18n("Add"), "edit_add");
+  return KGuiItem(i18n("Add"), "add");
 }
 
 KGuiItem KStdGuiItem::remove()
 {
-  return KGuiItem(i18n("Remove"), "edit_remove");
+  return KGuiItem(i18n("Remove"), "remove");
 }
 
 KGuiItem KStdGuiItem::test()
