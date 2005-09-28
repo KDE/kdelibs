@@ -374,7 +374,7 @@ INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         margin: 0__qem;
-        border: 0px -khtml-native;
+        border: 2px -khtml-native;
 }
 
 INPUT[type="hidden"] {
@@ -415,7 +415,7 @@ TEXTAREA {
         color: windowtext;
         font-family: monospace;
         margin: 0__qem;
-        border: 0px -khtml-native;
+        border: 2px -khtml-native;
 }
 
 /*

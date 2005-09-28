@@ -971,22 +971,22 @@ public:
     const BorderValue& borderBottom() const { return surround->border.bottom; }
 
     unsigned short  borderLeftWidth() const
-    { if( surround->border.left.style == BNONE) return 0; return surround->border.left.width; }
+    { if( surround->border.left.style == BNONE || surround->border.left.style == BNATIVE) return 0; return surround->border.left.width; }
     EBorderStyle    borderLeftStyle() const { return surround->border.left.style; }
     const QColor &  borderLeftColor() const { return surround->border.left.color; }
     bool borderLeftIsTransparent() const { return surround->border.left.isTransparent(); }
     unsigned short  borderRightWidth() const
-    { if (surround->border.right.style == BNONE) return 0; return surround->border.right.width; }
+    { if (surround->border.right.style == BNONE || surround->border.left.style == BNATIVE) return 0; return surround->border.right.width; }
     EBorderStyle    borderRightStyle() const {  return surround->border.right.style; }
     const QColor &  	    borderRightColor() const {  return surround->border.right.color; }
     bool borderRightIsTransparent() const { return surround->border.right.isTransparent(); }
     unsigned short  borderTopWidth() const
-    { if(surround->border.top.style == BNONE) return 0; return surround->border.top.width; }
+    { if(surround->border.top.style == BNONE || surround->border.left.style == BNATIVE) return 0; return surround->border.top.width; }
     EBorderStyle    borderTopStyle() const {return surround->border.top.style; }
     const QColor &  borderTopColor() const {  return surround->border.top.color; }
     bool borderTopIsTransparent() const { return surround->border.top.isTransparent(); }
     unsigned short  borderBottomWidth() const
-    { if(surround->border.bottom.style == BNONE) return 0; return surround->border.bottom.width; }
+    { if(surround->border.bottom.style == BNONE || surround->border.left.style == BNATIVE) return 0; return surround->border.bottom.width; }
     EBorderStyle    borderBottomStyle() const {  return surround->border.bottom.style; }
     const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
     bool borderBottomIsTransparent() const { return surround->border.bottom.isTransparent(); }
