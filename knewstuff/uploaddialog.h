@@ -93,7 +93,7 @@ class UploadDialog : public KDialogBase
     QComboBox *mLanguageCombo;
     QComboBox *mLicenceCombo;
 
-    Q3PtrList<Entry> mEntryList;
+    QList<Entry*> mEntryList;
     KURL mPayloadUrl;
 };
 

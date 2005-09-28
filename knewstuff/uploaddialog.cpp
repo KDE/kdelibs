@@ -48,8 +48,6 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
                parent, 0, false, true ),
   mEngine( engine )
 {
-  mEntryList.setAutoDelete( true );
-
   QFrame *topPage = plainPage();
 
   QGridLayout *topLayout = new QGridLayout( topPage );
@@ -107,7 +105,8 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
 
 UploadDialog::~UploadDialog()
 {
-  mEntryList.clear();
+	qDeleteAll(mEntryList);
+	mEntryList.clear();
 }
 
 void UploadDialog::slotOk()
