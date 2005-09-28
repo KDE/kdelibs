@@ -16,14 +16,14 @@ tcpslavebase.cpp slavebase.cpp passdlg.cpp
 forwardingslavebase.cpp
 progressbase.cpp defaultprogress.cpp
 statusbarprogress.cpp
-kdirnotify.cpp kdirnotify.skel kdirnotify.stub
+kdirnotify.cpp kdirnotify.skel kdirnotify_stub.cpp
 ../misc/uiserver.stub observer.cpp observer.skel observer.stub
 kemailsettings.cpp
 kprotocolinfo.cpp
 renamedlg.cpp skipdlg.cpp kremoteencoding.cpp
 kmimetypechooser.cpp
 """
-# why kdirnotify_stub.cpp ?
+# do not use kdirnotify.stub
 
 ksycoca_sources = """
 kdirwatch.cpp
@@ -55,7 +55,7 @@ coreobj = env.kdeobj('convenience',env)
 coreobj.target   = 'libkiocore'
 coreobj.source   = kiocore_sources
 coreobj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 FAM'
-coreobj.includes = '../../kdecore/network ../kssl ../../interfaces ../misc'
+coreobj.includes = '../../kdecore/network ../kssl ../../interfaces #interfaces ../misc'
 coreobj.execute()
 
 sycocaobj = env.kdeobj('convenience',env)

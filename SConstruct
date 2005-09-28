@@ -51,15 +51,19 @@ config = {
 # and the config.h
 env=configure(config)
 
-# now the kdemacros (TODO a bootstrap module ?)
+# now the kdemacros (TODO put this into a bootstrap section somehow ?)
+dest = open(env.join('build','kdemacros.h'), 'w')
+dest.write('#include <kdemacros.h.in>\n')
+dest.close()
+
 import os
 try:
-   os.mkdir('build')
+   os.mkdir('build'+os.sep+'kjs')
 except OSError:
    pass
 
-dest = open(env.join('build','kdemacros.h'), 'w')
-dest.write('#include <kdemacros.h.in>\n')
+dest = open(env.join('build','kjs','global.h'), 'w')
+dest.write('#include "global.h.in"\n')
 dest.close()
 
 ###################################################################

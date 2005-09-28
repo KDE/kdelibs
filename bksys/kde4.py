@@ -87,12 +87,25 @@ def generate(env):
 	if not env['_USECOLORS_']: creation_string=""
 	kidl_action=env.Action(kidl_str, creation_string)
 	env['BUILDERS']['Kidl']=Builder(action=kidl_action, suffix='.kidl', src_suffix='.h')
+
+	## TODO --no-signals (ita)
+
 	## DCOP
-	dcop_str='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-stub $SOURCE'
+	dcop_str='$DCOPIDL2CPP --c++-suffix cpp --no-stub $SOURCE'
 	dcop_action=env.Action(dcop_str, creation_string)
-	env['BUILDERS']['Dcop']=Builder(action=dcop_action, suffix='_skel.cpp', src_suffix='.kidl')
+
+        def dcopEmitter(target, source, env):
+		import os
+                adjustixes = SCons.Util.adjustixes
+                bs = SCons.Util.splitext(str(source[0].name))[0]
+                bs = os.path.join(str(target[0].get_dir()),bs)
+                target.append(bs+'_skel.h')
+                return target, source
+
+	env['BUILDERS']['Dcop']=Builder(action=dcop_action, suffix='_skel.cpp', src_suffix='.kidl', emitter=dcopEmitter)
+
 	## STUB
-	stub_str='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-skel $SOURCE'
+	stub_str='$DCOPIDL2CPP --c++-suffix cpp --no-skel $SOURCE'
 	stub_action=env.Action(stub_str, creation_string)
 
         def stubEmitter(target, source, env):

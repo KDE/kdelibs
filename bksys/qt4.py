@@ -171,7 +171,7 @@ def generate(env):
 
 	## MOC processing
 	moc_comp   = '$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE'
-	moc_string = "%screating%s $TARGET.name" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
+	moc_string = "%screating%s $TARGET" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
 	if not env['_USECOLORS_']: moc_string=""
 	moc_action = env.Action(moc_comp, moc_string)
 
