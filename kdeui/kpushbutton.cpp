@@ -100,7 +100,12 @@ void KPushButton::init( const KGuiItem &item )
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
-    QToolTip::add( this, item.toolTip() );
+    // do not add a tooltip here by default as it results in an event filter
+    // being applied to the QApplication which interferes with some specific
+    // cases such as kdesktop's event filter on the root window. besides, most
+    // of these tooltips are compeletely redundant against the text of the
+    // button and look completely inapropriate
+    // QToolTip::add( this, item.toolTip() );
 
     QWhatsThis::add( this, item.whatsThis() );
 
@@ -125,8 +130,13 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
-    QToolTip::add( this, d->item.toolTip() ); 
     QWhatsThis::add( this, d->item.whatsThis() );
+    // do not add a tooltip here by default as it results in an event filter
+    // being applied to the QApplication which interferes with some specific
+    // cases such as kdesktop's event filter on the root window. besides, most
+    // of these tooltips are compeletely redundant against the text of the
+    // button and look completely inapropriate
+    // QToolTip::add( this, d->item.toolTip() ); 
 }
 
 void KPushButton::setGuiItem( KStdGuiItem::StdItem item )
