@@ -1571,9 +1571,9 @@ void KFontSizeAction::init()
 
     setEditable( true );
     QFontDatabase fontDB;
-    Q3ValueList<int> sizes = fontDB.standardSizes();
+    QList<int> sizes = fontDB.standardSizes();
     QStringList lst;
-    for ( Q3ValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
+    for ( QList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
         lst.append( QString::number( *it ) );
 
     setItems( lst );

@@ -347,7 +347,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   d->pList = new KListView( this );
   d->pList->setFocus();
   listViewSearch->setListView(d->pList); // Plug into search line
-  Q3ValueList<int> columns;
+  QList<int> columns;
   columns.append(0);
   listViewSearch->setSearchColumns(columns);
 

@@ -252,7 +252,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 class KDialogQueuePrivate
 {
 public:
-  Q3ValueList< QPointer<QDialog> > queue;
+  QList< QPointer<QDialog> > queue;
   bool busy;
 };
 

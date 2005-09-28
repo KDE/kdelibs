@@ -78,7 +78,7 @@ public:
   SpellerType type;
   KSpell* suggestSpell;
   bool checking;
-  Q3ValueList<BufferedWord> unchecked;
+  QList<BufferedWord> unchecked;
   QTimer *checkNextTimer;
   bool aspellV6;
 };
