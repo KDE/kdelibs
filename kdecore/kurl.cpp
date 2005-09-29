@@ -290,10 +290,8 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   // Encoding specified
   if (updateDecoded)
   {
-     QByteArray array;
-     array.setRawData(new_segment, new_length);
+     QByteArray array = QByteArray::fromRawData( new_segment, new_length );
      decoded = textCodec->toUnicode( array, new_length );
-     array.resetRawData(new_segment, new_length);
      QByteArray validate = textCodec->fromUnicode(decoded);
 
      if (strcmp(validate.data(), new_segment) != 0)
@@ -455,8 +453,8 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
     for ( ; uit != uEnd ; ++uit )
     {
         // Get each URL encoded in toUtf8 - and since we get it in escaped
-        // form on top of that, .latin1() is fine.
-        urlStringList.append( (*uit).toMimeDataString().latin1() );
+        // form on top of that, .toLatin1() is fine.
+        urlStringList.append( (*uit).toMimeDataString().toLatin1() );
     }
 
     QByteArray uriListData;
@@ -486,7 +484,7 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
         {
             metaDataData += it.key().toUtf8();
             metaDataData += "$@@$";
-            metaDataData += it.data().toUtf8();
+            metaDataData += it.value().toUtf8();
             metaDataData += "$@@$";
         }
         mimeData->setData( "application/x-kio-metadata", metaDataData );
@@ -536,7 +534,8 @@ KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMa
         if ( !metaDataPayload.isEmpty() )
         {
             const QString str = QString::fromUtf8( metaDataPayload );
-            const QStringList lst = str.split( "$@@$");
+            QStringList lst = str.split( "$@@$" );
+            lst.removeLast(); // last one is always empty
             QStringList::ConstIterator it = lst.begin();
             bool readingKey = true; // true, then false, then true, etc.
             QString key;
