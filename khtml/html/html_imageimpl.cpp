@@ -510,7 +510,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
     if ((shape==Poly || shape==Unknown) && m_coordsLen > 5) {
         // make sure its even
         int len = m_coordsLen >> 1;
-        Q3PointArray points(len);
+        QPolygon points(len);
         for (int i = 0; i < len; ++i)
             points.setPoint(i, m_coords[(i<<1)].minWidth(width_),
                             m_coords[(i<<1)+1].minWidth(height_));

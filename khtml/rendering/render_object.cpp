@@ -897,7 +897,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             p->drawRect(x1,y1,x2-x1,y2-y1);
             return;
         }
-        Q3PointArray quad(4);
+        QPolygon quad(4);
         switch(s) {
         case BSTop:
             quad.setPoints(4,
