@@ -343,7 +343,7 @@ public:
     KURL m_delayedURL;
     KParts::URLArgs m_delayedArgs;
   };
-  Q3ValueList<DelayedRequest> m_requests;
+  QList<DelayedRequest> m_requests;
   bool m_urlDropHandlingEnabled;
   KBitArray m_actionStatus;
   QMap<int, QString> m_actionText;

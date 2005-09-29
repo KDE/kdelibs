@@ -93,7 +93,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos );
+    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos );
 
     /**
      * Load the plugin libraries specified by the list @p pluginInfos, make the
@@ -102,7 +102,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos, const KInstance * instance );
+    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KInstance * instance );
 
     /**
      * Load the plugin libraries for the given @p instance, make the
@@ -154,7 +154,7 @@ protected:
      *
      * @return A list of QDomDocument s, containing the parsed xml documents returned by plugins.
      */
-    static Q3ValueList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
+    static QList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
 
     /**
      * @internal

@@ -86,12 +86,12 @@ QString Plugin::localXMLFile() const
 }
 
 //static
-Q3ValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
+QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 {
   if ( !instance )
     kdError(1000) << "No instance ???" << endl;
 
-  Q3ValueList<PluginInfo> plugins;
+  QList<PluginInfo> plugins;
 
   // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
   const QStringList pluginDocs = instance->dirs()->findAllResources(
@@ -143,10 +143,10 @@ void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
   loadPlugins( parent, pluginInfos( instance ), instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos, const KInstance *instance )
+void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
-   Q3ValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
-   Q3ValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
+   QList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
+   QList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
@@ -167,7 +167,7 @@ void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &plugin
 
 }
 
-void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos )
+void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos )
 {
    loadPlugins(parent, pluginInfos, 0);
 }
@@ -224,9 +224,9 @@ void Plugin::setInstance( KInstance *instance )
 void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault )
 {
     KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
-    Q3ValueList<PluginInfo> plugins = pluginInfos( instance );
-    Q3ValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
-    Q3ValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
+    QList<PluginInfo> plugins = pluginInfos( instance );
+    QList<PluginInfo>::ConstIterator pIt = plugins.begin();
+    QList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
     {
         QDomElement docElem = (*pIt).m_document.documentElement();

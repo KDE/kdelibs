@@ -29,7 +29,7 @@
 template <class T1, class T2> struct QPair;
 template<typename T> class Q3PtrList;
 template <class Key, class T> class QMap;
-template<typename T> class Q3ValueList;
+template<typename T> class QList;
 
 class KFileItem;
 typedef Q3PtrList<KFileItem> KFileItemList;
@@ -795,7 +795,7 @@ public:
   enum Type {
       TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString
   };
-  typedef Q3ValueList<QPair<Type, QString> > ArgList;
+  typedef QList<QPair<Type, QString> > ArgList;
 
   LiveConnectExtension( KParts::ReadOnlyPart *parent );
 
