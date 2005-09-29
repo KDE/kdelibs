@@ -39,6 +39,7 @@ private slots:
     void testAdjustPath();
     void testIPV6();
     void testBaseURL();
+    void testSetUser();
     void testSubURL();
     void testComparisons();
     void testStreaming();

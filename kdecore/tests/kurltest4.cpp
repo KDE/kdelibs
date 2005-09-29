@@ -809,6 +809,28 @@ void KURLTest::testSubURL()
   check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
 }
 
+void KURLTest::testSetUser()
+{
+  // The KURL equality test below works because in Qt4 null == empty.
+  QString str1 = QString::null;
+  QString str2 = "";
+  assert( str1 == str2 );
+
+  KURL emptyUserTest1( "http://www.foobar.com/");
+  VERIFY( emptyUserTest1.user().isEmpty() );
+  VERIFY( !emptyUserTest1.user().isNull() ); // small change compared to KURL-3.5
+  KURL emptyUserTest2( "http://www.foobar.com/");
+  emptyUserTest2.setUser( "" );
+  //assert( emptyUserTest2.user().isNull() );
+  COMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  emptyUserTest2.setPass( "" );
+  COMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  emptyUserTest2.setUser( "foo" );
+  COMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
+  emptyUserTest2.setUser( QString::null );
+  COMPARE( emptyUserTest1==emptyUserTest2, true );
+}
+
 void KURLTest::testComparisons()
 {
   kdDebug() << k_funcinfo << endl;

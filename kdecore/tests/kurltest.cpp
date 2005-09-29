@@ -526,6 +526,27 @@ int main(int argc, char *argv[])
       KURL waba2( waba1, "http:/relative.html"); // "rfc 1606 loophole"
       check("http: Strange relative URL", waba2.url(), "http://www.website.com/relative.html");
   }
+
+
+  // The KURL equality test below works because in Qt4 null == empty.
+  QString str1 = QString::null;
+  QString str2 = "";
+  assert( str1 == str2 );
+
+  KURL emptyUserTest1( "http://www.foobar.com/");
+  assert( emptyUserTest1.user().isNull() );
+  KURL emptyUserTest2( "http://www.foobar.com/");
+  emptyUserTest2.setUser( "" );
+  //assert( emptyUserTest2.user().isNull() );
+  check( "Empty vs. null fields: user", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  emptyUserTest2.setPass( "" );
+  check( "Empty vs. null fields: password", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  emptyUserTest2.setUser( "foo" );
+  check( "setUser: user", emptyUserTest2.user(), "foo" );
+  emptyUserTest2.setUser( QString::null );
+  check( "Empty vs. null fields: user", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  assert( emptyUserTest2.user().isNull() );
+
   waba1.setUser("waldo");
   check("http: Set user", waba1.url(), "http://waldo@www.website.com/directory/filename?bla#blub");
   waba1.setUser("waldo/bastian");
