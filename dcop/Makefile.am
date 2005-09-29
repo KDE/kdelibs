@@ -21,7 +21,7 @@
 # AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-SUBDIRS = KDE-ICE . dcopidl dcopidlng dcopidl2cpp client tests
+SUBDIRS = KDE-ICE . dcopidlng dcopidl2cpp client tests
 KDE_OPTIONS = qtonly
 
 INCLUDES = $(all_includes)
