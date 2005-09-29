@@ -5,7 +5,7 @@ Import('env')
 
 # TODO tests directory is incomplete (ita)
 
-env.subdirs('KDE-ICE dcopidl dcopidl2cpp dcopidlng client tests')
+env.subdirs('KDE-ICE dcopidl2cpp dcopidlng client tests')
 
 # libDCOP.so - library for ?
 obj = env.qt4obj('shlib',env)
@@ -40,7 +40,7 @@ obj.instdir  = '/usr/local/bin/'
 obj.execute()
 
 """
-SUBDIRS = KDE-ICE . dcopidl dcopidlng dcopidl2cpp client tests
+SUBDIRS = KDE-ICE . dcopidlng dcopidl2cpp client tests
 KDE_OPTIONS = qtonly
 
 bin_PROGRAMS = dcopserver_shutdown
