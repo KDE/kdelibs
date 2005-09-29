@@ -29,12 +29,12 @@ class KListView;
 class Q3ListViewItem;
 class QLineEdit;
 class QComboBox;
-class Q3WidgetStack;
 class QToolButton;
 class KListBox;
 class Q3ListBoxItem;
 class QTextEdit;
 class QCheckBox;
+class QStackedWidget;
 
 class DrGroup;
 class DrBase;
@@ -80,7 +80,7 @@ private:
 	QWidget		*m_dummy;
 	KListView	*m_values;
 	QLineEdit	*m_edit1, *m_edit2;
-	Q3WidgetStack	*m_stack;
+	QStackedWidget	*m_stack;
 	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
 	QToolButton	*m_addval, *m_delval;

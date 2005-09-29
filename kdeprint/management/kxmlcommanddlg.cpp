@@ -20,6 +20,7 @@
 #include "kxmlcommanddlg.h"
 #include "driver.h"
 #include "kxmlcommand.h"
+#include <QStackedWidget>
 
 #include <qlayout.h>
 #include <q3header.h>
@@ -124,11 +125,11 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_persistent = new QCheckBox( i18n( "&Persistent option" ), m_dummy );
 
 	Q3GroupBox	*gb = new Q3GroupBox(0, Qt::Horizontal, i18n("Va&lues"), m_dummy);
-	m_stack = new Q3WidgetStack(gb);
+	m_stack = new QStackedWidget(gb);
 	QWidget	*w1 = new QWidget(m_stack), *w2 = new QWidget(m_stack), *w3 = new QWidget(m_stack);
-	m_stack->addWidget(w1, 1);
-	m_stack->addWidget(w2, 2);
-	m_stack->addWidget(w3, 3);
+	m_stack->insertWidget(1,w1);
+	m_stack->insertWidget(2,w2);
+	m_stack->insertWidget(3,w3);
 	m_edit1 = new QLineEdit(w1);
 	m_edit2 = new QLineEdit(w1);
 	QLabel	*m_editlab1 = new QLabel(i18n("Minimum v&alue:"), w1);
@@ -534,7 +535,7 @@ void KXmlCommandAdvancedDlg::slotTypeChanged(int ID)
 			slotValueSelected(m_values->currentItem());
 			break;
 	}
-	m_stack->raiseWidget(wId);
+	m_stack->setCurrentIndex(wId);
 }
 
 void KXmlCommandAdvancedDlg::slotAddValue()
