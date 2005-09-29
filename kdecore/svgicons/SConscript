@@ -7,10 +7,10 @@ ksvgiconengine.cpp
 ksvgiconpainter.cpp
 """
 
-obj = env.qt4obj('convenience',env)
+obj = env.kdeobj('convenience',env)
 obj.target   = 'libkdesvgicons'
 obj.source   = sources
-obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4 LIBART'
+obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 LIBART'
 obj.execute()
 
 
