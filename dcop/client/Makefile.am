@@ -1,5 +1,6 @@
 
 INCLUDES = $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 AM_LDFLAGS   = $(all_libraries)
 DCOP_LIB = ../libDCOP.la
 

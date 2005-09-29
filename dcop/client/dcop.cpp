@@ -645,8 +645,8 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 		    exit( -1 );
 		}
 
-		QStringList l( QStringList::split( '\n', f.readAll() ) );
-		dcopServer = l.first();
+		QList<QByteArray> l( f.readAll().split( '\n' ) );
+		dcopServer = QString::fromLatin1( l.first() );
 
 		if( dcopServer.isEmpty() )
 		{

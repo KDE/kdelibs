@@ -25,6 +25,7 @@ SUBDIRS = KDE-ICE . dcopidl dcopidlng dcopidl2cpp client tests
 KDE_OPTIONS = qtonly
 
 INCLUDES = $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 bin_PROGRAMS = dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc

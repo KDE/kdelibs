@@ -151,7 +151,8 @@ class DCOPClientPrivate
 public:
     DCOPClientPrivate( DCOPClient* client )
         : parent( client ),
-          postMessageTimer( client ) // for the moveToThread() call
+          postMessageTimer( client ),
+          eventLoop( 0 )
     {}
     DCOPClient *parent;
     DCOPCString appId;
@@ -203,6 +204,7 @@ public:
     QHash<int, LocalTransactionResult*> localTransActionList;
 
     QTimer eventLoopTimer;
+    QEventLoop* eventLoop;
 };
 
 class DCOPClientTransaction
@@ -658,6 +660,7 @@ DCOPClient::~DCOPClient()
 
     delete d->notifier;
     delete d->transactionList;
+    delete d->eventLoop;
     qDeleteAll(d->messages);
 /*    while (!d->messages.isEmpty())
         delete d->messages.takeFirst();*/
@@ -1958,7 +1961,9 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
                     }
                     if( timeout >= 0 )
                         d->eventLoopTimer.start(time_left - guiTimeout);
-                    qApp->enter_loop();
+                    if ( !d->eventLoop )
+                        d->eventLoop = new QEventLoop;
+                    d->eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
                     d->eventLoopTimer.stop();
                     if ( !old_lock ) {
                         d->non_blocking_call_lock = false;
@@ -2025,7 +2030,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
 
     // Wake up parent call, maybe it's reply is available already.
     if ( d->non_blocking_call_lock ) {
-        qApp->exit_loop();
+        d->eventLoop->quit();
     }
 
     d->currentKey = oldCurrentKey;
@@ -2034,7 +2039,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
 
 void DCOPClient::eventLoopTimeout()
 {
-    qApp->exit_loop();
+    d->eventLoop->quit();
 }
 
 void DCOPClient::processSocketData(int fd)
@@ -2051,7 +2056,7 @@ void DCOPClient::processSocketData(int fd)
         return;
 
     if ( d->non_blocking_call_lock ) {
-        qApp->exit_loop();
+        d->eventLoop->quit();
         return;
     }
 

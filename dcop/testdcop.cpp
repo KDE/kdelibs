@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <testdcop.h>
 #include <qtimer.h>
-#include <assert.h>
+#include <qrect.h>
 
 #include <assert.h>
 
@@ -182,7 +182,7 @@ void TestObject::slotCallBack(int callId, const DCOPCString &replyType, const QB
    QString arg1;
    args >> arg1;
 
-   qWarning("Value = %s", arg1.latin1());
+   qWarning("Value = %s", qPrintable(arg1));
 }
 
 #ifdef Q_OS_WIN
@@ -214,10 +214,12 @@ int main(int argc, char **argv)
 
 //  client->attach(); // attach to the server, now we can use DCOP service
 
-  client->registerAs( app.name(), false ); // register at the server, now others can call us.
+  DCOPCString appName = app.applicationName().toLatin1();
+
+  client->registerAs( appName, false ); // register at the server, now others can call us.
   qDebug("I registered as '%s'", client->appId().data() );
 
-  if ( client->isApplicationRegistered( app.name() ) )
+  if ( client->isApplicationRegistered( appName ) )
       qDebug("indeed, we are registered!");
 
   QDataStream dataStream( &data, QIODevice::WriteOnly );
@@ -235,7 +237,7 @@ int main(int argc, char **argv)
   ds.setVersion( QDataStream::Qt_3_1 );
 
   ds << QString("fourty-two") << 42;
-  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply)) {
+  if (!client->call(appName, "object1", "aFunction(QString,int)", data, replyType, reply)) {
     qDebug("I couldn't call myself");
     assert( 0 );
   }
@@ -244,7 +246,7 @@ int main(int argc, char **argv)
     assert( replyType == "void" );
   }
 
-  client->send(app.name(), "object1", "aFunction(QString,int)", data );
+  client->send(appName, "object1", "aFunction(QString,int)", data );
 
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
@@ -283,14 +285,14 @@ int main(int argc, char **argv)
 	foundApp.data(), foundObj.data());
 
   DCOPClient *client2 = new DCOPClient();
-  client2->registerAs(app.name(), false);
+  client2->registerAs(appName, false);
   qDebug("I2 registered as '%s'", client2->appId().data() );
 
 qDebug("Sending to object1");
-  client2->send(app.name(), "object1", "aFunction(QString,int)", data );
+  client2->send(appName, "object1", "aFunction(QString,int)", data );
 
 qDebug("Calling object1");
-  if (!client2->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
+  if (!client2->call(appName, "object1", "aFunction(QString,int)", data, replyType, reply))
     qDebug("I couldn't call myself");
   else {
       qDebug("return type was '%s'", replyType.data() );
@@ -298,7 +300,7 @@ qDebug("Calling object1");
   }
 
 qDebug("Calling countDown() in object1");
-  if (!client2->call(app.name(), "object1", "countDown()", data, replyType, reply))
+  if (!client2->call(appName, "object1", "countDown()", data, replyType, reply))
     qDebug("I couldn't call myself");
   else {
       qDebug("return type was '%s'", replyType.data() );

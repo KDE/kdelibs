@@ -155,7 +155,7 @@ static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, const c
 
 	if (iceConn->io_ok)
 	{
-		
+
 //		nwritten = _kde_IceTransWrite (iceConn->trans_conn, ptr, (int) nleft);
 
 		/*
@@ -344,7 +344,7 @@ void DCOPConnection::slotOutputReady()
 #else
    nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
 #endif
-   
+
    int e = errno;
    fcntl(fd, F_SETFL, fd_fl);
 
@@ -969,7 +969,7 @@ extern "C"
 }
 
 DCOPServer::DCOPServer(bool _suicide)
-    : suicide(_suicide), 
+    : suicide(_suicide),
       shutdown(false),
       currentClientNumber(0),
       serverKey(42),
@@ -977,7 +977,7 @@ DCOPServer::DCOPServer(bool _suicide)
 {
     appIds.reserve(263);
     clients.reserve(263);
-    
+
     if (_kde_IceLastMajorOpcode < 1 )
         IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
 				    const_cast<char *>("DUMMY"),
@@ -1633,13 +1633,13 @@ static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 	contents[size] = '\0';
 	int pos = contents.indexOf('\n');
 	ok = ok && ( pos != -1 );
-	
+
 	//Strip trailing newline, if need be..
 	int len = -1;
 	int pos2 = contents.indexOf('\n',pos + 1);
 	if (pos2 != -1)
 	    len = pos2 - (pos + 1);
-	
+
 
 	pid_t pid = ok ? contents.mid(pos+1,len).toUInt(&ok) : 0;
 	f.close();
@@ -1795,8 +1795,8 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 #ifdef Q_OS_WIN
 	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,true);
 #else
-	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
-		server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
+	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0);
+        server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
 #endif
 
     int ret = a.exec();
