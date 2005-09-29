@@ -1061,6 +1061,13 @@ int main(int argc, char *argv[])
   url1 = "mailto:User@Host.COM?subject=Hello";
   check("KURL(\"mailto:User@Host.COM?subject=Hello\").path()", url1.path(), "User@host.com");
 
+  KURL emptyUserTest1("http://www.foobar.com/");
+  KURL emptyUserTest2("http://www.foobar.com/");
+  emptyUserTest2.setUser("");
+  check("Empty vs. null fields: user", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE");
+  emptyUserTest2.setPass("");
+  check("Empty vs. null fields: password", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE");
+
   printf("\nTest OK !\n");
 }
 

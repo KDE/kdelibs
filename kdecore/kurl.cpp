@@ -1937,13 +1937,15 @@ KURL::setProtocol( const QString& _txt )
 void
 KURL::setUser( const QString& _txt )
 {
-   m_strUser = _txt;
+   if ( !_txt.isEmpty() )
+     m_strUser = _txt;
 }
 
 void
 KURL::setPass( const QString& _txt )
 {
-   m_strPass = _txt;
+   if ( !_txt.isEmpty() )
+     m_strPass = _txt;
 }
 
 void
