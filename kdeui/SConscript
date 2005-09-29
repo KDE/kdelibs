@@ -18,7 +18,7 @@ kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp
 kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3
 kshortcutdialog.cpp kkeybutton.cpp kkeydialog.cpp
 kruler.cpp kcursor.cpp
-kcharselect.cpp kcolordrag.cpp
+kcharselect.cpp kcolormimedata.cpp
 knumvalidator.cpp kdialog.cpp kdialogbase.cpp
 kjanuswidget.cpp kaboutdialog.cpp
 kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp
