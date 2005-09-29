@@ -19,7 +19,7 @@
 */
 
 #include <QVector>
-#include <Q3PointArray>
+#include <QPolygon>
 #include <q3valuevector.h>
 #include <qstringlist.h>
 #include <qmatrix.h>
@@ -1591,7 +1591,7 @@ void KSVGIconPainter::drawLine(double x1, double y1, double x2, double y2)
 	d->helper->drawVPath(vec);
 }
 
-void KSVGIconPainter::drawPolyline(Q3PointArray polyArray, int points)
+void KSVGIconPainter::drawPolyline(QPolygon polyArray, int points)
 {
 	if(polyArray.point(0).x() == -1 || polyArray.point(0).y() == -1)
 		return;
@@ -1627,7 +1627,7 @@ void KSVGIconPainter::drawPolyline(Q3PointArray polyArray, int points)
 	d->helper->drawVPath(polyline);
 }
 
-void KSVGIconPainter::drawPolygon(Q3PointArray polyArray)
+void KSVGIconPainter::drawPolygon(QPolygon polyArray)
 {
 	ArtVpath *polygon;
 

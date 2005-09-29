@@ -28,7 +28,7 @@ class QImage;
 class QColor;
 class QMatrix;
 class QDomElement;
-class Q3PointArray;
+class QPolygon;
 
 class KDECORE_EXPORT KSVGIconPainter
 {
@@ -67,8 +67,8 @@ public:
 	void drawRectangle(double x, double y, double w, double h, double rx, double ry);
 	void drawEllipse(double cx, double cy, double rx, double ry);
 	void drawLine(double x1, double y1, double x2, double y2);
-	void drawPolyline(Q3PointArray polyArray, int points = -1);
-	void drawPolygon(Q3PointArray polyArray);
+	void drawPolyline(QPolygon polyArray, int points = -1);
+	void drawPolygon(QPolygon polyArray);
 	void drawPath(const QString &data, bool fill);
 	void drawImage(double x, double y, QImage &image);
 
