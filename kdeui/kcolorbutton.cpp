@@ -31,7 +31,7 @@
 #include <QStyleOptionButton>
 #include "kcolordialog.h"
 #include "kcolorbutton.h"
-#include "kcolordrag.h"
+#include "kcolormimedata.h"
 
 class KColorButton::KColorButtonPrivate
 {
@@ -159,13 +159,13 @@ QSize KColorButton::sizeHint() const
 
 void KColorButton::dragEnterEvent( QDragEnterEvent *event)
 {
-  event->accept( KColorDrag::canDecode( event) && isEnabled());
+  event->accept( KColorMimeData::canDecode( event->mimeData()) && isEnabled());
 }
 
 void KColorButton::dropEvent( QDropEvent *event)
 {
-  QColor c;
-  if( KColorDrag::decode( event, c)) {
+  QColor c=KColorMimeData::fromMimeData( event->mimeData());
+  if (c.isValid()) {
     setColor(c);
   }
 }
@@ -175,12 +175,12 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
   KKey key( e );
 
   if ( KStdAccel::copy().contains( key ) ) {
-    QMimeSource* mime = new KColorDrag( color() );
-    QApplication::clipboard()->setData( mime, QClipboard::Clipboard );
+    QMimeData *mime=new QMimeData;
+    KColorMimeData::setInMimeData(mime,color());
+    QApplication::clipboard()->setMimeData( mime, QClipboard::Clipboard );
   }
   else if ( KStdAccel::paste().contains( key ) ) {
-    QColor color;
-    KColorDrag::decode( QApplication::clipboard()->data( QClipboard::Clipboard ), color );
+    QColor color=KColorMimeData::fromMimeData( QApplication::clipboard()->mimeData( QClipboard::Clipboard ));
     setColor( color );
   }
   else
@@ -198,9 +198,7 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
   if( (e->state() & Qt::LeftButton) &&
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
-    // Drag color object
-    KColorDrag *dg = new KColorDrag( color(), this);
-    dg->dragCopy();
+    KColorMimeData::createDrag(color(),this)->start();
     setDown(false);
   }
 }

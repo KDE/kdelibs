@@ -43,7 +43,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h kdatepik.h \
 	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h kcolorbtn.h ksystemtray.h \
 	kbuttonbox.h keditcl.h kled.h keditlistbox.h kwizard.h kkeydialog.h kkeybutton.h \
 	kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h \
-	kcolordrag.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h \
+	kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h \
 	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbtn.h kdualcolorbutton.h \
 	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
@@ -72,7 +72,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	keditlistbox.cpp kscrollview.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp \
 	ksystemtray.cpp kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
 	kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3 kshortcutdialog.cpp kkeybutton.cpp \
-	kkeydialog.cpp kruler.cpp kcursor.cpp kcharselect.cpp kcolordrag.cpp knumvalidator.cpp \
+	kkeydialog.cpp kruler.cpp kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp \
 	kdialog.cpp kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp \
 	kmessagebox.cpp kdualcolorbutton.cpp ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp kiconview.cpp klistbox.cpp kwordwrap.cpp \

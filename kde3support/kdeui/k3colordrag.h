@@ -17,33 +17,33 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KCOLORDRAG_H
-#define _KCOLORDRAG_H
+#ifndef _K3COLORDRAG_H
+#define _K3COLORDRAG_H
 
 #include <q3dragobject.h>
 #include <qcolor.h>
 #include <kdelibs_export.h>
 
-class KColorDragPrivate;
+class K3ColorDragPrivate;
 /**
  * A drag-and-drop object for colors. The according MIME type
  * is set to application/x-color.
  *
  * See the Qt drag'n'drop documentation.
  */
-class KDEUI_EXPORT KColorDrag : public Q3StoredDrag {
+class KDE3SUPPORT_EXPORT K3ColorDrag : public Q3StoredDrag {
     Q_OBJECT
 
 public:
     /**
      * Constructs a color drag with a white color.
      */
-    KColorDrag( QWidget *dragsource = 0, const char *name = 0 );
+    K3ColorDrag( QWidget *dragsource = 0, const char *name = 0 );
     /**
      * Constructs a color drag with the color @p col.
      */
-    KColorDrag( const QColor &col, QWidget *dragsource = 0, const char *name = 0 );
-    virtual ~KColorDrag() {}
+    K3ColorDrag( const QColor &col, QWidget *dragsource = 0, const char *name = 0 );
+    virtual ~K3ColorDrag() {}
 
     virtual const char *format(int i) const;
     virtual QByteArray encodedData ( const char * m ) const;
@@ -61,16 +61,16 @@ public:
      */
     static bool decode(QMimeSource *e, QColor &col);
     /**
-     * @deprecated This is equivalent with "new KColorDrag(color, dragsource)".
+     * @deprecated This is equivalent with "new K3ColorDrag(color, dragsource)".
      */
-    static KColorDrag* makeDrag( const QColor&,QWidget *dragsource) KDE_DEPRECATED;
+    static K3ColorDrag* makeDrag( const QColor&,QWidget *dragsource) KDE_DEPRECATED;
 
 private:
      QColor m_color; // unused
 protected:
      virtual void virtual_hook( int id, void* data );
 private:
-     KColorDragPrivate *d;
+     K3ColorDragPrivate *d;
 };
 
 

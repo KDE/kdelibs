@@ -60,7 +60,7 @@
 #include <kimageeffect.h>
 
 #include "kcolordialog.h"
-#include "kcolordrag.h"
+#include "kcolormimedata.h"
 #include "kstaticdeleter.h"
 #include <config.h>
 #include <kdebug.h>
@@ -436,8 +436,7 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
             int cell = posToCell(mPos);
             if ((cell != -1) && colors[cell].isValid())
             {
-               KColorDrag *d = new KColorDrag( colors[cell], this);
-               d->dragCopy();
+               KColorMimeData::createDrag( colors[cell], this)->start();
             }
         }
     }
@@ -445,13 +444,13 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->accept( acceptDrags && KColorDrag::canDecode( event));
+     event->accept( acceptDrags && KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorCells::dropEvent( QDropEvent *event)
 {
-     QColor c;
-     if( KColorDrag::decode( event, c)) {
+     QColor c=KColorMimeData::fromMimeData(event->mimeData());
+     if( c.isValid()) {
           int cell = posToCell(event->pos(), true);
 	  setColor(cell,c);
      }
@@ -521,19 +520,18 @@ void KColorPatch::mouseMoveEvent( QMouseEvent *e )
 {
         // Drag color object
         if( !(e->state() && Qt::LeftButton)) return;
-	KColorDrag *d = new KColorDrag( color, this);
-	d->dragCopy();
+	KColorMimeData::createDrag( color, this)->start();
 }
 
 void KColorPatch::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->accept( KColorDrag::canDecode( event));
+     event->accept( KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorPatch::dropEvent( QDropEvent *event)
 {
-     QColor c;
-     if( KColorDrag::decode( event, c)) {
+     QColor c=KColorMimeData::fromMimeData(event->mimeData());
+     if(c.isValid()) {
 	  setColor( c);
 	  emit colorChanged( c);
      }

@@ -18,7 +18,7 @@
 
 #include "kdualcolorbutton.h"
 #include "kcolordialog.h"
-#include "kcolordrag.h"
+#include "kcolormimedata.h"
 #include "dcolorarrow.xbm"
 #include "dcolorreset.xpm"
 #include <kglobalsettings.h>
@@ -163,13 +163,13 @@ void KDualColorButton::paintEvent(QPaintEvent *)
 
 void KDualColorButton::dragEnterEvent(QDragEnterEvent *ev)
 {
-    ev->accept(isEnabled() && KColorDrag::canDecode(ev));
+    ev->accept(isEnabled() && KColorMimeData::canDecode(ev->mimeData()));
 }
 
 void KDualColorButton::dropEvent(QDropEvent *ev)
 {
-    QColor c;
-    if(KColorDrag::decode(ev, c)){
+    QColor c=KColorMimeData::fromMimeData(ev->mimeData());
+    if(c.isValid()){
         if(curColor == Foreground){
             fg.setColor(c);
             emit fgChanged(c);
@@ -224,10 +224,9 @@ void KDualColorButton::mouseMoveEvent(QMouseEvent *ev)
         int delay = KGlobalSettings::dndEventDelay();
         if(ev->x() >= mPos.x()+delay || ev->x() <= mPos.x()-delay ||
            ev->y() >= mPos.y()+delay || ev->y() <= mPos.y()-delay) {
-            KColorDrag *d = new KColorDrag( curColor == Foreground ?
+            KColorMimeData::createDrag( curColor == Foreground ?
                                             fg.color() : bg.color(),
-                                            this);
-            d->dragCopy();
+                                            this)->start();
             dragFlag = true;
         }
     }

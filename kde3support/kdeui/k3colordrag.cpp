@@ -18,26 +18,26 @@
 */
 
 #include <qpainter.h>
-#include "kcolordrag.h"
+#include "k3colordrag.h"
 
 static const char * const color_mime_string = "application/x-color";
 static const char * const text_mime_string = "text/plain";
 
-KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource,
+K3ColorDrag::K3ColorDrag( const QColor &color, QWidget *dragsource,
 			const char *name)
      : Q3StoredDrag( color_mime_string, dragsource, name)
 {
      setColor( color);
 }
 
-KColorDrag::KColorDrag( QWidget *dragsource, const char *name)
+K3ColorDrag::K3ColorDrag( QWidget *dragsource, const char *name)
      : Q3StoredDrag( color_mime_string, dragsource, name)
 {
      setColor( Qt::white );
 }
 
 void
-KColorDrag::setColor( const QColor &color)
+K3ColorDrag::setColor( const QColor &color)
 {
      Q3ColorDrag tmp(color, 0, 0);
      setEncodedData(tmp.encodedData(color_mime_string));
@@ -51,7 +51,7 @@ KColorDrag::setColor( const QColor &color)
      setPixmap(colorpix, QPoint(-5,-7));
 }
 
-const char *KColorDrag::format(int i) const
+const char *K3ColorDrag::format(int i) const
 {
      if (i==1)
         return text_mime_string;
@@ -59,12 +59,12 @@ const char *KColorDrag::format(int i) const
         return Q3StoredDrag::format(i);
 }
 
-QByteArray KColorDrag::encodedData ( const char * m ) const
+QByteArray K3ColorDrag::encodedData ( const char * m ) const
 {
      if (!qstrcmp(m, text_mime_string) )
      {
         QColor color;
-        Q3ColorDrag::decode(const_cast<KColorDrag *>(this), color);
+        Q3ColorDrag::decode(const_cast<K3ColorDrag *>(this), color);
         QByteArray result = color.name().latin1();
         result.resize(result.length());
         return result;
@@ -73,7 +73,7 @@ QByteArray KColorDrag::encodedData ( const char * m ) const
 }
 
 bool
-KColorDrag::canDecode( QMimeSource *e)
+K3ColorDrag::canDecode( QMimeSource *e)
 {
      if (e->provides(color_mime_string))
         return true;
@@ -86,7 +86,7 @@ KColorDrag::canDecode( QMimeSource *e)
 }
 
 bool
-KColorDrag::decode( QMimeSource *e, QColor &color)
+K3ColorDrag::decode( QMimeSource *e, QColor &color)
 {
      if (Q3ColorDrag::decode(e, color))
         return true;
@@ -100,13 +100,13 @@ KColorDrag::decode( QMimeSource *e, QColor &color)
 }
 
 
-KColorDrag*
-KColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
+K3ColorDrag*
+K3ColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 {
-     return new KColorDrag( color, dragsource);
+     return new K3ColorDrag( color, dragsource);
 }
 
-void KColorDrag::virtual_hook( int, void* )
+void K3ColorDrag::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "kcolordrag.moc"
+#include "k3colordrag.moc"
