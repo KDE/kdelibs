@@ -408,7 +408,7 @@ def generate(env):
 	from SCons.Tool import Tool;
 	Tool('default').generate(env)
 
-	if env['PLATFORM'] in ('cygwin', 'win32', 'win64'):
+	if env['PLATFORM'] in ('cygwin', 'mingw', 'win32', 'win64'):
 		env['WINDOWS']=1
 	else:
 		env['WINDOWS']=0
