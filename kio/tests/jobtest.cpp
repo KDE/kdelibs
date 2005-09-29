@@ -428,7 +428,7 @@ static void fillOldUDSEntry( KIO::UDSEntry& entry, time_t now_time_t, const QStr
     atom.m_str = nameStr;
     entry.append( atom );
     atom.m_uds = KIO::UDS_SIZE;
-    atom.m_long = 123456;
+    atom.m_long = 123456ULL;
     entry.append( atom );
     atom.m_uds = KIO::UDS_MODIFICATION_TIME;
     atom.m_long = now_time_t;
@@ -455,8 +455,10 @@ typedef QHash<uint, QVariant> UDSEntry4;
 
 static void fillNewUDSEntry( UDSEntry4& entry, const QDateTime& now, const QString& nameStr )
 {
+    entry.reserve( 8 );
     entry.insert( KIO::UDS_NAME, nameStr );
-    entry.insert( KIO::UDS_SIZE, 123456 );
+    // we might need a method to make sure people use unsigned long long
+    entry.insert( KIO::UDS_SIZE, 123456ULL );
     entry.insert( KIO::UDS_MODIFICATION_TIME, now );
     entry.insert( KIO::UDS_ACCESS_TIME, now );
     entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
@@ -468,7 +470,7 @@ static void fillNewUDSEntry( UDSEntry4& entry, const QDateTime& now, const QStri
 // Which one is used depends on UDS_STRING vs UDS_LONG
 struct UDSAtom4 // can't be a union due to qstring...
 {
-  UDSAtom4() {} // for QHash
+  UDSAtom4() {} // for QHash or QMap
   UDSAtom4( const QString& s ) : m_str( s ) {}
   UDSAtom4( long long l ) : m_long( l ) {}
 
@@ -477,12 +479,28 @@ struct UDSAtom4 // can't be a union due to qstring...
 };
 
 // Another possibility, to save on QVariant costs
-typedef QHash<uint, UDSAtom4> UDSEntryQS;
+typedef QHash<uint, UDSAtom4> UDSEntryHS; // hash+struct
 
-static void fillQHashStructEntry( UDSEntryQS& entry, time_t now_time_t, const QString& nameStr )
+static void fillQHashStructEntry( UDSEntryHS& entry, time_t now_time_t, const QString& nameStr )
+{
+    entry.reserve( 8 );
+    entry.insert( KIO::UDS_NAME, nameStr );
+    entry.insert( KIO::UDS_SIZE, 123456ULL );
+    entry.insert( KIO::UDS_MODIFICATION_TIME, now_time_t );
+    entry.insert( KIO::UDS_ACCESS_TIME, now_time_t );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDS_USER, nameStr );
+    entry.insert( KIO::UDS_GROUP, nameStr );
+}
+
+// Let's see if QMap makes any difference
+typedef QMap<uint, UDSAtom4> UDSEntryMS; // map+struct
+
+static void fillQMapStructEntry( UDSEntryMS& entry, time_t now_time_t, const QString& nameStr )
 {
     entry.insert( KIO::UDS_NAME, nameStr );
-    entry.insert( KIO::UDS_SIZE, 123456 );
+    entry.insert( KIO::UDS_SIZE, 123456ULL );
     entry.insert( KIO::UDS_MODIFICATION_TIME, now_time_t );
     entry.insert( KIO::UDS_ACCESS_TIME, now_time_t );
     entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
@@ -634,13 +652,13 @@ void JobTest::newApiPerformance()
         // Slave code
         time_t start = time(0);
         for (int i = 0; i < iterations; ++i) {
-            UDSEntryQS entry;
+            UDSEntryHS entry;
             fillQHashStructEntry( entry, now_time_t, nameStr );
         }
 
         qDebug("QHash+struct API: slave code: %ld", time(0) - start);
 
-        UDSEntryQS entry;
+        UDSEntryHS entry;
         fillQHashStructEntry( entry, now_time_t, nameStr );
         COMPARE( entry.count(), 8 );
 
@@ -658,8 +676,8 @@ void JobTest::newApiPerformance()
             displayName = entry.value( KIO::UDS_NAME ).m_str;
 
             // For a field that might not be there
-            UDSEntryQS::const_iterator it = entry.find( KIO::UDS_URL );
-            const UDSEntryQS::const_iterator end = entry.end();
+            UDSEntryHS::const_iterator it = entry.find( KIO::UDS_URL );
+            const UDSEntryHS::const_iterator end = entry.end();
             if ( it != end )
                  url = it.value().m_str;
 
@@ -675,6 +693,52 @@ void JobTest::newApiPerformance()
         VERIFY( url.isEmpty() );
     }
 
+    {
+        qDebug( "Timing new QMap+struct api..." );
+
+        // Slave code
+        time_t start = time(0);
+        for (int i = 0; i < iterations; ++i) {
+            UDSEntryMS entry;
+            fillQMapStructEntry( entry, now_time_t, nameStr );
+        }
+
+        qDebug("QMap+struct API: slave code: %ld", time(0) - start);
+
+        UDSEntryMS entry;
+        fillQMapStructEntry( entry, now_time_t, nameStr );
+        COMPARE( entry.count(), 8 );
+
+        start = time(0);
+
+        // App code
+
+        QString displayName;
+        KIO::filesize_t size;
+        KURL url;
+
+        for (int i = 0; i < lookupIterations; ++i) {
+
+            // For a field that we assume to always be there
+            displayName = entry.value( KIO::UDS_NAME ).m_str;
+
+            // For a field that might not be there
+            UDSEntryMS::const_iterator it = entry.find( KIO::UDS_URL );
+            const UDSEntryMS::const_iterator end = entry.end();
+            if ( it != end )
+                 url = it.value().m_str;
+
+            it = entry.find( KIO::UDS_SIZE );
+            if ( it != end )
+                size = it.value().m_long;
+        }
+
+        qDebug("QMap+struct API: app code: %ld", time(0) - start);
+
+        COMPARE( size, 123456ULL );
+        COMPARE( displayName, QString::fromLatin1( "name" ) );
+        VERIFY( url.isEmpty() );
+    }
 }
 
 #include "jobtest.moc"
