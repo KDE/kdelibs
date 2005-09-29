@@ -317,7 +317,7 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 {
   if ( show )
   {
-    Q3PointArray array(3);
+    QPolygon array(3);
 
     painter->setPen( QPen() );
     painter->setBrush( QBrush( colorGroup().buttonText() ) );
