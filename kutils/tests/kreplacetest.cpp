@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
 
@@ -298,7 +298,7 @@ int main( int argc, char **argv )
                    "\n"
                    "    You should have received a copy of the GNU Library General Public License\n"
                    "    along with this library; see the file COPYING.LIB.  If not, write to\n"
-                   "    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,\n"
+                   "    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,\n"
                    "    Boston, MA 02110-1301, USA.\n"
                    "More tests:\n"
                    "ThisThis This, This. This\n"
