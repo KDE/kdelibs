@@ -570,9 +570,19 @@ void JobTest::newApiPerformance()
         KURL url;
 
         for (int i = 0; i < iterations; ++i) {
+
+            // For a field that we assume to always be there
             displayName = entry.value( KIO::UDS_NAME ).toString();
-            url = entry.value( KIO::UDS_URL ).toString();
-            size = entry.value( KIO::UDS_SIZE ).toULongLong();
+
+            // For a field that might not be there
+            UDSEntry4::const_iterator it = entry.find( KIO::UDS_URL );
+            const UDSEntry4::const_iterator end = entry.end();
+            if ( it != end )
+                 url = it.value().toString();
+
+            it = entry.find( KIO::UDS_SIZE );
+            if ( it != end )
+                size = it.value().toULongLong();
         }
 
         qDebug("New API: app code: %ld", time(0) - start);
