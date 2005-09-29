@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2004 David Faure <faure@kde.org>
+   Copyright (C) 2004, 2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -13,9 +13,11 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
+#include "QtTest/qttest_kde.h"
 
 #include "jobtest.h"
 
@@ -32,46 +34,18 @@
 #include <qeventloop.h>
 #include <qdir.h>
 #include <qfileinfo.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <unistd.h>
-#include <errno.h>
 #include <qhash.h>
 #include <qvariant.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <time.h>
+
+QTTEST_KDEMAIN( JobTest, GUI )
+
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
-
-static bool check(const QString& txt, QString a, QString b)
-{
-    if (a.isEmpty())
-        a = QString::null;
-    if (b.isEmpty())
-        b = QString::null;
-    if (a == b) {
-        kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
-    }
-    else {
-        kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
-        exit(1);
-    }
-    return true;
-}
-
-int main(int argc, char *argv[])
-{
-    KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init(argc,argv,"jobtest", 0, 0, 0, 0);
-    KApplication app;
-
-    JobTest test;
-    test.setup();
-    test.runAll();
-    test.cleanup();
-    kdDebug() << "All tests OK." << endl;
-    return 0; // success. The exit(1) in check() is what happens in case of failure.
-}
 
 QString JobTest::homeTmpDir() const
 {
@@ -84,10 +58,11 @@ QString JobTest::otherTmpDir() const
     return "/tmp/jobtest/";
 }
 
-void JobTest::setup()
+void JobTest::initTestCase()
 {
+    qDebug( "initTestCase" );
     // Start with a clean base dir
-    cleanup();
+    cleanupTestCase();
     QDir dir; // TT: why not a static method?
     bool ok = dir.mkdir( homeTmpDir() );
     if ( !ok )
@@ -97,24 +72,7 @@ void JobTest::setup()
         kdFatal() << "Couldn't create " << otherTmpDir() << endl;
 }
 
-void JobTest::runAll()
-{
-    get();
-    copyFileToSamePartition();
-    copyDirectoryToSamePartition();
-    copyFileToOtherPartition();
-    copyDirectoryToOtherPartition();
-    listRecursive();
-    moveFileToSamePartition();
-    moveDirectoryToSamePartition();
-    moveFileToOtherPartition();
-    moveSymlinkToOtherPartition();
-    moveDirectoryToOtherPartition();
-    moveFileNoPermissions();
-    moveDirectoryNoPermissions();
-}
-
-void JobTest::cleanup()
+void JobTest::cleanupTestCase()
 {
     KIO::NetAccess::del( homeTmpDir(), 0 );
     KIO::NetAccess::del( otherTmpDir(), 0 );
@@ -137,13 +95,13 @@ static void createTestSymlink( const QString& path )
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
             kdFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
-        assert( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
-        assert( S_ISLNK( buf.st_mode ) );
+        VERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+        VERIFY( S_ISLNK( buf.st_mode ) );
     } else {
-        assert( S_ISLNK( buf.st_mode ) );
+        VERIFY( S_ISLNK( buf.st_mode ) );
     }
     qDebug( "symlink %s created", qPrintable( path ) );
-    assert( QFileInfo( path ).isSymLink() );
+    VERIFY( QFileInfo( path ).isSymLink() );
 }
 
 static void createTestDirectory( const QString& path )
@@ -154,7 +112,7 @@ static void createTestDirectory( const QString& path )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
-    assert( QFileInfo( path + "/testlink" ).isSymLink() );
+    VERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
 }
 
 void JobTest::enterLoop()
@@ -176,9 +134,9 @@ void JobTest::get()
     connect( job, SIGNAL( result( KIO::Job* ) ),
             this, SLOT( slotGetResult( KIO::Job* ) ) );
     enterLoop();
-    assert( m_result == 0 ); // no error
-    assert( m_data.size() == 11 );
-    assert( QByteArray( m_data ) == "Hello world" );
+    VERIFY( m_result == 0 ); // no error
+    VERIFY( m_data.size() == 11 );
+    VERIFY( QByteArray( m_data ) == "Hello world" );
 }
 
 void JobTest::slotGetResult( KIO::Job* job )
@@ -199,33 +157,33 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
 
     // copy the file with file_copy
     bool ok = KIO::NetAccess::file_copy( u, d );
-    assert( ok );
-    assert( QFile::exists( dest ) );
-    assert( QFile::exists( src ) ); // still there
+    VERIFY( ok );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( QFile::exists( src ) ); // still there
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     ok = KIO::NetAccess::dircopy( u, d, 0 );
-    assert( ok );
-    assert( QFile::exists( dest ) );
-    assert( QFile::exists( src ) ); // still there
+    VERIFY( ok );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( QFile::exists( src ) ); // still there
 }
 
 void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
 {
-    assert( QFileInfo( src ).isDir() );
-    assert( QFileInfo( src + "/testfile" ).isFile() );
+    VERIFY( QFileInfo( src ).isDir() );
+    VERIFY( QFileInfo( src + "/testfile" ).isFile() );
     KURL u;
     u.setPath( src );
     KURL d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::dircopy( u, d, 0 );
-    assert( ok );
-    assert( QFile::exists( dest ) );
-    assert( QFileInfo( dest ).isDir() );
-    assert( QFileInfo( dest + "/testfile" ).isFile() );
-    assert( QFile::exists( src ) ); // still there
+    VERIFY( ok );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( QFileInfo( dest ).isDir() );
+    VERIFY( QFileInfo( dest + "/testfile" ).isFile() );
+    VERIFY( QFile::exists( src ) ); // still there
 }
 
 void JobTest::copyFileToSamePartition()
@@ -266,7 +224,7 @@ void JobTest::copyDirectoryToOtherPartition()
 
 void JobTest::moveLocalFile( const QString& src, const QString& dest )
 {
-    assert( QFile::exists( src ) );
+    VERIFY( QFile::exists( src ) );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -274,21 +232,21 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
 
     // move the file with file_move
     bool ok = KIO::NetAccess::file_move( u, d );
-    assert( ok );
-    assert( QFile::exists( dest ) );
-    assert( !QFile::exists( src ) ); // not there anymore
+    VERIFY( ok );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
     ok = KIO::NetAccess::move( d, u, 0 );
-    assert( ok );
-    assert( !QFile::exists( dest ) );
-    assert( QFile::exists( src ) ); // it's back
+    VERIFY( ok );
+    VERIFY( !QFile::exists( dest ) );
+    VERIFY( QFile::exists( src ) ); // it's back
 }
 
 static void moveLocalSymlink( const QString& src, const QString& dest )
 {
     KDE_struct_stat buf;
-    assert ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
+    VERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -298,37 +256,37 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     bool ok = KIO::NetAccess::move( u, d );
     if ( !ok )
         kdWarning() << KIO::NetAccess::lastError() << endl;
-    assert( ok );
-    assert ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
-    assert( !QFile::exists( src ) ); // not there anymore
+    VERIFY( ok );
+    VERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
+    VERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
     ok = KIO::NetAccess::move( d, u, 0 );
-    assert( ok );
-    assert ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
-    assert ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
+    VERIFY( ok );
+    VERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
+    VERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
 }
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
     kdDebug() << k_funcinfo << src << " " << dest << endl;
-    assert( QFile::exists( src ) );
-    assert( QFileInfo( src ).isDir() );
-    assert( QFileInfo( src + "/testfile" ).isFile() );
-    assert( QFileInfo( src + "/testlink" ).isSymLink() );
+    VERIFY( QFile::exists( src ) );
+    VERIFY( QFileInfo( src ).isDir() );
+    VERIFY( QFileInfo( src + "/testfile" ).isFile() );
+    VERIFY( QFileInfo( src + "/testlink" ).isSymLink() );
     KURL u;
     u.setPath( src );
     KURL d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::move( u, d, 0 );
-    assert( ok );
-    assert( QFile::exists( dest ) );
-    assert( QFileInfo( dest ).isDir() );
-    assert( QFileInfo( dest + "/testfile" ).isFile() );
-    assert( !QFile::exists( src ) ); // not there anymore
+    VERIFY( ok );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( QFileInfo( dest ).isDir() );
+    VERIFY( QFileInfo( dest + "/testfile" ).isFile() );
+    VERIFY( !QFile::exists( src ) ); // not there anymore
 
-    assert( QFileInfo( dest + "/testlink" ).isSymLink() );
+    VERIFY( QFileInfo( dest + "/testlink" ).isSymLink() );
 }
 
 void JobTest::moveFileToSamePartition()
@@ -381,8 +339,8 @@ void JobTest::moveFileNoPermissions()
     kdDebug() << k_funcinfo << endl;
     const QString src = "/etc/passwd";
     const QString dest = homeTmpDir() + "passwd";
-    assert( QFile::exists( src ) );
-    assert( QFileInfo( src ).isFile() );
+    VERIFY( QFile::exists( src ) );
+    VERIFY( QFileInfo( src ).isFile() );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -392,15 +350,15 @@ void JobTest::moveFileNoPermissions()
     job->setInteractive( false ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
-    assert( !ok );
-    assert( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    VERIFY( !ok );
+    VERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
     // OK this is fishy. Just like mv(1), KIO's behavior depends on whether
     // a direct rename(2) was used, or a full copy+del. In the first case
     // there is no destination file created, but in the second case the
     // destination file remains.
     // In fact we assume /home is a separate partition, in this test, so:
-    assert( QFile::exists( dest ) );
-    assert( QFile::exists( src ) );
+    VERIFY( QFile::exists( dest ) );
+    VERIFY( QFile::exists( src ) );
 }
 
 void JobTest::moveDirectoryNoPermissions()
@@ -408,8 +366,8 @@ void JobTest::moveDirectoryNoPermissions()
     kdDebug() << k_funcinfo << endl;
     const QString src = "/etc";
     const QString dest = homeTmpDir() + "etc";
-    assert( QFile::exists( src ) );
-    assert( QFileInfo( src ).isDir() );
+    VERIFY( QFile::exists( src ) );
+    VERIFY( QFileInfo( src ).isDir() );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -419,10 +377,10 @@ void JobTest::moveDirectoryNoPermissions()
     job->setInteractive( false ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
-    assert( !ok );
-    assert( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
-    assert( QFile::exists( dest ) ); // see moveFileNoPermissions
-    assert( QFile::exists( src ) );
+    VERIFY( !ok );
+    VERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    VERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
+    VERIFY( QFile::exists( src ) );
 }
 
 void JobTest::listRecursive()
@@ -434,44 +392,17 @@ void JobTest::listRecursive()
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
              SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
-    assert( ok );
+    VERIFY( ok );
     m_names.sort();
-    check( "listRecursive", m_names.join( "," ), ".,..,"
+    COMPARE( m_names.join( "," ).toLatin1(), QByteArray( ".,..,"
             "dirFromHome,dirFromHome/testfile,dirFromHome/testlink,dirFromHome_copied,"
             "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/dirFromHome/testlink,"
             "dirFromHome_copied/testfile,dirFromHome_copied/testlink,"
-            "fileFromHome,fileFromHome_copied" );
+            "fileFromHome,fileFromHome_copied" ) );
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 {
-    ///////// TEST CODE FOR FUTURE KIO API
-
-    typedef QHash<uint, QVariant> UDSEntry4;
-
-    UDSEntry4 entry;
-    // slave code
-    entry[KIO::UDS_NAME] = "name";
-    entry[KIO::UDS_SIZE] = 123456;
-    entry[KIO::UDS_MODIFICATION_TIME] = QDateTime::currentDateTime();
-
-    // app code
-    QString displayName = entry.value( KIO::UDS_NAME ).toString();
-    KURL url = entry.value( KIO::UDS_URL ).toString();
-
-    typedef QList<UDSEntry4> UDSEntryList4;
-
-    UDSEntryList4 lst4;
-    for( UDSEntryList4::ConstIterator it = lst4.begin(); it != lst4.end(); ++it ) {
-        QString displayName = entry.value( KIO::UDS_NAME ).toString();
-        KURL url = entry.value( KIO::UDS_URL ).toString();
-    }
-
-
-
-
-
-    ////
     for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
         QString displayName;
@@ -488,6 +419,165 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
         }
         m_names.append( displayName );
     }
+}
+
+void JobTest::newApiPerformance()
+{
+    const QDateTime now = QDateTime::currentDateTime();
+    const time_t now_time_t = now.toTime_t();
+    const int iterations = 3000000;
+    const QString nameStr = QString::fromLatin1( "name" );
+
+    /*
+      This is to compare the old list-of-lists API vs a QHash-based API
+      in terms of performance.
+
+      The number of atoms and their type map to what kio_file would put in
+      for any normal file.
+
+      The lookups are done for two atoms that are present, and for one that is not.
+
+      The results are .... not too good right now.
+
+    */
+
+    /// Old API
+    {
+        qDebug( "Timing old api..." );
+
+        // Slave code
+        time_t start = time(0);
+        KIO::UDSEntry entry;
+        for (int i = 0; i < iterations; ++i) {
+            entry.clear();
+            KIO::UDSAtom atom;
+            atom.m_uds = KIO::UDS_NAME;
+            atom.m_str = nameStr;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_SIZE;
+            atom.m_long = 123456;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_MODIFICATION_TIME;
+            atom.m_long = now_time_t;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_ACCESS_TIME;
+            atom.m_long = now_time_t;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_FILE_TYPE;
+            atom.m_long = S_IFREG;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_ACCESS;
+            atom.m_long = 0644;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_USER;
+            atom.m_str = nameStr;
+            entry.append( atom );
+            atom.m_uds = KIO::UDS_GROUP;
+            atom.m_str = nameStr;
+            entry.append( atom );
+        }
+        qDebug("Old API: slave code: %ld", time(0) - start);
+
+        COMPARE( entry.count(), 8 );
+
+        start = time(0);
+
+        // App code
+
+        QString displayName;
+        KIO::filesize_t size;
+        KURL url;
+
+        for (int i = 0; i < iterations; ++i) {
+            KIO::UDSEntry::ConstIterator it2 = entry.begin();
+            for( ; it2 != entry.end(); it2++ ) {
+                switch ((*it2).m_uds) {
+                case KIO::UDS_NAME:
+                    displayName = (*it2).m_str;
+                    break;
+                case KIO::UDS_URL:
+                    url = (*it2).m_str;
+                    break;
+                case KIO::UDS_SIZE:
+                    size = (*it2).m_long;
+                    break;
+                }
+            }
+        }
+
+        qDebug("Old API: app code: %ld", time(0) - start);
+
+        COMPARE( size, 123456ULL );
+        COMPARE( displayName, QString::fromLatin1( "name" ) );
+        VERIFY( url.isEmpty() );
+    }
+
+    ///////// TEST CODE FOR FUTURE KIO API
+
+
+    ////
+
+    typedef QHash<uint, QVariant> UDSEntry4;
+
+    {
+        qDebug( "Timing new api..." );
+
+        // Slave code
+        time_t start = time(0);
+        UDSEntry4 entry;
+        for (int i = 0; i < iterations; ++i) {
+            entry.clear();
+            entry[KIO::UDS_NAME] = nameStr;
+            entry[KIO::UDS_SIZE] = 123456;
+            entry[KIO::UDS_MODIFICATION_TIME] = now;
+            entry[KIO::UDS_ACCESS_TIME] = now;
+            entry[KIO::UDS_FILE_TYPE] = S_IFREG;
+            entry[KIO::UDS_ACCESS] = 0644;
+            entry[KIO::UDS_USER] = nameStr;
+            entry[KIO::UDS_GROUP] = nameStr;
+        }
+
+        qDebug("New API: slave code: %ld", time(0) - start);
+
+        COMPARE( entry.count(), 8 );
+
+        start = time(0);
+
+        // App code
+
+        // Normally the code would look like this, but let's change it to time it like the old api
+        /*
+        QString displayName = entry.value( KIO::UDS_NAME ).toString();
+        KURL url = entry.value( KIO::UDS_URL ).toString();
+        KIO::filesize_t size = entry.value( KIO::UDS_SIZE ).toULongLong();
+        */
+
+        QString displayName;
+        KIO::filesize_t size;
+        KURL url;
+
+        for (int i = 0; i < iterations; ++i) {
+            displayName = entry.value( KIO::UDS_NAME ).toString();
+            url = entry.value( KIO::UDS_URL ).toString();
+            size = entry.value( KIO::UDS_SIZE ).toULongLong();
+        }
+
+        qDebug("New API: app code: %ld", time(0) - start);
+
+        COMPARE( size, 123456ULL );
+        COMPARE( displayName, QString::fromLatin1( "name" ) );
+        VERIFY( url.isEmpty() );
+
+        /*
+        typedef QList<UDSEntry4> UDSEntryList4;
+        UDSEntryList4 lst4;
+        for( UDSEntryList4::ConstIterator it = lst4.begin(); it != lst4.end(); ++it ) {
+            QString displayName = entry.value( KIO::UDS_NAME ).toString();
+            KURL url = entry.value( KIO::UDS_URL ).toString();
+        }
+        */
+    }
+
 }
 
 #include "jobtest.moc"

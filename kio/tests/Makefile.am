@@ -69,7 +69,6 @@ dataprotocoltest_SOURCES = dataprotocoltest.cpp
 kprotocolinfotest_SOURCES = kprotocolinfotest.cpp
 ksycocaupdatetest_SOURCES = ksycocaupdatetest.cpp
 netaccesstest_SOURCES = netaccesstest.cpp
-jobtest_SOURCES = jobtest.cpp
 kurlcompletiontest_SOURCES = kurlcompletiontest.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
@@ -88,3 +87,5 @@ kmimetypetest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
 kbookmarktest_SOURCES = kbookmarktest.cpp
 kbookmarktest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
 
+jobtest_SOURCES = jobtest.cpp
+jobtest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la

@@ -30,12 +30,11 @@ class JobTest : public QObject
 
 public:
     JobTest() {}
-    void setup();
-    void runAll();
-    void cleanup();
 
+private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void get();
-    void twoGets();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
     void copyFileToOtherPartition();
@@ -48,10 +47,12 @@ public:
     void moveDirectoryToOtherPartition();
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
+    void newApiPerformance();
 
 signals:
     void exitLoop();
-private slots:
+
+protected slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KIO::Job* );
 
