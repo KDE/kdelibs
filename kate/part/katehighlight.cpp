@@ -3215,7 +3215,7 @@ void KateHlManager::getDefaults(uint schema, KateAttributeList &list)
   list.append(others);
 
   KateAttribute* alert = new KateAttribute();
-  alert->setTextColor(Qt::white);
+  alert->setTextColor(Qt::black);
   alert->setSelectedTextColor( QColor::QColor("#FCC") );
   alert->setBold(true);
   alert->setBGColor( QColor::QColor("#FCC") );
