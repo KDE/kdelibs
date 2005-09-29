@@ -27,7 +27,7 @@
 class QMimeData;
 class QDrag;
 /**
- * Drag-and-drop and clipboard mimedata manipulation for QColor objecbs. The according MIME type
+ * Drag-and-drop and clipboard mimedata manipulation for QColor objects. The according MIME type
  * is set to application/x-color.
  *
  * See the Qt drag'n'drop documentation.
@@ -37,22 +37,22 @@ public:
     /**
      * Sets the color and text representation fields for the specified color in the mimedata object
      */
-    static void setInMimeData(QMimeData *mimeData,const QColor&);
-    
+    static void setInMimeData(QMimeData *mimeData,const QColor& color);
+
     /**
      * Returns true if the MIME data @p mimeData contains a color object.
      */
     static bool canDecode(const QMimeData *mimeData);
-    
+
     /**
      * Decodes the MIME data @p mimeData and puts the resulting color into @p col.
      */
-     
+
     static QColor fromMimeData(const QMimeData *mimeData);
     /**
      * creates a color drag object. Either you have to start this drag or delete it
      */
-    static QDrag* createDrag( const QColor&,QWidget *dragsource);
+    static QDrag* createDrag( const QColor& color,QWidget *dragsource);
 };
 
 
