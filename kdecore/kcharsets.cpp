@@ -107,7 +107,7 @@ static const char* const charsets_for_encoding[] = {
     "sjis",                  "eucjp","unicode","iso8859-1", 0,
     "jis7",                  "eucjp","unicode","iso8859-1", 0,
     "big5",                  "big5","unicode","iso8859-1", 0,
-    "gbk",                   "gb2312.1980-0","gbk-0","unicode","iso8859-1", 0,
+    "gbk",                   "gb2312.1980-0","gbk-0","unicode","iso8859-1", "gb_2312-80", 0,
     "gb18030",               "gb18030.2000-1", "gb18030.2000-0", "unicode", "gbk-0", "gb2313.1980-0", "iso8859-1", 0,
     "gb2312",                "gb2312.1980-0","unicode","iso8859-1", 0,
     "euckr",                 "euckr","unicode","iso8859-1", 0,
@@ -215,6 +215,7 @@ static struct Builtin
     { "gb18030.2000-0", "gb18030" },
     { "gbk-0", "gbk" },
     { "gb2312.1980-0", "gbk" },
+    { "gb_2312-80", "gbk" },/* this one is not official, but MS is using it :/ */
     { "x-euc-kr", "euckr" },
     { "jisx0201.1976-0", "eucjp" },
     { "jisx0208.1983-0", "eucjp" },
