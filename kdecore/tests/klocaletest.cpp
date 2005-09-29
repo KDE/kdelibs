@@ -141,6 +141,13 @@ int main( int argc, char ** argv )
   num = KGlobal::locale()->readNumber( "1.12345678912", &ok );
         qDebug( "%s", QString::number( num, 'g', 12 ).latin1() ); // warning this is the only way to see all decimals
         check("readNumber(1.12345678912)",ok && num==1.12345678912?"yes":"no","yes");
+  // bug 95511
+  KLocale locale(*KGlobal::locale());
+  locale.setCurrencySymbol("$$");
+  num = locale.readMoney("1,234,567.89$$", &ok);
+  check("readMoney(1,234,567.89$$)",ok?"yes":"no","yes");
+  num = locale.readMoney("-1,234,567.89$$", &ok);
+  check("readMoney(-1,234,567.89$$)",ok?"yes":"no","yes");
 
   QDate date;
   date.setYMD( 2002, 5, 3 );

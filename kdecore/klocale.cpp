@@ -1476,11 +1476,12 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   QString str = _str.stripWhiteSpace();
   bool neg = false;
   bool currencyFound = false;
+  QString symbol = currencySymbol();
   // First try removing currency symbol from either end
-  int pos = str.find(currencySymbol());
-  if ( pos == 0 || pos == (int) str.length()-1 )
+  int pos = str.find(symbol);
+  if ( pos == 0 || pos == (int) str.length()-symbol.length() )
     {
-      str.remove(pos,currencySymbol().length());
+      str.remove(pos,symbol.length());
       str = str.stripWhiteSpace();
       currencyFound = true;
     }
@@ -1515,10 +1516,10 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   // it already (because of the negative sign being in the way).
   if ( !currencyFound )
     {
-      pos = str.find(currencySymbol());
-      if ( pos == 0 || pos == (int) str.length()-1 )
+      pos = str.find(symbol);
+      if ( pos == 0 || pos == (int) str.length()-symbol.length() )
         {
-	  str.remove(pos,currencySymbol().length());
+	  str.remove(pos,symbol.length());
 	  str = str.stripWhiteSpace();
         }
     }
