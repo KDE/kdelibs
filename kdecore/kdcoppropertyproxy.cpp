@@ -202,7 +202,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
     {
       DEMARSHAL( Cursor, QCursor )
       DEMARSHAL( Bitmap, QBitmap )
-      DEMARSHAL( PointArray, Q3PointArray )
+      DEMARSHAL( PointArray, QPolygon )
       DEMARSHAL( Region, QRegion )
       DEMARSHAL( List, ListType )
       DEMARSHAL( Map, MapType )
