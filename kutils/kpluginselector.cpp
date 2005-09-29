@@ -62,7 +62,7 @@
 #include <qstringlist.h>
 #include <QList>
 #include "kcmoduleproxy.h"
-
+#include <QStackedWidget>
 /*
     QCheckListViewItem that holds a pointer to the KPluginInfo object.
     Used in the tooltip code to access additional fields
@@ -106,7 +106,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     QMap<Q3CheckListItem*, KPluginInfo*> pluginInfoMap;
 
     KListView     * listview;
-    Q3WidgetStack * widgetstack;
+    QStackedWidget * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
 
@@ -498,7 +498,7 @@ class KPluginSelector::KPluginSelectorPrivate
 
         Q3Frame * frame;
         KTabWidget * tabwidget;
-        Q3WidgetStack * widgetstack;
+        QStackedWidget * widgetstack;
         QList<KPluginSelectionWidget *> pswidgets;
         bool hideconfigpage;
 };
@@ -516,7 +516,7 @@ KPluginSelector::KPluginSelector( QWidget * parent )
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
-    d->widgetstack = new Q3WidgetStack( splitter, "KPluginSelector Config Pages" );
+    d->widgetstack = new QStackedWidget( splitter/*, "KPluginSelector Config Pages"*/ );
     d->widgetstack->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
 
@@ -526,7 +526,7 @@ KPluginSelector::KPluginSelector( QWidget * parent )
     label->setAlignment( Qt::AlignCenter );
     label->setMinimumSize( 200, 200 );
 
-    d->widgetstack->addWidget( label, 1 );
+    d->widgetstack->insertWidget( 1,label );
 
     configPage( 1 );
 }
@@ -623,7 +623,7 @@ void KPluginSelector::addPlugins( const QList<KPluginInfo*> & plugininfos,
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
-Q3WidgetStack * KPluginSelector::widgetStack()
+QStackedWidget * KPluginSelector::widgetStack()
 {
     return d->widgetstack;
 }
@@ -642,14 +642,14 @@ inline void KPluginSelector::configPage( int id )
     else
         d->widgetstack->show();
 
-    d->widgetstack->raiseWidget( id );
+    d->widgetstack->setCurrentIndex( id );
 }
 
 void KPluginSelector::setShowEmptyConfigPage( bool show )
 {
     d->hideconfigpage = !show;
     if( d->hideconfigpage )
-        if( d->widgetstack->id( d->widgetstack->visibleWidget() ) == 1 )
+        if( d->widgetstack->currentIndex () == 1 )
             d->widgetstack->hide();
 }
 
@@ -682,7 +682,7 @@ void KPluginSelector::defaults()
     // not possible. (if the plugin has multiple KCMs they will be shown in a
     // tabwidget - defaults() will be called for all of them)
 
-    QWidget * pluginconfig = d->widgetstack->visibleWidget();
+    QWidget * pluginconfig = d->widgetstack->currentWidget ();
     KCModuleProxy * kcm = qobject_cast<KCModuleProxy *>( pluginconfig );
     if( kcm )
     {

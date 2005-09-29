@@ -30,7 +30,7 @@
 
 class KInstance;
 class KPluginInfo;
-class Q3WidgetStack;
+class QStackedWidget;
 class KConfig;
 class KConfigGroup;
 
@@ -190,7 +190,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *
          * @internal
          */
-        Q3WidgetStack * widgetStack();
+        QStackedWidget * widgetStack();
 
         /**
          * Show an info page in the widgetstack.
