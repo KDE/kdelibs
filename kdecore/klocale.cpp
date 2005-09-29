@@ -1375,11 +1375,13 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   QString str = _str.trimmed();
   bool neg = false;
   bool currencyFound = false;
+  QString symbol = currencySymbol();
+
   // First try removing currency symbol from either end
-  int pos = str.indexOf(currencySymbol());
-  if ( pos == 0 || pos == (int) str.length()-1 )
+  int pos = str.indexOf(symbol);
+  if ( pos == 0 || pos == (int) str.length()-symbol.length() )
     {
-      str.remove(pos,currencySymbol().length());
+      str.remove(pos,symbol.length());
       str = str.trimmed();
       currencyFound = true;
     }
@@ -1414,10 +1416,10 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   // it already (because of the negative sign being in the way).
   if ( !currencyFound )
     {
-      pos = str.indexOf(currencySymbol());
-      if ( pos == 0 || pos == (int) str.length()-1 )
+      pos = str.indexOf(symbol);
+      if ( pos == 0 || pos == (int) str.length()-symbol.length() )
         {
-	  str.remove(pos,currencySymbol().length());
+	  str.remove(pos,symbol.length());
 	  str = str.trimmed();
         }
     }
@@ -1602,7 +1604,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       break;
         }
       }
-    }
+  }
 
     /* for a match, we should reach the end of both strings, not just one of
        them */
@@ -1621,12 +1623,10 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 
       return result;
     }
-    else
-    {
-      if (ok) *ok = false;
-      return QDate(); // invalid date
-    }
-  }
+
+  if (ok) *ok = false;
+  return QDate(); // invalid date
+}
 
   QTime KLocale::readTime(const QString &intstr, bool *ok) const
   {

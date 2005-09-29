@@ -173,4 +173,25 @@ KLocaleTest::readTime()
 	VERIFY(ok);
 }
 
+void
+KLocaleTest::bug95511()
+{
+	KLocale locale(*KGlobal::locale());
+	bool ok=false;
+
+	locale.setCurrencySymbol("$$");
+	COMPARE(locale.readMoney("1,234,567,890.12$$", &ok), 1234567890.12);
+	VERIFY(ok);
+	COMPARE(locale.readMoney("-1,234,567,890.12$$", &ok), -1234567890.12);
+	VERIFY(ok);
+
+	locale.setCurrencySymbol("dollars");
+	COMPARE(locale.readMoney("12,345,678,901,234,567 dollars", &ok),
+		12345678901234567.00);
+	VERIFY(ok);
+	COMPARE(locale.readMoney("-12,345,678,901.00 dollars", &ok),
+		-12345678901.00);
+	VERIFY(ok);
+}
+
 QTTEST_KDEMAIN(KLocaleTest, NoGUI)

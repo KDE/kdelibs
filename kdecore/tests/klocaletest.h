@@ -33,6 +33,7 @@ private slots:
 	void readDate();
 	void formatTime();
 	void readTime();
+	void bug95511();
 };
 
 #endif // KLOCALETEST_H
