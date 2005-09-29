@@ -421,7 +421,7 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
     }
 }
 
-static void fillOldUDSEntry( KIO::UDSEntry& entry, const time_t& now_time_t, const QString& nameStr )
+static void fillOldUDSEntry( KIO::UDSEntry& entry, time_t now_time_t, const QString& nameStr )
 {
     KIO::UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
@@ -465,11 +465,40 @@ static void fillNewUDSEntry( UDSEntry4& entry, const QDateTime& now, const QStri
     entry.insert( KIO::UDS_GROUP, nameStr );
 }
 
+// Which one is used depends on UDS_STRING vs UDS_LONG
+struct UDSAtom4 // can't be a union due to qstring...
+{
+  UDSAtom4() {} // for QHash
+  UDSAtom4( const QString& s ) : m_str( s ) {}
+  UDSAtom4( long long l ) : m_long( l ) {}
+
+  QString m_str;
+  long long m_long;
+};
+
+// Another possibility, to save on QVariant costs
+typedef QHash<uint, UDSAtom4> UDSEntryQS;
+
+static void fillQHashStructEntry( UDSEntryQS& entry, time_t now_time_t, const QString& nameStr )
+{
+    entry.insert( KIO::UDS_NAME, nameStr );
+    entry.insert( KIO::UDS_SIZE, 123456 );
+    entry.insert( KIO::UDS_MODIFICATION_TIME, now_time_t );
+    entry.insert( KIO::UDS_ACCESS_TIME, now_time_t );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDS_USER, nameStr );
+    entry.insert( KIO::UDS_GROUP, nameStr );
+}
+
+
 void JobTest::newApiPerformance()
 {
     const QDateTime now = QDateTime::currentDateTime();
     const time_t now_time_t = now.toTime_t();
-    const int iterations = 3000000;
+    // use 30000 for callgrind, at least 100 times that for timing-based
+    const int iterations = 30000 * 100;
+    const int lookupIterations = 5 * iterations;
     const QString nameStr = QString::fromLatin1( "name" );
 
     /*
@@ -480,8 +509,6 @@ void JobTest::newApiPerformance()
       for any normal file.
 
       The lookups are done for two atoms that are present, and for one that is not.
-
-      The results are .... not too good right now.
 
     */
 
@@ -509,7 +536,7 @@ void JobTest::newApiPerformance()
         KIO::filesize_t size;
         KURL url;
 
-        for (int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < lookupIterations; ++i) {
             KIO::UDSEntry::ConstIterator it2 = entry.begin();
             for( ; it2 != entry.end(); it2++ ) {
                 switch ((*it2).m_uds) {
@@ -539,7 +566,7 @@ void JobTest::newApiPerformance()
     ////
 
     {
-        qDebug( "Timing new api..." );
+        qDebug( "Timing new QHash+QVariant api..." );
 
         // Slave code
         time_t start = time(0);
@@ -548,7 +575,7 @@ void JobTest::newApiPerformance()
             fillNewUDSEntry( entry, now, nameStr );
         }
 
-        qDebug("New API: slave code: %ld", time(0) - start);
+        qDebug("QHash+QVariant API: slave code: %ld", time(0) - start);
 
         UDSEntry4 entry;
         fillNewUDSEntry( entry, now, nameStr );
@@ -569,7 +596,7 @@ void JobTest::newApiPerformance()
         KIO::filesize_t size;
         KURL url;
 
-        for (int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < lookupIterations; ++i) {
 
             // For a field that we assume to always be there
             displayName = entry.value( KIO::UDS_NAME ).toString();
@@ -585,7 +612,7 @@ void JobTest::newApiPerformance()
                 size = it.value().toULongLong();
         }
 
-        qDebug("New API: app code: %ld", time(0) - start);
+        qDebug("QHash+QVariant API: app code: %ld", time(0) - start);
 
         COMPARE( size, 123456ULL );
         COMPARE( displayName, QString::fromLatin1( "name" ) );
@@ -599,6 +626,53 @@ void JobTest::newApiPerformance()
             KURL url = entry.value( KIO::UDS_URL ).toString();
         }
         */
+    }
+
+    {
+        qDebug( "Timing new QHash+struct api..." );
+
+        // Slave code
+        time_t start = time(0);
+        for (int i = 0; i < iterations; ++i) {
+            UDSEntryQS entry;
+            fillQHashStructEntry( entry, now_time_t, nameStr );
+        }
+
+        qDebug("QHash+struct API: slave code: %ld", time(0) - start);
+
+        UDSEntryQS entry;
+        fillQHashStructEntry( entry, now_time_t, nameStr );
+        COMPARE( entry.count(), 8 );
+
+        start = time(0);
+
+        // App code
+
+        QString displayName;
+        KIO::filesize_t size;
+        KURL url;
+
+        for (int i = 0; i < lookupIterations; ++i) {
+
+            // For a field that we assume to always be there
+            displayName = entry.value( KIO::UDS_NAME ).m_str;
+
+            // For a field that might not be there
+            UDSEntryQS::const_iterator it = entry.find( KIO::UDS_URL );
+            const UDSEntryQS::const_iterator end = entry.end();
+            if ( it != end )
+                 url = it.value().m_str;
+
+            it = entry.find( KIO::UDS_SIZE );
+            if ( it != end )
+                size = it.value().m_long;
+        }
+
+        qDebug("QHash+struct API: app code: %ld", time(0) - start);
+
+        COMPARE( size, 123456ULL );
+        COMPARE( displayName, QString::fromLatin1( "name" ) );
+        VERIFY( url.isEmpty() );
     }
 
 }
