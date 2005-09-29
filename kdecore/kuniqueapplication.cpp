@@ -456,7 +456,7 @@ KUniqueApplication::processDelayed()
 
 bool KUniqueApplication::restoringSession()
 {
-  return d->firstInstance && isRestored();
+  return d->firstInstance && isSessionRestored();
 }
 
 int KUniqueApplication::newInstance()
