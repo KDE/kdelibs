@@ -217,7 +217,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    const Q3CString lang = args->getOption("lang");
+    const DCOPCString lang = args->getOption("lang");
     if( !lang.isNull() )
         KGlobal::locale()->setLanguage(lang);
 
