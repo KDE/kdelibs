@@ -421,6 +421,50 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
     }
 }
 
+static void fillOldUDSEntry( KIO::UDSEntry& entry, const time_t& now_time_t, const QString& nameStr )
+{
+    KIO::UDSAtom atom;
+    atom.m_uds = KIO::UDS_NAME;
+    atom.m_str = nameStr;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_SIZE;
+    atom.m_long = 123456;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_MODIFICATION_TIME;
+    atom.m_long = now_time_t;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_ACCESS_TIME;
+    atom.m_long = now_time_t;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFREG;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_ACCESS;
+    atom.m_long = 0644;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_USER;
+    atom.m_str = nameStr;
+    entry.append( atom );
+    atom.m_uds = KIO::UDS_GROUP;
+    atom.m_str = nameStr;
+    entry.append( atom );
+}
+
+// QHash or QMap? doesn't seem to make much difference.
+typedef QHash<uint, QVariant> UDSEntry4;
+
+static void fillNewUDSEntry( UDSEntry4& entry, const QDateTime& now, const QString& nameStr )
+{
+    entry.insert( KIO::UDS_NAME, nameStr );
+    entry.insert( KIO::UDS_SIZE, 123456 );
+    entry.insert( KIO::UDS_MODIFICATION_TIME, now );
+    entry.insert( KIO::UDS_ACCESS_TIME, now );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDS_USER, nameStr );
+    entry.insert( KIO::UDS_GROUP, nameStr );
+}
+
 void JobTest::newApiPerformance()
 {
     const QDateTime now = QDateTime::currentDateTime();
@@ -429,7 +473,7 @@ void JobTest::newApiPerformance()
     const QString nameStr = QString::fromLatin1( "name" );
 
     /*
-      This is to compare the old list-of-lists API vs a QHash-based API
+      This is to compare the old list-of-lists API vs a QMap/QHash-based API
       in terms of performance.
 
       The number of atoms and their type map to what kio_file would put in
@@ -447,37 +491,14 @@ void JobTest::newApiPerformance()
 
         // Slave code
         time_t start = time(0);
-        KIO::UDSEntry entry;
         for (int i = 0; i < iterations; ++i) {
-            entry.clear();
-            KIO::UDSAtom atom;
-            atom.m_uds = KIO::UDS_NAME;
-            atom.m_str = nameStr;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_SIZE;
-            atom.m_long = 123456;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_MODIFICATION_TIME;
-            atom.m_long = now_time_t;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_ACCESS_TIME;
-            atom.m_long = now_time_t;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_FILE_TYPE;
-            atom.m_long = S_IFREG;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_ACCESS;
-            atom.m_long = 0644;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_USER;
-            atom.m_str = nameStr;
-            entry.append( atom );
-            atom.m_uds = KIO::UDS_GROUP;
-            atom.m_str = nameStr;
-            entry.append( atom );
+            KIO::UDSEntry entry;
+            fillOldUDSEntry( entry, now_time_t, nameStr );
         }
         qDebug("Old API: slave code: %ld", time(0) - start);
 
+        KIO::UDSEntry entry;
+        fillOldUDSEntry( entry, now_time_t, nameStr );
         COMPARE( entry.count(), 8 );
 
         start = time(0);
@@ -517,28 +538,20 @@ void JobTest::newApiPerformance()
 
     ////
 
-    typedef QHash<uint, QVariant> UDSEntry4;
-
     {
         qDebug( "Timing new api..." );
 
         // Slave code
         time_t start = time(0);
-        UDSEntry4 entry;
         for (int i = 0; i < iterations; ++i) {
-            entry.clear();
-            entry[KIO::UDS_NAME] = nameStr;
-            entry[KIO::UDS_SIZE] = 123456;
-            entry[KIO::UDS_MODIFICATION_TIME] = now;
-            entry[KIO::UDS_ACCESS_TIME] = now;
-            entry[KIO::UDS_FILE_TYPE] = S_IFREG;
-            entry[KIO::UDS_ACCESS] = 0644;
-            entry[KIO::UDS_USER] = nameStr;
-            entry[KIO::UDS_GROUP] = nameStr;
+            UDSEntry4 entry;
+            fillNewUDSEntry( entry, now, nameStr );
         }
 
         qDebug("New API: slave code: %ld", time(0) - start);
 
+        UDSEntry4 entry;
+        fillNewUDSEntry( entry, now, nameStr );
         COMPARE( entry.count(), 8 );
 
         start = time(0);
