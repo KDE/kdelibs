@@ -147,7 +147,13 @@ QDomElement Provider::createDomElement( QDomDocument &doc, QDomElement &parent )
 ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
   mParentWidget( parentWidget )
 {
-  mProviders.setAutoDelete( true );
+  //mProviders.setAutoDelete( true );
+}
+
+ProviderLoader::~ProviderLoader()
+{
+		qDeleteAll(mProviders);
+		mProviders.clear();
 }
 
 void ProviderLoader::load( const QString &type, const QString &providersList )

@@ -155,8 +155,8 @@ void DownloadDialog::slotProviders(Provider::List *list)
   Provider *p;
   /*QFrame *frame;*/
 
-  for(p = list->first(); p; p = list->next())
-  {
+  for (int i = 0; i < list->size(); ++i) {
+	p = list->at(i);
     kdDebug() << "++ provider ++ " << p->name() << endl;
 
     if(!m_filter.isEmpty())

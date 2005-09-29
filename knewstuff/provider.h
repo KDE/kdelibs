@@ -45,7 +45,7 @@ namespace KNS {
 class KDE_EXPORT Provider
 {
   public:
-    typedef Q3PtrList<Provider> List;
+    typedef QList<Provider *> List;
 
     /**
      * Constructor.
@@ -170,7 +170,7 @@ class KDE_EXPORT ProviderLoader : public QObject
      * @param parentWidget the parent widget
      */
     ProviderLoader( QWidget *parentWidget );
-
+	~ProviderLoader();
     /**
      * Starts asynchronously loading the list of providers of the
      * specified type.

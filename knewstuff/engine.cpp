@@ -104,7 +104,8 @@ void Engine::getMetaInformation( Provider::List *providers )
   mDownloadDialog->clear();
 
   Provider *p;
-  for ( p = providers->first(); p; p = providers->next() ) {
+  for (int i = 0; i < providers->size(); ++i) {
+	p = providers->at(i);
     if ( p->downloadUrl().isEmpty() ) continue;
 
     KIO::TransferJob *job = KIO::get( p->downloadUrl() );
@@ -252,8 +253,9 @@ void Engine::selectUploadProvider( Provider::List *providers )
   mProviderDialog->show();
   mProviderDialog->raise();
 
-  for( Provider *p = providers->first(); p; p = providers->next() ) {
-    mProviderDialog->addProvider( p );
+  for (int i = 0; i < providers->size(); ++i) {
+		  Provider *p = providers->at(i);
+		mProviderDialog->addProvider( p );
   }
 }
 
