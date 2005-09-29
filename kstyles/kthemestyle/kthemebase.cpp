@@ -1018,8 +1018,8 @@ KThemePixmap* KThemeBase::gradient( int w, int h, WidgetType widget ) const
                 {
                     int bc = bevelContrast( widget );
                     // want single increments, not factors like light()/dark()
-                    lc.setRgb( lc.Qt::red() - bc, lc.Qt::green() - bc, lc.Qt::blue() - bc );
-                    hc.setRgb( hc.Qt::red() + bc, hc.Qt::green() + bc, hc.Qt::blue() + bc );
+                    lc.setRgb( lc.red() - bc, lc.green() - bc, lc.blue() - bc );
+                    hc.setRgb( hc.red() + bc, hc.green() + bc, hc.blue() + bc );
                 }
                 KPixmapEffect::gradient( *pixmaps[ widget ],
                                          lc, hc,
