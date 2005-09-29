@@ -896,7 +896,7 @@ QString KResolver::localHostName()
   if (name.isEmpty())
     return QLatin1String("localhost");
 
-  if (name.find('.') == -1)
+  if (name.indexOf('.') == -1)
     {
       // not fully qualified
       // must resolve
@@ -921,7 +921,7 @@ static QStringList *KResolver_initIdnDomains()
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
      kde_use_idn = "at:br:ch:cn:de:dk:kr:jp:li:no:se:tw";
-  return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).toLower()));
+  return new QStringList(QString::fromLatin1(kde_use_idn).toLower().split(':'));
 }
 
 // implement the ToAscii function, as described by IDN documents
@@ -1089,7 +1089,7 @@ static QByteArray ToASCII(const QString& label)
   delete [] ucs4;
   return retval;
 #else
-  return label.latin1();
+  return label.toLatin1();
 #endif
 }
 

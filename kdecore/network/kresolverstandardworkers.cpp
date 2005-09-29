@@ -111,7 +111,7 @@ void KBlacklistWorker::loadBlacklist()
 	continue;
 
       QTextStream stream(&f);
-      stream.setEncoding(QTextStream::Latin1);
+      stream.setCodec("latin1");
       for (QString line = stream.readLine(); !line.isNull();
 	   line = stream.readLine())
 	{
@@ -982,15 +982,16 @@ bool KGetAddrinfoWorker::run()
   // keep track of any Unix-domain sockets
 
   bool seen_unix = false;
-  KResolverResults::Iterator it = results.begin();
-  for ( ; it != results.end(); )
+  int i = 0;
+  while ( i < results.count() )
     {
-      if ((*it).family() == AF_UNIX)
+      const KResolverEntry& res = results[i];
+      if (res.family() == AF_UNIX)
 	seen_unix = true;
-      if (!wantThis((*it).family()))
-	it = results.remove(it);
+      if (!wantThis(res.family()))
+	results.removeAt(i);
       else
-	++it;
+	++i;
     }
 
   if (!seen_unix)
