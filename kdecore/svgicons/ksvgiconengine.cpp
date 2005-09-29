@@ -24,7 +24,7 @@
 #include <qimage.h>
 #include <qmatrix.h>
 #include <QVector>
-#include <Q3PointArray>
+#include <QPolygon>
 #include <q3ptrlist.h>
 
 #include <kcodecs.h>
@@ -149,15 +149,15 @@ public:
 		return stopArray->data();
 	}
 
-	Q3PointArray parsePoints(QString points)
+	QPolygon parsePoints(QString points)
 	{
 		if(points.isEmpty())
-			return Q3PointArray();
+			return QPolygon();
 
 		points = points.simplified();
 
 		if(points.contains(",,") || points.contains(", ,"))
-			return Q3PointArray();
+			return QPolygon();
 
 		points.replace(',', ' ');
 		points.replace('\r', QString::null);
@@ -167,7 +167,7 @@ public:
 
 		QStringList pointList = points.split(' ', QString::SkipEmptyParts);
 
-		Q3PointArray array(pointList.count() / 2);
+		QPolygon array(pointList.count() / 2);
 		int i = 0;
 
 		for(QStringList::Iterator it = pointList.begin(); it != pointList.end(); it++)
@@ -375,13 +375,13 @@ public:
 		}
 		else if(element.tagName() == "polyline")
 		{
-			Q3PointArray polyline = parsePoints(element.attribute("points"));
+			QPolygon polyline = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolyline(polyline);
 			return true;
 		}
 		else if(element.tagName() == "polygon")
 		{
-			Q3PointArray polygon = parsePoints(element.attribute("points"));
+			QPolygon polygon = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolygon(polygon);
 			return true;
 		}
