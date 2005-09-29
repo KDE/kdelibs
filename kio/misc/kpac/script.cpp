@@ -22,6 +22,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <cstring>
 
 #include <netdb.h>
 #include <sys/types.h>
