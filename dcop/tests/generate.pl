@@ -14,7 +14,7 @@ sub shell_header {
 	print SHELL "TEST_APP=\`$DCOP 'TestApp-*'\`\n";
 }
 sub shell_footer {
-	print SHELL "$DCOP $TEST_APP 'MainApplication-Interface' quit";
+	print SHELL "$DCOP $TEST_APP 'TestInterface' quit";
 }
 
 sub test_h_header {
@@ -35,6 +35,7 @@ class Test2;
 
 // this has to work too
 #include <qstring.h>
+#include <qapplication.h>
 
 
 
@@ -52,6 +53,7 @@ public:
     Test() : DCOPObject("TestInterface") {}
     ~Test();
 k_dcop:
+    void quit() { qApp->quit(); }
 
 END
 

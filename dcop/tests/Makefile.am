@@ -3,6 +3,7 @@ nothing:
 	@echo -e "dcop tests not run.\nRun make tests in the tests directory to make them"
 
 INCLUDES = $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 AM_LDFLAGS   = $(all_libraries)
 
 METASOURCES = AUTO
