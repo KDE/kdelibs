@@ -20,12 +20,10 @@
 
 #include <QVector>
 #include <QPolygon>
-#include <q3valuevector.h>
 #include <qstringlist.h>
 #include <qmatrix.h>
 #include <qregexp.h>
 #include <qimage.h>
-#include <q3dict.h>
 #include <qmap.h>
 #include <qdom.h>
 #include <qcolor.h>
@@ -71,8 +69,7 @@ public:
 		m_worldMatrix = new QMatrix();
 
 		// Create new image with alpha support
-		m_image = new QImage(width, height, 32);
-		m_image->setAlphaBuffer(true);
+		m_image = new QImage(width, height, QImage::Format_ARGB32 /*_Premultiplied?*/);
 
 		m_strokeWidth = 1.0;
 		m_strokeMiterLimit = 4;
@@ -568,11 +565,10 @@ public:
 				QDomElement newElement = m_linearGradientElementMap[linear];
 
 				// Saved 'old' attributes
-				Q3Dict<QString> refattrs;
-				refattrs.setAutoDelete(true);
+				QMap<QString, QString> refattrs;
 
 				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
-					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+					refattrs.insert(newElement.attributes().item(i).nodeName(), newElement.attributes().item(i).nodeValue());
 
 				// Copy attributes
 				if(!newElement.isNull())
@@ -590,9 +586,9 @@ public:
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
 
 				// Restore attributes
-				Q3DictIterator<QString> itr(refattrs);
-				for(; itr.current(); ++itr)
-					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+				QMap<QString,QString>::const_iterator itr = refattrs.begin();
+				for(; itr != refattrs.end(); ++itr)
+					newElement.setAttribute(itr.key(), itr.value());
 
 				return;
 			}
@@ -614,11 +610,10 @@ public:
 				QDomElement newElement = m_radialGradientElementMap[radial];
 
 				// Saved 'old' attributes
-				Q3Dict<QString> refattrs;
-				refattrs.setAutoDelete(true);
+				QMap<QString,QString> refattrs;
 
 				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
-					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+					refattrs.insert(newElement.attributes().item(i).nodeName(), newElement.attributes().item(i).nodeValue());
 
 				// Copy attributes
 				if(!newElement.isNull())
@@ -636,9 +631,9 @@ public:
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
 
 				// Restore attributes
-				Q3DictIterator<QString> itr(refattrs);
-				for(; itr.current(); ++itr)
-					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+				QMap<QString,QString>::const_iterator itr = refattrs.begin();
+				for(; itr != refattrs.end(); ++itr)
+					newElement.setAttribute(itr.key(), itr.value());
 
 				return;
 			}
@@ -2304,7 +2299,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 void KSVGIconPainter::drawImage(double x, double y, QImage &image)
 {
 	if(image.depth() != 32)
-		image = image.convertDepth(32);
+		image = image.convertToFormat( QImage::Format_ARGB32 );
 
 	double affine[6];
 	affine[0] = d->helper->m_worldMatrix->m11();
@@ -2776,7 +2771,7 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 
                 while(pos >= 0)
                 {
-                        pos = reg.search(subtransform[1], pos);
+                        pos = reg.indexIn(subtransform[1], pos);
                         if(pos != -1)
                         {
                                 params += reg.cap(1);

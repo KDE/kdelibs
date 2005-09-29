@@ -1,4 +1,5 @@
 INCLUDES = -I$(srcdir)/.. $(LIBART_CFLAGS) $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 noinst_LTLIBRARIES = libkdesvgicons.la
 

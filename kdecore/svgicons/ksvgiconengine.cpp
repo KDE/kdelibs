@@ -25,7 +25,7 @@
 #include <qmatrix.h>
 #include <QVector>
 #include <QPolygon>
-#include <q3ptrlist.h>
+#include <QList>
 
 #include <kcodecs.h>
 
@@ -204,17 +204,16 @@ public:
 	//	m_engine->painter()->setStrokeOpacity(255, true);
 
 		// Collect parent node's attributes
-		Q3PtrList<QDomNamedNodeMap> applyList;
-		applyList.setAutoDelete(true);
+		QList<QDomNamedNodeMap> applyList;
 
 		QDomNode shape = node.parentNode();
 		for(; !shape.isNull() ; shape = shape.parentNode())
-			applyList.prepend(new QDomNamedNodeMap(shape.attributes()));
+			applyList.prepend( shape.attributes() );
 
 		// Apply parent attributes
-		for(QDomNamedNodeMap *map = applyList.first(); map != 0; map = applyList.next())
+		for ( QList<QDomNamedNodeMap>::const_iterator apit = applyList.begin(), apend = applyList.end() ; apit != apend ; ++apit )
 		{
-			QDomNamedNodeMap attr = *map;
+			QDomNamedNodeMap attr = *apit;
 
 			for(unsigned int i = 0; i < attr.count(); i++)
 			{
