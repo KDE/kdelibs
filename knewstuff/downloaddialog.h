@@ -31,7 +31,7 @@ namespace KIO
 }
 
 class KListView;
-class Q3TextBrowser;
+class QTextBrowser;
 class QFrame;
 template<typename T> class Q3ValueList;
 
@@ -172,7 +172,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     ProviderLoader *m_loader;
     QString m_entryname;
     KListView *lv_r, *lv_d, *lv_l;
-    Q3TextBrowser *m_rt;
+    QTextBrowser *m_rt;
     QFrame *m_frame;
     Q3ListViewItem *m_entryitem;
     Q3PtrList<Entry> m_entries;
@@ -181,7 +181,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     int m_curtab;
     QMap<QWidget*, Q3ValueList<KListView*>* > m_map;
     QMap<QWidget*, Provider*> m_providers;
-    QMap<QWidget*, Q3TextBrowser*> m_rts;
+    QMap<QWidget*, QTextBrowser*> m_rts;
     QMap<QWidget*, Q3ValueList<QPushButton*>* > m_buttons;
     QMap<KIO::Job*, Provider*> m_jobs;
     QMap<KIO::Job*, QString> m_data;

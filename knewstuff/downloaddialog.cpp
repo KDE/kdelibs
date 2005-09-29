@@ -43,6 +43,7 @@
 #include <qlabel.h>
 #include <q3textbrowser.h>
 #include <qtimer.h> // hack
+#include <QTextBrowser>
 
 using namespace KNS;
 
@@ -173,7 +174,7 @@ void DownloadDialog::addProvider(Provider *p)
   KTabCtl *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;
-  Q3TextBrowser *rt;
+  QTextBrowser *rt;
   QString tmp;
   int ret;
   QPixmap pix;
@@ -243,7 +244,7 @@ void DownloadDialog::addProvider(Provider *p)
   connect(d->m_lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
   connect(d->m_lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
 
-  rt = new Q3TextBrowser(frame);
+  rt = new QTextBrowser(frame);
   rt->setMinimumWidth(150);
 
   QPushButton *in = new QPushButton(i18n("Install"), frame);
