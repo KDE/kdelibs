@@ -16,23 +16,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLOCALETEST_H
-#define KLOCALETEST_H
+#ifndef KMACROEXPANDERTEST_H
+#define KMACROEXPANDERTEST_H
 
 #include <qobject.h>
 
-class KLocaleTest : public QObject
+class KMacroExpanderTest : public QObject
 {
 	Q_OBJECT
+
 private slots:
-	void initTestCase();
-	void formatNumbers();
-	void formatNumberStrings();
-	void readNumber();
-	void formatDate();
-	void readDate();
-	void formatTime();
-	void readTime();
+	void expandMacros();
+	void expandMacrosShellQuote();
+	void expandMacrosSubClass();
 };
 
-#endif // KLOCALETEST_H
+#endif // KMACROEXPANDERTEST_H

@@ -1,137 +1,182 @@
-#include <kmacroexpander.h>
+/* This file is part of the KDE libraries
+    Copyright (c) 2005 Thomas Braxton <brax108@cox.net>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
 
-#include <stdlib.h>
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
 
-bool check(QString txt, QString s, QString a, QString b)
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#include "kmacroexpandertest.h"
+#include "QtTest/qttest_kde.h"
+#include "kmacroexpander.h"
+#include "kmacroexpandertest.moc"
+
+class MyCExpander : public KCharMacroExpander
 {
-  if (a.isEmpty())
-     a = QString::null;
-  if (b.isEmpty())
-     b = QString::null;
-  if (a == b)
-    kdDebug() << txt << " (" << s << ") : '" << a << "' - ok" << endl;
-  else {
-    kdDebug() << txt << " (" << s << ") : got '" << a << "' but expected '" << b << "' - KO!" << endl;
-    exit(1);
-  }
-  return true;
-}
-
-class MyCExpander : public KCharMacroExpander {
+	QString exp;
 public:
-  MyCExpander() : KCharMacroExpander() {}
+	MyCExpander() : KCharMacroExpander(), exp("expanded") { }
 protected:
-  bool expandMacro(QChar chr, QStringList &ret)
-  {
-    if (chr == 'm') {
-      ret = QStringList(QString("expanded"));
-      return true;
-    }
-    return false;
-  }
+	bool expandMacro(QChar ch, QStringList& ret) {
+		if (ch == 'm') {
+			ret = QStringList(exp);
+			return true;
+		}
+		return false;
+	}
 };
 
-class MyWExpander : public KWordMacroExpander {
+class MyWExpander : public KWordMacroExpander
+{
+	QString exp;
 public:
-  MyWExpander() : KWordMacroExpander() {}
+	MyWExpander() : KWordMacroExpander(), exp("expanded") { }
 protected:
-  bool expandMacro(const QString &str, QStringList &ret)
-  {
-    if (str == "macro") {
-      ret = QStringList(QString("expanded"));
-      return true;
-    }
-    return false;
-  }
+	bool expandMacro(const QString& str, QStringList& ret) {
+		if (str == QString("macro")) {
+			ret = QStringList(exp);
+			return true;
+		}
+		return false;
+	}
 };
 
-int main(int argc, char *argv[])
+void
+KMacroExpanderTest::expandMacros()
 {
-  KCmdLineArgs::init(argc, argv, ":", "", "", "");
-  KApplication app(false,false);
-  QString s, s2;
+	QHash<QChar,QStringList> map;
+	QStringList list;
+	QString s;
 
-  QHash<QChar,QStringList> map1;
-  map1.insert('n', QStringList(QString("Restaurant \"Chew It\"")));
-  QStringList li;
-  li << "element1" << "'element2'";
-  map1.insert('l', li);
+	list << QString("Restaurant \"Chew It\"");
+	map.insert('n', list);
+	list.clear();
+	list << QString("element1") << QString("'element2'");
+	map.insert('l', list);
 
-  s = "text %l %n text";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, map1), "text element1 'element2' Restaurant \"Chew It\" text");
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map1), "text 'element1' ''\\''element2'\\''' 'Restaurant \"Chew It\"' text");
-  s = "text \"%l %n\" text";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map1), "text \"element1 'element2' Restaurant \\\"Chew It\\\"\" text");
+	s = "text %l %n text";
+	COMPARE(KMacroExpander::expandMacros(s, map),
+		QLatin1String("text element1 'element2' Restaurant \"Chew It\" text"));
+	s = "text \"%l %n\" text";
+	COMPARE(KMacroExpander::expandMacros(s, map),
+		QLatin1String("text \"element1 'element2' Restaurant \"Chew It\"\" text"));
 
-  QHash<QChar,QString> map;
-  map.insert('a', "%n");
-  map.insert('f', "filename.txt");
-  map.insert('u', "http://www.kde.org/index.html");
-  map.insert('n', "Restaurant \"Chew It\"");
+	QHash<QChar,QString> map2;
+	map2.insert('a', "%n");
+	map2.insert('f', "filename.txt");
+	map2.insert('u', "http://www.kde.org/index.html");
+	map2.insert('n', "Restaurant \"Chew It\"");
+	s = "Title: %a - %f - %u - %n - %%";
+	COMPARE(KMacroExpander::expandMacros(s, map2),
+		QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %"));
 
-  s = "Title: %a - %f - %u - %n - %%";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, map), "Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %");
+	QHash<QString,QString> smap;
+	smap.insert("foo", "%n");
+	smap.insert("file", "filename.txt");
+	smap.insert("url", "http://www.kde.org/index.html");
+	smap.insert("name", "Restaurant \"Chew It\"");
 
-  s = "kedit --caption %n %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption 'Restaurant \"Chew It\"' 'filename.txt'");
+	s = "Title: %foo - %file - %url - %name - %";
+	COMPARE(KMacroExpander::expandMacros(s, smap),
+		QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %"));
 
-  map.insert('n', "Restaurant 'Chew It'");
-  s = "kedit --caption %n %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption 'Restaurant '\\''Chew It'\\''' 'filename.txt'");
+	s = "Title: %{foo} - %{file} - %{url} - %{name} - %";
+	COMPARE(KMacroExpander::expandMacros(s, smap),
+		QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %"));
 
-  s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant 'Chew It'\" 'filename.txt'");
+	s = "Title: %foo-%file-%url-%name-%";
+	COMPARE(KMacroExpander::expandMacros(s, smap),
+		QLatin1String("Title: %n-filename.txt-http://www.kde.org/index.html-Restaurant \"Chew It\"-%"));
 
-  map.insert('n', "Restaurant \"Chew It\"");
-  s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'");
-
-  map.insert('n', "Restaurant $HOME");
-  s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\$HOME\" 'filename.txt'");
-
-  map.insert('n', "Restaurant `echo hello`");
-  s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\`echo hello\\`\" 'filename.txt'");
-
-  map.insert('n', "Restaurant `echo hello`");
-  s = "kedit --caption \"`echo %n`\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"$( echo 'Restaurant `echo hello`')\" 'filename.txt'");
-
-  QHash<QString,QString> smap;
-  smap.insert("foo", "%n");
-  smap.insert("file", "filename.txt");
-  smap.insert("url", "http://www.kde.org/index.html");
-  smap.insert("name", "Restaurant \"Chew It\"");
-
-  s = "Title: %foo - %file - %url - %name - %";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %");
-
-  s = "Title: %{foo} - %{file} - %{url} - %{name} - %";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %");
-
-  s = "Title: %foo-%file-%url-%name-%";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n-filename.txt-http://www.kde.org/index.html-Restaurant \"Chew It\"-%");
-
-  s = "Title: %{file} %{url";
-  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: filename.txt %{url");
-
-  MyCExpander mx1;
-  s = "subst %m but not %n equ %%";
-  s2 = s;
-  mx1.expandMacros(s2);
-  check( "MyCExpander::expandMacros", s, s2, "subst expanded but not %n equ %");
-
-  MyWExpander mx2;
-  s = "subst %macro but not %not equ %%";
-  s2 = s;
-  mx2.expandMacros(s2);
-  check( "MyWExpander::expandMacros", s, s2, "subst expanded but not %not equ %");
-
-  kdDebug() << endl << "Test OK!" << endl;
+	s = "Title: %{file} %{url";
+	COMPARE(KMacroExpander::expandMacros(s, smap),
+		QLatin1String("Title: filename.txt %{url"));
 }
 
+void
+KMacroExpanderTest::expandMacrosShellQuote()
+{
+	QHash<QChar,QStringList> map;
+	QStringList list;
+	QString s;
+
+	list << QString("Restaurant \"Chew It\"");
+	map.insert('n', list);
+	list.clear();
+	list << QString("element1") << QString("'element2'");
+	map.insert('l', list);
+
+	s = "text %l %n text";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map),
+		QLatin1String("text 'element1' ''\\''element2'\\''' 'Restaurant \"Chew It\"' text"));
+
+	s = "text \"%l %n\" text";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map),
+		QLatin1String("text \"element1 'element2' Restaurant \\\"Chew It\\\"\" text"));
+
+	QHash<QChar,QString> map2;
+	map2.insert('a', "%n");
+	map2.insert('f', "filename.txt");
+	map2.insert('u', "http://www.kde.org/index.html");
+	map2.insert('n', "Restaurant \"Chew It\"");
+
+	s = "Title: %a - %f - %u - %n - %%";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("Title: '%n' - 'filename.txt' - 'http://www.kde.org/index.html' - 'Restaurant \"Chew It\"' - '%'"));
+
+	s = "kedit --caption %n %f";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption 'Restaurant \"Chew It\"' 'filename.txt'"));
+
+	map2.insert('n', "Restaurant 'Chew It'");
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption 'Restaurant '\\''Chew It'\\''' 'filename.txt'"));
+
+	s = "kedit --caption \"%n\" %f";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption \"Restaurant 'Chew It'\" 'filename.txt'"));
+
+	map2.insert('n', "Restaurant \"Chew It\"");
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'"));
+
+	map2.insert('n', "Restaurant $HOME");
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption \"Restaurant \\$HOME\" 'filename.txt'"));
+
+	map2.insert('n', "Restaurant `echo hello`");
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption \"Restaurant \\`echo hello\\`\" 'filename.txt'"));
+
+	s = "kedit --caption \"`echo %n`\" %f";
+	COMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
+		QLatin1String("kedit --caption \"$( echo 'Restaurant `echo hello`')\" 'filename.txt'"));
+}
+
+void
+KMacroExpanderTest::expandMacrosSubClass()
+{
+	QString s;
+
+	MyCExpander mx1;
+	s = "subst %m but not %n equ %%";
+	mx1.expandMacros(s);
+	COMPARE(s, QLatin1String("subst expanded but not %n equ %"));
+
+	MyWExpander mx2;
+	s = "subst %macro but not %not equ %%";
+	mx2.expandMacros(s);
+	COMPARE(s, QLatin1String("subst expanded but not %not equ %"));
+}
+
+QTTEST_KDEMAIN(KMacroExpanderTest, NoGUI)
