@@ -22,7 +22,7 @@ KFileMetaPreview::KFileMetaPreview( QWidget *parent )
       haveAudioPreview( false )
 {
     QHBoxLayout *layout = new QHBoxLayout( this, 0, 0 );
-    m_stack = new Q3WidgetStack( this );
+    m_stack = new QStackedWidget( this );
     layout->addWidget( m_stack );
 
     // ###
@@ -42,7 +42,7 @@ void KFileMetaPreview::initPreviewProviders()
     // image previews
     KImageFilePreview *imagePreview = new KImageFilePreview( m_stack );
     (void) m_stack->addWidget( imagePreview );
-    m_stack->raiseWidget( imagePreview );
+    m_stack->setCurrentWidget ( imagePreview );
     resize( imagePreview->sizeHint() );
 
     QStringList mimeTypes = imagePreview->supportedMimeTypes();
@@ -109,11 +109,11 @@ void KFileMetaPreview::showPreview(const KURL &url)
     KPreviewWidgetBase *provider = previewProviderFor( mt->name() );
     if ( provider )
     {
-        if ( provider != m_stack->visibleWidget() ) // stop the previous preview
+        if ( provider != m_stack->currentWidget() ) // stop the previous preview
             clearPreview();
 
         m_stack->setEnabled( true );
-        m_stack->raiseWidget( provider );
+        m_stack->setCurrentWidget( provider );
         provider->showPreview( url );
     }
     else
@@ -125,8 +125,8 @@ void KFileMetaPreview::showPreview(const KURL &url)
 
 void KFileMetaPreview::clearPreview()
 {
-    if ( m_stack->visibleWidget() )
-        static_cast<KPreviewWidgetBase*>( m_stack->visibleWidget() )->clearPreview();
+    if ( m_stack->currentWidget() )
+        static_cast<KPreviewWidgetBase*>( m_stack->currentWidget() )->clearPreview();
 }
 
 void KFileMetaPreview::addPreviewProvider( const QString& mimeType,
