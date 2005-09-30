@@ -14,16 +14,46 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
 
-
-#include <kaboutdata.h>
-#include <kstandarddirs.h>
+#undef QT3_SUPPORT
+#include "kaboutdata.h"
+#include "kstandarddirs.h"
+#include "klocale.h"
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qimage.h>
+#include <qlist.h>
+
+struct KAboutPerson::Private
+{
+   const char *_name;
+#define mName d->_name
+   const char *_task;
+#define mTask d->_task
+   const char *_emailAddress;
+#define mEmailAddress d->_emailAddress
+   const char *_webAddress;
+#define mWebAddress d->_webAddress
+};
+
+KAboutPerson::KAboutPerson( const char* _name, const char* _task,
+                  const char* _emailAddress, const char* _webAddress )
+  : d(new Private)
+{
+   mName = _name;
+   mTask = _task;
+   mEmailAddress = _emailAddress;
+   mWebAddress = _webAddress;
+}
+
+KAboutPerson::~KAboutPerson()
+{
+   delete d;
+}
 
 QString
 KAboutPerson::name() const
@@ -36,8 +66,7 @@ KAboutPerson::task() const
 {
    if (mTask && *mTask)
       return i18n(mTask);
-   else
-      return QString::null;
+   return QString::null;
 }
 
 QString
@@ -53,12 +82,42 @@ KAboutPerson::webAddress() const
    return QString::fromUtf8(mWebAddress);
 }
 
+#undef mTask
+#undef mEmailAddress
+#undef mWebAddress
 
-KAboutTranslator::KAboutTranslator(const QString & name,
-                const QString & emailAddress):d(0)
+KAboutPerson&
+KAboutPerson::operator=(const KAboutPerson& other)
 {
-    mName=name;
-    mEmail=emailAddress;
+   *d = *other.d;
+   return *this;
+}
+
+struct KAboutTranslator::Private
+{
+   QString _name;
+   QString _email;
+#define mEmail d->_email
+};
+
+KAboutTranslator::KAboutTranslator(const QString & _name,
+                const QString & _emailAddress)
+  : d(new Private)
+{
+    mName = _name;
+    mEmail = _emailAddress;
+}
+
+KAboutTranslator::~KAboutTranslator()
+{
+    delete d;
+}
+
+KAboutTranslator&
+KAboutTranslator::operator=(const KAboutTranslator& other)
+{
+    *d = *other.d;
+    return *this;
 }
 
 QString KAboutTranslator::name() const
@@ -70,6 +129,9 @@ QString KAboutTranslator::emailAddress() const
 {
     return mEmail;
 }
+
+#undef mName
+#undef mEmail
 
 class KAboutData::Private
 {
@@ -83,8 +145,34 @@ public:
         {}
     ~Private()
         {
+             if (_licenseKey == License_File)
+                 delete [] _licenseText;
              delete programLogo;
         }
+    const char *_appName;
+#define mAppName d->_appName
+    const char *_programName;
+#define mProgramName d->_programName
+    const char *_version;
+#define mVersion d->_version
+    const char *_shortDescription;
+#define mShortDescription d->_shortDescription
+    int _licenseKey;
+#define mLicenseKey d->_licenseKey
+    const char *_copyrightStatement;
+#define mCopyrightStatement d->_copyrightStatement
+    const char *_otherText;
+#define mOtherText d->_otherText
+    const char *_homepageAddress;
+#define mHomepageAddress d->_homepageAddress
+    const char *_bugEmailAddress;
+#define mBugEmailAddress d->_bugEmailAddress
+    QList<KAboutPerson> _authorList;
+#define mAuthorList d->_authorList
+    QList<KAboutPerson> _creditList;
+#define mCreditList d->_creditList
+    const char *_licenseText;
+#define mLicenseText d->_licenseText
     const char *translatorName;
     const char *translatorEmail;
     const char *productName;
@@ -95,41 +183,39 @@ public:
 
 
 
-KAboutData::KAboutData( const char *appName,
-                        const char *programName,
-                        const char *version,
-                        const char *shortDescription,
+KAboutData::KAboutData( const char* _appName,
+                        const char* _programName,
+                        const char* _version,
+                        const char* _shortDescription,
 			int licenseType,
-			const char *copyrightStatement,
-			const char *text,
-			const char *homePageAddress,
-			const char *bugsEmailAddress
-			) :
-  mProgramName( programName ),
-  mVersion( version ),
-  mShortDescription( shortDescription ),
-  mLicenseKey( licenseType ),
-  mCopyrightStatement( copyrightStatement ),
-  mOtherText( text ),
-  mHomepageAddress( homePageAddress ),
-  mBugEmailAddress( bugsEmailAddress ),
-  mLicenseText (0), d(new Private)
+			const char* _copyrightStatement,
+			const char* text,
+			const char* homePageAddress,
+			const char* bugsEmailAddress
+			)
+  : d(new Private)
 {
 
-   if( appName ) {
-     const char *p = strrchr(appName, '/');
+   if( _appName ) {
+     const char *p = strrchr(_appName, '/');
      if( p )
 	 mAppName = p+1;
      else
-	 mAppName = appName;
+	 mAppName = _appName;
    } else
      mAppName = 0;
+   mProgramName = _programName;
+   mVersion = _version;
+   mShortDescription = _shortDescription;
+   mLicenseKey = licenseType;
+   mCopyrightStatement = _copyrightStatement;
+   mOtherText = text;
+   mHomepageAddress = homePageAddress;
+   mBugEmailAddress = bugsEmailAddress;
 }
 
 KAboutData::~KAboutData()
 {
-    if (mLicenseKey == License_File)
-        delete [] mLicenseText;
     delete d;
 }
 
@@ -169,27 +255,27 @@ KAboutData::setLicenseTextFile( const QString &file )
 }
 
 void
-KAboutData::setAppName( const char *appName )
+KAboutData::setAppName( const char* _appName )
 {
-  mAppName = appName;
+  mAppName = _appName;
 }
 
 void
-KAboutData::setProgramName( const char* programName )
+KAboutData::setProgramName( const char* _programName )
 {
-  mProgramName = programName;
+  mProgramName = _programName;
 }
 
 void
-KAboutData::setVersion( const char* version )
+KAboutData::setVersion( const char* _version )
 {
-  mVersion = version;
+  mVersion = _version;
 }
 
 void
-KAboutData::setShortDescription( const char *shortDescription )
+KAboutData::setShortDescription( const char* _shortDescription )
 {
-  mShortDescription = shortDescription;
+  mShortDescription = _shortDescription;
 }
 
 void
@@ -199,33 +285,33 @@ KAboutData::setLicense( LicenseKey licenseKey)
 }
 
 void
-KAboutData::setCopyrightStatement( const char *copyrightStatement )
+KAboutData::setCopyrightStatement( const char* _copyrightStatement )
 {
-  mCopyrightStatement = copyrightStatement;
+  mCopyrightStatement = _copyrightStatement;
 }
 
 void
-KAboutData::setOtherText( const char *otherText )
+KAboutData::setOtherText( const char* _otherText )
 {
-  mOtherText = otherText;
+  mOtherText = _otherText;
 }
 
 void
-KAboutData::setHomepage( const char *homepage )
+KAboutData::setHomepage( const char* _homepage )
 {
-  mHomepageAddress = homepage;
+  mHomepageAddress = _homepage;
 }
 
 void
-KAboutData::setBugAddress( const char *bugAddress )
+KAboutData::setBugAddress( const char* _bugAddress )
 {
-  mBugEmailAddress = bugAddress;
+  mBugEmailAddress = _bugAddress;
 }
 
 void
-KAboutData::setProductName( const char *productName )
+KAboutData::setProductName( const char* _productName )
 {
-  d->productName = productName;
+  d->productName = _productName;
 }
 
 const char *
@@ -239,8 +325,7 @@ KAboutData::productName() const
 {
    if (d->productName)
       return d->productName;
-   else
-      return appName();
+   return appName();
 }
 
 QString
@@ -248,8 +333,7 @@ KAboutData::programName() const
 {
    if (mProgramName && *mProgramName)
       return i18n(mProgramName);
-   else
-      return QString::null;
+   return QString::null;
 }
 
 QImage
@@ -278,8 +362,7 @@ KAboutData::shortDescription() const
 {
    if (mShortDescription && *mShortDescription)
       return i18n(mShortDescription);
-   else
-      return QString::null;
+   return QString::null;
 }
 
 QString
@@ -370,10 +453,8 @@ KAboutData::otherText() const
 {
    if (mOtherText && *mOtherText)
       return i18n(mOtherText);
-   else
-      return QString::null;
+   return QString::null;
 }
-
 
 QString
 KAboutData::license() const
@@ -431,7 +512,7 @@ KAboutData::license() const
         result += '\n';
         result += '\n';
         QTextStream str(&file);
-        result += str.read();
+        result += str.readAll();
      }
   }
 
@@ -443,8 +524,7 @@ KAboutData::copyrightStatement() const
 {
   if (mCopyrightStatement && *mCopyrightStatement)
      return i18n(mCopyrightStatement);
-  else
-     return QString::null;
+  return QString::null;
 }
 
 QString
@@ -464,7 +544,7 @@ KAboutData::customAuthorTextEnabled() const
 {
   return d->customAuthorTextEnabled;
 }
-    
+
 void
 KAboutData::setCustomAuthorText(const QString &plainText, const QString &richText)
 {
@@ -473,7 +553,7 @@ KAboutData::setCustomAuthorText(const QString &plainText, const QString &richTex
 
   d->customAuthorTextEnabled = true;
 }
-    
+
 void
 KAboutData::unsetCustomAuthorText()
 {
@@ -483,3 +563,15 @@ KAboutData::unsetCustomAuthorText()
   d->customAuthorTextEnabled = false;
 }
 
+#undef mAppName
+#undef mProgramName
+#undef mVersion
+#undef mShortDescription
+#undef mLicenseKey
+#undef mCopyrightStatement
+#undef mOtherText
+#undef mHomepageAddress
+#undef mBugEmailAddress
+#undef mAuthorList
+#undef mCreditList
+#undef mLicenseText

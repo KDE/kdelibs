@@ -14,19 +14,19 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
 
-#include <qlist.h>
-#include <qstring.h>
-#include <qimage.h>
-#include <klocale.h>
-
 #ifndef KABOUTDATA_H
 #define KABOUTDATA_H
 
+#include <qstring.h>
+#include <kdelibs_export.h>
+
+class QImage;
+template <class T> class QList;
 
 /**
  * This structure is used to store information about a person or developer.
@@ -70,55 +70,43 @@ public:
      *
      * @param webAddress Home page of the person.
      */
-    KAboutPerson( const char *name, const char *task,
-                  const char *emailAddress, const char *webAddress ):d(0)
-    {
-      mName = name;
-      mTask = task;
-      mEmailAddress = emailAddress;
-      mWebAddress = webAddress;
-    }
-    /**
-     * @internal
-     * Don't use. Required by QValueList
-     */
-    KAboutPerson() : mName(0), mTask(0), mEmailAddress(0), mWebAddress(0), d(0) {}
+    KAboutPerson( const char *name=0, const char *task=0,
+                  const char *emailAddress=0, const char *webAddress=0 );
+
+    ~KAboutPerson();
+    KAboutPerson& operator=(const KAboutPerson& other);
 
     /**
      * The person's name
      * @return the person's name (can be QString::null, if it has been
-     *           constructed with a null name)
+     *           constructed with a NULL name)
      */
     QString name() const;
 
     /**
      * The person's task
      * @return the person's task (can be QString::null, if it has been
-     *           constructed with a null task)
+     *           constructed with a NULL task)
      */
     QString task() const;
 
     /**
      * The person's email address
      * @return the person's email address (can be QString::null, if it has been
-     *           constructed with a null email)
+     *           constructed with a NULL email)
      */
     QString emailAddress() const;
 
     /**
      * The home page or a relevant link
      * @return the persons home page (can be QString::null, if it has been
-     *           constructed with a null home page)
+     *           constructed with a NULL home page)
      */
     QString webAddress() const;
 
 private:
-    const char *mName;
-    const char *mTask;
-    const char *mEmailAddress;
-    const char *mWebAddress;
     class Private;
-    Private * d;
+    Private *const d;
 };
 
 /**
@@ -146,6 +134,9 @@ public:
     KAboutTranslator(const QString & name=QString::null,
                      const QString & emailAddress=QString::null);
 
+    ~KAboutTranslator();
+    KAboutTranslator& operator=(const KAboutTranslator& other);
+
     /**
      * The translator's name
      * @return the translators's name (can be QString::null, if it has been
@@ -161,10 +152,8 @@ public:
     QString emailAddress() const;
 
 private:
-    QString mName;
-    QString mEmail;
     class Private;
-    Private* d;
+    Private *const d;
 };
 
 
@@ -592,18 +581,6 @@ class KDECORE_EXPORT KAboutData
     void unsetCustomAuthorText();
 
   private:
-    const char *mAppName;
-    const char *mProgramName;
-    const char *mVersion;
-    const char *mShortDescription;
-    int mLicenseKey;
-    const char *mCopyrightStatement;
-    const char *mOtherText;
-    const char *mHomepageAddress;
-    const char *mBugEmailAddress;
-    QList<KAboutPerson> mAuthorList;
-    QList<KAboutPerson> mCreditList;
-    const char *mLicenseText;
 
     class Private;
     Private *const d;
