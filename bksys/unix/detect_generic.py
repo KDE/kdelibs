@@ -16,6 +16,11 @@ def detect(env):
 
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
 
+	## Mac OS X settings
+	if sys.platform == 'darwin':
+		env['GENCXXFLAGS'] += ['-fno-common']
+		env['GENLINKFLAGS'] += ['-undefined', 'dynamic_lookup']
+
 	## Linux settings
 	if sys.platform == 'linux2':
 		env['GENCXXFLAGS'] += ['-D_XOPEN_SOURCE=500', '-D_BSD_SOURCE', '-D_GNU_SOURCE']

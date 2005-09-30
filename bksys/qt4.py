@@ -57,40 +57,61 @@ def generate(env):
 		('LIBPATH_QT', ''),
 		('LIB_QT', ''),
 		('RPATH_QT', ''),
+		('FRAMEWORKPATH_QT', ''),
+		('FRAMEWORK_QT', ''),
 
 		('CPPPATH_QT3SUPPORT', ''),
 		('CXXFLAGS_QT3SUPPORT', ''),
 		('LIB_QT3SUPPORT', ''),
 		('RPATH_QT3SUPPORT', ''),
+		('FRAMEWORK_QT3SUPPORT', ''),
+		('FRAMEWORKPATH_QT3SUPPORT', ''),
 
 		('CPPPATH_QTCORE', ''),
 		('LIB_QTCORE', ''),
 		('RPATH_QTCORE', ''),
+		('FRAMEWORK_QTCORE', ''),
+		('FRAMEWORKPATH_QTCORE', ''),
 
 		('CPPPATH_QTDESIGNER', ''),
 		('LIB_QTDESIGNER', ''),
+		('FRAMEWORK_QTDESIGNER', ''),
+		('FRAMEWORKPATH_QTDESIGNER', ''),
+
 		('CPPPATH_QTASSISTANT', ''),
 		('LIB_QTASSISTANT', ''),
+		('FRAMEWORK_QTASSISTANT', ''),
+		('FRAMEWORKPATH_QTASSISTANT', ''),
 			
 		('CPPPATH_QTNETWORK', ''),
 		('LIB_QTNETWORK', ''),
 		('RPATH_QTNETWORK', ''),
+		('FRAMEWORK_QTNETWORK', ''),
+		('FRAMEWORKPATH_QTNETWORK', ''),
 
 		('CPPPATH_QTGUI', ''),
 		('LIB_QTGUI', ''),
 		('RPATH_QTGUI', ''),
+		('FRAMEWORK_QTGUI', ''),
+		('FRAMEWORKPATH_QTGUI', ''),
 
 		('CPPPATH_QTOPENGL', ''),
 		('LIB_QTOPENGL', ''),
 		('RPATH_QTOPENGL', ''),
+		('FRAMEWORK_QTOPENGL', ''),
+		('FRAMEWORKPATH_QTOPENGL', ''),
 
 		('CPPPATH_QTSQL', ''),
 		('LIB_QTSQL', ''),
 		('RPATH_QTSQL', ''),
+		('FRAMEWORK_QTSQL', ''),
+		('FRAMEWORKPATH_QTSQL', ''),
 
 		('CPPPATH_QTXML', ''),
 		('LIB_QTXML', ''),
 		('RPATH_QTXML', ''),
+		('FRAMEWORK_QTXML', ''),
+		('FRAMEWORKPATH_QTXML', ''),
 
 		# TODO remove
 		('QTPLUGINS', 'uic executable command'),
@@ -100,15 +121,14 @@ def generate(env):
 	opts.Update(env)
 
 	# reconfigure when things are missing
-	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('LIB_QT')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or (not env.has_key('LIB_QT') and not env.has_key('FRAMEWORK_QT'))):
 		env['_CONFIGURE_']=1
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
 		import sys
 		if sys.platform == 'darwin':
-			# TODO: implement Qt .framework detection, rather than just the shared lib version
-			# sys.path.append('bksys'+os.sep+'osx')
-			sys.path.append('bksys'+os.sep+'unix')
+			sys.path.append('bksys'+os.sep+'osx')
+			#sys.path.append('bksys'+os.sep+'unix')
 			from detect_qt4 import detect
 		else:
 			sys.path.append('bksys'+os.sep+'unix')

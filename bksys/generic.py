@@ -49,6 +49,10 @@ def configure(dict):
 		elif key == 'colorful':  use_colors = dict[key]
 		else: print 'unknown key: '+key
 
+	## rpath flags are wrong (and pointless) on darwin
+	if sys.platform == 'darwin':
+		want_rpath = 0
+
 	## make sure the build dir is available
 	## TODO what if it is in a non-existing subdirectory ? (ita)
 	if not os.path.exists(build_dir): os.mkdir(build_dir)
@@ -281,9 +285,13 @@ class genobj:
 				# TODO: we need to mark in the cache that something is not there, rather than re-testing on every scons run
 				#if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
 				#	raise genobj.WrongLibError(lib)
-				if self.env.has_key('LIB_'+lib):
+				if self.env.has_key('FRAMEWORK_'+lib):
+					self.env.AppendUnique(FRAMEWORKS=self.env['FRAMEWORK_'+lib])
+				elif self.env.has_key('LIB_'+lib):
 					self.env.AppendUnique(LIBS=self.env['LIB_'+lib])
-				if self.env.has_key('LIBPATH_'+lib):
+				if self.env.has_key('FRAMEWORKPATH_'+lib):
+					self.env.AppendUnique(FRAMEWORKPATH=self.env['FRAMEWORKPATH_'+lib])
+				elif self.env.has_key('LIBPATH_'+lib):
 					self.env.AppendUnique(LIBPATH=self.env['LIBPATH_'+lib])
 				if self.env.has_key('LINKFLAGS_'+lib):
 					self.env.AppendUnique(LINKFLAGS=self.env['LINKFLAGS_'+lib])
@@ -678,8 +686,11 @@ def generate(env):
 			lst=target.split('/')
 			tname=lst[len(lst)-1]
 			libname=tname.split('.')[0]
+			# TODO: proper handling of bundles (LD* instead of LIB* in scons?)
+			# TODO: -undefined dynamic_lookup == "allow undefined", need proper support for
+			# -no-undefined and similar in such a way that's cross-platform
 			if sys.platform == 'darwin':
-				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.%s.dylib" % (libname, num)] )
+				thisenv.AppendUnique(LINKFLAGS = ["-undefined","dynamic_lookup","-install_name", "%s.%s.dylib" % (libname, num)] )
 			else:
 				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libname, num)] )
 

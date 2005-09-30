@@ -19,13 +19,18 @@ def exists(env):
 def generate(env):
 	if env['HELP']: return
 
+	import sys
+
 	#######################################
 	## other stuff
 
 	if env['WINDOWS']:
 		env['CONVENIENCE']         = []
 	else:
-		env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
+		if sys.platform == 'darwin':
+			env['CONVENIENCE']         = ['-fPIC','-DPIC','-fno-common'] # TODO flags for convenience libraries
+		else:
+			env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 	########## zlib
 	env['LIB_Z']               = ['z']
