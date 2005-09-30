@@ -213,8 +213,8 @@ private:
 	bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
 	bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
 
-	Q3ValueList<QString> v2ciphers, v2selectedciphers, v3ciphers, v3selectedciphers;
-	Q3ValueList<int> v2bits, v3bits;
+	QList<QString> v2ciphers, v2selectedciphers, v3ciphers, v3selectedciphers;
+	QList<int> v2bits, v3bits;
 
 	KSSLSettingsPrivate *d;
 };
