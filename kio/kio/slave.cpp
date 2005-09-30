@@ -435,7 +435,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
 	error_text = i18n("Cannot talk to klauncher");
-	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+	error = KIO::ERR_SLAVE_DEFINED;
         delete slave;
         return 0;
     }
