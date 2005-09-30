@@ -38,6 +38,7 @@
 struct sockaddr;
 class QString;
 class QByteArray;
+template<typename T> class QSet;
 
 //////////////////
 // Our definitions
@@ -935,7 +936,7 @@ private:
   friend class KResolverResults;
   friend class ::KNetwork::Internal::KResolverManager;
 
-  static QStringList *idnDomains;
+  static QSet<QString> *idnDomains;
 };
 
 }				// namespace KNetwork

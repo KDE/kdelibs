@@ -39,6 +39,7 @@
 // Qt includes
 #include <QCoreApplication>
 #include <QPointer>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 #include <QSharedData>
@@ -266,7 +267,8 @@ void KResolverResults::virtual_hook( int, void* )
 ///////////////////////
 // class KResolver
 
-QStringList *KResolver::idnDomains = 0;
+typedef QSet<QString> QStringSet;
+QStringSet *KResolver::idnDomains;
 
 
 // default constructor
@@ -916,12 +918,12 @@ static QStringList splitLabels(const QString& unicodeDomain);
 static QByteArray ToASCII(const QString& label);
 static QString ToUnicode(const QString& label);
 
-static QStringList *KResolver_initIdnDomains()
+static QStringSet *KResolver_initIdnDomains()
 {
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
      kde_use_idn = "ac:at:br:ch:cl:cn:de:dk:fi:hu:info:io:jp:kr:li:lt:museum:no:se:sh:th:tm:tw:vn";
-  return new QStringList(QString::fromLatin1(kde_use_idn).toLower().split(':'));
+  return new QStringSet(QString::fromLatin1(kde_use_idn).toLower().split(':').toSet());
 }
 
 // implement the ToAscii function, as described by IDN documents
@@ -939,7 +941,8 @@ QByteArray KResolver::domainToAscii(const QString& unicodeDomain)
   QStringList input = splitLabels(unicodeDomain);
 
   // Do we allow IDN names for this TLD?
-  if (input.count() && !idnDomains->contains(input[input.count()-1].toLower()))
+  const QString& tld = input.at(input.count() - 1);
+  if (input.count() && !idnDomains->contains(tld.toLower()))
     return input.join(".").toLower().toLatin1(); // No IDN allowed for this TLD
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
@@ -987,7 +990,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
   QStringList input = splitLabels(asciiDomain);
 
   // Do we allow IDN names for this TLD?
-  if (input.count() && !idnDomains->contains(input[input.count()-1].toLower()))
+  const QString& tld = input.at(input.count() - 1);
+  if (input.count() && !idnDomains->contains(tld.toLower()))
     return asciiDomain.toLower(); // No TLDs allowed
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
