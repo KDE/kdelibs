@@ -39,7 +39,6 @@ class KDirLister;
 class KToggleAction;
 class KActionSeparator;
 class KActionMenu;
-class Q3WidgetStack;
 class KProgress;
 namespace KIO {
   class CopyJob;

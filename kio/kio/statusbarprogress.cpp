@@ -19,7 +19,7 @@
 #include <qevent.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <qpushbutton.h>
 #include <qlabel.h>
 
@@ -50,7 +50,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 
   m_pButton = new QPushButton( "X", this );
   box->addWidget( m_pButton  );
-  stack = new Q3WidgetStack( this );
+  stack = new QStackedWidget( this );
   box->addWidget( stack );
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
@@ -60,13 +60,13 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   m_pProgressBar->setBackgroundMode( Qt::PaletteBackground );
   m_pProgressBar->installEventFilter( this );
   m_pProgressBar->setMinimumWidth( w );
-  stack->addWidget( m_pProgressBar, 1 );
+  stack->insertWidget( 1,m_pProgressBar );
 
   m_pLabel = new QLabel( "", this );
   m_pLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
   m_pLabel->installEventFilter( this );
   m_pLabel->setMinimumWidth( w );
-  stack->addWidget( m_pLabel, 2 );
+  stack->insertWidget( 2,m_pLabel);
   setMinimumSize( sizeHint() );
 
   mode = None;
@@ -97,7 +97,7 @@ void StatusbarProgress::setMode() {
       m_pButton->show();
     }
     stack->show();
-    stack->raiseWidget( m_pLabel );
+    stack->setCurrentWidget( m_pLabel );
     break;
 
   case Progress:
@@ -105,7 +105,7 @@ void StatusbarProgress::setMode() {
       m_pButton->show();
     }
     stack->show();
-    stack->raiseWidget( m_pProgressBar );
+    stack->setCurrentWidget( m_pProgressBar );
     break;
   }
 }
