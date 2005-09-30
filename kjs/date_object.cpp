@@ -535,19 +535,28 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     else
       value = prim.toNumber(exec);
   } else {
-    struct tm t;
-    memset(&t, 0, sizeof(t));
-    int year = args[0].toInt32(exec);
-    // TODO: check for NaN
-    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-    t.tm_mon = args[1].toInt32(exec);
-    t.tm_mday = (numArgs >= 3) ? args[2].toInt32(exec) : 1;
-    t.tm_hour = (numArgs >= 4) ? args[3].toInt32(exec) : 0;
-    t.tm_min = (numArgs >= 5) ? args[4].toInt32(exec) : 0;
-    t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
-    t.tm_isdst = -1;
-    int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
-    value = makeTime(&t, ms, false);
+    if (isNaN(args[0].toNumber(exec))
+        || isNaN(args[1].toNumber(exec))
+        || (numArgs >= 3 && isNaN(args[2].toNumber(exec)))
+        || (numArgs >= 4 && isNaN(args[3].toNumber(exec)))
+        || (numArgs >= 5 && isNaN(args[4].toNumber(exec)))
+        || (numArgs >= 6 && isNaN(args[5].toNumber(exec)))
+        || (numArgs >= 7 && isNaN(args[6].toNumber(exec)))) {
+      value = NaN;
+    } else {
+      struct tm t;
+      memset(&t, 0, sizeof(t));
+      int year = args[0].toInt32(exec);
+      t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
+      t.tm_mon = args[1].toInt32(exec);
+      t.tm_mday = (numArgs >= 3) ? args[2].toInt32(exec) : 1;
+      t.tm_hour = (numArgs >= 4) ? args[3].toInt32(exec) : 0;
+      t.tm_min = (numArgs >= 5) ? args[4].toInt32(exec) : 0;
+      t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
+      t.tm_isdst = -1;
+      int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
+      value = makeTime(&t, ms, false);
+    }
   }
 
   Object proto = exec->lexicalInterpreter()->builtinDatePrototype();
