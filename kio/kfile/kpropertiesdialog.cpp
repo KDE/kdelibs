@@ -104,6 +104,7 @@ extern "C" {
 #include <kprocess.h>
 #include <krun.h>
 #include <klistview.h>
+#include <kvbox.h>
 #include "kfilesharedlg.h"
 
 #include "kpropertiesdesktopbase.h"
@@ -901,7 +902,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     grid->addWidget(l, curRow, 0);
 
-    Q3HBox *box = new Q3HBox(d->m_frame);
+    KHBox *box = new KHBox(d->m_frame);
     box->setSpacing(20);
     l = new QLabel(mimeComment, box );
 

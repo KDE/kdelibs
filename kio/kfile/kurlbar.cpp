@@ -42,9 +42,10 @@
 #include <qpainter.h>
 #include <q3popupmenu.h>
 #include <qstyle.h>
-#include <q3vbox.h>
+
 
 #include <unistd.h>
+#include <kvbox.h>
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -904,7 +905,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     : KDialogBase( parent, name, true,
                    i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
 {
-    Q3VBox *box = new Q3VBox( this );
+    KVBox *box = new KVBox( this );
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );
     box->setSpacing( spacingHint() );
