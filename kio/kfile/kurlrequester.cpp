@@ -39,6 +39,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <kvbox.h>
 
 
 class KURLDragPushButton : public KPushButton
@@ -158,7 +159,7 @@ public:
 
 
 KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
-  : Q3HBox( parent)
+  : KHBox( parent)
 {
     d = new KURLRequesterPrivate;
 
@@ -172,7 +173,7 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
 
 
 KURLRequester::KURLRequester( QWidget *parent)
-  : Q3HBox( parent)
+  : KHBox( parent)
 {
     d = new KURLRequesterPrivate;
     init();
@@ -180,7 +181,7 @@ KURLRequester::KURLRequester( QWidget *parent)
 
 
 KURLRequester::KURLRequester( const QString& url, QWidget *parent)
-  : Q3HBox( parent)
+  : KHBox( parent)
 {
     d = new KURLRequesterPrivate;
     init();
@@ -264,7 +265,7 @@ void KURLRequester::changeEvent(QEvent *e)
         myFileDialog->setWindowTitle( windowTitle() );
      }
    }
-   Q3HBox::changeEvent(e);
+   KHBox::changeEvent(e);
 }
 
 QString KURLRequester::url() const

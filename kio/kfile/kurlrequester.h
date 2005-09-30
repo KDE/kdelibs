@@ -20,12 +20,13 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
-#include <q3hbox.h>
+
 
 #include <keditlistbox.h>
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
+#include <kvbox.h>
 
 class KComboBox;
 class KFileDialog;
@@ -54,7 +55,7 @@ class QEvent;
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLRequester : public Q3HBox
+class KIO_EXPORT KURLRequester : public KHBox
 {
     Q_OBJECT
     Q_PROPERTY( QString url READ url WRITE setURL )
