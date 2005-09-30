@@ -604,11 +604,20 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
   if (id == Parse) {
     return Number(parseDate(args[0].toString(exec)));
   } else { // UTC
+    int n = args.size();
+    if (isNaN(args[0].toNumber(exec))
+        || isNaN(args[1].toNumber(exec))
+        || (n >= 3 && isNaN(args[2].toNumber(exec)))
+        || (n >= 4 && isNaN(args[3].toNumber(exec)))
+        || (n >= 5 && isNaN(args[4].toNumber(exec)))
+        || (n >= 6 && isNaN(args[5].toNumber(exec)))
+        || (n >= 7 && isNaN(args[6].toNumber(exec)))) {
+      return Number(NaN);
+    }
+
     struct tm t;
     memset(&t, 0, sizeof(t));
-    int n = args.size();
     int year = args[0].toInt32(exec);
-    // TODO: check for NaN
     t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
     t.tm_mon = args[1].toInt32(exec);
     t.tm_mday = (n >= 3) ? args[2].toInt32(exec) : 1;
