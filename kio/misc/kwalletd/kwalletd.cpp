@@ -1079,8 +1079,8 @@ int KWalletD::removeEntry(int handle, const QString& folder, const QString& key)
 
 void KWalletD::slotAppUnregistered(const QByteArray& app) {
 	if (_handles.contains(app)) {
-		Q3ValueList<int> l = _handles[app];
-		for (Q3ValueList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
+		QList<int> l = _handles[app];
+		for (QList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
 			_handles[app].remove(*i);
 			KWallet::Backend *w = _wallets.find(*i);
 			if (w && !_leaveOpen && 0 == w->deref()) {
@@ -1093,7 +1093,7 @@ void KWalletD::slotAppUnregistered(const QByteArray& app) {
 
 
 void KWalletD::invalidateHandle(int handle) {
-	for (QMap<QByteArray,Q3ValueList<int> >::Iterator i = _handles.begin();
+	for (QMap<QByteArray,QList<int> >::Iterator i = _handles.begin();
 							i != _handles.end();
 									++i) {
 		i.data().remove(handle);
@@ -1177,7 +1177,7 @@ QStringList KWalletD::users(const QString& wallet) const {
 						it.current();
 							++it) {
 		if (it.current()->walletName() == wallet) {
-			for (QMap<QByteArray,Q3ValueList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
+			for (QMap<QByteArray,QList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
 				if (hit.data().contains(it.currentKey())) {
 					rc += hit.key();
 				}

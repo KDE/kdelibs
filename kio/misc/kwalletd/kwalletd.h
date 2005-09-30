@@ -27,9 +27,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include "kwalletbackend.h"
-#include <Q3ValueList>
-#include <q3ptrlist.h>
-
+#include <Q3PtrList>
 #include <time.h>
 #include <stdlib.h>
 
@@ -174,7 +172,7 @@ class KWalletD : public KDEDModule {
 		int doTransactionOpen(const QByteArray& appid, const QString& wallet, uint wId);
 
 		Q3IntDict<KWallet::Backend> _wallets;
-		QMap<QByteArray,Q3ValueList<int> > _handles;
+		QMap<QByteArray,QList<int> > _handles;
 		QMap<QString,QByteArray> _passwords;
 		KDirWatch *_dw;
 		int _failed;
