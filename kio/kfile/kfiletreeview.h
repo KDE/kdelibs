@@ -243,7 +243,6 @@ private:
 
     Q3ListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
     Q3ListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
-    Q3StrList m_lstDropFormats;
    QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
 

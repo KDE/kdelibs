@@ -70,7 +70,7 @@ void KCombiView::setRight(KFileView *view)
     right->KFileView::setViewMode( Files );
     setViewName( right->viewName() );
 
-    Q3ValueList<int> lst;
+    QList<int> lst;
     lst << left->gridX() + 2 * left->spacing();
     setSizes( lst );
     setStretchFactor(indexOf(left),0); //setResizeMode( left, QSplitter::KeepSize );
