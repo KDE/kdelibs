@@ -20,10 +20,11 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3multilineedit.h>
+#include <qtextedit.h>
 #include <qradiobutton.h>
 #include <qregexp.h>
-#include <Q3HButtonGroup>
+#include <QGroupBox>
+#include <QHBoxLayout>
 
 #include <kaboutdata.h>
 #include "ktoolinvocation.h"
@@ -64,6 +65,12 @@ public:
     QString os;
     QPushButton *submitBugButton;
     KURL url;
+    QList<QRadioButton*> severityButtons;
+    int currentSeverity() {
+    	for (int i=0;i<severityButtons.count();i++)
+		if (severityButtons[i]->isChecked()) return i;
+	return -1;
+    }
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
@@ -97,11 +104,14 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   }
 
   QLabel * tmpLabel;
-  QVBoxLayout * lay = new QVBoxLayout( parent, 0, spacingHint() );
+  QVBoxLayout * lay = new QVBoxLayout( parent);
+  lay->setMargin(0);
+  lay->setSpacing( spacingHint() );
 
-  QGridLayout *glay = new QGridLayout( lay, 4, 3 );
-  glay->setColStretch( 1, 10 );
-  glay->setColStretch( 2, 10 );
+  QGridLayout *glay = new QGridLayout();
+  lay->addItem(glay);
+  glay->addItem(new QSpacerItem(10,0),0,1);
+  glay->addItem(new QSpacerItem(10,0),0,2);
 
   int row = 0;
 
@@ -122,7 +132,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                                         parent );
     connect( m_configureEmail, SIGNAL( clicked() ), this,
              SLOT( slotConfigureEmail() ) );
-    glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, Qt::AlignTop|Qt::AlignRight );
+    glay->addWidget( m_configureEmail, 0, 2, 3, 1, Qt::AlignTop|Qt::AlignRight );
 
     // To
     qwtstr = i18n( "The email address this bug report is sent to." );
@@ -162,14 +172,14 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;
   for (; index < d->appcombo->count(); index++) {
-      if (d->appcombo->text(index) == d->appname) {
+      if (d->appcombo->itemText(index) == d->appname) {
           break;
       }
   }
   if (index == d->appcombo->count()) { // not present
-      d->appcombo->insertItem(d->appname);
+      d->appcombo->addItem(d->appname);
   }
-  d->appcombo->setCurrentItem(index);
+  d->appcombo->setCurrentIndex(index);
 
   tmpLabel->setWhatsThis(qwtstr );
 
@@ -188,7 +198,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
       m_strVersion += " " + d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
-  glay->addMultiCellWidget( m_version, row, row, 1, 2 );
+  glay->addWidget( m_version, row, 1, 1, 2 );
   m_version->setWhatsThis(qwtstr );
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
@@ -201,24 +211,27 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
           "release " + QString::fromLatin1( unameBuf.release );
 
   tmpLabel = new QLabel(d->os, parent);
-  glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
+  glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
   tmpLabel = new QLabel(i18n("Compiler:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
   tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
-  glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
+  glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
   if ( !d->submitBugButton )
   {
     // Severity
-    m_bgSeverity = new Q3HButtonGroup( i18n("Se&verity"), parent );
+    m_bgSeverity = new QGroupBox( i18n("Se&verity"), parent );
     static const char * const sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
     const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
-
+    QHBoxLayout *severityLayout=new QHBoxLayout(m_bgSeverity);
     for (int i = 0 ; i < 5 ; i++ )
     {
       // Store the severity string as the name
-      QRadioButton *rb = new QRadioButton( sevTexts[i], m_bgSeverity, sevNames[i] );
+      QRadioButton *rb = new QRadioButton( sevTexts[i], m_bgSeverity);
+      rb->setObjectName(sevNames[i] );
+      d->severityButtons.append(rb);
+      severityLayout->addWidget(rb);
       if (i==2) rb->setChecked(true); // default : "normal"
     }
 
@@ -244,9 +257,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
 
     // The multiline-edit
-    m_lineedit = new Q3MultiLineEdit( parent, "QMultiLineEdit" );
+    m_lineedit = new QTextEdit( parent);
     m_lineedit->setMinimumHeight( 180 ); // make it big
-    m_lineedit->setWordWrap(Q3MultiLineEdit::WidgetWidth);
+    m_lineedit->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);//Q3MultiLineEdit::WidgetWidth);
+    m_lineedit->setLineWrapMode(QTextEdit::WidgetWidth);
     lay->addWidget( m_lineedit, 10 /*stretch*/ );
 
     slotSetFrom();
@@ -291,8 +305,8 @@ void KBugReport::updateURL()
 
 void KBugReport::appChanged(int i)
 {
-    QString appName = d->appcombo->text(i);
-    int index = appName.find( '/' );
+    QString appName = d->appcombo->itemText(i);
+    int index = appName.indexOf( '/' );
     if ( index > 0 )
         appName = appName.left( index );
     kdDebug() << "appName " << appName << endl;
@@ -373,7 +387,7 @@ void KBugReport::slotOk( void )
         return;
     }
 
-    if( m_lineedit->text().isEmpty() ||
+    if( m_lineedit->toPlainText().isEmpty() ||
         m_subject->text().isEmpty() )
     {
         QString msg = i18n("You must specify both a subject and a description "
@@ -382,7 +396,7 @@ void KBugReport::slotOk( void )
         return;
     }
 
-    switch ( m_bgSeverity->id( m_bgSeverity->selected() ) )
+	switch ( d->currentSeverity())
     {
         case 0: // critical
             if ( KMessageBox::questionYesNo( this, i18n(
@@ -406,6 +420,8 @@ void KBugReport::slotOk( void )
                 "If it does not, please select a lower severity. Thank you!</p>" ),QString::null,KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
+	default:
+	    break;
     }
     if( !sendBugReport() )
     {
@@ -423,7 +439,7 @@ void KBugReport::slotOk( void )
 
 void KBugReport::slotCancel()
 {
-  if( !d->submitBugButton && ( m_lineedit->edited() || m_subject->edited() ) )
+  if( !d->submitBugButton && ( (m_lineedit->toPlainText().length()>0) || m_subject->isModified() ) )
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
@@ -437,22 +453,25 @@ void KBugReport::slotCancel()
 
 QString KBugReport::text() const
 {
-    kdDebug() << m_bgSeverity->selected()->objectName() << endl;
+    kdDebug() << d->severityButtons[d->currentSeverity()]->objectName() << endl;
     // Prepend the pseudo-headers to the contents of the mail
-  QString severity = m_bgSeverity->selected()->objectName();
+  QString severity = d->severityButtons[d->currentSeverity()]->objectName();
   QString appname = d->appcombo->currentText();
   QString os = QString::fromLatin1("OS: %1 (%2)\n").
                arg(KDE_COMPILING_OS).
                arg(KDE_DISTRIBUTION_TEXT);
   QString bodyText;
-  for(int i = 0; i < m_lineedit->numLines(); i++)
+/*  for(int i = 0; i < m_lineedit->numLines(); i++)
   {
      QString line = m_lineedit->textLine(i);
      if (!line.endsWith("\n"))
         line += '\n';
      bodyText += line;
   }
-
+*/
+  bodyText=m_lineedit->toPlainText();
+  if (bodyText.length()>0)
+  	if (bodyText[bodyText.length()-1]!='\n') bodyText+="\n";
   if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
@@ -507,8 +526,8 @@ bool KBugReport::sendBugReport()
     return false;
   }
 
-  QString btext = text();
-  fwrite(btext.ascii(),btext.length(),1,fd);
+  QByteArray btext = text().toAscii();
+  fwrite(btext.data(),btext.length(),1,fd);
   fflush(fd);
 
   int error = pclose(fd);
@@ -518,7 +537,8 @@ bool KBugReport::sendBugReport()
       QFile of(outputfile.name());
       if (of.open(QIODevice::ReadOnly )) {
           QTextStream is(&of);
-          is.setEncoding(QTextStream::UnicodeUTF8);
+          //is.setEncoding(QTextStream::UnicodeUTF8);
+          is.setCodec(QTextCodec::codecForName("UTF-8"));
           QString line;
           while (!is.atEnd())
               line = is.readLine();
