@@ -613,8 +613,8 @@ void HTMLFormElementImpl::submit(  )
                                                                             i18n("Konqueror has the ability to store the password "
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "
-                                                                                 "next time you visit this site. Do you want to store "
-                                                                                 "the information now?"),
+                                                                                 "next time you visit %1. Do you want to store "
+                                                                                 "the information now?").arg(formUrl.host()),
                                                                             QStringList(), QString::null, &checkboxResult, KMessageBox::Notify);
 
                 if ( savePassword == KDialogBase::Yes ) {
