@@ -1152,13 +1152,16 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->startup_id = startup_id;
 #endif
    request->envs = envs;
-   // Find service, if any - strip path if needed
-   KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
-   if (service != NULL)
-       send_service_startup_info( request,  service,
-           startup_id, Q3ValueList< DCOPCString >());
-   else // no .desktop file, no startup info
-       cancel_service_startup_info( request, startup_id, envs );
+   if( app != "kbuildsycoca" ) // avoid stupid loop
+   {
+       // Find service, if any - strip path if needed
+       KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
+       if (service != NULL)
+           send_service_startup_info( request,  service,
+               startup_id, Q3ValueList< DCOPCString >());
+       else // no .desktop file, no startup info
+           cancel_service_startup_info( request, startup_id, envs );
+   }
    request->transaction = dcopClient()->beginTransaction();
    queueRequest(request);
    return true;
