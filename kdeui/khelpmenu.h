@@ -133,15 +133,6 @@ class KDEUI_EXPORT KHelpMenu : public QObject
   Q_OBJECT
 
   public:
-    enum MenuId
-    {
-      menuHelpContents = 0,
-      menuWhatsThis = 1,
-      menuAboutApp = 2,
-      menuAboutKDE = 3,
-      menuReportBug = 4
-    };
-
     /**
      * Constructor.
      *

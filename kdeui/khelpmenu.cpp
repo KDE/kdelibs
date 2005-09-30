@@ -20,7 +20,7 @@
  */
 
 // I (espen) prefer that header files are included alphabetically
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
@@ -124,46 +124,40 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      mMenu->insertItem( BarIconSet( "contents", KIcon::SizeSmall),
-                     i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
-      mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
-      mMenu->setAccel( KStdAccel::shortcut(KStdAccel::Help), menuHelpContents );
+      mMenu->addAction( BarIconSet( "contents", KIcon::SizeSmall),
+                     i18n( "%1 &Handbook" ).arg( appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
       need_separator = true;
     }
 
     if( mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
+      #warning find a better way to get the default iconset, or reconsider using BarIconSet
       QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
-      mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
-      mMenu->connectItem( menuWhatsThis, this, SLOT(contextHelpActivated()) );
+      mMenu->addAction( wtb->icon(),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       delete wtb;
-      mMenu->setAccel( Qt::SHIFT + Qt::Key_F1, menuWhatsThis );
       need_separator = true;
     }
 
     if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
     {
       if (need_separator)
-        mMenu->insertSeparator();
-      mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
-      mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
+        mMenu->addSeparator();
+      mMenu->addAction( i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
       need_separator = true;
     }
 
     if (need_separator)
-      mMenu->insertSeparator();
+      mMenu->addSeparator();
 
     if (KAuthorized::authorizeKAction("help_about_app"))
     {
-      mMenu->insertItem( QIcon(kapp->miniIcon()),
-        i18n( "&About %1" ).arg(appName), menuAboutApp );
-      mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
+      mMenu->addAction( QIcon(kapp->miniIcon()),
+        i18n( "&About %1" ).arg(appName), this, SLOT( aboutApplication() ) );
     }
     
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
-      mMenu->insertItem( SmallIconSet("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
-      mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
+      mMenu->addAction( SmallIconSet("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
     }
   }
 
@@ -203,7 +197,7 @@ void KHelpMenu::aboutApplication()
 				   false, true, KStdGuiItem::ok() );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
-      Q3HBox *hbox = new Q3HBox( mAboutApp );
+      KHBox *hbox = new KHBox( mAboutApp );
       mAboutApp->setMainWidget( hbox );
       hbox->setSpacing(KDialog::spacingHint()*3);
       hbox->setMargin(KDialog::marginHint()*1);
