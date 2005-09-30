@@ -35,7 +35,7 @@ class KVBox;
 
 class Q3Grid;
 class Q3ListViewItem;
-class Q3WidgetStack;
+class QStackedWidget;
 class QLabel;
 class QStringList;
 class QTabWidget;
@@ -580,7 +580,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     int          mFace;
     KListView    *mTreeList;
     IconListBox  *mIconList;
-    Q3WidgetStack *mPageStack;
+    QStackedWidget *mPageStack;
     QLabel       *mTitleLabel;
     QTabWidget   *mTabControl;
     QFrame       *mPlainPage;

@@ -25,7 +25,7 @@
 
 #include <kpushbutton.h>
 #include <qlabel.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <klocale.h>
@@ -61,7 +61,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 
 	m_pagepool.setAutoDelete(false);
 
-	m_stack = new Q3WidgetStack(this);
+	m_stack = new QStackedWidget(this);
 	m_next = new KPushButton(i18n("&Next >"), this);
 	m_next->setDefault(true);
 	m_prev = new KPushButton(i18n("< &Back"), this);
@@ -140,7 +140,7 @@ KMWizard::~KMWizard()
 
 void KMWizard::addPage(KMWizardPage *page)
 {
-	m_stack->addWidget(page,page->id());
+	m_stack->insertWidget(page->id(),page);
 	m_pagepool.insert(page->id(),page);
 }
 
@@ -149,7 +149,7 @@ void KMWizard::setPrinter(KMPrinter *p)
 	if (p)
 	{
 		m_printer->copy(*p);
-		KMWizardPage	*page = (KMWizardPage*)m_stack->visibleWidget();
+		KMWizardPage	*page = (KMWizardPage*)m_stack->currentWidget();
 		if (page)
 			page->initPrinter(m_printer);
 	}
@@ -197,7 +197,7 @@ void KMWizard::setCurrentPage(int ID, bool back)
 	if (!back) m_pagestack.push(ID);
 
 	// raise page + initialize
-	m_stack->raiseWidget(page);
+	m_stack->setCurrentWidget(page);
 	m_title->setText(page->title());
 	if (!back) page->initPrinter(m_printer);
 
@@ -220,7 +220,7 @@ void KMWizard::slotPrev()
 
 void KMWizard::slotNext()
 {
-	KMWizardPage	*page = (KMWizardPage*)m_stack->visibleWidget();
+	KMWizardPage	*page = (KMWizardPage*)m_stack->currentWidget();
 	if (page)
 	{
 		QString	msg;

@@ -39,7 +39,7 @@
 #include <qtabbar.h>
 #include <q3textview.h>
 #include <qwidget.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
@@ -289,7 +289,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  Q3WidgetStack *wds = dynamic_cast<Q3WidgetStack*>( w );
+  QStackedWidget *wds = dynamic_cast<QStackedWidget*>( w );
   if ( wds )
   {
       QWidgetStackAccelManager::manage( wds );
@@ -304,7 +304,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  Q3WidgetStack *wdst = dynamic_cast<Q3WidgetStack*>( w );
+  QStackedWidget *wdst = dynamic_cast<QStackedWidget*>( w );
   if ( wdst )
   {
       QWidgetStackAccelManager::manage( wdst );
@@ -829,16 +829,16 @@ void KPopupAccelManager::manage(QMenu *popup)
     new KPopupAccelManager(popup);
 }
 
-void QWidgetStackAccelManager::manage( Q3WidgetStack *stack )
+void QWidgetStackAccelManager::manage( QStackedWidget *stack )
 {
     if ( stack->child( 0, "QWidgetStackAccelManager", false ) == 0 )
         new QWidgetStackAccelManager( stack );
 }
 
-QWidgetStackAccelManager::QWidgetStackAccelManager(Q3WidgetStack *stack)
+QWidgetStackAccelManager::QWidgetStackAccelManager(QStackedWidget *stack)
   : QObject(stack), m_stack(stack)
 {
-    aboutToShow(stack->visibleWidget()); // do one check and then connect to show
+    aboutToShow(stack->currentWidget()); // do one check and then connect to show
     connect(stack, SIGNAL(aboutToShow(QWidget *)), SLOT(aboutToShow(QWidget *)));
 }
 

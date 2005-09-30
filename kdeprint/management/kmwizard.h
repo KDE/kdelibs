@@ -26,7 +26,7 @@
 
 #include <kdelibs_export.h>
 
-class Q3WidgetStack;
+class QStackedWidget;
 class QLabel;
 class QPushButton;
 class KMWizardPage;
@@ -84,7 +84,7 @@ private:
 	Q3IntDict<KMWizardPage>	m_pagepool;
 	Q3ValueStack<int>	m_pagestack;
 
-	Q3WidgetStack		*m_stack;
+	QStackedWidget		*m_stack;
 	QLabel			*m_title;
 	QPushButton		*m_next, *m_prev;
 	int			m_start, m_end;

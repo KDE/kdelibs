@@ -29,7 +29,7 @@ class QSpinBox;
 class QComboBox;
 class Q3ListView;
 class QListviewItem;
-class Q3WidgetStack;
+class QStackedWidget;
 
 class EditEntryDialog : public KDialogBase
 {
@@ -54,7 +54,7 @@ private:
 	QComboBox	*m_type;
 	QSpinBox	*m_number;
 	Q3ListView	*m_view;
-	Q3WidgetStack	*m_stack;
+	QStackedWidget	*m_stack;
 	QString		m_current;
 	bool		m_block;
 };

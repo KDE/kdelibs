@@ -27,7 +27,7 @@
 #include <q3valuelist.h>
 #include <qobject.h>
 
-class Q3WidgetStack;
+class QStackedWidget;
 
 /**
  * A string class handling accelerators.
@@ -168,12 +168,12 @@ class QWidgetStackAccelManager : public QObject
 
 public:
 
-  static void manage(Q3WidgetStack *popup);
+  static void manage(QStackedWidget *popup);
 
 
 protected:
 
-  QWidgetStackAccelManager(Q3WidgetStack *popup);
+  QWidgetStackAccelManager(QStackedWidget *popup);
 
 
 private slots:
@@ -185,7 +185,7 @@ private:
 
   void calculateAccelerators();
 
-  Q3WidgetStack     *m_stack;
+  QStackedWidget     *m_stack;
   KAccelStringList m_entries;
 
 };

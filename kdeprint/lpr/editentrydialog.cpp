@@ -27,7 +27,7 @@
 #include <q3header.h>
 #include <klistview.h>
 #include <qlayout.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <klocale.h>
 #include <kiconloader.h>
 
@@ -46,13 +46,13 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	m_type->insertItem(i18n("String"));
 	m_type->insertItem(i18n("Number"));
 	m_type->insertItem(i18n("Boolean"));
-	m_stack = new Q3WidgetStack(w);
+	m_stack = new QStackedWidget(w);
 	m_boolean = new QCheckBox(i18n("Enabled"), m_stack);
 	m_string = new QLineEdit(m_stack);
 	m_number = new QSpinBox(0, 9999, 1, m_stack);
-	m_stack->addWidget(m_string, 0);
-	m_stack->addWidget(m_boolean, 2);
-	m_stack->addWidget(m_number, 1);
+	m_stack->insertWidget(0,m_string);
+	m_stack->insertWidget(2,m_boolean);
+	m_stack->insertWidget(1,m_number);
 	m_name = new QLineEdit(w);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(w, 0, 10);
@@ -150,7 +150,7 @@ void EditEntryDialog::fillEntry(PrintcapEntry *entry)
 
 void EditEntryDialog::slotTypeChanged(int ID)
 {
-	m_stack->raiseWidget(ID);
+	m_stack->setCurrentIndex(ID);
 	slotChanged();
 }
 

@@ -28,7 +28,7 @@
 #include <klistbox.h>
 #include <Q3VButtonGroup>
 #include <qradiobutton.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <qlayout.h>
 #include <qapplication.h>
 
@@ -280,29 +280,29 @@ void OptionBooleanView::slotSelected(int ID)
 DrOptionView::DrOptionView(QWidget *parent, const char *name)
 : Q3GroupBox(parent,name)
 {
-	m_stack = new Q3WidgetStack(this);
+	m_stack = new QStackedWidget(this);
 
 	OptionBaseView	*w = new OptionListView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->addWidget(w,DrBase::List);
+	m_stack->insertWidget(DrBase::List,w);
 
 	w = new OptionStringView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->addWidget(w,DrBase::String);
+	m_stack->insertWidget(DrBase::String,w);
 
 	w = new OptionNumericView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->addWidget(w,DrBase::Integer);
+	m_stack->insertWidget(DrBase::Integer,w);
 
 	w = new OptionBooleanView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->addWidget(w,DrBase::Boolean);
+	m_stack->insertWidget(DrBase::Boolean,w);
 
 	w = new OptionBaseView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->addWidget(w,0);	// empty widget
+	m_stack->insertWidget(0,w);	// empty widget
 
-	m_stack->raiseWidget(w);
+	m_stack->setCurrentWidget(w);
 	setTitle(i18n("No Option Selected"));
 
 	setColumnLayout(0, Qt::Vertical );
@@ -339,7 +339,7 @@ void DrOptionView::slotItemSelected(Q3ListViewItem *i)
 		}
 		else
 			setTitle(i18n("No Option Selected"));
-		m_stack->raiseWidget(w);
+		m_stack->setCurrentWidget(w);
 		w->setEnabled(enabled);
 		m_block = false;
 	}

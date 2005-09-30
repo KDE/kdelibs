@@ -20,7 +20,7 @@
 #ifndef KMPRINTERVIEW_H
 #define KMPRINTERVIEW_H
 
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <q3ptrlist.h>
 
 class KMIconView;
@@ -28,7 +28,7 @@ class KMListView;
 class KMPrinter;
 class Q3IconViewItem;
 
-class KMPrinterView : public Q3WidgetStack
+class KMPrinterView : public QStackedWidget
 {
 	Q_OBJECT
 public:

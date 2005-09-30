@@ -24,7 +24,7 @@
 #include <qpixmap.h>
 #include <q3ptrlist.h>
 
-class Q3WidgetStack;
+class QStackedWidget;
 class QLabel;
 class Q3ListBoxItem;
 
@@ -57,7 +57,7 @@ private:
 	Q3PtrList<CPage>		m_pages;
 	CListBox		*m_iconlist;
 	QLabel			*m_header;
-	Q3WidgetStack		*m_stack;
+	QStackedWidget		*m_stack;
 	QWidget			*m_empty;
 };
 

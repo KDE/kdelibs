@@ -30,7 +30,7 @@ class QLabel;
 class KListBox;
 class Q3ListBoxItem;
 class Q3VButtonGroup;
-class Q3WidgetStack;
+class QStackedWidget;
 class Q3ListViewItem;
 class DrBase;
 class DriverItem;
@@ -127,7 +127,7 @@ public slots:
 	void slotItemSelected(Q3ListViewItem*);
 
 private:
-	Q3WidgetStack	*m_stack;
+	QStackedWidget	*m_stack;
 	DriverItem	*m_item;
 	bool		m_block;
 	bool		m_allowfixed;

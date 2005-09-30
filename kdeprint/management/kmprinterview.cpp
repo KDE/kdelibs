@@ -30,12 +30,12 @@
 #include <klocale.h>
 
 KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
-: Q3WidgetStack(parent,name), m_type(KMPrinterView::Icons)
+: QStackedWidget(parent/*,name*/), m_type(KMPrinterView::Icons)
 {
 	m_iconview = new KMIconView(this);
-	addWidget(m_iconview,0);
+	insertWidget(0,m_iconview);
 	m_listview = new KMListView(this);
-	addWidget(m_listview,1);
+	insertWidget(1,m_listview);
 	m_current = QString::null;
 	m_listset = false;
 
@@ -90,12 +90,12 @@ void KMPrinterView::setViewType(ViewType t)
 		setPrinterList(KMManager::self()->printerList(false));
 	if (m_type == KMPrinterView::Tree)
 	{
-		raiseWidget(m_listview);
+		setCurrentWidget(m_listview);
 		m_listview->setPrinter(oldcurrent);
 	}
 	else
 	{
-		raiseWidget(m_iconview);
+		setCurrentWidget(m_iconview);
 		m_iconview->setPrinter(oldcurrent);
 	}
 }
@@ -107,7 +107,7 @@ void KMPrinterView::slotPrinterSelected(const QString& p)
 
 QSize KMPrinterView::minimumSizeHint() const
 {
-	return Q3WidgetStack::minimumSizeHint();
+	return QStackedWidget::minimumSizeHint();
 }
 
 #include "kmprinterview.moc"

@@ -29,10 +29,9 @@
 #include <qsplitter.h>
 #include <qtabwidget.h>
 #include <kvbox.h>
-#include <q3widgetstack.h>
 #include <qpainter.h>
 #include <qstyle.h>
-
+#include <QStackedWidget>
 #include <kapplication.h>
 #include <kdialog.h> // Access to some static members
 #include <klocale.h>
@@ -165,7 +164,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     mTitleSep->setFrameStyle( QFrame::HLine|QFrame::Plain );
     vbox->addWidget( mTitleSep );
 
-    mPageStack = new Q3WidgetStack( page );
+    mPageStack = new QStackedWidget( page );
     connect(mPageStack, SIGNAL(aboutToShow(QWidget *)),
             SIGNAL(aboutToShowPage(QWidget *)));
     vbox->addWidget( mPageStack, 10 );
@@ -439,7 +438,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
   {
     d->mIntToPage[d->mNextPageIndex] = static_cast<QWidget*>(page);
     d->mPageToInt[static_cast<QWidget*>(page)] = d->mNextPageIndex;
-    mPageStack->addWidget( page, 0 );
+    mPageStack->insertWidget( 0,page );
 
     if (items.isEmpty()) {
       kdDebug() << "Invalid QStringList, with zero items" << endl;
@@ -592,7 +591,7 @@ bool KJanusWidget::showPage( QWidget *w )
 
   if( mFace == TreeList || mFace == IconList )
   {
-    mPageStack->raiseWidget( w );
+    mPageStack->setCurrentWidget( w );
     mActivePageWidget = w;
 
     int index = d->mPageToInt[w];

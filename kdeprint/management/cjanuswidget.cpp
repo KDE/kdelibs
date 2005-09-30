@@ -19,7 +19,7 @@
 
 #include "cjanuswidget.h"
 
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <qlabel.h>
 #include <qpainter.h>
 #include <klistbox.h>
@@ -131,7 +131,7 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 {
 	m_pages.setAutoDelete(true);
 
-	m_stack = new Q3WidgetStack(this);
+	m_stack = new QStackedWidget(this);
 	m_header = new QLabel(this);
 	QFont	f(m_header->font());
 	f.setBold(true);
@@ -148,7 +148,7 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 
 	m_empty = new QWidget( this );
         m_empty->setObjectName( "Empty" );
-	m_stack->addWidget(m_empty,0);
+	m_stack->insertWidget(0,m_empty);
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 10);
 	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 5);
@@ -173,7 +173,7 @@ void CJanusWidget::addPage(QWidget *w, const QString& text, const QString& heade
 	page->m_pixmap = pix;
 	page->m_item = new CListBoxItem(m_iconlist,findPrevItem(page),pix,text);
 	m_iconlist->computeWidth();
-	m_stack->addWidget(w,m_pages.count());
+	m_stack->insertWidget(m_pages.count(),w);
 
 	if (m_iconlist->count() == 1)
 		m_iconlist->setSelected(page->m_item,true);
@@ -213,13 +213,13 @@ void CJanusWidget::slotSelected(Q3ListBoxItem *item)
 	CPage	*page = findPage(item);
 	if (page)
 	{
-		m_stack->raiseWidget(page->m_widget);
+		m_stack->setCurrentWidget(page->m_widget);
 		m_header->setText(page->m_header);
 	}
 	else
 	{
 		m_header->setText("");
-		m_stack->raiseWidget(m_empty);
+		m_stack->setCurrentWidget(m_empty);
 	}
 }
 
