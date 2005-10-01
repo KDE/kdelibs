@@ -6,30 +6,43 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!ENTITY Alt        		"<keycap>Alt</keycap>">
-<!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
-<!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
-<!ENTITY etc        		"itp.">
-<!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
-<!ENTITY Tab        		"<keycap>Tab</keycap>">
+<!-- Not defined entities, must be replaced with text:
+digikamimageplugins
+klicker
+kpat
+ktnef
+ -->
 
-<!ENTITY kicon                  "
-<guiicon>
-<inlinemediaobject>
- <objectinfo><title>Ikona K &kde;</title></objectinfo>
- <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
- <textobject><phrase>K</phrase></textobject>
-</inlinemediaobject>
-</guiicon>"><!-- if image is localised, then entityref should be used instead of fileref -->
+<!ENTITY Alt        		"<keycap>Alt</keycap>">
 
 <!ENTITY ark-mianownik    '<application>Ark</application>'>
 <!ENTITY ark-dopelniacz    '<application>Arka</application>'>
-<!ENTITY ark-miejscownik    '<application>Arku</application>'>
-<!ENTITY ark-narzednik    '<application>Arkiem</application>'>
+<!ENTITY ark-celownik    '<application>Arkowi</application>'>
 <!ENTITY ark-biernik    '<application>Arka</application>'>
-<!ENTITY ark    '&ark-mianownik;'>
+<!ENTITY ark-narzednik    '<application>Arkiem</application>'>
+<!ENTITY ark-miejscownik    '<application>Arku</application>'>
+
+<!ENTITY Backspace        		"<keycap>Backspace</keycap>">
+
+<!ENTITY cdrom-mianownik    '<hardware>CD-ROM</hardware>'>
+<!ENTITY cdrom-dopelniacz    '<hardware>CD-ROMu</hardware>'>
+<!ENTITY cdrom-celownik    '<hardware>CD-ROMowi</hardware>'>
+<!ENTITY cdrom-biernik    '<hardware>CD-ROM</hardware>'>
+<!ENTITY cdrom-narzednik    '<hardware>CD-ROMem</hardware>'>
+<!ENTITY cdrom-miejscownik    '<hardware>CD-ROMie</hardware>'>
+
+<!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">
+<!ENTITY dpi        		"dpi">
+<!ENTITY Enter        		"<keycap>Enter</keycap>">
+<!ENTITY Esc        		"<keycap>Esc</keycap>">
+<!ENTITY etc        		"itp.">
+<!ENTITY eg        		"np.">
+
+<!ENTITY FAQ        		"FAQ">
 
 <!ENTITY gif        		'<literal role="extension">.gif</literal>'>
+
+<!ENTITY ie        		"tzn.">
 
 <!ENTITY GUI-mianownik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-dopelniacz    'graficznego interfejsu użytkownika'>
@@ -43,7 +56,6 @@
 <!ENTITY kappfinder-biernik    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-narzednik    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-miejscownik    '<application>Kappfinder</application>'>
-<!ENTITY kappfinder    '&kappfinder-mianownik;'>
 
 <!ENTITY kcalc-mianownik    '<application>Kalkulator</application>'>
 <!ENTITY kcalc-dopelniacz    '<application>Kalkulatora</application>'>
@@ -51,7 +63,6 @@
 <!ENTITY kcalc-biernik    '<application>Kalkulator</application>'>
 <!ENTITY kcalc-narzednik    '<application>Kalkulatorem</application>'>
 <!ENTITY kcalc-miejscownik    '<application>Kalkulatorze</application>'>
-<!ENTITY kcalc    '&kcalc-mianownik;'>
 
 <!ENTITY kcontrolcenter    '&kcontrolcenter-mianownik;'>
 <!ENTITY kcontrolcenter-mianownik    '<application>Centrum sterowania &kde;</application>'>
@@ -65,14 +76,12 @@
 <!ENTITY kdm-celownik    '<application>KDM</application>'>
 <!ENTITY kdm-biernik    '<application>KDM</application>'>
 <!ENTITY kdm-miejscownik    '<application>KDM</application>'>
-<!ENTITY kdm    '&kdm-mianownik;'>
 
 <!ENTITY khelpcenter-mianownik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-dopelniacz    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-celownik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-biernik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-miejscownik    '<application>Centrum pomocy &kde;</application>'>
-<!ENTITY khelpcenter    '&khelpcenter-mianownik;'>
 
 <!ENTITY kicker-mianownik    '<application>Kicker</application>'>
 <!ENTITY kicker-dopelniacz    '<application>Kickera</application>'>
@@ -80,7 +89,17 @@
 <!ENTITY kicker-biernik    '<application>Kickera</application>'>
 <!ENTITY kicker-narzednik    '<application>Kickerem</application>'>
 <!ENTITY kicker-miejscownik    '<application>Kickerze</application>'>
-<!ENTITY kicker    '&kicker-mianownik;'>
+
+<!ENTITY kicon                  "
+<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>Ikona K &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon>"><!-- if image is localised, then entityref should be used instead of fileref -->
+
+<!ENTITY kipi    '<application>KIPI</application>'>
 
 <!ENTITY klipper-mianownik    '<application>Klipper</application>'>
 <!ENTITY klipper-dopelniacz    '<application>Klippera</application>'>
@@ -88,35 +107,30 @@
 <!ENTITY klipper-biernik    '<application>Klippera</application>'>
 <!ENTITY klipper-narzednik    '<application>Klipperem</application>'>
 <!ENTITY klipper-miejscownik    '<application>Klipperze</application>'>
-<!ENTITY klipper    '&klipper-mianownik;'>
 
 <!ENTITY kmail-mianownik    '<application>Kmail</application>'>
 <!ENTITY kmail-dopelniacz    '<application>Kmaila</application>'>
 <!ENTITY kmail-celownik    '<application>Kmail-owi</application>'>
 <!ENTITY kmail-biernik    '<application>Kmaila</application>'>
 <!ENTITY kmail-miejscownik    '<application>Kmail-u</application>'>
-<!ENTITY kmail    '&kmail-mianownik;'>
 
 <!ENTITY kmenu-mianownik    'Menu K'>
 <!ENTITY kmenu-dopelniacz    '&kmenu-mianownik;'>
 <!ENTITY kmenu-celownik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
-<!ENTITY kmenu    '&kmenu-mianownik;'>
 
 <!ENTITY knode-mianownik    '<application>Knode</application>'>
 <!ENTITY knode-dopelniacz    '<application>Knode</application>'>
 <!ENTITY knode-celownik    '<application>Knode</application>'>
 <!ENTITY knode-biernik    '<application>Knode</application>'>
 <!ENTITY knode-miejscownik    '<application>Knode</application>'>
-<!ENTITY knode    '&knode-mianownik;'>
 
 <!ENTITY konqueror-mianownik    '<application>Konqueror</application>'>
 <!ENTITY konqueror-dopelniacz    '<application>Konquerora</application>'>
 <!ENTITY konqueror-celownik    '<application>Konquerorowi</application>'>
 <!ENTITY konqueror-biernik    '<application>Konquerora</application>'>
 <!ENTITY konqueror-miejscownik    '<application>Konquerorze</application>'>
-<!ENTITY konqueror    '&konqueror-mianownik;'>
 
 <!ENTITY konsole-mianownik    '<application>Konsola</application>'>
 <!ENTITY konsole-dopelniacz    '<application>Konsoli</application>'>
@@ -124,7 +138,6 @@
 <!ENTITY konsole-biernik    '<application>Konsolę</application>'>
 <!ENTITY konsole-narzednik    '<application>Konsolą</application>'>
 <!ENTITY konsole-miejscownik    '<application>Konsoli</application>'>
-<!ENTITY konsole    '&konsole-mianownik;'>
 
 <!ENTITY kontact-mianownik    '<application>Kontact</application>'>
 <!ENTITY kontact-dopelniacz    '<application>Kontact</application>'>
@@ -132,7 +145,6 @@
 <!ENTITY kontact-biernik    '<application>Kontact</application>'>
 <!ENTITY kontact-narzednik    '<application>Kontact</application>'>
 <!ENTITY kontact-miejscownik    '<application>Kontact</application>'>
-<!ENTITY kontact    '&kontact-mianownik;'>
 
 <!ENTITY kopete-mianownik    '<application>Kopete</application>'>
 <!ENTITY kopete-dopelniacz    '<application>Kopete</application>'>
@@ -140,16 +152,20 @@
 <!ENTITY kopete-biernik    '<application>Kopete</application>'>
 <!ENTITY kopete-narzednik    '<application>Kopete</application>'>
 <!ENTITY kopete-miejscownik    '<application>Kopete</application>'>
-<!ENTITY kopete    '&kopete-mianownik;'>
 
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
+<!ENTITY kwallet-celownik    '<application>Portfelowi &kde;</application>'>
 <!ENTITY kwallet-biernik    '<application>Portfel &kde;</application>'>
-<!ENTITY kwallet    '&kwallet-mianownik;'>
+<!ENTITY kwallet-narzednik    '<application>Portfelem &kde;</application>'>
+<!ENTITY kwallet-miejscownik    '<application>Portfelu &kde;</application>'>
 
 <!ENTITY kwalletmanager-mianownik    '<application>Menedżer portfeli &kde;</application>'>
 <!ENTITY kwalletmanager-dopelniacz    '<application>Menedżera portfeli &kde;</application>'>
-<!ENTITY kwalletmanager    '&kwalletmanager-mianownik;'>
+<!ENTITY kwalletmanager-celownik    '<application>Menedżerowi portfeli &kde;</application>'>
+<!ENTITY kwalletmanager-biernik    '<application>Menedżera portfeli &kde;</application>'>
+<!ENTITY kwalletmanager-narzednik    '<application>Menedżerem portfeli &kde;</application>'>
+<!ENTITY kwalletmanager-miejscownik    '<application>Menedżerze portfeli &kde;</application>'>
 
 <!ENTITY Linux-mianownik    'Linux'>
 <!ENTITY Linux-dopelniacz    'Linuksa'>
@@ -157,7 +173,13 @@
 <!ENTITY Linux-biernik    'Linuksa'>
 <!ENTITY Linux-narzednik    'Linuksem'>
 <!ENTITY Linux-miejscownik    'Linuksie'>
-<!ENTITY Linux    '&Linux-mianownik;'>
+
+<!ENTITY OS-mianownik    'system operacyjny'>
+<!ENTITY OS-dopelniacz    'systemu operacyjnego'>
+<!ENTITY OS-celownik    'systemowi operacyjnemu'>
+<!ENTITY OS-biernik    'system operacyjny'>
+<!ENTITY OS-narzednik    'systemem operacyjnym'>
+<!ENTITY OS-miejscownik    'systemie operacyjnym'>
 
 <!ENTITY Sendmail-mianownik    '<application>Sendmail</application>'>
 <!ENTITY Sendmail-dopelniacz    '<application>Sendmail-a</application>'>
@@ -165,4 +187,6 @@
 <!ENTITY Sendmail-biernik    '<application>Sendmail-a</application>'>
 <!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
 <!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
-<!ENTITY Sendmail    '&Sendmail-mianownik;'>
+
+<!ENTITY Shift        		"<keycap>Shift</keycap>">
+<!ENTITY Tab        		"<keycap>Tab</keycap>">
