@@ -611,11 +611,17 @@ void HTMLFormElementImpl::submit(  )
 
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
+                                                                            formUrl.host().isEmpty() ? // e.g. local file
                                                                             i18n("Konqueror has the ability to store the password "
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "
-                                                                                 "next time you visit this site. Do you want to store "
-                                                                                 "the information now?"),
+                                                                                 "next time you submit this form. Do you want to store "
+                                                                                 "the information now?") :
+                                                                            i18n("Konqueror has the ability to store the password "
+                                                                                 "in an encrypted wallet. When the wallet is unlocked, it "
+                                                                                 "can then automatically restore the login information "
+                                                                                 "next time you visit %1. Do you want to store "
+                                                                                 "the information now?").arg(formUrl.host()),
                                                                             QStringList(), QString::null, &checkboxResult, KMessageBox::Notify);
 
                 if ( savePassword == KDialogBase::Yes ) {
