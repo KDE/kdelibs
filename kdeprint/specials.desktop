@@ -662,7 +662,7 @@ Extension=
 Require=exec:/kdeprintfax
 
 [Printer 3]
-Command=ps2pdf -sPAPERSIZE=%psl %in %out && kmail --composer --attach file:%out && sleep 15 && rm -f %out
+Command=ps2pdf -sPAPERSIZE=%psl %in %out && kmailservice 'mailto:?attachment=file:%out' && sleep 15 && rm -f %out
 Comment=Attachment for KMail Composer
 Comment[af]=Aanhegsel vir Kpos Saamsteller
 Comment[ar]=مرفقات كاتب KMail
