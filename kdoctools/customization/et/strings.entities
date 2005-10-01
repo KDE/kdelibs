@@ -8,16 +8,16 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LIST THEIR TITLES"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "the Invariant Sections being &FDLISTitles;">
+<!ENTITY FDLInvariantSections "mittemuudetavad sektsioonid (&FDLISTitles;)">
  ]]>
-<!ENTITY FDLInvariantSections "no Invariant Sections">
+<!ENTITY FDLInvariantSections "mittemuudetavad sektsioonid (puudub)">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "the Front-Cover Texts being &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "esikaane tekstid (&FDLFCTTitles;)">
  ]]>
-<!ENTITY FDLFrontCoverText "no Front-Cover Texts">
+<!ENTITY FDLFrontCoverText "esikaane tekstid (puudub)">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LIST THEIR TITLES"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "the Back-Cover Texts being &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "tagakaane tekstid (&FDLBCTTitles;)">
  ]]>
-<!ENTITY FDLBackCoverText "no Back-Cover Texts">
+<!ENTITY FDLBackCoverText "tagakaane tekstid (puudub)">
