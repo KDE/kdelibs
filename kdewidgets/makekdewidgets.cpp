@@ -5,7 +5,7 @@
 #include <kconfig.h>
 #include <kmacroexpander.h>
 #include <kdebug.h>
-
+#include <klocale.h>
 #include <QtCore>
 
 static const char description[] = I18N_NOOP( "Builds Qt widget plugins from an ini style description file." );
