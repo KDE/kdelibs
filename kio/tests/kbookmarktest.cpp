@@ -49,7 +49,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
 
     KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", "http://www.kde.org", "icon" );
     VERIFY( !bookmark.isNull() );
-    bookmark.addToMimeData( mimeData );
+    bookmark.setInMimeData( mimeData );
 
     VERIFY( KURL::List::canDecode( mimeData ) );
     VERIFY( KBookmark::List::canDecode( mimeData ) );
@@ -76,7 +76,7 @@ void KBookmarkTest::testMimeDataBookmarkList()
     KBookmark::List initialBookmarks;
     initialBookmarks.append( bookmark1 );
     initialBookmarks.append( bookmark2 );
-    initialBookmarks.addToMimeData( mimeData );
+    initialBookmarks.setInMimeData( mimeData );
 
     VERIFY( KURL::List::canDecode( mimeData ) );
     VERIFY( KBookmark::List::canDecode( mimeData ) );

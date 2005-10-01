@@ -403,10 +403,10 @@ void RMB::slotRMBActionCopyLocation( int val )
   if ( !bookmark.isGroup() )
   {
     QMimeData* mimeData = new QMimeData;
-    bookmark.addToMimeData( mimeData );
+    bookmark.setInMimeData( mimeData );
     QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
     mimeData = new QMimeData;
-    bookmark.addToMimeData( mimeData );
+    bookmark.setInMimeData( mimeData );
     QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
   }
 }

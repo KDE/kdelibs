@@ -190,7 +190,7 @@ QStringList KURL::List::toStringList() const
 }
 
 
-void KURL::List::addToMimeData( QMimeData* mimeData,
+void KURL::List::setInMimeData( QMimeData* mimeData,
                                 const KURL::MetaDataMap& metaData,
                                 MimeDataFlags flags )
 {
@@ -820,7 +820,7 @@ QString KURL::htmlURL() const
   return Q3StyleSheet::escape(prettyURL());
 }
 
-QString KURL::toMimeDataString() const // don't fold this into addToMimeData, it's also needed by other code like konqdrag
+QString KURL::toMimeDataString() const // don't fold this into setInMimeData, it's also needed by other code like konqdrag
 {
   if ( isLocalFile() )
   {

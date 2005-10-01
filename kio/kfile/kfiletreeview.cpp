@@ -268,7 +268,7 @@ Q3DragObject * KFileTreeView::dragObject()
       pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
    hotspot.setX( pixmap.width() / 2 );
    hotspot.setY( pixmap.height() / 2 );
-#if 0 // there is no more kurldrag, this should use urls.addToMimeData( mimeData ) instead
+#if 0 // there is no more kurldrag, this should use urls.setInMimeData( mimeData ) instead
    Q3DragObject* dragObject = new KURLDrag( urls, this );
    if( dragObject )
       dragObject->setPixmap( pixmap, hotspot );

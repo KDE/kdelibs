@@ -706,11 +706,11 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
 
   mimeData = new QMimeData;
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 
 #else
@@ -732,12 +732,12 @@ void KHTMLPopupGUIClient::slotCopyImage()
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
   mimeData->setImageData( d->m_pixmap );
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
 
   mimeData = new QMimeData;
   mimeData->setImageData( d->m_pixmap );
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
   kdDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
@@ -751,10 +751,10 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
   mimeData = new QMimeData;
-  safeURL.addToMimeData( mimeData );
+  safeURL.setInMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
   QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries

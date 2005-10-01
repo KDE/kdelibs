@@ -69,7 +69,7 @@ protected:
 	    return 0;
 
 	QDrag *drag = new QDrag( this );
-        m_urls.addToMimeData( drag->mimeData() );
+        m_urls.setInMimeData( drag->mimeData() );
 	return drag;
     }
 

@@ -540,14 +540,14 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
     // never reached
 }
 
-void KBookmark::addToMimeData( QMimeData* mimeData ) const
+void KBookmark::setInMimeData( QMimeData* mimeData ) const
 {
     KBookmark::List bookmarkList;
     bookmarkList.append( *this );
-    bookmarkList.addToMimeData( mimeData );
+    bookmarkList.setInMimeData( mimeData );
 }
 
-void KBookmark::List::addToMimeData( QMimeData* mimeData ) const
+void KBookmark::List::setInMimeData( QMimeData* mimeData ) const
 {
     KURL::List urls;
 
@@ -561,7 +561,7 @@ void KBookmark::List::addToMimeData( QMimeData* mimeData ) const
     }
 
     // This sets text/uri-list and text/plain into the mimedata
-    urls.addToMimeData( mimeData, KURL::MetaDataMap() );
+    urls.setInMimeData( mimeData, KURL::MetaDataMap() );
 
     mimeData->setData( "application/x-xbel", doc.toByteArray() );
 }
