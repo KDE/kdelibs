@@ -55,13 +55,14 @@ AC_ARG_WITH(acl,
 
 ACL_LIBS=""
 if test "x$with_acl" != xno; then
+  USE_POSIX_ACL=yes
   KDE_CHECK_HEADER(attr/libattr.h, ,[USE_POSIX_ACL="no"])
   KDE_CHECK_HEADER(sys/xattr.h, ,[USE_POSIX_ACL="no"])
   KDE_CHECK_HEADER(sys/acl.h, ,[USE_POSIX_ACL="no"])
   KDE_CHECK_HEADER(acl/libacl.h, ,[USE_POSIX_ACL="no"])
   KDE_CHECK_LIB(acl,acl_init, ,[USE_POSIX_ACL="no"])
 
-  if test $USE_POSIX_ACL = "yes" ; then
+  if test "$USE_POSIX_ACL" = "yes" ; then
     ACL_LIBS="-lacl -lattr"
     AC_DEFINE([USE_POSIX_ACL], 1, [Define if system has POSIX ACL support.])
   fi
