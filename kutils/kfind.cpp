@@ -68,11 +68,13 @@ struct KFind::Private
       customIds(false)
     {
         incrementalPath.setAutoDelete(true);
-        data.setAutoDelete(true);
+        //data.setAutoDelete(true);
     }
 
     ~Private()
     {
+		qDeleteAll(data);
+		data.clear();
         delete emptyMatch;
         emptyMatch = 0;
     }
@@ -109,7 +111,7 @@ struct KFind::Private
     QString               matchedPattern;
     Q3Dict<Match>          incrementalPath;
     Match *               emptyMatch;
-    Q3PtrVector<Data>      data;
+    QVector<Data*>      data;
     int                   currentId;
     bool                  customIds;
 };
