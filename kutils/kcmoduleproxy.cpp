@@ -28,7 +28,7 @@
 #include <qpoint.h>
 #include <q3scrollview.h>
 #include <qtextstream.h>
-#include <q3vbox.h>
+
 #include <qwidget.h>
 
 #include <QX11EmbedWidget>
@@ -48,6 +48,7 @@
 #include <kuser.h>
 
 #include <X11/Xlib.h>
+#include <kvbox.h>
 
 #include "kcmoduleproxy.h"
 #include "kcmoduleproxyIface.h"
@@ -93,7 +94,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 		KCModule							*kcm;
 		QX11EmbedWidget							*embedWidget;
 		KProcess							*rootProcess;
-		Q3VBox								*embedFrame;
+		KVBox								*embedFrame;
 		KCModuleProxyIfaceImpl  			*dcopObject;
 		DCOPClient							*dcopClient;
 		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
@@ -305,7 +306,7 @@ void KCModuleProxy::runAsRoot()
 	delete d->embedWidget;
 	delete d->embedFrame;
 
-	d->embedFrame = new Q3VBox( this, "embedFrame" );
+	d->embedFrame = new KVBox( this/*, "embedFrame"*/ );
 	d->embedFrame->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
 
 	QPalette pal( Qt::red );
