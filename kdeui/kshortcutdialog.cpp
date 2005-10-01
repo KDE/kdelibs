@@ -51,7 +51,7 @@
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qtimer.h>
-#include <q3vbox.h>
+
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -62,6 +62,7 @@
 #include <klocale.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
+#include <kvbox.h>
 
 bool KShortcutDialog::s_showMore = false;
 
@@ -70,7 +71,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
                KDialogBase::Details|KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Cancel, true )
 {
         setButtonText(Details, i18n("Advanced"));
-        m_stack = new Q3VBox(this);
+        m_stack = new KVBox(this);
         m_stack->setMinimumWidth(360);
         m_stack->setSpacing(0);
         m_stack->setMargin(0);

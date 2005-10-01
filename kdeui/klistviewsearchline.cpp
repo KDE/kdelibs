@@ -467,6 +467,7 @@ void KListViewSearchLine::checkItemParentsNotVisible(KListView *listView)
 }
 
 #include <kdebug.h>
+#include <kvbox.h>
 
 /** Check whether \p item, its siblings and their descendents should be shown. Show or hide the items as necessary.
  *
@@ -530,7 +531,7 @@ public:
 
 KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
                                                      QWidget *parent) :
-    Q3HBox(parent)
+    KHBox(parent)
 {
     d = new KListViewSearchLineWidgetPrivate;
     d->listView = listView;

@@ -21,11 +21,12 @@
 #define KLISTVIEWSEARCHLINE_H
 
 #include <klineedit.h>
-#include <q3hbox.h>
+
 #include <QContextMenuEvent>
 //Added by qt3to4:
 #include <QList>
 #include <q3valuelist.h>
+#include <kvbox.h>
 
 class KListView;
 class Q3ListViewItem;
@@ -307,7 +308,7 @@ private:
  *
  * @since 3.4
  */
-class KDEUI_EXPORT KListViewSearchLineWidget : public Q3HBox
+class KDEUI_EXPORT KListViewSearchLineWidget : public KHBox
 {
     Q_OBJECT
 

@@ -22,7 +22,7 @@
 #define kcharselect_h
 
 #include <q3gridview.h>
-#include <q3vbox.h>
+
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qstring.h>
@@ -30,6 +30,7 @@
 #include <qstringlist.h>
 
 #include <kdelibs_export.h>
+#include <kvbox.h>
 
 class QFont;
 class QFontDatabase;
@@ -138,7 +139,7 @@ private:
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KDEUI_EXPORT KCharSelect : public Q3VBox
+class KDEUI_EXPORT KCharSelect : public KVBox
 {
     Q_OBJECT
     Q_PROPERTY( QString fontFamily READ font WRITE setFont )
@@ -256,7 +257,7 @@ signals:
     void doubleClicked();
 
 private:
-    virtual void setFont(const QFont &f) { Q3VBox::setFont(f); }
+    virtual void setFont(const QFont &f) { KVBox::setFont(f); }
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

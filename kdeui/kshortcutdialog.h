@@ -23,7 +23,7 @@
 #include "kdialogbase.h"
 #include "kshortcut.h"
 
-class Q3VBox;
+class KVBox;
 class KPushButton;
 class KShortcutDialogSimple;
 class KShortcutDialogAdvanced;
@@ -61,7 +61,7 @@ private:
 	uint m_mod;
 	KShortcutDialogSimple *m_simple;
 	KShortcutDialogAdvanced *m_adv;
-	Q3VBox *m_stack;
+	KVBox *m_stack;
 	
 	void updateShortcutDisplay();
 	//void displayMods();

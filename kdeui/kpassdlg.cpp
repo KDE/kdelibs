@@ -29,7 +29,7 @@
 #include <qnamespace.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
-#include <q3hbox.h>
+
 #include <q3ptrdict.h>
 #include <qapplication.h>
 
@@ -45,6 +45,7 @@
 
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <kvbox.h>
 
 #include "kpassdlg.h"
 
@@ -397,7 +398,7 @@ void KPasswordDialog::init()
         m_pGrid->addRowSpacing(10, 10);
         m_pGrid->setRowStretch(10, 12);
 
-        Q3HBox* const strengthBox = new Q3HBox(m_pMain);
+        KHBox* const strengthBox = new KHBox(m_pMain);
         strengthBox->setSpacing(10);
         m_pGrid->addMultiCellWidget(strengthBox, 11, 11, 0, 2);
         QLabel* const passStrengthLabel = new QLabel(strengthBox);

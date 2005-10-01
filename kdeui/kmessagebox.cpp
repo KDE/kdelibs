@@ -19,12 +19,12 @@
 
 #include <qcheckbox.h>
 #include <qpointer.h>
-#include <q3hbox.h>
+
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qstringlist.h>
-#include <q3vbox.h>
+
 #include <q3groupbox.h>
 #include <q3stylesheet.h>
 #include <q3simplerichtext.h>
@@ -48,6 +48,7 @@
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include <kvbox.h>
 #endif
 
  /**
@@ -153,7 +154,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &ask, bool *checkboxReturn, int options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    Q3VBox *topcontents = new Q3VBox (dialog);
+    KVBox *topcontents = new KVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint());
 

@@ -27,7 +27,7 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <q3hbox.h>
+
 #include <q3popupmenu.h>
 #include <Q3VButtonGroup>
 
@@ -38,6 +38,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kiconloader.h>
+#include <kvbox.h>
 
 #include "keditcl.h"
 
@@ -723,7 +724,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   group = new Q3VButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
-  Q3HBox* row1 = new Q3HBox( group );
+  KHBox* row1 = new KHBox( group );
 
   text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, row1, "case");

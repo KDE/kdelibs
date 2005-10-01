@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qcheckbox.h>
 #include <qdatetime.h>
 #include <qfile.h>
-#include <q3hbox.h>
+
 #include <qevent.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -53,6 +53,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef Q_WS_X11
 #include <kwin.h>
+#include <kvbox.h>
 #endif
 
 #include "ktip.h"
@@ -230,16 +231,16 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	pl->addWidget(titlePane, 100);
     }
 
-    Q3HBox *hbox = new Q3HBox(this);
+    KHBox *hbox = new KHBox(this);
     hbox->setSpacing(0);
     hbox->setFrameStyle(Q3Frame::Panel | Q3Frame::Sunken);
     vbox->addWidget(hbox);
 
-    Q3HBox *tl = new Q3HBox(hbox);
+    KHBox *tl = new KHBox(hbox);
     tl->setMargin(7);
     tl->setBackgroundColor(mBlendedColor);
 
-    Q3HBox *topLeft = new Q3HBox(tl);
+    KHBox *topLeft = new KHBox(tl);
     topLeft->setMargin(15);
     topLeft->setBackgroundColor(mBaseColor);
 

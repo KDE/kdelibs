@@ -26,7 +26,7 @@
 #include <qevent.h>
 #include <qfont.h>
 #include <qfontdatabase.h>
-#include <q3hbox.h>
+
 #include <qnamespace.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
+#include <kvbox.h>
 
 class KCharSelect::KCharSelectPrivate
 {
@@ -358,10 +359,10 @@ bool KCharSelectTable::event ( QEvent *e )
 
 //==================================================================
 KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
-  : Q3VBox( parent, name ), d(new KCharSelectPrivate)
+  : KVBox( parent/*, name*/ ), d(new KCharSelectPrivate)
 {
     setSpacing( KDialog::spacingHint() );
-    Q3HBox* const bar = new Q3HBox( this );
+    KHBox* const bar = new KHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
 
     QLabel* const lFont = new QLabel( i18n( "Font:" ), bar );
@@ -401,7 +402,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
-    charTable = new KCharSelectTable( this, name, _font.isEmpty() ? Q3VBox::font().family() : _font, _chr, _tableNum );
+    charTable = new KCharSelectTable( this, name, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
     const QSize sz( charTable->contentsWidth()  +  4 ,
                     charTable->contentsHeight() +  4 );
     charTable->resize( sz );
@@ -410,7 +411,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
     charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );
 
-    setFont( _font.isEmpty() ? Q3VBox::font().family() : _font );
+    setFont( _font.isEmpty() ? KVBox::font().family() : _font );
     setTableNum( _tableNum );
 
     connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
@@ -438,7 +439,7 @@ KCharSelect::~KCharSelect()
 //==================================================================
 QSize KCharSelect::sizeHint() const
 {
-    return Q3VBox::sizeHint();
+    return KVBox::sizeHint();
 }
 
 //==================================================================

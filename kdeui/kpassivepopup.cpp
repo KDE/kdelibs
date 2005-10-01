@@ -12,7 +12,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qtimer.h>
-#include <q3vbox.h>
+
 #include <qx11info_x11.h>
 #include <QMouseEvent>
 #include <qpainter.h>
@@ -30,6 +30,7 @@
 #include "config.h"
 #ifdef Q_WS_X11
 #include <netwm.h>
+#include <kvbox.h>
 #endif
 
 #include "kpassivepopup.h"
@@ -129,17 +130,17 @@ void KPassivePopup::setView( const QString &caption, const QString &text,
     setView( standardView( caption, text, icon, this ) );
 }
 
-Q3VBox * KPassivePopup::standardView( const QString& caption,
+KVBox * KPassivePopup::standardView( const QString& caption,
                                      const QString& text,
                                      const QPixmap& icon,
                                      QWidget *parent )
 {
-    Q3VBox *vb = new Q3VBox( parent ? parent : this );
+    KVBox *vb = new KVBox( parent ? parent : this );
     vb->setSpacing( KDialog::spacingHint() );
 
-    Q3HBox *hb=0;
+    KHBox *hb=0;
     if ( !icon.isNull() ) {
-	hb = new Q3HBox( vb );
+	hb = new KHBox( vb );
 	hb->setMargin( 0 );
 	hb->setSpacing( KDialog::spacingHint() );
 	ttlIcon = new QLabel( hb, "title_icon" );

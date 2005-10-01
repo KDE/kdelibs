@@ -14,11 +14,12 @@
 #include <q3frame.h>
 
 #include <kdelibs_export.h>
+#include <kvbox.h>
 
 class QBoxLayout;
 class QTimer;
 class QLabel;
-class Q3VBox;
+class KVBox;
 
 /**
  * @short A dialog-like popup that displays messages without interupting the user.
@@ -144,7 +145,7 @@ public:
      * @see setView( const QString&, const QString& )
      * @see setView( const QString&, const QString&, const QPixmap& )
      */
-    Q3VBox * standardView( const QString& caption, const QString& text,
+    KVBox * standardView( const QString& caption, const QString& text,
                           const QPixmap& icon, QWidget *parent = 0L );
 
     /**
