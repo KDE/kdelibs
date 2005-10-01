@@ -40,6 +40,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 	m_ID = KMWizard::DriverTest;
 	m_title = i18n("Printer Test");
 	m_nextpage = KMWizard::Name;
+	m_needsinitonback = true;
 	m_driver = 0;
 	m_printer = 0;
 
