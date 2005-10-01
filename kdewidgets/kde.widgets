@@ -224,7 +224,7 @@ IncludeFile=kdatetimewidget.h
 Group=Input (KDE)
 
 [KDateTable]
-IncludeFile=kdatetbl.h
+IncludeFile=kdatetable.h
 Group=Input (KDE)
 ConstructorArgs=(parent, QDate::currentDate())
 
