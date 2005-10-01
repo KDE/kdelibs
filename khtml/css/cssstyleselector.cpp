@@ -3123,45 +3123,33 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 // rect
     case CSS_PROP_CLIP:
     {
-	Length top;
-	Length right;
-	Length bottom;
-	Length left;
-        bool hasClip = true;
-	if (isInherit) {
-            if (parentStyle->hasClip()) {
-                top = parentStyle->clipTop();
-                right = parentStyle->clipRight();
-                bottom = parentStyle->clipBottom();
-                left = parentStyle->clipLeft();
-            }
-            else {
-                hasClip = false;
-                top = right = bottom = left = Length();
-            }
-        } else if (isInitial) {
-            hasClip = false;
-            top = right = bottom = left = Length();
-        } else if ( !primitiveValue ) {
-	    break;
-	} else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RECT ) {
-	    RectImpl *rect = primitiveValue->getRectValue();
-	    if ( !rect )
-		break;
-	    top = convertToLength( rect->top(), style, paintDeviceMetrics );
-	    right = convertToLength( rect->right(), style, paintDeviceMetrics );
-	    bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
-	    left = convertToLength( rect->left(), style, paintDeviceMetrics );
+        Length top = Length();
+        Length right = Length();
+        Length bottom = Length();
+        Length left = Length();
 
-	} else if ( primitiveValue->getIdent() != CSS_VAL_AUTO ) {
-	    break;
-	}
-// 	qDebug("setting clip top to %d", top.value );
-// 	qDebug("setting clip right to %d", right.value );
-// 	qDebug("setting clip bottom to %d", bottom.value );
-// 	qDebug("setting clip left to %d", left.value );
-	style->setClip(top, right, bottom, left );
-	style->setHasClip(hasClip);
+        bool hasClip = false;
+
+        if (isInherit && parentStyle->hasClip()) {
+            hasClip = true;
+	    top = parentStyle->clipTop();
+	    right = parentStyle->clipRight();
+	    bottom = parentStyle->clipBottom();
+	    left = parentStyle->clipLeft();
+        } else if (primitiveValue && primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RECT) {
+            RectImpl *rect = primitiveValue->getRectValue();
+            if (rect) {
+                hasClip = true;
+                top = convertToLength( rect->top(), style, paintDeviceMetrics );
+                right = convertToLength( rect->right(), style, paintDeviceMetrics );
+                bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
+                left = convertToLength( rect->left(), style, paintDeviceMetrics );
+            }
+        }
+
+        style->setClip(top, right, bottom, left);
+        style->setHasClip(hasClip);
+
         // rect, ident
         break;
     }
