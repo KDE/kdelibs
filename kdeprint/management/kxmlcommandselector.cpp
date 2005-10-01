@@ -37,7 +37,7 @@
 #include <kseparator.h>
 #include <kguiitem.h>
 #include <kactivelabel.h>
-#include <kdatetbl.h>
+#include <kdatetable.h>
 #include <kdialogbase.h>
 
 KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialogBase *dlg)
