@@ -13,15 +13,14 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
 #ifndef KWIN_H
 #define KWIN_H
 
-#include <sys/types.h>
 #include <qwindowdefs.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX
 
@@ -171,7 +170,7 @@ public:
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
     class WindowInfo;
-    class WindowInfoPrivate;
+//    class WindowInfoPrivate;
     /**
      * Returns information about window @p win. It is recommended to check
      * whether the returned info is valid by calling the valid() method.
@@ -295,7 +294,7 @@ public:
      * @param state the flags that will be cleared
      */
     static void clearState( WId win, unsigned long  state );
-    
+
     /**
      * Sets the opacity of window @p win to percetage @p percent.
      *
@@ -307,7 +306,7 @@ public:
      * @since 3.4
      */
     static void setOpacity( WId win, uint percent );
-    
+
     /**
      * Sets the shadowsize of window @p win to percetage @p percent.
      *
@@ -653,7 +652,8 @@ public:
     WindowInfo( const WindowInfo& );
     WindowInfo& operator=( const WindowInfo& );
 private:
-    WindowInfoPrivate* d;
+    class Private;
+    Private * d;
 };
 
 #endif //Q_OS_UNIX

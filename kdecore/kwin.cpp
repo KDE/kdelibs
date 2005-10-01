@@ -13,9 +13,12 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
+#include "config.h"
+#include "kwin.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,32 +27,26 @@
 #include <sysent.h>
 #endif
 
-#include "kwin.h"
-
-#include <kuniqueapplication.h>
+#include "kuniqueapplication.h"
 #include <qbitmap.h>
 #include <qimage.h>
 #include <QWhatsThis>
-#include <q3cstring.h>
 #include <qdialog.h>
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qx11info_x11.h>
 
-#include "config.h"
 #include "kapplication.h"
-
-#include <kglobal.h>
-#include <kiconloader.h>
-#include <kdebug.h>
-
-#include <kdatastream.h>
-#include <klocale.h>
-#include <dcopclient.h>
-#include <dcopref.h>
+#include "kglobal.h"
+#include "kiconloader.h"
+#include "kdebug.h"
+#include "kdatastream.h"
+#include "klocale.h"
+#include "dcopclient.h"
+#include "dcopref.h"
 #ifdef Q_WS_X11
-#include <kstartupinfo.h>
-#include <kxerrorhandler.h>
+#include "kstartupinfo.h"
+#include "kxerrorhandler.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -81,13 +78,13 @@ static void kwin_net_create_atoms() {
 	names[n++] = "_KDE_WM_CHANGE_STATE";
 
         atoms[n] = &kde_wm_window_opacity;
-        names[n++] = (char*) "_NET_WM_WINDOW_OPACITY";
+        names[n++] = "_NET_WM_WINDOW_OPACITY";
 
         atoms[n] = &kde_wm_window_shadow;
-        names[n++] = (char*) "_KDE_WM_WINDOW_SHADOW";
+        names[n++] = "_KDE_WM_WINDOW_SHADOW";
 
         atoms[n] = &wm_protocols;
-        names[n++] = (char*) "WM_PROTOCOLS";
+        names[n++] = "WM_PROTOCOLS";
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( QX11Info::display(), const_cast<char**>(names), n, false, atoms_return );
@@ -175,15 +172,15 @@ bool ContextWidget::x11Event( XEvent * ev)
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
 	    XUngrabPointer( QX11Info::display(), ev->xbutton.time );
 	    Window root;
-	    Window child = QX11Info::appRootWindow();
+	    Window _child = QX11Info::appRootWindow();
 	    int root_x, root_y, lx, ly;
 	    uint state;
 	    Window w;
 	    do {
-		w = child;
-		XQueryPointer( QX11Info::display(), w, &root, &child,
+		w = _child;
+		XQueryPointer( QX11Info::display(), w, &root, &_child,
 			       &root_x, &root_y, &lx, &ly, &state );
-	    } while  ( child != None && child != w );
+	    } while  ( _child != None && _child != w );
 
 	    ::sendClientMessage(w, wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
@@ -349,12 +346,11 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
         NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMIcon );
         NETIcon ni = info.icon( width, height );
         if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
-    	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
-	    img.setAlphaBuffer( true );
+    	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, QImage::Format_ARGB32 );
 	    if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
-	        img = img.smoothScale( width, height );
+	        img = img.scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
 	    if ( !img.isNull() )
-	        result.convertFromImage( img );
+	        result.fromImage( img );
 	    return result;
         }
     }
@@ -397,7 +393,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        }
 	        if ( scale && width > 0 && height > 0 && !pm.isNull() &&
 		     ( (int) w != width || (int) h != height) ){
-		    result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+		    result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        } else {
 		    result = pm;
 	        }
@@ -428,7 +424,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.toLower(), KIcon::Small, iconWidth,
 								          KIcon::DefaultState, 0, true );
 	        if( scale && !pm.isNull() )
-		    result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+		    result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
 		    result = pm;
 
@@ -445,7 +441,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(  "xapp", KIcon::Small, iconWidth,
 								       KIcon::DefaultState, 0, true );
 	    if( scale && !pm.isNull() )
-		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+		result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else
 		result = pm;
 	}
@@ -460,7 +456,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
     if ( icon.isNull() )
 	return;
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
-    QImage img = icon.convertToImage().convertDepth( 32 );
+    QImage img = icon.toImage().convertToFormat( QImage::Format_ARGB32 );
     NETIcon ni;
     ni.size.width = img.size().width();
     ni.size.height = img.size().height();
@@ -468,7 +464,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
     info.setIcon( ni, true );
     if ( miniIcon.isNull() )
 	return;
-    img = miniIcon.convertToImage().convertDepth( 32 );
+    img = miniIcon.toImage().convertToFormat( QImage::Format_ARGB32 );
     ni.size.width = img.size().width();
     ni.size.height = img.size().height();
     ni.data = (unsigned char *) img.bits();
@@ -661,16 +657,15 @@ void KWin::lowerWindow( WId win )
 #endif
 }
 
-class KWin::WindowInfoPrivate
+struct KWin::WindowInfo::Private
 {
-    public:
-	WindowInfoPrivate()
+	Private()
 #ifdef Q_WS_X11
 	: info( NULL )
 #endif
 	{}
 #ifdef Q_WS_X11
-	~WindowInfoPrivate() { delete info; }
+	~Private() { delete info; }
 	NETWinInfo* info;
 #endif
 	WId win_;
@@ -681,16 +676,15 @@ class KWin::WindowInfoPrivate
 	int ref;
         bool valid;
     private:
-	WindowInfoPrivate( const WindowInfoPrivate& );
-	void operator=( const WindowInfoPrivate& );
+	Private( const Private& );
+	void operator=( const Private& );
 };
 
 // KWin::info() should be updated too if something has to be changed here
-KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long properties2 )
+KWin::WindowInfo::WindowInfo( WId _win, unsigned long properties, unsigned long properties2 ) : d(new Private)
 {
 #ifdef Q_WS_X11
     KXErrorHandler handler;
-    d = new WindowInfoPrivate;
     d->ref = 1;
     if( properties == 0 )
 	properties = NET::WMState |
@@ -713,19 +707,19 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
         properties |= NET::WMStrut; // will be used as fallback
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
-    d->info = new NETWinInfo( QX11Info::display(), win, QX11Info::appRootWindow(), props, 2 );
-    d->win_ = win;
+    d->info = new NETWinInfo( QX11Info::display(), _win, QX11Info::appRootWindow(), props, 2 );
+    d->win_ = _win;
     if( properties & NET::WMName ) {
         if( d->info->name() && d->info->name()[ 0 ] != '\0' )
 	    d->name_ = QString::fromUtf8( d->info->name() );
         else
-            d->name_ = readNameProperty( win, XA_WM_NAME );
+            d->name_ = readNameProperty( _win, XA_WM_NAME );
     }
     if( properties & NET::WMIconName ) {
         if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
             d->iconic_name_ = QString::fromUtf8( d->info->iconName());
         else
-            d->iconic_name_ = readNameProperty( win, XA_WM_ICON_NAME );
+            d->iconic_name_ = readNameProperty( _win, XA_WM_ICON_NAME );
     }
     if( properties & ( NET::WMGeometry | NET::WMKDEFrameStrut )) {
         NETRect frame, geom;
@@ -949,12 +943,12 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 #endif
 }
 
-bool KWin::WindowInfo::isOnDesktop( int desktop ) const
+bool KWin::WindowInfo::isOnDesktop( int _desktop ) const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
-    return d->info->desktop() == desktop || d->info->desktop() == NET::OnAllDesktops;
+    return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 #else
     return false;
 #endif
