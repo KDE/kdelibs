@@ -199,7 +199,7 @@ void KMWizard::setCurrentPage(int ID, bool back)
 	// raise page + initialize
 	m_stack->setCurrentWidget(page);
 	m_title->setText(page->title());
-	if (!back) page->initPrinter(m_printer);
+	if (!back || page->needsInitOnBack()) page->initPrinter(m_printer);
 
 	// update buttons
 	if (ID == m_start) m_prev->setEnabled(false);

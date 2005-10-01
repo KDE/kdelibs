@@ -26,6 +26,7 @@ KMWizardPage::KMWizardPage(QWidget *parent)
 	m_ID = KMWizard::Error;
 	m_title = "KMWizardPage";
 	m_nextpage = KMWizard::Error;
+	m_needsinitonback = false;
 }
 
 KMWizardPage::~KMWizardPage()

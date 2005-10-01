@@ -40,11 +40,13 @@ public:
 	virtual bool isValid(QString&);
 	virtual void initPrinter(KMPrinter*);
 	virtual void updatePrinter(KMPrinter*);
+	bool needsInitOnBack() 		{ return m_needsinitonback; }
 
 protected:
 	QString	m_title;
 	int	m_ID;
 	int	m_nextpage;
+	bool	m_needsinitonback;
 };
 
 #endif
