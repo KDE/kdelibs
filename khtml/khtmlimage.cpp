@@ -26,13 +26,14 @@
 #include "rendering/render_image.h"
 #include "misc/loader.h"
 
-#include <q3vbox.h>
+
 #include <qtimer.h>
 
 #include <kio/job.h>
 #include <kinstance.h>
 #include <kmimetype.h>
 #include <klocale.h>
+#include <kvbox.h>
 
 K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory /*NOT the part name, see Makefile.am*/, KHTMLImageFactory )
 
@@ -65,7 +66,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    Q3VBox *box = new Q3VBox( parentWidget, widgetName );
+    KVBox *box = new KVBox( parentWidget/*, widgetName*/ );
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
     m_khtml->setAutoloadImages( true );

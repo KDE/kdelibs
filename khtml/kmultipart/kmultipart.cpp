@@ -19,7 +19,7 @@
 
 #include "kmultipart.h"
 
-#include <q3vbox.h>
+
 #include <kinstance.h>
 #include <kmimetype.h>
 #include <klocale.h>
@@ -34,6 +34,7 @@
 #include <kxmlguifactory.h>
 #include <qtimer.h>
 #include <Q3GArray>
+#include <kvbox.h>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
@@ -102,7 +103,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
 
     setInstance( KMultiPartFactory::instance() );
 
-    Q3VBox *box = new Q3VBox( parentWidget, widgetName );
+    KVBox *box = new KVBox( parentWidget/*, widgetName*/ );
     setWidget( box );
 
     m_extension = new KParts::BrowserExtension( this );
