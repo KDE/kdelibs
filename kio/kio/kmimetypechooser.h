@@ -19,9 +19,9 @@
 #ifndef _KMIMETYPE_CHOOSER_H_
 #define _KMIMETYPE_CHOOSER_H_
 
-#include <q3vbox.h>
-#include <kdialogbase.h>
 
+#include <kdialogbase.h>
+#include <kvbox.h>
 
 /**
  * This widget provides a checkable list of all available mimetypes,
@@ -31,7 +31,7 @@
  *
  * @author Anders Lund (anders at alweb dk), jan 23, 2002
  */
-class KIO_EXPORT KMimeTypeChooser : public Q3VBox
+class KIO_EXPORT KMimeTypeChooser : public KVBox
 {
   Q_OBJECT
 

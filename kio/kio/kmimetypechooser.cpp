@@ -31,6 +31,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <kvbox.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate
@@ -53,7 +54,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
                               int visuals,
                               QWidget *parent,
                               const char *name )
-    : Q3VBox( parent, name )
+    : KVBox( parent/*, name*/ )
 {
   d = new KMimeTypeChooserPrivate();
   d->lvMimeTypes = 0;
@@ -88,7 +89,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   if (visuals & KMimeTypeChooser::EditButton)
   {
-    Q3HBox *btns = new Q3HBox( this );
+    KHBox *btns = new KHBox( this );
     ((QBoxLayout*)btns->layout())->addStretch(1);
     d->btnEditMimeType = new QPushButton( i18n("&Edit..."), btns );
 

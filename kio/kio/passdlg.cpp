@@ -20,7 +20,7 @@
 
 #include <qapplication.h>
 #include <qcheckbox.h>
-#include <q3hbox.h>
+
 #include <qlabel.h>
 #include <qlayout.h>
 #include <q3simplerichtext.h>
@@ -32,6 +32,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kvbox.h>
 
 using namespace KIO;
 
@@ -45,7 +46,7 @@ struct PasswordDialog::PasswordDialogPrivate
     QCheckBox* keepCheckBox;
     QMap<QString,QString> knownLogins;
     KComboBox* userEditCombo;
-    Q3HBox* userNameHBox;
+    KHBox* userNameHBox;
 
     bool keep;
     short unsigned int nRow;
@@ -109,7 +110,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->userNameLabel = new QLabel( i18n("&Username:"), main );
     d->userNameLabel->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     d->userNameLabel->setFixedSize( d->userNameLabel->sizeHint() );
-    d->userNameHBox = new Q3HBox( main );
+    d->userNameHBox = new KHBox( main );
 
     d->userEdit = new KLineEdit( d->userNameHBox );
     QSize s = d->userEdit->sizeHint();
@@ -126,7 +127,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl = new QLabel( i18n("&Password:"), main );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
-    Q3HBox* hbox = new Q3HBox( main );
+    KHBox* hbox = new KHBox( main );
     d->passEdit = new KLineEdit( hbox );
     if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
@@ -144,7 +145,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         // Row 7: Add spacer
         d->layout->addItem(new QSpacerItem(0,4),7,0); //addRowSpacing( 7, 4 );
         // Row 8: Keep Password
-        hbox = new Q3HBox( main );
+        hbox = new KHBox( main );
         d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
         d->keepCheckBox->setFixedSize( d->keepCheckBox->sizeHint() );
         d->keep = cfg->readBoolEntry("Keep", false );
