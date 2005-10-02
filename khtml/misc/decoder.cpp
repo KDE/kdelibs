@@ -316,7 +316,7 @@ QString Decoder::decode(const char *data, int len)
                     i--;
                 }
             }
-            buffer += QByteArray(data, len+1);
+            buffer += QByteArray(data, len);
 #endif
             // we still don't have an encoding, and are in the head
             // the following tags are allowed in <head>:
