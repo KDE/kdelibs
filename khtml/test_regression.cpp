@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 #include <kapplication.h>
-#include <kaccelmanager.h>
+#include <kacceleratormanager.h>
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
@@ -179,10 +179,7 @@ public:
         case CT_ComboBox:
         {
             const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
-            if (cbOpt->currentText.isEmpty())
-                return QSize(size.width() + 18, size.height());
-            else
-                return QSize(size.width() + 6, size.height());
+            return QSize(qMax(43, size.width() + 6), size.height());
         }
         default:
             return size;
@@ -324,7 +321,7 @@ void PartMonitor::partCompleted()
     RenderWidget::flushWidgetResizes();
     m_timeout_timer->stop();
     connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
-    m_timeout_timer->start( visual ? 100 : 2, true );
+    m_timeout_timer->start( /*visual ? 100 :*/ 2, true );
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
@@ -1272,7 +1269,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
-        FILE *pipe = popen( QLatin1String( "diff -u baseline/%1-render %3/%2-render" )
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
@@ -1288,7 +1285,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & DomFailure ) {
         domDiff += "<pre>";
-        FILE *pipe = popen( QLatin1String( "diff -u baseline/%1-dom %3/%2-dom" )
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
@@ -1388,6 +1385,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
+    qDebug("file:%s", filename.latin1());
     qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // Set arguments

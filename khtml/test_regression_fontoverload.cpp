@@ -40,6 +40,22 @@ struct MetricsInfo {
     int leading;
 };
 
+
+#if QT_VERSION >= 0x040100
+typedef QFixed QtFontDim;
+
+static int dimToInt(QtFontDim dim) {
+    return dim.toInt();
+}
+
+#else 
+typedef qreal QtFontDim;
+
+static int dimToInt(QtFontDim dim) {
+    return (int)dim;
+}
+#endif
+
 static MetricsInfo compatMetrics[] = {
     {"-Adobe-Courier-Medium-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
     {"-Adobe-Courier-Medium-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
@@ -157,7 +173,7 @@ public:
     ~QFakeFontEngine();
 
     bool  haveMetrics;
-    qreal m_ascent, m_descent, m_leading;
+    QtFontDim m_ascent, m_descent, m_leading;
     bool  ahem;
     int   pixS;
 #if 0
@@ -185,7 +201,7 @@ public:
     }
 
 
-    qreal ascent() const 
+    QtFontDim ascent() const 
     {
       if (haveMetrics)
         return m_ascent;
@@ -193,7 +209,7 @@ public:
         return QFontEngineXLFD::ascent();
     }
 
-    qreal descent() const 
+    QtFontDim descent() const 
     {
       if (haveMetrics)
         return m_descent;
@@ -201,7 +217,7 @@ public:
         return QFontEngineXLFD::descent();
     }
 
-    qreal leading() const
+    QtFontDim leading() const
     {
       if (ahem)
         return 0;
@@ -234,8 +250,8 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
     int y       = int(p.y());
     int pixS    = int(eng->pixS);
     int advance = pixS;
-    int ascent  = int(eng->ascent());
-    int descent = int(eng->descent());
+    int ascent  = dimToInt(eng->ascent());
+    int descent = dimToInt(eng->descent());
 
     if (si.flags & QTextItem::RightToLeft)
     {
@@ -276,8 +292,8 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
     pixS = size;
-    ahem = QLatin1String(name).contains("ahem");
     this->name = QLatin1String(name);
+    ahem = this->name.contains("ahem");
 
     MetricsInfo* metrics = grabMetrics(name);
     if (metrics)
