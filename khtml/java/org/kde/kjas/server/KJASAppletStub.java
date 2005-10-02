@@ -193,7 +193,6 @@ public final class KJASAppletStub
                         app.setBounds( 0, 0, appletSize.width, appletSize.height );
                     else
                         app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
-                    active = true;
                     app.init();
                     loader.removeStatusListener(panel);
                     app.setVisible(true);
@@ -201,6 +200,7 @@ public final class KJASAppletStub
                     panel.stopAnimation();
                     break;
                 case STARTED:
+                    active = true;
                     app.start();
                     frame.validate();
                     app.repaint();
@@ -462,7 +462,10 @@ public final class KJASAppletStub
     * @return true if the applet has been completely loaded.
     */
     boolean isLoaded() {
-        return runThread != null && runThread.getAppletState() >= INSTANCIATED;
+        if (runThread == null)
+            return false;
+        int state = runThread.getAppletState();
+        return (state >= INSTANCIATED && state < DESTROYED);
     }
     
     public void appletResize( int width, int height )

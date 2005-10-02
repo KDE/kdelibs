@@ -385,8 +385,9 @@ public class KJASAppletContext implements AppletContext
             Main.protocol.sendShowStatusCmd( myID, message );
         }
     }
-    public void evaluateJavaScript(String script, String appletID, JSObject jso) {
-        if( active ) {
+    public boolean evaluateJavaScript(String script, String appletID, JSObject jso) {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if( active && stub != null && stub.isLoaded ()) {
             if( jso != null ) {
                 synchronized (jsobjects) {
                     jsobjects.push(jso);
@@ -395,7 +396,10 @@ public class KJASAppletContext implements AppletContext
             int [] types = { KJASAppletStub.JString };
             String [] arglist = { script };
             Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "eval", types, arglist);
+            return true;
         }
+        Main.debug( "evaluateJavaScript failure, context active:" + active + " stub:" + stub); 
+        return false;
     }
 
     public boolean getMember(String appletID, int callid, int objid, String name)

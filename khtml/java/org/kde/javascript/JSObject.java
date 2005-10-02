@@ -70,16 +70,15 @@ public class JSObject extends netscape.javascript.JSObject {
 
     private Object evaluate(String script, boolean global) throws netscape.javascript.JSException {
         Main.info("evaluate (\"" + script + "\")");
-        if (!applet.isActive()) {
-            Main.debug("evaluate on not active applet");
-            return null;
-        }
          
         KJASAppletContext kc = (KJASAppletContext) applet.getAppletContext();
         //String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
 
-        kc.evaluateJavaScript("window.__lc[1](" + id + ",\"" + escapeString(script) + "\",this" + (global ? ",true)" : ")"), appletID, this);
+        if (!kc.evaluateJavaScript("window.__lc[1](" + id + ",\"" + escapeString(script) + "\",this" + (global ? ",true)" : ")"), appletID, this)) {
+            Main.debug("evaluate on not active applet");
+            return null;
+        }
         boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);
