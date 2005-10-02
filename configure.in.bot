@@ -132,5 +132,7 @@ if test "$USE_POSIX_ACL" != "yes"; then
   echo "libacl was not found. Without that library, you will not be able"
   echo "to manage access control lists on file systems that support them,"
   echo "such as ext3 or reiserfs."
+  echo "You can download it from ftp://oss.sgi.com/projects/xfs/cmd_tars/"
+  echo "(you will need attr too)"
   echo ""
 fi
