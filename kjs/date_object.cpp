@@ -315,7 +315,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   }
 
   time_t tv = (time_t) floor(milli / 1000.0);
-  int ms = int(milli - tv * 1000.0);
+  double ms = milli - tv * 1000.0;
 
   struct tm *t;
   if ( (id == DateProtoFuncImp::ToGMTString) ||
@@ -422,7 +422,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
-    ms = args[0].toInt32(exec);
+    ms = roundValue(exec, args[0]);
     break;
   case SetSeconds:
     t->tm_sec = args[0].toInt32(exec);
@@ -687,7 +687,7 @@ static const struct KnownZone {
     { "PDT", -420 }
 };
 
-double KJS::makeTime(struct tm *t, int ms, bool utc)
+double KJS::makeTime(struct tm *t, double ms, bool utc)
 {
     int utcOffset;
     if (utc) {
@@ -1041,9 +1041,11 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      while (isspace(*dateString))
        dateString++;
 
+#if 0
      // Trailing garbage
      if (*dateString != '\0')
        return invalidDate;
+#endif
 
      // Y2K: Solve 2 digit years
      if ((year >= 0) && (year < 50))
