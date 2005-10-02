@@ -211,6 +211,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
   int n, m;
   UString u2, u3;
+  double dpos;
   int pos, p0, i;
   double d = 0.0;
 
@@ -263,14 +264,16 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case LastIndexOf:
     u2 = a0.toString(exec);
     d = a1.toNumber(exec);
-    if (a1.type() == UndefinedType || KJS::isNaN(d) || KJS::isPosInf(d))
-      pos = len;
-    else
-      pos = a1.toInteger(exec);
-    if (pos < 0)
-      pos = 0;
-    d = s.rfind(u2, pos);
-    result = Number(d);
+    if (a1.type() == UndefinedType || KJS::isNaN(d))
+      dpos = len;
+    else {
+      dpos = d;
+      if (dpos < 0)
+        dpos = 0;
+      else if (dpos > len)
+        dpos = len;
+    }
+    result = Number(s.rfind(u2, dpos));
     break;
   case Match:
   case Search: {
