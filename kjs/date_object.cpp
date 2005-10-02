@@ -38,6 +38,8 @@
 #include <sys/timeb.h>
 #endif
 
+#include <errno.h>
+
 #ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
@@ -808,7 +810,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      	return invalidDate;
 
      // ' 09-Nov-99 23:12:40 GMT'
+     errno = 0;
      day = strtol(dateString, &newPosStr, 10);
+     if (errno)
+       return invalidDate;
      dateString = newPosStr;
 
      if (!*dateString)
@@ -824,10 +829,14 @@ double KJS::KRFCDate_parseDate(const UString &_date)
            return invalidDate;
          year = day;
          month = strtol(dateString, &newPosStr, 10) - 1;
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
          if (*dateString++ != '/' || !*dateString)
            return invalidDate;
          day = strtol(dateString, &newPosStr, 10);
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
        } else {
          return invalidDate;
@@ -838,6 +847,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
         // This looks like a MM/DD/YYYY date, not an RFC date.....
         month = day - 1; // 0-based
         day = strtol(dateString, &newPosStr, 10);
+        if (errno)
+          return invalidDate;
         dateString = newPosStr;
         if (*dateString == '/')
           dateString++;
@@ -879,8 +890,11 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 
      // '99 23:12:40 GMT'
-     if (year <= 0 && *dateString)
+     if (year <= 0 && *dateString) {
        year = strtol(dateString, &newPosStr, 10);
+       if (errno)
+         return invalidDate;
+     }
 
      // Don't fail if the time is missing.
      if (*newPosStr)
@@ -895,6 +909,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             dateString = ++newPosStr;
 
         hour = strtol(dateString, &newPosStr, 10);
+
+        // Do not check for errno here since we want to continue
+        // even if errno was set becasue we are still looking
+        // for the timezone!
         // read a number? if not this might be a timezone name
         if (newPosStr != dateString) {
           have_time = true;
@@ -911,6 +929,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             return invalidDate;
 
           minute = strtol(dateString, &newPosStr, 10);
+          if (errno)
+            return invalidDate;
           dateString = newPosStr;
 
           if ((minute < 0) || (minute > 59))
@@ -925,6 +945,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             dateString++;
 
             second = strtol(dateString, &newPosStr, 10);
+            if (errno)
+              return invalidDate;
             dateString = newPosStr;
 
             if ((second < 0) || (second > 59))
@@ -975,6 +997,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        }
        if ((*dateString == '+') || (*dateString == '-')) {
          offset = strtol(dateString, &newPosStr, 10);
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
 
          if ((offset < -9959) || (offset > 9959))
@@ -984,6 +1008,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          offset = abs(offset);
          if ( *dateString == ':' ) { // GMT+05:00
            int offset2 = strtol(dateString, &newPosStr, 10);
+           if (errno)
+             return invalidDate;
            dateString = newPosStr;
            offset = (offset*60 + offset2)*sgn;
          }
@@ -994,6 +1020,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          for (int i=0; i < int(sizeof(known_zones)/sizeof(KnownZone)); i++) {
            if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
              offset = known_zones[i].tzOffset;
+             dateString += strlen(known_zones[i].tzName);
              have_tz = true;
              break;
            }
@@ -1006,7 +1033,17 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
      if ( *dateString && year == -1 ) {
        year = strtol(dateString, &newPosStr, 10);
+       if (errno)
+         return invalidDate;
+       dateString = newPosStr;
      }
+
+     while (isspace(*dateString))
+       dateString++;
+
+     // Trailing garbage
+     if (*dateString != '\0')
+       return invalidDate;
 
      // Y2K: Solve 2 digit years
      if ((year >= 0) && (year < 50))
@@ -1014,9 +1051,6 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
      if ((year >= 50) && (year < 100))
          year += 1900;  // Y2K
-
-     if ((year < 1900) || (year > 2500))
-     	return invalidDate;
 
      if (!have_tz) {
        // fall back to midnight, local timezone
@@ -1036,29 +1070,18 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        return makeTime(&t, 0, false) / 1000.0;
      }
 
-     offset *= 60;
-
-     result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
-
-     // avoid negative time values
-     if ((offset > 0) && (offset > result))
-        offset = 0;
-
-     result -= offset;
-
-     // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
-     // This is so that parse error and valid epoch 0 return values won't
-     // be the same for sensitive applications...
-     if (result < 1) result = 1;
-
+     result = ymdhms_to_seconds(year, month+1, day, hour, minute, second) - offset*60;
      return result;
 }
 
 
 double KJS::timeClip(double t)
 {
-  if (isInf(t) || fabs(t) > 8.64E15)
+  if (isInf(t))
     return NaN;
-  return t;
+  double at = fabs(t);
+  if (at > 8.64E15)
+    return NaN;
+  return floor(at) * (t != at ? -1 : 1);
 }
 
