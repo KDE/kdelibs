@@ -616,7 +616,7 @@ QString KLocale::translate_priv(const char *msgid,
   }
   if (!msgid || !msgid[0])
     {
-      kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -664,8 +664,8 @@ QString KLocale::translate( const char *index, const char *fallback) const
 {
   if (!index || !index[0] || !fallback || !fallback[0])
     {
-      kdDebug(173) << "KLocale: trying to look up \"\" in catalog. "
-		   << "Fix the program" << endl;
+      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
+                  << "Fix the program" << endl;
       return QString::null;
     }
 
@@ -701,7 +701,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 {
   if (!singular || !singular[0] || !plural || !plural[0])
     {
-      kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -852,7 +852,7 @@ QString KLocale::translate( const char *singular, const char *plural,
       else                              // "%n ceann"
           return put_n_in(forms[4], n);
   }
-  kdFatal(173) << "The function should have returned in another way" << endl;
+  kdFatal() << "The function should have returned in another way" << endl;
 
   return QString::null;
 }
@@ -861,7 +861,7 @@ QString KLocale::translateQt( const char *context, const char *source,
 			      const char *message) const
 {
   if (!source || !source[0]) {
-    kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
+    kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		<< "Fix the program" << endl;
     return QString::null;
   }
