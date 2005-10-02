@@ -472,19 +472,8 @@ public:
    *
    * @return The time as a string
    */
-  QString formatTime(const QTime &pTime, bool includeSecs, bool isDuration /*=false*/) const;
-
-  /**
-   * Returns a string formatted to the current locale's conventions
-   * regarding times.
-   *
-   * @param pTime The time to be formated.
-   * @param includeSecs if true, seconds are included in the output,
-   *        otherwise only hours and minutes are formatted.
-   *
-   * @return The time as a string
-   */
-  QString formatTime(const QTime &pTime, bool includeSecs = false) const; // BIC: merge with above
+  QString formatTime(const QTime &pTime, bool includeSecs = false,
+                     bool isDuration = false) const;
 
   /**
    * Use this to determine if the user wants a 12 hour clock.

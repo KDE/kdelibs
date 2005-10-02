@@ -616,7 +616,7 @@ QString KLocale::translate_priv(const char *msgid,
   }
   if (!msgid || !msgid[0])
     {
-      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
+      kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -701,7 +701,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 {
   if (!singular || !singular[0] || !plural || !plural[0])
     {
-      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
+      kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -720,7 +720,8 @@ QString KLocale::translate( const char *singular, const char *plural,
 	  QString tmp = QString::fromUtf8( plural );
 #ifndef NDEBUG
 	  if (tmp.indexOf("%n") == -1) {
-			  kdDebug(173) << "the message for i18n should contain a '%n'! " << plural << endl;
+		kdDebug(173) << "the message for i18n should contain a '%n'! "
+			     << plural << endl;
 	  }
 #endif
       return put_n_in( tmp,  n );
@@ -851,7 +852,7 @@ QString KLocale::translate( const char *singular, const char *plural,
       else                              // "%n ceann"
           return put_n_in(forms[4], n);
   }
-  kdFatal() << "The function should have been returned in another way\n";
+  kdFatal(173) << "The function should have returned in another way" << endl;
 
   return QString::null;
 }
@@ -860,7 +861,7 @@ QString KLocale::translateQt( const char *context, const char *source,
 			      const char *message) const
 {
   if (!source || !source[0]) {
-    kdWarning() << "KLocale: trying to look up \"\" in catalog. "
+    kdWarning(173) << "KLocale: trying to look up \"\" in catalog. "
 		<< "Fix the program" << endl;
     return QString::null;
   }
@@ -1741,12 +1742,6 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   if (ok) *ok = false;
   // ######## KDE4: remove this
   return QTime(-1, -1, -1); // return invalid date if it didn't work
-}
-
-//BIC: merge with below
-QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
-{
-  return formatTime( pTime, includeSecs, false );
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuration) const
