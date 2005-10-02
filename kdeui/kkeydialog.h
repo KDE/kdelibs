@@ -84,19 +84,13 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	KKeyChooser( KShortcutList*, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 
 	virtual ~KKeyChooser();
-
-	/**
-	 * Insert an action collection, i.e. add all its actions to the ones
-	 * already associated with the KKeyChooser object.
-	 */
-	bool insert( KActionCollection* ); // #### KDE4 : remove me
     /**
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * already associated with the KKeyChooser object.
 	 * @param title subtree title of this collection of shortcut.
 	 * @since 3.1
 	 */
-    bool insert( KActionCollection *, const QString &title);
+    bool insert( KActionCollection *, const QString &title = QString::null);
 
 	void syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset );
 

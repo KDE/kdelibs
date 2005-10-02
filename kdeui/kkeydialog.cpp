@@ -230,11 +230,6 @@ KKeyChooser::~KKeyChooser()
 	delete d;
 }
 
-bool KKeyChooser::insert( KActionCollection *pColl)
-{
-    return insert(pColl, QString::null);
-}
-
 bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
 {
     QString str = title;
