@@ -50,6 +50,11 @@ KAboutPerson::KAboutPerson( const char* _name, const char* _task,
    mWebAddress = _webAddress;
 }
 
+KAboutPerson::KAboutPerson(const KAboutPerson& other): d(new Private)
+{
+    *d = *other.d;
+}
+
 KAboutPerson::~KAboutPerson()
 {
    delete d;
@@ -118,6 +123,11 @@ KAboutTranslator::operator=(const KAboutTranslator& other)
 {
     *d = *other.d;
     return *this;
+}
+
+KAboutTranslator::KAboutTranslator(const KAboutTranslator& other): d(new Private)
+{
+    *d = *other.d;
 }
 
 QString KAboutTranslator::name() const
@@ -217,6 +227,18 @@ KAboutData::KAboutData( const char* _appName,
 KAboutData::~KAboutData()
 {
     delete d;
+}
+
+KAboutData::KAboutData(const KAboutData& other): d(new Private)
+{
+    *d = *other.d;
+}
+
+KAboutData& 
+KAboutData::operator=(const KAboutData& other)
+{
+    *d = *other.d;
+    return *this;
 }
 
 void

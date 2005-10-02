@@ -73,8 +73,11 @@ public:
     KAboutPerson( const char *name=0, const char *task=0,
                   const char *emailAddress=0, const char *webAddress=0 );
 
+    KAboutPerson(const KAboutPerson& other);
+
     ~KAboutPerson();
     KAboutPerson& operator=(const KAboutPerson& other);
+    
 
     /**
      * The person's name
@@ -133,6 +136,8 @@ public:
      */
     KAboutTranslator(const QString & name=QString::null,
                      const QString & emailAddress=QString::null);
+
+    KAboutTranslator(const KAboutTranslator& other);
 
     ~KAboutTranslator();
     KAboutTranslator& operator=(const KAboutTranslator& other);
@@ -237,6 +242,9 @@ class KDECORE_EXPORT KAboutData
 		const char *homePageAddress = 0,
 		const char *bugsEmailAddress = "submit@bugs.kde.org"
 		);
+
+     KAboutData(const KAboutData& other);
+     KAboutData& operator=(const KAboutData& other);
 
      ~KAboutData();
 
