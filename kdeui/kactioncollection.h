@@ -192,7 +192,6 @@ public:
    */
   const QString& xmlFile() const;
 
-  //TODO FOR KDE4 make this default true
   /**
    * Enable highlighting notification for specific KActions.
    * This is false by default, so, by default, the highlighting
@@ -204,7 +203,7 @@ public:
    * @see actionHighlighted()
    * @see highlightingEnabled()
    */
-  void setHighlightingEnabled( bool enable );
+  void setHighlightingEnabled( bool enable = true );
   /**
    * Return whether highlighting notifications are enabled.
    * @see connectHighlight()
