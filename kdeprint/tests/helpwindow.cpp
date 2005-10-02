@@ -21,7 +21,7 @@
 #include <qtextstream.h>
 #include <q3stylesheet.h>
 #include <qmessagebox.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qapplication.h>
 #include <qcombobox.h>
 #include <qevent.h>
@@ -227,7 +227,7 @@ void HelpWindow::aboutQt()
 void HelpWindow::openFile()
 {
 #ifndef QT_NO_FILEDIALOG
-    QString fn = Q3FileDialog::getOpenFileName( QString::null, QString::null, this );
+    QString fn = QFileDialog::getOpenFileName( QString::null, QString::null, this );
     if ( !fn.isEmpty() )
 	browser->setSource( fn );
 #endif
