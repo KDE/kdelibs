@@ -1385,7 +1385,6 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
-    qDebug("file:%s", filename.latin1());
     qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // Set arguments
