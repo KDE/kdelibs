@@ -18,9 +18,9 @@ import java.net.URL;
  * information during class loading.
  */
 public class KJASAppletPanel extends javax.swing.JPanel implements StatusListener {
-    private final int LOADING = 1;
-    private final int RUNNING = 2;
-    private final int FAILED = 3;
+    private final static int LOADING = 1;
+    private final static int RUNNING = 2;
+    private final static int FAILED = 3;
 
     private Image load_img = null;
     private Image fail_img = null;

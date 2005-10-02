@@ -16,7 +16,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var v;var len=window.__lc[0].length;if(i>=len)v='E unknown object';else{var r;try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){v='E '+e;r='E ';}finally{var t=typeof r;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string'){if(r!='E ')v='S '+r;}else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
+    private final static String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var v;var len=window.__lc[0].length;if(i>=len)v='E unknown object';else{var r;try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){v='E '+e;r='E ';}finally{var t=typeof r;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string'){if(r!='E ')v='S '+r;}else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
@@ -81,7 +81,7 @@ public class JSObject extends netscape.javascript.JSObject {
         }
         boolean timedout = true;
         try {
-            Thread.currentThread().sleep(30000);
+            Thread.sleep(30000);
         } catch (InterruptedException ex) {
             timedout = false;
         }
@@ -111,9 +111,9 @@ public class JSObject extends netscape.javascript.JSObject {
             int applethashcode = Integer.parseInt(value.substring(p1+1, p2));
             java.util.Enumeration e = kc.getApplets();
             while (e.hasMoreElements()) {
-                Applet applet = (Applet) e.nextElement();
-                if (applet.hashCode() == applethashcode)
-                    return applet;
+                Applet app = (Applet) e.nextElement();
+                if (app.hashCode() == applethashcode)
+                    return app;
             }
             return null;
         }

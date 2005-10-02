@@ -106,7 +106,7 @@ public class KJASSecurityManager extends SecurityManager
             Main.protocol.sendSecurityConfirm(certs, certsnr, perm.toString(), id);
             boolean granted = false;
             try {
-                Thread.currentThread().sleep(300000);
+                Thread.sleep(300000);
             } catch (InterruptedException ie) {
                 if (((String) confirmRequests.get(id)).equals("yes")) {
                     granted = true;

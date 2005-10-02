@@ -10,9 +10,9 @@ import java.util.*;
 public class KJASAudioClip implements AudioClip
 {
     private AudioClip theClip;
-    private final int PLAYING = 1;
-    private final int LOOPING = 2;
-    private final int STOPPED = 3;
+    private final static int PLAYING = 1;
+    private final static int LOOPING = 2;
+    private final static int STOPPED = 3;
     private int state;
     private static Hashtable cache = new Hashtable();
 

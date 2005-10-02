@@ -130,8 +130,8 @@ class KIOConnection
     private byte [] in_buf = null;                // current input buffer
     private int in_bufpos = 0;                    // position in buffer
     private boolean in_eof = false;               // all data is read
-    private final int LOW_BUFFER_LIMIT = 5;       // put onhold off
-    private final int HIGH_BUFFER_LIMIT = 10;     // put onhold on
+    private final static int LOW_BUFFER_LIMIT = 5;       // put onhold off
+    private final static int HIGH_BUFFER_LIMIT = 10;     // put onhold on
 
     protected KIOConnection(URL u) {
         url = u;
