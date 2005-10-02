@@ -2857,19 +2857,52 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   bool bracketInserted = false;
   QString buf;
   QChar c;
+
   for( uint z = 0; z < chars.length(); z++ )
   {
     QChar ch = c = chars[z];
-
     if (ch.isPrint() || ch == '\t')
     {
       buf.append (ch);
 
       if (!bracketInserted && (config()->configFlags() & KateDocument::cfAutoBrackets))
       {
-        if (ch == '(') { bracketInserted = true; buf.append (')'); }
-        if (ch == '[') { bracketInserted = true; buf.append (']'); }
-        if (ch == '{') { bracketInserted = true; buf.append ('}'); }
+        QChar end_ch;
+        bool complete = true;
+        QChar prevChar = textLine->getChar(view->cursorColumn()-1);
+        QChar nextChar = textLine->getChar(view->cursorColumn());
+        switch(ch) {
+          case '(': end_ch = ')'; break;
+          case '[': end_ch = ']'; break;
+          case '{': end_ch = '}'; break;
+          case '\'':end_ch = '\'';break;
+          case '"': end_ch = '"'; break;
+          default: complete = false;
+        }
+        if (complete)
+        {
+          if (view->hasSelection())
+          { // there is a selection, enclose the selection
+            buf.append (view->selection());
+            buf.append (end_ch);
+            bracketInserted = true;
+          }
+          else
+          { // no selection, check whether we should better refuse to complete
+            if ( ( (ch == '\'' || ch == '"') &&
+                   (prevChar.isLetterOrNumber() || prevChar == ch) )
+              || nextChar.isLetterOrNumber()
+              || (nextChar == end_ch && prevChar != ch) )
+            {
+              kdDebug(13020) << "AutoBracket refused before: " << nextChar << "\n";
+            }
+            else
+            {
+              buf.append (end_ch);
+              bracketInserted = true;
+            }
+          }
+        }
       }
     }
   }
@@ -2998,13 +3031,31 @@ void KateDocument::backspace( KateView *view, const KateTextCursor& c )
   if ((col == 0) && (line == 0))
     return;
 
+  int complement = 0;
   if (col > 0)
   {
+    if (config()->configFlags() & KateDocument::cfAutoBrackets)
+    {
+      // if inside empty (), {}, [], '', "" delete both
+      KateTextLine::Ptr tl = m_buffer->plainLine(line);
+      if(!tl) return;
+      QChar prevChar = tl->getChar(col-1);
+      QChar nextChar = tl->getChar(col);
+
+      if ( (prevChar == '"' && nextChar == '"') ||
+           (prevChar == '\'' && nextChar == '\'') ||
+           (prevChar == '(' && nextChar == ')') ||
+           (prevChar == '[' && nextChar == ']') ||
+           (prevChar == '{' && nextChar == '}') )
+      {
+        complement = 1;
+      }
+    }
     if (!(config()->configFlags() & KateDocument::cfBackspaceIndents))
     {
       // ordinary backspace
       //c.cursor.col--;
-      removeText(line, col-1, line, col);
+      removeText(line, col-1, line, col+complement);
     }
     else
     {
@@ -3044,11 +3095,11 @@ void KateDocument::backspace( KateView *view, const KateTextCursor& c )
         }
         if (y < 0) {
           // FIXME: what shoud we do in this case?
-          removeText(line, 0, line, col);
+          removeText(line, 0, line, col+complement);
         }
       }
       else
-        removeText(line, col-1, line, col);
+        removeText(line, col-1, line, col+complement);
     }
   }
   else
