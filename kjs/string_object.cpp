@@ -438,7 +438,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
-    } else if (a0.type() != UndefinedType) {
+    } else {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {
 	if (s.isEmpty()) {
