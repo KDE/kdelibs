@@ -418,8 +418,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     // now quickly remove all custom elements (i.e. separators) and unplug all actions
 
-    Q3ValueList<int>::ConstIterator custIt = client->customElements.begin();
-    Q3ValueList<int>::ConstIterator custEnd = client->customElements.end();
+    QList<int>::ConstIterator custIt = client->customElements.begin();
+    QList<int>::ConstIterator custEnd = client->customElements.end();
     for (; custIt != custEnd; ++custIt )
         builder->removeCustomElement( container, *custIt );
 

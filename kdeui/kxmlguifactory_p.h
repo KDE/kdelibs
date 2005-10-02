@@ -69,7 +69,7 @@ struct ContainerClient
 {
     KXMLGUIClient *client;
     ActionList actions;
-    Q3ValueList<int> customElements;
+    QList<int> customElements;
     QString groupName; //is empty if no group client
     ActionListMap actionLists;
     QString mergingName;
