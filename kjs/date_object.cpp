@@ -344,6 +344,9 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case ToString:
+    s = ctime(&tv);
+    result = String(s.substr(0, s.size() - 1));
+    break;
   case ToDateString:
   case ToTimeString:
   case ToGMTString:
@@ -353,7 +356,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       strftime(timebuffer, bufsize, xFormat, t);
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
-    } else { // ToString, toGMTString & toUTCString
+    } else { // toGMTString & toUTCString
       strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
     }
     setlocale(LC_TIME,oldlocale.c_str());
