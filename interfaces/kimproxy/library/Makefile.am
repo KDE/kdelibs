@@ -20,3 +20,7 @@ libkimproxy_la_LIBADD = $(LIB_KIO)
 libkimproxy_la_SOURCES = kimproxy.cpp kimiface.stub kimproxyiface.skel
 
 kimiface_DIR = $(top_srcdir)/interfaces/kimproxy/interface
+
+include $(top_srcdir)/admin/Doxyfile.am
+DOXYGEN_REFERENCES = kabc dcop
+
