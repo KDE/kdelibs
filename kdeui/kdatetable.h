@@ -20,7 +20,6 @@
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
-// KDE4: rename this file to kdatetable.h
 
 #include <qvalidator.h>
 #include <q3gridview.h>
