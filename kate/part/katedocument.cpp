@@ -2762,8 +2762,6 @@ void KateDocument::setModified(bool m) {
 
 void KateDocument::makeAttribs(bool needInvalidate)
 {
-  highlight()->clearAttributeArrays ();
-
   for (uint z = 0; z < m_views.count(); z++)
     m_views.at(z)->renderer()->updateAttributes ();
 
