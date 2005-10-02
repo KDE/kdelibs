@@ -893,6 +893,12 @@ void KateSchemaConfigPage::apply()
   KateFactory::self()->schemaManager()->schema (0)->sync();
 
   KateFactory::self()->schemaManager()->update ();
+
+  // clear all attributes
+  for (int i = 0; i < KateHlManager::self()->highlights(); ++i)
+    KateHlManager::self()->getHl (i)->clearAttributeArrays ();
+
+  // than reload the whole stuff
   KateRendererConfig::global()->setSchema (defaultSchemaCombo->currentItem());
   KateRendererConfig::global()->reloadSchema();
 
