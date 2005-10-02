@@ -193,6 +193,7 @@ public final class KJASAppletStub
                         app.setBounds( 0, 0, appletSize.width, appletSize.height );
                     else
                         app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
+                    active = true;
                     app.init();
                     loader.removeStatusListener(panel);
                     app.setVisible(true);
@@ -200,7 +201,6 @@ public final class KJASAppletStub
                     panel.stopAnimation();
                     break;
                 case STARTED:
-                    active = true;
                     app.start();
                     frame.validate();
                     app.repaint();
