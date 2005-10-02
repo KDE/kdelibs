@@ -287,16 +287,6 @@ public:
 	 */
 	virtual ~KKeyDialog();
 
-	/**
-	 * Insert an action collection, i.e. add all its actions to the ones
-	 * displayed by the dialog.
-	 * This method can be useful in applications following the document/view
-	 * design, with actions in both the document and the view.
-	 * Simply call insert with the action collections of each one in turn.
-	 * @return true :)
-	 */
-	bool insert( KActionCollection* ); // #### KDE4: remove me
-
         /**
          * Insert an action collection, i.e. add all its actions to the ones
 	 * displayed by the dialog.
@@ -309,7 +299,7 @@ public:
          * @return true :)
 	 * @since 3.1
 	 */
-        bool insert(KActionCollection *, const QString &title);
+        bool insert(KActionCollection *, const QString &title = QString::null);
 
 	/**
 	 * Run the dialog and call commitChanges() if @p bSaveSettings

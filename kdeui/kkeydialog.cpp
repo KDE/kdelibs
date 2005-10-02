@@ -1115,11 +1115,6 @@ KKeyDialog::~KKeyDialog()
 	group.writeEntry( "Dialog Size", size(), true, true );
 }
 
-bool KKeyDialog::insert( KActionCollection* pColl )
-{
-	return m_pKeyChooser->insert( pColl );
-}
-
 bool KKeyDialog::insert(KActionCollection *pColl, const QString &title)
 {
     return m_pKeyChooser->insert(pColl, title);
