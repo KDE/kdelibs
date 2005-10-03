@@ -488,14 +488,16 @@ public:
 
   /**
    * Sets the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).
-   * @param info the new file type
+   * @param m the new file type
    * @since 3.5.0
+   * @todo Actually explain what this does -- does setting S_IFDIR
+   *       mean the file type is set to Directory?
    */
    void setFileMode( mode_t m );
 
   /**
    * Sets new mimetype for item
-   * @param info the new mimetype
+   * @param mimetype the new mimetype
    * @since 3.5.0
    */
    void setMimeType( const QString& mimetype );

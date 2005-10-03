@@ -124,7 +124,7 @@ public:
 
   /**
    * Return the entry for the permissions mask if there is one and sets
-   * @param exists to true. If there is no such entry, @param is set to false.
+   * @p exists to true. If there is no such entry, @p exists is set to false.
    * @return the permissions mask entry */
   unsigned short maskPermissions( bool &exists ) const;
 
@@ -136,17 +136,18 @@ public:
 
   /** 
    * Access to the permissions entry for a named user, if such an entry 
-   * exists. @param exists is set to true if a matching entry exists and
+   * exists. @p exists is set to true if a matching entry exists and
    * to false otherwise.
    * @return the permissions for a user entry with the name in @p name */
   unsigned short namedUserPermissions( const QString& name, bool *exits ) const;
+
   /** Set the permissions for a user with the name @p name. Will fail
    * if the user doesn't exist, in which case the ACL will be unchanged.
    * @return success or failure. */
   bool setNamedUserPermissions( const QString& name, unsigned short );
 
   /** Returns the list of all group permission entries. Each entry consists
-   * of a name/permissions pair. This is a QPair, therefor access is provided 
+   * of a name/permissions pair. This is a QPair, therefore access is provided 
    * via the .first and .next members.
    * @return the list of all group permission entries. */
   ACLUserPermissionsList allUserPermissions() const;
@@ -159,7 +160,7 @@ public:
 
   /**
    * Access to the permissions entry for a named group, if such an entry 
-   * exists. @param exists is set to true if a matching entry exists and
+   * exists. @p exists is set to true if a matching entry exists and
    * to false otherwise.
    * @return the permissions for a group with the name in @p name */
   unsigned short namedGroupPermissions( const QString& name, bool *exists ) const;
