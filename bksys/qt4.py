@@ -130,6 +130,9 @@ def generate(env):
 			sys.path.append('bksys'+os.sep+'osx')
 			#sys.path.append('bksys'+os.sep+'unix')
 			from detect_qt4 import detect
+		elif env['WINDOWS']:
+			sys.path.append('bksys'+os.sep+'win32')
+			from detect_qt4 import detect
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
 			from detect_qt4 import detect
