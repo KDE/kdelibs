@@ -774,9 +774,9 @@ def generate(env):
 			lenv.AppendUnique(LIBS = [link])
 			lenv.PrependUnique(LIBPATH = [dir])
 
-        def link_local_staticlib(lenv, str):
-                """ Links against a shared library made in the project """
-                lst = lenv.make_list(str)
+	def link_local_staticlib(lenv, str):
+		""" Links against a shared library made in the project """
+		lst = lenv.make_list(str)
 		for file in lst:
 			import re
 			reg = re.compile("(.*)/(lib.*.a)")
@@ -808,18 +808,18 @@ def generate(env):
 	if env.has_key('EXTRALIBS'):     env.AppendUnique( LINKFLAGS = env['EXTRALIBS'])
 
 	if env.has_key('BKS_DEBUG'):
-                if (env['BKS_DEBUG'] == "full"):
-                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-Wall'])
-                        if env['WINDOWS']:
-                                pass
-                        else:
-                                env.AppendUnique(CXXFLAGS = ['-g3'])
-                elif (env['BKS_DEBUG'] == "trace"): # i cannot remember who wanted this (TODO ita)
-                        env.AppendUnique(
-                                LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),
-                                CXXFLAGS=env.Split("-DDEBUG -Wall -finstrument-functions -g3 -O0"))
-                else:
-                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g', '-Wall'])
+		if (env['BKS_DEBUG'] == "full"):
+			env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-Wall'])
+			if env['WINDOWS']:
+				pass
+			else:
+				env.AppendUnique(CXXFLAGS = ['-g3'])
+		elif (env['BKS_DEBUG'] == "trace"): # i cannot remember who wanted this (TODO ita)
+			env.AppendUnique(
+			        LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),
+			        CXXFLAGS=env.Split("-DDEBUG -Wall -finstrument-functions -g3 -O0"))
+		else:
+			env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g', '-Wall'])
 
 	env.Export('env')
 
