@@ -199,7 +199,7 @@ public:
    * @see sessionConfig()
    * @deprecated use QApplication::isSessionRestored()
    */
-  bool isRestored() const { return QApplication::isSessionRestored(); } KDE_DEPRECATED
+  bool isRestored() const { return QApplication::isSessionRestored(); } KDE_DEPRECATED;
 #endif
   
   /**
