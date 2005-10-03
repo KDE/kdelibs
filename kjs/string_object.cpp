@@ -273,7 +273,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       else if (dpos > len)
         dpos = len;
     }
-    result = Number(s.rfind(u2, dpos));
+    result = Number(s.rfind(u2, int(dpos)));
     break;
   case Match:
   case Search: {

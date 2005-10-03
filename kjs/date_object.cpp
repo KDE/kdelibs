@@ -68,7 +68,7 @@
 using namespace KJS;
 
 // come constants
-const time_t invalidDate = -1;
+const time_t invalidDate = LONG_MIN;
 const double hoursPerDay = 24;
 const double minutesPerHour = 60;
 const double secondsPerMinute = 60;
@@ -76,6 +76,43 @@ const double msPerSecond = 1000;
 const double msPerMinute = msPerSecond * secondsPerMinute;
 const double msPerHour = msPerMinute * minutesPerHour;
 const double msPerDay = msPerHour * hoursPerDay;
+static const char * const weekdayName[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+static const char * const monthName[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+static UString formatDate(struct tm &tm)
+{
+    char buffer[100];
+    snprintf(buffer, sizeof(buffer), "%s %s %02d %04d",
+            weekdayName[(tm.tm_wday + 6) % 7],
+            monthName[tm.tm_mon], tm.tm_mday, tm.tm_year + 1900);
+    return buffer;
+}
+
+static UString formatDateUTCVariant(struct tm &tm)
+{
+    char buffer[100];
+    snprintf(buffer, sizeof(buffer), "%s, %02d %s %04d",
+            weekdayName[(tm.tm_wday + 6) % 7],
+            tm.tm_mday, monthName[tm.tm_mon], tm.tm_year + 1900);
+    return buffer;
+}
+
+static UString formatTime(struct tm &tm)
+{
+    char buffer[100];
+    if (tm.tm_gmtoff == 0) {
+        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", tm.tm_hour, tm.tm_min, tm.tm_sec);
+    } else {
+        int offset = tm.tm_gmtoff;
+        if (offset < 0) {
+            offset = -offset;
+        }
+        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
+                tm.tm_hour, tm.tm_min, tm.tm_sec,
+                tm.tm_gmtoff < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+    }
+    return UString(buffer);
+}
 
 static int day(double t)
 {
@@ -346,23 +383,17 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case ToString:
-    s = ctime(&tv);
-    result = String(s.substr(0, s.size() - 1));
+    result = String(formatDate(*t) + " " + formatTime(*t));
     break;
   case ToDateString:
+    result = String(formatDate(*t));
+    break;
   case ToTimeString:
+    result = String(formatTime(*t));
+    break;
   case ToGMTString:
   case ToUTCString:
-    setlocale(LC_TIME,"C");
-    if (id == DateProtoFuncImp::ToDateString) {
-      strftime(timebuffer, bufsize, xFormat, t);
-    } else if (id == DateProtoFuncImp::ToTimeString) {
-      strftime(timebuffer, bufsize, "%X",t);
-    } else { // toGMTString & toUTCString
-      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
-    }
-    setlocale(LC_TIME,oldlocale.c_str());
-    result = String(timebuffer);
+    result = String(formatDateUTCVariant(*t) + " " + formatTime(*t));
     break;
   case ToLocaleString:
     strftime(timebuffer, bufsize, cFormat, t);
@@ -582,10 +613,9 @@ Value DateObjectImp::call(ExecState* /*exec*/, Object &/*thisObj*/, const List &
   fprintf(stderr,"DateObjectImp::call - current time\n");
 #endif
   time_t t = time(0L);
-  UString s(ctime(&t));
-
-  // return formatted string minus trailing \n
-  return String(s.substr(0, s.size() - 1));
+  // FIXME: not threadsafe
+  struct tm *tm = localtime(&t);
+  return String(formatDate(*tm) + " " + formatTime(*tm));
 }
 
 // ------------------------------ DateObjectFuncImp ----------------------------
@@ -644,7 +674,7 @@ double KJS::parseDate(const UString &u)
 #endif
   double /*time_t*/ seconds = KRFCDate_parseDate( u );
 
-  return seconds == -1 ? NaN : seconds * 1000.0;
+  return seconds == invalidDate ? NaN : seconds * 1000.0;
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
