@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KRANDOM_H
-#define _KRANDOM_H
+#ifndef KRANDOM_H
+#define KRANDOM_H
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"
