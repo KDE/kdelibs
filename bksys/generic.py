@@ -189,7 +189,7 @@ class genobj:
 		def reldir(dir):
 			ndir    = SCons.Node.FS.default_fs.Dir(dir).srcnode().abspath
 			rootdir = SCons.Node.FS.default_fs.Dir('#').abspath
-			return ndir.replace(rootdir, '').lstrip(os.sep)
+			return striproot(ndir.replace(rootdir, ''))
 
 		dir=self.dirprefix
 		if not len(dir)>2: dir=reldir('.')
@@ -358,15 +358,24 @@ def slashify(val):
 	else:
 		return val
 	
-## HELPER 
+## HELPER - strip root '/' from path
+def striproot(s):
+	a = string.lstrip(s)
+	# TODO add win32 support 
+	if a[0] == os.sep:
+		return a[1:]
+	else:
+		return a
+
+## HELPER - join pathes 
 def join(lenv, s1, s2, s3=None, s4=None):
 	if s4 and s3: return lenv.join(s1, s2, lenv.join(s3, s4))
 	if s3 and s2: return lenv.join(s1, lenv.join(s2, s3))
 	elif not s2:  return s1
 	# having s1, s2
-	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,string.lstrip(s2,os.sep))
+	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,striproot(s2))
 	if not s1: s1=os.sep 
-	return os.path.join(s1,string.lstrip(s2,os.sep))
+	return os.path.join(s1,striproot(s2))
 
 ## HELPER export the data to xml
 bks_dump='<?xml version="1.0" encoding="UTF-8"?>\n<bksys version="1">\n'
@@ -383,7 +392,7 @@ def get_dump(nenv):
 def getreldir(lenv):
 	cwd=os.getcwd()
 	root=SCons.Node.FS.default_fs.Dir('#').abspath
-	return cwd.replace(root,'').lstrip(os.sep)
+	return striproot(cwd.replace(root,''))
 
 ## HELPER - find programs and headers
 def find_path(lenv, file, path_list):
