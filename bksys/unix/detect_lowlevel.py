@@ -640,9 +640,6 @@ def detect(lenv):
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "/usr/etc"
 
-/* what C++ compiler was used for compilation */
-#define KDE_COMPILER_VERSION "[0mTarget: i386-redhat-linux"
-
 /* what OS used for compilation */
 #define KDE_COMPILING_OS "Linux 2.6.12-1.1398_FC4 i686"
 

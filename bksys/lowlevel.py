@@ -69,7 +69,6 @@ def generate(env):
 		elif env['WINDOWS']:
 			sys.path.append('bksys'+os.sep+'win32')
 			from detect_lowlevel import detect
-			detect(env)
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
 			from detect_lowlevel import detect

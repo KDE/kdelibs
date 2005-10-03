@@ -665,9 +665,6 @@ def detect(lenv):
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "/sw/etc"
 
-/* what C++ compiler was used for compilation */
-#define KDE_COMPILER_VERSION "gcc version 3.3 20030304 (Apple Computer, Inc. build 1809)"
-
 /* what OS used for compilation */
 #define KDE_COMPILING_OS "Darwin 8.3.0 Power Macintosh"
 
