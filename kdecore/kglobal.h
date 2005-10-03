@@ -209,8 +209,7 @@ public:
  */
 
 template<class T>
-KDE_DEPRECATED
-inline T kClamp( const T& x, const T& low, const T& high )
+inline KDE_DEPRECATED T kClamp( const T& x, const T& low, const T& high )
 {
     if ( x < low )       return low;
     else if ( high < x ) return high;
