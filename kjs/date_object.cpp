@@ -191,6 +191,78 @@ static double timeZoneOffset(const struct tm *t)
 #endif
 }
 
+// Converts a list of arguments sent to a Date member function into milliseconds, updating
+// ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
+//
+// Format of member function: f([hour,] [min,] [sec,] [ms])
+static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int maxArgs, double *ms, struct tm *t)
+{
+    double milliseconds = 0;
+    int idx = 0;
+    int numArgs = args.size();
+    
+    // JS allows extra trailing arguments -- ignore them
+    if (numArgs > maxArgs)
+        numArgs = maxArgs;
+
+    // hours
+    if (maxArgs >= 4 && idx < numArgs) {
+        t->tm_hour = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerHour;
+    }
+
+    // minutes
+    if (maxArgs >= 3 && idx < numArgs) {
+        t->tm_min = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerMinute;
+    }
+    
+    // seconds
+    if (maxArgs >= 2 && idx < numArgs) {
+        t->tm_sec = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerSecond;
+    }
+    
+    // milliseconds
+    if (idx < numArgs) {
+        milliseconds += roundValue(exec, args[idx]);
+    } else {
+        milliseconds += *ms;
+    }
+    
+    *ms = milliseconds;
+}
+
+// Converts a list of arguments sent to a Date member function into years, months, and milliseconds, updating
+// ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
+//
+// Format of member function: f([years,] [months,] [days])
+static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int maxArgs, double *ms, struct tm *t)
+{
+  int idx = 0;
+  int numArgs = args.size();
+  
+  // JS allows extra trailing arguments -- ignore them
+  if (numArgs > maxArgs)
+    numArgs = maxArgs;
+  
+  // years
+  if (maxArgs >= 3 && idx < numArgs) {
+    t->tm_year = args[idx++].toInt32(exec) - 1900;
+  }
+  
+  // months
+  if (maxArgs >= 2 && idx < numArgs) {
+    t->tm_mon = args[idx++].toInt32(exec);
+  }
+  
+  // days
+  if (idx < numArgs) {
+    t->tm_mday = 0;
+    *ms += args[idx].toInt32(exec) * msPerDay;
+  }
+}
+
 // ------------------------------ DateInstanceImp ------------------------------
 
 const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
@@ -453,51 +525,29 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
-    ms = roundValue(exec, args[0]);
+    fillStructuresUsingTimeArgs(exec, args, 1, &ms, t);
     break;
   case SetSeconds:
-    t->tm_sec = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      ms = args[1].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 2, &ms, t);
     break;
   case SetMinutes:
-    t->tm_min = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_sec = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      ms = args[2].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 3, &ms, t);
     break;
   case SetHours:
-    t->tm_hour = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_min = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      t->tm_sec = args[2].toInt32(exec);
-    if (args.size() >= 4)
-      ms = args[3].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 4, &ms, t);
     break;
   case SetDate:
-    t->tm_mday = args[0].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 1, &ms, t);
     break;
   case SetMonth:
-    t->tm_mon = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_mday = args[1].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 2, &ms, t);    
     break;
   case SetFullYear:
-    t->tm_year = args[0].toInt32(exec) - 1900;
-    if (args.size() >= 2)
-      t->tm_mon = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      t->tm_mday = args[2].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 3, &ms, t);
     break;
-  case SetYear: {
-    int a0 = args[0].toInt32(exec);
-    if (a0 >= 0 && a0 <= 99)
-      a0 += 1900;
-    t->tm_year = a0 - 1900;
+  case SetYear:
+    t->tm_year = args[0].toInt32(exec) >= 1900 ? args[0].toInt32(exec) - 1900 : args[0].toInt32(exec);
     break;
-  }
   }
 
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
@@ -737,8 +787,8 @@ double KJS::makeTime(struct tm *t, double ms, bool utc)
         t->tm_isdst = 0;
 #endif
     } else {
-	utcOffset = 0;
-	t->tm_isdst = -1;
+        utcOffset = 0;
+        t->tm_isdst = -1;
     }
 
     double yearOffset = 0.0;
@@ -753,6 +803,14 @@ double KJS::makeTime(struct tm *t, double ms, bool utc)
       const double baseTime = timeFromYear(baseYear);
       yearOffset = timeFromYear(y) - baseTime;
       t->tm_year = baseYear - 1900;
+    }
+
+    // Determine if we passed over a DST change boundary
+    if (!utc) {
+      time_t tval = mktime(t) + utcOffset + int((ms + yearOffset)/1000);
+      struct tm t3;
+      localtime_r(&tval, &t3);
+      t->tm_isdst = t3.tm_isdst;
     }
 
     return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
