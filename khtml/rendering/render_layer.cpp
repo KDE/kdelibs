@@ -24,7 +24,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Alternatively, the contents of this file may be used under the terms
  * of either the Mozilla Public License Version 1.1, found at
@@ -137,7 +137,47 @@ void RenderLayer::updateLayerPosition()
         static_cast<RenderBox*>(m_object)->relativePositionOffset(x, y);
 
     // Subtract our parent's scroll offset.
-    if (parent())
+    if (m_object->isPositioned() && enclosingPositionedAncestor()) {
+        RenderLayer* positionedParent = enclosingPositionedAncestor();
+
+        // For positioned layers, we subtract out the enclosing positioned layer's scroll offset.
+        positionedParent->subtractScrollOffset(x, y);
+        
+        if (positionedParent->renderer()->isRelPositioned() &&
+            positionedParent->renderer()->isInlineFlow()) {
+            // When we have an enclosing relpositioned inline, we need to add in the offset of the first line
+            // box from the rest of the content, but only in the cases where we know we're positioned
+            // relative to the inline itself.
+            RenderFlow* flow = static_cast<RenderFlow*>(positionedParent->renderer());
+            int sx = 0, sy = 0;
+            if (flow->firstLineBox()) {
+                if (flow->style()->direction() == LTR)
+                    sx = flow->firstLineBox()->xPos();
+                else
+                    sx = flow->lastLineBox()->xPos();
+                sy = flow->firstLineBox()->yPos();
+            } else {
+                sx = flow->staticX(); // ###
+                sy = flow->staticY();
+            }
+            bool isInlineType = m_object->style()->isOriginalDisplayInlineType();
+            
+            if (!m_object->hasStaticX())
+                x += sx;
+            
+            // This is not terribly intuitive, but we have to match other browsers.  Despite being a block display type inside
+            // an inline, we still keep our x locked to the left of the relative positioned inline.  Arguably the correct
+            // behavior would be to go flush left to the block that contains the inline, but that isn't what other browsers
+            // do.
+            if (m_object->hasStaticX() && !isInlineType)
+                // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
+                x += sx - (m_object->containingBlock()->borderLeft() + m_object->containingBlock()->paddingLeft());
+            
+            if (!m_object->hasStaticY())
+                y += sy;
+        }
+    }
+    else if (parent())
         parent()->subtractScrollOffset(x, y);
 
     setPos(x,y);

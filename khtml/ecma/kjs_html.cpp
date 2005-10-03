@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU Library General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "misc/loader.h"
@@ -1907,7 +1907,11 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameContentWindow:       {
-        KHTMLView *view = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle())->view();
+        DOM::DocumentImpl* contentDoc = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle());
+        if (!contentDoc)
+            return Undefined();
+            
+        KHTMLView *view = contentDoc->view();
         if (view && view->part())
             return Value(Window::retrieveWindow(view->part()));
         else

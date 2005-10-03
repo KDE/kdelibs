@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -72,7 +72,7 @@ void RenderReplaced::calcMinMaxWidth()
 #endif
 
     m_width = calcReplacedWidth();
-    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    m_width = calcBoxWidth( m_width );
 
     if ( style()->width().isPercent() || style()->height().isPercent() || 
 		    style()->maxWidth().isPercent() || style()->maxHeight().isPercent() ||
@@ -373,10 +373,6 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if ( (_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()) ||
          (_tx + m_width <= paintInfo.r.left()) || (_tx > paintInfo.r.right()) )
         return;
-
-    // add offset for relative positioning
-    if(isRelPositioned())
-        relativePositionOffset(_tx, _ty);
 
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();

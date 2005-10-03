@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -57,6 +57,7 @@ public:
 
     static RenderFlow* createFlow(DOM::NodeImpl* node, RenderStyle* style, RenderArena* arena);
 
+    virtual void deleteLastLineBox(RenderArena* arena=0);
     virtual void deleteInlineBoxes(RenderArena* arena=0);
 
 

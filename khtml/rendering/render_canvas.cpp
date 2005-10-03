@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +17,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
 
@@ -56,8 +57,14 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
 
     setPositioned(true); // to 0,0 :)
 
-    m_printingMode = false;
+    m_staticMode = false;
+    m_pagedMode = false;
     m_printImages = true;
+
+    m_pageTop = 0;
+    m_pageBottom = 0;
+
+    m_page = 0;
 
     m_maximalOutlineSize = 0;
 
@@ -70,22 +77,31 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
 }
 
+RenderCanvas::~RenderCanvas()
+{
+    delete m_page;
+}
+
+void RenderCanvas::setStyle(RenderStyle* style)
+{
+    /*
+    if (m_pagedMode)
+        style->setOverflow(OHIDDEN); */
+    RenderBlock::setStyle(style);
+}
+
 void RenderCanvas::calcHeight()
 {
-    if (!m_printingMode && m_view)
-    {
-        m_height = m_view->visibleHeight();
-    }
-    else if (!m_view)
-    {
+    if (m_pagedMode || !m_view)
         m_height = m_rootHeight;
-    }
+    else
+        m_height = m_view->visibleHeight();
 }
 
 void RenderCanvas::calcWidth()
 {
     // the width gets set by KHTMLView::print when printing to a printer.
-    if(m_printingMode || !m_view)
+    if(m_pagedMode || !m_view)
     {
         m_width = m_rootWidth;
         return;
@@ -121,10 +137,12 @@ void RenderCanvas::calcMinMaxWidth()
 
 void RenderCanvas::layout()
 {
-    if (m_printingMode)
+    if (m_pagedMode) {
        m_minWidth = m_width;
+//        m_maxWidth = m_width;
+    }
 
-    m_needsFullRepaint =  markedForRepaint() || !view() || view()->needsFullRepaint() || m_printingMode;
+    m_needsFullRepaint =  markedForRepaint() || !view() || view()->needsFullRepaint() || m_pagedMode;
 
     setChildNeedsLayout(true);
     setMinMaxKnown(false);
@@ -148,13 +166,14 @@ void RenderCanvas::layout()
     qt.start();
 #endif
 
-    if (!m_printingMode) {
-        m_viewportWidth = m_width = m_view->visibleWidth();
-        m_viewportHeight = m_height = m_view->visibleHeight();
-    }
-    else {
+    if (m_pagedMode || !m_view) {
         m_width = m_rootWidth;
         m_height = m_rootHeight;
+    }
+    else
+    {
+        m_viewportWidth = m_width = m_view->visibleWidth();
+        m_viewportHeight = m_height = m_view->visibleHeight();
     }
 
     RenderBlock::layout();
@@ -162,7 +181,7 @@ void RenderCanvas::layout()
     int docW = docWidth();
     int docH = docHeight();
 
-    if (!m_printingMode) {
+    if (!m_pagedMode) {
         bool vss = m_view->verticalScrollBar()->isShown();
         bool hss = m_view->horizontalScrollBar()->isShown();
         QSize s = m_view->viewportSize(docW, docH);
@@ -186,7 +205,7 @@ void RenderCanvas::layout()
         // think again if we are falling downright in the hysteresis zone
 
         if (vss && s.width() > docW && docW > m_view->visibleWidth())
-            hDocW = s.width()+1; 
+            hDocW = s.width()+1;
 
         if (hss && s.height() > docH && docH > m_view->visibleHeight())
             hDocH = s.height()+1;
@@ -204,6 +223,8 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 
+//     kdDebug(6040) << "RenderCanvas::resize layer to " << kMax( docW,int( m_width ) ) << "x"  << kMax( docH,m_height ) << endl;
+
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
 
@@ -213,7 +234,7 @@ void RenderCanvas::layout()
 
 bool RenderCanvas::needsFullRepaint() const
 {
-    return m_needsFullRepaint;
+    return m_needsFullRepaint || m_pagedMode;
 }
 
 void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h)
@@ -224,6 +245,11 @@ void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h)
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
 {
+    if ( f && m_pagedMode) {
+        xPos = 0;
+        yPos = m_pageTop;
+    }
+    else
     if ( f && m_view) {
 	xPos = m_view->contentsX();
 	yPos = m_view->contentsY();
@@ -239,6 +265,7 @@ void RenderCanvas::paint(PaintInfo& paintInfo, int _tx, int _ty)
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
+
     // 1. paint background, borders etc
     if(paintInfo.phase == PaintActionElementBackground) {
         paintBoxDecorations(paintInfo, _tx, _ty);
@@ -276,9 +303,12 @@ void RenderCanvas::paintBoxDecorations(PaintInfo& paintInfo, int /*_tx*/, int /*
 
 void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
-    if (m_printingMode) return;
+    if (m_staticMode) return;
 //    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
 
+    if (f && m_pagedMode) {
+        y += m_pageTop;
+    } else
     if ( f && m_view ) {
         x += m_view->contentsX();
         y += m_view->contentsY();
@@ -312,12 +342,12 @@ void RenderCanvas::scheduleDeferredRepaints()
             (*it)->repaint();
     }
     //kdDebug(6040) << "scheduled deferred repaints: " << m_dirtyChildren.count() << " needed full repaint: " << needsFullRepaint() << endl;
-    m_dirtyChildren.clear();    
+    m_dirtyChildren.clear();
 }
 
 void RenderCanvas::repaint(bool immediate)
 {
-    if (m_view && !m_printingMode) {
+    if (m_view && !m_staticMode) {
         if (immediate) {
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
@@ -621,20 +651,28 @@ void RenderCanvas::selectionStartEnd(int& spos, int& epos)
 
 QRect RenderCanvas::viewRect() const
 {
-    if (m_printingMode)
-        return QRect(0,0, m_width, m_height);
+    if (m_pagedMode)
+        if (m_pageTop == m_pageBottom) {
+            kdDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_height) << endl;
+            return QRect(0, m_pageTop, m_width, m_height);
+        }
+        else {
+            kdDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop) << endl;
+            return QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop);
+        }
     else if (m_view)
         return QRect(m_view->contentsX(),
             m_view->contentsY(),
             m_view->visibleWidth(),
             m_view->visibleHeight());
-    else return QRect(0,0,m_rootWidth,m_rootHeight);
+    else
+        return QRect(0,0,m_rootWidth,m_rootHeight);
 }
 
 int RenderCanvas::docHeight() const
 {
     int h;
-    if (m_printingMode || !m_view)
+    if (m_pagedMode || !m_view)
         h = m_height;
     else
         h = 0;
@@ -659,7 +697,7 @@ int RenderCanvas::docHeight() const
 int RenderCanvas::docWidth() const
 {
     int w;
-    if (m_printingMode || !m_view)
+    if (m_pagedMode || !m_view)
         w = m_width;
     else
         w = 0;
@@ -681,27 +719,7 @@ int RenderCanvas::docWidth() const
     return w;
 }
 
-// The idea here is to take into account what object is moving the pagination point, and
-// thus choose the best place to chop it.
-void RenderCanvas::setBestTruncatedAt(int y, RenderObject *forRenderer, bool forcedBreak)
-{
-    // Nobody else can set a page break once we have a forced break.
-    if (m_forcedPageBreak) return;
-
-    kdDebug(6040) << "RenderCanvas::setBestTruncatedAt for " << forRenderer->renderName()
-                  << " at " << y << ((forcedBreak) ? " (forced)" : "") << endl;
-
-    // Forced breaks always win over unforced breaks.
-    if (forcedBreak) {
-        m_forcedPageBreak = true;
-        m_bestTruncatedAt = y;
-        return;
-    }
-
-    // prefer the widest object who tries to move the pagination point
-    int width = forRenderer->width();
-    if (width > m_truncatorWidth) {
-        m_truncatorWidth = width;
-        m_bestTruncatedAt = y;
-    }
+RenderPage* RenderCanvas::page() {
+    if (!m_page) m_page = new RenderPage(this);
+    return m_page;
 }

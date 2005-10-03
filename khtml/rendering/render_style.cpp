@@ -5,6 +5,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  * Copyright (C) 2002-2004 Apple Computer, Inc.
+ * Copyright (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,7 +19,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -1049,5 +1050,54 @@ QString RenderStyle::createDiff( const RenderStyle &parent ) const
 
     return res;
 }
-
 #endif
+
+RenderPageStyle::RenderPageStyle() : next(0), m_pageType(ANY_PAGE)
+{
+}
+
+RenderPageStyle::~RenderPageStyle()
+{
+    delete next;
+}
+
+RenderPageStyle* RenderPageStyle::getPageStyle(PageType type)
+{
+    RenderPageStyle *ps = 0;
+    for (ps = this; ps; ps = ps->next)
+        if (ps->m_pageType==type)
+            break;
+    return ps;
+}
+
+RenderPageStyle* RenderPageStyle::addPageStyle(PageType type)
+{
+    RenderPageStyle *ps = getPageStyle(type);
+
+    if (!ps)
+    {
+        ps = new RenderPageStyle(*this); // use the real copy constructor to get an identical copy
+        ps->m_pageType = type;
+
+        ps->next = next;
+        next = ps;
+    }
+
+    return ps;
+}
+
+void RenderPageStyle::removePageStyle(PageType type)
+{
+    RenderPageStyle *ps = next;
+    RenderPageStyle *prev = this;
+
+    while (ps) {
+        if (ps->m_pageType==type) {
+            prev->next = ps->next;
+            delete ps;
+            return;
+        }
+        prev = ps;
+        ps = ps->next;
+    }
+}

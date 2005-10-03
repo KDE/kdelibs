@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -182,7 +182,10 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_mouseInside( false ),
       m_hasFirstLine( false ),
       m_isSelectionBorder( false ),
-      m_isRoot( false )
+      m_isRoot( false ),
+      m_afterPageBreak( false ),
+      m_needsPageClear( false ),
+      m_containsPageBreak( false )
 {
   assert( node );
   if (node->getDocument()->documentElement() == node) setIsRoot(true);
@@ -437,15 +440,11 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
-    if (!style()->htmlHacks()) {
-        // match IE in strict mode
-        if (isRoot()||isBody())
-            return 0;
-        return containingBlock();
-    }
     bool skipTables = isPositioned() || isRelPositioned();
+    bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && !curr->isBody()) {
+    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && 
+                   !(strict && skipTables ? curr->isRoot() : curr->isBody())) {
         if (!skipTables && (curr->isTableCell() || curr->isTable()))
             break;
         curr = curr->parent();
@@ -1216,6 +1215,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (minMaxKnown()) { ts << " minMaxKnown"; }
     if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
+    if (afterPageBreak()) { ts << " afterPageBreak"; }
 }
 #endif
 

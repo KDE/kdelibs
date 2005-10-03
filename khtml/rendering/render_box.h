@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -107,11 +107,16 @@ public:
 
     void setStaticX(short staticX);
     void setStaticY(int staticY);
+    int staticX() const { return m_staticX; }
+    int staticY() const { return m_staticY; }
 
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
     RenderBlock* createAnonymousBlock();
+
+    virtual int pageTopAfter(int y) const;
+    virtual int crossesPageBreak(int t, int b) const;
 
 protected:
     int calcBoxWidth(int w) const;
@@ -155,13 +160,12 @@ protected:
     void restructureParentFlow();
 
 
-    // the actual height of the contents + borders + padding
+    // the actual height of the contents + borders + padding (border-box)
     int m_height;
-
     int m_y;
 
-    short m_x;
     short m_width;
+    short m_x;
 
     short m_marginTop;
     short m_marginBottom;

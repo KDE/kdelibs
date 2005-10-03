@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -610,6 +610,12 @@ void HTMLFormElementImpl::submit(  )
 
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
+                                                                            formUrl.host().isEmpty() ? // e.g. local file
+                                                                            i18n("Konqueror has the ability to store the password "
+                                                                                 "in an encrypted wallet. When the wallet is unlocked, it "
+                                                                                 "can then automatically restore the login information "
+                                                                                 "next time you submit this form. Do you want to store "
+                                                                                 "the information now?") :
                                                                             i18n("Konqueror has the ability to store the password "
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "

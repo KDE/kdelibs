@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
 // -------------------------------------------------------------------------
@@ -78,6 +78,22 @@ RootInlineBox* InlineBox::root()
     if (m_parent)
         return m_parent->root();
     return static_cast<RootInlineBox*>(this);
+}
+
+void InlineFlowBox::removeFromLine(InlineBox *child)
+{
+    if (child == m_firstChild) {
+        m_firstChild = child->nextOnLine();
+    }
+    if (child == m_lastChild) {
+        m_lastChild = child->prevOnLine();
+    }
+    if (child->nextOnLine()) {
+        child->nextOnLine()->m_prev = child->prevOnLine();
+    }
+    if (child->prevOnLine()) {
+        child->prevOnLine()->m_next = child->nextOnLine();
+    }
 }
 
 int InlineFlowBox::marginLeft() const

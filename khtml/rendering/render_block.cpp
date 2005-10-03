@@ -6,6 +6,7 @@
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +20,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -28,6 +29,7 @@
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 //#define FLOAT_DEBUG
+//#define PAGE_DEBUG
 
 #include <kdebug.h>
 #include "rendering/render_text.h"
@@ -91,6 +93,7 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_positionedObjects = 0;
     m_pre = false;
     m_firstLine = false;
+    m_avoidPageBreak = false;
     m_clearStatus = CNONE;
     m_maxTopPosMargin = m_maxTopNegMargin = m_maxBottomPosMargin = m_maxBottomNegMargin = 0;
     m_topMarginQuirk = m_bottomMarginQuirk = false;
@@ -374,8 +377,69 @@ void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
         box->close();
         box->setPos(box->xPos(), -500000);
     }
-
 }
+
+void RenderBlock::makePageBreakAvoidBlocks()
+{
+    KHTMLAssert(!childrenInline());
+    KHTMLAssert(canvas()->pagedMode());
+
+    RenderObject *breakAfter = firstChild();
+    RenderObject *breakBefore = breakAfter ? breakAfter->nextSibling() : 0;
+
+    RenderBlock* pageRun = 0;
+
+    // ### Should follow margin-collapsing rules, skipping self-collapsing blocks
+    // and exporting page-breaks from first/last child when collapsing with parent margin.
+    while (breakAfter) {
+        if (breakAfter->isRenderBlock() && !breakAfter->childrenInline())
+            static_cast<RenderBlock*>(breakAfter)->makePageBreakAvoidBlocks();
+        EPageBreak pbafter = breakAfter->style()->pageBreakAfter();
+        EPageBreak pbbefore = breakBefore ? breakBefore->style()->pageBreakBefore() : PBALWAYS;
+        if ((pbafter == PBAVOID && pbbefore == PBAVOID) ||
+            (pbafter == PBAVOID && pbbefore == PBAUTO) ||
+            (pbafter == PBAUTO && pbbefore == PBAVOID))
+        {
+            if (!pageRun) {
+                pageRun = createAnonymousBlock();
+                pageRun->m_avoidPageBreak = true;
+                pageRun->setChildrenInline(false);
+            }
+            pageRun->appendChildNode(removeChildNode(breakAfter));
+        } else
+        {
+            if (pageRun) {
+                pageRun->appendChildNode(removeChildNode(breakAfter));
+                pageRun->close();
+                insertChildNode(pageRun, breakBefore);
+                pageRun = 0;
+            }
+        }
+        breakAfter = breakBefore;
+        breakBefore = breakBefore ? breakBefore->nextSibling() : 0;
+    }
+
+    // recurse into positioned block children as well.
+    if (m_positionedObjects) {
+        Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
+        for ( ; it.current(); ++it ) {
+            if (it.current()->isRenderBlock() && !it.current()->childrenInline()) {
+                static_cast<RenderBlock*>(it.current())->makePageBreakAvoidBlocks();
+            }
+        }
+    }
+
+    // recurse into floating block children.
+    if (m_floatingObjects) {
+        Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
+        for ( ; it.current(); ++it ) {
+            if (it.current()->node->isRenderBlock() && !it.current()->node->childrenInline()) {
+                static_cast<RenderBlock*>(it.current()->node)->makePageBreakAvoidBlocks();
+            }
+        }
+    }
+}
+
 
 void RenderBlock::removeChild(RenderObject *oldChild)
 {
@@ -487,6 +551,8 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
+    if (canvas()->pagedMode()) relayoutChildren = true;
+
     if (!relayoutChildren && posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
         // All we have to is lay out our positioned objects.
         layoutPositionedObjects(relayoutChildren);
@@ -564,6 +630,8 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // children.
     bool canCollapseOwnMargins = !isPositioned() && !isFloating() && !isTableCell();
 
+    setContainsPageBreak(false);
+
     if (childrenInline())
         layoutInlineChildren( relayoutChildren );
     else
@@ -606,6 +674,27 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if( hasOverhangingFloats() && ((isFloating() && style()->height().isVariable()) || isTableCell())) {
         m_height = floatBottom();
         m_height += borderBottom() + paddingBottom();
+    }
+
+    if (canvas()->pagedMode()) {
+#ifdef PAGE_DEBUG
+        kdDebug(6040) << renderName() << " Page Bottom: " << pageTopAfter(0) << endl;
+        kdDebug(6040) << renderName() << " Bottom: " << m_height << endl;
+#endif
+        bool needsPageBreak = false;
+        int xpage = crossesPageBreak(0, m_height);
+        if (xpage) {
+            needsPageBreak = true;
+#ifdef PAGE_DEBUG
+            kdDebug( 6040 ) << renderName() << " crosses to page " << xpage << endl;
+#endif
+        }
+        if (needsPageBreak && !containsPageBreak()) {
+            setNeedsPageClear(true);
+#ifdef PAGE_DEBUG
+            kdDebug( 6040 ) << renderName() << " marked for page-clear" << endl;
+#endif
+        }
     }
 
     layoutPositionedObjects( relayoutChildren );
@@ -998,6 +1087,78 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
     }
 }
 
+bool RenderBlock::canClear(RenderObject *child, PageBreakLevel level)
+{
+    KHTMLAssert(child->parent() && child->parent() == this);
+    KHTMLAssert(canvas()->pagedMode());
+
+    // Positioned elements cannot be moved. Only normal flow and floating.
+    if (child->isPositioned() || child->isRelPositioned()) return false;
+
+    switch(level) {
+        case PageBreakNormal:
+            // check page-break-inside: avoid
+            if (!style()->pageBreakInside())
+                // we cannot, but can our parent?
+                if(!parent()->canClear(this, level)) return false;
+        case PageBreakHarder:
+            // check page-break-after/before: avoid
+            if (m_avoidPageBreak)
+                // we cannot, but can our parent?
+                if(!parent()->canClear(this, level)) return false;
+        case PageBreakForced:
+            // child is larger than page-height and is forced to break
+            if(child->height() > canvas()->pageHeight()) return false;
+            return true;
+    }
+    assert(false);
+    return false;
+}
+
+void RenderBlock::clearPageBreak(RenderObject* child, int pageBottom)
+{
+    KHTMLAssert(child->parent() && child->parent() == this);
+    KHTMLAssert(canvas()->pagedMode());
+
+    if (child->yPos() >= pageBottom) return;
+
+    int heightIncrease = 0;
+
+    heightIncrease = pageBottom - child->yPos();
+
+    // ### should never happen, canClear should have been called to detect it.
+    if (child->height() > canvas()->pageHeight()) {
+        kdDebug(6040) << "### child is too large to clear: " << child->height() << " > " << canvas()->pageHeight() << endl;
+        return;
+    }
+
+    // The child needs to be lowered.  Move the child so that it just clears the break.
+    child->setPos(child->xPos(), pageBottom);
+
+#ifdef PAGE_DEBUG
+    kdDebug(6040) << "Cleared block " << heightIncrease << "px" << endl;
+#endif
+
+    // Increase our height by the amount we had to clear.
+    m_height += heightIncrease;
+
+    // We might have to do another layout to take into account
+    // the extra space we now have available.
+    if (!child->style()->width().isFixed()  && child->usesLineWidth())
+        // The child's width is a percentage of the line width.
+        // When the child shifts to clear a page-break, its width can
+        // change (because it has more available line width).
+        // So go ahead and mark the item as dirty.
+        child->setChildNeedsLayout(true);
+    if (child->hasFloats())
+        child->markAllDescendantsWithFloatsForLayout();
+    if (child->containsPageBreak())
+        child->setNeedsLayout(true);
+    child->layoutIfNeeded();
+
+    child->setAfterPageBreak(true);
+}
+
 int RenderBlock::estimateVerticalPosition(RenderObject* child, const MarginInfo& marginInfo)
 {
     // FIXME: We need to eliminate the estimation of vertical position, because
@@ -1136,6 +1297,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // The legend then gets skipped during normal layout.
     RenderObject* legend = layoutLegend(relayoutChildren);
 
+    PageBreakInfo pageBreakInfo(pageTopAfter(0));
+
     RenderObject* child = firstChild();
     while( child != 0 )
     {
@@ -1148,7 +1311,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (relayoutChildren || floatBottom() > m_y ||
+        if (relayoutChildren ||
             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
             (child->isRenderBlock() && child->style()->height().isPercent()))
             child->setChildNeedsLayout(true);
@@ -1162,7 +1325,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // The child is a normal flow object.  Compute its vertical margins now.
         child->calcVerticalMargins();
 
-#ifdef APPLE_CHANGES /* margin-collapse not merged yet */
+#ifdef APPLE_CHANGES /* margin-*-collapse not merged yet */
         // Do not allow a collapse if the margin top collapse style is set to SEPARATE.
         if (child->style()->marginTopCollapse() == MSEPARATE) {
             marginInfo.setAtTopOfBlock(false);
@@ -1177,7 +1340,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         // If an element might be affected by the presence of floats, then always mark it for
         // layout.
-        if ( child->flowAroundFloats() && child->usesLineWidth()) {
+        if ( !child->flowAroundFloats() || child->usesLineWidth() ) {
             int fb = floatBottom();
             if (fb > m_height || fb > yPosEstimate)
                 child->setChildNeedsLayout(true);
@@ -1187,7 +1350,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         child->setPos(child->xPos(), yPosEstimate);
         child->layoutIfNeeded();
 
-        // Now determine the correct ypos based off examination of collapsing margin
+        // Now determine the correct ypos based on examination of collapsing margin
         // values.
         collapseMargins(child, marginInfo, yPosEstimate);
 
@@ -1211,6 +1374,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             marginInfo.clearMargin();
         }
 #endif
+
+        // Check for page-breaks
+        if (canvas()->pagedMode())
+            clearChildOfPageBreaks(child, pageBreakInfo, marginInfo);
 
         if (child->hasOverhangingFloats() && !child->flowAroundFloats()) {
             // need to add the child's floats to our floating objects list, but not in the case where
@@ -1248,11 +1415,103 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         child = child->nextSibling();
     }
 
+    // The last child had forced page-break-after
+    if (pageBreakInfo.forcePageBreak())
+        m_height = pageBreakInfo.pageBottom();
+
     // Now do the handling of the bottom of the block, adding in our bottom border/padding and
     // determining the correct collapsed bottom margin information.
     handleBottomOfBlock(top, bottom, marginInfo);
 
     setNeedsLayout(false);
+}
+
+void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo)
+{
+    int childTop = child->yPos();
+    int childBottom = child->yPos()+child->height();
+#ifdef PAGE_DEBUG
+    kdDebug(6040) << renderName() << " ChildTop: " << childTop << " ChildBottom: " << childBottom << endl;
+#endif
+
+    bool forcePageBreak = pageBreakInfo.forcePageBreak() || child->style()->pageBreakBefore() == PBALWAYS;
+#ifdef PAGE_DEBUG
+    if (forcePageBreak)
+        kdDebug(6040) << renderName() << "Forced break required" << endl;
+#endif
+
+    int xpage = crossesPageBreak(childTop, childBottom);
+    if (xpage || forcePageBreak)
+    {
+        if (!forcePageBreak && child->containsPageBreak() && !child->needsPageClear()) {
+#ifdef PAGE_DEBUG
+            kdDebug(6040) << renderName() << " Child contains page-break to page " << xpage << endl;
+#endif
+            // ### Actually this assumes floating children are breaking/clearing
+            // nicely as well.
+            setContainsPageBreak(true);
+        }
+        else {
+            bool doBreak = true;
+            // don't break before the first child or when page-break-inside is avoid
+            if (!forcePageBreak && (!style()->pageBreakInside() || m_avoidPageBreak || child == firstChild())) {
+                if (parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
+#ifdef PAGE_DEBUG
+                    kdDebug(6040) << renderName() << "Avoid page-break inside" << endl;
+#endif
+                    child->setNeedsPageClear(false);
+                    setNeedsPageClear(true);
+                    doBreak = false;
+                }
+#ifdef PAGE_DEBUG
+                else
+                    kdDebug(6040) << renderName() << "Ignoring page-break avoid" << endl;
+#endif
+            }
+            if (doBreak) {
+#ifdef PAGE_DEBUG
+                kdDebug(6040) << renderName() << " Clearing child of page-break" << endl;
+                kdDebug(6040) << renderName() << " child top of page " << xpage << endl;
+#endif
+                clearPageBreak(child, pageBreakInfo.pageBottom());
+                child->setNeedsPageClear(false);
+                setContainsPageBreak(true);
+            }
+        }
+        pageBreakInfo.setPageBottom(pageBreakInfo.pageBottom() + canvas()->pageHeight());
+    }
+    else
+    if (child->yPos() >= pageBreakInfo.pageBottom()) {
+        bool doBreak = true;
+#ifdef PAGE_DEBUG
+        kdDebug(6040) << "Page-break between children" << endl;
+#endif
+        if (!style()->pageBreakInside() || m_avoidPageBreak) {
+            if(parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
+#ifdef PAGE_DEBUG
+                kdDebug(6040) << "Avoid page-break inside" << endl;
+#endif
+                child->setNeedsPageClear(false);
+                setNeedsPageClear(true);
+                doBreak = false;
+            }
+#ifdef PAGE_DEBUG
+            else
+                kdDebug(6040) << "Ignoring page-break avoid" << endl;
+#endif
+        }
+        if (doBreak) {
+            // Break between children
+            setContainsPageBreak(true);
+            // ### Should collapse top-margin with page-margin
+        }
+        pageBreakInfo.setPageBottom(pageBreakInfo.pageBottom() + canvas()->pageHeight());
+    }
+
+    // Do we need a forced page-break before next child?
+    pageBreakInfo.setForcePageBreak(false);
+    if (child->style()->pageBreakAfter() == PBALWAYS)
+        pageBreakInfo.setForcePageBreak(true);
 }
 
 void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
@@ -1268,7 +1527,7 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren )
+            if ( relayoutChildren || (r->hasStaticY() && r->parent() != this && r->parent()->isBlockFlow()) )
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
@@ -1310,14 +1569,12 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
 
 void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintOutline)
 {
-
 #ifdef DEBUG_LAYOUT
-    //kdDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
+   //kdDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
     // If we're a repositioned run-in, don't paint background/borders.
     bool inlineFlow = isInlineFlow();
-    bool isPrinting = (pI.p->device()->devType() == QInternal::Printer);
 
     // 1. paint background, borders etc
     if (!inlineFlow &&
@@ -1327,7 +1584,6 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
 
     if ( pI.phase == PaintActionElementBackground )
         return;
-
     if ( pI.phase == PaintActionChildBackgrounds )
         pI.phase = PaintActionChildBackground;
 
@@ -1340,25 +1596,12 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
     int _h = pI.r.height();
     if (style()->hidesOverflow() && m_layer)
         m_layer->subtractScrollOffset(scrolledX, scrolledY);
-    for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
-        // Check for page-break-before: always, and if it's set, break and bail.
-        if (isPrinting && !childrenInline() && child->style()->pageBreakBefore() == PBALWAYS &&
-            inRootBlockContext() && (_ty + child->yPos()) > _y && (_ty + child->yPos()) < _y + _h) {
-            canvas()->setBestTruncatedAt(_ty + child->yPos(), this, true);
-            return;
-        }
 
+    for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
         if(!child->layer() && !child->isFloating())
             child->paint(pI, scrolledX, scrolledY);
-
-        // Check for page-break-after: always, and if it's set, break and bail.
-        if (isPrinting && !childrenInline() && child->style()->pageBreakAfter() == PBALWAYS &&
-            inRootBlockContext() && (_ty + child->yPos() + child->height()) > _y &&
-            (_ty + child->yPos() + child->height()) < _y + _h) {
-            canvas()->setBestTruncatedAt(_ty + child->yPos() + child->height() + child->collapsedMarginBottom(), this, true);
-            return;
-        }
     }
+
     paintLineBoxDecorations(pI, scrolledX, scrolledY);
 
     // 3. paint floats.
@@ -1373,11 +1616,11 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
 #ifdef BOX_DEBUG
     if ( style() && style()->visibility() == VISIBLE ) {
         if(isAnonymous())
-            outlineBox(p, _tx, _ty, "green");
+            outlineBox(pI.p, _tx, _ty, "green");
         if(isFloating())
-            outlineBox(p, _tx, _ty, "yellow");
+            outlineBox(pI.p, _tx, _ty, "yellow");
         else
-            outlineBox(p, _tx, _ty);
+            outlineBox(pI.p, _tx, _ty);
     }
 #endif
 }
@@ -1532,7 +1775,6 @@ void RenderBlock::positionNewFloats()
         f = lastFloat;
     }
 
-
     int y = m_height;
 
 
@@ -1551,6 +1793,20 @@ void RenderBlock::positionNewFloats()
 
         RenderObject *o = f->node;
         int _height = o->height() + o->marginTop() + o->marginBottom();
+
+        // floats avoid page-breaks
+        if(canvas()->pagedMode())
+        {
+            int top = y;
+            int bottom = y + o->height();
+            if (crossesPageBreak(top, bottom) && o->height() < canvas()->pageHeight() ) {
+                int newY = pageTopAfter(top);
+#ifdef PAGE_DEBUG
+                kdDebug(6040) << renderName() << " clearing float " << newY - y << "px" << endl;
+#endif
+                y = newY;
+            }
+        }
 
         int ro = rightOffset(); // Constant part of right offset.
         int lo = leftOffset(); // Constant part of left offset.
@@ -2032,11 +2288,12 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
 int RenderBlock::getClearDelta(RenderObject *child)
 {
     //kdDebug( 6040 ) << "getClearDelta on child " << child << " oldheight=" << m_height << endl;
+    bool clearSet = child->style()->clear() != CNONE;
     int bottom = 0;
     switch(child->style()->clear())
     {
         case CNONE:
-            return 0;
+            break;
         case CLEFT:
             bottom = leftBottom();
             break;
@@ -2048,7 +2305,17 @@ int RenderBlock::getClearDelta(RenderObject *child)
             break;
     }
 
-    return kMax(0, bottom-(child->yPos()));
+    // We also clear floats if we are too big to sit on the same line as a float, and happen to flow around floats.
+    // FIXME: Note that the remaining space checks aren't quite accurate, since you should be able to clear only some floats (the minimum # needed
+    // to fit) and not all (we should be using nearestFloatBottom and looping).
+    int result = clearSet ? kMax(0, bottom - child->yPos()) : 0;
+    if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
+        if ((child->style()->width().isPercent() && child->width() > lineWidth(child->yPos())) ||
+            (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) && 
+              child->minWidth() <= contentWidth()))
+            result = kMax(0, floatBottom() - child->yPos());
+    }
+    return result;
 }
 
 bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
@@ -2675,6 +2942,8 @@ const char *RenderBlock::renderName() const
         return "RenderBlock (floating)";
     if (isPositioned())
         return "RenderBlock (positioned)";
+    if (isAnonymousBlock() && m_avoidPageBreak)
+        return "RenderBlock (avoidPageBreak)";
     if (isAnonymousBlock())
         return "RenderBlock (anonymous)";
     else if (isAnonymous())

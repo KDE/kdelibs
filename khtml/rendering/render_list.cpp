@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -270,25 +270,6 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         else {
             rightLineOffset = m_listItem->rightRelOffset(yOffset, m_listItem->rightOffset(yOffset));
             _tx += (rightLineOffset-xOffset) + m_listItem->paddingRight() + m_listItem->borderRight();
-        }
-    }
-
-
-    bool isPrinting = (paintInfo.p->device()->devType() == QInternal::Printer);
-    if (isPrinting)
-    {
-        if (_ty < paintInfo.r.y())
-        {
-            // This has been painted already we suppose.
-            return;
-        }
-        if (_ty + m_height + paddingBottom() + borderBottom() > paintInfo.r.bottom())
-        {
-            RenderCanvas *rootObj = canvas();
-            if (_ty < rootObj->truncatedAt())
-                rootObj->setBestTruncatedAt(_ty, this);
-            // Let's paint this on the next page.
-            return;
         }
     }
 

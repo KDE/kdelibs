@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -420,10 +420,13 @@ void RenderContainer::layout()
 {
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
-
+    const bool pagedMode = canvas()->pagedMode();
     RenderObject *child = firstChild();
     while( child ) {
+        if (pagedMode) child->setNeedsLayout(true);
         child->layoutIfNeeded();
+        if (child->containsPageBreak()) setContainsPageBreak(true);
+        if (child->needsPageClear()) setNeedsPageClear(true);
         child = child->nextSibling();
     }
     setNeedsLayout(false);

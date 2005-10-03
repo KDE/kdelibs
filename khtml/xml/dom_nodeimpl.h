@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -567,7 +567,8 @@ public:
 protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
-    NodeImpl *recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
+    NodeImpl *recursiveItem    ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
+    NodeImpl *recursiveItemBack( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
 
     // Override this to determine what nodes to return. Set doRecurse to 
     // false if the children of this node do not need to be entered.

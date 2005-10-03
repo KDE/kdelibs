@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU Library General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "config.h"
 
@@ -37,7 +37,9 @@
 #include <kwinmodule.h> // schroder
 #endif
 
+#ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
+#endif
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
@@ -110,8 +112,8 @@ namespace KJS {
 #ifdef Q_WS_QWS
   class KonquerorFunc : public DOMFunction {
   public:
-    KonquerorFunc(const Konqueror* k, const char* name)
-      : DOMFunction(), konqueror(k), m_name(name) { }
+    KonquerorFunc(ExecState *exec, const Konqueror* k, const char* name)
+      : DOMFunction(exec), konqueror(k), m_name(name) { }
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
 
   private:
@@ -631,7 +633,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     }
 #ifdef Q_WS_QWS
     case _Konqueror: {
-      Value k( new Konqueror(exec, part) );
+      Value k( new Konqueror(part) );
       const_cast<Window *>(this)->put(exec, "konqueror", k, DontDelete|ReadOnly|Internal);
       return k;
     }
@@ -641,11 +643,16 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case OuterHeight:
     case OuterWidth:
     {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return Number(0);
       KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId());
       return Number(entry->value == OuterHeight ?
                     inf.geometry().height() : inf.geometry().width());
+#else
+      return Number(entry->value == OuterHeight ?  
+		    part->view()->height() : part->view()->width());
+#endif
     }
     case PageXOffset:
       return Number(part->view()->contentsX());
@@ -1555,6 +1562,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Boolean((KMessageBox::warningYesNo(widget, Q3StyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
+#ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
       return Undefined();
     if ( part && part->xmlDocImpl() )
@@ -1574,6 +1582,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return String(str2);
     else
         return Null();
+#else
+    return Undefined();
+#endif
   case Window::Open:
     return window->openWindow(exec, args);
   case Window::Close: {
@@ -1918,6 +1929,7 @@ WindowQObject::WindowQObject(Window *w)
                this, SLOT( parentDestroyed() ) );
   pausedTime = 0;
   lastTimerId = 0;
+  currentlyDispatching = false;
 }
 
 WindowQObject::~WindowQObject()
@@ -1994,6 +2006,8 @@ void WindowQObject::timerEvent(QTimerEvent *)
   if (scheduledActions.isEmpty())
     return;
 
+  currentlyDispatching = true;
+
   QTime currentActual = QTime::currentTime();
   QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
 
@@ -2014,12 +2028,14 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
     action->executing = true; // prevent deletion in clearTimeout()
 
-    if (action->singleShot)
-      scheduledActions.removeRef(action);
     if (parent->part()) {
       bool ok = action->execute(parent);
       if ( !ok ) // e.g. JS disabled
         scheduledActions.removeRef( action );
+    }
+
+    if (action->singleShot) {
+      scheduledActions.removeRef(action);
     }
 
     action->executing = false;
@@ -2032,12 +2048,17 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   pausedTime += currentActual.msecsTo(QTime::currentTime());
 
+  currentlyDispatching = false;
+
   // Work out when next event is to occur
   setNextTimer();
 }
 
 void WindowQObject::setNextTimer()
 {
+  if (currentlyDispatching)
+    return; // Will schedule at the end 
+
   if (scheduledActions.isEmpty())
     return;
 
@@ -2359,6 +2380,7 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case External::AddFavorite:
   {
+#ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
       return Undefined();
     part->xmlDocImpl()->updateRendering();
@@ -2396,6 +2418,9 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
       mgr->addBookmarkDialog(url,title);
     }
+#else
+    return Undefined();
+#endif
     break;
   }
   default:
@@ -2530,14 +2555,14 @@ Value Konqueror::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  return Value( new KonquerorFunc(this, p.qstring().latin1() ) );
+  return Value( new KonquerorFunc(exec, this, p.qstring().latin1() ) );
 }
 
 Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
 {
   KParts::BrowserExtension *ext = konqueror->part->browserExtension();
 
-  if(!ext)
+  if (!ext)
     return Undefined();
 
   KParts::BrowserInterface *iface = ext->browserInterface();

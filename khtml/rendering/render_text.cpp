@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -857,8 +857,8 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
     InlineTextBox f(0, pI.r.top()-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
-    bool isPrinting = (pI.p->device()->devType() == QInternal::Printer);
-    if (isPrinting && pI.phase == PaintActionSelection) return;
+    bool isStatic = canvas()->staticMode();
+    if (isStatic && pI.phase == PaintActionSelection) return;
 
     if(si >= 0)
     {
@@ -869,7 +869,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
         // Now calculate startPos and endPos, for painting selection.
         // We paint selection while endPos > 0
         int endPos, startPos;
-        if (!isPrinting && (selectionState() != SelectionNone)) {
+        if (!isStatic && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
                 startPos = 0;
@@ -887,7 +887,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
         InlineTextBox* s;
 	const Font *font = &style()->htmlFont();
 
-        bool haveSelection = !isPrinting && selectionState() != SelectionNone && startPos != endPos;
+        bool haveSelection = !isStatic && selectionState() != SelectionNone && startPos != endPos;
         if (!haveSelection && pI.phase == PaintActionSelection)
             // When only painting the selection, don't bother to paint if there
             return;
@@ -896,25 +896,6 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
         // know we can stop
         do {
             s = m_lines[si];
-
-	    if (isPrinting)
-	    {
-                int lh = lineHeight( false ) + paddingBottom() + borderBottom();
-                if (ty+s->m_y < pI.r.y())
-                {
-                   // This has been painted already we suppose.
-                   continue;
-                }
-
-                if (ty+lh+s->m_y > pI.r.bottom())
-                {
-                   RenderCanvas *rootObj = canvas();
-                   if (ty+s->m_y < rootObj->truncatedAt())
-                      rootObj->setBestTruncatedAt(ty+s->m_y, this);
-                   // Let's stop here.
-                   break;
-                }
-            }
 
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
             int d = _style->textDecorationsInEffect();
@@ -1009,9 +990,9 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
             {
                 int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
                 QColor c2 = QColor("#0000ff");
-                drawBorder(p, tx + s->m_x, ty + s->m_y, tx + s->m_x + 1, ty + s->m_y + h,
+                drawBorder(pI.p, tx + s->m_x, ty + s->m_y, tx + s->m_x + 1, ty + s->m_y + h,
                               RenderObject::BSLeft, c2, c2, SOLID, 1, 1);
-                drawBorder(p, tx + s->m_x + s->m_width, ty + s->m_y, tx + s->m_x + s->m_width + 1, ty + s->m_y + h,
+                drawBorder(pI.p, tx + s->m_x + s->m_width, ty + s->m_y, tx + s->m_x + s->m_width + 1, ty + s->m_y + h,
                               RenderObject::BSRight, c2, c2, SOLID, 1, 1);
             }
 #endif

@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -58,7 +58,8 @@ public:
         DOC_LINKS,     // all A _and_ AREA elements with a value for href
         DOC_ANCHORS,      // all A elements with a value for name
         // from HTMLTable, HTMLTableSection, HTMLTableRow
-        TABLE_ROWS,    // all rows in this table or tablesection
+        TABLE_ROWS,    // all rows in this table
+        TABLE_BODY_ROWS, //all rows in the body and extra/illegal headers. Used to implement the above.
         TABLE_TBODIES, // all TBODY elements in this table
         TSECTION_ROWS, // all rows elements in this table section
         TR_CELLS,      // all CELLS in this row
@@ -73,6 +74,8 @@ public:
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
+
+    virtual NodeImpl *item ( unsigned long index ) const;
 
     // obsolete and not domtree changes save
     virtual NodeImpl *firstItem() const;

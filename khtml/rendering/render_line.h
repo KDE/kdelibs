@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -33,7 +33,7 @@ class InlineBox
 {
 public:
     InlineBox(RenderObject* obj)
-    :m_object(obj), m_x(0), m_y(0), m_width(0), m_height(0), m_baseline(0),
+    :m_object(obj), m_x(0), m_width(0), m_y(0), m_height(0), m_baseline(0),
      m_firstLine(false), m_constructed(false)
     {
         m_next = 0;
@@ -108,8 +108,8 @@ public: // FIXME: Would like to make this protected, but methods are accessing t
     RenderObject* m_object;
 
     short m_x;
-    int m_y;
     short m_width;
+    int m_y;
     int m_height;
     int m_baseline;
 
@@ -155,6 +155,7 @@ public:
         m_lastChild = 0;
         m_includeLeftEdge = m_includeRightEdge = false;
         m_hasTextChildren = false;
+        m_afterPageBreak = false;
     }
 
     virtual bool isInlineFlowBox() const { return true; }
@@ -180,7 +181,7 @@ public:
         if (child->isInlineTextBox())
             m_hasTextChildren = true;
     }
-
+    void removeFromLine(InlineBox* child);
     virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty, int xOffsetOnLine);
     void paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
                           int my, int mh, int _tx, int _ty, int w, int h, int xoff);
@@ -223,12 +224,16 @@ public:
 
     virtual void setOverflowPositions(int /*top*/, int /*bottom*/) {}
 
+    void setAfterPageBreak(bool b = true) { m_afterPageBreak = b; }
+    bool afterPageBreak() const { return m_afterPageBreak; }
+
 protected:
     InlineBox* m_firstChild;
     InlineBox* m_lastChild;
     bool m_includeLeftEdge : 1;
     bool m_includeRightEdge : 1;
     bool m_hasTextChildren : 1;
+    bool m_afterPageBreak : 1;
 };
 
 class RootInlineBox : public InlineFlowBox

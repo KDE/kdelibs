@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003-2004 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +17,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -26,6 +27,7 @@
 #include "rendering/render_text.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom_docimpl.h"
 #include <QVector>
 
@@ -37,6 +39,7 @@
 
 #define BIDI_DEBUG 0
 //#define DEBUG_LINEBREAKS
+//#define PAGE_DEBUG
 
 namespace khtml {
 
@@ -759,6 +762,11 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
     lineBox->verticallyAlignBoxes(m_height);
 //    lineBox->setBlockHeight(m_height);
 
+    // Check for page-breaks
+    if (canvas()->pagedMode() && !lineBox->afterPageBreak())
+        // If we get a page-break we might need to redo the line-break
+        if (clearLineOfPageBreaks(lineBox) && hasFloats()) return;
+
     // See if the line spilled out.  If so set overflow height accordingly.
     int bottomOfLine = lineBox->bottomOverflow();
     if (bottomOfLine > m_height && bottomOfLine > m_overflowHeight)
@@ -775,6 +783,76 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
         // to update the static normal flow x/y of positioned elements.
         r->obj->position(r->box, r->start, r->stop - r->start, r->level%2);
     }
+}
+
+bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
+{
+    bool doPageBreak = false;
+    // Check for physical page-breaks
+    int xpage = crossesPageBreak(lineBox->topOverflow(), lineBox->bottomOverflow());
+    if (xpage) {
+#ifdef PAGE_DEBUG
+        kdDebug(6040) << renderName() << " Line crosses to page " << xpage << endl;
+        kdDebug(6040) << renderName() << " at pos " << lineBox->yPos() << " height " << lineBox->height() << endl;
+#endif
+
+        doPageBreak = true;
+        // check page-break-inside
+        if (!style()->pageBreakInside()) {
+            if (parent()->canClear(this, PageBreakNormal)) {
+                setNeedsPageClear(true);
+                doPageBreak = false;
+            }
+#ifdef PAGE_DEBUG
+            else
+                kdDebug(6040) << "Ignoring page-break-inside: avoid" << endl;
+#endif
+        }
+        // check orphans
+        int orphans = 0;
+        InlineRunBox* box = lineBox->prevLineBox();
+        while (box && orphans < style()->orphans()) {
+            orphans++;
+            box = box->prevLineBox();
+        }
+
+        if (orphans < style()->orphans()) {
+#ifdef PAGE_DEBUG
+            kdDebug(6040) << "Orphans: " << orphans << endl;
+#endif
+            // Orphans is a level 2 page-break rule and can be broken only
+            // if the break is physically required.
+            if (parent()->canClear(this, PageBreakHarder)) {
+                // move block instead
+                setNeedsPageClear(true);
+                doPageBreak = false;
+            }
+#ifdef PAGE_DEBUG
+            else
+                kdDebug(6040) << "Ignoring violated orphans" << endl;
+#endif
+        }
+        if (doPageBreak) {
+            int oldYPos = lineBox->yPos();
+            int pTop = pageTopAfter(lineBox->yPos());
+
+            m_height = pTop;
+            lineBox->setAfterPageBreak(true);
+            lineBox->verticallyAlignBoxes(m_height);
+            if (lineBox->yPos() < pTop) {
+                // ### serious crap. render_line is sometimes placing lines too high
+                kdDebug(6040) << "page top overflow by repositioned line" << endl;
+                int heightIncrease = pTop - lineBox->yPos();
+                m_height = pTop + heightIncrease;
+                lineBox->verticallyAlignBoxes(m_height);
+            }
+#ifdef PAGE_DEBUG
+            kdDebug(6040) << "Cleared line " << lineBox->yPos() - oldYPos << "px" << endl;
+#endif
+            setContainsPageBreak(true);
+        }
+    }
+    return doPageBreak;
 }
 
 // collects one line of the paragraph and transforms it to visual order
@@ -1255,7 +1333,7 @@ static void buildCompactRuns(RenderObject* compactObj, BidiState &bidi)
 }
 #endif
 
-void RenderBlock::layoutInlineChildren(bool relayoutChildren)
+void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLine)
 {
     BidiState bidi;
 
@@ -1338,10 +1416,24 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
 
         previousLineBrokeAtBR = true;
 
+        int lineCount = 0;
+        bool pagebreakHint = false;
+        int oldPos = 0;
+        BidiIterator oldStart;
+        BidiState oldBidi;
+        const bool pagedMode = canvas()->pagedMode();
+//
         while( !end.atEnd() ) {
             start = end;
+            lineCount++;
             betweenMidpoints = false;
             isLineEmpty = true;
+            pagebreakHint = false;
+            if (pagedMode) {
+                oldPos = m_height;
+                oldStart = start;
+                oldBidi = bidi;
+            }
 #ifdef APPLE_CHANGES    // KDE handles compact blocks differently
             if (m_firstLine && firstChild() && firstChild()->isCompact()) {
                 buildCompactRuns(firstChild(), bidi);
@@ -1349,6 +1441,11 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
                 end = start;
             }
 #endif
+            if (lineCount == breakBeforeLine) {
+                m_height = pageTopAfter(oldPos);
+                pagebreakHint = true;
+            }
+redo_linebreak:
             end = findNextLineBreak(start, bidi);
             if( start.atEnd() ) break;
             if (!isLineEmpty) {
@@ -1368,6 +1465,8 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
                 if (sBidiRunCount) {
                     InlineFlowBox* lineBox = constructLine(start, end);
                     if (lineBox) {
+                        if (pagebreakHint) lineBox->setAfterPageBreak(true);
+
                         // Now we position all of our text runs horizontally.
                         computeHorizontalPositionsForLine(lineBox, bidi);
 
@@ -1375,6 +1474,15 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
                         computeVerticalPositionsForLine(lineBox);
 
                         deleteBidiRuns(renderArena());
+
+                        if (lineBox->afterPageBreak() && hasFloats() && !pagebreakHint) {
+                            start = end = oldStart;
+                            bidi = oldBidi;
+                            m_height = pageTopAfter(oldPos);
+                            deleteLastLineBox(renderArena());
+                            pagebreakHint = true;
+                            goto redo_linebreak;
+                        }
                     }
                 }
 
@@ -1403,6 +1511,50 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
 
     sNumMidpoints = 0;
     sCurrMidpoint = 0;
+
+    // If we violate widows page-breaking rules, we set a hint and relayout.
+    // Note that the widows rule might still be violated afterwards if the lines have become wider
+    if (canvas()->pagedMode() && containsPageBreak() && breakBeforeLine == 0)
+    {
+        int orphans = 0;
+        int widows = 0;
+        // find breaking line
+        InlineRunBox* lineBox = firstLineBox();
+        while (lineBox) {
+            if (lineBox->isInlineFlowBox()) {
+                InlineFlowBox* flowBox = static_cast<InlineFlowBox*>(lineBox);
+                if (flowBox->afterPageBreak()) break;
+            }
+            orphans++;
+            lineBox = lineBox->nextLineBox();
+        }
+        InlineFlowBox* pageBreaker = static_cast<InlineFlowBox*>(lineBox);
+        if (!pageBreaker) goto no_break;
+        // count widows
+        while (lineBox && widows < style()->widows()) {
+            if (lineBox->hasTextChildren())
+                widows++;
+            lineBox = lineBox->nextLineBox();
+        }
+        if (widows < style()->widows()) {
+            kdDebug( 6040 ) << "Widows: " << widows << endl;
+            // Check if we have enough orphans after respecting widows count
+            int newOrphans = orphans - (style()->widows() - widows);
+            if (newOrphans < style()->orphans() && parent()->canClear(this,PageBreakHarder))
+            {
+                // Relayout to remove incorrect page-break
+                setNeedsPageClear(true);
+                setContainsPageBreak(false);
+                layoutInlineChildren(relayoutChildren, -1);
+                return;
+            } else {
+                // Set hint and try again
+                layoutInlineChildren(relayoutChildren, newOrphans+1);
+                return;
+            }
+        }
+    }
+    no_break:
 
     // in case we have a float on the last line, it might not be positioned up to now.
     // This has to be done before adding in the bottom border/padding, or the float will
@@ -1477,7 +1629,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     // This variable is used only if whitespace isn't set to PRE, and it tells us whether
     // or not we are currently ignoring whitespace.
-    // ### Obsoleted by cleaning code in renderText
     bool ignoringSpaces = false;
     BidiIterator ignoreStart;
 
@@ -1635,6 +1786,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             int lastSpace = pos;
             bool autoWrap = o->style()->autoWrap();
             bool preserveWS = o->style()->preserveWS();
+            bool preserveLF = o->style()->preserveLF();
 #ifdef APPLE_CHANGES
             int wordSpacing = o->style()->wordSpacing();
 #endif
@@ -1653,7 +1805,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef APPLE_CHANGES    // KDE applies wordspacing differently
                 bool applyWordSpacing = false;
 #endif
-                if ( c == '\n' || (autoWrap && isBreakable( str, pos, strlen )) ) {
+                if ( (preserveLF && c == '\n') || (autoWrap && isBreakable( str, pos, strlen )) ) {
                     if (ignoringSpaces) {
                         if (!currentCharacterIsSpace) {
                             // Stop ignoring spaces and begin at this
@@ -1708,7 +1860,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         goto end;
                     }
 
-                    if( *(str+pos) == '\n' ) {
+                    if( preserveLF && *(str+pos) == '\n' ) {
                         lBreak.obj = o;
                         lBreak.pos = pos;
 

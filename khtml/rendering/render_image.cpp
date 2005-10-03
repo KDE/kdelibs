@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
  */
@@ -222,7 +222,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !canvas()->printImages())
+    if (!canvas()->printImages())
         return;
 
     //    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&

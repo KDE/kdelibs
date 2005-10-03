@@ -374,7 +374,7 @@ INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         margin: 0__qem;
-        border: 0px -khtml-native;
+        border: 2px -khtml-native;
 }
 
 INPUT[type="hidden"] {
@@ -415,7 +415,7 @@ TEXTAREA {
         color: windowtext;
         font-family: monospace;
         margin: 0__qem;
-        border: 0px -khtml-native;
+        border: 2px -khtml-native;
 }
 
 /*
@@ -562,18 +562,8 @@ marquee {
 
 /* noscript is handled internally, as it depends on the html settings */
 
-/* media rules are commented out for the moment. We'll have to add
- * them later. Lars, 23.12.99
- */
-
-/*
-      @media print {
-        @page         { margin: 10% }
-        H1, H2, H3,
-        H4, H5, H6    { page-break-after: avoid; page-break-inside: avoid }
-        BLOCKQUOTE,
-        PRE           { page-break-inside: avoid }
-        UL, OL, DL    { page-break-before: avoid }
-      }
-
-*/
+@media print {
+  h1, h2, h3,
+  h4, h5, h6    { page-break-after: avoid }
+  ul, ol, dl    { page-break-before: avoid }
+}

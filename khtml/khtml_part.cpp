@@ -23,7 +23,7 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
 
@@ -3961,10 +3961,10 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
               true))  // don't care if the ref changes!
     {
       m_url = cURL;
+      emit d->m_extension->openURLNotify();      
       if ( !gotoAnchor( m_url.encodedHtmlRef()) )
         gotoAnchor( m_url.htmlRef() );
       emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
-      emit d->m_extension->openURLNotify();
       return false; // we jumped, but we didn't open a URL
     }
   }
