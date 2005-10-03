@@ -143,6 +143,9 @@ public:
     virtual int lowestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int rightmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int leftmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
+    int lowestAbsolutePosition() const;
+    int leftmostAbsolutePosition() const;
+    int rightmostAbsolutePosition() const;
 
     int rightOffset() const;
     int rightRelOffset(int y, int fixedOffset, bool applyTextIndent=true, int *heightRemaining = 0) const;

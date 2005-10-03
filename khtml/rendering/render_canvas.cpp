@@ -680,8 +680,11 @@ int RenderCanvas::docHeight() const
     RenderObject *fc = firstChild();
     if(fc) {
         int dh = fc->overflowHeight() + fc->marginTop() + fc->marginBottom();
-        int lowestPos = firstChild()->lowestPosition(false);
+        int lowestPos = fc->lowestPosition(false);
 // kdDebug(6040) << "h " << h << " lowestPos " << lowestPos << " dh " << dh << " fc->rh " << fc->effectiveHeight() << " fc->height() " << fc->height() << endl;
+        if( lowestPos > dh )
+            dh = lowestPos;
+        lowestPos = lowestAbsolutePosition();
         if( lowestPos > dh )
             dh = lowestPos;
         if( dh > h )
@@ -708,6 +711,9 @@ int RenderCanvas::docWidth() const
         int rightmostPos = fc->rightmostPosition(false);
 // kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
         if( rightmostPos > dw )
+            dw = rightmostPos;
+        rightmostPos = rightmostAbsolutePosition();
+        if ( rightmostPos > dw )
             dw = rightmostPos;
         if( dw > w )
             w = dw;

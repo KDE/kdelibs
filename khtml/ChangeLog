@@ -1,3 +1,19 @@
+2005-10-03  Germain Garand  <germain@ebooksfrance.org>
+
+        let the initial containing block be the Canvas, as mandated by latest
+        draft of CSS 2.1 10.1.1
+
+        * rendering/render_object.cpp (containingBlock, container): don't special case the Root, it's no more 
+        an initial containing block.
+
+        * rendering/render_block.{cpp,h} (*AbsolutePosition): separate calculation
+        of positioned objects' contribution to the object's rightmost/lower/leftmost position. 
+
+        * rendering/render_box.cpp (setStyle, containingBlockWidth): checking for isCanvas where applicable.
+
+        * rendering/render_canvas.cpp (docWidth, docHeight):
+        take into account absolutely positioned objects from the canvas itself.
+
 2005-09-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implementation of real page-breaking algorithm respecting the CSS 2.1 specification.

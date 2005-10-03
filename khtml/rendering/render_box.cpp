@@ -160,7 +160,7 @@ void RenderBox::setStyle(RenderStyle *_style)
             m_layer->insertOnlyThisLayer();
         }
     }
-    else if (m_layer && !isRoot() && !isCanvas()) {
+    else if (m_layer && !isCanvas()) {
         m_layer->removeOnlyThisLayer();
         m_layer = 0;
     }
@@ -620,7 +620,7 @@ void RenderBox::close()
 
 short RenderBox::containingBlockWidth() const
 {
-    if (isRoot() && canvas()->view())
+    if ((isCanvas()||isRoot()) && canvas()->view())
     {
         if (canvas()->pagedMode())
             return canvas()->width();

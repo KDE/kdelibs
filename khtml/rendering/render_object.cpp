@@ -564,8 +564,7 @@ RenderBlock *RenderObject::containingBlock() const
     }
     else if(m_style->position() == ABSOLUTE) {
         while (o &&
-               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) &&
-               !o->isRoot() && !o->isCanvas())
+               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas())
             o = o->parent();
     } else {
         while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
@@ -1459,7 +1458,7 @@ RenderObject *RenderObject::container() const
         // we may not have one if we're part of an uninstalled subtree.  We'll
         // climb as high as we can though.
         o = parent();
-        while (o && o->style()->position() == STATIC && !o->isRoot() && !o->isCanvas())
+        while (o && o->style()->position() == STATIC && !o->isCanvas())
             o = o->parent();
     }
     else

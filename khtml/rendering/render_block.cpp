@@ -2015,23 +2015,32 @@ int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) 
             }
         }
     }
-
-    // Fixed positioned objects do not scroll and thus should not constitute
-    // part of the lowest position.
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        QPtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int lp = r->yPos() + r->lowestPosition(false);
-            bottom = kMax(bottom, lp);
-        }
-    }
+    bottom = kMax(bottom, lowestAbsolutePosition());
 
     if (!includeSelf && lastLineBox()) {
         int lp = lastLineBox()->yPos() + lastLineBox()->height();
         bottom = kMax(bottom, lp);
     }
 
+    return bottom;
+}
+
+int RenderBlock::lowestAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+        
+    // Fixed positioned objects do not scroll and thus should not constitute
+    // part of the lowest position.
+    int bottom = 0;
+    RenderObject* r;
+    QPtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;
+        int lp = r->yPos() + r->lowestPosition(false);
+        bottom = kMax(bottom, lp);
+    }
     return bottom;
 }
 
@@ -2053,15 +2062,7 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
             }
         }
     }
-
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        QPtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int rp = r->xPos() + r->rightmostPosition(false);
-            right = kMax(right, rp);
-        }
-    }
+    right = kMax(right, rightmostAbsolutePosition());
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox()) {
@@ -2070,6 +2071,22 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         }
     }
 
+    return right;
+}
+
+int RenderBlock::rightmostAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+    int right = 0;
+    RenderObject* r;
+    QPtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;
+        int rp = r->xPos() + r->rightmostPosition(false);
+        right = kMax(right, rp);
+    }
     return right;
 }
 
@@ -2091,21 +2108,29 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
             }
         }
     }
-
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        QPtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int lp = r->xPos() + r->leftmostPosition(false);
-            left = kMin(left, lp);
-        }
-    }
+    left = kMin(left, leftmostAbsolutePosition());
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox())
             left = kMin(left, (int)currBox->xPos());
     }
 
+    return left;
+}
+
+int RenderBlock::leftmostAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+    int  left = 0;
+    RenderObject* r;
+    QPtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;                         
+        int lp = r->xPos() + r->leftmostPosition(false);
+        left = kMin(left, lp);
+    }
     return left;
 }
 
