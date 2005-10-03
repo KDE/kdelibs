@@ -189,7 +189,7 @@ class genobj:
 		def reldir(dir):
 			ndir    = SCons.Node.FS.default_fs.Dir(dir).srcnode().abspath
 			rootdir = SCons.Node.FS.default_fs.Dir('#').abspath
-			return ndir.replace(rootdir, '').lstrip('/')
+			return ndir.replace(rootdir, '').lstrip(os.sep)
 
 		dir=self.dirprefix
 		if not len(dir)>2: dir=reldir('.')
@@ -351,15 +351,22 @@ def make_list(env, s):
 		try: return s.split()
 		except AttributeError: return s
 
+## HELPER - replace current os path separators with slashes
+def slashify(val):
+	if os.sep == "\\":
+		return str.replace(val,os.sep,'/')
+	else:
+		return val
+	
 ## HELPER 
 def join(lenv, s1, s2, s3=None, s4=None):
 	if s4 and s3: return lenv.join(s1, s2, lenv.join(s3, s4))
 	if s3 and s2: return lenv.join(s1, lenv.join(s2, s3))
 	elif not s2:  return s1
 	# having s1, s2
-	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,string.lstrip(s2,'/'))
-	if not s1: s1='/' # TODO on win32 this will not work (for js)
-	return os.path.join(s1,string.lstrip(s2,'/'))
+	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,string.lstrip(s2,os.sep))
+	if not s1: s1=os.sep 
+	return os.path.join(s1,string.lstrip(s2,os.sep))
 
 ## HELPER export the data to xml
 bks_dump='<?xml version="1.0" encoding="UTF-8"?>\n<bksys version="1">\n'
@@ -376,7 +383,7 @@ def get_dump(nenv):
 def getreldir(lenv):
 	cwd=os.getcwd()
 	root=SCons.Node.FS.default_fs.Dir('#').abspath
-	return cwd.replace(root,'').lstrip('/')
+	return cwd.replace(root,'').lstrip(os.sep)
 
 ## HELPER - find programs and headers
 def find_path(lenv, file, path_list):
@@ -683,7 +690,7 @@ def generate(env):
 				thisenv['SHLIBSUFFIX']='.so.'+vnum
 			thisenv.Depends(target, thisenv.Value(vnum))
 			num=vnum.split('.')[0]
-			lst=target.split('/')
+			lst=target.split(os.sep)
 			tname=lst[len(lst)-1]
 			libname=tname.split('.')[0]
 			# TODO: proper handling of bundles (LD* instead of LIB* in scons?)
@@ -749,8 +756,10 @@ def generate(env):
         def link_local_shlib(lenv, str):
                 """ Links against a shared library made in the project """
                 lst = lenv.make_list(str)
-		for file in lst:
+		for afile in lst:
 			import re
+			file = slashify(afile)
+
 			if sys.platform == 'darwin':
 				reg=re.compile("(.*)/lib(.*).(la|so|dylib)$")
 			else:
@@ -777,8 +786,9 @@ def generate(env):
 	def link_local_staticlib(lenv, str):
 		""" Links against a shared library made in the project """
 		lst = lenv.make_list(str)
-		for file in lst:
+		for afile in lst:
 			import re
+			file = slashify(afile)
 			reg = re.compile("(.*)/(lib.*.a)")
 			result = reg.match(file)
 			if not result:
