@@ -598,8 +598,6 @@ public:
    * @deprecated use QApplication::keyboardModifiers() and QApplication::mouseButtons() instead.
    */
   static Qt::ButtonState keyboardMouseState() KDE_DEPRECATED;
-#endif
-
 
   /// @deprecated Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,
@@ -617,6 +615,8 @@ public:
          Button3Pressed = 1<<10,
          Button4Pressed = 1<<11,
          Button5Pressed = 1<<12 };
+
+#endif
 
 public slots:
   /**
