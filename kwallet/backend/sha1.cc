@@ -20,6 +20,13 @@
 
 #include <config.h>
 
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_BITYPES_H
+#include <sys/bitypes.h> /* For uintXX_t on Tru64 */
+#endif
+
 #include "sha1.h"
 #include <string.h>
 
@@ -307,7 +314,7 @@ const unsigned char *SHA1::hash() {
 	p = _buf;
 
 #ifdef WORDS_BIGENDIAN
-#define X(a) do { *(unsigned long *)p = _h##a; p += 4; } while (0)
+#define X( a ) do { *( uint32_t * )p = _h##a; p += 4; } while ( 0 )
 #else
 #define X(a) do { *p++ = _h##a >> 24;  *p++ = _h##a >> 16;             \
 			*p++ = _h##a >>  8;  *p++ = _h##a;        } while (0)
