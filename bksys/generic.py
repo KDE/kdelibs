@@ -565,11 +565,10 @@ def generate(env):
 		elif env['WINDOWS']:
 			sys.path.append('bksys'+os.sep+'win32')
 			from detect_generic import detect
-			detect(env)
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
 			from detect_generic import detect
-			detect(env)
+		detect(env)
 
 		env['GENERIC_ISCONFIGURED']=1
 
