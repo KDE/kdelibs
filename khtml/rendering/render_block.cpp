@@ -1731,8 +1731,8 @@ void RenderBlock::insertFloatingObject(RenderObject *o)
         else
             newObj = new FloatingObject(FloatingObject::FloatRight);
 
-        newObj->startY = -1;
-        newObj->endY = -1;
+        newObj->startY = -500000;
+        newObj->endY = -500000;
         newObj->width = o->width() + o->marginLeft() + o->marginRight();
     }
     else {
@@ -1763,12 +1763,12 @@ void RenderBlock::positionNewFloats()
 {
     if(!m_floatingObjects) return;
     FloatingObject *f = m_floatingObjects->getLast();
-    if(!f || f->startY != -1) return;
+    if(!f || f->startY != -500000) return;
     FloatingObject *lastFloat;
     while(1)
     {
         lastFloat = m_floatingObjects->prev();
-        if (!lastFloat || lastFloat->startY != -1) {
+        if (!lastFloat || lastFloat->startY != -500000) {
             m_floatingObjects->next();
             break;
         }
@@ -2221,12 +2221,6 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
 
-    // we have overhanging floats
-    if (!m_floatingObjects) {
-        m_floatingObjects = new QPtrList<FloatingObject>;
-        m_floatingObjects->setAutoDelete(true);
-    }
-
     QPtrListIterator<FloatingObject> it(*flow->m_floatingObjects);
     FloatingObject *r;
     for ( ; (r = it.current()); ++it ) {
@@ -2243,10 +2237,12 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
 
             FloatingObject* f = 0;
             // don't insert it twice!
-            QPtrListIterator<FloatingObject> it(*m_floatingObjects);
-            while ( (f = it.current()) ) {
-                if (f->node == r->node) break;
-                ++it;
+            if (m_floatingObjects) {
+                QPtrListIterator<FloatingObject> it(*m_floatingObjects);
+                while ( (f = it.current()) ) {
+                    if (f->node == r->node) break;
+                    ++it;
+                }
             }
             if ( !f ) {
                 FloatingObject *floatingObj = new FloatingObject(r->type);
@@ -2271,6 +2267,10 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
 
                 floatingObj->width = r->width;
                 floatingObj->node = r->node;
+                if (!m_floatingObjects) {
+                    m_floatingObjects = new QPtrList<FloatingObject>;
+                    m_floatingObjects->setAutoDelete(true);
+                 }
                 m_floatingObjects->append(floatingObj);
 #ifdef DEBUG_LAYOUT
                 kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
