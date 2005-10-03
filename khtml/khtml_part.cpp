@@ -6376,14 +6376,13 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     u.setPass(QString::null);
 
     QDrag *drag = new QDrag( d->m_view->viewport() );
-    QMimeData* mimeData = new QMimeData;
     QMap<QString, QString> metaDataMap;
     if ( !d->m_referrer.isEmpty() )
       metaDataMap.insert( "referrer", d->m_referrer );
-    u.setInMimeData( mimeData, metaDataMap );
+    u.setInMimeData( drag->mimeData(), metaDataMap );
 
     if( img && img->complete() )
-      mimeData->setImageData( img->currentImage() );
+      drag->mimeData()->setImageData( img->currentImage() );
 
     if ( !pix.isNull() )
       drag->setPixmap( pix );
