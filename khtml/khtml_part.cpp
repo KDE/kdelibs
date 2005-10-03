@@ -385,9 +385,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  d->m_paFindAheadText = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
+  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), KShortcut( '/' ), this, SLOT( slotFindAheadText()),
       actionCollection(), "findAheadText");
-  d->m_paFindAheadLinks = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
+  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
       actionCollection(), "findAheadLink");
   d->m_paFindAheadText->setEnabled( false );
   d->m_paFindAheadLinks->setEnabled( false );
