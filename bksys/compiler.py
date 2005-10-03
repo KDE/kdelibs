@@ -27,7 +27,7 @@ def generate(env):
 			env['COMPILER_ISCONFIGURED'] = 1;
 			dest = open(env.join(env['_BUILDDIR_'], 'config-compiler.h'), 'w')
 			dest.write('/* compiler name and version */\n')
-			dest.write('#define KDE_COMPILER_VERSION '+compiler_version+'\n')
+			dest.write('#define KDE_COMPILER_VERSION "'+compiler_version+'"\n')
 			dest.close();
 			context.Result(compiler_version)
 		else:
