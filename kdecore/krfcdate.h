@@ -13,17 +13,18 @@
    
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
 #ifndef KRFCDATE_H
 #define KRFCDATE_H
 
-#include <qstring.h>
-#include <q3cstring.h>
 #include <time.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
+
+class QString;
+class QByteArray;
 
 /**
  * The KRFCDate class contains functions related to the parsing of dates.
@@ -80,21 +81,7 @@ public:
    * @return the string representation of the date
    */
 
-   static QByteArray rfc2822DateString(time_t utcTime, int utcOffset);
-
-
-  /**
-   * Returns a string representation of the given date and time formated
-   * in conformance to RFC2822.
-   *
-   * Provided for convenience, the function is equivalent to
-   * rfc2822DateString(t, localUTCOffset()).
-   *
-   * @param utcTime    a date and time in UTC
-   * @return the string representation of the date
-   */
-
-   static QByteArray rfc2822DateString(time_t utcTime);
+   static QByteArray rfc2822DateString(time_t utcTime, int utcOffset=localUTCOffset());
 
 };
 

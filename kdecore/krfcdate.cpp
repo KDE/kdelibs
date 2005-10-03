@@ -14,20 +14,21 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
+#undef QT3_SUPPORT
+#include "config.h"
+#include "krfcdate.h"
 
 #include <sys/param.h>
 #include <ctype.h>
 #include <stdlib.h>
 
 #include <qstringlist.h>
-
-#include <krfcdate.h>
-#include <q3cstring.h>
+#include <qstring.h>
+#include <qbytearray.h>
 
 static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {
@@ -109,7 +110,7 @@ KRFCDate::parseDate(const QString &_date)
      time_t result = 0;
      int offset = 0;
      char *newPosStr;
-     const char *dateString = _date.latin1();
+     const char *dateString = _date.toLatin1().data();
      int day = 0;
      char monthStr[4];
      int month = -1;
@@ -355,7 +356,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   QString input = input_;
 
   // First find the 'T' separator, if any.
-  int tPos = input.find('T');
+  int tPos = input.indexOf(QLatin1Char('T'));
 
   // If there is no time, no month or no day specified, fill those missing
   // fields so that 'input' matches YYYY-MM-DDTHH:MM:SS
@@ -482,10 +483,4 @@ QByteArray KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
                     sgn, z/60%24, z%60).toAscii();
 
     return dateStr;
-}
-
-
-QByteArray KRFCDate::rfc2822DateString(time_t utcTime)
-{
-    return rfc2822DateString(utcTime, localUTCOffset());
 }

@@ -9,6 +9,7 @@ class KRFCDateTest : public QObject
 
 private slots:
     void test();
+    void testRFC2822();
 };
 
 #endif
