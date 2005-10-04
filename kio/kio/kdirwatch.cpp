@@ -213,7 +213,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   delayRemove = false;
   m_ref = 0;
 
-  KConfigGroup config(KGlobal::config(), Q3CString("DirWatch"));
+  KConfigGroup config(KGlobal::config(), QLatin1String("DirWatch"));
   m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readNumEntry("PollInterval", 500);
 
@@ -349,7 +349,7 @@ void KDirWatchPrivate::slotActivated()
 
   while ( pending > 0 ) {
 
-    if ( pending > sizeof( buf ) )
+    if ( pending > (int)sizeof( buf ) )
       pending = sizeof( buf );
 
     ( void ) read( m_inotify_fd, buf, pending);
@@ -360,7 +360,7 @@ void KDirWatchPrivate::slotActivated()
       qDebug( "---> wd: %d", ev.wd );
       qDebug( "---> mask: %x", ev.mask );
 
-      Q3CString path( ev.len+1 );
+      QByteArray path( ev.len );
       memcpy( path.data(), &buf[offset+sizeof( struct inotify_event )], ev.len );
 
       qDebug( "---> path: %s", path.data() );
@@ -745,7 +745,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // we have a new path to watch
 
   KDE_struct_stat stat_buf;
-  Q3CString tpath = QFile::encodeName(path);
+  QByteArray tpath = QFile::encodeName(path);
   bool exists = (KDE_stat(tpath, &stat_buf) == 0);
 
   Entry newEntry;
@@ -1634,7 +1634,7 @@ KDirWatch::Method KDirWatch::internalMethod()
 #endif
 #ifdef HAVE_INOTIFY
   if (d->supports_inotify)
-    return KDirWatch::Inotify;
+    return KDirWatch::INotify;
 #endif
 #ifdef HAVE_DNOTIFY
   if (d->supports_dnotify)

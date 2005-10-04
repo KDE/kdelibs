@@ -217,7 +217,7 @@ class KIO_EXPORT KDirWatch : public QObject
     */
    void setDeleted( const QString &path );
 
-   enum Method { FAM, Inotify, DNotify, Stat };
+   enum Method { FAM, INotify, DNotify, Stat };
    /**
     * Returns the preferred internal method to
     * watch for changes.
