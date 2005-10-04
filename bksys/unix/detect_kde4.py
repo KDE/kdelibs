@@ -47,16 +47,19 @@ def bootstrap(env):
 	env['LIB_KDECORE'] = ['kdecore']
 	env['LIB_KIO']     = ['kio', 'kwalletclient', 'kdesu']
 	env['LIB_KDEUI']   = ['kdeui']
+	env['LIB_QTTEST']  = ['qttest']
 
 	env['LIBPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore') ]
 	env['LIBPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio') ]
 	env['LIBPATH_KIO'].append( env.join(os.getcwd(), env['_BUILDDIR_'], 'kdesu'))
 	env['LIBPATH_KIO'].append( env.join(os.getcwd(), env['_BUILDDIR_'], 'kwallet', 'client'))
 	env['LIBPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui') ]
+	env['LIBPATH_QTTEST']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'qttestlib') ]
 
 	env['CPPPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore'), '#kdecore' ]
 	env['CPPPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio'), '#kio' ]
 	env['CPPPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui'), '#kdeui' ]
+	env['CPPPATH_QTTEST']  = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'qttestlib'), '#qttestlib' ]
 
 def detect(env):
 	"""

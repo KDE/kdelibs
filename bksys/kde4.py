@@ -39,14 +39,17 @@ def generate(env):
 		('LIBPATH_KDECORE', ''),
 		('LIBPATH_KIO', ''),
 		('LIBPATH_KDEUI', ''),
+		('LIBPATH_QTTEST', ''),
 
 		('CPPPATH_KDECORE', ''),
 		('CPPPATH_KIO', ''),
 		('CPPPATH_KDEUI', ''),
+		('CPPPATH_QTTEST', ''),
 
 		('LIB_KDECORE', ''),
 		('LIB_KIO', ''),
 		('LIB_KDEUI', ''),
+		('LIB_QTTEST', ''),
 
 		('KCONFIGCOMPILER', ''),
 		('DCOPIDL', ''), ('DCOPIDL2CPP', ''),
