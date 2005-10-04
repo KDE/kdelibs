@@ -12,25 +12,24 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __ksycocafactory_h__
-#define __ksycocafactory_h__
+#ifndef KSYCOCAFACTORY_H
+#define KSYCOCAFACTORY_H
 
-#include "ksycocatype.h"
-#include "ksycocaentry.h"
+#include <ksycocaentry.h>
 
-#include <q3dict.h>
-#include <q3ptrlist.h>
 class KSycoca;
 class QStringList;
 class QString;
 class KSycocaDict;
 class KSycocaResourceList;
+template <class T> class QList;
+template <class T, class U> class QHash;
 
-typedef Q3Dict<KSycocaEntry::Ptr> KSycocaEntryDict;
+typedef QHash<QString, KSycocaEntry::Ptr> KSycocaEntryDict;
 
 /**
  * @internal
@@ -134,7 +133,7 @@ protected:
 /** This, instead of a typedef, allows to declare "class ..." in header files
  * @internal
  */
-class KDECORE_EXPORT KSycocaFactoryList : public Q3PtrList<KSycocaFactory>
+class KDECORE_EXPORT KSycocaFactoryList : public QList<KSycocaFactory*>
 {
 public:
    KSycocaFactoryList() { }

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA 02111-1307, USA.
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
  **/
 
 #include <qdir.h>
@@ -260,15 +260,15 @@ bool KBuildSycoca::build()
   KBSEntryDictList *entryDictList = 0;
   KBSEntryDict *serviceEntryDict = 0;
 
-  entryDictList = new KBSEntryDictList();
+  entryDictList = new KBSEntryDictList;
   // Convert for each factory the entryList to a Dict.
   int i = 0;
   // For each factory
-  for (KSycocaFactory *factory = m_lstFactories->first();
-       factory;
-       factory = m_lstFactories->next() )
+  for (KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
+       factory != m_lstFactories->end();
+       ++factory)
   {
-     KBSEntryDict *entryDict = new KBSEntryDict();
+     KBSEntryDict *entryDict = new KBSEntryDict;
      if (g_allEntries)
      {
          KSycocaEntry::List list = (*g_allEntries)[i++];
@@ -279,21 +279,21 @@ bool KBuildSycoca::build()
             entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>(*it));
          }
      }
-     if (factory == g_bsf)
+     if ((*factory) == g_bsf)
         serviceEntryDict = entryDict;
-     else if (factory == g_bsgf)
+     else if ((*factory) == g_bsgf)
         g_serviceGroupEntryDict = entryDict;
      entryDictList->append(entryDict);
   }
 
   QStringList allResources;
   // For each factory
-  for (KSycocaFactory *factory = m_lstFactories->first();
-       factory;
-       factory = m_lstFactories->next() )
+  for (KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
+       factory != m_lstFactories->end();
+       ++factory)
   {
     // For each resource the factory deals with
-    const KSycocaResourceList *list = factory->resourceList();
+    const KSycocaResourceList *list = (*factory)->resourceList();
     if (!list) continue;
 
     for( KSycocaResourceList::ConstIterator it1 = list->begin();
@@ -328,12 +328,13 @@ bool KBuildSycoca::build()
      // Now find all factories that use this resource....
      // For each factory
      g_entryDict = entryDictList->first();
-     for (g_factory = m_lstFactories->first();
-          g_factory;
-          g_factory = m_lstFactories->next(),
+     for (KSycocaFactoryList::Iterator it = m_lstFactories->begin();
+          it != m_lstFactories->end();
+	  ++it,
           g_entryDict = entryDictList->next() )
      {
-        // For each resource the factory deals with
+        g_factory = (*it);
+	// For each resource the factory deals with
         const KSycocaResourceList *list = g_factory->resourceList();
         if (!list) continue;
 
@@ -577,18 +578,18 @@ void KBuildSycoca::save()
    (*m_str) << (Q_INT32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0L;
    KSycocaFactory * serviceFactory = 0L;
-   for(KSycocaFactory *factory = m_lstFactories->first();
-       factory;
-       factory = m_lstFactories->next())
+   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
+       factory != m_lstFactories->end();
+       ++factory)
    {
       Q_INT32 aId;
       Q_INT32 aOffset;
-      aId = factory->factoryId();
+      aId = (*factory)->factoryId();
       if ( aId == KST_KServiceTypeFactory )
-         servicetypeFactory = factory;
+         servicetypeFactory = *factory;
       else if ( aId == KST_KServiceFactory )
-         serviceFactory = factory;
-      aOffset = factory->offset();
+         serviceFactory = *factory;
+      aOffset = (*factory)->offset();
       (*m_str) << aId;
       (*m_str) << aOffset;
    }
@@ -601,11 +602,11 @@ void KBuildSycoca::save()
    (*m_str) << (*g_allResourceDirs);
 
    // Write factory data....
-   for(KSycocaFactory *factory = m_lstFactories->first();
-       factory;
-       factory = m_lstFactories->next())
+   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
+       factory != m_lstFactories->end();
+       ++factory)
    {
-      factory->save(*m_str);
+      (*factory)->save(*m_str);
       if (m_str->device()->status())
          return; // error
    }
@@ -616,14 +617,13 @@ void KBuildSycoca::save()
    m_str->device()->at(0);
 
    (*m_str) << (Q_INT32) KSycoca::version();
-   for(KSycocaFactory *factory = m_lstFactories->first();
-       factory;
-       factory = m_lstFactories->next())
+   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
+       factory != m_lstFactories->end(); ++factory)
    {
       Q_INT32 aId;
       Q_INT32 aOffset;
-      aId = factory->factoryId();
-      aOffset = factory->offset();
+      aId = (*factory)->factoryId();
+      aOffset = (*factory)->offset();
       (*m_str) << aId;
       (*m_str) << aOffset;
    }
@@ -911,12 +911,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
          factories->append( new KProtocolInfoFactory );
 
          // For each factory
-         for (KSycocaFactory *factory = factories->first();
-              factory;
-              factory = factories->next() )
+	 for (KSycocaFactoryList::Iterator factory = factories->begin();
+	      factory != factories->end(); ++factory)
          {
              KSycocaEntry::List list;
-             list = factory->allEntries();
+             list = (*factory)->allEntries();
              g_allEntries->append( list );
          }
          delete factories; factories = 0;

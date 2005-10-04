@@ -12,17 +12,18 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "ksycocafactory.h"
 #include "ksycoca.h"
 #include "ksycocatype.h"
-#include "ksycocafactory.h"
 #include "ksycocaentry.h"
 #include "ksycocadict.h"
 #include <qstringlist.h>
 #include <q3dict.h>
+#include <qhash.h>
 #include <kdebug.h>
 
 template class Q3Dict<KSycocaEntry>;
@@ -57,9 +58,8 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
       // Build new database!
       m_str = 0;
       m_resourceList = 0;
-      m_entryDict = new KSycocaEntryDict(977);
-      m_entryDict->setAutoDelete(true);
-      m_sycocaDict = new KSycocaDict();
+      m_entryDict = new KSycocaEntryDict;
+      m_sycocaDict = new KSycocaDict;
       m_beginEntryOffset = 0;
       m_endEntryOffset = 0;
 
@@ -101,11 +101,10 @@ KSycocaFactory::save(QDataStream &str)
 
    // Write all entries.
    int entryCount = 0;
-   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
-       it.current(); 
-       ++it)
+   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+       it != m_entryDict->end(); ++it)
    {
-      KSycocaEntry *entry = (*it.current());
+      KSycocaEntry *entry = (*it).data();
       entry->save(str);
       entryCount++;
    }
@@ -115,12 +114,10 @@ KSycocaFactory::save(QDataStream &str)
    // Write indices...
    // Linear index
    str << (Q_INT32) entryCount;
-   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
-       it.current(); 
-       ++it)
+   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+       it != m_entryDict->end(); ++it)
    {
-      KSycocaEntry *entry = (*it.current());
-      str << (Q_INT32) entry->offset(); 
+      str << qint32(it->data()->offset());
    }
 
    // Dictionary index
@@ -145,7 +142,7 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
    if (!m_sycocaDict) return; // Error!
 
    QString name = newEntry->name();
-   m_entryDict->insert( name, new KSycocaEntry::Ptr(newEntry) );
+   m_entryDict->insert( name, KSycocaEntry::Ptr(newEntry) );
    m_sycocaDict->add( name, newEntry );
 }
 

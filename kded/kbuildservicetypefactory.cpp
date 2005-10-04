@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA 02111-1307, USA.
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
  **/
 
 #include "kbuildservicetypefactory.h"
@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <assert.h>
 #include <kdesktopfile.h>
+#include <qhash.h>
 
 template class Q3Dict<KMimeType>;
 
@@ -58,10 +59,10 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 {
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
-   KSycocaEntry::Ptr * servType = (*m_entryDict)[ _name ];
-   if (!servType)
+   KSycocaEntry::Ptr servType = (*m_entryDict)[ _name ];
+   if (!servType.data())
       return 0;
-   return (KServiceType *) ((KSycocaEntry*)*servType);
+   return (KServiceType *) ((KSycocaEntry*)servType);
 }
 
 
@@ -163,11 +164,11 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    Q3Dict<KMimeType> dict;
 
    // For each mimetype in servicetypeFactory
-   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
-       it.current();
+   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+       it != m_entryDict->end();
        ++it)
    {
-      KSycocaEntry *entry = (*it.current());
+      KSycocaEntry *entry = (*it);
       if ( entry->isType( KST_KMimeType ) )
       {
         KMimeType *mimeType = (KMimeType *) entry;

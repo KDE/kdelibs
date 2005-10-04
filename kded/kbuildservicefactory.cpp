@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA 02111-1307, USA.
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
  **/
 
 #include "kbuildservicefactory.h"
@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <assert.h>
+#include <qhash.h>
 
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 	KBuildServiceGroupFactory *serviceGroupFactory ) :
@@ -141,11 +142,11 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    m_offerListOffset = str.device()->at();
 
    bool isNumber;
-   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
-       itserv.current();
+   for(KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
+       itserv != m_entryDict->end();
        ++itserv)
    {
-      KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
+      KService *service = (KService *) ((KSycocaEntry *)(*itserv));
       QStringList serviceTypeList = service->serviceTypes();
       KServiceType::List serviceTypes;
       QStringList::ConstIterator it = serviceTypeList.begin();
@@ -178,12 +179,12 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    }
 
    // For each entry in servicetypeFactory
-   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
-       it.current();
+   for(KSycocaEntryDict::Iterator it = m_serviceTypeFactory->entryDict()->begin();
+       it != m_serviceTypeFactory->entryDict()->end();
        ++it)
    {
       // export associated services
-      KServiceType *entry = static_cast<KServiceType*>(static_cast<KSycocaEntry*>(*it.current()));
+      KServiceType *entry = static_cast<KServiceType*>(static_cast<KSycocaEntry*>(*it));
       KService::List services = entry->services();
   
       for(KService::List::ConstIterator it2 = services.begin();
@@ -205,11 +206,11 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 
    KService::List initList;
 
-   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
-       itserv.current();
+   for(KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
+       itserv != m_entryDict->end();
        ++itserv)
    {
-      KService::Ptr service = (KService *) ((KSycocaEntry *) *itserv.current());
+      KService::Ptr service = (KService *) ((KSycocaEntry *) *itserv);
       if ( !service->init().isEmpty() )
       {
           initList.append(service); 
