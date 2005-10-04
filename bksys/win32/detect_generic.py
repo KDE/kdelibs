@@ -3,17 +3,19 @@
 def detect(env):
 	import os, sys
 	import SCons.Util
+
 	if env['ARGS'].get('debug', None):
 		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
 		env.pprint('CYAN','** Enabling debug for the project **')
 		env['GENCXXFLAGS'] = ['-g']
+		env['GENCCFLAGS'] = ['-g']
+		env['GENLINKFLAGS'] = ['-g']
 	else:
-		if os.environ.has_key('CXXFLAGS'):
-			# user-defined flags (gentooers will be elighted)
-			env['GENCXXFLAGS'] = SCons.Util.CLVar( os.environ['CXXFLAGS'] )+['-DNDEBUG', '-DNO_DEBUG']
-		else:
-			env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
-
+		env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
+		env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
+		env['GENLINKFLAGS'] = []
+	
+	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
 	if os.environ.has_key('LINKFLAGS'): env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LINKFLAGS'] )
 	# for make compatibility 
