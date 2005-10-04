@@ -49,6 +49,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
   kaccelmanager.h =&gt; kacceleratormanager.h
 </UL>
 
+
+<H4>KCompletion</H4>
+<li>enableSounds() was removed, use setEnableSounds()</li>
+<li>disableSounds() was removed, use setEnableSounds()</li>
+
 <H4>KGlobalSettings</H4>
 <ul>
 <li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO:trash instead</li>
@@ -162,6 +167,7 @@ Desktop Entry Spec</a>
 
 <H4>KStdAccel</H4>
 <li>Removed deprecated methods</li>
+<li>Removed WhatThis, use WhatsThis</li>
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
 
 <H4>KStyle</H4>
@@ -230,6 +236,10 @@ in the drop/paste side.</li>
 <ul>
 <li>checkAvailable() -&gt; isAvailable()</li>
 </ul>
+
+
+<H4>KConfigBackend</H4>
+<li>Removed filename(), use fileName()</li>
 
 <H4>KConfigDialog</H4>
 <ul>

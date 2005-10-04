@@ -152,14 +152,6 @@ public:
    */
   KLockFile::Ptr lockFile( bool bGlobal = false );
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-  /**
-   * @deprecated Use fileName() instead
-   */
-  KDE_DEPRECATED QString filename() const { return mfileName; }
-
 protected:
   KConfigBase *pConfig;
 

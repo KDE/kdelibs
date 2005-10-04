@@ -381,20 +381,6 @@ public:
      */
     bool hasMultipleMatches() const { return myHasMultipleMatches; }
 
-#ifndef KDE_NO_COMPAT
-    /**
-     * @deprecated
-     * @see setEnableSounds
-     */
-    void enableSounds() { myBeep = true; }
-
-    /**
-     * @deprecated
-     * @see setEnableSounds
-     */
-    void disableSounds() { myBeep = false; }
-#endif
-    
 public slots:
     /**
      * Attempts to complete "string" and emits the completion via match().

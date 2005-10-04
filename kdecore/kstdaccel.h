@@ -77,9 +77,6 @@ namespace KStdAccel
 
     PasteSelection     ///< @since 3.4
 
-#ifndef KDE_NO_COMPAT
-    , WhatThis = WhatsThis
-#endif
   };
 
   /**
