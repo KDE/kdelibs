@@ -139,13 +139,15 @@ unsigned int ValueImp::toUInt32(ExecState *exec) const
     return 0;
   double d32 = fmod(d, D32);
 
+  if (d32 < 0)
+    d32 += D32;
+
   //6.3.1.4 Real floating and integer
   // 50) The remaindering operation performed when a value of integer type is
   //   converted to unsigned type need not be performed when a value of real
   //   floating type is converted to unsigned type. Thus, the range of
   //   portable real floating values is (-1, Utype_MAX+1).
-  int t_int = static_cast<int>(d32);
-  return static_cast<unsigned int>(t_int);
+  return static_cast<unsigned int>(d32);
 }
 
 unsigned short ValueImp::toUInt16(ExecState *exec) const
