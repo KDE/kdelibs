@@ -501,6 +501,9 @@ void ElementImpl::close()
 {
     NodeImpl::close();
 
+    if (!getDocument()->renderer())
+        return; // the document is about to be destroyed
+    
     if (m_restyleChildrenLate) {
         NodeImpl *e = firstChild();
         while(e) {
