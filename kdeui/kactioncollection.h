@@ -194,8 +194,8 @@ public:
 
   /**
    * Enable highlighting notification for specific KActions.
-   * This is false by default, so, by default, the highlighting
-   * signals will not be emitted.
+   * This is true by default, so, by default, the highlighting
+   * signals will be emitted.
    *
    * @see connectHighlight()
    * @see disconnectHighlight()
@@ -203,7 +203,7 @@ public:
    * @see actionHighlighted()
    * @see highlightingEnabled()
    */
-  void setHighlightingEnabled( bool enable = true );
+  void setHighlightingEnabled( bool enable);
   /**
    * Return whether highlighting notifications are enabled.
    * @see connectHighlight()

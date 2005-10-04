@@ -52,7 +52,7 @@ public:
     m_bAutoConnectShortcuts = true;
     m_widget = 0;
     m_kaccel = m_builderKAccel = 0;
-    m_highlight = false;
+    m_highlight = true;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
     m_parentGUIClient = 0L;
