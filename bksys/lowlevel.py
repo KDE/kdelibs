@@ -16,6 +16,7 @@ def exists(env):
 ## obj.uselib='Z PNG KDE4' will add all the flags
 ##   and paths from zlib, libpng and kde4 vars defined below
 
+## TODO move to platform lowlevel.py
 def generate(env):
 	if env['HELP']: return
 
@@ -38,15 +39,16 @@ def generate(env):
 	########## png
 	env['LIB_PNG']             = ['png', 'z', 'm']
 
-	########## sm
-	env['LIB_SM']              = ['SM', 'ICE']
+	if not env['WINDOWS']:
+		########## sm
+		env['LIB_SM']              = ['SM', 'ICE']
+	
+		env['LIB_DL']              = ['dl']
 
-	env['LIB_DL']              = ['dl']
-
-	########## X11
-	env['LIB_X11']             = ['X11']
-	env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
-	env['LIB_XRENDER']         = ['Xrender']
+		########## X11
+		env['LIB_X11']             = ['X11']
+		env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
+		env['LIB_XRENDER']         = ['Xrender']
 
 	# tell it we do have a global config.h file
 	env['_CONFIG_H_'].append('lowlevel')
