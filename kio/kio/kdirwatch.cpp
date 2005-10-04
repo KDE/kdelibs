@@ -360,7 +360,7 @@ void KDirWatchPrivate::slotActivated()
       qDebug( "---> wd: %d", ev.wd );
       qDebug( "---> mask: %x", ev.mask );
 
-      QCString path( ev.len+1 );
+      Q3CString path( ev.len+1 );
       memcpy( path.data(), &buf[offset+sizeof( struct inotify_event )], ev.len );
 
       qDebug( "---> path: %s", path.data() );
