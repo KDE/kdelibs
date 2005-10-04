@@ -1,10 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-MimeType=application/mspowerpoint
+MimeType=application/vnd.ms-powerpoint
 Icon=presentation
-X-KDE-IsAlso=application/vnd.ms-powerpoint
-Patterns=*.ppz;*.PPZ;*.ppt;*.PPT;*.pps;*.PPS;
 Comment=Microsoft PowerPoint Presentation
 Comment[af]=Microsoft Powerpoint Voorlegging
 Comment[ar]=مستند مايكروسوفت باوربوينت
@@ -37,7 +35,6 @@ Comment[hu]=Microsoft PowerPoint dokumentum
 Comment[is]=Microsoft PowerPoint kynning
 Comment[it]=Presentazione Microsoft PowerPoint
 Comment[ja]=Microsoft PowerPoint プレゼンテーション
-Comment[km]=ការ​បង្ហាញ Microsoft PowerPoint
 Comment[ko]=마이크로소프트 파워포인트 프리젠테이션
 Comment[lt]=Microsoft PowerPoint pristatymas
 Comment[lv]=Microsoft PowerPoint prezentācija
@@ -71,3 +68,7 @@ Comment[wa]=Prezintaedje Microsoft PowerPoint
 Comment[xx]=xxMicrosoft PowerPoint Presentationxx
 Comment[zh_CN]=Microsoft PowerPoint 演示文稿
 Comment[zh_TW]=微軟 PowerPoint 文件
+
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.ppt
