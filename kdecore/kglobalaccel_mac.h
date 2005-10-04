@@ -27,6 +27,7 @@ public:
     bool disconnectKey( const KKeyServer::Key& )
     { return false; }
     void disableBlocking( bool disable ) {}
+    static void blockShortcuts( bool block ) {}
 };
 
 #endif // _KGLOBALACCEL_EMB_H
