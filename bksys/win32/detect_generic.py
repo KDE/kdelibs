@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 def detect(env):
+	## detect win32 specific settings 
 	import os, sys
 	import SCons.Util
 
@@ -44,6 +45,7 @@ def detect(env):
 
 
 def dist(env):
+	## create source package
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
 	else: VERSION=version
 	FOLDER  = appname+'-'+VERSION
