@@ -143,6 +143,7 @@ typedef void* IceIOErrorHandler;
 
 #if defined Q_WS_X11
 #include <kipc.h>
+#include <QX11Info>
 #endif
 
 #ifdef Q_WS_MACX
@@ -152,7 +153,6 @@ typedef void* IceIOErrorHandler;
 
 #include "kappdcopiface.h"
 #include <qevent.h>
-#include <QX11Info>
 #include <QDesktopWidget>
 #include <QMetaObject>
 

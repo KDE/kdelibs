@@ -40,8 +40,8 @@ typedef void Display;
 
 #ifdef Q_WS_X11
 #include <QX11Info>
-struct _IceConn;
 #endif
+struct _IceConn;
 class QPixmap;
 class KSessionManaged;
 class KStyle;
@@ -199,7 +199,7 @@ public:
    * @see sessionConfig()
    * @deprecated use QApplication::isSessionRestored()
    */
-  bool isRestored() const { return QApplication::isSessionRestored(); } KDE_DEPRECATED;
+  KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
   
   /**

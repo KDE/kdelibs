@@ -27,7 +27,6 @@
 #include <qglobal.h>
 #include <qlist.h>
 #include <qset.h>
-#include <qx11info_x11.h>
 #include <qwindowdefs.h>
 #include "kglobal.h"
 
@@ -42,9 +41,13 @@
 
 #include <qfont.h>
 
+#ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#endif
+
 #include <qcolormap.h>
 #include <qwidget.h>
 
@@ -251,6 +254,7 @@ int kasciistricmp( const char *str1, const char *str2 )
     return *s1 ? res : (*s2 ? -1 : 0);
 }
 
+#ifdef Q_WS_X11
 //static GC*	app_gc_ro	= 0;		// read-only GC
 static GC*	app_gc_tmp	= 0;		// temporary GC
 //static GC*	app_gc_ro_m	= 0;		// read-only GC (monochrome)
@@ -311,4 +315,4 @@ GC kde_xget_temp_gc( int scrn, bool monochrome )		// get temporary GC
     }
     return gc;
 }
-
+#endif

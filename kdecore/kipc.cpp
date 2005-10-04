@@ -26,10 +26,10 @@
 #include "config.h"
 
 #include <qwindowdefs.h>
-#include <qx11info_x11.h>
 #include <kipc.h>
 
 #if defined Q_WS_X11
+#include <qx11info_x11.h>
 #include <kxerrorhandler.h>
 #include <X11/X.h> 
 #include <X11/Xlib.h> 

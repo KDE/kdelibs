@@ -27,7 +27,6 @@
 #include <QFlags>
 
 #if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
-#include <QX11Info>
 
 #include "kkeyserver_x11.h"
 #include "kkeynative.h"
@@ -39,6 +38,7 @@
 #include <klocale.h>
 
 #ifdef Q_WS_X11
+#include <QX11Info>
 # define XK_MISCELLANY
 # define XK_XKB_KEYS
 # include <X11/X.h>

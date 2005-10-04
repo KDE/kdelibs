@@ -26,6 +26,7 @@ public:
     { return false; }
     bool disconnectKey( const KKeyServer::Key& )
     { return false; }
+    void disableBlocking( bool disable ) {}
 };
 
 #endif // _KGLOBALACCEL_EMB_H

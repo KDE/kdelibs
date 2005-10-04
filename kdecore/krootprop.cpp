@@ -18,11 +18,11 @@
 */
 
 #include <qwidget.h>
-#include <qx11info_x11.h>
 
 #include "config.h"
 #ifdef Q_WS_X11 // not needed anyway :-)
 
+#include <qx11info_x11.h>
 #include "krootprop.h"
 #include "kglobal.h"
 #include "klocale.h"
