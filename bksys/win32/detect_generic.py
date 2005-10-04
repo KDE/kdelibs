@@ -15,6 +15,9 @@ def detect(env):
 			env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
 
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
+	if os.environ.has_key('LINKFLAGS'): env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LINKFLAGS'] )
+	# for make compatibility 
+	if os.environ.has_key('LDFLAGS'):   env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LDFLAGS'] )
 
 	# User-specified prefix
 	if env['ARGS'].has_key('prefix'):
