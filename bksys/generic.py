@@ -264,7 +264,7 @@ class genobj:
 
 		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
-		lext=['.so', '.la', '.dylib']
+		lext=['.so', '.la', '.dylib','.dll']
 		sext=['.a']
 		for lib in llist:
 			sal=SCons.Util.splitext(lib)
@@ -644,6 +644,10 @@ def generate(env):
 			blue=env['BKS_COLORS']['BLUE']
 			normal=env['BKS_COLORS']['NORMAL']
 		return "%screating%s %s" % (blue, normal, target[0].path)
+
+	if env['WINDOWS']:
+		sys.path.append('bksys'+os.sep+'win32')
+		from detect_generic import build_la_file
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
@@ -751,6 +755,7 @@ def generate(env):
 	def subdirs(lenv, folderlist):
 		flist=lenv.make_list(folderlist)
 		for i in flist:
+			lenv['CURBUILDDIR'] = i[1:]
 			lenv.SConscript(lenv.join(i, 'SConscript'))
 		# take all objects - warn those who are not already executed
 		if lenv.has_key('USE_THE_FORCE_LUKE'):
@@ -808,7 +813,12 @@ def generate(env):
 
 	SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
+
+	if env['WINDOWS']:
+		sys.path.append('bksys'+os.sep+'win32')
+		from detect_generic import bksys_shlib
 	SConsEnvironment.bksys_shlib   = bksys_shlib
+
 	SConsEnvironment.subdirs       = subdirs
 	SConsEnvironment.link_local_shlib = link_local_shlib
 	SConsEnvironment.link_local_staticlib = link_local_staticlib
