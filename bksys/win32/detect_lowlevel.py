@@ -1,3 +1,7 @@
+##
+# @file 
+# low level configuration like build directory and low level related config.h creation
+
 def detect(lenv):
 	import os
 
