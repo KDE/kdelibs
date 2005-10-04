@@ -522,7 +522,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
     return 0;
   }
 
-  KAboutContainer* const container = new KAboutContainer( mPageTab,
+  KAboutContainer* const container = new KAboutContainer( 0,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
 						  innerAlignment );
   container->setObjectName( "container" );
@@ -577,7 +577,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
     return 0;
   }
 
-  QFrame *const page = new QFrame( mPageTab, title.latin1() ); // TODO: ?!???
+  QFrame *const page = new QFrame( 0, title.latin1() );
   page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );
