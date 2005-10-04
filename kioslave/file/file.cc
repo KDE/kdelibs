@@ -39,6 +39,11 @@
 #include <sys/sendfile.h>
 #endif
 
+#ifdef USE_POSIX_ACL
+#include <sys/acl.h>
+#include <acl/libacl.h>
+#endif
+
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>
@@ -88,6 +93,11 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*32)
 
 static QString testLogFile( const char *_filename );
+#ifdef USE_POSIX_ACL
+static bool isExtendedACL(  acl_t p_acl );
+static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, 
+                            mode_t type, bool withACL );
+#endif
 
 extern "C" { KDE_EXPORT int kdemain(int argc, char **argv); }
 
@@ -119,12 +129,78 @@ FileProtocol::FileProtocol( const Q3CString &pool, const Q3CString &app ) : Slav
     groupcache.setAutoDelete( true );
 }
 
+
+int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
+{
+    int ret = 0;
+#ifdef USE_POSIX_ACL
+
+    const QString ACLString = metaData( "ACL_STRING" );
+    const QString defaultACLString = metaData( "DEFAULT_ACL_STRING" );
+    // Empty strings mean leave as is
+    if ( !ACLString.isEmpty() ) {
+        acl_t acl = 0;
+        if ( ACLString == "ACL_DELETE" ) {
+            // user told us to delete the extended ACL, so let's write only 
+            // the minimal (UNIX permission bits) part
+            acl = acl_from_mode( perm );
+        }
+        acl = acl_from_text( ACLString.latin1() );
+        if ( acl_valid( acl ) == 0 ) { // let's be safe
+            ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
+            ssize_t size = acl_size( acl );
+            kdDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+        }
+        acl_free( acl );
+        if ( ret != 0 ) return ret; // better stop trying right away
+    }
+
+    if ( directoryDefault && !defaultACLString.isEmpty() ) {
+        if ( defaultACLString == "ACL_DELETE" ) {
+            // user told us to delete the default ACL, do so
+            ret += acl_delete_def_file( path );
+        } else {
+            acl_t acl = acl_from_text( defaultACLString.latin1() );
+            if ( acl_valid( acl ) == 0 ) { // let's be safe
+                ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
+                ssize_t size = acl_size( acl );
+                kdDebug(7101) << "Set Default ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+            }
+            acl_free( acl );
+        }
+    }
+#else
+    Q_UNUSED(path);
+    Q_UNUSED(perm);
+    Q_UNUSED(directoryDefault);
+#endif
+    return ret;
+}
+
 void FileProtocol::chmod( const KURL& url, int permissions )
 {
-    Q3CString _path( QFile::encodeName(url.path()));
-    if ( ::chmod( _path.data(), permissions ) == -1 )
+    Q3CString _path( QFile::encodeName(url.path()) );
+    /* FIXME: Should be atomic */
+    if ( ::chmod( _path.data(), permissions ) == -1 || 
+        ( setACL( _path.data(), permissions, false ) == -1 ) ||
+        /* if not a directory, cannot set default ACLs */
+        ( setACL( _path.data(), permissions, true ) == -1 && errno != ENOTDIR ) ) {
+
+        switch (errno) {
+            case EPERM:
+            case EACCES:
+                error( KIO::ERR_ACCESS_DENIED, url.path() );
+                break;
+            case ENOTSUP:
+                error( KIO::ERR_UNSUPPORTED_ACTION, url.path() );
+                break;
+            case ENOSPC:
+                error( KIO::ERR_DISK_FULL, url.path() );
+                break;
+            default:
         error( KIO::ERR_CANNOT_CHMOD, url.path() );
-    else
+        }
+    } else
         finished();
 }
 
@@ -490,6 +566,10 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     Q3CString _src( QFile::encodeName(src.path()));
     Q3CString _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
+#ifdef USE_POSIX_ACL
+    acl_t acl;
+#endif
+
     if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, src.path() );
@@ -565,6 +645,15 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 #ifdef HAVE_FADVISE
     posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
 #endif
+
+#ifdef USE_POSIX_ACL
+    acl = acl_get_fd(src_fd);
+    if ( acl && !isExtendedACL( acl ) ) {
+        kdDebug(7101) << _dest.data() << " doesn't have extended ACL" << endl;
+        acl_free( acl );
+        acl = NULL;
+    }
+#endif
     totalSize( buff_src.st_size );
 
     KIO::filesize_t processed_size = 0;
@@ -611,6 +700,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
           error( KIO::ERR_COULD_NOT_READ, src.path());
           close(src_fd);
           close(dest_fd);
+#ifdef USE_POSIX_ACL
+          if (acl) acl_free(acl);
+#endif
           return;
        }
        if (n == 0)
@@ -633,6 +725,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
               kdWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest.path());
            }
+#ifdef USE_POSIX_ACL
+           if (acl) acl_free(acl);
+#endif
            return;
          }
          processed_size += n;
@@ -648,19 +743,29 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     {
         kdWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest.path());
+#ifdef USE_POSIX_ACL
+        if (acl) acl_free(acl);
+#endif
         return;
     }
 
     // set final permissions
     if ( _mode != -1 )
     {
-       if (::chmod(_dest.data(), _mode) != 0)
+        if ( (::chmod(_dest.data(), _mode) != 0)
+#ifdef USE_POSIX_ACL
+          || (acl && acl_set_file(_dest.data(), ACL_TYPE_ACCESS, acl) != 0)
+#endif
+        )
        {
         // Eat the error if the filesystem apparently doesn't support chmod.
         if ( KIO::testFileSystemFlag( _dest, KIO::SupportsChmod ) )
             warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
        }
     }
+#ifdef USE_POSIX_ACL
+    if (acl) acl_free(acl);
+#endif
 
     // copy access and modification time
     struct utimbuf ut;
@@ -809,8 +914,49 @@ void FileProtocol::del( const KURL& url, bool isfile)
     finished();
 }
 
-bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & path, UDSEntry & entry, short int details )
+
+QString FileProtocol::getUserName( uid_t uid ) 
 {
+    QString *temp;
+    temp = usercache.find( uid );
+    if ( !temp ) {
+        struct passwd *user = getpwuid( uid );
+        if ( user ) {
+            usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
+            return QString::fromLatin1( user->pw_name );
+        }
+        else
+            return QString::number( uid );
+    }
+    else
+        return *temp;
+}
+
+QString FileProtocol::getGroupName( gid_t gid ) 
+{
+    QString *temp;
+    temp = groupcache.find( gid );
+    if ( !temp ) {
+        struct group *grp = getgrgid( gid );
+        if ( grp ) {
+            groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
+            return QString::fromLatin1( grp->gr_name );
+        }
+        else
+            return QString::number( gid );
+    }
+    else
+        return *temp;
+}
+
+
+
+bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & path, UDSEntry & entry, 
+                                   short int details, bool withACL )
+{
+#ifndef USE_POSIX_ACL
+    Q_UNUSED(withACL);
+#endif
     assert(entry.count() == 0); // by contract :-)
     // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
     // because there's no real performance penalty in kio_file for returning the complete
@@ -880,42 +1026,24 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
     atom.m_long = buff.st_size;
     entry.append( atom );
 
+#ifdef USE_POSIX_ACL
+    /* Append an atom indicating whether the file has extended acl information
+     * and if withACL is specified also one with the acl itself. If it's a directory
+     * and it has a default ACL, also append that. */
+    appendACLAtoms( path, entry, type, withACL );
+#endif
+
  notype:
     atom.m_uds = KIO::UDS_MODIFICATION_TIME;
     atom.m_long = buff.st_mtime;
     entry.append( atom );
 
     atom.m_uds = KIO::UDS_USER;
-    uid_t uid = buff.st_uid;
-    QString *temp = usercache.find( uid );
-
-    if ( !temp ) {
-        struct passwd *user = getpwuid( uid );
-        if ( user ) {
-            usercache.insert( uid, new QString(QLatin1String(user->pw_name)) );
-            atom.m_str = user->pw_name;
-        }
-        else
-            atom.m_str = QString::number( uid );
-    }
-    else
-        atom.m_str = *temp;
+    atom.m_str = getUserName( buff.st_uid );
     entry.append( atom );
 
     atom.m_uds = KIO::UDS_GROUP;
-    gid_t gid = buff.st_gid;
-    temp = groupcache.find( gid );
-    if ( !temp ) {
-        struct group *grp = getgrgid( gid );
-        if ( grp ) {
-            groupcache.insert( gid, new QString(QLatin1String(grp->gr_name)) );
-            atom.m_str = grp->gr_name;
-        }
-        else
-            atom.m_str = QString::number( gid );
-    }
-    else
-        atom.m_str = *temp;
+    atom.m_str = getGroupName( buff.st_gid );
     entry.append( atom );
 
     atom.m_uds = KIO::UDS_ACCESS_TIME;
@@ -954,7 +1082,7 @@ void FileProtocol::stat( const KURL & url )
     kdDebug(7101) << "FileProtocol::stat details=" << details << endl;
 
     UDSEntry entry;
-    if ( !createUDSEntry( url.fileName(), _path, entry, details ) )
+    if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
     {
         error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
         return;
@@ -989,7 +1117,14 @@ void FileProtocol::stat( const KURL & url )
             case KIO::UDS_LINK_DEST:
                 kdDebug(7101) << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
                 break;
+            case KIO::UDS_EXTENDED_ACL:
+                kdDebug(7101) << "Contains extended ACL " << endl;
+                break;
         }
+        }
+    MetaData::iterator it1 = mOutgoingMetaData.begin();
+    for ( ; it1 != mOutgoingMetaData.end(); it1++ ) {
+        kdDebug(7101) << it1.key() << " = " << it1.data() << endl;
     }
 /////////
 #endif
@@ -1075,7 +1210,9 @@ void FileProtocol::listDir( const KURL& url)
     Q3StrListIterator it(entryNames);
     for (; it.current(); ++it) {
         entry.clear();
-        if ( createUDSEntry( QFile::decodeName(*it), *it /* we can use the filename as relative path*/, entry, 2 ) )
+        if ( createUDSEntry( QFile::decodeName(*it), 
+                             *it /* we can use the filename as relative path*/, 
+                             entry, 2, true ) )
           listEntry( entry, false);
         else
           ;//Well, this should never happen... but with wrong encoding names
@@ -1093,7 +1230,7 @@ void FileProtocol::listDir( const KURL& url)
 /*
 void FileProtocol::testDir( const QString& path )
 {
-    QCString _path( QFile::encodeName(path));
+    Q3CString _path( QFile::encodeName(path));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, path );
@@ -1382,7 +1519,7 @@ void FileProtocol::unmount( const QString& _point )
 		 *                 exit status == 4 => media was ejected
 		 */
 //		if( WEXITSTATUS( system( buffer.toLocal8Bit() )) == 4 ) {
-		if( WEXITSTATUS( system( buffer.data() )) == 4 ) {  // Fix for QString -> QCString?
+		if( WEXITSTATUS( system( buffer.data() )) == 4 ) {  // Fix for QString -> Q3CString?
 			/*
 			 *  this is not an error, so skip "testLogFile()"
 			 *  to avoid wrong/confusing error popup
@@ -1533,5 +1670,66 @@ static QString testLogFile( const char *_filename )
 
     return result;
 }
+
+/*************************************
+ *
+ * ACL handling helpers
+ *
+ *************************************/
+#ifdef USE_POSIX_ACL
+
+static bool isExtendedACL( acl_t acl )
+{
+    return ( acl_equiv_mode( acl, 0 ) != 0 );
+}
+
+static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, mode_t type, bool withACL )
+{
+    // first check for a noop
+    if ( acl_extended_file( path.data() ) == 0 ) return;
+
+    acl_t acl = 0;
+    acl_t defaultAcl = 0;
+    UDSAtom atom;
+    bool isDir = S_ISDIR( type );
+    // do we have an acl for the file, and/or a default acl for the dir, if it is one?
+    acl = acl_get_file( path.data(), ACL_TYPE_ACCESS );
+    /* Sadly libacl does not provided a means of checking for extended ACL and default
+     * ACL separately. Since a directory can have both, we need to check again. */
+    if ( isDir ) {
+        if ( acl ) { 
+            if ( !isExtendedACL( acl ) ) {
+                acl_free( acl ); 
+                acl = 0;
+            }
+        }
+        defaultAcl = acl_get_file( path.data(), ACL_TYPE_DEFAULT );
+    }
+    if ( acl || defaultAcl ) {
+      kdDebug(7101) << path.data() << " has extended ACL entries " << endl;
+      atom.m_uds = KIO::UDS_EXTENDED_ACL;
+      atom.m_long = 1;
+      entry.append( atom );
+    }
+    if ( withACL ) {
+        if ( acl ) {
+            ssize_t size = acl_size( acl );
+            atom.m_uds = KIO::UDS_ACL_STRING;
+            atom.m_str = QString::fromLatin1( acl_to_text( acl, &size ) );
+            entry.append( atom );
+            kdDebug(7101) << path.data() << "ACL: " << atom.m_str << endl;
+        }
+        if ( defaultAcl ) {
+            ssize_t size = acl_size( defaultAcl );
+            atom.m_uds = KIO::UDS_DEFAULT_ACL_STRING;
+            atom.m_str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
+            entry.append( atom );
+            kdDebug(7101) << path.data() << "DEFAULT ACL: " << atom.m_str << endl;
+        }
+    }
+    if ( acl ) acl_free( acl );
+    if ( defaultAcl ) acl_free( defaultAcl );
+}
+#endif
 
 #include "file.moc"

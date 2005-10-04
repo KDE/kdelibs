@@ -355,6 +355,40 @@ KIO::filesize_t KFileItem::size() const
   return 0L;
 }
 
+bool KFileItem::hasExtendedACL() const
+{
+  KIO::UDSEntry::ConstIterator it = m_entry.begin();
+  for( ; it != m_entry.end(); it++ )
+    if ( (*it).m_uds == KIO::UDS_EXTENDED_ACL ) {
+      return true;
+    }
+  return false;
+}
+
+KACL KFileItem::ACL() const
+{
+  if ( hasExtendedACL() ) {
+    // Extract it from the KIO::UDSEntry
+    KIO::UDSEntry::ConstIterator it = m_entry.begin();
+    for( ; it != m_entry.end(); ++it )
+      if ( (*it).m_uds == KIO::UDS_ACL_STRING )
+        return KACL((*it).m_str);
+  }
+  // create one from the basic permissions
+  return KACL( m_permissions );
+}
+
+KACL KFileItem::defaultACL() const
+{
+  // Extract it from the KIO::UDSEntry
+  KIO::UDSEntry::ConstIterator it = m_entry.begin();
+  for( ; it != m_entry.end(); ++it )
+    if ( (*it).m_uds == KIO::UDS_DEFAULT_ACL_STRING )
+      return KACL((*it).m_str);
+  return KACL();
+}
+
+
 time_t KFileItem::time( unsigned int which ) const
 {
   unsigned int mappedWhich = 0;
@@ -909,7 +943,7 @@ QString KFileItem::permissionsString() const
 
 QString KFileItem::parsePermissions(mode_t perm) const
 {
-    char p[] = "----------";
+    char p[] = "---------- ";
 
     if (isDir())
 	p[0]='d';
@@ -920,22 +954,28 @@ QString KFileItem::parsePermissions(mode_t perm) const
 	p[1]='r';
     if (perm & QFile::WriteUser)
 	p[2]='w';
-    if (perm & QFile::ExeUser)
-	p[3]='x';
+    if ((perm & QFile::ExeUser) && !(perm & S_ISUID)) p[3]='x';
+    else if ((perm & QFile::ExeUser) && (perm & S_ISUID)) p[3]='s';
+    else if (!(perm & QFile::ExeUser) && (perm & S_ISUID)) p[3]='S';
 
     if (perm & QFile::ReadGroup)
 	p[4]='r';
     if (perm & QFile::WriteGroup)
 	p[5]='w';
-    if (perm & QFile::ExeGroup)
-	p[6]='x';
+    if ((perm & QFile::ExeGroup) && !(perm & S_ISGID)) p[6]='x';
+    else if ((perm & QFile::ExeGroup) && (perm & S_ISGID)) p[6]='s';
+    else if (!(perm & QFile::ExeGroup) && (perm & S_ISGID)) p[6]='S';
 
     if (perm & QFile::ReadOther)
 	p[7]='r';
     if (perm & QFile::WriteOther)
 	p[8]='w';
-    if (perm & QFile::ExeOther)
-	p[9]='x';
+    if ((perm & QFile::ExeOther) && !(perm & S_ISVTX)) p[9]='x';
+    else if ((perm & QFile::ExeOther) && (perm & S_ISVTX)) p[9]='t';
+    else if (!(perm & QFile::ExeOther) && (perm & S_ISVTX)) p[9]='T';
+
+    if (hasExtendedACL())
+        p[10]='+';
 
     return QLatin1String(p);
 }

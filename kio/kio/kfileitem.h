@@ -26,6 +26,8 @@
 #include <q3ptrlist.h>
 #include <kio/global.h>
 #include <kurl.h>
+
+#include <kacl.h>
 #include <kmimetype.h>
 #include <kfilemetainfo.h>
 
@@ -137,6 +139,27 @@ public:
    * @return the access persmission as string
    */
   QString permissionsString() const;
+
+  /**
+   * Tells if the file has extended access level information ( Posix ACL )
+   * @return true if the file has extend ACL information or false if it hasn't
+   * @since 3.5
+  */
+  bool hasExtendedACL() const;
+
+  /**
+   * Returns the access control list for the file.
+   * @return the access control list as a KACL
+   * @since 3.5
+   */
+  KACL ACL() const;
+
+  /**
+   * Returns the default access control list for the directory.
+   * @return the default access control list as a KACL
+   * @since 3.5
+   */
+  KACL defaultACL() const;
 
   /**
    * Returns the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).

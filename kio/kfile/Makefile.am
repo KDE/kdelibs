@@ -13,7 +13,7 @@
 
 #    You should have received a copy of the GNU General Public License
 #    along with this library; see the file COPYING.  If not, write to
-#    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+#    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
 
@@ -39,7 +39,7 @@ include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
-	kfilespeedbar.h kpreviewprops.h
+	kfilespeedbar.h kpreviewprops.h kacleditwidget.h kacleditwidget_p.h images.h
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
@@ -56,7 +56,7 @@ libkfile_la_SOURCES = \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
 	kfilemetapreview.cpp kpropertiesdesktopbase.ui3 \
 	kpropertiesdesktopadvbase.ui3 kpropertiesmimetypebase.ui3 \
-	kencodingfiledialog.cpp
+	kencodingfiledialog.cpp kacleditwidget.cpp
 
 libkfile_la_COMPILE_FIRST = $(srcdir)/../kio/kdirnotify_stub.h
 

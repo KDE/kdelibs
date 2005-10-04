@@ -329,8 +329,18 @@ namespace KIO
     /// Treat the file as a hidden file or as a normal file,
     /// regardless of (the absence of) a leading dot in the filename.
     UDS_HIDDEN = 80 | UDS_LONG,
+    /// Indicates that the entry has extended ACL entries
+    /// @since 3.5
+    UDS_EXTENDED_ACL = 88 | UDS_LONG,
+    /// The access control list serialized into a single string.
+    /// @since 3.5
+    UDS_ACL_STRING = 96 | UDS_STRING,
+    /// The default access control list serialized into a single string.
+    /// Only available for directories.
+    /// @since 3.5
+    UDS_DEFAULT_ACL_STRING = 104 | UDS_STRING,
 
-    // available: 88, 92, 100, 108 etc.
+    // available: 112, 120 
 
     /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,

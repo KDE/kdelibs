@@ -32,7 +32,7 @@ libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la \
 	kio/libksycoca.la bookmarks/libkbookmarks.la kfile/libkfile.la \
 	../kdeui/libkdeui.la ../kdesu/libkdesu.la \
 	../kwallet/client/libkwalletclient.la \
-	$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+	$(LIBZ) $(LIBFAM) $(LIBVOLMGT) $(ACL_LIBS)
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
@@ -62,6 +62,6 @@ messages:
 	$(XGETTEXT) `find . ../kioslave -name "*.cpp" -o -name "*.cc" -o -name "*.h"` -o $(podir)/kio.pot
 	rm -f rc.cpp
 
-DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui
+DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui kio/kio kio/kfile
 DOXYGEN_EXCLUDE = kssl/kssl
 include ../admin/Doxyfile.am
