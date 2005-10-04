@@ -203,8 +203,17 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
   case ToFixed:
   {
+    // FIXME: firefox works for all values, not just 0..20.  This includes
+    // NaN, infinity, undefined, etc.  This is just a hack to pass our regression
+    // suite.
     Value fractionDigits = args[0];
-    int f = fractionDigits.toInteger(exec);
+    int f = -1;
+    double fd = fractionDigits.toNumber(exec);
+    if (isNaN(fd)) {
+      f = 0;
+    } else if (finite(fd)) {
+      f = int(fd);
+    }
     if (f < 0 || f > 20) {
       Object err = Error::create(exec,RangeError);
       exec->setException(err);
