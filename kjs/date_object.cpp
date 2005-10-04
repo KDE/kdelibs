@@ -548,8 +548,8 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   case SetYear:
     int y = args[0].toInt32(exec);
     if (y < 1900) {
-      if (y == 0) {
-        t->tm_year = 0;
+      if (y >= 0 && y <= 99) {
+        t->tm_year = y;
       } else {
         fillStructuresUsingDateArgs(exec, args, 3, &ms, t);
       }
