@@ -1,7 +1,13 @@
 #! /usr/bin/env python
+## 
+# @file  
+# win32 related function for several bksys tasks like scanning environment,  
+# shared library and .la file creation, creating source packages and 
+# project cleaning 
+#
 
+## detect win32 specific settings 
 def detect(env):
-	## detect win32 specific settings 
 	import os, sys
 	import SCons.Util
 
@@ -39,58 +45,56 @@ def detect(env):
 		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 
-	## no colors if user does not want them
+	# no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 
-
-
+## create source package
 def dist(env):
-	## create source package
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
 	else: VERSION=version
 	FOLDER  = appname+'-'+VERSION
 	TMPFOLD = ".tmp"+FOLDER
 	ARCHIVE = FOLDER+'.tar.bz2'
 
-	## check if the temporary directory already exists
+	# check if the temporary directory already exists
 	os.popen('rm -rf %s %s %s' % (FOLDER, TMPFOLD, ARCHIVE) )
 
-	## create a temporary directory
+	# create a temporary directory
 	startdir = os.getcwd()
 
 	os.popen("mkdir -p "+TMPFOLD)	
 	os.popen("cp -R * "+TMPFOLD)
 	os.popen("mv "+TMPFOLD+" "+FOLDER)
 
-	## remove scons-local if it is unpacked
+	# remove scons-local if it is unpacked
 	os.popen("rm -rf %s/scons %s/sconsign %s/scons-local-0.96.1" % (FOLDER, FOLDER, FOLDER))
 
-	## remove our object files first
+	# remove our object files first
 	os.popen("find %s -name \"cache\" | xargs rm -rf" % FOLDER)
 	os.popen("find %s -name \"build\" | xargs rm -rf" % FOLDER)
 	os.popen("find %s -name \"*.pyc\" | xargs rm -f " % FOLDER)
 
-	## CVS cleanup
+	# CVS cleanup
 	os.popen("find %s -name \"CVS\" | xargs rm -rf" % FOLDER)
 	os.popen("find %s -name \".cvsignore\" | xargs rm -rf" % FOLDER)
 
-	## Subversion cleanup
+	# Subversion cleanup
 	os.popen("find %s -name .svn -type d | xargs rm -rf" % FOLDER)
 
-	## GNU Arch cleanup
+	# GNU Arch cleanup
 	os.popen("find %s -name \"{arch}\" | xargs rm -rf" % FOLDER)
 	os.popen("find %s -name \".arch-i*\" | xargs rm -rf" % FOLDER)
 
-	## Create the tarball (coloured output)
+	# Create the tarball (coloured output)
 	env.pprint('GREEN', 'Writing archive '+ARCHIVE)
 	os.popen("tar cjf %s %s " % (ARCHIVE, FOLDER))
 
-	## Remove the temporary directory
+	# Remove the temporary directory
 	os.popen('rm -rf '+FOLDER)
 	env.Exit(0)
 
+## Remove the cache directory
 def distclean(env):
-	## Remove the cache directory
 	import os, shutil
 	if os.path.isdir(env['CACHEDIR']): shutil.rmtree(env['CACHEDIR'])
 	os.popen("find . -name \"*.pyc\" | xargs rm -rf")
@@ -133,13 +137,14 @@ def bksys_shlib(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=
 	library_list = thisenv.SharedLibrary(target, source)
 	lafile_list  = thisenv.LaFile(target, library_list)
 
-	## Install the libraries automatically
+	# Install the libraries automatically
 	if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
 		inst_lib=thisenv.bksys_install(libdir, library_list)
 		thisenv.bksys_install(libdir, lafile_list)	
 
 	return library_list
 
+## create .la file used by libtool
 def build_la_file(target, source, env):
 	""" Writes a .la file, used by libtool """
 	dest=open(target[0].path, 'w')
