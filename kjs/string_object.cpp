@@ -227,7 +227,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     // handled above
     break;
   case CharAt:
-    pos = a0.toInteger(exec);
+    pos = a0.type() == UndefinedType ? 0 : a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       s = "";
     else
@@ -235,7 +235,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     result = String(s);
     break;
   case CharCodeAt:
-    pos = a0.toInteger(exec);
+    pos = a0.type() == UndefinedType ? 0 : a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
