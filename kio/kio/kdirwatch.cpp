@@ -329,7 +329,8 @@ KDirWatchPrivate::~KDirWatchPrivate()
   }
 #endif
 #ifdef HAVE_INOTIFY
-  ::close( m_inotify_fd );
+  if ( supports_inotify )
+    ::close( m_inotify_fd );
 #endif
 #ifdef HAVE_DNOTIFY
   close(mPipe[0]);
@@ -341,10 +342,27 @@ KDirWatchPrivate::~KDirWatchPrivate()
 
 void KDirWatchPrivate::slotActivated()
 {
+#ifdef HAVE_DNOTIFY
+  if ( supports_dnotify )
+  {
+    char dummy_buf[4096];
+    read(mPipe[0], &dummy_buf, 4096);
+
+    if (!rescan_timer.isActive())
+      rescan_timer.start(m_PollInterval, true /* singleshot */);
+
+    return;
+  }
+#endif
+
 #ifdef HAVE_INOTIFY
+  if ( !supports_inotify )
+    return;
+
   int pending = -1;
   int offset = 0;
   char buf[4096];
+  assert( m_inotify_fd > -1 );
   ioctl( m_inotify_fd, FIONREAD, &pending );
 
   while ( pending > 0 ) {
@@ -369,8 +387,9 @@ void KDirWatchPrivate::slotActivated()
       // associated entries
       // for now, we suck and iterate
       for ( EntryMap::Iterator it = m_mapEntries.begin();
-            it != m_mapEntries.end(); ++it ) {
+            it != m_mapEntries.end();  ) {
         Entry* e = &( *it );
+        ++it;
         if ( e->wd == ev.wd ) {
           e->dirty = true;
 
@@ -378,10 +397,8 @@ void KDirWatchPrivate::slotActivated()
           for(;sub_entry; sub_entry = e->m_entries.next())
             if (sub_entry->path == e->path + "/" + QFile::decodeName( path )) break;
 
-          if (sub_entry && sub_entry->isDir) {
-            QString path = e->path;
-            removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
-            sub_entry->m_status = Normal;
+          if (sub_entry) {
+            removeEntry(0,e->path, sub_entry);
             if (!useINotify(sub_entry))
                 useStat(sub_entry);
           }
@@ -395,14 +412,6 @@ void KDirWatchPrivate::slotActivated()
       offset += sizeof( struct inotify_event ) + ev.len;
     }
   }
-#endif
-
-#ifdef HAVE_DNOTIFY
-   char dummy_buf[4096];
-   read(mPipe[0], &dummy_buf, 4096);
-
-   if (!rescan_timer.isActive())
-     rescan_timer.start(m_PollInterval, true /* singleshot */);
 #endif
 }
 
@@ -644,10 +653,11 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 bool KDirWatchPrivate::useINotify( Entry* e )
 {
   e->wd = 0;
-  e->dirty = false;
   if (!supports_inotify) return false;
 
   e->m_mode = INotifyMode;
+  e->dirty = true;
+  scanEntry( e );
 
   qDebug( "** inotify watching %s", e->path.latin1() );
 
@@ -954,7 +964,11 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
 
   if (stillWatching == 0) {
     // if nobody is interested, we don't watch
-    e->m_ctime = invalid_ctime; // invalid
+    if ( e->m_mode != INotifyMode )
+    {
+      e->m_ctime = invalid_ctime; // invalid
+      e->m_status = NonExistent;
+    }
     //    e->m_status = Normal;
   }
   return true;
@@ -1058,8 +1072,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   // Shouldn't happen: Ignore "unknown" notification method
   if (e->m_mode == UnknownMode) return NoChange;
 
-#ifdef HAVE_DNOTIFY
-  if (e->m_mode == DNotifyMode) {
+#if defined ( HAVE_DNOTIFY ) || defined( HAVE_INOTIFY )
+  if (e->m_mode == DNotifyMode || e->m_mode == INotifyMode ) {
     // we know nothing has changed, no need to stat
     if(!e->dirty) return NoChange;
     e->dirty = false;
@@ -1100,8 +1114,11 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
   // dir/file doesn't exist
 
-  if (e->m_ctime == invalid_ctime)
+  if (e->m_ctime == invalid_ctime) {
+    e->m_nlink = 0;
+    e->m_status = NonExistent;
     return NoChange;
+  }
 
   e->m_ctime = invalid_ctime;
   e->m_nlink = 0;
@@ -1191,7 +1208,7 @@ void KDirWatchPrivate::slotRescan()
   // removeDir(), when called in slotDirty(), can cause a crash otherwise
   delayRemove = true;
 
-#ifdef HAVE_DNOTIFY
+#if defined( HAVE_DNOTIFY )
   Q3PtrList<Entry> dList, cList;
 #endif
 
@@ -1220,6 +1237,11 @@ void KDirWatchPrivate::slotRescan()
     int ev = scanEntry( &(*it) );
 
 #ifdef HAVE_INOTIFY
+    if ((*it).m_mode == INotifyMode) {
+      if ( ev == Deleted ) {
+        addEntry(0, QDir::cleanPath( ( *it ).path+"/.."), &*it, true);
+      }
+    }
 #endif
 
 #ifdef HAVE_DNOTIFY
