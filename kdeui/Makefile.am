@@ -37,18 +37,18 @@ libkspell_la_SOURCES = dummy.cpp
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
 
-include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h kdatepik.h \
+include_HEADERS = kprogress.h kcolordialog.h kselect.h \
 	kdatepicker.h kdatetbl.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
 	kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h \
-	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h kcolorbtn.h ksystemtray.h \
+	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h \
 	kbuttonbox.h keditcl.h kled.h keditlistbox.h kwizard.h kkeydialog.h kkeybutton.h \
 	kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h \
 	kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h \
-	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbtn.h kdualcolorbutton.h \
+	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
 	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
 	kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
-	kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h \
+	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h \
 	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
 	kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h \
