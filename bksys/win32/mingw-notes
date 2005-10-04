@@ -1,0 +1,17 @@
+bksys on win32/mingw development notes
+
+2005-09-27 Ralf Habacker 
+added initial win32 mingw support using cygwin build environment and -mno-cygwin flag. 
+
+- configure with 
+	  CFLAGS="-mno-cygwin -Ikdecore -Imingw" CXXFLAGS="-mno-cygwin -Ikdecore -Imingw" LDFLAGS="-mno-cygwin" scons configure
+
+problems 
+- include files from win are partial not usable, I'm currently using a subset of them in a separate 
+  folder called mingw (discussion with Jaruslav required where to place). May be the win dir should 
+  have a compiler specific structure at now to reduce such conflicts until different compiler 
+  support is stable. Then they could be merged together 
+
+- CFLAGS and LDFLAGS/LINKFLAGS are not stored in cache/generic.cache.py GENCCFLAGS -> fixed in svn
+
+
