@@ -259,12 +259,15 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (isNaN(x) || isInf(x))
       return String(UString::from(x));
 
+    int f = 1;
     Value fractionDigits = args[0];
-    int f = fractionDigits.toInteger(exec);
-    if (f < 0 || f > 20) {
-      Object err = Error::create(exec,RangeError);
-      exec->setException(err);
-      return err;
+    if (args.size() > 0) {
+      f = fractionDigits.toInteger(exec);
+      if (f < 0 || f > 20) {
+        Object err = Error::create(exec,RangeError);
+        exec->setException(err);
+        return err;
+      }
     }
 
     int decimalAdjust = 0;
