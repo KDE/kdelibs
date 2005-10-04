@@ -67,7 +67,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KAccelAction</H4>
 <li>KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
-    support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of 
+    support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of
     shortcut3 and shortcut4 have been reduced just to "shortcut".</li>
 <li>The constructor, init(), and insert() functions now only take only KShortcut "default" argument instead of two</li>
 <li>Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
@@ -180,7 +180,11 @@ Desktop Entry Spec</a>
 <li>This class has been moved to kde3support. Use KURL::setInMimeData() and
 KURL::List::setInMimeData() in the drag/copy side,
 and the static methods KURL::List::canDecode() and KURL::List::fromMimeData()
-in the drop/paste side.</li>
+in the drop/paste side.<br />
+Example: Replace <pre>  KURL::List uriList;
+  if ( KURLDrag::canDecode(e) &amp;&amp; KURLDrag::decode( e, uriList ) ) {</pre>
+by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
+  if ( !uriList.isEmpty() ) {</pre></li>
 
 <H4>KMD5</H4>
 
