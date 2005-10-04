@@ -51,13 +51,13 @@ def generate(env):
 	# tell it we do have a global config.h file
 	env['_CONFIG_H_'].append('lowlevel')
 
-        from SCons.Options import Options
-        cachefile=env['CACHEDIR']+'lowlevel.cache.py'
-        opts = Options(cachefile)
-        opts.AddOptions(
-                ('LOWLEVEL_ISCONFIGURED', ''),
-        )
-        opts.Update(env)
+	from SCons.Options import Options
+	cachefile=env['CACHEDIR']+'lowlevel.cache.py'
+	opts = Options(cachefile)
+	opts.AddOptions(
+	        ('LOWLEVEL_ISCONFIGURED', ''),
+	)
+	opts.Update(env)
 
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('LOWLEVEL_ISCONFIGURED')):
 		env['_CONFIGURE_']=1
