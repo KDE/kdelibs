@@ -239,8 +239,6 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 #endif
 
-  supports_inotify = false;
-
 #ifdef HAVE_INOTIFY
   supports_inotify = true;
 
