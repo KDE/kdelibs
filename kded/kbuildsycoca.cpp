@@ -365,7 +365,7 @@ bool KBuildSycoca::build()
      }
   }
 
-  bool result = !uptodate || !g_ctimeDict->isEmpty();
+  bool result = !uptodate || (g_ctimeDict && !g_ctimeDict->isEmpty());
 
   if (result || bMenuTest)
   {

@@ -185,6 +185,11 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    {
       // export associated services
       KServiceType *entry = static_cast<KServiceType*>(static_cast<KSycocaEntry*>(*it));
+#warning I added this here, but it shouldn't be 0 in the first place (coolo)
+      if (!entry) {
+         kdDebug() << "no entry\n";
+	 continue;
+      }	
       KService::List services = entry->services();
   
       for(KService::List::ConstIterator it2 = services.begin();
