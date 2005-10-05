@@ -48,6 +48,18 @@ def detect(env):
 	# no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 
+	# setup win32 kdelibs addon package 
+	if env['CC'] == 'gcc':
+		env['GENCXXFLAGS']  += ' -Iwin/include -Iwin/include/mingw'
+		env['GENCCFLAGS']   += ' -Iwin/include -Iwin/include/mingw'
+# TODO (rh) don't know how to set not in win dir 
+#		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
+	elif env['CC'] == 'cl':
+		env['GENCXXFLAGS']  += ' /Iwin\\include /Iwin\\include\\msvc'
+		env['GENCCFLAGS']   += ' /Iwin\\include /Iwin\\include\\msvc'
+# TODO (rh) don't know required cl flags, don't know how to set not in win dir 
+#		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
+
 ## create source package
 def dist(env):
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
