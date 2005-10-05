@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "collector.h"
 #include "value.h"
 #include "object.h"
 #include "types.h"
@@ -37,7 +38,7 @@ public:
   virtual bool implementsCall() const { return true; }
   virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
-  enum { Print, Debug, Quit };
+  enum { Print, Debug, Quit, GC };
 
 private:
   int id;
@@ -54,6 +55,11 @@ Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
   case Print:
   case Debug:
     fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+    return Undefined();
+  case GC:
+    Interpreter::lock();
+    Collector::collect();
+    Interpreter::unlock();
     return Undefined();
   case Quit:
     exit(0);
@@ -104,6 +110,8 @@ int main(int argc, char **argv)
     global.put(interp.globalExec(), "print", Object(new TestFunctionImp(TestFunctionImp::Print,1)));
     // add "quit" for compatibility with the mozilla js shell
     global.put(interp.globalExec(), "quit", Object(new TestFunctionImp(TestFunctionImp::Quit,0)));
+    // add "gc" for compatibility with the mozilla js shell
+    global.put(interp.globalExec(), "gc", Object(new TestFunctionImp(TestFunctionImp::GC, 0)));
     // add "version" for compatibility with the mozilla js shell 
     global.put(interp.globalExec(), "version", Object(new VersionFunctionImp()));
 

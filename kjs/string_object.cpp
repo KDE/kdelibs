@@ -32,6 +32,16 @@
 #include <stdio.h>
 #include "string_object.lut.h"
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_BITYPES_H
+#include <sys/bitypes.h> /* For uintXX_t on Tru64 */
+#endif
+
 using namespace KJS;
 
 // ------------------------------ StringInstanceImp ----------------------------
@@ -201,6 +211,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
   int n, m;
   UString u2, u3;
+  double dpos;
   int pos, p0, i;
   double d = 0.0;
 
@@ -216,7 +227,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     // handled above
     break;
   case CharAt:
-    pos = a0.toInteger(exec);
+    pos = a0.type() == UndefinedType ? 0 : a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       s = "";
     else
@@ -224,7 +235,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     result = String(s);
     break;
   case CharCodeAt:
-    pos = a0.toInteger(exec);
+    pos = a0.type() == UndefinedType ? 0 : a0.toInteger(exec);
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
@@ -253,14 +264,16 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case LastIndexOf:
     u2 = a0.toString(exec);
     d = a1.toNumber(exec);
-    if (a1.type() == UndefinedType || KJS::isNaN(d) || KJS::isPosInf(d))
-      pos = len;
-    else
-      pos = a1.toInteger(exec);
-    if (pos < 0)
-      pos = 0;
-    d = s.rfind(u2, pos);
-    result = Number(d);
+    if (a1.type() == UndefinedType || KJS::isNaN(d))
+      dpos = len;
+    else {
+      dpos = d;
+      if (dpos < 0)
+        dpos = 0;
+      else if (dpos > len)
+        dpos = len;
+    }
+    result = Number(s.rfind(u2, int(dpos)));
     break;
   case Match:
   case Search: {
@@ -413,7 +426,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
     result = res;
     i = p0 = 0;
-    d = (a1.type() != UndefinedType) ? a1.toInteger(exec) : -1; // optional max number
+    uint32_t limit = (a1.type() != UndefinedType) ? a1.toUInt32(exec) : 0xFFFFFFFFU;
     if (a0.type() == ObjectType && Object::dynamicCast(a0).inherits(&RegExpImp::info)) {
       Object obj0 = Object::dynamicCast(a0);
       RegExp reg(obj0.get(exec,"source").toString(exec));
@@ -423,7 +436,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	break;
       }
       pos = 0;
-      while (pos < s.size()) {
+      while (static_cast<uint32_t>(i) != limit && pos < s.size()) {
 	// TODO: back references
         int mpos;
         int *ovector = 0L;
@@ -438,7 +451,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
-    } else if (a0.type() != UndefinedType) {
+    } else {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {
 	if (s.isEmpty()) {
@@ -446,11 +459,11 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  put(exec,lengthPropertyName, Number(0));
 	  break;
 	} else {
-	  while (i != d && i < s.size()-1)
+	  while (static_cast<uint32_t>(i) != limit && i < s.size()-1)
 	    res.put(exec,i++, String(s.substr(p0++, 1)));
 	}
       } else {
-	while (i != d && (pos = s.find(u2, p0)) >= 0) {
+	while (static_cast<uint32_t>(i) != limit && (pos = s.find(u2, p0)) >= 0) {
 	  res.put(exec,i, String(s.substr(p0, pos-p0)));
 	  p0 = pos + u2.size();
 	  i++;
@@ -458,7 +471,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       }
     }
     // add remaining string, if any
-    if (i != d)
+    if (static_cast<uint32_t>(i) != limit)
       res.put(exec,i++, String(s.substr(p0)));
     res.put(exec,lengthPropertyName, Number(i));
     }

@@ -1004,14 +1004,13 @@ Boolean InternalFunctionImp::hasInstance(ExecState *exec, const Value &value)
 
 double KJS::roundValue(ExecState *exec, const Value &v)
 {
-  if (v.type() == UndefinedType) /* TODO: see below */
-    return 0.0;
   double n = v.toNumber(exec);
-  if (isNaN(n))
-    return NaN;
-  if (n == 0.0)   /* TODO: -0, Inf */
-    return 0.0;
-  double d = floor(fabs(n));
+  if (isNaN(n) || isInf(n))
+    return n;
+  double an = fabs(n);
+  if (an == 0.0)
+    return n;
+  double d = floor(an);
   if (n < 0)
     d *= -1;
 

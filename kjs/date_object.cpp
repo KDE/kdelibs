@@ -38,6 +38,8 @@
 #include <sys/timeb.h>
 #endif
 
+#include <errno.h>
+
 #ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
@@ -62,7 +64,7 @@
 using namespace KJS;
 
 // come constants
-const time_t invalidDate = -1;
+const time_t invalidDate = LONG_MIN;
 const double hoursPerDay = 24;
 const double minutesPerHour = 60;
 const double secondsPerMinute = 60;
@@ -70,6 +72,43 @@ const double msPerSecond = 1000;
 const double msPerMinute = msPerSecond * secondsPerMinute;
 const double msPerHour = msPerMinute * minutesPerHour;
 const double msPerDay = msPerHour * hoursPerDay;
+static const char * const weekdayName[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+static const char * const monthName[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+static UString formatDate(struct tm &tm)
+{
+    char buffer[100];
+    snprintf(buffer, sizeof(buffer), "%s %s %02d %04d",
+            weekdayName[(tm.tm_wday + 6) % 7],
+            monthName[tm.tm_mon], tm.tm_mday, tm.tm_year + 1900);
+    return buffer;
+}
+
+static UString formatDateUTCVariant(struct tm &tm)
+{
+    char buffer[100];
+    snprintf(buffer, sizeof(buffer), "%s, %02d %s %04d",
+            weekdayName[(tm.tm_wday + 6) % 7],
+            tm.tm_mday, monthName[tm.tm_mon], tm.tm_year + 1900);
+    return buffer;
+}
+
+static UString formatTime(struct tm &tm)
+{
+    char buffer[100];
+    if (tm.tm_gmtoff == 0) {
+        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", tm.tm_hour, tm.tm_min, tm.tm_sec);
+    } else {
+        int offset = tm.tm_gmtoff;
+        if (offset < 0) {
+            offset = -offset;
+        }
+        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
+                tm.tm_hour, tm.tm_min, tm.tm_sec,
+                tm.tm_gmtoff < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+    }
+    return UString(buffer);
+}
 
 static int day(double t)
 {
@@ -144,6 +183,78 @@ static double timeZoneOffset(const struct tm *t)
   return timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 );
 #  endif
 #endif
+}
+
+// Converts a list of arguments sent to a Date member function into milliseconds, updating
+// ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
+//
+// Format of member function: f([hour,] [min,] [sec,] [ms])
+static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int maxArgs, double *ms, struct tm *t)
+{
+    double milliseconds = 0;
+    int idx = 0;
+    int numArgs = args.size();
+    
+    // JS allows extra trailing arguments -- ignore them
+    if (numArgs > maxArgs)
+        numArgs = maxArgs;
+
+    // hours
+    if (maxArgs >= 4 && idx < numArgs) {
+        t->tm_hour = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerHour;
+    }
+
+    // minutes
+    if (maxArgs >= 3 && idx < numArgs) {
+        t->tm_min = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerMinute;
+    }
+    
+    // seconds
+    if (maxArgs >= 2 && idx < numArgs) {
+        t->tm_sec = 0;
+        milliseconds += args[idx++].toInt32(exec) * msPerSecond;
+    }
+    
+    // milliseconds
+    if (idx < numArgs) {
+        milliseconds += roundValue(exec, args[idx]);
+    } else {
+        milliseconds += *ms;
+    }
+    
+    *ms = milliseconds;
+}
+
+// Converts a list of arguments sent to a Date member function into years, months, and milliseconds, updating
+// ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
+//
+// Format of member function: f([years,] [months,] [days])
+static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int maxArgs, double *ms, struct tm *t)
+{
+  int idx = 0;
+  int numArgs = args.size();
+  
+  // JS allows extra trailing arguments -- ignore them
+  if (numArgs > maxArgs)
+    numArgs = maxArgs;
+  
+  // years
+  if (maxArgs >= 3 && idx < numArgs) {
+    t->tm_year = args[idx++].toInt32(exec) - 1900;
+  }
+  
+  // months
+  if (maxArgs >= 2 && idx < numArgs) {
+    t->tm_mon = args[idx++].toInt32(exec);
+  }
+  
+  // days
+  if (idx < numArgs) {
+    t->tm_mday = 0;
+    *ms += args[idx].toInt32(exec) * msPerDay;
+  }
 }
 
 // ------------------------------ DateInstanceImp ------------------------------
@@ -307,7 +418,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   }
 
   time_t tv = (time_t) floor(milli / 1000.0);
-  int ms = int(milli - tv * 1000.0);
+  double ms = milli - tv * 1000.0;
 
   struct tm *t;
   if ( (id == DateProtoFuncImp::ToGMTString) ||
@@ -338,20 +449,17 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case ToString:
+    result = String(formatDate(*t) + " " + formatTime(*t));
+    break;
   case ToDateString:
+    result = String(formatDate(*t));
+    break;
   case ToTimeString:
+    result = String(formatTime(*t));
+    break;
   case ToGMTString:
   case ToUTCString:
-    setlocale(LC_TIME,"C");
-    if (id == DateProtoFuncImp::ToDateString) {
-      strftime(timebuffer, bufsize, xFormat, t);
-    } else if (id == DateProtoFuncImp::ToTimeString) {
-      strftime(timebuffer, bufsize, "%X",t);
-    } else { // ToString, toGMTString & toUTCString
-      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
-    }
-    setlocale(LC_TIME,oldlocale.c_str());
-    result = String(timebuffer);
+    result = String(formatDateUTCVariant(*t) + " " + formatTime(*t));
     break;
   case ToLocaleString:
     strftime(timebuffer, bufsize, cFormat, t);
@@ -411,51 +519,38 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
-    ms = args[0].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 1, &ms, t);
     break;
   case SetSeconds:
-    t->tm_sec = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      ms = args[1].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 2, &ms, t);
     break;
   case SetMinutes:
-    t->tm_min = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_sec = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      ms = args[2].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 3, &ms, t);
     break;
   case SetHours:
-    t->tm_hour = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_min = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      t->tm_sec = args[2].toInt32(exec);
-    if (args.size() >= 4)
-      ms = args[3].toInt32(exec);
+    fillStructuresUsingTimeArgs(exec, args, 4, &ms, t);
     break;
   case SetDate:
-    t->tm_mday = args[0].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 1, &ms, t);
     break;
   case SetMonth:
-    t->tm_mon = args[0].toInt32(exec);
-    if (args.size() >= 2)
-      t->tm_mday = args[1].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 2, &ms, t);    
     break;
   case SetFullYear:
-    t->tm_year = args[0].toInt32(exec) - 1900;
-    if (args.size() >= 2)
-      t->tm_mon = args[1].toInt32(exec);
-    if (args.size() >= 3)
-      t->tm_mday = args[2].toInt32(exec);
+    fillStructuresUsingDateArgs(exec, args, 3, &ms, t);
     break;
-  case SetYear: {
-    int a0 = args[0].toInt32(exec);
-    if (a0 >= 0 && a0 <= 99)
-      a0 += 1900;
-    t->tm_year = a0 - 1900;
+  case SetYear:
+    int y = args[0].toInt32(exec);
+    if (y < 1900) {
+      if (y >= 0 && y <= 99) {
+        t->tm_year = y;
+      } else {
+        fillStructuresUsingDateArgs(exec, args, 3, &ms, t);
+      }
+    } else {
+      t->tm_year = y - 1900;
+    }
     break;
-  }
   }
 
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
@@ -529,19 +624,28 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     else
       value = prim.toNumber(exec);
   } else {
-    struct tm t;
-    memset(&t, 0, sizeof(t));
-    int year = args[0].toInt32(exec);
-    // TODO: check for NaN
-    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-    t.tm_mon = args[1].toInt32(exec);
-    t.tm_mday = (numArgs >= 3) ? args[2].toInt32(exec) : 1;
-    t.tm_hour = (numArgs >= 4) ? args[3].toInt32(exec) : 0;
-    t.tm_min = (numArgs >= 5) ? args[4].toInt32(exec) : 0;
-    t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
-    t.tm_isdst = -1;
-    int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
-    value = makeTime(&t, ms, false);
+    if (isNaN(args[0].toNumber(exec))
+        || isNaN(args[1].toNumber(exec))
+        || (numArgs >= 3 && isNaN(args[2].toNumber(exec)))
+        || (numArgs >= 4 && isNaN(args[3].toNumber(exec)))
+        || (numArgs >= 5 && isNaN(args[4].toNumber(exec)))
+        || (numArgs >= 6 && isNaN(args[5].toNumber(exec)))
+        || (numArgs >= 7 && isNaN(args[6].toNumber(exec)))) {
+      value = NaN;
+    } else {
+      struct tm t;
+      memset(&t, 0, sizeof(t));
+      int year = args[0].toInt32(exec);
+      t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
+      t.tm_mon = args[1].toInt32(exec);
+      t.tm_mday = (numArgs >= 3) ? args[2].toInt32(exec) : 1;
+      t.tm_hour = (numArgs >= 4) ? args[3].toInt32(exec) : 0;
+      t.tm_min = (numArgs >= 5) ? args[4].toInt32(exec) : 0;
+      t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
+      t.tm_isdst = -1;
+      int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
+      value = makeTime(&t, ms, false);
+    }
   }
 
   Object proto = exec->interpreter()->builtinDatePrototype();
@@ -562,10 +666,9 @@ Value DateObjectImp::call(ExecState* /*exec*/, Object &/*thisObj*/, const List &
   fprintf(stderr,"DateObjectImp::call - current time\n");
 #endif
   time_t t = time(0L);
-  UString s(ctime(&t));
-
-  // return formatted string minus trailing \n
-  return String(s.substr(0, s.size() - 1));
+  // FIXME: not threadsafe
+  struct tm *tm = localtime(&t);
+  return String(formatDate(*tm) + " " + formatTime(*tm));
 }
 
 // ------------------------------ DateObjectFuncImp ----------------------------
@@ -589,11 +692,20 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
   if (id == Parse) {
     return Number(parseDate(args[0].toString(exec)));
   } else { // UTC
+    int n = args.size();
+    if (isNaN(args[0].toNumber(exec))
+        || isNaN(args[1].toNumber(exec))
+        || (n >= 3 && isNaN(args[2].toNumber(exec)))
+        || (n >= 4 && isNaN(args[3].toNumber(exec)))
+        || (n >= 5 && isNaN(args[4].toNumber(exec)))
+        || (n >= 6 && isNaN(args[5].toNumber(exec)))
+        || (n >= 7 && isNaN(args[6].toNumber(exec)))) {
+      return Number(NaN);
+    }
+
     struct tm t;
     memset(&t, 0, sizeof(t));
-    int n = args.size();
     int year = args[0].toInt32(exec);
-    // TODO: check for NaN
     t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
     t.tm_mon = args[1].toInt32(exec);
     t.tm_mday = (n >= 3) ? args[2].toInt32(exec) : 1;
@@ -615,7 +727,7 @@ double KJS::parseDate(const UString &u)
 #endif
   double /*time_t*/ seconds = KRFCDate_parseDate( u );
 
-  return seconds == -1 ? NaN : seconds * 1000.0;
+  return seconds == invalidDate ? NaN : seconds * 1000.0;
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
@@ -659,7 +771,7 @@ static const struct {
     { { 0, 0, 0, 0 }, 0 }
 };
 
-double KJS::makeTime(struct tm *t, int ms, bool utc)
+double KJS::makeTime(struct tm *t, double ms, bool utc)
 {
     int utcOffset;
     if (utc) {
@@ -679,8 +791,8 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
         t->tm_isdst = 0;
 #endif
     } else {
-	utcOffset = 0;
-	t->tm_isdst = -1;
+        utcOffset = 0;
+        t->tm_isdst = -1;
     }
 
     double yearOffset = 0.0;
@@ -695,6 +807,14 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
       const double baseTime = timeFromYear(baseYear);
       yearOffset = timeFromYear(y) - baseTime;
       t->tm_year = baseYear - 1900;
+    }
+
+    // Determine if we passed over a DST change boundary
+    if (!utc) {
+      time_t tval = mktime(t) + utcOffset + int((ms + yearOffset)/1000);
+      struct tm t3;
+      localtime_r(&tval, &t3);
+      t->tm_isdst = t3.tm_isdst;
     }
 
     return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
@@ -782,7 +902,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      	return invalidDate;
 
      // ' 09-Nov-99 23:12:40 GMT'
+     errno = 0;
      day = strtol(dateString, &newPosStr, 10);
+     if (errno)
+       return invalidDate;
      dateString = newPosStr;
 
      if (!*dateString)
@@ -798,10 +921,14 @@ double KJS::KRFCDate_parseDate(const UString &_date)
            return invalidDate;
          year = day;
          month = strtol(dateString, &newPosStr, 10) - 1;
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
          if (*dateString++ != '/' || !*dateString)
            return invalidDate;
          day = strtol(dateString, &newPosStr, 10);
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
        } else {
          return invalidDate;
@@ -812,6 +939,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
         // This looks like a MM/DD/YYYY date, not an RFC date.....
         month = day - 1; // 0-based
         day = strtol(dateString, &newPosStr, 10);
+        if (errno)
+          return invalidDate;
         dateString = newPosStr;
         if (*dateString == '/')
           dateString++;
@@ -853,8 +982,11 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 
      // '99 23:12:40 GMT'
-     if (year <= 0 && *dateString)
+     if (year <= 0 && *dateString) {
        year = strtol(dateString, &newPosStr, 10);
+       if (errno)
+         return invalidDate;
+     }
 
      // Don't fail if the time is missing.
      if (*newPosStr)
@@ -869,6 +1001,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             dateString = ++newPosStr;
 
         hour = strtol(dateString, &newPosStr, 10);
+
+        // Do not check for errno here since we want to continue
+        // even if errno was set becasue we are still looking
+        // for the timezone!
         // read a number? if not this might be a timezone name
         if (newPosStr != dateString) {
           have_time = true;
@@ -885,6 +1021,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             return invalidDate;
 
           minute = strtol(dateString, &newPosStr, 10);
+          if (errno)
+            return invalidDate;
           dateString = newPosStr;
 
           if ((minute < 0) || (minute > 59))
@@ -899,6 +1037,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
             dateString++;
 
             second = strtol(dateString, &newPosStr, 10);
+            if (errno)
+              return invalidDate;
             dateString = newPosStr;
 
             if ((second < 0) || (second > 59))
@@ -931,6 +1071,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        }
        if ((*dateString == '+') || (*dateString == '-')) {
          offset = strtol(dateString, &newPosStr, 10);
+         if (errno)
+           return invalidDate;
          dateString = newPosStr;
 
          if ((offset < -9959) || (offset > 9959))
@@ -940,6 +1082,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          offset = abs(offset);
          if ( *dateString == ':' ) { // GMT+05:00
            int offset2 = strtol(dateString, &newPosStr, 10);
+           if (errno)
+             return invalidDate;
            dateString = newPosStr;
            offset = (offset*60 + offset2)*sgn;
          }
@@ -950,6 +1094,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          for (int i=0; known_zones[i].tzName != 0; i++) {
            if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
              offset = known_zones[i].tzOffset;
+             dateString += strlen(known_zones[i].tzName);
              have_tz = true;
              break;
            }
@@ -962,7 +1107,19 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
      if ( *dateString && year == -1 ) {
        year = strtol(dateString, &newPosStr, 10);
+       if (errno)
+         return invalidDate;
+       dateString = newPosStr;
      }
+
+     while (isspace(*dateString))
+       dateString++;
+
+#if 0
+     // Trailing garbage
+     if (*dateString != '\0')
+       return invalidDate;
+#endif
 
      // Y2K: Solve 2 digit years
      if ((year >= 0) && (year < 50))
@@ -970,9 +1127,6 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
      if ((year >= 50) && (year < 100))
          year += 1900;  // Y2K
-
-     if ((year < 1900) || (year > 2500))
-     	return invalidDate;
 
      if (!have_tz) {
        // fall back to midnight, local timezone
@@ -992,29 +1146,18 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        return makeTime(&t, 0, false) / 1000.0;
      }
 
-     offset *= 60;
-
-     result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
-
-     // avoid negative time values
-     if ((offset > 0) && (offset > result))
-        offset = 0;
-
-     result -= offset;
-
-     // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
-     // This is so that parse error and valid epoch 0 return values won't
-     // be the same for sensitive applications...
-     if (result < 1) result = 1;
-
+     result = ymdhms_to_seconds(year, month+1, day, hour, minute, second) - offset*60;
      return result;
 }
 
 
 double KJS::timeClip(double t)
 {
-  if (isInf(t) || fabs(t) > 8.64E15)
+  if (isInf(t))
     return NaN;
-  return t;
+  double at = fabs(t);
+  if (at > 8.64E15)
+    return NaN;
+  return floor(at) * (t != at ? -1 : 1);
 }
 
