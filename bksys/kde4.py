@@ -66,8 +66,12 @@ def generate(env):
 		env['_CONFIGURE_']=1
 		import sys
 		import os
-		sys.path.append('bksys'+os.sep+'unix')
-		from detect_kde4 import detect
+		if env['WINDOWS']: 
+			sys.path.append('bksys'+os.sep+'win32')
+			from detect_kde4 import detect
+		else:
+			sys.path.append('bksys'+os.sep+'unix')
+			from detect_kde4 import detect
 		detect(env)
 
 		dest=open(env.join(env['_BUILDDIR_'], 'config-kde.h'), 'w')
