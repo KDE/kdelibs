@@ -44,6 +44,8 @@ bksys on win32/mingw development notes
 	
 	the qt definitions are required because detect_qt4.py does not provide them 
 	
+- kdecore could not be build because scons searchs for dcopidl2cpp and not for dcopidl2cpp.exe  -> detect_kde4.py requires a patch
+
 
 2005-09-27 Ralf Habacker 
 added initial win32 mingw support using cygwin build environment and -mno-cygwin flag. 
