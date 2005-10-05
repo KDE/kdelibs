@@ -2057,7 +2057,7 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int rp = r->left + r->node->rightmostPosition(false);
+                int rp = r->left + r->node->marginLeft() + r->node->rightmostPosition(false);
            	right = kMax(right, rp);
             }
         }
@@ -2103,7 +2103,7 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int lp = r->left + r->node->leftmostPosition(false);
+                int lp = r->left + r->node->marginLeft() + r->node->leftmostPosition(false);
                 left = kMin(left, lp);
             }
         }
