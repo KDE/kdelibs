@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <sys/types.h>
+
 KDEWIN32_EXPORT unsigned long int
 htonl (unsigned long int x)
 {
