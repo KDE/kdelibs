@@ -13,15 +13,6 @@ def bootstrap(env):
 	## not very portable but that's the best i have at the moment (ITA)
 	includes=['.','dcop','kio','kio/kio','kio/kfile','kdeui','kdecore','libltdl','kdefx']
 
-	if env['WINDOWS']:
-		if env['CC'] == 'gcc':
-			includes.append('win/include')
-			includes.append('win/include/mingw')
-		elif env['CC'] == 'cl':
-			includes.append('win/include')
-			includes.append('win/include/msvc')
-
-
 	env['INCLUDES_KDE4']=['#build']
 	for dir in includes:
 		env['INCLUDES_KDE4'].append('#'+dir)
@@ -66,6 +57,7 @@ def bootstrap(env):
 	env['CPPPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio'), '#kio' ]
 	env['CPPPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui'), '#kdeui' ]
 
+## detect kde4 configuration
 def detect(env):
 	"""
 	def getpath(varname):
@@ -90,5 +82,4 @@ def detect(env):
 
 	# normal detection functions go here
 	if env['CC'] == 'cl':
-	 	env.AppendUnique(CPPPATH=['win/include','win/include/msvc'])
 	 	env.AppendUnique(CXXFLAGS = '/FI./win/kdelibs_global_win.h')
