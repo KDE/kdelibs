@@ -1,9 +1,55 @@
 bksys on win32/mingw development notes
 
+2005-10-05 Ralf Habacker 
+- shared library could be build with gcc, the only problem is that the import library will not be 
+  deleted when running scons -c (file seems not to be registrated by scons, install will probably fail too) 
+
+- the compiler specific include file problem was discussed with Jaruslav and he agreed to split the win headers 
+  into win/include for platform independent headers and win/include/<compiler> for platform specific headers.
+  Submitted the required changes and added minimal mingw headers to compile kdewin32, KDE-ICE, kdefx and dcop. 
+
+- first try to avoid qt related headers dependencies for runtime headers like unistd.h and pwd.h because 
+  obj.genobj does not add qt headers by default. 
+  
+- a problem arised with bksys compiling dcop relating to library ordering. Some network related symbols are not 
+  resolved in kICE. I've triedto use obj.uselibs and obk.libs to make sure kdewin32 and wsock32 are added at 
+  the end of the link line without any success. 
+  Using obj.uselibs does not add any library and using obj.libs like shown below places kICE at the end of the link line 
+
+	neither 
+	
+		obj.libs = []
+		if env['WINDOWS'] and env['CC'] == 'gcc': 
+			obj.libs += ['kdewin32','wsock32'] 
+		obj.libs   += [env.join('KDE-ICE', 'libkICE.a')]
+
+	nor 
+
+		obj.libs = []
+		obj.libs   += [env.join('KDE-ICE', 'libkICE.a')]
+		if env['WINDOWS'] and env['CC'] == 'gcc': 
+			obj.libs += ['kdewin32','wsock32'] 
+
+	works
+  
+  a workaround is to use the full path of the system library, which is not platform independent -> fix in bksys required 
+  	obj.libs += [env.join('../win','libkdewin32.a')]
+  	obj.libs += [env.join('/usr/lib/w32api','libwsock32.a')] 
+
+
+- update configure command to 
+		QTDIR=/c/Qt/4.0.1 CFLAGS="-mno-cygwin " CXXFLAGS="-mno-cygwin -DUNICODE -DQT_LARGEFILE_SUPPORT \
+	  -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -I$QTDIR/include" \
+	  LDFLAGS="-mno-cygwin" scons configure
+	
+	the qt definitions are required because detect_qt4.py does not provide them 
+	
+
 2005-09-27 Ralf Habacker 
 added initial win32 mingw support using cygwin build environment and -mno-cygwin flag. 
 
 - configure with 
+		export QTDIR=/c/Qt/4.0.1
 	  CFLAGS="-mno-cygwin -Ikdecore -Imingw" CXXFLAGS="-mno-cygwin -Ikdecore -Imingw" LDFLAGS="-mno-cygwin" scons configure
 
 problems 
