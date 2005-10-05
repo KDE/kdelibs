@@ -11,8 +11,7 @@ def bootstrap(env):
 
 	## not very portable but that's the best i have at the moment (ITA)
 	includes=['.','dcop','kio','kio/kio','kio/kfile','kdeui','kdecore','libltdl','kdefx']
-	if env['WINDOWS']:
-		includes.append('win')
+
 	env['INCLUDES_KDE4']=['#build']
 	for dir in includes:
 		env['INCLUDES_KDE4'].append('#'+dir)
