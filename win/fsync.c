@@ -22,10 +22,11 @@
 
 KDEWIN32_EXPORT int fsync(int fd)
 {
-	Qt::HANDLE h;
+	HANDLE h;
+
 	if (fd < 0)
 		return -1;
-	h = (Qt::HANDLE)_get_osfhandle(fd);
+	h = (HANDLE)_get_osfhandle(fd);
 	if ((int)h == -1)
 		return -1;
 	if (!FlushFileBuffers(h))
