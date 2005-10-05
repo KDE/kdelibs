@@ -24,8 +24,8 @@
 /*! Bootstrap */
 #define kdemain \
 kde_start(int argc, char **argv); \
-__declspec(dllimport) void kde_bootstrap(); \
-__declspec(dllimport) void kde_destroy(); \
+KDE_IMPORT void kde_bootstrap(); \
+KDE_IMPORT void kde_destroy(); \
 int main(int argc, char **argv) \
 { kde_bootstrap(); const int retcode = kde_start(argc, argv); kde_destroy(); return retcode; } \
 int kde_start
