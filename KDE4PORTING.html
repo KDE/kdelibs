@@ -239,6 +239,7 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <H4>KAction</H4>
 <ul>
 <li>void activated( KAction::ActivationReason reason, Qt::ButtonState state ); -&gt; void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );</li>
+<li>void setStatusText(const QString &text) was depricated during KDE3. Instead use void setToolTip(const QString &test)</li>
 </ul>
 
 <H4>KRootPixmap</H4>
