@@ -43,7 +43,11 @@
 
 #ifdef USE_POSIX_ACL
 #include <sys/acl.h>
+#ifdef HAVE_NON_POSIX_ACL_EXTENSIONS
 #include <acl/libacl.h>
+#else
+#include <posixacladdons.h>
+#endif
 #endif
 
 #include <assert.h>
@@ -97,6 +101,7 @@ using namespace KIO;
 
 static QString testLogFile( const char *_filename );
 #ifdef USE_POSIX_ACL
+static QString aclAsString(  acl_t p_acl );
 static bool isExtendedACL(  acl_t p_acl );
 static void appendACLAtoms( const QCString & path, UDSEntry& entry, 
                             mode_t type, bool withACL );
@@ -151,8 +156,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         acl = acl_from_text( ACLString.latin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
-            ssize_t size = acl_size( acl );
-            kdDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+            kdDebug(7101) << "Set ACL on: " << path << " to: " << aclAsString( acl ) << endl;
         }
         acl_free( acl );
         if ( ret != 0 ) return ret; // better stop trying right away
@@ -166,8 +170,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             acl_t acl = acl_from_text( defaultACLString.latin1() );
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
-                ssize_t size = acl_size( acl );
-                kdDebug(7101) << "Set Default ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+                kdDebug(7101) << "Set Default ACL on: " << path << " to: " << aclAsString( acl ) << endl;
             }
             acl_free( acl );
         }
@@ -1695,28 +1698,38 @@ static bool isExtendedACL( acl_t acl )
     return ( acl_equiv_mode( acl, 0 ) != 0 );
 }
 
+static QString aclAsString(  acl_t acl )
+{
+    char *aclString = acl_to_text( acl, 0 );
+    QString ret = QString::fromLatin1( aclString );
+    acl_free( (void*)aclString );
+    return ret;
+}
+
 static void appendACLAtoms( const QCString & path, UDSEntry& entry, mode_t type, bool withACL )
 {
     // first check for a noop
+#ifdef HAVE_NON_POSIX_ACL_EXTENSIONS
     if ( acl_extended_file( path.data() ) == 0 ) return;
+#endif
 
     acl_t acl = 0;
     acl_t defaultAcl = 0;
     UDSAtom atom;
     bool isDir = S_ISDIR( type );
     // do we have an acl for the file, and/or a default acl for the dir, if it is one?
-    acl = acl_get_file( path.data(), ACL_TYPE_ACCESS );
+    if ( ( acl = acl_get_file( path.data(), ACL_TYPE_ACCESS ) ) ) { 
+        if ( !isExtendedACL( acl ) ) {
+            acl_free( acl ); 
+            acl = 0;
+        }
+    }
+
     /* Sadly libacl does not provided a means of checking for extended ACL and default
      * ACL separately. Since a directory can have both, we need to check again. */
-    if ( isDir ) {
-        if ( acl ) { 
-            if ( !isExtendedACL( acl ) ) {
-                acl_free( acl ); 
-                acl = 0;
-            }
-        }
+    if ( isDir )
         defaultAcl = acl_get_file( path.data(), ACL_TYPE_DEFAULT );
-    }
+
     if ( acl || defaultAcl ) {
       kdDebug(7101) << path.data() << " has extended ACL entries " << endl;
       atom.m_uds = KIO::UDS_EXTENDED_ACL;
@@ -1725,16 +1738,14 @@ static void appendACLAtoms( const QCString & path, UDSEntry& entry, mode_t type,
     }
     if ( withACL ) {
         if ( acl ) {
-            ssize_t size = acl_size( acl );
             atom.m_uds = KIO::UDS_ACL_STRING;
-            atom.m_str = QString::fromLatin1( acl_to_text( acl, &size ) );
+            atom.m_str = aclAsString( acl );
             entry.append( atom );
             kdDebug(7101) << path.data() << "ACL: " << atom.m_str << endl;
         }
         if ( defaultAcl ) {
-            ssize_t size = acl_size( defaultAcl );
             atom.m_uds = KIO::UDS_DEFAULT_ACL_STRING;
-            atom.m_str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
+            atom.m_str = aclAsString( defaultAcl );
             entry.append( atom );
             kdDebug(7101) << path.data() << "DEFAULT ACL: " << atom.m_str << endl;
         }

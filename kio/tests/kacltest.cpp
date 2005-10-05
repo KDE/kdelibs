@@ -79,9 +79,23 @@ int main(int argc, char *argv[])
     return 0; // success. The exit(1) in check() is what happens in case of failure.
 }
 
-static const QString s_testACL( "user::rw-\nuser:bin:rwx\ngroup::rw-\nmask::rwx\nother::r--\n" );
-static const QString s_testACL2( "user::rwx\nuser:bin:rwx\ngroup::rw-\ngroup:users:r--\ngroup:audio:--x\nmask::r-x\nother::r--\n" );
-static const QString s_testACLEffective("user::rwx\nuser:bin:rwx    #effective:r-x\ngroup::rw-      #effective:r--\ngroup:audio:--x\ngroup:users:r--\nmask::r-x\nother::r--\n");
+#ifdef Q_OS_FREEBSD
+static const QString s_group1 = QString::fromLatin1("staff");
+static const QString s_group2 = QString::fromLatin1("guest");
+#else
+static const QString s_group1 = QString::fromLatin1("audio");
+static const QString s_group2 = QString::fromLatin1("users");
+#endif
+
+static const QString s_testACL = QString::fromLatin1( "user::rw-\nuser:bin:rwx\ngroup::rw-\nmask::rwx\nother::r--\n" );
+static const QString s_testACL2 = QString::fromLatin1( "user::rwx\nuser:bin:rwx\ngroup::rw-\n") +
+                                  QString::fromLatin1( "group:" ) + s_group1 + QString::fromLatin1( ":--x\n" ) +
+                                  QString::fromLatin1( "group:" ) + s_group2 + QString::fromLatin1( ":r--\n" ) +
+                                  QString::fromLatin1( "mask::r-x\nother::r--\n" );
+static const QString s_testACLEffective = QString::fromLatin1( "user::rwx\nuser:bin:rwx #effective:r-x\ngroup::rw- #effective:r--\n" ) + 
+                                          QString::fromLatin1( "group:" ) + s_group1 + QString::fromLatin1( ":--x\n" ) +
+                                          QString::fromLatin1( "group:" ) + s_group2 + QString::fromLatin1( ":r--\n" ) +
+                                          QString::fromLatin1( "mask::r-x\nother::r--\n" );
 
 KACLTest::KACLTest()
 :m_acl( s_testACL )
@@ -120,13 +134,13 @@ void KACLTest::cleanup()
 
 void KACLTest::testAsString()
 {
-  check( "asString: ", s_testACL, m_acl.asString() );
+  check( "asString: ", m_acl.asString(), s_testACL );
 }
 
 void KACLTest::testSetACL()
 {
   m_acl.setACL( s_testACL2 );
-  check( "setACL: ", s_testACLEffective.simplifyWhiteSpace(), m_acl.asString().simplifyWhiteSpace() );
+  check( "setACL: ", m_acl.asString().simplifyWhiteSpace().remove(" "), s_testACLEffective.simplifyWhiteSpace().remove(" ") );
 }
 
 void KACLTest::testGetOwnerPermissions()
@@ -182,10 +196,10 @@ void KACLTest::testGetAllGroupsPermissions()
     permissions = ( *it ).second;
     // setACL sorts them alphabetically ...
     if ( count == 0 ) {
-      check( "All groups name: ", name, "audio" );
+      check( "All groups name: ", name, s_group1 );
       check( "All groups permissions: ", QString::number( permissions ), "1" );
     } else if ( count == 1 ) {
-      check( "All groups name: ", name, "users" );
+      check( "All groups name: ", name, s_group2 );
       check( "All groups permissions: ", QString::number( permissions ), "4" );
     }
     ++it;
@@ -249,26 +263,27 @@ void KACLTest::testSettingExtended()
 
   // groups, all and named
   
-  const QString expected2( "user::rw-\nuser:bin:rwx\ngroup::rw-\ngroup:audio:-wx\ngroup:users:r--\nmask::rwx\nother::r--\n" );
+  const QString expected2 = QString::fromLatin1( "user::rw-\nuser:bin:rwx\ngroup::rw-\ngroup:" ) + s_group1 +
+                            QString::fromLatin1( ":-wx\ngroup:" ) + s_group2 + QString::fromLatin1(":r--\nmask::rwx\nother::r--\n" );
   CharlesII.setACL( s_testACL ); // reset
   ACLGroupPermissionsList groups;
-  ACLGroupPermissions group = qMakePair( QString( "audio" ), ( unsigned short )3 );
+  ACLGroupPermissions group = qMakePair( s_group1, ( unsigned short )3 );
   groups.append( group );
-  group = qMakePair( QString( "users" ), ( unsigned short )4 );
+  group = qMakePair( s_group2, ( unsigned short )4 );
   groups.append( group );
   CharlesII.setAllGroupPermissions( groups );
   check( "setAllGroupPermissions: ", CharlesII.asString(), expected2 );
 
   CharlesII.setACL( s_testACL ); // reset
-  CharlesII.setNamedGroupPermissions( QString( "audio" ), 3 );
-  CharlesII.setNamedGroupPermissions( QString( "users" ), 4 );
+  CharlesII.setNamedGroupPermissions( s_group1, 3 );
+  CharlesII.setNamedGroupPermissions( s_group2, 4 );
   check( "setNamedGroupPermissions: ", CharlesII.asString(), expected2 );
 }
 
 void KACLTest::testSettingErrorHandling()
 {
   KACL foo( s_testACL );
-  bool v = foo.setNamedGroupPermissions( "audio", 7 ); // existing group
+  bool v = foo.setNamedGroupPermissions( s_group1, 7 ); // existing group
   check( "Existing group: ", v, true );
   v = foo.setNamedGroupPermissions( "jongel", 7 ); // non-existing group
   check( "Non-existing group: ", v, false );

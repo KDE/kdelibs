@@ -43,7 +43,7 @@ libksycoca_la_SOURCES = \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
 	dataslave.cpp dataprotocol.cpp 
 #if USE_POSIX_ACL
-  libksycoca_la_SOURCES += kacl.cpp
+  libksycoca_la_SOURCES += kacl.cpp posixacladdons.cpp
 #endif
 
 include_HEADERS = \
@@ -111,6 +111,9 @@ noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
 	renamedlg.h skipdlg.h dataslave.h dataprotocol.h \
 	kservice_p.h
+#if USE_POSIX_ACL
+noinst_HEADERS += posixacladdons.h
+#endif
 
 parserfiles = yacc.y lex.l
 

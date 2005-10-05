@@ -56,15 +56,33 @@ AC_ARG_WITH(acl,
 ACL_LIBS=""
 if test "x$with_acl" != xno; then
   USE_POSIX_ACL=yes
-  KDE_CHECK_HEADER(attr/libattr.h, ,[USE_POSIX_ACL="no"])
-  KDE_CHECK_HEADER(sys/xattr.h, ,[USE_POSIX_ACL="no"])
+  HAVE_NON_POSIX_ACL_EXTENSIONS=no
   KDE_CHECK_HEADER(sys/acl.h, ,[USE_POSIX_ACL="no"])
-  KDE_CHECK_HEADER(acl/libacl.h, ,[USE_POSIX_ACL="no"])
-  KDE_CHECK_LIB(acl,acl_init, ,[USE_POSIX_ACL="no"])
+  HAVE_SYS_XATTR_H=no
+  KDE_CHECK_HEADER(sys/xattr.h,[HAVE_SYS_XATTR_H="yes"],)
+  if test "$HAVE_SYS_XATTR_H" = "yes" ; then
+    AC_DEFINE([HAVE_SYS_XATTR_H], 1, [Define if system has the sys/xattr.h header.])
+  fi
+
+  case $host in
+      *-*-freebsd*)
+              KDE_CHECK_LIB(c,acl_init,[ACL_LIBS="-lc"],[USE_POSIX_ACL="no"])
+              ;;
+      *)
+              KDE_CHECK_HEADER(attr/libattr.h, ,[USE_POSIX_ACL="no"])
+              KDE_CHECK_LIB(acl,acl_init,[ACL_LIBS="-lacl -lattr"],[USE_POSIX_ACL="no"])
+              KDE_CHECK_HEADER(acl/libacl.h,[HAVE_NON_POSIX_ACL_EXTENSIONS="yes"],)
+              if test "$HAVE_SYS_XATTR_H" = "no" ; then
+                USE_POSIX_ACL="no"
+              fi
+              ;;
+  esac
 
   if test "$USE_POSIX_ACL" = "yes" ; then
-    ACL_LIBS="-lacl -lattr"
     AC_DEFINE([USE_POSIX_ACL], 1, [Define if system has POSIX ACL support.])
+    if test "$HAVE_NON_POSIX_ACL_EXTENSIONS" = "yes" ; then
+      AC_DEFINE([HAVE_NON_POSIX_ACL_EXTENSIONS], 1, [Define if system has non-POSIX extensions to the ACL support.])
+    fi
   fi
 
   if test "x$with_acl" != xcheck && test "$USE_POSIX_ACL" != "yes"; then

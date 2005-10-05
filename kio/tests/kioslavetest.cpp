@@ -346,6 +346,16 @@ void KioslaveTest::slotSlaveError()
    slave = 0;
 }
 
+static void printACL( const QString& acl )
+{
+  KACL kacl( acl );
+  kdDebug() << "According to KACL: " << endl << kacl.asString() << endl;
+  kdDebug() << "Owner: " << kacl.ownerPermissions() << endl;
+  kdDebug() << "Owning group: " << kacl.owningGroupPermissions() << endl;
+  kdDebug() << "Others: " << kacl.othersPermissions() << endl;
+}
+
+
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 {
     KIO::UDSEntry::ConstIterator it = entry.begin();
@@ -359,7 +369,19 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
                 }
                 break;
             case KIO::UDS_ACCESS:
-                kdDebug() << "Access permissions : " << (mode_t)((*it).m_long) << endl;
+                kdDebug() << "Access permissions : " << (*it).m_long << endl;
+                break;
+            case KIO::UDS_EXTENDED_ACL:
+                if( (*it).m_long == 1 )
+                  kdDebug() << "Has extended ACL information." << endl;
+                break;
+            case KIO::UDS_ACL_STRING:
+                kdDebug() << "ACL: " << ( (*it).m_str.ascii() ) << endl;
+                printACL( (*it).m_str );
+                break;
+            case KIO::UDS_DEFAULT_ACL_STRING:
+                kdDebug() << "Default ACL: " << ( (*it).m_str.ascii() ) << endl;
+                printACL( (*it).m_str );
                 break;
             case KIO::UDS_USER:
                 kdDebug() << "User : " << ((*it).m_str.ascii() ) << endl;

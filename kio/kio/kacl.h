@@ -20,10 +20,8 @@
 #ifndef __kacl_h__
 #define __kacl_h__
 
-
 #include <sys/types.h>
 #include <kio/global.h>
-
 
 typedef QPair<QString, unsigned short> ACLUserPermissions;
 typedef QValueList<ACLUserPermissions> ACLUserPermissionsList;
@@ -139,7 +137,8 @@ public:
    * exists. @p exists is set to true if a matching entry exists and
    * to false otherwise.
    * @return the permissions for a user entry with the name in @p name */
-  unsigned short namedUserPermissions( const QString& name, bool *exits ) const;
+  unsigned short namedUserPermissions( const QString& name, bool *exists ) const;
+
 
   /** Set the permissions for a user with the name @p name. Will fail
    * if the user doesn't exist, in which case the ACL will be unchanged.

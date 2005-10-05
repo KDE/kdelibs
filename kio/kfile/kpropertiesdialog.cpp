@@ -75,7 +75,13 @@ extern "C" {
 
 #ifdef USE_POSIX_ACL
 extern "C" {
-#  include <sys/xattr.h>
+#include <sys/param.h>
+#ifdef HAVE_SYS_MOUNT_H
+#include <sys/mount.h>
+#endif
+#ifdef HAVE_SYS_XATTR_H
+#include <sys/xattr.h>
+#endif
 }
 #endif
 
@@ -1832,7 +1838,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   updateAccessControls();
 
 
-  if ( isTrash )
+  if ( isTrash || !d->canChangePermissions )
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
@@ -2052,8 +2058,13 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   // FIXME make it work with partial entries
   if ( properties->items().count() == 1 ) {
     QCString pathCString = QFile::encodeName( properties->item()->url().path() );
+#ifdef Q_OS_FREEBSD
+    struct statfs buf;
+    fileSystemSupportsACLs = ( statfs( pathCString.data(), &buf ) == 0 ) && ( buf.f_flags & MNT_ACLS );
+#else
     fileSystemSupportsACLs =
       getxattr( pathCString.data(), "system.posix_acl_access", NULL, 0 ) >= 0 || errno == ENODATA;
+#endif
   }
   if ( fileSystemSupportsACLs  ) {
     std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );

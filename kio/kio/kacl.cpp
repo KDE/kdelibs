@@ -27,8 +27,11 @@
 #include <grp.h>
 #include <sys/stat.h>
 #ifdef USE_POSIX_ACL
-#include <sys/acl.h>
+#ifdef HAVE_NON_POSIX_ACL_EXTENSIONS
 #include <acl/libacl.h>
+#else
+#include <posixacladdons.h>
+#endif
 #endif
 #include <qintdict.h>
 
@@ -39,6 +42,7 @@
 
 #ifdef USE_POSIX_ACL
 static void printACL( acl_t acl, const QString &comment );
+static QString aclAsString(const acl_t acl);
 #endif
 
 class KACL::KACLPrivate {
@@ -166,8 +170,7 @@ static void permissionsToEntry( acl_entry_t entry, unsigned short v )
 
 static void printACL( acl_t acl, const QString &comment )
 {
-    ssize_t size = acl_size( acl );
-    kdDebug() << comment << acl_to_text( acl, &size ) << endl;
+    kdDebug() << comment << aclAsString( acl ) << endl;
 }
 
 static int getUidForName( const QString& name )
@@ -550,6 +553,9 @@ bool KACL::setACL( const QString &aclStr )
 {
     bool ret = false;
 #ifdef USE_POSIX_ACL
+    if ( aclStr.isEmpty() )
+        return false;
+
     acl_t temp = acl_from_text( aclStr.latin1() );
     if ( acl_valid( temp ) != 0 ) {
         // TODO errno is set, what to do with it here?
@@ -567,8 +573,7 @@ bool KACL::setACL( const QString &aclStr )
 QString KACL::asString() const
 {
 #ifdef USE_POSIX_ACL
-    ssize_t size = acl_size( d->m_acl );
-    return QString::fromLatin1( acl_to_text( d->m_acl, &size ) );
+    return aclAsString( d->m_acl );
 #else
     return QString::null;
 #endif
@@ -612,6 +617,16 @@ QString KACL::KACLPrivate::getGroupName( gid_t gid ) const
     else
         return *temp;
 }
+
+static QString aclAsString(const acl_t acl)
+{
+    char *aclString = acl_to_text( acl, 0 );
+    QString ret = QString::fromLatin1( aclString );
+    acl_free( (void*)aclString );
+    return ret;
+}
+
+
 #endif
 
 void KACL::virtual_hook( int, void* )
