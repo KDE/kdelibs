@@ -23,7 +23,11 @@
 #define popen _popen
 #define pclose _pclose
 
+#if defined(__MINGW32__)
+#define KDE_IMPORT
+#else 
 #define KDE_IMPORT __declspec(dllimport)
+#endif 
 
 #ifdef MAKE_KDECORE_LIB
 # define KDECORE_EXPORT KDE_EXPORT
