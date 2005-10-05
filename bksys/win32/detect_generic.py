@@ -106,7 +106,6 @@ def bksys_shlib(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=
 	note: on win32 platforms only the major version number is used 
 	"""
 	import types,os,sys
-	print "win32 bksys_shlib"
 	# parameter can be a list
 	if type(ntarget) is types.ListType: target=ntarget[0]
 	else: target=ntarget
