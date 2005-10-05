@@ -2,10 +2,12 @@
 
 Import('env')
 
-obj = env.genobj('shlib',env)
+obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdewin32'
-obj.source   = 'pwd.c win32_utils.c time.c unistd.c signal.c fcntl.c'
+obj.uselib   = 'QT QTCORE QT3SUPPORT'
+obj.source   = 'fcntl.c  getenv.c  kde_file_win.c  net.c  readdir.c   resource.c  strndup.c  time.c   unistd.c '
+obj.source   +='fsync.c  grp.c     mmap.c          pwd.c  realpath.c  signal.c    syslog.c   uname.c  win32_utils.c win32_utils2.cpp'
 
 if env['CC'] == 'gcc': 
 	obj.includes = 'include include/mingw'
