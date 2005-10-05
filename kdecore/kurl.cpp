@@ -443,7 +443,7 @@ QStringList KURL::List::toStringList() const
    return lst;
 }
 
-void KURL::List::setInMimeData( QMimeData* mimeData,
+void KURL::List::populateMimeData( QMimeData* mimeData,
                                 const KURL::MetaDataMap& metaData,
                                 MimeDataFlags flags ) const
 {
@@ -2499,10 +2499,10 @@ KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
     return mode;
 }
 
-void KURL::setInMimeData( QMimeData* mimeData,
+void KURL::populateMimeData( QMimeData* mimeData,
                        const MetaDataMap& metaData,
                        MimeDataFlags flags ) const
 {
     KURL::List lst( *this );
-    lst.setInMimeData( mimeData, metaData, flags );
+    lst.populateMimeData( mimeData, metaData, flags );
 }

@@ -38,7 +38,7 @@ void KURLMimeTest::testURLList()
     metaData["key"] = "value";
     metaData["key2"] = "value2";
 
-    urls.setInMimeData( mimeData, metaData );
+    urls.populateMimeData( mimeData, metaData );
 
     VERIFY( KURL::List::canDecode( mimeData ) );
 
@@ -58,7 +58,7 @@ void KURLMimeTest::testOneURL()
     KURL oneURL = "file:///tmp";
     QMimeData* mimeData = new QMimeData;
 
-    oneURL.setInMimeData( mimeData );
+    oneURL.populateMimeData( mimeData );
 
     VERIFY( KURL::List::canDecode( mimeData ) );
     QMap<QString, QString> decodedMetaData;

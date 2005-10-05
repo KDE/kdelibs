@@ -23,7 +23,7 @@
 #include <QDrag>
 
 void
-KColorMimeData::setInMimeData( QMimeData *mimeData, const QColor &color)
+KColorMimeData::populateMimeData( QMimeData *mimeData, const QColor &color)
 {
 	mimeData->setColorData(color);
 	mimeData->setText(color.name());
@@ -69,7 +69,7 @@ KColorMimeData::createDrag( const QColor &color,QWidget *dragsource)
 {
     QDrag *drag=new QDrag(dragsource);
     QMimeData *mime=new QMimeData;
-    setInMimeData(mime,color);
+    populateMimeData(mime,color);
     drag->setMimeData(mime);
     QPixmap colorpix( 25, 20);
     colorpix.fill( color);

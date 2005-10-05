@@ -6379,7 +6379,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     QMap<QString, QString> metaDataMap;
     if ( !d->m_referrer.isEmpty() )
       metaDataMap.insert( "referrer", d->m_referrer );
-    u.setInMimeData( drag->mimeData(), metaDataMap );
+    u.populateMimeData( drag->mimeData(), metaDataMap );
 
     if( img && img->complete() )
       drag->mimeData()->setImageData( img->currentImage() );

@@ -200,8 +200,8 @@ public:
       /**
        * Adds URLs data into the given QMimeData.
        *
-       * By default, setInMimeData also exports the URLs as plain text, for e.g. dropping
-       * onto a text editor.
+       * By default, populateMimeData (renamed from setInMimeData)also exports the URLs 
+       * as plain text, for e.g. dropping onto a text editor. 
        * But in some cases this might not be wanted, e.g. if adding other mime data
        * which provides better plain text data.
        *
@@ -216,7 +216,7 @@ public:
        *
        * @since 4.0
        */
-      void setInMimeData( QMimeData* mimeData,
+      void populateMimeData( QMimeData* mimeData,
                           const KURL::MetaDataMap& metaData = MetaDataMap(),
                           MimeDataFlags flags = None ) const;
 
@@ -958,12 +958,12 @@ public:
   /**
    * Adds URL data into the given QMimeData.
    *
-   * By default, setInMimeData also exports the URL as plain text, for e.g. dropping
+   * By default, populateMimeData also exports the URL as plain text, for e.g. dropping
    * onto a text editor.
    * But in some cases this might not be wanted, e.g. if adding other mime data
    * which provides better plain text data.
    *
-   * WARNING: do not call this method multiple times, use KURL::List::setInMimeData instead.
+   * WARNING: do not call this method multiple times, use KURL::List::populateMimeData instead.
    *
    * @param mimeData the QMimeData instance used to drag or copy this URL
    * @param metaData KIO metadata shipped in the mime data, which is used for instance to
@@ -973,7 +973,7 @@ public:
    *
    * @since 4.0
    */
-  void setInMimeData( QMimeData* mimeData,
+  void populateMimeData( QMimeData* mimeData,
                       const MetaDataMap& metaData = MetaDataMap(),
                       MimeDataFlags flags = None ) const;
 

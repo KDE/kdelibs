@@ -38,7 +38,7 @@ public:
      * Sets the color and text representation fields for the specified color in the mimedata object
      * ==> application/x-color and text/plain types are  set
      */
-    static void setInMimeData(QMimeData *mimeData,const QColor& color);
+    static void populateMimeData(QMimeData *mimeData,const QColor& color);
 
     /**
      * Returns true if the MIME data @p mimeData contains a color object.

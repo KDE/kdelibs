@@ -529,7 +529,7 @@ protected:
      * Add the data (urls) from the selected item(s) into @p mimeData,
      * which can be used when dragging or coping items.
      */
-    virtual void setInMimeData( QMimeData* mimeData );
+    virtual void populateMimeData( QMimeData* mimeData );
 
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
     virtual void contentsDropEvent( QDropEvent * );

@@ -176,7 +176,7 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
 
   if ( KStdAccel::copy().contains( key ) ) {
     QMimeData *mime=new QMimeData;
-    KColorMimeData::setInMimeData(mime,color());
+    KColorMimeData::populateMimeData(mime,color());
     QApplication::clipboard()->setMimeData( mime, QClipboard::Clipboard );
   }
   else if ( KStdAccel::paste().contains( key ) ) {

@@ -54,7 +54,7 @@ public:
          *
          * @since 4.0
          */
-        void setInMimeData( QMimeData* mimeData ) const;
+        void populateMimeData( QMimeData* mimeData ) const;
 
         /**
          * Return true if @p mimeData contains bookmarks
@@ -228,13 +228,13 @@ public:
     /**
      * Adds this bookmark into the given QMimeData.
      *
-     * WARNING: do not call this method multiple times, use KBookmark::List::setInMimeData instead.
+     * WARNING: do not call this method multiple times, use KBookmark::List::populateMimeData instead.
      *
      * @param mimeData the QMimeData instance used to drag or copy this bookmark
      *
      * @since 4.0
      */
-    void setInMimeData( QMimeData* mimeData ) const;
+    void populateMimeData( QMimeData* mimeData ) const;
 
 
 protected:

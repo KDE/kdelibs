@@ -800,7 +800,7 @@ void KURLBarListBox::paintEvent( QPaintEvent* )
     p.drawRect( 0, 0, width() - 1, height() - 1 );
 }
 
-void KURLBarListBox::setInMimeData( QMimeData* mimeData )
+void KURLBarListBox::populateMimeData( QMimeData* mimeData )
 {
     KURL::List urls;
     KURLBarItem *item = static_cast<KURLBarItem*>( firstItem() );
@@ -813,7 +813,7 @@ void KURLBarListBox::setInMimeData( QMimeData* mimeData )
 
     if ( !urls.isEmpty() ) {
         // ### use custom drag-object with description etc.?
-        urls.setInMimeData( mimeData );
+        urls.populateMimeData( mimeData );
     }
 }
 
