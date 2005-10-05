@@ -2567,6 +2567,8 @@ bool KateDocument::saveAs( const KURL &u )
       readDirConfig();
 
     emit fileNameChanged();
+    emit nameChanged((Kate::Document *) this);
+
     return true;
   }
 
