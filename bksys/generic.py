@@ -1,4 +1,9 @@
-## Thomas Nagy, 2005
+## 
+# @file 
+# bksys core 
+# 
+# (\@) Thomas Nagy, 2005
+# 
 """ Run scons -h to display the associated help, or look below """
 
 import os, re, types, sys, string, shutil, stat, glob
@@ -37,7 +42,7 @@ def configure(dict):
 	want_rpath = 1
 	use_colors = 0
 
-	## process the options
+	# process the options
 	for key in dict.keys():
 		if   key == 'modules':   mytools    = dict[key].split()
 		elif key == 'builddir':  build_dir  = dict[key]
@@ -49,15 +54,15 @@ def configure(dict):
 		elif key == 'colorful':  use_colors = dict[key]
 		else: print 'unknown key: '+key
 
-	## rpath flags are wrong (and pointless) on darwin
+	# rpath flags are wrong (and pointless) on darwin
 	if sys.platform == 'darwin':
 		want_rpath = 0
 
-	## make sure the build dir is available
-	## TODO what if it is in a non-existing subdirectory ? (ita)
+	# make sure the build dir is available
+	# TODO what if it is in a non-existing subdirectory ? (ita)
 	if not os.path.exists(build_dir): os.mkdir(build_dir)
 
-	## now build the environment
+	# now build the environment
 	if bootstrap:
 		env = Environment.Environment( ENV=os.environ, BOOTSTRAP_KDE=1,
 			_BUILDDIR_=build_dir, CACHEDIR=cache_dir, _USECOLORS_=use_colors,
@@ -67,19 +72,19 @@ def configure(dict):
 			_USECOLORS_=use_colors, CACHEDIR=cache_dir,
 			tools=mytools, toolpath=tool_path )
 
-	## at this point the help was displayed if asked to, then quit
+	# at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
 
-	## disable the rpath in scripts if asked to
+	# disable the rpath in scripts if asked to
 	env['_WANT_RPATH_']=want_rpath
 
 	env.Append(CPPPATH=['#']) # ugly hack, remove when possible (ita)
 	env.AppendUnique(LIBPATH=['#', build_dir]) # ugly hack, remove when possible (ita)
 
-	## we want symlinks by default
+	# we want symlinks by default
 	env.SetOption('duplicate', cp_method)
 
-	## now the post-configuration
+	# now the post-configuration
 	if env['_CONFIGURE_']:
 		# write the config.h if we were asked to, then quit
 		if config_h: write_config_h(env)
@@ -87,7 +92,7 @@ def configure(dict):
 
 	return env
 
-### To make a tarball of the project use 'scons dist'
+## To make a tarball of the project use 'scons dist'
 def dist(env, appname, version=None):
 	import os
 	if 'dist' in sys.argv:
