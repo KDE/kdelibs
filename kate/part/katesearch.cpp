@@ -596,7 +596,7 @@ bool KateSearch::doSearch( const QString& text )
         found = false;
       else if (m_view->blockSelectionMode())
       {
-        if ((int)foundCol < s.selEnd.col() && (int)foundCol >= s.selBegin.col())
+        if ((int)foundCol < QMAX(s.selEnd.col(), s.selBegin.col()) && (int)foundCol >= QMIN(s.selEnd.col(), s.selBegin.col()))
           break;
       }
     }
@@ -604,7 +604,8 @@ bool KateSearch::doSearch( const QString& text )
     line = foundLine;
     col = foundCol+1;
   }
-  while (m_view->blockSelectionMode() && found);
+  while (s.flags.selected && m_view->blockSelectionMode() && found);
+  // in the case we want to search in selection + blockselection we need to loop
 
   if( !found ) return false;
 
