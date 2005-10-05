@@ -274,7 +274,17 @@ void KateSearch::wrapSearch()
 {
   if( s.flags.selected )
   {
-      s.cursor = s.flags.backward ? s.selEnd : s.selBegin;
+    KateTextCursor start (s.selBegin);
+    KateTextCursor end (s.selEnd);
+
+    // recalc for block sel, to have start with lowest col, end with highest
+    if (m_view->blockSelectionMode())
+    {
+      start.setCol (QMIN(s.selBegin.col(), s.selEnd.col()));
+      end.setCol (QMAX(s.selBegin.col(), s.selEnd.col()));
+    }
+    
+    s.cursor = s.flags.backward ? end : start;
   }
   else
   {
@@ -591,12 +601,24 @@ bool KateSearch::doSearch( const QString& text )
 
     if ( found && s.flags.selected )
     {
-      if ( !s.flags.backward && KateTextCursor( foundLine, foundCol ) >= s.selEnd
-        ||  s.flags.backward && KateTextCursor( foundLine, foundCol ) < s.selBegin )
+      KateTextCursor start (s.selBegin);
+      KateTextCursor end (s.selEnd);
+
+      // recalc for block sel, to have start with lowest col, end with highest
+      if (m_view->blockSelectionMode())
+      {
+        start.setCol (QMIN(s.selBegin.col(), s.selEnd.col()));
+        end.setCol (QMAX(s.selBegin.col(), s.selEnd.col()));
+      }
+
+      if ( !s.flags.backward && KateTextCursor( foundLine, foundCol ) >= end
+        ||  s.flags.backward && KateTextCursor( foundLine, foundCol ) < start )
+      {
         found = false;
+      }
       else if (m_view->blockSelectionMode())
       {
-        if ((int)foundCol < QMAX(s.selEnd.col(), s.selBegin.col()) && (int)foundCol >= QMIN(s.selEnd.col(), s.selBegin.col()))
+        if ((int)foundCol >= start.col() && (int)foundCol < end.col())
           break;
       }
     }
