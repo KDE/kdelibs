@@ -171,7 +171,7 @@ QMAKE_LFLAGS += /FORCE:MULTIPLE
 # a .cpp or .cxx extension, thus .cc files are compiled properly with msvc
 QMAKE_CXXFLAGS += /TP
 
-INCLUDEPATH	+= moc $(KDELIBS)/win $(KDELIBS)
+INCLUDEPATH	+= moc $(KDELIBS)/win/include $(KDELIBS)/win/include/msvc $(KDELIBS)
 
 contains(KW_CONFIG,release) {
 OBJECTS_DIR = obj_rel
