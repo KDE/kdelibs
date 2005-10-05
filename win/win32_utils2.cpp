@@ -1,5 +1,6 @@
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 
@@ -15,27 +16,27 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 		*ok = false; \
 	return QString::null; }
 
-	if (!subKey)
+	if (subKey.isEmpty())
 		FAILURE;
 	HKEY hKey;
 	TCHAR *lszValue;
 	DWORD dwType=REG_SZ;
 	DWORD dwSize;
-	if (ERROR_SUCCESS!=RegOpenKeyEx(key, subKey.utf16(), NULL, KEY_READ, &hKey))
+	if (ERROR_SUCCESS!=RegOpenKeyEx(key, (WCHAR*)subKey.utf16(), NULL, KEY_READ, &hKey))
 		FAILURE;
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.utf16(), NULL, NULL, NULL, &dwSize))
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, (WCHAR*)item.utf16(), NULL, NULL, NULL, &dwSize))
 		FAILURE;
 
 	lszValue = new TCHAR[dwSize];
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.utf16(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, (WCHAR*)item.utf16(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
 		delete [] lszValue;
 		FAILURE;
 	}
 	RegCloseKey(hKey);
 
-	QString res = QString::fromUtf16(lszValue);
+	QString res = QString::fromUtf16((ushort*)lszValue);
 	delete [] lszValue;
 	return res;
 }
