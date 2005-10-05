@@ -40,9 +40,9 @@ def bootstrap(env):
 	env['KDECONF']    = env.join( env['PREFIX'], 'share/config')
 	env['KDEMODULE'] = env.join( env['PREFIX'], 'lib/kde4')
 
-	env['KCONFIGCOMPILER']= env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore/kconfig_compiler/kconfig_compiler')
-	env['DCOPIDL']        = env.join(os.getcwd(), 'dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng')
-	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp')
+	env['KCONFIGCOMPILER']= env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore/kconfig_compiler/kconfig_compiler.exe')
+	env['DCOPIDL']        = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidlng/dcopidl.exe --srcdir dcop/dcopidlng')
+	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp.exe')
 
 	env['LIB_KDECORE'] = ['kdecore']
 	env['LIB_KIO']     = ['kio', 'kwalletclient', 'kdesu']
