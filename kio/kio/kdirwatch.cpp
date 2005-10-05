@@ -370,7 +370,7 @@ void KDirWatchPrivate::slotActivated()
     if ( pending > (int)sizeof( buf ) )
       pending = sizeof( buf );
 
-    ( void ) read( m_inotify_fd, buf, pending);
+    pending = read( m_inotify_fd, buf, pending);
 
     while ( pending > 0 ) {
       struct inotify_event ev;
