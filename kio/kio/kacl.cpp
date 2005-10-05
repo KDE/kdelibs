@@ -48,7 +48,7 @@ class KACL::KACLPrivate {
 public:
     KACLPrivate() : m_acl( 0 ) { init(); }
 #ifdef USE_POSIX_ACL
-    KACLPrivate( acl_t acl ) 
+    KACLPrivate( acl_t acl )
         : m_acl( acl ) { init(); }
     ~KACLPrivate() { if ( m_acl ) acl_free( m_acl ); }
 #endif
@@ -72,19 +72,22 @@ public:
     mutable Q3IntDict<QString> m_groupcache;
 };
 
-KACL::KACL( const QString &aclString ) 
+KACL::KACL( const QString &aclString )
     : d( new KACLPrivate )
 {
     setACL( aclString );
 }
 
-KACL::KACL( mode_t basePermissions ) 
+KACL::KACL( mode_t basePermissions )
 #ifdef USE_POSIX_ACL
     : d( new KACLPrivate( acl_from_mode( basePermissions ) ) )
 #else
     : d( new KACLPrivate )
 #endif
 {
+#ifndef USE_POSIX_ACL
+    Q_UNUSED( basePermissions );
+#endif
 }
 
 KACL::KACL()
@@ -107,6 +110,7 @@ bool KACL::operator==( const KACL& rhs ) const {
 #ifdef USE_POSIX_ACL
     return ( acl_cmp( d->m_acl, rhs.d->m_acl ) == 0 );
 #else
+    Q_UNUSED( rhs );
     return true;
 #endif
 }
@@ -206,6 +210,8 @@ bool KACL::setOwnerPermissions( unsigned short v )
 {
 #ifdef USE_POSIX_ACL
     permissionsToEntry( entryForTag( d->m_acl, ACL_USER_OBJ ), v );
+#else
+    Q_UNUSED( v );
 #endif
     return true;
 }
@@ -223,6 +229,8 @@ bool KACL::setOwningGroupPermissions( unsigned short v )
 {
 #ifdef USE_POSIX_ACL
     permissionsToEntry( entryForTag( d->m_acl, ACL_GROUP_OBJ ), v );
+#else
+    Q_UNUSED( v );
 #endif
     return true;
 }
@@ -240,6 +248,8 @@ bool KACL::setOthersPermissions( unsigned short v )
 {
 #ifdef USE_POSIX_ACL
     permissionsToEntry( entryForTag( d->m_acl, ACL_OTHER ), v );
+#else
+    Q_UNUSED( v );
 #endif
     return true;
 }
@@ -289,6 +299,7 @@ bool KACL::setMaskPermissions( unsigned short v )
 #ifdef USE_POSIX_ACL
     return d->setMaskPermissions( v );
 #else
+    Q_UNUSED( v );
     return true;
 #endif
 }
@@ -315,6 +326,9 @@ unsigned short KACL::namedUserPermissions( const QString& name, bool *exists ) c
         }
         ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
+#else
+    Q_UNUSED( name );
+    Q_UNUSED( exists );
 #endif
     return 0;
 }
@@ -357,7 +371,7 @@ bool KACL::KACLPrivate::setNamedUserOrGroupPermissions( const QString& name, uns
     }
     if ( allIsWell && createdNewEntry ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
-        // named group entry, there needs to be a mask entry as well, so add 
+        // named group entry, there needs to be a mask entry as well, so add
         // one.
         setMaskPermissions( acl_calc_mask( &newACL ) );
     }
@@ -378,6 +392,8 @@ bool KACL::setNamedUserPermissions( const QString& name, unsigned short permissi
 #ifdef USE_POSIX_ACL
     return d->setNamedUserOrGroupPermissions( name, permissions, ACL_USER );
 #else
+    Q_UNUSED( name );
+    Q_UNUSED( permissions );
     return true;
 #endif
 }
@@ -408,11 +424,11 @@ ACLUserPermissionsList KACL::allUserPermissions() const
 #ifdef USE_POSIX_ACL
 bool KACL::KACLPrivate::setAllUsersOrGroups( const QList< QPair<QString, unsigned short> > &list, acl_tag_t type )
 {
-    bool allIsWell = true; 
+    bool allIsWell = true;
     bool atLeastOneUserOrGroup = false;
 
     // make working copy, in case something goes wrong
-    acl_t newACL = acl_dup( m_acl ); 
+    acl_t newACL = acl_dup( m_acl );
     acl_entry_t entry;
 
 //printACL( newACL, "Before cleaning: " );
@@ -423,7 +439,7 @@ bool KACL::KACLPrivate::setAllUsersOrGroups( const QList< QPair<QString, unsigne
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  type ) {
             acl_delete_entry( newACL, entry );
-            // we have to start from the beginning, the iterator is 
+            // we have to start from the beginning, the iterator is
             // invalidated, on deletion
             ret = acl_get_entry( newACL, ACL_FIRST_ENTRY, &entry );
         } else {
@@ -452,7 +468,7 @@ bool KACL::KACLPrivate::setAllUsersOrGroups( const QList< QPair<QString, unsigne
 //printACL( newACL, "After adding entries: " );
     if ( allIsWell && atLeastOneUserOrGroup ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
-        // named group entry, there needs to be a mask entry as well, so add 
+        // named group entry, there needs to be a mask entry as well, so add
         // one.
         setMaskPermissions( acl_calc_mask( &newACL ) );
     }
@@ -471,6 +487,7 @@ bool KACL::setAllUserPermissions( const ACLUserPermissionsList &users )
 #ifdef USE_POSIX_ACL
     return d->setAllUsersOrGroups( users, ACL_USER );
 #else
+    Q_UNUSED( users );
     return true;
 #endif
 }
@@ -499,6 +516,8 @@ unsigned short KACL::namedGroupPermissions( const QString& name, bool *exists ) 
         }
         ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
+#else
+    Q_UNUSED( name );
 #endif
     return 0;
 }
@@ -508,6 +527,8 @@ bool KACL::setNamedGroupPermissions( const QString& name, unsigned short permiss
 #ifdef USE_POSIX_ACL
     return d->setNamedUserOrGroupPermissions( name, permissions, ACL_GROUP );
 #else
+    Q_UNUSED( name );
+    Q_UNUSED( permissions );
     return true;
 #endif
 }
@@ -525,7 +546,7 @@ ACLGroupPermissionsList KACL::allGroupPermissions() const
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  ACL_GROUP ) {
             id = *( (gid_t*) acl_get_qualifier( entry ) );
-            QString name = d->getGroupName( id ); 
+            QString name = d->getGroupName( id );
             unsigned short permissions = entryToPermissions( entry );
             ACLGroupPermissions pair = qMakePair( name, permissions );
             list.append( pair );
@@ -541,6 +562,7 @@ bool KACL::setAllGroupPermissions( const ACLGroupPermissionsList &groups )
 #ifdef USE_POSIX_ACL
     return d->setAllUsersOrGroups( groups, ACL_GROUP );
 #else
+    Q_UNUSED( groups );
     return true;
 #endif
 }
@@ -563,6 +585,8 @@ bool KACL::setACL( const QString &aclStr )
         d->m_acl = temp;
         ret = true;
     }
+#else
+    Q_UNUSED( aclStr );
 #endif
     return ret;
 }
