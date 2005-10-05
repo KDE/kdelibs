@@ -37,11 +37,13 @@
 # endif
 #endif
 
-#ifdef MAKE_KDEWIN32_LIB
-# define KDEWIN32_EXPORT KDE_EXPORT
-#else
-# define KDEWIN32_EXPORT KDE_IMPORT
-#endif
+#ifndef KDEWIN32_EXPORT
+# ifdef MAKE_KDEWIN32_LIB
+#  define KDEWIN32_EXPORT KDE_EXPORT
+# else
+#  define KDEWIN32_EXPORT KDE_IMPORT
+# endif
+#endif 
 
 /* some classes, i.e. KDock* already use EXPORT_* macro: define it too */
 #ifdef MAKE_KDEUI_LIB
