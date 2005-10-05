@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.
    RSA Data Security, Inc. Created 1991. All rights reserved.
