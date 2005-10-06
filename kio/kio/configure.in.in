@@ -128,6 +128,9 @@ if test "x$kde_enable_inotify" = "xyes"; then
 #ifndef IN_ALL_EVENTS
 #error no inotify notification
 #endif
+#ifndef __NR_inotify_init
+#error no __NR_inotify_init
+#endif
 
   ],kde_cv_have_inotify=yes,kde_cv_have_inotify=no)
 
