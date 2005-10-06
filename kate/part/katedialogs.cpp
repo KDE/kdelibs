@@ -109,7 +109,7 @@
 #include <qwidgetstack.h>
 
 // trailing slash is important
-#define HLDOWNLOADPATH "http://www.kde.org/apps/kate/syntax/"
+#define HLDOWNLOADPATH "http://kate.kde.org/syntax/"
 
 //END
 
