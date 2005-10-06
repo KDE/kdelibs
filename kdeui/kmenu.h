@@ -136,12 +136,6 @@ public:
      */
     Qt::KeyboardModifiers keyboardModifiers() const;
 
-    // BEGIN compat methods
-    /**
-     * Constructs a KMenu.
-     */
-    KMenu(QWidget *parent, const char *name) KDE_DEPRECATED;
-
 signals:
     /**
      * connect to this signal to be notified when a context menu is about to be shown

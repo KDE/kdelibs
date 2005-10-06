@@ -883,7 +883,7 @@ void KAction::setWhatsThis( const QString& text )
 
 void KAction::updateWhatsThis( int i )
 {
-  QMenu* pm = popupMenu( i );
+  QMenu* pm = menu( i );
   if ( pm )
   {
     pm->setWhatsThis( itemId( i ), d->whatsThis() );
@@ -924,7 +924,7 @@ KToolBar* KAction::toolBar( int index ) const
     return dynamic_cast<KToolBar *>( d->m_containers.at(index).m_container );
 }
 
-QMenu* KAction::popupMenu( int index ) const
+QMenu* KAction::menu( int index ) const
 {
     return dynamic_cast<QMenu *>( d->m_containers.at(index).m_container );
 }
@@ -989,10 +989,10 @@ void KAction::slotActivated()
   emit activated();
 }
 
-// This catches signals emitted by KActions inserted into QPopupMenu
+// This catches signals emitted by KActions inserted into QMenu
 // We do crude things inside it, because we need to know which
-// QPopupMenu emitted the signal. We need to be sure that it is
-// only called by QPopupMenus, we plugged us in.
+// QMenu emitted the signal. We need to be sure that it is
+// only called by QMenus, we plugged us in.
 void KAction::slotPopupActivated()
 {
   if( qobject_cast<Q3Signal *>(sender()))
@@ -1010,7 +1010,7 @@ void KAction::slotPopupActivated()
         if ( kpm ) { // KMenu? Nice, it stores the state.
             buttons = kpm->mouseButtons();
             modifiers = kpm->keyboardModifiers();
-        } else { // just a QPopupMenu? We'll ask for the state now then (small race condition?)
+        } else { // just a QMenu? We'll ask for the state now then (small race condition?)
             //kdDebug(129) << "KAction::slotPopupActivated not a KMenu -> using QApplication methods" << endl;
             buttons = QApplication::mouseButtons();
             modifiers = QApplication::keyboardModifiers();
@@ -1025,7 +1025,7 @@ void KAction::slotPopupActivated()
     }
   }
 
-  kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QPopupMenus which are in containers. Use slotActivated instead."<<endl;
+  kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QMenus which are in containers. Use slotActivated instead."<<endl;
 #ifdef QT3_SUPPORT
   emit activated( KAction::PopupMenuActivation, Qt::NoButton );
 #endif

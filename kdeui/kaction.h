@@ -130,7 +130,7 @@ class KToolBar;
  * is invoked, it will use the fileNew() slot to execute it.
  *
  * \code
- * QPopupMenu *file = new QPopupMenu;
+ * QMenu *file = new QMenu;
  * newAct->plug(file);
  * \endcode
  * That just inserted the action into the File menu.  The point is, it's not
@@ -523,7 +523,7 @@ protected slots:
 
 protected:
     KToolBar* toolBar( int index ) const;
-    QMenu* popupMenu( int index ) const;
+    QMenu* menu( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
     int findContainer( int id ) const;
