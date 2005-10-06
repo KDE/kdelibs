@@ -333,7 +333,7 @@ public:
      *
      * @param xmlfile The local xmlfile (relative or absolute)
      * @param _conserveMemory Specify whether createGUI() should call
-     * KXMLGuiClient::conserveMemory() to free all memory
+     * KXMLGUIClient::conserveMemory() to free all memory
      *     allocated by the QDomDocument and by the KXMLGUIFactory.
      */
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
