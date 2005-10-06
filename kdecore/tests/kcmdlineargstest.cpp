@@ -1,6 +1,7 @@
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kapplication.h>
+#include <kurl.h>
 
 #include <stdio.h>
 

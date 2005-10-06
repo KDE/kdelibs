@@ -19,14 +19,14 @@
 #ifndef KCMDLINEARGS_H
 #define KCMDLINEARGS_H
 
-#include "kdelibs_export.h"
-#include <kurl.h>
+#include <kdelibs_export.h>
+#include <qglobal.h>
 
-#include <q3ptrlist.h>
-#include <qstring.h>
-#include <q3valuelist.h>
-
+template <class T> class QList;
 typedef QList<QByteArray> QByteArrayList;
+class QString;
+class QDataStream;
+class KURL;
 
 /**
  * @short Structure that holds command line options.
@@ -73,7 +73,6 @@ class KUniqueApplication;
 class KCmdLineParsedOptions;
 class KCmdLineParsedArgs;
 class KAboutData;
-class KCmdLineArgsPrivate;
 
 /**
  *  @short A class for command-line argument handling.
@@ -223,11 +222,10 @@ class KDECORE_EXPORT KCmdLineArgs
 {
   friend class KApplication;
   friend class KUniqueApplication;
-  friend class Q3PtrList<KCmdLineArgs>;
+  friend class KCmdLineArgsList;
 public:
   // Static functions:
 
-  Q_FLAGS(StdCmdLineArgs)
   enum StdCmdLineArg {
     CmdLineArgQt = 0x01,
     CmdLineArgKDE = 0x02,
@@ -256,7 +254,7 @@ public:
    */
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
-                    const char *_version, StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
+                    const char *_version, StdCmdLineArgs stdargs=CmdLineArgQt|CmdLineArgKDE);
 
   /**
    * Initialize class.
@@ -271,7 +269,7 @@ public:
    * @param stdargs KDE/Qt or no default parameters
    */
   static void init(int _argc, char **_argv,
-                   const KAboutData *about, StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
+                   const KAboutData *about, StdCmdLineArgs stdargs=CmdLineArgQt|CmdLineArgKDE);
   /**
    * Initialize Class
    *
@@ -290,7 +288,7 @@ public:
   /**
    * add standard Qt/KDE command-line args
    */
-  static void addStdCmdLineOptions(StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
+  static void addStdCmdLineOptions(StdCmdLineArgs stdargs=CmdLineArgQt|CmdLineArgKDE);
 
   /**
    * Add options to your application.
@@ -685,7 +683,8 @@ private:
   static char *mCwd; // Current working directory. Important for KUnqiueApp!
   static bool parseArgs;
 
-  KCmdLineArgsPrivate *d;
+  class Private;
+  Private *d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCmdLineArgs::StdCmdLineArgs)

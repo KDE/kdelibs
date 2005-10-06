@@ -26,6 +26,7 @@
 #include <qtextstream.h>
 #include <qdom.h>
 #include <qregexp.h>
+#include <q3ptrlist.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -36,6 +37,7 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kurl.h>
 
 #include <iostream>
 

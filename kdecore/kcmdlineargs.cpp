@@ -16,7 +16,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#undef QT3_SUPPORT
 #include <config.h>
+#include "kcmdlineargs.h"
 
 #include <sys/param.h>
 
@@ -32,17 +34,15 @@
 
 #include <qdir.h>
 #include <qfile.h>
-#include <q3asciidict.h>
-#include <q3strlist.h>
-#include <qglobal.h>
+#include <qhash.h>
 
-#include "kcmdlineargs.h"
-#include <kaboutdata.h>
-#include <klocale.h>
-#include <kapplication.h>
-#include <kglobal.h>
-#include <kstringhandler.h>
-#include <kstaticdeleter.h>
+#include "kaboutdata.h"
+#include "klocale.h"
+#include "kapplication.h"
+#include "kglobal.h"
+#include "kstringhandler.h"
+#include "kstaticdeleter.h"
+#include "kurl.h"
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -110,61 +110,27 @@ static const KCmdLineOptions kde_options[] =
 
 
 
-template class Q3AsciiDict<QByteArray>;
-template class Q3PtrList<KCmdLineArgs>;
-
-class KCmdLineParsedOptions : public Q3AsciiDict<QByteArray>
+class KCmdLineParsedOptions : public QHash<QByteArray,QByteArray>
 {
 public:
-   KCmdLineParsedOptions()
-     : Q3AsciiDict<QByteArray>( 7 ) { }
-
-   // WABA: Huh?
-   // The compiler doesn't find KCmdLineParsedOptions::write(s) by itself ???
-   // WABA: No, because there is another write function that hides the
-   // write function in the base class even though this function has a
-   // different signature. (obscure C++ feature)
-   QDataStream& save( QDataStream &s) const
-   { return Q3GDict::write(s); }
-
-   QDataStream& load( QDataStream &s)
-   { return Q3GDict::read(s); }
-
-protected:
-   virtual QDataStream& write( QDataStream &s, Q3PtrCollection::Item data) const
-   {
-      QByteArray *str = (QByteArray *) data;
-      s << (*str);
-      return s;
-   }
-
-   virtual QDataStream& read( QDataStream &s, Q3PtrCollection::Item &item)
-   {
-      QByteArray *str = new QByteArray;
-      s >> (*str);
-      item = (void *)str;
-      return s;
-   }
-
+   KCmdLineParsedOptions() { }
 };
 
-class KCmdLineParsedArgs : public Q3StrList
+class KCmdLineParsedArgs : public QList<QByteArray>
 {
 public:
-   KCmdLineParsedArgs()
-     : Q3StrList( true ) { }
-   QDataStream& save( QDataStream &s) const
-   { return Q3GList::write(s); }
-
-   QDataStream& load( QDataStream &s)
-   { return Q3GList::read(s); }
+   KCmdLineParsedArgs() { }
 };
 
 
-class KCmdLineArgsList: public Q3PtrList<KCmdLineArgs>
+class KCmdLineArgsList: public QList<KCmdLineArgs*>
 {
 public:
    KCmdLineArgsList() { }
+   ~KCmdLineArgsList() {
+	   while (count())
+		delete takeFirst();
+   }
 };
 
 KCmdLineArgsList *KCmdLineArgs::argsList = 0;
@@ -262,31 +228,30 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *nam
          const char *id, const char *afterId)
 {
    if (!argsList)
-      argsList = new KCmdLineArgsList();
+      argsList = new KCmdLineArgsList;
 
    int pos = argsList->count();
 
    if (pos && id && argsList->last() && !argsList->last()->name)
       pos--;
 
-   KCmdLineArgs *args;
+   KCmdLineArgsList::Iterator args;
    int i = 0;
-   for(args = argsList->first(); args; args = argsList->next(), i++)
+   for(args = argsList->begin(); args != argsList->end(); ++args, i++)
    {
-      if (!id && !args->id)
+      if (!id && !(*args)->id)
          return; // Options already present.
 
-      if (id && args->id && (::qstrcmp(id, args->id) == 0))
+      if (id && (*args)->id && (::qstrcmp(id, (*args)->id) == 0))
    return; // Options already present.
 
-      if (afterId && args->id && (::qstrcmp(afterId, args->id) == 0))
+      if (afterId && (*args)->id && (::qstrcmp(afterId, (*args)->id) == 0))
          pos = i+1;
    }
 
-   assert( parsed == false ); // You must add _ALL_ cmd line options
-                              // before accessing the arguments!
-   args = new KCmdLineArgs(options, name, id);
-   argsList->insert(pos, args);
+   Q_ASSERT( parsed == false ); // You must add _ALL_ cmd line options
+                                // before accessing the arguments!
+   argsList->insert(pos, new KCmdLineArgs(options, name, id));
 }
 
 void
@@ -307,11 +272,11 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
 
    if (!count) return;
 
-   KCmdLineArgs *args;
-   for(args = argsList->first(); args; args = argsList->next())
+   KCmdLineArgsList::Iterator args;
+   for(args = argsList->begin(); args != argsList->end(); ++args)
    {
-      ds << QByteArray(args->id);
-      args->save(ds);
+      ds << QByteArray((*args)->id);
+      (*args)->save(ds);
    }
 }
 
@@ -322,11 +287,11 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
-   KCmdLineArgs *args;
+   KCmdLineArgsList::Iterator args;
    if ( argsList ) {
-      for(args = argsList->first(); args; args = argsList->next())
+      for(args = argsList->begin(); args != argsList->end(); ++args)
       {
-         args->clear();
+         (*args)->clear();
       }
    }
 
@@ -347,12 +312,12 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    {
      QByteArray id;
      ds >> id;
-     assert( argsList );
-     for(args = argsList->first(); args; args = argsList->next())
+     Q_ASSERT( argsList );
+     for(args = argsList->begin(); args != argsList->end(); ++args)
      {
-       if (args->id  == id)
+       if ((*args)->id  == id)
        {
-          args->load(ds);
+          (*args)->load(ds);
           break;
        }
      }
@@ -362,37 +327,44 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
 KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
 {
-   KCmdLineArgs *args = argsList ? argsList->first() : 0;
-   while(args)
+   if (!argsList)
+      return 0;
+   KCmdLineArgsList::Iterator args = argsList->begin();
+   while(args != argsList->end())
    {
-      if ((id && ::qstrcmp(args->id, id) == 0) || (!id && !args->id))
+      if ((id && ::qstrcmp((*args)->id, id) == 0) || (!id && !(*args)->id))
       {
           if (!parsed)
              parseAllArgs();
-          return args;
+          return *args;
       }
-      args = argsList->next();
+      ++args;
    }
 
-   return args;
+   return *args;
 }
 
 void KCmdLineArgs::removeArgs(const char *id)
 {
-   KCmdLineArgs *args = argsList ? argsList->first() : 0;
-   while(args)
+   if (!argsList)
+      return;
+   KCmdLineArgsList::Iterator args = argsList->begin();
+   while(args != argsList->end())
    {
-      if (args->id && id && ::qstrcmp(args->id, id) == 0)
+      if ((*args)->id && id && ::qstrcmp((*args)->id, id) == 0)
       {
           if (!parsed)
              parseAllArgs();
           break;
       }
-      args = argsList->next();
+      ++args;
    }
 
-   if (args)
-      delete args;
+   if (args != argsList->end()) {
+      KCmdLineArgs *a = *args;
+      argsList->erase(args);
+      delete a;
+   }
 }
 
 /*
@@ -446,7 +418,7 @@ findOption(const KCmdLineOptions *options, QByteArray &opt,
                if (!options->name)
                   return result+0;
                QByteArray nextOption = options->name;
-               int p = nextOption.find(' ');
+               int p = nextOption.indexOf(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
                if (strncmp(nextOption.data(), "no", 2) == 0)
@@ -455,7 +427,7 @@ findOption(const KCmdLineOptions *options, QByteArray &opt,
                   enabled = !enabled;
                }
                result = findOption(options, nextOption, opt_name, def, enabled);
-               assert(result);
+               Q_ASSERT(result);
                opt = nextOption;
                return result;
             }
@@ -479,11 +451,11 @@ findOption(const KCmdLineOptions *options, QByteArray &opt,
 void
 KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled, bool &moreOptions)
 {
-   KCmdLineArgs *args = argsList->first();
+   KCmdLineArgsList::Iterator args = argsList->begin();
    const char *opt_name;
    const char *def;
    QByteArray argument;
-   int j = opt.find('=');
+   int j = opt.indexOf('=');
    if (j != -1)
    {
       argument = opt.mid(j+1);
@@ -492,14 +464,15 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
 
    bool enabled = true;
    int result = 0;
-   while (args)
+   while (args != argsList->end())
    {
       enabled = _enabled;
-      result = ::findOption(args->options, opt, opt_name, def, enabled);
+      result = ::findOption((*args)->options, opt, opt_name, def, enabled);
       if (result) break;
-      args = argsList->next();
+      ++args;
    }
-   if (!args && (_opt[0] == '-') && _opt[1] && (_opt[1] != '-'))
+   if ((args == argsList->end()) &&
+       (_opt[0] == '-') && _opt[1] && (_opt[1] != '-'))
    {
       // Option not found check if it is a valid option
       // in the style of -Pprinter1 or ps -aux
@@ -508,21 +481,22 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
       {
          QByteArray singleCharOption = " ";
          singleCharOption[0] = _opt[p];
-         args = argsList->first();
-         while (args)
+         args = argsList->begin();
+         while (args != argsList->end())
          {
             enabled = _enabled;
-            result = ::findOption(args->options, singleCharOption, opt_name, def, enabled);
+            result = ::findOption((*args)->options, singleCharOption,
+			          opt_name, def, enabled);
             if (result) break;
-            args = argsList->next();
+            ++args;
          }
-         if (!args)
+         if (args == argsList->end())
             break; // Unknown argument
 
          p++;
          if (result == 1) // Single option
          {
-            args->setOption(singleCharOption, enabled);
+            (*args)->setOption(singleCharOption, enabled);
             if (_opt[p])
                continue; // Next option
             else
@@ -534,16 +508,16 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
             {
                argument = _opt+p;
             }
-            args->setOption(singleCharOption, argument.data());
+            (*args)->setOption(singleCharOption, argument.data());
             return;
          }
          break; // Unknown argument
       }
-      args = 0;
+      args = argsList->end();
       result = 0;
    }
 
-   if (!args || !result)
+   if (args == argsList->end() || !result)
    {
       if (ignoreUnknown)
          return;
@@ -576,11 +550,11 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
          }
          argument = argv[i];
       }
-      args->setOption(opt, argument.data());
+      (*args)->setOption(opt, argument.data());
    }
    else
    {
-      args->setOption(opt, enabled);
+      (*args)->setOption(opt, enabled);
    }
 }
 
@@ -729,16 +703,15 @@ KCmdLineArgs::parseAllArgs()
 int *
 KCmdLineArgs::qt_argc()
 {
-   //Q_ASSERT(argsList)
    if (!argsList)
-      addStdCmdLineOptions(KCmdLineArgs::StdCmdLineArgs(CmdLineArgKDE|CmdLineArgQt)); // Lazy bastards!
+      addStdCmdLineOptions(CmdLineArgKDE|CmdLineArgQt); // Lazy bastards!
 
    static int qt_argc = -1;
    if( qt_argc != -1 )
       return &qt_argc;
 
    KCmdLineArgs *args = parsedArgs("qt");
-   assert(args); // No qt options have been added!
+   Q_ASSERT(args); // No qt options have been added!
    if (!argv)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
@@ -748,7 +721,7 @@ KCmdLineArgs::qt_argc()
       exit(255);
    }
 
-   assert(argc >= (args->count()+1));
+   Q_ASSERT(argc >= (args->count()+1));
    qt_argc = args->count() +1;
    return &qt_argc;
 }
@@ -761,16 +734,15 @@ KCmdLineArgs::qt_argc()
 char ***
 KCmdLineArgs::qt_argv()
 {
-   //Q_ASSERT(argsList)
    if (!argsList)
-      addStdCmdLineOptions(StdCmdLineArgs(CmdLineArgKDE|CmdLineArgQt)); // Lazy bastards!
+      addStdCmdLineOptions(CmdLineArgKDE|CmdLineArgQt); // Lazy bastards!
 
    static char** qt_argv;
    if( qt_argv != NULL )
       return &qt_argv;
 
    KCmdLineArgs *args = parsedArgs("qt");
-   assert(args); // No qt options have been added!
+   Q_ASSERT(args); // No qt options have been added!
    if (!argv)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
@@ -809,7 +781,7 @@ KCmdLineArgs::enable_i18n()
 void
 KCmdLineArgs::usage(const QString &error)
 {
-    assert(KGlobal::_locale);
+    Q_ASSERT(KGlobal::_locale);
     QByteArray localError = error.toLocal8Bit();
     if (localError[error.length()-1] == '\n')
   localError = localError.left(error.length()-1);
@@ -825,7 +797,7 @@ void
 KCmdLineArgs::usage(const char *id)
 {
    enable_i18n();
-   assert(argsList != 0); // It's an error to call usage(...) without
+   Q_ASSERT(argsList != 0); // It's an error to call usage(...) without
                           // having done addCmdLineOptions first!
 
    QString optionFormatString   = "  %1 %2\n";
@@ -834,21 +806,21 @@ KCmdLineArgs::usage(const char *id)
    QString tmp;
    QString usage;
 
-   KCmdLineArgs *args = argsList->last();
+   KCmdLineArgsList::Iterator args = --(argsList->end());
 
-   if (!(args->id) && (args->options) &&
-       (args->options->name) && (args->options->name[0] != '+'))
+   if (!((*args)->id) && ((*args)->options) &&
+       ((*args)->options->name) && ((*args)->options->name[0] != '+'))
    {
       usage = i18n("[options] ")+usage;
    }
 
-   while(args)
+   while(args != argsList->begin())
    {
-      if (args->name)
+      if ((*args)->name)
       {
-         usage = i18n("[%1-options]").arg(args->name)+" "+usage;
+         usage = i18n("[%1-options]").arg((*args)->name)+" "+usage;
       }
-      args = argsList->prev();
+      --args;
    }
 
    KCmdLineArgs *appOptions = argsList->last();
@@ -872,17 +844,17 @@ KCmdLineArgs::usage(const char *id)
    printQ(optionHeaderString.arg(i18n("Generic options")));
    printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
 
-   args = argsList->first();
-   while(args)
+   args = argsList->begin();
+   while(args != argsList->end())
    {
-      if (args->name && args->id)
+      if ((*args)->name && (*args)->id)
       {
-         QString option = QString("--help-%1").arg(args->id);
-         QString desc = i18n("Show %1 specific options").arg(args->name);
+         QString option = QString("--help-%1").arg((*args)->id);
+         QString desc = i18n("Show %1 specific options").arg((*args)->name);
 
          printQ(optionFormatString.arg(option, -25).arg(desc));
       }
-      args = argsList->next();
+      ++args;
    }
 
    printQ(optionFormatString.arg("--help-all",-25).arg(i18n("Show all options")));
@@ -891,35 +863,35 @@ KCmdLineArgs::usage(const char *id)
    printQ(optionFormatString.arg("--license",-25).arg(i18n("Show license information")));
    printQ(optionFormatString.arg("--", -25).arg(i18n("End of options")));
 
-   args = argsList->first(); // Sets current to 1st.
+   args = argsList->begin(); // Sets current to 1st.
 
    bool showAll = id && (::qstrcmp(id, "all") == 0);
 
    if (!showAll)
    {
-     while(args)
+     while(args != argsList->end())
      {
-       if (!id && !args->id) break;
-       if (id && (::qstrcmp(args->id, id) == 0)) break;
-       args = argsList->next();
+       if (!id && !(*args)->id) break;
+       if (id && (::qstrcmp((*args)->id, id) == 0)) break;
+       ++args;
      }
    }
 
-   while(args)
+   while(args != argsList->end())
    {
      bool hasArgs = false;
      bool hasOptions = false;
      QString optionsHeader;
-     if (args->name)
-        optionsHeader = optionHeaderString.arg(i18n("%1 options").arg(QLatin1String(args->name)));
+     if ((*args)->name)
+        optionsHeader = optionHeaderString.arg(i18n("%1 options").arg(QLatin1String((*args)->name)));
      else
         optionsHeader = i18n("\nOptions:\n");
 
-     while (args)
+     while (args != argsList->end())
      {
-       const KCmdLineOptions *option = args->options;
+       const KCmdLineOptions *option = (*args)->options;
        QByteArray opt = "";
-//
+
        while(option && option->name)
        {
          QString description;
@@ -945,7 +917,7 @@ KCmdLineArgs::usage(const char *id)
          {
             if (option->description)
             {
-               QString tmp = "\n"+i18n(option->description);
+               tmp = "\n"+i18n(option->description);
                if (!tmp.endsWith("\n"))
                   tmp.append("\n");
                printQ(tmp);
@@ -960,7 +932,7 @@ KCmdLineArgs::usage(const char *id)
             description = i18n(option->description);
             dl = description.split( "\n", QString::KeepEmptyParts);
             description = dl.first();
-            dl.remove( dl.begin() );
+            dl.erase( dl.begin() );
          }
          QByteArray name = option->name;
          if (name[0] == '!')
@@ -976,9 +948,9 @@ KCmdLineArgs::usage(const char *id)
 
             name = name.mid(1);
             if ((name[0] == '[') && (name[name.length()-1] == ']'))
-         name = name.mid(1, name.length()-2);
+                name = name.mid(1, name.length()-2);
             printQ(optionFormatString.arg(QString( name ), -25)
-     .arg(description));
+                                     .arg(description));
          }
          else
          {
@@ -1021,8 +993,9 @@ KCmdLineArgs::usage(const char *id)
 
          option++;
        }
-       args = argsList->next();
-       if (!args || args->name || !args->id) break;
+       ++args;
+       if (args == argsList->end() || (*args)->name == 0 || (*args)->id == 0)
+        break;
      }
      if (!showAll) break;
    }
@@ -1056,7 +1029,7 @@ KCmdLineArgs::~KCmdLineArgs()
   delete parsedOptionList;
   delete parsedArgList;
   if (argsList)
-     argsList->removeRef(this);
+     argsList->removeAll(this);
 }
 
 void
@@ -1072,8 +1045,6 @@ void
 KCmdLineArgs::reset()
 {
    if ( argsList ) {
-      argsList->setAutoDelete( true );
-      argsList->clear();
       delete argsList;
       argsList = 0;
    }
@@ -1083,16 +1054,15 @@ KCmdLineArgs::reset()
 void
 KCmdLineArgs::save( QDataStream &ds) const
 {
-   uint count = 0;
    if (parsedOptionList)
-      parsedOptionList->save( ds );
+      ds << (*parsedOptionList);
    else
-      ds << count;
+      ds << quint32(0);
 
    if (parsedArgList)
-      parsedArgList->save( ds );
+      ds << (*parsedArgList);
    else
-      ds << count;
+      ds << quint32(0);
 }
 
 void
@@ -1101,8 +1071,8 @@ KCmdLineArgs::load( QDataStream &ds)
    if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
    if (!parsedArgList) parsedArgList = new KCmdLineParsedArgs;
 
-   parsedOptionList->load( ds );
-   parsedArgList->load( ds );
+   ds >> (*parsedOptionList);
+   ds >> (*parsedArgList);
 
    if (parsedOptionList->count() == 0)
    {
@@ -1122,21 +1092,20 @@ KCmdLineArgs::setOption(const QByteArray &opt, bool enabled)
    if (isQt)
    {
       // Qt does it own parsing.
-      QByteArray arg = "-";
+      QByteArray argString = "-";
       if( !enabled )
-          arg += "no";
-      arg += opt;
-      addArgument(arg);
+          argString += "no";
+      argString += opt;
+      addArgument(argString);
    }
    if (!parsedOptionList) {
   parsedOptionList = new KCmdLineParsedOptions;
-  parsedOptionList->setAutoDelete(true);
    }
 
    if (enabled)
-      parsedOptionList->replace( opt, new QByteArray("t") );
+      parsedOptionList->insert( opt, QByteArray("t") );
    else
-      parsedOptionList->replace( opt, new QByteArray("f") );
+      parsedOptionList->insert( opt, QByteArray("f") );
 }
 
 void
@@ -1145,14 +1114,14 @@ KCmdLineArgs::setOption(const QByteArray &opt, const char *value)
    if (isQt)
    {
       // Qt does it's own parsing.
-      QByteArray arg = "-";
-      arg += opt;
-      addArgument(arg);
+      QByteArray argString = "-";
+      argString += opt;
+      addArgument(argString);
       addArgument(value);
 
 #ifdef Q_WS_X11
       // Hack coming up!
-      if (arg == "-display")
+      if (argString == "-display")
       {
          setenv(DISPLAY, value, true);
       }
@@ -1160,23 +1129,22 @@ KCmdLineArgs::setOption(const QByteArray &opt, const char *value)
    }
    if (!parsedOptionList) {
   parsedOptionList = new KCmdLineParsedOptions;
-  parsedOptionList->setAutoDelete(true);
    }
 
-   parsedOptionList->insert( opt, new QByteArray(value) );
+   parsedOptionList->insert( opt, value );
 }
 
 QByteArray
 KCmdLineArgs::getOption(const char *_opt) const
 {
-   QByteArray *value = 0;
+   QByteArray value;
    if (parsedOptionList)
    {
-      value = parsedOptionList->find(_opt);
+      value = parsedOptionList->value(_opt);
    }
 
-   if (value)
-      return (*value);
+   if (!value.isEmpty())
+      return value;
 
    // Look up the default.
    const char *opt_name;
@@ -1192,7 +1160,7 @@ KCmdLineArgs::getOption(const char *_opt) const
                       _opt, _opt);
       fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
 
-      assert( 0 );
+      Q_ASSERT( 0 );
       exit(255);
    }
    return QByteArray(def);
@@ -1207,11 +1175,10 @@ KCmdLineArgs::getOptionList(const char *_opt) const
 
    while(true)
    {
-      QByteArray *value = parsedOptionList->take(_opt);
-      if (!value)
+      QByteArray value = parsedOptionList->take(_opt);
+      if (value.isEmpty())
          break;
-      result.prepend(*value);
-      delete value;
+      result.prepend(value);
    }
 
    // Reinsert items in dictionary
@@ -1223,7 +1190,7 @@ KCmdLineArgs::getOptionList(const char *_opt) const
        it != result.end();
        ++it)
    {
-      parsedOptionList->insert(_opt, new QByteArray(*it));
+      parsedOptionList->insert(_opt, QByteArray(*it));
    }
    return result;
 }
@@ -1245,22 +1212,22 @@ KCmdLineArgs::isSet(const char *_opt) const
                       _opt, _opt);
       fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
 
-      assert( 0 );
+      Q_ASSERT( 0 );
       exit(255);
    }
 
-   QByteArray *value = 0;
+   QByteArray value;
    if (parsedOptionList)
    {
-      value = parsedOptionList->find(opt);
+      value = parsedOptionList->value(opt);
    }
 
-   if (value)
+   if (!value.isEmpty())
    {
       if (result == 3)
          return true;
       else
-         return ((*value)[0] == 't');
+         return (value[0] == 't');
    }
 
    if (result == 3)
@@ -1288,7 +1255,7 @@ KCmdLineArgs::arg(int n) const
       fprintf(stderr, "Application requests for arg(%d) without checking count() first.\n",
                       n);
 
-      assert( 0 );
+      Q_ASSERT( 0 );
       exit(255);
    }
 

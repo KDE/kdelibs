@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
+#include <kurl.h>
 
 static KCmdLineOptions options[] =
 {

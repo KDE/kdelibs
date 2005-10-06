@@ -51,6 +51,7 @@
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
 #include <kwin.h>
+#include <kurl.h>
 
 #include <config.h>
 

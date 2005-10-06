@@ -36,6 +36,7 @@
 #include <kaboutdata.h>
 #include <kinstance.h>
 #include <ktempfile.h>
+#include <kurl.h>
 
 static KCmdLineOptions options[] =
 {
