@@ -1,5 +1,34 @@
 bksys on win32/mingw development notes
 
+2005-10-06 Ralf Habacker 
+- encountered two problems today 
+
+	1. library dependency ordering 
+	
+	dcop/SConscript contains 
+	
+	obj.libs = ['../dcop/KDE-ICE/libkICE.a','../win/libkdewin32.la','/usr/lib/w32api/libwsock32.a']
+	
+	the real link is ordered like 	-lkdewin32 -lkICE -lwsock32 and there is no possibility to change the ordering 
+	
+	-> the problem is located genobj.execute() where shared libs and static are splitted and independently added as dependency 
+	
+
+	2. wrong output dir of import library - win32/detect_generic.py:bksys_shlib requires the recent library output dir 
+			currently no idea where to get from 
+	
+	3. bksys requires .a and .la extension in genobj.libs attribute, which isn't platform independent 
+	
+		obj.libs = ['../dcop/KDE-ICE/libkICE.a','/usr/lib/w32api/libwsock32.a','../win/libkdewin32.la']
+		
+		if someone changes a library from static to shared and vice versa, all references must be changed 
+		-> there must be used .la files at all or 
+				- static libraries must be extended with .la file creation 
+			the library name without the extension and prefix 
+				- ['/usr/xxx/lib','mylib']  (is it possible to define sub lists e.g. ['liba',['pathb',libb']] )
+				- ['mylib'] using LIBPATH
+
+
 2005-10-05 Ralf Habacker 
 - shared library could be build with gcc, the only problem is that the import library will not be 
   deleted when running scons -c (file seems not to be registrated by scons, install will probably fail too) 
@@ -38,9 +67,10 @@ bksys on win32/mingw development notes
 
 
 - update configure command to 
-		QTDIR=/c/Qt/4.0.1 CFLAGS="-mno-cygwin " CXXFLAGS="-mno-cygwin -DUNICODE -DQT_LARGEFILE_SUPPORT \
-	  -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -I$QTDIR/include" \
-	  LDFLAGS="-mno-cygwin" scons configure
+		export QTDIR=/c/Qt/4.0.1 
+CFLAGS="-mno-cygwin " CXXFLAGS="-mno-cygwin -DUNICODE -DQT_LARGEFILE_SUPPORT \
+-DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -I$QTDIR/include" \
+LDFLAGS="-mno-cygwin" scons configure
 	
 	the qt definitions are required because detect_qt4.py does not provide them 
 	
