@@ -1,5 +1,22 @@
 bksys on win32/mingw development notes
 
+2005-10-07 Ralf Habacker 
+- mingw linker seems to export symbols from imported static libraries, which results in twice defined symbols in some cases 
+	
+	libDCOP uses kICE uses kdewin32 
+	dcop.exe uses libDCOP and kdewin32 -> linking failed 
+	
+- _Winmain undefined errors  ->  worarkound by using a specific WinMain to main converter, qt has such support
+	currently don't know ho to use 
+
+- configure debug=1 does not set -g option for c code in cache/generic.cache.py (gcc compile line  is okay, g++ has to -g options)
+
+- only with one manual intervention (moving libDCOP.a into the right place, see 2005-10-06.2) libdcop, dcopserver and dcop tools could be build 
+	-> dcopserver segfaults
+	-> dcopfind could be started 
+
+
+
 2005-10-06 Ralf Habacker 
 - encountered two problems today 
 
