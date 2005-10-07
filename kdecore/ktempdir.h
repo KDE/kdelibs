@@ -121,7 +121,6 @@ public:
     * and has not been unlinked yet.
     */
    bool exists() const;
-   bool existing() const KDE_DEPRECATED;
 
 protected:
 
@@ -144,8 +143,5 @@ private:
    class Private;
    Private *const d;
 };
-
-// KDE4
-bool KTempDir::existing() const { return exists(); }
 
 #endif
