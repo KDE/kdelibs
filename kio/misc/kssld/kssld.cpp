@@ -623,8 +623,8 @@ void KSSLD::caVerifyUpdate() {
 		return;
 	
 	cfg->setGroup(QString::null);
-	Q_UINT32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
-	Q_UINT32 oldStamp = cfg->readUnsignedNumEntry("ksslcalistStamp");
+	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
+	quint32 oldStamp = cfg->readUnsignedNumEntry("ksslcalistStamp");
 	if (oldStamp != newStamp)
 	{
 		caRegenerate();

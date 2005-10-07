@@ -126,7 +126,7 @@ KServiceType::KServiceType( QDataStream& _str, int offset )
 void
 KServiceType::load( QDataStream& _str )
 {
-  Q_INT8 b;
+  qint8 b;
   _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
        >> b;
   m_bValid = b;
@@ -141,7 +141,7 @@ KServiceType::save( QDataStream& _str )
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs
-       << (Q_INT8)m_bValid;
+       << (qint8)m_bValid;
 }
 
 KServiceType::~KServiceType()

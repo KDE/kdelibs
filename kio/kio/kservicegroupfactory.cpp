@@ -36,7 +36,7 @@ KServiceGroupFactory::KServiceGroupFactory()
    if (m_str)
    {
       // Read Header
-      Q_INT32 i;
+      qint32 i;
       (*m_str) >> i;
       m_baseGroupDictOffset = i;
 

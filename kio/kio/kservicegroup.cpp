@@ -204,11 +204,11 @@ QStringList KServiceGroup::suppressGenericNames() const
 void KServiceGroup::load( QDataStream& s )
 {
   QStringList groupList;
-  Q_INT8 noDisplay;
-  Q_INT8 _showEmptyMenu;
-  Q_INT8 inlineHeader;
-  Q_INT8 _inlineAlias;
-  Q_INT8 _allowInline;
+  qint8 noDisplay;
+  qint8 _showEmptyMenu;
+  qint8 inlineHeader;
+  qint8 _inlineAlias;
+  qint8 _allowInline;
   s >> m_strCaption >> m_strIcon >>
       m_strComment >> groupList >> m_strBaseGroupName >> m_childCount >>
       noDisplay >> d->suppressGenericNames >> d->directoryEntryPath >>
@@ -276,11 +276,11 @@ void KServiceGroup::save( QDataStream& s )
 
   (void) childCount();
 
-  Q_INT8 noDisplay = d->m_bNoDisplay ? 1 : 0;
-  Q_INT8 _showEmptyMenu = d->m_bShowEmptyMenu ? 1 : 0;
-  Q_INT8 inlineHeader = d->m_bShowInlineHeader ? 1 : 0;
-  Q_INT8 _inlineAlias = d->m_bInlineAlias ? 1 : 0;
-  Q_INT8 _allowInline = d->m_bAllowInline ? 1 : 0;
+  qint8 noDisplay = d->m_bNoDisplay ? 1 : 0;
+  qint8 _showEmptyMenu = d->m_bShowEmptyMenu ? 1 : 0;
+  qint8 inlineHeader = d->m_bShowInlineHeader ? 1 : 0;
+  qint8 _inlineAlias = d->m_bInlineAlias ? 1 : 0;
+  qint8 _allowInline = d->m_bAllowInline ? 1 : 0;
   s << m_strCaption << m_strIcon <<
       m_strComment << groupList << m_strBaseGroupName << m_childCount <<
       noDisplay << d->suppressGenericNames << d->directoryEntryPath <<

@@ -6,7 +6,7 @@
 typedef struct des_key
 {
   char kn[16][8];
-  Q_UINT32 sp[8][64];
+  quint32 sp[8][64];
   char iperm[16][16][8];
   char fperm[16][16][8];
 } DES_KEY;

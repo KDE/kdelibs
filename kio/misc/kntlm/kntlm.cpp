@@ -84,13 +84,13 @@ void KNTLM::addBuf( QByteArray &buf, SecBuf &secbuf, QByteArray &data )
   memcpy( buf.data() + secbuf.offset, data.data(), data.size() );
 }
 
-bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QString &workstation, Q_UINT32 flags )
+bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QString &workstation, quint32 flags )
 {
   QByteArray rbuf( sizeof(Negotiate) );
   
   rbuf.fill( 0 );
   memcpy( rbuf.data(), "NTLMSSP", 8 );
-  ((Negotiate*) rbuf.data())->msgType = KFromToLittleEndian( (Q_UINT32)1 );
+  ((Negotiate*) rbuf.data())->msgType = KFromToLittleEndian( (quint32)1 );
   if ( !domain.isEmpty() ) {
     flags |= Negotiate_Domain_Supplied;
     addString( rbuf, ((Negotiate*) rbuf.data())->domain, domain );
@@ -126,7 +126,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
     
   rbuf.fill( 0 );
   memcpy( rbuf.data(), "NTLMSSP", 8 );
-  ((Auth*) rbuf.data())->msgType = KFromToLittleEndian( (Q_UINT32)3 );
+  ((Auth*) rbuf.data())->msgType = KFromToLittleEndian( (quint32)3 );
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
@@ -289,10 +289,10 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
   blob.fill( 0 );
   
   Blob *bl = (Blob *) blob.data();
-  bl->signature = KFromToBigEndian( (Q_UINT32) 0x01010000 );
-  Q_UINT64 now = QDateTime::currentDateTime().toTime_t();
-  now += (Q_UINT64)3600*(Q_UINT64)24*(Q_UINT64)134774;
-  now *= (Q_UINT64)10000000;
+  bl->signature = KFromToBigEndian( (quint32) 0x01010000 );
+  quint64 now = QDateTime::currentDateTime().toTime_t();
+  now += (quint64)3600*(quint64)24*(quint64)134774;
+  now *= (quint64)10000000;
   bl->timestamp = KFromToLittleEndian( now );
   for ( uint i = 0; i<8; i++ ) {
     bl->challenge[i] = KRandom::random() % 0xff;
@@ -303,7 +303,7 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
 
 QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
 {
-  Q_UINT8 ipad[64], opad[64];
+  quint8 ipad[64], opad[64];
   KMD5::Digest digest;
   QByteArray ret;
   
@@ -365,7 +365,7 @@ QByteArray KNTLM::QString2UnicodeLE( const QString &target )
 {
   QByteArray unicode( target.length() * 2 );
   for ( int i = 0; i < target.length(); i++ ) {
-    ((Q_UINT16*)unicode.data())[ i ] = KFromToLittleEndian( target[i].unicode() );
+    ((quint16*)unicode.data())[ i ] = KFromToLittleEndian( target[i].unicode() );
   }
   return unicode;
 }

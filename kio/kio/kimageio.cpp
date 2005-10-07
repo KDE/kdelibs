@@ -65,7 +65,7 @@ KImageIOFormat::~KImageIOFormat()
 void
 KImageIOFormat::load( QDataStream& _str)
 {
-   Q_INT8 iRead, iWrite;
+   qint8 iRead, iWrite;
    KSycocaEntry::read(_str, mType);
    KSycocaEntry::read(_str, mHeader);
    KSycocaEntry::read(_str, mFlags);
@@ -83,8 +83,8 @@ void
 KImageIOFormat::save( QDataStream& _str)
 {
    KSycocaEntry::save( _str );
-   Q_INT8 iRead = bRead ? 1 : 0;
-   Q_INT8 iWrite = bWrite ? 1 : 0;
+   qint8 iRead = bRead ? 1 : 0;
+   qint8 iWrite = bWrite ? 1 : 0;
 
    _str << mType << mHeader << mFlags << iRead << iWrite
         << mSuffices << mMimetype << mLib << mPattern << rPaths;

@@ -1292,7 +1292,7 @@ QByteArray UIServer::open_RenameDlg64( int id,
   kdDebug(7024) << "KIO::open_RenameDlg done" << endl;
   QByteArray data;
   QDataStream stream( &data, QIODevice::WriteOnly );
-  stream << Q_UINT8(result) << newDest;
+  stream << quint8(result) << newDest;
   if ( item && result != KIO::R_CANCEL )
     setItemVisible( item, true );
   return data;

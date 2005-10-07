@@ -727,7 +727,7 @@ SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 SimpleJob *KIO::rmdir( const KURL& url )
 {
     //kdDebug(7007) << "rmdir " << url << endl;
-    KIO_ARGS << url << Q_INT8(false); // isFile is false
+    KIO_ARGS << url << qint8(false); // isFile is false
     return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
 
@@ -741,14 +741,14 @@ SimpleJob *KIO::chmod( const KURL& url, int permissions )
 SimpleJob *KIO::rename( const KURL& src, const KURL & dest, bool overwrite )
 {
     //kdDebug(7007) << "rename " << src << " " << dest << endl;
-    KIO_ARGS << src << dest << (Q_INT8) overwrite;
+    KIO_ARGS << src << dest << (qint8) overwrite;
     return new SimpleJob(src, CMD_RENAME, packedArgs, false);
 }
 
 SimpleJob *KIO::symlink( const QString& target, const KURL & dest, bool overwrite, bool showProgressInfo )
 {
     //kdDebug(7007) << "symlink target=" << target << " " << dest << endl;
-    KIO_ARGS << target << dest << (Q_INT8) overwrite;
+    KIO_ARGS << target << dest << (qint8) overwrite;
     return new SimpleJob(dest, CMD_SYMLINK, packedArgs, showProgressInfo);
 }
 
@@ -760,7 +760,7 @@ SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgr
 
 SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo )
 {
-    KIO_ARGS << int(1) << Q_INT8( ro ? 1 : 0 )
+    KIO_ARGS << int(1) << qint8( ro ? 1 : 0 )
              << QString::fromLatin1(fstype) << dev << point;
     SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
@@ -966,7 +966,7 @@ void TransferJob::slotFinished()
             }
             case CMD_PUT: {
                 int permissions;
-                Q_INT8 iOverwrite, iResume;
+                qint8 iOverwrite, iResume;
                 istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                 m_packedArgs.truncate(0);
                 QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
@@ -1349,7 +1349,7 @@ void TransferJob::slotPostRedirection()
 TransferJob *KIO::put( const KURL& url, int permissions,
                   bool overwrite, bool resume, bool showProgressInfo )
 {
-    KIO_ARGS << url << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions;
+    KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
     TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
     return job;
 }
@@ -1420,7 +1420,7 @@ StoredTransferJob *KIO::storedGet( const KURL& url, bool reload, bool showProgre
 StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KURL& url, int permissions,
                                    bool overwrite, bool resume, bool showProgressInfo )
 {
-    KIO_ARGS << url << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions;
+    KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
     StoredTransferJob * job = new StoredTransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
     job->setData( arr );
     return job;
@@ -1625,7 +1625,7 @@ void FileCopyJob::startCopyJob()
 void FileCopyJob::startCopyJob(const KURL &slave_url)
 {
     //kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
-    KIO_ARGS << m_src << m_dest << m_permissions << (Q_INT8) m_overwrite;
+    KIO_ARGS << m_src << m_dest << m_permissions << (qint8) m_overwrite;
     m_copyJob = new DirectCopyJob(slave_url, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
@@ -1635,7 +1635,7 @@ void FileCopyJob::startCopyJob(const KURL &slave_url)
 
 void FileCopyJob::startRenameJob(const KURL &slave_url)
 {
-    KIO_ARGS << m_src << m_dest << (Q_INT8) m_overwrite;
+    KIO_ARGS << m_src << m_dest << (qint8) m_overwrite;
     m_moveJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
     addSubjob( m_moveJob );
     connectSubjob( m_moveJob );
@@ -1925,7 +1925,7 @@ FileCopyJob *KIO::file_move( const KURL& src, const KURL& dest, int permissions,
 
 SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 {
-    KIO_ARGS << src << Q_INT8(true); // isFile
+    KIO_ARGS << src << qint8(true); // isFile
     return new SimpleJob(src, CMD_DEL, packedArgs, showProgressInfo );
 }
 
@@ -2650,7 +2650,7 @@ void CopyJob::startRenameJob( const KURL& slave_url )
     files.append(info);
     emit aboutToCreate( this, files );
 
-    KIO_ARGS << m_currentSrcURL << dest << (Q_INT8) false /*no overwrite*/;
+    KIO_ARGS << m_currentSrcURL << dest << (qint8) false /*no overwrite*/;
     SimpleJob * newJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
     Scheduler::scheduleJob(newJob);
     addSubjob( newJob );
@@ -4146,7 +4146,7 @@ void MultiGetJob::flushQueue(Q3PtrList<GetRequest> &queue)
       }
    }
    // Send number of URLs, (URL, metadata)*
-   KIO_ARGS << (Q_INT32) queue.count();
+   KIO_ARGS << (qint32) queue.count();
    for(entry = queue.first(); entry; entry = queue.next())
    {
       stream << entry->url << entry->metaData;

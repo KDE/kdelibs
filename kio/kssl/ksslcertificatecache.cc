@@ -381,13 +381,13 @@ KSSLCertificate *KSSLCertificateCache::getCertByMD5Digest(const QString &key) {
 
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
-  s << (Q_UINT32)p;
+  s << (quint32)p;
 return s;
 }
 
 
 QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p) {
-  Q_UINT32 pd;
+  quint32 pd;
   s >> pd;
   p = (KSSLCertificateCache::KSSLCertificatePolicy) pd;
   return s;

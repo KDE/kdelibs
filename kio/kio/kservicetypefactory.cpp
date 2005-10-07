@@ -39,7 +39,7 @@ KServiceTypeFactory::KServiceTypeFactory()
    if (m_str)
    {
       // Read Header
-      Q_INT32 i,n;
+      qint32 i,n;
       (*m_str) >> i;
       m_fastPatternOffset = i;
       (*m_str) >> i;
@@ -120,19 +120,19 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    str->device()->at( m_fastPatternOffset );
 
-   Q_INT32 nrOfEntries;
+   qint32 nrOfEntries;
    (*str) >> nrOfEntries;
-   Q_INT32 entrySize;
+   qint32 entrySize;
    (*str) >> entrySize;
 
-   Q_INT32 fastOffset =  str->device()->at( );
+   qint32 fastOffset =  str->device()->at( );
 
-   Q_INT32 matchingOffset = 0;
+   qint32 matchingOffset = 0;
 
    // Let's go for a binary search in the "fast" pattern index
-   Q_INT32 left = 0;
-   Q_INT32 right = nrOfEntries - 1;
-   Q_INT32 middle;
+   qint32 left = 0;
+   qint32 right = nrOfEntries - 1;
+   qint32 middle;
    // Extract extension
    int lastDot = _filename.lastIndexOf('.');
    int ext_len = _filename.length() - lastDot - 1;
@@ -169,7 +169,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
       str->device()->at( m_otherPatternOffset );
 
       QString pattern;
-      Q_INT32 mimetypeOffset;
+      qint32 mimetypeOffset;
 
       while (true)
       {
@@ -186,7 +186,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    QStringList::const_iterator it = m_patterns.begin();
    QStringList::const_iterator end = m_patterns.end();
-   QVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
+   QVector<qint32>::const_iterator it_offset = m_pattern_offsets.begin();
 
   for ( ; it != end; ++it, ++it_offset )
    {

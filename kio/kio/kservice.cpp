@@ -289,11 +289,11 @@ void KService::load( QDataStream& s )
   // dummies are here because of fields that were removed, to keep bin compat.
   // Feel free to re-use, but fields for Applications only (not generic services)
   // should rather be added to application.desktop
-  Q_INT8 def, term, dummy1, dummy2;
-  Q_INT8 dst, initpref;
+  qint8 def, term, dummy1, dummy2;
+  qint8 dst, initpref;
   QString dummyStr1, dummyStr2;
   int dummyI1, dummyI2;
-  Q_UINT32 dummyUI32;
+  quint32 dummyUI32;
 
   // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
   // !! This data structure should remain binary compatible at all times !!
@@ -320,13 +320,13 @@ void KService::load( QDataStream& s )
 void KService::save( QDataStream& s )
 {
   KSycocaEntry::save( s );
-  Q_INT8 def = m_bAllowAsDefault, initpref = m_initialPreference;
-  Q_INT8 term = m_bTerminal;
-  Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
-  Q_INT8 dummy1 = 0, dummy2 = 0; // see ::load
+  qint8 def = m_bAllowAsDefault, initpref = m_initialPreference;
+  qint8 term = m_bTerminal;
+  qint8 dst = (qint8) m_DCOPServiceType;
+  qint8 dummy1 = 0, dummy2 = 0; // see ::load
   QString dummyStr1, dummyStr2;
   int dummyI1 = 0, dummyI2 = 0;
-  Q_UINT32 dummyUI32 = 0;
+  quint32 dummyUI32 = 0;
 
   // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
   // !! This data structure should remain binary compatible at all times !!

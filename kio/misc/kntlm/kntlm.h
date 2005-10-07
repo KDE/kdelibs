@@ -70,9 +70,9 @@ public:
 
   typedef struct
   {
-    Q_UINT16 len;
-    Q_UINT16 maxlen;
-    Q_UINT32 offset;
+    quint16 len;
+    quint16 maxlen;
+    quint32 offset;
   } SecBuf;
 
   /**
@@ -81,8 +81,8 @@ public:
   typedef struct
   {
     char signature[8]; /* "NTLMSSP\0" */
-    Q_UINT32 msgType; /* 1 */
-    Q_UINT32 flags;
+    quint32 msgType; /* 1 */
+    quint32 flags;
     SecBuf domain;
     SecBuf workstation;
   } Negotiate;
@@ -93,11 +93,11 @@ public:
   typedef struct
   {
     char signature[8];
-    Q_UINT32 msgType; /* 2 */
+    quint32 msgType; /* 2 */
     SecBuf targetName;
-    Q_UINT32 flags;
-    Q_UINT8 challengeData[8];
-    Q_UINT32 context[2];
+    quint32 flags;
+    quint8 challengeData[8];
+    quint32 context[2];
     SecBuf targetInfo;
   } Challenge;
 
@@ -107,23 +107,23 @@ public:
   typedef struct
   {
     char signature[8];
-    Q_UINT32 msgType; /* 3 */
+    quint32 msgType; /* 3 */
     SecBuf lmResponse;
     SecBuf ntResponse;
     SecBuf domain;
     SecBuf user;
     SecBuf workstation;
     SecBuf sessionKey;
-    Q_UINT32 flags;
+    quint32 flags;
   } Auth;
   
   typedef struct
   {
-    Q_UINT32 signature;
-    Q_UINT32 reserved;
-    Q_UINT64 timestamp;
-    Q_UINT8  challenge[8];
-    Q_UINT8  unknown[4];
+    quint32 signature;
+    quint32 reserved;
+    quint64 timestamp;
+    quint8  challenge[8];
+    quint8  unknown[4];
     //Target info block - variable length
   } Blob;
 
@@ -139,7 +139,7 @@ public:
    */
   static bool getNegotiate( QByteArray &negotiate, const QString &domain = QString::null, 
     const QString &workstation = QString::null,
-    Q_UINT32 flags = Negotiate_Unicode | Request_Target | Negotiate_NTLM );
+    quint32 flags = Negotiate_Unicode | Request_Target | Negotiate_NTLM );
   /**
    * Creates the type 3 message which should be sent to the server after 
    * the challenge (type 2) received.

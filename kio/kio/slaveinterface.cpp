@@ -41,7 +41,7 @@ QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
     const KIO::UDSEntry::ConstIterator end = e.end();
     for( ; it != end; ++it )
     {
-        const Q_UINT32 uds = it.key();
+        const quint32 uds = it.key();
         s << uds;
         if ( uds & KIO::UDS_STRING )
             s << it.value().toString();
@@ -56,11 +56,11 @@ QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
 QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
 {
     e.clear();
-    Q_UINT32 size;
+    quint32 size;
     s >> size;
-    for( Q_UINT32 i = 0; i < size; ++i )
+    for( quint32 i = 0; i < size; ++i )
     {
-        Q_UINT32 uds;
+        quint32 uds;
         s >> uds;
         if (uds & KIO::UDS_STRING) {
             QString str;
@@ -199,9 +199,9 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     QDataStream stream( rawdata );
 
     QString str1;
-    Q_INT32 i;
-    Q_INT8 b;
-    Q_UINT32 ul;
+    qint32 i;
+    qint8 b;
+    quint32 ul;
 
     switch( _cmd ) {
     case MSG_DATA:
@@ -225,7 +225,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_LIST_ENTRIES:
 	{
-	    Q_UINT32 count;
+	    quint32 count;
 	    stream >> count;
 
 	    UDSEntryList list;

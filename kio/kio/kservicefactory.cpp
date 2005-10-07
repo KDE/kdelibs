@@ -40,7 +40,7 @@ KServiceFactory::KServiceFactory()
    if (m_str)
    {
       // Read Header
-      Q_INT32 i;
+      qint32 i;
       (*m_str) >> i;
       m_nameDictOffset = i;
       (*m_str) >> i;
@@ -226,10 +226,10 @@ KService::List KServiceFactory::allInitServices()
    // Assume we're NOT building a database
 
    m_str->device()->at(m_initListOffset);
-   Q_INT32 entryCount;
+   qint32 entryCount;
    (*m_str) >> entryCount;
 
-   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   qint32 *offsetList = new qint32[entryCount];
    for(int i = 0; i < entryCount; i++)
    {
       (*m_str) >> offsetList[i];
@@ -255,8 +255,8 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
    // Jump to the offer list
    str->device()->at( m_offerListOffset );
 
-   Q_INT32 aServiceTypeOffset;
-   Q_INT32 aServiceOffset;
+   qint32 aServiceTypeOffset;
+   qint32 aServiceOffset;
    // We might want to do a binary search instead of a linear search
    // since servicetype offsets are sorted. Bah.
    while (true)
@@ -275,7 +275,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
                 list.append( KService::Ptr( serv ) );
             // Restore position
             str->device()->at( savedPos );
-         } else if ( aServiceTypeOffset > (Q_INT32)serviceTypeOffset )
+         } else if ( aServiceTypeOffset > (qint32)serviceTypeOffset )
             break; // too far
       }
       else

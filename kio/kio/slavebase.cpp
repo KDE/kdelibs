@@ -421,7 +421,7 @@ void SlaveBase::error( int _errid, const QString &_text )
 {
     mIncomingMetaData.clear(); // Clear meta data
     mOutgoingMetaData.clear();
-    KIO_DATA << (Q_INT32) _errid << _text;
+    KIO_DATA << (qint32) _errid << _text;
 
     m_pConnection->send( MSG_ERROR, data );
     //reset
@@ -458,7 +458,7 @@ void SlaveBase::needSubURLData()
 void SlaveBase::slaveStatus( const QString &host, bool connected )
 {
     pid_t pid = getpid();
-    Q_INT8 b = connected ? 1 : 0;
+    qint8 b = connected ? 1 : 0;
     KIO_DATA << pid << mProtocol << host << b;
     if (d->onHold)
        stream << d->onHoldUrl;
@@ -530,7 +530,7 @@ void SlaveBase::processedPercent( float /* percent */ )
 
 void SlaveBase::speed( unsigned long _bytes_per_second )
 {
-    KIO_DATA << (Q_UINT32) _bytes_per_second;
+    KIO_DATA << (quint32) _bytes_per_second;
     slaveWriteError = false;
     m_pConnection->send( INF_SPEED, data );
     if (slaveWriteError) exit();
@@ -687,7 +687,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    KIO_DATA << (Q_UINT32)list.count();
+    KIO_DATA << (quint32)list.count();
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
@@ -872,7 +872,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
     kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
-    KIO_DATA << (Q_INT32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
+    KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
@@ -1022,7 +1022,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_PUT:
     {
         int permissions;
-        Q_INT8 iOverwrite, iResume;
+        qint8 iOverwrite, iResume;
         stream >> url >> iOverwrite >> iResume >> permissions;
         bool overwrite = ( iOverwrite != 0 );
         bool resume = ( iResume != 0 );
@@ -1052,7 +1052,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_RENAME:
     {
-        Q_INT8 iOverwrite;
+        qint8 iOverwrite;
         KURL url2;
         stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -1060,7 +1060,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     } break;
     case CMD_SYMLINK:
     {
-        Q_INT8 iOverwrite;
+        qint8 iOverwrite;
         QString target;
         stream >> target >> url >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -1069,7 +1069,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_COPY:
     {
         int permissions;
-        Q_INT8 iOverwrite;
+        qint8 iOverwrite;
         KURL url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -1077,7 +1077,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     } break;
     case CMD_DEL:
     {
-        Q_INT8 isFile;
+        qint8 isFile;
         stream >> url >> isFile;
         del( url, isFile != 0);
     } break;
