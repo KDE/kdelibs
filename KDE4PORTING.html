@@ -85,6 +85,14 @@ by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 by QX11Info::display()</li>
 <li>cut,copy,paste, clear and selectAll were moved to KStdAction</li>
 <li>guiEnabled() was removed, QApplication::type() should be used instead.</li>
+<li>geometryArgument was removed, please use:
+<pre>
+ QString geometry;
+ KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+ if (args->isSet("geometry"))
+    geometry = args->getOption("geometry");
+</pre>
+</li>
 </ul>
 
 <H4>KCatalogue</H4>

@@ -197,7 +197,7 @@ public:
    *    Note that this may mean the config object returned by
    * sessionConfig() contains data saved by a session closedown.
    * @see sessionConfig()
-   * @deprecated use QApplication::isSessionRestored()
+   * @deprecated use qApp->isSessionRestored()
    */
   KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
@@ -499,7 +499,7 @@ public:
    */
   void removeX11EventFilter( const QWidget* filter );
 
-#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
+#ifdef QT3_SUPPORT
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
@@ -578,12 +578,23 @@ public:
    */
   void updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time = 0 );
 
+#ifdef QT3_SUPPORT
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
     * @return the geometry argument, or QString::null if there is none
+    * @deprecated please use the following code instead:
+    *
+    * <code>
+    * QString geometry;
+    * KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    * if (args->isSet("geometry"))
+    *     geometry = args->getOption("geometry");
+    *    
+    * </code>
     */
   QString geometryArgument() const;
+#endif
 
   /**
    * Install a Qt SQL property map with entries for all KDE widgets
@@ -591,7 +602,7 @@ public:
    */
   void installKDEPropertyMap();
 
-#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
+#ifdef QT3_SUPPORT
   /**
    * Returns the state of the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * and mouse buttons, similarly to QKeyEvent::state() and QMouseEvent::state().

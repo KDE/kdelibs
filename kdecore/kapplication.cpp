@@ -251,7 +251,6 @@ public:
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
-  QString geometry_arg;
   QByteArray startup_id;
   QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
@@ -1328,11 +1327,6 @@ void KApplication::parseCommandLine( )
     // FIXME(E): Implement for Qt Embedded
 #endif
 
-    if (args->isSet("geometry"))
-    {
-        d->geometry_arg = args->getOption("geometry");
-    }
-
     if (args->isSet("smkey"))
     {
         d->sessionKey = args->getOption("smkey");
@@ -1340,10 +1334,14 @@ void KApplication::parseCommandLine( )
 
 }
 
-QString KApplication::geometryArgument() const
-{
-    return d->geometry_arg;
-}
+#ifdef QT3_SUPPORT
+ QString KApplication::geometryArgument() const
+ {
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    if (args->isSet("geometry"))
+        return args->getOption("geometry");
+ }
+#endif
 
 QPixmap KApplication::icon() const
 {
@@ -2102,6 +2100,7 @@ void KApplication::read_app_startup_id()
 #endif
 }
 
+#ifdef QT3_SUPPORT
 int KApplication::random()
 {
    return KRandom::random();
@@ -2158,6 +2157,7 @@ Qt::ButtonState KApplication::keyboardMouseState()
 #endif
     return static_cast< Qt::ButtonState >( ret );
 }
+#endif
 
 void KApplication::installSigpipeHandler()
 {
