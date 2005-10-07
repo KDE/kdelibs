@@ -34,35 +34,21 @@
 
 using namespace KIO;
 
-
 QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
 {
-    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
-    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
-    // that would break the compatibility of the wire-protocol with KDE 2.
-    // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
-    // environment.
-
-    Q_UINT32 size = 0;
+    s << e.size();
     KIO::UDSEntry::ConstIterator it = e.begin();
-    for( ; it != e.end(); ++it )
+    const KIO::UDSEntry::ConstIterator end = e.end();
+    for( ; it != end; ++it )
     {
-       size++;
-       if ((*it).m_uds == KIO::UDS_SIZE)
-          size++;
-    }
-    s << size;
-    it = e.begin();
-    for( ; it != e.end(); ++it )
-    {
-       if ((*it).m_uds == KIO::UDS_SIZE)
-       {
-          KIO::UDSAtom a;
-          a.m_uds = KIO::UDS_SIZE_LARGE;
-          a.m_long = (*it).m_long >> 32;
-          s << a;
-       }
-       s << *it;
+        const Q_UINT32 uds = it.key();
+        s << uds;
+        if ( uds & KIO::UDS_STRING )
+            s << it.value().toString();
+        else if ( uds & KIO::UDS_NUMBER )
+            s << it.value().toNumber();
+        else
+            Q_ASSERT( 0 );
     }
     return s;
 }
@@ -72,32 +58,20 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     e.clear();
     Q_UINT32 size;
     s >> size;
-
-    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
-    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
-    // that would break the compatibility of the wire-protocol with KDE 2.
-    // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
-    // environment.
-    qint64 msb = 0;
-    for(Q_UINT32 i = 0; i < size; i++)
+    for( Q_UINT32 i = 0; i < size; ++i )
     {
-       KIO::UDSAtom a;
-       s >> a;
-       if (a.m_uds == KIO::UDS_SIZE_LARGE)
-       {
-          msb = a.m_long;
-       }
-       else
-       {
-          if (a.m_uds == KIO::UDS_SIZE)
-          {
-             if (a.m_long < 0)
-                a.m_long += (qint64) 1 << 32;
-             a.m_long += msb << 32;
-          }
-          e.append(a);
-          msb = 0;
-       }
+        Q_UINT32 uds;
+        s >> uds;
+        if (uds & KIO::UDS_STRING) {
+            QString str;
+            s >> str;
+            e.insert( uds, str );
+        } else if (uds & KIO::UDS_NUMBER) {
+            long long val;
+            s >> val;
+            e.insert( uds, val );
+        } else
+            Q_ASSERT( 0 );
     }
     return s;
 }
@@ -201,12 +175,12 @@ void SlaveInterface::calcSpeed()
 
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
 
-//     kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " 
-// 	      << long(d->sizes[d->nums-1] - d->sizes[0]) << " " 
-// 	      <<  d->times[d->nums-1] - d->times[0] << " " 
-// 	      << long(lspeed) << " " << double(d->filesize) / diff 
-// 	      << " " << convertSize(lspeed) << " " 
-// 	      << convertSize(long(double(d->filesize) / diff) * 1000) << " " 
+//     kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
+// 	      << long(d->sizes[d->nums-1] - d->sizes[0]) << " "
+// 	      <<  d->times[d->nums-1] - d->times[0] << " "
+// 	      << long(lspeed) << " " << double(d->filesize) / diff
+// 	      << " " << convertSize(lspeed) << " "
+// 	      << convertSize(long(double(d->filesize) / diff) * 1000) << " "
 // 	      <<  endl ;
 
     if (!lspeed) {
@@ -518,23 +492,6 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
         stream << result;
         m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }
-}
-
-// No longer used.
-// Remove in KDE 4.0
-void SlaveInterface::sigpipe_handler(int)
-{
-    int saved_errno = errno;
-    // Using kdDebug from a signal handler is not a good idea.
-#ifndef NDEBUG    
-    char msg[1000];
-    sprintf(msg, "*** SIGPIPE *** (ignored, pid = %ld)\n", (long) getpid());
-    write(2, msg, strlen(msg));
-#endif    
-
-    // Do nothing.
-    // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
-    errno = saved_errno;
 }
 
 void SlaveInterface::virtual_hook( int, void* )

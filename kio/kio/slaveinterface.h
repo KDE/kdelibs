@@ -230,12 +230,6 @@ protected:
     void requestNetwork( const QString &, const QString &);
     void dropNetwork( const QString &, const QString &);
 
-    /**
-     * @internal
-     * KDE 4.0: Remove
-     */
-    static void sigpipe_handler(int);
-
 protected slots:
     void calcSpeed();
 
@@ -250,38 +244,6 @@ private:
     SlaveInterfacePrivate *d;
 };
 
-}
-
-inline QDataStream &operator >>(QDataStream &s, KIO::UDSAtom &a )
-{
-    Q_INT32 l;
-    s >> a.m_uds;
-
-    if ( a.m_uds & KIO::UDS_LONG ) {
-        s >> l;
-        a.m_long = l;
-        a.m_str = QString::null;
-    } else if ( a.m_uds & KIO::UDS_STRING ) {
-        s >> a.m_str;
-        a.m_long = 0;
-    } else {} // DIE!
-    //    assert( 0 );
-
-    return s;
-}
-
-inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
-{
-    s << a.m_uds;
-
-    if ( a.m_uds & KIO::UDS_LONG )
-        s << (Q_INT32) a.m_long;
-    else if ( a.m_uds & KIO::UDS_STRING )
-        s << a.m_str;
-    else {} // DIE!
-    //    assert( 0 );
-
-    return s;
 }
 
 KIO_EXPORT QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );

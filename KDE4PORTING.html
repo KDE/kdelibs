@@ -411,6 +411,21 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 
 <H3><A NAME="kio">Changes in kio</A></H3>
 
+<H4>KIO::UDSEntry</H4>
+<ul>
+<li>UDSEntry is now a hash instead of a list. Use the methods stringValue()
+and numberValue() to retrieve fields directly, no loop is needed anymore.
+See the UDSEntry documentation for code examples.</li>
+<li>Also note that UDSEntryListConstIterator is now UDSEntryList::ConstIterator;
+see the UDSEntryList documentation for a full code example of iterating through
+a listDir result.</li>
+<li>For kioslaves: replace every three lines like 
+ <pre>atom.m_uds = KIO::UDS_SIZE;
+      atom.m_long = buff.st_size;
+      entry.append( atom );</pre>
+  with the line <pre>entry.insert( KIO::UDS_SIZE, buff.st_size );</pre></li>
+</ul>
+
 <H4>KRun</H4>
 <ul>
 <li>the constructor needs a second parameter (a widget) now</li>

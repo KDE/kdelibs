@@ -32,7 +32,6 @@
 #include <qobject.h>
 #include <q3intdict.h>
 #include <qstring.h>
-#include <q3valuelist.h>
 
 #include <kio/global.h>
 #include <kio/slavebase.h>
@@ -83,7 +82,7 @@ protected:
   bool createUDSEntry( const QString & filename, const Q3CString & path, KIO::UDSEntry & entry,
                        short int details, bool withACL );
   int setACL( const char *path, mode_t perm, bool _directoryDefault );
-  
+
   QString getUserName( uid_t uid );
   QString getGroupName( gid_t gid );
 

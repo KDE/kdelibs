@@ -281,28 +281,14 @@ void PreviewJob::slotResult( KIO::Job *job )
                 determineNextFile();
                 return;
             }
-            KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-            KIO::UDSEntry::ConstIterator it = entry.begin();
-            d->tOrig = 0;
-            int found = 0;
-            for( ; it != entry.end() && found < 2; it++ )
-            {
-                if ( (*it).m_uds == KIO::UDS_MODIFICATION_TIME )
-                {
-                    d->tOrig = (time_t)((*it).m_long);
-                    found++;
-                }
-                else if ( (*it).m_uds == KIO::UDS_SIZE )
-                    {
-                    if ( filesize_t((*it).m_long) > d->maximumSize &&
-                         !d->ignoreMaximumSize &&
-                         !d->currentItem.plugin->property("IgnoreMaximumSize").toBool() )
-                    {
-                        determineNextFile();
-                        return;
-                    }
-                    found++;
-                }
+            const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
+            d->tOrig = entry.numberValue( KIO::UDS_MODIFICATION_TIME, 0 );
+            if ( !d->ignoreMaximumSize &&
+                 entry.numberValue( KIO::UDS_SIZE, 0 ) > d->maximumSize &&
+                 !d->currentItem.plugin->property("IgnoreMaximumSize").toBool()
+                ) {
+                determineNextFile();
+                return;
             }
 
             if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool() )
@@ -355,10 +341,10 @@ bool PreviewJob::statResultThumbnail()
     // way (file:/path/to/file)
 #ifdef KURL_TRIPLE_SLASH_FILE_PROT
     d->origName = url.url();
-#else    
+#else
     if (url.protocol() == "file") d->origName = "file://" + url.path();
     else d->origName = url.url();
-#endif    
+#endif
 
     KMD5 md5( QFile::encodeName( d->origName ) );
     d->thumbName = QFile::encodeName( md5.hexDigest() ) + ".png";
@@ -470,7 +456,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         thumb.setText("Thumb::Mimetype", 0, d->currentItem.item->mimetype());
         thumb.setText("Software", 0, "KDE Thumbnail Generator");
         KTempFile temp(d->thumbPath + "kde-tmp-", ".png");
-        if (temp.status() == 0) //Only try to write out the thumbnail if we 
+        if (temp.status() == 0) //Only try to write out the thumbnail if we
         {                       //actually created the temp file.
             thumb.save(temp.name(), "PNG");
             rename(QFile::encodeName(temp.name()), QFile::encodeName(d->thumbPath + d->thumbName));

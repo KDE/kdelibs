@@ -546,25 +546,6 @@ void KFileDialog::slotOk()
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotStatResult(KIO::Job*)));
 }
 
-
-static bool isDirectory (const KIO::UDSEntry &t)
-{
-    bool isDir = false;
-
-    for (KIO::UDSEntry::ConstIterator it = t.begin();
-         it != t.end();
-         it++)
-    {
-        if ((*it).m_uds == KIO::UDS_FILE_TYPE)
-        {
-            isDir = S_ISDIR ((mode_t) ((*it).m_long));
-            break;
-        }
-    }
-
-    return isDir;
-}
-
 // FIXME : count all errors and show messagebox when d->statJobs.count() == 0
 // in case of an error, we cancel the whole operation (clear d->statJobs and
 // don't call accept)
@@ -588,7 +569,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     }
 
     KIO::UDSEntry t = sJob->statResult();
-    if (isDirectory (t))
+    if (t.isDir())
     {
         if ( ops->dirOnlyMode() )
         {
@@ -2017,7 +1998,7 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
         {
             kdDebug (kfile_area) << "\tfile exists" << endl;
 
-            if (isDirectory (t))
+            if (t.isDir())
             {
                 kdDebug (kfile_area) << "\tisDir - won't alter extension" << endl;
                 return;

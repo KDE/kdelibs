@@ -237,7 +237,7 @@ void DirectoryListThread::run()
 		struct dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
 		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
-#endif 
+#endif
 
 		{
 			// Skip hidden files if m_noHidden is true
@@ -1157,8 +1157,8 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
 	QStringList matches;
 
-	KIO::UDSEntryListConstIterator it = entries.begin();
-	KIO::UDSEntryListConstIterator end = entries.end();
+	KIO::UDSEntryList::ConstIterator it = entries.begin();
+	const KIO::UDSEntryList::ConstIterator end = entries.end();
 
 	QString filter = d->list_urls_filter;
 
@@ -1167,34 +1167,15 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 	// Iterate over all files
 	//
 	for (; it != end; ++it) {
+		const KIO::UDSEntry& entry = *it;
+		const QString url = entry.stringValue( KIO::UDS_URL );
+
 		QString name;
-		QString url;
-		bool is_exe = false;
-		bool is_dir = false;
-
-		KIO::UDSEntry e = *it;
-		KIO::UDSEntry::ConstIterator it_2 = e.begin();
-
-		for( ; it_2 != e.end(); it_2++ ) {
-			switch ( (*it_2).m_uds ) {
-				case KIO::UDS_NAME:
-					name = (*it_2).m_str;
-					break;
-				case KIO::UDS_ACCESS:
-					is_exe = ((*it_2).m_long & MODE_EXE) != 0;
-					break;
-				case KIO::UDS_FILE_TYPE:
-					is_dir = ((*it_2).m_long & S_IFDIR) != 0;
-					break;
-				case KIO::UDS_URL:
-					url = (*it_2).m_str;
-					break;
-			}
-		}
-
 		if (!url.isEmpty()) {
 			// kdDebug() << "KURLCompletion::slotEntries url: " << url << endl;
 			name = KURL(url).fileName();
+		} else {
+			name = entry.stringValue( KIO::UDS_NAME );
 		}
 
 		// kdDebug() << "KURLCompletion::slotEntries name: " << name << endl;
@@ -1205,14 +1186,17 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 		          ( name.length() == 2 && name[1] == '.' ) ) )
 			continue;
 
-		if ( d->mode == DirCompletion && !is_dir )
+		const bool isDir = entry.isDir();
+
+		if ( d->mode == DirCompletion && !isDir )
 			continue;
 
 		if ( filter_len == 0 || name.left(filter_len) == filter ) {
-			if ( is_dir )
+			if ( isDir )
 				name.append( QLatin1Char( '/' ) );
 
-			if ( is_exe || !d->list_urls_only_exe )
+			const bool isExe = entry.numberValue( KIO::UDS_ACCESS ) & MODE_EXE;
+			if ( isExe || !d->list_urls_only_exe )
 				matches.append( name );
 		}
 	}

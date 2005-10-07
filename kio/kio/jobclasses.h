@@ -1564,7 +1564,7 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param files a list of items that are about to be created.
 	 */
-        void aboutToCreate( KIO::Job *job, const Q3ValueList<KIO::CopyInfo> &files);
+        void aboutToCreate( KIO::Job *job, const QList<KIO::CopyInfo> &files);
 
         /**
 	 * Sends the number of processed files.
@@ -1692,8 +1692,8 @@ namespace KIO {
         KIO::filesize_t m_fileProcessedSize;
         int m_processedFiles;
         int m_processedDirs;
-        Q3ValueList<CopyInfo> files;
-        Q3ValueList<CopyInfo> dirs;
+        QList<CopyInfo> files;
+        QList<CopyInfo> dirs;
         KURL::List dirsToRemove;
         KURL::List m_srcList;
         KURL::List::Iterator m_currentStatSrc;

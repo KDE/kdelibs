@@ -588,18 +588,9 @@ void HTTPProtocol::stat(const KURL& url)
 
     // When downloading we assume it exists
     UDSEntry entry;
-    UDSAtom atom;
-    atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = url.fileName();
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFREG; // a file
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
-    entry.append( atom );
+    entry.insert( KIO::UDS_NAME, url.fileName() );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG ); // a file
+    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH ); // readable by everybody
 
     statEntry( entry );
     finished();
@@ -632,7 +623,6 @@ void HTTPProtocol::davSetRequest( const Q3CString& requestXML )
 void HTTPProtocol::davStatList( const KURL& url, bool stat )
 {
   UDSEntry entry;
-  UDSAtom atom;
 
   // check to make sure this host supports WebDAV
   if ( !davHostOk() )
@@ -707,9 +697,9 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     QDomElement thisResponse = n.toElement();
     if (thisResponse.isNull())
       continue;
-  
+
     hasResponse = true;
-    
+
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
     if ( !href.isNull() )
     {
@@ -722,20 +712,16 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
       KURL thisURL ( urlStr, encoding );
 
-      atom.m_uds = KIO::UDS_NAME;
-
       if ( thisURL.isValid() ) {
         // don't list the base dir of a listDir()
         if ( !stat && thisURL.path(+1).length() == url.path(+1).length() )
           continue;
 
-        atom.m_str = thisURL.fileName();
+        entry.insert( KIO::UDS_NAME, thisURL.fileName() );
       } else {
         // This is a relative URL.
-        atom.m_str = href.text();
+        entry.insert( KIO::UDS_NAME, href.text() );
       }
-
-      entry.append( atom );
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
 
@@ -802,7 +788,6 @@ int HTTPProtocol::codeFromResponse( const QString& response )
 void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& entry )
 {
   QString mimeType;
-  UDSAtom atom;
   bool foundExecutable = false;
   bool isDirectory = false;
   uint lockCount = 0;
@@ -837,11 +822,9 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     if ( hasMetaData( "davRequestResponse" ) )
     {
-      atom.m_uds = KIO::UDS_XML_PROPERTIES;
       QDomDocument doc;
       doc.appendChild(prop);
-      atom.m_str = doc.toString();
-      entry.append( atom );
+      entry.insert( KIO::UDS_XML_PROPERTIES, doc.toString() );
     }
 
     for ( QDomNode n = prop.firstChild(); !n.isNull(); n = n.nextSibling() )
@@ -859,16 +842,12 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       if ( property.tagName() == "creationdate" )
       {
         // Resource creation date. Should be is ISO 8601 format.
-        atom.m_uds = KIO::UDS_CREATION_TIME;
-        atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
-        entry.append( atom );
+        entry.insert( KIO::UDS_CREATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
       }
       else if ( property.tagName() == "getcontentlength" )
       {
         // Content length (file size)
-        atom.m_uds = KIO::UDS_SIZE;
-        atom.m_long = property.text().toULong();
-        entry.append( atom );
+        entry.insert( KIO::UDS_SIZE, property.text().toULong() );
       }
       else if ( property.tagName() == "displayname" )
       {
@@ -912,10 +891,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       else if ( property.tagName() == "getlastmodified" )
       {
         // Last modification date
-        atom.m_uds = KIO::UDS_MODIFICATION_TIME;
-        atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
-        entry.append( atom );
-
+        entry.insert( KIO::UDS_MODIFICATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
       }
       else if ( property.tagName() == "getetag" )
       {
@@ -969,29 +945,21 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
 
-  atom.m_uds = KIO::UDS_FILE_TYPE;
-  atom.m_long = isDirectory ? S_IFDIR : S_IFREG;
-  entry.append( atom );
+  entry.insert( KIO::UDS_FILE_TYPE, isDirectory ? S_IFDIR : S_IFREG );
 
   if ( foundExecutable || isDirectory )
   {
     // File was executable, or is a directory.
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = 0700;
-    entry.append(atom);
+    entry.insert( KIO::UDS_ACCESS, 0700 );
   }
   else
   {
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = 0600;
-    entry.append(atom);
+    entry.insert( KIO::UDS_ACCESS, 0600 );
   }
 
   if ( !isDirectory && !mimeType.isEmpty() )
   {
-    atom.m_uds = KIO::UDS_MIME_TYPE;
-    atom.m_str = mimeType;
-    entry.append( atom );
+    entry.insert( KIO::UDS_MIME_TYPE, mimeType );
   }
 }
 
@@ -1757,7 +1725,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         m_request.cache = parseCacheControl(tmp);
      else
         m_request.cache = DEFAULT_CACHE_CONTROL;
-     
+
      m_request.passwd = url.pass();
      m_request.user = url.user();
      m_request.doProxy = m_bUseProxy;
@@ -3466,7 +3434,7 @@ try_again:
         if ( getAuthorization() )
         {
            // for NTLM Authentication we have to keep the connection open!
-           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 ) 
+           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 )
            {
              m_bKeepAlive = true;
              readBody( true );
@@ -4215,7 +4183,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
          .arg( m_request.hostname ) );
     }
     else
-    {    
+    {
        totalSize ( 0 );
     }
   }
@@ -4897,7 +4865,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     };
   }
 #endif
-  else if ( strncasecmp( p, "NTLM", 4 ) == 0 && 
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0 &&
     (( b && m_bPersistentProxyConnection ) || !b ) )
   {
     f = AUTH_NTLM;
@@ -4925,7 +4893,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   */
   if (b)
   {
-    if ((f == AUTH_None) || 
+    if ((f == AUTH_None) ||
         ((m_iProxyAuthCount > 0) && (f < ProxyAuthentication)))
     {
       // Since I purposefully made the Proxy-Authentication settings
@@ -4936,13 +4904,13 @@ void HTTPProtocol::configAuth( char *p, bool b )
         ProxyAuthentication = f;
       kdDebug(7113) << "(" << m_pid << ") Rejected proxy auth method: " << f << endl;
       return;
-    } 
-    m_iProxyAuthCount++;   
+    }
+    m_iProxyAuthCount++;
     kdDebug(7113) << "(" << m_pid << ") Accepted proxy auth method: " << f << endl;
   }
   else
   {
-    if ((f == AUTH_None) || 
+    if ((f == AUTH_None) ||
         ((m_iWWWAuthCount > 0) && (f < Authentication)))
     {
       kdDebug(7113) << "(" << m_pid << ") Rejected auth method: " << f << endl;
@@ -5464,7 +5432,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     // create a response
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
-    KNTLM::getAuth( buf, challenge, user, passwd, domain, 
+    KNTLM::getAuth( buf, challenge, user, passwd, domain,
 		    KNetwork::KResolver::localHostName(), false, false );
   }
   else

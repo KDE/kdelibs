@@ -81,39 +81,20 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
     static const QString& dot = KGlobal::staticQString( "." );
     static const QString& dotdot = KGlobal::staticQString( ".." );
-    KIO::UDSEntryListConstIterator it = list.begin();
-    KIO::UDSEntryListConstIterator end = list.end();
+    KIO::UDSEntryList::ConstIterator it = list.begin();
+    const KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
-        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-        KIO::filesize_t size = 0;
-        bool isLink = false;
-        bool isDir = false;
-        QString name;
-        for( ; it2 != (*it).end(); it2++ ) {
-          switch( (*it2).m_uds ) {
-            case KIO::UDS_NAME:
-              name = (*it2).m_str;
-              break;
-            case KIO::UDS_LINK_DEST:
-              isLink = !(*it2).m_str.isEmpty();
-              break;
-            case KIO::UDS_SIZE:
-              size = ((*it2).m_long);
-              break;
-            case KIO::UDS_FILE_TYPE:
-              isDir = S_ISDIR((*it2).m_long);
-              break;
-            default:
-              break;
-          }
-        }
+
+        const KIO::UDSEntry& entry = *it;
+        const KIO::filesize_t size = entry.numberValue( KIO::UDS_SIZE, -1 );
+        const QString name = entry.stringValue( KIO::UDS_NAME );
         if ( name == dot )
             m_totalSize += size;
         else if ( name != dotdot )
         {
-            if (!isLink)
+            if (!entry.isLink())
               m_totalSize += size;
-            if (!isDir)
+            if (!entry.isDir())
               m_totalFiles++;
             else
               m_totalSubdirs++;

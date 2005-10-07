@@ -65,7 +65,6 @@
 
 using namespace KIO;
 
-template class Q3PtrList<Q3ValueList<UDSAtom> >;
 typedef Q3ValueList<Q3CString> AuthKeysList;
 typedef QMap<QString,Q3CString> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
@@ -324,10 +323,10 @@ void SlaveBase::dispatchLoop()
 void SlaveBase::connectSlave(const QString& path)
 {
 #ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
-    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(), 
+    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(),
 						QFile::encodeName(path));
     appconn->init(sock);
-					      
+
     if (!appconn->inited())
     {
         kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl
@@ -689,8 +688,8 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
     KIO_DATA << (Q_UINT32)list.count();
-    UDSEntryListConstIterator it = list.begin();
-    UDSEntryListConstIterator end = list.end();
+    UDSEntryList::ConstIterator it = list.begin();
+    const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
       stream << *it;
     slaveWriteError = false;

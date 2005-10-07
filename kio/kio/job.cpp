@@ -1286,15 +1286,15 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     if( _error )
     {
 	static bool override_loaded = false;
-	static Q3ValueList< int >* overriden_ports = NULL;
+	static QList< int >* overriden_ports = NULL;
 	if( !override_loaded )
 	{
 	    KConfig cfg( "kio_httprc", true );
-	    overriden_ports = new Q3ValueList< int >;
+	    overriden_ports = new QList< int >;
 	    *overriden_ports = cfg.readIntListEntry( "OverriddenPorts" );
 	    override_loaded = true;
 	}
-	for( Q3ValueList< int >::ConstIterator it = overriden_ports->begin();
+	for( QList< int >::ConstIterator it = overriden_ports->begin();
 	     it != overriden_ports->end();
 	     ++it )
 	    if( overriden_ports->contains( url.port()))
@@ -1949,39 +1949,24 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     slotProcessedSize( m_processedEntries );
 
     if (recursive) {
-        UDSEntryListConstIterator it = list.begin();
-        UDSEntryListConstIterator end = list.end();
+        UDSEntryList::ConstIterator it = list.begin();
+        const UDSEntryList::ConstIterator end = list.end();
 
         for (; it != end; ++it) {
-            bool isDir = false;
-            bool isLink = false;
-            KURL itemURL;
 
-            UDSEntry::ConstIterator it2 = (*it).begin();
-            UDSEntry::ConstIterator end2 = (*it).end();
-            for( ; it2 != end2; it2++ ) {
-                switch( (*it2).m_uds ) {
-                    case UDS_FILE_TYPE:
-                        isDir = S_ISDIR((*it2).m_long);
-                        break;
-                    case UDS_NAME:
-                        if( itemURL.isEmpty() ) {
-                            itemURL = url();
-                            itemURL.addPath( (*it2).m_str );
-                        }
-                        break;
-                    case UDS_URL:
-                        itemURL = (*it2).m_str;
-                        break;
-                    case UDS_LINK_DEST:
-                        // This is a link !!! Don't follow !
-                        isLink = !(*it2).m_str.isEmpty();
-                        break;
-                    default:
-                        break;
-                }
+            const UDSEntry& entry = *it;
+
+            KURL itemURL;
+            const UDSEntry::ConstIterator end2 = entry.end();
+            UDSEntry::ConstIterator it2 = entry.find( KIO::UDS_URL );
+            if ( it2 != end2 )
+                itemURL = it2.value().toString();
+            else { // no URL, use the name
+                itemURL = url();
+                itemURL.addPath( entry.stringValue( KIO::UDS_NAME ) );
             }
-            if (isDir && !isLink) {
+
+            if (entry.isDir() && !entry.isLink()) {
                 const QString filename = itemURL.fileName();
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
@@ -2010,24 +1995,22 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
         // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
         UDSEntryList newlist;
 
-        UDSEntryListConstIterator it = list.begin();
-        UDSEntryListConstIterator end = list.end();
+        UDSEntryList::const_iterator it = list.begin();
+        const UDSEntryList::const_iterator end = list.end();
         for (; it != end; ++it) {
 
+            // Modify the name in the UDSEntry
             UDSEntry newone = *it;
-            UDSEntry::Iterator it2 = newone.begin();
-            QString filename;
-            for( ; it2 != newone.end(); it2++ ) {
-                if ((*it2).m_uds == UDS_NAME) {
-                    filename = (*it2).m_str;
-                    (*it2).m_str = prefix + filename;
-                }
-            }
+            const QString filename = newone.stringValue( KIO::UDS_NAME );
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
             // the toplevel dir, and skip hidden files/dirs if that was requested
             if (  (prefix.isNull() || (filename != ".." && filename != ".") )
-               && (includeHidden || (filename[0] != '.') )  )
+                  && (includeHidden || (filename[0] != '.') )  )
+            {
+                // ## Didn't find a way to use the iterator instead of re-doing a key lookup
+                newone.insert( KIO::UDS_NAME, prefix + filename );
                 newlist.append(newone);
+            }
         }
 
         emit entries(this, newlist);
@@ -2254,23 +2237,10 @@ void CopyJob::slotResultStating( Job *job )
         return;
     }
 
-    // Is it a file or a dir ? Does it have a local path?
-    UDSEntry entry = ((StatJob*)job)->statResult();
-    bool bDir = false;
-    bool bLink = false;
-    QString sName;
-    QString sLocalPath;
-    UDSEntry::ConstIterator it2 = entry.begin();
-    for( ; it2 != entry.end(); it2++ ) {
-        if ( ((*it2).m_uds) == UDS_FILE_TYPE )
-            bDir = S_ISDIR( (mode_t)(*it2).m_long );
-        else if ( ((*it2).m_uds) == UDS_LINK_DEST )
-            bLink = !((*it2).m_str.isEmpty());
-        else if ( ((*it2).m_uds) == UDS_NAME )
-            sName = (*it2).m_str;
-        else if ( ((*it2).m_uds) == UDS_LOCAL_PATH )
-            sLocalPath = (*it2).m_str;
-    }
+    // Keep copy of the stat result
+    const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
+    const QString sLocalPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+    const bool isDir = entry.isDir();
 
     if ( destinationState == DEST_NOT_STATED )
         // we were stating the dest
@@ -2278,8 +2248,8 @@ void CopyJob::slotResultStating( Job *job )
         if (job->error())
             destinationState = DEST_DOESNT_EXIST;
         else {
-            // Treat symlinks to dirs as dirs here, so no test on bLink
-            destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
+            // Treat symlinks to dirs as dirs here, so no test on isLink
+            destinationState = isDir ? DEST_IS_DIR : DEST_IS_FILE;
             //kdDebug(7007) << "CopyJob::slotResultStating dest is dir:" << bDir << endl;
         }
         if ( m_dest == d->m_globalDest )
@@ -2297,6 +2267,10 @@ void CopyJob::slotResultStating( Job *job )
         statCurrentSrc();
         return;
     }
+
+    // Is it a file or a dir ?
+    const QString sName = entry.stringValue( KIO::UDS_NAME );
+
     // We were stating the current source URL
     m_currentDest = m_dest; // used by slotEntries
     // Create a dummy list with it, for slotEntries
@@ -2327,8 +2301,9 @@ void CopyJob::slotResultStating( Job *job )
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-    if ( bDir
-         && !bLink // treat symlinks as files (no recursion)
+    if ( isDir
+         // treat symlinks as files (no recursion)
+         && entry.find( KIO::UDS_STRING ) == entry.end() // i.e ."not a link"
          && m_mode != Link ) // No recursion in Link mode either.
     {
         //kdDebug(7007) << " Source is a directory " << endl;
@@ -2434,53 +2409,28 @@ void CopyJob::slotReport()
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
-    UDSEntryListConstIterator it = list.begin();
-    UDSEntryListConstIterator end = list.end();
+    UDSEntryList::ConstIterator it = list.begin();
+    UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
-        UDSEntry::ConstIterator it2 = (*it).begin();
+        const UDSEntry& entry = *it;
         struct CopyInfo info;
-        info.permissions = -1;
-        info.mtime = (time_t) -1;
-        info.ctime = (time_t) -1;
-        info.size = (KIO::filesize_t)-1;
-        QString displayName;
+        info.permissions = entry.numberValue( KIO::UDS_ACCESS, -1 );
+        info.mtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
+        info.ctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
+        info.size = (KIO::filesize_t) entry.numberValue( KIO::UDS_SIZE, -1 );
+        if ( info.size != (KIO::filesize_t) -1 )
+            m_totalSize += info.size;
+
+        // recursive listing, displayName can be a/b/c/d
+        const QString displayName = entry.stringValue( KIO::UDS_NAME );
+        const QString urlStr = entry.stringValue( KIO::UDS_URL );
         KURL url;
-        QString localPath;
-        bool isDir = false;
-        for( ; it2 != (*it).end(); it2++ ) {
-            switch ((*it2).m_uds) {
-                case UDS_FILE_TYPE:
-                    //info.type = (mode_t)((*it2).m_long);
-                    isDir = S_ISDIR( (mode_t)((*it2).m_long) );
-                    break;
-                case UDS_NAME: // recursive listing, displayName can be a/b/c/d
-                    displayName = (*it2).m_str;
-                    break;
-                case UDS_URL: // optional
-                    url = KURL((*it2).m_str);
-                    break;
-                case UDS_LOCAL_PATH:
-                    localPath = (*it2).m_str;
-                    break;
-                case UDS_LINK_DEST:
-                    info.linkDest = (*it2).m_str;
-                    break;
-                case UDS_ACCESS:
-                    info.permissions = ((*it2).m_long);
-                    break;
-                case UDS_SIZE:
-                    info.size = (KIO::filesize_t)((*it2).m_long);
-                    m_totalSize += info.size;
-                    break;
-                case UDS_MODIFICATION_TIME:
-                    info.mtime = (time_t)((*it2).m_long);
-                    break;
-                case UDS_CREATION_TIME:
-                    info.ctime = (time_t)((*it2).m_long);
-                default:
-                    break;
-            }
-        }
+        if ( !urlStr.isEmpty() )
+            url = urlStr;
+        QString localPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+        const bool isDir = entry.isDir();
+        info.linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
+
         if (displayName != ".." && displayName != ".")
         {
             bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
@@ -2696,7 +2646,7 @@ void CopyJob::startRenameJob( const KURL& slave_url )
     info.size = (KIO::filesize_t)-1;
     info.uSource = m_currentSrcURL;
     info.uDest = dest;
-    Q3ValueList<CopyInfo> files;
+    QList<CopyInfo> files;
     files.append(info);
     emit aboutToCreate( this, files );
 
@@ -2758,7 +2708,7 @@ bool CopyJob::shouldSkip( const QString& path ) const
 void CopyJob::slotResultCreatingDirs( Job * job )
 {
     // The dir we are trying to create:
-    Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
+    QList<CopyInfo>::Iterator it = dirs.begin();
     // Was there an error creating a dir ?
     if ( job->error() )
     {
@@ -2826,31 +2776,17 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     // We come here after a conflict has been detected and we've stated the existing dir
 
     // The dir we were trying to create:
-    Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
-    // Its modification time:
-    time_t destmtime = (time_t)-1;
-    time_t destctime = (time_t)-1;
-    KIO::filesize_t destsize = 0;
-    QString linkDest;
+    QList<CopyInfo>::Iterator it = dirs.begin();
 
-    UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-    KIO::UDSEntry::ConstIterator it2 = entry.begin();
-    for( ; it2 != entry.end(); it2++ ) {
-        switch ((*it2).m_uds) {
-            case UDS_MODIFICATION_TIME:
-                destmtime = (time_t)((*it2).m_long);
-                break;
-            case UDS_CREATION_TIME:
-                destctime = (time_t)((*it2).m_long);
-                break;
-            case UDS_SIZE:
-                destsize = (*it2).m_long;
-                break;
-            case UDS_LINK_DEST:
-                linkDest = (*it2).m_str;
-                break;
-        }
-    }
+    const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+
+    // Its modification time:
+    const time_t destmtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
+    const time_t destctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
+
+    const KIO::filesize_t destsize = entry.numberValue( KIO::UDS_SIZE );
+    const QString linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
+
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
@@ -2895,7 +2831,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             // Change the current one and strip the trailing '/'
             (*it).uDest.setPath( newUrl.path( -1 ) );
             newPath = newUrl.path( 1 ); // With trailing slash
-            Q3ValueList<CopyInfo>::Iterator renamedirit = it;
+            QList<CopyInfo>::Iterator renamedirit = it;
             ++renamedirit;
             // Change the name of subdirectories inside the directory
             for( ; renamedirit != dirs.end() ; ++renamedirit )
@@ -2911,7 +2847,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
                 }
             }
             // Change filenames inside the directory
-            Q3ValueList<CopyInfo>::Iterator renamefileit = files.begin();
+            QList<CopyInfo>::Iterator renamefileit = files.begin();
             for( ; renamefileit != files.end() ; ++renamefileit )
             {
                 QString path = (*renamefileit).uDest.path();
@@ -2968,7 +2904,7 @@ void CopyJob::createNextDir()
     if ( !dirs.isEmpty() )
     {
         // Take first dir to create out of list
-        Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
+        QList<CopyInfo>::Iterator it = dirs.begin();
         // Is this URL on the skip list or the overwrite list ?
         while( it != dirs.end() && udir.isEmpty() )
         {
@@ -3007,7 +2943,7 @@ void CopyJob::createNextDir()
 void CopyJob::slotResultCopyingFiles( Job * job )
 {
     // The file we were trying to copy:
-    Q3ValueList<CopyInfo>::Iterator it = files.begin();
+    QList<CopyInfo>::Iterator it = files.begin();
     if ( job->error() )
     {
         // Should we skip automatically ?
@@ -3100,7 +3036,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 {
     // We come here after a conflict has been detected and we've stated the existing file
     // The file we were trying to create:
-    Q3ValueList<CopyInfo>::Iterator it = files.begin();
+    QList<CopyInfo>::Iterator it = files.begin();
 
     RenameDlg_Result res;
     QString newPath;
@@ -3112,28 +3048,12 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
       || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
     {
         // Its modification time:
-        time_t destmtime = (time_t)-1;
-        time_t destctime = (time_t)-1;
-        KIO::filesize_t destsize = 0;
-        QString linkDest;
-        UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-        KIO::UDSEntry::ConstIterator it2 = entry.begin();
-        for( ; it2 != entry.end(); it2++ ) {
-            switch ((*it2).m_uds) {
-                case UDS_MODIFICATION_TIME:
-                    destmtime = (time_t)((*it2).m_long);
-                    break;
-                case UDS_CREATION_TIME:
-                    destctime = (time_t)((*it2).m_long);
-                    break;
-                case UDS_SIZE:
-                    destsize = (*it2).m_long;
-                    break;
-                case UDS_LINK_DEST:
-                    linkDest = (*it2).m_str;
-                    break;
-            }
-        }
+        const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+
+        const time_t destmtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
+        const time_t destctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
+        const KIO::filesize_t destsize = entry.numberValue( KIO::UDS_SIZE );
+        const QString linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
 
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"
@@ -3203,7 +3123,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
 
-            Q3ValueList<CopyInfo> files;
+            QList<CopyInfo> files;
             files.append(*it);
             emit aboutToCreate( this, files );
         }
@@ -3238,7 +3158,7 @@ void CopyJob::copyNextFile()
     bool bCopyFile = false;
     //kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
     // Take the first file in the list
-    Q3ValueList<CopyInfo>::Iterator it = files.begin();
+    QList<CopyInfo>::Iterator it = files.begin();
     // Is this URL on the skip list ?
     while (it != files.end() && !bCopyFile)
     {
@@ -3874,61 +3794,36 @@ void DeleteJob::slotReport()
 
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
-   UDSEntryListConstIterator it = list.begin();
-   UDSEntryListConstIterator end = list.end();
-   for (; it != end; ++it)
-   {
-      UDSEntry::ConstIterator it2 = (*it).begin();
-      bool bDir = false;
-      bool bLink = false;
-      QString displayName;
-      KURL url;
-      int atomsFound(0);
-      for( ; it2 != (*it).end(); it2++ )
-      {
-         switch ((*it2).m_uds)
-         {
-         case UDS_FILE_TYPE:
-            bDir = S_ISDIR((*it2).m_long);
-            atomsFound++;
-            break;
-         case UDS_NAME:
-            displayName = (*it2).m_str;
-            atomsFound++;
-            break;
-         case UDS_URL:
-            url = KURL((*it2).m_str);
-            atomsFound++;
-            break;
-         case UDS_LINK_DEST:
-            bLink = !(*it2).m_str.isEmpty();
-            atomsFound++;
-            break;
-         case UDS_SIZE:
-            m_totalSize += (KIO::filesize_t)((*it2).m_long);
-            atomsFound++;
-            break;
-         default:
-            break;
-         }
-         if (atomsFound==5) break;
-      }
-      assert(!displayName.isEmpty());
-      if (displayName != ".." && displayName != ".")
-      {
-          if( url.isEmpty() ) {
-              url = ((SimpleJob *)job)->url(); // assumed to be a dir
-              url.addPath( displayName );
-          }
-         //kdDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")" << endl;
-         if ( bLink )
-            symlinks.append( url );
-         else if ( bDir )
-            dirs.append( url );
-         else
-            files.append( url );
-      }
-   }
+    UDSEntryList::ConstIterator it = list.begin();
+    const UDSEntryList::ConstIterator end = list.end();
+    for (; it != end; ++it)
+    {
+        const UDSEntry& entry = *it;
+        const QString displayName = entry.stringValue( KIO::UDS_NAME );
+
+        assert(!displayName.isEmpty());
+        if (displayName != ".." && displayName != ".")
+        {
+            KURL url;
+            const QString urlStr = entry.stringValue( KIO::UDS_URL );
+            if ( !urlStr.isEmpty() )
+                url = urlStr;
+            else {
+                url = ((SimpleJob *)job)->url(); // assumed to be a dir
+                url.addPath( displayName );
+            }
+
+            m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDS_SIZE, 0 );
+
+            //kdDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")" << endl;
+            if ( entry.isLink() )
+                symlinks.append( url );
+            else if ( entry.isDir() )
+                dirs.append( url );
+            else
+                files.append( url );
+        }
+    }
 }
 
 
@@ -4097,52 +3992,28 @@ void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 
 void DeleteJob::slotResult( Job *job )
 {
-   switch ( state )
-   {
-   case STATE_STATING:
-      {
-         // Was there an error while stating ?
-         if (job->error() )
-         {
+    switch ( state )
+    {
+    case STATE_STATING:
+    {
+        // Was there an error while stating ?
+        if (job->error() )
+        {
             // Probably : doesn't exist
             Job::slotResult( job ); // will set the error and emit result(this)
             return;
-         }
+        }
 
-         // Is it a file or a dir ?
-         UDSEntry entry = ((StatJob*)job)->statResult();
-         bool bDir = false;
-         bool bLink = false;
-         KIO::filesize_t size = (KIO::filesize_t)-1;
-         UDSEntry::ConstIterator it2 = entry.begin();
-         int atomsFound(0);
-         for( ; it2 != entry.end(); it2++ )
-         {
-            if ( ((*it2).m_uds) == UDS_FILE_TYPE )
-            {
-               bDir = S_ISDIR( (mode_t)(*it2).m_long );
-               atomsFound++;
-            }
-            else if ( ((*it2).m_uds) == UDS_LINK_DEST )
-            {
-               bLink = !((*it2).m_str.isEmpty());
-               atomsFound++;
-            }
-            else if ( ((*it2).m_uds) == UDS_SIZE )
-            {
-               size = (*it2).m_long;
-               atomsFound++;
-            }
-            if (atomsFound==3) break;
-         }
+        const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
+        const KURL url = static_cast<SimpleJob*>(job)->url();
+        const bool isLink = entry.isLink();
 
-         KURL url = ((SimpleJob*)job)->url();
+        subjobs.remove( job );
+        assert( subjobs.isEmpty() );
 
-         subjobs.remove( job );
-         assert( subjobs.isEmpty() );
-
-         if (bDir && !bLink)
-         {
+        // Is it a file or a dir ?
+        if (entry.isDir() && !isLink)
+        {
             // Add toplevel dir in list of dirs
             dirs.append( url );
             if ( url.isLocalFile() && !m_parentDirs.contains( url.path(-1) ) )
@@ -4164,10 +4035,10 @@ void DeleteJob::slotResult( Job *job )
                 ++m_currentStat;
                 statNextSrc();
             }
-         }
-         else
-         {
-            if ( bLink ) {
+        }
+        else
+        {
+            if ( isLink ) {
                 //kdDebug(7007) << " Target is a symlink" << endl;
                 symlinks.append( url );
             } else {
@@ -4178,49 +4049,49 @@ void DeleteJob::slotResult( Job *job )
                 m_parentDirs.append( url.directory(false) );
             ++m_currentStat;
             statNextSrc();
-         }
-      }
-      break;
-   case STATE_LISTING:
-      if ( job->error() )
-      {
-         // Try deleting nonetheless, it may be empty (and non-listable)
-      }
-      subjobs.remove( job );
-      assert( subjobs.isEmpty() );
-      ++m_currentStat;
-      statNextSrc();
-      break;
-   case STATE_DELETING_FILES:
-      if ( job->error() )
-      {
-         Job::slotResult( job ); // will set the error and emit result(this)
-         return;
-      }
-      subjobs.remove( job );
-      assert( subjobs.isEmpty() );
-      m_processedFiles++;
+        }
+    }
+        break;
+    case STATE_LISTING:
+        if ( job->error() )
+        {
+            // Try deleting nonetheless, it may be empty (and non-listable)
+        }
+        subjobs.remove( job );
+        assert( subjobs.isEmpty() );
+        ++m_currentStat;
+        statNextSrc();
+        break;
+    case STATE_DELETING_FILES:
+        if ( job->error() )
+        {
+            Job::slotResult( job ); // will set the error and emit result(this)
+            return;
+        }
+        subjobs.remove( job );
+        assert( subjobs.isEmpty() );
+        m_processedFiles++;
 
-      deleteNextFile();
-      break;
-   case STATE_DELETING_DIRS:
-      if ( job->error() )
-      {
-         Job::slotResult( job ); // will set the error and emit result(this)
-         return;
-      }
-      subjobs.remove( job );
-      assert( subjobs.isEmpty() );
-      m_processedDirs++;
-      //emit processedDirs( this, m_processedDirs );
-      //if (!m_shred)
-         //emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
+        deleteNextFile();
+        break;
+    case STATE_DELETING_DIRS:
+        if ( job->error() )
+        {
+            Job::slotResult( job ); // will set the error and emit result(this)
+            return;
+        }
+        subjobs.remove( job );
+        assert( subjobs.isEmpty() );
+        m_processedDirs++;
+        //emit processedDirs( this, m_processedDirs );
+        //if (!m_shred)
+        //emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
 
-      deleteNextDir();
-      break;
-   default:
-      assert(0);
-   }
+        deleteNextDir();
+        break;
+    default:
+        assert(0);
+    }
 }
 
 DeleteJob *KIO::del( const KURL& src, bool shred, bool showProgressInfo )

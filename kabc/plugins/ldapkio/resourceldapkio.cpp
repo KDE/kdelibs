@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
     This file is part of libkabc.
     Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
@@ -126,18 +127,16 @@ void ResourceLDAPKIO::enter_loop()
 
 void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
 {
-  KIO::UDSEntryListConstIterator it = list.begin();
-  KIO::UDSEntryListConstIterator end = list.end();
+  KIO::UDSEntryList::ConstIterator it = list.begin();
+  KIO::UDSEntryList::ConstIterator end = list.end();
   for (; it != end; ++it) {
-    KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-    for( ; it2 != (*it).end(); it2++ ) {
-      if ( (*it2).m_uds == KIO::UDS_URL ) {
-        KURL tmpurl( (*it2).m_str );
-        d->mResultDn = tmpurl.path();
-        kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
-        if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
-        return;
-      }
+    const QString urlStr = (*it).stringValue( KIO::UDS_URL );
+    if ( !urlStr.isEmpty() ) {
+      KURL tmpurl( urlStr );
+      d->mResultDn = tmpurl.path();
+      kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
+      if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
+      return;
     }
   }
 }

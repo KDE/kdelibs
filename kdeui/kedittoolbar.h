@@ -405,7 +405,7 @@ protected slots:
 private slots:
   void slotProcessExited( KProcess* );
 
-protected: // KDE4: make private
+private:
   void setupLayout();
 
   void insertActive(ToolbarItem *item, Q3ListViewItem *before, bool prepend = false);

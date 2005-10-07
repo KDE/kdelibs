@@ -212,20 +212,7 @@ KURL NetAccess::mostLocalURL(const KURL & url, QWidget* window)
     return url;
   }
 
-  QString path;
-
-  // Extract the local path from the KIO::UDSEntry
-  KIO::UDSEntry::ConstIterator it = entry.begin();
-  const KIO::UDSEntry::ConstIterator end = entry.end();
-  for ( ; it != end; ++it )
-  {
-    if ( (*it).m_uds == KIO::UDS_LOCAL_PATH )
-    {
-      path = (*it).m_str;
-      break;
-    }
-  }
-
+  const QString path = entry.stringValue( KIO::UDS_LOCAL_PATH );
   if ( !path.isEmpty() )
   {
     KURL new_url;

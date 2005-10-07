@@ -16,6 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <q3valuelist.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 #include <kapplication.h>

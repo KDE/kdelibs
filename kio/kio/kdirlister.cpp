@@ -224,7 +224,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
         lister->d->rootFileItem = 0;
 
       KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
-      jobs.insert( job, Q3ValueList<KIO::UDSEntry>() );
+      jobs.insert( job, KIO::UDSEntryList() );
 
       lister->jobStarted( job );
       lister->connectJob( job );
@@ -292,7 +292,7 @@ void KDirListerCache::stop( KDirLister *lister )
       //kdDebug(7004) << k_funcinfo << " found lister in list - for " << url << endl;
       bool ret = listers->removeRef( lister );
       Q_ASSERT( ret );
-      
+
       KIO::ListJob *job = jobForUrl( url );
       if ( job )
         lister->jobDone( job );
@@ -471,7 +471,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         const bool isLocal = item->url.isLocalFile();
         const bool isManuallyMounted = isLocal && KIO::manually_mounted( item->url.path() );
         bool containsManuallyMounted = false;
-        if ( !isManuallyMounted && item->lstItems && isLocal ) 
+        if ( !isManuallyMounted && item->lstItems && isLocal )
         {
           // Look for a manually-mounted directory inside
           // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
@@ -483,7 +483,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
               containsManuallyMounted = true;
         }
 
-        if ( isManuallyMounted || containsManuallyMounted ) 
+        if ( isManuallyMounted || containsManuallyMounted )
         {
           kdDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
             ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" ) << endl;
@@ -548,7 +548,7 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   Q_ASSERT( !listers || (listers && killed) );
 
   job = KIO::listDir( _dir, false /* no default GUI */ );
-  jobs.insert( job, Q3ValueList<KIO::UDSEntry>() );
+  jobs.insert( job, KIO::UDSEntryList() );
 
   connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
            this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
@@ -918,21 +918,12 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
   static const QString& dot = KGlobal::staticQString(".");
   static const QString& dotdot = KGlobal::staticQString("..");
 
-  KIO::UDSEntryListConstIterator it = entries.begin();
-  KIO::UDSEntryListConstIterator end = entries.end();
+  KIO::UDSEntryList::ConstIterator it = entries.begin();
+  KIO::UDSEntryList::ConstIterator end = entries.end();
 
   for ( ; it != end; ++it )
   {
-    QString name;
-
-    // find out about the name
-    KIO::UDSEntry::ConstIterator entit = (*it).begin();
-    for( ; entit != (*it).end(); ++entit )
-      if ( (*entit).m_uds == KIO::UDS_NAME )
-      {
-        name = (*entit).m_str;
-        break;
-      }
+    const QString name = (*it).stringValue( KIO::UDS_NAME );
 
     Q_ASSERT( !name.isEmpty() );
     if ( name.isEmpty() )
@@ -1095,7 +1086,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
     {
       kdl->jobStarted( job );
-      
+
       // do it like when starting a new list-job that will redirect later
       emit kdl->started( oldUrl );
 
@@ -1127,7 +1118,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
   if ( newDir )
   {
     kdDebug(7004) << "slotRedirection: " << newUrl.url() << " already in use" << endl;
-    
+
     // only in this case there can newUrl already be in urlsCurrentlyListed or urlsCurrentlyHeld
     delete dir;
 
@@ -1182,7 +1173,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
     else if ( holders )
       urlsCurrentlyHeld.insert( newUrl.url(), holders );
 
-    
+
     // emit old items: listers, holders. NOT: newUrlListers/newUrlHolders, they already have them listed
     // TODO: make this a separate method?
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
@@ -1256,13 +1247,13 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
 #ifdef DEBUG_CACHE
       printDebug();
 #endif
-      return; // only in this case the job doesn't need to be converted, 
+      return; // only in this case the job doesn't need to be converted,
     }
   }
 
   // make the job an update job
   job->disconnect( this );
-    
+
   connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
            this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
   connect( job, SIGNAL(result( KIO::Job * )),
@@ -1502,9 +1493,10 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   KFileItem *item = 0, *tmp;
 
-  Q3ValueList<KIO::UDSEntry> buf = jobs[job];
-  Q3ValueListIterator<KIO::UDSEntry> it = buf.begin();
-  for ( ; it != buf.end(); ++it )
+  KIO::UDSEntryList buf = jobs.value( job );
+  KIO::UDSEntryList::ConstIterator it = buf.begin();
+  const KIO::UDSEntryList::ConstIterator end = buf.end();
+  for ( ; it != end; ++it )
   {
     // Form the complete url
     if ( !item )
@@ -1512,8 +1504,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     else
       item->setUDSEntry( *it, jobUrl, delayedMimeTypes, true );
 
-    // Find out about the name
-    QString name = item->name();
+    const QString name = item->name();
     Q_ASSERT( !name.isEmpty() );
 
     // we duplicate the check for dotdot here, to avoid iterating over
@@ -1602,7 +1593,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_job )
 {
   KIO::ListJob *job;
-  QMap< KIO::ListJob *, Q3ValueList<KIO::UDSEntry> >::Iterator it = jobs.begin();
+  QMap< KIO::ListJob *, KIO::UDSEntryList >::ConstIterator it = jobs.begin();
   while ( it != jobs.end() )
   {
     job = it.key();
@@ -1769,7 +1760,7 @@ void KDirListerCache::printDebug()
     kdDebug(7004) << "   " << it2.currentKey() << "  " << it2.current()->count() << " listers: " << list << endl;
   }
 
-  QMap< KIO::ListJob *, Q3ValueList<KIO::UDSEntry> >::Iterator jit = jobs.begin();
+  QMap< KIO::ListJob *, KIO::UDSEntryList >::Iterator jit = jobs.begin();
   kdDebug(7004) << "Jobs: " << endl;
   for ( ; jit != jobs.end() ; ++jit )
     kdDebug(7004) << "   " << jit.key() << " listing " << joburl( jit.key() ).prettyURL() << ": " << (*jit).count() << " entries." << endl;
@@ -2062,7 +2053,7 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
   if ( !(d->changes & MIME_FILTER) )
     d->oldMimeFilter = d->mimeFilter;
 
-  if ( mimeFilter.find("all/allfiles") != mimeFilter.end() || 
+  if ( mimeFilter.find("all/allfiles") != mimeFilter.end() ||
        mimeFilter.find("all/all") != mimeFilter.end() )
     d->mimeFilter.clear();
   else

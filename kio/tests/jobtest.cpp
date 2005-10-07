@@ -64,12 +64,16 @@ void JobTest::initTestCase()
     // Start with a clean base dir
     cleanupTestCase();
     QDir dir; // TT: why not a static method?
-    bool ok = dir.mkdir( homeTmpDir() );
-    if ( !ok )
-        kdFatal() << "Couldn't create " << homeTmpDir() << endl;
-    ok = dir.mkdir( otherTmpDir() );
-    if ( !ok )
-        kdFatal() << "Couldn't create " << otherTmpDir() << endl;
+    if ( !QFile::exists( homeTmpDir() ) ) {
+        bool ok = dir.mkdir( homeTmpDir() );
+        if ( !ok )
+            kdFatal() << "Couldn't create " << homeTmpDir() << endl;
+    }
+    if ( !QFile::exists( otherTmpDir() ) ) {
+        bool ok = dir.mkdir( otherTmpDir() );
+        if ( !ok )
+            kdFatal() << "Couldn't create " << otherTmpDir() << endl;
+    }
 }
 
 void JobTest::cleanupTestCase()
@@ -364,8 +368,13 @@ void JobTest::moveFileNoPermissions()
 void JobTest::moveDirectoryNoPermissions()
 {
     kdDebug() << k_funcinfo << endl;
-    const QString src = "/etc";
-    const QString dest = homeTmpDir() + "etc";
+#if 0
+    QString src = "/etc/cups";
+    if ( !QFile::exists( src ) )
+        src= "/etc";
+#endif
+    QString src = "/etc";
+    const QString dest = homeTmpDir() + "mdnp";
     VERIFY( QFile::exists( src ) );
     VERIFY( QFileInfo( src ).isDir() );
     KURL u;
@@ -378,6 +387,7 @@ void JobTest::moveDirectoryNoPermissions()
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     VERIFY( !ok );
+    qDebug( "%d", KIO::NetAccess::lastError() );
     VERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
     VERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
     VERIFY( QFile::exists( src ) );
@@ -386,6 +396,10 @@ void JobTest::moveDirectoryNoPermissions()
 void JobTest::listRecursive()
 {
     const QString src = homeTmpDir();
+    // Add a symlink to a dir, to make sure we don't recurse into those
+    bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
+    Q_ASSERT( symlinkOk );
+
     KURL u;
     u.setPath( src );
     KIO::ListJob* job = KIO::listRecursive( u );
@@ -394,36 +408,35 @@ void JobTest::listRecursive()
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     VERIFY( ok );
     m_names.sort();
+    qDebug( "%s", qPrintable( m_names.join( "," ) ) );
     COMPARE( m_names.join( "," ).toLatin1(), QByteArray( ".,..,"
             "dirFromHome,dirFromHome/testfile,dirFromHome/testlink,dirFromHome_copied,"
             "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/dirFromHome/testlink,"
-            "dirFromHome_copied/testfile,dirFromHome_copied/testlink,"
+            "dirFromHome_copied/testfile,dirFromHome_copied/testlink,dirFromHome_link,"
             "fileFromHome,fileFromHome_copied" ) );
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 {
     for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
-        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-        QString displayName;
-        KURL url;
-        for( ; it2 != (*it).end(); it2++ ) {
-            switch ((*it2).m_uds) {
-            case KIO::UDS_NAME:
-                displayName = (*it2).m_str;
-                break;
-            case KIO::UDS_URL:
-                url = (*it2).m_str;
-                break;
-            }
-        }
+        QString displayName = (*it).stringValue( KIO::UDS_NAME );
+        //KURL url = (*it).stringValue( KIO::UDS_URL );
         m_names.append( displayName );
     }
 }
 
-static void fillOldUDSEntry( KIO::UDSEntry& entry, time_t now_time_t, const QString& nameStr )
+class OldUDSAtom
 {
-    KIO::UDSAtom atom;
+public:
+  QString m_str;
+  long long m_long;
+  unsigned int m_uds;
+};
+typedef QList<OldUDSAtom> OldUDSEntry; // well it was a QValueList :)
+
+static void fillOldUDSEntry( OldUDSEntry& entry, time_t now_time_t, const QString& nameStr )
+{
+    OldUDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
     atom.m_str = nameStr;
     entry.append( atom );
@@ -451,9 +464,9 @@ static void fillOldUDSEntry( KIO::UDSEntry& entry, time_t now_time_t, const QStr
 }
 
 // QHash or QMap? doesn't seem to make much difference.
-typedef QHash<uint, QVariant> UDSEntry4;
+typedef QHash<uint, QVariant> UDSEntryHV;
 
-static void fillNewUDSEntry( UDSEntry4& entry, const QDateTime& now, const QString& nameStr )
+static void fillUDSEntryHV( UDSEntryHV& entry, const QDateTime& now, const QString& nameStr )
 {
     entry.reserve( 8 );
     entry.insert( KIO::UDS_NAME, nameStr );
@@ -515,7 +528,8 @@ void JobTest::newApiPerformance()
     const QDateTime now = QDateTime::currentDateTime();
     const time_t now_time_t = now.toTime_t();
     // use 30000 for callgrind, at least 100 times that for timing-based
-    const int iterations = 30000 * 100;
+    // use /10 times that in svn, so that jobtest doesn't last forever
+    const int iterations = 30000 /* * 100 */ / 10;
     const int lookupIterations = 5 * iterations;
     const QString nameStr = QString::fromLatin1( "name" );
 
@@ -537,12 +551,12 @@ void JobTest::newApiPerformance()
         // Slave code
         time_t start = time(0);
         for (int i = 0; i < iterations; ++i) {
-            KIO::UDSEntry entry;
+            OldUDSEntry entry;
             fillOldUDSEntry( entry, now_time_t, nameStr );
         }
         qDebug("Old API: slave code: %ld", time(0) - start);
 
-        KIO::UDSEntry entry;
+        OldUDSEntry entry;
         fillOldUDSEntry( entry, now_time_t, nameStr );
         COMPARE( entry.count(), 8 );
 
@@ -555,7 +569,7 @@ void JobTest::newApiPerformance()
         KURL url;
 
         for (int i = 0; i < lookupIterations; ++i) {
-            KIO::UDSEntry::ConstIterator it2 = entry.begin();
+            OldUDSEntry::ConstIterator it2 = entry.begin();
             for( ; it2 != entry.end(); it2++ ) {
                 switch ((*it2).m_uds) {
                 case KIO::UDS_NAME:
@@ -589,14 +603,14 @@ void JobTest::newApiPerformance()
         // Slave code
         time_t start = time(0);
         for (int i = 0; i < iterations; ++i) {
-            UDSEntry4 entry;
-            fillNewUDSEntry( entry, now, nameStr );
+            UDSEntryHV entry;
+            fillUDSEntryHV( entry, now, nameStr );
         }
 
         qDebug("QHash+QVariant API: slave code: %ld", time(0) - start);
 
-        UDSEntry4 entry;
-        fillNewUDSEntry( entry, now, nameStr );
+        UDSEntryHV entry;
+        fillUDSEntryHV( entry, now, nameStr );
         COMPARE( entry.count(), 8 );
 
         start = time(0);
@@ -620,8 +634,8 @@ void JobTest::newApiPerformance()
             displayName = entry.value( KIO::UDS_NAME ).toString();
 
             // For a field that might not be there
-            UDSEntry4::const_iterator it = entry.find( KIO::UDS_URL );
-            const UDSEntry4::const_iterator end = entry.end();
+            UDSEntryHV::const_iterator it = entry.find( KIO::UDS_URL );
+            const UDSEntryHV::const_iterator end = entry.end();
             if ( it != end )
                  url = it.value().toString();
 
@@ -635,17 +649,9 @@ void JobTest::newApiPerformance()
         COMPARE( size, 123456ULL );
         COMPARE( displayName, QString::fromLatin1( "name" ) );
         VERIFY( url.isEmpty() );
-
-        /*
-        typedef QList<UDSEntry4> UDSEntryList4;
-        UDSEntryList4 lst4;
-        for( UDSEntryList4::ConstIterator it = lst4.begin(); it != lst4.end(); ++it ) {
-            QString displayName = entry.value( KIO::UDS_NAME ).toString();
-            KURL url = entry.value( KIO::UDS_URL ).toString();
-        }
-        */
     }
 
+    // ########### THE CHOSEN SOLUTION:
     {
         qDebug( "Timing new QHash+struct api..." );
 

@@ -41,14 +41,10 @@ SpeedTest::SpeedTest( const KURL & url )
 
 void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
 
-    UDSEntryListConstIterator it=list.begin();
-    for (; it != list.end(); ++it) {
-      UDSEntry::ConstIterator it2 = (*it).begin();
-        for( ; it2 != (*it).end(); it2++ ) {
-            if ((*it2).m_uds == UDS_NAME)
-              kdDebug() << ( *it2 ).m_str << endl;
-        }
-    }
+    UDSEntryList::ConstIterator it = list.begin();
+    const UDSEntryList::ConstIterator end = list.end();
+    for (; it != end; ++it)
+        kdDebug() << (*it).stringValue( UDS_NAME ) << endl;
 }
 
 

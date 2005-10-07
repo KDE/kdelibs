@@ -69,67 +69,40 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     kdDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
               << listing << endl;
 
-    bool mimetype_found = false;
-    bool name_found = false;
-    bool url_found = false;
-    QString name, mimetype;
+    const QString name = entry.stringValue( KIO::UDS_NAME );
+    QString mimetype = entry.stringValue( KIO::UDS_MIME_TYPE );
     KURL url;
-
-    KIO::UDSEntry::iterator it = entry.begin();
-    KIO::UDSEntry::iterator end = entry.end();
-
-    for(; it!=end; ++it)
+    const QString urlStr = entry.stringValue( KIO::UDS_URL );
+    const bool url_found = !urlStr.isEmpty();
+    if ( url_found )
     {
+        url = urlStr;
         KURL new_url = m_requestedURL;
-
-        switch( (*it).m_uds )
-        {
-        case KIO::UDS_NAME:
-            name_found = true;
-            name = (*it).m_str;
-            kdDebug() << "Name = " << name << endl;
-	    break;
-        case KIO::UDS_URL:
-            url_found = true;
-            url = (*it).m_str;
-	    if (listing)
-            {
-                new_url.addPath(url.fileName());
-            }
-            (*it).m_str = new_url.url();
-            kdDebug() << "URL = " << url << endl;
-            kdDebug() << "New URL = " << (*it).m_str << endl;
-            break;
-        case KIO::UDS_MIME_TYPE:
-            mimetype_found = true;
-            mimetype = (*it).m_str;
-            kdDebug() << "Mimetype = " << (*it).m_str << endl;
-            break;
-        }
+        if (listing)
+            new_url.addPath(url.fileName());
+        // ## Didn't find a way to use an iterator instead of re-doing a key lookup
+        entry.insert( KIO::UDS_URL, new_url.url() );
+        kdDebug() << "URL = " << url << endl;
+        kdDebug() << "New URL = " << urlStr << endl;
     }
 
-    if (!mimetype_found)
+    if (mimetype.isEmpty())
     {
         KURL new_url = m_processedURL;
         if (url_found && listing)
         {
             new_url.addPath( url.fileName() );
         }
-        else if (name_found && listing)
+        else if (listing)
         {
             new_url.addPath( name );
         }
 
-        KMimeType::Ptr mime = KMimeType::findByURL(new_url);
-        mimetype = mime->name();
+        mimetype = KMimeType::findByURL(new_url)->name();
 
-        KIO::UDSAtom atom;
-        atom.m_uds = KIO::UDS_MIME_TYPE;
-        atom.m_long = 0;
-        atom.m_str = mimetype;
-        entry.append(atom);
+        entry.insert( KIO::UDS_MIME_TYPE, mimetype );
 
-        kdDebug() << "New Mimetype = " << mime->name() << endl;
+        kdDebug() << "New Mimetype = " << mimetype << endl;
     }
 
     if ( m_processedURL.isLocalFile() )
@@ -140,11 +113,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath( name );
         }
 
-        KIO::UDSAtom atom;
-        atom.m_uds = KIO::UDS_LOCAL_PATH;
-        atom.m_long = 0;
-        atom.m_str = new_url.path();
-        entry.append(atom);
+        entry.insert( KIO::UDS_LOCAL_PATH, new_url.path() );
     }
 }
 
@@ -425,7 +394,7 @@ void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
     KIO::UDSEntryList final_entries = entries;
 
     KIO::UDSEntryList::iterator it = final_entries.begin();
-    KIO::UDSEntryList::iterator end = final_entries.end();
+    const KIO::UDSEntryList::iterator end = final_entries.end();
 
     for(; it!=end; ++it)
     {

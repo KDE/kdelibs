@@ -2152,18 +2152,11 @@ void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
   }
 
   const UDSEntry entry = dynamic_cast<KIO::StatJob *>( _job )->statResult();
-  UDSEntry::ConstIterator it = entry.begin();
-  const UDSEntry::ConstIterator end = entry.end();
-  for ( ; it != end; ++it ) {
-    if ( ( *it ).m_uds == UDS_MODIFICATION_TIME ) {
-     break;
-    }
-  }
+  const time_t lastModified = entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
 
   // If the filesystem supports modification times, only reload the
   // user-defined stylesheet if necessary - otherwise always reload.
-  if ( it != end ) {
-    const time_t lastModified = static_cast<time_t>( ( *it ).m_long );
+  if ( lastModified != static_cast<time_t>(-1) ) {
     if ( d->m_userStyleSheetLastModified >= lastModified ) {
       return;
     }
@@ -3961,7 +3954,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
               true))  // don't care if the ref changes!
     {
       m_url = cURL;
-      emit d->m_extension->openURLNotify();      
+      emit d->m_extension->openURLNotify();
       if ( !gotoAnchor( m_url.encodedHtmlRef()) )
         gotoAnchor( m_url.htmlRef() );
       emit d->m_extension->setLocationBarURL( m_url.prettyURL() );

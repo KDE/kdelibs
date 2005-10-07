@@ -1030,27 +1030,18 @@ void KRun::slotStatResult( KIO::Job * job )
     if(!dynamic_cast<KIO::StatJob*>(job))
         kdFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
-    QString knownMimeType;
-    KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-    KIO::UDSEntry::ConstIterator it = entry.begin();
-    for( ; it != entry.end(); it++ ) {
-        switch( (*it).m_uds ) {
-        case KIO::UDS_FILE_TYPE:
-            if ( S_ISDIR( (mode_t)((*it).m_long) ) )
-                m_bIsDirectory = true; // it's a dir
-            else
-                m_bScanFile = true; // it's a file
-            break;
-        case KIO::UDS_MIME_TYPE: // mimetype already known? (e.g. print:/manager)
-            knownMimeType = (*it).m_str;
-            break;
-        case KIO::UDS_LOCAL_PATH:
-            d->m_localPath = (*it).m_str;
-            break;
-        default:
-            break;
-        }
-    }
+    const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+    const mode_t mode = entry.numberValue( KIO::UDS_FILE_TYPE );
+    if ( S_ISDIR( mode ) )
+        m_bIsDirectory = true; // it's a dir
+    else
+        m_bScanFile = true; // it's a file
+
+    d->m_localPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+
+    // mimetype already known? (e.g. print:/manager)
+    const QString knownMimeType = entry.stringValue( KIO::UDS_MIME_TYPE ) ;
+
     if ( !knownMimeType.isEmpty() )
     {
         foundMimeType( knownMimeType );

@@ -1,5 +1,6 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,8 +22,11 @@
 #include <kdelibs_export.h>
 
 #include <qstring.h>
-#include <q3valuelist.h>
+#include <qhash.h>
 #include <qmap.h>
+#include <qlist.h>
+
+#include <sys/stat.h> // S_ISDIR
 
 class KURL;
 
@@ -293,83 +297,6 @@ namespace KIO
   KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
 
   /**
-   * Constants used to specify the type of a KUDSAtom.
-   */
-  enum UDSAtomTypes {
-    /// First let's define the item types
-    UDS_STRING = 1,
-    UDS_LONG = 2,
-    UDS_TIME = 4 | UDS_LONG,
-
-    // To add new UDS entries below, you can use a step of 8
-    // (i.e. 8, 16, 24, 32, etc.) Only the last 3 bits are a bitfield,
-    // the rest isn't.
-
-    /// Size of the file
-    UDS_SIZE = 8 | UDS_LONG,
-    UDS_SIZE_LARGE = 32768 | UDS_LONG, // For internal use only
-    /// User ID of the file owner
-    UDS_USER = 16 | UDS_STRING,
-    /// Name of the icon, that should be used for displaying.
-    /// It overrides all other detection mechanisms
-    /// @since 3.2
-    UDS_ICON_NAME = 24 | UDS_STRING,
-    /// Group ID of the file owner
-    UDS_GROUP =	32 | UDS_STRING,
-    /// Extra data (used only if you specified Columns/ColumnsTypes)
-    /// This is the only UDS entry that can be repeated.
-    /// @since 3.2
-    UDS_EXTRA = 48 | UDS_STRING,
-    /// Filename - as displayed in directory listings etc.
-    /// "." has the usual special meaning of "current directory"
-    UDS_NAME = 64 | UDS_STRING,
-    /// A local file path if the ioslave display files sitting
-    /// on the local filesystem (but in another hierarchy, e.g. media:/)
-    UDS_LOCAL_PATH = 72 | UDS_STRING,
-    /// Treat the file as a hidden file or as a normal file,
-    /// regardless of (the absence of) a leading dot in the filename.
-    UDS_HIDDEN = 80 | UDS_LONG,
-    /// Indicates that the entry has extended ACL entries
-    /// @since 3.5
-    UDS_EXTENDED_ACL = 88 | UDS_LONG,
-    /// The access control list serialized into a single string.
-    /// @since 3.5
-    UDS_ACL_STRING = 96 | UDS_STRING,
-    /// The default access control list serialized into a single string.
-    /// Only available for directories.
-    /// @since 3.5
-    UDS_DEFAULT_ACL_STRING = 104 | UDS_STRING,
-
-    // available: 112, 120 
-
-    /// Access permissions (part of the mode returned by stat)
-    UDS_ACCESS = 128 | UDS_LONG,
-    /// The last time the file was modified
-    UDS_MODIFICATION_TIME = 256 | UDS_TIME,
-    /// The last time the file was opened
-    UDS_ACCESS_TIME = 512 | UDS_TIME,
-    /// The time the file was created
-    UDS_CREATION_TIME = 1024 | UDS_TIME,
-    /// File type, part of the mode returned by stat
-    /// (for a link, this returns the file type of the pointed item)
-    /// check UDS_LINK_DEST to know if this is a link
-    UDS_FILE_TYPE = 2048 | UDS_LONG,
-    /// Name of the file where the link points to
-    /// Allows to check for a symlink (don't use S_ISLNK !)
-    UDS_LINK_DEST = 4096 | UDS_STRING,
-    /// An alternative URL (If different from the caption)
-    UDS_URL = 8192 | UDS_STRING,
-    /// A mime type; prevents guessing
-    UDS_MIME_TYPE = 16384 | UDS_STRING,
-    /// A mime type to be used for displaying only.
-    /// But when 'running' the file, the mimetype is re-determined
-    UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING,
-    /// XML properties, e.g. for WebDAV
-    /// @since 3.1
-    UDS_XML_PROPERTIES = 32768 | UDS_STRING
-  };
-
-  /**
    * Specifies how to use the cache.
    * @see parseCacheControl()
    * @see getCacheControlString()
@@ -459,70 +386,197 @@ namespace KIO
    */
   KIO_EXPORT bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
 
+  /**
+   * Constants used to specify the type of a UDSField.
+   */
+  enum UDSFieldTypes {
 
-/************
- *
- * Universal Directory Service
- *
- * Any file or URL can be represented by the UDSEntry type below
- * A UDSEntry is a list of atoms
- * Each atom contains a specific bit of information for the file
- *
- * The following UDS constants represent the different possible values
- * for m_uds in the UDS atom structure below
- *
- * Each atom contains a specific bit of information for the file
+    // First let's define the item types: bit field
+
+    /// Indicates that the field is a QString
+    UDS_STRING = 0x01000000,
+    /// Indicates that the field is a number (long long)
+    UDS_NUMBER   = 0x02000000,
+    /// Indicates that the field represents a time, which is modelled by a long long
+    UDS_TIME   = 0x04000000 | UDS_NUMBER,
+
+    // The rest isn't a bit field
+
+    /// Size of the file
+    UDS_SIZE = 1 | UDS_NUMBER,
+    /// @internal
+    UDS_SIZE_LARGE = 2 | UDS_NUMBER,
+    /// User ID of the file owner
+    UDS_USER = 3 | UDS_STRING,
+    /// Name of the icon, that should be used for displaying.
+    /// It overrides all other detection mechanisms
+    UDS_ICON_NAME = 4 | UDS_STRING,
+    /// Group ID of the file owner
+    UDS_GROUP =	5 | UDS_STRING,
+    /// Filename - as displayed in directory listings etc.
+    /// "." has the usual special meaning of "current directory"
+    UDS_NAME = 6 | UDS_STRING,
+    /// A local file path if the ioslave display files sitting
+    /// on the local filesystem (but in another hierarchy, e.g. media:/)
+    UDS_LOCAL_PATH = 7 | UDS_STRING,
+    /// Treat the file as a hidden file (if set to 1) or as a normal file (if set to 0).
+    /// This field overrides the default behavior (the check for a leading dot in the filename).
+    UDS_HIDDEN = 8 | UDS_NUMBER,
+    /// Access permissions (part of the mode returned by stat)
+    UDS_ACCESS = 9 | UDS_NUMBER,
+    /// The last time the file was modified
+    UDS_MODIFICATION_TIME = 10 | UDS_TIME,
+    /// The last time the file was opened
+    UDS_ACCESS_TIME = 11 | UDS_TIME,
+    /// The time the file was created
+    UDS_CREATION_TIME = 12 | UDS_TIME,
+    /// File type, part of the mode returned by stat
+    /// (for a link, this returns the file type of the pointed item)
+    /// check UDS_LINK_DEST to know if this is a link
+    UDS_FILE_TYPE = 13 | UDS_NUMBER,
+    /// Name of the file where the link points to
+    /// Allows to check for a symlink (don't use S_ISLNK !)
+    UDS_LINK_DEST = 14 | UDS_STRING,
+    /// An alternative URL (If different from the caption)
+    UDS_URL = 15 | UDS_STRING,
+    /// A mime type; prevents guessing
+    UDS_MIME_TYPE = 16 | UDS_STRING,
+    /// A mime type to be used for displaying only.
+    /// But when 'running' the file, the mimetype is re-determined
+    UDS_GUESSED_MIME_TYPE = 17 | UDS_STRING,
+    /// XML properties, e.g. for WebDAV
+    /// @since 3.1
+    UDS_XML_PROPERTIES = 18 | UDS_STRING,
+
+    /// Indicates that the entry has extended ACL entries
+    /// @since 3.5
+    UDS_EXTENDED_ACL = 19 | UDS_NUMBER,
+    /// The access control list serialized into a single string.
+    /// @since 3.5
+    UDS_ACL_STRING = 20 | UDS_STRING,
+    /// The default access control list serialized into a single string.
+    /// Only available for directories.
+    /// @since 3.5
+    UDS_DEFAULT_ACL_STRING = 21 | UDS_STRING,
+
+    /// Extra data (used only if you specified Columns/ColumnsTypes)
+    /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
+    /// until UDS_EXTRA_END.
+    /// @since 3.2
+    UDS_EXTRA = 100 | UDS_STRING,
+    /// Extra data (used only if you specified Columns/ColumnsTypes)
+    /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
+    /// until UDS_EXTRA_END.
+    /// @since 3.2
+    UDS_EXTRA_END = 140 | UDS_STRING
+  };
+
+/**
+ * A field inside a UDSEntry, to store information about a file or URL.
+ * Each field is for instance the name, the size, the modification time of the file, etc.
+ * You never need to use this class directly, see UDSEntry for the public API.
  */
-class KIO_EXPORT UDSAtom
+class KIO_EXPORT UDSField // KDE4: naming: I would get rid of "UDS" everywhere, but what about the UDS_X constants?
 {
 public:
+  /// @internal needed by QHash
+  UDSField() {}
   /**
-   * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
+   * Create a field holding a string.
+   * This constructor is called implicitly when doing
+   * \code
+   * entry.insert( KIO::UDS_XXX, myString )
+   * \endcode
    */
-  QString m_str;
+  UDSField( const QString& s ) : m_str( s ) {}
   /**
-   * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
+   * Create a field holding a long long.
+   * This constructor is called implicitly when doing
+   * \code
+   * entry.insert( KIO::UDS_XXX, myNumber )
+   * \endcode
    */
-  long long m_long;
+  UDSField( long long l ) : m_long( l ) {}
 
   /**
-   * Holds one of the UDS_XXX constants
+   * @return the string value held by this UDSField
    */
-  unsigned int m_uds;
+  QString toString() const { return m_str; }
+
+  /**
+   * @return the number value held by this UDSField
+   */
+  long long toNumber() const { return m_long; }
+
+private:
+  /// Whether 'm_str' or 'm_long' is used depends on the field type, stored as the key in UDSEntry.
+  QString m_str;
+  /// Whether 'm_str' or 'm_long' is used depends on the field type, stored as the key in UDSEntry.
+  long long m_long;
 };
 
 /**
- * An entry is the list of atoms containing all the informations for a file or URL
- */
-typedef Q3ValueList<UDSAtom> UDSEntry;
-typedef Q3ValueList<UDSEntry> UDSEntryList;
-typedef Q3ValueListIterator<UDSEntry> UDSEntryListIterator;
-typedef Q3ValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
-
-////// KDE4 TODO: m_uds is the key, QVariant would do the job as the value (to allow QDateTime etc.).
-//////  -> remove UDSAtom, turn UDSEntry into QHash<uint, QVariant>, and UDSEntryList can be a QList.
-////// KDE4 TODO: rename UDSAtomTypes to UDSFieldType or something (no more atoms).
-////// The word UDS isn't really well-known either... ListEntry isn't really good for stat() result though...
-
-/**
- * UDS entry is the data structure representing all the information about a given URL
+ * Universal Directory Service
+ *
+ * UDS entry is the data structure representing all the fields about a given URL
  * (file or directory).
  *
  * The KIO::listDir() and KIO:stat() operations use this data structure.
  *
- * KIO defines a number of fields, see the UDS_XXX enums.
+ * KIO defines a number of fields, see the UDS_XXX enums (see UDSFieldTypes).
  *
+ * UDSEntry is a hashtable, so you can retrieve fields directly.
  * For instance, to retrieve the name of the entry, use:
  * \code
- * QString displayName = entry.value( KIO::UDS_NAME ).toString();
+ * QString displayName = entry.stringValue( KIO::UDS_NAME );
+ * \endcode
+ *
+ * To know the modification time of the file/url:
+ * \code
+ *  time_t mtime = entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
+ *  if ( mtime != -1 )
+ *      ...
  * \endcode
  */
-typedef QHash<uint, QVariant> UDSEntry4;
+class UDSEntry : public QHash<uint, UDSField>
+{
+public:
+  QString stringValue( uint field ) const {
+    return value( field ).toString();
+  }
+  long long numberValue( uint field, long long defaultValue = 0 ) const {
+    const_iterator it = find( field );
+    return it != constEnd() ? it.value().toNumber() : defaultValue;
+  }
+
+  // Convenience methods.
+  // Let's not add one method per field, only methods that have some more logic
+  // than just calling stringValue(field) or numberValue(field).
+
+  /// @return true if this entry is a directory (or a link to a directory)
+  bool isDir() const { return S_ISDIR( numberValue( KIO::UDS_FILE_TYPE ) ); }
+  /// @return true if this entry is a link
+  bool isLink() const { return !stringValue( KIO::UDS_LINK_DEST ).isEmpty(); }
+};
 
 /**
- * A list of UDS entries, as returned by KIO::listDir()
+ * A directory listing is a list of UDSEntry instances.
+ *
+ * To list the name and size of all the files in a directory listing you would do:
+ * \code
+ *   KIO::UDSEntryList::ConstIterator it = entries.begin();
+ *   const KIO::UDSEntryList::ConstIterator end = entries.end();
+ *   for (; it != end; ++it) {
+ *     const KIO::UDSEntry& entry = *it;
+ *     QString name = entry.stringValue( KIO::UDS_NAME );
+ *     bool isDir = S_ISDIR( entry.numberValue( KIO::UDS_FILE_TYPE ) );
+ *     KIO::filesize_t size = entry.numberValue( KIO::UDS_SIZE, -1 );
+ *     ...
+ *   }
+ * \endcode
  */
-typedef QList<UDSEntry4> UDSEntryList4;
+typedef QList<UDSEntry> UDSEntryList;
+
 
 /**
  * MetaData is a simple map of key/value strings.

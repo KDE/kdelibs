@@ -19,6 +19,19 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kio/chmodjob.h"
+
+#include "kio/job.h"
+
+#include <kdirnotify_stub.h>
+#include <kglobal.h>
+
+#include <klocale.h>
+#include <kdebug.h>
+#include <kmessagebox.h>
+#include <qtimer.h>
+#include <qfile.h>
+
 #include <config.h>
 
 #include <pwd.h>
@@ -26,17 +39,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <assert.h>
-
-#include <qtimer.h>
-#include <qfile.h>
-#include <klocale.h>
-#include <kdebug.h>
-#include <kmessagebox.h>
-
-#include "kio/job.h"
-#include "kio/chmodjob.h"
-
-#include <kdirnotify_stub.h>
 
 using namespace KIO;
 
@@ -95,34 +97,17 @@ void ChmodJob::processList()
 
 void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
-    KIO::UDSEntryListConstIterator it = list.begin();
-    KIO::UDSEntryListConstIterator end = list.end();
+    KIO::UDSEntryList::ConstIterator it = list.begin();
+    KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
-        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-        mode_t permissions = 0;
-        bool isDir = false;
-        bool isLink = false;
-        QString relativePath;
-        for( ; it2 != (*it).end(); it2++ ) {
-          switch( (*it2).m_uds ) {
-            case KIO::UDS_NAME:
-              relativePath = (*it2).m_str;
-              break;
-            case KIO::UDS_FILE_TYPE:
-              isDir = S_ISDIR((*it2).m_long);
-              break;
-            case KIO::UDS_LINK_DEST:
-              isLink = !(*it2).m_str.isEmpty();
-              break;
-            case KIO::UDS_ACCESS:
-              permissions = (mode_t)((*it2).m_long);
-              break;
-            default:
-              break;
-          }
-        }
-        if ( !isLink && relativePath != QLatin1String("..") )
+        const KIO::UDSEntry& entry = *it;
+        const bool isLink = !entry.stringValue( KIO::UDS_STRING ).isEmpty();
+        const QString relativePath = entry.stringValue( KIO::UDS_NAME );
+        static const QString& dotdot = KGlobal::staticQString("..");
+        if ( !isLink && relativePath != dotdot )
         {
+            const mode_t permissions = entry.numberValue( KIO::UDS_ACCESS );
+
             ChmodInfo info;
             info.url = m_lstItems.first()->url(); // base directory
             info.url.addPath( relativePath );
@@ -130,7 +115,7 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             // Emulate -X: only give +x to files that had a +x bit already
             // So the check is the opposite : if the file had no x bit, don't touch x bits
             // For dirs this doesn't apply
-            if ( !isDir )
+            if ( !entry.isDir() )
             {
                 int newPerms = m_permissions & mask;
                 if ( (newPerms & 0111) && !(permissions & 0111) )

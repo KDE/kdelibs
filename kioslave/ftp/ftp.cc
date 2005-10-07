@@ -166,7 +166,7 @@ int FtpSocket::connectSocket(const QString& host, const QString& port,
   m_socket.setBlocking(true);
 
   if(!m_socket.connect(host, port))
-  { 
+  {
     int iErrorCode = ERR_COULD_NOT_CONNECT;
     if (m_socket.error() == KStreamSocket::LookupFailure)
       iErrorCode = ERR_HOST_NOT_FOUND;
@@ -388,7 +388,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
 bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port )
 {
   QString serv;
-  if ( port != 0 )  
+  if ( port != 0 )
     serv = QString::number( port );
   else
     serv = QLatin1String( "ftp" );
@@ -670,7 +670,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   if( num > 0 )
     ftpResponse(-1);
   else
-  { 
+  {
     m_iRespType = m_iRespCode = 0;
   }
 
@@ -1160,39 +1160,20 @@ void Ftp::chmod( const KURL & url, int permissions )
 void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntry& entry, bool isDir )
 {
   assert(entry.count() == 0); // by contract :-)
-  UDSAtom atom;
-  atom.m_uds = UDS_NAME;
-  atom.m_str = filename;
-  entry.append( atom );
 
-  atom.m_uds = UDS_SIZE;
-  atom.m_long = ftpEnt.size;
-  entry.append( atom );
-
-  atom.m_uds = UDS_MODIFICATION_TIME;
-  atom.m_long = ftpEnt.date;
-  entry.append( atom );
-
-  atom.m_uds = UDS_ACCESS;
-  atom.m_long = ftpEnt.access;
-  entry.append( atom );
-
-  atom.m_uds = UDS_USER;
-  atom.m_str = ftpEnt.owner;
-  entry.append( atom );
-
+  entry.insert( UDS_NAME, filename );
+  entry.insert( UDS_SIZE, ftpEnt.size );
+  entry.insert( UDS_MODIFICATION_TIME, ftpEnt.date );
+  entry.insert( UDS_ACCESS, ftpEnt.access );
+  entry.insert( UDS_USER, ftpEnt.owner );
   if ( !ftpEnt.group.isEmpty() )
   {
-    atom.m_uds = UDS_GROUP;
-    atom.m_str = ftpEnt.group;
-    entry.append( atom );
+    entry.insert( UDS_GROUP, ftpEnt.group );
   }
 
   if ( !ftpEnt.link.isEmpty() )
   {
-    atom.m_uds = UDS_LINK_DEST;
-    atom.m_str = ftpEnt.link;
-    entry.append( atom );
+    entry.insert( UDS_LINK_DEST, ftpEnt.link );
 
     KMimeType::Ptr mime = KMimeType::findByURL( KURL("ftp://host/" + filename ) );
     // Links on ftp sites are often links to dirs, and we have no way to check
@@ -1202,44 +1183,25 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
     if ( mime->name() == KMimeType::defaultMimeType() )
     {
       kdDebug(7102) << "Setting guessed mime type to inode/directory for " << filename << endl;
-      atom.m_uds = UDS_GUESSED_MIME_TYPE;
-      atom.m_str = "inode/directory";
-      entry.append( atom );
+      entry.insert( UDS_GUESSED_MIME_TYPE, QString::fromLatin1( "inode/directory" ) );
       isDir = true;
     }
   }
 
-  atom.m_uds = UDS_FILE_TYPE;
-  atom.m_long = isDir ? S_IFDIR : ftpEnt.type;
-  entry.append( atom );
-
-  /* atom.m_uds = UDS_ACCESS_TIME;
-     atom.m_long = buff.st_atime;
-     entry.append( atom );
-
-     atom.m_uds = UDS_CREATION_TIME;
-     atom.m_long = buff.st_ctime;
-     entry.append( atom ); */
+  entry.insert( UDS_FILE_TYPE, isDir ? S_IFDIR : ftpEnt.type );
+  // entry.insert UDS_ACCESS_TIME,buff.st_atime);
+  // entry.insert UDS_CREATION_TIME,buff.st_ctime);
 }
 
 
 void Ftp::ftpShortStatAnswer( const QString& filename, bool isDir )
 {
     UDSEntry entry;
-    UDSAtom atom;
 
-    atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = filename;
-    entry.append( atom );
 
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = isDir ? S_IFDIR : S_IFREG;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-    entry.append( atom );
-
+    entry.insert( KIO::UDS_NAME, filename );
+    entry.insert( KIO::UDS_FILE_TYPE, isDir ? S_IFDIR : S_IFREG );
+    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
     // No details about size, ownership, group, etc.
 
     statEntry(entry);
@@ -1282,26 +1244,12 @@ void Ftp::stat( const KURL &url)
   if( path.isEmpty() || path == "/" )
   {
     UDSEntry entry;
-    UDSAtom atom;
-
-    atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = QString::null;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFDIR;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_USER;
-    atom.m_str = "root";
-    entry.append( atom );
-    atom.m_uds = KIO::UDS_GROUP;
-    entry.append( atom );
-
+    //entry.insert( KIO::UDS_NAME, UDSField( QString::null ) );
+    entry.insert( KIO::UDS_NAME, QString::fromLatin1( "." ) );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFDIR );
+    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+    entry.insert( KIO::UDS_USER, QString::fromLatin1( "root" ) );
+    entry.insert( KIO::UDS_GROUP, QString::fromLatin1( "root" ) );
     // no size
 
     statEntry( entry );
@@ -1349,20 +1297,9 @@ void Ftp::stat( const KURL &url)
     // Don't list the parent dir. Too slow, might not show it, etc.
     // Just return that it's a dir.
     UDSEntry entry;
-    UDSAtom atom;
-
-    atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = filename;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFDIR;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-    entry.append( atom );
-
+    entry.insert( KIO::UDS_NAME, filename );
+    entry.insert( KIO::UDS_FILE_TYPE, S_IFDIR );
+    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
     // No clue about size, ownership, group, etc.
 
     statEntry(entry);

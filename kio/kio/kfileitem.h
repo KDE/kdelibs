@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
 
@@ -605,6 +606,7 @@ private:
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
   mutable QString m_access;
+  QString m_iconName;
   QMap<const void*, void*> m_extra;
   mutable KFileMetaInfo m_metaInfo;
 

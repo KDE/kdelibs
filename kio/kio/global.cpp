@@ -18,6 +18,18 @@
 
 #include <config.h>
 
+#include "kio/global.h"
+#include "kio/job.h"
+
+#include <kdebug.h>
+#include <klocale.h>
+#include <kglobal.h>
+#include <kprotocolmanager.h>
+#include <kde_file.h>
+
+#include <qbytearray.h>
+#include <qdatetime.h>
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/uio.h>
@@ -28,18 +40,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-
-#include "kio/global.h"
-#include "kio/job.h"
-
-#include <kdebug.h>
-#include <klocale.h>
-#include <kglobal.h>
-#include <kprotocolmanager.h>
-#include <kde_file.h>
-
-#include <q3cstring.h>
-#include <qdatetime.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -1323,10 +1323,10 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
-#ifdef __CYGWIN__                
-#define hasmntopt(var,opt) (0)   
-#endif                           
-                                 
+#ifdef __CYGWIN__
+#define hasmntopt(var,opt) (0)
+#endif
+
 // There are (at least) four kind of APIs:
 // setmntent + getmntent + struct mntent (linux...)
 //             getmntent + struct mnttab
@@ -1372,7 +1372,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	FILE *mnttab;
 	struct mnttab mnt;
 	int len;
-	Q3CString devname;
+	QByteArray devname;
 
 	if( (volpath = volmgt_root()) == NULL ) {
 		kdDebug( 7007 ) << "findDeviceMountPoint: "
@@ -1421,7 +1421,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 #else
 
     char    realpath_buffer[MAXPATHLEN];
-    Q3CString realname;
+    QByteArray realname;
 
     realname = QFile::encodeName(filename);
     /* If the path contains symlinks, get the real name */
@@ -1439,7 +1439,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     for (int i=0;i<num_fs;i++) {
 
-        Q3CString device_name = mounted[i].f_mntfromname;
+        QByteArray device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1500,7 +1500,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	    mountedfrom[fsname_len] = '\0';
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
-            Q3CString device_name = mountedfrom;
+            QByteArray device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1550,7 +1550,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     {
       // There may be symbolic links into the /etc/mnttab
       // So we have to find the real device name here as well!
-      Q3CString device_name = FSNAME(me);
+      QByteArray device_name = FSNAME(me);
       if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
@@ -1706,7 +1706,7 @@ static QString get_mount_info(const QString& filename,
 
     for (int i=0;i<num_fs;i++) {
 
-        Q3CString device_name = mounted[i].f_mntfromname;
+        QByteArray device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1773,7 +1773,7 @@ static QString get_mount_info(const QString& filename,
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
             /* get the mount-from information: */
-            Q3CString device_name = mountedfrom;
+            QByteArray device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1838,8 +1838,8 @@ static QString get_mount_info(const QString& filename,
             {
                 // The next GETMNTENT call may destroy 'me'
                 // Copy out the info that we need
-                Q3CString fsname_me = FSNAME(me);
-                Q3CString mounttype_me = MOUNTTYPE(me);
+                QByteArray fsname_me = FSNAME(me);
+                QByteArray mounttype_me = MOUNTTYPE(me);
 
                 STRUCT_SETMNTENT fstab;
                 if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {
@@ -1894,7 +1894,7 @@ static QString get_mount_info(const QString& filename,
 //dummy
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
-	return QString::null;
+    return QString::null;
 }
 #endif
 
@@ -1906,7 +1906,7 @@ QString KIO::findPathMountPoint(const QString& filename)
   return get_mount_info(filename, isautofs, isslow, ismanual, fstype);
 #else //!Q_OS_UNIX
   return QString::null;
-#endif 
+#endif
 }
 
 bool KIO::manually_mounted(const QString& filename)
@@ -1918,7 +1918,7 @@ bool KIO::manually_mounted(const QString& filename)
   return !mountPoint.isNull() && (ismanual == Right);
 #else //!Q_OS_UNIX
   return false;
-#endif 
+#endif
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
@@ -1930,7 +1930,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
   return !mountPoint.isNull() && (isslow == Right);
 #else //!Q_OS_UNIX
   return false;
-#endif 
+#endif
 }
 
 bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
@@ -1952,7 +1952,7 @@ bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
   case CaseInsensitive:
       return isMsDos;
   }
-#endif 
+#endif
   return false;
 }
 

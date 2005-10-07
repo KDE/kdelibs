@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
                  2001 Carsten Pfeiffer <pfeiffer@kde.org>
@@ -172,84 +173,49 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   // determine the mimetype
   if (!m_pMimeType && !m_url.isEmpty())
   {
-      bool accurate = false;
-      bool isLocalURL;
-      KURL url = mostLocalURL(isLocalURL);
+    bool accurate = false;
+    bool isLocalURL;
+    KURL url = mostLocalURL(isLocalURL);
 
-      m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
-                                          // use fast mode if not mimetype on demand
-                                          _determineMimeTypeOnDemand, &accurate );
-      //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
-      // if we didn't use fast mode, or if we got a result, then this is the mimetype
-      // otherwise, determineMimeType will be able to do better.
-      m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
+    m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
+                                        // use fast mode if not mimetype on demand
+                                        _determineMimeTypeOnDemand, &accurate );
+    //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
+    // if we didn't use fast mode, or if we got a result, then this is the mimetype
+    // otherwise, determineMimeType will be able to do better.
+    m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
   }
 }
 
 void KFileItem::readUDSEntry( bool _urlIsDirectory )
 {
-  // extract the mode and the filename from the KIO::UDS Entry
-  bool UDS_URL_seen = false;
+  // extract fields from the KIO::UDS Entry
 
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it ) {
-    switch ((*it).m_uds) {
-
-      case KIO::UDS_FILE_TYPE:
-        m_fileMode = (mode_t)((*it).m_long);
-        break;
-
-      case KIO::UDS_ACCESS:
-        m_permissions = (mode_t)((*it).m_long);
-        break;
-
-      case KIO::UDS_USER:
-        m_user = ((*it).m_str);
-        break;
-
-      case KIO::UDS_GROUP:
-        m_group = ((*it).m_str);
-        break;
-
-      case KIO::UDS_NAME:
-        m_strName = (*it).m_str;
-        m_strText = KIO::decodeFileName( m_strName );
-        break;
-
-      case KIO::UDS_URL:
-        UDS_URL_seen = true;
-        m_url = KURL((*it).m_str);
-        if ( m_url.isLocalFile() )
-           m_bIsLocalURL = true;
-        break;
-
-      case KIO::UDS_MIME_TYPE:
-        m_pMimeType = KMimeType::mimeType((*it).m_str);
-        m_bMimeTypeKnown = true;
-        break;
-
-      case KIO::UDS_GUESSED_MIME_TYPE:
-        m_guessedMimeType = (*it).m_str;
-        break;
-
-      case KIO::UDS_LINK_DEST:
-        m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
-        break;
-
-      case KIO::UDS_ICON_NAME:
-        if ( !d )
-          d = new KFileItemPrivate();
-        d->iconName = (*it).m_str;
-        break;
-
-      case KIO::UDS_HIDDEN:
-        if ( (*it).m_long )
-          m_hidden = Hidden;
-        else
-          m_hidden = Shown;
-        break;
-    }
+  m_fileMode = m_entry.numberValue( KIO::UDS_FILE_TYPE );
+  m_permissions = m_entry.numberValue( KIO::UDS_ACCESS );
+  m_user = m_entry.stringValue( KIO::UDS_USER );
+  m_group = m_entry.stringValue( KIO::UDS_GROUP );
+  m_strName = m_entry.stringValue( KIO::UDS_NAME );
+  m_strText = KIO::decodeFileName( m_strName );
+  const QString urlStr = m_entry.stringValue( KIO::UDS_URL );
+  bool UDS_URL_seen = !urlStr.isEmpty();
+  if ( UDS_URL_seen ) {
+      m_url = KURL( urlStr );
+      if ( m_url.isLocalFile() )
+          m_bIsLocalURL = true;
   }
+  const QString mimeTypeStr = m_entry.stringValue( KIO::UDS_MIME_TYPE );
+  m_bMimeTypeKnown = !mimeTypeStr.isEmpty();
+  if ( m_bMimeTypeKnown )
+      m_pMimeType = KMimeType::mimeType( mimeTypeStr );
+
+  m_guessedMimeType = m_entry.stringValue( KIO::UDS_GUESSED_MIME_TYPE );
+  m_bLink = !m_entry.stringValue( KIO::UDS_LINK_DEST ).isEmpty(); // we don't store the link dest
+
+  m_iconName = m_entry.stringValue( KIO::UDS_ICON_NAME );
+
+  const int hiddenVal = m_entry.numberValue( KIO::UDS_HIDDEN, -1 );
+  m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
 
   // avoid creating these QStrings again and again
   static const QString& dot = KGlobal::staticQString(".");
@@ -296,10 +262,10 @@ void KFileItem::setName( const QString& name )
 QString KFileItem::linkDest() const
 {
   // Extract it from the KIO::UDSEntry
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it )
-    if ( (*it).m_uds == KIO::UDS_LINK_DEST )
-      return (*it).m_str;
+  const QString linkStr = m_entry.stringValue( KIO::UDS_LINK_DEST );
+  if ( !linkStr.isEmpty() )
+    return linkStr;
+
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use readlink() [if local URL]
   if ( m_bIsLocalURL )
   {
@@ -320,17 +286,9 @@ QString KFileItem::localPath() const
   {
     return m_url.path();
   }
-  else
-  {
-    // Extract the local path from the KIO::UDSEntry
-    KIO::UDSEntry::ConstIterator it = m_entry.begin();
-    const KIO::UDSEntry::ConstIterator end = m_entry.end();
-    for( ; it != end; ++it )
-      if ( (*it).m_uds == KIO::UDS_LOCAL_PATH )
-        return (*it).m_str;
-  }
 
-  return QString::null;
+  // Extract the local path from the KIO::UDSEntry
+  return m_entry.stringValue( KIO::UDS_LOCAL_PATH );
 }
 
 KIO::filesize_t KFileItem::size() const
@@ -339,12 +297,12 @@ KIO::filesize_t KFileItem::size() const
     return m_size;
 
   // Extract it from the KIO::UDSEntry
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it )
-    if ( (*it).m_uds == KIO::UDS_SIZE ) {
-      m_size = (*it).m_long;
-      return m_size;
-    }
+  long long fieldVal = m_entry.numberValue( KIO::UDS_SIZE, -1 );
+  if ( fieldVal != -1 ) {
+    m_size = fieldVal;
+    return m_size;
+  }
+
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
@@ -357,22 +315,17 @@ KIO::filesize_t KFileItem::size() const
 
 bool KFileItem::hasExtendedACL() const
 {
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); it++ )
-    if ( (*it).m_uds == KIO::UDS_EXTENDED_ACL ) {
-      return true;
-    }
-  return false;
+  // Check if the field exists; its value doesn't matter
+  return m_entry.numberValue( KIO::UDS_EXTENDED_ACL, -1 ) != -1;
 }
 
 KACL KFileItem::ACL() const
 {
   if ( hasExtendedACL() ) {
     // Extract it from the KIO::UDSEntry
-    KIO::UDSEntry::ConstIterator it = m_entry.begin();
-    for( ; it != m_entry.end(); ++it )
-      if ( (*it).m_uds == KIO::UDS_ACL_STRING )
-        return KACL((*it).m_str);
+    const QString fieldVal = m_entry.stringValue( KIO::UDS_ACL_STRING );
+    if ( !fieldVal.isEmpty() )
+      return KACL( fieldVal );
   }
   // create one from the basic permissions
   return KACL( m_permissions );
@@ -381,11 +334,11 @@ KACL KFileItem::ACL() const
 KACL KFileItem::defaultACL() const
 {
   // Extract it from the KIO::UDSEntry
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it )
-    if ( (*it).m_uds == KIO::UDS_DEFAULT_ACL_STRING )
-      return KACL((*it).m_str);
-  return KACL();
+  const QString fieldVal = m_entry.stringValue( KIO::UDS_DEFAULT_ACL_STRING );
+  if ( !fieldVal.isEmpty() )
+    return KACL(fieldVal);
+  else
+    return KACL();
 }
 
 
@@ -409,12 +362,11 @@ time_t KFileItem::time( unsigned int which ) const
     return m_time[mappedWhich];
 
   // Extract it from the KIO::UDSEntry
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it )
-    if ( (*it).m_uds == which ) {
-      m_time[mappedWhich] = static_cast<time_t>((*it).m_long);
-      return m_time[mappedWhich];
-    }
+  long long fieldVal = m_entry.numberValue( which, -1 );
+  if ( fieldVal != -1 ) {
+    m_time[mappedWhich] = static_cast<time_t>( fieldVal );
+    return m_time[mappedWhich];
+  }
 
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )

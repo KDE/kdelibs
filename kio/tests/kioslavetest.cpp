@@ -204,7 +204,7 @@ void KioslaveTest::changeOperation( QAbstractButton *b ) {
 
 
 void KioslaveTest::changeProgressMode( QAbstractButton *b ) {
-  progressMode = progressButtons->buttons().indexOf( b ); 
+  progressMode = progressButtons->buttons().indexOf( b );
 
   if ( progressMode == ProgressStatus ) {
     statusBar()->show();
@@ -353,40 +353,42 @@ void KioslaveTest::slotSlaveError()
 
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 {
+    // It's rather rare to iterate that way, usually you'd use numberValue/stringValue directly.
+    // This is just to print out all that we got
     KIO::UDSEntry::ConstIterator it = entry.begin();
     for( ; it != entry.end(); it++ ) {
-        switch ((*it).m_uds) {
+        switch ( it.key() ) {
             case KIO::UDS_FILE_TYPE:
-                kdDebug() << "File Type : " << (mode_t)((*it).m_long) << endl;
-                if ( S_ISDIR( (mode_t)((*it).m_long) ) )
+                kdDebug() << "File Type : " << (mode_t)(it.value().toNumber()) << endl;
+                if ( S_ISDIR( (mode_t)(it.value().toNumber()) ) )
                 {
                     kdDebug() << "is a dir" << endl;
                 }
                 break;
             case KIO::UDS_ACCESS:
-                kdDebug() << "Access permissions : " << (mode_t)((*it).m_long) << endl;
+                kdDebug() << "Access permissions : " << (mode_t)(it.value().toNumber()) << endl;
                 break;
             case KIO::UDS_USER:
-                kdDebug() << "User : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug() << "User : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kdDebug() << "Group : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug() << "Group : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kdDebug() << "Name : " << ((*it).m_str.ascii() ) << endl;
-                //m_strText = decodeFileName( (*it).m_str );
+                kdDebug() << "Name : " << (it.value().toString().ascii() ) << endl;
+                //m_strText = decodeFileName( it.value().toString() );
                 break;
             case KIO::UDS_URL:
-                kdDebug() << "URL : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug() << "URL : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kdDebug() << "MimeType : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug() << "MimeType : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kdDebug() << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug() << "LinkDest : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_SIZE:
-                kdDebug() << "Size: " << KIO::convertSize((*it).m_long) << endl;
+                kdDebug() << "Size: " << KIO::convertSize(it.value().toNumber()) << endl;
                 break;
         }
     }
@@ -396,22 +398,23 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
 
     KURL url = static_cast<KIO::ListJob*>( job )->url();
     KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(url);
-    UDSEntryListConstIterator it=list.begin();
+    UDSEntryList::ConstIterator it=list.begin();
     for (; it != list.end(); ++it) {
         // For each file...
+        QString name = (*it).stringValue( KIO::UDS_NAME );
+        kdDebug() << name << endl;
+
         KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
         UDSEntry::ConstIterator it2 = (*it).begin();
         for( ; it2 != (*it).end(); it2++ ) {
-            if ((*it2).m_uds == UDS_NAME)
-                kdDebug() << "" << ( *it2 ).m_str << endl;
-            else if ( (*it2).m_uds == UDS_EXTRA) {
+            if ( it2.key() >= UDS_EXTRA && it2.key() <= UDS_EXTRA_END) {
                 if ( extraFieldsIt != extraFields.end() ) {
                     QString column = (*extraFieldsIt).name;
                     //QString type = (*extraFieldsIt).type;
-                    kdDebug() << "  Extra data (" << column << ") :" << ( *it2 ).m_str << endl;
+                    kdDebug() << "  Extra data (" << column << ") :" << it2.value().toString() << endl;
                     ++extraFieldsIt;
                 } else {
-                    kdDebug() << "  Extra data (UNDEFINED) :" << ( *it2 ).m_str << endl;
+                    kdDebug() << "  Extra data (UNDEFINED) :" << it2.value().toString() << endl;
                 }
             }
         }

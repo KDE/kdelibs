@@ -95,7 +95,7 @@ using namespace KIO;
 static QString testLogFile( const char *_filename );
 #ifdef USE_POSIX_ACL
 static bool isExtendedACL(  acl_t p_acl );
-static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, 
+static void appendACLAtoms( const Q3CString & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
 
@@ -141,7 +141,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     if ( !ACLString.isEmpty() ) {
         acl_t acl = 0;
         if ( ACLString == "ACL_DELETE" ) {
-            // user told us to delete the extended ACL, so let's write only 
+            // user told us to delete the extended ACL, so let's write only
             // the minimal (UNIX permission bits) part
             acl = acl_from_mode( perm );
         }
@@ -181,7 +181,7 @@ void FileProtocol::chmod( const KURL& url, int permissions )
 {
     Q3CString _path( QFile::encodeName(url.path()) );
     /* FIXME: Should be atomic */
-    if ( ::chmod( _path.data(), permissions ) == -1 || 
+    if ( ::chmod( _path.data(), permissions ) == -1 ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
         /* if not a directory, cannot set default ACLs */
         ( setACL( _path.data(), permissions, true ) == -1 && errno != ENOTDIR ) ) {
@@ -915,7 +915,7 @@ void FileProtocol::del( const KURL& url, bool isfile)
 }
 
 
-QString FileProtocol::getUserName( uid_t uid ) 
+QString FileProtocol::getUserName( uid_t uid )
 {
     QString *temp;
     temp = usercache.find( uid );
@@ -932,7 +932,7 @@ QString FileProtocol::getUserName( uid_t uid )
         return *temp;
 }
 
-QString FileProtocol::getGroupName( gid_t gid ) 
+QString FileProtocol::getGroupName( gid_t gid )
 {
     QString *temp;
     temp = groupcache.find( gid );
@@ -951,20 +951,20 @@ QString FileProtocol::getGroupName( gid_t gid )
 
 
 
-bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & path, UDSEntry & entry, 
+bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & path, UDSEntry & entry,
                                    short int details, bool withACL )
 {
 #ifndef USE_POSIX_ACL
     Q_UNUSED(withACL);
 #endif
     assert(entry.count() == 0); // by contract :-)
+    entry.reserve( 8 ); // speed up QHash insertion
+
     // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
     // because there's no real performance penalty in kio_file for returning the complete
     // details. Please consider doing it in your kioslave if you're using this one as a model :)
-    UDSAtom atom;
-    atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = filename;
-    entry.append( atom );
+
+    entry.insert( KIO::UDS_NAME, filename );
 
     mode_t type;
     mode_t access;
@@ -980,9 +980,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
                 buffer2[ n ] = 0;
             }
 
-            atom.m_uds = KIO::UDS_LINK_DEST;
-            atom.m_str = QFile::decodeName( buffer2 );
-            entry.append( atom );
+            entry.insert( KIO::UDS_LINK_DEST, QFile::decodeName( buffer2 ) );
 
             // A symlink -> follow it only if details>1
             if ( details > 1 && KDE_stat( path.data(), &buff ) == -1 ) {
@@ -990,18 +988,9 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
                 type = S_IFMT - 1;
                 access = S_IRWXU | S_IRWXG | S_IRWXO;
 
-                atom.m_uds = KIO::UDS_FILE_TYPE;
-                atom.m_long = type;
-                entry.append( atom );
-
-                atom.m_uds = KIO::UDS_ACCESS;
-                atom.m_long = access;
-                entry.append( atom );
-
-                atom.m_uds = KIO::UDS_SIZE;
-                atom.m_long = 0L;
-                entry.append( atom );
-
+                entry.insert( KIO::UDS_FILE_TYPE, type );
+                entry.insert( KIO::UDS_ACCESS, access );
+                entry.insert( KIO::UDS_SIZE, 0LL );
                 goto notype;
 
             }
@@ -1014,17 +1003,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
     type = buff.st_mode & S_IFMT; // extract file type
     access = buff.st_mode & 07777; // extract permissions
 
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = type;
-    entry.append( atom );
+    entry.insert( KIO::UDS_FILE_TYPE, type );
+    entry.insert( KIO::UDS_ACCESS, access );
 
-    atom.m_uds = KIO::UDS_ACCESS;
-    atom.m_long = access;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_SIZE;
-    atom.m_long = buff.st_size;
-    entry.append( atom );
+    entry.insert( KIO::UDS_SIZE, buff.st_size );
 
 #ifdef USE_POSIX_ACL
     /* Append an atom indicating whether the file has extended acl information
@@ -1034,21 +1016,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
 #endif
 
  notype:
-    atom.m_uds = KIO::UDS_MODIFICATION_TIME;
-    atom.m_long = buff.st_mtime;
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_USER;
-    atom.m_str = getUserName( buff.st_uid );
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_GROUP;
-    atom.m_str = getGroupName( buff.st_gid );
-    entry.append( atom );
-
-    atom.m_uds = KIO::UDS_ACCESS_TIME;
-    atom.m_long = buff.st_atime;
-    entry.append( atom );
+    entry.insert( KIO::UDS_MODIFICATION_TIME, buff.st_mtime );
+    entry.insert( KIO::UDS_USER, getUserName( buff.st_uid ) );
+    entry.insert( KIO::UDS_GROUP, getGroupName( buff.st_gid ) );
+    entry.insert( KIO::UDS_ACCESS_TIME, buff.st_atime );
 
     // Note: buff.st_ctime isn't the creation time !
     // We made that mistake for KDE 2.0, but it's in fact the
@@ -1089,39 +1060,6 @@ void FileProtocol::stat( const KURL & url )
     }
 #if 0
 ///////// debug code
-    KIO::UDSEntry::ConstIterator it = entry.begin();
-    for( ; it != entry.end(); it++ ) {
-        switch ((*it).m_uds) {
-            case KIO::UDS_FILE_TYPE:
-                kdDebug(7101) << "File Type : " << (mode_t)((*it).m_long) << endl;
-                break;
-            case KIO::UDS_ACCESS:
-                kdDebug(7101) << "Access permissions : " << (mode_t)((*it).m_long) << endl;
-                break;
-            case KIO::UDS_USER:
-                kdDebug(7101) << "User : " << ((*it).m_str.ascii() ) << endl;
-                break;
-            case KIO::UDS_GROUP:
-                kdDebug(7101) << "Group : " << ((*it).m_str.ascii() ) << endl;
-                break;
-            case KIO::UDS_NAME:
-                kdDebug(7101) << "Name : " << ((*it).m_str.ascii() ) << endl;
-                //m_strText = decodeFileName( (*it).m_str );
-                break;
-            case KIO::UDS_URL:
-                kdDebug(7101) << "URL : " << ((*it).m_str.ascii() ) << endl;
-                break;
-            case KIO::UDS_MIME_TYPE:
-                kdDebug(7101) << "MimeType : " << ((*it).m_str.ascii() ) << endl;
-                break;
-            case KIO::UDS_LINK_DEST:
-                kdDebug(7101) << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
-                break;
-            case KIO::UDS_EXTENDED_ACL:
-                kdDebug(7101) << "Contains extended ACL " << endl;
-                break;
-        }
-        }
     MetaData::iterator it1 = mOutgoingMetaData.begin();
     for ( ; it1 != mOutgoingMetaData.end(); it1++ ) {
         kdDebug(7101) << it1.key() << " = " << it1.data() << endl;
@@ -1210,8 +1148,8 @@ void FileProtocol::listDir( const KURL& url)
     Q3StrListIterator it(entryNames);
     for (; it.current(); ++it) {
         entry.clear();
-        if ( createUDSEntry( QFile::decodeName(*it), 
-                             *it /* we can use the filename as relative path*/, 
+        if ( createUDSEntry( QFile::decodeName(*it),
+                             *it /* we can use the filename as relative path*/,
                              entry, 2, true ) )
           listEntry( entry, false);
         else
@@ -1697,9 +1635,9 @@ static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, mode_t type
     /* Sadly libacl does not provided a means of checking for extended ACL and default
      * ACL separately. Since a directory can have both, we need to check again. */
     if ( isDir ) {
-        if ( acl ) { 
+        if ( acl ) {
             if ( !isExtendedACL( acl ) ) {
-                acl_free( acl ); 
+                acl_free( acl );
                 acl = 0;
             }
         }
@@ -1707,23 +1645,17 @@ static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, mode_t type
     }
     if ( acl || defaultAcl ) {
       kdDebug(7101) << path.data() << " has extended ACL entries " << endl;
-      atom.m_uds = KIO::UDS_EXTENDED_ACL;
-      atom.m_long = 1;
-      entry.append( atom );
+      entry.insert( KIO::UDS_EXTENDED_ACL, 1 );
     }
     if ( withACL ) {
         if ( acl ) {
             ssize_t size = acl_size( acl );
-            atom.m_uds = KIO::UDS_ACL_STRING;
-            atom.m_str = QString::fromLatin1( acl_to_text( acl, &size ) );
-            entry.append( atom );
+            entry.insert( KIO::UDS_ACL_STRING, QString::fromLatin1( acl_to_text( acl, &size ) ) );
             kdDebug(7101) << path.data() << "ACL: " << atom.m_str << endl;
         }
         if ( defaultAcl ) {
             ssize_t size = acl_size( defaultAcl );
-            atom.m_uds = KIO::UDS_DEFAULT_ACL_STRING;
-            atom.m_str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
-            entry.append( atom );
+            entry.insert( KIO::UDS_DEFAULT_ACL_STRING, QString::fromLatin1( acl_to_text( defaultAcl, &size ) ) );
             kdDebug(7101) << path.data() << "DEFAULT ACL: " << atom.m_str << endl;
         }
     }
