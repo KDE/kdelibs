@@ -33,7 +33,7 @@
 #include <kaccel.h>
 #include <kaccelbase.h>
 #include <kaccelprivate.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
 #include <kguiitem.h>
 #include <kmainwindow.h>
@@ -359,7 +359,7 @@ bool KAction::setShortcut( const KShortcut& cut )
 bool KAction::updateKAccelShortcut( KAccel* kaccel )
 {
   // Check if action is permitted
-  if (kapp && !KAuthorized::authorizeKAction(name()))
+  if (!KAuthorized::authorizeKAction(name()))
     return false;
 
   bool b = true;
@@ -534,7 +534,7 @@ int KAction::plug( QWidget *w, int index )
 #endif
 
   // Check if action is permitted
-  if (kapp && !KAuthorized::authorizeKAction(name()))
+  if (!KAuthorized::authorizeKAction(name()))
     return -1;
 
   plugShortcut();
