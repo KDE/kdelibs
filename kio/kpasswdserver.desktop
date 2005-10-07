@@ -121,6 +121,7 @@ Comment[ta]=கடவுச்சொல் சேமிக்க ஆதரவு
 Comment[tg]=Дастгирии Ҳофизаи Гузарвожа
 Comment[tr]=Parola önbellekleme desteği
 Comment[uk]=Підтримка кешування паролів
+Comment[uz]=Махфий сўзларни кэшда сақлаш
 Comment[xx]=xxPassword caching supportxx
 Comment[zh_CN]=密码缓存支持
 ServiceTypes=KDEDModule

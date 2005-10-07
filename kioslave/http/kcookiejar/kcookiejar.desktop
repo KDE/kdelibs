@@ -116,6 +116,7 @@ Comment[ta]=கணினியின் எல்லா தற்காலிக
 Comment[tg]=Гузаргоҳи ҳамаша Cookies дар система муҳофизат кунед
 Comment[tr]=Sistemdeki tüm çerezleri izler
 Comment[uk]=Стежить за всіма куками в системі
+Comment[uz]=Тизимдаги ҳамма кукиларни кузатади
 Comment[xx]=xxKeeps track of all cookies in the systemxx
 Comment[zh_CN]=将全部 cookies 的记录保存在系统中
 ServiceTypes=KDEDModule

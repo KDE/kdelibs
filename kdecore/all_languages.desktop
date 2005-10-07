@@ -1972,6 +1972,7 @@ Name[sv]=Brittisk engelska
 Name[ta]=பிரிட்டிஷ் ஆங்கிலம்
 Name[tr]=İngiliz İngilizcesi
 Name[uk]=Англійська (Великобританія)
+Name[uz]=Инглизча (Англия)
 Name[xx]=xxBritish Englishxx
 Name[zh_CN]=英国英语
 [en_US]
@@ -2019,6 +2020,7 @@ Name[sv]=Amerikansk engelska
 Name[ta]=அமெரிக்கன் ஆங்கிலம்
 Name[tr]=Amerikan İngilizcesi
 Name[uk]=Англійська (США)
+Name[uz]=Инглизча (АҚШ)
 Name[xx]=xxAmerican Englishxx
 Name[zh_CN]=美国英语
 [eo]
@@ -2802,7 +2804,6 @@ Name[ta]=கேலிக்
 Name[tg]=Галӣ
 Name[tr]=Galik
 Name[uk]=Гальська
-Name[uz]=Галикча
 Name[wa]=Gayel
 Name[xx]=xxGaelicxx
 Name[zh_CN]=盖尔语
@@ -2855,6 +2856,7 @@ Name[sv]=Galiciska
 Name[ta]=காலிசியன்
 Name[tr]=Galce
 Name[uk]=Галісійська
+Name[uz]=Галикча
 Name[ven]=Mugalata
 Name[vi]=Tiếng Galician 
 Name[xh]=isiGalacian
@@ -3314,6 +3316,7 @@ Name[ta]=அப்பர் செர்பியன்
 Name[tg]=Лужасагии болоӣ
 Name[tr]=Yukarı Sırpça
 Name[uk]=Верхньо-лужицька
+Name[uz]=Юқори Сорбча
 Name[xx]=xxUpper Sorbianxx
 Name[zh_CN]=索布语
 [hu]
@@ -6041,6 +6044,7 @@ Name[ta]=லோ சாக்ஸான்
 Name[tg]=Саксон
 Name[tr]=Aşağı Sakson
 Name[uk]=Ніжньо-Саксонська
+Name[uz]=Паст Саксонча
 Name[xx]=xxLow Saxonxx
 Name[zh_CN]=撒克逊语
 [ne]
@@ -9861,6 +9865,7 @@ Name[sv]=Förenklad kinesiska
 Name[ta]=சீனம் சுலபமாக்கப்பட்டது
 Name[tr]=Basitleştirilmiş Çince
 Name[uk]=Китайська (спрощена)
+Name[uz]=Соддалаштирилган Хитойча
 Name[xx]=xxChinese Simplifiedxx
 Name[zh_CN]=简体中文
 [zh_TW]
@@ -9911,6 +9916,7 @@ Name[sv]=Traditionell kinesiska
 Name[ta]=சீனம் பழமையானது
 Name[tr]=Geleneksel Çince
 Name[uk]=Китайська (традиційна)
+Name[uz]=Анъанавий Хитойча
 Name[xx]=xxChinese Traditionalxx
 Name[zh_CN]=繁体中文
 [zu]

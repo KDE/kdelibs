@@ -52,6 +52,7 @@ Name[ta]=பலப்பகுதி/கலக்கப்பட்ட பகு
 Name[tg]=Компоненти дарунсохт барои қисматҳои зиёд/омезишшуда
 Name[tr]=Çok parçalı/karışık için Gömülebilir Bileşen
 Name[uk]=Вбудовна компонента для повідомлень multipart/mixed
+Name[uz]=Multipart/mixed учун ичига ўрнатиб бўладиган компонент
 Name[xx]=xxEmbeddable Component for multipart/mixedxx
 Name[zh_CN]=可嵌入的 multipart/mixed 组件
 ServiceTypes=KParts/ReadOnlyPart
