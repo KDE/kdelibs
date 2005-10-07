@@ -31,21 +31,23 @@ Button::Button(const QString& what,
                const QString& providerList,
                const QString& resourceType,
                QWidget* parent, const char* name)
-    : KPushButton(parent, name),
+    : KPushButton(parent),
       d(0),
       m_providerList(providerList),
       m_type(resourceType),
       m_downloadDialog(0)
 {
+	setObjectName(name);
     setButtonText(what);
     init();
 }
 
 Button::Button(QWidget* parent, const char* name)
-    : KPushButton(parent, name),
+    : KPushButton(parent),
       d(0),
       m_downloadDialog(0)
 {
+	setObjectName(name);
     setButtonText(i18n("Download New Stuff"));
     init();
 }
