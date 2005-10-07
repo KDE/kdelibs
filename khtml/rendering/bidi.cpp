@@ -1451,6 +1451,8 @@ redo_linebreak:
                 // Now that the runs have been ordered, we create the line boxes.
                 // At the same time we figure out where border/padding/margin should be applied for
                 // inline flow boxes.
+
+#ifdef APPLE_CHANGES    // KDE handles compact blocks differently
                 if (sCompactFirstBidiRun) {
                     // We have a compact line sharing this line.  Link the compact runs
                     // to our runs to create a single line of runs.
@@ -1458,7 +1460,7 @@ redo_linebreak:
                     sFirstBidiRun = sCompactFirstBidiRun;
                     sBidiRunCount += sCompactBidiRunCount;
                 }
-
+#endif
                 if (sBidiRunCount) {
                     InlineFlowBox* lineBox = constructLine(start, end);
                     if (lineBox) {
@@ -1572,6 +1574,31 @@ redo_linebreak:
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
+static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetStaticX = 0, bool *needToSetStaticY = 0 )
+{
+      // If our original display wasn't an inline type, then we can
+      // determine our static x position now.
+      bool nssx, nssy;
+      bool isInlineType = o->style()->isOriginalDisplayInlineType();
+      nssx = o->hasStaticX();
+      if (o->hasStaticX() && !isInlineType && o->isBox()) {
+          static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
+                                  p->borderLeft()+p->paddingLeft() :
+                                  p->borderRight()+p->paddingRight());
+          nssx = false;
+      }
+
+      // If our original display was an INLINE type, then we can
+      // determine our static y position now.
+      nssy = o->hasStaticY();
+      if (o->hasStaticY() && isInlineType && o->isBox()) {
+          static_cast<RenderBox*>(o)->setStaticY(p->height());
+          nssy = false;
+      }
+      if (needToSetStaticX) *needToSetStaticX = nssx;
+      if (needToSetStaticY) *needToSetStaticY = nssy;
+}
+
 BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi)
 {
     int width = lineWidth(m_height);
@@ -1581,6 +1608,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
+
+    BidiIterator posStart = start;
+    bool hadPosStart = false;
 
     // eliminate spaces at beginning of line
     // remove leading spaces.  Any inline flows we encounter will be empty and should also
@@ -1606,21 +1636,33 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 width = lineWidth(m_height);
             }
             else if (o->isBox() && o->isPositioned()) {
-                if (o->hasStaticX())
-                    static_cast<RenderBox*>(o)->setStaticX(style()->direction() == LTR ?
-                                  borderLeft()+paddingLeft() :
-                                  borderRight()+paddingRight());
-                if (o->hasStaticY())
-                    static_cast<RenderBox*>(o)->setStaticY(m_height);
+                if (!hadPosStart) {
+                    hadPosStart = true;
+                    posStart = start;
+                    // end
+                    addMidpoint(BidiIterator(0, o, 0));
+                } else {
+                    // start/end
+                    addMidpoint(BidiIterator(0, o, 0));
+                    addMidpoint(BidiIterator(0, o, 0));
+                }
+                setStaticPosition(this, o);
             }
         }
-
         adjustEmbedding = true;
         start.increment(bidi);
         adjustEmbedding = false;
     }
 
+    if (hadPosStart && !start.atEnd())
+        addMidpoint(start);
+
     if ( start.atEnd() ){
+        if (hadPosStart) {
+            start = posStart;
+            posStart.increment(bidi);
+            return posStart;
+        }
         return start;
     }
 
@@ -1685,24 +1727,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 }
             }
             else if (o->isPositioned()) {
-                // If our original display wasn't an inline type, then we can
-                // go ahead and determine our static x position now.
-                bool isInlineType = o->style()->isOriginalDisplayInlineType();
-                bool needToSetStaticX = o->hasStaticX();
-                if (o->hasStaticX() && !isInlineType && o->isBox()) {
-                    static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
-                                  borderLeft()+paddingLeft() :
-                                  borderRight()+paddingRight());
-                    needToSetStaticX = false;
-                }
-
-                // If our original display was an INLINE type, then we can go ahead
-                // and determine our static y position now.
-                bool needToSetStaticY = o->hasStaticY();
-                if (o->hasStaticY() && isInlineType && o->isBox()) {
-                    static_cast<RenderBox*>(o)->setStaticY(m_height);
-                    needToSetStaticY = false;
-                }
+                bool needToSetStaticX;
+                bool needToSetStaticY;
+                setStaticPosition(this, o, &needToSetStaticX, &needToSetStaticY);
 
                 // If we're ignoring spaces, we have to stop and include this object and
                 // then start ignoring spaces again.
@@ -2044,6 +2071,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             }
         }
     }
+
+    if (hadPosStart)
+        start = posStart;
 
     // make sure we consume at least one char/object.
     if( lBreak == start )

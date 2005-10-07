@@ -1,3 +1,10 @@
+2005-10-07  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (findNextLineBreak): integrate all positioned inlines in the lineboxes to get a correct static position
+        in initial whitespace. Use some midpoints voodoo to take care of whitespace.
+
+        cf. unsorted/113527.html
+
 2005-10-03  Germain Garand  <germain@ebooksfrance.org>
 
         let the initial containing block be the Canvas, as mandated by latest
