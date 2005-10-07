@@ -60,6 +60,18 @@ def detect(env):
 # TODO (rh) don't know required cl flags, don't know how to set not in win dir 
 #		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
 
+	if os.environ.has_key('MINGW'):  
+		env.pprint('CYAN','Checking for mingw environment : found under ',os.environ['MINGW'])
+		env['GENCXXFLAGS']  += ' -I' + os.environ['MINGW'] + '/include'
+		env['GENCCFLAGS']   += ' -I' + os.environ['MINGW'] + '/include'
+		env['GENLINKFLAGS'] += ' -L' + os.environ['MINGW'] + '/lib'
+		# TODO (rh) move to win32 qt4 stuff 
+		env['GENCXXFLAGS']  += ' -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '/include' 
+		if sys.platform == 'cygwin':
+			env['GENCXXFLAGS']  += ' -mno-cygwin'
+			env['GENCCFLAGS']   += ' -mno-cygwin'
+			env['GENLINKFLAGS'] += ' -mno-cygwin'
+
 ## create source package
 def dist(env):
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
@@ -171,6 +183,7 @@ def build_la_file(target, source, env):
 		dest.write("library_names='%s %s'\n" % (sname,name) )
 	else:
 		dest.write("dlname='%s'\n" % sname)
+		src=source[0].name
 		name = src.split('.')[0] + '.a'
 		dest.write("library_names='%s %s'\n" % (sname, name) )
 	dest.write("old_library=''\ndependency_libs=''\ncurrent=0\n")
