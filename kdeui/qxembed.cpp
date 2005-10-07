@@ -929,7 +929,7 @@ static bool wstate_withdrawn( WId winid )
     // L1610: Non managed windows have no WM_STATE property.
     //        Returning true ensures that the loop L1711 stops.
     if ( r == Success && data && format == 32 ) {
-        Q_UINT32 *wstate = (Q_UINT32*)data;
+        quint32 *wstate = (quint32*)data;
         withdrawn  = (*wstate == WithdrawnState );
         XFree( (char *)data );
     }

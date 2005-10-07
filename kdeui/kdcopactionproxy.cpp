@@ -132,7 +132,7 @@ bool KDCOPActionProxy::processAction( const DCOPCString&, const DCOPCString &fun
     replyType = "bool";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1 );
-    reply << (Q_INT8)action->isPlugged();
+    reply << (qint8)action->isPlugged();
     return true;
   }
 
