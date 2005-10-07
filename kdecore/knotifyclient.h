@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KNOTIFY_CLIENT
-#define _KNOTIFY_CLIENT
+#ifndef KNOTIFY_CLIENT
+#define KNOTIFY_CLIENT
 #include <qstring.h>
 #include "kdelibs_export.h"
 

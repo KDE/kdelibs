@@ -24,7 +24,6 @@
 #ifndef Q_WS_WIN //TODO kresolver not ported
 #include "kresolver.h"
 #endif
-#include <kdebug.h>
 
 #ifndef Q_WS_WIN //TODO knetwork not ported
 using namespace KNetwork;
