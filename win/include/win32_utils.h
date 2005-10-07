@@ -24,6 +24,7 @@
 
 #ifdef  __cplusplus
 #include <qstring.h>
+#include <q3cstring.h>
 
 extern "C" {
 #endif
