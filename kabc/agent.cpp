@@ -124,7 +124,7 @@ QString Agent::asString() const
 
 QDataStream &KABC::operator<<( QDataStream &s, const Agent &agent )
 {
-  Q_UINT32 hasAddressee = ( agent.mAddressee != 0 );
+  quint32 hasAddressee = ( agent.mAddressee != 0 );
 
   s << agent.mIntern << agent.mUrl << hasAddressee;
   if ( hasAddressee )
@@ -135,7 +135,7 @@ QDataStream &KABC::operator<<( QDataStream &s, const Agent &agent )
 
 QDataStream &KABC::operator>>( QDataStream &s, Agent &agent )
 {
-  Q_UINT32 hasAddressee;
+  quint32 hasAddressee;
 
   s >> agent.mIntern >> agent.mUrl >> hasAddressee;
 
