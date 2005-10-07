@@ -113,6 +113,12 @@ ToolTip=ListView Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0, name)
 
+[KListViewSearchLineWidget]
+ToolTip=ListView Search Line Widget (KDE)
+IncludeFile=klistviewsearchline.h
+Group=Input (KDE)
+ConstructorArgs=(0, parent, name)
+
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
 ToolTip=Safe Password LineEdit (KDE)
