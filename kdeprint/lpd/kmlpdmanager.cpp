@@ -184,7 +184,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	Q3CString cmd = "chmod -R o-rwx,g+rwX ";
+	QByteArray cmd = "chmod -R o-rwx,g+rwX ";
 	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
 	cmd += "&& chown -R lp.lp ";
 	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
@@ -208,7 +208,7 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 			m_entries.insert(ent->m_name,ent);
 			return false;
 		}
-		Q3CString cmd = "rm -rf ";
+		QByteArray cmd = "rm -rf ";
 		cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
 		system(cmd.data());
 		delete ent;
@@ -548,7 +548,7 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 		if (!writePrinters())
 			return false;
 		// write various driver files using templates
-		Q3CString cmd = "cp ";
+		QByteArray cmd = "cp ";
 		cmd += QFile::encodeName(KProcess::quote(driverDirectory()+"/master-filter"));
 		cmd += " ";
 		cmd += QFile::encodeName(KProcess::quote(spooldir + "/filter"));

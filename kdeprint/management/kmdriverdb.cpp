@@ -222,18 +222,18 @@ void KMDriverDB::loadDbFile()
 				entry->file = words[1];
 			}
 			else if (words[0] == "MANUFACTURER" && entry)
-				entry->manufacturer = words[1].upper();
+				entry->manufacturer = words[1].toUpper();
 			else if (words[0] == "MODEL" && entry)
 				entry->model = words[1];
 			else if (words[0] == "MODELNAME" && entry)
 				entry->modelname = words[1];
 			else if (words[0] == "PNPMANUFACTURER" && entry)
-				entry->pnpmanufacturer = words[1].upper();
+				entry->pnpmanufacturer = words[1].toUpper();
 			else if (words[0] == "PNPMODEL" && entry)
 				entry->pnpmodel = words[1];
 			else if (words[0] == "DESCRIPTION" && entry)
 				entry->description = words[1];
-			else if (words[0] == "RECOMMANDED" && entry && words[1].lower() == "yes")
+			else if (words[0] == "RECOMMANDED" && entry && words[1].toLower() == "yes")
 				entry->recommended = true;
 			else if (words[0] == "DRIVERCOMMENT" && entry)
 				entry->drivercomment = ("<qt>"+words[1].replace("&lt;", "<").replace("&gt;", ">")+"</qt>");

@@ -192,7 +192,7 @@ void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 		QStringList	ilist;
 		Q3DictIterator<KMDBEntryList>	it(*models);
 		for (;it.current();++it)
-			ilist.append(QString( it.currentKey().latin1() ).upper());
+			ilist.append(QString( it.currentKey().latin1() ).toUpper());
 		ilist.sort();
 		m_model->insertStringList(ilist);
 		m_model->setCurrentItem(0);
