@@ -797,8 +797,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         "$Id$",
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed"));
 
-     KApplication::installSigpipeHandler();
-
      KCmdLineArgs::init(argc, argv, &aboutData);
 
      KUniqueApplication::addCmdLineOptions();
