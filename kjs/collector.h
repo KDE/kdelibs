@@ -35,7 +35,7 @@ namespace KJS {
   /**
    * @short Garbage collector.
    */
-  class Collector {
+  class KJS_EXPORT Collector {
     // disallow direct construction/destruction
     Collector();
   public:

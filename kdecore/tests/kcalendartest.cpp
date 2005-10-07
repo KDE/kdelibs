@@ -6,6 +6,7 @@
 
 #include "kcalendartest.h"
 #include "kcalendartest.moc"
+#include "klocale.h"
 
 QTTEST_KDEMAIN(KCalendarTest, NoGUI)
 

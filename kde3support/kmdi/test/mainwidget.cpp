@@ -23,7 +23,7 @@
 #include <qfile.h>
 #include <k3mdimainfrm.h>
 #include <k3mditoolviewaccessor.h>
-
+#include <q3popupmenu.h>
 #include "mainwidget.h"
 
 MainWidget::MainWidget(QDomElement& dockConfig,K3Mdi::MdiMode mode)

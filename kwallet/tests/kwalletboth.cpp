@@ -1,5 +1,6 @@
 #include <qtextstream.h>
 #include <qtimer.h>
+#include <qmap.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

@@ -28,6 +28,7 @@
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 #include <ksimpleconfig.h>
+#include <klocale.h>
 
 #include <qdir.h>
 #include <qregexp.h>
@@ -131,7 +132,7 @@ void testLocalFile( const QString& filename )
 
     if ( tmpFile.open( QIODevice::ReadWrite ) )
     {
-        Q3CString fname = QFile::encodeName( tmpFile.name() );
+        QByteArray fname = QFile::encodeName( tmpFile.name() );
         filter(fname, fname, KURIFilterData::LOCAL_FILE);
         tmpFile.close();
         tmpFile.remove();
@@ -288,13 +289,13 @@ int main(int argc, char **argv)
     setenv( "SOMEVAR", "/somevar", 0 );
     setenv( "ETC", "/etc", 0 );
 
-    Q3CString qtdir=getenv("QTDIR");
-    Q3CString home = getenv("HOME");
-    Q3CString kdehome = getenv("KDEHOME");
+    QByteArray qtdir=getenv("QTDIR");
+    QByteArray home = getenv("HOME");
+    QByteArray kdehome = getenv("KDEHOME");
 
     filter( "$SOMEVAR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
     filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
-    filter( "$QTDIR/doc/html/functions.html#s", Q3CString("file://")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
+    filter( "$QTDIR/doc/html/functions.html#s", QByteArray("file://")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
     filter( "http://www.kde.org/$USER", "http://www.kde.org/$USER", KURIFilterData::NET_PROTOCOL ); // no expansion
 
     // Assume the default (~/.kde) if
@@ -337,16 +338,16 @@ int main(int argc, char **argv)
     filter( "$HOME", home, KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ) ); //use specific filter.
 
 
-    Q3CString sc;
-    filter( sc.sprintf("gg%cfoo bar",delimiter), "http://www.google.com/search?q=foo+bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( sc.sprintf("bug%c55798", delimiter), "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
+    QString sc;
+    filter( sc.sprintf("gg%cfoo bar",delimiter).toLocal8Bit(), "http://www.google.com/search?q=foo+bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("bug%c55798", delimiter).toLocal8Bit(), "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
 
-    filter( sc.sprintf("gg%cC++", delimiter), "http://www.google.com/search?q=C%2B%2B&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( sc.sprintf("ya%cfoo bar was here", delimiter), 0, -1 ); // this triggers default search, i.e. google
-    filter( sc.sprintf("gg%cwww.kde.org", delimiter), "http://www.google.com/search?q=www.kde.org&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( sc.sprintf("av%c+rock +sample", delimiter), "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock+%2Bsample", KURIFilterData::NET_PROTOCOL );
-    filter( sc.sprintf("gg%cé", delimiter) /*eaccent in utf8*/, "http://www.google.com/search?q=%C3%A9&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( sc.sprintf("gg%cпрйвет", delimiter) /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("gg%cC++", delimiter).toLocal8Bit(), "http://www.google.com/search?q=C%2B%2B&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("ya%cfoo bar was here", delimiter).toLocal8Bit(), 0, -1 ); // this triggers default search, i.e. google
+    filter( sc.sprintf("gg%cwww.kde.org", delimiter).toLocal8Bit(), "http://www.google.com/search?q=www.kde.org&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("av%c+rock +sample", delimiter).toLocal8Bit(), "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock+%2Bsample", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("gg%cé", delimiter).toLocal8Bit() /*eaccent in utf8*/, "http://www.google.com/search?q=%C3%A9&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( sc.sprintf("gg%cпрйвет", delimiter).toLocal8Bit() /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     // Absolute Path tests for kshorturifilter
     filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share/" ); // cleanPath removes the trailing slash
