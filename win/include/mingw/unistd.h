@@ -103,6 +103,13 @@ KDEWIN32_EXPORT pid_t fork(void);
 
 KDEWIN32_EXPORT pid_t setsid(void);
 
+#ifndef ICE_t
+#undef gethostname
+#define gethostname kde_gethostname
+
+KDEWIN32_EXPORT int kde_gethostname(char *__name, int __len);
+#endif 
+
 KDEWIN32_EXPORT unsigned alarm(unsigned __secs ); 
 
 KDEWIN32_EXPORT char* getlogin();
