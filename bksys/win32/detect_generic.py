@@ -50,27 +50,31 @@ def detect(env):
 
 	# setup win32 kdelibs addon package 
 	if env['CC'] == 'gcc':
-		env['GENCXXFLAGS']  += ' -Iwin/include -Iwin/include/mingw'
-		env['GENCCFLAGS']   += ' -Iwin/include -Iwin/include/mingw'
+		env['GENCXXFLAGS']  += [' -Iwin/include -Iwin/include/mingw']
+		env['GENCCFLAGS']   += [' -Iwin/include -Iwin/include/mingw']
 # TODO (rh) don't know how to set not in win dir 
 #		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
 	elif env['CC'] == 'cl':
-		env['GENCXXFLAGS']  += ' /Iwin\\include /Iwin\\include\\msvc'
-		env['GENCCFLAGS']   += ' /Iwin\\include /Iwin\\include\\msvc'
+		env['GENCXXFLAGS']  += [' /Iwin\\include /Iwin\\include\\msvc']
+		env['GENCCFLAGS']   += [' /Iwin\\include /Iwin\\include\\msvc']
 # TODO (rh) don't know required cl flags, don't know how to set not in win dir 
 #		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
 
-	if os.environ.has_key('MINGW'):  
-		env.pprint('CYAN','Checking for mingw environment : found under ',os.environ['MINGW'])
-		env['GENCXXFLAGS']  += ' -I' + os.environ['MINGW'] + '/include'
-		env['GENCCFLAGS']   += ' -I' + os.environ['MINGW'] + '/include'
-		env['GENLINKFLAGS'] += ' -L' + os.environ['MINGW'] + '/lib'
+	if sys.platform == 'cygwin':
+		env['GENCXXFLAGS']  += [' -mno-cygwin']
+		env['GENCCFLAGS']   += [' -mno-cygwin']
+		env['GENLINKFLAGS'] += [' -mno-cygwin']
 		# TODO (rh) move to win32 qt4 stuff 
-		env['GENCXXFLAGS']  += ' -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '/include' 
-		if sys.platform == 'cygwin':
-			env['GENCXXFLAGS']  += ' -mno-cygwin'
-			env['GENCCFLAGS']   += ' -mno-cygwin'
-			env['GENLINKFLAGS'] += ' -mno-cygwin'
+		env['GENCXXFLAGS']  += [' -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '/include']
+		# required libraries should be installed under mingw installation root, so add the search pathes 
+		if not os.environ.has_key('MINGW') or os.environ('MINGW') == '':  
+			env.pprint('RED','Checking for mingw installation: not found, please set MINGW env var to MingW installation path (mostly /c/Mingw)')
+			exit
+		else:
+			env.pprint('CYAN','Checking for mingw installation: found under ',os.environ['MINGW'])
+			env['GENCXXFLAGS']  += [' -I' + os.environ['MINGW'] + '/include']
+			env['GENCCFLAGS']   += [' -I' + os.environ['MINGW'] + '/include']
+			env['GENLINKFLAGS'] += [' -L' + os.environ['MINGW'] + '/lib']
 
 ## create source package
 def dist(env):
