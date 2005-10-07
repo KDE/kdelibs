@@ -20,8 +20,6 @@
 #ifndef KDE_WIN32_UTILS_H
 #define KDE_WIN32_UTILS_H
 
-#include <windows.h>
-
 #include <kdecore/kdelibs_export.h>
 
 #ifdef  __cplusplus
@@ -48,6 +46,28 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 
 #ifdef  __cplusplus
 }
+/**
+  predefined registry root keys
+*/
+
+#ifndef HKEY
+#define HKEY void*
+#endif
+
+#ifndef HKEY_CLASSES_ROOT
+#define HKEY_CLASSES_ROOT	((HKEY)0x80000000)
+#endif 
+
+#ifndef HKEY_CURRENT_USER
+#define HKEY_CURRENT_USER	((HKEY)0x80000001)
+#endif 
+#ifndef HKEY_LOCAL_MACHINE
+#define HKEY_LOCAL_MACHINE	((HKEY)0x80000002)
+#endif 
+
+#ifndef HKEY_USERS
+#define HKEY_USERS	((HKEY)0x80000003)
+#endif 
 
 /**
  \return a value from MS Windows native registry.
