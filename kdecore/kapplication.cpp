@@ -282,6 +282,23 @@ static void cleanupAppClient() {
   s_DCOPClient = 0L;
 }
 
+/**
+   * Installs a handler for the SIGPIPE signal. It is thrown when you write to
+   * a pipe or socket that has been closed.
+   * The handler is installed automatically in the constructor, but you may
+   * need it if your application or component does not have a KApplication
+   * instance.
+   */
+static void installSigpipeHandler()
+{
+#ifdef Q_OS_UNIX
+    struct sigaction act;
+    act.sa_handler = SIG_IGN;
+    sigemptyset( &act.sa_mask );
+    act.sa_flags = 0;
+    sigaction( SIGPIPE, &act, 0 );
+#endif
+}
 
 void KApplication::installX11EventFilter( QWidget* filter )
 {
@@ -2159,30 +2176,7 @@ Qt::ButtonState KApplication::keyboardMouseState()
 }
 #endif
 
-void KApplication::installSigpipeHandler()
-{
-#ifdef Q_OS_UNIX
-    struct sigaction act;
-    act.sa_handler = SIG_IGN;
-    sigemptyset( &act.sa_mask );
-    act.sa_flags = 0;
-    sigaction( SIGPIPE, &act, 0 );
-#endif
-}
 
-void KApplication::sigpipeHandler(int)
-{
-    int saved_errno = errno;
-    // Using kdDebug from a signal handler is not a good idea.
-#ifndef NDEBUG
-    char msg[1000];
-    sprintf(msg, "*** SIGPIPE *** (ignored, pid = %ld)\n", (long) getpid());
-    write(2, msg, strlen(msg));
-#endif
-
-    // Do nothing.
-    errno = saved_errno;
-}
 
 void KApplication::virtual_hook( int id, void* data )
 { KInstance::virtual_hook( id, data ); }

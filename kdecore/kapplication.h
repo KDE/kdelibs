@@ -61,12 +61,8 @@ class KURL;
 * @li It provides the application with KDE resources such as
 * accelerators, common menu entries, a KConfig object. session
 * management events, help invocation etc.
-* @li Installs a signal handler for the SIGCHLD signal in order to
-* avoid zombie children. If you want to catch this signal yourself or
-* don't want it to be caught at all, you have set a new signal handler
-* (or SIG_IGN) after KApplication's constructor has run.
-* @li Installs an empty signal handler for the SIGPIPE signal using
-* installSigpipeHandler(). If you want to catch this signal
+* @li Installs an empty signal handler for the SIGPIPE signal.
+* If you want to catch this signal
 * yourself, you have set a new signal handler after KApplication's
 * constructor has run.
 * @li It can start new services
@@ -751,15 +747,6 @@ public:
    */
   static QPalette createApplicationPalette( KConfig *config, int contrast );
 
-  /**
-   * Installs a handler for the SIGPIPE signal. It is thrown when you write to
-   * a pipe or socket that has been closed.
-   * The handler is installed automatically in the constructor, but you may
-   * need it if your application or component does not have a KApplication
-   * instance.
-   */
-  static void installSigpipeHandler();
-
 signals:
   /**
    * Emitted when KApplication has changed its palette due to a KControl request.
@@ -884,7 +871,6 @@ private:
   void kdisplaySetStyle();
   void kdisplaySetFont();
   void applyGUIStyle();
-  static void sigpipeHandler(int);
 
   int captionLayout;
 
