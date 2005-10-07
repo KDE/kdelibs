@@ -93,7 +93,7 @@ by QX11Info::display()</li>
     geometry = args->getOption("geometry");
 </pre>
 </li>
-<li>installSigpipeHandler() was removed.</li> 
+<li>installSigpipeHandler() was removed.</li>
 </ul>
 
 <H4>KCatalogue</H4>
@@ -180,6 +180,9 @@ Desktop Entry Spec</a>
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
 
 <H4>KStyle</H4>
+
+<H4>KTempDir</H4>
+<li>existing() was removed, use exists() instead</li>
 
 <H4>KURL</H4>
 <li>filename() has been removed, use fileName() instead</li>
@@ -428,7 +431,7 @@ See the UDSEntry documentation for code examples.</li>
 <li>Also note that UDSEntryListConstIterator is now UDSEntryList::ConstIterator;
 see the UDSEntryList documentation for a full code example of iterating through
 a listDir result.</li>
-<li>For kioslaves: replace every three lines like 
+<li>For kioslaves: replace every three lines like
  <pre>atom.m_uds = KIO::UDS_SIZE;
       atom.m_long = buff.st_size;
       entry.append( atom );</pre>
