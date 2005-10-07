@@ -40,7 +40,7 @@
  *
  * @internal
 */
-void KApplication_init_windows(bool /*GUIenabled*/)
+void KApplication_init_windows()
 {
 	QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language() 
 		+ "/LC_MESSAGES/qt_" + KGlobal::locale()->language() + ".qm" );
