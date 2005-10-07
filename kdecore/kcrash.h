@@ -22,8 +22,9 @@
 #ifndef KCRASH_H
 #define KCRASH_H
 
-#include <qstring.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
+
+class QString;
 
 /**
  * This class handles segmentation-faults.

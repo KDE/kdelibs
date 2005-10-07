@@ -31,15 +31,15 @@
    Rik Hemsley (C) 2001.
 */
 
-#ifndef _KMDBASE_H
-#define _KMDBASE_H
+#ifndef KMDBASE_H
+#define KMDBASE_H
 
 #define KBase64 KCodecs
 
-#include <qglobal.h>
-#include <qstring.h>
-#include <qiodevice.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
+
+class QByteArray;
+class QIODevice;
 
 /**
  * A wrapper class for the most commonly used encoding and

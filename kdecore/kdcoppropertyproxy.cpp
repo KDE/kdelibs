@@ -18,14 +18,15 @@
 */
 
 #include "kdcoppropertyproxy.h"
+#include "dcopobject.h"
 
-#include <q3strlist.h>
+#include <qobject.h>
 #include <qmetaobject.h>
 #include <qvariant.h>
 #include <qcursor.h>
 #include <qbitmap.h>
 #include <qregion.h>
-#include <q3pointarray.h>
+#include <qpolygon.h>
 #include <qicon.h>
 #include <qfont.h>
 #include <qimage.h>
@@ -35,22 +36,21 @@
 #include <ctype.h>
 #include <assert.h>
 
-class KDCOPPropertyProxyPrivate
+class KDCOPPropertyProxy::Private
 {
 public:
-  KDCOPPropertyProxyPrivate()
+  Private()
   {
   }
-  ~KDCOPPropertyProxyPrivate()
+  ~Private()
   {
   }
 
   QObject *m_object;
 };
 
-KDCOPPropertyProxy::KDCOPPropertyProxy( QObject *object )
+KDCOPPropertyProxy::KDCOPPropertyProxy( QObject *object ) : d(new Private)
 {
-  d = new KDCOPPropertyProxyPrivate;
   d->m_object = object;
 }
 
@@ -202,7 +202,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
     {
       DEMARSHAL( Cursor, QCursor )
       DEMARSHAL( Bitmap, QBitmap )
-      DEMARSHAL( PointArray, QPolygon )
+      DEMARSHAL( Polygon, QPolygon )
       DEMARSHAL( Region, QRegion )
       DEMARSHAL( List, ListType )
       DEMARSHAL( Map, MapType )
@@ -268,7 +268,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
     {
       MARSHAL( Cursor )
       MARSHAL( Bitmap )
-//      MARSHAL( PointArray )
+      MARSHAL( Polygon )
       MARSHAL( Region )
       MARSHAL2( List )
       MARSHAL2( Map )

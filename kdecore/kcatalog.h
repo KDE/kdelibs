@@ -21,9 +21,7 @@
 #define KCATALOG_H
 
 #include <qstring.h>
-#include "kdelibs_export.h"
-
-struct kde_loaded_l10nfile;
+#include <kdelibs_export.h>
 
 class KCatalogPrivate;
 

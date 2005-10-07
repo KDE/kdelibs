@@ -19,11 +19,11 @@
 #ifndef KCLIPBOARD_H
 #define KCLIPBOARD_H
 
-#include <qclipboard.h>
-#include <qmime.h>
 #include <qobject.h>
-#include <q3strlist.h>
-#include "kdelibs_export.h"
+#include <qclipboard.h>
+#include <kdelibs_export.h>
+
+class QMimeSource;
 
 /**
  * This class is only for internal use.

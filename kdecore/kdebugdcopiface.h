@@ -17,12 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KDEBUGDCOPIFACE_H_
-#define _KDEBUGDCOPIFACE_H_
+#ifndef KDEBUGDCOPIFACE_H
+#define KDEBUGDCOPIFACE_H
 
 #include <dcopobject.h>
-#include <dcopref.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
 /**
  * @short DCOP interface to KDebug.
@@ -49,4 +48,3 @@ k_dcop:
 };
 
 #endif
-

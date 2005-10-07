@@ -16,11 +16,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
-#include <kconfig.h>
-#include <kglobal.h>
-
 #include "kclipboard.h"
+#include "kapplication.h"
+#include "kconfig.h"
+#include "kglobal.h"
+
+#include <qmime.h>
+#include <q3strlist.h>
 
 /*
  * This class provides an automatic synchronization of the X11 Clipboard and Selection

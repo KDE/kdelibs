@@ -21,12 +21,11 @@
 #define KAPPDCOP_INTERFACE_H
 
 #include <dcopobject.h>
-#include <qstringlist.h>
-#include <q3cstring.h>
-#include <dcopref.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
 class KApplication;
+class QStringList;
+class QByteArray;
 
 /**
 This is the main interface to the KApplication.  This will provide a consistant

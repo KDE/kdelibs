@@ -16,16 +16,16 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kdcoppropertyproxy_h__
-#define __kdcoppropertyproxy_h__
+#ifndef KDCOPPROPERTYPROXY_H
+#define KDCOPPROPERTYPROXY_H
 
-#include <qobject.h>
-#include <q3cstring.h>
-#include <q3valuelist.h>
-#include "kdelibs_export.h"
-#include <dcopobject.h>
+#include <kdelibs_export.h>
 
-class KDCOPPropertyProxyPrivate;
+class QObject;
+template <class T> class QList;
+class DCOPCString;
+typedef QList<DCOPCString> DCOPCStringList;
+
 /**
  * The KDCOPPropertyProxy class provides an easy way to publish Qt properties of a
  * QObject through DCOP.
@@ -101,7 +101,8 @@ private:
   static bool decodePropertyRequestInternal( const DCOPCString &fun, QObject *object, bool &set,
                                              DCOPCString &propName, DCOPCString &arg );
 
-  KDCOPPropertyProxyPrivate *d;
+  class Private;
+  Private *const d;
 };
 
 #endif
