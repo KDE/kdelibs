@@ -1292,7 +1292,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
   const QList<QPair<QString, QString> > items = QUrl::queryItems();
   QPair<QString, QString> item;
   Q_FOREACH( item, items ) {
-      result.insert( options & CaseInsensitiveKeys ? item.first.lower() : item.first, item.second );
+      result.insert( options & CaseInsensitiveKeys ? item.first.toLower() : item.first, item.second );
   }
 #if 0
   if ( m_strQuery_encoded.isEmpty() )

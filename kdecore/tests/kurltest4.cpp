@@ -192,8 +192,8 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::ref()", url1.ref().lower(), "%2f");
-  check("KURL::encodedHtmlRef()", url1.encodedHtmlRef().lower(), "%2f");
+  check("KURL::ref()", url1.ref().toLower(), "%2f");
+  check("KURL::encodedHtmlRef()", url1.encodedHtmlRef().toLower(), "%2f");
   check("KURL::htmlRef()", url1.htmlRef(), "/");
 
   u1 = "file:///home/dfaure/my#%23";
@@ -213,7 +213,7 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::ref()", url1.ref(), "j");
-  check("KURL::encodedHtmlRef()", url1.encodedHtmlRef().lower(), "%6a");
+  check("KURL::encodedHtmlRef()", url1.encodedHtmlRef().toLower(), "%6a");
   check("KURL::htmlRef()", url1.htmlRef(), "j");
 #endif
 

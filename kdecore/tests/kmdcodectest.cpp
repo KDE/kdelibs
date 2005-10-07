@@ -189,15 +189,15 @@ void MD5_timeTrial ()
     time_t endTime;
     time_t startTime;
 
-    Q_UINT8 block[TEST_BLOCK_LEN];
-    Q_UINT32 i;
+    quint8 block[TEST_BLOCK_LEN];
+    quint32 i;
 
     cout << "Timing test. Digesting " << TEST_BLOCK_COUNT << " blocks of "
          << TEST_BLOCK_LEN << "-byte..." << endl;
 
     // Initialize block
     for (i = 0; i < TEST_BLOCK_LEN; i++)
-        block[i] = (Q_UINT8)(i & 0xff);
+        block[i] = (quint8)(i & 0xff);
 
     // Start timer
     time (&startTime);

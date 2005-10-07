@@ -59,7 +59,7 @@ KSycocaDict::KSycocaDict()
 KSycocaDict::KSycocaDict(QDataStream *str, int offset)
   : d(0), mStr(str), mOffset(offset)
 {
-   Q_UINT32 test1, test2;
+   quint32 test1, test2;
    str->device()->at(offset);
    (*str) >> test1 >> test2;
    if ((test1 > 0x000fffff) || (test2 > 1024))
@@ -129,11 +129,11 @@ KSycocaDict::find_string(const QString &key )
    uint hash = hashKey(key) % mHashTableSize;
    //kdDebug(7011) << QString("hash is %1").arg(hash) << endl;
 
-   uint off = mOffset+sizeof(Q_INT32)*hash;
+   uint off = mOffset+sizeof(qint32)*hash;
    //kdDebug(7011) << QString("off is %1").arg(off,8,16) << endl;
    mStr->device()->at( off );
 
-   Q_INT32 offset;
+   qint32 offset;
    (*mStr) >> offset;
 
    //kdDebug(7011) << QString("offset is %1").arg(offset,8,16) << endl;
@@ -411,13 +411,13 @@ KSycocaDict::save(QDataStream &str)
       //kdDebug(7011) << QString("Writing hash table (pass #%1)").arg(pass) << endl;
       for(uint i=0; i < mHashTableSize; i++)
       {
-         Q_INT32 tmpid;
+         qint32 tmpid;
          if (!hashTable[i].entry)
-            tmpid = (Q_INT32) 0;
+            tmpid = (qint32) 0;
          else if (!hashTable[i].duplicates)
-            tmpid = (Q_INT32) hashTable[i].entry->payload->offset(); // Positive ID
+            tmpid = (qint32) hashTable[i].entry->payload->offset(); // Positive ID
          else
-            tmpid = (Q_INT32) -hashTable[i].duplicate_offset; // Negative ID
+            tmpid = (qint32) -hashTable[i].duplicate_offset; // Negative ID
          str << tmpid;
          //kdDebug(7011) << QString("Hash table : %1").arg(tmpid,8,16) << endl;
       }
@@ -435,10 +435,10 @@ KSycocaDict::save(QDataStream &str)
 */
             for(string_entry *dup = dups->first(); dup; dup=dups->next())
             {
-               str << (Q_INT32) dup->payload->offset(); // Positive ID
+               str << (qint32) dup->payload->offset(); // Positive ID
                str << dup->keyStr;                      // Key (QString)
             }
-            str << (Q_INT32) 0;               // End of list marker (0)
+            str << (qint32) 0;               // End of list marker (0)
          }
       }
       //kdDebug(7011) << QString("End of Dict, offset = %1").arg(str.device()->at(),8,16) << endl;

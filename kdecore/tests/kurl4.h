@@ -183,7 +183,7 @@ public:
    * Returns the protocol for the URL (i.e., file, http, etc.), lowercased.
    * @see QUrl::scheme
    */
-  QString protocol() const { return scheme().lower(); }
+  QString protocol() const { return scheme().toLower(); }
 
   /**
    * Sets the protocol for the URL (i.e., file, http, etc.)

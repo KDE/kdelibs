@@ -548,7 +548,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
-    QByteArray name = n.lower().latin1();
+    QByteArray name = n.toLower().latin1();
     QByteArray key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);
@@ -596,7 +596,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     if(cname.isEmpty())
         cname = name;
-    cname = cname.upper();
+    cname = cname.toUpper();
 
     const QString basicName = QLatin1String(cname);
     kdDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir << endl;

@@ -111,13 +111,13 @@ public:
    void save(QDataStream &str);
 
 protected:
-   Q_UINT32 hashKey( const QString &);
+   quint32 hashKey( const QString &);
 private:
    KSycocaDictStringList *d;
    QDataStream *mStr;
-   Q_INT32 mOffset;
-   Q_UINT32 mHashTableSize;
-   QList<Q_INT32> mHashList;
+   qint32 mOffset;
+   quint32 mHashTableSize;
+   QList<qint32> mHashList;
 };
 
 #endif

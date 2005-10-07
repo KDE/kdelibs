@@ -145,14 +145,14 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
 
     replyType = "bool";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
-    reply << (Q_INT8)object->setProperty( propName, propValue );
+    reply << (qint8)object->setProperty( propName, propValue );
 	reply.setVersion(QDataStream::Qt_3_1 );
     return true;
   }
 
   if ( fun == "propertyNames(bool)" )
   {
-    Q_INT8 b;
+    qint8 b;
     QDataStream stream( data );
 	stream.setVersion(QDataStream::Qt_3_1 );
     stream >> b;
@@ -230,7 +230,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       DEMARSHAL( UInt, uint )
       case QVariant::Bool:
       {
-        Q_INT8 v;
+        qint8 v;
         stream >> v;
         prop = QVariant( static_cast<bool>( v ), 1 );
       }
@@ -289,7 +289,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       MARSHAL2( Int )
       MARSHAL2( UInt )
       case QVariant::Bool:
-        reply << (Q_INT8)prop.toBool();
+        reply << (qint8)prop.toBool();
         break;
       MARSHAL2( Double )
       default:

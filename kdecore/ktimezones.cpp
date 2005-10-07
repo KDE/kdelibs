@@ -690,28 +690,28 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
     }
 
     // Structures that represent the zoneinfo file.
-    Q_UINT8 T, z, i_, f_;
+    quint8 T, z, i_, f_;
     struct
     {
-        Q_UINT32 ttisgmtcnt;
-        Q_UINT32 ttisstdcnt;
-        Q_UINT32 leapcnt;
-        Q_UINT32 timecnt;
-        Q_UINT32 typecnt;
-        Q_UINT32 charcnt;
+        quint32 ttisgmtcnt;
+        quint32 ttisstdcnt;
+        quint32 leapcnt;
+        quint32 timecnt;
+        quint32 typecnt;
+        quint32 charcnt;
     } tzh;
-    Q_UINT32 transitionTime;
-    Q_UINT8 localTimeIndex;
+    quint32 transitionTime;
+    quint8 localTimeIndex;
     struct
     {
-        Q_INT32 gmtoff;
-        Q_INT8 isdst;
-        Q_UINT8 abbrind;
+        qint32 gmtoff;
+        qint8 isdst;
+        quint8 abbrind;
     } tt;
-    Q_UINT32 leapTime;
-    Q_UINT32 leapSeconds;
-    Q_UINT8 isStandard;
-    Q_UINT8 isUTC;
+    quint32 leapTime;
+    quint32 leapSeconds;
+    quint8 isStandard;
+    quint8 isUTC;
 
     QDataStream str(&f);
     str >> T >> z >> i_ >> f_;

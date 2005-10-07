@@ -39,7 +39,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
       if (m_str) // Can be 0 in case of errors
       {
           // Read position of index tables....
-          Q_INT32 i;
+          qint32 i;
           (*m_str) >> i;
           m_sycocaDictOffset = i;
           (*m_str) >> i;
@@ -79,9 +79,9 @@ KSycocaFactory::saveHeader(QDataStream &str)
 {
    // Write header 
    str.device()->at(mOffset);
-   str << (Q_INT32) m_sycocaDictOffset;
-   str << (Q_INT32) m_beginEntryOffset;
-   str << (Q_INT32) m_endEntryOffset;
+   str << (qint32) m_sycocaDictOffset;
+   str << (qint32) m_beginEntryOffset;
+   str << (qint32) m_endEntryOffset;
 }
 
 void
@@ -113,7 +113,7 @@ KSycocaFactory::save(QDataStream &str)
 
    // Write indices...
    // Linear index
-   str << (Q_INT32) entryCount;
+   str << (qint32) entryCount;
    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
        it != m_entryDict->end(); ++it)
    {
@@ -167,7 +167,7 @@ KSycocaEntry::List KSycocaFactory::allEntries()
    // Assume we're NOT building a database
 
    m_str->device()->at(m_endEntryOffset);
-   Q_INT32 entryCount;
+   qint32 entryCount;
    (*m_str) >> entryCount;
    
    if (entryCount > 8192)
@@ -176,7 +176,7 @@ KSycocaEntry::List KSycocaFactory::allEntries()
       return list;
    }
 
-   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   qint32 *offsetList = new qint32[entryCount];
    for(int i = 0; i < entryCount; i++)
    {
       (*m_str) >> offsetList[i];
