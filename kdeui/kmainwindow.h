@@ -225,7 +225,7 @@ public:
      *
      * That means clients could simply do the following:
      * \code
-     * if (kapp->isRestored()){
+     * if (qApp->isSessionRestored()){
      *   int n = 1;
      *   while (KMainWindow::canBeRestored(n)){
      *     (new childMW)->restore(n);
@@ -250,7 +250,7 @@ public:
      * for backwards compatibility with 3.1 and 3.0 branches:
      *
      * \code
-     * if (kapp->isRestored())
+     * if (qApp->isSessionRestored())
      *   RESTORE(childMW)
      * else {
      *   // create default application as usual
@@ -265,7 +265,7 @@ public:
      * use the templated kRestoreMainWindows global functions:
      *
      * \code
-     * if (kapp->isRestored())
+     * if (qApp->isSessionRestored())
      *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
      * else {
      *   // create default application as usual

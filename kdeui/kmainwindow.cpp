@@ -354,7 +354,7 @@ KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 
 bool KMainWindow::canBeRestored( int number )
 {
-    if ( !kapp->isRestored() )
+    if ( !qApp->isSessionRestored() )
         return false;
     KConfig *config = kapp->sessionConfig();
     if ( !config )
@@ -366,7 +366,7 @@ bool KMainWindow::canBeRestored( int number )
 
 const QString KMainWindow::classNameOfToplevel( int number )
 {
-    if ( !kapp->isRestored() )
+    if ( !qApp->isSessionRestored() )
         return QString::null;
     KConfig *config = kapp->sessionConfig();
     if ( !config )
