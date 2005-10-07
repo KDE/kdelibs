@@ -43,7 +43,7 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtabwidget.h>
-#include <q3vbox.h>
+
 #include <qlayout.h>
 #include <qregexp.h>
 #include <kmessagebox.h>
@@ -65,6 +65,7 @@
 #include <kio/renamedlg.h>
 
 #include <time.h>
+#include <kvbox.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
 
@@ -77,7 +78,7 @@ public:
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
 	TreeComboBox	*m_printers;
-	Q3VBox		*m_dummy;
+	KVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
 	KURLRequester	*m_file;
 	QCheckBox	*m_persistent;
@@ -324,7 +325,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_cmd = new QLineEdit(m_pbox);
         d->m_cmd->setWhatsThis(whatsThisExternalPrintCommand);
 	d->m_cmdlabel->setBuddy(d->m_cmd);
-	d->m_dummy = new Q3VBox(this);
+	d->m_dummy = new KVBox(this);
 	d->m_plugin = new PluginComboBox(this);
 	d->m_extbtn = new KPushButton(this);
 	d->m_extbtn->setToolTip(i18n("Show/hide advanced options"));

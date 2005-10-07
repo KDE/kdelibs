@@ -23,18 +23,19 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qpixmap.h>
-#include <q3hbox.h>
+
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kvbox.h>
 
 Q3PtrDict<MessageWindow> MessageWindow::m_windows;
 
 MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
 	: QWidget( parent, Qt::WStyle_Customize|Qt::WStyle_NoBorder|Qt::WShowModal|Qt::WType_Dialog|Qt::WDestructiveClose )
 {
-	Q3HBox *box = new Q3HBox( this );
-	box->setFrameStyle( Q3Frame::Panel|Q3Frame::Raised );
+	KHBox *box = new KHBox( this );
+	box->setFrameStyle( QFrame::Panel|QFrame::Raised );
 	box->setLineWidth( 1 );
 	box->setSpacing( 10 );
 	box->setMargin( 5 );
