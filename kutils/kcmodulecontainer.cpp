@@ -112,7 +112,8 @@ void KCModuleContainer::finalize()
 		if(!d->btnLayout) /* It could already be added */
 		{
 			d->btnLayout = new QHBoxLayout(this, 0, 0, "btnLayout");
-			d->btnRootMode = new KPushButton(KStdGuiItem::adminMode(), this, "btnRootMode");
+			d->btnRootMode = new KPushButton(KStdGuiItem::adminMode(), this);
+                        d->btnRootMode->setObjectName("btnRootMode");
 					
 			d->btnLayout->addWidget( d->btnRootMode );
 			d->btnLayout->addStretch();
