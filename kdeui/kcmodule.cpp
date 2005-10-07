@@ -73,6 +73,15 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
     d->managers.setAutoDelete( true );
 
 }
+    
+KCModule::KCModule(QWidget *parent, const QStringList &)
+    : QWidget(parent)
+{
+    init();
+    d->_instance = new KInstance("kcmunnamed");
+    KGlobal::setActiveInstance(this->instance());
+    d->managers.setAutoDelete( true );
+}
 
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
     : QWidget( parent )

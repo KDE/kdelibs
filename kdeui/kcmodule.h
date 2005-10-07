@@ -29,7 +29,6 @@
 #include <kdelibs_export.h>
 
 class QStringList;
-
 class KAboutData;
 class KConfigDialogManager;
 class KConfigSkeleton;
@@ -90,9 +89,11 @@ public:
    * Make sure you have a QStringList argument in your
    * implementation.
    */
-    /// KDE4 remove name parameter
-  KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=QStringList() );
-
+#ifdef QT3_SUPPORT
+  KCModule(QWidget *parent, const char *name, const QStringList &args=QStringList() );
+#endif
+  KCModule(QWidget *parent=0, const QStringList &args=QStringList() );
+  
   KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
 
   /*
