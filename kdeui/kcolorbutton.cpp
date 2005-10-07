@@ -40,8 +40,7 @@ public:
     QColor m_defaultColor;
 };
 
-KColorButton::KColorButton( QWidget *parent, const char *name )
-  : QPushButton( parent, name )
+KColorButton::KColorButton( QWidget *parent ) : QPushButton( parent )
 {
   d = new KColorButtonPrivate;
   d->m_bdefaultColor = false;
@@ -52,9 +51,7 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
-KColorButton::KColorButton( const QColor &c, QWidget *parent,
-			    const char *name )
-  : QPushButton( parent, name ), col(c)
+KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( parent ), col(c)
 {
   d = new KColorButtonPrivate;
   d->m_bdefaultColor = false;
@@ -65,9 +62,8 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent,
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
-KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent,
-			    const char *name )
-  : QPushButton( parent, name ), col(c)
+KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent )
+  : QPushButton( parent ), col(c)
 {
   d = new KColorButtonPrivate;
   d->m_bdefaultColor = true;

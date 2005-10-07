@@ -48,7 +48,7 @@ public:
     /**
      * Constructs a password input widget using the user's global "echo mode" setting.
      */
-    KPasswordEdit(QWidget *parent=0, const char *name=0);
+    KPasswordEdit(QWidget *parent=0);
     // KDE4: either of the two must go! add default values for parameters
 
     /**
@@ -56,14 +56,14 @@ public:
      * Note that echoMode is a QLineEdit::EchoMode.
      * @since 3.0
      */
-    KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name);
+    KPasswordEdit(EchoMode echoMode, QWidget *parent);
 
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a KPasswordEdit::EchoModes.
      * @since 3.2
      */
-    KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name);
+    KPasswordEdit(EchoModes echoMode, QWidget *parent);
 
     /**
      * Destructs the widget.
@@ -191,12 +191,10 @@ public:
      *        which allows the user to keep his password input for later.
      * @param extraBttn: allows to show additional buttons, KDialogBase.
      * @param parent Passed to lower level constructor.
-     * @param name Passed to lower level constructor
      *
      * @since 3.0
      */
-    KPasswordDialog(Types type, bool enableKeep, int extraBttn,
-                    QWidget *parent=0, const char *name=0);
+    KPasswordDialog(Types type, bool enableKeep, int extraBttn, QWidget *parent=0);
 
 
     /**
@@ -211,11 +209,10 @@ public:
      * @param iconName the name of the icon to be shown in the dialog. If empty,
      * a default icon is used
      * @param parent Passed to lower level constructor.
-     * @param name Passed to lower level constructor
      * @since 3.3
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& iconName,
-                    QWidget *parent = 0, const char *name = 0);
+                    QWidget *parent = 0);
 
     /**
      * Destructs the password dialog.

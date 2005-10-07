@@ -46,24 +46,23 @@ public:
     /**
      * Default constructor.
      */
-    KPushButton( QWidget *parent, const char *name=0 );
+    KPushButton( QWidget *parent );
 
     /**
      * Constructor, that sets the button-text to @p text
      */
-    KPushButton( const QString &text, QWidget *parent, const char *name=0);
+    KPushButton( const QString &text, QWidget *parent );
 
     /**
      * Constructor, that sets an icon and the button-text to @p text
      */
-    KPushButton( const QIcon &icon, const QString &text,
-                 QWidget *parent, const char *name=0 );
+    KPushButton( const QIcon &icon, const QString &text, QWidget *parent );
 
     /**
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
      * and the what's this help
      */
-    KPushButton( const KGuiItem &item, QWidget *parent, const char *name = 0 );
+    KPushButton( const KGuiItem &item, QWidget *parent );
 
     /**
      * Destructs the button.

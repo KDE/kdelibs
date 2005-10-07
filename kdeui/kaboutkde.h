@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _KABOUT_KDE_H_
-#define _KABOUT_KDE_H_
+#ifndef KABOUT_KDE_H
+#define KABOUT_KDE_H
 
 #include <kaboutdialog.h>
 

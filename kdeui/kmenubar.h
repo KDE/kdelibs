@@ -19,8 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KMENUBAR_H
-#define _KMENUBAR_H
+#ifndef KMENUBAR_H
+#define KMENUBAR_H
 
 #include <qmenubar.h>
 
@@ -41,7 +41,7 @@ class KDEUI_EXPORT KMenuBar : public QMenuBar
 
 public:
 
-    KMenuBar (QWidget *parent=0, const char *name=0);
+    KMenuBar (QWidget *parent=0);
     ~KMenuBar ();
 
     /**

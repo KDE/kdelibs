@@ -17,8 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __COLBTN_H__
-#define __COLBTN_H__
+#ifndef KCOLORBUTTON_H
+#define KCOLORBUTTON_H
 
 #include <qpushbutton.h>
 
@@ -45,15 +45,18 @@ public:
     /**
      * Creates a color button.
      */
-    KColorButton( QWidget *parent, const char *name = 0L );
+    KColorButton( QWidget *parent );
 
     /**
      * Creates a color button with an initial color @p c.
      */
-    KColorButton( const QColor &c, QWidget *parent, const char *name = 0L );
-    /// @since 3.1
-    KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent,
-                  const char *name=0L );
+    KColorButton( const QColor &c, QWidget *parent );
+    
+    /**
+     * Creates a color button with an initial color @p c and default color @p defaultColor.
+     * @since 3.1
+     */
+    KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent );
 
     virtual ~KColorButton();
 

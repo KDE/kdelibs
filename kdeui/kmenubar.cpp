@@ -131,8 +131,7 @@ Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 #endif
 }
 
-KMenuBar::KMenuBar(QWidget *parent, const char *name)
-  : QMenuBar(parent, name)
+KMenuBar::KMenuBar(QWidget *parent) : QMenuBar(parent)
 {
 #ifdef Q_WS_X11
 #ifdef __GNUC__

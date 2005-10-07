@@ -102,8 +102,7 @@ class KPasswordDialog::KPasswordDialogPrivate
 };
 
 
-KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
-    : QLineEdit(parent, name)
+KPasswordEdit::KPasswordEdit(QWidget *parent) : QLineEdit(parent)
 {
     init();
 
@@ -120,14 +119,14 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 
 }
 
-KPasswordEdit::KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name)
-    : QLineEdit(parent, name), m_EchoMode(echoMode)
+KPasswordEdit::KPasswordEdit(EchoModes echoMode, QWidget *parent)
+    : QLineEdit(parent), m_EchoMode(echoMode)
 {
     init();
 }
 
-KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name)
-    : QLineEdit(parent, name)
+KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent)
+    : QLineEdit(parent)
     , m_EchoMode( echoMode == QLineEdit::NoEcho ? NoEcho : OneStar )
 {
     init();
@@ -291,8 +290,8 @@ int KPasswordEdit::maxPasswordLength() const
  */
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
-                                 QWidget *parent, const char *name)
-    : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
+                                 QWidget *parent)
+    : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
     d->iconName = "password";
@@ -300,8 +299,8 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
 }
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& icon,
-				  QWidget *parent, const char *name )
-    : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
+				  QWidget *parent)
+    : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
     if ( icon.trimmed().isEmpty() )

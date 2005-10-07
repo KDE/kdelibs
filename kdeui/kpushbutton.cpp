@@ -39,32 +39,28 @@ public:
 
 bool KPushButton::s_useIcons = false;
 
-KPushButton::KPushButton( QWidget *parent, const char *name )
-    : QPushButton( parent, name ),
+KPushButton::KPushButton( QWidget *parent ) : QPushButton( parent ),
       m_dragEnabled( false )
 {
     init( KGuiItem( "" ) );
 }
 
-KPushButton::KPushButton( const QString &text, QWidget *parent,
-                          const char *name)
-    : QPushButton( parent, name ),
+KPushButton::KPushButton( const QString &text, QWidget *parent ) : QPushButton( parent ),
       m_dragEnabled( false )
 {
     init( KGuiItem( text ) );
 }
 
 KPushButton::KPushButton( const QIcon &icon, const QString &text,
-                          QWidget *parent, const char *name )
-    : QPushButton( text, parent, name ),
+                          QWidget *parent )
+    : QPushButton( text, parent ),
       m_dragEnabled( false )
 {
     init( KGuiItem( text, icon ) );
 }
 
-KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
-                          const char *name )
-    : QPushButton( parent, name ),
+KPushButton::KPushButton( const KGuiItem &item, QWidget *parent )
+    : QPushButton( parent ),
       m_dragEnabled( false )
 {
     init( item );
