@@ -131,7 +131,7 @@ namespace KJS {
            InnerWidth, Length, _Location, Navigate, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
-           ScreenTop, ScreenLeft, AToB, BToA, FrameElement,
+           ScreenTop, ScreenLeft, AToB, BToA, FrameElement, GetComputedStyle,
            ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
            XMLHttpRequest, XMLSerializer, DOMParser,

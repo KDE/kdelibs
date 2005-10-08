@@ -839,7 +839,12 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), doc);
   case DOMDocument::DefaultView: // DOM2
+    {
+    KHTMLView *view = node.handle()->getDocument()->view();
+    if (view)
+        return Window::retrieve(view->part());
     return getDOMAbstractView(exec, doc.defaultView());
+    }
   case PreferredStylesheetSet:
     return String(doc.preferredStylesheetSet());
   case SelectedStylesheetSet:

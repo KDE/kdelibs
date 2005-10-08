@@ -55,6 +55,7 @@
 #include "kjs_traversal.h"
 #include "kjs_css.h"
 #include "kjs_events.h"
+#include "kjs_views.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
@@ -292,6 +293,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension
   sidebar	Window::SideBar		DontDelete|ReadOnly
+  getComputedStyle	Window::GetComputedStyle	DontDelete|Function 2
 
 # Warning, when adding a function to this object you need to add a case in Window::get
 
@@ -539,6 +541,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Blur:
     case AToB:
     case BToA:
+    case GetComputedStyle:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     default:
       break;
@@ -1586,6 +1589,16 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 #else
     return Undefined();
 #endif
+  case Window::GetComputedStyle:  {
+       if ( !part || !part->xmlDocImpl() )
+         return Undefined();
+        DOM::Node arg0 = toNode(args[0]);
+        if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
+          return Undefined(); // throw exception?
+        else
+          return getDOMCSSStyleDeclaration(exec, part->document().defaultView().getComputedStyle(static_cast<DOM::Element>(arg0),
+                                                                              args[1].toString(exec).string()));
+      }
   case Window::Open:
     return window->openWindow(exec, args);
   case Window::Close: {

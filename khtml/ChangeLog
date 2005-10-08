@@ -1,3 +1,12 @@
+2005-10-08  Germain Garand  <germain@ebooksfrance.org>
+
+        Follow Mozilla/Opera in considering the Window object as an implementation of the AbstractView/ViewCSS 
+        DOM2 interfaces. Return the Window object when available ; an AbstractView if not.
+
+        * ecma/kjs_dom.cpp (DefaultView): return the view's Window object if available.
+
+        * ecma/kjs_window.{cpp,h} (GetComputedStyle): implement, as in AbstractView.
+
 2005-10-07  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/bidi.cpp (findNextLineBreak): integrate all positioned inlines in the lineboxes to get a correct static position
