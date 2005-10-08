@@ -30,5 +30,9 @@ typedef int caddr_t;
 #define KDEWIN32_EXPORT
 #endif 
 
+#ifndef KDECORE_EXPORT
+#define KDECORE_EXPORT
+#endif 
+
 #endif 
 
