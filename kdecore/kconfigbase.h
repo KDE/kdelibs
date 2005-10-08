@@ -20,14 +20,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KCONFIGBASE_H
-#define _KCONFIGBASE_H
+#ifndef KCONFIGBASE_H
+#define KCONFIGBASE_H
 
-#include <qmap.h>
 #include <qobject.h>
 #include <qvariant.h>
 
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
+
+template <typename KT, typename KV> class QMap;
+class QString;
+class Q3StrList; // only needed for KDE3 compatibility
 
 class KConfigBackEnd;
 class KConfigBasePrivate;
@@ -35,14 +38,6 @@ class KConfigGroup;
 struct KEntry;
 struct KEntryKey;
 typedef QMap<KEntryKey, KEntry> KEntryMap;
-
-class Q3StrList;
-class QByteArray;
-class QColor;
-class QDateTime;
-class QFont;
-class QString;
-class QStringList;
 
 /**
  * @short KDE Configuration Management abstract base class
@@ -225,29 +220,31 @@ public:
   QVariant readPropertyEntry( const char *pKey,
                               const QVariant &aDefault) const;
 
+#ifdef QT3_SUPPORT
   /**
    * Reads a list of strings.
    *
-   * @deprecated
+   * @deprecated Use the version that returns QStringList
    *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  int readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const;
+  int readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const KDE_DEPRECATED;
 
   /**
    * Reads a list of strings.
    *
-   * @deprecated
+   * @deprecated Use the version that returns QStringList
    *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  int readListEntry( const char *pKey, Q3StrList &list, char sep = ',' ) const;
+  int readListEntry( const char *pKey, Q3StrList &list, char sep = ',' ) const KDE_DEPRECATED;
+#endif
 
   /**
    * Reads a list of strings.
@@ -829,6 +826,7 @@ public:
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
 
+#ifdef QT3_SUPPORT
   /**
    * writeEntry() overridden to accept a list of strings.
    *
@@ -850,7 +848,8 @@ public:
    * @see  writeEntry()
    */
   void writeEntry( const QString& pKey, const Q3StrList &rValue,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+		   KDE_DEPRECATED;
   /**
    * writeEntry() overridden to accept a list of strings.
    *
@@ -872,8 +871,9 @@ public:
    * @see  writeEntry()
    */
   void writeEntry( const char *pKey, const Q3StrList &rValue,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
-
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+		   KDE_DEPRECATED;
+#endif
   /**
    * writeEntry() overridden to accept a list of strings.
    *
@@ -896,6 +896,7 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+  
   /**
    * writeEntry() overridden to accept a list of strings.
    *
@@ -918,7 +919,6 @@ public:
    */
   void writeEntry( const char *pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
-
 
  /**
    * writeEntry() overridden to accept a list of Integers.
@@ -2065,16 +2065,16 @@ public:
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */
-  KConfigGroupSaver( KConfigBase* config, const QString &group )
-      : _config(config), _oldgroup(config->group())
+  KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
+      : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* config, const char *group )
-      : _config(config), _oldgroup(config->group())
+  KConfigGroupSaver( KConfigBase* pConfig, const char *group )
+      : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* config, const QByteArray &group )
-      : _config(config), _oldgroup(config->group())
+  KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
+      : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
   ~KConfigGroupSaver() { _config->setGroup( _oldgroup ); }

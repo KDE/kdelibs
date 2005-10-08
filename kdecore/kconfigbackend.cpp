@@ -71,7 +71,7 @@ static QByteArray printableToString(const char *str, int l)
      l--;
   }
 
-  QByteArray result(l + 1);
+  QByteArray result(l + 1, 0);
   char *r = result.data();
 
   for(int i = 0; i < l;i++, str++)
@@ -116,7 +116,7 @@ static QByteArray printableToString(const char *str, int l)
 }
 
 static QByteArray stringToPrintable(const QByteArray& str){
-  QByteArray result(str.length()*2); // Maximum 2x as long as source string
+  QByteArray result(str.length()*2, 0); // Maximum 2x as long as source string
   register char *r = result.data();
   register const char *s = str.data();
 
@@ -168,7 +168,7 @@ static QByteArray stringToPrintable(const QByteArray& str){
 
 static QByteArray decodeGroup(const char*s, int l)
 {
-  QByteArray result(l);
+  QByteArray result(l,0);
   register char *r = result.data();
 
   l--; // Correct for trailing \0
@@ -200,7 +200,7 @@ static QByteArray decodeGroup(const char*s, int l)
 static QByteArray encodeGroup(const QByteArray &str)
 {
   int l = str.length();
-  QByteArray result(l*2+1);
+  QByteArray result(l*2+1, 0);
   register char *r = result.data();
   register const char *s = str.data();
   while(l)
@@ -214,9 +214,8 @@ static QByteArray encodeGroup(const QByteArray &str)
   return result;
 }
 
-class KConfigBackEnd::KConfigBackEndPrivate
+struct KConfigBackEnd::Private
 {
-public:
    QDateTime localLastModified;
    uint      localLastSize;
    KLockFile::Ptr localLockFile;
@@ -280,9 +279,9 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
 			       const char * _resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess), mFileMode(-1)
+  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess), mFileMode(-1),
+    d(new Private)
 {
-   d = new KConfigBackEndPrivate;
    changeFileName(_fileName, _resType, _useKDEGlobals);
 }
 
@@ -439,7 +438,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    //using kdDebug() here leads to an infinite loop
    //remove this for the release, aleXXX
    //qWarning("Parsing %s, global = %s default = %s",
-   //           rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
+   //           rFile.name().toLatin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
 
    QByteArray aCurrentGroup("<default>");
 
@@ -468,7 +467,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (sigsetjmp (mmap_jmpbuf, 1))
       {
-qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
+qWarning("SIGBUS while reading %s", rFile.fileName().toLatin1().data());
          munmap(( char* )map, rFile.size());
          sigaction (SIGBUS, &mmap_old_sigact, 0);
          return;
@@ -525,7 +524,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
          if ((e >= eof) || (*e != ']'))
          {
-            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().latin1(), line);
+            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().toLatin1().data(), line);
             continue;
          }
          // group found; get the group name by taking everything in
@@ -595,7 +594,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
 	    for (;; s++)
 	    {
 		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().latin1(), line);
+		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().toLatin1().data(), line);
 		    goto sktoeol;
 		}
 		if (*s == ']')
@@ -606,7 +605,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
             {
               // Locale
               if (locale) {
-		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().latin1(), line);
+		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().toLatin1().data(), line);
 		goto sktoeol;
               }
               locale = option;
@@ -633,7 +632,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
             }
          }
       }
-      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().latin1(), line);
+      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().toLatin1().data(), line);
       continue;
 
    haveeq:
@@ -641,7 +640,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
       {
 	 if (endOfKey < startLine)
 	 {
-	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().latin1(), line);
+	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().toLatin1().data(), line);
 	   goto sktoeol;
 	 }
 	 if (!isspace(*endOfKey))
@@ -923,10 +922,12 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
   for (KEntryMapIterator aIt = aMap.begin();
        aIt != aMap.end(); ++aIt)
   {
-    const KEntry &currentEntry = *aIt;
+    const KEntry currentEntry = *aIt;
+    const KEntryKey key = aIt.key();
     if(aIt.key().bDefault)
     {
-       aTempMap.replace(aIt.key(), currentEntry);
+       aTempMap.remove(key);
+       aTempMap.insert(key, currentEntry);
        continue;
     }
 
@@ -948,7 +949,8 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
     if (aIt2 != aTempMap.end() && (*aIt2).bImmutable)
        continue; // Bail out if the on-disk entry is immutable
 
-    aTempMap.insert(aIt.key(), currentEntry, true);
+    aTempMap.remove(key);
+    aTempMap.insert(key, currentEntry);
   } // loop
 
   return bEntriesLeft;

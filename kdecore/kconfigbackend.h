@@ -19,16 +19,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KCONFIGBACKEND_H
-#define _KCONFIGBACKEND_H
+#ifndef KCONFIGBACKEND_H
+#define KCONFIGBACKEND_H
 
+#include <kdelibs_export.h>
 #include <kconfigbase.h>
 #include <klockfile.h>
-#include "kdelibs_export.h"
-#include <qbytearray.h> // TODO: move data to Private class and use a forward declaration
 
 class QFile;
-class KConfigBackEndPrivate;
+class QByteArray;
 
 /**
  * Abstract base class for KDE configuration file loading/saving.
@@ -168,8 +167,8 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 protected:
-  class KConfigBackEndPrivate;
-  KConfigBackEndPrivate *d;
+  class Private;
+  Private *const d;
 };
 
 
@@ -278,8 +277,8 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KConfigINIBackEndPrivate;
-  KConfigINIBackEndPrivate *not_d;
+  class Private;
+  Private *not_d;
 };
 
 #endif

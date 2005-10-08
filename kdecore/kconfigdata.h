@@ -19,12 +19,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KCONFIGDATA_H
-#define _KCONFIGDATA_H
+#ifndef KCONFIGDATA_H
+#define KCONFIGDATA_H
 
-#include <qbytearray.h>
+#include <kdelibs_export.h>
 #include <qmap.h>
-#include "kdelibs_export.h"
+
+class QByteArray;
 
 /**
  * map/dict/list config node entry.
@@ -33,7 +34,7 @@
 struct KDECORE_EXPORT KEntry
 {
   KEntry()
-    : mValue(0), bDirty(false), bNLS(false), 
+    : mValue(), bDirty(false), bNLS(false), 
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
   QByteArray mValue;
   /**
@@ -69,8 +70,8 @@ struct KDECORE_EXPORT KEntry
  */
 struct KDECORE_EXPORT KEntryKey
 {
-  KEntryKey(const QByteArray& _group = 0,
-	    const QByteArray& _key = 0)
+  KEntryKey(const QByteArray& _group = QByteArray(),
+	    const QByteArray& _key = QByteArray())
       : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
         c_key(_key.data()) {}
   /**
@@ -109,7 +110,7 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 
   result = 0;
   if (k1.c_key && k2.c_key)
-     result = strcmp(k1.c_key, k2.c_key);
+     result = qstrcmp(k1.c_key, k2.c_key);
   if (result != 0)
      return result < 0;
   if (!k1.bLocal && k2.bLocal)

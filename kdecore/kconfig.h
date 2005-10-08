@@ -19,14 +19,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KCONFIG_H
-#define _KCONFIG_H
+#ifndef KCONFIG_H
+#define KCONFIG_H
 
-#include "kconfigbase.h"
-#include "kconfigdata.h"
-#include "klockfile.h"
-
-class KConfigPrivate;
+#include <kconfigbase.h>
+#include <kconfigdata.h>
+#include <klockfile.h>
 
 /**
 * Access KDE Configuration entries.
@@ -258,7 +256,8 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KConfigPrivate *d;
+  class Private;
+  Private *d;
 };
 
 /**

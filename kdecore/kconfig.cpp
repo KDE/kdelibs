@@ -25,27 +25,27 @@
 #include <sys/stat.h>
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qfileinfo.h>
-
-#include "kconfigbackend.h"
-
 #include "kconfig.h"
+#include "kconfigbackend.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kstaticdeleter.h"
 #include "ktoolinvocation.h"
 
 #include <qtimer.h>
+#include <qfileinfo.h>
+
 KConfig::KConfig( const QString& fileName,
-                 bool bReadOnly, bool bUseKderc, const char *resType )
+                 bool readOnly, bool bUseKderc, const char *resType )
   : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
     bForceGlobal(false)
 {
   // set the object's read-only status.
-  setReadOnly(bReadOnly);
+  setReadOnly(readOnly);
 
   // for right now we will hardcode that we are using the INI
   // back end driver.  In the future this should be converted over to
@@ -73,11 +73,11 @@ KConfig::KConfig( const QString& fileName,
       reparseConfiguration();
 }
 
-KConfig::KConfig(KConfigBackEnd *aBackEnd, bool bReadOnly)
+KConfig::KConfig(KConfigBackEnd *aBackEnd, bool readOnly)
     : bGroupImmutable(false), bFileImmutable(false),
     bForceGlobal(false)
 {
-  setReadOnly(bReadOnly);
+  setReadOnly(readOnly);
   backEnd = aBackEnd;
   reparseConfiguration();
 }
@@ -112,7 +112,7 @@ QStringList KConfig::groupList() const
   {
     while(aIt.key().mKey.isEmpty())
     {
-      QByteArray group = aIt.key().mGroup;
+      QByteArray _group = aIt.key().mGroup;
       ++aIt;
       while (true)
       {
@@ -124,8 +124,8 @@ QStringList KConfig::groupList() const
 
          if (!aIt.key().bDefault && !(*aIt).bDeleted)
          {
-            if (group != "$Version") // Special case!
-               retList.append(QString::fromUtf8(group));
+            if (_group != "$Version") // Special case!
+               retList.append(QString::fromUtf8(_group));
             break; // Group is non-empty, added, next group
          }
          ++aIt;
@@ -232,20 +232,16 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   KEntryMapConstIterator aIt = aEntryMap.find(_key);
   if (aIt != aEntryMap.end())
   {
-    const KEntry &entry = *aIt;
-    if (entry.bDeleted)
-       return KEntry();
-    else
-       return entry;
+    if (!aIt->bDeleted) 
+       return *aIt;
   }
-  else {
-    return KEntry();
-  }
+  
+  return KEntry();
 }
 
-bool KConfig::internalHasGroup(const QByteArray &group) const
+bool KConfig::internalHasGroup(const QByteArray &_group) const
 {
-  KEntryKey groupKey( group, 0);
+  KEntryKey groupKey( _group, 0);
 
   KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
   KEntryMapConstIterator aEnd = aEntryMap.end();
@@ -353,7 +349,7 @@ KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekd
 KSharedConfig::~KSharedConfig()
 {
   if ( s_list )
-    s_list->remove(this);
+    s_list->removeAll(this);
 }
 
 #include "kconfig.moc"
