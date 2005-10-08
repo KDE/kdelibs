@@ -67,8 +67,8 @@ Comment[zh_CN]=Kugar 报告模板
 Comment[zh_TW]=Kugar 報表樣本
 Icon=kugardata
 Type=MimeType
-Patterns=*.kut;
+Patterns=*.kut;*.ktf;
 X-KDE-AutoEmbed=false
 [Property::X-KDE-NativeExtension]
 Type=QString
-Value=.kut
+Value=.ktf
