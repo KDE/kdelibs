@@ -750,7 +750,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
          if (lf) 
          {
-            lf->lock( KLockFile::LockForce );
+            lf->lock( KLockFile::ForceFlag );
             // But what if the locking failed? Ignore it for now...
          }
          
@@ -802,7 +802,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
       if (lf) 
       {
-         lf->lock( KLockFile::LockForce );
+         lf->lock( KLockFile::ForceFlag );
          // But what if the locking failed? Ignore it for now...
       }
       writeConfigFile( mGlobalFileName, true, bMerge ); // Always merge

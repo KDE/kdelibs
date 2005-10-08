@@ -67,25 +67,26 @@ public:
      LockStale
    };
 
-   enum LockOptions {
+   enum LockFlag {
      /**
       * Return immediately, do not wait for the lock to become available
       */
-     LockNoBlock = 1,
+     NoBlockFlag = 1,
      
      /**
       * Automatically remove a lock when a lock is detected that is stale
       * for more than staleTime() seconds.
       */
-     LockForce = 2
+     ForceFlag = 2
    };
+   Q_DECLARE_FLAGS(LockFlags, LockFlag)
 
    /**
     * Attempt to acquire the lock
     *
-    * @param options A set of @ref LockOptions OR'ed together.
+    * @param flags A set of @ref LockFlags OR'ed together.
     */
-   LockResult lock(int options=0);
+   LockResult lock(LockFlags flags=LockFlags());
    
    /**
     * Returns whether the lock is held or not
@@ -116,8 +117,10 @@ public:
    bool getLockInfo(int &pid, QString &hostname, QString &appname);
 
 private:
-   class KLockFilePrivate;
-   KLockFilePrivate *d;
+   class Private;
+   Private *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KLockFile::LockFlags)
 
 #endif
