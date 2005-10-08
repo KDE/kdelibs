@@ -20,21 +20,8 @@
 #ifndef _KDEWIN_UNISTD_H
 #define _KDEWIN_UNISTD_H
 
-//#include <kdecore/kdelibs_export.h>
-
-#include <io.h> /* access(), etc.*/
-#include <process.h> /* getpid(), etc.*/
-
-/* include most headers here to avoid redefining gethostname() */
 #include <sys/types.h>
-//#include <kdelibs_global_win.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/wait.h>
-
-#define _WINSOCKAPI_ /* skip winsock */
-
-#include <sys/stat.h>
+#include_next <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,10 +90,10 @@ KDEWIN32_EXPORT pid_t fork(void);
 
 KDEWIN32_EXPORT pid_t setsid(void);
 
+// KDE-ICE uses winsock headers 
 #ifndef ICE_t
 #undef gethostname
 #define gethostname kde_gethostname
-
 KDEWIN32_EXPORT int kde_gethostname(char *__name, int __len);
 #endif 
 
