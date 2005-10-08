@@ -234,6 +234,8 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
     KLibrary *lib = loader->library(QFile::encodeName(libname));
     if (!lib)
     {
+      kdWarning() << k_funcinfo << "Could not load library. [ "
+		  << loader->lastErrorMessage() << " ]" << endl;
       libname.prepend("lib");
       lib = loader->library(QFile::encodeName(libname));
     }
@@ -258,6 +260,11 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
         }
       }
       loader->unloadLibrary(QFile::encodeName(libname));
+    }
+    else
+    {
+	kdWarning() << k_funcinfo << "Could not load library. [ "
+		    << loader->lastErrorMessage() << " ]" << endl;
     }
     kdDebug(7020) << "Could not load module '" << obj << "'\n";
   }
