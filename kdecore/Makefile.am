@@ -1,3 +1,4 @@
+
 #    This file is part of the KDE libraries
 #
 #    Copyright (C) 1996-1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -35,7 +36,7 @@ lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a
 
 include_HEADERS = kconfig.h kconfigskeleton.h \
-	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
+	kconfigdata.h ksimpleconfig.h \
 	kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h \
 	kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
@@ -106,7 +107,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp \
 	ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp \
 	kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp \
-	kuser.cpp kconfigskeleton.cpp kconfigdialogmanager.cpp klockfile.cpp \
+	kuser.cpp kconfigskeleton.cpp klockfile.cpp \
 	kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
