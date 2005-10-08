@@ -307,26 +307,30 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-  if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
-      // FIXME: determine post encoding correctly by looking in headers for charset
-      job = KIO::http_post( url, QCString(_body.utf8()), false );
-      if(contentType.isNull())
-	job->addMetaData( "content-type", "Content-type: text/plain" );
-      else
-	job->addMetaData( "content-type", contentType );
+
+  if (method.lower() == "post" && (url.protocol().lower().startsWith("http"))) {
+    // FIXME: determine post encoding correctly by looking in headers for charset
+
+    QByteArray buf;
+    buf.duplicate(_body.utf8().data(), _body.length());
+
+    job = KIO::http_post( url, buf, false );
+    if(contentType.isNull())
+      job->addMetaData( "content-type", "Content-type: text/plain" );
+    else
+      job->addMetaData( "content-type", contentType );
   }
-  else
-  {
-     job = KIO::get( url, false, false );
+  else {
+    job = KIO::get( url, false, false );
   }
+
   if (!requestHeaders.isEmpty()) {
     QString rh;
     QMap<QString, QString>::ConstIterator begin = requestHeaders.begin();
     QMap<QString, QString>::ConstIterator end = requestHeaders.end();
     for (QMap<QString, QString>::ConstIterator i = begin; i != end; ++i) {
-      if (i != begin) {
-	rh += "\r\n";
-      }
+      if (i != begin)
+        rh += "\r\n";
       rh += i.key() + ": " + i.data();
     }
     job->addMetaData("customHTTPHeader", rh);
