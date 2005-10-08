@@ -775,9 +775,9 @@ QSize KJanusWidget::minimumSizeHint() const
     // Select the tallest item. It has only effect in IconList mode
     //
     int h1 = s1.rheight() + s3.rheight() + s4.height();
-    int h2 = QMAX( h1, s2.rheight() );
+    int h2 = qMax( h1, s2.rheight() );
 
-    return QSize( s1.width()+s2.width()+QMAX(s3.width(),s4.width()), h2 );
+    return QSize( s1.width()+s2.width()+qMax(s3.width(),s4.width()), h2 );
   }
   else if( mFace == Tabbed )
   {
@@ -956,7 +956,7 @@ void KJanusWidget::IconListBox::updateWidth()
     for( Q3ListBoxItem *i = item(0); i; i = i->next() )
     {
       int w = ((IconListItem *)i)->width(this);
-      maxWidth = QMAX( w, maxWidth );
+      maxWidth = qMax( w, maxWidth );
     }
 
     for( Q3ListBoxItem *i = item(0); i; i = i->next() )
@@ -1011,7 +1011,7 @@ KJanusWidget::IconListItem::IconListItem( Q3ListBox *listbox, const QPixmap &pix
 
 int KJanusWidget::IconListItem::expandMinimumWidth( int width )
 {
-  mMinimumWidth = QMAX( mMinimumWidth, width );
+  mMinimumWidth = qMax( mMinimumWidth, width );
   return mMinimumWidth;
 }
 
@@ -1073,8 +1073,8 @@ int KJanusWidget::IconListItem::width( const Q3ListBox *lb ) const
 {
   int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
-  int w  = QMAX( wt, wp );
-  return QMAX( w, mMinimumWidth );
+  int w  = qMax( wt, wp );
+  return qMax( w, mMinimumWidth );
 }
 
 

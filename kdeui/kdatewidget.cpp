@@ -154,15 +154,15 @@ void KDateWidget::slotDateChanged( )
   int y,m,day;
 
   y = d->m_year->value();
-  y = QMIN(QMAX(y, calendar->minValidYear()), calendar->maxValidYear());
+  y = qMin(qMax(y, calendar->minValidYear()), calendar->maxValidYear());
 
   calendar->setYMD(date, y, 1, 1);
   m = d->m_month->currentItem()+1;
-  m = QMIN(QMAX(m,1), calendar->monthsInYear(date));
+  m = qMin(qMax(m,1), calendar->monthsInYear(date));
 
   calendar->setYMD(date, y, m, 1);
   day = d->m_day->value();
-  day = QMIN(QMAX(day,1), calendar->daysInMonth(date));
+  day = qMin(qMax(day,1), calendar->daysInMonth(date));
 
   calendar->setYMD(date, y, m, day);
   setDate(date);

@@ -151,16 +151,16 @@ void KNumInput::layout(bool deep)
     KNumInput* p = this;
     while(p) {
         p->doLayout();
-        w1 = QMAX(w1, p->m_colw1);
-        w2 = QMAX(w2, p->m_colw2);
+        w1 = qMax(w1, p->m_colw1);
+        w2 = qMax(w2, p->m_colw2);
         p = p->m_prev;
     }
 
     p = m_next;
     while(p) {
         p->doLayout();
-        w1 = QMAX(w1, p->m_colw1);
-        w2 = QMAX(w2, p->m_colw2);
+        w1 = qMax(w1, p->m_colw1);
+        w2 = qMax(w2, p->m_colw2);
         p = p->m_next;
     }
 
@@ -423,20 +423,20 @@ QSize KIntNumInput::minimumSizeHint() const
     int w;
     int h;
 
-    h = 2 + QMAX(m_sizeSpin.height(), m_sizeSlider.height());
+    h = 2 + qMax(m_sizeSpin.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
     if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
-        h = QMAX(h, m_sizeLabel.height() + 2);
+        h = qMax(h, m_sizeLabel.height() + 2);
 
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
     if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
-        w = QMAX(w, m_sizeLabel.width() + 4);
+        w = qMax(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
 }
@@ -465,7 +465,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     if (qApp->reverseLayout())
     {
-        m_spin->setGeometry(w, h, m_slider ? m_colw2 : QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
+        m_spin->setGeometry(w, h, m_slider ? m_colw2 : qMax(m_colw2, e->size().width() - w), m_sizeSpin.height());
         w += m_colw2 + 8;
 
         if(m_slider)
@@ -476,7 +476,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
         m_spin->setGeometry(w + m_slider->size().width() + KDialog::spacingHint(), h, m_colw2, m_sizeSpin.height());
     }
     else {
-        m_spin->setGeometry(w, h, QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
+        m_spin->setGeometry(w, h, qMax(m_colw2, e->size().width() - w), m_sizeSpin.height());
     }
 
     h += m_sizeSpin.height() + 2;
@@ -649,20 +649,20 @@ QSize KDoubleNumInput::minimumSizeHint() const
     int w;
     int h;
 
-    h = 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
+    h = 2 + qMax(m_sizeEdit.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
     if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
-	h = QMAX(h, m_sizeLabel.height() + 2);
+	h = qMax(h, m_sizeLabel.height() + 2);
 
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
     if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
-        w = QMAX(w, m_sizeLabel.width() + 4);
+        w = qMax(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
 }

@@ -177,7 +177,7 @@ void KScrollView::wheelEvent( QWheelEvent *e )
 {
     int pageStep = verticalScrollBar()->pageStep();
     int lineStep = verticalScrollBar()->lineStep();
-    int step = QMIN( QApplication::wheelScrollLines()*lineStep, pageStep );
+    int step = qMin( QApplication::wheelScrollLines()*lineStep, pageStep );
     if ( ( e->state() & Qt::ControlModifier ) || ( e->state() & Qt::ShiftModifier ) )
         step = pageStep;
 

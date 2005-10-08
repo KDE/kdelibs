@@ -292,7 +292,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, "KSpell" );
     d->disablePercentage = config->readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
-    d->disablePercentage = QMIN( d->disablePercentage, 101 );
+    d->disablePercentage = qMin( d->disablePercentage, 101 );
     d->disableWordCount = config->readNumEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
     textEdit->installEventFilter( this );

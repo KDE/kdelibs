@@ -192,8 +192,8 @@ void KIconView::slotAutoSelect()
       QRect r;
       QRect redraw;
       if ( previousItem )
-	r = QRect( QMIN( previousItem->x(), m_pCurrentItem->x() ),
-		   QMIN( previousItem->y(), m_pCurrentItem->y() ),
+	r = QRect( qMin( previousItem->x(), m_pCurrentItem->x() ),
+		   qMin( previousItem->y(), m_pCurrentItem->y() ),
 		   0, 0 );
       else
 	r = QRect( 0, 0, 0, 0 );
@@ -537,10 +537,10 @@ void KIconViewItem::calcRect( const QString& text_ )
     // Should not be higher than pixmap if text is alongside icons
     if ( view->itemTextPos() != Q3IconView::Bottom ) {
         if ( d && !d->m_pixmapSize.isNull() )
-            height = QMIN( d->m_pixmapSize.height() + 2, height );
+            height = qMin( d->m_pixmapSize.height() + 2, height );
         else
-            height = QMIN( itemIconRect.height(), height );
-        height = QMAX( height, fm->height() );
+            height = qMin( itemIconRect.height(), height );
+        height = qMax( height, fm->height() );
     }
     
     // Calculate the word-wrap
@@ -548,7 +548,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     m_wordWrap = KWordWrap::formatText( *fm, outerRect, 0, t );
     r = m_wordWrap->boundingRect();
 
-    int realWidth = QMAX( QMIN( r.width() + 4, tw ), fm->width( "X" ) );
+    int realWidth = qMax( qMin( r.width() + 4, tw ), fm->width( "X" ) );
     itemTextRect.setWidth( realWidth );
     itemTextRect.setHeight( r.height() );
 
@@ -557,7 +557,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         // If the pixmap size has been specified, use it
         if ( d && !d->m_pixmapSize.isNull() )
         {
-            w = QMAX( itemTextRect.width(), d->m_pixmapSize.width() + 2 );
+            w = qMax( itemTextRect.width(), d->m_pixmapSize.width() + 2 );
             h = itemTextRect.height() + d->m_pixmapSize.height() + 2 + 1;
 #if 0 // FIXME 
             // Waiting for the qt bug to be solved, the pixmapRect must
@@ -566,14 +566,14 @@ void KIconViewItem::calcRect( const QString& text_ )
 #endif
         }
         else {
-            w = QMAX( itemTextRect.width(), itemIconRect.width() );
+            w = qMax( itemTextRect.width(), itemIconRect.width() );
             h = itemTextRect.height() + itemIconRect.height() + 1;
         }
 
         itemRect.setWidth( w );
         itemRect.setHeight( h );
-        int width = QMAX( w, QApplication::globalStrut().width() ); // see QIconViewItem::width()
-        int height = QMAX( h, QApplication::globalStrut().height() ); // see QIconViewItem::height()
+        int width = qMax( w, QApplication::globalStrut().width() ); // see QIconViewItem::width()
+        int height = qMax( h, QApplication::globalStrut().height() ); // see QIconViewItem::height()
         itemTextRect = QRect( ( width - itemTextRect.width() ) / 2, height - itemTextRect.height(),
                               itemTextRect.width(), itemTextRect.height() );
         itemIconRect = QRect( ( width - itemIconRect.width() ) / 2, y,
@@ -582,7 +582,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         // If the pixmap size has been specified, use it
         if ( d && !d->m_pixmapSize.isNull() )
         {
-            h = QMAX( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
+            h = qMax( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
 #if 0 // FIXME 
             // Waiting for the qt bug to be solved, the pixmapRect must
             // stay on the top...
@@ -590,13 +590,13 @@ void KIconViewItem::calcRect( const QString& text_ )
 #endif
         }
         else
-            h = QMAX( itemTextRect.height(), itemIconRect.height() );
+            h = qMax( itemTextRect.height(), itemIconRect.height() );
         w = itemTextRect.width() + itemIconRect.width() + 1;
 
         itemRect.setWidth( w );
         itemRect.setHeight( h );
-        int width = QMAX( w, QApplication::globalStrut().width() ); // see QIconViewItem::width()
-        int height = QMAX( h, QApplication::globalStrut().height() ); // see QIconViewItem::height()
+        int width = qMax( w, QApplication::globalStrut().width() ); // see QIconViewItem::width()
+        int height = qMax( h, QApplication::globalStrut().height() ); // see QIconViewItem::height()
 
         itemTextRect = QRect( width - itemTextRect.width(), ( height - itemTextRect.height() ) / 2,
                               itemTextRect.width(), itemTextRect.height() );
@@ -604,7 +604,7 @@ void KIconViewItem::calcRect( const QString& text_ )
             itemIconRect = QRect( 0, ( height - itemIconRect.height() ) / 2,
                                   itemIconRect.width(), itemIconRect.height() );
         else // icon smaller than text -> place in top or center with first line
-	    itemIconRect = QRect( 0, QMAX(( fm->height() - itemIconRect.height() ) / 2 + y, 0),
+	    itemIconRect = QRect( 0, qMax(( fm->height() - itemIconRect.height() ) / 2 + y, 0),
                                   itemIconRect.width(), itemIconRect.height() );
         if ( ( itemIconRect.height() <= 20 ) && ( itemTextRect.height() < itemIconRect.height() ) )
         {

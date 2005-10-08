@@ -339,10 +339,10 @@ QRect KCompletionBox::calculateGeometry() const
 {
     int x = 0, y = 0;
     int ih = itemHeight();
-    int h = QMIN( 15 * ih, (int) count() * ih ) + 2*frameWidth();
+    int h = qMin( 15 * ih, (int) count() * ih ) + 2*frameWidth();
 
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
-    w = QMAX( KListBox::minimumSizeHint().width(), w );
+    w = qMax( KListBox::minimumSizeHint().width(), w );
 
   //### M.O.: Qt4 doesn't actually honor SC_ComboBoxListBoxPopup ???
 #if 0
@@ -356,7 +356,7 @@ QRect KCompletionBox::calculateGeometry() const
         const QComboBox* cb = static_cast<const QComboBox*>(combo);
 
         //Expand to the combo width
-        w = QMAX( w, cb->width() );
+        w = qMax( w, cb->width() );
 
         QPoint parentCorner = d->m_parent->mapToGlobal(QPoint(0, 0));
         QPoint comboCorner  = cb->mapToGlobal(QPoint(0, 0));

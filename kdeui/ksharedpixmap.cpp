@@ -201,9 +201,9 @@ bool KSharedPixmap::x11Event(XEvent *event)
     }
 
     unsigned w = d->rect.width(), h = d->rect.height();
-    unsigned tw = QMIN(width, w), th = QMIN(height, h);
+    unsigned tw = qMin(width, w), th = qMin(height, h);
     unsigned xa = d->rect.x() % width, ya = d->rect.y() % height;
-    unsigned t1w = QMIN(width-xa,tw), t1h = QMIN(height-ya,th);
+    unsigned t1w = qMin(width-xa,tw), t1h = qMin(height-ya,th);
 
     QPixmap::resize( tw+origin.x(), th+origin.y() );
 

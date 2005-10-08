@@ -368,9 +368,9 @@ KDatePicker::selectMonthClicked()
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
   //date.setYMD(date.year(), month, 1);
-  //date.setYMD(date.year(), month, QMIN(day, date.daysInMonth()));
+  //date.setYMD(date.year(), month, qMin(day, date.daysInMonth()));
   calendar->setYMD(date, calendar->year(date), item->data().toInt(),
-                   QMIN(day, calendar->daysInMonth(date)));
+                   qMin(day, calendar->daysInMonth(date)));
   // ----- set this month
   setDate(date);
 }
@@ -405,9 +405,9 @@ KDatePicker::selectYearClicked()
       day=calendar->day(date);
       // ----- construct a valid date in this month:
       //date.setYMD(year, date.month(), 1);
-      //date.setYMD(year, date.month(), QMIN(day, date.daysInMonth()));
+      //date.setYMD(year, date.month(), qMin(day, date.daysInMonth()));
       calendar->setYMD(date, year, calendar->month(date),
-                       QMIN(day, calendar->daysInMonth(date)));
+                       qMin(day, calendar->daysInMonth(date)));
       // ----- set this month
       setDate(date);
     } else {
@@ -492,8 +492,8 @@ KDatePicker::setFontSize(int s)
          KGlobal::locale()->calendar()->year(table->getDate()), false);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
-      maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));
-      maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
+      maxMonthRect.setWidth(qMax(r.width(), maxMonthRect.width()));
+      maxMonthRect.setHeight(qMax(r.height(),  maxMonthRect.height()));
     }
 
   QStyleOptionToolButton opt;

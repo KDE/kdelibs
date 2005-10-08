@@ -179,7 +179,7 @@ unsigned int KTabWidget::tabBarWidthForMaxChars( uint maxLength )
         if ( !tabBar()->tabIcon(i).isNull() )
             iw = tabBar()->tabIcon(i).pixmap( QIcon::Small, QIcon::Normal ).width() + 4;
         x += ( tabBar()->style()->sizeFromContents( QStyle::CT_TabBarTab, 0L,
-                   QSize( QMAX( lw + hframe + iw, QApplication::globalStrut().width() ), 0 ),
+                   QSize( qMax( lw + hframe + iw, QApplication::globalStrut().width() ), 0 ),
                    this ) ).width();
     }
     return x;
@@ -257,9 +257,9 @@ void KTabWidget::resizeTabs( int changeTabIndex )
 
         int tabBarHeight = tabBar()->sizeHint().height();
         if ( cornerWidget( Qt::TopLeftCorner ) && cornerWidget( Qt::TopLeftCorner )->isVisible() )
-            lcw = QMAX( cornerWidget( Qt::TopLeftCorner )->width(), tabBarHeight );
+            lcw = qMax( cornerWidget( Qt::TopLeftCorner )->width(), tabBarHeight );
         if ( cornerWidget( Qt::TopRightCorner ) && cornerWidget( Qt::TopRightCorner )->isVisible() )
-            rcw = QMAX( cornerWidget( Qt::TopRightCorner )->width(), tabBarHeight );
+            rcw = qMax( cornerWidget( Qt::TopRightCorner )->width(), tabBarHeight );
 
         uint maxTabBarWidth = width() - lcw - rcw;
 
