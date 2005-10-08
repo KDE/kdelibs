@@ -1041,9 +1041,13 @@ void RenderText::calcMinMaxWidth()
             m_hasBeginWS = true;
         if ((isSpace || isNewline) && i == len-1)
             m_hasEndWS = true;
+        
+        if (i && c == SOFT_HYPHEN)
+            continue;
 
         int wordlen = 0;
-        while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
+        while( i+wordlen < len && (i+wordlen == 0 || str->s[i+wordlen].unicode() != SOFT_HYPHEN) &&
+               !(isBreakable( str->s, i+wordlen, str->l )) )
             wordlen++;
 
         if (wordlen)

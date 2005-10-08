@@ -1,5 +1,13 @@
 2005-10-08  Germain Garand  <germain@ebooksfrance.org>
 
+        Port soft-hyphen support from WebCore
+
+        * rendering/bidi.cpp (findNextLineBreak): main skipping/breaking logic
+
+        * rendering/render_text.{cpp,h} (calcMinMaxWidth): account for soft hyphen
+
+2005-10-08  Germain Garand  <germain@ebooksfrance.org>
+
         Follow Mozilla/Opera in considering the Window object as an implementation of the AbstractView/ViewCSS 
         DOM2 interfaces. Return the Window object when available ; an AbstractView if not.
 
