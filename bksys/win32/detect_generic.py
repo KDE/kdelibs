@@ -10,17 +10,24 @@
 def detect(env):
 	import os, sys
 	import SCons.Util
+	env['GENCXXFLAGS'] = []
 
 	if env['ARGS'].get('debug', None):
 		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
 		env.pprint('CYAN','** Enabling debug for the project **')
-		env['GENCXXFLAGS'] = ['-g']
-		env['GENCCFLAGS'] = ['-g']
-		env['GENLINKFLAGS'] = ['-g']
+		if env['CC'] == 'gcc':
+			env['GENCCFLAGS'] = ['-g']
+			env['GENLINKFLAGS'] = ['-g']
+		elif env['CC'] == 'cl':
+			env['GENCCFLAGS'] = ['']
+			env['GENLINKFLAGS'] = ['']
 	else:
-		env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
-		env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
-		env['GENLINKFLAGS'] = []
+		if env['CC'] == 'gcc':
+			env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
+			env['GENLINKFLAGS'] = []
+		elif env['CC'] == 'cl':
+			env['GENCCFLAGS'] = ['']
+			env['GENLINKFLAGS'] = ['']
 	
 	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
@@ -48,35 +55,37 @@ def detect(env):
 	# no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 
-	# setup win32 kdelibs addon package 
-	if env['CC'] == 'gcc':
-		env['GENCXXFLAGS']  += ['-Iwin/include','-Iwin/include/mingw']
-		env['GENCCFLAGS']   += ['-Iwin/include','-Iwin/include/mingw']
-# TODO (rh) don't know how to set not in win dir 
-#		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
-	elif env['CC'] == 'cl':
-		env['GENCXXFLAGS']  += ['/Iwin\\include','/Iwin\\include\\msvc']
+	if env['CC'] == 'cl':
+		env.AppendUnique(CPPPATH = [os.environ['INCLUDE'].split()])
 		env['GENCCFLAGS']   += ['/Iwin\\include','/Iwin\\include\\msvc']
 # TODO (rh) don't know required cl flags, don't know how to set not in win dir 
-#		env['GENLINKFLAGS'] += '-lkdewin32 -L#build/win'
+#		env['GENLINKFLAGS'] += ['']
 
-	if sys.platform == 'cygwin':
-		env['GENCXXFLAGS']  += ['-mno-cygwin']
-		env['GENCCFLAGS']   += ['-mno-cygwin']
-		env['GENLINKFLAGS'] += ['-mno-cygwin']
+	elif sys.platform == 'cygwin':
+		env['GENCCFLAGS']   += ['-mno-cygwin','-Iwin/include','-Iwin/include/mingw']
+		env['GENLINKFLAGS'] += ['-mno-cygwin','-L'+env['_BUILDDIR_']+'\\win']
 		# TODO (rh) move to win32 qt4 stuff 
 		qtmingwflags = '-DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '/include'
 		env['GENCXXFLAGS']  += qtmingwflags.split()
-		# required libraries should be installed under mingw installation root, so add the search pathes 
-		if not os.environ.has_key('MINGW'):  
-			env.pprint('RED','Checking for mingw installation: not found, please set MingW installation path (eg. export MINGW=/c/Mingw)')
-			exit
-		else:
-			env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
-			env['GENCXXFLAGS']  += [' -I' + os.environ['MINGW'] + '/include']
-			env['GENCCFLAGS']   += [' -I' + os.environ['MINGW'] + '/include']
-			env['GENLINKFLAGS'] += [' -L' + os.environ['MINGW'] + '/lib']
 
+		# required libraries should be installed under mingw installation root, so add the search pathes 
+		if os.environ.has_key('MINGW'):  
+			env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
+#			env['GENCXXFLAGS']  += ['-I' + os.environ['MINGW'] + '/include']
+			env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '/include']
+			env['GENLINKFLAGS'] += ['-L' + os.environ['MINGW'] + '/lib']
+	elif os.environ.has_key('MINGW'):  
+		env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
+		env['GENCCFLAGS']   += ['-Iwin\\include','-Iwin\\include\\mingw']
+		env['GENLINKFLAGS'] += ['-L'+env['_BUILDDIR_']+'\\win']
+
+		# required libraries should be installed under mingw installation root, so add the search pathes 
+		env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '\\include']
+		env['GENLINKFLAGS'] += ['-L' + os.environ['MINGW'] + '\\lib']
+
+		qtmingwflags = '-DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '\\include'
+		env['GENCXXFLAGS']  += qtmingwflags.split()
+	
 ## create source package
 def dist(env):
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
@@ -152,8 +161,8 @@ def bksys_shlib(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=
 	lst=target.split(os.sep)
 	tname=lst[len(lst)-1]
 	libname=tname.split('.')[0]
-	if thisenv['CC'] == 'gcc':
-		thisenv.AppendUnique(LINKFLAGS = ["-Wl,--out-implib=%s.a" % (lenv.join(thisenv['CURBUILDDIR'],libname))] )
+#	if thisenv['CC'] == 'gcc':
+#		thisenv.AppendUnique(LINKFLAGS = ["-Wl,--out-implib=%s.a" % (lenv.join(thisenv['CURBUILDDIR'],libname))] )
 
 	# Fix against a scons bug - shared libs and ordinal out of range(128)
 	# (rh) Is this really required ? 
