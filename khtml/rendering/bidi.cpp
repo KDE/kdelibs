@@ -1581,7 +1581,7 @@ static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetS
       bool nssx, nssy;
       bool isInlineType = o->style()->isOriginalDisplayInlineType();
       nssx = o->hasStaticX();
-      if (o->hasStaticX() && !isInlineType && o->isBox()) {
+      if (nssx && !isInlineType && o->isBox()) {
           static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
                                   p->borderLeft()+p->paddingLeft() :
                                   p->borderRight()+p->paddingRight());
@@ -1591,9 +1591,9 @@ static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetS
       // If our original display was an INLINE type, then we can
       // determine our static y position now.
       nssy = o->hasStaticY();
-      if (o->hasStaticY() && isInlineType && o->isBox()) {
+      if (nssy && o->isBox()) {
           static_cast<RenderBox*>(o)->setStaticY(p->height());
-          nssy = false;
+          nssy = !isInlineType;
       }
       if (needToSetStaticX) *needToSetStaticX = nssx;
       if (needToSetStaticY) *needToSetStaticY = nssy;
