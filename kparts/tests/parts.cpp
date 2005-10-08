@@ -28,7 +28,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
   setWidget( m_edit );
   setXMLFile( "kpartstest_part1.rc" );
 
-  /*KAction * paBlah = */ new KAction( "Blah", "filemail", 0, actionCollection(), "p1_blah" );
+  /*KAction * paBlah = */ //new KAction( "Blah", "filemail", 0, actionCollection(), "p1_blah" );
 }
 
 Part1::~Part1()

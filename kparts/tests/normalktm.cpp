@@ -28,7 +28,7 @@ Shell::Shell()
 
   Q3PopupMenu * pFile = new Q3PopupMenu( this );
   menuBar()->insertItem( "File", pFile );
-  QObject * coll = this;
+  KActionCollection * coll = new KActionCollection(this);
   KAction * paLocal = new KAction( "&View local file", 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   // No XML : we need to plug our actions ourselves
   paLocal->plug( pFile );

@@ -43,8 +43,8 @@ Shell::Shell()
   KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
   paQuit->setIcon(QIcon(BarIcon("exit")));
 
-  (void)new KAction( "Yet another menu item", 0, coll, "shell_yami" );
-  (void)new KAction( "Yet another submenu item", 0, coll, "shell_yasmi" );
+//  (void)new KAction( "Yet another menu item", 0, coll, "shell_yami" );
+//  (void)new KAction( "Yet another submenu item", 0, coll, "shell_yasmi" );
 
   setCentralWidget( m_splitter );
   m_splitter->setMinimumSize( 400, 300 );

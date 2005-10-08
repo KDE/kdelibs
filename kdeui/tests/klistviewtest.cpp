@@ -3,6 +3,7 @@
 #include <kcmdlineargs.h>
 #include <kdialogbase.h>
 #include <q3vbox.h>
+#include <kvbox.h>
 
 int main( int argc, char **argv )
 {
