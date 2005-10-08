@@ -1,5 +1,106 @@
 bksys on win32/mingw development notes
 
+TODO 
+---- 
+
+- complete build system 
+	-	fix depending library ordering problem  (is in work)
+	- add required qt defines to qt component packages 
+	- fix installation of files 
+
+- build or add notes where to get source/binary packages of required libraries 		
+		- zlib 
+		- bzip2 
+		- libart_lgpl
+		- others 
+		
+		it may be possible to use cygwin mirrors as a repository for source packages 
+		because of its dependency feature
+		the cygsetup tool from http://sf.net/projects/kde-cygwin (see cvs repository 
+		tools/cygsetup) may be used a starting point 
+
+	
+
+
+History
+-------
+
+2005-10-08 Ralf Habacker 
+- moved to native mingw system using a dos shell (without cygwin) to see if there are 
+  some leaving path problems 
+  Requirements: 
+  	- Python 2.4 
+		- scons-96.91 
+  	- Mingw compile environment which comes with QT/win32 
+		- MSYS - mingw shell environment 
+		- cygwin (required for perl, see dcop/dcopidlng/dcopidl.bat) may be replaced  
+		  by native perl, but havent' tested yet 
+
+  I'm using the following configure line
+
+set MSYS=c:\MSYS\1.0
+set QTDIR=c:\Qt\4.0.1
+set MINGW=c:\MingwQT
+set PYTHON=c:\Python24
+set CYGWIN=c:\cygwin
+set PATH=%PYTHON%;%PATH%
+set PATH=%QTDIR%\bin;%PATH%
+set PATH=%MINGW%\bin;%PATH%
+set PATH=%MSYS%\bin;%PATH%
+scons configure 
+
+- cleanup library naming 
+	- using libxxx as target is platform specific better is using xxx because scons/bksys 
+		will add platform specific prefix for creating and search for libraries
+
+	- using <path>/xxx.la or <path>/xxx.a is also platform specific and must be separated 
+	  from the library name 
+	
+	- recently I'm using the following code ('/' as delimiter in any case)
+	  
+	obj.libpaths = ['../libltdl','../win','../dcop','']
+	obj.libs     = ['ltdlc','kdewin32','DCOP','wsock32']
+
+	obj.libpaths = ['../libltdl ../win ../dcop ']
+	obj.libs     = ['ltdlc kdewin32 DCOP','wsock32']
+	
+	note that the last library is a system library, which search path is added by default 
+	
+	-> a patch for this is in test phase 
+
+btw: another approach may be using sub lists, but don't currently if this is  valid python syntax. 
+
+	obj.libs     = [['path',ltdlc],[ kdewin32 DCOP']
+  
+ 
+  
+- while working with the different compilers on windows I recognized that a better naming schema is required  
+	if env['WINDOWS']:
+		if env['CC'] == 'gcc': 
+			.. this is very long  
+
+		platform   				compiler 			MAKESPEC  	(1)
+	[sys.platform] 		 	env['CC']			
+	env['PLATFORM']
+		win32							gcc 					win32-g++
+											cl 						win32-msvc win32-msvc.net win32-msvc2005 (2)
+		cygwin						gcc						cygwin-g++
+
+		(1) this MAKESPEC definition is similar to the one QT uses 
+		    (could be readed from $QTDIR/.qmake.cache)
+		
+		(2) currently no idea how to distinct the different compilers 
+				(scons have this info internal Tool/msvs.py Tool/msvc.py)
+		
+		-> i suggest to add one new env variables  env['MAKESPEC'] which will be 
+	
+
+
+	
+
+History
+-------
+
 2005-10-07 Ralf Habacker 
 - mingw linker seems to export symbols from imported static libraries, which results in twice defined symbols in some cases 
 	
@@ -15,6 +116,30 @@ bksys on win32/mingw development notes
 	-> dcopserver segfaults
 	-> dcopfind could be started 
 
+- installed mingw zlib library and added Mingw include/lib dirs to configure command, which looks now: 
+export QTDIR=/c/Qt/4.0.1 
+export PATH=$QTDIR/bin:$PATH
+export MINGW=/c/MingwQT
+export PATH=$MINGW/bin:$PATH
+
+scons configure
+
+- it seems that the g++ compile command line includes CCFLAGS and CXXFLAGS, so that for CXXFLAGS no repeated setting 
+  of CCFLAGS is required (I don't know if this is all the cases)
+
+
+
+- library dependency ordering update 
+   There must be a general rule adding libs 
+   
+
+ set QTDIR=c:\Qt\4.0.1
+ set MINGW=c:\MingwQT
+ set PYTHON=c:\Python24
+
+ set PATH=%QTDIR%\bin;%PATH%
+ set PATH=%MINGW%\bin;%PATH%
+ set PATH=%PYTHON%;%PATH%
 
 
 2005-10-06 Ralf Habacker 
@@ -85,9 +210,9 @@ bksys on win32/mingw development notes
 
 - update configure command to 
 		export QTDIR=/c/Qt/4.0.1 
-CFLAGS="-mno-cygwin " CXXFLAGS="-mno-cygwin -DUNICODE -DQT_LARGEFILE_SUPPORT \
--DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -I$QTDIR/include" \
-LDFLAGS="-mno-cygwin" scons configure
+		CFLAGS="-mno-cygwin " CXXFLAGS="-mno-cygwin -DUNICODE -DQT_LARGEFILE_SUPPORT \
+		-DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -I$QTDIR/include" \
+		LDFLAGS="-mno-cygwin" scons configure
 	
 	the qt definitions are required because detect_qt4.py does not provide them 
 	
