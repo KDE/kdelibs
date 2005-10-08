@@ -10,6 +10,8 @@ def detect(lenv):
         dest.write('/* lowlevel configuration */\n')
 
 	content="""
+#define HAVE_SYS_STAT_H
+#define HAVE_SYS_TIME_H
 """
 
 	dest.write(content)
