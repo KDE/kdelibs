@@ -91,7 +91,10 @@ def generate(env):
 	creation_string = "%screating%s $TARGET.path" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
 
 	## KIDL file
-	kidl_str='$DCOPIDL $SOURCE > $TARGET || (rm -f $TARGET ; false)'
+	if env['WINDOWS']:
+		kidl_str='$DCOPIDL $SOURCE $TARGET'
+	else:
+		kidl_str='$DCOPIDL $SOURCE > $TARGET || (rm -f $TARGET ; false)'
 	if not env['_USECOLORS_']: creation_string=""
 	kidl_action=env.Action(kidl_str, creation_string)
 	env['BUILDERS']['Kidl']=Builder(action=kidl_action, suffix='.kidl', src_suffix='.h')
