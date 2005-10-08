@@ -629,7 +629,7 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     }
     if ( isBinary ) {
         d->output += QLatin1Char('[');
-        int sz = QMIN( data.size(), 64 );
+        int sz = qMin( data.size(), 64 );
         for ( int i = 0; i < sz ; ++i ) {
             d->output += QString::number( (unsigned char) data[i], 16 ).rightJustified(2, QLatin1Char('0'));
             if ( i < sz )
@@ -655,7 +655,7 @@ QString kdBacktrace(int levels)
     char** strings = backtrace_symbols (trace, n);
 
     if ( levels != -1 )
-        n = QMIN( n, levels );
+        n = qMin( n, levels );
     s = QLatin1String("[\n");
 
     for (int i = 0; i < n; ++i)

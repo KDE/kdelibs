@@ -739,7 +739,7 @@ KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 
     uint actSpeed = KGlobalSettings::visualActivateSpeed();
 
-    uint actCount = QMIN(rect.width(), rect.height()) / 2;
+    uint actCount = qMin(rect.width(), rect.height()) / 2;
 
     // Clip actCount to range 1..10.
 
@@ -777,7 +777,7 @@ KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
     // The spacing between the rects we draw.
     // Use the minimum of width and height to avoid painting outside the
     // pixmap area.
-    //unsigned int delta(QMIN(rect.width() / actCount, rect.height() / actCount));
+    //unsigned int delta(qMin(rect.width() / actCount, rect.height() / actCount));
 
     // Support for rectangles by David
     unsigned int deltaX = rect.width() / actCount;
