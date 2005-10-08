@@ -4,8 +4,10 @@ Import('env')
 
 # libtdlc.so - library for ?
 obj = env.genobj('convenience',env)
-obj.target   = 'libltdlc'
+obj.target   = 'ltdlc'
 obj.source   = 'ltdl.c'
+if env['WINDOWS']:
+	obj.source  += ' ltdl_win.c'
 obj.uselib   = 'DL'
 obj.execute()
 
