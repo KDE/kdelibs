@@ -34,6 +34,7 @@
 #include <qpixmap.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <qhash.h>
 
 // KDE headers
 #include <dcopclient.h>

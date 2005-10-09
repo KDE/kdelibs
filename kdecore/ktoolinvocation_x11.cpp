@@ -30,6 +30,7 @@
 #include "klocale.h"
 #include <qmessagebox.h>
 #include <qapplication.h>
+#include <qhash.h>
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>

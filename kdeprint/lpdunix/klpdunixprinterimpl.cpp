@@ -21,6 +21,7 @@
 #include "kprinter.h"
 
 #include <qfile.h>
+#include <qhash.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kmacroexpander.h>
