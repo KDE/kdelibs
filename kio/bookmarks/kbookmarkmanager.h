@@ -93,6 +93,8 @@ public:
 
     /**
      * Save the bookmarks to the default konqueror XML file on disk.
+     * You should use emitChanged() instead of this function, it saves
+     * and notifies everyone that the file has changed.
      * @param toolbarCache iff true save a cache of the toolbar folder, too
      * @return true if saving was successful
      */
@@ -159,7 +161,8 @@ public:
     KBookmark findByAddress( const QString & address, bool tolerate = false );
 
     /**
-     * @internal (for KBookmarkGroup)
+     * Saves the bookmark file and notifies everyone.
+     * @param group the parent of all changed bookmarks
      */
     void emitChanged( const KBookmarkGroup & group );
 

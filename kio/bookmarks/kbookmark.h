@@ -303,13 +303,13 @@ public:
     KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString::null, bool emitSignal = true );
     /**
      * Create a new bookmark separator
+     * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      */
     KBookmark createNewSeparator();
 
     /**
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
-     * if this bookmark was added interactively.
      * @param mgr the manager of the bookmark
      * @param bm the bookmark to add
      * @param emitSignal if true emit KBookmarkNotifier signal
@@ -320,7 +320,6 @@ public:
     /**
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
-     * if this bookmark was added interactively.
      * @param mgr the manager of the bookmark
      * @param text for the bookmark
      * @param url the URL that the bookmark points to
@@ -333,11 +332,13 @@ public:
     /**
      * Moves @p item after @p after (which should be a child of ours).
      * If item is null, @p item is moved as the first child.
+     * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      */
     bool moveItem( const KBookmark & item, const KBookmark & after );
 
     /**
      * Delete a bookmark - it has to be one of our children !
+     * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      */
     void deleteBookmark( KBookmark bk );
 

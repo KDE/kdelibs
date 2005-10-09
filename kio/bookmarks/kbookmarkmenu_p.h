@@ -193,9 +193,9 @@ public:
 class RMB
 {
 public:
-  // ##### DF: How about two normal constructors instead??
-  static void begin_rmb_action(KBookmarkMenu *);
-  static void begin_rmb_action(KBookmarkBar *);
+  RMB(KBookmarkMenu *);
+  RMB(KBookmarkBar *);
+  void begin_action();
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
   void fillContextMenu( QMenu* contextMenu, const QString & address, int val );

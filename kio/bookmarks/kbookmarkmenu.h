@@ -49,6 +49,7 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KMenu;
+class RMB;
 
 namespace KIO { class Job; }
 
@@ -230,11 +231,12 @@ protected:
   QString m_parentAddress;
 
   class KBookmarkMenuPrivate* d;
+  RMB * rmb;
 
-  // TODO make non static!
-  static QString s_highlightedAddress;
-  static QString s_highlightedImportLocation;
-  static QString s_highlightedImportType;
+  // TODO make non static! FIXME check this:
+  QString s_highlightedAddress;
+  QString s_highlightedImportLocation;
+  QString s_highlightedImportType;
 };
 
 /**
