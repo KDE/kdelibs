@@ -787,13 +787,13 @@ def generate(env):
 			if sys.platform == 'darwin':
 				reg=re.compile("(.*)/lib(.*).(la|so|dylib)$")
 			else:
-				reg=re.compile("(.*)/lib(.*).(la|so)$")
+				reg=re.compile("(.*)/(lib|kdeinit_)(.*).(la|so)$")
 			result=reg.match(file)
 			if not result:
 				if sys.platform == 'darwin':
 					reg = re.compile("(.*)/lib(.*)\.(\d+)\.(la|so|dylib)")
 				else:
-					reg = re.compile("(.*)/lib(.*)\.(la|so)\.(\d+)")
+					reg = re.compile("(.*)/(lib|kdeinit_)(.*)\.(la|so)\.(\d+)")
 				result=reg.match(file)
 				if not result:
 					print "Unknown la file given "+file
