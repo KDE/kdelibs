@@ -13,6 +13,13 @@ kpat
 ktnef
  -->
 
+<!ENTITY akregator-mianownik    '<application>Akregator</application>'>
+<!ENTITY akregator-dopelniacz    '<application>Akregatora</application>'>
+<!ENTITY akregator-celownik    '<application>Akregatorowi</application>'>
+<!ENTITY akregator-biernik    '<application>Akregatora</application>'>
+<!ENTITY akregator-narzednik    '<application>Akregatorem</application>'>
+<!ENTITY akregator-miejscownik    '<application>Akregatorze</application>'>
+
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
 
 <!ENTITY ark-mianownik    '<application>Ark</application>'>
@@ -49,6 +56,13 @@ ktnef
 <!ENTITY GUI-celownik    'graficznemu interfejsowi użytkownika'>
 <!ENTITY GUI-biernik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-miejscownik    'graficznym interfejsie użytkownika'>
+
+<!ENTITY juk-mianownik    '<application>Juk</application>'>
+<!ENTITY juk-dopelniacz    '<application>Juka</application>'>
+<!ENTITY juk-celownik    '<application>Jukowi</application>'>
+<!ENTITY juk-biernik    '<application>Juka</application>'>
+<!ENTITY juk-narzednik    '<application>Jukiem</application>'>
+<!ENTITY juk-miejscownik    '<application>Juku</application>'>
 
 <!ENTITY kappfinder-mianownik    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-dopelniacz    '<application>Kappfinder</application>'>
@@ -114,9 +128,11 @@ ktnef
 <!ENTITY kmail-biernik    '<application>Kmaila</application>'>
 <!ENTITY kmail-miejscownik    '<application>Kmail-u</application>'>
 
+<!ENTITY kmenu    'Menu K'>
 <!ENTITY kmenu-mianownik    'Menu K'>
 <!ENTITY kmenu-dopelniacz    '&kmenu-mianownik;'>
 <!ENTITY kmenu-celownik    '&kmenu-mianownik;'>
+<!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
 
@@ -130,6 +146,7 @@ ktnef
 <!ENTITY konqueror-dopelniacz    '<application>Konquerora</application>'>
 <!ENTITY konqueror-celownik    '<application>Konquerorowi</application>'>
 <!ENTITY konqueror-biernik    '<application>Konquerora</application>'>
+<!ENTITY konqueror-narzednik    '<application>Konquerorem</application>'>
 <!ENTITY konqueror-miejscownik    '<application>Konquerorze</application>'>
 
 <!ENTITY konsole-mianownik    '<application>Konsola</application>'>
@@ -153,6 +170,13 @@ ktnef
 <!ENTITY kopete-narzednik    '<application>Kopete</application>'>
 <!ENTITY kopete-miejscownik    '<application>Kopete</application>'>
 
+<!ENTITY korganizer-mianownik    '<application>Korganizer</application>'>
+<!ENTITY korganizer-dopelniacz    '<application>Koganizera</application>'>
+<!ENTITY korganizer-celownik    '<application>Koganizerowi</application>'>
+<!ENTITY korganizer-biernik    '<application>Koganizera</application>'>
+<!ENTITY korganizer-narzednik    '<application>Koganizerem</application>'>
+<!ENTITY korganizer-miejscownik    '<application>Koganizerze</application>'>
+
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
 <!ENTITY kwallet-celownik    '<application>Portfelowi &kde;</application>'>
@@ -166,6 +190,13 @@ ktnef
 <!ENTITY kwalletmanager-biernik    '<application>Menedżera portfeli &kde;</application>'>
 <!ENTITY kwalletmanager-narzednik    '<application>Menedżerem portfeli &kde;</application>'>
 <!ENTITY kwalletmanager-miejscownik    '<application>Menedżerze portfeli &kde;</application>'>
+
+<!ENTITY noatun-mianownik    '<application>Noatun</application>'>
+<!ENTITY noatun-dopelniacz    '<application>Noatuna</application>'>
+<!ENTITY noatun-celownik    '<application>Noatunowi</application>'>
+<!ENTITY noatun-biernik    '<application>Noatuna</application>'>
+<!ENTITY noatun-narzednik    '<application>Noatunem</application>'>
+<!ENTITY noatun-miejscownik    '<application>Noatunie</application>'>
 
 <!ENTITY Linux-mianownik    'Linux'>
 <!ENTITY Linux-dopelniacz    'Linuksa'>
@@ -190,3 +221,10 @@ ktnef
 
 <!ENTITY Shift        		"<keycap>Shift</keycap>">
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
+
+<!ENTITY UNIX-mianownik    'Unix'>
+<!ENTITY UNIX-dopelniacz    'Uniksa'>
+<!ENTITY UNIX-celownik    'Uniksowi'>
+<!ENTITY UNIX-biernik    'Uniksa'>
+<!ENTITY UNIX-narzednik    'Uniksem'>
+<!ENTITY UNIX-miejscownik    'Uniksie'>
