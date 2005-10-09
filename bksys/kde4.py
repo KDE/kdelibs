@@ -57,11 +57,6 @@ def generate(env):
 	)
 	opts.Update(env)
 
-	if env['WINDOWS']: # (js) TODO: will be moved to win32/
-	# +windows flags
-		if env['CC'] == "cl":
-			env.AppendUnique(CXXFLAGS = '/FI./win/include/kdelibs_global_win.h')
-		
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('KDE4_ISCONFIGURED')):
 		env['_CONFIGURE_']=1
 		import sys
