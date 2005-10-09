@@ -45,30 +45,42 @@
 #include <volmgt.h>
 #endif
 
+// If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
+// a hidden kconfig option and getting the code from #57240 into the same
+// method, so that all KDE apps use the same unit, instead of letting each app decide.
+
 KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
+    // Per IEC 60027-2
+
+    // Binary prefixes
+    //Tebi-byte             TiB             2^40    1,099,511,627,776 bytes
+    //Gibi-byte             GiB             2^30    1,073,741,824 bytes
+    //Mebi-byte             MiB             2^20    1,048,576 bytes
+    //Kibi-byte             KiB             2^10    1,024 bytes
+
     double fsize = size;
     QString s;
-    // Giga-byte
+    // Gibi-byte
     if ( size >= 1073741824 )
     {
         fsize /= 1073741824.0;
-        if ( fsize > 1024 ) // Tera-byte
-            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024.0, 1));
+        if ( fsize > 1024 ) // Tebi-byte
+            s = i18n( "%1 TiB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024.0, 1));
         else
-            s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+            s = i18n( "%1 GiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
-    // Mega-byte
+    // Mebi-byte
     else if ( size >= 1048576 )
     {
         fsize /= 1048576.0;
-        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+        s = i18n( "%1 MiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
-    // Kilo-byte
+    // Kibi-byte
     else if ( size >= 1024 )
     {
         fsize /= 1024.0;
-        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+        s = i18n( "%1 KiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Just byte
     else if ( size > 0 )
