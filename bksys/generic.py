@@ -583,14 +583,11 @@ def generate(env):
 		env['_CONFIGURE_']=1
 
 		import sys
-		if sys.platform == 'darwin':
-			sys.path.append('bksys'+os.sep+'osx')
-			from detect_lowlevel import detect
-		elif env['WINDOWS']:
+		if env['WINDOWS']:
 			sys.path.append('bksys'+os.sep+'win32')
 			from detect_generic import detect
 		else:
-			sys.path.append('bksys'+os.sep+'unix')
+			sys.path.append('bksys'+os.sep+'unix') # includes osx
 			from detect_generic import detect
 		detect(env)
 

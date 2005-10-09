@@ -1,11 +1,7 @@
 # Thomas Nagy 2005
 
-def detect(lenv):
+def detect(lenv,dest):
 	import os
-
-	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
-        dest=open(lenv.join(lenv['_BUILDDIR_'], 'config-lowlevel.h'), 'w')
-        dest.write('/* lowlevel configuration */\n')
 
 	content="""
 /* Define where your dcop binary is */
@@ -145,12 +141,6 @@ def detect(lenv):
 /* Define to 1 if you have the `gethostbyname_r' function. */
 /* #undef HAVE_GETHOSTBYNAME_R */
 
-/* Define if you have gethostname */
-#define HAVE_GETHOSTNAME 1
-
-/* Define if you have the gethostname prototype */
-#define HAVE_GETHOSTNAME_PROTO 1
-
 /* Define to 1 if you have the `getmntinfo' function. */
 #define HAVE_GETMNTINFO 1
 
@@ -207,12 +197,6 @@ def detect(lenv):
 
 /* Define to 1 if you have the `inet_pton' function. */
 #define HAVE_INET_PTON 1
-
-/* Define to 1 if you have the `initgroups' function. */
-#define HAVE_INITGROUPS 1
-
-/* Define if you have the initgroups prototype */
-#define HAVE_INITGROUPS_PROTO 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -289,24 +273,6 @@ def detect(lenv):
 /* Define if you want MIT-SHM support */
 #define HAVE_MITSHM 1
 
-/* Define if you have mkdtemp */
-#define HAVE_MKDTEMP 1
-
-/* Define if you have the mkdtemp prototype */
-#define HAVE_MKDTEMP_PROTO 1
-
-/* Define if you have mkstemp */
-#define HAVE_MKSTEMP 1
-
-/* Define if you have mkstemps */
-#define HAVE_MKSTEMPS 1
-
-/* Define if you have the mkstemps prototype */
-#define HAVE_MKSTEMPS_PROTO 1
-
-/* Define if you have the mkstemp prototype */
-#define HAVE_MKSTEMP_PROTO 1
-
 /* Define to 1 if you have a working `mmap' system call. */
 #define HAVE_MMAP 1
 
@@ -353,7 +319,7 @@ def detect(lenv):
 #define HAVE_PRELOADED_SYMBOLS 1
 
 /* Define to 1 if you have the `ptsname' function. */
-#define HAVE_PTSNAME 1
+/* #undef HAVE_PTSNAME */
 
 /* Define to 1 if you have the <pty.h> header file. */
 /* #undef HAVE_PTY_H */
@@ -363,12 +329,6 @@ def detect(lenv):
 
 /* Define to 1 if you have the `putenv' function. */
 #define HAVE_PUTENV 1
-
-/* Define if you have random */
-#define HAVE_RANDOM 1
-
-/* Define if you have the random prototype */
-#define HAVE_RANDOM_PROTO 1
 
 /* Define if you have res_init */
 #define HAVE_RES_INIT 1
@@ -387,12 +347,6 @@ def detect(lenv):
 
 /* Define to 1 if you have the `setegid' function. */
 #define HAVE_SETEGID 1
-
-/* Define if you have setenv */
-#define HAVE_SETENV 1
-
-/* Define if you have the setenv prototype */
-#define HAVE_SETENV_PROTO 1
 
 /* Define to 1 if you have the `seteuid' function. */
 #define HAVE_SETEUID 1
@@ -430,12 +384,6 @@ def detect(lenv):
 /* Define to 1 if you have the `socket' function. */
 #define HAVE_SOCKET 1
 
-/* Define if you have srandom */
-#define HAVE_SRANDOM 1
-
-/* Define if you have the srandom prototype */
-#define HAVE_SRANDOM_PROTO 1
-
 /* If we are going to use OpenSSL */
 #define HAVE_SSL 1
 
@@ -471,18 +419,6 @@ def detect(lenv):
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
-
-/* Define if you have strlcat */
-#define HAVE_STRLCAT 1
-
-/* Define if you have the strlcat prototype */
-#define HAVE_STRLCAT_PROTO 1
-
-/* Define if you have strlcpy */
-#define HAVE_STRLCPY 1
-
-/* Define if you have the strlcpy prototype */
-#define HAVE_STRLCPY_PROTO 1
 
 /* Define to 1 if you have the `strrchr' function. */
 #define HAVE_STRRCHR 1
@@ -574,19 +510,7 @@ def detect(lenv):
 #define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `unlockpt' function. */
-#define HAVE_UNLOCKPT 1
-
-/* Define if you have unsetenv */
-#define HAVE_UNSETENV 1
-
-/* Define if you have the unsetenv prototype */
-#define HAVE_UNSETENV_PROTO 1
-
-/* Define to 1 if you have the `usleep' function. */
-#define HAVE_USLEEP 1
-
-/* Define if you have the usleep prototype */
-#define HAVE_USLEEP_PROTO 1
+/* #undef HAVE_UNLOCKPT */
 
 /* Define if you have the utempter helper for utmp managment */
 /* #undef HAVE_UTEMPTER */
@@ -658,9 +582,6 @@ def detect(lenv):
 
 /* Use Xft preinitialization in kdeinit */
 /* #undef KDEINIT_USE_XFT */
-
-/* Suffix for lib directories */
-#define KDELIBSUFF ""
 
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "/sw/etc"
@@ -831,78 +752,6 @@ int getmntinfo(struct statfs **mntbufp, int flags);
 /* #undef _GNU_SOURCE */
 
 
-#if !defined(HAVE_GETHOSTNAME_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int gethostname (char *, unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_INITGROUPS_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int initgroups(const char *, gid_t);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKDTEMP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-char *mkdtemp(char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKSTEMPS_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemps(char *, int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKSTEMP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemp(char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_RANDOM_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-long int random(void);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
 #if !defined(HAVE_RES_INIT_PROTO)
 #ifdef __cplusplus
 extern "C" {
@@ -912,80 +761,6 @@ int res_init(void);
 }
 #endif
 #endif
-
-
-
-#if !defined(HAVE_SETENV_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int setenv (const char *, const char *, int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_SRANDOM_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-void srandom(unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_STRLCAT_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcat(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_STRLCPY_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcpy(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_UNSETENV_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-void unsetenv (const char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_USLEEP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int usleep (unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
 
 #ifndef HAVE_S_ISSOCK
 #define HAVE_S_ISSOCK
@@ -1086,9 +861,5 @@ extern "C"
 int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #endif
 """
-
-	content="""
-"""
-
-	dest.write(content)
-	dest.close()
+	## commented out for now; the real fix is not the above, but to write real tests in lowlevel.py
+	### dest.write(content)

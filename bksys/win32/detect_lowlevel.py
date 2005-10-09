@@ -1,13 +1,9 @@
 ##
 # @file 
-# low level configuration like build directory and low level related config.h creation
+# platform-dependent low level configuration
 
-def detect(lenv):
+def detect(lenv, dest):
 	import os
-
-	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
-        dest=open(lenv.join(lenv['_BUILDDIR_'], 'config-lowlevel.h'), 'w')
-        dest.write('/* lowlevel configuration */\n')
 
 	content="""
 #define HAVE_SYS_STAT_H 1
@@ -22,4 +18,3 @@ def detect(lenv):
 """
 
 	dest.write(content)
-	dest.close()
