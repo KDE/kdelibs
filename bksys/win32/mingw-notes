@@ -21,9 +21,28 @@ TODO
 
 	
 
-
 History
 -------
+
+2005-10-09 Ralf Habacker 
+- tried to fix broken env.kdeinitobj support
+	on win32 this kdeinit support seems not be necessary because forking isn't available
+	for which the kdeinit stuff is designed 
+
+	-> in most cases using of kde4obj or qt4obj is better
+
+- export symbols problem 
+	the libDCOP shared library uses a convenience kICE library. The mingw compiler exports the symbols 
+	(objdump -x shows them) but they are not exported to import library `
+	-> because kICE is used in more than one libraries, build it as shared library 
+
+- general bksys dependency problem 
+	libtool has support for adding depending library automatically, which bksys does not have such 
+	support. 
+	For example: 
+		shared libDCOP uses static libKICE, which required shared wsock32 library 
+		->  you have to specifiy wsock32 as dependency for libDCOP
+ 
 
 2005-10-08 Ralf Habacker 
 - moved to native mingw system using a dos shell (without cygwin) to see if there are 
@@ -60,17 +79,24 @@ scons configure
 	  
 	obj.libpaths = ['../libltdl','../win','../dcop','']
 	obj.libs     = ['ltdlc','kdewin32','DCOP','wsock32']
+	
+	or
 
 	obj.libpaths = ['../libltdl ../win ../dcop ']
-	obj.libs     = ['ltdlc kdewin32 DCOP','wsock32']
+	obj.libs     = ['ltdlc kdewin32 DCOP wsock32']
+
+	or 
+	
+	obj.libpaths = '../libltdl ../win ../dcop '
+	obj.libs     = 'ltdlc kdewin32 DCOP wsock32'
 	
 	note that the last library is a system library, which search path is added by default 
 	
 	-> a patch for this is in test phase 
 
-btw: another approach may be using sub lists, but don't currently if this is  valid python syntax. 
+btw: another approach may be using sub lists, but I currently don't if this is valid python syntax. 
 
-	obj.libs     = [['path',ltdlc],[ kdewin32 DCOP']
+	obj.libs     = [['path',lib'],['lib']]
   
  
   
