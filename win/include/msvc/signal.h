@@ -67,11 +67,7 @@ KDEWIN32_EXPORT int kill(pid_t pid, int sig);
 }
 #endif
 
-/* regular signal.h */
-#ifdef _MSC_VER
-# include <msvc/signal.h>
-#elif defined(__BORLANDC__)
-# include <bcc/signal.h>
-#endif
+/* regular header from msvc includes */
+#include <../include/signal.h>
 
 #endif SIGNAL_H

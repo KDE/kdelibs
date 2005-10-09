@@ -23,11 +23,8 @@
 
 #include <kdecore/kdelibs_export.h>
 
-#ifdef _MSC_VER
-# include <msvc/stdlib.h>
-#elif defined(__BORLANDC__)
-# include <bcc/stdlib.h>
-#endif
+/* regular header from msvc includes */
+# include <../include/stdlib.h>
 
 #define __need_size_t
 #define __need_wchar_t

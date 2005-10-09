@@ -20,12 +20,8 @@
 #ifndef _SYS_TYPES_H_
 #define _SYS_TYPES_H_
 
-/* regular types.h */
-#ifdef _MSC_VER
-# include <sys/msvc/types.h>
-#elif defined(__BORLANDC__)
-# include <sys/bcc/types.h>
-#endif
+/* regular header from msvc includes */
+#include <../include/sys/types.h>
 
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED

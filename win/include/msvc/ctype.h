@@ -20,11 +20,7 @@
 #ifndef KDEWIN_CTYPE_H
 #define KDEWIN_CTYPE_H
 
-#ifdef _MSC_VER
-# include <msvc/ctype.h>
-#elif defined(__BORLANDC__)
-# include <bcc/ctype.h>
-#endif
+#include <../include/ctype.h>
 
 #ifdef __cplusplus
 inline int KDE_isspace(int c) { return ((unsigned)(c + 1) <= 256) && isspace(c); }

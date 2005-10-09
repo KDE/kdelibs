@@ -20,7 +20,8 @@
 #ifndef _KDEWIN_LIMITS_H_
 #define _KDEWIN_LIMITS_H_
 
-#include "../include/limits.h" /* msvc */
+/* regular header from msvc includes */
+#include <../include/limits.h>
 
 #include "sys/param.h"
 

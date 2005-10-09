@@ -22,15 +22,8 @@
 
 #include <kdecore/kdelibs_export.h>
 
-/* regular sys/stat.h */
-#ifdef _MSC_VER
-# include <sys/msvc/stat.h>
-/*# ifdef _INC_STAT
-#  define _STAT_H_
-# endif*/
-#elif defined(__BORLANDC__)
-# include <sys/bcc/stat.h>
-#endif
+/* regular header from msvc includes */
+#include <../include/sys/stat.h>
 
 typedef short nlink_t;
 

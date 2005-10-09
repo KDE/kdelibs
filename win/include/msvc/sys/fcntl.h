@@ -17,10 +17,5 @@
    Boston, MA 02110-1301, USA.
 */
 
-/* regular sys/fcntl.h */
-#ifdef _MSC_VER
-# include <sys/msvc/fcntl.h>
-#elif defined(__BORLANDC__)
-# include <sys/bcc/fcntl.h>
-#endif
-
+/* regular header from msvc includes */
+# include <../include/sys/fcntl.h>

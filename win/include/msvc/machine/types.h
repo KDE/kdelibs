@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef	_MACHTYPES_H_
-#define	_MACHTYPES_H_
+#ifndef _MACHTYPES_H_
+#define _MACHTYPES_H_
 
 /*
  *  The following section is RTEMS specific and is needed to more

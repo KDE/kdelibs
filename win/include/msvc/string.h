@@ -43,11 +43,7 @@ KDEWIN32_EXPORT char* strndup(const char *src, size_t n);
 }
 #endif
 
-/* regular string.h */
-#ifdef _MSC_VER
-# include <msvc/string.h>
-#elif defined(__BORLANDC__)
-# include <bcc/string.h>
-#endif
+/* regular header from msvc includes */
+#include <../include/string.h>
 
 #endif /* KDEWIN_STRING_H */

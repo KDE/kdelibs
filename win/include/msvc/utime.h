@@ -19,4 +19,5 @@
 
 /* jump to sys/ in your compiler's library */
 
-#include <sys/utime.h>
+/* regular header from msvc includes */
+#include <../include/sys/utime.h>
