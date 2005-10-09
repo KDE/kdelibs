@@ -82,4 +82,4 @@ def detect(env):
 
 	# normal detection functions go here
 	if env['CC'] == 'cl':
-	 	env.AppendUnique(CXXFLAGS = '/FI./win/kdelibs_global_win.h')
+	 	env.AppendUnique(CXXFLAGS = '/FI./win/include/kdelibs_global_win.h')

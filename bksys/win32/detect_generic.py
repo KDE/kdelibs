@@ -6,12 +6,16 @@
 # project cleaning 
 #
 
+# TODO (ce) what about KDE_MAKE_LIB 
+                          
 ## detect win32 specific settings 
 def detect(env):
 	import os, sys
 	import SCons.Util
 	env['GENCXXFLAGS'] = []
 
+	# (rh) The flags from GENCCFLAGS seems to be added to GENCXXFLAGS, 
+	# so there is no need to duplicate settings in GENCXXGLAGS
 	if env['ARGS'].get('debug', None):
 		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
 		env.pprint('CYAN','** Enabling debug for the project **')
@@ -19,15 +23,19 @@ def detect(env):
 			env['GENCCFLAGS'] = ['-g']
 			env['GENLINKFLAGS'] = ['-g']
 		elif env['CC'] == 'cl':
-			env['GENCCFLAGS'] = ['']
-			env['GENLINKFLAGS'] = ['']
+			env['GENCCFLAGS'] = ['-Od','-ZI','-MDd']
+			env['GENLINKFLAGS'] = ['/INCREMENTAL', '/DEBUG']
 	else:
 		if env['CC'] == 'gcc':
 			env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
 			env['GENLINKFLAGS'] = []
 		elif env['CC'] == 'cl':
-			env['GENCCFLAGS'] = ['']
+			env['GENCCFLAGS'] = ['-MD']
 			env['GENLINKFLAGS'] = ['']
+
+	if env['CC'] == 'cl':
+		# avoid some compiler warnings...
+		env['GENCCFLAGS'] +=  ['-D__GNUC__=0','-wd4619','-wd4820']
 	
 	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
