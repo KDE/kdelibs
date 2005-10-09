@@ -22,6 +22,13 @@ ktnef
 
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
 
+<!ENTITY amarok-mianownik    '<application>amaroK</application>'>
+<!ENTITY amarok-dopelniacz    '<application>amaroKa</application>'>
+<!ENTITY amarok-celownik    '<application>amaroKowi</application>'>
+<!ENTITY amarok-biernik    '<application>amaroKa</application>'>
+<!ENTITY amarok-narzednik    '<application>amaroKiem</application>'>
+<!ENTITY amarok-miejscownik    '<application>amaroKu</application>'>
+
 <!ENTITY ark-mianownik    '<application>Ark</application>'>
 <!ENTITY ark-dopelniacz    '<application>Arka</application>'>
 <!ENTITY ark-celownik    '<application>Arkowi</application>'>
