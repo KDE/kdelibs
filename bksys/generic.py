@@ -730,7 +730,7 @@ def generate(env):
 			source=src2
 
 		library_list = thisenv.SharedLibrary(target, source)
-		lafile_list  = thisenv.LaFile(target, library_list)
+		lafile_list  = thisenv.LaFile(libprefix+target, library_list)
 
 		## Install the libraries automatically
 		if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
