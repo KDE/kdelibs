@@ -370,7 +370,6 @@ def generate(env):
 			def create_kdeinit_la_cpp(target, source, env):
 				""" Creates the dummy kdemain file for the module"""
 				dest=open(target[0].path, 'w')
-				print target[0].path + ' kdeinit.la'
 				dest.write('#include <kdemacros.h>\n')
 				dest.write('extern \"C\" int kdemain(int, char* []);\n')
 				dest.write('extern \"C\" KDE_EXPORT int kdeinitmain( int argc, char* argv[] ) { return kdemain(argc, argv); }\n')
