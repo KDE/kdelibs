@@ -665,7 +665,6 @@ def generate(env):
 	def build_empty_file(target, source, env):
 		""" Writes an empty file """
 		dest=open(target[0].path, 'w')
-		print target[0].path + " +++++"
 		dest.write("")
 		dest.close()
 	env['BUILDERS']['EmptyFile'] = env.Builder(action=env.Action(build_empty_file), prefix='dummy_', suffix='.cpp', src_suffix='')
