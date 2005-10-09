@@ -2529,8 +2529,13 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
   QCString sPart = QFile::encodeName(sCopyFile + ".part");
   bool bResume = false;
   bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
-  bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
-  if(bMarkPartial && bPartExists && buff.st_size > 0)
+  const bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
+  
+  if(!bMarkPartial)
+  {
+    sPart = QFile::encodeName(sCopyFile);
+  }
+  else if(bPartExists && buff.st_size > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
     if(S_ISDIR(buff.st_mode))
     {
