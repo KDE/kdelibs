@@ -19,20 +19,17 @@
 #define KLIBLOADER_H
 
 #include <qobject.h>
-#include <qstring.h>
 #include <qstringlist.h>
-#include <q3asciidict.h>
-#include <q3ptrlist.h>
+#include <qhash.h>
 #include <kglobal.h>
 
 #include <stdlib.h> // For backwards compatibility
 
-class KInstance;
+class QString;
 class QTimer;
-class KLibrary;
+class KInstance;
 class KLibFactory;
 class KLibFactoryPrivate;
-class KLibLoaderPrivate;
 class KLibraryPrivate;
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
@@ -50,7 +47,6 @@ class KLibraryPrivate;
 class KDECORE_EXPORT KLibrary : public QObject
 {
     friend class KLibLoader;
-    friend class Q3AsciiDict<KLibrary>;
 
     Q_OBJECT
 public:
@@ -122,7 +118,7 @@ private:
     QString m_filename;
     KLibFactory* m_factory;
     void * m_handle;
-    Q3PtrList<QObject> m_objs;
+    QList<QObject*> m_objs;
     QTimer *m_timer;
     KLibraryPrivate *d;
 };
@@ -221,11 +217,11 @@ public:
      * @since 4.0
      */
     template<typename T>
-    T *create( QObject *parent = 0,
-               const char *name = 0,
+    T *create( QObject *pParent = 0,
+               const char *pName = 0,
                const QStringList &args = QStringList() )
     {
-        QObject *object = this->create( parent, name,
+        QObject *object = this->create( pParent, pName,
                                         T::staticMetaObject.className(),
                                         args );
 
@@ -363,7 +359,7 @@ public:
      */
     KLibrary* globalLibrary( const char *name );
 
-    /*
+    /**
      * Returns an error message that can be useful to debug the problem.
      * Returns QString::null if the last call to library() was successful.
      * You can call this function more than once. The error message is only
@@ -489,14 +485,15 @@ private slots:
     void slotLibraryDestroyed();
 private:
     void close_pending( KLibWrapPrivate * );
-    Q3AsciiDict<KLibWrapPrivate> m_libs;
+    QHash<const char*, KLibWrapPrivate*> m_libs;
 
     static KLibLoader* s_self;
 
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KLibLoaderPrivate *d;
+    class Private;
+    Private *const d;
 };
 
 #endif

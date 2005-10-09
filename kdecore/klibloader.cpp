@@ -17,24 +17,19 @@
    Boston, MA 02110-1301, USA.
 */
 #include "config.h"
+#include "klibloader.h"
 
-#include <config.h>
 #include <qclipboard.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qtimer.h>
-#include <q3objectdict.h>
-#include <q3cstring.h>
-#include <QApplication>
+#include <qstack.h>
 
-#include "klibloader.h"
 #include "kapplication.h"
 #include "kstandarddirs.h"
 #include "kdebug.h"
 #include "klocale.h"
 #include "ltdl.h"
-
-template class Q3AsciiDict<KLibrary>;
 
 #include <stdlib.h> //getenv
 
@@ -54,13 +49,34 @@ template class Q3AsciiDict<KLibrary>;
 #  define LT_GLOBAL             0
 #endif /* !LT_GLOBAL */
 
+namespace KLibLoader_cpp {
+enum UnloadMode {UNKNOWN, UNLOAD, DONT_UNLOAD};
+};
 
-class KLibLoaderPrivate
+/* This helper class is needed, because KLibraries can go away without
+   being unloaded. So we need some info about KLibraries even after its
+   death. */
+struct KLibWrapPrivate
 {
-public:
-    Q3PtrList<KLibWrapPrivate> loaded_stack;
-    Q3PtrList<KLibWrapPrivate> pending_close;
-    enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
+    KLibWrapPrivate(KLibrary *l, lt_dlhandle h);
+
+    KLibrary *lib;
+    KLibLoader_cpp::UnloadMode unload_mode;
+    int ref_count;
+    lt_dlhandle handle;
+    QString name;
+    QString filename;
+};
+
+struct KLibLoader::Private
+{
+    ~Private() {
+    	while (!loaded_stack.isEmpty())
+	    delete loaded_stack.pop();
+    }
+    QStack<KLibWrapPrivate*> loaded_stack;
+    QList<KLibWrapPrivate*> pending_close;
+    KLibLoader_cpp::UnloadMode unload_mode;
 
     QString errorMessage;
 };
@@ -69,8 +85,8 @@ KLibLoader* KLibLoader::s_self = 0;
 
 // -------------------------------------------------------------------------
 
-KLibFactory::KLibFactory( QObject* parent )
-    : QObject( parent )
+KLibFactory::KLibFactory( QObject* _parent )
+    : QObject( _parent )
 {
 }
 
@@ -79,9 +95,9 @@ KLibFactory::~KLibFactory()
 //    kdDebug(150) << "Deleting KLibFactory " << this << endl;
 }
 
-QObject* KLibFactory::create( QObject* parent, const char* name, const char* classname, const QStringList &args )
+QObject* KLibFactory::create( QObject* _parent, const char* _name, const char* classname, const QStringList &args )
 {
-    QObject* obj = createObject( parent, name, classname, args );
+    QObject* obj = createObject( _parent, _name, classname, args );
     if ( obj )
 	emit objectCreated( obj );
     return obj;
@@ -114,17 +130,16 @@ KLibrary::~KLibrary()
 	m_timer->stop();
 
     // If any object is remaining, delete
-    if ( m_objs.count() > 0 )
+    if ( !m_objs.isEmpty() )
 	{
-	    Q3PtrListIterator<QObject> it( m_objs );
-	    for ( ; it.current() ; ++it )
+	    while (!m_objs.isEmpty())
 		{
-		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << " Library = " << m_libname << endl;
-		    disconnect( it.current(), SIGNAL( destroyed() ),
+		    QObject *obj = m_objs.takeFirst();
+		    kdDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << m_libname << endl;
+		    disconnect( obj, SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
+		    delete obj;
 		}
-	    m_objs.setAutoDelete(true);
-	    m_objs.clear();
 	}
 
     if ( m_factory ) {
@@ -155,7 +170,7 @@ KLibFactory* KLibrary::factory()
     void* sym = symbol( symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name(), "init_" + name() );
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name(), QLatin1String("init_") + name() );
         kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -182,7 +197,7 @@ void* KLibrary::symbol( const char* symname ) const
     void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = "KLibrary: " + QLatin1String( lt_dlerror() );
+        KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QLatin1String( lt_dlerror() );
         kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -210,7 +225,7 @@ void KLibrary::slotObjectCreated( QObject *obj )
   if ( m_timer && m_timer->isActive() )
     m_timer->stop();
 
-  if ( m_objs.containsRef( obj ) )
+  if ( m_objs.contains( obj ) )
       return; // we know this object already
 
   connect( obj, SIGNAL( destroyed() ),
@@ -221,7 +236,7 @@ void KLibrary::slotObjectCreated( QObject *obj )
 
 void KLibrary::slotObjectDestroyed()
 {
-  m_objs.removeRef( sender() );
+  m_objs.removeAll( sender() );
 
   if ( m_objs.count() == 0 )
   {
@@ -230,15 +245,17 @@ void KLibrary::slotObjectDestroyed()
 
     if ( !m_timer )
     {
-      m_timer = new QTimer( this, "klibrary_shutdown_timer" );
+      m_timer = new QTimer( this );
+      m_timer->setObjectName( QLatin1String("klibrary_shutdown_timer") );
+      m_timer->setSingleShot(true);
       connect( m_timer, SIGNAL( timeout() ),
                this, SLOT( slotTimeout() ) );
     }
 
     // as long as it's not stable make the timeout short, for debugging
     // pleasure (matz)
-    //m_timer->start( 1000*60, true );
-    m_timer->start( 1000*10, true );
+    //m_timer->start( 1000*60 );
+    m_timer->start( 1000*10 );
   }
 }
 
@@ -256,31 +273,15 @@ void KLibrary::slotTimeout()
 
 // -------------------------------------------------
 
-/* This helper class is needed, because KLibraries can go away without
-   being unloaded. So we need some info about KLibraries even after its
-   death. */
-class KLibWrapPrivate
-{
-public:
-    KLibWrapPrivate(KLibrary *l, lt_dlhandle h);
-
-    KLibrary *lib;
-    enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
-    int ref_count;
-    lt_dlhandle handle;
-    QString name;
-    QString filename;
-};
-
 KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
  : lib(l), ref_count(1), handle(h), name(l->name()), filename(l->fileName())
 {
-    unload_mode = UNKNOWN;
+    unload_mode = KLibLoader_cpp::UNKNOWN;
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
 //        kdDebug(150) << "Will not unload " << name << endl;
-        unload_mode = DONT_UNLOAD;
+        unload_mode = KLibLoader_cpp::DONT_UNLOAD;
     } else if (lt_dlsym(handle, "__kde_do_unload") != 0) {
-        unload_mode = UNLOAD;
+        unload_mode = KLibLoader_cpp::UNLOAD;
     }
 }
 
@@ -300,36 +301,33 @@ void KLibLoader::cleanUp()
   s_self = 0L;
 }
 
-KLibLoader::KLibLoader( QObject* parent )
-    : QObject( parent )
+KLibLoader::KLibLoader( QObject* _parent )
+    : QObject( _parent ), d(new Private)
 {
     s_self = this;
-    d = new KLibLoaderPrivate;
     lt_dlinit();
-    d->unload_mode = KLibLoaderPrivate::UNKNOWN;
+    d->unload_mode = KLibLoader_cpp::UNKNOWN;
     if (getenv("KDE_NOUNLOAD") != 0)
-        d->unload_mode = KLibLoaderPrivate::DONT_UNLOAD;
+        d->unload_mode = KLibLoader_cpp::DONT_UNLOAD;
     else if (getenv("KDE_DOUNLOAD") != 0)
-        d->unload_mode = KLibLoaderPrivate::UNLOAD;
-    d->loaded_stack.setAutoDelete( true );
+        d->unload_mode = KLibLoader_cpp::UNLOAD;
 }
 
 KLibLoader::~KLibLoader()
 {
 //    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
 
-    Q3AsciiDictIterator<KLibWrapPrivate> it( m_libs );
-    for (; it.current(); ++it )
+    for (QHash<const char*, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
     {
-      kdDebug(150) << "The KLibLoader contains the library " << it.current()->name
-        << " (" << it.current()->lib << ")" << endl;
-      d->pending_close.append(it.current());
+      Q_ASSERT((*it) != 0);
+      kdDebug(150) << "The KLibLoader contains the library " << (*it)->name
+        << " (" << (*it)->lib << ")" << endl;
+      d->pending_close.append(*it);
     }
 
     close_pending(0);
 
     delete d;
-    d = 0L;
 }
 
 static inline QByteArray makeLibName( const char* name )
@@ -341,7 +339,7 @@ static inline QByteArray makeLibName( const char* name )
     int pos = libname.lastIndexOf('/');
     if (pos < 0)
       pos = 0;
-    if (libname.find('.', pos) < 0)
+    if (libname.indexOf('.', pos) < 0)
       libname += ".la";
     return libname;
 }
@@ -372,7 +370,7 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 }
 
 
-KLibrary* KLibLoader::globalLibrary( const char *name )
+KLibrary* KLibLoader::globalLibrary( const char *_name )
 {
 KLibrary *tmp;
 int olt_dlopen_flag = lt_dlopen_flag;
@@ -381,49 +379,49 @@ int olt_dlopen_flag = lt_dlopen_flag;
    kdDebug(150) << "Loading the next library global with flag "
                 << lt_dlopen_flag
                 << "." << endl;
-   tmp = library(name);
+   tmp = library(_name);
    lt_dlopen_flag = olt_dlopen_flag;
 
 return tmp;
 }
 
 
-KLibrary* KLibLoader::library( const char *name )
+KLibrary* KLibLoader::library( const char *_name )
 {
-    if (!name)
+    if (!_name)
         return 0;
 
-    KLibWrapPrivate* wrap = m_libs[name];
-    if (wrap) {
+    if (m_libs.contains(_name)) {
       /* Nothing to do to load the library.  */
-      wrap->ref_count++;
-      return wrap->lib;
+      m_libs[_name]->ref_count++;
+      return m_libs[_name]->lib;
     }
 
+    KLibWrapPrivate* wrap = 0;
     /* Test if this library was loaded at some time, but got
        unloaded meanwhile, whithout being dlclose()'ed.  */
-    Q3PtrListIterator<KLibWrapPrivate> it(d->loaded_stack);
-    for (; it.current(); ++it) {
-      if (it.current()->name == name)
-        wrap = it.current();
+    QStack<KLibWrapPrivate*>::Iterator it = d->loaded_stack.begin();
+    for (; it != d->loaded_stack.end(); ++it) {
+      if ((*it)->name == QLatin1String(_name))
+        wrap = *it;
     }
 
     if (wrap) {
-      d->pending_close.removeRef(wrap);
+      d->pending_close.removeAll(wrap);
       if (!wrap->lib) {
         /* This lib only was in loaded_stack, but not in m_libs.  */
-        wrap->lib = new KLibrary( name, wrap->filename, wrap->handle );
+        wrap->lib = new KLibrary( QLatin1String(_name), wrap->filename, wrap->handle );
       }
       wrap->ref_count++;
     } else {
-      QString libfile = findLibrary( name );
+      QString libfile = findLibrary( _name );
       if ( libfile.isEmpty() )
       {
-        const QByteArray libname = makeLibName( name );
+        const QByteArray libname = makeLibName( _name );
 #ifndef NDEBUG
-        kdDebug(150) << "library=" << name << ": No file named " << libname << " found in paths." << endl;
+        kdDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
 #endif
-        d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg(QString( libname ));
+        d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg( QString(libname) );
         return 0;
       }
 
@@ -441,11 +439,11 @@ KLibrary* KLibLoader::library( const char *name )
       else
         d->errorMessage = QString::null;
 
-      KLibrary *lib = new KLibrary( name, libfile, handle );
+      KLibrary *lib = new KLibrary( QLatin1String(_name), libfile, handle );
       wrap = new KLibWrapPrivate(lib, handle);
-      d->loaded_stack.prepend(wrap);
+      d->loaded_stack.push(wrap);
     }
-    m_libs.insert( name, wrap );
+    m_libs.insert( _name, wrap );
 
     connect( wrap->lib, SIGNAL( destroyed() ),
              this, SLOT( slotLibraryDestroyed() ) );
@@ -460,9 +458,10 @@ QString KLibLoader::lastErrorMessage() const
 
 void KLibLoader::unloadLibrary( const char *libname )
 {
-  KLibWrapPrivate *wrap = m_libs[ libname ];
-  if (!wrap)
+  if (!m_libs.contains(libname))
     return;
+  
+  KLibWrapPrivate *wrap = m_libs[ libname ];
   if (--wrap->ref_count)
     return;
 
@@ -475,9 +474,9 @@ void KLibLoader::unloadLibrary( const char *libname )
   close_pending( wrap );
 }
 
-KLibFactory* KLibLoader::factory( const char* name )
+KLibFactory* KLibLoader::factory( const char* _name )
 {
-    KLibrary* lib = library( name );
+    KLibrary* lib = library( _name );
     if ( !lib )
         return 0;
 
@@ -488,13 +487,12 @@ void KLibLoader::slotLibraryDestroyed()
 {
   const KLibrary *lib = static_cast<const KLibrary *>( sender() );
 
-  Q3AsciiDictIterator<KLibWrapPrivate> it( m_libs );
-  for (; it.current(); ++it )
-    if ( it.current()->lib == lib )
+  for (QHash<const char*, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
+    if ( (*it)->lib == lib )
     {
-      KLibWrapPrivate *wrap = it.current();
+      KLibWrapPrivate *wrap = *it;
       wrap->lib = 0;  /* the KLibrary object is already away */
-      m_libs.remove( it.currentKey() );
+      m_libs.take( it.key() );
       close_pending( wrap );
       return;
     }
@@ -502,14 +500,14 @@ void KLibLoader::slotLibraryDestroyed()
 
 void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 {
-  if (wrap && !d->pending_close.containsRef( wrap ))
+  if (wrap && !d->pending_close.contains( wrap ))
     d->pending_close.append( wrap );
 
   /* First delete all KLibrary objects in pending_close, but _don't_ unload
      the DSO behind it.  */
-  Q3PtrListIterator<KLibWrapPrivate> it(d->pending_close);
-  for (; it.current(); ++it) {
-    wrap = it.current();
+  for (QList<KLibWrapPrivate*>::Iterator it = d->pending_close.begin();
+       it != d->pending_close.end(); ++it) {
+    wrap = *it;
     if (wrap->lib) {
       disconnect( wrap->lib, SIGNAL( destroyed() ),
                   this, SLOT( slotLibraryDestroyed() ) );
@@ -519,24 +517,24 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     }
   }
 
-  if (d->unload_mode == KLibLoaderPrivate::DONT_UNLOAD) {
-    d->pending_close.clear();
+  if (d->unload_mode == KLibLoader_cpp::DONT_UNLOAD) {
+    while (!d->pending_close.isEmpty())
+        delete d->pending_close.takeFirst();
     return;
   }
 
   bool deleted_one = false;
-  while ((wrap = d->loaded_stack.first())) {
+  while ((wrap = d->loaded_stack.top())) {
     /* Let's first see, if we want to try to unload this lib.
        If the env. var KDE_DOUNLOAD is set, we try to unload every lib.
        If not, we look at the lib itself, and unload it only, if it exports
        the symbol __kde_do_unload. */
-    if (d->unload_mode != KLibLoaderPrivate::UNLOAD
-        && wrap->unload_mode != KLibWrapPrivate::UNLOAD)
+    if (d->unload_mode != KLibLoader_cpp::UNLOAD && wrap->unload_mode != KLibLoader_cpp::UNLOAD)
       break;
 
     /* Now ensure, that the libs are only unloaded in the reverse direction
        they were loaded.  */
-    if (!d->pending_close.containsRef( wrap )) {
+    if (!d->pending_close.contains( wrap )) {
       if (!deleted_one)
         /* Only diagnose, if we really haven't deleted anything. */
 //        kdDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
@@ -567,9 +565,8 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
     deleted_one = true;
     lt_dlclose(wrap->handle);
-    d->pending_close.removeRef(wrap);
-    /* loaded_stack is AutoDelete, so wrap is freed */
-    d->loaded_stack.remove();
+    d->pending_close.removeAll(wrap);
+    delete d->loaded_stack.pop();
   }
 }
 
