@@ -79,11 +79,6 @@ public:
      */
     QString parentAddress();
 
-    /**
-     * @since 4.0
-     */
-    QString highlightedAddress() const;
-
 signals:
     /**
      * @since 3.2
