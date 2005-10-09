@@ -149,7 +149,7 @@ public:
    * through a proxy server where as those that are not should bypass it.
    *
    * This function as well as @ref noProxyFor only apply when @ref proxyType
-   * is @p ManaualProxy.
+   * is @p ManualProxy.
    *
    * @see proxyForURL, proxyFor, slaveProtocol
    */
@@ -209,7 +209,7 @@ public:
    * host-names that should bypass any proxy settings.
    *
    * This function as well as @ref useReverseProxy only apply
-   * when @ref proxyType is @p ManaualProxy.
+   * when @ref proxyType is @p ManualProxy.
    *
    * @see useReverseProxy, proxyFor, proxyForURL, slaveProtocol
    */
@@ -237,9 +237,9 @@ public:
    * whether the URL needs to be routed through a proxy server.
    *
    * NOTE: This function does not take the @ref useReverseProxy()
-   * settings into account.
+   * or the @ref noProxyFor() settings into account.
    *
-   * @see useReverseProxy, slaveProtocol
+   * @see useReverseProxy, slaveProtocol, noProxyFor
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address or the text "DIRECT"
    *          if no proxying is needed for the given address.
