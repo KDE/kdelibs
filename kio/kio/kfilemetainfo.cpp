@@ -842,8 +842,8 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
         case KFileMimeTypeInfo::Bytes:
             item->m_suffix = i18n("B"); break;
 
-        case KFileMimeTypeInfo::KiloBytes:
-            item->m_suffix = i18n("KB"); break;
+        case KFileMimeTypeInfo::KibiBytes:
+            item->m_suffix = i18n("KiB"); break;
 
         case KFileMimeTypeInfo::FramesPerSecond:
             item->m_suffix = i18n("fps"); break;
@@ -1592,10 +1592,10 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
                 // convertSize already adds the correct suffix
                 return KIO::convertSize(value.toInt());
             }
-            else if (unit() == KFileMimeTypeInfo::KiloBytes)
+            else if (unit() == KFileMimeTypeInfo::KibiBytes)
             {
-                // convertSizeFromKB already adds the correct suffix
-                return KIO::convertSizeFromKB(value.toInt());
+                // convertSizeFromKiB already adds the correct suffix
+                return KIO::convertSizeFromKiB(value.toInt());
             }
             else
                 s = KGlobal::locale()->formatNumber( value.toInt() , 0);
@@ -1608,8 +1608,8 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
 	case QVariant::ULongLong :
             if ( unit() == KFileMimeTypeInfo::Bytes )
                 return KIO::convertSize( value.toULongLong() );
-            else if ( unit() == KFileMimeTypeInfo::KiloBytes )
-                return KIO::convertSizeFromKB( value.toULongLong() );
+            else if ( unit() == KFileMimeTypeInfo::KibiBytes )
+                return KIO::convertSizeFromKiB( value.toULongLong() );
             else
                 s = KGlobal::locale()->formatNumber( value.toULongLong(), 0 );
             break;

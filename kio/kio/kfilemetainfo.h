@@ -120,7 +120,7 @@ public:
         DotsPerInch     = 9,  ///< Resolution in DPI @since 3.1
         BitsPerPixel    = 10, ///< A bit depth @since 3.1
         Hertz           = 11, ///< Sample rates and similar @since 3.1
-        KiloBytes       = 12, ///< Some data/file size in kilobytes @since 3.1
+        KibiBytes       = 12, ///< Some data/file size in kibibytes (1024 bytes) @since 3.1
         Millimeters     = 13  ///< Sizes @since 3.3
     };
 
