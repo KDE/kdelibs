@@ -2,7 +2,6 @@
 
 Import('env')
 
-ice_flags="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP"
 
 ice_sources="""
 accept.c
@@ -27,10 +26,17 @@ transport.c
 watch.c
 """
 
-obj          = env.genobj('convenience', env)
-obj.target   = 'libkICE.a'
+if env['WINDOWS']:
+	obj          = env.genobj('shlib', env)
+	obj.ccflags  ="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP"
+	obj.libpaths = '../../win'
+	obj.libs     = 'kdewin32 wsock32'
+else:
+	obj          = env.genobj('convenience', env)
+	obj.ccflags  ="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP"
+
+obj.target   = 'kICE'
 obj.source   = ice_sources
-obj.includes = '#/ ./ ..'
-obj.ccflags = ice_flags
+obj.includes = '. ..'
 obj.execute()
 
