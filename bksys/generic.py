@@ -141,7 +141,7 @@ class genobj:
 
 		# vars used by shlibs
 		self.vnum=''
-		self.libprefix=''
+		self.libprefix='lib'
 
 		# a directory where to install the targets (optional)
 		self.instdir=''
@@ -246,6 +246,10 @@ class genobj:
 		# copy the environment if a subclass has not already done it
 		if not self.env: self.env = self.orenv.Copy()
 
+		# remove libprefix is one is given to avoid repeated libprefix
+		if self.libprefix != '' and self.target[:len(self.libprefix)] == self.libprefix:
+			self.target = self.target[len(self.libprefix):]
+
 		if not self.p_localtarget: self.p_localtarget = self.joinpath(self.target)
 		if not self.p_localsource: self.p_localsource = self.joinpath(self.env.make_list(self.source))
 
@@ -269,7 +273,10 @@ class genobj:
 
 		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
-		lext=['.so', '.la', '.dylib','.dll']
+		if self.env['WINDOWS']:
+			lext=['.la']
+		else:
+			lext=['.so', '.la', '.dylib','.dll']
 		sext=['.a']
 		for lib in llist:
 			sal=SCons.Util.splitext(lib)
@@ -312,12 +319,11 @@ class genobj:
 					self.env.AppendUnique(RPATH=self.env['RPATH_'+lib])
 
 		# Settings for static and shared libraries
-		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
 		if len(self.libpaths)>0:           self.env.PrependUnique(LIBPATH=self.fixpath(self.libpaths))
 		if len(self.linkflags)>0:          self.env.PrependUnique(LINKFLAGS=self.env.make_list(self.linkflags))
-		if len(self.p_local_shlibs)>0:     self.env.link_local_shlib(self.p_local_shlibs)
 		if len(self.p_local_staticlibs)>0: self.env.link_local_staticlib(self.p_local_staticlibs)
-
+		if len(self.p_local_shlibs)>0:     self.env.link_local_shlib(self.p_local_shlibs)
+		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
 		# The target to return - IMPORTANT no more self.env modification is possible after this part
 		ret=None
 		if self.type=='shlib' or self.type=='kioslave' or self.type=='module':
@@ -716,7 +722,7 @@ def generate(env):
 			if sys.platform == 'darwin':
 				thisenv.AppendUnique(LINKFLAGS = ["-undefined","dynamic_lookup","-install_name", "%s.%s.dylib" % (libname, num)] )
 			else:
-				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libname, num)] )
+				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libprefix+libname, num)] )
 
 		# Fix against a scons bug - shared libs and ordinal out of range(128)
 		if type(source) is types.ListType:
@@ -737,13 +743,13 @@ def generate(env):
 			nums=vnum.split('.')
 			symlinkcom = ('cd $SOURCE.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
 			if sys.platform == 'darwin':
-				tg = target+'.'+vnum+'.dylib'
-				nm1 = target+'.dylib'
-				nm2 = target+'.'+nums[0]+'.dylib'
+				tg = libprefix+target+'.'+vnum+'.dylib'
+				nm1 = libprefix+target+'.dylib'
+				nm2 = libprefix+target+'.'+nums[0]+'.dylib'
 			else:
-				tg = target+'.so.'+vnum
-				nm1 = target+'.so'
-				nm2 = target+'.so.'+nums[0]
+				tg = libprefix+target+'.so.'+vnum
+				nm1 = libprefix+target+'.so'
+				nm2 = libprefix+target+'.so.'+nums[0]
 
 			thisenv.SymLink(target=nm1, source=library_list)
 			thisenv.SymLink(target=nm2, source=library_list)
