@@ -1167,8 +1167,8 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 {
     d->m_freeSpaceLabel->setText(
 	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-	.arg(KIO::convertSizeFromKB(kBAvail))
-	.arg(KIO::convertSizeFromKB(kBSize))
+	.arg(KIO::convertSizeFromKiB(kBAvail))
+	.arg(KIO::convertSizeFromKiB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
@@ -1181,8 +1181,8 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 {
     d->m_freeSpaceLabel->setText(
 	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-	.arg(KIO::convertSizeFromKB(kBAvail))
-	.arg(KIO::convertSizeFromKB(kBSize))
+	.arg(KIO::convertSizeFromKiB(kBAvail))
+	.arg(KIO::convertSizeFromKiB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
@@ -2956,8 +2956,8 @@ void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 
   d->m_freeSpaceLabel->setText(
       i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-      .arg(KIO::convertSizeFromKB(kBAvail))
-      .arg(KIO::convertSizeFromKB(kBSize))
+      .arg(KIO::convertSizeFromKiB(kBAvail))
+      .arg(KIO::convertSizeFromKiB(kBSize))
       .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 
   d->m_freeSpaceBar->setProgress(percUsed, 100);
