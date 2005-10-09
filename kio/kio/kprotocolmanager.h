@@ -133,16 +133,25 @@ public:
 
 
   /**
-   * Returns whether or not the user specified the
-   * use of proxy server to make connections.
-   * @return true to use a proxy
+   * Returns true if the user specified a proxy server to make connections.
+   *
+   * @see slaveProtocol, proxyForURL, proxyFor
    */
   static bool useProxy();
 
   /**
-   * Returns whether or not the the proxy server
-   * lookup should be reversed or not.
-   * @return true to use a reversed proxy
+   * Returns true if the proxy settings should apply to the list
+   * returned by @ref noProxyFor.
+   *
+   * Normally addresses listed in the noProxyFor list are not routed
+   * through a proxy server. However, if this function returns true,
+   * then all addresses listed in the noProxyFor list are to be routed
+   * through a proxy server where as those that are not should bypass it.
+   *
+   * This function as well as @ref noProxyFor only apply when @ref proxyType
+   * is @p ManaualProxy.
+   *
+   * @see proxyForURL, proxyFor, slaveProtocol
    */
   static bool useReverseProxy();
 
@@ -165,7 +174,8 @@ public:
 
   /**
    * Returns the type of proxy configuration that is used.
-   * @return the proxy type
+   *
+   * @see ProxyType
    */
   static ProxyType proxyType();
 
@@ -173,7 +183,13 @@ public:
    * Proxy authorization modes.
    *
    * @li Prompt     - Ask for authorization as needed
-   * @li Automatic  - Use auto login as defined in kionetrc files.
+   * @li Automatic  - Use auto login as defined in .kionetrc files.
+   *
+   * NOTE: .kionetrc files have the same format as ftp .netrc files.
+   * Please note the use of .kionetrc files is highly discouraged since
+   * password is stored in clear text. For future releases the ability
+   * to store preset password for proxy servers will probably be supported
+   * through KWallet integration.
    */
   enum ProxyAuthMode
   {
@@ -184,23 +200,28 @@ public:
   /**
    * Returns the way proxy authorization should be handled.
    *
-   * @return the proxy authorization mode
    * @see ProxyAuthMode
    */
   static ProxyAuthMode proxyAuthMode();
 
   /**
-   * Returns the strings for hosts that should contacted
-   * DIRECTLY, bypassing any proxy settings.
-   * @return a list of (comma-separated) hostnames or partial host
-   *         names
+   * Returns a comma-separated list of hostnames or partial
+   * host-names that should bypass any proxy settings.
+   *
+   * This function as well as @ref useReverseProxy only apply
+   * when @ref proxyType is @p ManaualProxy.
+   *
+   * @see useReverseProxy, proxyFor, proxyForURL, slaveProtocol
    */
   static QString noProxyFor();
 
   /**
-   * Returns the proxy server address for a given
-   * protocol.
+   * Returns the proxy server address for a given protocol.
    *
+   * NOTE: This function does not take the @ref useReverseProxy()
+   * settings into account.
+   *
+   * @see useReverseProxy, slaveProtocol
    * @param protocol the protocol whose proxy info is needed
    * @returns the proxy server address if one is available,
    *          or QString::null if not available
@@ -208,16 +229,20 @@ public:
   static QString proxyFor( const QString& protocol );
 
   /**
-   * Returns the Proxy server address for a given URL
-   * If automatic proxy configuration is configured, KPAC
-   * is used to determine the proxy server, otherwise the return
-   * value of proxyFor for the URL's protocol is used.
-   * If an empty string is returned, the request is to be aborted,
-   * a return value of "DIRECT" requests a direct connection.
+   * Returns the proxy server address for a given URL.
    *
+   * If @ref proxyType returns Automatic, an external service
+   * called KPAC (a kded module) is used to determine the proxy
+   * server. Otherwise, @ref proxyFor is invoked to determine
+   * whether the URL needs to be routed through a proxy server.
+   *
+   * NOTE: This function does not take the @ref useReverseProxy()
+   * settings into account.
+   *
+   * @see useReverseProxy, slaveProtocol
    * @param url the URL whose proxy info is needed
-   * @returns the proxy server address if one is available
-   *          or QString::null otherwise
+   * @returns the proxy server address or the text "DIRECT"
+   *          if no proxying is needed for the given address.
    */
   static QString proxyForURL( const KURL& url );
 
