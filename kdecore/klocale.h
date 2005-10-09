@@ -741,7 +741,7 @@ public:
    * listed (but only once).
    *
    * If the selected languages are "nn, nb, pt_BR", you will get:
-   * "nn, no, nb, pt".
+   * "nn, nb, pt".
    *
    * @return List of language codes
    *
