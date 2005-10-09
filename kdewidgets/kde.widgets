@@ -118,7 +118,7 @@ ConstructorArgs=(parent, 0)
 ToolTip=ListView Search Line Widget (KDE)
 IncludeFile=klistviewsearchline.h
 Group=Input (KDE)
-ConstructorArgs=(0, parent, name)
+ConstructorArgs=(0, parent)
 
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
