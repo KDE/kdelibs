@@ -554,7 +554,7 @@ def generate(env):
 	opts.AddOptions(
 		('PREFIX', 'prefix for installation' ),
 		('GENCCFLAGS', 'C flags' ),
-                ('GENCXXFLAGS', 'additional cxx flags for the project' ),
+		('GENCXXFLAGS', 'additional cxx flags for the project' ),
 		('GENLINKFLAGS', 'additional link flags' ),
 		('EXTRAINCLUDES', 'extra include paths for the project' ),
 		('EXTRALIBS', 'extra library search paths for the project' ),
@@ -569,10 +569,14 @@ def generate(env):
 	# Check if the following command line arguments have been given
 	# and set a flag in the environment to show whether or not it was
 	# given.
-	if 'install' in sys.argv: env['_INSTALL_']=1
-	else: env['_INSTALL_']=0
-	if 'configure' in sys.argv: env['_CONFIGURE_']=1
-	else: env['_CONFIGURE_']=0
+	if 'install' in sys.argv:
+		env['_INSTALL_']=1
+	else:
+		env['_INSTALL_']=0
+	if 'configure' in sys.argv:
+		env['_CONFIGURE_']=1
+	else:
+		env['_CONFIGURE_']=0
 
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('GENERIC_ISCONFIGURED')):
@@ -776,9 +780,9 @@ def generate(env):
 				ke.execute()
 				ke.unlockworkdir()
 
-        def link_local_shlib(lenv, str):
-                """ Links against a shared library made in the project """
-                lst = lenv.make_list(str)
+	def link_local_shlib(lenv, str):
+		""" Links against a shared library made in the project """
+		lst = lenv.make_list(str)
 		for afile in lst:
 			import re
 			file = slashify(afile)
@@ -847,11 +851,11 @@ def generate(env):
 
 	if env.has_key('BKS_DEBUG'):
 		if (env['BKS_DEBUG'] == "full"):
-			env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-Wall'])
+			env.AppendUnique(CXXFLAGS = ['-DDEBUG'])
 			if env['WINDOWS']:
-				pass
+				env.AppendUnique(CXXFLAGS = ['-Od','-W3'])
 			else:
-				env.AppendUnique(CXXFLAGS = ['-g3'])
+				env.AppendUnique(CXXFLAGS = ['-g3', '-Wall'])
 		elif (env['BKS_DEBUG'] == "trace"): # i cannot remember who wanted this (TODO ita)
 			env.AppendUnique(
 			        LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),

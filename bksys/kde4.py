@@ -78,6 +78,9 @@ def generate(env):
 		env['KDE4_ISCONFIGURED']=1
 		env['UIC3_PRE_INCLUDE']="#include <kdialog.h>\n#include <klocale.h>\n"
 
+		# (js) update here, BUT: this still doesn't add stuff defined in detect_kde4.py 
+		# (js) (e.g. GENCCFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
+		opts.Update(env)
 		opts.Save(cachefile, env)
 		
 	import SCons.Defaults

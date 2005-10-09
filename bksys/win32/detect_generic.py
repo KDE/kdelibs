@@ -13,11 +13,12 @@ def detect(env):
 	import os, sys
 	import SCons.Util
 	env['GENCXXFLAGS'] = []
+	env['CPPPATH'] = []
 
 	# (rh) The flags from GENCCFLAGS seems to be added to GENCXXFLAGS, 
 	# so there is no need to duplicate settings in GENCXXGLAGS
-	if env['ARGS'].get('debug', None):
-		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
+	if env['ARGS'].has_key('debug'):
+		env['BKS_DEBUG'] = env['ARGS'].get('debug')
 		env.pprint('CYAN','** Enabling debug for the project **')
 		if env['CC'] == 'gcc':
 			env['GENCCFLAGS'] = ['-g']
@@ -35,7 +36,7 @@ def detect(env):
 
 	if env['CC'] == 'cl':
 		# avoid some compiler warnings...
-		env['GENCCFLAGS'] +=  ['-wd4619','-wd4820']
+		env.AppendUnique( GENCCFLAGS' = ['-wd4619','-wd4820'] )
 	
 	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
@@ -49,14 +50,16 @@ def detect(env):
 		env.pprint('CYAN','** installation prefix for the project set to:',env['PREFIX'])
 
 	# User-specified include paths
-	env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes', None)
-	if env['EXTRAINCLUDES']:
+	if env['ARGS'].has_key('extraincludes'):
+		env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes')
+	if env.has_key('EXTRAINCLUDES'):
 		env['EXTRAINCLUDES'] = env['EXTRAINCLUDES'].split(':')
 		env.pprint('CYAN','** extra include paths for the project set to:',env['EXTRAINCLUDES'])
 
 	# User-specified library search paths
-	env['EXTRALIBS'] = env['ARGS'].get('extralibs', None)
-	if env['EXTRALIBS']:
+	if env['ARGS'].has_key('extralibs'):
+		env['EXTRALIBS'] = env['ARGS'].get('extralibs')
+	if env.has_key('EXTRALIBS'):
 		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 

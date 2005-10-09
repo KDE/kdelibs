@@ -76,10 +76,10 @@ def detect(env):
 	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
 	"""
 
+	# normal detection functions go here
+	if env['CC'] == 'cl':
+		env.AppendUnique(GENCCFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
+
 	if env.has_key('BOOTSTRAP_KDE'):
 		bootstrap(env)
 		return
-
-	# normal detection functions go here
-	if env['CC'] == 'cl':
-	 	env.AppendUnique(CXXFLAGS = '/FI./win/include/kdelibs_global_win.h')

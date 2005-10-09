@@ -6,8 +6,7 @@ def exists(env):
 def generate(env):
 
 	def Check_compiler(context):
-	    	context.Message('Checking for compiler version... ')
-
+		context.Message('Checking for compiler version... ')
 		import sys, os
 		
 		if env['WINDOWS']:

@@ -41,3 +41,9 @@ for outside code: ---> #define KDECORE_SHARED_EXPORT
 
 Better to store shared libs in $KDEDIR/bin, so every kde app can see all needed libs. 
 Modules can still be located in $KDEDIR/lib/kde4/ ...
+
+Usable places:
+http://cvs.sourceforge.net/viewcvs.py/qtwin/qt-4/
+
+recent addition for vcproj.:
+http://cvs.sourceforge.net/viewcvs.py/qtwin/qt-4/qmake/generators/win32/msvc_vcproj.cpp
