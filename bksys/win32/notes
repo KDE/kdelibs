@@ -47,3 +47,7 @@ http://cvs.sourceforge.net/viewcvs.py/qtwin/qt-4/
 
 recent addition for vcproj.:
 http://cvs.sourceforge.net/viewcvs.py/qtwin/qt-4/qmake/generators/win32/msvc_vcproj.cpp
+
+2005-10-09
+kde4.py: KDECXXFLAGS and KDECCFLAGS options addded; 
+	these are transferred to CXXFLAGS, CPPFLAGS and CCFLAGS respectively

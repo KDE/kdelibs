@@ -20,6 +20,8 @@ def generate(env):
 		('KDEDIR', ''),
 		('KDELIBPATH', 'path to the installed kde libs'),
 		('KDEINCLUDEPATH', 'path to the installed kde includes'),
+		('KDECCFLAGS', 'kde-related C compiler flags'),
+		('KDECXXFLAGS', 'kde-related c++ compiler flags'),
 
 		('LIBPATH_KDE4', ''),
 		('RPATH_KDE4', ''),
@@ -78,8 +80,8 @@ def generate(env):
 		env['KDE4_ISCONFIGURED']=1
 		env['UIC3_PRE_INCLUDE']="#include <kdialog.h>\n#include <klocale.h>\n"
 
-		# (js) update here, BUT: this still doesn't add stuff defined in detect_kde4.py 
-		# (js) (e.g. GENCCFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
+		# (js) update here
+		env.AppendUnique( CXXFLAGS = env['KDECCFLAGS'] )
 		opts.Update(env)
 		opts.Save(cachefile, env)
 		
@@ -389,3 +391,10 @@ def generate(env):
 			
 			
 	SConsEnvironment.kdeinitobj = kdeinitobj
+
+	# (js) apply KDE***FLAGS
+	if env.has_key('KDECCFLAGS'):
+		env.AppendUnique( CCFLAGS = env['KDECCFLAGS'] )
+	if env.has_key('KDECXXFLAGS'):
+		env.AppendUnique( CPPFLAGS = env['KDECXXFLAGS'] )
+		env.AppendUnique( CXXFLAGS = env['KDECXXFLAGS'] )
