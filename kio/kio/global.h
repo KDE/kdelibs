@@ -47,7 +47,7 @@ namespace KIO
    * Converts @p size from bytes to the string representation.
    *
    * @param  size  size in bytes
-   * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
+   * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
   KIO_EXPORT QString convertSize( KIO::filesize_t size );
 
@@ -61,12 +61,12 @@ namespace KIO
   KIO_EXPORT QString number( KIO::filesize_t size );
 
   /**
-   * Converts size from kilo-bytes to the string representation.
+   * Converts size from kibi-bytes (2^10) to the string representation.
    *
-   * @param  kbSize  size in kilo-bytes
-   * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
+   * @param  kibSize  size in kibi-bytes (2^10)
+   * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
-   KIO_EXPORT QString convertSizeFromKB( KIO::filesize_t kbSize );
+   KIO_EXPORT QString convertSizeFromKiB( KIO::filesize_t kibSize );
 
   /**
    * Calculates remaining time in seconds from total size, processed size and speed.

@@ -95,9 +95,9 @@ KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
     return s;
 }
 
-KIO_EXPORT QString KIO::convertSizeFromKB( KIO::filesize_t kbSize )
+KIO_EXPORT QString KIO::convertSizeFromKiB( KIO::filesize_t kibSize )
 {
-    return convertSize(kbSize * 1024);
+    return convertSize(kibSize * 1024);
 }
 
 KIO_EXPORT QString KIO::number( KIO::filesize_t size )
