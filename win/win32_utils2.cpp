@@ -1,12 +1,18 @@
 
-#include <qstring.h>
-#include <q3cstring.h>
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <QString>
+#include <QByteArray>
+#include <QDir>
+#include <QFileInfo>
 
 #include <windows.h>
 #include <shellapi.h>
 #include <tchar.h>
+
+#if defined(__MINGW32__)
+# define WIN32_CAST_CHAR (WCHAR*)
+#else
+# define WIN32_CAST_CHAR (LPCSTR)
+#endif
 
 KDEWIN32_EXPORT 
 QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& item, bool *ok)
@@ -22,21 +28,22 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 	TCHAR *lszValue;
 	DWORD dwType=REG_SZ;
 	DWORD dwSize;
-	if (ERROR_SUCCESS!=RegOpenKeyEx(key, (WCHAR*)subKey.utf16(), NULL, KEY_READ, &hKey))
+
+	if (ERROR_SUCCESS!=RegOpenKeyEx(key, WIN32_CAST_CHAR subKey.utf16(), NULL, KEY_READ, &hKey))
 		FAILURE;
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, (WCHAR*)item.utf16(), NULL, NULL, NULL, &dwSize))
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, WIN32_CAST_CHAR item.utf16(), NULL, NULL, NULL, &dwSize))
 		FAILURE;
 
 	lszValue = new TCHAR[dwSize];
 
-	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, (WCHAR*)item.utf16(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
+	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, WIN32_CAST_CHAR item.utf16(), NULL, &dwType, (LPBYTE)lszValue, &dwSize)) {
 		delete [] lszValue;
 		FAILURE;
 	}
 	RegCloseKey(hKey);
 
-	QString res = QString::fromUtf16((ushort*)lszValue);
+	QString res = QString::fromUtf16( (const ushort*)lszValue );
 	delete [] lszValue;
 	return res;
 }
@@ -57,16 +64,16 @@ bool showWin32FilePropertyDialog(const QString& fileName)
 }
 
 KDEWIN32_EXPORT
-Q3CString getWin32LocaleName()
+QByteArray getWin32LocaleName()
 {
 	bool ok;
 	QString localeNumber = getWin32RegistryValue(HKEY_CURRENT_USER, "Control Panel\\International", 
 		"Locale", &ok);
 	if (!ok)
-		return Q3CString();
+		return QByteArray();
 	QString localeName = getWin32RegistryValue(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layout\\DosKeybCodes", 
 		localeNumber, &ok);
 	if (!ok)
-		return Q3CString();
-	return localeName.latin1();
+		return QByteArray();
+	return localeName.toLatin1();
 }

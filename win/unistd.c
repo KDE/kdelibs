@@ -135,7 +135,7 @@ typedef unsigned int size_t;
 /*#define INCL_WINSOCK_API_PROTOTYPES 0
 #include <winsock2.h>*/
 
-KDEWIN32_EXPORT int kde_gethostname(char *__name, int __len)
+KDEWIN32_EXPORT int kde_gethostname(char *__name, size_t __len)
 {
   size_t len = __len;
   if (0==GetComputerNameA(__name, &len))

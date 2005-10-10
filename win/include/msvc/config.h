@@ -22,7 +22,7 @@
 #ifndef _KDE_WIN_CONFIG_H_
 #define _KDE_WIN_CONFIG_H_
 
-#include <kdelibs_export.h>
+#include <kdecore/kdelibs_export.h>
 
 #ifndef HAVE_LIMITS_H
 #define HAVE_LIMITS_H 1

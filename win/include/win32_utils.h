@@ -23,8 +23,8 @@
 #include <kdecore/kdelibs_export.h>
 
 #ifdef  __cplusplus
-#include <qstring.h>
-#include <q3cstring.h>
+#include <QString>
+#include <QByteArray>
 
 extern "C" {
 #endif
@@ -54,18 +54,15 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 #ifndef HKEY
 #define HKEY void*
 #endif
-
 #ifndef HKEY_CLASSES_ROOT
 #define HKEY_CLASSES_ROOT	((HKEY)0x80000000)
 #endif 
-
 #ifndef HKEY_CURRENT_USER
 #define HKEY_CURRENT_USER	((HKEY)0x80000001)
 #endif 
 #ifndef HKEY_LOCAL_MACHINE
 #define HKEY_LOCAL_MACHINE	((HKEY)0x80000002)
 #endif 
-
 #ifndef HKEY_USERS
 #define HKEY_USERS	((HKEY)0x80000003)
 #endif 
@@ -105,7 +102,7 @@ bool showWin32FilePropertyDialog(const QString& fileName);
  Used e.g. by kbuildsycoca application.
 */
 KDEWIN32_EXPORT
-Q3CString getWin32LocaleName();
+QByteArray getWin32LocaleName();
 
 #endif //__cplusplus
 

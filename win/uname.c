@@ -47,7 +47,7 @@ KDEWIN32_EXPORT int uname(struct utsname *name)
 	char valid_processor_level;
 	char *ostype = 0;
 	char tmpnodename[MAX_COMPUTERNAME_LENGTH+2];
-	int tmpnodenamelen = MAX_COMPUTERNAME_LENGTH+1;
+	size_t tmpnodenamelen = MAX_COMPUTERNAME_LENGTH+1;
 
 	if (!name)
 		return -1;

@@ -176,6 +176,9 @@ declared but not defined. The compiler was unable to find any destructors for th
 # pragma warning(disable: 4189)
 
 # if (_MSC_VER >= 1300)
+/* disable C4273: inconsistent DLL linkage. dllexport assumed. */
+#  pragma warning(disable: 4273)
+
 /* disable C4288: nonstandard extension used : 'i' : loop control variable 
  declared in the for-loop is used outside the for-loop scope; 
  it conflicts with the declaration in the outer scope */

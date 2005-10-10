@@ -35,7 +35,7 @@ struct timeval {
 }; 
 #endif*/
 
-#include <time.h>
+#include <../include/time.h>
 
 #ifdef __cplusplus
 extern "C" {
