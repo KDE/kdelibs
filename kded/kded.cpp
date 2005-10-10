@@ -423,7 +423,6 @@ void Kded::recreate(bool initial)
       else
          m_needDelayedCheck = false;
       QTimer::singleShot(100, this, SLOT(installCrashHandler()));
-      QTimer::singleShot(500, this, SLOT(initModules()));
    }
 }
 
@@ -708,8 +707,10 @@ public:
     {
        if (startup)
           startup = false;
-       else
+       else {
           runBuildSycoca();
+          QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
+       }
        return 0;
     }
 
