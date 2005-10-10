@@ -98,7 +98,9 @@ const char *qStringToC(const QByteArray &s)
    return s.data();
 }
 
+#ifdef _GNUC
 #warning FIX the marshalled types
+#endif
 DCOPCString demarshal( QDataStream &stream, const QString &type )
 {
     DCOPCString result;
@@ -291,7 +293,9 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
 
 }
 
+#ifdef _GNUC
 #warning FIX the marshalled types
+#endif
 void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 {
     if (type == "QStringList")

@@ -1370,7 +1370,9 @@ static void fillQtObjects( DCOPCStringList& l, QObject* o, DCOPCString path)
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
+#ifdef _GNUC
 #warning might make sense to update to QString as objectName is one now
+#endif
       QByteArray n = (*it)->objectName().toLatin1();
       if ( n == "unnamed" || n.isEmpty() )
       {
@@ -1407,7 +1409,9 @@ static void fillQtObjectsEx( QList<O>& l, QObject* o, DCOPCString path )
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
+#ifdef _GNUC
 #warning might make sense to update to QString as objectName is one now
+#endif
       QByteArray n = (*it)->objectName().toLatin1();
       if ( n == "unnamed" || n.isEmpty() )
       {

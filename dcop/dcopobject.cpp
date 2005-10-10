@@ -60,7 +60,9 @@ DCOPObject::DCOPObject(QObject *obj)
     d = new DCOPObjectPrivate;
     QObject *currentObj = obj;
     while (currentObj != 0L) {
+#ifdef _GNUC
 #warning might make sense updating ident from DCOPCString to something that uses QString as objectName is a QString now and not a const char *
+#endif
         ident.prepend( currentObj->objectName().toLatin1().constData() );
         ident.prepend("/");
         currentObj = currentObj->parent();
@@ -158,7 +160,9 @@ DCOPCString DCOPObject::objectName( QObject* obj )
     QObject *currentObj = obj;
     while (currentObj != 0 )
     {
+#ifdef _GNUC
 #warning might make sense updating ident from DCOPCString to something that uses QString as objectName is a QString now and not a const char *
+#endif
 	identity.prepend( currentObj->objectName().toLatin1().constData() );
 	identity.prepend("/");
 	currentObj = currentObj->parent();
