@@ -4,7 +4,7 @@
 # 
 # (\@) Thomas Nagy, 2005
 # 
-""" Run scons -h to display the associated help, or look below """
+#  Run scons -h to display the associated help, or look below
 
 import os, re, types, sys, string, shutil, stat, glob
 import SCons.Defaults
@@ -113,8 +113,16 @@ def pprint(env, col, str, label=''):
 	except: mycol=''
 	print "%s%s%s %s" % (mycol, str, env['BKS_COLORS']['NORMAL'], label)
 
+## class for building binary targets like programs, shared libraries, static libs, loadable modules and convenience libraries 
+#
+#
 class genobj:
+	## construct a binary target 
+	#
+	# @val type of binary object "program", "shlib", staticlib", "module", "convenience"
+	# @env used scons environment 
 	def __init__(self, val, env):
+		# NOTE: (rh) is kioslave not a kde module ? 
 		if not val in ["program", "shlib", "kioslave", "staticlib", "module", "convenience"]:
 			env.pprint('RED', 'unknown object type given to genobj: '+val)
 			env.Exit(1)
@@ -124,32 +132,50 @@ class genobj:
 		self.env   = None
 		self.executed = 0
 
+		## list of source files 
 		self.source=''
+		## target name 
 		self.target=''
 
+		## flags for c++ compiler (may be platform dependent)
 		self.cxxflags  =''
+		## flags for c compiler (may be platform dependent)
 		self.ccflags   =''
+		## additional include path(es) (using '/' on every platform)  
 		self.includes  =''
 
+		## flags for linker (may be platform dependent)
 		self.linkflags =''
+		## list of path(es) containing required libraries (use with libs class member)
 		self.libpaths  =''
+		## list of libraries which should be included in this binary object
+		# use the basic library name without any platform specific prefix or suffixes 
+		# on linux e.g. use xyz for the real library named libxyz.so 
 		self.libs      =''
 
 		# warning: uber-cool feature
 		# self.uselib='KIO XML' and all linkflags, etc are added
+		
+		## use of bksys predefined module/libraries found in the configure part
+		# This will add all required c/c++ and linker flags 
+		# often used modules are QT QTCORE QT3SUPPORT KDE4 FAM ART PCRE XML OPENSSL
 		self.uselib=''
 
 		# vars used by shlibs
 		self.vnum=''
+		## library prefix 
+		# this value will be added at the beginning of the binary object target name 
+		# on linux e.g if the target is named \b xyaz and \b libprefix is set to \b 'lib' 
+		# the real library is named libxyz 
 		self.libprefix='lib'
 
-		# a directory where to install the targets (optional)
+		## a directory where to install the targets (optional)
 		self.instdir=''
 
 		# change the working directory before reading the targets (do not use)
 		self.chdir=''
 
-		# unix permissions
+		## unix permissions
 		self.perms=''
 
 		# these members are private
@@ -232,7 +258,7 @@ class genobj:
 		def __str__(self):
 			return "No such library " + self.value
 
-	# When an object is created and the sources, targets, etc are given
+	## When an object is created and the sources, targets, etc are given
 	# the execute command calls the SCons functions like Program, Library, etc
 	def execute(self):
 		if self.executed: return
@@ -501,12 +527,12 @@ def generate(env):
 		p('BOLD','* scons install prefix=/opt/local DESTDIR=/tmp/blah\n')
 		return
 
-	## Global cache directory
+	#-- Global cache directory
 	# Put all project files in it so a rm -rf cache will clean up the config
 	if not env.has_key('CACHEDIR'): env['CACHEDIR'] = env.join(os.getcwd(),'cache')+os.sep
 	if not os.path.isdir(env['CACHEDIR']): os.mkdir(env['CACHEDIR'])
 	
-	## SCons cache directory
+	#-- SCons cache directory
 	# This avoids recompiling the same files over and over again: 
 	# very handy when working with cvs
 	# TODO: not portable so add a win32 ifdef
@@ -534,7 +560,7 @@ def generate(env):
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
 	#SConsEnvironment.Symlink = SCons.Action.ActionFactory(os.symlink, lambda dest, link: 'symlink("%s", "%s")' % (dest, link))
 
-	## Special trick for installing rpms ...
+	# Special trick for installing rpms ...
 	env['DESTDIR']=''
 	if 'install' in sys.argv:
 		dd=''
@@ -545,10 +571,10 @@ def generate(env):
 			env['DESTDIR']=dd
 			env.pprint('CYAN','** Enabling DESTDIR for the project ** ',env['DESTDIR'])
 
-	## Use the same extension .o for all object files
+	# Use the same extension .o for all object files
 	env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
 
-	## load the options
+	# load the options
 	cachefile=env['CACHEDIR']+'generic.cache.py'
 	opts = Options(cachefile)
 	opts.AddOptions(
@@ -608,8 +634,8 @@ def generate(env):
 		env['LINKCOMSTR']  =l
 		env['SHLINKCOMSTR']=l
 
+	## Install files on 'scons install
 	def bksys_install(lenv, subdir, files, destfile=None, perms=None):
-		""" Install files on 'scons install' """
 		if not env['_INSTALL_']: return
 		basedir = env['DESTDIR']
 		install_list=None
@@ -627,8 +653,8 @@ def generate(env):
 			lenv.Exit(1)
 		lenv.bksys_install( lenv.join(lenv[type],subdir), files, destfile=None, perms=perms)
 
+	## Writes a .la file, used by libtool 
 	def build_la_file(target, source, env):
-		""" Writes a .la file, used by libtool """
 		dest=open(target[0].path, 'w')
 		sname=source[0].name
 		dest.write("# Generated by ltmain.sh - GNU libtool 1.5.18 - (pwn3d by bksys)\n#\n#\n")
@@ -649,6 +675,8 @@ def generate(env):
 		dest.write("libdir='%s'" % env['BKSYS_DESTDIR'])
 		dest.close()
 		#return 0
+	
+	## template for compiling message 
 	def string_la_file(target, source, env):
 		blue=''
 		normal=''
@@ -663,8 +691,8 @@ def generate(env):
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
+	## Writes an empty file 
 	def build_empty_file(target, source, env):
-		""" Writes an empty file """
 		dest=open(target[0].path, 'w')
 		dest.write("")
 		dest.close()
@@ -673,6 +701,8 @@ def generate(env):
 	## Build symlinks
 	def symlink_command(target, source, env):
 		os.symlink( str(source[0].name), target[0].path)
+
+	## template for symbolic linking targets message
 	def symlink_str(target, source, env):
 		yellow=''
 		normal=''
@@ -733,12 +763,12 @@ def generate(env):
 		library_list = thisenv.SharedLibrary(target, source)
 		lafile_list  = thisenv.LaFile(libprefix+target, library_list)
 
-		## Install the libraries automatically
+		# Install the libraries automatically
 		if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
 			inst_lib=thisenv.bksys_install(libdir, library_list)
 			thisenv.bksys_install(libdir, lafile_list)	
 
-		## Handle the versioning
+		# Handle the versioning
 		if len(vnum)>0:
 			nums=vnum.split('.')
 			symlinkcom = ('cd $SOURCE.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
@@ -762,7 +792,7 @@ def generate(env):
 				env.Alias('install', env.SymLink(target=link2, source=src))
 		return library_list
 
-	# Declare scons scripts to process
+	## Declare scons scripts to process
 	def subdirs(lenv, folderlist):
 		flist=lenv.make_list(folderlist)
 		for i in flist:
@@ -776,9 +806,9 @@ def generate(env):
 				ke.lockworkdir()
 				ke.execute()
 				ke.unlockworkdir()
-
+	
+	## Links against a shared library made in the project 
 	def link_local_shlib(lenv, str):
-		""" Links against a shared library made in the project """
 		lst = lenv.make_list(str)
 		for afile in lst:
 			import re
@@ -806,9 +836,9 @@ def generate(env):
 
 			lenv.AppendUnique(LIBS = [link])
 			lenv.PrependUnique(LIBPATH = [dir])
-
+	
+	## Links against a shared library made in the project 
 	def link_local_staticlib(lenv, str):
-		""" Links against a shared library made in the project """
 		lst = lenv.make_list(str)
 		for afile in lst:
 			import re
@@ -861,4 +891,3 @@ def generate(env):
 			env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g', '-Wall'])
 
 	env.Export('env')
-
