@@ -328,7 +328,9 @@ def generate(env):
 				senv = env
 			SConsEnvironment.kdeobj.__init__(self, 'shlib', senv)
 			self.binary = kdeobj('program', senv)
+			self.binary.libprefix = ''
 			self.kdeinitlib = kdeobj('shlib', senv)
+			self.kdeinitlib.libprefix = ''
 			self.kdeinitlib.it_is_a_kdelib()
 
 		def execute(self):
