@@ -145,7 +145,6 @@ Group=Buttons (KDE)
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
-ConstructorArgs=(QString(),parent)
 
 [KIconButton]
 IncludeFile=kicondialog.h
