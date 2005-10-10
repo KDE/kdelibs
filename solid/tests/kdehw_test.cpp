@@ -50,7 +50,7 @@ int main()
         }
 
 	HalDevice dev( "/org/freedesktop/Hal/devices/computer" );
-	kdDebug() << "Computer vendor : " << dev.property( "system.vendor" ) << endl;
+	kdDebug() << "Computer vendor : " << dev.property( "system.kernel.machine" ) << endl;
 	kdDebug() << "Try locking : " << dev.lock("foo") << endl;
 	kdDebug() << "Try abusing lock : " << dev.lock("foofoo") << endl;
 	kdDebug() << "Try unlocking : " << dev.unlock() << endl;
