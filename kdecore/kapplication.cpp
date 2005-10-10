@@ -1353,12 +1353,11 @@ void KApplication::parseCommandLine( )
 }
 
 #ifdef QT3_SUPPORT
- QString KApplication::geometryArgument() const
- {
+QString KApplication::geometryArgument() const
+{
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    if (args->isSet("geometry"))
-        return args->getOption("geometry");
- }
+    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
+}
 #endif
 
 QPixmap KApplication::icon() const
