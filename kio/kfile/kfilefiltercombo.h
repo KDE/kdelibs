@@ -32,7 +32,7 @@ class KIO_EXPORT KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 
- public:
+public:
     KFileFilterCombo(QWidget *parent=0);
     ~KFileFilterCombo();
 
@@ -79,22 +79,25 @@ class KIO_EXPORT KFileFilterCombo : public KComboBox
      * @see setDefaultFilter
      */
     QString defaultFilter() const;
-    
- protected:
+
+    /**
+     * @return all filters (this can be a list of patterns or a list of mimetypes)
+     */
+    QStringList filters() const { return m_filters; }
+
+protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
+    virtual void virtual_hook( int id, void* data );
 
-    QStringList filters;
-    bool m_allTypes;
-
- signals:
+signals:
     void filterChanged();
 
 private slots:
     void slotFilterChanged();
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
+    QStringList m_filters;
+    bool m_allTypes;
     class KFileFilterComboPrivate;
     KFileFilterComboPrivate *d;
 };

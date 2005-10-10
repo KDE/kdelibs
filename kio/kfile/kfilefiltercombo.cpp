@@ -64,25 +64,25 @@ KFileFilterCombo::~KFileFilterCombo()
 void KFileFilterCombo::setFilter(const QString& filter)
 {
     clear();
-    filters.clear();
+    m_filters.clear();
     d->hasAllSupportedFiles = false;
 
     if (!filter.isEmpty()) {
 	QString tmp = filter;
 	int index = tmp.indexOf('\n');
 	while (index > 0) {
-	    filters.append(tmp.left(index));
+	    m_filters.append(tmp.left(index));
 	    tmp = tmp.mid(index + 1);
 	    index = tmp.indexOf('\n');
 	}
-	filters.append(tmp);
+	m_filters.append(tmp);
     } 
     else
-	filters.append( d->defaultFilter );
+	m_filters.append( d->defaultFilter );
 
     QStringList::ConstIterator it;
-	QStringList::ConstIterator end(filters.end());
-    for (it = filters.begin(); it != end; ++it) {
+    QStringList::ConstIterator end(m_filters.end());
+    for (it = m_filters.begin(); it != end; ++it) {
 	int tab = (*it).indexOf('|');
 	addItem((tab < 0) ? *it :
 		   (*it).mid(tab + 1));
@@ -96,7 +96,7 @@ QString KFileFilterCombo::currentFilter() const
 {
     QString f = currentText();
     if (f == itemText(currentIndex())) { // user didn't edit the text
-	f = filters.at(currentIndex());
+	f = m_filters.at(currentIndex());
         if ( d->isMimeFilter || (currentIndex() == 0 && d->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }
@@ -119,7 +119,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
                                       const QString& defaultType )
 {
     clear();
-    filters.clear();
+    m_filters.clear();
     QString delim = QLatin1String(", ");
     d->hasAllSupportedFiles = false;
 
@@ -136,7 +136,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
 
 	kdDebug(kfile_area) << *it << endl;
         KMimeType::Ptr type = KMimeType::mimeType( *it );
-        filters.append( type->name() );
+        m_filters.append( type->name() );
         if ( m_allTypes )
         {
             allTypes += type->name();
@@ -156,7 +156,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
             d->hasAllSupportedFiles = true;
         }
 
-        filters.prepend( allTypes );
+        m_filters.prepend( allTypes );
     }
 
     d->lastFilter = currentText();
