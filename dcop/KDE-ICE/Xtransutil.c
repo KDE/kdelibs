@@ -418,8 +418,9 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 
 #endif /* ICE_t */
 
-
 #if defined(_WIN32) && (defined(TCPCONN) || defined(DNETCONN))
+# include <kde_file_win.h>
+
 int
 TRANS(WSAStartup) (void)
 {
@@ -461,7 +462,11 @@ trans_mkdir(char *path, int mode)
 {
     struct stat buf;
 
+#if defined(_WIN32) || defined(_WIN64)
+    if (kdewin32_mkdir(path, mode) == 0) {
+#else
     if (mkdir(path, mode) == 0) {
+#endif
 	chmod(path, mode);
 	return 0;
     }
