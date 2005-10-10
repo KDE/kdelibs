@@ -273,8 +273,10 @@ QString KConfigBase::readEntry( const char *pKey,
           FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
           if (fs)
           {
+             {
              QTextStream ts(fs, QIODevice::ReadOnly);
              result = ts.readAll().trimmed();
+             }
              pclose(fs);
           }
           aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
