@@ -169,7 +169,7 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
 
    KDoubleValidator extends QDoubleValidator to be
    locale-aware. That means that - subject to not being disabled -
-   KLocale::decimalPoint(), KLocale::thousandsSeparator()
+   KLocale::decimalSymbol(), KLocale::thousandsSeparator()
    and KLocale::positiveSign() and KLocale::negativeSign()
    are respected.
 

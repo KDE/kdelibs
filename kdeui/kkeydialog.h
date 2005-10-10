@@ -262,7 +262,7 @@ typedef KKeyChooser KKeyChooser;
  * associations for KActionCollection, KAccel, and KGlobalAccel. It uses the KKeyChooser widget
  * and offers buttons to set all keys to defaults and invoke on-line help.
  *
- * Three static methods are supplied which provide the most convienient interface
+ * Several static methods are supplied which provide the most convenient interface
  * to the dialog. The most common and most encouraged use is with KActionCollection.
  *
  * \code

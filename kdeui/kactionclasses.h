@@ -1035,7 +1035,7 @@ public:
 
     /**
      * Returns true if this action creates a sticky popup menu.
-     * See setStickyMenu.
+     * See setStickyMenu().
      */
     bool stickyMenu() const;
     /**
@@ -1148,7 +1148,7 @@ public:
     void setDelayed(bool delayed);
     /**
      * Returns true if this action creates a sticky popup menu.
-     * See setStickyMenu.
+     * See setStickyMenu().
      */
     bool stickyMenu() const;
     /**
@@ -1341,7 +1341,7 @@ private:
  * It's useful for text handling applications as
  * when plugged into a toolbar it provides a menu
  * with the clipboard history if klipper is running.
- * If clipper is not running, the menu has only one
+ * If klipper is not running, the menu has only one
  * item: the current clipboard content.
  *
  * @since 3.2
