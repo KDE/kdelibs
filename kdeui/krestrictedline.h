@@ -36,6 +36,9 @@
  * or set afterwards via setValidChars().
  * The default key bindings of QLineEdit are still in effect.
  *
+ * This is almost like setting a QRegExpValidator on a KLineEdit;
+ * the difference is that with KRestrictedLine it can all be done in Qt designer.
+ *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  */
 class KDEUI_EXPORT KRestrictedLine : public KLineEdit
@@ -50,9 +53,8 @@ public:
    *  The first two parameters are simply passed on to QLineEdit.
    *  @param parent   pointer to the parent widget
    *  @param name     pointer to the name of this widget
-   *  @param valid    pointer to set of valid characters
    */
-  KRestrictedLine( const QString& valid, QWidget* parent );
+  KRestrictedLine( QWidget* parent );
 
   /**
    * Destructs the restricted line editor.
