@@ -35,7 +35,7 @@ kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp
 kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
-kuser.cpp kconfigskeleton.cpp kconfigdialogmanager.cpp klockfile.cpp
+kuser.cpp kconfigskeleton.cpp klockfile.cpp
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
 network/kresolver.cpp
 network/kresolvermanager.cpp
@@ -59,7 +59,7 @@ ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 
 inst_headers="""
 kconfig.h kconfigskeleton.h
-kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h
+kconfigdata.h ksimpleconfig.h
 kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h
 kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h
 kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h

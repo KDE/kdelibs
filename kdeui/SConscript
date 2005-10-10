@@ -44,7 +44,7 @@ ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp
 kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
-ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp
+ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
 """
 
 for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kdatetable.h kwhatsthismanager_p.h kstdaction_p.h".split():
@@ -58,5 +58,7 @@ obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.libs     = '../kdecore/libkdecore.la ../kdefx/libkdefx.la'
 obj.iskdelib = 1
 obj.execute()
+
+## TODO install the headers!
 
 
