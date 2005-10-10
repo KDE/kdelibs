@@ -486,17 +486,21 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		{
 			value = *it;
 			DrBase	*ch;
-			if ((ch = ((DrListOption*)driver()->findOption("PageSize"))->findChoice(value)))
+			if ((ch = (driver()->findOption("PageSize"))) &&
+                            (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
 			{
 				if (m_pagesize->isEnabled())
 					setComboItem(m_pagesize, ch->get("text"));
 			}
-			else if ((ch = ((DrListOption*)driver()->findOption("MediaType"))->findChoice(value)))
+			else if ((ch = (driver()->findOption("MediaType"))) &&
+                                 (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
+
 			{
 				if (m_papertype->isEnabled())
 					setComboItem(m_papertype, ch->get("text"));
 			}
-			else if ((ch = ((DrListOption*)driver()->findOption("InputSlot"))->findChoice(value)))
+			else if ((ch = (driver()->findOption("InputSlot"))) &&
+                                 (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
 			{
 				if (m_inputslot)
 					setComboItem(m_inputslot, ch->get("text"));
