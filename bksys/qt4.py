@@ -193,7 +193,7 @@ def generate(env):
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	## MOC processing
-	moc_comp   = '$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE'
+	moc_comp   = '$QT_MOC $QT_MOCINCFLAGS -o $TARGET $SOURCE'
 	moc_string = "%screating%s $TARGET" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
 	if not env['_USECOLORS_']: moc_string=""
 	moc_action = env.Action(moc_comp, moc_string)
@@ -202,6 +202,8 @@ def generate(env):
 	env['BUILDERS']['Moccpp'] = Builder(action=moc_action,suffix='_moc.cpp',src_suffix='.h')
 	# for Moc2 you have to give the dependency explicitely, eg: env.Moc2(['file.cpp'])
 	env['BUILDERS']['Moc2']   = Builder(action=moc_action,suffix='.moc',src_suffix='.cpp')
+	# we need an extra option because moc only likes '-I ...' and not '/I ...' 
+	env['QT_MOCINCFLAGS']     = '$( ${_concat("-I", CPPPATH, "", __env__, RDirs, TARGET, SOURCE)} $)'
 
 	## TRANSLATIONS
 	#env['BUILDERS']['Transfiles']=Builder(action='$MSGFMT $SOURCE -o $TARGET',suffix='.gmo',src_suffix='.po')
