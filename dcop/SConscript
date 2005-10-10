@@ -7,7 +7,7 @@ Import('env')
 
 env.subdirs('KDE-ICE dcopidl2cpp dcopidlng client tests')
 
-# libDCOP.so - library for ?
+# libDCOP - library for DCOP support
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'DCOP'
@@ -20,7 +20,7 @@ if env['WINDOWS'] and env['CC'] == 'gcc':
 	obj.libs     += ' kdewin32 wsock32'
 obj.execute()
 
-# dcopserver - library for ?
+# dcopserver program
 if env['WINDOWS']: 
 	obj = env.qt4obj('program',env)
 else: 
@@ -46,7 +46,7 @@ def build_dcopfile(target = None, source = None, env = None):
 act=env.Action(build_dcopfile, varlist=['PREFIX'])
 env.Command('dcop-path.h', '', act) # no source needed
 
-# dcop_shutdown - program for ?
+# dcopserver_shutdown - program for forcing dcopserver to shutdown
 if not env['WINDOWS']:
 	obj=env.genobj('program', env)
 	obj.target='dcopserver_shutdown'

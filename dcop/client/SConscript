@@ -8,7 +8,9 @@ for prog in progs1:
 	obj.target    = prog
 	obj.source    = prog+'.cpp'
 	obj.libpaths  = ['..','../../win']
-	obj.libs      = ['DCOP','kdewin32']
+	obj.libs      = ['DCOP']
+	if env['WINDOWS']:
+		obj.libs.append('kdewin32')
 #	obj.libs      = ['../libDCOP.la','../../win/libkdewin32.la']
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	obj.linkflags = ' -Wl,--no-undefined -Wl,--allow-shlib-undefined'
