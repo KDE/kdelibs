@@ -15,6 +15,7 @@ def detect(lenv, dest):
 #define LTDL_OBJDIR ""
 #define HAVE_STDIO_H 1
 #define HAVE_STDLIB_H 1
+#define HAVE_SYS_TYPES_H 1
 """
 
 	dest.write(content)
