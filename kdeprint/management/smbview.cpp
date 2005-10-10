@@ -31,6 +31,11 @@
 #include <kmessagebox.h>
 #include <kcursor.h>
 
+#include <qfile.h>
+#include <qtextstream.h>
+#include <cstdlib>
+
+
 //*********************************************************************************************
 
 SmbView::SmbView(QWidget *parent)
@@ -126,7 +131,42 @@ void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 
 void SmbView::init()
 {
-	QString	cmd("nmblookup -M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
+	// Open Samba configuration file and check if a WINS server is defined
+	m_wins_server = QString::null;
+	QString wins_keyword("wins server");	
+	QFile smb_conf ("/etc/samba/smb.conf");
+	if (smb_conf.exists () && smb_conf.open (IO_ReadOnly))
+	{
+		QTextStream smb_stream (&smb_conf);
+		while (!smb_stream.atEnd ())
+		{
+			QString smb_line = smb_stream.readLine ();
+			if (smb_line.contains (wins_keyword, FALSE) > 0)
+			{
+				QString key = smb_line.section ('=', 0, 0);
+				key = key.stripWhiteSpace();
+				if (key.contains(wins_keyword, FALSE) * wins_keyword.contains(key, FALSE) != 1)
+				{
+					continue;
+				}
+				m_wins_server = smb_line.section ('=', 1, 1);
+				// take only the first declared WINS server
+				m_wins_server = m_wins_server.section(',', 0, 0);
+				m_wins_server = m_wins_server.stripWhiteSpace ();
+				m_wins_server = m_wins_server.section(' ', 0, 0);
+				// strip any server tag (see man smb.conf(5))
+				if (m_wins_server.section(':', 1, 1) != NULL)
+				{
+					m_wins_server = m_wins_server.section(':', 1, 1);
+				}
+				break;
+			}
+		}
+		smb_conf.close ();
+	}
+	m_wins_server = m_wins_server.isEmpty ()? " " : " -U " + m_wins_server + " ";
+	QString cmd ("nmblookup" + m_wins_server +
+					"-M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
 	*m_proc << cmd;
 	startProcess(GroupListing);
 }
@@ -138,7 +178,7 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
-			*m_proc << "nmblookup -M ";
+			*m_proc << "nmblookup"+m_wins_server+"-M ";
                         *m_proc << KProcess::quote(item->text(0));
                         *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
                         *m_proc << KProcess::quote(item->text(0));
