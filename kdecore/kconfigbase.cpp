@@ -270,8 +270,10 @@ QString KConfigBase::readEntry( const char *pKey,
           FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
           if (fs)
           {
+             {
              QTextStream ts(fs, IO_ReadOnly);
              result = ts.read().stripWhiteSpace();
+             }
              pclose(fs);
           }
           aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
