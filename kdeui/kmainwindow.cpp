@@ -28,6 +28,7 @@
 #include "ktoolbarhandler.h"
 #include "kwhatsthismanager_p.h"
 #include "kxmlguifactory.h"
+#include "kcmdlineargs.h"
 
 #include <QCloseEvent>
 #include <QDesktopWidget>
@@ -248,7 +249,13 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     d->shuttingDown = false;
     if ((d->care_about_geometry = being_first)) {
         being_first = false;
-        if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
+        
+        QString geometry;
+        KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+        if (args->isSet("geometry"))
+            geometry = args->getOption("geometry");
+
+        if ( geometry.isNull() ) // if there is no geometry, it doesn't mater
             d->care_about_geometry = false;
         else
             parseGeometry(false);
@@ -281,13 +288,18 @@ void KMainWindow::setupToolbarMenuActions()
 
 void KMainWindow::parseGeometry(bool parsewidth)
 {
-    assert ( !kapp->geometryArgument().isNull() );
+    QString cmdlineGeometry;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    if (args->isSet("geometry"))
+        cmdlineGeometry = args->getOption("geometry");
+
+    assert ( !cmdlineGeometry.isNull() );
     assert ( d->care_about_geometry );
 
 #if defined Q_WS_X11
     int x, y;
     int w, h;
-    int m = XParseGeometry( kapp->geometryArgument().latin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
+    int m = XParseGeometry( cmdlineGeometry.latin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
     if (parsewidth) {
         QSize minSize = minimumSize();
         QSize maxSize = maximumSize();
