@@ -51,16 +51,12 @@ def detect(env):
 
 	# User-specified include paths
 	if env['ARGS'].has_key('extraincludes'):
-		env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes')
-	if env.has_key('EXTRAINCLUDES'):
-		env['EXTRAINCLUDES'] = env['EXTRAINCLUDES'].split(':')
+		env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes','').split(':')
 		env.pprint('CYAN','** extra include paths for the project set to:',env['EXTRAINCLUDES'])
 
 	# User-specified library search paths
 	if env['ARGS'].has_key('extralibs'):
-		env['EXTRALIBS'] = env['ARGS'].get('extralibs')
-	if env.has_key('EXTRALIBS'):
-		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
+		env['EXTRALIBS'] = env['ARGS'].get('extralibs','').split(':')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 
 	# no colors if user does not want them
