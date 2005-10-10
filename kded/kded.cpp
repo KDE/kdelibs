@@ -113,8 +113,6 @@ Kded::Kded(bool checkUpdates)
 
   QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
-  QTimer::singleShot(500, this, SLOT(initModules()));
-
   m_pDirWatch = 0;
 
   m_windowIdList.setAutoDelete(true);
@@ -173,7 +171,7 @@ void Kded::initModules()
             dontLoad = true;
          if (dontLoad)
             noDemandLoad(service->desktopEntryName());
-            
+
          if (dontLoad && !autoload)
             unloadModule(service->desktopEntryName().latin1());
      }
@@ -359,7 +357,7 @@ void Kded::updateResourceList()
   delete KSycoca::self();
 
   if (!b_checkUpdates) return;
-  
+
   if (delayedCheck) return;
 
   QStringList dirs = KSycoca::self()->allResourceDirs();
@@ -448,7 +446,7 @@ void Kded::recreateDone()
       m_recreateRequests.remove(m_recreateRequests.begin());
    }
    m_recreateBusy = false;
-   
+
    // Did a new request come in while building?
    if (!m_recreateRequests.isEmpty())
    {
@@ -680,7 +678,7 @@ class KDEDQtDCOPObject : public DCOPObject
 {
 public:
   KDEDQtDCOPObject() : DCOPObject("qt/kded") { }
-  
+
   virtual bool process(const QCString &fun, const QByteArray &data,
                        QCString& replyType, QByteArray &replyData)
     {
@@ -691,7 +689,7 @@ public:
         return true;
       }
       return DCOPObject::process(fun, data, replyType, replyData);
-    }                       
+    }
 
   QCStringList functions()
     {
@@ -715,8 +713,10 @@ public:
     {
        if (startup)
           startup = false;
-       else
+       else {
           runBuildSycoca();
+          QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
+       }
        return 0;
     }
 
