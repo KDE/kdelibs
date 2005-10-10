@@ -17,5 +17,5 @@
    Boston, MA 02110-1301, USA.
 */
 
-/* regular header from msvc includes */
-# include <../include/sys/fcntl.h>
+/* the same as fcntl.h */
+#include "msvc/fcntl.h"

@@ -26,7 +26,9 @@
 extern "C" {
 #endif
 
-#include <sys/fcntl.h>
+/* regular header from msvc includes */
+# include <../include/fcntl.h>
+
 #define O_NDELAY	_FNDELAY
 
 #define	_FNONBLOCK	0x4000	/* non blocking I/O (POSIX style) */ 
