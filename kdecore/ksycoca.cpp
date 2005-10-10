@@ -22,17 +22,16 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
+#include "kapplication.h"
+#include "dcopclient.h"
+#include "kglobal.h"
+#include "kdebug.h"
+#include "kprocess.h"
+#include "kstandarddirs.h"
 
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qbuffer.h>
-
-#include <kapplication.h>
-#include <dcopclient.h>
-#include <kglobal.h>
-#include <kdebug.h>
-#include <kprocess.h>
-#include <kstandarddirs.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
@@ -44,8 +43,6 @@
 #ifndef MAP_FAILED
 #define MAP_FAILED ((void *) -1)
 #endif
-
-template class QList<KSycocaFactory*>;
 
 // The following limitations are in place:
 // Maximum length of a single string: 8192 bytes

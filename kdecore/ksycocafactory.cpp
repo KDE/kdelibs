@@ -16,18 +16,16 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#undef QT3_SUPPORT
 #include "ksycocafactory.h"
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
 #include "ksycocadict.h"
-#include <qstringlist.h>
-#include <q3dict.h>
-#include <qhash.h>
-#include <kdebug.h>
+#include "kdebug.h"
 
-template class Q3Dict<KSycocaEntry>;
-template class Q3Dict<KSharedPtr<KSycocaEntry> >;
+#include <qstringlist.h>
+#include <qhash.h>
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)
@@ -47,10 +45,10 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
           (*m_str) >> i;
           m_endEntryOffset = i;
 
-          int saveOffset = m_str->device()->at();
+          int saveOffset = m_str->device()->pos();
           // Init index tables
           m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);   
-          saveOffset = m_str->device()->at(saveOffset);
+          saveOffset = m_str->device()->seek(saveOffset);
       }
    }
    else
@@ -78,7 +76,7 @@ void
 KSycocaFactory::saveHeader(QDataStream &str)
 {
    // Write header 
-   str.device()->at(mOffset);
+   str.device()->seek(mOffset);
    str << (qint32) m_sycocaDictOffset;
    str << (qint32) m_beginEntryOffset;
    str << (qint32) m_endEntryOffset;
@@ -91,13 +89,13 @@ KSycocaFactory::save(QDataStream &str)
                              // building database
    if (!m_sycocaDict) return; // Error!
 
-   mOffset = str.device()->at(); // store position in member variable
+   mOffset = str.device()->pos(); // store position in member variable
    m_sycocaDictOffset = 0;
 
    // Write header (pass #1)
    saveHeader(str);
 
-   m_beginEntryOffset = str.device()->at();
+   m_beginEntryOffset = str.device()->pos();
 
    // Write all entries.
    int entryCount = 0;
@@ -109,7 +107,7 @@ KSycocaFactory::save(QDataStream &str)
       entryCount++;
    }
 
-   m_endEntryOffset = str.device()->at();
+   m_endEntryOffset = str.device()->pos();
 
    // Write indices...
    // Linear index
@@ -121,16 +119,16 @@ KSycocaFactory::save(QDataStream &str)
    }
 
    // Dictionary index
-   m_sycocaDictOffset = str.device()->at();      
+   m_sycocaDictOffset = str.device()->pos();      
    m_sycocaDict->save(str);
 
-   int endOfFactoryData = str.device()->at();
+   int endOfFactoryData = str.device()->pos();
 
    // Update header (pass #2)
    saveHeader(str);
 
    // Seek to end.
-   str.device()->at(endOfFactoryData);
+   str.device()->seek(endOfFactoryData);
 }
 
 void 
@@ -166,7 +164,7 @@ KSycocaEntry::List KSycocaFactory::allEntries()
 
    // Assume we're NOT building a database
 
-   m_str->device()->at(m_endEntryOffset);
+   m_str->device()->seek(m_endEntryOffset);
    qint32 entryCount;
    (*m_str) >> entryCount;
    

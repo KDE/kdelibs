@@ -158,7 +158,7 @@ protected:
    bool m_recreateBusy;
    
    Q3AsciiDict<KDEDModule> m_modules;
-   Q3AsciiDict<KLibrary> m_libs;
+   QHash<const char*, KLibrary*> m_libs;
    Q3AsciiDict<QObject> m_dontLoad;
    Q3AsciiDict<QList<long> > m_windowIdList;
    Q3IntDict<long> m_globalWindowIdList;

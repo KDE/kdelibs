@@ -16,14 +16,15 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __ksycocadict_h__
-#define __ksycocadict_h__
+#ifndef KSYCOCADICT_H
+#define KSYCOCADICT_H
 
-#include <qstring.h>
-#include <q3valuelist.h>
-#include <qdatastream.h>
-#include "kdelibs_export.h"
+#include <qlist.h>
 
+#include <kdelibs_export.h>
+
+class QString;
+class QDataStream;
 class KSycocaEntry;
 class KSycocaDictStringList;
 

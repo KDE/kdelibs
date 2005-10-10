@@ -21,6 +21,7 @@
 #define __kservices_h__
 
 #include <qstringlist.h>
+#include <q3valuelist.h>
 #include <qmap.h>
 #include <qvariant.h>
 #include <kicontheme.h>

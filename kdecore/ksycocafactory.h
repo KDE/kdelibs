@@ -26,8 +26,8 @@ class QStringList;
 class QString;
 class KSycocaDict;
 class KSycocaResourceList;
-template <class T> class QList;
-template <class T, class U> class QHash;
+template <typename T> class QList;
+template <typename KT, typename VT> class QHash;
 
 typedef QHash<QString, KSycocaEntry::Ptr> KSycocaEntryDict;
 

@@ -19,11 +19,12 @@
 #ifndef KSYCOCA_H
 #define KSYCOCA_H
 
-#include <dcopobject.h>
 #include <qobject.h>
 #include <qstringlist.h>
-#include "ksycocatype.h"
+
 #include <kdelibs_export.h>
+#include <dcopobject.h>
+#include <ksycocatype.h>
 
 class QDataStream;
 class KSycocaFactory;

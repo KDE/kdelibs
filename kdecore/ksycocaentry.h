@@ -16,16 +16,17 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __ksycocaentry_h__
-#define __ksycocaentry_h__
-
-#include "ksycocatype.h"
+#ifndef KSYCOCAENTRY_H
+#define KSYCOCAENTRY_H
 
 #include <qdatastream.h>
 #include <qlist.h>
-#include <qstring.h>
+
+#include <kdelibs_export.h>
+#include <ksycocatype.h>
 #include <ksharedptr.h>
 
+class QString;
 class QStringList;
 
 /**
@@ -63,8 +64,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
     * @internal
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &_str, int offset ) : 
-              mOffset( offset ), m_bDeleted(false) 
+   KSycocaEntry( QDataStream &_str, int iOffset ) : 
+              mOffset( iOffset ), m_bDeleted(false) 
    { 
      read(_str, mPath);
    }
@@ -105,7 +106,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    virtual void save(QDataStream &s)
      {
        mOffset = s.device()->pos(); // store position in member variable
-       s << (qint32) sycocaType() << mPath;
+       s << qint32(sycocaType()) << mPath;
      }
 
    /**

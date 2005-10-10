@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __ksycocatype_h__
-#define __ksycocatype_h__
+#ifndef KSYCOCATYPE_H
+#define KSYCOCATYPE_H
 
 /**
  * \relates KSycocaEntry
@@ -58,7 +58,5 @@ enum KSycocaFactoryId { KST_KServiceFactory = 1,
 public: \
  virtual KSycocaFactoryId factoryId() const { return factory_id; } \
 private:
-
-
 
 #endif
