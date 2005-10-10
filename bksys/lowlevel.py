@@ -42,7 +42,7 @@ int main() {
 #ifdef __cplusplus
 extern "C" {
 #endif
-%(prototype)s
+%(prototype)s;
 #ifdef __cplusplus
 }
 #endif
