@@ -1240,6 +1240,8 @@ void KFileDialog::slotLocationChanged( const QString& text )
 {
     if ( text.isEmpty() && ops->view() )
         ops->view()->clearSelection();
+
+    updateFilter();
 }
 
 QString KFileDialog::getOpenFileName(const QString& startDir,
@@ -2020,8 +2022,29 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
             fileName.truncate (dot);
 
         // add extension
-        locationEdit->setCurrentText (urlStr.left (fileNameOffset) + fileName + d->extension);
-        locationEdit->lineEdit()->setEdited (true);
+        const QString newText = urlStr.left (fileNameOffset) + fileName + d->extension;
+        if ( newText != locationEdit->currentText() )
+        {
+            locationEdit->setCurrentText (urlStr.left (fileNameOffset) + fileName + d->extension);
+            locationEdit->lineEdit()->setEdited (true);
+        }
+    }
+}
+
+// Updates the filter if the extension of the filename specified in locationEdit is changed
+// (this prevents you from accidently saving "file.kwd" as RTF, for example)
+void KFileDialog::updateFilter ()
+{
+    if ((operationMode() == Saving) && (mode() & KFile::File) ) {
+        const QString urlStr = locationEdit->currentText ();
+        if (urlStr.isEmpty ())
+            return;
+
+        KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
+        if (mime && mime->name() != KMimeType::defaultMimeType()) {
+            if (filterWidget->filters().findIndex(mime->name()) != -1 )
+                filterWidget->setCurrentFilter(mime->name());
+        }
     }
 }
 
