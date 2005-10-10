@@ -223,7 +223,7 @@ QByteArray DCOPClient::iceauthPath()
 	int		ret;
 	ret = SearchPathA(NULL,"iceauth.exe",NULL,sizeof(szPath)/sizeof(szPath[0]),szPath,&pszFilePart);
 	if(ret != 0)
-		return QCString(szPath);
+		return QByteArray(szPath);
 #else
     QByteArray path = ::getenv("PATH");
     if (path.isEmpty())
