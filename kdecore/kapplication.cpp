@@ -714,7 +714,8 @@ void KApplication::init()
 #endif
     
 #ifdef QT3_SUPPORT
-    connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
+    if (metaObject()->indexOfSignal(SIGNAL(shutDown())) != -1)
+        connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 #endif
 
     {
