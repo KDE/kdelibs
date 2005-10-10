@@ -9,7 +9,7 @@ def exists(env):
 	return true
 
 def generate(env):
-	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('LIBIDN_ISCONFIGURED')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_LIBIDN')):
 		from SCons.Tool import Tool
 		import os
 		pkgs = Tool('pkgconfig', ['./bksys'])
