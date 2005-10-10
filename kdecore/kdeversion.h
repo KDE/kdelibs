@@ -22,10 +22,10 @@
 
 #include "kdelibs_export.h"
 
-#define KDE_VERSION_STRING "3.4.91 (beta1, >= 20050910)"
+#define KDE_VERSION_STRING "3.4.92 (beta2, >= 20051010)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 4
-#define KDE_VERSION_RELEASE 91
+#define KDE_VERSION_RELEASE 92
 #define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
 #define KDE_VERSION \
