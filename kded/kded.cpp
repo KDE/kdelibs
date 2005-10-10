@@ -705,12 +705,12 @@ public:
 
   int newInstance()
     {
-       if (startup)
+       if (startup) {
           startup = false;
-       else {
+	  QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
+       } else 
           runBuildSycoca();
-          QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
-       }
+
        return 0;
     }
 
