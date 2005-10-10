@@ -58,9 +58,9 @@ dest.close()
 
 import os
 try:
-   os.mkdir('build'+os.sep+'kjs')
+	os.mkdir('build'+os.sep+'kjs')
 except OSError:
-   pass
+	pass
 
 dest = open(env.join('build','kjs','global.h'), 'w')
 dest.write('#include "global.h.in"\n')
@@ -83,6 +83,9 @@ kio
 qttestlib
 kded
 """
+
+if env['WINDOWS']:
+	subdirs = "win\n" + subdirs
 
 # TODO this will not stay like this ..
 dirs=[] # the dirs to process are appended to this var in the loop below
