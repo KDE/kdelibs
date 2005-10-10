@@ -1772,16 +1772,7 @@ int main(int argc, char **argv, char **envp)
 #endif
       handle_requests(pid); // Wait for klauncher to be ready
    }
-
-   if (launch_kded)
-   {
-      pid = launch( 1, "kded", 0 );
-#ifndef NDEBUG
-      fprintf(stderr, "kdeinit: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
-      handle_requests(pid);
-   }
-
+   
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
    X11fd = initXconnection();
@@ -1803,6 +1794,15 @@ int main(int argc, char **argv, char **envp)
 	 XOpenIM (X11display, 0, 0, 0);
       }
 #endif
+   }
+
+   if (launch_kded)
+   {
+      pid = launch( 1, "kded", 0 );
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
+      handle_requests(pid);
    }
 
    for(i = 1; i < argc; i++)
