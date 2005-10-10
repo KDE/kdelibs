@@ -122,6 +122,7 @@ if test "x$kde_enable_inotify" = "xyes"; then
 
   AC_TRY_COMPILE(
   [
+#include <asm/unistd.h>
 #include <linux/inotify.h>
   ],
   [
