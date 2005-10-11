@@ -1787,7 +1787,7 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 #endif
     putenv(strdup("SESSION_MANAGER="));
 
-    QApplication a( argc, argv, false );
+    QCoreApplication a( argc, argv );
 
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server

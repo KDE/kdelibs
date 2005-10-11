@@ -699,6 +699,8 @@ void DCOPClient::bindToApp()
                 SLOT(processSocketData(int)));
 
         moveToThread( qApp->thread() );
+    } else {
+        qWarning( "No qApp! This is not allowed; timers won't work..." );
     }
 }
 

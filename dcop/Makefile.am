@@ -32,7 +32,7 @@ check_PROGRAMS = testdcop testdcopc
  # dcop_deadlock_test
 
 lib_LTLIBRARIES  = libDCOP.la 
-libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE) $(LIB_QT) $(LIB_QT3SUPPORT)
+libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
 libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
