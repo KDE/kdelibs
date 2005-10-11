@@ -9,8 +9,8 @@
  * exact licensing terms.
  */
 
-#ifndef __KIconLoader_h_Included__
-#define __KIconLoader_h_Included__
+#ifndef KICONLOADER_H
+#define KICONLOADER_H
 
 #include <qstring.h>
 
@@ -482,4 +482,4 @@ KDECORE_EXPORT QIcon UserIconSet(const QString& name,
  */
 KDECORE_EXPORT int IconSize(KIcon::Group group, KInstance *instance=KGlobal::instance());
 
-#endif // __KIconLoader_h_Included__
+#endif // KICONLOADER_H

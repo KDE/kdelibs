@@ -1,5 +1,5 @@
-#ifndef __KACCELPRIVATE_H
-#define __KACCELPRIVATE_H
+#ifndef KACCELPRIVATE_H
+#define KACCELPRIVATE_H
 
 #include "kkeyserver_x11.h"
 #include <qtimer.h>
@@ -48,4 +48,4 @@ class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 	bool eventFilter( QObject* pWatched, QEvent* pEvent ); // virtual method from QObject
 };
 
-#endif // !__KACCELPRIVATE_H
+#endif // !KACCELPRIVATE_H

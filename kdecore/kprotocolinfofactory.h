@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kprotocolinfofactory_h__
-#define __kprotocolinfofactory_h__
+#ifndef kprotocolinfofactory_h
+#define kprotocolinfofactory_h
 
 #include "../kio/kio/kprotocolinfo.h"
 

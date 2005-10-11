@@ -18,8 +18,8 @@
 */
 
 
-#ifndef __KACCELMANAGER_PRIVATE_H__
-#define __KACCELMANAGER_PRIVATE_H__
+#ifndef KACCELMANAGER_PRIVATE_H
+#define KACCELMANAGER_PRIVATE_H
 
 
 #include <qstring.h>

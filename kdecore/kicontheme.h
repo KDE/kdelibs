@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef __KIconTheme_h_Included__
-#define __KIconTheme_h_Included__
+#ifndef KICONTHEME_H
+#define KICONTHEME_H
 
 #include <qstring.h>
 #include <qstringlist.h>

@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KDESKTOPFILE_H
-#define _KDESKTOPFILE_H
+#ifndef KDESKTOPFILE_H
+#define KDESKTOPFILE_H
 
 #include "kconfig.h"
 #include "kdelibs_export.h"

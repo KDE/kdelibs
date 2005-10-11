@@ -22,8 +22,8 @@
 	still add it :)
  Holger: Now we add a Template to create the TypeList
 */
-#ifndef __ktypelist_h__
-#define __ktypelist_h__
+#ifndef ktypelist_h
+#define ktypelist_h
 
 // Convenience macros for transforming flat type enumerations into the
 // recursive typelist structure

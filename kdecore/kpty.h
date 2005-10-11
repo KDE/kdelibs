@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kpty_h__
-#define __kpty_h__
+#ifndef kpty_h
+#define kpty_h
 
 #include <qglobal.h>
 #include <kdelibs_export.h>

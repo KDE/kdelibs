@@ -10,8 +10,8 @@
  * exact licensing terms.
  */
 
-#ifndef __KIconEffect_h_Included__
-#define __KIconEffect_h_Included__
+#ifndef KICONEFFECT_H
+#define KICONEFFECT_H
 
 #include <qimage.h>
 #include <qpixmap.h>

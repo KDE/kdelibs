@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KINSTANCE_H
-#define _KINSTANCE_H
+#ifndef KINSTANCE_H
+#define KINSTANCE_H
 
 #include "kdelibs_export.h"
 

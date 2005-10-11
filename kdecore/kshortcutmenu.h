@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KSHORTCUTMENU_H
-#define __KSHORTCUTMENU_H
+#ifndef KSHORTCUTMENU_H
+#define KSHORTCUTMENU_H
 
 #include <qmap.h>
 #include <q3popupmenu.h>
@@ -55,4 +55,4 @@ class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
 	IndexToKKeySequence m_seqs;
 };
 
-#endif // __KSHORTCUTMENU_H
+#endif // KSHORTCUTMENU_H

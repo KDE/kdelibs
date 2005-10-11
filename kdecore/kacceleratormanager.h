@@ -18,9 +18,8 @@
 */
 
 
-#ifndef __K_ACCELMANAGER_H__
-#define __K_ACCELMANAGER_H__
-
+#ifndef K_ACCELMANAGER_H
+#define K_ACCELMANAGER_H
 
 class QWidget;
 class QString;
