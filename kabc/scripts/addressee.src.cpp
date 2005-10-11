@@ -90,6 +90,9 @@ Addressee::Addressee( const Addressee &a )
 
 Addressee &Addressee::operator=( const Addressee &a )
 {
+  if ( this == &a )
+    return (*this);
+
   mData = a.mData;
   return (*this);
 }
@@ -1034,7 +1037,10 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
 
 QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
 {
-  if (!a.mData) return s;
+  if (!a.mData)
+    return s;
+
+  a.detach();
 
   s >> a.mData->uid;
 
