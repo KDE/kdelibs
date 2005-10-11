@@ -135,7 +135,7 @@ def detect(env):
   # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
-	env['LIB_QT']              = ['QtGui_debug']+env['LIB_Z']+env['LIB_PNG']
+	env['LIB_QT']              = ['QtGui'+lib_addon]+env['LIB_Z']+env['LIB_PNG']
 	env['RPATH_QT']            = [env['QTLIBPATH']]
 	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
 	env['CPPPATH_QT3SUPPORT']  = [ env.join(env['QTINCLUDEPATH'], 'Qt3Support') ]
