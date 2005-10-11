@@ -221,12 +221,12 @@ void Plugin::setInstance( KInstance *instance )
     KXMLGUIClient::setInstance( instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault )
+void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault, int minVersionRequired )
 {
     KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
     QList<PluginInfo> plugins = pluginInfos( instance );
     QList<PluginInfo>::ConstIterator pIt = plugins.begin();
-    QList<PluginInfo>::ConstIterator pEnd = plugins.end();
+    const QList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
     {
         QDomElement docElem = (*pIt).m_document.documentElement();
@@ -257,6 +257,9 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 desktop.setDesktopGroup();
                 pluginEnabled = desktop.readBoolEntry(
                     "X-KDE-PluginInfo-EnabledByDefault", enableNewPluginsByDefault );
+                const int version = desktop.readNumEntry( "X-KDE-PluginInfo-Version", 1 );
+                if ( version < minVersionRequired )
+                    pluginEnabled = false;
             }
             else
             {
@@ -265,7 +268,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
 
         // search through already present plugins
-        QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
+        const QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
 
         bool pluginFound = false;
         for ( QObjectList::ConstIterator it = pluginList.begin(); it != pluginList.end() ; ++it )

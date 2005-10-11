@@ -119,7 +119,15 @@ public:
      * If a disabled plugin is already loaded it will be removed from the GUI
      * factory and deleted.
      *
-     * This method is automatically called by KParts::Plugin and by KParts::MainWindow.
+     * If you change the binary interface offered by your part, you can avoid crashes
+     * from old plugins lying around by setting X-KDE-PluginInfo-Version=2 in the
+     * .desktop files of the plugins, and passing 2 to @p minVersionRequired, so that
+     * the old plugins are not loaded. Increase both numbers every time a
+     * binary incompatible change in the application's plugin interface is made.
+     *
+     *
+     * This method is automatically called by KParts::Part and by KParts::MainWindow.
+     * @see PartBase::setPluginLoadingMode, PartBase::setPluginMinimumVersion
      *
      * If you call this method in an already constructed GUI (like when the user
      * has changed which plugins are enabled) you need to add the new plugins to
@@ -138,7 +146,7 @@ public:
      * }
      * \endcode
      */
-    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true );
+    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true, int minVersionRequired = 0 );
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This

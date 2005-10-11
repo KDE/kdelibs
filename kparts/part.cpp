@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
              (C) 1999-2005 David Faure <faure@kde.org>
@@ -47,6 +48,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <kdebug.h>
+#include "part.h"
 
 template class Q3PtrList<KXMLGUIClient>;
 
@@ -61,11 +63,13 @@ public:
   PartBasePrivate()
   {
       m_pluginLoadingMode = PartBase::LoadPlugins;
+      m_pluginMinimumVersion = 0;
   }
   ~PartBasePrivate()
   {
   }
   PartBase::PluginLoadingMode m_pluginLoadingMode;
+  int m_pluginMinimumVersion;
 };
 
 class PartPrivate
@@ -124,12 +128,17 @@ void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
 void PartBase::loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance )
 {
   if( d->m_pluginLoadingMode != DoNotLoadPlugins )
-    Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins );
+    Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins, d->m_pluginMinimumVersion );
 }
 
 void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
 {
-    d->m_pluginLoadingMode = loadingMode;
+  d->m_pluginLoadingMode = loadingMode;
+}
+
+void KParts::PartBase::setPluginMinimumVersion( int version )
+{
+  d->m_pluginMinimumVersion = version;
 }
 
 Part::Part( QObject *parent )
@@ -695,5 +704,4 @@ bool ReadWritePart::waitSaveComplete()
 }
 
 #include "part.moc"
-
 // vim:sw=2:ts=8:et
