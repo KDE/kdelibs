@@ -28,6 +28,7 @@ kdeinit_LTLIBRARIES = kcmshell.la
 kcmshell_la_SOURCES = main.cpp main.skel
 kcmshell_la_LIBADD = ../kutils/libkutils.la
 kcmshell_la_LDFLAGS = $(all_libraries) -module -avoid-version
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 noinst_HEADERS = main.h
 

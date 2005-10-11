@@ -23,7 +23,7 @@
 
 #include <q3cstring.h>
 #include <qfile.h> 
-
+#include <QIcon>
 #include <dcopclient.h>
 #include <QX11EmbedWidget>
 #include <QVBoxLayout>
@@ -188,7 +188,7 @@ static void setIcon(QWidget *w, const QString &iconName)
 {
     QPixmap icon = DesktopIcon(iconName);
     QPixmap miniIcon = SmallIcon(iconName);
-    w->setIcon( icon ); //standard X11
+    w->setWindowIcon( QIcon(icon) ); //standard X11
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KWin::setIcons(w->winId(), icon, miniIcon );
 #endif
@@ -336,7 +336,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     else
     {
 
-        if (kapp->iconName() != kapp->name())
+        if (kapp->iconName() != kapp->objectName())
             setIcon(dlg, kapp->iconName());
         else if ( modules.count() == 1 )
             setIcon(dlg, KCModuleInfo( modules.first()).icon());
