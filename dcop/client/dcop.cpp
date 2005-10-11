@@ -40,7 +40,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstringlist.h>
 #include <qtextstream.h>
 #include <qvariant.h>
-#include <qapplication.h>
+#include <qcoreapplication.h>
 
 #include "../dcopclient.h"
 #include "../dcopref.h"
@@ -910,7 +910,7 @@ int main( int argc, char** argv )
     else if( !user.isEmpty() )
 	users[ user ] = userList()[ user ];
 
-    QApplication qapp( argc, argv, QApplication::Tty ); // needed for DCOPClient's use of QTimer...
+    QCoreApplication qapp( argc, argv ); // needed for DCOPClient's use of QTimer...
 
     int retval = runDCOP( args, users, session, sessionName, readStdin, updateUserTime );
 
