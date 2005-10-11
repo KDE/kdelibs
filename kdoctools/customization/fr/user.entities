@@ -154,6 +154,9 @@
 <!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurMickaelSibelle   '<othercredit role="translator"><firstname>Mickaël</firstname><surname>Sibelle</surname><affiliation><address><email></email>kimael@gmail.com</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurMickaelSibelle    '<othercredit role="reviewer"><firstname>Mickaël</firstname><surname>Sibelle</surname><affiliation><address><email>kimael@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -217,6 +220,7 @@
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
 <!ENTITY SebastienRenard     'Sébastien Renard <email>Sebastien.Renard@digitalfox.homeip.net</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
+<!ENTITY MickaelSibelle 'Mickaël Sibelle <email>kimael@gmail.com</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
