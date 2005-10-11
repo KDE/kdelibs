@@ -302,7 +302,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
             int h = (size.height()+1)>>1;
             for (y = 0; y < h; y++) {
                 unsigned int *sl1 = (unsigned int *)image.scanLine(y);
-                unsigned int *sl2 = (unsigned int *)image.scanLine(QMAX(size.height()-y-1, y));
+                unsigned int *sl2 = (unsigned int *)image.scanLine(qMax(size.height()-y-1, y));
 
                 int w = (size.width()+1)>>1;
                 int x2 = size.width()-1;
@@ -316,19 +316,19 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
                     }
                     if (eff == RectangleGradient) {
                         rgb = qRgb(rcb - rSign *
-                                   QMAX(xtable[0][x], ytable[0][y]) * 2,
+                                   qMax(xtable[0][x], ytable[0][y]) * 2,
                                    gcb - gSign *
-                                   QMAX(xtable[1][x], ytable[1][y]) * 2,
+                                   qMax(xtable[1][x], ytable[1][y]) * 2,
                                    bcb - bSign *
-                                   QMAX(xtable[2][x], ytable[2][y]) * 2);
+                                   qMax(xtable[2][x], ytable[2][y]) * 2);
                     }
                     if (eff == PipeCrossGradient) {
                         rgb = qRgb(rcb - rSign *
-                                   QMIN(xtable[0][x], ytable[0][y]) * 2,
+                                   qMin(xtable[0][x], ytable[0][y]) * 2,
                                    gcb - gSign *
-                                   QMIN(xtable[1][x], ytable[1][y]) * 2,
+                                   qMin(xtable[1][x], ytable[1][y]) * 2,
                                    bcb - bSign *
-                                   QMIN(xtable[2][x], ytable[2][y]) * 2);
+                                   qMin(xtable[2][x], ytable[2][y]) * 2);
                     }
                     if (eff == EllipticGradient) {
                         rgb = qRgb(rcb - rSign *
@@ -565,20 +565,20 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                   else if (eff == RectangleGradient)
                   {
                       scanline[x] = qRgb(rcb - rSign *
-                                         QMAX(xtable[0][x], ytable[0][y]) * 2,
+                                         qMax(xtable[0][x], ytable[0][y]) * 2,
                                          gcb - gSign *
-                                         QMAX(xtable[1][x], ytable[1][y]) * 2,
+                                         qMax(xtable[1][x], ytable[1][y]) * 2,
                                          bcb - bSign *
-                                         QMAX(xtable[2][x], ytable[2][y]) * 2);
+                                         qMax(xtable[2][x], ytable[2][y]) * 2);
                   }
                   else if (eff == PipeCrossGradient)
                   {
                       scanline[x] = qRgb(rcb - rSign *
-                                         QMIN(xtable[0][x], ytable[0][y]) * 2,
+                                         qMin(xtable[0][x], ytable[0][y]) * 2,
                                          gcb - gSign *
-                                         QMIN(xtable[1][x], ytable[1][y]) * 2,
+                                         qMin(xtable[1][x], ytable[1][y]) * 2,
                                          bcb - bSign *
-                                         QMIN(xtable[2][x], ytable[2][y]) * 2);
+                                         qMin(xtable[2][x], ytable[2][y]) * 2);
                   }
                   else if (eff == EllipticGradient)
                   {
@@ -628,12 +628,12 @@ namespace {
 
 struct KIE4Pack
 {
-    Q_UINT16 data[4];
+    quint16 data[4];
 };
 
 struct KIE8Pack
 {
-    Q_UINT16 data[8];
+    quint16 data[8];
 };
 
 }
@@ -675,7 +675,7 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 
     if(haveMMX)
     {
-        Q_UINT16 p = Q_UINT16(256.0f*(percent));
+        quint16 p = quint16(256.0f*(percent));
         KIE4Pack mult = {{p,p,p,0}};
 
         __asm__ __volatile__(
@@ -685,7 +685,7 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 
         unsigned int rem = pixels % 4;
         pixels -= rem;
-        Q_UINT32 *end = ( data + pixels );
+        quint32 *end = ( data + pixels );
 
         if (brighten)
         {
@@ -1083,14 +1083,14 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
 #ifdef USE_SSE2_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
-        Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
+        quint16 alpha = quint16( ( 1.0 - opacity ) * 256.0 );
 
         KIE8Pack packedalpha = { { alpha, alpha, alpha, 256,
                                    alpha, alpha, alpha, 256 } };
 
-        Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
-        Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
-        Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
+        quint16 red   = quint16( clr.red()   * 256 * opacity );
+        quint16 green = quint16( clr.green() * 256 * opacity );
+        quint16 blue  = quint16( clr.blue()  * 256 * opacity );
 
         KIE8Pack packedcolor = { { blue, green, red, 0,
                                    blue, green, red, 0 } };
@@ -1103,10 +1103,10 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         : : "r"(&packedalpha), "r"(&packedcolor),
             "m"(packedcolor),  "m"(packedalpha) );
 
-        Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
+        quint32 *data = reinterpret_cast<quint32*>( dst.bits() );
 
         // Check how many pixels we need to process to achieve 16 byte alignment
-        int offset = (16 - (Q_UINT32( data ) & 0x0f)) / 4;
+        int offset = (16 - (quint32( data ) & 0x0f)) / 4;
 
         // The main loop processes 8 pixels / iteration
         int remainder = (pixels - offset) % 8;
@@ -1188,12 +1188,12 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
-        Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
+        quint16 alpha = quint16( ( 1.0 - opacity ) * 256.0 );
         KIE4Pack packedalpha = { { alpha, alpha, alpha, 256 } };
 
-        Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
-        Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
-        Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
+        quint16 red   = quint16( clr.red()   * 256 * opacity );
+        quint16 green = quint16( clr.green() * 256 * opacity );
+        quint16 blue  = quint16( clr.blue()  * 256 * opacity );
 
         KIE4Pack packedcolor = { { blue, green, red, 0 } };
 
@@ -1203,7 +1203,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         "movq         (%1),    %%mm5\n\t"       // Set up color * alpha * 256 in MM5
         : : "r"(&packedalpha), "r"(&packedcolor), "m"(packedcolor), "m"(packedalpha) );
 
-        Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
+        quint32 *data = reinterpret_cast<quint32*>( dst.bits() );
 
         // The main loop processes 4 pixels / iteration
         int remainder = pixels % 4;
@@ -1333,7 +1333,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 
 #ifdef USE_SSE2_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
-        Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
+        quint16 alpha = quint16( opacity * 256.0 );
         KIE8Pack packedalpha = { { alpha, alpha, alpha, 0,
                                    alpha, alpha, alpha, 0 } };
 
@@ -1343,11 +1343,11 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
         "movdqu      (%0), %%xmm6\n\t" // Set up alpha * 256 in XMM6
         : : "r"(&packedalpha), "m"(packedalpha) );
 
-        Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
-        Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
+        quint32 *data1 = reinterpret_cast<quint32*>( src.bits() );
+        quint32 *data2 = reinterpret_cast<quint32*>( dst.bits() );
 
         // Check how many pixels we need to process to achieve 16 byte alignment
-        int offset = (16 - (Q_UINT32( data2 ) & 0x0f)) / 4;
+        int offset = (16 - (quint32( data2 ) & 0x0f)) / 4;
 
         // The main loop processes 4 pixels / iteration
         int remainder = (pixels - offset) % 4;
@@ -1428,7 +1428,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
-        Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
+        quint16 alpha = quint16( opacity * 256.0 );
         KIE4Pack packedalpha = { { alpha, alpha, alpha, 0 } };
 
         // Prepare the MM6 and MM7 registers for blending and unpacking
@@ -1437,8 +1437,8 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
         "movq        (%0),   %%mm6\n\t"      // Set up alpha * 256 in MM6
         : : "r"(&packedalpha), "m"(packedalpha) );
 
-        Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
-        Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
+        quint32 *data1 = reinterpret_cast<quint32*>( src.bits() );
+        quint32 *data2 = reinterpret_cast<quint32*>( dst.bits() );
 
         // The main loop processes 2 pixels / iteration
         int remainder = pixels % 2;
@@ -1654,7 +1654,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 yvar = var / image_height   * (image_height - y*2/unaffected -1);
 
                 if (eff == RectangleGradient)
-                    intensity = initial_intensity + QMAX(xvar, yvar);
+                    intensity = initial_intensity + qMax(xvar, yvar);
                 else
                     intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
                 if (intensity > 1) intensity = 1;
@@ -1698,7 +1698,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 yvar = var / image_height   * (image_height - y*2/unaffected -1);
 
                 if (eff == RectangleGradient)
-                    intensity = initial_intensity + QMAX(xvar, yvar);
+                    intensity = initial_intensity + qMax(xvar, yvar);
                 else
                     intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
                 if (intensity > 1) intensity = 1;
@@ -1970,8 +1970,8 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
 	for (int i = 0; i < img.numColors(); i++) {
 	    col = img.color(i);
 	    int mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
-	    min = QMIN(min, mean);
-	    max = QMAX(max, mean);
+	    min = qMin(min, mean);
+	    max = qMax(max, mean);
 	}
     } else {
 	// truecolor
@@ -1979,8 +1979,8 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
 	    for (int x=0; x < img.width(); x++) {
 		col = img.pixel(x, y);
 		int mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
-		min = QMIN(min, mean);
-		max = QMAX(max, mean);
+		min = qMin(min, mean);
+		max = qMax(max, mean);
 	    }
     }
 
@@ -2589,8 +2589,8 @@ void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
 {
     // clip rect
     QRect lr =  lowerRect & lower.rect();
-    lr.setWidth( QMIN(lr.width(), upper.width()-upperOffset.x()) );
-    lr.setHeight( QMIN(lr.height(), upper.height()-upperOffset.y()) );
+    lr.setWidth( qMin(lr.width(), upper.width()-upperOffset.x()) );
+    lr.setHeight( qMin(lr.height(), upper.height()-upperOffset.y()) );
     if ( !lr.isValid() ) return;
 
     // blend
@@ -2611,8 +2611,8 @@ void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
 {
     // clip rect
     QRect lr =  lowerRect & lower.rect();
-    lr.setWidth( QMIN(lr.width(), upper.width()-upperOffset.x()) );
-    lr.setHeight( QMIN(lr.height(), upper.height()-upperOffset.y()) );
+    lr.setWidth( qMin(lr.width(), upper.width()-upperOffset.x()) );
+    lr.setHeight( qMin(lr.height(), upper.height()-upperOffset.y()) );
     if ( !lr.isValid() ) return;
 
     // blend
@@ -2699,7 +2699,7 @@ void KImageEffect::blendOnLower(QImage &upper, QImage &lower,
     QRect r = computeDestinationRect(lower.size(), disposition, upper);
     for (int y = r.top(); y<r.bottom(); y += upper.height())
         for (int x = r.left(); x<r.right(); x += upper.width())
-            blendOnLower(upper, QPoint(-QMIN(x, 0), -QMIN(y, 0)),
+            blendOnLower(upper, QPoint(-qMin(x, 0), -qMin(y, 0)),
                    lower, QRect(x, y, upper.width(), upper.height()), opacity);
 }
 
@@ -3490,8 +3490,8 @@ QImage KImageEffect::spread(QImage &src, unsigned int amount)
             for(x=0; x < src.width(); x++){
                 x_distance = x + ((rand() & (amount+1))-quantum);
                 y_distance = y + ((rand() & (amount+1))-quantum);
-                x_distance = QMIN(x_distance, src.width()-1);
-                y_distance = QMIN(y_distance, src.height()-1);
+                x_distance = qMin(x_distance, src.width()-1);
+                y_distance = qMin(y_distance, src.height()-1);
                 if(x_distance < 0)
                     x_distance = 0;
                 if(y_distance < 0)
@@ -3510,8 +3510,8 @@ QImage KImageEffect::spread(QImage &src, unsigned int amount)
             for(x=0; x < src.width(); x++){
                 x_distance = x + ((rand() & (amount+1))-quantum);
                 y_distance = y + ((rand() & (amount+1))-quantum);
-                x_distance = QMIN(x_distance, src.width()-1);
-                y_distance = QMIN(y_distance, src.height()-1);
+                x_distance = qMin(x_distance, src.width()-1);
+                y_distance = qMin(y_distance, src.height()-1);
                 if(x_distance < 0)
                     x_distance = 0;
                 if(y_distance < 0)
@@ -3537,7 +3537,7 @@ QImage KImageEffect::swirl(QImage &src, double degrees,
     // compute scaling factor
     x_center = src.width()/2.0;
     y_center = src.height()/2.0;
-    radius = QMAX(x_center,y_center);
+    radius = qMax(x_center,y_center);
     x_scale=1.0;
     y_scale=1.0;
     if(src.width() > src.height())
@@ -3726,7 +3726,7 @@ void KImageEffect::normalize(QImage &image)
 {
     struct double_packet high, low, intensity, *histogram;
     struct short_packet *normalize_map;
-    Q_INT64 number_pixels;
+    qint64 number_pixels;
     int x, y;
     unsigned int *p, *q;
     register long i;
@@ -3768,7 +3768,7 @@ void KImageEffect::normalize(QImage &image)
     /*
     Find the histogram boundaries by locating the 0.1 percent levels.
     */
-    number_pixels = (Q_INT64)image.width()*image.height();
+    number_pixels = (qint64)image.width()*image.height();
     threshold_intensity = number_pixels/1000;
 
     /* red */
@@ -4531,7 +4531,7 @@ QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
     if(src.depth() > 8){ // DirectClass source image
         unsigned int *p, *s0, *s1, *s2;
         for(y=0; y < src.height(); ++y){
-            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
+            p = (unsigned int *)src.scanLine(qMin(qMax(y-1,0),src.height()-3));
             q = (unsigned int *)dest.scanLine(y);
             // shade this row of pixels.
             *q++=(*(p+src.width()));
@@ -4584,7 +4584,7 @@ QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
         int scanLineIdx;
         unsigned int *cTable = (unsigned int *)src.colorTable().data();
         for(y=0; y < src.height(); ++y){
-            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
+            scanLineIdx = qMin(qMax(y-1,0),src.height()-3);
             p = (unsigned char *)src.scanLine(scanLineIdx);
             q = (unsigned int *)dest.scanLine(y);
             // shade this row of pixels.
@@ -4827,7 +4827,7 @@ static void bumpmap_row( uint           *src,
             else {
                 shade = (int)( ndotl / sqrt(double(nx * nx + ny * ny + params->nz2)) );
 
-                shade = (int)( shade + QMAX(0.0, (255 * params->compensation - shade)) *
+                shade = (int)( shade + qMax(0.0, (255 * params->compensation - shade)) *
                                ambient / 255 );
 	    }
 	}

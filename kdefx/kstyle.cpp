@@ -222,7 +222,7 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 p->setPen( pal.buttonText().color() );
 
-                int l = QMIN( r.width()-2, r.height()-2 );
+                int l = qMin( r.width()-2, r.height()-2 );
                 QPoint c = r.center();
 
                 p->drawLine( c.x()-l/2, c.y(), c.x()+l/2, c.y() );
@@ -2902,7 +2902,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 QSize textSize = header->fontMetrics.size(0, header->text);
                 int iconSpacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);
                 int w = iconSize.width() + iconSpacing + textSize.width();
-                int h = QMAX(iconSize.height(), textSize.height() );
+                int h = qMax(iconSize.height(), textSize.height() );
 
                 return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin);
             }

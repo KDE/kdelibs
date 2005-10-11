@@ -122,7 +122,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 	    // Bi-directional error diffusion
 	    if ( y&1 ) {
 		for (x=0; x<sw; x++) {
-		    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
+		    int pix = qMax(qMin(2, (l1[x] * 2 + 128)/ 255), 0);
 		    int err = l1[x] - pix * 255 / 2;
 		    pv[chan][x] = pix;
 
@@ -137,7 +137,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 		}
 	    } else {
 		for (x=sw; x-->0; ) {
-		    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
+		    int pix = qMax(qMin(2, (l1[x] * 2 + 128)/ 255), 0);
 		    int err = l1[x] - pix * 255 / 2;
 		    pv[chan][x] = pix;
 
