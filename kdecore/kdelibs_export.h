@@ -24,12 +24,14 @@
 #include <kdemacros.h>
 
 /* needed, because e.g. Q_OS_UNIX is so frequently used */
-#include <Qt/qglobal.h>
+#ifdef __cplusplus
+# include <Qt/qglobal.h>
+#endif
 
-#ifdef Q_WS_WIN
-#include <kdelibs_export_win.h>
 
-#else /* Q_OS_UNIX */
+#if defined _WIN32 || defined _WIN64
+# include <kdelibs_export_win.h>
+#else /* UNIX */
 
 /* export statements for unix */
 #define KDECORE_EXPORT KDE_EXPORT
