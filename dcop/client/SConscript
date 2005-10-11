@@ -7,13 +7,15 @@ for prog in progs1:
 	obj=env.qt4obj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.cpp'
-	obj.libpaths  = ['..','../../win']
-	obj.libs      = ['DCOP']
+	obj.libpaths  = '.. '
+	obj.libs      = 'DCOP '
 	if env['WINDOWS']:
-		obj.libs.append('kdewin32')
-#	obj.libs      = ['../libDCOP.la','../../win/libkdewin32.la']
+		obj.libpaths += '../../win '
+		obj.libs     += 'kdewin32 '
+	else:
+	    obj.linkflags = ' -Wl,--no-undefined -Wl,--allow-shlib-undefined'
+
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
-	obj.linkflags = ' -Wl,--no-undefined -Wl,--allow-shlib-undefined'
 	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
 	#obj.linkflags = env['KDE_RPATH']
 	#obj.includes  = env['KDELIBS_INCLUDES']
