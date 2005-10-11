@@ -31,24 +31,23 @@ class QStringList;
 
 /**
  * Base class for all Sycoca entries.
- * 
+ *
  * You can't create an instance of KSycocaEntry, but it provides
  * the common functionality for servicetypes and services.
- * 
+ *
  * @internal
- * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html 
+ * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html
  */
 class KDECORE_EXPORT KSycocaEntry : public KShared
 {
- 
+
 public:
    virtual bool isType(KSycocaType t) const { return (t == KST_KSycocaEntry); }
    virtual KSycocaType sycocaType() const { return KST_KSycocaEntry; }
 
-public:
   typedef KSharedPtr<KSycocaEntry> Ptr;
   typedef QList<Ptr> List;
-public: // KDoc seems to barf on those typedefs and generates no docs after them
+
    /**
     * Default constructor
     */
@@ -64,9 +63,9 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
     * @internal
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &_str, int iOffset ) : 
-              mOffset( iOffset ), m_bDeleted(false) 
-   { 
+   KSycocaEntry( QDataStream &_str, int iOffset ) :
+              mOffset( iOffset ), m_bDeleted(false)
+   {
      read(_str, mPath);
    }
 
@@ -76,17 +75,17 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    virtual QString name() const = 0;
 
    /**
-    * @return the path of this entry 
+    * @return the path of this entry
     * The path can be absolute or relative.
     * The corresponding factory should know relative to what.
     */
    QString entryPath() const { return mPath; }
-  
+
    /**
     * @return true if valid
     */
    virtual bool isValid() const = 0;
-  
+
    /**
     * @return true if deleted
     */
@@ -96,7 +95,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
     * @internal
     * @return the position of the entry in the sycoca file
     */
-   int offset() { return mOffset; }
+   int offset() const { return mOffset; }
 
    /**
     * @internal
@@ -119,7 +118,7 @@ private:
    int mOffset;
 protected:
    bool m_bDeleted;
-   QString mPath;   
+   QString mPath;
 protected:
    virtual void virtual_hook( int id, void* data );
 };
