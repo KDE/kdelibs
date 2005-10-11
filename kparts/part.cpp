@@ -19,14 +19,13 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <kparts/part.h>
-#include <kparts/event.h>
-#include <kparts/plugin.h>
-#include <kparts/mainwindow.h>
-#include <kparts/partmanager.h>
-#include <kparts/browserextension.h>
+#include "part.h"
+#include "event.h"
+#include "plugin.h"
+#include "mainwindow.h"
+#include "partmanager.h"
+#include "browserextension.h"
 
-#include <q3pointarray.h>
 #include <qapplication.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -48,7 +47,6 @@
 #include <unistd.h>
 #include <assert.h>
 #include <kdebug.h>
-#include "part.h"
 
 template class Q3PtrList<KXMLGUIClient>;
 
