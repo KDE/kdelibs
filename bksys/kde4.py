@@ -350,6 +350,7 @@ def generate(env):
 			self.binary.uselib       = self.uselib
 			self.binary.libs         = [self.kdeinitlib.target + ".la"] + self.orenv.make_list(self.libs)
 			self.binary.libdirs      = "build/dcop"
+			self.binary.libpaths     = self.libpaths
 			env.Depends(self.binary.target, self.kdeinitlib.target + ".la")
 
 			myname=None
