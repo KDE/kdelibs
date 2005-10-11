@@ -133,7 +133,7 @@ void SmbView::init()
 {
 	// Open Samba configuration file and check if a WINS server is defined
 	m_wins_server = QString::null;
-	QString wins_keyword("wins server");	
+	QLatin1String wins_keyword("wins server");	
 	QFile smb_conf ("/etc/samba/smb.conf");
 	if (smb_conf.exists () && smb_conf.open (IO_ReadOnly))
 	{
@@ -145,7 +145,7 @@ void SmbView::init()
 			{
 				QString key = smb_line.section('=', 0, 0);
 				key = key.stripWhiteSpace();
-				if (key.lower() != wins_keyword.lower())
+				if (key.lower() != wins_keyword)
 				{
 					continue;
 				}
