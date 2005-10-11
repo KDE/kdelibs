@@ -11,11 +11,12 @@ resource.c strndup.c time.c unistd.c fsync.c grp.c mmap.c pwd.c
 realpath.c signal.c syslog.c uname.c  win32_utils.c win32_utils2.cpp
 """
 
-obj.ccflags += " -DMAKE_KDEWIN32_LIB /FI./include/kdelibs_export_win.h /FI./include/kdemacros.h "
+obj.ccflags += ' -DMAKE_KDEWIN32_LIB '
 
 if env['CC'] == 'gcc': 
 	obj.includes = 'include include/mingw'
 elif env['CC'] == 'cl':
 	obj.includes = 'include include/msvc'
+	obj.ccflags += ' /FI./include/kdelibs_export_win.h /FI./include/kdemacros.h '
 	
 obj.execute()
