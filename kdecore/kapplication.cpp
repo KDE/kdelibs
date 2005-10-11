@@ -494,7 +494,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    setName( instanceName() );
+    setObjectName( instanceName() );
 
     installSigpipeHandler();
     parseCommandLine( );
@@ -513,7 +513,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
-    setName( instanceName() );
+    setObjectName( instanceName() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -530,7 +530,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
-    setName( instanceName() );
+    setObjectName( instanceName() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -549,7 +549,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    setName( instanceName() );
+    setObjectName( instanceName() );
 
     installSigpipeHandler();
     parseCommandLine( );
@@ -570,7 +570,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     useStyles = allowStyles;
 
     Q_ASSERT (!rAppName.isEmpty());
-    setName(rAppName);
+    setObjectName(rAppName);
 
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
