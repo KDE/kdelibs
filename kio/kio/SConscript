@@ -26,7 +26,7 @@ kmimetypechooser.cpp
 # do not use kdirnotify.stub
 
 ksycoca_sources = """
-kdirwatch.cpp
+kdirwatch.cpp kacl.cpp
 kfileshare.cpp ksambashare.cpp knfsshare.cpp
 ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp
 kservicetypefactory.cpp kservicetype.cpp

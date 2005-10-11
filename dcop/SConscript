@@ -32,7 +32,8 @@ obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libpaths = ['.','KDE-ICE']
-obj.libs     = ['DCOP','kICE']
+obj.libs     = ['DCOP', 'KDE-ICE/libkICE.a']
+
 if env['WINDOWS']: 
 	obj.ccflags  = '-Dkdemain=main'
 	obj.libpaths += ['../win/']

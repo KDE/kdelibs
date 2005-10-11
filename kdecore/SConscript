@@ -3,7 +3,7 @@
 Import('env')
 
 env.subdirs('kconfig_compiler')
-if env.has_key("LIBART_ISCONFIGURED"): env.subdirs('svgicons')
+if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: env.subdirs('svgicons')
 
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
@@ -94,7 +94,7 @@ obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN'
 obj.libs     = '../libltdl/libltdlc.a'
 obj.iskdelib = 1
 obj.includes = 'network'
-if env.has_key("LIBART_ISCONFIGURED"): 
+if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: 
 	obj.uselib += ' LIBART'
 	obj.cxxflags += ' -DHAVE_LIBART '
 	obj.libpaths = "./svgicons"

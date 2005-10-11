@@ -281,7 +281,6 @@ def generate(env):
 		return src
 
 	#valid_targets = "program convenience shlib kioslave staticlib".split()
-	#import qt4.generate.qt4obj
 	from SCons.Script.SConscript import SConsEnvironment
 	class kdeobj(SConsEnvironment.qt4obj):
 		def __init__(self, val, senv=None):
@@ -343,6 +342,7 @@ def generate(env):
 			# 'dcopserver' (lib)
 			
 			self.kdeinitlib.libs     = self.libs
+			self.kdeinitlib.libpaths = self.libpaths
 			self.kdeinitlib.uselib   = self.uselib
 			self.kdeinitlib.source   = self.source
 			self.kdeinitlib.execute()
