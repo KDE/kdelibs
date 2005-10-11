@@ -57,14 +57,13 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      * @param groupsToShow a list of mimetype groups to show. If empty, all
      *        groups are shown.
      * @param parent The parent widget to use
-     * @param name The internal name of this object
      */
     KMimeTypeChooser( const QString& text=QString::null,
                       const QStringList &selectedMimeTypes=QStringList(),
                       const QString &defaultGroup=QString::null,
                       const QStringList &groupsToShow=QStringList(),
                       int visuals=Comments|Patterns|EditButton,
-                      QWidget *parent=0, const char *name=0 );
+                      QWidget *parent=0 );
     ~KMimeTypeChooser();
 
     /**
@@ -147,7 +146,6 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
      * @param groupsToShow a list of mimetype groups to show. If empty, all
      *        groups are shown.
      * @param parent The parent widget to use
-     * @param name The internal name of this object
      */
     KMimeTypeChooserDialog( const QString &caption=QString::null,
                          const QString& text=QString::null,
@@ -155,7 +153,7 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
                          const QString &defaultGroup=QString::null,
                          const QStringList &groupsToShow=QStringList(),
                          int visuals=KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
-                         QWidget *parent=0, const char *name=0 );
+                         QWidget *parent=0 );
 
     /**
      * @overload
@@ -164,7 +162,7 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
                          const QString& text,
                          const QStringList &selectedMimeTypes,
                          const QString &defaultGroup,
-                         QWidget *parent=0, const char *name=0 );
+                         QWidget *parent=0 );
 
     ~KMimeTypeChooserDialog();
 

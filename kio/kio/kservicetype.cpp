@@ -355,7 +355,7 @@ void KServiceType::addService(KService::Ptr service)
   d->services.append(service);
 }
 
-KService::List KServiceType::services()
+KService::List KServiceType::services() const
 {
   if (d)
      return d->services;

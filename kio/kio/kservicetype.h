@@ -193,9 +193,9 @@ public:
   void addService(KService::Ptr service);
   /**
    * @internal
-   * List serices that provide this service type
+   * List services that provide this service type
    */
-  KService::List services();
+  KService::List services() const;
 
   /**
    * Returns a pointer to the servicetype '_name' or 0L if the

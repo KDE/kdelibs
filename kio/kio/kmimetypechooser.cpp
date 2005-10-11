@@ -52,9 +52,8 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
                               const QString &defaultGroup,
                               const QStringList &groupsToShow,
                               int visuals,
-                              QWidget *parent,
-                              const char *name )
-    : KVBox( parent/*, name*/ )
+                              QWidget *parent )
+    : KVBox( parent )
 {
   d = new KMimeTypeChooserPrivate();
   d->lvMimeTypes = 0;
@@ -253,12 +252,12 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QString &defaultGroup,
                          const QStringList &groupsToShow,
                          int visuals,
-                         QWidget *parent, const char *name )
-    : KDialogBase(parent, name, true, caption, Cancel|Ok, Ok)
+                         QWidget *parent )
+    : KDialogBase(parent, "", true, caption, Cancel|Ok, Ok)
 {
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, groupsToShow, visuals,
-                                  this, "chooser" );
+                                  this );
   setMainWidget(m_chooser);
 
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
@@ -270,13 +269,13 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QString& text,
                          const QStringList &selMimeTypes,
                          const QString &defaultGroup,
-                         QWidget *parent, const char *name )
-    : KDialogBase(parent, name, true, caption, Cancel|Ok, Ok)
+                         QWidget *parent )
+    : KDialogBase(parent, "", true, caption, Cancel|Ok, Ok)
 {
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, QStringList(),
                                   KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
-                                  this, "chooser" );
+                                  this );
   setMainWidget(m_chooser);
 
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
