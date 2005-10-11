@@ -40,7 +40,7 @@ KCTimeInfo::~KCTimeInfo()
 {
 }
 
-void 
+void
 KCTimeInfo::saveHeader(QDataStream &str)
 {
   KSycocaFactory::saveHeader(str);
@@ -53,22 +53,22 @@ KCTimeInfo::save(QDataStream &str)
 {
   KSycocaFactory::save(str);
 
-  m_dictOffset = str.device()->at();
+  m_dictOffset = str.device()->pos();
   Q3DictIterator<quint32> it(ctimeDict);
   while( it.current())
   {
      str << it.currentKey() << *(it.current());
      ++it;
-  }   
+  }
   str << QString::null << (quint32) 0;
 
-  int endOfFactoryData = str.device()->at();
+  int endOfFactoryData = str.device()->pos();
 
   saveHeader(str);
-  str.device()->at(endOfFactoryData);
+  str.device()->seek(endOfFactoryData);
 }
 
-void 
+void
 KCTimeInfo::addCTime(const QString &path, quint32 ctime)
 {
   assert(!path.isEmpty());
@@ -86,7 +86,7 @@ void
 KCTimeInfo::fillCTimeDict(Q3Dict<quint32> &dict)
 {
     assert(m_str);
-    m_str->device()->at(m_dictOffset);
+    m_str->device()->seek(m_dictOffset);
     QString path;
     quint32 ctime;
     while(true)

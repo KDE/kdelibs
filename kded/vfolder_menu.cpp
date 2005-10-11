@@ -45,7 +45,7 @@ static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElem
       kdDebug(7021) << e.tagName() << " and " << s << " requires combining!" << endl;
 
       docElem.removeChild(*it);
-      dupeList.remove(it);
+      dupeList.erase(it);
    }
    dupeList.insert(s, e);
 }
@@ -94,7 +94,7 @@ QStringList VFolderMenu::allDirectories()
    {
      if ((*it).startsWith(previous))
      {
-        it = m_allDirectories.remove(it);
+        it = m_allDirectories.erase(it);
      }
      else
      {
@@ -109,7 +109,7 @@ static void
 track(const QString &menuId, const QString &menuName, Q3Dict<KService> *includeList, Q3Dict<KService> *excludeList, Q3Dict<KService> *itemList, const QString &comment)
 {
    if (itemList->find(menuId))
-      printf("%s: %s INCL %d EXCL %d\n", menuName.latin1(), comment.latin1(), includeList->find(menuId) ? 1 : 0, excludeList->find(menuId) ? 1 : 0);
+      printf("%s: %s INCL %d EXCL %d\n", qPrintable(menuName), qPrintable(comment), includeList->find(menuId) ? 1 : 0, excludeList->find(menuId) ? 1 : 0);
 }
 
 void
@@ -145,9 +145,9 @@ VFolderMenu::excludeItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2)
 VFolderMenu::SubMenu*
 VFolderMenu::takeSubMenu(SubMenu *parentMenu, const QString &menuName)
 {
-   int i = menuName.find('/');
-   QString s1 = i > 0 ? menuName.left(i) : menuName;
-   QString s2 = menuName.mid(i+1);
+   const int i = menuName.indexOf('/');
+   const QString s1 = i > 0 ? menuName.left(i) : menuName;
+   const QString s2 = menuName.mid(i+1);
 
    // Look up menu
    for(SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
@@ -231,10 +231,9 @@ VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority)
 void
 VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu *newMenu, bool reversePriority)
 {
-   int i = menuName.find('/');
-
-   QString s1 = menuName.left(i);
-   QString s2 = menuName.mid(i+1);
+   const int i = menuName.indexOf('/');
+   const QString s1 = menuName.left(i);
+   const QString s2 = menuName.mid(i+1);
 
    // Look up menu
    for(SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
@@ -271,7 +270,7 @@ VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu
 void
 VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService *newService)
 {
-   int i = name.find('/');
+   const int i = name.indexOf('/');
 
    if (i == -1)
    {
@@ -620,7 +619,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
            // but we don't care about that
 
            docElem.removeChild(docElem2);
-           menuNodes.remove(it);
+           menuNodes.erase(it);
          }
          menuNodes.insert(name, e);
       }
@@ -746,8 +745,8 @@ VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
    QStringList result = KGlobal::dirs()->findAllResources("xdgconf-menu", baseName);
 
    while( !result.isEmpty() && (result[0] != basePath))
-      result.remove(result.begin());
-      
+      result.erase(result.begin());
+
    if (result.count() <= 1)
    {
       m_docInfo.path = QString::null; // No parent found
@@ -808,9 +807,9 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
 void
 VFolderMenu::initDirs()
 {
-   m_defaultDataDirs = QStringList::split(':', KGlobal::dirs()->kfsstnd_prefixes());
-   QString localDir = m_defaultDataDirs.first();
-   m_defaultDataDirs.remove(localDir); // Remove local dir
+   m_defaultDataDirs = KGlobal::dirs()->kfsstnd_prefixes().split(':', QString::SkipEmptyParts);
+   const QString localDir = m_defaultDataDirs.first();
+   m_defaultDataDirs.removeAll(localDir); // Remove local dir
 
    m_defaultAppDirs = KGlobal::dirs()->findDirs("xdgdata-apps", QString::null);
    m_defaultDirectoryDirs = KGlobal::dirs()->findDirs("xdgdata-dirs", QString::null);
@@ -963,7 +962,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
    while( ( ep = readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
+      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
          continue;
 
       QString pathfn = dir + fn;
@@ -1009,7 +1008,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
    for(QStringList::ConstIterator it = relFiles.begin();
        it != relFiles.end(); ++it)
    {
-      if (!m_forcedLegacyLoad && (dirs.search(*it) != -1))
+      if (!m_forcedLegacyLoad && (dirs.indexIn(*it) != -1))
       {
          QString name = *it;
          if (!name.endsWith("/.directory"))
@@ -1024,7 +1023,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
          continue;
       }
 
-      if (files.search(*it) != -1)
+      if (files.indexIn(*it) != -1)
       {
          QString name = *it;
          KService *service = 0;
@@ -1073,7 +1072,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
    while( ( ep = readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
+      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
          continue;
 
       QString pathfn = dir + fn;

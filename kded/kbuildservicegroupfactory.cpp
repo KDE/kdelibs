@@ -53,7 +53,7 @@ KBuildServiceGroupFactory::createEntry( const QString&, const char * )
 {
   // Unused
   kdWarning("!!!! KBuildServiceGroupFactory::createEntry called!");
-  return 0; 
+  return 0;
 }
 
 
@@ -85,7 +85,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   // Create new group entry
   if (!entry)
      entry = new KServiceGroup(file, menuName);
-     
+
   entry->m_childCount = -1; // Recalculate
 
   addEntry( entry, "apps" ); // "vfolder" ??
@@ -166,14 +166,14 @@ KBuildServiceGroupFactory::save(QDataStream &str)
 {
    KSycocaFactory::save(str);
 
-   m_baseGroupDictOffset = str.device()->at();
+   m_baseGroupDictOffset = str.device()->pos();
    m_baseGroupDict->save(str);
 
-   int endOfFactoryData = str.device()->at();
+   int endOfFactoryData = str.device()->pos();
 
    // Update header (pass #3)
    saveHeader(str);
 
    // Seek to end.
-   str.device()->at(endOfFactoryData);
+   str.device()->seek(endOfFactoryData);
 }

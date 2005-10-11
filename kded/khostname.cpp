@@ -71,7 +71,7 @@ KHostName::KHostName()
    oldName = args->arg(0);
    newName = args->arg(1);
    if (oldName == newName)
-      exit(0);  
+      exit(0);
 
    home = ::getenv("HOME");
    if (home.isEmpty())
@@ -116,7 +116,7 @@ void KHostName::changeX()
    if (!xFile)
    {
       fprintf(stderr, "Warning: Can't run xauth.\n");
-      return;   
+      return;
    }
    QList<QByteArray> lines;
    {
@@ -149,7 +149,7 @@ void KHostName::changeX()
       if (netDisplay != display)
          continue;
 
-      i = netId.find('/');
+      i = netId.indexOf('/');
       if (i == -1)
          continue;
 
@@ -229,7 +229,7 @@ void KHostName::changeDcop()
       if (!iceFile)
       {
          fprintf(stderr, "Warning: Can't run iceauth.\n");
-         return;   
+         return;
       }
       QList<QByteArray> lines;
       {

@@ -132,9 +132,9 @@ KBuildServiceTypeFactory::saveHeader(QDataStream &str)
    str << (qint32) m_otherPatternOffset;
    str << (qint32) m_propertyTypeDict.count();
 
-   for (QMap<QString, int>::Iterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
+   for (QMap<QString, int>::ConstIterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
    {
-     str << it.key() << (qint32)it.data();
+     str << it.key() << (qint32)it.value();
    }
 
 }
@@ -146,13 +146,13 @@ KBuildServiceTypeFactory::save(QDataStream &str)
 
    savePatternLists(str);
 
-   int endOfFactoryData = str.device()->at();
+   int endOfFactoryData = str.device()->pos();
 
    // Update header (pass #3)
    saveHeader(str);
 
    // Seek to end.
-   str.device()->at(endOfFactoryData);
+   str.device()->seek(endOfFactoryData);
 }
 
 void
@@ -171,8 +171,8 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
       KSycocaEntry *entry = (*it);
       if ( entry->isType( KST_KMimeType ) )
       {
-        KMimeType *mimeType = (KMimeType *) entry;
-        QStringList pat = mimeType->patterns();
+        KMimeType *mimeType = static_cast<KMimeType *>( entry );
+        const QStringList pat = mimeType->patterns();
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )
         {
@@ -197,10 +197,10 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    qint32 entrySize = 0;
    qint32 nrOfEntries = 0;
 
-   m_fastPatternOffset = str.device()->at();
+   m_fastPatternOffset = str.device()->pos();
 
    // Write out fastPatternHeader (Pass #1)
-   str.device()->at(m_fastPatternOffset);
+   str.device()->seek(m_fastPatternOffset);
    str << nrOfEntries;
    str << entrySize;
 
@@ -208,27 +208,27 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    QStringList::ConstIterator it = fastPatterns.begin();
    for ( ; it != fastPatterns.end() ; ++it )
    {
-     int start = str.device()->at();
+     int start = str.device()->pos();
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
      //kdDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();
-     entrySize = str.device()->at() - start;
+     entrySize = str.device()->pos() - start;
      nrOfEntries++;
    }
 
    // store position
-   m_otherPatternOffset = str.device()->at();
+   m_otherPatternOffset = str.device()->pos();
 
    // Write out fastPatternHeader (Pass #2)
-   str.device()->at(m_fastPatternOffset);
+   str.device()->seek(m_fastPatternOffset);
    str << nrOfEntries;
    str << entrySize;
 
    // For the other patterns
-   str.device()->at(m_otherPatternOffset);
+   str.device()->seek(m_otherPatternOffset);
 
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
@@ -262,8 +262,8 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    for( ; pit != pd.end(); ++pit )
    {
      if (!m_propertyTypeDict.contains(pit.key()))
-       m_propertyTypeDict.insert(pit.key(), pit.data());
-     else if (m_propertyTypeDict[pit.key()] != static_cast<int>(pit.data()))
+       m_propertyTypeDict.insert(pit.key(), pit.value());
+     else if (m_propertyTypeDict[pit.key()] != static_cast<int>(pit.value()))
        kdWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
    }
 }

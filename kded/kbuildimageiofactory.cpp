@@ -43,7 +43,7 @@ QStringList KBuildImageIOFactory::resourceTypes()
     return QStringList() << "services";
 }
 
-KBuildImageIOFactory::~KBuildImageIOFactory() 
+KBuildImageIOFactory::~KBuildImageIOFactory()
 {
    delete m_resourceList;
 }
@@ -67,9 +67,9 @@ KBuildImageIOFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 
    // Since Qt doesn't allow us to unregister image formats
    // we have to make sure not to add them a second time.
-   // This typically happens when the sycoca database is updated 
+   // This typically happens when the sycoca database is updated
    // incremenatally
-   for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+   for( KImageIOFormatList::ConstIterator it = formatList->begin();
            it != formatList->end();
            ++it )
    {
@@ -103,15 +103,14 @@ KBuildImageIOFactory::save(QDataStream &str)
    for(QStringList::Iterator it = rPath.begin();
        it != rPath.end(); )
    {
-      QStringList::Iterator it2 = it++;
-      if (*it2 == last)
+      if (*it == last)
       {
          // remove duplicate
-         rPath.remove(it2);
+         it = rPath.erase(it);
       }
       else
       {
-         last = *it2;
+         last = *it++;
       }
    }
    mReadPattern = createPattern( KImageIO::Reading );

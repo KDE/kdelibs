@@ -111,6 +111,7 @@ Kded::Kded(bool checkUpdates)
   else
      cPath = ksycoca_env;
   m_pTimer = new QTimer(this);
+  m_pTimer->setSingleShot( true );
   connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
   m_pDirWatch = 0;
@@ -171,14 +172,14 @@ void Kded::initModules()
             noDemandLoad(service->desktopEntryName());
 
          if (dontLoad && !autoload)
-            unloadModule(service->desktopEntryName().latin1());
+            unloadModule(service->desktopEntryName().toLatin1());
      }
 }
 
 
 void Kded::noDemandLoad(const QString &obj)
 {
-  m_dontLoad.insert(obj.latin1(), this);
+  m_dontLoad.insert(obj.toLatin1(), this);
 }
 
 KDEDModule *Kded::loadModule(const DCOPCString &obj, bool onDemand)
@@ -195,7 +196,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
   KDEDModule *module = 0;
   if (s && !s->library().isEmpty())
   {
-    DCOPCString obj = s->desktopEntryName().latin1();
+    DCOPCString obj = s->desktopEntryName().toLatin1();
     KDEDModule *oldModule = m_modules.value(obj, 0);
     if (oldModule)
        return oldModule;
@@ -356,13 +357,13 @@ void Kded::updateResourceList()
 
   if (delayedCheck) return;
 
-  QStringList dirs = KSycoca::self()->allResourceDirs();
+  const QStringList dirs = KSycoca::self()->allResourceDirs();
   // For each resource
   for( QStringList::ConstIterator it = dirs.begin();
        it != dirs.end();
        ++it )
   {
-     if (m_allResourceDirs.find(*it) == m_allResourceDirs.end())
+     if (!m_allResourceDirs.contains(*it))
      {
         m_allResourceDirs.append(*it);
         readDirectory(*it);
@@ -440,14 +441,14 @@ void Kded::recreateDone()
       DCOPClientTransaction *transaction = m_recreateRequests.first();
       if (transaction)
          KApplication::dcopClient()->endTransaction(transaction, replyType, replyData);
-      m_recreateRequests.remove(m_recreateRequests.begin());
+      m_recreateRequests.erase(m_recreateRequests.begin());
    }
    m_recreateBusy = false;
 
    // Did a new request come in while building?
    if (!m_recreateRequests.isEmpty())
    {
-      m_pTimer->start(2000, true /* single shot */ );
+      m_pTimer->start(2000);
       m_recreateCount = m_recreateRequests.count();
    }
 }
@@ -461,7 +462,7 @@ void Kded::update(const QString& )
 {
   if (!m_recreateBusy)
   {
-    m_pTimer->start( 2000, true /* single shot */ );
+    m_pTimer->start( 2000 );
   }
   else
   {
@@ -477,7 +478,7 @@ bool Kded::process(const DCOPCString &fun, const QByteArray &data,
     {
        if (m_recreateRequests.isEmpty())
        {
-          m_pTimer->start(0, true /* single shot */ );
+          m_pTimer->start(0);
           m_recreateCount = 0;
        }
        m_recreateCount++;
@@ -569,7 +570,7 @@ void Kded::unregisterWindowId(long windowId)
   QList<long> windowIds = m_windowIdList.value(sender);
   if (!windowIds.isEmpty())
   {
-     windowIds.remove(windowId);
+     windowIds.removeAll(windowId);
      if (windowIds.isEmpty())
         m_windowIdList.remove(sender);
      else
@@ -593,6 +594,7 @@ KUpdateD::KUpdateD()
 {
     m_pDirWatch = new KDirWatch;
     m_pTimer = new QTimer;
+    m_pTimer->setSingleShot( true );
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(runKonfUpdate()));
     QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
            this, SLOT(slotNewUpdateFile()));
@@ -624,12 +626,12 @@ void KUpdateD::runKonfUpdate()
 
 void KUpdateD::slotNewUpdateFile()
 {
-    m_pTimer->start( 500, true /* single shot */ );
+    m_pTimer->start( 500 );
 }
 
 KHostnameD::KHostnameD(int pollInterval)
 {
-    m_Timer.start(pollInterval, false /* repetitive */ );
+    m_Timer.start(pollInterval); // repetitive timer (not single-shot)
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(checkHostname()));
     checkHostname();
 }

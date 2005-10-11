@@ -41,15 +41,16 @@ KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name)
    d = new KDEDModulePrivate;
    d->objMap = 0;
    d->timeout = 0;
+   d->timer.setSingleShot( true );
    connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
 }
-  
+
 KDEDModule::~KDEDModule()
 {
    emit moduleDeleted(this);
    delete d; d = 0;
 }
-  
+
 void KDEDModule::setIdleTimeout(int secs)
 {
    d->timeout = secs*1000;
@@ -59,7 +60,7 @@ void KDEDModule::resetIdle()
 {
    d->timer.stop();
    if (!d->objMap || d->objMap->isEmpty())
-      d->timer.start(d->timeout, true);
+      d->timer.start(d->timeout);
 }
 
 void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared *obj)
@@ -69,14 +70,14 @@ void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared 
 
    // appKey acts as a placeholder
    KEntryKey appKey(app, 0);
-   d->objMap->replace(appKey, 0);
+   d->objMap->insert(appKey, 0);
 
    KEntryKey indexKey(app, key);
 
    // Prevent deletion in case the same object is inserted again.
-   KSharedPtr<KShared> _obj = obj; 
+   KSharedPtr<KShared> _obj = obj;
 
-   d->objMap->replace(indexKey, _obj);
+   d->objMap->insert(indexKey, _obj);
    resetIdle();
 }
 
@@ -86,13 +87,13 @@ KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
       return 0;
    KEntryKey indexKey(app, key);
 
-   KDEDObjectMap::Iterator it = d->objMap->find(indexKey);
+   KDEDObjectMap::ConstIterator it = d->objMap->find(indexKey);
    if (it == d->objMap->end())
       return 0;
 
-   return it.data().data();
+   return it.value();
 }
-  
+
 void KDEDModule::remove(const DCOPCString &app, const DCOPCString &key)
 {
    if (!d->objMap)
@@ -114,10 +115,9 @@ void KDEDModule::removeAll(const DCOPCString &app)
    KDEDObjectMap::Iterator it = d->objMap->find(indexKey);
    while (it != d->objMap->end())
    {
-      KDEDObjectMap::Iterator it2 = it++;
-      if (it2.key().mGroup != app)
+      if (it.key().mGroup != app)
          break; // All keys for this app have been removed.
-      d->objMap->remove(it2);  
+      it = d->objMap->erase(it);
    }
    resetIdle();
 }

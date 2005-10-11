@@ -53,7 +53,7 @@
 #include <kcmdlineargs.h>
 #include <kcrash.h>
 
-#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
+#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
 # include <qlabel.h>
 # include <kmessagebox.h>
@@ -176,7 +176,7 @@ void KBuildSycoca::processGnomeVfs()
           QStringList &serviceTypes = s->accessServiceTypes();
           if (serviceTypes.count() <= 1)
           {
-             serviceTypes += QStringList::split(',', mimetypes);
+             serviceTypes += mimetypes.split( ',', QString::SkipEmptyParts );
 //             kdDebug(7021) << "Adding gnome mimetypes for '" << app << "'.\n";
 //             kdDebug(7021) << "ServiceTypes=" << s->serviceTypes().join(":") << endl;
           }
@@ -314,7 +314,7 @@ bool KBuildSycoca::build()
        ++it1 )
   {
      g_changed = false;
-     g_resource = (*it1).ascii();
+     g_resource = (*it1).toLatin1();
 
      QStringList relFiles;
 
@@ -380,7 +380,7 @@ bool KBuildSycoca::build()
 
      connect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
              this, SLOT(slotCreateEntry(const QString &, KService **)));
-             
+
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
      KServiceGroup *entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
@@ -494,7 +494,7 @@ bool KBuildSycoca::recreate()
   if (database->status() != 0)
   {
     fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.toLocal8Bit().data(),strerror(database->status()));
-#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
+#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
       KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.toLocal8Bit().data()), i18n("KBuildSycoca"));
@@ -518,7 +518,7 @@ bool KBuildSycoca::recreate()
   if( build()) // Parse dirs
   {
     save(); // Save database
-    if (m_str->device()->status())
+    if (m_str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
       database->abort(); // Error
     m_str = 0L;
     if (!database->close())
@@ -573,7 +573,7 @@ bool KBuildSycoca::recreate()
 void KBuildSycoca::save()
 {
    // Write header (#pass 1)
-   m_str->device()->at(0);
+   m_str->device()->seek(0);
 
    (*m_str) << (qint32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0L;
@@ -607,14 +607,14 @@ void KBuildSycoca::save()
        ++factory)
    {
       (*factory)->save(*m_str);
-      if (m_str->device()->status())
+      if (m_str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
          return; // error
    }
 
-   int endOfData = m_str->device()->at();
+   int endOfData = m_str->device()->pos();
 
    // Write header (#pass 2)
-   m_str->device()->at(0);
+   m_str->device()->seek(0);
 
    (*m_str) << (qint32) KSycoca::version();
    for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
@@ -630,7 +630,7 @@ void KBuildSycoca::save()
    (*m_str) << (qint32) 0; // No more factories.
 
    // Jump to end of database
-   m_str->device()->at(endOfData);
+   m_str->device()->seek(endOfData);
 }
 
 bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& stamp, bool top )
@@ -700,8 +700,8 @@ QStringList KBuildSycoca::existingResourceDirs()
    while( !resources.empty())
    {
       QString res = resources.front();
-      *dirs += KGlobal::dirs()->resourceDirs( res.latin1());
-      resources.remove( res ); // remove this 'res' and all its duplicates
+      *dirs += KGlobal::dirs()->resourceDirs( res.toLatin1());
+      resources.removeAll( res );
    }
 
    *g_allResourceDirs = *dirs;
@@ -711,7 +711,7 @@ QStringList KBuildSycoca::existingResourceDirs()
    {
       QFileInfo inf( *it );
       if( !inf.exists() || !inf.isReadable() )
-         it = dirs->remove( it );
+         it = dirs->erase( it );
       else
          ++it;
    }
@@ -735,12 +735,6 @@ static KCmdLineOptions options[] = {
 
 static const char appName[] = "kbuildsycoca";
 static const char appVersion[] = "1.1";
-
-class WaitForSignal : public QObject
-{
-public:
-   ~WaitForSignal() { qApp->exit_loop (); }
-};
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
@@ -816,10 +810,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      dcopClient->setNotifications( true );
      while (dcopClient->isApplicationRegistered(appName))
      {
-       WaitForSignal *obj = new WaitForSignal;
-       obj->connect(dcopClient, SIGNAL(applicationRemoved(const QByteArray &)),
-               SLOT(deleteLater()));
-       qApp->enter_loop();
+       QEventLoop eventLoop;
+       QObject::connect(dcopClient, SIGNAL(applicationRemoved(const QByteArray &)),
+                        &eventLoop, SLOT(quit()));
+       eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
      }
      dcopClient->setNotifications( false );
    }

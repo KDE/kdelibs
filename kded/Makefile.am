@@ -18,6 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
