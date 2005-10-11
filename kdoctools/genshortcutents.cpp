@@ -32,7 +32,7 @@
 #include <qfile.h>
 //Added by qt3to4:
 #include <QTextStream>
-
+#include <QStringList>
 static const KCmdLineOptions cmdLineOptions[] = {
 	{ "o", 0, 0 },
 	{ "output <file>", I18N_NOOP( "Output file" ), "kde-standard-accels.entities" },
@@ -276,8 +276,8 @@ QString entityForAccel( KStdAccel::StdAccel accel )
 	markup += "\t\"";
 
 	QString internalStr = KStdAccel::shortcut( accel ).toStringInternal();
-	QString firstSequence = internalStr.left( internalStr.find( ';' ) );
-	const QStringList keys = QStringList::split( '+', firstSequence );
+	QString firstSequence = internalStr.left( internalStr.indexOf( ';' ) );
+	const QStringList keys = firstSequence.split( '+',QString::SkipEmptyParts );
 	if ( keys.empty() ) {
 		return QString();
 	}
@@ -316,7 +316,7 @@ int main( int argc, char **argv )
 	const QString outputFileName = args->getOption( "output" );
 	QFile outputFile( outputFileName );
 	if ( !outputFile.open( QIODevice::WriteOnly ) ) {
-		qDebug( "Failed to open %s for writing.", outputFileName.latin1() );
+		qDebug( "Failed to open %s for writing.", outputFileName.toLatin1() );
 		return 1;
 	}
 

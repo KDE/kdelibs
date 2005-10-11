@@ -53,7 +53,7 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
         if ( cur->type == XML_TEXT_NODE ) {
             QString words = QString::fromUtf8( ( char* )cur->content );
-            QStringList wlist = QStringList::split( ' ',  words.simplified() );
+            QStringList wlist = words.simplified().split( ' ',QString::SkipEmptyParts );
             for ( QStringList::ConstIterator it = wlist.begin();
                   it != wlist.end(); ++it )
             {
@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
     QVector<const char *> params;
     if (args->isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );
-        params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).latin1() ) );
+        params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).toLatin1() ) );
     }
     {
         const QByteArrayList paramList = args->getOptionList( "param" );
@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
         QByteArrayList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
             const QByteArray tuple = *it;
-            const int ch = tuple.find( '=' );
+            const int ch = tuple.indexOf( '=' );
             if ( ch == -1 ) {
                 kdError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
                 return( 2 );
@@ -216,7 +216,7 @@ int main(int argc, char **argv) {
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =
-            xsltParseStylesheetFile((const xmlChar *)tss.latin1());
+            xsltParseStylesheetFile((const xmlChar *)tss.toLatin1().data());
 
         if (style_sheet != NULL) {
 
@@ -264,33 +264,33 @@ int main(int argc, char **argv) {
             goto end;
         }
 
-        if (output.find( "<FILENAME " ) == -1 || args->isSet( "stdout" ) || args->isSet("output") )
+        if (output.indexOf( "<FILENAME " ) == -1 || args->isSet( "stdout" ) || args->isSet("output") )
         {
             QFile file;
             if (args->isSet( "stdout" ) ) {
-                file.open( QIODevice::WriteOnly, stdout );
+                file.open( stdout, QIODevice::WriteOnly );
             } else {
                 if (args->isSet( "output" ) )
-                   file.setName( QFile::decodeName(args->getOption( "output" )));
+                   file.setFileName( QFile::decodeName(args->getOption( "output" )));
                 else
-                   file.setName( "index.html" );
+                   file.setFileName( "index.html" );
                 file.open(QIODevice::WriteOnly);
             }
             replaceCharsetHeader( output );
 
             QByteArray data = output.toLocal8Bit();
-            file.writeBlock(data.data(), data.length());
+            file.write(data.data(), data.length());
             file.close();
         } else {
             int index = 0;
             while (true) {
-                index = output.find("<FILENAME ", index);
+                index = output.indexOf("<FILENAME ", index);
                 if (index == -1)
                     break;
                 int filename_index = index + strlen("<FILENAME filename=\"");
 
                 QString filename = output.mid(filename_index,
-                                              output.find("\"", filename_index) -
+                                              output.indexOf("\"", filename_index) -
                                               filename_index);
 
                 QString filedata = splitOut(output, index);
@@ -298,7 +298,7 @@ int main(int argc, char **argv) {
                 file.open(QIODevice::WriteOnly);
                 replaceCharsetHeader( filedata );
                 QByteArray data = fromUnicode( filedata );
-                file.writeBlock(data.data(), data.length());
+                file.write(data.data(), data.length());
                 file.close();
 
                 index += 8;

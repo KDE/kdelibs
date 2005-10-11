@@ -57,7 +57,7 @@ QString transform( const QString &pat, const QString& tss,
     INFO(i18n("Parsing stylesheet"));
 
     xsltStylesheetPtr style_sheet =
-        xsltParseStylesheetFile((const xmlChar *)tss.latin1());
+        xsltParseStylesheetFile((const xmlChar *)tss.toLatin1().data());
 
     if ( !style_sheet ) {
         return parsed;
@@ -70,7 +70,7 @@ QString transform( const QString &pat, const QString& tss,
 
     INFO(i18n("Parsing document"));
 
-    xmlDocPtr doc = xmlParseFile( pat.latin1() );
+    xmlDocPtr doc = xmlParseFile( pat.toLatin1() );
     xsltTransformContextPtr ctxt;
 
     ctxt = xsltNewTransformContext(style_sheet, doc);
@@ -194,7 +194,7 @@ void fillInstance(KInstance &ins, const QString &srcdir) {
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
-    xmlLoadCatalogs(catalogs.latin1());
+    xmlLoadCatalogs(catalogs.toLatin1());
 }
 
 extern "C" void *init_kbzip2filter();
@@ -223,7 +223,7 @@ bool saveToCache( const QString &contents, const QString &filename )
        return false;
     }
 
-    fd->writeBlock( contents.toUtf8() );
+    fd->write( contents.toUtf8() );
     fd->close();
     delete fd;
     return true;
@@ -254,7 +254,7 @@ static bool readCache( const QString &filename,
     int n;
     QByteArray text;
     // Also end loop in case of error, when -1 is returned
-    while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
+    while ( ( n = fd->read(buffer, 31900) ) > 0)
     {
         buffer[n] = 0;
         text += buffer;
@@ -309,7 +309,7 @@ QByteArray fromUnicode( const QString &data )
     char buffer[30000];
     uint buffer_len = 0;
     uint len = 0;
-    uint offset = 0;
+    int offset = 0;
     const int part_len = 5000;
 
     QString part;

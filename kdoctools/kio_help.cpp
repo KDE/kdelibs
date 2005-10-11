@@ -53,7 +53,7 @@ QString HelpProtocol::langLookup(QString fname)
 
     QStringList langs = KGlobal::locale()->languageList();
     langs.append( "en" );
-    langs.remove( "C" );
+    langs.removeAll( "C" );
 
     // this is kind of compat hack as we install our docs in en/ but the
     // default language is en_US
@@ -393,9 +393,9 @@ void HelpProtocol::get_file( const KURL& url )
        if (n == 0)
           break; // Finished
 
-       array.setRawData(buffer, n);
+       array = array.fromRawData(buffer, n);
        data( array );
-       array.resetRawData(buffer, n);
+       array = array.fromRawData(buffer, n);
 
        processed_size += n;
        processedSize( processed_size );

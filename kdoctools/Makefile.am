@@ -43,6 +43,7 @@ xslt_pure.o: xslt.cpp
 bin_SCRIPTS = checkXML
 
 METASOURCES = AUTO
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 update_DATA = kio_help.upd
 update_SCRIPTS = move_kio_help_cache.sh
