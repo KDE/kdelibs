@@ -1,5 +1,9 @@
-# Thomas Nagy, 2005
-
+##
+# @file 
+# win32 related QT 4 detection 
+# 
+# (\@) Thomas Nagy, 2005
+#
 
 import os, re, types, sys
 
@@ -10,8 +14,12 @@ def detect(env):
 		if v : v=os.path.abspath(v)
 		return v
 
+	# set qt relating library name suffix, depends on version and debug/release mode 
+	# This values could be taken from QTDIR/.qmake.conf 
+	#  debug -> CONFIG 
+	#  library version extension -> QMAKE_QT_VERSION_OVERRIDE (=4 yet) 
 	if env['ARGS'].get('debug', None):
-		lib_addon = '_debug'
+		lib_addon = 'd4'
 	else:
 		lib_addon = '4'
 
@@ -21,6 +29,8 @@ def detect(env):
 	libdir		= getpath('libdir')
 	qtincludes	= getpath('qtincludes')
 	qtlibs		= getpath('qtlibs')
+
+	# TODO (rh) libsuffix and lib_addon may be overlap in some areas, potential for cleanup 
 	libsuffix	= ''
 	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
 
