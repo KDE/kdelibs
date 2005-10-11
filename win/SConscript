@@ -18,5 +18,6 @@ if env['CC'] == 'gcc':
 elif env['CC'] == 'cl':
 	obj.includes = 'include include/msvc'
 	obj.ccflags += ' /FI./include/kdelibs_export_win.h /FI./include/kdemacros.h '
-	
+	obj.linkflags += ' advapi32.lib shell32.lib '
+
 obj.execute()

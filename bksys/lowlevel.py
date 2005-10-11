@@ -69,10 +69,13 @@ def generate(env):
 			env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 	########## zlib
-	env['LIB_Z']               = ['z']
+	if env['WINDOWS'] and env['CC'] == 'cl':
+		env['LIB_Z']         = ['zlib']
+	else:
+		env['LIB_Z']         = ['z']
 
 	########## png
-	env['LIB_PNG']             = ['png', 'z', 'm']
+	env['LIB_PNG']             = ['png', 'm'] + env['LIB_Z']
 
 	if not env['WINDOWS']:
 		########## sm

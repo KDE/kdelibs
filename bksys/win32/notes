@@ -51,3 +51,17 @@ http://cvs.sourceforge.net/viewcvs.py/qtwin/qt-4/qmake/generators/win32/msvc_vcp
 2005-10-09
 kde4.py: KDECXXFLAGS and KDECCFLAGS options addded; 
 	these are transferred to CXXFLAGS, CPPFLAGS and CCFLAGS respectively
+
+2005-10-11
+ It's good idea to append always a space to string definitions:
+ obj.libs = ' lib1 lib2 ' instead of 'lib1 lib2' because then
+ adding 
+ 
+  obj.libs += 'lib3'
+
+  will cause horrible error: 'lib1 lib2lib3'
+                                      ^^
+
+ anyway it's still not natural for many devs and thus error-prone...
+ By overloading "=" and "+=" operator we could append and prepend ' ' to the
+ string... 

@@ -131,11 +131,13 @@ def detect(env):
 	if not qtlibs: qtlibs=env.join(qtdir, 'lib', libsuffix)
 	env['QTLIBPATH']=qtlibs
 
-  ########## QT
-  # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+	########## QT
+	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
-	env['LIB_QT']              = ['QtGui'+lib_addon]+env['LIB_Z']+env['LIB_PNG']
+	env['LIB_QT']              = ['QtGui'+lib_addon]+env['LIB_Z']
+	if not env['WINDOWS']:
+		env['LIB_QT'] += env['LIB_PNG']
 	env['RPATH_QT']            = [env['QTLIBPATH']]
 	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
 	env['CPPPATH_QT3SUPPORT']  = [ env.join(env['QTINCLUDEPATH'], 'Qt3Support') ]
