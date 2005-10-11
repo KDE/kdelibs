@@ -54,13 +54,13 @@ KCTimeInfo::save(QDataStream &str)
   KSycocaFactory::save(str);
 
   m_dictOffset = str.device()->at();
-  Q3DictIterator<Q_UINT32> it(ctimeDict);
+  Q3DictIterator<quint32> it(ctimeDict);
   while( it.current())
   {
      str << it.currentKey() << *(it.current());
      ++it;
   }   
-  str << QString::null << (Q_UINT32) 0;
+  str << QString::null << (quint32) 0;
 
   int endOfFactoryData = str.device()->at();
 
@@ -69,31 +69,31 @@ KCTimeInfo::save(QDataStream &str)
 }
 
 void 
-KCTimeInfo::addCTime(const QString &path, Q_UINT32 ctime)
+KCTimeInfo::addCTime(const QString &path, quint32 ctime)
 {
   assert(!path.isEmpty());
-  ctimeDict.replace(path, new Q_UINT32(ctime));
+  ctimeDict.replace(path, new quint32(ctime));
 }
 
-Q_UINT32
+quint32
 KCTimeInfo::ctime(const QString &path)
 {
-  Q_UINT32 *ctimeP = ctimeDict[path];
+  quint32 *ctimeP = ctimeDict[path];
   return ctimeP ? *ctimeP : 0;
 }
 
 void
-KCTimeInfo::fillCTimeDict(Q3Dict<Q_UINT32> &dict)
+KCTimeInfo::fillCTimeDict(Q3Dict<quint32> &dict)
 {
     assert(m_str);
     m_str->device()->at(m_dictOffset);
     QString path;
-    Q_UINT32 ctime;
+    quint32 ctime;
     while(true)
     {
       KSycocaEntry::read(*m_str, path);
       (*m_str) >> ctime;
       if (path.isEmpty()) break;
-      dict.replace(path, new Q_UINT32(ctime));
+      dict.replace(path, new quint32(ctime));
     }
 }

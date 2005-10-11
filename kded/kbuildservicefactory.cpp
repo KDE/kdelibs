@@ -102,11 +102,11 @@ KBuildServiceFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
 
-   str << (Q_INT32) m_nameDictOffset;
-   str << (Q_INT32) m_relNameDictOffset;
-   str << (Q_INT32) m_offerListOffset;
-   str << (Q_INT32) m_initListOffset;
-   str << (Q_INT32) m_menuIdDictOffset;
+   str << (qint32) m_nameDictOffset;
+   str << (qint32) m_relNameDictOffset;
+   str << (qint32) m_offerListOffset;
+   str << (qint32) m_initListOffset;
+   str << (qint32) m_menuIdDictOffset;
 }
 
 void
@@ -199,12 +199,12 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
           it2 != services.end(); ++it2)
       {
          const KService *service = *it2;
-         str << (Q_INT32) entry->offset();
-         str << (Q_INT32) service->offset();
+         str << (qint32) entry->offset();
+         str << (qint32) service->offset();
       }
    }
 
-   str << (Q_INT32) 0;               // End of list marker (0)
+   str << (qint32) 0;               // End of list marker (0)
 }
 
 void
@@ -224,12 +224,12 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
           initList.append(service);
       }
    }
-   str << (Q_INT32) initList.count(); // Nr of init services.
+   str << (qint32) initList.count(); // Nr of init services.
    for(KService::List::Iterator it = initList.begin();
        it != initList.end();
        ++it)
    {
-      str << (Q_INT32) (*it)->offset();
+      str << (qint32) (*it)->offset();
    }
 }
 

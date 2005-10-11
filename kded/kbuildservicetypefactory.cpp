@@ -128,13 +128,13 @@ void
 KBuildServiceTypeFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-   str << (Q_INT32) m_fastPatternOffset;
-   str << (Q_INT32) m_otherPatternOffset;
-   str << (Q_INT32) m_propertyTypeDict.count();
+   str << (qint32) m_fastPatternOffset;
+   str << (qint32) m_otherPatternOffset;
+   str << (qint32) m_propertyTypeDict.count();
 
    for (QMap<QString, int>::Iterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
    {
-     str << it.key() << (Q_INT32)it.data();
+     str << it.key() << (qint32)it.data();
    }
 
 }
@@ -194,8 +194,8 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // Sort the list - the fast one, useless for the other one
    fastPatterns.sort();
 
-   Q_INT32 entrySize = 0;
-   Q_INT32 nrOfEntries = 0;
+   qint32 entrySize = 0;
+   qint32 nrOfEntries = 0;
 
    m_fastPatternOffset = str.device()->at();
 

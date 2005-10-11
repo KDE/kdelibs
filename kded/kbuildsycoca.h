@@ -47,7 +47,7 @@ public:
     */
    bool recreate();
 
-   static bool checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs );
+   static bool checkTimestamps( quint32 timestamp, const QStringList &dirs );
 
    static QStringList existingResourceDirs();
    

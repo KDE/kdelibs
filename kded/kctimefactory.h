@@ -50,14 +50,14 @@ public:
   KSycocaEntry * createEntry(const QString &, const char *) { return 0; }
   KSycocaEntry * createEntry(int) { return 0; }
   
-  void addCTime(const QString &path, Q_UINT32 ctime);
+  void addCTime(const QString &path, quint32 ctime);
 
-  Q_UINT32 ctime(const QString &path);
+  quint32 ctime(const QString &path);
 
-  void fillCTimeDict(Q3Dict<Q_UINT32> &dict);
+  void fillCTimeDict(Q3Dict<quint32> &dict);
 
 protected:
-  Q3Dict<Q_UINT32> ctimeDict;
+  Q3Dict<quint32> ctimeDict;
   int m_dictOffset;
 };
 
