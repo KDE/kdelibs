@@ -115,8 +115,6 @@ Kded::Kded(bool checkUpdates)
 
   m_pDirWatch = 0;
 
-  m_windowIdList.setAutoDelete(true);
-
   m_recreateCount = 0;
   m_recreateBusy = false;
 }
@@ -128,7 +126,7 @@ Kded::~Kded()
   delete m_pTimer;
   delete m_pDirWatch;
 
-  m_modules.setAutoDelete(true);
+  qDeleteAll( m_modules );
 }
 
 bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
@@ -185,7 +183,7 @@ void Kded::noDemandLoad(const QString &obj)
 
 KDEDModule *Kded::loadModule(const DCOPCString &obj, bool onDemand)
 {
-  KDEDModule *module = m_modules.find(obj);
+  KDEDModule *module = m_modules.value(obj, 0);
   if (module)
      return module;
   KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
@@ -198,7 +196,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
   if (s && !s->library().isEmpty())
   {
     DCOPCString obj = s->desktopEntryName().latin1();
-    KDEDModule *oldModule = m_modules.find(obj);
+    KDEDModule *oldModule = m_modules.value(obj, 0);
     if (oldModule)
        return oldModule;
 
@@ -232,6 +230,8 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
     KLibrary *lib = loader->library(QFile::encodeName(libname));
     if (!lib)
     {
+      kdWarning() << k_funcinfo << "Could not load library. [ "
+                 << loader->lastErrorMessage() << " ]" << endl;
       libname.prepend("lib");
       lib = loader->library(QFile::encodeName(libname));
     }
@@ -257,6 +257,11 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
       }
       loader->unloadLibrary(QFile::encodeName(libname));
     }
+    else
+    {
+       kdWarning() << k_funcinfo << "Could not load library. [ "
+                   << loader->lastErrorMessage() << " ]" << endl;
+    }
     kdDebug(7020) << "Could not load module '" << obj << "'\n";
   }
   return 0;
@@ -264,10 +269,11 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
 
 bool Kded::unloadModule(const DCOPCString &obj)
 {
-  KDEDModule *module = m_modules.take(obj);
+  KDEDModule *module = m_modules.value(obj, 0);
   if (!module)
      return false;
   kdDebug(7020) << "Unloading module '" << obj << "'\n";
+  m_modules.remove(obj);
   delete module;
   return true;
 }
@@ -275,12 +281,12 @@ bool Kded::unloadModule(const DCOPCString &obj)
 // DCOP
 DCOPCStringList Kded::loadedModules()
 {
-	DCOPCStringList modules;
-	Q3AsciiDictIterator<KDEDModule> it( m_modules );
-	for ( ; it.current(); ++it)
-		modules.append( it.currentKey() );
+    DCOPCStringList modules;
+    QHash<QByteArray, KDEDModule*>::const_iterator it = m_modules.begin();
+    for ( ; it != m_modules.end(); ++it)
+        modules.append( it.key() );
 
-	return modules;
+    return modules;
 }
 
 DCOPCStringList Kded::functions()
@@ -300,26 +306,23 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 
 void Kded::slotApplicationRemoved(const QByteArray &appId)
 {
-  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  foreach( KDEDModule* module, m_modules )
   {
-     it.current()->removeAll(appId);
+     module->removeAll(appId);
   }
 
-  QList<long> *windowIds = m_windowIdList.find(appId);
-  if (windowIds)
+  const QList<long> windowIds = m_windowIdList.value(appId);
+  for( QList<long>::ConstIterator it = windowIds.begin();
+       it != windowIds.end(); ++it)
   {
-     for( QList<long>::ConstIterator it = windowIds->begin();
-          it != windowIds->end(); ++it)
-     {
-        long windowId = *it;
-        m_globalWindowIdList.remove(windowId);
-        for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
-        {
-            emit it.current()->windowUnregistered(windowId);
-        }
-     }
-     m_windowIdList.remove(appId);
+      long windowId = *it;
+      m_globalWindowIdList.remove(windowId);
+      foreach( KDEDModule* module, m_modules )
+      {
+          emit module->windowUnregistered(windowId);
+      }
   }
+  m_windowIdList.remove(appId);
 }
 
 void Kded::updateDirWatch()
@@ -535,29 +538,24 @@ void Kded::readDirectory( const QString& _path )
 
 bool Kded::isWindowRegistered(long windowId)
 {
-  return m_globalWindowIdList.find(windowId) != 0;
+  return m_globalWindowIdList.contains(windowId);
 
 }
 
 // DCOP
 void Kded::registerWindowId(long windowId)
 {
-  m_globalWindowIdList.replace(windowId, &windowId);
+  m_globalWindowIdList.insert(windowId);
   DCOPCString sender = callingDcopClient()->senderId();
   if( sender.isEmpty()) // local call
       sender = callingDcopClient()->appId();
-  QList<long> *windowIds = m_windowIdList.find(sender);
-  if (!windowIds)
-  {
-    windowIds = new QList<long>;
-    m_windowIdList.insert(sender, windowIds);
-  }
-  windowIds->append(windowId);
+  QList<long> windowIds = m_windowIdList.value(sender);
+  windowIds.append(windowId);
+  m_windowIdList.insert(sender, windowIds);
 
-
-  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  foreach( KDEDModule* module, m_modules )
   {
-     emit it.current()->windowRegistered(windowId);
+     emit module->windowRegistered(windowId);
   }
 }
 
@@ -568,17 +566,19 @@ void Kded::unregisterWindowId(long windowId)
   DCOPCString sender = callingDcopClient()->senderId();
   if( sender.isEmpty()) // local call
       sender = callingDcopClient()->appId();
-  QList<long> *windowIds = m_windowIdList.find(sender);
-  if (windowIds)
+  QList<long> windowIds = m_windowIdList.value(sender);
+  if (!windowIds.isEmpty())
   {
-     windowIds->remove(windowId);
-     if (windowIds->isEmpty())
+     windowIds.remove(windowId);
+     if (windowIds.isEmpty())
         m_windowIdList.remove(sender);
+     else
+        m_windowIdList.insert(sender, windowIds);
   }
 
-  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  foreach( KDEDModule* module, m_modules )
   {
-    emit it.current()->windowUnregistered(windowId);
+    emit module->windowUnregistered(windowId);
   }
 }
 
@@ -708,7 +708,7 @@ public:
        if (startup) {
           startup = false;
 	  QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
-       } else 
+       } else
           runBuildSycoca();
 
        return 0;

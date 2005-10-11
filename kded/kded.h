@@ -18,13 +18,13 @@
  **/
 
 #ifndef __kded_h__
-#define __kded_h__ 
+#define __kded_h__
 
 #include <qobject.h>
 #include <qstring.h>
 #include <qtimer.h>
-#include <q3asciidict.h>
-#include <q3intdict.h>
+#include <qhash.h>
+#include <qset.h>
 
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -49,15 +49,15 @@ public:
    /**
     * Catch calls to unknown objects.
     */
-   bool process(const DCOPCString &obj, const DCOPCString &fun, 
-                const QByteArray &data, 
+   bool process(const DCOPCString &obj, const DCOPCString &fun,
+                const QByteArray &data,
 		DCOPCString &replyType, QByteArray &replyData);
 
    /**
     * process DCOP message.  Only calls to "recreate" are supported at
     * this time.
     */
-   bool process(const DCOPCString &fun, const QByteArray &data, 
+   bool process(const DCOPCString &fun, const QByteArray &data,
 		DCOPCString &replyType, QByteArray &replyData);
 
    virtual DCOPCStringList functions();
@@ -115,7 +115,7 @@ protected slots:
     * @internal Triggers rebuilding
     */
    void dirDeleted(const QString& path);
- 
+
    /**
     * @internal Triggers rebuilding
     */
@@ -125,7 +125,7 @@ protected slots:
     * @internal Installs crash handler
     */
    void installCrashHandler();
-   
+
    void runDelayedCheck();
 
 protected:
@@ -133,7 +133,7 @@ protected:
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir );
-   
+
 
    static void crashHandler(int);
 
@@ -152,19 +152,20 @@ protected:
     * in only one rebuilding.
     */
    QTimer* m_pTimer;
-   
+
    QList<DCOPClientTransaction *> m_recreateRequests;
    int m_recreateCount;
    bool m_recreateBusy;
-   
-   Q3AsciiDict<KDEDModule> m_modules;
-   QHash<const char*, KLibrary*> m_libs;
-   Q3AsciiDict<QObject> m_dontLoad;
-   Q3AsciiDict<QList<long> > m_windowIdList;
-   Q3IntDict<long> m_globalWindowIdList;
+
+   QHash<QByteArray,KDEDModule *> m_modules;
+   QHash<QByteArray,KLibrary *> m_libs;
+   QHash<QByteArray,QObject *> m_dontLoad;
+   QHash<QByteArray,QList<long> > m_windowIdList;
+
+   QSet<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
-     
+
    static Kded *_self;
 };
 
@@ -174,7 +175,7 @@ class KUpdateD : public QObject
 public:
    KUpdateD();
    ~KUpdateD();
-   
+
 public slots:
    void runKonfUpdate();
    void slotNewUpdateFile();
@@ -201,7 +202,7 @@ class KHostnameD : public QObject
 public:
    KHostnameD(int pollInterval);
    ~KHostnameD();
-   
+
 public slots:
    void checkHostname();
 

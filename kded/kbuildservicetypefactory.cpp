@@ -250,7 +250,7 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
      // Already exists
      if (serviceType->desktopEntryPath().endsWith("kdelnk"))
         return; // Skip
-     
+
      // Replace
      KSycocaFactory::removeEntry(newEntry);
    }
@@ -263,7 +263,7 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    {
      if (!m_propertyTypeDict.contains(pit.key()))
        m_propertyTypeDict.insert(pit.key(), pit.data());
-     else if (m_propertyTypeDict[pit.key()] != pit.data())
+     else if (m_propertyTypeDict[pit.key()] != static_cast<int>(pit.data()))
        kdWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
    }
 }

@@ -34,7 +34,7 @@ public:
    * Create factory
    */
   KBuildServiceTypeFactory();
-  
+
   virtual ~KBuildServiceTypeFactory();
 
   /**
@@ -70,7 +70,7 @@ public:
 
   /**
    * Returns all resource types for this service factory
-   */  
+   */
   static QStringList resourceTypes();
 private:
 

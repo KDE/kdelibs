@@ -85,7 +85,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 
   KService * serv = new KService( &desktopFile );
 
-  if ( serv->isValid() && !serv->isDeleted() ) 
+  if ( serv->isValid() && !serv->isDeleted() )
   {
      return serv;
   } else {
@@ -155,7 +155,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          (*it).toInt(&isNumber);
          if (isNumber)
             continue;
-         
+
          KServiceType::Ptr serviceType = KServiceType::serviceType(*it);
          if (!serviceType)
          {
@@ -164,16 +164,16 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          }
          serviceTypes.append(serviceType);
       }
-      
+
       while(serviceTypes.count())
       {
          KServiceType::Ptr serviceType = serviceTypes.first();
          serviceTypes.pop_front();
-         
+
          KServiceType::Ptr parentType = serviceType->parentType();
          if (parentType)
             serviceTypes.append(parentType);
-         
+
          serviceType->addService(service);
       }
    }
@@ -183,19 +183,22 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
        it != m_serviceTypeFactory->entryDict()->end();
        ++it)
    {
+       const KSycocaEntry* baseEntry = (*it).data();
       // export associated services
-      KServiceType *entry = static_cast<KServiceType*>(static_cast<KSycocaEntry*>(*it));
+#ifdef __GNUC__
 #warning I added this here, but it should not be 0 in the first place (coolo)
-      if (!entry) {
+#endif
+      if ( !baseEntry ) {
          kdDebug() << "no entry\n";
-	 continue;
-      }	
-      KService::List services = entry->services();
-  
+         continue;
+      }
+      const KServiceType *entry = static_cast<const KServiceType*>( baseEntry );
+      const KService::List services = entry->services();
+
       for(KService::List::ConstIterator it2 = services.begin();
           it2 != services.end(); ++it2)
       {
-         KService *service = *it2;
+         const KService *service = *it2;
          str << (Q_INT32) entry->offset();
          str << (Q_INT32) service->offset();
       }
@@ -218,7 +221,7 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
       KService::Ptr service = (KService *) ((KSycocaEntry *) *itserv);
       if ( !service->init().isEmpty() )
       {
-          initList.append(service); 
+          initList.append(service);
       }
    }
    str << (Q_INT32) initList.count(); // Nr of init services.
