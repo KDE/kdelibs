@@ -43,7 +43,7 @@ public:
 
 KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
                           const char *name )
-  : Q3Frame( parent, name ),
+  : QFrame( parent, name ),
     d( new KAnimWidgetPrivate )
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
@@ -114,31 +114,31 @@ void KAnimWidget::showEvent(QShowEvent* e)
      d->initDone = true;
      updateIcons();
   }
-  Q3Frame::showEvent(e);
+  QFrame::showEvent(e);
 }
 
 void KAnimWidget::hideEvent(QHideEvent* e)
 {
-  Q3Frame::hideEvent(e);
+  QFrame::hideEvent(e);
 }
 
 void KAnimWidget::enterEvent( QEvent *e )
 {
-  setFrameStyle( WinPanel | Raised );
+  setFrameStyle( Panel | Raised );
 
-  Q3Frame::enterEvent( e );
+  QFrame::enterEvent( e );
 }
 
 void KAnimWidget::leaveEvent( QEvent *e )
 {
   setFrameStyle( StyledPanel | Sunken );
 
-  Q3Frame::leaveEvent( e );
+  QFrame::leaveEvent( e );
 }
 
 void KAnimWidget::mousePressEvent( QMouseEvent *e )
 {
-  Q3Frame::mousePressEvent( e );
+  QFrame::mousePressEvent( e );
 }
 
 void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
@@ -147,7 +147,7 @@ void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
        rect().contains( e->pos() ) )
     emit clicked();
 
-  Q3Frame::mouseReleaseEvent( e );
+  QFrame::mouseReleaseEvent( e );
 }
 
 void KAnimWidget::slotTimerUpdate()
@@ -190,7 +190,7 @@ void KAnimWidget::updateIcons()
 
   QString path = KGlobal::iconLoader()->iconPath(d->icon_name, -d->size);
   QImage img(path);
-  
+
   if (img.isNull())
      return;
 
@@ -199,7 +199,7 @@ void KAnimWidget::updateIcons()
   d->transparent = img.hasAlphaBuffer();
   if (d->pixmap.width() != d->size)
   {
-     img = img.smoothScale(d->size, d->size*d->frames);     
+     img = img.smoothScale(d->size, d->size*d->frames);
   }
   d->pixmap = img;
 
