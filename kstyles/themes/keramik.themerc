@@ -28,6 +28,7 @@ Name[xx]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=A style using alphablending
 Comment[bg]=Стил, използващ алфа сливане
+Comment[ca]=Un estil que usa barreja alfa
 Comment[cs]=Styl používající alfa kanál
 Comment[da]=En stil der bruger alfablanding
 Comment[de]=Ein Stil mit Alpha-Blending
