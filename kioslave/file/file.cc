@@ -145,7 +145,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             // the minimal (UNIX permission bits) part
             acl = acl_from_mode( perm );
         }
-        acl = acl_from_text( ACLString.latin1() );
+        acl = acl_from_text( ACLString.toLatin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
             ssize_t size = acl_size( acl );
@@ -160,7 +160,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             // user told us to delete the default ACL, do so
             ret += acl_delete_def_file( path );
         } else {
-            acl_t acl = acl_from_text( defaultACLString.latin1() );
+            acl_t acl = acl_from_text( defaultACLString.toLatin1() );
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
                 ssize_t size = acl_size( acl );
@@ -322,9 +322,9 @@ void FileProtocol::get( const KURL& url )
        if (n == 0)
           break; // Finished
 
-       array.setRawData(buffer, n);
+       array = array.fromRawData(buffer, n);
        data( array );
-       array.resetRawData(buffer, n);
+       array.clear();
 
        processed_size += n;
        processedSize( processed_size );
@@ -1194,7 +1194,7 @@ void FileProtocol::special( const QByteArray &data)
     case 1:
       {
 	QString fstype, dev, point;
-	Q_INT8 iRo;
+	qint8 iRo;
 
 	stream >> iRo >> fstype >> dev >> point;
 
@@ -1205,7 +1205,7 @@ void FileProtocol::special( const QByteArray &data)
 	if (ok)
 	    finished();
 	else
-	    mount( ro, fstype.ascii(), dev, point );
+	    mount( ro, fstype.toAscii(), dev, point );
 
       }
       break;
@@ -1293,7 +1293,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
     Q3CString point = QFile::encodeName( KProcess::quote(_point) );
     bool fstype_empty = !_fstype || !*_fstype;
-    Q3CString fstype = KProcess::quote(_fstype).latin1(); // good guess
+    Q3CString fstype = KProcess::quote(_fstype).toLatin1(); // good guess
     Q3CString readonly = _ro ? "-r" : "";
     QString epath = QLatin1String(getenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
@@ -1310,28 +1310,28 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     {
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
         if ( !_dev.isEmpty() && _point.isEmpty() && fstype_empty )
-            buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), dev.data(), tmp );
+            buffer.sprintf( "%s %s 2>%s", mountProg.toLatin1().data(), dev.data(), tmp );
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
           if ( !_point.isEmpty() && _dev.isEmpty() && fstype_empty )
-            buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), point.data(), tmp );
+            buffer.sprintf( "%s %s 2>%s", mountProg.toLatin1().data(), point.data(), tmp );
           else
             // mount giving device + mountpoint but no fstype
             if ( !_point.isEmpty() && !_dev.isEmpty() && fstype_empty )
-              buffer.sprintf( "%s %s %s %s 2>%s", mountProg.latin1(), readonly.data(), dev.data(), point.data(), tmp );
+              buffer.sprintf( "%s %s %s %s 2>%s", mountProg.toLatin1().data(), readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
 #if defined(__svr4__) && defined(__sun__) // MARCO for Solaris 8 and I
                 // believe this is true for SVR4 in general
                 buffer.sprintf( "%s -F %s %s %s %s 2>%s"
-				mountProg.latin1()
+				mountProg.toLatin1()
                                 fstype.data()
                                 _ro ? "-oro" : ""
                                 dev.data()
                                 point.data()
                                 tmp );
 #else
-              buffer.sprintf( "%s %s -t %s %s %s 2>%s", mountProg.latin1(), readonly.data(),
+              buffer.sprintf( "%s %s -t %s %s %s 2>%s", mountProg.toLatin1().data(), readonly.data(),
                               fstype.data(), dev.data(), point.data(), tmp );
 #endif
 
@@ -1489,7 +1489,7 @@ void FileProtocol::unmount( const QString& _point )
         error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
         return;
     }
-    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
+    buffer.sprintf( "%s %s 2>%s", umountProg.toLatin1().data(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
 

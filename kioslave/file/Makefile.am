@@ -1,7 +1,7 @@
 ## Makefile.am of kdebase/kioslave/file
 
 AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
-
+KDE_CXXFLAGS = -UQT3_SUPPORT
 INCLUDES = $(all_includes)
 
 ####### Files
