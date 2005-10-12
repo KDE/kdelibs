@@ -190,7 +190,7 @@ Desktop Entry Spec</a>
 
 <H4>KURL</H4>
 <li>filename() has been removed, use fileName() instead</li>
-<li>isMalformed -&gt; !isValid()
+<li>isMalformed -&gt; !isValid()</li>
 
 <H4>KURLDrag</H4>
 <li>This class has been moved to kde3support. Use KURL::populateMimeData() and
@@ -275,22 +275,22 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 </ul>
 
 <H4>KJanusWidget</H4>
-<li>Q3[HV]Box -> K[HV]Box>/li>
+<li>Q3[HV]Box -&gt; K[HV]Box</li>
 <li>usage of QFrame, instead of Q3Frame</li>
 
 <H4>KDialogBase</H4>
-<li>setButtonOKText -&gt; setButtonOk
-<li>setButtonApplyText -&gt; setButtonApply
-<li>setButtonCancelText -&gt; setButtonCancel
-<li>getBackgroundTile -&gt; backgroundTile
-<li>getContentsRect -&gt; gone
-<li>getBorderWidths -&gt; gone
-<li>Q3[HV]Box -> K[HV]Box>/li>
+<li>setButtonOKText -&gt; setButtonOk</li>
+<li>setButtonApplyText -&gt; setButtonApply</li>
+<li>setButtonCancelText -&gt; setButtonCancel</li>
+<li>getBackgroundTile -&gt; backgroundTile</li>
+<li>getContentsRect -&gt; gone</li>
+<li>getBorderWidths -&gt; gone</li>
+<li>Q3[HV]Box -&gt; K[HV]Box</li>
 
 <H4>KDatePicker</H4>
-<li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);
-<li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);
-<li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)
+<li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);</li>
+<li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);</li>
+<li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)</li>
 <li>removed getData() method.  Use date() instead</li>
 <li>removed protected slot <tt>void selectWeekClicked()</tt>
 
@@ -299,16 +299,16 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 Use KSystemTray instead.</p>
 
 <H4>KDateWidget</H4>
-<li>signal void changed(QDate); was changed by void changed(const QDate&amp;)
+<li>signal void changed(QDate); was changed by void changed(const QDate&amp;)</li>
 
 <H4>KDateTable</H4>
-<li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);
+<li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);</li>
 
 <H4>KKeyDialog</H4>
 <li>removed KDE2 deprecated functions</li>
 
 <H4>KMainWindowInterface</H4>
-<li>functionsDynamic() now returns a DCOPCStringList
+<li>functionsDynamic() now returns a DCOPCStringList</li>
 <li>function processDynamic arguments uses DCOPCString instead of QCString :
 	   <pre>bool processDynamic(const DCOPCString &amp;fun, const QByteArray &amp;data, DCOPCString&amp; replyType, QByteArray &amp;replyData);</pre>
 <li>actions() now returns a DCOPCString
@@ -322,21 +322,21 @@ Use KSystemTray instead.</p>
 </li>
 
 <H4>KAboutDialog</H4>
-<li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed
-<li>addContainerPage int args are now Qt::Alignment args
-<li>addScrolledContainerPage int args are now Qt::Alignment args
-<li>addContainer int args are now Qt::Alignment args
+<li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed</li>
+<li>addContainerPage int args are now Qt::Alignment args</li>
+<li>addScrolledContainerPage int args are now Qt::Alignment args</li>
+<li>addContainer int args are now Qt::Alignment args</li>
 
 <H4>KAboutContainer</H4>
-<li>KAboutContainer constructor int args have been replaced by Qt::Alignment
-<li>addTitle int args replaced by Qt::Alignment
-<li>addImage int args replaced by Qt::Alignment
+<li>KAboutContainer constructor int args have been replaced by Qt::Alignment</li>
+<li>addTitle int args replaced by Qt::Alignment</li>
+<li>addImage int args replaced by Qt::Alignment</li>
 
 <H4>KRecentFilesAction</H4>
-<li>the maxItem property is now an int (was a uint) (affects all accessors methods)
+<li>the maxItem property is now an int (was a uint) (affects all accessors methods)</li>
 
 <H4>KPasswdEdit</H4>
-<li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated
+<li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated</li>
 
 <H4>KPassivePopup</H4>
 <li>clicked single now emits a const QPoint reference</li>
@@ -375,7 +375,7 @@ if needed (see the KURLDrag section)</li>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 
 <H4>KInputDialog</H4>
-<li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)
+<li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)</li>
 
 <h4>KToolBar</h4>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
@@ -414,8 +414,8 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 
 
 <h4>KLineEdit</h4>
-<li>void cursorAtEnd() removed, use QLineEdit::end(false) instead
-<li>unused protected slots removed: void slotAboutToShow() and void slotCancelled()
+<li>void cursorAtEnd() removed, use QLineEdit::end(false) instead</li>
+<li>unused protected slots removed: void slotAboutToShow() and void slotCancelled()</li>
 
 <h4>KLineEditDlg</h4>
 <li>Was deprecated, has been removed. Use KInputDialog instead.</li>
@@ -458,15 +458,15 @@ a listDir result.</li>
 </ul>
 
 <H4>RenameDlg</H4>
-<li>void b0Pressed() renamed to void cancelPressed()
-<li>void b1Pressed() renamed to void renamePressed()
-<li>void b2Pressed() renamed to void skipPressed()
-<li>void b3Pressed() renamed to void autoSkipPressed()
-<li>void b4Pressed() renamed to void overwritePressed()
-<li>void b5Pressed() renamed to void overwriteAllPressed()
-<li>void b6Pressed() renamed to void resumePressed()
-<li>void b7Pressed() renamed to void resumeAllPressed()
-<li>void b8Pressed() renamed to void suggestNewNamePressed()
+<li>void b0Pressed() renamed to void cancelPressed()</li>
+<li>void b1Pressed() renamed to void renamePressed()</li>
+<li>void b2Pressed() renamed to void skipPressed()</li>
+<li>void b3Pressed() renamed to void autoSkipPressed()</li>
+<li>void b4Pressed() renamed to void overwritePressed()</li>
+<li>void b5Pressed() renamed to void overwriteAllPressed()</li>
+<li>void b6Pressed() renamed to void resumePressed()</li>
+<li>void b7Pressed() renamed to void resumeAllPressed()</li>
+<li>void b8Pressed() renamed to void suggestNewNamePressed()</li>
 
 <H4>KURLCombo</H4>
 <ul>
@@ -486,12 +486,12 @@ a listDir result.</li>
 </ul>
 
 <H4>KFileDialog</H4>
-<li>void toolbarCallback(int) was removed
-<li>void pathComboChanged( const QString&amp; ); was removed
-<li>void dirCompletion( const QString&amp; ); was removed
-<li>void setFilterMimeType(const QString &amp;label, const KMimeType::List &amp;types, const KMimeType::Ptr &amp;defaultType) was removed
-<li>void setPreviewWidget(const QWidget *w) was removed
-<li>void updateStatusLine(int dirs, int files); was removed
+<li>void toolbarCallback(int) was removed</li>
+<li>void pathComboChanged( const QString&amp; ); was removed</li>
+<li>void dirCompletion( const QString&amp; ); was removed</li>
+<li>void setFilterMimeType(const QString &amp;label, const KMimeType::List &amp;types, const KMimeType::Ptr &amp;defaultType) was removed</li>
+<li>void setPreviewWidget(const QWidget *w) was removed</li>
+<li>void updateStatusLine(int dirs, int files); was removed</li>
 
 <h4>KFileOpenWithHandler</h4>
 <p>This class has been removed.</p>
