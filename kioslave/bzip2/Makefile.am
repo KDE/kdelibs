@@ -1,5 +1,6 @@
 INCLUDES = -I$(top_srcdir)/kio $(all_includes)
 METASOURCES = AUTO
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 kde_module_LTLIBRARIES = kbzip2filter.la
 
