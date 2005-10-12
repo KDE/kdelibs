@@ -123,7 +123,7 @@ void KAnimWidget::hideEvent(QHideEvent* e)
 
 void KAnimWidget::enterEvent( QEvent *e )
 {
-  setFrameStyle( WinPanel | Raised );
+  setFrameStyle( Panel | Raised );
 
   QFrame::enterEvent( e );
 }

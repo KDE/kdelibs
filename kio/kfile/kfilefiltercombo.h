@@ -79,10 +79,11 @@ class KIO_EXPORT KFileFilterCombo : public KComboBox
      * @see setDefaultFilter
      */
     QString defaultFilter() const;
-    
+
  protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
 
+// KDE4: those variables are private. filters() was added
     QStringList filters;
     bool m_allTypes;
 
@@ -95,6 +96,7 @@ private slots:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    friend class KFileDialog; // gone in KDE4
     class KFileFilterComboPrivate;
     KFileFilterComboPrivate *d;
 };

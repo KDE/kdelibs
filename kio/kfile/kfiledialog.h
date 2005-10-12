@@ -968,6 +968,7 @@ private:
 
     void appendExtension(KURL &url);
     void updateLocationEditExtension(const QString &);
+    void updateFilter();
 
     static void initStatic();
 
