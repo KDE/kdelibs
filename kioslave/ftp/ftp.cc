@@ -509,15 +509,15 @@ bool Ftp::ftpLogin()
     }
 
     tempbuf = "user ";
-    tempbuf += user.latin1();
+    tempbuf += user.toLatin1();
     if ( m_bUseProxy )
     {
       tempbuf += '@';
-      tempbuf += m_host.latin1();
+      tempbuf += m_host.toLatin1();
       if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
       {
         tempbuf += ':';
-        tempbuf += QString::number(m_port).latin1();
+        tempbuf += QString::number(m_port).toLatin1();
       }
     }
 
@@ -537,7 +537,7 @@ bool Ftp::ftpLogin()
     if( needPass )
     {
       tempbuf = "pass ";
-      tempbuf += pass.latin1();
+      tempbuf += pass.toLatin1();
       kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
       loggedIn = ( ftpSendCmd(tempbuf) && (m_iRespCode == 230) );
     }
@@ -588,7 +588,7 @@ bool Ftp::ftpLogin()
   }
 
   QString sTmp = remoteEncoding()->decode( ftpResponse(3) );
-  int iBeg = sTmp.find('"');
+  int iBeg = sTmp.indexOf('"');
   int iEnd = sTmp.lastIndexOf('"');
   if(iBeg > 0 && iBeg < iEnd)
   {
@@ -607,13 +607,13 @@ void Ftp::ftpAutoLoginMacro ()
   if ( macro.isEmpty() )
     return;
 
-  QStringList list = QStringList::split('\n', macro);
+  QStringList list = macro.split('\n',QString::SkipEmptyParts);
 
   for(QStringList::Iterator it = list.begin() ; it != list.end() ; ++it )
   {
     if ( (*it).startsWith("init") )
     {
-      list = QStringList::split( '\\', macro);
+      list = macro.split( '\\',QString::SkipEmptyParts);
       it = list.begin();
       ++it;  // ignore the macro name
 
@@ -644,7 +644,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
 {
   assert(m_control != NULL);    // must have control connection socket
 
-  if ( cmd.find( '\r' ) != -1 || cmd.find( '\n' ) != -1)
+  if ( cmd.indexOf( '\r' ) != -1 || cmd.indexOf( '\n' ) != -1)
   {
     kdWarning(7102) << "Invalid command received (contains CR or LF):"
                     << cmd.data() << endl;
@@ -1468,7 +1468,7 @@ void Ftp::listDir( const KURL &url )
 
 void Ftp::slave_status()
 {
-  kdDebug(7102) << "Got slave_status host = " << (m_host.ascii() ? m_host.ascii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]" << endl;
+  kdDebug(7102) << "Got slave_status host = " << (!m_host.toAscii().isEmpty() ? m_host.toAscii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]" << endl;
   slaveStatus( m_host, m_bLoggedOn );
 }
 
@@ -1588,7 +1588,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
         if ( tmp[0] == '/' ) // listing on ftp://ftp.gnupg.org/ starts with '/'
           tmp.remove( 0, 1 );
 
-        if (tmp.find('/') != -1)
+        if (tmp.indexOf('/') != -1)
           continue; // Don't trick us!
         // Some sites put more than one space between the date and the name
         // e.g. ftp://ftp.uni-marburg.de/mirror/
@@ -1815,9 +1815,9 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fi
     if(!mimetypeEmitted)
     {
       mimetypeEmitted = true;
-      array.setRawData(buffer, n);
+      array = array.fromRawData(buffer, n);
       KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(array, url.fileName());
-      array.resetRawData(buffer, n);
+      array.clear();
       kdDebug(7102) << "ftpGet: Emitting mimetype " << result->mimeType() << endl;
       mimeType( result->mimeType() );
       if( m_size != UnknownSize )	// Emit total size AFTER mimetype
@@ -1827,9 +1827,9 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fi
     // write output file or pass to data pump ...
     if(iCopyFile == -1)
     {
-       array.setRawData(buffer, n);
+       array = array.fromRawData(buffer, n);
        data( array );
-       array.resetRawData(buffer, n);
+       array.clear();
     }
     else if( (iError = WriteToFile(iCopyFile, buffer, n)) != 0)
        return statusClientError;              // client side error
