@@ -16,8 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-// $Id$
-
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
