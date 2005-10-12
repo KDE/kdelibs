@@ -99,10 +99,14 @@ void Query::customEvent(QCustomEvent* event)
 		emit finished();
 	}
 	if (event->type()==QEvent::User+SD_ADDREMOVE) {
+		RemoteService* svr;
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
-		RemoteService*  svr = new RemoteService(aev->m_name+"."+
-		    	aev->m_type.left(aev->m_type.length()-1)+"."+aev->m_domain);
+		QString type=aev->m_type.left(aev->m_type.length()-1);
+		// label is badly splitted here - _http   _tcp.local. . - rely on decode()
+		if (d->m_type=="_services._dns-sd._udp") svr = new RemoteService(aev->m_name+"."+
+			type+"."+aev->m_domain);
+		else svr = new RemoteService(aev->m_name, type, aev->m_domain);
 		if (aev->m_op==AddRemoveEvent::Add) emit serviceAdded(svr);
 			else emit serviceRemoved(svr);
 		d->m_finished = aev->m_last;
