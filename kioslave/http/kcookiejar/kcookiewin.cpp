@@ -34,8 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // The same applies to the QT_NO_ACCEL ifdef below. I hope it doesn't make
 // too much trouble... (Simon)
 
-#include <q3hbox.h>
-#include <q3vbox.h>
+
+
 #include <q3accel.h>
 #include <qlabel.h>
 #include <qwidget.h>
@@ -66,6 +66,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include <kvbox.h>
 #endif
 
 #include "kcookiejar.h"
@@ -97,7 +98,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     vlayout->setResizeMode( QLayout::Fixed );
 
     // Cookie image and message to user
-    Q3HBox* hBox = new Q3HBox( this );
+    KHBox* hBox = new KHBox( this );
     hBox->setSpacing( KDialog::spacingHint() );
     QLabel* icon = new QLabel( hBox );
     icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning) );
@@ -106,7 +107,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 
     int count = cookieList.count();
 
-    Q3VBox* vBox = new Q3VBox( hBox );
+    KVBox* vBox = new KVBox( hBox );
     QString txt = i18n("You received a cookie from",
                        "You received %n cookies from", count);
     QLabel* lbl = new QLabel( txt, vBox );

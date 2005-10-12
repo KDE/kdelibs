@@ -1697,7 +1697,7 @@ bool HTTPProtocol::isOffline(const KURL &url)
 void HTTPProtocol::multiGet(const QByteArray &data)
 {
   QDataStream stream(data);
-  Q_UINT32 n;
+  quint32 n;
   stream >> n;
 
   kdDebug(7113) << "(" << m_pid << ") HTTPProtcool::multiGet n = " << n << endl;
