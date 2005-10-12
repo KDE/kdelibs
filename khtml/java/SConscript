@@ -6,7 +6,7 @@ kjavaappletviewer_sources = """
 kjavaappletviewer.cpp
 """
 
-libkjava_sources = """
+kjava_sources = """
 kjavaapplet.cpp kjavaappletcontext.cpp kjavaappletserver.cpp kjavaappletwidget.cpp
 kjavadownloader.cpp kjavaprocess.cpp
 """
@@ -19,13 +19,13 @@ kjavaappletwidget.h kjavaprocess.h kqeventutil.h kxeventutil.h
 includes = '#/khtml #/kio/kssl #/kio/kssl '
 
 obj = env.kdeobj('convenience')
-obj.target = 'libkjava'
-obj.source = libkjava_sources
+obj.target = 'kjava'
+obj.source = kjava_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 
-obj = env.kdeobj('shlib')
+obj = env.kdeobj('module')
 obj.target = 'kjavaappletviewer'
 obj.source = kjavaappletviewer_sources
 obj.includes = includes
@@ -33,6 +33,7 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.libpaths = '.'
 obj.libs = 'kjava '
 obj.execute()
+
 
 """Unhandled Defines 
 METASOURCES = AUTO

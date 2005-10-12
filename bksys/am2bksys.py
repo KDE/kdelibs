@@ -15,10 +15,11 @@ import os, re, types, sys, string, shutil, stat, glob, amtool
 # The class can handle simple Makefile.am 100% correct, for complex ones, manual
 # fine-tunning is required. These are something that can not handle:
 #		- Custom make target
-#		- distinguish between share/static libraries and modify the obj.libs or obj.uselibs accordingly
 #		- extra moc files
 #		- checking programs (test/EXTRA, how to enable checking?? )
 #		- conditional compilation
+#		- install dir support
+#		- DATA files handling
 #
 #
 
@@ -29,16 +30,43 @@ class AM2Bksys(amtool.AMFile):
 
 		self.defaultUseLibs = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 
-		self.LibHandlerMapping = {}
-		self.LibHandlerMapping['noinst'] = "env.kdeobj('convenience')"
-		self.LibHandlerMapping['kdeinit'] = "env.kdeinitobj()"
-		self.LibHandlerMapping['lib'] = "env.kdeobj('shlib')\nobj.it_is_a_kdelib()"
-		self.LibHandlerMapping['kde_module'] = "env.kdeobj('module')"
+		self.LibHandlerMapping = {
+		'noinst' : 'env.kdeobj(\'convenience\')',
+		'kdeinit' : 'env.kdeinitobj()',
+		'lib' : 'env.kdeobj(\'shlib\')\nobj.it_is_a_kdelib()',
+		'kde_module' : 'env.kdeobj(\'module\')',
+		}
 		
-		self.ProgHandlerMapping = {}
-		self.ProgHandlerMapping['bin'] = "env.kdeobj('program')"
-		self.ProgHandlerMapping['check'] = "env.kdeobj('program')\nobj.env = env.Copy()\nobj.env['NOAUTOINSTALL'] = 1"
-		self.ProgHandlerMapping['EXTRA'] = self.ProgHandlerMapping['check']
+		self.ProgHandlerMapping = {
+		'bin' : 'env.kdeobj(\'program\')',
+		'check' : 'env.kdeobj(\'program\')\nobj.env = env.Copy()\nobj.env[\'NOAUTOINSTALL\'] = 1',
+		'EXTRA' : 'env.kdeobj(\'program\')\nobj.env = env.Copy()\nobj.env[\'NOAUTOINSTALL\'] = 1',
+		}
+		
+		self.DataHandlerMapping = {
+			'kde_htmldir' : '',
+			'kde_appsdir' : 'KDEAPPS',
+			'kde_icondir' : 'KDEICONS',
+			'kde_sounddir' : '',
+			'kde_datadir' : 'KDEDATA',
+			'kde_locale' : 'KDELOCALE',
+			'kde_cgidir' : '',
+			'kde_confdir' : 'KDECONF',
+			'kde_kcfgdir' : 'KDEKCFG',
+			'kde_mimedir' : 'KDEMIME',
+			'kde_toolbardir' : '',
+			'kde_wallpaperdir' : '',
+			'kde_templatesdir' : '',
+			'kde_bindir' : 'KDEBIN',
+			'kde_servicesdir' : 'KDESERV',
+			'kde_servicetypesdir' : 'KDESERVTYPES',
+			'kde_moduledir' : 'KDEMODULE',
+			'kde_styledir' : '',
+			'kde_widgetdir' : '',
+			'xdg_appsdir' : '',
+			'xdg_menudir' : '',
+			'xdg_directorydir' : '',
+		}
 		
 		self.out_buf_header = """#! /usr/bin/env python
 #generated from %s by am2bksys.py
@@ -78,15 +106,24 @@ Import('env')
 		return out_buf
 
 	def generateLibadds(self, name):
+		reg = re.compile("(.*)lib([^/]*)\.la$")
 		def convertLocalLibs(lib):
 			lib = lib.replace('$(top_srcdir)', '#')
 			lib = lib.replace('$(top_builddir)', '##')
 			lib = lib.replace('$(srcdir)/', '')
-			return lib
+			result=reg.match(lib)
+			if result:
+				path = result.group(1)
+				if path.endswith('/'):	path = path[:-1]
+				if path[:2] == "./": path = path[2:]
+				return (path, result.group(2))
+			
+			return ('', lib)
 		uselibs = self.defaultUseLibs.split()
 		out_buf = ""
 		if self.libadds.has_key(name):
 			convertedlibs = []
+			libpaths = []
 			libs = self.libadds[name].split()
 			for lib in libs:
 				if lib[:2] == '$(' and lib[-1:] == ')':
@@ -97,8 +134,12 @@ Import('env')
 					else:
 						print "WARNING: UNKNOW makefile variable in LDADDS %s" % lib
 				else:
-					convertedlibs.append(convertLocalLibs(lib))
+					path, libname = convertLocalLibs(lib)
+					if len(path) and not libpaths.count(path):
+						libpaths.append(path)
+					convertedlibs.append(libname)
 			if len(convertedlibs):
+				out_buf += "obj.libpaths = '%s '\n" % ' '.join(libpaths)
 				out_buf += "obj.libs = '%s '\n" % ' '.join(convertedlibs)
 		
 		out_buf += 'obj.uselib = \'%s \'\n' % ' '.join(uselibs)
@@ -147,12 +188,52 @@ Import('env')
 		
 		return out_buf
 
+	def generateSubdirs(self):
+		out_buf = ""
+		if len(self.subdirs):
+			dirs = self.subdirs.split()
+			if dirs.count('.'): del dirs[dirs.index('.')]
+			out_buf = "env.subdirs('%s')\n\n" % " ".join(dirs)
+		
+		return out_buf;
+
+	def generateData(self, files, inst_dir):
+		def getKDEInstType(rawdir):
+			if rawdir[:2] != "$(":
+				print "ERROR: Do not understand data install dir format %s\n" % rawdir
+				return "",""
+			instype = subdir = ""
+			if rawdir.endswith(")"):
+				instype = rawdir[2:-1]
+			else:
+				reg = re.compile("\$\((.*)\)/(.*)")
+				result = reg.match(rawdir)
+				if result:
+					instype = result.group(1)
+					subdir = result.group(2)
+					
+			if not len(instype) or not self.DataHandlerMapping.has_key(instype):
+				instype = ""
+			else:
+				instype = self.DataHandlerMapping[instype]
+				
+			return (instype, subdir)
+			
+		out_buf = ""
+		if len(files):
+			(insttype, subdir) = getKDEInstType(inst_dir)
+			if insttype:
+				out_buf = "env.bksys_insttype('%s', '%s', '%s')\n\n" % (insttype, subdir, files)
+		return out_buf
+
 	def generateConscript(self):
 		out_buf = self.out_buf_header % self.path
 		
 		self.getIncludes()	#fix path
 		
-		out_buf += self.generateSources();
+		out_buf += self.generateSubdirs()
+		
+		out_buf += self.generateSources()
 
 		out_buf += self.generateHeaders()
 
@@ -178,6 +259,10 @@ Import('env')
 				continue
 			for key in self.progs[progtypekey].split():
 				out_buf += self.generateObj(0, progtypekey, key)
+		
+		#generate data files
+		for dataname in self.data.keys():
+			out_buf += self.generateData(self.data[dataname], self.datadirs[dataname])
 		
 		if len(self.defines):
 			out_buf += '\n"""Unhandled Defines \n'

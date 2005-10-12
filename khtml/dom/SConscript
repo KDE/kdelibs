@@ -2,7 +2,7 @@
 #generated from khtml/dom/Makefile.am by am2bksys.py
 Import('env')
 
-libkhtmldom_sources = """
+khtmldom_sources = """
 css_rule.cpp css_stylesheet.cpp css_value.cpp dom2_events.cpp
 dom2_range.cpp dom2_traversal.cpp dom2_views.cpp dom_doc.cpp
 dom_element.cpp dom_misc.cpp dom_node.cpp dom_string.cpp
@@ -25,9 +25,9 @@ html_table.h
 
 includes = '#/kimgio #/kio #/dcop #/khtml '
 
-obj = env.kdeobj('convenience',env)
-obj.target = 'libkhtmldom'
-obj.source = libkhtmldom_sources
+obj = env.kdeobj('convenience')
+obj.target = 'khtmldom'
+obj.source = khtmldom_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
@@ -43,4 +43,3 @@ SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
 """Unhandled Targets 
 srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
 """
-

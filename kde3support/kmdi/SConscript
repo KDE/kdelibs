@@ -2,7 +2,7 @@
 #generated from kde3support/kmdi/Makefile.am by am2bksys.py
 Import('env')
 
-libk3mdi_sources = """
+k3mdi_sources = """
 k3mdichildarea.cpp k3mdichildfrm.cpp k3mdichildfrmcaption.cpp k3mdichildview.cpp
 k3mdidockcontainer.cpp k3mdidocumentviewtabwidget.cpp k3mdifocuslist.cpp k3mdiguiclient.cpp
 k3mdimainfrm.cpp k3mditaskbar.cpp k3mditoolviewaccessor.cpp
@@ -17,10 +17,11 @@ k3mdinulliterator.h k3mditaskbar.h k3mditoolviewaccessor.h
 includes = '#/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi '
 
 obj = env.kdeobj('convenience')
-obj.target = 'libk3mdi'
-obj.source = libk3mdi_sources
+obj.target = 'k3mdi'
+obj.source = k3mdi_sources
 obj.includes = includes
-obj.libs = '##/kutils/libkutils.la '
+obj.libpaths = '##/kutils '
+obj.libs = 'kutils '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 

@@ -37,7 +37,10 @@ class AMFile:
 		self.sources = {}
 		self.includes= {}
 		self.headers = {}
+		self.data    = {}
+		self.datadirs= {}
 		self.path    = ''
+		self.subdirs = ''
 		
 	## read and parse a Makefile.am 
 	#
@@ -75,13 +78,16 @@ class AMFile:
 					single_target = target[1].strip().replace("'",'')
 					# TODO: (rh) split into list 
 					self.targets[str(target[0]).strip()] = single_target
-		self.getLibraryDeps()
-		self.getLinkerFlags()
 		self.getLibraries()
 		self.getPrograms()
-		self.getSources()
 		self.getIncludes()
 		self.getHeaders()
+		self.getSources()
+		self.getLibraryDeps()
+		self.getLinkerFlags()
+		self.getSubdirs()
+		self.getData()
+
 		return 1
 		
 	## adds library dependencies from another AMFile instance 
@@ -112,6 +118,10 @@ class AMFile:
 		for key in src.libs.keys():
 			self.libs[key] = src.libs[key]
 
+	def getSubdirs(self):
+		if self.defines.has_key('SUBDIRS'):
+			self.subdirs = self.defines['SUBDIRS']
+			del self.defines['SUBDIRS']
 	## collect all LIBADDS definitions 
 	#
 	# the function store the definitions in the libadds class member keyed 
@@ -124,7 +134,11 @@ class AMFile:
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
-				self.libadds[str(result.group(1))] = self.defines[key]
+				libadd = self.findRealTargetname(str(result.group(1)))
+				if not len(libadd):
+					print "WARNING: no corresponding target for libadd item %s \n" % str(result.group(1))
+					continue
+				self.libadds[libadd] = self.defines[key]
 				del self.defines[key]
 		return self.libadds
 
@@ -139,7 +153,11 @@ class AMFile:
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
-				self.ldflags[str(result.group(1))] = self.defines[key]
+				ldflag = self.findRealTargetname(str(result.group(1)))
+				if not len(ldflag):
+					print "WARNING: no corresponding target for ldflag item %s \n" % str(result.group(1))
+					continue
+				self.ldflags[ldflag] = self.defines[key]
 				del self.defines[key]
 		return self.ldflags
 
@@ -150,8 +168,8 @@ class AMFile:
 	# @return definition list 
 	#
 	def getLibraries(self):
-		def stripExtension(val):
-			reg = re.compile("(.*)\.l?a$")
+		def stripLibname(val):
+			reg = re.compile("(?:lib)?(.*)\.l?a$")
 			files = val.split()
 			retlist = []
 			for file in files:
@@ -166,7 +184,7 @@ class AMFile:
 				libtype = str(result.group(1))
 				if not self.libs.has_key(libtype):
 					self.libs[libtype] = ""
-				self.libs[libtype] = stripExtension(self.defines[key])
+				self.libs[libtype] = stripLibname(self.defines[key])
 				del self.defines[key]
 		return self.libs
 
@@ -181,24 +199,66 @@ class AMFile:
 				self.progs[progtype] = self.defines[key]
 				del self.defines[key]
 		return self.progs
-				
+
+	def getData(self):
+		reg = re.compile("(.*)_DATA$")
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				dat = str(result.group(1))
+				self.data[dat] = self.defines[key]
+				del self.defines[key]
+		for name in self.data:
+			if self.defines.has_key(name+"dir"):
+				self.datadirs[name] = self.defines[name+"dir"]
+				del self.defines[name+"dir"]
+			else:
+				del self.data[name]
+		
+		return self.data
+
 	## collect all SOURCES definitions 
 	#
 	# the function store the definitions in the sources class member keyed 
 	# by the relating target
+	# this function should be called after getPrograms and getLibraries
 	# @return definition list 
 	#
 	def getSources(self):
+		reg = re.compile("(.*?)METASOURCES$")
 		reg = re.compile("(.*?)_(?:l?a_)?SOURCES$")
 		# TODO (rh) fix relative library pathes 
 		for key in self.defines.keys():
+			if key.endswith('METASOURCES') and self.defines[key] == "AUTO":
+				del self.defines[key]
+				continue
+			
 			result=reg.match(key)
 			if result:
-				source = str(result.group(1))
+				source = self.findRealTargetname(str(result.group(1)))
+				if not len(source):
+					print "WARNING: no corresponding target for source item %s \n" % str(result.group(1))
+					continue
 				self.sources[source] = self.defines[key]
 				del self.defines[key]
 		return self.sources
 
+	def findRealTargetname(self, target):
+		def findInDict(dict, target):
+			for key in dict.keys():
+				targets = dict[key].split()
+				if targets.count(target) > 0:
+					return 1
+			return 0
+		if not findInDict(self.progs, target) and not findInDict(self.libs, target):
+			if target[:3] == "lib":
+				target = target[3:]
+				if not findInDict(self.libs, target):
+					target = ""
+			else:
+				target = ""
+		return target
+	
 	def getIncludes(self):
 		#if we've got a dir global includes, save it in self.includes['_DIR_GLOBAL_']
 		if self.defines.has_key('INCLUDES'):
@@ -209,7 +269,10 @@ class AMFile:
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
-				self.includes[str(result.group(1))] = self.defines[key]
+				include = self.findRealTargetname(str(result.group(1)))
+				if not len(include):
+					include = result.group(1)
+				self.includes[include] = self.defines[key]
 				del self.defines[key]
 		return self.includes
 
@@ -230,7 +293,10 @@ class AMFile:
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
-				self.headers[str(result.group(1))] = self.defines[key]
+				header = self.findRealTargetname(str(result.group(1)))
+				if not len(header):
+					header = result.group(1)
+				self.headers[header] = self.defines[key]
 				del self.defines[key]
 		return self.headers
 			

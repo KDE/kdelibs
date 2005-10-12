@@ -661,10 +661,7 @@ def generate(env):
 		return install_list
 
 	def bksys_insttype(lenv, type, subdir, files, perms=None):
-		if not lenv.has_key(type):
-			lenv.pprint('RED', 'unknown file type to install '+type)
-			lenv.Exit(1)
-		lenv.bksys_install( lenv.join(lenv[type],subdir), files, destfile=None, perms=perms)
+		lenv.bksys_install( lenv.join(lenv.getInstDirForResType(type),subdir), files, destfile=None, perms=perms)
 
 	## Writes a .la file, used by libtool 
 	def build_la_file(target, source, env):
@@ -843,7 +840,7 @@ def generate(env):
 			lenv.AppendUnique(LIBS = [link])
 			lenv.PrependUnique(LIBPATH = [dir])
 	
-	## Links against a shared library made in the project 
+	## Links against a static library made in the project 
 	def link_local_staticlib(lenv, str):
 		lst = lenv.make_list(str)
 		for afile in lst:

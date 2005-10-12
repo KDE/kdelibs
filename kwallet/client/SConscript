@@ -1,18 +1,23 @@
 #! /usr/bin/env python
-
+#generated from kwallet/client/Makefile.am by am2bksys.py
 Import('env')
 
-obj = env.kdeobj('shlib', env)
-obj.iskdelib = 1
-obj.vnum     = '2.1.0'
-obj.target   = 'libkwalletclient'
-obj.source   = """
-kwallet.skel
-kwallet.cc
+kwalletclient_sources = """
+kwallet.cc kwallet.skel
 """
 
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-obj.libs     = '../../kdecore/libkdecore.la'
-obj.execute()
+include_headers = """
+kwallet.h kwallettypes.h
+"""
 
+includes = 'srcdir '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kwalletclient'
+obj.vnum = '1.1'
+obj.source = kwalletclient_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
+obj.execute()
 

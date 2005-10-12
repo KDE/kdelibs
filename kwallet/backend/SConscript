@@ -1,21 +1,27 @@
 #! /usr/bin/env python
-
+#generated from kwallet/backend/Makefile.am by am2bksys.py
 Import('env')
 
-obj = env.qt4obj('shlib', env)
-obj.vnum     = '1.0.0'
-obj.target   = 'libkwalletbackend'
-obj.source   = """
-blockcipher.cc
-blowfish.cc
-cbc.cc
-sha1.cc
-kwalletentry.cc
-kwalletbackend.cc
+kwalletbackend_sources = """
+blockcipher.cc blowfish.cc cbc.cc kwalletbackend.cc
+kwalletentry.cc sha1.cc
 """
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-obj.libs     = '../../kdecore/libkdecore.la'
-obj.includes = '../client'
-obj.execute()
 
+noinst_headers = """
+blockcipher.h blowfish.h blowfishtables.h cbc.h
+kwalletbackend.h kwalletentry.h sha1.h
+"""
+
+includes = '../client '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kwalletbackend'
+obj.vnum = '1.0'
+obj.source = kwalletbackend_sources
+obj.includes = includes
+obj.libpaths = '../../kdecore '
+obj.libs = 'kdecore '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 QT '
+obj.execute()
 

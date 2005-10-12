@@ -2,9 +2,9 @@
 #generated from kutils/Makefile.am by am2bksys.py
 Import('env')
 
-env.subdirs("ksettings")
+env.subdirs('ksettings')
 
-libkutils_sources = """
+kutils_sources = """
 kcmodulecontainer.cpp kcmoduleinfo.cpp kcmoduleloader.cpp kcmoduleproxy.cpp
 kcmoduleproxyIface.skel kcmoduleproxyIfaceImpl.cpp kcmultidialog.cpp kfind.cpp
 kfinddialog.cpp kmultitabbar.cpp kplugininfo.cpp kpluginselector.cpp
@@ -25,18 +25,18 @@ includes = '#/interfaces/kregexpeditor '
 
 obj = env.kdeobj('shlib')
 obj.it_is_a_kdelib()
-obj.target = 'libkutils'
+obj.target = 'kutils'
 obj.vnum = '3.0.2'
-obj.source = libkutils_sources
+obj.source = kutils_sources
 obj.includes = includes
-obj.libpaths = "ksettings"
-obj.libs = '../kio/libkio.la ksettings '
+obj.libpaths = '../kio ksettings '
+obj.libs = 'kio ksettings '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
 for i in noinst_headers.split():
 	env.Moc(i)
-
+	
 """Unhandled Defines 
 METASOURCES = AUTO
 DOXYGEN_REFERENCES = kdecore kdeui kio

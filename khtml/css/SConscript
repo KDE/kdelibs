@@ -2,7 +2,7 @@
 #generated from khtml/css/Makefile.am by am2bksys.py
 Import('env')
 
-libkhtmlcss_sources = """
+khtmlcss_sources = """
 css_base.cpp css_renderstyledeclarationimpl.cpp css_ruleimpl.cpp css_stylesheetimpl.cpp
 css_valueimpl.cpp csshelper.cpp cssparser.cpp cssstyleselector.cpp
 parser.cpp
@@ -17,8 +17,8 @@ cssstyleselector.h parser.h
 includes = '#/kimgio #/kio #/dcop #/khtml #/libltdl #/kwallet/client #/kutils '
 
 obj = env.kdeobj('convenience')
-obj.target = 'libkhtmlcss'
-obj.source = libkhtmlcss_sources
+obj.target = 'khtmlcss'
+obj.source = khtmlcss_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
@@ -37,4 +37,3 @@ YACC = bison
 """Unhandled Targets 
 .PHONY = parser
 """
-

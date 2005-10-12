@@ -21,11 +21,13 @@ obj = env.kdeobj('convenience')
 obj.target = 'libkjs_html'
 obj.source = libkjs_html_sources
 obj.includes = includes
-obj.libs = '##/kjs/libkjs.la '
+obj.libpaths = "##/kjs"
+obj.libs = 'kjs '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
-env['BUILDERS']['Hash']    = Builder(action="perl ../../kjs/create_hash_table $SOURCE -i > $TARGET" ,suffix='.cpp',src_suffix='.cpp')
+if not env['BUILDERS'].has_key('Hash'):
+	env['BUILDERS']['Hash']    = Builder(action="perl ../../kjs/create_hash_table $SOURCE -i > $TARGET" ,suffix='.cpp',src_suffix='.cpp')
 
 for i in "kjs_dom.cpp kjs_html.cpp kjs_css.cpp kjs_events.cpp kjs_navigator.cpp kjs_mozilla.cpp kjs_range.cpp kjs_traversal.cpp kjs_views.cpp kjs_window.cpp domparser.cpp xmlhttprequest.cpp xmlserializer.cpp".split():
         env.Hash(i)

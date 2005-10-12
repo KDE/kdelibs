@@ -1,14 +1,23 @@
 #! /usr/bin/env python
-
+#generated from kdeui/kdetrayproxy/Makefile.am by am2bksys.py
 Import('env')
 
-env.Kidl("module.h")
-env.Dcop("module.kidl")
+kded_kdetrayproxy_sources = """
+kdetrayproxy.cpp module.cpp module.skel
+"""
 
-obj = env.qt4obj('module', env)
+noinst_headers = """
+kdetrayproxy.h module.h
+"""
+
+includes = '#/kded '
+
+obj = env.kdeobj('module')
 obj.target = 'kded_kdetrayproxy'
-obj.source = "kdetrayproxy.cpp module.cpp module_skel.cpp"
-obj.uselib = "QT QTCORE QTGUI QT3SUPPORT KDE4"
-obj.libs   = "../../kdecore/libkdecore.la"
-obj.includes = '../../kded'
+obj.source = kded_kdetrayproxy_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KDED '
 obj.execute()
+
+env.bksys_insttype('KDESERV', 'kded', 'kdetrayproxy.desktop')
+
