@@ -554,14 +554,14 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
     return 0L;
 }
 
-void KDirOperator::trashSelected(KAction::ActivationReason reason, Qt::ButtonState state)
+void KDirOperator::trashSelected(KAction::ActivationReason reason, Qt::MouseButtons, Qt::KeyboardModifiers modifiers)
 {
     if ( !m_fileView )
         return;
 
-    if ( reason == KAction::PopupMenuActivation && ( state & Qt::ShiftModifier ) ) {
+    if ( reason == KAction::PopupMenuActivation && ( modifiers & Qt::ShiftModifier ) ) {
         deleteSelected();
-	return;
+        return;
     }
 
     const KFileItemList *list = m_fileView->selectedItems();
@@ -1260,8 +1260,8 @@ void KDirOperator::setupActions()
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, 0,0,myActionCollection, "trash" );
-    connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::ButtonState ) ),
-	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::ButtonState ) ) );
+    connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
+	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers ) ) );
     new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QLatin1String("folder_new") );

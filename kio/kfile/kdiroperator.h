@@ -707,8 +707,7 @@ public slots:
      * Trashes the currently selected files/directories.
      * @since 3.4
      */
-	// ### KDE4: make virtual
-    void trashSelected(KAction::ActivationReason, Qt::ButtonState);
+    virtual void trashSelected(KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers);
 
 protected slots:
     /**
