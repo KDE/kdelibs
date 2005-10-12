@@ -1,0 +1,31 @@
+#! /usr/bin/env python
+#generated from kde3support/kmdi/Makefile.am by am2bksys.py
+Import('env')
+
+libk3mdi_sources = """
+k3mdichildarea.cpp k3mdichildfrm.cpp k3mdichildfrmcaption.cpp k3mdichildview.cpp
+k3mdidockcontainer.cpp k3mdidocumentviewtabwidget.cpp k3mdifocuslist.cpp k3mdiguiclient.cpp
+k3mdimainfrm.cpp k3mditaskbar.cpp k3mditoolviewaccessor.cpp
+"""
+
+include_headers = """
+k3mdichildarea.h k3mdichildfrm.h k3mdichildfrmcaption.h k3mdichildview.h
+k3mdidefines.h k3mdiiterator.h k3mdilistiterator.h k3mdimainfrm.h
+k3mdinulliterator.h k3mditaskbar.h k3mditoolviewaccessor.h
+"""
+
+includes = '#/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi '
+
+obj = env.kdeobj('convenience')
+obj.target = 'libk3mdi'
+obj.source = libk3mdi_sources
+obj.includes = includes
+obj.libs = '##/kutils/libkutils.la '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.execute()
+
+
+"""Unhandled Defines 
+METASOURCES = AUTO
+SUBDIRS = . test
+"""

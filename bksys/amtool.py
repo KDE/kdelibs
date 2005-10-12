@@ -21,7 +21,8 @@ def printDict(dict,sep=' = ' ):
 #
 # The class provides methods for the following tasks: 
 #		- parsing Makefile.am's and collecting targets and defines into class members 
-#		- extracting library dependencies and linker flags keyed by the related targets 
+#		- extracting library dependencies and linker flags keyed by the related targets
+#		- extracting target libraries and programs
 #		- collecting detailled lists of libraries dependencies
 #
 #
@@ -31,6 +32,12 @@ class AMFile:
 		self.targets = {}
 		self.libadds = {}
 		self.ldflags = {}
+		self.libs    = {}
+		self.progs   = {}
+		self.sources = {}
+		self.includes= {}
+		self.headers = {}
+		self.path    = ''
 		
 	## read and parse a Makefile.am 
 	#
@@ -44,13 +51,21 @@ class AMFile:
 			src=open(path, 'r')
 		except:
 			return 0
+		self.path = path
+		
 		file  = src.read()
 		lines = file.replace('\n\t','###')
-		lines2 = lines.replace('\\\n',' ')
-		list = lines2.split('\n')
+		list = lines.replace('\\\n',' ').split('\n')
 		for line in list:
 			if line[:1] == '#' or len(line) == 0:
 				continue
+			
+			index = 0
+			while line[index].count('#'):
+				index = line[index].index('#')
+				if line[index:index+3] == "###":
+					index += 3
+
 			var = line.split('=')
 			if len(var) == 2:
 				self.defines[str(var[0]).strip()] = var[1].strip().replace("'",'').replace('\###',' ')
@@ -62,6 +77,11 @@ class AMFile:
 					self.targets[str(target[0]).strip()] = single_target
 		self.getLibraryDeps()
 		self.getLinkerFlags()
+		self.getLibraries()
+		self.getPrograms()
+		self.getSources()
+		self.getIncludes()
+		self.getHeaders()
 		return 1
 		
 	## adds library dependencies from another AMFile instance 
@@ -84,6 +104,14 @@ class AMFile:
 		for key in src.ldflags.keys():
 			self.ldflags[key] = src.ldflags[key]
 
+	def addSources(self,src):
+		for key in src.sources.keys():
+			self.sources[key] = src.sources[key]
+
+	def addLibraries(self,src):
+		for key in src.libs.keys():
+			self.libs[key] = src.libs[key]
+
 	## collect all LIBADDS definitions 
 	#
 	# the function store the definitions in the libadds class member keyed 
@@ -91,12 +119,13 @@ class AMFile:
 	# @return definition list 
 	#
 	def getLibraryDeps(self):
-		reg = re.compile("(.*)_(la|a)_LIBADD$")
+		reg = re.compile("(.*?)_(?:l?a_)?LIBADD$")
 		# TODO (rh) fix relative library pathes 
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
 				self.libadds[str(result.group(1))] = self.defines[key]
+				del self.defines[key]
 		return self.libadds
 
 	## collect all LDFLAGS definitions 
@@ -106,13 +135,105 @@ class AMFile:
 	# @return definition list 
 	#
 	def getLinkerFlags(self):
-		reg = re.compile("(.*)_(la|a)_LDFLAGS$")
+		reg = re.compile("(.*?)_(?:l?a_)?LDFLAGS$")
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
 				self.ldflags[str(result.group(1))] = self.defines[key]
+				del self.defines[key]
 		return self.ldflags
 
+	## collect all LTLIBRARIES definitions 
+	#
+	# the function store the definitions in the libraries class member keyed 
+	# by the relating target 
+	# @return definition list 
+	#
+	def getLibraries(self):
+		def stripExtension(val):
+			reg = re.compile("(.*)\.l?a$")
+			files = val.split()
+			retlist = []
+			for file in files:
+				result=reg.match(file)
+				if result:
+					retlist.append(str(result.group(1)))
+			return ' '.join(retlist)
+		reg = re.compile("(.*)(_l?a)?_LTLIBRARIES$")
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				libtype = str(result.group(1))
+				if not self.libs.has_key(libtype):
+					self.libs[libtype] = ""
+				self.libs[libtype] = stripExtension(self.defines[key])
+				del self.defines[key]
+		return self.libs
+
+	def getPrograms(self):
+		reg = re.compile("(.*)_PROGRAMS$")
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				progtype = str(result.group(1))
+				if not self.progs.has_key(progtype):
+					self.progs[progtype] = ""
+				self.progs[progtype] = self.defines[key]
+				del self.defines[key]
+		return self.progs
+				
+	## collect all SOURCES definitions 
+	#
+	# the function store the definitions in the sources class member keyed 
+	# by the relating target
+	# @return definition list 
+	#
+	def getSources(self):
+		reg = re.compile("(.*?)_(?:l?a_)?SOURCES$")
+		# TODO (rh) fix relative library pathes 
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				source = str(result.group(1))
+				self.sources[source] = self.defines[key]
+				del self.defines[key]
+		return self.sources
+
+	def getIncludes(self):
+		#if we've got a dir global includes, save it in self.includes['_DIR_GLOBAL_']
+		if self.defines.has_key('INCLUDES'):
+			self.defines['_DIR_GLOBAL__INCLUDES'] = self.defines['INCLUDES']
+			del self.defines['INCLUDES']
+		reg = re.compile("(.*?)_(?:l?a_)?INCLUDES")
+		# TODO (rh) fix relative library pathes 
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				self.includes[str(result.group(1))] = self.defines[key]
+				del self.defines[key]
+		return self.includes
+
+	def convertMakeFileVariable(self, var):
+		var = var.strip()
+		if var[:2] == '$(' and var[-1:] == ')':
+			return var[2:-1]
+		else:
+			return var
+
+	def getHeaders(self):
+		#if we've got a dir global includes, save it in self.headers['_DIR_GLOBAL_']
+		if self.defines.has_key('HEADERS'):
+			self.defines['_DIR_GLOBAL__HEADERS'] = self.defines['HEADERS']
+			del self.defines['HEADERS']
+		reg = re.compile("(.*?)_(?:l?a_)?HEADERS")
+		# TODO (rh) fix relative library pathes 
+		for key in self.defines.keys():
+			result=reg.match(key)
+			if result:
+				self.headers[str(result.group(1))] = self.defines[key]
+				del self.defines[key]
+		return self.headers
+			
 	## return a reverse usage list of dependencies 
 	#
 	# The function scannes the recent library definitions and reorganice
@@ -145,61 +266,84 @@ class AMFile:
 		print "### LDFLAGS:"
 		printDict(self.ldflags,' : ')
 
-uses = 0
-libadds = 0
-ldflags = 0
-defines = 0
-targets = 0
-if len(sys.argv) == 1:
-	print "amtool [options] Makefile.am [Makefile.am] ..."
-	print "list Makefile.am content" 
-	print "options:" 
-	print "    --uses print where a library is used" 
-	print "    --libadd print all LIBADD depenencies " 
-	print "    --ldflags print all LDFLAGS definitions" 
-	print "    --defines print all Makefile variables" 
-	print "    --targets print all Makefile tarets" 
-else:
-	all_ams = AMFile()
-	for a in range(1,len(sys.argv)):
-		if sys.argv[a][:6] == '--uses':
-			uses = 1
-		elif sys.argv[a][:8] == '--libadd':
-			libadds = 1
-		elif sys.argv[a][:9] == '--defines':
-			defines = 1
-		elif sys.argv[a][:9] == '--targets':
-			targets = 1			
-		elif sys.argv[a][:9] == '--ldflags':
-			ldflags = 1
+	def printLibraries(self):
+		print "### Libraries:"
+		printDict(self.libs,' : ')
 
-		if  libadds or defines or targets or ldflags:	
-			uses = 2
-						
-	for a in range(1,len(sys.argv)):
-		if sys.argv[a][:2] == '--':
-			continue
-		am_file = AMFile()
+	def printSources(self):
+		print "### Sources:"
+		printDict(self.sources,' : ')
 
-		if not am_file.read(sys.argv[a]): 
-			continue
-
-		if uses == 2:
-			print "### " + sys.argv[a]
-
-		if defines:
-			am_file.printDefines()
-		if targets:
-			am_file.printTargets()
-		if libadds:
-			am_file.printLibraryDeps()
-		if ldflags:
-			am_file.printLinkerFlags()
-
-		all_ams.addLibraryDeps(am_file)
-
-	if uses == 0:
-		all_ams.printUsedLibraries()
-	elif uses == 1:
-		a = all_ams.getReverseLibraryDeps()
-		printDict(a)
+# uses = 0
+# libadds = 0
+# ldflags = 0
+# defines = 0
+# targets = 0
+# libs = 0
+# sources = 0
+# if len(sys.argv) == 1:
+# 	print "amtool [options] Makefile.am [Makefile.am] ..."
+# 	print "list Makefile.am content" 
+# 	print "options:" 
+# 	print "    --uses print where a library is used" 
+# 	print "    --libadd print all LIBADD depenencies " 
+# 	print "    --ldflags print all LDFLAGS definitions" 
+# 	print "    --defines print all Makefile variables" 
+# 	print "    --targets print all Makefile tarets" 
+# 	print "    --libs print all libraries defined in self Makefile.am" 
+# 	print "    --sources print all sources defined in self Makefile.am" 
+# else:
+# 	all_ams = AMFile()
+# 	for a in range(1,len(sys.argv)):
+# 		if sys.argv[a][:6] == '--uses':
+# 			uses = 1
+# 		elif sys.argv[a][:8] == '--libadd':
+# 			libadds = 1
+# 		elif sys.argv[a][:9] == '--defines':
+# 			defines = 1
+# 		elif sys.argv[a][:9] == '--targets':
+# 			targets = 1			
+# 		elif sys.argv[a][:9] == '--ldflags':
+# 			ldflags = 1
+# 		elif sys.argv[a][:6] == '--libs':
+# 			libs = 1
+# 		elif sys.argv[a][:9] == '--sources':
+# 			sources = 1
+# 		if  libadds or defines or targets or ldflags or libs or sources:	
+# 			uses = 2
+# 						
+# 	for a in range(1,len(sys.argv)):
+# 		if sys.argv[a][:2] == '--':
+# 			continue
+# 		am_file = AMFile()
+# 
+# 		if not am_file.read(sys.argv[a]): 
+# 			continue
+# 
+# 		if uses == 2:
+# 			print "### " + sys.argv[a]
+# 
+# 		if defines:
+# 			am_file.printDefines()
+# 		if targets:
+# 			am_file.printTargets()
+# 		if libadds:
+# 			am_file.printLibraryDeps()
+# 		if ldflags:
+# 			am_file.printLinkerFlags()
+# 		if libs:
+# 			am_file.printLibraries()
+# 		if sources:
+# 			am_file.printSources()
+# 
+# 		all_ams.addLibraryDeps(am_file)
+# 		all_ams.addLinkerFlags(am_file)
+# 		all_ams.addSources(am_file)
+# 		all_ams.addLibraries(am_file)
+# 		generateConscript(am_file, out_buf)
+		
+# 	if uses == 0:
+# 		all_ams.printLibraryDeps()
+# 	elif uses == 1:
+# 		a = all_ams.getReverseLibraryDeps()
+# 		printDict(a)

@@ -1,0 +1,26 @@
+#! /usr/bin/env python
+#generated from kde3support/kdecore/Makefile.am by am2bksys.py
+Import('env')
+
+libkde3core_sources = """
+k3keysequence.cpp k3shortcut.cpp k3shortcutmenu.cpp k3urldrag.cpp
+"""
+
+include_headers = """
+k3keysequence.h k3shortcut.h k3shortcutmenu.h k3urldrag.h
+"""
+
+includes = '#/kdecore '
+
+obj = env.kdeobj('convenience')
+obj.target = 'libkde3core'
+obj.source = libkde3core_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+METASOURCES = AUTO
+SUBDIRS = .
+"""

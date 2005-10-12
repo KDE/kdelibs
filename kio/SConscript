@@ -7,12 +7,15 @@ env.subdirs('kssl kio bookmarks kfile kpasswdserver')
 obj = env.kdeobj('shlib', env)
 obj.target   = 'libkio'
 obj.vnum     = '6.0.2'
-obj.source   = "SConscript.dummy"
+obj.source   = "dummy.cpp"
 obj.iskdelib = 1
 obj.linkflags = '-Wl,--whole-archive build/kio/kssl/libkssl.a build/kio/kio/libkiocore.a build/kio/kio/libksycoca.a build/kio/bookmarks/libkbookmarks.a build/kio/kfile/libkfile.a -Wl,--no-whole-archive'
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 FAM'
 obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la'
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+
+import generic
+env.Command('dummy.cpp', '', generic.WriteFile("$TARGET", ""))
 
 obj.execute()
 # For now ;(

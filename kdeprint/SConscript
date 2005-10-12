@@ -1,0 +1,99 @@
+#! /usr/bin/env python
+#generated from kdeprint/Makefile.am by am2bksys.py
+Import('env')
+
+kded_kdeprintd_sources = """
+kdeprintd.cpp kdeprintd.skel kprintprocess.cpp
+"""
+
+libkdeprint_sources = """
+driver.cpp driveritem.cpp driverview.cpp droptionview.cpp
+foomatic2loader.cpp fooparser.cpp fooscanner.cpp kdeprintcheck.cpp
+kfilelist.cpp kmdbentry.cpp kmfactory.cpp kmfactory.skel
+kmjob.cpp kmjobmanager.cpp kmmanager.cpp kmprinter.cpp
+kmspecialmanager.cpp kmthreadjob.cpp kmuimanager.cpp kmvirtualmanager.cpp
+kpcopiespage.cpp kpdriverpage.cpp kpfileselectpage.cpp kpfilterpage.cpp
+kpgeneralpage.cpp kpipeprocess.cpp kpmarginpage.cpp kpposterpage.cpp
+kpqtpage.cpp kpreloadobject.cpp kprintaction.cpp kprintdialog.cpp
+kprintdialogpage.cpp kprinter.cpp kprinterimpl.cpp kprinterpropertydialog.cpp
+kprintpreview.cpp kxmlcommand.cpp marginpreview.cpp marginvaluewidget.cpp
+marginwidget.cpp messagewindow.cpp plugincombobox.cpp posterpreview.cpp
+ppdloader.cpp ppdparser.cpp ppdscanner.cpp printerfilter.cpp
+treecombobox.cpp util.cpp
+"""
+
+libdriverparse_sources = """
+driverparse.c
+"""
+
+include_headers = """
+kprintaction.h kprinter.h
+"""
+
+kdeprint_headers = """
+driver.h kmjob.h kmjobmanager.h kmmanager.h
+kmobject.h kmprinter.h kpreloadobject.h kprintdialog.h
+kprintdialogpage.h
+"""
+
+noinst_headers = """
+driveritem.h driverparse.h driverview.h droptionview.h
+foomatic2loader.h kdeprintcheck.h kdeprintd.h kfilelist.h
+kmdbentry.h kmfactory.h kmspecialmanager.h kmthreadjob.h
+kmuimanager.h kmvirtualmanager.h kpcopiespage.h kpdriverpage.h
+kpfileselectpage.h kpfilterpage.h kpgeneralpage.h kpipeprocess.h
+kpmarginpage.h kpposterpage.h kpqtpage.h kprintdialog.h
+kprinterimpl.h kprinterpropertydialog.h kprintpreview.h kprintprocess.h
+kxmlcommand.h marginpreview.h marginvaluewidget.h marginwidget.h
+messagewindow.h plugincombobox.h posterpreview.h ppdloader.h
+printerfilter.h treecombobox.h util.h
+"""
+
+includes = '#/kdefx #/kded #/kdecore/network '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'libkdeprint'
+obj.vnum = '6.0.2'
+obj.source = libkdeprint_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS Z '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kded_kdeprintd'
+obj.source = kded_kdeprintd_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDED '
+obj.execute()
+
+
+"""Unhandled Defines 
+services_DATA = kdeprintd.desktop
+KDE_OPTIONS = nofinal
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
+configdir = $(kde_confdir)
+update_DATA = kdeprintrc.upd
+libkdeprint_la_DEPENDENCIES = $(LIB_KPARTS)
+CUPSSUBDIR = cups
+config_DATA = kdeprintrc
+EXTRA_DIST = fooparser.y fooscanner.l kprintpreviewui.rc
+servicesdir = $(kde_servicesdir)/kded
+updatedir = $(kde_datadir)/kconf_update
+printdatadir = $(kde_datadir)/kdeprint
+SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tools tests
+kdeprintdir = $(includedir)/kdeprint
+uidata_DATA = kprintpreviewui.rc
+noinst_LIBRARIES = libdriverparse.a
+libkdeprint_la_METASOURCES = AUTO
+printdata_DATA = testprint.ps specials.desktop
+uidatadir = $(kde_confdir)/ui
+noinst_DATA = kdeprint
+"""
+
+"""Unhandled Targets 
+ppdparser = ###rm -f ppdparser.cpp.h###bison -v -d -p kdeprint_ppd $(srcdir)/ppdparser.y -o $(srcdir)/ppdparser.cpp###if test -f "$(srcdir)/ppdparser.hpp"; then mv $(srcdir)/ppdparser.hpp $(srcdir)/ppdparser.cpp.h; fi###flex -o$(srcdir)/ppdscanner.cpp -Pkdeprint_ppd $(srcdir)/ppdscanner.l###echo "#ifndef ppdparser_cpp_h" > $(srcdir)/ppdparser.cpp.hh###echo "#define ppdparser_cpp_h" >> $(srcdir)/ppdparser.cpp.hh###cat $(srcdir)/ppdparser.cpp.h >> $(srcdir)/ppdparser.cpp.hh###echo "#endif" >> $(srcdir)/ppdparser.cpp.hh###mv $(srcdir)/ppdparser.cpp.hh $(srcdir)/ppdparser.cpp.h
+messages = rc.cpp###$(EXTRACTRC) `find . -name "*.rc" -o -name "*.ui" | grep -v /cupsdconf` >> rc.cpp###$(XGETTEXT) `find . -name "*.cpp" | grep -v /cupsdconf` -o $(podir)/kdeprint.pot
+kdeprint = ###$(LN_S) $(srcdir)/management kdeprint
+fooparser = ###rm -f fooparser.cpp.h###bison -v -d -p kdeprint_foomatic2 $(srcdir)/fooparser.y -o $(srcdir)/fooparser.cpp###if test -f "$(srcdir)/fooparser.hpp"; then mv $(srcdir)/fooparser.hpp $(srcdir)/fooparser.cpp.h; fi###flex -o$(srcdir)/fooscanner.cpp -Pkdeprint_foomatic2 $(srcdir)/fooscanner.l###echo "#ifndef fooparser_cpp_h" > $(srcdir)/fooparser.cpp.hh###echo "#define fooparser_cpp_h" >> $(srcdir)/fooparser.cpp.hh###cat $(srcdir)/fooparser.cpp.h >> $(srcdir)/fooparser.cpp.hh###echo "#endif" >> $(srcdir)/fooparser.cpp.hh###mv $(srcdir)/fooparser.cpp.hh $(srcdir)/fooparser.cpp.h
+"""

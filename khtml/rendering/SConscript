@@ -1,0 +1,44 @@
+#! /usr/bin/env python
+#generated from khtml/rendering/Makefile.am by am2bksys.py
+Import('env')
+
+libkhtmlrender_sources = """
+bidi.cpp break_lines.cpp counter_tree.cpp enumerate.cpp
+font.cpp render_arena.cpp render_block.cpp render_body.cpp
+render_box.cpp render_br.cpp render_canvas.cpp render_container.cpp
+render_flow.cpp render_form.cpp render_frames.cpp render_generated.cpp
+render_image.cpp render_inline.cpp render_layer.cpp render_line.cpp
+render_list.cpp render_object.cpp render_replaced.cpp render_style.cpp
+render_table.cpp render_text.cpp table_layout.cpp
+"""
+
+noinst_headers = """
+bidi.h break_lines.h enumerate.h font.h
+render_applet.h render_arena.h render_box.h render_br.h
+render_canvas.h render_container.h render_flow.h render_form.h
+render_frames.h render_generated.h render_layer.h render_line.h
+render_list.h render_object.h render_replaced.h render_style.h
+render_table.h render_text.h table_layout.h
+"""
+
+includes = '#/kimgio #/kio #/dcop #/kfile #/khtml #/kutils '
+
+obj = env.kdeobj('convenience')
+obj.target = 'libkhtmlrender'
+obj.source = libkhtmlrender_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+libkhtmlrender_la_METASOURCES = AUTO
+SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
+"""
+
+"""Unhandled Targets 
+loading-icon = ###bin2c -sploading_icon $(srcdir)/img-loading.png > $(srcdir)/loading_icon.cpp
+srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
+"""
+

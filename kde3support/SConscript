@@ -1,0 +1,29 @@
+#! /usr/bin/env python
+#generated from kde3support/Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs("kdecore kdeui kio kparts kmdi")
+
+libkde3support_sources = """
+dummy.cpp
+"""
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'libkde3support'
+obj.source = libkde3support_sources
+obj.libpaths = 'kmdi kparts kio kdeui kdecore '
+obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+import generic
+env.Command('dummy.cpp', '', generic.WriteFile("$TARGET"))
+
+"""Unhandled Defines 
+SUBDIRS = kdecore kdeui kio kparts kmdi kunittest . tests
+"""
+
+"""Unhandled Targets 
+dummy.cpp = ###echo >dummy.cpp
+"""

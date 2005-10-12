@@ -264,9 +264,6 @@ def generate(env):
 				cppkcfgfile=sfile.dir.File(bs+'.cpp')
 				lenv.Depends(bs+'.cpp', lenv['KCONFIGCOMPILER'])
 				src.append(bs+'.cpp')
-			elif ext == ".dummy":
-				lenv.EmptyFile(bs)
-				src.append('dummy_'+bs+'.cpp')
 			else:
 				src.append(file)
 
@@ -349,7 +346,7 @@ def generate(env):
 					
 			self.binary.uselib       = self.uselib
 			self.binary.libs         = [self.kdeinitlib.target + ".la"] + self.orenv.make_list(self.libs)
-			self.binary.libdirs      = "build/dcop"
+			#self.binary.libdirs      = "build/dcop"
 			self.binary.libpaths     = self.libpaths
 			env.Depends(self.binary.target, self.kdeinitlib.target + ".la")
 

@@ -82,6 +82,11 @@ kjs
 kio
 qttestlib
 kded
+kparts
+kutils
+kdeprint
+khtml
+kde3support
 """
 
 if env['WINDOWS']:

@@ -1,0 +1,30 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+libkparts_sources = """
+browserextension.cpp browserinterface.cpp browserrun.cpp event.cpp
+factory.cpp historyprovider.cpp mainwindow.cpp part.cpp
+partmanager.cpp plugin.cpp statusbarextension.cpp
+"""
+
+includes = '../ #/kio/ #/libltdl #/kfile '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'libkparts'
+obj.vnum = '3.0.1'
+obj.source = libkparts_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+
+"""Unhandled Defines 
+servicetypedir = $(kde_servicetypesdir)
+libkparts_la_METASOURCES = AUTO
+kpartsincludedir = $(includedir)/kparts
+servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop
+DOXYGEN_REFERENCES = kdecore kdeui kdefx kio
+"""
+

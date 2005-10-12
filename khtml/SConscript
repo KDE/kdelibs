@@ -1,0 +1,127 @@
+#! /usr/bin/env python
+#generated from khtml/Makefile.am by am2bksys.py
+Import('env')
+
+#FIXME java is optional
+env.subdirs("""
+misc
+dom
+css
+xml
+html
+rendering
+java
+ecma
+imload
+""")
+
+testkhtml_sources = """
+domtreeview.cpp testkhtml.cpp
+"""
+
+libkhtml_sources = """
+htmlpageinfo.ui3 khtml_events.cpp khtml_ext.cpp khtml_factory.cpp
+khtml_iface.cc khtml_iface.skel khtml_pagecache.cpp khtml_part.cpp
+khtml_printsettings.cpp khtml_run.cpp khtml_settings.cc khtmlimage.cpp
+khtmlview.cpp kjserrordlg.ui3
+"""
+
+testregression_sources = """
+test_regression.cpp test_regression_fontoverload.cpp
+"""
+
+khtmlimagepart_sources = """
+imgdummy.cpp
+"""
+
+testkhtml_static_sources = """
+domtreeview.cpp testkhtml.cpp
+"""
+
+libkhtmlpart_sources = """
+dummy.cpp
+"""
+
+include_headers = """
+khtml_events.h khtml_part.h khtml_settings.h khtmldefaults.h
+khtmlview.h
+"""
+
+noinst_headers = """
+khtmlpart_p.h
+"""
+
+includes = '##/kjs #/kimgio java #/dcop misc dom xml html css #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils '
+
+dummy_cpp = """#include <kdelibs_export.h>
+extern "C" KDE_EXPORT void* init_libkhtml(); 
+extern "C" KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }
+
+"""
+
+imgdummy_cpp = """#include <kdelibs_export.h>
+extern "C"  KDE_EXPORT void* init_khtmlimagefactory();
+extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }
+
+"""
+
+import generic
+env.Command('dummy.cpp', '', generic.WriteFile("$TARGET", dummy_cpp))
+env.Command('imgdummy.cpp', '', generic.WriteFile("$TARGET", imgdummy_cpp))
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'libkhtml'
+obj.vnum = '6.0.2'
+obj.source = libkhtml_sources
+obj.includes = includes
+obj.libpaths = "xml html rendering css misc ecma dom imload "
+obj.libs = 'khtmlxml khtmlhtml khtmlrender khtmlcss khtmlmisc kjs_html khtmldom khtmlimload ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KJAVA KPARTS THAI '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'libkhtmlpart'
+obj.source = libkhtmlpart_sources
+obj.includes = includes
+obj.libs = 'libkhtml.la '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'khtmlimagepart'
+obj.source = khtmlimagepart_sources
+obj.includes = includes
+obj.libs = 'libkhtml.la '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+for i in noinst_headers.split():
+	env.Moc(i)
+
+"""Unhandled Defines 
+LIBKJAVA = 
+DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
+EXTRA_DIST = CHANGES DESIGN README.HTMLWidget README.tags
+JAVA_SUBDIR = java
+CLEANFILES = dummy.cpp
+service_DATA = khtml.desktop khtmlimage.desktop
+rc_DATA = khtml.rc khtml_browser.rc khtml_popupmenu.rc
+libkhtml_la_METASOURCES = AUTO
+servicedir = $(kde_servicesdir)
+SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma imload . kmultipart
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
+DOXYGEN_EXCLUDE = test*.* html rendering xml misc pics test
+testregression_LDADD = libkhtml.la
+SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
+testkhtml_static_LDADD = libkhtml.la
+testkhtml_LDADD = libkhtml.la
+rcdir = $(kde_datadir)/khtml
+"""
+
+"""Unhandled Targets 
+.PHONY = parser
+parser = ###cd $(srcdir) && \###perl scripts/makeattrs && \###bash scripts/maketags && \###bash scripts/makeprop
+srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore \###         $(include_HEADERS) -lqt
+"""

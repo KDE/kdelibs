@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+#generated from khtml/dom/Makefile.am by am2bksys.py
+Import('env')
+
+libkhtmldom_sources = """
+css_rule.cpp css_stylesheet.cpp css_value.cpp dom2_events.cpp
+dom2_range.cpp dom2_traversal.cpp dom2_views.cpp dom_doc.cpp
+dom_element.cpp dom_misc.cpp dom_node.cpp dom_string.cpp
+dom_text.cpp dom_xml.cpp html_base.cpp html_block.cpp
+html_document.cpp html_element.cpp html_form.cpp html_head.cpp
+html_image.cpp html_inline.cpp html_list.cpp html_misc.cpp
+html_object.cpp html_table.cpp
+"""
+
+myinclude_headers = """
+css_rule.h css_stylesheet.h css_value.h dom2_events.h
+dom2_range.h dom2_traversal.h dom2_views.h dom_core.h
+dom_doc.h dom_element.h dom_exception.h dom_html.h
+dom_misc.h dom_node.h dom_string.h dom_text.h
+dom_xml.h html_base.h html_block.h html_document.h
+html_element.h html_form.h html_head.h html_image.h
+html_inline.h html_list.h html_misc.h html_object.h
+html_table.h
+"""
+
+includes = '#/kimgio #/kio #/dcop #/khtml '
+
+obj = env.kdeobj('convenience',env)
+obj.target = 'libkhtmldom'
+obj.source = libkhtmldom_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+libkhtmldom_la_METASOURCES = AUTO
+myincludedir = $(includedir)/dom
+KDE_CXXFLAGS = $(USE_EXCEPTIONS) $(WOVERLOADED_VIRTUAL)
+SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
+"""
+
+"""Unhandled Targets 
+srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
+"""
+

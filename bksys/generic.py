@@ -28,6 +28,14 @@ def write_config_h(lenv):
 	lenv.pprint('GREEN','configuration done - run scons to compile now')
 	lenv.Exit(0)
 
+## Writes an empty file
+def write_file(target, content=""):
+	dest=open(target, 'w')
+	dest.write(content)
+	dest.close()
+WriteFile = SCons.Action.ActionFactory(write_file,
+	lambda dest, content="": 'WriteFile("%s", "%s")' % (dest, content))
+
 ## CONFIGURATION: configure the project - this is the entry point
 def configure(dict):
 	from SCons import Environment
@@ -216,6 +224,7 @@ class genobj:
 
 	## FIXME : this scheme is ugly (ita)
 	# a list of paths, with absolute and relative ones, useful when giving include dirs
+	# If a path begins with ##, then its corresponding build dir will be added as well
 	def fixpath(self, val):
 		def reldir(dir):
 			ndir    = SCons.Node.FS.default_fs.Dir(dir).srcnode().abspath
@@ -230,6 +239,10 @@ class genobj:
 		bdir="./"
 		if self.orenv.has_key('_BUILDDIR_'): bdir=self.orenv['_BUILDDIR_']
 		for v in thing:
+			if v[:2] == "##":
+				ret.append( self.orenv.join('#', bdir, v[2:]) )
+				v = v[1:]
+				
 			if v[:1] == "#" or v[:1] == "/":
 				ret.append(v)
 			else:
@@ -690,13 +703,6 @@ def generate(env):
 		from detect_generic import build_la_file
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
-
-	## Writes an empty file 
-	def build_empty_file(target, source, env):
-		dest=open(target[0].path, 'w')
-		dest.write("")
-		dest.close()
-	env['BUILDERS']['EmptyFile'] = env.Builder(action=env.Action(build_empty_file), prefix='dummy_', suffix='.cpp', src_suffix='')
 
 	## Build symlinks
 	def symlink_command(target, source, env):
