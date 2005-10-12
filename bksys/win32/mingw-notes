@@ -4,9 +4,11 @@ TODO
 ---- 
 
 - complete build system 
-	-	fix depending library ordering problem  (is in work)
+	- fix depending library ordering problem  (works now better)
 	- add required qt defines to qt component packages 
 	- fix installation of files 
+  - implement library dependency support like libtool does  
+	- provides application wrapper setting the required PATH without installation 
 
 - build or add notes where to get source/binary packages of required libraries 		
 		- zlib 
@@ -19,6 +21,7 @@ TODO
 		the cygsetup tool from http://sf.net/projects/kde-cygwin (see cvs repository 
 		tools/cygsetup) may be used a starting point 
 
+http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/389916
 	
 
 History
@@ -90,6 +93,9 @@ scons configure
 	obj.libpaths = '../libltdl ../win ../dcop '
 	obj.libs     = 'ltdlc kdewin32 DCOP wsock32'
 	
+	the last notation is non error prof because if one add additional libs they may be concatenated without delimiters 
+	obj.libs     += 'ltdlc kdewin32 DCOP wsock32'.split()
+
 	note that the last library is a system library, which search path is added by default 
 	
 	-> a patch for this is in test phase 
