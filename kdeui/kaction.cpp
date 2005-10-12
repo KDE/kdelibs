@@ -967,6 +967,9 @@ void KAction::addContainer( QWidget* c, QWidget* w )
 
 void KAction::activate()
 {
+#ifdef QT3_SUPPORT
+  emit activated( KAction::EmulatedActivation, Qt::NoButton );
+#endif
   emit activated( KAction::EmulatedActivation, Qt::NoButton, Qt::NoModifier );
   slotActivated();
 }
@@ -977,6 +980,9 @@ void KAction::slotActivated()
   if ( senderObj )
   {
     if ( qobject_cast<KAccelPrivate *>( senderObj ) ) {
+#ifdef QT3_SUPPORT
+      emit activated( KAction::AccelActivation, Qt::NoButton );
+#endif
       emit activated( KAction::AccelActivation, Qt::NoButton, Qt::NoModifier );
     }
   }
@@ -1010,6 +1016,9 @@ void KAction::slotPopupActivated()
             modifiers = QApplication::keyboardModifiers();
         }
         emit activated( KAction::PopupMenuActivation, buttons, modifiers );
+#ifdef QT3_SUPPORT
+        emit activated( KAction::PopupMenuActivation, Qt::ButtonState(int(buttons|modifiers)) );
+#endif
         slotActivated();
         return;
       }
@@ -1017,6 +1026,9 @@ void KAction::slotPopupActivated()
   }
 
   kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QMenus which are in containers. Use slotActivated instead."<<endl;
+#ifdef QT3_SUPPORT
+  emit activated( KAction::PopupMenuActivation, Qt::NoButton );
+#endif
   emit activated( KAction::PopupMenuActivation, Qt::NoButton, Qt::NoModifier );
   slotActivated();
 }

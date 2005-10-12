@@ -571,6 +571,11 @@ signals:
      */
     void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
+//#ifdef QT3_SUPPORT TODO
+    /// @deprecated, use the signal
+    /// void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
+    QT_MOC_COMPAT void activated( KAction::ActivationReason reason, Qt::ButtonState state );
+//#endif
     void enabled( bool );
 
 private:
