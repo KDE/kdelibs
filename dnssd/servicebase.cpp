@@ -34,7 +34,7 @@ ServiceBase::~ServiceBase()
 
 QString ServiceBase::encode()
 {
-	return  m_serviceName.replace(".","\\.").replace("\\","\\\\") + QString(".") + m_type +
+	return  m_serviceName.replace("\\","\\\\").replace(".","\\.") + QString(".") + m_type +
 			 QString(".") + m_domain;
 }
 

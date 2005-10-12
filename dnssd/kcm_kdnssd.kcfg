@@ -16,7 +16,7 @@
   </entry>
   <entry key="Recursive" type="Bool" >
    <label>Recursive search for domains</label>
-   <whatsthis>Specifies that every found domain should be in turn queried for more browsing domains.</whatsthis>
+   <whatsthis>Removed in KDE 3.5.0</whatsthis>
    <default>false</default>
   </entry>
  </group>

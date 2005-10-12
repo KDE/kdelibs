@@ -53,9 +53,7 @@ public:
 	Constructor that creates browser for domain list. This does not use global
 	configuration at all.
 	@param domains List of domains 
-	@param recursive TRUE - specified domains will be recursively browsed to
-	discover more domains. This means that every domain (specified in constructor,
-	or found by query) will be queried for list of more browsing domains. 
+	@param recursive TRUE - additionally local network will be browsed for more domains
 	@param parent Parent object.
 	This process is recursive.
 	 */
@@ -92,10 +90,13 @@ signals:
 protected:
 	virtual void virtual_hook(int,void*);
 private:
+	friend class DomainBrowserPrivate;
 	DomainBrowserPrivate *d;
+
+	void gotNewDomain(const QString&);
+	void gotRemoveDomain(const QString&);
+
 private slots:
-	void gotNewDomain(DNSSD::RemoteService::Ptr);
-	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
 	void domainListChanged(int,int);
 };
 

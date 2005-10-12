@@ -22,6 +22,7 @@
 #include "responder.h"
 #include "remoteservice.h"
 #include "sdevent.h"
+#include <kdebug.h>
 #include <qapplication.h>
 #include <qtimer.h>
 
