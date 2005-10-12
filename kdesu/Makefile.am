@@ -2,6 +2,8 @@
 
 INCLUDES = -I$(top_srcdir)/kio/ $(all_includes)
 
+KDE_CXXFLAGS = -UQT3_SUPPORT
+
 lib_LTLIBRARIES = libkdesu.la
 libkdesu_la_SOURCES = client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp kdesu_pty.cpp
 libkdesu_la_LDFLAGS = -version-info 6:0:2 -no-undefined $(all_libraries) 

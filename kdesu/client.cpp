@@ -307,7 +307,7 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
         // kdDebug(900) << "Found a matching entry: " << reply << endl;
         while (1)
         {
-            pos = reply.find( '\007', index );
+            pos = reply.indexOf( '\007', index );
             if( pos == -1 )
             {
                 if( index == 0 )
