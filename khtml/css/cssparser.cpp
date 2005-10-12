@@ -2023,10 +2023,10 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
         v = args->next();
         if ( !validUnit( v, FNumber, true ) )
             return 0;
-        r = QMAX( 0, QMIN( 255, r ) );
-        g = QMAX( 0, QMIN( 255, g ) );
-        b = QMAX( 0, QMIN( 255, b ) );
-        int a = (int)(QMAX( 0.0, QMIN( 1.0, v->fValue ) ) * 255);
+        r = qMax( 0, qMin( 255, r ) );
+        g = qMax( 0, qMin( 255, g ) );
+        b = qMax( 0, qMin( 255, b ) );
+        int a = (int)(qMax( 0.0, qMin( 1.0, v->fValue ) ) * 255);
         c = qRgba( r, g, b, a );
     }
     else

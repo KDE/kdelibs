@@ -192,7 +192,7 @@ public:
         GIFLoader* me = static_cast<GIFLoader*>(gifInfo->UserData);
         
         int remBytes = me->buffer.size() - me->bufferReadPos;
-        int toRet    = QMIN(remBytes, limit);
+        int toRet    = qMin(remBytes, limit);
         
         memcpy(data, me->buffer.data() + me->bufferReadPos, toRet);
         me->bufferReadPos += toRet;

@@ -73,16 +73,16 @@ private:
 #define NodeImpl_IdNSMask    0xffff0000
 #define NodeImpl_IdLocalMask 0x0000ffff
 
-const Q_UINT16 noNamespace = 0;
-const Q_UINT16 anyNamespace = 0xffff;
-const Q_UINT16 xhtmlNamespace = 1;
-const Q_UINT16 anyLocalName = 0xffff;
+const quint16 noNamespace = 0;
+const quint16 anyNamespace = 0xffff;
+const quint16 xhtmlNamespace = 1;
+const quint16 anyLocalName = 0xffff;
 
-inline Q_UINT16 localNamePart(Q_UINT32 id) { return id & NodeImpl_IdLocalMask; }
-inline Q_UINT16 namespacePart(Q_UINT32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }
-inline Q_UINT32 makeId(Q_UINT16 n, Q_UINT16 l) { return (n << 16) | l; }
+inline quint16 localNamePart(quint32 id) { return id & NodeImpl_IdLocalMask; }
+inline quint16 namespacePart(quint32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }
+inline quint32 makeId(quint16 n, quint16 l) { return (n << 16) | l; }
 
-const Q_UINT32 anyQName = makeId(anyNamespace, anyLocalName);
+const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 
 class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
@@ -139,7 +139,7 @@ public:
     // appendChild(), and returns the node into which will be parsed next.
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
-    typedef Q_UINT32 Id;
+    typedef quint32 Id;
     // id() is used to easily and exactly identify a node. It
     // is optimized for quick comparison and low memory consumption.
     // its value depends on the owner document of the node and is

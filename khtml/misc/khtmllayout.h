@@ -101,7 +101,7 @@ namespace khtml
                 unsigned type : 3;
                 bool quirk : 1;
             } l;
-            Q_UINT32 _length;
+            quint32 _length;
         };
     };
 

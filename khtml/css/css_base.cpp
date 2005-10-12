@@ -311,7 +311,7 @@ DOMString CSSSelector::selectorText() const
     // the original namespace prefix used. Ugh. -dwh
     DOMString str;
     const CSSSelector* cs = this;
-    Q_UINT16 tag = localNamePart(cs->tag);
+    quint16 tag = localNamePart(cs->tag);
     if ( tag == anyLocalName && cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
     {
         str = "#";

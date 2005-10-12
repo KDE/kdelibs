@@ -471,12 +471,12 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     unsigned int numPseudoProps = 0;
 
     // try to sort out most style rules as early as possible.
-    Q_UINT16 cssTagId = localNamePart(element->id());
+    quint16 cssTagId = localNamePart(element->id());
     int smatch = 0;
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	Q_UINT16 tag = localNamePart(selectors[i]->tag);
+	quint16 tag = localNamePart(selectors[i]->tag);
 	if ( cssTagId == tag || tag == anyLocalName ) {
 	    ++schecked;
 
@@ -1030,10 +1030,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
     if (sel->tag != anyQName) {
         int eltID = e->id();
-        Q_UINT16 localName = localNamePart(eltID);
-        Q_UINT16 ns = namespacePart(eltID);
-        Q_UINT16 selLocalName = localNamePart(sel->tag);
-        Q_UINT16 selNS = namespacePart(sel->tag);
+        quint16 localName = localNamePart(eltID);
+        quint16 ns = namespacePart(eltID);
+        quint16 selLocalName = localNamePart(sel->tag);
+        quint16 selNS = namespacePart(sel->tag);
 
         if (localName <= ID_LAST_TAG && e->isHTMLElement())
             ns = xhtmlNamespace; // FIXME: Really want to move away from this complicated hackery and just

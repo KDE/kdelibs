@@ -5310,8 +5310,8 @@ void KHTMLPart::saveState( QDataStream &stream )
   kdDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
 #endif
 
-  stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY()
-         << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight() << (Q_INT32) d->m_view->marginWidth() << (Q_INT32) d->m_view->marginHeight();
+  stream << m_url << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
+         << (qint32) d->m_view->contentsWidth() << (qint32) d->m_view->contentsHeight() << (qint32) d->m_view->marginWidth() << (qint32) d->m_view->marginHeight();
 
   // save link cursor position
   int focusNodeNumber;
@@ -5381,7 +5381,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   }
 
   // Save frame data
-  stream << (Q_UINT32) frameNameLst.count();
+  stream << (quint32) frameNameLst.count();
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
 #ifndef NDEBUG
   s_saveStateIndentLevel = indentLevel;
@@ -5391,8 +5391,8 @@ void KHTMLPart::saveState( QDataStream &stream )
 void KHTMLPart::restoreState( QDataStream &stream )
 {
   KURL u;
-  Q_INT32 xOffset, yOffset, wContents, hContents, mWidth, mHeight;
-  Q_UINT32 frameCount;
+  qint32 xOffset, yOffset, wContents, hContents, mWidth, mHeight;
+  quint32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KURL::List frameURLs;
   Q3ValueList<QByteArray> frameStateBuffers;

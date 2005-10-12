@@ -222,7 +222,7 @@ void CSSStyleSheetImpl::addNamespace(CSSParser* p, const DOM::DOMString& prefix,
         p->defaultNamespace = m_doc->getId(NodeImpl::NamespaceId, uri.implementation(), false, false, &exceptioncode);
 }
 
-void CSSStyleSheetImpl::determineNamespace(Q_UINT32& id, const DOM::DOMString& prefix)
+void CSSStyleSheetImpl::determineNamespace(quint32& id, const DOM::DOMString& prefix)
 {
     // If the stylesheet has no namespaces we can just return.  There won't be any need to ever check
     // namespace values in selectors.

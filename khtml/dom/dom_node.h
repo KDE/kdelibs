@@ -841,7 +841,7 @@ public:
      * not part of the DOM.
      * @returns the element id, in case this is an element, 0 otherwise
      */
-    Q_UINT32 elementId() const;
+    quint32 elementId() const;
 
     /**
      * tests if this Node is 0. Useful especially, if casting to a derived

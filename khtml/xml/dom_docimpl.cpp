@@ -1536,7 +1536,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 ElementImpl* DocumentImpl::findAccessKeyElement(QChar c)
 {
-    c = c.upper();
+    c = c.toUpper();
     for( NodeImpl* n = this;
          n != NULL;
          n = n->traverseNextNode()) {
@@ -1544,7 +1544,7 @@ ElementImpl* DocumentImpl::findAccessKeyElement(QChar c)
             ElementImpl* en = static_cast< ElementImpl* >( n );
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
             if( s.length() == 1
-                && s[ 0 ].upper() == c )
+                && s[ 0 ].toUpper() == c )
                 return en;
         }
     }
@@ -1790,7 +1790,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
 
     // Look in the names array for the name
     // compatibility mode has to lookup upper case
-    QString name = cs ? n.string() : n.string().upper();
+    QString name = cs ? n.string() : n.string().toUpper();
 
     if (!_nsURI) {
         id = (NodeImpl::Id)(long) map->ids.find( name );
@@ -1801,7 +1801,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
             QConstString px( _prefix->s, _prefix->l );
-            QString qn("aliases: " + (cs ? px.string() : px.string().upper()) + ":" + name);
+            QString qn("aliases: " + (cs ? px.string() : px.string().toUpper()) + ":" + name);
             if (!map->ids.find( qn )) {
                 map->ids.insert( qn, (void*)id );
             }
@@ -1828,7 +1828,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     // and register an alias if needed for DOM1 methods compatibility
     if(_prefix && _prefix->l) {
         QConstString px( _prefix->s, _prefix->l );
-        QString qn("aliases: " + (cs ? px.string() : px.string().upper()) + ":" + name);
+        QString qn("aliases: " + (cs ? px.string() : px.string().toUpper()) + ":" + name);
         if (!map->ids.find( qn )) {
             map->ids.insert( qn, (void*)cid );
         }

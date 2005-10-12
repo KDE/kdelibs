@@ -77,10 +77,10 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
         if (imageTile.versions[line] < parent->versions[origLine])
         {
             if (parent->format.depth() == 1)
-                scaleLoop<Q_UINT8>(&imageTile.image, xScaleTable, line, 
+                scaleLoop<quint8>(&imageTile.image, xScaleTable, line, 
                                 parent->image, origLine, tileX, tileY);
             else
-                scaleLoop<Q_UINT32>(&imageTile.image, xScaleTable, line,
+                scaleLoop<quint32>(&imageTile.image, xScaleTable, line,
                                 parent->image, origLine, tileX, tileY);
         }
     }

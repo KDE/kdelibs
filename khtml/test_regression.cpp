@@ -65,7 +65,7 @@
 struct PalInfo
 {
     QPalette::ColorRole role;
-    Q_UINT32            color;
+    quint32            color;
 };
 
 PalInfo palInfo[] = 

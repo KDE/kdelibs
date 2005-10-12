@@ -797,7 +797,7 @@ protected:
 
                 unsigned int unused : 27;
             } f;
-            Q_UINT64 _iflags;
+            quint64 _iflags;
         };
     } inherited_flags;
 
@@ -832,7 +832,7 @@ protected:
 
                 unsigned int unused : 23;
             } f;
-            Q_UINT64 _niflags;
+            quint64 _niflags;
         };
     } noninherited_flags;
 
