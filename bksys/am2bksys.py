@@ -12,11 +12,13 @@ import os, re, types, sys, string, shutil, stat, glob, amtool
 
 ## Class for automatically converting Makefile.am to SConscript
 #
-# The class provides methods for the following tasks: 
-#		- parsing Makefile.am's and collecting targets and defines into class members 
-#		- extracting library dependencies and linker flags keyed by the related targets
-#		- extracting target libraries and programs
-#		- collecting detailled lists of libraries dependencies
+# The class can handle simple Makefile.am 100% correct, for complex ones, manual
+# fine-tunning is required. These are something that can not handle:
+#		- Custom make target
+#		- distinguish between share/static libraries and modify the obj.libs or obj.uselibs accordingly
+#		- extra moc files
+#		- checking programs (test/EXTRA, how to enable checking?? )
+#		- conditional compilation
 #
 #
 
@@ -217,6 +219,7 @@ if len(sys.argv) == 1:
 	print "options:" 
 	print "    -o file  Write generated SConscript to this file" 
 	print "    -w Write generated SConscript to the same dir as the Makefile.am" 
+	print "By default, am2bksys will output the generated SConscript to stdout" 
 else:
 	outputfile = ""
 	for a in range(1,len(sys.argv)):
