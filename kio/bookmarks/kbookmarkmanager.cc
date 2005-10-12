@@ -45,7 +45,7 @@
 class KBookmarkManagerPrivate : public dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate> {
 public:
     KBookmarkManagerPrivate()
-        { m_browserEditor = true; };
+        { m_browserEditor = true; }
     QString m_editorCaption;
     bool m_browserEditor;
 };
