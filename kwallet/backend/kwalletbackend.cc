@@ -156,7 +156,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	QByteArray block1(shasz);
 
-	sha.process(password.data(), QMIN(password.size(), 16));
+	sha.process(password.data(), qMin(password.size(), 16));
 
 	// To make brute force take longer
 	for (int i = 0; i < 2000; i++) {
@@ -168,7 +168,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 	sha.reset();
 
 	if (password.size() > 16) {
-		sha.process(password.data() + 16, QMIN(password.size() - 16, 16));
+		sha.process(password.data() + 16, qMin(password.size() - 16, 16));
 		QByteArray block2(shasz);
 		// To make brute force take longer
 		for (int i = 0; i < 2000; i++) {
@@ -180,7 +180,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 		sha.reset();
 
 		if (password.size() > 32) {
-			sha.process(password.data() + 32, QMIN(password.size() - 32, 16));
+			sha.process(password.data() + 32, qMin(password.size() - 32, 16));
 
 			QByteArray block3(shasz);
 			// To make brute force take longer
@@ -330,7 +330,7 @@ int Backend::open(const QByteArray& password) {
 	_hashes.clear();
 	// Read in the hashes
 	QDataStream hds(&db);
-	Q_UINT32 n;
+	quint32 n;
 	hds >> n;
 	if (n > 0xffff) { // sanity check
 		return -43;
@@ -340,7 +340,7 @@ int Backend::open(const QByteArray& password) {
 		KMD5::Digest d, d2; // judgment day
 		MD5Digest ba;
 		QMap<MD5Digest,QList<MD5Digest> >::iterator it;
-		Q_UINT32 fsz;
+		quint32 fsz;
 		if (hds.atEnd()) return -43;
 		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
@@ -437,7 +437,7 @@ int Backend::open(const QByteArray& password) {
 
 	while (!eStream.atEnd()) {
 		QString folder;
-		Q_UINT32 n;
+		quint32 n;
 
 		eStream >> folder;
 		eStream >> n;
@@ -450,7 +450,7 @@ int Backend::open(const QByteArray& password) {
 			KWallet::Wallet::EntryType et = KWallet::Wallet::Unknown;
 			Entry *e = new Entry;
 			eStream >> key;
-			Q_INT32 x = 0; // necessary to read properly
+			qint32 x = 0; // necessary to read properly
 			eStream >> x;
 			et = static_cast<KWallet::Wallet::EntryType>(x);
 
@@ -505,7 +505,7 @@ int Backend::sync(const QByteArray& password) {
 	QByteArray hashes;
 	QDataStream hashStream(&hashes, QIODevice::WriteOnly);
 	KMD5 md5;
-	hashStream << static_cast<Q_UINT32>(_entries.count());
+	hashStream << static_cast<quint32>(_entries.count());
 
 	// Holds decrypted data prior to encryption
 	QByteArray decrypted;
@@ -518,16 +518,16 @@ int Backend::sync(const QByteArray& password) {
 	QDataStream dStream(&decrypted, QIODevice::WriteOnly);
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
-		dStream << static_cast<Q_UINT32>(i.data().count());
+		dStream << static_cast<quint32>(i.data().count());
 
 		md5.reset();
 		md5.update(i.key().toUtf8());
 		hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
-		hashStream << static_cast<Q_UINT32>(i.data().count());
+		hashStream << static_cast<quint32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
 			dStream << j.key();
-			dStream << static_cast<Q_INT32>(j.data()->type());
+			dStream << static_cast<qint32>(j.data()->type());
 			dStream << j.data()->value();
 
 			md5.reset();
