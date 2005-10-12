@@ -1628,7 +1628,6 @@ static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, mode_t type
 
     acl_t acl = 0;
     acl_t defaultAcl = 0;
-    UDSAtom atom;
     bool isDir = S_ISDIR( type );
     // do we have an acl for the file, and/or a default acl for the dir, if it is one?
     acl = acl_get_file( path.data(), ACL_TYPE_ACCESS );
@@ -1650,13 +1649,15 @@ static void appendACLAtoms( const Q3CString & path, UDSEntry& entry, mode_t type
     if ( withACL ) {
         if ( acl ) {
             ssize_t size = acl_size( acl );
-            entry.insert( KIO::UDS_ACL_STRING, QString::fromLatin1( acl_to_text( acl, &size ) ) );
-            kdDebug(7101) << path.data() << "ACL: " << atom.m_str << endl;
+            const QString str = QString::fromLatin1( acl_to_text( acl, &size ) );
+            entry.insert( KIO::UDS_ACL_STRING, str );
+            kdDebug(7101) << path.data() << "ACL: " << str << endl;
         }
         if ( defaultAcl ) {
             ssize_t size = acl_size( defaultAcl );
-            entry.insert( KIO::UDS_DEFAULT_ACL_STRING, QString::fromLatin1( acl_to_text( defaultAcl, &size ) ) );
-            kdDebug(7101) << path.data() << "DEFAULT ACL: " << atom.m_str << endl;
+            const QString str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
+            entry.insert( KIO::UDS_DEFAULT_ACL_STRING, str );
+            kdDebug(7101) << path.data() << "DEFAULT ACL: " << str << endl;
         }
     }
     if ( acl ) acl_free( acl );
