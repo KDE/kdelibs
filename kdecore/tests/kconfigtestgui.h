@@ -16,8 +16,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef _KCONFIG_TEST_H
-#define _KCONFIG_TEST_H
+#ifndef KCONFIGTESTGUI_H
+#define KCONFIGTESTGUI_H
 
 #include <kapplication.h>
 #include <qdialog.h>
@@ -43,7 +43,7 @@ class KConfigTestView : public QDialog
 {
   Q_OBJECT
 public:
-  KConfigTestView( QWidget *parent=0, const char *name=0 );
+  KConfigTestView( QWidget *parent=0 );
   ~KConfigTestView();
 
 private slots:

@@ -61,8 +61,8 @@
 // Construct the KConfigTestView with buttons
 //
 
-KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
-    : QDialog( parent, name ),
+KConfigTestView::KConfigTestView( QWidget *parent )
+    : QDialog( parent ),
       pConfig( 0L ),
       pFile( 0L ),
       pStream( 0L )
