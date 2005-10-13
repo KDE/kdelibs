@@ -28,14 +28,6 @@ def write_config_h(lenv):
 	lenv.pprint('GREEN','configuration done - run scons to compile now')
 	lenv.Exit(0)
 
-## Writes an empty file
-def write_file(target, content=""):
-	dest=open(target, 'w')
-	dest.write(content)
-	dest.close()
-WriteFile = SCons.Action.ActionFactory(write_file,
-	lambda dest, content="": 'WriteFile("%s", "%s")' % (dest, content))
-
 ## CONFIGURATION: configure the project - this is the entry point
 def configure(dict):
 	from SCons import Environment
@@ -855,6 +847,13 @@ def generate(env):
 			lenv.Append(LIBPATH=[f.dir])
 			lenv.Append(LIBS=[f.name])
 
+	def create_file(target, source, env):
+		f = open(str(target[0]), 'wb')
+		f.write(source[0].get_contents())
+		f.close()
+	
+	env['BUILDERS']['CreateFile'] = env.Builder(action = create_file)
+	
 	SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
 

@@ -65,9 +65,8 @@ extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefacto
 
 """
 
-import generic
-env.Command('dummy.cpp', '', generic.WriteFile("$TARGET", dummy_cpp))
-env.Command('imgdummy.cpp', '', generic.WriteFile("$TARGET", imgdummy_cpp))
+env.CreateFile('dummy.cpp', Value(dummy_cpp))
+env.CreateFile('imgdummy.cpp', Value(imgdummy_cpp))
 
 obj = env.kdeobj('shlib')
 obj.it_is_a_kdelib()

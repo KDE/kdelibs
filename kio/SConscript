@@ -14,8 +14,7 @@ obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 FAM'
 obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la'
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
-import generic
-env.Command('dummy.cpp', '', generic.WriteFile("$TARGET", ""))
+env.CreateFile('dummy.cpp', Value(''))
 
 obj.execute()
 # For now ;(

@@ -17,8 +17,7 @@ obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
-import generic
-env.Command('dummy.cpp', '', generic.WriteFile("$TARGET"))
+env.CreateFile('dummy.cpp', Value(''))
 
 """Unhandled Defines 
 SUBDIRS = kdecore kdeui kio kparts kmdi kunittest . tests
