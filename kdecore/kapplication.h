@@ -214,107 +214,6 @@ public:
    */
   void enableSessionManagement();
 
-  /**
-   * The possible values for the @p confirm parameter of requestShutDown().
-   */
-  enum ShutdownConfirm {
-    /**
-     * Obey the user's confirmation setting.
-     */
-    ShutdownConfirmDefault = -1,
-    /**
-     * Don't confirm, shutdown without asking.
-     */
-    ShutdownConfirmNo = 0,
-    /**
-     * Always confirm, ask even if the user turned it off.
-     */
-    ShutdownConfirmYes = 1
-  };
-
-  /**
-   * The possible values for the @p sdtype parameter of requestShutDown().
-   */
-  enum ShutdownType {
-    /**
-     * Select previous action or the default if it's the first time.
-     */
-    ShutdownTypeDefault = -1,
-    /**
-     * Only log out.
-     */
-    ShutdownTypeNone = 0,
-    /**
-     * Log out and reboot the machine.
-     */
-    ShutdownTypeReboot = 1,
-    /**
-     * Log out and halt the machine.
-     */
-    ShutdownTypeHalt = 2
-  };
-
-  /**
-   * The possible values for the @p sdmode parameter of requestShutDown().
-   */
-  enum ShutdownMode {
-    /**
-     * Select previous mode or the default if it's the first time.
-     */
-    ShutdownModeDefault = -1,
-    /**
-     * Schedule a shutdown (halt or reboot) for the time all active sessions
-     * have exited.
-     */
-    ShutdownModeSchedule = 0,
-    /**
-     * Shut down, if no sessions are active. Otherwise do nothing.
-     */
-    ShutdownModeTryNow = 1,
-    /**
-     * Force shutdown. Kill any possibly active sessions.
-     */
-    ShutdownModeForceNow = 2,
-    /**
-     * Pop up a dialog asking the user what to do if sessions are still active.
-     */
-    ShutdownModeInteractive = 3
-  };
-
-  /**
-   * Asks the session manager to shut the session down.
-   *
-   * Using @p confirm == ShutdownConfirmYes or @p sdtype != ShutdownTypeDefault or
-   * @p sdmode != ShutdownModeDefault causes the use of ksmserver's DCOP
-   * interface. The remaining two combinations use the standard XSMP and
-   * will work with any session manager compliant with it.
-   *
-   * @param confirm Whether to ask the user if he really wants to log out.
-   * ShutdownConfirm
-   * @param sdtype The action to take after logging out. ShutdownType
-   * @param sdmode If/When the action should be taken. ShutdownMode
-   * @return true on success, false if the session manager could not be
-   * contacted.
-   */
-  bool requestShutDown( ShutdownConfirm confirm = ShutdownConfirmDefault,
-                        ShutdownType sdtype = ShutdownTypeDefault,
-			ShutdownMode sdmode = ShutdownModeDefault );
-
-  /**
-   * Propagates the network address of the session manager in the
-   * SESSION_MANAGER environment variable so that child processes can
-   * pick it up.
-   *
-   * If SESSION_MANAGER isn't defined yet, the address is searched in
-   * $HOME/.KSMserver.
-   *
-   * This function is called by clients that are started outside the
-   * session ( i.e. before ksmserver is started), but want to launch
-   * other processes that should participate in the session.  Examples
-   * are kdesktop or kicker.
-   */
-    void propagateSessionManager();
-
     /**
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with KSessionManaged.
@@ -952,7 +851,6 @@ private:
   class Private;
   Private *d;
 };
-
 
 #endif
 
