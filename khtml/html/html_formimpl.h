@@ -206,6 +206,8 @@ public:
     void activate();
     virtual void attach();
     void click();
+    void blur();
+    void focus();
 
 protected:
     DOMString m_value;

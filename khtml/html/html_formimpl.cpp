@@ -1057,6 +1057,17 @@ DOMString HTMLButtonElementImpl::type() const
     return getAttribute(ATTR_TYPE);
 }
 
+void HTMLButtonElementImpl::blur()
+{
+    if(getDocument()->focusNode() == this)
+        getDocument()->setFocusNode(0);
+}
+
+void HTMLButtonElementImpl::focus()
+{
+    getDocument()->setFocusNode(this);
+}
+
 void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())

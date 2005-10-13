@@ -209,7 +209,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
   if ( !win || !win->isSafeScript(exec) )
     return false;
 
-  
+
   if ( docImpl->underDocNamedCache().contains( p.qstring() ) )
     return true;
 
@@ -242,7 +242,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   // Check for forms with name==propertyName, return item or list if found
   // Note that document.myform should only look at forms
   // Check for applets with name==propertyName, return item or list if found
-  
+
   //But first, go through the cache
   ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
   if (info) {
@@ -826,7 +826,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
   select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
 @end
-@begin HTMLButtonElementTable 7
+@begin HTMLButtonElementTable 9
   form		KJS::HTMLElement::ButtonForm		DontDelete|ReadOnly
   accessKey	KJS::HTMLElement::ButtonAccessKey	DontDelete
   disabled	KJS::HTMLElement::ButtonDisabled	DontDelete
@@ -834,6 +834,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   tabIndex	KJS::HTMLElement::ButtonTabIndex	DontDelete
   type		KJS::HTMLElement::ButtonType		DontDelete|ReadOnly
   value		KJS::HTMLElement::ButtonValue		DontDelete
+  blur		KJS::HTMLElement::ButtonBlur            DontDelete|Function 0
+  focus		KJS::HTMLElement::ButtonFocus           DontDelete|Function 0
 @end
 @begin HTMLLabelElementTable 3
   form		KJS::HTMLElement::LabelForm		DontDelete|ReadOnly
@@ -1909,7 +1911,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         DOM::DocumentImpl* contentDoc = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle());
         if (!contentDoc)
             return Undefined();
-            
+
         KHTMLView *view = contentDoc->view();
         if (view && view->part())
             return Value(Window::retrieveWindow(view->part()));
@@ -2225,6 +2227,18 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
       }
       else if (id == KJS::HTMLElement::InputClick) {
         input.click();
+        return Undefined();
+      }
+    }
+    break;
+    case ID_BUTTON: {
+      DOM::HTMLButtonElement button = element;
+      if (id == KJS::HTMLElement::ButtonBlur) {
+        button.blur();
+        return Undefined();
+      }
+      else if (id == KJS::HTMLElement::ButtonFocus) {
+        button.focus();
         return Undefined();
       }
     }

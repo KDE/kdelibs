@@ -1,3 +1,11 @@
+2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        WebCore merge: blur and focus on buttons
+
+        * html/html_formimpl.{cpp.h}: Add form and blur
+        * dom/html_form.{cpp,h}: ditto
+        * ecma/kjs_html.{cpp,h}: ditto
+
 2005-10-08  Germain Garand  <germain@ebooksfrance.org>
 
         Port soft-hyphen support from WebCore
@@ -8,7 +16,7 @@
 
 2005-10-08  Germain Garand  <germain@ebooksfrance.org>
 
-        Follow Mozilla/Opera in considering the Window object as an implementation of the AbstractView/ViewCSS 
+        Follow Mozilla/Opera in considering the Window object as an implementation of the AbstractView/ViewCSS
         DOM2 interfaces. Return the Window object when available ; an AbstractView if not.
 
         * ecma/kjs_dom.cpp (DefaultView): return the view's Window object if available.
@@ -27,11 +35,11 @@
         let the initial containing block be the Canvas, as mandated by latest
         draft of CSS 2.1 10.1.1
 
-        * rendering/render_object.cpp (containingBlock, container): don't special case the Root, it's no more 
+        * rendering/render_object.cpp (containingBlock, container): don't special case the Root, it's no more
         an initial containing block.
 
         * rendering/render_block.{cpp,h} (*AbsolutePosition): separate calculation
-        of positioned objects' contribution to the object's rightmost/lower/leftmost position. 
+        of positioned objects' contribution to the object's rightmost/lower/leftmost position.
 
         * rendering/render_box.cpp (setStyle, containingBlockWidth): checking for isCanvas where applicable.
 
