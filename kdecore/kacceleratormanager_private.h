@@ -117,9 +117,6 @@ public:
 };
 
 
-class Q3PopupMenu;
-
-
 /**
  * This class manages a popup menu. It will notice if entries have been
  * added or changed, and will recalculate the accelerators accordingly.

@@ -21,7 +21,7 @@
 #define KSHORTCUTMENU_H
 
 #include <qmap.h>
-#include <q3popupmenu.h>
+#include <QMenu>
 
 #include "kshortcut.h"
 
@@ -30,7 +30,7 @@ class KAccelActions;
 /**
  * @internal
  */
-class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
+class KDECORE_EXPORT KShortcutMenu : public QMenu
 {
 	Q_OBJECT
  public:

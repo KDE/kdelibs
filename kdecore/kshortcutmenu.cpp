@@ -30,7 +30,7 @@
 //#include <kkeynative.h>
 
 KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
-:	Q3PopupMenu( pParent ),
+:	QMenu( pParent ),
 	m_pActions( pActions ),
 	m_seq( seq )
 {
@@ -99,7 +99,7 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 			// And permit Enter, Return to select the item.
 			if( pEvent->key() == Qt::Key_Up    || pEvent->key() == Qt::Key_Down ||
 			    pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return )
-				Q3PopupMenu::keyPressEvent( pEvent );
+				QMenu::keyPressEvent( pEvent );
 			else
 				close();
 		}

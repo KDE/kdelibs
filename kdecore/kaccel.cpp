@@ -309,7 +309,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 	if( m_mapIDToKey.contains( id ) ) {
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
-		Q3PopupMenu* pMenu = createPopupMenu( m_pWatch, seq );
+		QMenu* pMenu = createPopupMenu( m_pWatch, seq );
 
 		// If there was only one action mapped to this key,
 		//  and that action is not a multi-key shortcut,

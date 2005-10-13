@@ -322,7 +322,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
                 static bool recursion_block = false;
                 if( !recursion_block ) {
                         recursion_block = true;
-		        Q3PopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
+		        QMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
 		        connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
 		        pMenu->exec( QPoint( 0, 0 ) );
 		        disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));

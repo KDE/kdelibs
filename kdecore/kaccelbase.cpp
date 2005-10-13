@@ -562,7 +562,7 @@ void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 	m_rgActions.writeActions( m_sConfigGroup, pConfig, m_bConfigIsGlobal, m_bConfigIsGlobal );
 }
 
-Q3PopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
+QMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 {
 	KShortcutMenu* pMenu = new KShortcutMenu( pParent, &actions(), seq );
 

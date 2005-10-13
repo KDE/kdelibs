@@ -29,7 +29,7 @@
 #include "kaccelaction.h"
 #include "kkeyserver.h"
 
-class Q3PopupMenu;
+class QMenu;
 class QWidget;
 
 //----------------------------------------------------
@@ -188,7 +188,7 @@ class KDECORE_EXPORT KAccelBase
 	 */
 	void writeSettings( KConfigBase* pConfig = 0 ) const;
 
-	Q3PopupMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
+	QMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
 
  // Protected methods
  protected:
