@@ -604,10 +604,10 @@ static void embed( QChar::Direction d, BidiState &bidi )
 
 	    bidi.context = new BidiContext(level, runDir, bidi.context, override);
 	    bidi.context->ref();
-	    if ( override )
-		dir = runDir;
+	    dir = runDir;
 	    bidi.status.last = runDir;
 	    bidi.status.lastStrong = runDir;
+	    bidi.status.eor = runDir;
 	}
     }
     adjustEmbedding = b;
@@ -929,7 +929,6 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
         case QChar::DirRLO:
         case QChar::DirLRO:
         case QChar::DirPDF:
-            bidi.eor = bidi.last;
             embed( dirCurrent, bidi );
             break;
 
@@ -1857,19 +1856,19 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         // Ignore soft hyphens
                         BidiIterator endMid(0, o, pos-1);
                         addMidpoint(endMid);
-                        
+
                         // Add the width up to but not including the hyphen.
                         tmpW += t->width(lastSpace, pos - lastSpace, f);
-                        
+
                         // For whitespace normal only, include the hyphen.  We need to ensure it will fit
                         // on the line if it shows when we break.
                         if (o->style()->whiteSpace() == NORMAL)
                             tmpW += t->width(pos, 1, f);
-                        
+
                         BidiIterator startMid(0, o, pos+1);
                         addMidpoint(startMid);
                     }
-                    
+
                     pos++;
                     len--;
                     lastSpace = pos; // Cheesy hack to prevent adding in widths of the run twice.
@@ -1934,7 +1933,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                             goto end;
                         else if ( (pos > 1 && str[pos-1].unicode() == SOFT_HYPHEN) )
                             // Subtract the width of the soft hyphen out since we fit on a line.
-                            tmpW -= t->width(pos-1, 1, f);                        
+                            tmpW -= t->width(pos-1, 1, f);
                     }
 
                     if( preserveLF && *(str+pos) == '\n' ) {
