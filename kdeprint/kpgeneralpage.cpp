@@ -178,7 +178,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
                         " <li> <b>Reverse Landscape.</b> Reverse Landscape prints the images upside down. </li> "
                         " <li> <b>Reverse Portrait.</b> Reverse Portrait prints the image upside down.</li> "
                         " </ul> "
-                        " The icon changes according to your selection.</p>" 
+                        " The icon changes according to your selection.</p>"
                         " <br> "
                         " <hr> "
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches "
@@ -487,17 +487,20 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		{
 			value = *it;
 			DrBase	*ch;
-			if ((ch = ((DrListOption*)driver()->findOption("PageSize"))->findChoice(value)))
+			if ((ch = (driver()->findOption("PageSize"))) &&
+                            (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
 			{
 				if (m_pagesize->isEnabled())
 					setComboItem(m_pagesize, ch->get("text"));
 			}
-			else if ((ch = ((DrListOption*)driver()->findOption("MediaType"))->findChoice(value)))
+			else if ((ch = (driver()->findOption("MediaType"))) &&
+                                 (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
 			{
 				if (m_papertype->isEnabled())
 					setComboItem(m_papertype, ch->get("text"));
 			}
-			else if ((ch = ((DrListOption*)driver()->findOption("InputSlot"))->findChoice(value)))
+			else if ((ch = (driver()->findOption("InputSlot"))) &&
+                                 (ch = static_cast<DrListOption*>(ch)->findChoice(value)))
 			{
 				if (m_inputslot)
 					setComboItem(m_inputslot, ch->get("text"));
@@ -556,7 +559,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 					m_inputslot->setCurrentItem(index);
 				else
 					kdWarning() << "media option '" << value << "' not handled." << endl;
-			}		
+			}
 		}
 
 		// Try to find "sides" option
