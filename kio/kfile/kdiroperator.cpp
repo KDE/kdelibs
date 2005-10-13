@@ -1374,11 +1374,11 @@ void KDirOperator::setupMenu(int whichActions)
     if (whichActions & FileActions)
     {
         actionMenu->insert( mkdirAction );
-        if (currUrl.isLocalFile() && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
+        if (currUrl.isLocalFile() && !(QApplication::keyboardModifiers() & Qt::ShiftModifier))
             actionMenu->insert( myActionCollection->action( "trash" ) );
         KConfig *globalconfig = KGlobal::config();
         KConfigGroupSaver cs( globalconfig, QLatin1String("KDE") );
-        if (!currUrl.isLocalFile() || (KApplication::keyboardMouseState() & Qt::ShiftModifier) ||
+        if (!currUrl.isLocalFile() || (QApplication::keyboardModifiers() & Qt::ShiftModifier) ||
             globalconfig->readBoolEntry("ShowDeleteCommand", false))
             actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
