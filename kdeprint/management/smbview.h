@@ -61,6 +61,7 @@ private:
 	QString		m_buffer;
 	QString		m_login, m_password;
 	KTempFile	*m_passwdFile;
+	QString		m_wins_server;
 };
 
 #endif
