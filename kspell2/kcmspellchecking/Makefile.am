@@ -3,7 +3,7 @@ kde_module_LTLIBRARIES = kcm_spellchecking.la
 kcm_spellchecking_la_SOURCES = spellchecking.cpp
 
 kcm_spellchecking_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-kcm_spellchecking_la_LIBADD = -lkdeui
+kcm_spellchecking_la_LIBADD = -lkdecore -lkdeui ../libkspell2base.la -L../
 
 AM_CPPFLAGS= $(all_includes)
 

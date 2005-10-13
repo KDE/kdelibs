@@ -1,5 +1,4 @@
-SUBDIRS = . ui tests plugins
-# kcmspellchecking
+SUBDIRS = . ui tests plugins kcmspellchecking
 
 METASOURCES = AUTO
 

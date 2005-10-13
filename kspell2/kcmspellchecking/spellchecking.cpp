@@ -43,7 +43,7 @@ KSpellCheckingConfig::KSpellCheckingConfig(QWidget *parent, const char *, const 
   box->layout()->setSpacing( KDialog::spacingHint() );
   layout->addWidget(box);
 
-  spellConfig = new KSpellConfig(box, 0L ,0L, false );
+  spellConfig = new KSpellConfig(box, 0L, false );
   layout->addStretch(1);
   connect(spellConfig,SIGNAL(configChanged()), SLOT( changed() ));
 
