@@ -169,7 +169,7 @@ public slots: // public for bookmark bar
 
 protected slots:
   void slotAboutToShow();
-  void slotAboutToShowContextMenu( KMenu *, int, QMenu * );
+  void slotAboutToShowContextMenu( KMenu *, QAction*, QMenu * );
   void slotActionHighlighted( KAction * );
 
   void slotRMBActionRemove( int );

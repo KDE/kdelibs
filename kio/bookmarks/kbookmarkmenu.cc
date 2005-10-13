@@ -109,8 +109,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     if ( KBookmarkSettings::self()->m_contextmenu )
     {
       (void) _parentMenu->contextMenu();
-      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KMenu*, int, QMenu*) ),
-               this, SLOT( slotAboutToShowContextMenu(KMenu*, int, QMenu*) ));
+      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KMenu*, QAction*, QMenu*) ),
+               this, SLOT( slotAboutToShowContextMenu(KMenu*, QAction*, QMenu*) ));
     }
 
     if ( m_bIsRoot )
@@ -230,7 +230,7 @@ KBookmark RMB::atAddress(const QString & address)
   return bookmark;
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KMenu*, int, QMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KMenu*, QAction*, QMenu* contextMenu )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull())
