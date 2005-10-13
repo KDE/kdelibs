@@ -302,8 +302,6 @@ void HTMLFrameElementImpl::attach()
     assert(!attached());
     assert(parentNode());
 
-    // we should first look up via id, then via name.
-    // this shortterm hack fixes the ugly case. ### rewrite needed for next release
     name = getAttribute(ATTR_NAME);
     if (name.isNull())
         name = getAttribute(ATTR_ID);
@@ -606,6 +604,10 @@ void HTMLIFrameElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
+
+    name = getAttribute(ATTR_NAME);
+    if (name.isNull())
+        name = getAttribute(ATTR_ID);
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();

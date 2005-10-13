@@ -1,5 +1,11 @@
 2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        WebCore merge: correct name on IFrames
+
+        * html/html_baseimpl.cpp: copied FrameElementImpl behavior for initializing name
+
+2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
         WebCore merge: blur and focus on buttons
 
         * html/html_formimpl.{cpp.h}: Add form and blur
