@@ -38,7 +38,7 @@
 class QPixmap;
 class QPainter;
 class Q3Frame;
-class Q3PopupMenu;
+class QMenu;
 
 class KMultiTabBarPrivate;
 class KMultiTabBarTabPrivate;
@@ -79,7 +79,7 @@ public:
 	 * @param popup A popup menu which should be displayed if the button is clicked
 	 * @param not_used_yet will be used for a popup text in the future
 	 */
- 	int appendButton(const QPixmap &pic,int id=-1,Q3PopupMenu* popup=0,const QString& not_used_yet=QString::null);
+ 	int appendButton(const QPixmap &pic,int id=-1,QMenu* popup=0,const QString& not_used_yet=QString::null);
 	/**
          * remove a button with the given ID
 	 */
@@ -166,9 +166,9 @@ class KUTILS_EXPORT KMultiTabBarButton: public QPushButton
 {
 	Q_OBJECT
 public:
-	KMultiTabBarButton(const QPixmap& pic,const QString&, Q3PopupMenu *popup,
+	KMultiTabBarButton(const QPixmap& pic,const QString&, QMenu *popup,
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
-	KMultiTabBarButton(const QString&, Q3PopupMenu *popup,
+	KMultiTabBarButton(const QString&, QMenu *popup,
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
 	virtual  ~KMultiTabBarButton();
 	int id() const;

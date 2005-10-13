@@ -384,7 +384,7 @@ void KMultiTabBarInternal::setPosition(enum KMultiTabBar::KMultiTabBarPosition p
 	viewport()->repaint();
 }
 
-KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q3PopupMenu *popup,
+KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, QMenu *popup,
 		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style)
 	:QPushButton(QIcon(),text,parent),m_style(style)
 {
@@ -400,7 +400,7 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 }
 
-KMultiTabBarButton::KMultiTabBarButton(const QString& text, Q3PopupMenu *popup,
+KMultiTabBarButton::KMultiTabBarButton(const QString& text, QMenu *popup,
 		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style)
 	:QPushButton(QIcon(),text,parent),m_style(style)
 {
@@ -896,7 +896,7 @@ KMultiTabBar::~KMultiTabBar() {
   return 0;
 }*/
 
-int KMultiTabBar::appendButton(const QPixmap &pic ,int id,Q3PopupMenu *popup,const QString&)
+int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QMenu *popup,const QString&)
 {
 	KMultiTabBarButton  *btn;
 	m_buttons.append(btn= new KMultiTabBarButton(pic,QString::null,
