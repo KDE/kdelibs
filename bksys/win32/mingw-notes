@@ -11,7 +11,7 @@ TODO
 	- provides application wrapper setting the required PATH without installation 
 	- fix bug in lowlevel.py not detecting winsock gethostname() function 
 	- fix bug not installing KDE-ICE dir 
-   
+   	
 - build or add notes where to get source/binary packages of required libraries 		
 		- zlib 
 		- bzip2 
@@ -24,7 +24,9 @@ TODO
 		tools/cygsetup) may be used a starting point 
 
 - check dcopserver problem (winsock related problem reported on kde-windows@kde.org)
-	
+	-> porting of qt3 qeventloop stuff from http://lists.kde.org/?l=kde-core-devel&m=111341067414640&w=2 is required, 
+		 qt4 has socketnotifier support. -> Thread opened on kde-windows@kde.org 
+		 
 
 History
 -------
