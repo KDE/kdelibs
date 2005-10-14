@@ -262,7 +262,7 @@ int RenderLayer::height() const
 RenderLayer *RenderLayer::stackingContext() const
 {
     RenderLayer* curr = parent();
-    for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
+    for ( ; curr && !curr->m_object->isCanvas() &&
           curr->m_object->style()->hasAutoZIndex();
           curr = curr->parent());
     return curr;
@@ -271,7 +271,7 @@ RenderLayer *RenderLayer::stackingContext() const
 RenderLayer* RenderLayer::enclosingPositionedAncestor() const
 {
     RenderLayer* curr = parent();
-    for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
+    for ( ; curr && !curr->m_object->isCanvas() &&
          !curr->m_object->isPositioned() && !curr->m_object->isRelPositioned();
          curr = curr->parent());
 
