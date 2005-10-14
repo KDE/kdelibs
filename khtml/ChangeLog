@@ -1,3 +1,7 @@
+2005-10-14  Lubos Lunak <l.lunak@kde.org>
+
+        * khtmlview.cpp: show accesskeys for all frames
+
 2005-09-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implementation of real page-breaking algorithm respecting the CSS 2.1 specification.
