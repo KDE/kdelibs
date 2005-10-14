@@ -686,7 +686,7 @@ void KApplication::init()
     d->oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
-    
+
 #ifdef QT3_SUPPORT
     if (metaObject()->indexOfSignal(SIGNAL(shutDown())) != -1)
         connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
@@ -1131,23 +1131,25 @@ void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
-    if (args && args->isSet("icon"))
-    {
-       QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
-       QIcon icon = windowIcon();
-       icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-       setWindowIcon(icon);
-    }
-    else {
-        QIcon icon = windowIcon();
-        QPixmap largeIcon = DesktopIcon(instanceName());
-        icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-        setWindowIcon(icon);
+    if ( type() != Tty ) {
+        if (args && args->isSet("icon"))
+        {
+            QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
+            QIcon icon = windowIcon();
+            icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
+            setWindowIcon(icon);
+        }
+        else {
+            QIcon icon = windowIcon();
+            QPixmap largeIcon = DesktopIcon(instanceName());
+            icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
+            setWindowIcon(icon);
+        }
     }
 
     if (!args)
         return;
-    
+
     if (args->isSet("config"))
     {
         QString config = QString::fromLocal8Bit(args->getOption("config"));
@@ -1175,7 +1177,7 @@ void KApplication::parseCommandLine( )
     {
        aCaption = QString::fromLocal8Bit(args->getOption("caption"));
     }
-    
+
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
