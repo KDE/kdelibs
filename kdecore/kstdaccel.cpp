@@ -70,7 +70,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Cut,                 I18N_NOOP("Cut"),   0,           CTRL(X), SHIFT(Delete), KShortcut(), false },
 	{ Copy,                I18N_NOOP("Copy"),  0,           CTRL(C), CTRL(Insert), KShortcut(), false },
 	{ Paste,               I18N_NOOP("Paste"), 0,           CTRL(V), SHIFT(Insert), KShortcut(), false },
-	{ PasteSelection,      I18N_NOOP("Paste Selection"),    0, CTRLSHIFT(Insert), KShortcut(), false },
+	{ PasteSelection,      I18N_NOOP("Paste Selection"),    0, CTRLSHIFT(Insert), 0, KShortcut(), false },
 
 	{ SelectAll,           "SelectAll", I18N_NOOP("Select All"), CTRL(A), 0, KShortcut(), false },
 	{ Deselect,            I18N_NOOP("Deselect"), 0, CTRLSHIFT(A), 0, KShortcut(), false },
@@ -120,7 +120,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	
 	{ RotateUp,            "RotateUp",   I18N_NOOP("Previous Item in List"), Qt::Key_Up,   0, KShortcut(), false },
 	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"),     Qt::Key_Down, 0, KShortcut(), false },
-	{ AccelNone,           0, 0, 0, 0, KShortcut(), false }
+	{ AccelNone,            0, 0, 0, 0, KShortcut(), false }
 };
 
 /** Search for the KStdAccelInfo object associated with the given @p id. */
