@@ -2504,6 +2504,9 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                     text_after = true;
                     priority = 5;
                     break;
+                case ID_FRAME:
+                    ignore = true;
+                    break;
                 default:
                     ignore = !element->isFocusable();
                     priority = 2;
