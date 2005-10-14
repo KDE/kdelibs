@@ -401,36 +401,40 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
   case OnUnload:
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
     break;
-  case ScrollTop: {
-    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer()) {
-        node.handle()->getDocument()->updateLayout();
-        if (rend->style()->hidesOverflow())
-            rend->layer()->scrollToYOffset(value.toInt32(exec));
-        else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
-            if (sview)
-                sview->setContentsPos(sview->contentsX(), value.toInt32(exec));
-        }
-    }
-    break;
-  }
-  case ScrollLeft: {
-    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer()) {
-        node.handle()->getDocument()->updateLayout();
-        if (rend->style()->hidesOverflow())
-            rend->layer()->scrollToXOffset(value.toInt32(exec));
-        else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
-            if (sview)
-                sview->setContentsPos(value.toInt32(exec), sview->contentsY());
-        }
-    }
-    break;
-  }
   default:
-    kdDebug(6070) << "WARNING: DOMNode::putValueProperty unhandled token " << token << endl;
+    // Make sure our layout is up to date 
+    DOM::DocumentImpl* docimpl = node.handle()->getDocument();
+    if (docimpl)
+      docimpl->updateLayout();
+
+    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+
+    switch (token) {
+      case ScrollLeft:
+        if (rend && rend->layer()) {
+          if (rend->style()->hidesOverflow())
+            rend->layer()->scrollToXOffset(value.toInt32(exec));
+          else if (rend->isRoot()) {
+            QScrollView* sview = node.ownerDocument().view();
+            if (sview)
+              sview->setContentsPos(value.toInt32(exec), sview->contentsY());
+          }
+        }
+        break;
+      case ScrollTop:
+        if (rend && rend->layer()) {
+          if (rend->style()->hidesOverflow())
+            rend->layer()->scrollToYOffset(value.toInt32(exec));
+          else if (rend->isRoot()) {
+            QScrollView* sview = node.ownerDocument().view();
+            if (sview)
+              sview->setContentsPos(sview->contentsX(), value.toInt32(exec));
+          }
+        }
+        break;
+      default:
+      kdDebug(6070) << "WARNING: DOMNode::putValueProperty unhandled token " << token << endl;
+    }
   }
 }
 
