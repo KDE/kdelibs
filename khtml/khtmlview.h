@@ -32,6 +32,7 @@
 
 class QPainter;
 class QRect;
+template< typename T > class QValueVector;
 
 namespace DOM {
     class HTMLDocumentImpl;
@@ -274,6 +275,7 @@ private:
     bool handleAccessKey(const QKeyEvent* ev);
     bool focusNodeWithAccessKey(QChar c, KHTMLView* caller = NULL);
     QMap< DOM::ElementImpl*, QChar > buildFallbackAccessKeys() const;
+    void displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QValueVector< QChar >& taken, bool use_fallbacks );
 
     void useSlowRepaints();
 

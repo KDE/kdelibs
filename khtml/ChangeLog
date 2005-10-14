@@ -1,3 +1,7 @@
+2005-10-14  Lubos Lunak <l.lunak@kde.org>
+
+        * khtmlview.cpp: show accesskeys for all frames
+
 2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
 
         WebCore merge: correct name on IFrames

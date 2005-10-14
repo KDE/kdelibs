@@ -85,6 +85,7 @@
 #include <qstring.h>
 #include <qstylesheet.h>
 #include <qtimer.h>
+#include <qvaluevector.h>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -2156,20 +2157,35 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
 void KHTMLView::displayAccessKeys()
 {
-    QMap< ElementImpl*, QChar > fallbacks = buildFallbackAccessKeys();
+    QValueVector< QChar > taken;
+    displayAccessKeys( NULL, this, taken, false );
+    displayAccessKeys( NULL, this, taken, true );
+}
+
+void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QValueVector< QChar >& taken, bool use_fallbacks )
+{
+    QMap< ElementImpl*, QChar > fallbacks;
+    if( use_fallbacks )
+        fallbacks = buildFallbackAccessKeys();
     for( NodeImpl* n = m_part->xmlDocImpl(); n != NULL; n = n->traverseNextNode()) {
         if( n->isElementNode()) {
             ElementImpl* en = static_cast< ElementImpl* >( n );
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
             QString accesskey;
-            if( s.length() == 1 )
-                accesskey = s.string()[ 0 ].upper();
-            if( accesskey.isNull() && fallbacks.contains( en ))
-                accesskey = "<qt><i>" + QString( fallbacks[ en ].upper()) + "</i></qt>";
+            if( s.length() == 1 ) {
+                QChar a = s.string()[ 0 ].upper();
+                if( qFind( taken.begin(), taken.end(), a ) == taken.end()) // !contains
+                    accesskey = a;
+            }
+            if( accesskey.isNull() && fallbacks.contains( en )) {
+                QChar a = fallbacks[ en ].upper();
+                if( qFind( taken.begin(), taken.end(), a ) == taken.end()) // !contains
+                    accesskey = QString( "<qt><i>" ) + a + "</i></qt>";
+            }
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
 	        QLabel *lab=new QLabel(accesskey,viewport(),0,Qt::WDestructiveClose);
-	        connect( this, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
+	        connect( origview, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());
 	        lab->setLineWidth(2);
@@ -2180,10 +2196,27 @@ void KHTMLView::displayAccessKeys()
                     KMIN(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
                     KMIN(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
 	        showChild(lab);
+                taken.append( accesskey[ 0 ] );
 	    }
         }
     }
+    QPtrList<KParts::ReadOnlyPart> frames = m_part->frames();
+    for( QPtrListIterator<KParts::ReadOnlyPart> it( frames );
+         it != NULL;
+         ++it ) {
+        if( !(*it)->inherits( "KHTMLPart" ))
+            continue;
+        KHTMLPart* part = static_cast< KHTMLPart* >( *it );
+        if( part->view() && part->view() != caller )
+            part->view()->displayAccessKeys( this, origview, taken, use_fallbacks );
+    }
+    // pass up to the parent
+    if (m_part->parentPart() && m_part->parentPart()->view()
+        && m_part->parentPart()->view() != caller)
+        m_part->parentPart()->view()->displayAccessKeys( this, origview, taken, use_fallbacks );
 }
+
+
 
 void KHTMLView::accessKeysTimeout()
 {
@@ -3396,7 +3429,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }
-    if (d->accessKeysEnabled && d->accessKeysActivated) emit repaintAccessKeys();
+    emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
         bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;
         d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;
