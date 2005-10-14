@@ -1397,7 +1397,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (d->accessKeysEnabled && _ke->key() == Key_Control && _ke->state()==0 && !d->accessKeysActivated) d->accessKeysPreActivate=true;
+    if (d->accessKeysEnabled && _ke->key() == Key_Control && _ke->state()==0 && !d->accessKeysActivated)
+    {
+        d->accessKeysPreActivate=true;
+        _ke->accept();
+        return;
+    }
 
     if (_ke->key() == Key_Shift && _ke->state()==0)
 	    d->scrollSuspendPreActivate=true;
@@ -1659,6 +1664,13 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	return;
     }
 
+    if( d->scrollSuspendPreActivate && _ke->key() != Key_Shift )
+        d->scrollSuspendPreActivate = false;
+    if( _ke->key() == Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftButton
+        && !(KApplication::keyboardMouseState() & Qt::ShiftButton))
+        if (d->scrollTimerId)
+                d->scrollSuspended = !d->scrollSuspended;
+
     if (d->accessKeysEnabled) {
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
     if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
@@ -1669,14 +1681,9 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	    d->accessKeysPreActivate = false;
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
+        _ke->accept();
+        return;
     }
-
-    if( d->scrollSuspendPreActivate && _ke->key() != Key_Shift )
-        d->scrollSuspendPreActivate = false;
-    if( _ke->key() == Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftButton
-        && !(KApplication::keyboardMouseState() & Qt::ShiftButton))
-        if (d->scrollTimerId)
-                d->scrollSuspended = !d->scrollSuspended;
 
     // Send keyup event
     if ( dispatchKeyEvent( _ke ) )
