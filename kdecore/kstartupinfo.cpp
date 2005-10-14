@@ -187,7 +187,7 @@ class DelayedWindowEvent
 
 void KStartupInfo::slot_window_added( WId w_P )
     {
-    kapp->postEvent( this, new DelayedWindowEvent( w_P ));
+    qApp->postEvent( this, new DelayedWindowEvent( w_P ));
     }
 
 void KStartupInfo::customEvent( QEvent* e_P )

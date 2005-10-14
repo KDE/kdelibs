@@ -149,7 +149,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
        {
 #warning fixme once there is a kcoreapp and kapp class
 #if 0
-           if (Tty != kapp->type())
+           if (Tty != qApp->type())
                QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
                i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
            else
@@ -400,7 +400,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 {}
 #warning fixme once there is kcoreapp and kapp
 #if 0
-     if (Tty != kapp->type())
+     if (Tty != qApp->type())
        QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
              i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
      else
@@ -417,7 +417,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
    {
 #warning fixme once there is kcoreapp and kapp
 #if 0
-      if (Tty != kapp->type())
+      if (Tty != qApp->type())
           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
                i18n("Could not launch the browser:\n\n%1").arg(error), i18n("&OK"));
       else
