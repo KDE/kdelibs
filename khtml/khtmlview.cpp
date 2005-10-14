@@ -2200,6 +2200,8 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QValu
 	    }
         }
     }
+    if( use_fallbacks )
+        return;
     QPtrList<KParts::ReadOnlyPart> frames = m_part->frames();
     for( QPtrListIterator<KParts::ReadOnlyPart> it( frames );
          it != NULL;
