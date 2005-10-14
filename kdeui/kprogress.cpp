@@ -23,6 +23,7 @@
 #include <limits.h>
 
 #include <qpainter.h>
+#include <qapplication.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -34,7 +35,6 @@
 
 #include "kprogress.h"
 
-#include <kapplication.h>
 #include <klocale.h>
 #include <kwin.h>
 
@@ -179,9 +179,6 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
       mMinDuration(2000),
       d(new KProgressDialogPrivate)
 {
-#ifdef Q_WS_X11
-    KWin::setIcons(winId(), kapp->icon(), kapp->miniIcon());
-#endif
     mShowTimer = new QTimer(this);
     
     showButton(KDialogBase::Close, false);

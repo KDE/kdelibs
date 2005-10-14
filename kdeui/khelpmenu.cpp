@@ -151,7 +151,7 @@ KMenu* KHelpMenu::menu()
 
     if (KAuthorized::authorizeKAction("help_about_app"))
     {
-      mMenu->addAction( QIcon(kapp->miniIcon()),
+      mMenu->addAction( qApp->windowIcon(),
         i18n( "&About %1" ).arg(appName), this, SLOT( aboutApplication() ) );
     }
     
@@ -203,7 +203,9 @@ void KHelpMenu::aboutApplication()
       hbox->setMargin(KDialog::marginHint()*1);
 
       QLabel *label1 = new QLabel(hbox);
-      label1->setPixmap( kapp->icon() );
+      
+      int size = IconSize(KIcon::Desktop);
+      label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
       label2->setText( mAboutAppText );
 

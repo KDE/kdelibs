@@ -36,10 +36,10 @@
 #include "kspell.h"
 
 #include <q3valuelist.h>
+#include <qapplication.h>
 #include <qtextcodec.h>
 #include <qtimer.h>
 
-#include <kapplication.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -382,9 +382,6 @@ KSpell::setUpDialog( bool reallyuseprogressbar )
   connect( this, SIGNAL(progress(unsigned int)),
 	   ksdlg, SLOT(slotProgress(unsigned int)) );
 
-#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
-  KWin::setIcons( ksdlg->winId(), kapp->icon(), kapp->miniIcon() );
-#endif
   if ( modaldlg )
     ksdlg->setFocus();
   dialogsetup = true;

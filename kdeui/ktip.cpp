@@ -208,14 +208,17 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     mDatabase = db;
 
     setCaption(i18n("Tip of the Day"));
-#ifdef Q_WS_X11
-    KWin::setIcons( winId(),
-                    KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 32 ),
-                    KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 16 ) );
-#endif
+       
+    QIcon icon;
+    QPixmap pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 32 );
+    icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
+    pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 16 );
+    icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
+    setWindowIcon(icon);
+       
     QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
 
-   if (isTipDialog)
+    if (isTipDialog)
     {
 	QHBoxLayout *pl = new QHBoxLayout(vbox, 0, 0);
 
