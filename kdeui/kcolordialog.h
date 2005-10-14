@@ -22,8 +22,8 @@
 // layout management added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 
-#ifndef KDELIBS_KCOLORDIALOG_H
-#define KDELIBS_KCOLORDIALOG_H
+#ifndef KCOLORDIALOG_H
+#define KCOLORDIALOG_H
 
 #ifdef Q_WS_QWS
 // FIXME(E): Do we need the KColorDialog extra functionality in Qt Embedded?
