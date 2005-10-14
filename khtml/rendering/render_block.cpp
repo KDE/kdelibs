@@ -988,11 +988,7 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
         marginInfo.setPosMarginIfLarger(child->maxBottomMargin(true));
         marginInfo.setNegMarginIfLarger(child->maxBottomMargin(false));
 
-#ifdef APPLE_CHANGES
         if (!marginInfo.canCollapseWithTop())
-#else
-        if (!marginInfo.atTopOfBlock())
-#endif
             // We need to make sure that the position of the self-collapsing block
             // is correct, since it could have overflowing content
             // that needs to be positioned correctly (e.g., a block that
@@ -1228,11 +1224,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
 
 void RenderBlock::setCollapsedBottomMargin(const MarginInfo& marginInfo)
 {
-#ifdef APPLE_CHANGES
     if (marginInfo.canCollapseWithBottom() && !marginInfo.canCollapseWithTop()) {
-#else
-    if (marginInfo.canCollapseWithBottom() && !marginInfo.atTopOfBlock()) {
-#endif
         // Update our max pos/neg bottom margins, since we collapsed our bottom margins
         // with our children.
         m_maxBottomPosMargin = kMax((int)m_maxBottomPosMargin, marginInfo.posMargin());
