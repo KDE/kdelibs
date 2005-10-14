@@ -41,7 +41,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P )
     {
     if( accept_broadcast_P != NULL )
         {
-        ( void ) kapp->desktop(); //trigger desktop widget creation to select root window events
+        ( void ) qApp->desktop(); //trigger desktop widget creation to select root window events
         kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
         accept_atom1 = XInternAtom( QX11Info::display(), accept_broadcast_P, false );
         accept_atom2 = accept_atom1;
@@ -58,7 +58,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P, bool 
     {
     if( accept_broadcast_P != NULL )
         {
-        ( void ) kapp->desktop(); //trigger desktop widget creation to select root window events
+        ( void ) qApp->desktop(); //trigger desktop widget creation to select root window events
         kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
         accept_atom2 = XInternAtom( QX11Info::display(), accept_broadcast_P, false );
         accept_atom1 = obsolete_P ? accept_atom2
