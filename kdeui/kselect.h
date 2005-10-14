@@ -20,8 +20,8 @@
 // Selector widgets for KDE Color Selector, but probably useful for other
 // stuff also.
 
-#ifndef __KSELECT_H__
-#define __KSELECT_H__
+#ifndef KSELECT_H
+#define KSELECT_H
 
 #include <qwidget.h>
 #include <q3rangecontrol.h>
@@ -367,6 +367,5 @@ private:
   KGradientSelectorPrivate *d;
 };
 
-
-#endif		// __KSELECT_H__
+#endif		// KSELECT_H
 
