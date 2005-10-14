@@ -195,9 +195,9 @@ public final class KJASAppletStub
                         app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
                     app.init();
                     loader.removeStatusListener(panel);
-                    app.setVisible(true);
                     // stop the loading... animation 
                     panel.stopAnimation();
+                    app.setVisible(true);
                     break;
                 case STARTED:
                     active = true;
