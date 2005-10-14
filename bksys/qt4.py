@@ -183,9 +183,8 @@ def generate(env):
 		emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
 
 	def qrc_buildit(target, source, env):
-		dir=str(source[0].get_dir())
 		name = SCons.Util.splitext( source[0].name )[0]
-		comp='cd %s && %s -name %s %s -o %s' % (dir, env['QT_RCC'], name, source[0].name, target[0].name)
+		comp='%s -name %s %s -o %s' % (env['QT_RCC'], name, source[0].path, target[0].path)
 		return env.Execute(comp)
 	def qrc_stringit(target, source, env):
 		print "%screating%s %s" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'], target[0].name)
