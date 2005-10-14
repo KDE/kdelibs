@@ -1407,7 +1407,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
     if (d->accessKeysEnabled && d->accessKeysActivated)
     {
-        if (_ke->state()==0 || _ke->state()==ShiftButton) {
+        int state = ( _ke->state() & ( ShiftButton | ControlButton | AltButton | MetaButton ));
+        if ( state==0 || state==ShiftButton) {
 	if (_ke->key() != Key_Shift) accessKeysTimeout();
         handleAccessKey( _ke );
         _ke->accept();
