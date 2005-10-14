@@ -22,8 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#ifndef __KMANAGERSELECTION_H
-#define __KMANAGERSELECTION_H
+#ifndef KMANAGERSELECTION_H
+#define KMANAGERSELECTION_H
 
 #include <qobject.h>
 #include <kdelibs_export.h>
