@@ -22,8 +22,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kaction_h__
-#define __kaction_h__
+#ifndef KACTION_H
+#define KACTION_H
 
 #include <qicon.h> // remove if iconSet() is removed
 #include <qobject.h>
