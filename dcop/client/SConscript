@@ -12,6 +12,7 @@ for prog in progs1:
 	if env['WINDOWS']:
 		obj.libpaths += '../../win '
 		obj.libs     += 'kdewin32 '
+		obj.ccflags  += '-Dkdemain=main '
 	else:
 	    obj.linkflags = ' -Wl,--no-undefined -Wl,--allow-shlib-undefined'
 
@@ -26,7 +27,7 @@ for prog in progs2:
 	obj=env.genobj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.c'
-	obj.uselib    = 'KDE4'
+	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
