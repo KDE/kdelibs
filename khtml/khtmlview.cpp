@@ -1388,7 +1388,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
     if (d->accessKeysEnabled && d->accessKeysActivated)
     {
-        if (_ke->state()==0 || _ke->state()==Qt::ShiftModifier) {
+        int state = ( _ke->state() & ( Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier ));
+        if ( state==0 || state==Qt::ShiftModifier) {
 	if (_ke->key() != Qt::Key_Shift) accessKeysTimeout();
         handleAccessKey( _ke );
         _ke->accept();
