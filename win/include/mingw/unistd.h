@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include_next <unistd.h>
 
+#include <winsock2.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -90,12 +91,7 @@ KDEWIN32_EXPORT pid_t fork(void);
 
 KDEWIN32_EXPORT pid_t setsid(void);
 
-// KDE-ICE uses winsock headers 
-#ifndef ICE_t
-#undef gethostname
-#define gethostname kde_gethostname
 KDEWIN32_EXPORT int kde_gethostname(char *__name, size_t __len);
-#endif 
 
 KDEWIN32_EXPORT unsigned alarm(unsigned __secs ); 
 

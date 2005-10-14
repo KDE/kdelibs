@@ -51,10 +51,10 @@
   int setsockopt (int __s, int __level, int __optname, const void *optval, int __optlen);
   int getsockopt (int __s, int __level, int __optname, void *__optval, int *__optlen);
   int shutdown (int, int);
-/* defined in winsock:  int socket (int __family, int __type, int __protocol);*/
+/* defined in winsock2:  int socket (int __family, int __type, int __protocol);*/
   int socketpair (int __domain, int __type, int __protocol, int *__socket_vec);
 
-/*defined in winsock:  struct servent *getservbyname (const char *__name, const char *__proto); */
+/*defined in winsock2:  struct servent *getservbyname (const char *__name, const char *__proto); */
 
 //#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
