@@ -460,7 +460,6 @@ QString KApplication::sessionConfigName() const
 
 #ifdef Q_WS_X11
 static SmcConn mySmcConnection = 0;
-static SmcConn tmpSmcConnection = 0;
 #else
 // FIXME(E): Implement for Qt Embedded
 // Possibly "steal" XFree86's libSM?
@@ -1270,12 +1269,6 @@ KApplication::~KApplication()
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
-
-  // close the temporary smc connection
-  if (tmpSmcConnection) {
-      SmcCloseConnection( tmpSmcConnection, 0, 0 );
-      tmpSmcConnection = 0;
-  }
 #else
   // FIXME(E): Implement for Qt Embedded
 #endif
