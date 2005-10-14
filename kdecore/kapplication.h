@@ -255,30 +255,22 @@ public:
    */
   static void disableAutoDcopRegistration();
 
+#ifdef QT3_SUPPORT
   /**
    * Returns a QPixmap with the application icon.
    * @return the application icon
+   * @deprecated Use QApplication::windowIcon()
    */
   QPixmap icon() const;
 
   /**
-   * Returns the name of the application icon.
-   * @return the icon's name
-   */
-  QString iconName() const;
-
-  /**
    * Returns the mini-icon for the application as a QPixmap.
    * @return the application's mini icon
+   * @deprecated Use QApplication::windowIcon()
    */
   QPixmap miniIcon() const;
-
-  /**
-   * Returns the name of the mini-icon for the application.
-   * @return the mini icon's name
-   */
-  QString miniIconName() const;
-
+#endif
+  
   /**
    *  Sets the top widget of the application.
    *  This means basically applying the right window caption and
@@ -576,10 +568,6 @@ private:
   KConfig* pSessionConfig; //instance specific application config object
   QString aCaption; // the name for the window title
   bool bSessionManagement;
-  mutable QPixmap *pIcon;
-  mutable QPixmap *pMiniIcon;
-  QString aIconName;
-  QString aMiniIconName;
   bool useStyles;
   QWidget *smw;
 

@@ -425,21 +425,6 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
             if( !d->app_started_timer->isActive())
                 d->app_started_timer->start( 0, true );
         }
-        if( w->isTopLevel() && ( w->windowIcon().isNull()))
-        {
-            // icon() cannot be null pixmap, it'll be the "unknown" icon - so check if there is this application icon
-            static QPixmap* ic = NULL;
-            if( ic == NULL )
-                ic = new QPixmap( KGlobal::iconLoader()->loadIcon( iconName(),
-                    KIcon::NoGroup, 0, KIcon::DefaultState, NULL, true ));
-            if( !ic->isNull())
-            {
-                w->setWindowIcon( *ic );
-#if defined Q_WS_X11
-                KWin::setIcons( w->winId(), *ic, miniIcon());
-#endif
-            }
-        }
     }
     return QApplication::notify(receiver, event);
 }
@@ -488,8 +473,6 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   KInstance( KCmdLineArgs::about), d (new Private)
 {
 
-    pIcon = 0L;
-    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -509,8 +492,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
                 visual, colormap ),
   KInstance( KCmdLineArgs::about), d (new Private)
 {
-    pIcon = 0L;
-    pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setObjectName( instanceName() );
@@ -526,8 +507,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
                 visual, colormap ),
   KInstance( _instance ), d (new Private)
 {
-    pIcon = 0L;
-    pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setObjectName( instanceName() );
@@ -543,8 +522,6 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
                 GUIenabled ),
   KInstance( _instance ), d (new Private)
 {
-    pIcon = 0L;
-    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -562,8 +539,6 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
                            bool allowStyles, bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName), d (new Private)
 {
-    pIcon = 0L;
-    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -1151,12 +1126,29 @@ void KApplication::dcopFailure(const QString &msg)
   }
 }
 
+
+
 void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
-    if ( !args ) return;
+    if (args && args->isSet("icon"))
+    {
+       QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
+       QIcon icon = windowIcon();
+       icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
+       setWindowIcon(icon);
+    }
+    else {
+        QIcon icon = windowIcon();
+        QPixmap largeIcon = DesktopIcon(instanceName());
+        icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
+        setWindowIcon(icon);
+    }
 
+    if (!args)
+        return;
+    
     if (args->isSet("config"))
     {
         QString config = QString::fromLocal8Bit(args->getOption("config"));
@@ -1184,35 +1176,7 @@ void KApplication::parseCommandLine( )
     {
        aCaption = QString::fromLocal8Bit(args->getOption("caption"));
     }
-
-    if (args->isSet("miniicon"))
-    {
-       const char *tmp = args->getOption("miniicon");
-       if (!pMiniIcon) {
-         pMiniIcon = new QPixmap;
-       }
-       *pMiniIcon = SmallIcon(tmp);
-       aMiniIconName = tmp;
-    }
-
-    if (args->isSet("icon"))
-    {
-       const char *tmp = args->getOption("icon");
-       if (!pIcon) {
-          pIcon = new QPixmap;
-       }
-       *pIcon = DesktopIcon( tmp );
-       aIconName = tmp;
-       if (!pMiniIcon) {
-         pMiniIcon = new QPixmap;
-       }
-       if (pMiniIcon->isNull())
-       {
-          *pMiniIcon = SmallIcon( tmp );
-          aMiniIconName = tmp;
-       }
-    }
-
+    
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
@@ -1262,44 +1226,22 @@ QString KApplication::geometryArgument() const
 
 QPixmap KApplication::icon() const
 {
-  if( !pIcon) {
-      pIcon = new QPixmap;
-  }
-  if( pIcon->isNull()) {
-      *pIcon = DesktopIcon( instanceName() );
-  }
-  return *pIcon;
-}
-
-QString KApplication::iconName() const
-{
-  return aIconName.isNull() ? (QString)instanceName() : aIconName;
+  QIcon icon = windowIcon();
+  int size = IconSize(KIcon::Desktop);
+  return icon.pixmap(size,size);
 }
 
 QPixmap KApplication::miniIcon() const
 {
-  if (!pMiniIcon) {
-      pMiniIcon = new QPixmap;
-  }
-  if (pMiniIcon->isNull()) {
-      *pMiniIcon = SmallIcon( instanceName() );
-  }
-  return *pMiniIcon;
-}
-
-QString KApplication::miniIconName() const
-{
-  return aMiniIconName.isNull() ? (QString)instanceName() : aMiniIconName;
+  QIcon icon = windowIcon();
+  int size = IconSize(KIcon::Small);
+  return icon.pixmap(size,size);
 }
 
 extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
-  delete pMiniIcon;
-  pMiniIcon = 0L;
-  delete pIcon;
-  pIcon = 0L;
   delete d->m_KAppDCOPInterface;
 
   // First call the static deleters and then call KLibLoader::cleanup()
@@ -1967,13 +1909,9 @@ void KApplication::setTopWidget( QWidget *topWidget )
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
         topWidget->setWindowTitle( caption() );
     }
-    // set the specified icons
-    topWidget->setWindowIcon( icon() );
 
 #if defined Q_WS_X11
 //#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
-    KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
-
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
 #endif
