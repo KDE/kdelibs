@@ -184,16 +184,6 @@ void KCMShell::appExit(const DCOPCString &appId)
     }
 }
 
-static void setIcon(QWidget *w, const QString &iconName)
-{
-    QPixmap icon = DesktopIcon(iconName);
-    QPixmap miniIcon = SmallIcon(iconName);
-    w->setWindowIcon( QIcon(icon) ); //standard X11
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    KWin::setIcons(w->winId(), icon, miniIcon );
-#endif
-}
-
 extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 {
     KAboutData aboutData( "kcmshell", I18N_NOOP("KDE Control Module"),
@@ -335,12 +325,13 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     }
     else
     {
-
-        if (kapp->iconName() != kapp->objectName())
-            setIcon(dlg, kapp->iconName());
-        else if ( modules.count() == 1 )
-            setIcon(dlg, KCModuleInfo( modules.first()).icon());
-
+        if ( !args->isSet( "icon" ) && modules.count() == 1)
+        {
+            QString iconName = KCModuleInfo( modules.first()).icon();
+            QPixmap icon = DesktopIcon(iconName);
+            dlg->setWindowIcon( QIcon(icon) );
+        }
+        
         dlg->exec();
         delete dlg;
     }
