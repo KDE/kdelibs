@@ -9,7 +9,9 @@ TODO
 	- fix installation of files 
   - implement library dependency support like libtool does  
 	- provides application wrapper setting the required PATH without installation 
-
+	- fix bug in lowlevel.py not detecting winsock gethostname() function 
+	- fix bug not installing KDE-ICE dir 
+   
 - build or add notes where to get source/binary packages of required libraries 		
 		- zlib 
 		- bzip2 
@@ -21,7 +23,7 @@ TODO
 		the cygsetup tool from http://sf.net/projects/kde-cygwin (see cvs repository 
 		tools/cygsetup) may be used a starting point 
 
-http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/389916
+- check dcopserver problem (winsock related problem reported on kde-windows@kde.org)
 	
 
 History
