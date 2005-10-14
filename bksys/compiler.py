@@ -18,11 +18,11 @@ def generate(env):
 
 		compiler_version = detect(env)
 
-		# Quote backslashes, as we are going to make this a string
-		compiler_version.replace('\\', '\\\\')
-		
-		env['_CONFIG_H_'].append('compiler')
 		if compiler_version:
+			# Quote backslashes, as we are going to make this a string
+			compiler_version.replace('\\', '\\\\')
+
+			env['_CONFIG_H_'].append('compiler')
 			env['COMPILER_ISCONFIGURED'] = 1;
 			dest = open(env.join(env['_BUILDDIR_'], 'config-compiler.h'), 'w')
 			dest.write('/* compiler name and version */\n')
