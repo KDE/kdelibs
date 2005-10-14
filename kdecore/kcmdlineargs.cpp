@@ -95,7 +95,6 @@ static const KCmdLineOptions kde_options[] =
 {
    { "caption <caption>",       I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
    { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon"), 0},
-   { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
    { "config <filename>",       I18N_NOOP("Use alternative configuration file"), 0},
    { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
    { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
