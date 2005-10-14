@@ -1378,7 +1378,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && _ke->state()==0 && !d->accessKeysActivated) d->accessKeysPreActivate=true;
+    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && _ke->state()==0 && !d->accessKeysActivated)
+    {
+        d->accessKeysPreActivate=true;
+        _ke->accept();
+        return;
+    }
 
     if (_ke->key() == Qt::Key_Shift && _ke->state()==0)
 	    d->scrollSuspendPreActivate=true;
@@ -1640,6 +1645,13 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	return;
     }
 
+    if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
+        d->scrollSuspendPreActivate = false;
+    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftModifier
+        && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
+        if (d->scrollTimerId)
+                d->scrollSuspended = !d->scrollSuspended;
+
     if (d->accessKeysEnabled) {
         if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) d->accessKeysPreActivate=false;
         if (_ke->key() == Qt::Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && !(KApplication::keyboardMouseState() & Qt::ControlModifier))
@@ -1649,15 +1661,11 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	    d->accessKeysActivated = true;
 	    d->accessKeysPreActivate = false;
 	}
-	else if (d->accessKeysActivated) accessKeysTimeout();
+	else if (d->accessKeysActivated)
+            accessKeysTimeout();
+        _ke->accept();
+        return;
     }
-
-    if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
-        d->scrollSuspendPreActivate = false;
-    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftModifier
-        && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
-        if (d->scrollTimerId)
-                d->scrollSuspended = !d->scrollSuspended;
 
     // Send keyup event
     if ( dispatchKeyEvent( _ke ) )
