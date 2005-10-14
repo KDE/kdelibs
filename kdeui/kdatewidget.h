@@ -16,8 +16,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KDATECTL_H__
-#define __KDATECTL_H__
+#ifndef KDATECTL_H
+#define KDATECTL_H
 
 #include <qwidget.h>
 #include <qdatetime.h>

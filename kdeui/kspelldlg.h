@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __KSPELLDLG_H__
-#define __KSPELLDLG_H__
+#ifndef KSPELLDLG_H
+#define KSPELLDLG_H
 
 #include <kdialogbase.h>
 
@@ -112,3 +112,4 @@ protected slots:
 };
 
 #endif
+

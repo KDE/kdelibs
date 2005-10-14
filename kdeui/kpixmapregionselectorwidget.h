@@ -17,8 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KPIXMAPREGIONSELECTORWIDGET_H__
-#define __KPIXMAPREGIONSELECTORWIDGET_H__
+#ifndef KPIXMAPREGIONSELECTORWIDGET_H
+#define KPIXMAPREGIONSELECTORWIDGET_H
 #include <q3vbox.h>
 #include <qpixmap.h>
 #include <qrect.h>

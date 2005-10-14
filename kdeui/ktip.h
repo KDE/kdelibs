@@ -23,8 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#ifndef __K_TIP_H__
-#define __K_TIP_H__
+#ifndef KTIP_H
+#define KTIP_H
 
 #include <qstringlist.h>
 
@@ -190,3 +190,4 @@ private:
 };
 
 #endif
+

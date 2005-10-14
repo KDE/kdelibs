@@ -489,5 +489,5 @@ class KDEUI_EXPORT KColorDialog : public KDialogBase
 };
 
 #endif		// !Q_WS_QWS
-#endif		// KDELIBS_KCOLORDIALOG_H
+#endif		// KCOLORDIALOG_H
 

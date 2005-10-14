@@ -19,8 +19,8 @@
     Many thanks to Simon tronical Hausmann
 */
 
-#ifndef __kguiitem_h__
-#define __kguiitem_h__
+#ifndef kguiitem_h
+#define kguiitem_h
 
 #include <qstring.h>
 

@@ -17,8 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KBUTTONBOX__H__
-#define __KBUTTONBOX__H__
+#ifndef KBUTTONBOX_H
+#define KBUTTONBOX_H
 
 #include <kdelibs_export.h>
 
@@ -167,3 +167,4 @@ private:
 };
 
 #endif
+

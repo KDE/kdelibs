@@ -16,8 +16,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __karrowbutton_h__
-#define __karrowbutton_h__
+#ifndef karrowbutton_h
+#define karrowbutton_h
 
 #include <qpushbutton.h>
 
@@ -91,4 +91,4 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		KArrowButtonPrivate *d;
 };
 
-#endif // __karrowbutton_h__
+#endif // karrowbutton_h

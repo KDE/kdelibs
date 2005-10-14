@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __KSEPARATOR_H__
-#define __KSEPARATOR_H__
+#ifndef KSEPARATOR_H
+#define KSEPARATOR_H
 
 #include <qframe.h>
 
@@ -78,4 +78,4 @@ private:
 };
 
 
-#endif // __KSEPARATOR_H__
+#endif // KSEPARATOR_H

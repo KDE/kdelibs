@@ -7,8 +7,8 @@
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
  */
 
-#ifndef __KRootPixmap_h_Included__
-#define __KRootPixmap_h_Included__
+#ifndef KROOTPIXMAP_H
+#define KROOTPIXMAP_H
 
 #include <qobject.h>
 #include <qcolor.h>
@@ -206,5 +206,5 @@ private:
 };
 
 #endif // ! Q_WS_QWS
-#endif // __KRootPixmap_h_Included__
+#endif // KROOTPIXMAP_H
 

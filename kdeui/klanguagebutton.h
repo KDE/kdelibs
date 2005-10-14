@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __KLANGBUTTON_H__
-#define __KLANGBUTTON_H__
+#ifndef KLANGBUTTON_H
+#define KLANGBUTTON_H
 
 #include <qwidget.h>
 

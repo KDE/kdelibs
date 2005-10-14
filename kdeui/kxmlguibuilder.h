@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __kxmlguibuilder_h__
-#define __kxmlguibuilder_h__
+#ifndef kxmlguibuilder_h
+#define kxmlguibuilder_h
 
 #include <qdom.h>
 #include <qstringlist.h>
@@ -94,3 +94,4 @@ private:
 };
 
 #endif
+

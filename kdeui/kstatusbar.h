@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KSTATUSBAR_H__
-#define __KSTATUSBAR_H__
+#ifndef KSTATUSBAR_H
+#define KSTATUSBAR_H
 
 #include <qstatusbar.h>
 #include <q3intdict.h>
@@ -197,5 +197,5 @@ private:
   class KStatusBarPrivate* d;
 };
 
-#endif // __KSTATUSBAR_H__
+#endif // KSTATUSBAR_H
 

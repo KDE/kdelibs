@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KKEYDIALOG_H__
-#define __KKEYDIALOG_H__
+#ifndef KKEYDIALOG_H
+#define KKEYDIALOG_H
 
 #include <q3dict.h>
 #include <kdialogbase.h>
@@ -367,4 +367,4 @@ private:
 	KKeyChooser* m_pKeyChooser;
 };
 
-#endif // __KKEYDIALOG_H__
+#endif // KKEYDIALOG_H

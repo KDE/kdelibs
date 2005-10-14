@@ -16,8 +16,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kstdguiitem_h
-#define __kstdguiitem_h
+#ifndef kstdguiitem_h
+#define kstdguiitem_h
 
 #include <kdelibs_export.h>
 

@@ -7,8 +7,8 @@
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
  */
 
-#ifndef __KPixmapIO_h_Included__
-#define __KPixmapIO_h_Included__
+#ifndef KPixmapIO_H
+#define KPixmapIO_H
 
 #include <kdelibs_export.h>
 
@@ -181,4 +181,4 @@ private:
     KPixmapIOPrivate* d;
 };
 
-#endif // __KPixmapIO_h_Included__
+#endif // KPixmapIO_H

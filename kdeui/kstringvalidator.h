@@ -19,8 +19,8 @@
     02111-1307 USA
 */
 
-#ifndef __KSTRINGVALIDATOR_H__
-#define __KSTRINGVALIDATOR_H__
+#ifndef KSTRINGVALIDATOR_H
+#define KSTRINGVALIDATOR_H
 
 #include <qvalidator.h>
 #include <qstringlist.h>
@@ -138,4 +138,4 @@ private:
   class KMimeTypeValidator* d;
 };
 
-#endif // __KSTRINGVALIDATOR_H__
+#endif // KSTRINGVALIDATOR_H

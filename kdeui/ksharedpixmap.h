@@ -9,8 +9,8 @@
  * version 2 of the License, or (at your option) any later version.
  */
 
-#ifndef __KSharedPixmap_h_Included__
-#define __KSharedPixmap_h_Included__
+#ifndef KSHAREDPIXMAP_H
+#define KSHAREDPIXMAP_H
 
 #include <kpixmap.h>
 
@@ -109,3 +109,4 @@ private:
 #endif
 
 #endif
+

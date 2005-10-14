@@ -23,8 +23,8 @@
 // <mweilguni@sime.com>
 
 
-#ifndef _KCOLORCOMBO_H__
-#define _KCOLORCOMBO_H__
+#ifndef KCOLORCOMBO_H
+#define KCOLORCOMBO_H
 
 #include <qcombobox.h>
 #include <kcolordialog.h>
@@ -92,4 +92,4 @@ private:
 	KColorComboPrivate *d;
 };
 
-#endif	// __KCOLORCOMBO_H__
+#endif	// KCOLORCOMBO_H

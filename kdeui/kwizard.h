@@ -20,8 +20,8 @@
     Boston, MA 02111-1307, USA.
 */  
 
-#ifndef __KWIZARD_H
-#define __KWIZARD_H
+#ifndef KWIZARD_H
+#define KWIZARD_H
 
 #include <q3wizard.h>
 
@@ -57,6 +57,6 @@ public:
   ~KWizard() {}
 };
 
-#endif // __KWIZARD_H
+#endif // KWIZARD_H
 
 

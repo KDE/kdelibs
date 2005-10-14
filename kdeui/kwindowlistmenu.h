@@ -22,8 +22,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#ifndef __kwindowlistmenu_h__
-#define __kwindowlistmenu_h__
+#ifndef kwindowlistmenu_h
+#define kwindowlistmenu_h
 
 #include <kmenu.h>
 #include <qmap.h>

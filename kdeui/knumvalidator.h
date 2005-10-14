@@ -19,8 +19,8 @@
 **
 *****************************************************************************/
 
-#ifndef __KNUMVALIDATOR_H
-#define __KNUMVALIDATOR_H
+#ifndef KNUMVALIDATOR_H
+#define KNUMVALIDATOR_H
 
 #include <qvalidator.h>
 
