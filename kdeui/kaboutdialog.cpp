@@ -32,7 +32,7 @@
 #include <qtabwidget.h>
 #include <qtabbar.h>
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include "ktoolinvocation.h"
 
 #include <kglobal.h>
@@ -41,6 +41,7 @@
 #include <ktextbrowser.h>
 #include <kurllabel.h>
 #include <kaboutdialog.h>
+#include <kiconloader.h>
 #include <kaboutdialog_private.h>
 #include <kdebug.h>
 
@@ -695,13 +696,8 @@ void KAboutContainerBase::setProduct( const QString &appName,
     return;
   }
 
-  if ( kapp )
-  {
-    mIconLabel->setPixmap( kapp->icon() );
-    kdDebug(291) << "setPixmap (iconName): " << kapp->iconName() << endl;
-  }
-  else
-    kdDebug(291) << "no kapp" << endl;
+  int size = IconSize(KIcon::Desktop);
+  mIconLabel->setPixmap( qApp->windowIcon().pixmap(size,size) );
 
   const QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
     arg(QLatin1String(KDE_VERSION_STRING));

@@ -23,7 +23,8 @@
 
 #include <kaboutdata.h>
 #include <kaction.h>
-#include <kapplication.h>
+#include <qapplication.h>
+#include <kinstance.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kiconloader.h>
@@ -61,7 +62,6 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 
 		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
 		 case Help: sLabel = i18n("show help", "&Help"); break;
-		 case AboutApp: iconName = kapp->miniIconName();
 		 case Preferences:
 		 case HelpContents:
 			{
@@ -122,6 +122,13 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
             pAction = ret;
             break;
          }
+		// Same as default, but with the app icon 
+                case AboutApp: {
+                        	pAction = new KAction( sLabel, qApp->windowIcon(), cut,
+					recvr, slot,
+					parent, (name) ? name : pInfo->psName );
+			            
+                                }
 		 default:
 			pAction = new KAction( sLabel, iconName, cut,
 					recvr, slot,
