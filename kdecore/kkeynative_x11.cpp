@@ -198,7 +198,7 @@ uint KKeyNative::modXWin()        { return modXMeta(); }
 
 #ifdef KDE3_SUPPORT
 uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
-#endif KDE3_SUPPORT
+#endif
 uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMaskX(); }
 uint KKeyNative::modXNumLock()                 { return KKeyServer::modXNumLock(); }
 uint KKeyNative::modXLock()                    { return KKeyServer::modXLock(); }

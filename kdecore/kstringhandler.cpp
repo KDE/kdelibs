@@ -307,7 +307,7 @@ QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& f
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
-      delta = kClamp(delta, 1, delta); // no max
+      delta = qMax(1, delta);
 
       tmp.remove(0, delta);
       nameWidth = fontMetrics.width(tmp);
@@ -385,7 +385,7 @@ QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& f
     {
       int length = tmp.length();
       int delta = em ? (nameWidth - maxPixels) / em : length;
-      delta = kClamp(delta, 1, length) ;
+      delta = qBound(1, delta, length);
 
       tmp.remove(length - delta, delta);
       nameWidth = fontMetrics.width(tmp);

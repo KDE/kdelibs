@@ -310,7 +310,7 @@ void KIconEffect::toGray(QImage &img, float value)
     unsigned int* data = ii.data;
     
     
-    int rval, gval, bval, val, alpha, i;
+    int rval, gval, bval, val, alpha;
     for (unsigned int i=0; i<ii.pixels; i++)
     {
 	val = qGray(data[i]);
@@ -332,7 +332,7 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     KIEImgEdit ii(img);
     unsigned int* data = ii.data;
 
-    int rval, gval, bval, val, alpha, i;
+    int rval, gval, bval, val, alpha;
     float rcol = col.red(), gcol = col.green(), bcol = col.blue();
     for (unsigned int i=0; i<ii.pixels; i++)
     {
