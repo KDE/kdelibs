@@ -28,6 +28,10 @@
 
 #if defined(USE_POSIX_ACL) && !defined(HAVE_NON_POSIX_ACL_EXTENSIIONS)
 
+#ifdef Q_OS_FREEBSD
+#include <sys/types.h>
+#endif
+
 #include <sys/acl.h>
 
 #ifdef Q_OS_FREEBSD
