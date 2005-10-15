@@ -27,6 +27,7 @@ for prog in progs2:
 	obj.source    = prog+'.c'
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	#obj.includes  = env['KDELIBS_INCLUDES']
+	obj.instdir   = env['KDEBIN']
 	obj.execute()
 
 """

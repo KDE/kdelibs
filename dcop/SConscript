@@ -57,6 +57,10 @@ if not env['WINDOWS']:
 	obj.instdir  = env['KDEBIN']
 	obj.execute()
 
+install_headers = "dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h"
+
+env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
+
 """
 SUBDIRS = KDE-ICE . dcopidlng dcopidl2cpp client tests
 KDE_OPTIONS = qtonly

@@ -28,12 +28,13 @@ def bootstrap(env):
 	env['KDEDATA']   = env.join( env['PREFIX'], 'share')
 	env['KDEAPPS']   = env.join( env['PREFIX'], 'share/apps')
 	env['KDEKCFG']   = env.join( env['PREFIX'], 'share/config.kcfg')
-	env['KDEICONS']   = env.join( env['PREFIX'], 'share/icons')
+	env['KDEICONS']  = env.join( env['PREFIX'], 'share/icons')
 	env['KDEMIME']   = env.join( env['PREFIX'], 'share/mimelnk')
-	env['KDEDOC']   = env.join( env['PREFIX'], 'share/doc')
+	env['KDEDOC']    = env.join( env['PREFIX'], 'share/doc')
 	env['KDESERV']   = env.join( env['PREFIX'], 'share/services')
-	env['KDELOCALE']   = env.join( env['PREFIX'], 'share/locale')
+	env['KDELOCALE'] = env.join( env['PREFIX'], 'share/locale')
 	env['KDESERVTYPES']   = env.join( env['PREFIX'], 'share/servicetypes')
+	env['KDEINCLUDE']= env.join( env['PREFIX'], 'include')
 	
 	env['KDELIB']    = env.join( env['PREFIX'], 'lib')
 	env['KDECONF']    = env.join( env['PREFIX'], 'share/config')
@@ -43,7 +44,7 @@ def bootstrap(env):
 	env['DCOPIDL']        = env.join(os.getcwd(), 'dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng')
 	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp')
 
-	env['LIB_KDECORE'] = ['kdecore']
+	env['LIB_KDECORE'] = ['kdecore','DCOP']
 	env['LIB_KIO']     = ['kio', 'kwalletclient', 'kdesu']
 	env['LIB_KDEUI']   = ['kdeui']
 	env['LIB_QTTEST']  = ['qttest']
@@ -59,6 +60,8 @@ def bootstrap(env):
 	env['CPPPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio'), '#kio' ]
 	env['CPPPATH_KDEUI']   = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdeui'), '#kdeui' ]
 	env['CPPPATH_QTTEST']  = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'qttestlib'), '#qttestlib' ]
+	
+	print "end of bootstrapping, KDEBIN: %s" % env['KDEBIN']
 
 def detect(env):
 	"""
@@ -77,10 +80,12 @@ def detect(env):
 	libsuffix	= ''
 	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
 	"""
-
+	
+	print "in unix/detect_kde4 detect"
 	if env.has_key('BOOTSTRAP_KDE'):
+		print "doing bootstrap"
 		bootstrap(env)
 		return
-
+	print "not doing bootstrap"
 	# normal detection functions go here
 
