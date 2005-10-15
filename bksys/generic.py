@@ -465,6 +465,40 @@ def find_program_using_which(lenv, prog):
 def exists(env):
 	return true
 
+## get the compiler to use from the command line or from QMAKESPEC
+## this is needed for environments with more than one compiler installed
+def getCompiler(env,sys):
+	if env['ARGS'] and env['ARGS'].has_key('platform'):
+		# first check for argument 'platform'
+		platform = env['ARGS']['platform']
+	elif os.environ.has_key('QMAKESPEC'):
+		# the look for QMAKESPEC
+		platform = os.environ['QMAKESPEC']
+	else:
+        # nothing set - use the best SCons finds
+		return False
+
+	regex = re.compile('^(.+)-(.+)$', re.IGNORECASE)
+	match = regex.search(platform)
+	if match:
+		plat = match.group(1)
+		comp = match.group(2)
+		if plat == 'win32':
+			if comp == 'msvc.net' or comp == 'msvc2005':
+				return 'msvc'       # tool name is msvc
+			if comp == 'g++':
+				return 'mingw'
+			# if comp == 'msvc':    # not supported
+		elif plat == 'linux':
+			return False            # for now
+		elif plat == 'macx':
+			return False            # for now
+		env.pprint('RED', 'platform '+platform+' currently not supported')
+		env.Exit(1)
+	else:
+		env.pprint('YELLOW', 'could not parse '+platform)
+	return False
+
 ## Entry point of the module generic
 def generate(env):
 
@@ -559,6 +593,11 @@ def generate(env):
  		return table
 
 	env['ARGS']=makeHashTable(sys.argv)
+
+	## use the compiler the user wants to have
+	comp = getCompiler(env,sys)
+	if ( comp != False ):
+		Tool(comp).generate(env)
 
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
