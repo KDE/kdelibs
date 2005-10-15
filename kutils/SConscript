@@ -29,8 +29,8 @@ obj.target = 'kutils'
 obj.vnum = '3.0.2'
 obj.source = kutils_sources
 obj.includes = includes
-obj.libpaths = '../kio ksettings '
-obj.libs = 'kio ksettings '
+obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ksettings '
+obj.libs = 'kdecore kdeui DCOP kio ksettings '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 

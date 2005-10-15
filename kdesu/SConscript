@@ -8,7 +8,8 @@ obj.vnum     = '6.0.2'
 obj.target   = 'libkdesu'
 obj.source   = "client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp kdesu_pty.cpp"
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-obj.libs     = '../kdecore/libkdecore.la'
+obj.libpaths = '../kdecore ../dcop'
+obj.libs     = 'kdecore DCOP'
 obj.execute()
 
 stubobj = env.qt4obj('program', env)

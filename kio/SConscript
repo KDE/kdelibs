@@ -10,8 +10,9 @@ obj.vnum     = '6.0.2'
 obj.source   = "dummy.cpp"
 obj.iskdelib = 1
 obj.linkflags = '-Wl,--whole-archive build/kio/kssl/libkssl.a build/kio/kio/libkiocore.a build/kio/kio/libksycoca.a build/kio/bookmarks/libkbookmarks.a build/kio/kfile/libkfile.a -Wl,--no-whole-archive'
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 FAM'
-obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la'
+obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
+obj.libpaths = '../kdecore ../dcop'
+obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la kdecore DCOP'
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 env.CreateFile('dummy.cpp', Value(''))

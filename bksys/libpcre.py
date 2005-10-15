@@ -12,9 +12,9 @@ def generate(env):
 		if ret: 
 			env['CACHED_PCRE'] = 1;
 			env['CXXFLAGS_PCRE'] = SCons.Util.CLVar( 
-					os.popen('pcre-config --cflags').read().strip() );
-			env['LINKFLAGS_PCPRE'] = SCons.Util.CLVar( 
-					os.popen('pcre-config --libs').read().strip() );
+					os.popen('pcre-config --cflags').read().strip() )
+			env['LINKFLAGS_PCRE'] = SCons.Util.CLVar( 
+					os.popen('pcre-config --libs').read().strip() )
 		else:
 			env['CACHED_PCRE'] = 0;
 		context.Result(ret)

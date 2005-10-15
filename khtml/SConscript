@@ -74,10 +74,15 @@ obj.target = 'libkhtml'
 obj.vnum = '6.0.2'
 obj.source = libkhtml_sources
 obj.includes = includes
-obj.libpaths = "xml html rendering css misc ecma dom imload "
-obj.libs = 'khtmlxml khtmlhtml khtmlrender khtmlcss khtmlmisc kjs_html khtmldom khtmlimload ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KJAVA KPARTS THAI '
+obj.linkflags = '-Wl,--whole-archive build/khtml/imload/decoders/libdecoders.a -Wl,--no-whole-archive'
+obj.libpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts xml html rendering css misc ecma dom imload imload/decoders"
+obj.libs = 'DCOP kdecore kdeui kjs kio kparts khtmlxml khtmlhtml khtmlrender khtmlcss khtmlmisc kjs_html khtmldom khtmlimload ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la -ljpeg -lungif'
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI '
 obj.execute()
+
+# For now ;(
+env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
+env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
 
 obj = env.kdeobj('module')
 obj.target = 'libkhtmlpart'

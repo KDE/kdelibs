@@ -18,6 +18,8 @@ obj.target = 'kwalletclient'
 obj.vnum = '1.1'
 obj.source = kwalletclient_sources
 obj.includes = includes
+obj.libpaths = "../../dcop"
+obj.libs = "DCOP"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
 obj.execute()
 

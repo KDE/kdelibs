@@ -16,7 +16,9 @@ obj.target = 'libkparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.libpaths = "../kdecore ../kdeui ../dcop"
+obj.libs = "kdecore kdeui DCOP"
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KIO '
 obj.execute()
 
 

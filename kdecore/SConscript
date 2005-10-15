@@ -90,15 +90,20 @@ obj = env.kdeobj('shlib', env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdecore'
 obj.source   = core_files
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN'
-obj.libs     = '../libltdl/libltdlc.a'
+#FIXME: DL is required for ../libltdl/libltdlc.a, although it is specified
+#when compiling libltdlc.a, we still need it here. We need a better static
+#library support (liucougar)
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN DL'
+obj.libpaths = '../dcop'
+obj.libs     = '../libltdl/libltdlc.a DCOP'
 obj.iskdelib = 1
 obj.includes = 'network'
-if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: 
-	obj.uselib += ' LIBART'
-	obj.cxxflags += ' -DHAVE_LIBART '
-	obj.libpaths = "./svgicons"
-	obj.libs += " libkdesvgicons"
+if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
+    #FIXME: QTXML is used in libkdesvgicons
+    obj.uselib += ' QTXML LIBART'
+    obj.cxxflags += ' -DHAVE_LIBART '
+    obj.libpaths += " svgicons"
+    obj.libs += " libkdesvgicons"
 obj.execute()
 
 """
