@@ -23,3 +23,6 @@ libThreadWeaver_la_SOURCES = \
 	ThreadWeaver.cpp \
 	Thread.cpp \
 	SuspendingState.cpp
+
+include ../../admin/Doxyfile.am
+
