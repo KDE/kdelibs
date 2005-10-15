@@ -5,25 +5,40 @@ def exists(env):
 
 def generate(env):
 
+	def get_compiler_version():
+		import re, os
+
+		# TODO check this with other compilers
+		# TODO: and convert xlC and KCC code from kdelibs/configure.in.in
+		if env['CC'] != 'gcc' and env['CC'] != 'cl':
+			return False
+	
+		error_regexp = re.compile('Usage|ERROR|unrecognized option|unknown option|WARNING|missing|###')
+		unused_regexp = re.compile('Reading specs|Using built|Configured with|Thread model|Copyright|###')
+	
+		for flag in ['-v', '-V', '--version', '-version', '/help']:
+			# should I use context.TryAction here?
+			syspf = os.popen( env['CC']+' '+flag+' 2>&1' )
+			for line in syspf.read().split( '\n' ):
+				if re.search( error_regexp, line, 'I' ):
+					continue
+				if re.search( unused_regexp, line, 'I' ):
+					continue
+				if len(line):
+					return line
+
+		return False
+
 	def Check_compiler(context):
 		context.Message('Checking for compiler version... ')
 		import sys, os
-		
-		if env['WINDOWS']:
-			sys.path.append('bksys'+os.sep+'win32')
-			from detect_compiler import detect
-		else:
-			sys.path.append('bksys'+os.sep+'unix') # works for unix and osx too
-			from detect_compiler import detect
 
-		compiler_version = detect(env)
-
+		compiler_version = get_compiler_version()
 		if compiler_version:
 			# Quote backslashes, as we are going to make this a string
 			compiler_version.replace('\\', '\\\\')
 
 			env['_CONFIG_H_'].append('compiler')
-			env['COMPILER_ISCONFIGURED'] = 1;
 			dest = open(env.join(env['_BUILDDIR_'], 'config-compiler.h'), 'w')
 			dest.write('/* compiler name and version */\n')
 			dest.write('#define KDE_COMPILER_VERSION "'+compiler_version+'"\n')
@@ -50,3 +65,4 @@ def generate(env):
 
 		env = conf.Finish()
 		opts.Save(optionFile, env)
+		env['COMPILER_ISCONFIGURED'] = 1;
