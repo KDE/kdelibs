@@ -13,8 +13,6 @@ for prog in progs1:
 		obj.libpaths += '../../win '
 		obj.libs     += 'kdewin32 '
 		obj.ccflags  += '-Dkdemain=main '
-	else:
-	    obj.linkflags = ' -Wl,--no-undefined -Wl,--allow-shlib-undefined'
 
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB

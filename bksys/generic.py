@@ -743,10 +743,12 @@ def generate(env):
 			# TODO: proper handling of bundles (LD* instead of LIB* in scons?)
 			# TODO: -undefined dynamic_lookup == "allow undefined", need proper support for
 			# -no-undefined and similar in such a way that's cross-platform
+			# DF: do we ever want shlibs with undefined symbols? How about we avoid that? :)
+			# IIRC windows DLLs can't have undefined symbols.
 			if sys.platform == 'darwin':
-				thisenv.AppendUnique(LINKFLAGS = ["-undefined","dynamic_lookup","-install_name", "%s.%s.dylib" % (libname, num)] )
+				thisenv.AppendUnique(LINKFLAGS = ["-undefined","error","-install_name", "%s.%s.dylib" % (libname, num)] )
 			else:
-				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--soname=%s.so.%s" % (libprefix+libname, num)] )
+				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--no-undefined","-Wl,--soname=%s.so.%s" % (libprefix+libname, num)] )
 
 		# Fix against a scons bug - shared libs and ordinal out of range(128)
 		if type(source) is types.ListType:
