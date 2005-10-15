@@ -208,7 +208,7 @@ class AMFile:
 				dat = str(result.group(1))
 				self.data[dat] = self.defines[key]
 				del self.defines[key]
-		for name in self.data:
+		for name in self.data.keys():
 			if self.defines.has_key(name+"dir"):
 				self.datadirs[name] = self.defines[name+"dir"]
 				del self.defines[name+"dir"]
