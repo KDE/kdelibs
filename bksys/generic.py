@@ -325,7 +325,6 @@ class genobj:
 			libs=SCons.Util.CLVar(self.uselib)
 			for lib in libs:
 				# TODO: this doesn't work if the lib doesn't exist (eg, FAM on Mac OS X), we need to handle optional libraries nicely
-				# TODO: we need to mark in the cache that something is not there, rather than re-testing on every scons run
 				#if not self.env.has_key('LIBPATH_'+lib) and not self.env.has_key('INCLUDES_'+lib) and not self.env.has_key('LIB_'+lib) and not self.env.has_key('LINKFLAGS_'+lib):
 				#	raise genobj.WrongLibError(lib)
 				if self.env.has_key('FRAMEWORK_'+lib):
