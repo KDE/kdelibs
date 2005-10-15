@@ -551,7 +551,6 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
       int codeEnd = responseHeaders.find("\n", codeStart+3);
       if (codeEnd != -1)
         responseHeaders.replace(codeStart, (codeEnd-codeStart), "200 OK");
-      // qDebug("Response Header: %s", responseHeaders.latin1());
     }
 
     changeState(Loaded);
@@ -563,17 +562,16 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 
   if ( decoder == NULL ) {
-     int pos = responseHeaders.find("Content-Type:");
-     if ( pos > -1 )
-     {
-        int index = responseHeaders.find('\n', pos+13);
-        QString type = responseHeaders.mid(pos+13, index);
-        // qDebug("XMLHttpRequest::slotData: 'content-type = %s'", type.latin1());
-        index = type.find (';');
-        if (index > -1)
-          encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
-        // qDebug("XMLHttpRequest::slotData: 'encoding = %s'", encoding.latin1());
-     }
+    int pos = responseHeaders.find("content-type:", 0, false);
+
+    if ( pos > -1 ) {
+      pos += 13;
+      int index = responseHeaders.find('\n', pos);
+      QString type = responseHeaders.mid(pos, (index-pos));
+      index = type.find (';');
+      if (index > -1)
+        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
+    }
 
     decoder = new Decoder;
     if (!encoding.isNull())
