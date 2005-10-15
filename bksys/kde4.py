@@ -81,7 +81,6 @@ def generate(env):
 		env['UIC3_PRE_INCLUDE']="#include <kdialog.h>\n#include <klocale.h>\n"
 
 		# (js) update here
-		opts.Update(env)
 		opts.Save(cachefile, env)
 		
 	import SCons.Defaults
