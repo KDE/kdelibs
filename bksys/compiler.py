@@ -64,5 +64,5 @@ def generate(env):
 		conf.Check_compiler()
 
 		env = conf.Finish()
-		opts.Save(optionFile, env)
 		env['COMPILER_ISCONFIGURED'] = 1;
+		opts.Save(optionFile, env)
