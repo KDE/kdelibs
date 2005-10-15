@@ -160,13 +160,13 @@ def generate(env):
 		## The platform-dependent checks
 
 		if sys.platform == 'darwin':
-			sys.path.append('bksys'+os.sep+'osx')
+			sys.path.insert(0,'bksys'+os.sep+'osx')
 			from detect_lowlevel import detect
 		elif env['WINDOWS']:
-			sys.path.append('bksys'+os.sep+'win32')
+			sys.path.insert(0,'bksys'+os.sep+'win32')
 			from detect_lowlevel import detect
 		else:
-			sys.path.append('bksys'+os.sep+'unix')
+			sys.path.insert(0,'bksys'+os.sep+'unix')
 			from detect_lowlevel import detect
 		detect(env, dest)
 		dest.close()
