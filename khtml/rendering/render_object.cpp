@@ -1877,21 +1877,15 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
         if (currDecs) {
             if (currDecs & UNDERLINE) {
                 decorations &= ~UNDERLINE;
-                underline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                underline = st->color();
             }
             if (currDecs & OVERLINE) {
                 decorations &= ~OVERLINE;
-                overline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                overline = st->color();
             }
             if (currDecs & LINE_THROUGH) {
                 decorations &= ~LINE_THROUGH;
-                linethrough = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                linethrough = st->color();
             }
         }
         curr = curr->parent();
@@ -1904,17 +1898,11 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
     if (decorations && curr) {
         RenderStyle *st = curr->style();
         if (decorations & UNDERLINE)
-            underline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            underline = st->color();
         if (decorations & OVERLINE)
-            overline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            overline = st->color();
         if (decorations & LINE_THROUGH)
-            linethrough = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            linethrough = st->color();
     }
 }
 

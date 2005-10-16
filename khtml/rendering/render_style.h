@@ -603,7 +603,6 @@ class StyleCSS3InheritedData : public Shared<StyleCSS3InheritedData>
 // are inherited from the
 // first parent which is block level
 //
-// this applies to decoration_color too
 
 enum EWhiteSpace {
     NORMAL, PRE, NOWRAP, PRE_WRAP, PRE_LINE, KHTML_NOWRAP
@@ -653,7 +652,6 @@ public:
 
     khtml::Font font;
     QColor color;
-    QColor decoration_color;
 
     short border_hspacing;
     short border_vspacing;
@@ -1029,7 +1027,6 @@ public:
     ETextTransform textTransform() const { return inherited_flags.f._text_transform; }
     int textDecorationsInEffect() const { return inherited_flags.f._text_decorations; }
     int textDecoration() const { return visual->textDecoration; }
-    const QColor &textDecorationColor() const { return inherited->decoration_color; }
     int wordSpacing() const { return inherited->font.wordSpacing; }
     int letterSpacing() const { return inherited->font.letterSpacing; }
 
@@ -1195,7 +1192,6 @@ public:
     void addToTextDecorationsInEffect(int v) { inherited_flags.f._text_decorations |= v; }
     void setTextDecorationsInEffect(int v) { inherited_flags.f._text_decorations = v; }
     void setTextDecoration(unsigned v) { SET_VAR(visual, textDecoration, v); }
-    void setTextDecorationColor(const QColor &v) { SET_VAR(inherited,decoration_color,v) }
     void setDirection(EDirection v) { inherited_flags.f._direction = v; }
     void setLineHeight(Length v) { SET_VAR(inherited,line_height,v) }
 

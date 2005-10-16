@@ -2529,7 +2529,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:
     case CSS_PROP_SCROLLBAR_TRACK_COLOR:
     case CSS_PROP_SCROLLBAR_ARROW_COLOR:
-    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
     {
         QColor col;
         if (isInherit) {
@@ -2587,8 +2586,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setBorderLeftColor(col); break;
         case CSS_PROP_COLOR:
             style->setColor(col); break;
-        case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
-            style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
             style->setOutlineColor(col); break;
 #ifndef APPLE_CHANGES

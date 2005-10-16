@@ -662,7 +662,6 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     case CSS_PROP_BORDER_BOTTOM_COLOR:  // <color> | inherit
     case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | inherit
     case CSS_PROP_COLOR:                // <color> | inherit
-    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
         if ( id == CSS_VAL__KHTML_TEXT || id == CSS_VAL_MENU ||
              (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT ) ||
              id == CSS_VAL_TRANSPARENT ||

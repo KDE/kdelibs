@@ -354,7 +354,7 @@ StyleInheritedData::~StyleInheritedData()
 StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
     : Shared<StyleInheritedData>(),
       indent( o.indent ), line_height( o.line_height ), style_image( o.style_image ),
-      font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
+      font( o.font ), color( o.color ),
       border_hspacing( o.border_hspacing ),
       border_vspacing( o.border_vspacing ),
       widows(o.widows), orphans(o.orphans)
@@ -373,7 +373,6 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
 	style_image == o.style_image &&
 	font == o.font &&
 	color == o.color &&
-	decoration_color == o.decoration_color &&
         border_hspacing == o.border_hspacing &&
         border_vspacing == o.border_vspacing &&
         quotes == o.quotes &&
@@ -652,7 +651,6 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // 	int _text_decorations : 4;
 //     DataRef<StyleBackgroundData> background;
     if (inherited->color != other->inherited->color ||
-        inherited->decoration_color != other->inherited->decoration_color ||
         !(inherited_flags.f._visibility == other->inherited_flags.f._visibility) ||
         !(noninherited_flags.f._overflow == other->noninherited_flags.f._overflow) ||
         !(inherited_flags.f._text_decorations == other->inherited_flags.f._text_decorations) ||

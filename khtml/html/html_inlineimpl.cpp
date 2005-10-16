@@ -278,8 +278,6 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_COLOR:
         addHTMLColor(CSS_PROP_COLOR, attr->value());
-        // HTML4 compatibility hack
-        addHTMLColor(CSS_PROP__KHTML_TEXT_DECORATION_COLOR, attr->value());
         break;
     case ATTR_FACE:
         addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());

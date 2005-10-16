@@ -138,4 +138,3 @@ scrollbar-arrow-color
 # khtml internals
 -khtml-flow-mode
 -khtml-user-input
--khtml-text-decoration-color
