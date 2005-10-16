@@ -282,8 +282,6 @@ def generate(env):
 		def __init__(self, val, senv=None):
 			if senv: SConsEnvironment.qt4obj.__init__(self, val, senv)
 			else: SConsEnvironment.qt4obj.__init__(self, val, env)
-			self.iskdelib=0
-		def it_is_a_kdelib(self): self.iskdelib=1
 		def execute(self):
 			if self.executed: return
 			if self.orenv.has_key('DUMPCONFIG'):
@@ -291,10 +289,9 @@ def generate(env):
 				self.xml()
 				return
 			if (self.type=='shlib' or self.type=='kioslave'):
-				if self.iskdelib==1:
-					self.instdir=self.orenv.getInstDirForResType('KDELIB')
-				else:
-					self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
+				self.instdir=self.orenv.getInstDirForResType('KDELIB')
+			if self.type=='module':
+				self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
 			elif self.type=='program':
 				self.instdir=self.orenv.getInstDirForResType('KDEBIN')
 				self.perms=0755
@@ -307,7 +304,7 @@ def generate(env):
 		def xml(self):
 			dirprefix = reldir('.')
 			if not dirprefix: dirprefix=self.dirprefix
-			ret='<compile type="%s" dirprefix="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" iskdelib="%s" libprefix="%s">\n' % (self.type, dirprefix, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.iskdelib, self.libprefix)
+			ret='<compile type="%s" dirprefix="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" libprefix="%s">\n' % (self.type, dirprefix, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.libprefix)
 			if self.source:
 				for i in self.orenv.make_list(self.source): ret+='    <source file="%s"/>\n' % i
 			ret+="</compile>\n"
@@ -326,7 +323,6 @@ def generate(env):
 			self.binary.libprefix = ''
 			self.kdeinitlib = kdeobj('shlib', senv)
 			self.kdeinitlib.libprefix = ''
-			self.kdeinitlib.it_is_a_kdelib()
 
 		def execute(self):
 			if self.executed: return

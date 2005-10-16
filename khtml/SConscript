@@ -69,7 +69,6 @@ env.CreateFile('dummy.cpp', Value(dummy_cpp))
 env.CreateFile('imgdummy.cpp', Value(imgdummy_cpp))
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'libkhtml'
 obj.vnum = '6.0.2'
 obj.source = libkhtml_sources

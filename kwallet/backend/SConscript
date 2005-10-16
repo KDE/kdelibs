@@ -15,7 +15,6 @@ kwalletbackend.h kwalletentry.h sha1.h
 includes = '../client '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kwalletbackend'
 obj.vnum = '1.0'
 obj.source = kwalletbackend_sources

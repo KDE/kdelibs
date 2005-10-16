@@ -11,7 +11,6 @@ partmanager.cpp plugin.cpp statusbarextension.cpp
 includes = '../ #/kio/ #/libltdl #/kfile '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'libkparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources

@@ -9,7 +9,6 @@ dummy.cpp
 """
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'libkde3support'
 obj.source = libkde3support_sources
 obj.linkflags = '-Wl,--whole-archive build/kde3support/kmdi/libk3mdi.a build/kde3support/kparts/libk3parts.a build/kde3support/kio/libk3io.a build/kde3support/kdeui/libkde3ui.a build/kde3support/kdecore/libkde3core.a -Wl,--no-whole-archive'

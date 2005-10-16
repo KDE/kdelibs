@@ -25,6 +25,8 @@ kmimetypechooser.cpp
 """
 # do not use kdirnotify.stub
 
+env.Depends('observer.cpp', 'observer_stub.cpp')
+
 ksycoca_sources = """
 kdirwatch.cpp kacl.cpp
 kfileshare.cpp ksambashare.cpp knfsshare.cpp

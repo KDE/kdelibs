@@ -13,7 +13,6 @@ kwallet.h kwallettypes.h
 includes = 'srcdir '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kwalletclient'
 obj.vnum = '1.1'
 obj.source = kwalletclient_sources

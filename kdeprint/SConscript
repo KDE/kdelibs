@@ -52,7 +52,6 @@ printerfilter.h treecombobox.h util.h
 includes = '#/kdefx #/kded #/kdecore/network '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'libkdeprint'
 obj.vnum = '6.0.2'
 obj.source = libkdeprint_sources

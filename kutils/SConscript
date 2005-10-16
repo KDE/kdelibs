@@ -24,7 +24,6 @@ kcmoduleproxyIface.h kmultitabbar_p.h kpluginselector_p.h
 includes = '#/interfaces/kregexpeditor '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kutils'
 obj.vnum = '3.0.2'
 obj.source = kutils_sources
