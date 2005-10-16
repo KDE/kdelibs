@@ -80,7 +80,7 @@ def detect(env):
 			env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
 #			env['GENCXXFLAGS']  += ['-I' + os.environ['MINGW'] + '/include']
 			env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '/include']
-			env['GENLINKFLAGS'] += ['-L' + os.environ['MINGW'] + '/lib']
+			env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-L' + os.environ['MINGW'] + '/lib']
 	elif os.environ.has_key('MINGW'):  
 		env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
 		env['GENCCFLAGS']   += ['-Iwin\\include','-Iwin\\include\\mingw']
@@ -88,7 +88,7 @@ def detect(env):
 
 		# required libraries should be installed under mingw installation root, so add the search pathes 
 		env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '\\include']
-		env['GENLINKFLAGS'] += ['-L' + os.environ['MINGW'] + '\\lib']
+		env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-L' + os.environ['MINGW'] + '\\lib']
 
 		qtmingwflags = '-DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '\\include'
 		env['GENCXXFLAGS']  += qtmingwflags.split()
