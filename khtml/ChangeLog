@@ -1,3 +1,7 @@
+2005-10-15  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Handle HTTP response headers case insensitively.
+        Fix for bug 110768.
+
 2005-10-14  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.cpp: show accesskeys for all frames
@@ -23,6 +27,10 @@
         * rendering/bidi.cpp (findNextLineBreak): main skipping/breaking logic
 
         * rendering/render_text.{cpp,h} (calcMinMaxWidth): account for soft hyphen
+
+2005-10-08  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Do not append NULL character to end of posted
+        data. Fix for bug 113393.
 
 2005-10-08  Germain Garand  <germain@ebooksfrance.org>
 
