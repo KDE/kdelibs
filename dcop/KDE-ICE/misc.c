@@ -254,6 +254,11 @@ register char	 *ptr;
 	{
 #ifdef _WIN32
 	    errno = WSAGetLastError();
+	    if (nread < 0 && !iceConn->want_to_close && errno == WSAEWOULDBLOCK) 
+	    {
+	          sleep(1);
+	          continue;
+	    }
 #endif
             if( nread < 0 && errno == EINTR )
                 continue;
