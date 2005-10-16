@@ -467,7 +467,12 @@ def exists(env):
 
 ## get the compiler to use from the command line or from QMAKESPEC
 ## this is needed for environments with more than one compiler installed
+## or when you want to cross-compile (don't forget to set PLATFORM correct - not ready)
 def getCompiler(env,sys):
+	#cached value
+	if env.has_key('COMPILERTOOL'):
+		return env['COMPILERTOOL']
+
 	if env['ARGS'] and env['ARGS'].has_key('platform'):
 		# first check for argument 'platform'
 		platform = env['ARGS']['platform']
@@ -561,6 +566,7 @@ def generate(env):
 		p('BOLD','* prefix       ','the installation path')
 		p('BOLD','* extraincludes','a list of paths separated by ":"')
 		p('BOLD','* extralibs','a list of paths separated by ":"')
+		p('BOLD','* platform','the platform you want to compile for (use same values like QMAKESPEC)')
 		p('BOLD','* scons configure debug=full prefix=/usr/local extraincludes=/tmp/include:/usr/local extralibs=/usr/local/lib')
 		p('BOLD','* scons install prefix=/opt/local DESTDIR=/tmp/blah\n')
 		return
@@ -594,11 +600,6 @@ def generate(env):
 
 	env['ARGS']=makeHashTable(sys.argv)
 
-	## use the compiler the user wants to have
-	comp = getCompiler(env,sys)
-	if ( comp != False ):
-		Tool(comp).generate(env)
-
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
 	#SConsEnvironment.Symlink = SCons.Action.ActionFactory(os.symlink, lambda dest, link: 'symlink("%s", "%s")' % (dest, link))
@@ -629,6 +630,8 @@ def generate(env):
 		('EXTRALIBS', 'extra library search paths for the project' ),
 		('BKS_DEBUG', 'debug level: full, trace, or just something' ),
 		('GENERIC_ISCONFIGURED', 'is the project configured' ),
+		('COMPILERTOOL', 'compiler to use' ),
+		('PLATFORM', 'platform to compile for' ),
 	)
 	opts.Update(env)
 	
@@ -647,6 +650,12 @@ def generate(env):
 	else:
 		env['_CONFIGURE_']=0
 
+	# use the compiler the user wants to have    
+	comp = getCompiler(env,sys)                   
+	if ( comp != False ):                         
+		Tool(comp).generate(env)                    
+		env['COMPILERTOOL']=comp                    
+                                               
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('GENERIC_ISCONFIGURED')):
 		env['_CONFIGURE_']=1
@@ -921,7 +930,7 @@ def generate(env):
 	if env.has_key('BKS_DEBUG'):
 		if (env['BKS_DEBUG'] == "full"):
 			env.AppendUnique(CXXFLAGS = ['-DDEBUG'])
-			if env['WINDOWS']:
+			if env['WINDOWS'] and env['COMPILERTOOL'] == 'msvc':
 				env.AppendUnique(CXXFLAGS = ['-Od','-W3'])
 			else:
 				env.AppendUnique(CXXFLAGS = ['-g3', '-Wall'])
