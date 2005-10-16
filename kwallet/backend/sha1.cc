@@ -25,6 +25,9 @@
 #ifdef HAVE_SYS_BITYPES_H
 #include <sys/bitypes.h> /* For uintXX_t on Tru64 */
 #endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
 
 #include "sha1.h"
 #include <string.h>
