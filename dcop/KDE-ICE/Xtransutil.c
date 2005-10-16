@@ -426,9 +426,9 @@ TRANS(WSAStartup) (void)
 {
     static WSADATA wsadata;
 
-    PRMSG (2,"WSAStartup()\n", 0, 0, 0);
+    PRMSG (2,"WSAStartup([2,0],..)\n", 0, 0, 0);
 
-    if (!wsadata.wVersion && WSAStartup(MAKEWORD(1,1), &wsadata))
+    if (!wsadata.wVersion && WSAStartup(MAKEWORD(2,0), &wsadata))
         return 1;
     return 0;
 }
