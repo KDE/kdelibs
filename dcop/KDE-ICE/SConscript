@@ -31,6 +31,8 @@ if env['WINDOWS']:
 	obj.ccflags  ="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP"
 	obj.libpaths = '../../win '
 	obj.libs     = 'kdewin32 ws2_32'
+	# (rh) this is required because genobj does not know anything about KDE installation pathes
+	obj.instdir  = env['KDELIB']
 	# (js)
 	if env['CC'] == 'cl':
 		obj.ccflags += " /FI./../../win/include/kdelibs_export_win.h -DWIN32_LEAN_AND_MEAN " 
