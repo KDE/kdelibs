@@ -6,11 +6,11 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Pomoc</guimenu>
-<guimenuitem>Podręcznik &kappname;</guimenuitem>
+<guimenuitem>Podręcznik programu ...</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Uruchamia System pomocy KDE</action> 
-na stronie pomocy programu &kappname; (czyli na tym dokumencie).</para></listitem>
+na stronie pomocy programu (czyli na tym dokumencie).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -40,7 +40,7 @@ możesz zgłosić błąd lub prośbę o dodanie nowej funkcji.</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Pomoc</guimenu>
-<guimenuitem>O programie &kappname;</guimenuitem>
+<guimenuitem>O programie ...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Wyświetla informację o autorach i wersji programu.</action></para></listitem>
 </varlistentry>
