@@ -2,6 +2,8 @@
 
 Import('env')
 
+env.subdirs('iceauth')
+
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'kdewin32'

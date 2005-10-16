@@ -1,0 +1,13 @@
+#! /usr/bin/env python
+
+Import('env')
+
+obj = env.genobj('program',env)
+obj.vnum     = '1.0.0'
+obj.target   = 'iceauth'
+obj.source   = "iceauth.c process.c"
+obj.includes = "../../dcop/KDE-ICE ../../dcop"
+obj.libpaths = "../../dcop/KDE-ICE .."
+obj.libs     = "kICE kdewin32"
+
+obj.execute()
