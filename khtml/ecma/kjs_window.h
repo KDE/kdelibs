@@ -29,6 +29,7 @@
 #include <qdatetime.h>
 
 #include "kjs_binding.h"
+#include "kjs_views.h"
 
 class QTimer;
 class KHTMLView;
@@ -99,6 +100,7 @@ namespace KJS {
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
+    virtual DOM::AbstractView toAbstractView() const;
     void scheduleClose();
     void closeNow();
     void delayedGoHistory(int steps);

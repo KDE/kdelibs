@@ -215,7 +215,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 
 ////////////////////// Window Object ////////////////////////
 
-const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
+const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable, 0 };
 
 /*
 @begin WindowTable 89
@@ -1011,6 +1011,14 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
 bool Window::toBoolean(ExecState *) const
 {
   return !m_frame.isNull() && !m_frame->m_part.isNull();
+}
+
+DOM::AbstractView Window::toAbstractView() const
+{
+  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  if (!part)
+    return DOM::AbstractView();
+  return part->document().defaultView();
 }
 
 void Window::scheduleClose()

@@ -20,6 +20,7 @@
 
 #include "ecma/kjs_views.h"
 #include "ecma/kjs_css.h"
+#include "ecma/kjs_window.h"
 #include "kjs_views.lut.h"
 
 using namespace KJS;
@@ -80,6 +81,10 @@ DOM::AbstractView KJS::toAbstractView (const Value& val)
   Object obj = Object::dynamicCast(val);
   if (!obj.isValid() || !obj.inherits(&DOMAbstractView::info))
     return DOM::AbstractView ();
+
+  // the Window object is considered for all practical purposes as a descendant of AbstractView
+  if (obj.inherits(&Window::info))
+     return static_cast<const Window *>(obj.imp())->toAbstractView(); 
 
   const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj.imp());
   return dobj->toAbstractView ();
