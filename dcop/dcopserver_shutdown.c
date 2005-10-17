@@ -87,7 +87,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   int n;
 
   n = max_length;
-  // TODO: (rh) add win32 home dir 
+  /* TODO: (rh) add win32 home dir */
   home_dir = getenv("HOME");
   strncpy(dcop_file, home_dir, n);
   dcop_file[ n - 1 ] = '\0';
