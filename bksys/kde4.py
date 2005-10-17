@@ -108,7 +108,7 @@ def generate(env):
                 adjustixes = SCons.Util.adjustixes
                 bs = SCons.Util.splitext(str(source[0].name))[0]
                 bs = os.path.join(str(target[0].get_dir()),bs)
-                target.append(bs+'_skel.h')
+                #target.append(bs+'_skel.h') # not necessary for dcop, right ?
                 return target, source
 
 	env['BUILDERS']['Dcop']=Builder(action=dcop_action, suffix='_skel.cpp', src_suffix='.kidl', emitter=dcopEmitter)
