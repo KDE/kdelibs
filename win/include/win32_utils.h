@@ -50,8 +50,11 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 /**
   predefined registry root keys
 */
-
+#ifdef __MINGW32__
+#include <windows.h>
+#else 
 #ifndef HKEY
+#warning KKEY defined
 #define HKEY void*
 #endif
 #ifndef HKEY_CLASSES_ROOT
@@ -66,6 +69,7 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 #ifndef HKEY_USERS
 #define HKEY_USERS	((HKEY)0x80000003)
 #endif 
+#endif
 
 /**
  \return a value from MS Windows native registry.
