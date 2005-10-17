@@ -4,7 +4,7 @@ Import('env')
 obj = env.qt4obj('program', env)
 obj.target    = 'dcopidl2cpp'
 obj.source    = 'main.cpp skel.cpp stub.cpp stubimpl.cpp'
-obj.uselib    = 'QT QTXML'
+obj.uselib    = 'QT QTCORE QTXML'
 #obj.libs      = env['LIB_QT']+env['LIB_QTXML']
 #obj.linkflags = env['KDE_RPATH']
 obj.execute()
