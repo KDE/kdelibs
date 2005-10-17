@@ -87,6 +87,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   int n;
 
   n = max_length;
+  // TODO: (rh) add win32 home dir 
   home_dir = getenv("HOME");
   strncpy(dcop_file, home_dir, n);
   dcop_file[ n - 1 ] = '\0';
@@ -97,10 +98,15 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
 
   if (gethostname(dcop_file+strlen(dcop_file), n) != 0)
   {
+#ifdef _WIN32
+  	 strcat(dcop_file,"localhost");
+#else
      perror("Error. Could not determine hostname: ");
      dcop_file[0] = '\0';
      return;
+#endif
   }
+
   dcop_file[max_length] = '\0';
   n = max_length - strlen(dcop_file);
 
@@ -110,8 +116,12 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   display = getDisplay();
   if (display == NULL)
   {
+#if _WIN32
+  	 strcat(dcop_file,"NODISPLAY");
+#else 
      dcop_file[0] = '\0';
      return; /* barf */
+#endif 
   }
 
   strcpy(dcop_file_old, dcop_file);
