@@ -11,13 +11,10 @@ for prog in progs1:
 	obj.libs      = 'DCOP '
 	if env['WINDOWS']:
 		obj.libpaths += '../../win '
-		obj.libs     += 'kdewin32 '
-		obj.ccflags  += '-Dkdemain=main '
+		obj.libs     += 'kdewin32 ws2_32'
+		obj.cxxflags += '-Dkdemain=main '
 
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
-	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
-	#obj.linkflags = env['KDE_RPATH']
-	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
 progs2='dcopclient dcopobject dcopref'.split()
@@ -26,7 +23,6 @@ for prog in progs2:
 	obj.target    = prog
 	obj.source    = prog+'.c'
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
-	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.instdir   = env['KDEBIN']
 	obj.execute()
 
