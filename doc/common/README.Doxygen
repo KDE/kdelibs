@@ -29,7 +29,7 @@ The tool for generating dox lives in admin/ :
 In a configured build directory, you can use "make apidox" to
 generate the API dox for the module -- assuming it has any, of course.
 Writing dox is beyond the scope of this README -- see the notes at
-http://developer.kde.org/policies/documentationpolicy.html .
+http://developer.kde.org/policies/documentationpolicy.php .
 You can generate dox by hand -- without even having a configured
 build directory -- as explained below. There is also documentation
 for the special tags you can enter in Makefile.am anywhere
