@@ -19,11 +19,12 @@ obj.ccflags += '-DMAKE_DCOP_LIB'
 obj.cxxflags += '-DMAKE_DCOP_LIB'
 if env['WINDOWS'] and env['CC'] == 'gcc':
 	obj.libpaths += ' ../win/'
-	obj.libs     += ' kdewin32 wsock32'
+	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
 
 # dcopserver program
 if env['WINDOWS']: 
+	# (rh) temporary hack, will be reduced to kdeinitobj
 	obj = env.qt4obj('program',env)
 else: 
 	obj = env.kdeinitobj(env)
@@ -36,8 +37,8 @@ obj.libs     = 'DCOP kICE '
 
 if env['WINDOWS']: 
 	obj.ccflags  = '-Dkdemain=main'
-	obj.libpaths += '../win/ '
-	obj.libs     += 'kdewin32 wsock32 '
+	obj.libpaths += '../win/'
+	obj.libs     += 'kdewin32 ws2_32'
 
 obj.execute()
 
@@ -50,12 +51,15 @@ act=env.Action(build_dcopfile, varlist=['PREFIX'])
 env.Command('dcop-path.h', '', act) # no source needed
 
 # dcopserver_shutdown - program for forcing dcopserver to shutdown
-if not env['WINDOWS']:
-	obj=env.genobj('program', env)
-	obj.target='dcopserver_shutdown'
-	obj.source='dcopserver_shutdown.c'
-	obj.instdir  = env['KDEBIN']
-	obj.execute()
+obj=env.genobj('program', env)
+obj.target='dcopserver_shutdown'
+obj.source='dcopserver_shutdown.c'
+obj.instdir  = env['KDEBIN']
+if env['WINDOWS'] and env['CC'] == 'gcc':
+	obj.libpaths = '../win/'
+	obj.libs     = 'kdewin32 ws2_32'
+
+obj.execute()
 
 install_headers = "dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h"
 
