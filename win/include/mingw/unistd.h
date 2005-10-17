@@ -91,6 +91,11 @@ KDEWIN32_EXPORT pid_t fork(void);
 
 KDEWIN32_EXPORT pid_t setsid(void);
 
+// using winsock gethostname() requires WSAStartup called before :-( 
+// which will not be done in every case, so uses this one 
+//http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/gethostname_2.asp
+#undef gethostname
+#define gethostname kde_gethostname
 KDEWIN32_EXPORT int kde_gethostname(char *__name, size_t __len);
 
 KDEWIN32_EXPORT unsigned alarm(unsigned __secs ); 
