@@ -357,7 +357,7 @@
 <!ENTITY Thomas.Schuetz.mail '<email>Thomas.Schuetz@gmx.li</email>'>
 <!ENTITY Cornelius.Schumacher '<personname><firstname>Cornelius</firstname><surname>Schumacher</surname></personname>'>
 <!ENTITY Cornelius.Schumacher.mail '<email>schumacher@kde.org</email>'>
-<!ENTITY Guenter.Schwann '<personname><firstname>GÃÂ¼nter</firstname><surname>Schwann</surname></personname>'>
+<!ENTITY Guenter.Schwann '<personname><firstname>Günter</firstname><surname>Schwann</surname></personname>'>
 <!ENTITY Guenter.Schwann.mail '<email>vogel@sbox.tugraz.at</email>'>
 <!ENTITY Aaron.J.Seigo '<personname><firstname>Aaron</firstname><othername>J.</othername><surname>Seigo</surname></personname>'>
 <!ENTITY Aaron.J.Seigo.mail '<email>aseigo@olympusproject.org</email>'>
