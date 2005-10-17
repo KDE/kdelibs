@@ -124,8 +124,12 @@ KIOExec::KIOExec()
     }
     args->clear();
 
-    if ( tempfiles )
-        slotRunApp(); // does not return
+    if ( tempfiles ) {
+        // #113991
+        QTimer::singleShot( 0, this, SLOT( slotRunApp() ) );
+        //slotRunApp(); // does not return
+        return;
+    }
 
     counter = 0;
     if ( counter == expectedCounter )
