@@ -135,6 +135,10 @@ typedef unsigned int size_t;
 /*#define INCL_WINSOCK_API_PROTOTYPES 0
 #include <winsock2.h>*/
 
+// using winsock gethostname(), which would be taken normally requires WSAStartup called before 
+// which will not be done in every case
+//http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/gethostname_2.asp
+
 KDEWIN32_EXPORT int kde_gethostname(char *__name, size_t __len)
 {
   size_t len = __len;
