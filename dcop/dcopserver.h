@@ -143,12 +143,6 @@ private slots:
     void slotCleanDeadConnections();
     void slotOutputReady(int socket );
 
-#ifdef Q_OS_WIN
-public:
-    static BOOL WINAPI dcopServerConsoleProc(DWORD dwCtrlType);
-private:
-    static DWORD WINAPI TerminatorThread(void * pParam);
-#endif
 private:
     void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
         const DCOPCString& data );
@@ -165,12 +159,6 @@ private:
     QHash<IceConn, DCOPConnection*> clients; // index on iceConn
     QHash<int, DCOPConnection*> fd_clients; // index on fd
     QList<IceConn> deadConnections;
-
-#ifdef Q_OS_WIN
-    HANDLE m_evTerminate;
-    HANDLE m_hTerminateThread;
-    DWORD m_dwTerminateThreadId;
-#endif
 
 #ifdef DCOP_LOG
     QTextStream *m_stream;

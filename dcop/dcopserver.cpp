@@ -48,6 +48,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define QT_CLEAN_NAMESPACE 1
 #include <QByteArray>
+#include <QDir>
+#include <QEventLoop>
 #include <QTextStream>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -80,13 +82,15 @@ DCOPServer* the_server;
 
 static QByteArray findDcopserverShutdown()
 {
+// TODO: (rh) couldn't this win32 related stuff be emulated by the unix part, only changing the path separator
+//            does this have negative runtime effects against using SearchPathA() ? 
 #ifdef Q_OS_WIN32
 	char szPath[512];
 	char *pszFilePart;
 	int ret;
 	ret = SearchPathA(NULL,"dcopserver_shutdown","exe",sizeof(szPath)/sizeof(szPath[0]),szPath,&pszFilePart);
 	if(ret != 0)
-		return QCString(szPath);
+		return QByteArray(szPath);
 #else
    QByteArray path = getenv("PATH");
    char *dir = strtok(path.data(), ":");
@@ -289,6 +293,28 @@ qWarning("DCOPServer: DCOPIceWrite() outputBlocked. Queuing %d bytes.", _data.si
         return;
     }
 }
+
+#ifdef Q_OS_WIN
+
+BOOL WINAPI dcopServerConsoleProc(DWORD dwCtrlType)
+{
+    BOOL ret;
+    switch(dwCtrlType)
+    {
+	case CTRL_BREAK_EVENT:
+    case CTRL_CLOSE_EVENT:
+	case CTRL_LOGOFF_EVENT:
+	case CTRL_SHUTDOWN_EVENT:
+    case CTRL_C_EVENT:
+        system(findDcopserverShutdown() +" --kill");
+        ret = true;
+        break;
+    default:
+        ret = false;
+    }
+    return ret;
+}
+#endif
 
 void DCOPConnection::waitForOutputReady(const QByteArray &_data, int start)
 {
@@ -546,6 +572,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
+// TODO: (rh) differs only in path separator, may be set in one part and used elsewhere
 #ifdef Q_OS_WIN
     snprintf (tempFile, PATH_MAX, "%s\\%sXXXXXX", path, prefix);
 #else
@@ -1067,16 +1094,6 @@ DCOPServer::DCOPServer(bool _suicide)
     m_deadConnectionTimer->setSingleShot(true);
     connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
 
-#ifdef Q_OS_WIN
-	char szEventName[256];
-	sprintf(szEventName,"dcopserver%i",GetCurrentProcessId());
-	m_evTerminate = CreateEventA(NULL,true,false,(LPCSTR)szEventName);
-	ResetEvent(m_evTerminate);
-	m_hTerminateThread = CreateThread(NULL,0,TerminatorThread,this,0,&m_dwTerminateThreadId);
-	if(m_hTerminateThread)
-		CloseHandle(m_hTerminateThread);
-#endif
-
 #ifdef DCOP_LOG
     char hostname_buffer[256];
     memset( hostname_buffer, 0, sizeof( hostname_buffer ) );
@@ -1101,10 +1118,6 @@ DCOPServer::~DCOPServer()
     delete m_logger;
     while(!listener.empty())
         delete listener.takeFirst();
-#endif
-#ifdef Q_OS_WIN
-	SetEvent(m_evTerminate);
-	CloseHandle(m_evTerminate);
 #endif
 }
 
@@ -1333,12 +1346,6 @@ void DCOPServer::slotExit()
 {
 #ifndef NDEBUG
 	fprintf( stderr, "DCOPServer : slotExit() -> exit.\n" );
-#endif
-#ifdef Q_OS_WIN
-	SetEvent(m_evTerminate);
-	if(m_dwTerminateThreadId != GetCurrentThreadId())
-		WaitForSingleObject(m_hTerminateThread,INFINITE);
-	CloseHandle(m_hTerminateThread);
 #endif
 	exit(0);
 }
@@ -1667,9 +1674,15 @@ static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
     }
     return false;
 }
+#ifdef Q_OS_WIN
+#define ABOUT_OPTIONS "[--suicide] [--nosid] [--help]"
+#else
+#define ABOUT_OPTIONS "[--nofork] [--suicide] [--nosid] [--help]"
+#endif
 
+// TODO: (rh) update option descriptions  
 const char* const ABOUT =
-"Usage: dcopserver [--nofork] [--nosid] [--help]\n"
+"Usage: dcopserver " ABOUT_OPTIONS "\n"
 "       dcopserver --serverid\n"
 "\n"
 "DCOP is KDE's Desktop Communications Protocol. It is a lightweight IPC/RPC\n"
@@ -1679,16 +1692,43 @@ const char* const ABOUT =
 "Copyright (C) 1999-2001, The KDE Developers <http://www.kde.org>\n"
 ;
 
+#ifdef Q_OS_WIN
+void myMessageOutput(QtMsgType type, const char *msg)
+{
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "Debug: %s\n", msg);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "Warning: %s\n", msg);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "Critical: %s\n", msg);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "Fatal: %s\n", msg);
+        abort();
+    }
+}
+#endif 
+
+
 extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 {
+#ifdef Q_OS_WIN
+    qInstallMsgHandler(myMessageOutput);
+#endif 
     bool serverid = false;
     bool nofork = false;
     bool nosid = false;
     bool suicide = false;
     for(int i = 1; i < argc; i++) {
+#ifndef Q_OS_WIN
 	if (strcmp(argv[i], "--nofork") == 0)
 	    nofork = true;
-	else if (strcmp(argv[i], "--nosid") == 0)
+	else 
+#endif 
+	if (strcmp(argv[i], "--nosid") == 0)
 	    nosid = true;
 	else if (strcmp(argv[i], "--nolocal") == 0)
 	    ; // Ignore
@@ -1793,19 +1833,27 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
 #ifdef Q_OS_WIN
-	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,true);
+	SetConsoleCtrlHandler(dcopServerConsoleProc,true);
 #else
 	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0);
         server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
 #endif
 
+#ifdef Q_OS_WIN
+    int ret = 0;
+    QEventLoop eventloop;
+    while (1) {
+        eventloop.processEvents(QEventLoop::ProcessEventsFlag(0x10));
+        sleep(1);
+    }
+        
+#else
     int ret = a.exec();
+#endif 
     delete server;
     return ret;
 }
 
-#ifdef Q_OS_WIN
-#include "dcopserver_win.cpp"
-#endif
 
 #include "dcopserver.moc"
+
