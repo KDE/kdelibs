@@ -9,5 +9,6 @@ obj.source   = "iceauth.c process.c"
 obj.includes = "../../dcop/KDE-ICE ../../dcop"
 obj.libpaths = "../../dcop/KDE-ICE .."
 obj.libs     = "kICE kdewin32"
+obj.instdir  = env['KDEBIN']
 
 obj.execute()
