@@ -154,17 +154,17 @@ protected:
 
   /**
    * If you change the binary interface offered by your part, you can avoid crashes
-   * from old plugins lying around by setting X-KDE-PluginInfo-Version=2 in the
-   * .desktop files of the plugins, and calling setPluginMinimumVersion( 2 ), so that
+   * from old plugins lying around by setting X-KDE-InterfaceVersion=2 in the
+   * .desktop files of the plugins, and calling setPluginInterfaceVersion( 2 ), so that
    * the old plugins are not loaded. Increase both numbers every time a
    * binary incompatible change in the application's plugin interface is made.
    *
-   * @param version the minimum version that plugins must have in order to be loaded.
+   * @param version the interface version that plugins must have in order to be loaded.
    *
    * For a KParts::Part: call this before setInstance.
    * For a KParts::MainWindow: call this before createGUI.
    */
-  void setPluginMinimumVersion( int version );
+  void setPluginInterfaceVersion( int version );
 
 private:
   PartBasePrivate *d;

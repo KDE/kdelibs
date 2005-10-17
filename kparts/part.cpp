@@ -61,13 +61,13 @@ public:
   PartBasePrivate()
   {
       m_pluginLoadingMode = PartBase::LoadPlugins;
-      m_pluginMinimumVersion = 0;
+      m_pluginInterfaceVersion = 0;
   }
   ~PartBasePrivate()
   {
   }
   PartBase::PluginLoadingMode m_pluginLoadingMode;
-  int m_pluginMinimumVersion;
+  int m_pluginInterfaceVersion;
 };
 
 class PartPrivate
@@ -126,7 +126,7 @@ void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
 void PartBase::loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance )
 {
   if( d->m_pluginLoadingMode != DoNotLoadPlugins )
-    Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins, d->m_pluginMinimumVersion );
+    Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins, d->m_pluginInterfaceVersion );
 }
 
 void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
@@ -134,9 +134,9 @@ void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
   d->m_pluginLoadingMode = loadingMode;
 }
 
-void KParts::PartBase::setPluginMinimumVersion( int version )
+void KParts::PartBase::setPluginInterfaceVersion( int version )
 {
-  d->m_pluginMinimumVersion = version;
+  d->m_pluginInterfaceVersion = version;
 }
 
 Part::Part( QObject *parent )

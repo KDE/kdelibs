@@ -120,14 +120,14 @@ public:
      * factory and deleted.
      *
      * If you change the binary interface offered by your part, you can avoid crashes
-     * from old plugins lying around by setting X-KDE-PluginInfo-Version=2 in the
-     * .desktop files of the plugins, and passing 2 to @p minVersionRequired, so that
+     * from old plugins lying around by setting X-KDE-InterfaceVersion=2 in the
+     * .desktop files of the plugins, and passing 2 to @p interfaceVersionRequired, so that
      * the old plugins are not loaded. Increase both numbers every time a
      * binary incompatible change in the application's plugin interface is made.
      *
      *
      * This method is automatically called by KParts::Part and by KParts::MainWindow.
-     * @see PartBase::setPluginLoadingMode, PartBase::setPluginMinimumVersion
+     * @see PartBase::setPluginLoadingMode, PartBase::setPluginInterfaceVersion
      *
      * If you call this method in an already constructed GUI (like when the user
      * has changed which plugins are enabled) you need to add the new plugins to
@@ -135,18 +135,13 @@ public:
      * \code
      * if( factory() )
      * {
-     *   QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
-     *   QPtrListIterator<KParts::Plugin> it( plugins );
-     *   KParts::Plugin * plugin;
-     *   while( ( plugin = it.current() ) != 0 )
-     *   {
-     *     ++it;
-     *     factory()->addClient(  plugin );
-     *   }
+     *   const QList<KParts::Plugin *> plugins = KParts::Plugin::pluginObjects( this );
+     *   foreach ( KParts::Plugin * plugin, plugins )
+     *     factory()->addClient( plugin );
      * }
      * \endcode
      */
-    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true, int minVersionRequired = 0 );
+    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true, int interfaceVersionRequired = 0 );
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This
@@ -154,7 +149,7 @@ public:
      * QObject to retrieve the list of child objects inheriting
      * KParts::Plugin .
      **/
-    static Q3PtrList<Plugin> pluginObjects( QObject *parent );
+    static QList<Plugin *> pluginObjects( QObject *parent );
 
 protected:
     /**

@@ -182,9 +182,9 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return plugin;
 }
 
-Q3PtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
+QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
 {
-  Q3PtrList<KParts::Plugin> objects;
+  QList<KParts::Plugin *> objects;
 
   if (!parent )
     return objects;
@@ -221,7 +221,7 @@ void Plugin::setInstance( KInstance *instance )
     KXMLGUIClient::setInstance( instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault, int minVersionRequired )
+void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault, int interfaceVersionRequired )
 {
     KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
     QList<PluginInfo> plugins = pluginInfos( instance );
@@ -257,9 +257,15 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 desktop.setDesktopGroup();
                 pluginEnabled = desktop.readBoolEntry(
                     "X-KDE-PluginInfo-EnabledByDefault", enableNewPluginsByDefault );
-                const int version = desktop.readNumEntry( "X-KDE-PluginInfo-Version", 1 );
-                if ( version < minVersionRequired )
-                    pluginEnabled = false;
+                if ( interfaceVersionRequired != 0 )
+                {
+                    const int version = desktop.readNumEntry( "X-KDE-InterfaceVersion", 1 );
+                    if ( version != interfaceVersionRequired )
+                    {
+                        kdDebug(1000) << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired << endl;
+                        pluginEnabled = false;
+                    }
+                }
             }
             else
             {
