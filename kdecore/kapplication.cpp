@@ -113,7 +113,7 @@
 #include <fixx11h.h>
 #endif
 
-#ifndef Q_WS_WIN
+#ifndef Q_WS_WIN // TODO: could be removed ? 
 #include <KDE-ICE/ICElib.h>
 #else
 typedef void* IceIOErrorHandler;
@@ -194,8 +194,6 @@ static void kde_ice_ioerrorhandler( IceConn conn )
 
 #ifdef Q_WS_WIN
 void KApplication_init_windows();
-
-class QAssistantClient;
 #endif
 
 /*
@@ -216,17 +214,12 @@ public:
 #ifdef Q_WS_X11
 	,oldXErrorHandler( NULL )
 	,oldXIOErrorHandler( NULL )
-#elif defined Q_WS_WIN
-	,qassistantclient( 0 )
 #endif
   {
   }
 
   ~Private()
   {
-#ifdef Q_WS_WIN
-     delete qassistantclient;
-#endif
   }
 
 
@@ -247,8 +240,6 @@ public:
 #ifdef Q_WS_X11
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
   int (*oldXIOErrorHandler)(Display*);
-#elif defined Q_WS_WIN
-  QAssistantClient* qassistantclient;
 #endif
 
     QString sessionKey;
