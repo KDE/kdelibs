@@ -108,8 +108,8 @@ def generate(env):
 		if not os.path.exists( env['_BUILDDIR_'] ): os.mkdir( env['_BUILDDIR_'] )
 		
 		## The platform-independent checks
-        	dest=open(env.join(env['_BUILDDIR_'], 'config-lowlevel.h'), 'w')
-        	dest.write('/* lowlevel configuration */\n')
+		dest=open(env.join(env['_BUILDDIR_'], 'config-lowlevel.h'), 'w')
+		dest.write('/* lowlevel configuration */\n')
 
 		conf = env.Configure( custom_tests = { 'CheckFuncWithKdefakeImpl' : CheckFuncWithKdefakeImpl } )
 		## TODO let the caller specify which checks they want? Hopefully not turning this into one-file-per-check though...
