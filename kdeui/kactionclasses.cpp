@@ -1900,8 +1900,8 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     int id_ = KAction::getToolButtonID();
 
     if ( icon().isEmpty() && !iconSet().isNull() ) {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
-                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
+                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
                            isEnabled(), plainText(),
                            index );
     } else {
@@ -1911,8 +1911,8 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
         else
             instance = KGlobal::instance();
 
-        bar->insertButton( icon(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
-                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+        bar->insertButton( icon(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
+                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
                            isEnabled(), plainText(),
                            index, instance );
     }
