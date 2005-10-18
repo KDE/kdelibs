@@ -117,7 +117,7 @@ def detect_kde(env):
 		try:
 			tmplibdir = os.popen(kde_config+' --expandvars --install lib').read().strip()
 			libkdeuiSO = env.join(tmplibdir, getSOfromLA(env.join(tmplibdir,'/libkdeui.la')) )
-			m = re.search('(.*)/lib/libqt.*', os.popen('ldd ' + libkdeuiSO + ' | grep libqt').read().strip().split()[2])
+			m = re.search('(.*)/lib' + libsuffix + '/libqt.*', os.popen('ldd ' + libkdeuiSO + ' | grep libqt').read().strip().split()[2])
 		except: m=None
 		if m:
 			qtdir = m.group(1)
