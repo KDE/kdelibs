@@ -30,7 +30,6 @@
 #include <q3simplerichtext.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
-#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -45,10 +44,11 @@
 #include <kactivelabel.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
+#include <kvbox.h>
 
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <X11/Xlib.h>
-#include <kvbox.h>
 #endif
 
  /**

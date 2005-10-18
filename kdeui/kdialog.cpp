@@ -32,12 +32,12 @@
 #include <q3valuelist.h>
 #include <qtimer.h>
 #include <qcursor.h>
-#include <qx11info_x11.h>
 #include <QKeyEvent>
 #include <QDesktopWidget>
 
 #include "config.h"
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <netwm.h> 
 #endif
 

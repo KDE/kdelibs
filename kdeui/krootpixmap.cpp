@@ -13,7 +13,10 @@
 #include <qtimer.h>
 #include <qrect.h>
 #include <qimage.h>
+
+#ifdef Q_WS_X11
 #include <qx11info_x11.h>
+#endif
 
 #include <kapplication.h>
 #include <kimageeffect.h>

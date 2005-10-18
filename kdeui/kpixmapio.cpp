@@ -17,7 +17,6 @@
 #include <qcolor.h>
 #include <qglobal.h>
 #include <qvector.h>
-#include <qx11info_x11.h>
 
 #include <kglobal.h>
 #include <kconfig.h>
@@ -30,6 +29,7 @@
 #endif
 
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <X11/X.h> 
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h> 

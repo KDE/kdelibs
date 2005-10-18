@@ -50,10 +50,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ktextbrowser.h>
 #include <kiconeffect.h>
 #include <kglobalsettings.h>
+#include <kvbox.h>
 
 #ifdef Q_WS_X11
 #include <kwin.h>
-#include <kvbox.h>
 #endif
 
 #include "ktip.h"

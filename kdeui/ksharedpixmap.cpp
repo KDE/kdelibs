@@ -19,10 +19,10 @@
 #include <qpixmap.h>
 #include <qwindowdefs.h>
 #include <qwidget.h>
-#include <qx11info_x11.h>
 #include <q3cstring.h>
 
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 
 #include <krootprop.h>
 #include <ksharedpixmap.h>

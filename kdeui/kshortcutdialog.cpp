@@ -20,6 +20,7 @@
 #include "kshortcutdialog.h"
 
 #include <qvariant.h>
+#include <QKeyEvent>
 
 #ifdef Q_WS_X11
 	#define XK_XKB_KEYS

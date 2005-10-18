@@ -46,7 +46,9 @@
 #include <q3whatsthis.h>
 
 #include "config.h"
+#ifdef Q_WS_X11
 #include <QX11EmbedWidget>
+#endif 
 
 class KHelpMenuPrivate
 {

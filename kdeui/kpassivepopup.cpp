@@ -13,7 +13,6 @@
 #include <qlayout.h>
 #include <qtimer.h>
 
-#include <qx11info_x11.h>
 #include <QMouseEvent>
 #include <qpainter.h>
 #include <qtooltip.h>
@@ -25,12 +24,13 @@
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
 #include <Q3PointArray>
+#include <kvbox.h>
 
 
 #include "config.h"
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <netwm.h>
-#include <kvbox.h>
 #endif
 
 #include "kpassivepopup.h"
