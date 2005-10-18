@@ -68,19 +68,18 @@ class KCModuleContainer::KCModuleContainerPrivate
 
 
 
+#warning the old code created an instance (through the constructor) - should this stay?
 
 /***********************************************************************/
-KCModuleContainer::KCModuleContainer( QWidget* parent, const char* name, 
-	const QString& mods )
-	: KCModule( parent, name )
+KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
+	: KCModule( KGlobal::instance(), parent )
 {
 	d = new KCModuleContainerPrivate( QStringList::split( ",", QString(mods).remove( " " )) );
 	init();
 }
 
-KCModuleContainer::KCModuleContainer( QWidget* parent, const char* name, 
-	const QStringList& mods )
-	: KCModule( parent, name ), d( new KCModuleContainerPrivate( mods ) )
+KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
+	: KCModule( KGlobal::instance(), parent ), d( new KCModuleContainerPrivate( mods ) )
 {
 	init();
 }

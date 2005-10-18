@@ -27,11 +27,6 @@ Group=Graphics (KDE)
 ToolTip=Combo Box (KDE)
 Group=Input (KDE)
 
-[KCModule]
-ToolTip=KControl Center Module (KDE)
-IsContainer=true
-Group=Container (KDE)
-
 [KDateWidget]
 ToolTip=Date preview (KDE)
 Group=Input (KDE)

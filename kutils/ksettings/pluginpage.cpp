@@ -17,7 +17,9 @@
 
 */
 
+#define KDE3_SUPPORT
 #include "ksettings/pluginpage.h"
+#undef KDE3_SUPPORT
 #include "kpluginselector.h"
 #include <qlayout.h>
 #include <kdialog.h>

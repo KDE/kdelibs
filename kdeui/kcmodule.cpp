@@ -31,8 +31,10 @@
 #include <kinstance.h>
 #include <klocale.h>
 
+#define KDE3_SUPPORT
 #include "kcmodule.h"
 #include "kcmodule.moc"
+#undef KDE3_SUPPORT
 
 class KCModulePrivate
 {

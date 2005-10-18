@@ -44,7 +44,7 @@ class KCMError : public KCModule
 {
 	public:
 		KCMError( const QString& msg, const QString& details, QWidget* parent )
-			: KCModule( parent, "KCMError" )
+			: KCModule( KGlobal::instance(), parent )
 		{
 			QVBoxLayout* topLayout = new QVBoxLayout( this );
 			topLayout->addWidget( new QLabel( msg, this ) );

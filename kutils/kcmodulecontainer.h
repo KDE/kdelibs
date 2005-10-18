@@ -59,13 +59,12 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 * specified modules in @p mods.
 		 *
                  * @param parent the parent QWidget.
-                 * @param name the module's name.
 		 * @param mods The list of KCModules to be loaded. The name of each
 		 * KCModule is its service name, that is the name of the desktop file without
 		 * the ".desktop" part
 		 *
 		 */
-		KCModuleContainer( QWidget* parent, const char* name, const QStringList& mods );
+		KCModuleContainer( QWidget* parent, const QStringList& mods );
 
 		/**
 		 * This is a convenience function, instead of building a QStringList you
@@ -80,11 +79,10 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 * for you, taking the modules you want as argument.
 		 *
 		 * @param parent The parent widget
-		 * @param name The service name
 		 * @param mods The modules to load
 		 * @return The KCModule containing the requested modules.
 		 */
-		KCModuleContainer( QWidget *parent, const char* name, const QString& mods = QString() );
+		KCModuleContainer( QWidget *parent, const QString& mods = QString() );
 
 		/**
 		 * Adds the specified module to the tab widget. Setting the tab icon, text,

@@ -39,7 +39,7 @@ namespace KSettings
  * typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
  * K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
  *
- * MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
+ * MyAppPluginConfig( QWidget * parent, const QStringList & args )
  *     : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
  * {
  *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "General Plugins" ), "General" );
@@ -72,11 +72,14 @@ class KUTILS_EXPORT PluginPage : public KCModule
 {
     Q_OBJECT
     public:
+
+#ifdef KDE3_SUPPORT
         /**
          * Standart KCModule constructor. Automatically creates the the
          * KPluginSelector widget.
          */
-        PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+        KDE_DEPRECATED PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+#endif
 
         /**
          * Standart KCModule constructor. Automatically creates the the
