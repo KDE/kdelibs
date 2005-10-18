@@ -28,7 +28,7 @@ class QWidget;
 class KLibLoader;
 
 /**
- * @class Loads a KControl Module.
+ * @short Loads a KControl Module.
  *
  * KCModuleLoader tries in several ways 
  * to locate and load a KCModule. If loading fails a 
