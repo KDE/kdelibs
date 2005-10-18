@@ -184,7 +184,7 @@ public:
    */
   KConfig* sessionConfig();
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
  /**
    * Is the application restored from the session manager?
    *
@@ -254,7 +254,7 @@ public:
    */
   static void disableAutoDcopRegistration();
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /**
    * Returns a QPixmap with the application icon.
    * @return the application icon
@@ -340,7 +340,7 @@ public:
    */
   static QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
 #ifdef Q_WS_X11
   /**
    * Get the X11 display
@@ -386,7 +386,7 @@ public:
    */
   void removeX11EventFilter( const QWidget* filter );
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
@@ -465,7 +465,7 @@ public:
    */
   void updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time = 0 );
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
@@ -489,7 +489,7 @@ public:
    */
   static void installKDEPropertyMap();
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /**
    * Returns the state of the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * and mouse buttons, similarly to QKeyEvent::state() and QMouseEvent::state().
@@ -739,7 +739,7 @@ signals:
   */
   void saveYourself();
   
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /** Your application is killed. Either by your program itself,
       @p xkill or (the usual case) by KDE's logout.
 

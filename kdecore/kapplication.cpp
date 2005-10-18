@@ -674,7 +674,7 @@ void KApplication::init()
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
     if (metaObject()->indexOfSignal(SIGNAL(shutDown())) != -1)
         connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 #endif
@@ -1199,13 +1199,12 @@ void KApplication::parseCommandLine( )
 
 }
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
 QString KApplication::geometryArgument()
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
 }
-#endif
 
 QPixmap KApplication::icon() const
 {
@@ -1220,6 +1219,8 @@ QPixmap KApplication::miniIcon() const
   int size = IconSize(KIcon::Small);
   return icon.pixmap(size,size);
 }
+
+#endif
 
 extern void kDebugCleanup();
 
@@ -1935,7 +1936,7 @@ void KApplication::read_app_startup_id()
 #endif
 }
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
 int KApplication::random()
 {
    return KRandom::random();
