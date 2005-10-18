@@ -594,7 +594,7 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
+  Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
   Q3ListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
@@ -681,7 +681,7 @@ void KListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
-            Qt::ButtonState keybstate = QApplication::keyboardModifiers();
+            Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
             d->autoSelect.stop();
 
