@@ -122,7 +122,9 @@ def generate(env):
         	conf.CheckFuncWithKdefakeImpl(dest, 'getdomainname', '#include <stdlib.h>\n#include <unistd.h>\n#include <netdb.h>',
 					      'char buffer[200]; getdomainname(buffer, 200);',
 					      '#include <sys/types.h>\nint getdomainname (char *, size_t)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'gethostname', '#include <stdlib.h>\n#include <unistd.h>',
+        	# TODO: does not work yet on mingw
+        	if not (env['WINDOWS'] and env['CC'] == 'gcc'):
+        	        conf.CheckFuncWithKdefakeImpl(dest, 'gethostname', '#include <stdlib.h>\n#include <unistd.h>',
 					      'char buffer[200]; gethostname(buffer, 200);',
 					      'int gethostname (char *, unsigned int)')
         	conf.CheckFuncWithKdefakeImpl(dest, 'usleep', '#include <unistd.h>',
