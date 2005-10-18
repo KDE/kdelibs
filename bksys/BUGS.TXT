@@ -6,8 +6,8 @@ generic
 -------
 * installing versioned libraries is broken at the very moment
 * duplicate PREFIX entry in modules
-
-
+    
+    
 mac
 ----
 
@@ -23,5 +23,6 @@ unix
 
 win32
 -----
+* mingw: fix bug in lowlevel.py not detecting winsock gethostname() function 
 
  
