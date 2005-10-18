@@ -5,7 +5,7 @@ Priority	Status          Description
 					 s-started
 					 w-waiting
 					 f-finished
-
+ 
 
 generic
 -------
@@ -18,7 +18,11 @@ generic
 3     n     dcop, kdecore and other test apps require RUNTESTS to be compiled, currently there 
             is no support for this 
 		
-		
+-     n     implement library dependency support like libtool does, required for static libraries 
+            and uninstalled shared (from kde-buildsystem@kde.org)
+
+-     n     cleanup QT related component definition
+              QT is something like QT + zlib, QTGUI is QtCore + QTGui
 
 mac related
 -----------
@@ -35,7 +39,11 @@ win32 related
 -------------
   			 						
 2	    n     fix installation of files  (dll's are in lib dir instead of bin, which is in path)
- 						
+
+1     n		  QT requires some component relates defines like QT_<component>_LIB they have 
+            to be added in win32/detect_qt4.py 
+            
+
 
 
 
