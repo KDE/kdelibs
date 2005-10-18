@@ -30,6 +30,14 @@ class KCharsets;
 class DCOPClient;
 class DCOPObject;
 
+#ifdef KDE3_SUPPORT
+#include <krandom.h>
+#include <kcmdlineargs.h>
+#include <kiconloader.h>
+#include <qpixmap.h>
+#include <qicon.h>
+#endif
+
 typedef unsigned long Atom;
 #if !defined(Q_WS_X11)
 typedef void Display;
@@ -260,14 +268,20 @@ public:
    * @return the application icon
    * @deprecated Use QApplication::windowIcon()
    */
-  KDE_DEPRECATED QPixmap icon() const;
+  KDE_DEPRECATED inline QPixmap icon() const {
+      int size = IconSize(KIcon::Desktop);
+      return windowIcon().pixmap(size,size);
+  };
 
   /**
    * Returns the mini-icon for the application as a QPixmap.
    * @return the application's mini icon
    * @deprecated Use QApplication::windowIcon()
    */
-  KDE_DEPRECATED QPixmap miniIcon() const;
+  KDE_DEPRECATED inline QPixmap miniIcon() const {
+      int size = IconSize(KIcon::Small);
+      return windowIcon().pixmap(size,size);
+  };
 #endif
   
   /**
@@ -392,7 +406,7 @@ public:
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    * @deprecated Use KMath::random()
    */
-  static int random() KDE_DEPRECATED;
+  static inline int random() KDE_DEPRECATED { return KRandom::random(); } ;
 
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
@@ -400,7 +414,7 @@ public:
    * @return the random string
    * @deprecated use KRandom::randomString() instead.
    */
-  static QString randomString(int length) KDE_DEPRECATED;
+  static inline QString randomString(int length) KDE_DEPRECATED { return KRandom::randomString(length); } ;
 #endif
 
   /**
@@ -480,7 +494,10 @@ public:
     *    
     * </code>
     */
-  static KDE_DEPRECATED QString geometryArgument();
+  static inline KDE_DEPRECATED QString geometryArgument() {
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
+  };
 #endif
 
   /**
@@ -488,33 +505,6 @@ public:
    * Call this in any application using KDE widgets in QSqlForm or QDataView.
    */
   static void installKDEPropertyMap();
-
-#ifdef KDE3_SUPPORT
-  /**
-   * Returns the state of the currently pressed keyboard modifiers (e.g. shift, control, etc.)
-   * and mouse buttons, similarly to QKeyEvent::state() and QMouseEvent::state().
-   * @deprecated use QApplication::keyboardModifiers() and QApplication::mouseButtons() instead.
-   */
-  static Qt::ButtonState keyboardMouseState() KDE_DEPRECATED;
-
-  /// @deprecated Same values as ShiftMask etc. in X.h
-  enum { ShiftModifier = 1<<0,
-         LockModifier = 1<<1,
-         ControlModifier = 1<<2,
-         Modifier1 = 1<<3,
-         Modifier2 = 1<<4,
-         Modifier3 = 1<<5,
-         Modifier4 = 1<<6,
-         Modifier5 = 1<<7 };
-
-  /** @deprecated Same values as Button1Mask etc. in X.h */
-  enum { Button1Pressed = 1<<8,
-         Button2Pressed = 1<<9,
-         Button3Pressed = 1<<10,
-         Button4Pressed = 1<<11,
-         Button5Pressed = 1<<12 };
-
-#endif
 
 public slots:
   /**
@@ -730,24 +720,10 @@ signals:
 
      Do not do any closing at this point! The user may still select
      Cancel  wanting to continue working with your
-     application. Cleanups could be done after shutDown() (see
-     the following).
-
+     application. Cleanups could be done after aboutToQuit(). 
   */
   void saveYourself();
   
-#ifdef KDE3_SUPPORT
-  /** Your application is killed. Either by your program itself,
-      @p xkill or (the usual case) by KDE's logout.
-
-      The signal is particularly useful if your application has to do some
-      last-second cleanups. Note that no user interaction is possible at
-      this state.
-   * @deprecated use QCoreApplication::aboutToQuit()
-   */
-  void shutDown(); 
-#endif
-
 private:
   void propagateSettings(SettingsCategory category);
   void kdisplaySetPalette();

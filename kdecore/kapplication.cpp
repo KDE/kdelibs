@@ -49,34 +49,23 @@
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
 #define QT_NO_TRANSLATION
-#include "kaboutdata.h"
 #include "kaccel.h"
 #include "kauthorized.h"
+#include "kaboutdata.h"
 #include "kcheckaccelerators.h"
-#include "kclipboard.h"
-#include "kcmdlineargs.h"
-#include "kcodecs.h"
-#include "kconfig.h"
 #include "kcrash.h"
-#include "kdatastream.h"
-#include "kdebug.h"
-#include "kglobal.h"
+#include "kconfig.h"
+#include "kcmdlineargs.h"
+#include "kclipboard.h"
 #include "kglobalaccel.h"
 #include "kglobalsettings.h"
+#include "kdebug.h"
+#include "kglobal.h"
 #include "kiconloader.h"
-#include "kkeynative.h"
 #include "klibloader.h"
 #include "klocale.h"
-#include "kmacroexpander.h"
-#include "kmath.h"
-#include "kmimesourcefactory.h"
-#include "kprotocolinfo.h"
-#include "kshell.h"
-#include "ksimpleconfig.h"
 #include "kstandarddirs.h"
-#include "kstdaccel.h"
-#include "kstringhandler.h"
-#include "krandom.h"
+#include "kmimesourcefactory.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -674,11 +663,6 @@ void KApplication::init()
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
-#ifdef KDE3_SUPPORT
-    if (metaObject()->indexOfSignal(SIGNAL(shutDown())) != -1)
-        connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
-#endif
-
     {
         QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
         QStringList::Iterator it = plugins.begin();
@@ -1198,29 +1182,6 @@ void KApplication::parseCommandLine( )
     }
 
 }
-
-#ifdef KDE3_SUPPORT
-QString KApplication::geometryArgument()
-{
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
-}
-
-QPixmap KApplication::icon() const
-{
-  QIcon icon = windowIcon();
-  int size = IconSize(KIcon::Desktop);
-  return icon.pixmap(size,size);
-}
-
-QPixmap KApplication::miniIcon() const
-{
-  QIcon icon = windowIcon();
-  int size = IconSize(KIcon::Small);
-  return icon.pixmap(size,size);
-}
-
-#endif
 
 extern void kDebugCleanup();
 
@@ -1775,8 +1736,7 @@ void KApplication::installKDEPropertyMap()
 #endif
 }
 
-QByteArray
-KApplication::launcher()
+QByteArray KApplication::launcher()
 {
    return "klauncher";
 }
@@ -1936,65 +1896,6 @@ void KApplication::read_app_startup_id()
 #endif
 }
 
-#ifdef KDE3_SUPPORT
-int KApplication::random()
-{
-   return KRandom::random();
-}
-
-QString KApplication::randomString(int length)
-{
-   return KRandom::randomString(length);
-}
-
-Qt::ButtonState KApplication::keyboardMouseState()
-{
-    int ret = 0;
-#ifdef Q_WS_X11
-    Window root;
-    Window child;
-    int root_x, root_y, win_x, win_y;
-    uint state;
-    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
-                   &root_x, &root_y, &win_x, &win_y, &state );
-    // transform the same way like Qt's qt_x11_translateButtonState()
-    if( state & Button1Mask )
-        ret |= Qt::LeftButton;
-    if( state & Button2Mask )
-        ret |= Qt::MidButton;
-    if( state & Button3Mask )
-        ret |= Qt::RightButton;
-    if( state & ShiftMask )
-        ret |= Qt::ShiftModifier;
-    if( state & ControlMask )
-        ret |= Qt::ControlModifier;
-    if( state & KKeyNative::modXAlt() )
-        ret |= Qt::AltModifier;
-    if( state & KKeyNative::modXWin() )
-        ret |= Qt::MetaModifier;
-#elif defined(Q_WS_WIN)
-    const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
-    if (GetAsyncKeyState(VK_LBUTTON))
-        ret |= (mousebtn_swapped ? Qt::RightButton : Qt::LeftButton);
-    if (GetAsyncKeyState(VK_MBUTTON))
-        ret |= Qt::MidButton;
-    if (GetAsyncKeyState(VK_RBUTTON))
-        ret |= (mousebtn_swapped ? Qt::LeftButton : Qt::RightButton);
-    if (GetAsyncKeyState(VK_SHIFT))
-        ret |= Qt::ShiftModifier;
-    if (GetAsyncKeyState(VK_CONTROL))
-        ret |= Qt::ControlModifier;
-    if (GetAsyncKeyState(VK_MENU))
-        ret |= Qt::AltModifier;
-    if (GetAsyncKeyState(VK_LWIN) || GetAsyncKeyState(VK_RWIN))
-        ret |= Qt::MetaModifier;
-#else
-    //TODO: other platforms
-#endif
-    return static_cast< Qt::ButtonState >( ret );
-}
-#endif
-
 void KApplication::virtual_hook( int id, void* data )
 { KInstance::virtual_hook( id, data ); }
 
@@ -2002,3 +1903,4 @@ void KSessionManaged::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kapplication.moc"
+
