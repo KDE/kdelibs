@@ -7,7 +7,10 @@
 #include "q3hbox.h"
 #include "q3vbox.h"
 #include "qxembed.h"
+
+#ifdef Q_WS_X11
 #include <QX11Info>
+#endif
 
 WId windowWithName(const char *);
 
