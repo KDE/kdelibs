@@ -64,6 +64,8 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 //	void x11MappingNotify();
 //	bool x11KeyPress( const XEvent *pEvent );
 	void activate( KAccelAction* pAction, const KKeySequence& seq );
+  static void blockShortcuts( bool block );
+  void disableBlocking( bool disable );
 
  protected slots:
 	void slotActivated( int iAction );
