@@ -278,7 +278,7 @@ public:
    * provide any argument parsing. It does provide access to the
    * KAboutData information.
    * This method is exactly the same as calling
-   * init(0,0, const KAboutData *about, true).
+   * init(0,0, const KAboutData *about, CmdLineArgNone).
    *
    * @param about the about data.
    * \see KAboutData
