@@ -35,7 +35,7 @@ class DCOPConnection;
   * This requires:
   * DCOPSignalConnectionList * DCOPConnection::signalConnectionList()
 */
-class DCOP_EXPORT DCOPSignalConnection
+class DCOPSignalConnection
 {
 public:
    DCOPCString sender;      // Sender client, empty means any client
@@ -49,7 +49,7 @@ public:
 };
 
 /** \internal */
-class DCOP_EXPORT DCOPSignalConnectionList : public QList<DCOPSignalConnection*>
+class DCOPSignalConnectionList : public QList<DCOPSignalConnection*>
 {
 public:
    DCOPSignalConnectionList() { };
@@ -58,7 +58,7 @@ public:
 /**
  * @internal
  */
-class DCOP_EXPORT DCOPSignals
+class DCOPSignals
 {
 public:
    ~DCOPSignals();
