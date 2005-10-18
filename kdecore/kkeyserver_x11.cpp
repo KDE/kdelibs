@@ -535,7 +535,7 @@ QString Sym::toString( bool bUserSpace ) const
 
 	QString s;
 #ifdef Q_WS_WIN
-	s = QKeySequence( m_sym );
+	s = QString(QKeySequence(m_sym)); 
 #elif defined(Q_WS_X11)
 	// Get X-name
 	s = XKeysymToString( m_sym );
