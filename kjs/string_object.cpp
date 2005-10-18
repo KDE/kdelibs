@@ -405,20 +405,23 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     {
         // The arg processing is very much like ArrayProtoFunc::Slice
         int begin = args[0].toUInt32(exec);
-        if (begin < 0)
-          begin = maxInt(begin + len, 0);
-        else
-          begin = minInt(begin, len);
         int end = len;
         if (args[1].type() != UndefinedType) {
           end = args[1].toInteger(exec);
-          if (end < 0)
-            end = maxInt(len + end, 0);
-          else
-            end = minInt(end, len);
         }
-        //printf( "Slicing from %d to %d \n", begin, end );
-        result = String(s.substr(begin, end-begin));
+        int from = begin < 0 ? len + begin : begin;
+        int to = end < 0 ? len + end : end;
+        if (to > from && to > 0 && from < len) {
+          if (from < 0) {
+            from = 0;
+          }
+          if (to > len) {
+            to = len;
+          }
+          result = String(s.substr(from, to - from));
+        } else {
+          result = String("");
+        }
         break;
     }
     case Split: {
