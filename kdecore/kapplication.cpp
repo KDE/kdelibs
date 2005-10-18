@@ -270,11 +270,6 @@ public:
 static QList<const QWidget*> *x11Filter = 0;
 static bool autoDcopRegistration = true;
 
-
-#ifdef Q_WS_X11
-  Display *KApplication::getDisplay() { return QX11Info::display(); }
-#endif
-
 static void cleanupAppClient() {
   // close down IPC
   s_dcopClientHasBeenClosedDown=true;
@@ -455,7 +450,7 @@ QString KApplication::sessionConfigName() const
     QString sessKey = sessionKey();
     if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
         sessKey = d->sessionKey;
-    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(sessKey);
+    return QString("session/%1_%2_%3").arg(applicationName()).arg(sessionId()).arg(sessKey);
 }
 
 #ifdef Q_WS_X11
@@ -469,15 +464,14 @@ static QTime* smModificationTime = 0;
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
-  KInstance( KCmdLineArgs::about), d (new Private)
+  KInstance( KCmdLineArgs::about ), d (new Private)
 {
 
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    setObjectName( instanceName() );
-
+    setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -489,11 +483,11 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 		            bool allowStyles ) :
   QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 visual, colormap ),
-  KInstance( KCmdLineArgs::about), d (new Private)
+  KInstance( KCmdLineArgs::about ), d (new Private)
 {
     read_app_startup_id();
     useStyles = allowStyles;
-    setObjectName( instanceName() );
+    setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -508,7 +502,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 {
     read_app_startup_id();
     useStyles = allowStyles;
-    setObjectName( instanceName() );
+    setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -525,8 +519,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    setObjectName( instanceName() );
-
+    setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -542,10 +535,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-
-    Q_ASSERT (!rAppName.isEmpty());
-    setObjectName(rAppName);
-
+    setApplicationName(rAppName);
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
@@ -621,9 +611,6 @@ void KApplication::init()
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
-  Q_ASSERT( KGlobal::instance()->aboutData() );
-  setApplicationName( KGlobal::instance()->aboutData()->appName());
-
 
 #ifdef Q_WS_X11 //FIXME(E)
   // create all required atoms in _one_ roundtrip to the X server
@@ -671,7 +658,7 @@ void KApplication::init()
 
   KConfig* config = KGlobal::config();
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
-  if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
+  if (readOnly.isEmpty() && applicationName() != QLatin1String("kdialog"))
   {
     if (KAuthorized::authorize("warn_unwritable_config"))
        config->checkConfigFilesWritable(true);
@@ -761,7 +748,7 @@ void KApplication::init()
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
-                                   + QLatin1String(name()) + '/');
+                                   + applicationName() + '/');
   pSessionConfig = 0L;
   bSessionManagement = true;
 
@@ -854,7 +841,7 @@ void KApplication::dcopAutoRegistration()
      {
      ( void ) dcopClient();
      if( dcopClient()->appId().isEmpty())
-         dcopClient()->registerAs(name());
+         dcopClient()->registerAs(applicationName().toLatin1().data());
      }
 }
 
@@ -1173,11 +1160,6 @@ void KApplication::parseCommandLine( )
           fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).toLocal8Bit().data());
     }
 
-    if (args->isSet("caption"))
-    {
-       aCaption = QString::fromLocal8Bit(args->getOption("caption"));
-    }
-
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
@@ -1218,7 +1200,7 @@ void KApplication::parseCommandLine( )
 }
 
 #ifdef QT3_SUPPORT
-QString KApplication::geometryArgument() const
+QString KApplication::geometryArgument()
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
@@ -1528,18 +1510,21 @@ void KApplication::applyGUIStyle()
     kdisplaySetPalette();
 }
 
-QString KApplication::caption() const
+QString KApplication::caption()
 {
-  // Caption set from command line ?
-  if( !aCaption.isNull() )
-        return aCaption;
-  else
+    // Caption set from command line ?
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    if (args && args->isSet("caption"))
+    {
+       return QString::fromLocal8Bit(args->getOption("caption"));
+    }
+    else
       // We have some about data ?
       if ( KGlobal::instance()->aboutData() )
         return KGlobal::instance()->aboutData()->programName();
       else
         // Last resort : application name
-        return name();
+        return qApp->applicationName();
 }
 
 
@@ -1548,22 +1533,22 @@ QString KApplication::caption() const
 // An attempt to simplify consistent captions.
 //
 QString KApplication::makeStdCaption( const QString &userCaption,
-                                      bool withAppName, bool modified ) const
+                                      bool withAppName, bool modified )
 {
-  QString s = userCaption.isEmpty() ? caption() : userCaption;
+  QString captionString = userCaption.isEmpty() ? caption() : userCaption;
 
   // If the document is modified, add '[modified]'.
   if (modified)
-      s += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
+      captionString += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
 
   if ( !userCaption.isEmpty() ) {
       // Add the application name if:
       // User asked for it, it's not a duplication  and the app name (caption()) is not empty
       if ( withAppName && !caption().isNull() && !userCaption.endsWith(caption())  )
-	  s += QString::fromUtf8(" - ") + caption();
+	  captionString += QString::fromUtf8(" - ") + caption();
   }
 
-  return s;
+  return captionString;
 }
 
 QPalette KApplication::createApplicationPalette()
@@ -1795,7 +1780,7 @@ KApplication::launcher()
    return "klauncher";
 }
 
-QString KApplication::tempSaveName( const QString& pFilename ) const
+QString KApplication::tempSaveName( const QString& pFilename )
 {
   QString aFilename;
 
@@ -1824,7 +1809,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
 
 
 QString KApplication::checkRecoverFile( const QString& pFilename,
-        bool& bRecover ) const
+        bool& bRecover ) 
 {
   QString aFilename;
 
@@ -2008,8 +1993,6 @@ Qt::ButtonState KApplication::keyboardMouseState()
     return static_cast< Qt::ButtonState >( ret );
 }
 #endif
-
-
 
 void KApplication::virtual_hook( int id, void* data )
 { KInstance::virtual_hook( id, data ); }

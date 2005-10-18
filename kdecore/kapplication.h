@@ -90,7 +90,6 @@ class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 
   Q_OBJECT
 public:
-  enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
 
   /**
    * This constructor takes aboutData and command line
@@ -195,7 +194,7 @@ public:
    * @see sessionConfig()
    * @deprecated use qApp->isSessionRestored()
    */
-  KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
+  KDE_DEPRECATED inline bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
   
   /**
@@ -261,20 +260,20 @@ public:
    * @return the application icon
    * @deprecated Use QApplication::windowIcon()
    */
-  QPixmap icon() const;
+  KDE_DEPRECATED QPixmap icon() const;
 
   /**
    * Returns the mini-icon for the application as a QPixmap.
    * @return the application's mini icon
    * @deprecated Use QApplication::windowIcon()
    */
-  QPixmap miniIcon() const;
+  KDE_DEPRECATED QPixmap miniIcon() const;
 #endif
   
   /**
    *  Sets the top widget of the application.
-   *  This means basically applying the right window caption and
-   *  icon. An application may have several top widgets. You don't
+   *  This means basically applying the right window caption.
+   *  An application may have several top widgets. You don't
    *  need to call this function manually when using KMainWindow.
    *
    *  @param topWidget A top widget of the application.
@@ -299,8 +298,7 @@ public:
    * executable.
    * @return the text for the window caption
    */
-  QString caption() const;
-
+  static QString caption(); 
 
   /**
    * Builds a caption that contains the application name along with the
@@ -319,8 +317,8 @@ public:
    * modified, i.e., it contains data that has not been saved.
    * @return the created caption
    */
-  QString makeStdCaption( const QString &userCaption,
-                          bool withAppName=true, bool modified=false ) const;
+  static QString makeStdCaption( const QString &userCaption,
+                          bool withAppName=true, bool modified=false );
 
   /**
    * Get a file name in order to make a temporary copy of your document.
@@ -329,7 +327,7 @@ public:
    * document.
    * @return A new filename for auto-saving.
    */
-  QString tempSaveName( const QString& pFilename ) const;
+  static QString tempSaveName( const QString& pFilename );
 
   /**
    * Check whether  an auto-save file exists for the document you want to
@@ -340,15 +338,17 @@ public:
    * file.
    * @return The full path of the file to open.
    */
-  QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
+  static QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
+#ifdef QT3_SUPPORT
 #ifdef Q_WS_X11
   /**
    * Get the X11 display
    * @return the X11 Display
    * @deprecated use QX11Info::display()
    */
-  Display *getDisplay() KDE_DEPRECATED;
+  KDE_DEPRECATED static inline Display *getDisplay() { return QX11Info::display(); } ;
+#endif
 #endif
 
   /**
@@ -480,14 +480,14 @@ public:
     *    
     * </code>
     */
-  QString geometryArgument() const;
+  static KDE_DEPRECATED QString geometryArgument();
 #endif
 
   /**
    * Install a Qt SQL property map with entries for all KDE widgets
    * Call this in any application using KDE widgets in QSqlForm or QDataView.
    */
-  void installKDEPropertyMap();
+  static void installKDEPropertyMap();
 
 #ifdef QT3_SUPPORT
   /**
@@ -555,7 +555,6 @@ protected:
 
   /// Current application object.
   static KApplication *KApp;
-  int pArgc;
 
 private slots:
   void dcopFailure(const QString &);
@@ -565,8 +564,8 @@ private slots:
 
 private:
   QString sessionConfigName() const;
+  
   KConfig* pSessionConfig; //instance specific application config object
-  QString aCaption; // the name for the window title
   bool bSessionManagement;
   bool useStyles;
   QWidget *smw;
@@ -758,8 +757,6 @@ private:
   void kdisplaySetStyle();
   void kdisplaySetFont();
   void applyGUIStyle();
-
-  int captionLayout;
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
