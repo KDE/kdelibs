@@ -25,7 +25,7 @@
 
 static void checkIcon( const KURL& url, const QString& expectedIcon )
 {
-    QString icon = KMimeType::iconForURL( url );
+    QString icon = KMimeType::iconNameForURL( url );
     COMPARE( icon, expectedIcon );
 }
 
@@ -34,7 +34,7 @@ QTTEST_KDEMAIN( KMimeTypeTest, NoGUI )
 void KMimeTypeTest::testIcons()
 {
     // Obviously those tests will need to be fixed if we ever change the name of the icons
-    // but at least they unit-test KMimeType::iconForURL.
+    // but at least they unit-test KMimeType::iconNameForURL.
 
     // TODO test data-driven testing :)
 

@@ -488,7 +488,7 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _
                                  int _force_size, int _state, QString * _path )
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
-  QString iconName = iconForURL( _url, _mode );
+  QString iconName = iconNameForURL( _url, _mode );
 
   if (!iconLoader->extraDesktopThemesAdded())
   {

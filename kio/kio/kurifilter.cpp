@@ -152,7 +152,7 @@ QString KURIFilterData::iconName()
             case KURIFilterData::LOCAL_DIR:
             case KURIFilterData::NET_PROTOCOL:
             {
-                m_strIconName = KMimeType::iconForURL( m_pURI );
+                m_strIconName = KMimeType::iconNameForURL( m_pURI );
                 break;
             }
             case KURIFilterData::EXECUTABLE:
