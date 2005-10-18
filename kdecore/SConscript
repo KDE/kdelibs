@@ -24,7 +24,7 @@ kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp
 kaudioplayer.cpp kdcoppropertyproxy.cpp
 kprocio.cpp krandom.cpp
 kpixmapprovider.cpp
-kcodecs.cpp ksocks.cpp fakes.c
+kcodecs.cpp fakes.c
 ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp
 kxmessages.cpp kstartupinfo.cpp kcatalog.cpp
 kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp
@@ -42,7 +42,7 @@ ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 
 if not env['WINDOWS']:
 	core_files +="""
-netsupp.cpp netwm.cpp kwin.cpp kwinmodule.cpp 
+ksocks.cpp netsupp.cpp netwm.cpp kwin.cpp kwinmodule.cpp 
 network/kresolver.cpp
 network/kresolvermanager.cpp
 network/kresolverworkerbase.cpp
