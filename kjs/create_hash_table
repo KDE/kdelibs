@@ -26,6 +26,8 @@ my $name;
 my $size;
 my $hashsize;
 my $banner = 0;
+my $namespace = "KJS";
+
 sub calcTable();
 sub output();
 sub hashValue($);
@@ -35,6 +37,8 @@ while (<IN>) {
   s/^\s*//g;
   if (/^\#|^$/) {
       # comment. do nothing
+    } elsif (/^\@namespace\s+(\w+)/ && !$inside) {
+        $namespace = $1;
     } elsif (/^\@begin/ && !$inside) {
       if (/^\@begin\s*([:_\w]+)\s*(\d+)\s*$/) {
         $inside = 1;
@@ -147,8 +151,8 @@ sub output() {
   $nameStringTable =~ y/:/_/;
 
   print "\n#include \"lookup.h\"\n" if ($includelookup);
-  print "\nusing namespace KJS;\n"; # because of DontDelete etc.
-  print "\nnamespace KJS {\n";
+  print "\nusing namespace $namespace;\n"; # because of DontDelete etc.
+  print "\nnamespace $namespace {\n";
 
   # first, build the string table
   my %soffset = ();
