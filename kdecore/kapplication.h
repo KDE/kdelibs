@@ -571,14 +571,11 @@ private:
   QWidget *smw;
 
   void init();
-
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
-
   void read_app_startup_id();
 
   void dcopAutoRegistration();
   void dcopClientPostInit();
-  void initUrlActionRestrictions();
 
 public:
   /**
