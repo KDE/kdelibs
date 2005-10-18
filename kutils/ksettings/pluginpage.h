@@ -78,7 +78,7 @@ class KUTILS_EXPORT PluginPage : public KCModule
          * Standart KCModule constructor. Automatically creates the the
          * KPluginSelector widget.
          */
-        KDE_DEPRECATED PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+        PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() ) KDE_DEPRECATED;
 #endif
 
         /**
