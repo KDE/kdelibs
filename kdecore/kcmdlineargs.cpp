@@ -218,8 +218,12 @@ const char * KCmdLineArgs::appName()
   * Add Qt and KDE command line options to KCmdLineArgs.
   */
 void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
-   if (stdargs & KCmdLineArgs::CmdLineArgQt) KCmdLineArgs::addCmdLineOptions(qt_options, "Qt", "qt");
-   if (stdargs & KCmdLineArgs::CmdLineArgKDE)  KCmdLineArgs::addCmdLineOptions(kde_options, "KDE", "kde");
+   if (stdargs & KCmdLineArgs::CmdLineArgQt) {
+       KCmdLineArgs::addCmdLineOptions(qt_options, "Qt", "qt");
+   }
+   if (stdargs & KCmdLineArgs::CmdLineArgKDE) {
+       KCmdLineArgs::addCmdLineOptions(kde_options, "KDE", "kde");
+   }
 }
 
 void
@@ -340,7 +344,7 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
       ++args;
    }
 
-   return *args;
+   return 0;
 }
 
 void KCmdLineArgs::removeArgs(const char *id)
