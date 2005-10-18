@@ -249,10 +249,10 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     d->shuttingDown = false;
     if ((d->care_about_geometry = being_first)) {
         being_first = false;
-        
+
         QString geometry;
         KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-        if (args->isSet("geometry"))
+        if (args && args->isSet("geometry"))
             geometry = args->getOption("geometry");
 
         if ( geometry.isNull() ) // if there is no geometry, it doesn't mater
