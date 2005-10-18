@@ -2,16 +2,16 @@
 
 Import('env')
 
-env.subdirs('kconfig_compiler')
+env.subdirs('kconfig_compiler tests')
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: env.subdirs('svgicons')
 
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
-kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
+kdebug.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
 kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp
-kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp
+kstandarddirs.cpp kprocess.cpp kprocctrl.cpp
 klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp
-kiconloader.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp
+kiconloader.cpp krootprop.cpp kcharsets.cpp
 kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp
 kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp
 kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp
@@ -22,7 +22,7 @@ kuniqueapplication.cpp kacceleratormanager.cpp
 ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp
 kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp
 kaudioplayer.cpp kdcoppropertyproxy.cpp
-netsupp.cpp kprocio.cpp krandom.cpp
+kprocio.cpp krandom.cpp
 kpixmapprovider.cpp
 kcodecs.cpp ksocks.cpp fakes.c
 ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp
@@ -37,6 +37,12 @@ ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp klockfile.cpp
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
+ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
+"""
+
+if not env['WINDOWS']:
+	core_files +="""
+netsupp.cpp netwm.cpp kwin.cpp kwinmodule.cpp 
 network/kresolver.cpp
 network/kresolvermanager.cpp
 network/kresolverworkerbase.cpp
@@ -54,9 +60,12 @@ network/ksockssocketdevice.cpp
 network/kbufferedsocket.cpp
 network/ksocketbuffer.cpp
 network/knetworkinterface.cpp
-ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 """
-
+else:
+	core_files +="""
+kapplication_win.cpp 
+kglobalaccel_win.cpp
+"""
 inst_headers="""
 kconfig.h kconfigskeleton.h
 kconfigdata.h ksimpleconfig.h
@@ -98,6 +107,11 @@ obj.libpaths = '../dcop'
 obj.libs     = '../libltdl/libltdlc.a DCOP'
 obj.iskdelib = 1
 obj.includes = 'network'
+obj.ccflags  = '-Dksocklen_t=int' 
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32 ws2_32'
+
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     #FIXME: QTXML is used in libkdesvgicons
     obj.uselib += ' QTXML LIBART'
