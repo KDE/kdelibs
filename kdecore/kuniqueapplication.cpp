@@ -428,7 +428,8 @@ KUniqueApplication::processDelayed()
      DCOPCString replyType;
      if (request->fun == "newInstance()") {
        dcopClient()->setPriorityCall(false);
-       QDataStream ds(request->data);
+       QDataStream ds(&request->data, QIODevice::ReadOnly);
+       ds.setVersion( QDataStream::Qt_3_1 );
        KCmdLineArgs::loadAppArgs(ds);
        if( !ds.atEnd()) // backwards compatibility
        {
