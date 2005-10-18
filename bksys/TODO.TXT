@@ -1,0 +1,27 @@
+
+win32 related 
+-------------
+
+Priority	Status          Description 	 
+(1-3)      n-not started
+					 s-started
+					 w-waiting
+					 f-finished
+  			
+3			n			add code for manual selecting develop environment on windows in cases multiple are installed (--platform=...)
+							1. msvc 
+							2. bcc32 
+							3. mingw (native) 
+							4. mingw (through cygwin) 
+							5. cygwin
+ 						
+2			n			extend bksys help option to display options defined set by the opts.AddOptions() 
+ 						 this provides old configure help options list (used by 4) 
+ 						 -> move help printing after opts.Update(env)
+ 						 -> add "print opts.GenerateHelpText(env)" before return 
+ 						
+
+linux related
+-------------
+
+

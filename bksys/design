@@ -42,8 +42,10 @@ convenience  : static library made of objects compiled with pic (position-indepe
 kioslave     : same as shlib, but without 'lib' as a prefix
 
 The existing classes are the following:
-* genobj: build generic c++ or c applications, depending on the sources given to build
-* qt4obj: build a qt4 object, scanning for moc files and adding the dependencies on .rcc files
+* genobj:     build generic c++ or c applications, depending on the sources given to build
+* qt4obj:     build a qt4 object, scanning for moc files and adding the dependencies on .rcc files
+* kde4obj:    build a kde4 object, scanning for ... 
+* kdeinitobj: build a kdeinit object, scanning for ... 
 
 Targets are then specified like this:
 obj = env.qt4obj('shlib',env)
@@ -88,8 +90,18 @@ DISCUSSION:
 
 No more question for the moment :)
 
+
 BUGS:
 -----
+see BUGS.TXT
 
-* installing versioned libraries is broken at the very moment
-* duplicate PREFIX entry in modules
+
+TODO:
+-----
+see TODO.TXT and search for TODO tags in the python sources 
+
+
+RULES:
+-----
+see RULES.TXT for some programming rules 
+
