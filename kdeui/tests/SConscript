@@ -1,0 +1,81 @@
+#! /usr/bin/env python
+
+Import('env')
+
+if env.has_key('RUNTESTS') and env['RUNTESTS']:
+	
+	check_PROGRAMS = """
+	itemcontainertest
+	kaboutdialogtest
+	kaccelgentest
+	kactiontest
+	#kblendtest
+	kbugreporttest
+	kbuttonboxtest
+	kcharselecttest
+	kcolordlgtest
+	#kcolortest
+	kcomboboxtest
+	kcompletiontest
+	kdatepicktest
+	kdatetimewidgettest
+	kdatewidgettest
+	#kdesattest
+	kdialogbasetest
+	kdualcolortest
+	keditlistboxtest
+	kedittest
+	kfontdialogtest
+	#kgradienttest
+	#khashtest
+	khboxtest
+	kinputdialogtest
+	kjanuswidgettest
+	kledtest
+	klineedittest
+	klistviewtest
+	kmainwindowrestoretest
+	kmainwindowtest
+	kmessageboxtest
+	knuminputtest
+	kpalettetest
+	kpixmapregionselectordialogtest
+	kpopuptest
+	kprogresstest
+	krulertest
+	kseparatortest
+	kspelltest
+	ksqueezedtextlabeltest
+	kstatusbartest
+	ksystemtraytest
+	ktabctltest
+	ktabwidgettest
+	ktextedittest
+	ktoolbarlabelactiontest
+	kunbalancedgrdtest
+	kwindowtest
+	kwizardtest
+	kwordwraptest
+	kxmlguitest
+	qxembedtest
+	"""
+	
+	for appname in check_PROGRAMS.split():
+		if appname[:1] == '#':
+			if env['WINDOWS']:
+				continue
+			else:
+				appname = appname[1:]
+				
+		obj = env.kdeobj('program', env)
+		obj.vnum     = '6.0.2'
+		obj.target   = appname
+		obj.source   = appname + '.cpp'
+		obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+		obj.libpaths = '.. ../../kdecore ../../dcop ../../qttestlib '
+		obj.libs     = 'kdeui kdecore DCOP QtTest'
+		obj.includes += '.. ../../kdecore ../../kdefx ../../qttestlib'
+		if env['WINDOWS']:
+			obj.libs     += ' kdewin32 ws2_32'
+	
+		obj.execute()
