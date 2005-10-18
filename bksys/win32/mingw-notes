@@ -1,17 +1,10 @@
 bksys on win32/mingw development notes
 
-TODO 
----- 
+local TODO 
+--------------
+			
+- provides application wrapper setting the required PATH rsp. LD_LIBRARY_PATH without installation (NICE TO HAVE)
 
-- complete build system 
-	- fix depending library ordering problem  (works now better)
-	- add required qt defines to qt component packages 
-	- fix installation of files 
-  - implement library dependency support like libtool does  
-	- provides application wrapper setting the required PATH without installation 
-	- fix bug in lowlevel.py not detecting winsock gethostname() function 
-	- fix bug not installing KDE-ICE dir 
-   	
 - build or add notes where to get source/binary packages of required libraries 		
 		- zlib 
 		- bzip2 
@@ -23,14 +16,26 @@ TODO
 		the cygsetup tool from http://sf.net/projects/kde-cygwin (see cvs repository 
 		tools/cygsetup) may be used a starting point 
 
-- check dcopserver problem (winsock related problem reported on kde-windows@kde.org)
-	-> porting of qt3 qeventloop stuff from http://lists.kde.org/?l=kde-core-devel&m=111341067414640&w=2 is required, 
-		 qt4 has socketnotifier support. -> Thread opened on kde-windows@kde.org 
-		 
 
 History
 -------
+2005-10-18 Ralf Habacker 
+- fixed dcopserver 100% cpu problem by using custom event loop
 
+2005-10-17 Ralf Habacker 
+- got dcopserver initial running with KDE4 -> dcopserver consumes sometimes 100% 
+  requires some cleanup of win32 related code 
+
+2005-10-16 Ralf Habacker 
+- compiled many files of kdecore succesfully. 
+  
+  
+
+
+2005-10-14 Ralf Habacker 
+- tried to get dcopserver running, recognized that the special eventlopp does not fit into qt4
+  need more investigation how to use the qt4 related eventloop and to avoid the specific bootstrapping
+  
 2005-10-09 Ralf Habacker 
 - tried to fix broken env.kdeinitobj support
 	on win32 this kdeinit support seems not be necessary because forking isn't available
