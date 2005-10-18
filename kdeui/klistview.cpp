@@ -594,7 +594,7 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
 
   Q3ListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
@@ -636,7 +636,7 @@ void KListView::slotAutoSelect()
       if( selectionMode() == Q3ListView::Single )
                 emit selectionChanged( d->pCurrentItem );
     }
-    else if( (keybstate & KApplication::ControlModifier) )
+    else if( (keybstate & Qt::ControlModifier) )
       setSelected( d->pCurrentItem, !d->pCurrentItem->isSelected() );
     else {
       bool block = signalsBlocked();
@@ -681,7 +681,7 @@ void KListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
-            Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+            Qt::ButtonState keybstate = QApplication::keyboardModifiers();
 
             d->autoSelect.stop();
 

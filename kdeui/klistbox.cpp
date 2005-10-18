@@ -117,7 +117,7 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
 
   Q3ListBoxItem* previousItem = item( currentItem() ); 
   setCurrentItem( m_pCurrentItem );
@@ -179,7 +179,7 @@ void KListBox::slotAutoSelect()
 
 void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
 {
-  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
     
   m_pAutoSelect->stop();
   

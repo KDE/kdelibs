@@ -168,7 +168,7 @@ void KIconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
   Q3IconViewItem* previousItem = currentItem();
   setCurrentItem( m_pCurrentItem );
 
@@ -244,7 +244,7 @@ void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
     return;
   }
 
-  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
 
   m_pAutoSelect->stop();
 

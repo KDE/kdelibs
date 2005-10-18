@@ -1159,6 +1159,8 @@ public:
                              int options, const QString &details=QString::null,
                              QMessageBox::Icon notifyType=QMessageBox::Information);
 
+    // KDE4 make a constructor that takes a QIcon
+
 private:
     static KConfig* againConfig;
 };

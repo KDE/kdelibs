@@ -76,7 +76,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     setBackgroundOrigin(WindowOrigin);
     hasQuit = 0;
     menu = new KMenu( this );
-    menu->addTitle( kapp->miniIcon(), kapp->caption() );
+    menu->addTitle( qApp->windowIcon(), kapp->caption() );
     move( -1000, -1000 );
     KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 

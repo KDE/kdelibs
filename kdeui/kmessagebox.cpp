@@ -985,13 +985,14 @@ KMessageBox::about(QWidget *parent, const QString &text,
                                 parent, "about", true, true,
                                 KStdGuiItem::ok() );
     
-    QPixmap ret = KApplication::kApplication()->icon();
-    if (ret.isNull())
-        ret = QMessageBox::standardIcon(QMessageBox::Information);
-    dialog->setWindowIcon(ret);
-
-    createKMessageBox(dialog, ret, text, QStringList(), QString::null, 0, options);
-    
+    if (qApp->windowIcon().isNull()){
+        QPixmap ret = QMessageBox::standardIcon(QMessageBox::Information);
+        dialog->setWindowIcon(ret);
+    }
+  
+    int size = IconSize(KIcon::Desktop);
+    QPixmap icon = qApp->windowIcon().pixmap(size,size);
+    createKMessageBox(dialog, icon, text, QStringList(), QString::null, 0, options);
     return;
 }
 
