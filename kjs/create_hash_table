@@ -151,7 +151,7 @@ sub output() {
   $nameStringTable =~ y/:/_/;
 
   print "\n#include \"lookup.h\"\n" if ($includelookup);
-  print "\nusing namespace $namespace;\n"; # because of DontDelete etc.
+  print "\nusing namespace KJS;\n"; # because of DontDelete etc.
   print "\nnamespace $namespace {\n";
 
   # first, build the string table
