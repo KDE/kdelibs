@@ -206,16 +206,17 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <H4>KMD5</H4>
 
 <H4>KLocale</H4>
-<li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;
-<li> bool weekStartsMonday() const -&gt; int weekStartDay() const
-<li> QString monthName(int i, bool shortName = false) const -&gt; QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate &amp; date, bool shortName = false ) const = 0;
-<li> QString weekDayName(int i, bool shortName = false) const -&gt; calendar()-&gt;weekDayName
-<li> QString monthNamePossessive(int i, bool shortName = false) const -&gt; calendar()-&gt;monthNamePossessive()
-<li> void setWeekStartsMonday(bool start) -&gt; setWeekStartDay
-<li> languages() -&gt; languageList()
-<li> formatMoney(const QString &amp;numStr) -&gt;   QString formatMoney(double num, const QString &amp; currency = QString::null, int digits = -1) const;
-<li> charset() -&gt; gone
-<li> setCharset() -&gt; gone
+<li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;</li>
+<li> bool weekStartsMonday() const -&gt; int weekStartDay() const</li>
+<li> QString monthName(int i, bool shortName = false) const -&gt; QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate &amp; date, bool shortName = false ) const = 0;<li>
+<li> QString weekDayName(int i, bool shortName = false) const -&gt; calendar()-&gt;weekDayName<li>
+<li> QString monthNamePossessive(int i, bool shortName = false) const -&gt; calendar()-&gt;monthNamePossessive()</li>
+<li> void setWeekStartsMonday(bool start) -&gt; setWeekStartDay</li>
+<li> languages() -&gt; languageList()</li>
+<li> formatMoney(const QString &amp;numStr) -&gt;   QString formatMoney(double num, const QString &amp; currency = QString::null, int digits = -1) const;</li>
+<li> charset() -&gt; gone</li>
+<li> setCharset() -&gt; gone</li>
+<li>removeCatalogue was renamed to removeCatalog</li>
 
 <H4>KCmdLineArgs</H4>
 <li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
