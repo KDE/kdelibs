@@ -151,7 +151,7 @@ public slots:
 
     void invokeEditSlot( const char *slot )
     {
-        if ( qApp->focusWidget() );
+        if ( qApp->focusWidget() )
             QMetaObject::invokeMethod( qApp->focusWidget(), slot );
     }
 
