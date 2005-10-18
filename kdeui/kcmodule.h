@@ -89,10 +89,9 @@ public:
    * Make sure you have a QStringList argument in your
    * implementation.
    */
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   KCModule(QWidget *parent, const char *name, const QStringList &args=QStringList() );
 #endif
-  KCModule(QWidget *parent=0, const QStringList &args=QStringList() );
   
   KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
 
