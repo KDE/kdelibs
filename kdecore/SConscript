@@ -46,7 +46,7 @@ if not env['WINDOWS']:
 	core_files +="""
 kglobalaccel_x11.cpp 
 ktoolinvocation_x11.cpp 
-ksocks.cpp netsupp.cpp netwm.cpp 
+ksocks.cpp netsupp.cpp netwm.cpp kpty.cpp
 kwin.cpp kwinmodule.cpp 
 network/kresolver.cpp
 network/kresolvermanager.cpp
@@ -113,7 +113,6 @@ obj.libpaths = '../dcop'
 obj.libs     = '../libltdl/libltdlc.a DCOP'
 obj.iskdelib = 1
 obj.includes = 'network'
-obj.ccflags  = '-Dksocklen_t=int' 
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32 ws2_32'
