@@ -1648,13 +1648,13 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
     if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftModifier
-        && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
+        && !(QApplication::keyboardModifiers() & Qt::ShiftModifier))
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
     if (d->accessKeysEnabled) {
         if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) d->accessKeysPreActivate=false;
-        if (_ke->key() == Qt::Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && !(KApplication::keyboardMouseState() & Qt::ControlModifier))
+        if (_ke->key() == Qt::Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && !(QApplication::keyboardModifiers() & Qt::ControlModifier))
 	{
 	    displayAccessKeys();
 	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
