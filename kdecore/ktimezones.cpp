@@ -1,5 +1,6 @@
 /*
    This file is part of the KDE libraries
+   Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -17,359 +18,546 @@
    Boston, MA 02110-1301, USA.
 */
 
+// This file requires AC_STRUCT_TIMEZONE autoconf macro to have been used.
+// This file requires HAVE_TM_GMTOFF to be defined if struct tm member gmtoff is available.
+
 #include <config.h>
 
-#include <ktimezones.h>
-#include <kdebug.h>
+#include <cmath>
+#include <climits>
+#include <cstdlib>
+
+#include <QFile>
+#include <QFileInfo>
+#include <QRegExp>
+#include <QStringList>
+#include <QTextStream>
+
 #include <kcodecs.h>
 #include <kprocess.h>
 #include <kstringhandler.h>
 #include <ktempfile.h>
+#include <kdebug.h>
+#include <ktimezones.h>
 
-#include <qdatetime.h>
-#include <qfile.h>
-#include <qregexp.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
 
-#include <cerrno>
-#include <climits>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
 
-#define UTC_ZONE "UTC"
-
-/**
- * Find out if the given standard (e.g. "GMT") and daylight savings time
- * (e.g. "BST", but which may be empty) abbreviated timezone names match
- * this timezone.
- *
- * Thus, this class can be used as a heuristic when trying to lookup the
- * real timezone from the abbreviated zone names.
+/* Return the offset to UTC in the current time zone at the specified UTC time.
+ * The thread-safe function localtime_r() is used in preference if available.
  */
-class AbbreviationsMatch :
-    public KTimezoneDetails
+static int gmtoff(time_t t)
+{
+#ifdef _POSIX_THREAD_SAFE_FUNCTIONS
+    tm tmtime;
+    if (!localtime_r(&t, &tmtime))
+        return 0;
+#ifdef HAVE_TM_GMTOFF
+    return tmtime.tm_gmtoff;
+#else
+    int lwday = tmtime.tm_wday;
+    int lt = 3600*tmtime.tm_hour + 60*tmtime.tm_min + tmtime.tm_sec;
+    if (!gmtime_r(&t, &tmtime))
+        return 0;
+    int uwday = tmtime.tm_wday;
+    int ut = 3600*tmtime.tm_hour + 60*tmtime.tm_min + tmtime.tm_sec;
+#endif
+#else
+    tm *tmtime = localtime(&t);
+    if (!tmtime)
+        return 0;
+#ifdef HAVE_TM_GMTOFF
+    return tmtime->tm_gmtoff;
+#else
+    int lwday = tmtime->tm_wday;
+    int lt = 3600*tmtime->tm_hour + 60*tmtime->tm_min + tmtime->tm_sec;
+    tmtime = gmtime(&t);
+    int uwday = tmtime->tm_wday;
+    int ut = 3600*tmtime->tm_hour + 60*tmtime->tm_min + tmtime->tm_sec;
+#endif
+#endif
+#ifndef HAVE_TM_GMTOFF
+    if (lwday != uwday)
+    {
+      // Adjust for different day
+      if (lwday == uwday + 1  ||  lwday == 0 && uwday == 6)
+        lt += 24*3600;
+      else
+        lt -= 24*3600;
+    }
+    return lt - ut;
+#endif
+}
+
+/******************************************************************************/
+
+class KTimezonesPrivate
 {
 public:
-    AbbreviationsMatch(const QString &stdZone, const QString &dstZone = "")
+    KTimezonesPrivate() : zones(new KTimezones::ZoneMap())  {}
+    ~KTimezonesPrivate()
     {
-        m_stdZone = stdZone;
-        m_dstZone = dstZone;
-    }
-
-    void parseStarted()
-    {
-        m_foundStd = false;
-        m_foundDst = m_dstZone.isEmpty();
-    }
-
-    bool test()
-    {
-        return (m_foundStd && m_foundDst);
-    }
-
-private:
-    bool m_foundStd;
-    bool m_foundDst;
-    QString m_stdZone;
-    QString m_dstZone;
-
-    virtual void gotAbbreviation(int /*index*/, const QString &value)
-    {
-        if (m_stdZone == value)
+        // Autodelete behavior.
+        KTimezone *utcZone = utc();
+        for (KTimezones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
         {
-            m_foundStd = true;
+            if (it.data() != utcZone)    // can't delete KTimezone returned by utc()
+                delete it.data();
         }
-        if (m_dstZone == value)
-        {
-            m_foundDst = true;
-        }
+        delete zones;
     }
+    static KTimezone *utc();
+
+    KTimezones::ZoneMap *zones;
 };
 
-/**
- * Internal dummy source for UTC timezone.
- */
-class DummySource :
-    public KTimezoneSource
+KTimezone *KTimezonesPrivate::utc()
 {
-public:
-    DummySource() :
-        KTimezoneSource("")
-    {
-    }
-
-    virtual bool parse(const QString &/*zone*/, KTimezoneDetails &/*dataReceiver*/) const
-    {
-        return true;
-    }
-};
-
-/**
- * Find offset at a particular point in time.
- */
-class OffsetFind :
-    public KTimezoneDetails
-{
-public:
-    OffsetFind(unsigned dateTime)
-    {
-        m_dateTime = dateTime;
-    }
-
-    void parseStarted()
-    {
-        m_transitionTimeIndex = 0;
-        m_localTimeIndex = -1;
-        m_abbrIndex = -1;
-        m_offset = 0;
-        m_isDst = false;
-        m_abbr = UTC_ZONE;
-    }
-
-    int offset()
-    {
-        return m_offset;
-    }
-
-    bool isDst()
-    {
-        return m_isDst;
-    }
-
-    QString abbreviation()
-    {
-        return m_abbr;
-    }
-
-private:
-    unsigned m_dateTime;
-    int m_transitionTimeIndex;
-    int m_localTimeIndex;
-    int m_abbrIndex;
-    int m_offset;
-    bool m_isDst;
-    QString m_abbr;
-
-    virtual void gotTransitionTime(int index, unsigned transitionTime)
-    {
-        if (transitionTime <= m_dateTime)
-        {
-            // Remember the index of the transition time that relates to dateTime.
-            m_transitionTimeIndex = index;
-        }
-    }
-
-    virtual void gotLocalTimeIndex(int index, unsigned localTimeIndex)
-    {
-        if (index == m_transitionTimeIndex)
-        {
-            // Remember the index of the local time that relates to dateTime.
-            m_localTimeIndex = localTimeIndex;
-        }
-    }
-
-    virtual void gotLocalTime(int index, int gmtOff, bool isDst, unsigned abbrInd)
-    {
-        if (index == m_localTimeIndex)
-        {
-            // Remember the results that relate to gmtOffset.
-            m_offset = gmtOff;
-            m_isDst = isDst;
-            m_abbrIndex = abbrInd;
-        }
-    }
-
-    virtual void gotAbbreviation(int index, const QString &value)
-    {
-        if (index == m_abbrIndex)
-        {
-            m_abbr = value;
-        }
-    }
-};
-
-const float KTimezone::UNKNOWN = 1000.0;
-
-bool KTimezone::isValidLatitude(float latitude)
-{
-    return (latitude >= -90.0) && (latitude <= 90.0);
+    static KTimezone utcZone;
+    return &utcZone;
 }
 
-bool KTimezone::isValidLongitude(float longitude)
+
+KTimezones::KTimezones()
+  : d(new KTimezonesPrivate)
 {
-    return (longitude >= -180.0) && (longitude <= 180.0);
-}
-
-KTimezone::KTimezone(
-    KSharedPtr<KTimezoneSource> db, const QString& name,
-    const QString &countryCode, float latitude, float longitude,
-    const QString &comment) :
-    m_db(db),
-    m_name(name),
-    m_countryCode(countryCode),
-    m_latitude(latitude),
-    m_longitude(longitude),
-    m_comment(comment),
-    d(0)
-{
-    // Detect duff values.
-    if (m_latitude * m_latitude > 90 * 90)
-        m_latitude = UNKNOWN;
-    if (m_longitude * m_longitude > 180 * 180)
-        m_longitude = UNKNOWN;
-}
-
-KTimezone::~KTimezone()
-{
-    // FIXME when needed:
-    // delete d;
-}
-
-QString KTimezone::comment() const
-{
-    return m_comment;
-}
-
-QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &dateTime) const
-{
-    char *originalZone = ::getenv("TZ");
-
-    // Convert the given localtime to UTC.
-    ::putenv(strdup(QString("TZ=:").append(m_name).toUtf8()));
-    tzset();
-    unsigned utc = dateTime.toTime_t();
-
-    // Set the timezone and convert UTC to localtime.
-    ::putenv(strdup(QString("TZ=:").append(newZone->name()).toUtf8()));
-    tzset();
-    QDateTime remoteTime;
-    remoteTime.setTime_t(utc, Qt::LocalTime);
-
-    // Now restore things
-    if (!originalZone)
-    {
-        ::unsetenv("TZ");
-    }
-    else
-    {
-        ::putenv(strdup(QString("TZ=").append(originalZone).toUtf8()));
-    }
-    tzset();
-    return remoteTime;
-}
-
-QString KTimezone::countryCode() const
-{
-    return m_countryCode;
-}
-
-float KTimezone::latitude() const
-{
-    return m_latitude;
-}
-
-float KTimezone::longitude() const
-{
-    return m_longitude;
-}
-
-QString KTimezone::name() const
-{
-    return m_name;
-}
-
-int KTimezone::offset(Qt::TimeSpec basisSpec) const
-{
-    char *originalZone = ::getenv("TZ");
-
-    // Get the time in the current timezone.
-    QDateTime basisTime = QDateTime::currentDateTime(basisSpec);
-
-    // Set the timezone and find out what time it is there compared to the basis.
-    ::putenv(strdup(QString("TZ=:").append(m_name).toUtf8()));
-    tzset();
-    QDateTime remoteTime = QDateTime::currentDateTime(Qt::LocalTime);
-    int offset = remoteTime.secsTo(basisTime);
-
-    // Now restore things
-    if (!originalZone)
-    {
-        ::unsetenv("TZ");
-    }
-    else
-    {
-        ::putenv(strdup(QString("TZ=").append(originalZone).toUtf8()));
-    }
-    tzset();
-    return offset;
-}
-
-int KTimezone::offset(const QDateTime &dateTime) const
-{
-    OffsetFind finder(dateTime.toTime_t());
-    int result = 0;
-    if (parse(finder))
-    {
-        result = finder.offset();
-    }
-    return result;
-}
-
-bool KTimezone::parse(KTimezoneDetails &dataReceiver) const
-{
-    dataReceiver.parseStarted();
-    bool result = m_db->parse(m_name, dataReceiver);
-    dataReceiver.parseEnded();
-    return result;
-}
-
-KTimezones::KTimezones() :
-    m_zoneinfoDir(),
-    m_zones(0),
-    d(0)
-{
-    // Create the database (and resolve m_zoneinfoDir!).
-    allZones();
-    m_UTC = new KTimezone(new DummySource(), UTC_ZONE);
-    add(m_UTC);
 }
 
 KTimezones::~KTimezones()
 {
-    // FIXME when needed:
-    // delete d;
+    delete d;
+}
 
-    // Autodelete behavior.
-    if (m_zones)
+const KTimezones::ZoneMap KTimezones::zones() const
+{
+    return *d->zones;
+}
+
+bool KTimezones::add(KTimezone *zone)
+{
+    if (d->zones->find(zone->name()) != d->zones->end())
+        return false;    // name already exists
+    d->zones->insert(zone->name(), zone);
+    return true;
+}
+
+KTimezone *KTimezones::detach(KTimezone *zone)
+{
+    if (zone)
     {
-        for (ZoneMap::ConstIterator it = m_zones->begin(); it != m_zones->end(); ++it)
+        for (ZoneMap::Iterator it = d->zones->begin(), end = d->zones->end();  it != end;  ++it)
         {
-            delete it.data();
+            if (it.data() == zone)
+            {
+                d->zones->remove(it);
+                return (zone == utc()) ? 0 : zone;
+            }
         }
     }
-    delete m_zones;
+    return 0;
 }
 
-void KTimezones::add(KTimezone *zone)
+KTimezone *KTimezones::detach(const QString &name)
 {
-    m_zones->insert(zone->name(), zone);
+    if (!name.isEmpty())
+    {
+        ZoneMap::Iterator it = d->zones->find(name);
+        if (it != d->zones->end())
+        {
+            KTimezone *zone = it.data();
+            d->zones->remove(it);
+            return (zone == utc()) ? 0 : zone;
+        }
+    }
+    return 0;
 }
 
-const KTimezones::ZoneMap KTimezones::allZones()
+const KTimezone *KTimezones::zone(const QString &name)
 {
-    // Have we already done all the hard work? If not, create the cache.
-    if (m_zones)
-        return *m_zones;
-    m_zones = new ZoneMap();
+    if (!name.isEmpty())
+    {
+        ZoneMap::ConstIterator it = d->zones->find(name);
+        if (it != d->zones->end())
+            return it.data();
+    }
+    return 0;    // error
+}
 
-    // Go read the database.
-    //
-    // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
-    // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
-    //
-    // For Unix its all easy except knowing where to look. Try the LSB location first.
+KTimezone *KTimezones::utc()
+{
+    return KTimezonesPrivate::utc();
+}
+
+
+/******************************************************************************/
+
+class KTimezonePrivate
+{
+public:
+    KTimezonePrivate(KTimezoneSource *src, const QString& nam,
+                     const QString &country, float lat, float lon, const QString &cmnt);
+    KTimezonePrivate(const KTimezonePrivate &);
+    ~KTimezonePrivate()  { delete data; }
+    KTimezonePrivate &operator=(const KTimezonePrivate &);
+    static KTimezoneSource *utcSource();
+
+    KTimezoneSource *source;
+    QString name;
+    QString countryCode;
+    QString comment;
+    float   latitude;
+    float   longitude;
+    KTimezoneData *data;
+
+private:
+    static KTimezoneSource *mUtcSource;
+};
+
+KTimezoneSource *KTimezonePrivate::mUtcSource;
+
+
+KTimezonePrivate::KTimezonePrivate(KTimezoneSource *src, const QString& nam,
+                 const QString &country, float lat, float lon, const QString &cmnt)
+  : source(src),
+    name(nam),
+    countryCode(country),
+    comment(cmnt),
+    latitude(lat),
+    longitude(lon),
+    data(0)
+{
+    // Detect duff values.
+    if (::fabsf(latitude) > 90)
+        latitude = KTimezone::UNKNOWN;
+    if (::fabsf(longitude) > 180)
+        longitude = KTimezone::UNKNOWN;
+}
+
+KTimezonePrivate::KTimezonePrivate(const KTimezonePrivate &rhs)
+    : source(rhs.source),
+      name(rhs.name),
+      countryCode(rhs.countryCode),
+      comment(rhs.comment),
+      latitude(rhs.latitude),
+      longitude(rhs.longitude)
+{
+    if (rhs.data)
+        data = rhs.data->clone();
+    else
+        data = 0;
+}
+
+KTimezonePrivate &KTimezonePrivate::operator=(const KTimezonePrivate &rhs)
+{
+    source      = rhs.source;
+    name        = rhs.name;
+    countryCode = rhs.countryCode;
+    comment     = rhs.comment;
+    latitude    = rhs.latitude;
+    longitude   = rhs.longitude;
+    delete data;
+    if (rhs.data)
+        data = rhs.data->clone();
+    else
+        data = 0;
+    return *this;
+}
+
+KTimezoneSource *KTimezonePrivate::utcSource()
+{
+    if (!mUtcSource)
+        mUtcSource = new KTimezoneSource;
+    return mUtcSource;
+}
+
+
+const float KTimezone::UNKNOWN = 1000.0;
+
+KTimezone::KTimezone(const QString &name)
+  : d(new KTimezonePrivate(KTimezonePrivate::utcSource(), name, QString(), UNKNOWN, UNKNOWN, QString()))
+{
+}
+
+KTimezone::KTimezone(
+    KTimezoneSource *source, const QString &name,
+    const QString &countryCode, float latitude, float longitude,
+    const QString &comment)
+  : d(new KTimezonePrivate(source, name, countryCode, latitude, longitude, comment))
+{
+}
+
+KTimezone::KTimezone(const KTimezone &rhs)
+  : d(new KTimezonePrivate(*rhs.d))
+{
+}
+
+KTimezone::~KTimezone()
+{
+    delete d;
+}
+
+KTimezone &KTimezone::operator=(const KTimezone &rhs)
+{
+    d->operator=(*rhs.d);
+    return *this;
+}
+
+QString KTimezone::countryCode() const
+{
+    return d->countryCode;
+}
+
+float KTimezone::latitude() const
+{
+    return d->latitude;
+}
+
+float KTimezone::longitude() const
+{
+    return d->longitude;
+}
+
+QString KTimezone::comment() const
+{
+    return d->comment;
+}
+
+QString KTimezone::name() const
+{
+    return d->name;
+}
+
+QList<QByteArray> KTimezone::abbreviations() const
+{
+    if (!data(true))
+        return QList<QByteArray>();
+    return d->data->abbreviations();
+}
+
+QByteArray KTimezone::abbreviation(const QDateTime &utcDateTime) const
+{
+    if (utcDateTime.timeSpec() != Qt::UTC  ||  !data(true))
+        return QByteArray();
+    return d->data->abbreviation(utcDateTime);
+}
+
+const KTimezoneData *KTimezone::data(bool create) const
+{
+    if (create && !d->data)
+        d->data = d->source->parse(this);
+    return d->data;
+}
+
+bool KTimezone::parse() const
+{
+    delete d->data;
+    d->data = d->source->parse(this);
+    return d->data;
+}
+
+QDateTime KTimezone::toUTC(const QDateTime &zoneDateTime) const
+{
+    if (zoneDateTime.timeSpec() != Qt::LocalTime)
+        return QDateTime();
+    int secs = offsetAtZoneTime(zoneDateTime);
+    QDateTime dt = zoneDateTime;
+    dt.setTimeSpec(Qt::UTC);
+    return dt.addSecs(-secs);
+}
+
+QDateTime KTimezone::toZoneTime(const QDateTime &utcDateTime) const
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return QDateTime();
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut == (uint)-1  ||  t < 0)
+        return QDateTime();
+    int secs = offset(t);
+    QDateTime dt = utcDateTime.addSecs(secs);
+    dt.setTimeSpec(Qt::LocalTime);
+    return dt;
+}
+
+QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &zoneDateTime) const
+{
+    return newZone->toZoneTime(toUTC(zoneDateTime));
+}
+
+int KTimezone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
+{
+    if (secondOffset)
+        *secondOffset = 0;
+    return 0;
+}
+
+int KTimezone::offset(time_t) const
+{
+    return 0;
+}
+
+int KTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return 0;
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut == (uint)-1  ||  t < 0)
+        return 0;
+    return offset(t);
+}
+
+int KTimezone::currentOffset(Qt::TimeSpec basis) const
+{
+    // Get current offset of this time zone to UTC
+    time_t now = time(0);
+    int secs = offset(now);
+
+    switch (basis)
+    {
+        case Qt::LocalTime:
+            // Return the current offset of this time zone to the local system time
+            return secs - gmtoff(now);
+        case Qt::UTC:
+            // Return the current offset of this time zone to UTC
+            return secs;
+
+        default:
+            break;
+    }
+    return 0;
+}
+
+bool KTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return false;
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut == (uint)-1  ||  t < 0)
+        return false;
+    return isDst(t);
+}
+
+bool KTimezone::isDst(time_t) const
+{
+    return false;
+}
+
+bool KTimezone::isValidLatitude(float latitude)
+{
+    return ::fabsf(latitude) <= 90.0;
+}
+
+bool KTimezone::isValidLongitude(float longitude)
+{
+    return ::fabsf(longitude) <= 180.0;
+}
+
+
+/******************************************************************************/
+
+KTimezoneData *KTimezoneSource::parse(const KTimezone *) const
+{
+    return new KTimezoneData;
+}
+
+
+/******************************************************************************/
+
+KTimezoneData::KTimezoneData()
+{ }
+
+KTimezoneData::~KTimezoneData()
+{ }
+
+KTimezoneData *KTimezoneData::clone()
+{
+    return new KTimezoneData;
+}
+
+QList<QByteArray> KTimezoneData::abbreviations() const
+{
+    QList<QByteArray> abbrs;
+    abbrs.append("UTC");
+    return abbrs;
+}
+
+QByteArray KTimezoneData::abbreviation(const QDateTime &) const
+{
+    return "UTC";
+}
+
+
+/******************************************************************************/
+
+class KSystemTimezonesPrivate : public KTimezones
+{
+public:
+    static KSystemTimezonesPrivate *instance();
+    const KTimezone *local();
+    static QString zoneinfoDir()   { instance();  return m_zoneinfoDir; }
+
+private:
+    KSystemTimezonesPrivate() {}
+    void readZoneTab();
+    static QString calcChecksum(const QString &zoneName, QIODevice::Offset size);
+    static float convertCoordinate(const QString &coordinate);
+
+    static KSystemTimezonesPrivate *m_instance;
+    static KSystemTimezoneSource *m_source;
+    static QString m_zoneinfoDir;
+    typedef QMap<QString, QString> MD5Map;    // zone name, checksum
+    static MD5Map  m_md5Sums;
+};
+
+KSystemTimezonesPrivate         *KSystemTimezonesPrivate::m_instance = 0;
+KSystemTimezoneSource           *KSystemTimezonesPrivate::m_source = 0;
+QString                          KSystemTimezonesPrivate::m_zoneinfoDir;
+KSystemTimezonesPrivate::MD5Map  KSystemTimezonesPrivate::m_md5Sums;
+
+
+const KTimezone *KSystemTimezones::local()
+{
+    return KSystemTimezonesPrivate::instance()->local();
+}
+
+QString KSystemTimezones::zoneinfoDir()
+{
+    return KSystemTimezonesPrivate::zoneinfoDir();
+}
+
+KTimezones *KSystemTimezones::timezones()
+{
+    return KSystemTimezonesPrivate::instance();
+}
+
+/*
+ * Initialisation can be very calculation intensive, so ensure that only one
+ * instance is ever constructed by making the constructor private.
+ */
+KSystemTimezonesPrivate *KSystemTimezonesPrivate::instance()
+{
+    if (!m_instance)
+    {
+        m_instance = new KSystemTimezonesPrivate;
+        // Go read the database.
+        //
+        // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
+        // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
+        //
+        // For Unix, read zone.tab.
+        m_instance->readZoneTab();
+    }
+    return m_instance;
+}
+
+/*
+ * Find the location of the zoneinfo files and store in m_zoneinfoDir.
+ * Parse zone.tab and for each time zone, create a KSystemTimezone instance.
+ */
+void KSystemTimezonesPrivate::readZoneTab()
+{
+    // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QFile f;
     m_zoneinfoDir = "/usr/share/zoneinfo";
     f.setName(m_zoneinfoDir + "/zone.tab");
@@ -391,7 +579,7 @@ const KTimezones::ZoneMap KTimezones::allZones()
                 //
                 // /bin/grep -h ^Zone /usr/share/lib/zoneinfo/src/* | /bin/awk '{print "??\t+9999+99999\t" $2}'
                 //
-                // where the country code is set to "??" and the lattitude/longitude
+                // where the country code is set to "??" and the latitude/longitude
                 // values are dummies.
                 m_zoneinfoDir = "/usr/share/lib/zoneinfo";
                 KTempFile temp;
@@ -405,146 +593,200 @@ const KTimezones::ZoneMap KTimezones::allZones()
                 if (!temp.status() || !f.open(IO_ReadOnly))
                 {
                     kdDebug() << "Can't open " << f.name() << endl;
-                    return *m_zones;
+                    m_zoneinfoDir = QString::null;
                 }
             }
         }
     }
-
-    // Parse the zone.tab.
-    QTextStream str(&f);
-    QRegExp lineSeparator("[ \t]");
-    QRegExp ordinateSeparator("[+-]");
-    KSharedPtr<KTimezoneSource> db(new KTimezoneSource(m_zoneinfoDir));
-    while (!str.atEnd())
+    if (!m_zoneinfoDir.isEmpty())
     {
-        QString line = str.readLine();
-        if (line.isEmpty() || '#' == line[0])
-            continue;
-        QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
-        if (tokens.count() < 3)
+        // Parse the zone.tab.
+        QTextStream str(&f);
+        QRegExp lineSeparator("[ \t]");
+        QRegExp ordinateSeparator("[+-]");
+        if (!m_source)
+            m_source = new KSystemTimezoneSource;
+        while (!str.atEnd())
         {
-            kdError() << "invalid record: " << line << endl;
-            continue;
-        }
+            QString line = str.readLine();
+            if (line.isEmpty() || '#' == line[0])
+                continue;
+            QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
+            int n = tokens.count();
+            if (n < 3)
+            {
+                kdError() << "invalid record: " << line << endl;
+                continue;
+            }
 
-        // Skip the first + or -
-        int split = tokens[1].indexOf(ordinateSeparator, 1);
-        float latitude = convertCoordinate(tokens[1].left(split));
-        float longitude = convertCoordinate(tokens[1].mid(split));
-        
-        // Add entry to list.
-        if (tokens[0] == "??")
-            tokens[0] = "";
-        QString comment = tokens.count() == 4 ? tokens[3] : "";
-        KTimezone *timezone = new KTimezone(db, tokens[2], tokens[0], latitude, longitude, comment);
-        add(timezone);
+            // Got three tokens. Now check for two ordinates plus first one is "".
+            QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
+            if (ordinates.count() < 2)
+            {
+                kdError() << "invalid coordinates: " << tokens[1] << endl;
+                continue;
+            }
+
+            float latitude = convertCoordinate(ordinates[0]);
+            float longitude = convertCoordinate(ordinates[1]);
+
+            // Add entry to list.
+            if (tokens[0] == "??")
+                tokens[0] = "";
+            KTimezone *timezone = new KSystemTimezone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+            add(timezone);
+        }
     }
     f.close();
-    return *m_zones;
 }
 
-/**
- * Convert sHHMM or sHHMMSS to a floating point number of degrees.
- */
-float KTimezones::convertCoordinate(const QString &coordinate)
-{
-    int value = coordinate.toInt();
-    int degrees = 0;
-    int minutes = 0;
-    int seconds = 0;
-
-    if (coordinate.length() > 6)
-    {
-        degrees = value / 10000;
-        value -= degrees * 10000;
-        minutes = value / 100;
-        value -= minutes * 100;
-        seconds = value;
-    }
-    else
-    {
-        degrees = value / 100;
-        value -= degrees * 100;
-        minutes = value;
-    }
-    value = degrees * 3600 + minutes * 60 + seconds;
-    return value / 3600.0;
-}
-
-const KTimezone *KTimezones::local()
+const KTimezone *KSystemTimezonesPrivate::local()
 {
     const KTimezone *local = 0;
 
+    instance();    // initialise data
+
+    // SOLUTION 1: DEFINITIVE.
     // First try the simplest solution of checking for well-formed TZ setting.
     char *envZone = ::getenv("TZ");
     if (envZone)
     {
         if (envZone[0] == '\0')
-        {
-            return m_UTC;
-        }
-        else
+            return utc();
         if (envZone[0] == ':')
-        {
-            envZone++;
-        }
+            ++envZone;
         local = zone(envZone);
     }
     if (local)
         return local;
 
-    // Try to match /etc/localtime against the list of zoneinfo files.
-    QFile f;
-    f.setName("/etc/localtime");
-    if (f.open(IO_ReadOnly))
+    if (!m_zoneinfoDir.isEmpty())
     {
-        // Compute the MD5 sum of /etc/localtime.
-        KMD5 context("");
-        context.reset();
-        context.update(f);
-        QIODevice::Offset referenceSize = f.size();
-        QString referenceMd5Sum = context.hexDigest();
-        f.close();
-        if (!m_zoneinfoDir.isEmpty())
+        // SOLUTION 2: DEFINITIVE.
+        // Try to follow any /etc/localtime symlink to a zoneinfo file.
+        QFile f;
+        f.setName("/etc/localtime");
+        QFileInfo fi(f);
+        if (fi.isSymLink())
         {
-            // Compare it with each zoneinfo file.
-            for (ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it)
+            // Try to match the last portion of the link reference with a valid
+            // database entry.
+            QString zoneInfoFileName = fi.canonicalFilePath();
+            if (zoneInfoFileName.startsWith(m_zoneinfoDir))
             {
-                KTimezone *zone = it.data();
-                f.setName(m_zoneinfoDir + '/' + zone->name());
-                if (f.open(IO_ReadOnly))
+                QFileInfo fiz(zoneInfoFileName);
+                if (fiz.exists() && fiz.isReadable())
                 {
-                    QIODevice::Offset candidateSize = f.size();
-                    QString candidateMd5Sum;
-                    if (candidateSize == referenceSize)
+                    // We've got the zoneinfo file path.
+                    // The timezone name is the part of the path after the zoneinfo directory.
+                    QString name = zoneInfoFileName.mid(m_zoneinfoDir.length() + 1);
+                    // kdDebug() << "local=" << name << endl;
+                    local = zone(name);
+                }
+            }
+        }
+        else if (f.open(IO_ReadOnly))
+        {
+            // SOLUTION 3: DEFINITIVE.
+            // Try to match /etc/localtime against the list of zoneinfo files.
+
+            // Compute the MD5 sum of /etc/localtime.
+            KMD5 context("");
+            context.reset();
+            context.update(f);
+            QIODevice::Offset referenceSize = f.size();
+            QString referenceMd5Sum = context.hexDigest();
+            f.close();
+
+            // Look for a checksum match with the cached checksum values
+            bool changed = false;
+            MD5Map oldChecksums = m_md5Sums;   // save a copy of the existing checksums
+            for (MD5Map::ConstIterator it5 = m_md5Sums.begin(), end5 = m_md5Sums.end();  it5 != end5;  ++it5)
+            {
+                if (it5.data() == referenceMd5Sum)
+                {
+                    // The cached checksum matches. Ensure that the file hasn't changed.
+                    QString zoneName = it5.key();
+                    QString candidateMd5Sum = calcChecksum(zoneName, referenceSize);
+                    if (candidateMd5Sum.isNull())
                     {
-                        // Only do the heavy lifting for file sizes which match.
-                        context.reset();
-                        context.update(f);
-                        candidateMd5Sum = context.hexDigest();
+                        m_md5Sums.remove(zoneName);    // no match - wrong file size
+                        changed = true;
                     }
-                    f.close();
+                    else if (candidateMd5Sum != referenceMd5Sum)
+                        changed = true;
+                    else
+                        local = zone(zoneName);    // file still matches
+
+                    // File(s) have changed, so clear the cache
+                    if (changed)
+                    {
+                        oldChecksums.clear();
+                        m_md5Sums.clear();
+                        m_md5Sums[zoneName] = candidateMd5Sum;    // reinsert the newly calculated checksum
+                   }
+                    break;
+                }
+            }
+            if (local)
+                return local;
+
+            // The checksum didn't match any in the cache.
+            // Continue building missing entries in the cache on the assumption that
+            // we haven't previously looked at the zoneinfo file which matches.
+            const ZoneMap zmap = zones();
+            for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
+            {
+                KTimezone *zone = zit.data();
+                QString zonename = zone->name();
+                if (!m_md5Sums.contains(zonename))
+                {
+                    QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
                     if (candidateMd5Sum == referenceMd5Sum)
                     {
-                        // kdError() << "local=" << zone->name() << endl;
+                        // kdDebug() << "local=" << zone->name() << endl;
                         local = zone;
                         break;
                     }
                 }
             }
-        }
-    }
-    if (local)
-        return local;
+            if (local)
+                return local;
 
+            // Didn't find the file, so presumably a previously cached checksum must
+            // have changed. Delete all the old checksums.
+            MD5Map::ConstIterator mit;
+            MD5Map::ConstIterator mend = oldChecksums.end();
+            for (mit = oldChecksums.begin();  mit != mend;  ++mit)
+                m_md5Sums.remove(mit.key());
+
+            // And recalculate the old checksums
+            for (mit = oldChecksums.begin(); mit != mend; ++mit)
+            {
+                QString zonename = mit.key();
+                QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
+                if (candidateMd5Sum == referenceMd5Sum)
+                {
+                    // kdDebug() << "local=" << zonename << endl;
+                    local = zone(zonename);
+                    break;
+                }
+            }
+        }
+        if (local)
+            return local;
+    }
+
+    // SOLUTION 4: DEFINITIVE.
     // BSD support.
     QString fileZone;
+    QFile f;
     f.setName("/etc/timezone");
     if (!f.open(IO_ReadOnly))
     {
         kdDebug() << "Can't open " << f.name() << endl;
 
+        // SOLUTION 5: DEFINITIVE.
         // Solaris support using /etc/default/init.
         f.setName("/etc/default/init");
         if (!f.open(IO_ReadOnly))
@@ -564,7 +806,7 @@ const KTimezone *KTimezones::local()
                 {
                     fileZone = fileZone.mid(3);
 
-                    // kdError() << "local=" << fileZone << endl;
+                    // kdDebug() << "local=" << fileZone << endl;
                     local = zone(fileZone);
                 }
             }
@@ -581,7 +823,7 @@ const KTimezone *KTimezones::local()
         {
             fileZone = ts.readLine();
 
-            // kdError() << "local=" << fileZone << endl;
+            // kdDebug() << "local=" << fileZone << endl;
             local = zone(fileZone);
         }
         f.close();
@@ -589,197 +831,842 @@ const KTimezone *KTimezones::local()
     if (local)
         return local;
 
+    // SOLUTION 6: HEURISTIC.
     // None of the deterministic stuff above has worked: try a heuristic. We
     // try to find a pair of matching timezone abbreviations...that way, we'll
     // likely return a value in the user's own country.
     if (!m_zoneinfoDir.isEmpty())
     {
         tzset();
-        AbbreviationsMatch matcher(tzname[0], tzname[1]);
+        QByteArray tzname0(tzname[0]);   // store copies, because zone->parse() will change them
+        QByteArray tzname1(tzname[1]);
         int bestOffset = INT_MAX;
-        for (ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it)
+        KSystemTimezoneSource::startParseBlock();
+        const ZoneMap zmap = zones();
+        for (ZoneMap::ConstIterator it = zmap.begin(), end = zmap.end();  it != end;  ++it)
         {
-            KTimezone *zone = it.data();
-            int candidateOffset = QABS(zone->offset(Qt::LocalTime));
-            if (zone->parse(matcher) && matcher.test() && (candidateOffset < bestOffset))
+            KSystemTimezone *zone = static_cast<KSystemTimezone*>(it.data());
+            int candidateOffset = QABS(zone->currentOffset(Qt::LocalTime));
+            if (candidateOffset < bestOffset
+            &&  zone->parse())
             {
-                // kdError() << "local=" << zone->name() << endl;
-                bestOffset = candidateOffset;
-                local = zone;
+                QList<QByteArray> abbrs = zone->abbreviations();
+                if (abbrs.contains(tzname0)  &&  abbrs.contains(tzname1))
+                {
+                    // kdDebug() << "local=" << zone->name() << endl;
+                    local = zone;
+                    bestOffset = candidateOffset;
+                    if (!bestOffset)
+                        break;
+                }
             }
         }
+        KSystemTimezoneSource::endParseBlock();
     }
     if (local)
         return local;
-    return m_UTC;
+
+    // SOLUTION 7: FAILSAFE.
+    return KTimezones::utc();
 }
 
-const KTimezone *KTimezones::zone(const QString &name)
+// Calculate the MD5 checksum for the given zone file, provided that its size matches.
+// The calculated checksum is cached.
+QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, QIODevice::Offset size)
 {
-    if (name.isEmpty())
-        return m_UTC;
-    ZoneMap::ConstIterator it = m_zones->find(name);
-    if (it != m_zones->end())
-        return it.data();
+    QString path = m_zoneinfoDir + '/' + zoneName;
+    QFileInfo fi(path);
+    if (static_cast<QIODevice::Offset>(fi.size()) == size)
+    {
+        // Only do the heavy lifting for file sizes which match.
+        QFile f;
+        f.setName(path);
+        if (f.open(IO_ReadOnly))
+        { 
+            KMD5 context("");
+            context.reset();
+            context.update(f);
+            QString candidateMd5Sum = context.hexDigest();
+            f.close();
+            m_md5Sums[zoneName] = candidateMd5Sum;    // cache the new checksum
+            return candidateMd5Sum;
+        }
+    }
+    return QString::null;
+}
 
-    // Error.
+/**
+ * Convert sHHMM or sHHMMSS to a floating point number of degrees.
+ */
+float KSystemTimezonesPrivate::convertCoordinate(const QString &coordinate)
+{
+    int value = coordinate.toInt();
+    int degrees = 0;
+    int minutes = 0;
+    int seconds = 0;
+
+    if (coordinate.length() > 11)
+    {
+        degrees = value / 10000;
+        value -= degrees * 10000;
+        minutes = value / 100;
+        value -= minutes * 100;
+        seconds = value;
+    }
+    else
+    {
+        degrees = value / 100;
+        value -= degrees * 100;
+        minutes = value;
+    }
+    value = degrees * 3600 + minutes * 60 + seconds;
+    return value / 3600.0;
+}
+
+
+/******************************************************************************/
+
+KSystemTimezone::KSystemTimezone(KSystemTimezoneSource *source, const QString &name,
+        const QString &countryCode, float latitude, float longitude, const QString &comment)
+  : KTimezone(source, name, countryCode, latitude, longitude, comment)
+//    , d(0)
+{
+}
+
+KSystemTimezone::~KSystemTimezone()
+{
+//    delete d;
+}
+
+int KSystemTimezone::offset(time_t t) const
+{
+    if (t == (time_t)-1)
+        return 0;
+
+    // Make this time zone the current local time zone
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    QByteArray tz = name().toUtf8();
+    tz.prepend(":");
+    bool change = (tz != originalZone);
+    if (change)
+    {
+        ::setenv("TZ", tz, 1);
+        ::tzset();
+    }
+
+    int secs = gmtoff(t);
+
+    if (change)
+    {
+        // Restore the original local time zone
+        if (!originalZone)
+            ::unsetenv("TZ");
+        else
+            ::setenv("TZ", originalZone, 1);
+        ::tzset();
+    }
+    return secs;
+}
+
+int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
+{
+    if (zoneDateTime.timeSpec() != Qt::LocalTime)
+        return 0;
+    // Make this time zone the current local time zone
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    QByteArray tz = name().toUtf8();
+    tz.prepend(":");
+    bool change = (tz != originalZone);
+    if (change)
+    {
+        ::setenv("TZ", tz, 1);
+        ::tzset();
+    }
+
+    // Convert zone time to UTC, and then get the offset to UTC
+    tm tmtime;
+    tmtime.tm_sec    = zoneDateTime.time().second();
+    tmtime.tm_min    = zoneDateTime.time().minute();
+    tmtime.tm_hour   = zoneDateTime.time().hour();
+    tmtime.tm_mday   = zoneDateTime.date().day();
+    tmtime.tm_mon    = zoneDateTime.date().month() - 1;
+    tmtime.tm_year   = zoneDateTime.date().year() - 1900;
+    tmtime.tm_isdst  = -1;
+    time_t t = mktime(&tmtime);
+    int secs = (t == (time_t)-1) ? 0 : gmtoff(t);
+//FIXME: Set secondOffset correctly
+    if (secondOffset)
+        *secondOffset = secs;
+
+    if (change)
+    {
+        // Restore the original local time zone
+        if (!originalZone)
+            ::unsetenv("TZ");
+        else
+            ::setenv("TZ", originalZone, 1);
+        ::tzset();
+    }
+    return secs;
+}
+
+bool KSystemTimezone::isDst(time_t t) const
+{
+    if (t != (time_t)-1)
+    {
+#ifdef _POSIX_THREAD_SAFE_FUNCTIONS
+        tm tmtime;
+        if (localtime_r(&t, &tmtime))
+            return tmtime.tm_isdst > 0;
+#else
+        tm *tmtime = localtime(&t);
+        if (tmtime)
+            return tmtime->tm_isdst > 0;
+#endif
+    }
+    return false;
+}
+
+
+/******************************************************************************/
+
+class KSystemTimezoneDataPrivate
+{
+public:
+    QByteArray TZ;
+    QList<QByteArray> abbreviations;
+};
+
+
+// N.B. KSystemTimezoneSourcePrivate is also used by KSystemTimezoneData
+class KSystemTimezoneSourcePrivate
+{
+public:
+    static void setTZ(const QByteArray &zoneName);
+    static void restoreTZ();
+    static char      *savedTZ;       // temporary value of TZ environment variable saved by setTZ()
+    static QByteArray originalTZ;    // saved value of TZ environment variable during multiple parse() calls
+    static bool       TZIsSaved;     // TZ has been saved in savedTZ
+    static bool       multiParse;    // true if performing multiple parse() calls
+};
+
+char      *KSystemTimezoneSourcePrivate::savedTZ;
+QByteArray KSystemTimezoneSourcePrivate::originalTZ;
+bool       KSystemTimezoneSourcePrivate::TZIsSaved = false;
+bool       KSystemTimezoneSourcePrivate::multiParse = false;
+
+
+KSystemTimezoneSource::KSystemTimezoneSource()
+//  : d(new KSystemTimezoneSourcePrivate)
+{
+}
+
+KSystemTimezoneSource::~KSystemTimezoneSource()
+{
+//    delete d;
+}
+
+KTimezoneData* KSystemTimezoneSource::parse(const KTimezone *zone) const
+{
+    QByteArray tz = zone->name().toUtf8();
+    KSystemTimezoneSourcePrivate::setTZ(tz);   // make this time zone the current local time zone
+
+    tzset();    // initialise the tzname array
+    KSystemTimezoneData* data = new KSystemTimezoneData;
+    data->d->TZ = tz;
+    data->d->abbreviations.append(tzname[0]);
+    data->d->abbreviations.append(tzname[1]);
+
+    KSystemTimezoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
+    return data;
+}
+
+void KSystemTimezoneSource::startParseBlock()
+{
+    KSystemTimezoneSourcePrivate::originalTZ = ::getenv("TZ");   // save the original local time zone
+    KSystemTimezoneSourcePrivate::multiParse = true;
+}
+
+void KSystemTimezoneSource::endParseBlock()
+{
+    if (KSystemTimezoneSourcePrivate::multiParse)
+    {
+        // Restore the original local time zone
+        if (KSystemTimezoneSourcePrivate::originalTZ.isEmpty())
+            ::unsetenv("TZ");
+        else
+            ::setenv("TZ", KSystemTimezoneSourcePrivate::originalTZ, 1);
+        ::tzset();
+        KSystemTimezoneSourcePrivate::multiParse = false;
+    }
+}
+
+// Set the TZ environment variable to the specified time zone,
+// saving its current setting first if necessary.
+void KSystemTimezoneSourcePrivate::setTZ(const QByteArray &zoneName)
+{
+    QByteArray tz = zoneName;
+    tz.prepend(":");
+    bool setTZ = multiParse;
+    if (!setTZ)
+    {
+        savedTZ = ::getenv("TZ");   // save the original local time zone
+        TZIsSaved = true;
+        setTZ = (tz != savedTZ);
+    }
+    if (setTZ)
+    {
+        ::setenv("TZ", tz, 1);
+        ::tzset();
+    }
+}
+
+// Restore the TZ environment variable if it was saved by setTz()
+void KSystemTimezoneSourcePrivate::restoreTZ()
+{
+    if (TZIsSaved)
+    {
+        if (!savedTZ)
+            ::unsetenv("TZ");
+        else
+            ::setenv("TZ", savedTZ, 1);
+        ::tzset();
+        TZIsSaved = false;
+    }
+}
+
+
+/******************************************************************************/
+
+KSystemTimezoneData::KSystemTimezoneData()
+  : d(new KSystemTimezoneDataPrivate)
+{ }
+
+KSystemTimezoneData::KSystemTimezoneData(const KSystemTimezoneData &rhs)
+  : KTimezoneData(),
+    d(new KSystemTimezoneDataPrivate)
+{
+    operator=(rhs);
+}
+
+KSystemTimezoneData::~KSystemTimezoneData()
+{
+    delete d;
+}
+
+KSystemTimezoneData &KSystemTimezoneData::operator=(const KSystemTimezoneData &rhs)
+{
+    d->TZ = rhs.d->TZ;
+    d->abbreviations = rhs.d->abbreviations;
+    return *this;
+}
+
+KTimezoneData *KSystemTimezoneData::clone()
+{
+    return new KSystemTimezoneData(*this);
+}
+
+QList<QByteArray> KSystemTimezoneData::abbreviations() const
+{
+    return d->abbreviations;
+}
+
+QByteArray KSystemTimezoneData::abbreviation(const QDateTime &utcDateTime) const
+{
+    QByteArray abbr;
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return abbr;
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut != (uint)-1  &&  t >= 0)
+    {
+        KSystemTimezoneSourcePrivate::setTZ(d->TZ);   // make this time zone the current local time zone
+
+        /* Use tm.tm_zone if available because it returns the abbreviation
+         * in use at the time specified. Otherwise, use tzname[] which
+         * returns the appropriate current abbreviation instead.
+         */
+#ifdef _POSIX_THREAD_SAFE_FUNCTIONS
+        tm tmtime;
+        if (localtime_r(&t, &tmtime))
+#ifdef HAVE_STRUCT_TM_TM_ZONE
+            abbr = tmtime.tm_zone;
+#else
+            abbr = tzname[(tmtime.tm_isdst > 0) ? 1 : 0];
+#endif
+#else
+        tm *tmtime = localtime(&t);
+        if (tmtime)
+#ifdef HAVE_STRUCT_TM_TM_ZONE
+            abbr = tmtime->tm_zone;
+#else
+            abbr = tzname[(tmtime->tm_isdst > 0) ? 1 : 0];
+#endif
+#endif
+        KSystemTimezoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
+    }
+    return abbr;
+}
+
+
+/******************************************************************************/
+
+KTzfileTimezone::KTzfileTimezone(KTzfileTimezoneSource *source, const QString &name,
+        const QString &countryCode, float latitude, float longitude,
+        const QString &comment)
+  : KTimezone(source, name, countryCode, latitude, longitude, comment)
+//    , d(0)
+{
+}
+
+KTzfileTimezone::~KTzfileTimezone()
+{
+//    delete d;
+}
+
+int KTzfileTimezone::offset(time_t t) const
+{
+    if (t != (time_t)-1)
+    {
+        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        if (tdata)
+        {
+            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            if (ltt)
+                return ltt->gmtoff;
+        }
+    }
     return 0;
 }
 
-KTimezoneDetails::KTimezoneDetails()
+int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
+{
+    int offset = 0;
+    const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+    if (tdata)
+    {
+        // Get the specified date/time as an offset from epoch (in zone time)
+        if (zoneDateTime.timeSpec() != Qt::LocalTime)
+            return 0;
+        QDateTime dt = zoneDateTime;
+        dt.setTimeSpec(Qt::UTC);
+        uint ut = dt.toTime_t();
+        time_t tztime = static_cast<time_t>(ut);
+        if (ut != (uint)-1  &&  tztime >= 0)
+        {
+            Q_UINT32 count = tdata->nTransitionTimes();
+            for (Q_UINT32 i = 0;  i < count;  ++i)
+            {
+                const KTzfileTimezoneData::TransitionTime *tt = tdata->transitionTime(i);
+                if (!tt)
+                    break;    // how the hell did we reach the end??
+                Q_INT32 t = tt->time;
+                const KTzfileTimezoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
+                if (!ltt)
+                    continue;   // something funny is going on here ...
+                int newOffset = ltt->gmtoff;
+                if (tztime - offset < t)
+                {
+                    // The date/time falls before this transition
+                    if (secondOffset)
+                    {
+                        if (tztime - newOffset >= t)
+                            *secondOffset = newOffset;   // and it falls again after this transition
+                        else
+                            *secondOffset = offset;
+                    }
+                    return offset;
+                }
+                offset = newOffset;
+            }
+        }
+    }
+    if (secondOffset)
+        *secondOffset = offset;
+    return offset;
+}
+
+bool KTzfileTimezone::isDst(time_t t) const
+{
+    if (t != (time_t)-1)
+    {
+        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        if (tdata)
+        {
+            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            if (ltt)
+                    return ltt->isdst;
+        }
+    }
+    return false;
+}
+
+bool KTzfileTimezone::transitionTime(const QDateTime &utcDateTime, KTzfileTimezone::Adjustment &adjustment)
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return false;
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut != (uint)-1  &&  t >= 0)
+    {
+        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        if (tdata)
+        {
+            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            if (ltt)
+            {
+                adjustment.utcOffset = ltt->gmtoff;
+                adjustment.isDst     = ltt->isdst;
+                adjustment.abbrev    = tdata->abbreviation(ltt->abbrIndex);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/******************************************************************************/
+
+KTzfileTimezoneData::KTzfileTimezoneData()
+  : m_nTransitionTimes(0),
+    m_nLocalTimeTypes(0),
+    m_nLeapSecondAdjusts(0),
+    m_nIsStandard(0),
+    m_nIsUTC(0),
+    m_transitionTimes(0),
+    m_localTimeTypes(0),
+    m_leapSecondAdjusts(0),
+    m_isStandard(0),
+    m_isUTC(0)
+{ }
+
+KTzfileTimezoneData::KTzfileTimezoneData(const KTzfileTimezoneData &rhs)
+  : KTimezoneData(),
+    m_transitionTimes(0),
+    m_localTimeTypes(0),
+    m_leapSecondAdjusts(0),
+    m_isStandard(0),
+    m_isUTC(0)
+{
+    operator=(rhs);
+}
+
+KTzfileTimezoneData::~KTzfileTimezoneData()
+{
+    delete[] m_transitionTimes;
+    delete[] m_localTimeTypes;
+    delete[] m_leapSecondAdjusts;
+    delete[] m_isStandard;
+    delete[] m_isUTC;
+}
+
+KTzfileTimezoneData &KTzfileTimezoneData::operator=(const KTzfileTimezoneData &rhs)
+{
+    delete[] m_transitionTimes;
+    delete[] m_localTimeTypes;
+    delete[] m_leapSecondAdjusts;
+    delete[] m_isStandard;
+    delete[] m_isUTC;
+    KTimezoneData::operator=(rhs);
+    m_nTransitionTimes   = rhs.m_nTransitionTimes;
+    m_nLocalTimeTypes    = rhs.m_nLocalTimeTypes;
+    m_nLeapSecondAdjusts = rhs.m_nLeapSecondAdjusts;
+    m_nIsStandard        = rhs.m_nIsStandard;
+    m_nIsUTC             = rhs.m_nIsUTC;
+    m_abbreviations      = rhs.m_abbreviations;
+    if (m_nTransitionTimes)
+    {
+        m_transitionTimes = new TransitionTime[m_nTransitionTimes];
+        memcpy(m_transitionTimes, rhs.m_transitionTimes, sizeof(TransitionTime) * m_nTransitionTimes);
+    }
+    else
+        m_transitionTimes = 0;
+    if (m_nLocalTimeTypes)
+    {
+        m_localTimeTypes = new LocalTimeType[m_nLocalTimeTypes];
+        memcpy(m_localTimeTypes, rhs.m_localTimeTypes, sizeof(LocalTimeType) * m_nLocalTimeTypes);
+    }
+    else
+        m_localTimeTypes = 0;
+    if (m_nLeapSecondAdjusts)
+    {
+        m_leapSecondAdjusts = new LeapSecondAdjust[m_nLeapSecondAdjusts];
+        memcpy(m_leapSecondAdjusts, rhs.m_leapSecondAdjusts, sizeof(LeapSecondAdjust) * m_nLeapSecondAdjusts);
+    }
+    else
+        m_leapSecondAdjusts = 0;
+    if (m_nIsStandard)
+    {
+        m_isStandard = new bool[m_nIsStandard];
+        memcpy(m_isStandard, rhs.m_isStandard, sizeof(bool) * m_nIsStandard);
+    }
+    else
+        m_isStandard = 0;
+    if (m_nIsUTC)
+    {
+        m_isUTC = new bool[m_nIsUTC];
+        memcpy(m_isUTC, rhs.m_isUTC, sizeof(bool) * m_nIsUTC);
+    }
+    else
+        m_isUTC = 0;
+    return *this;
+}
+
+KTimezoneData *KTzfileTimezoneData::clone()
+{
+    return new KTzfileTimezoneData(*this);
+}
+
+const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::transitionTime(int index) const
+{
+    if (index < 0  ||  static_cast<unsigned>(index) > m_nTransitionTimes)
+        return 0;
+    return m_transitionTimes + index;
+}
+
+const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::localTimeType(int index) const
+{
+    if (index < 0  ||  static_cast<unsigned>(index) > m_nLocalTimeTypes)
+        return 0;
+    return m_localTimeTypes + index;
+}
+
+const KTzfileTimezoneData::LeapSecondAdjust *KTzfileTimezoneData::leapSecondAdjustment(int index) const
+{
+    if (index < 0  ||  static_cast<unsigned>(index) > m_nLeapSecondAdjusts)
+        return 0;
+    return m_leapSecondAdjusts + index;
+}
+
+bool KTzfileTimezoneData::isStandard(int index) const
+{
+    if (index < 0  ||  static_cast<unsigned>(index) > m_nIsStandard)
+        return true;
+    return m_isStandard[index];
+}
+
+bool KTzfileTimezoneData::isUTC(int index) const
+{
+    if (index < 0  ||  static_cast<unsigned>(index) > m_nIsUTC)
+        return true;
+    return m_isUTC[index];
+}
+
+QList<QByteArray> KTzfileTimezoneData::abbreviations() const
+{
+    return m_abbreviations;
+}
+
+QByteArray KTzfileTimezoneData::abbreviation(const QDateTime &utcDateTime) const
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return QByteArray();
+    uint ut = utcDateTime.toTime_t();
+    time_t t = static_cast<time_t>(ut);
+    if (ut != (uint)-1  &&  t >= 0)
+    {
+        const LocalTimeType *ltt = getLocalTime(t);
+        if (ltt)
+            return abbreviation(ltt->abbrIndex);
+    }
+    return QByteArray();
+}
+
+QByteArray KTzfileTimezoneData::abbreviation(int index) const
+{
+    Q_UINT8 i = static_cast<Q_UINT8>(index);
+    if (index >= 0  &&  static_cast<int>(i) == index  &&  i < m_abbreviations.count())
+        return m_abbreviations[i];
+    return QByteArray();
+}
+
+const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::getTransitionTime(time_t t) const
+{
+    Q_UINT32 i;
+    for (i = 0;  i < m_nTransitionTimes;  ++i)
+    {
+        if (m_transitionTimes[i].time > t)
+            break;
+    }
+    return (i > 0) ? m_transitionTimes + i - 1 : 0;
+}
+
+const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::getLocalTime(time_t t) const
+{
+    const TransitionTime *tt = getTransitionTime(t);
+    if (tt)
+    {
+        unsigned i = tt->localTimeIndex;
+        if (i < m_nLocalTimeTypes)
+            return m_localTimeTypes + i;
+    }
+    return 0;
+}
+
+Q_UINT32 KTzfileTimezoneData::getLeapSeconds(time_t t) const
+{
+    Q_UINT32 i;
+    for (i = 0;  i < m_nLeapSecondAdjusts;  ++i)
+    {
+        if (m_leapSecondAdjusts[i].time > t)
+            break;
+    }
+    return (i > 0) ? m_leapSecondAdjusts[i - 1].leapSeconds : 0;
+}
+
+
+/******************************************************************************/
+
+class KTzfileTimezoneSourcePrivate
+{
+public:
+    KTzfileTimezoneSourcePrivate(const QString &loc)
+      : location(loc) {}
+    ~KTzfileTimezoneSourcePrivate() {}
+
+    QString location;
+};
+
+
+KTzfileTimezoneSource::KTzfileTimezoneSource(const QString &location)
+  : d(new KTzfileTimezoneSourcePrivate(location))
 {
 }
 
-KTimezoneDetails::~KTimezoneDetails()
+KTzfileTimezoneSource::~KTzfileTimezoneSource()
 {
+    delete d;
 }
 
-void KTimezoneDetails::gotAbbreviation(int /*index*/, const QString &)
-{}
-
-void KTimezoneDetails::gotHeader(
-        unsigned, unsigned, unsigned,
-        unsigned, unsigned, unsigned)
-{}
-
-void KTimezoneDetails::gotLeapAdjustment(int /*index*/, unsigned, unsigned)
-{}
-
-void KTimezoneDetails::gotLocalTime(int /*index*/, int, bool, unsigned)
-{}
-
-void KTimezoneDetails::gotLocalTimeIndex(int /*index*/, unsigned)
-{}
-
-void KTimezoneDetails::gotIsStandard(int /*index*/, bool)
-{}
-
-void KTimezoneDetails::gotTransitionTime(int /*index*/, unsigned)
-{}
-
-void KTimezoneDetails::gotIsUTC(int /*index*/, bool)
-{}
-
-void KTimezoneDetails::parseEnded()
-{}
-
-void KTimezoneDetails::parseStarted()
-{}
-
-KTimezoneSource::KTimezoneSource(const QString &db) :
-    m_db(db)
+KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
 {
-}
+    Q_UINT32 abbrCharCount;     // the number of characters of time zone abbreviation strings
+    Q_UINT32 ttisgmtcnt;
+    Q_UINT8  is;
+    Q_UINT8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
-KTimezoneSource::~KTimezoneSource()
-{
-}
-
-QString KTimezoneSource::db()
-{
-    return m_db;
-}
-
-bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver) const
-{
-    QFile f(m_db + '/' + zone);
+    QFile f(d->location + '/' + zone->name());
     if (!f.open(IO_ReadOnly))
     {
         kdError() << "Cannot open " << f.name() << endl;
-        return false;
+        return 0;
     }
-
-    // Structures that represent the zoneinfo file.
-    quint8 T, z, i_, f_;
-    struct
-    {
-        quint32 ttisgmtcnt;
-        quint32 ttisstdcnt;
-        quint32 leapcnt;
-        quint32 timecnt;
-        quint32 typecnt;
-        quint32 charcnt;
-    } tzh;
-    quint32 transitionTime;
-    quint8 localTimeIndex;
-    struct
-    {
-        qint32 gmtoff;
-        qint8 isdst;
-        quint8 abbrind;
-    } tt;
-    quint32 leapTime;
-    quint32 leapSeconds;
-    quint8 isStandard;
-    quint8 isUTC;
-
     QDataStream str(&f);
-    str >> T >> z >> i_ >> f_;
-    // kdError() << "signature: " << QChar(T) << QChar(z) << QChar(i_) << QChar(f_) << endl;
+
+    // Read the file type identifier
+    str >> T_ >> Z_ >> i_ >> f_;
+    if (T_ != 'T' || Z_ != 'Z' || i_ != 'i' || f_ != 'f')
+    {
+        kdError() << "Not a TZFILE: " << f.name() << endl;
+        return 0;
+    }
+    // Discard 16 bytes reserved for future use
     unsigned i;
     for (i = 0; i < 4; i++)
-        str >> tzh.ttisgmtcnt;
-    str >> tzh.ttisgmtcnt >> tzh.ttisstdcnt >> tzh.leapcnt >> tzh.timecnt >> tzh.typecnt >> tzh.charcnt;
-    // kdError() << "header: " << tzh.ttisgmtcnt << ", " << tzh.ttisstdcnt << ", " << tzh.leapcnt << ", " <<
-    //    tzh.timecnt << ", " << tzh.typecnt << ", " << tzh.charcnt << endl;
-    dataReceiver.gotHeader(tzh.ttisgmtcnt, tzh.ttisstdcnt, tzh.leapcnt, tzh.timecnt, tzh.typecnt, tzh.charcnt);
-    for (i = 0; i < tzh.timecnt; i++)
+        str >> ttisgmtcnt;
+
+    KTzfileTimezoneData* data = new KTzfileTimezoneData;
+
+    // Read the sizes of arrays held in the file
+    str >> data->m_nIsUTC
+        >> data->m_nIsStandard
+        >> data->m_nLeapSecondAdjusts
+        >> data->m_nTransitionTimes
+        >> data->m_nLocalTimeTypes
+        >> abbrCharCount;
+    // kdDebug() << "header: " << data->n_isUTC << ", " << data->n_isStandard << ", " << data->m_leapSecondAdjusts << ", " <<
+    //    data->n_transitionTimes << ", " << data->n_localTimeTypes << ", " << abbrCharCount << endl;
+
+    // Read the transition times, at which the rules for computing local time change
+    data->m_transitionTimes = new KTzfileTimezoneData::TransitionTime[data->m_nTransitionTimes];
+    KTzfileTimezoneData::TransitionTime *tt = data->m_transitionTimes;
+    for (i = 0;  i < data->m_nTransitionTimes;  ++tt, ++i)
     {
-        str >> transitionTime;
-        dataReceiver.gotTransitionTime(i, transitionTime);
+        str >> tt->time;
     }
-    for (i = 0; i < tzh.timecnt; i++)
+    tt = data->m_transitionTimes;
+    for (i = 0; i < data->m_nTransitionTimes; ++tt, ++i)
     {
         // NB: these appear to be 1-based, not zero-based!
-        str >> localTimeIndex;
-        dataReceiver.gotLocalTimeIndex(i, localTimeIndex);
-    }
-    for (i = 0; i < tzh.typecnt; i++)
-    {
-        str >> tt.gmtoff >> tt.isdst >> tt.abbrind;
-        // kdError() << "local type: " << tt.gmtoff << ", " << tt.isdst << ", " << tt.abbrind << endl;
-        dataReceiver.gotLocalTime(i, tt.gmtoff, (tt.isdst != 0), tt.abbrind);
+        str >> tt->localTimeIndex;
     }
 
-    // Make sure we don't run foul of maliciously coded timezone abbreviations.
-    if (tzh.charcnt > 64)
+    // Read the local time types
+    data->m_localTimeTypes = new KTzfileTimezoneData::LocalTimeType[data->m_nLocalTimeTypes];
+    KTzfileTimezoneData::LocalTimeType *ltt = data->m_localTimeTypes;
+    for (i = 0;  i < data->m_nLocalTimeTypes;  ++ltt, ++i)
     {
-        kdError() << "excessive length for timezone abbreviations: " << tzh.charcnt << endl;
-        return false;
+        str >> ltt->gmtoff;
+        str >> is;
+        ltt->isdst = (is != 0);
+        str >> ltt->abbrIndex;
+        // kdDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
     }
-    QByteArray array(tzh.charcnt);
+
+    // Read the timezone abbreviations. They are stored as null terminated strings in
+    // a character array.
+    // Make sure we don't fall foul of maliciously coded time zone abbreviations.
+    if (abbrCharCount > 64)
+    {
+        kdError() << "excessive length for timezone abbreviations: " << abbrCharCount << endl;
+        delete data;
+        return 0;
+    }
+    QByteArray array(abbrCharCount);
     str.readRawBytes(array.data(), array.size());
     char *abbrs = array.data();
-    if (abbrs[tzh.charcnt - 1] != 0)
+    if (abbrs[abbrCharCount - 1] != 0)
     {
         // These abbrevations are corrupt!
-        kdError() << "timezone abbreviations not terminated: " << abbrs[tzh.charcnt - 1] << endl;
-        return false;
+        kdError() << "timezone abbreviations not null terminated: " << abbrs[abbrCharCount - 1] << endl;
+        delete data;
+        return 0;
     }
-    char *abbr = abbrs;
-    while (abbr < abbrs + tzh.charcnt)
+    Q_UINT8 n = 0;
+    for (i = 0; i < abbrCharCount; ++n, i += strlen(abbrs + i) + 1)
     {
-        // kdError() << "abbr: " << abbr << endl;
-        dataReceiver.gotAbbreviation((abbr - abbrs), abbr);
-        abbr += strlen(abbr) + 1;
+        data->m_abbreviations.append(QByteArray(abbrs + i));
+        // Convert the LocalTimeTypes pointer to a sequential index
+        ltt = data->m_localTimeTypes;
+        for (unsigned j = 0;  j < data->m_nLocalTimeTypes;  ++ltt, ++j)
+        {
+            if (ltt->abbrIndex == i)
+                ltt->abbrIndex = n;
+        }
     }
-    for (i = 0; i < tzh.leapcnt; i++)
+
+    // Read the leap second adjustments
+    data->m_leapSecondAdjusts = new KTzfileTimezoneData::LeapSecondAdjust[data->m_nLeapSecondAdjusts];
+    KTzfileTimezoneData::LeapSecondAdjust* lsa = data->m_leapSecondAdjusts;
+    for (i = 0;  i < data->m_nLeapSecondAdjusts;  ++lsa, ++i)
     {
-        str >> leapTime >> leapSeconds;
-        // kdError() << "leap entry: " << leapTime << ", " << leapSeconds << endl;
-        dataReceiver.gotLeapAdjustment(i, leapTime, leapSeconds);
+        str >> lsa->time >> lsa->leapSeconds;
+        // kdDebug() << "leap entry: " << lsa->time << ", " << lsa->leapSeconds << endl;
     }
-    for (i = 0; i < tzh.ttisstdcnt; i++)
+
+    // Read the standard/wall time indicators.
+    // These are true if the transition times associated with local time types
+    // are specified as standard time, false if wall clock time.
+    data->m_isStandard = new bool[data->m_nIsStandard];
+    bool *iss = data->m_isStandard;
+    for (i = 0;  i < data->m_nIsStandard;  ++iss, ++i)
     {
-        str >> isStandard;
-        // kdError() << "standard: " << isStandard << endl;
-        dataReceiver.gotIsStandard(i, (isStandard != 0));
+        str >> is;
+        *iss = (is != 0);
+        // kdDebug() << "standard: " << is << endl;
     }
-    for (i = 0; i < tzh.ttisgmtcnt; i++)
+
+    // Read the UTC/local time indicators.
+    // These are true if the transition times associated with local time types
+    // are specified as UTC, false if local time.
+    data->m_isUTC = new bool[data->m_nIsUTC];
+    bool *isu = data->m_isUTC;
+    for (i = 0;  i < data->m_nIsUTC;  ++isu, ++i)
     {
-        str >> isUTC;
-        // kdError() << "UTC: " << isUTC << endl;
-        dataReceiver.gotIsUTC(i, (isUTC != 0));
+        str >> is;
+        *isu = (is != 0);
+        // kdDebug() << "UTC: " << is << endl;
     }
-    return true;
+    return data;
 }

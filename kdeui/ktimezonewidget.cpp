@@ -46,7 +46,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
     addColumn(i18n("Region"));
     addColumn(i18n("Comment"));
 
-    const KTimezones::ZoneMap zones = db->allZones();
+    const KTimezones::ZoneMap zones = db->zones();
     for (KTimezones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it)
     {
         const KTimezone *zone = it.data();
