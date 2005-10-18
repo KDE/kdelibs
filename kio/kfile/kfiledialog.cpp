@@ -39,7 +39,6 @@
 #include <qtextcodec.h>
 #include <qtimer.h>
 #include <q3filedialog.h>
-#include <qx11info_x11.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -90,6 +89,7 @@
 #include <kfilebookmarkhandler.h>
 
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #endif
