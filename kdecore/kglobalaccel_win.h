@@ -69,6 +69,11 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 
  protected slots:
 	void slotActivated( int iAction );
+
+ private:
+  bool m_blocked;
+  bool m_blockingDisabled;
+
 };
 
 #endif // _KGLOBALACCEL_WIN_H
