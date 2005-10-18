@@ -47,50 +47,12 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 
 #ifdef  __cplusplus
 }
-/**
-  predefined registry root keys
-*/
-#ifdef __MINGW32__
-#include <windows.h>
-#else 
-#ifndef HKEY
-#warning KKEY defined
-#define HKEY void*
-#endif
-#ifndef HKEY_CLASSES_ROOT
-#define HKEY_CLASSES_ROOT	((HKEY)0x80000000)
-#endif 
-#ifndef HKEY_CURRENT_USER
-#define HKEY_CURRENT_USER	((HKEY)0x80000001)
-#endif 
-#ifndef HKEY_LOCAL_MACHINE
-#define HKEY_LOCAL_MACHINE	((HKEY)0x80000002)
-#endif 
-#ifndef HKEY_USERS
-#define HKEY_USERS	((HKEY)0x80000003)
-#endif 
-#endif
-
-/**
- \return a value from MS Windows native registry.
- @param key is usually one of HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE
-        constants defined in WinReg.h. 
- @param subKey is a registry subkey defined as a path to a registry folder, eg.
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
-        ('\' delimiter must be used)
- @param item is an item inside subKey or "" if default folder's value should be returned
- @param ok if not null, will be set to true on success and false on failure
-*/
-KDEWIN32_EXPORT QString getWin32RegistryValue(HKEY key, const QString& subKey, 
-	const QString& item, bool *ok = 0);
 
 /**
  \return a value from MS Windows native registry for shell folder \a folder.
 */
-inline QString getWin32ShellFoldersPath(const QString& folder) {
-	return getWin32RegistryValue(HKEY_CURRENT_USER, 
-			"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", folder);
-}
+KDEWIN32_EXPORT 
+QString getWin32ShellFoldersPath(const QString& folder) 
 
 /**
  Shows native MS Windows file property dialog for a file \a fileName.

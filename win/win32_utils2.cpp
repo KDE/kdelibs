@@ -14,8 +14,18 @@
 # define WIN32_CAST_CHAR (LPCSTR)
 #endif
 
-KDEWIN32_EXPORT 
-QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& item, bool *ok)
+
+/**
+ \return a value from MS Windows native registry.
+ @param key is usually one of HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE
+        constants defined in WinReg.h. 
+ @param subKey is a registry subkey defined as a path to a registry folder, eg.
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
+        ('\' delimiter must be used)
+ @param item is an item inside subKey or "" if default folder's value should be returned
+ @param ok if not null, will be set to true on success and false on failure
+*/
+QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& item, bool *ok = 0)
 {
 #define FAILURE \
 	{ if (ok) \
@@ -48,6 +58,7 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 	return res;
 }
 
+
 KDEWIN32_EXPORT
 bool showWin32FilePropertyDialog(const QString& fileName)
 {
@@ -76,4 +87,14 @@ QByteArray getWin32LocaleName()
 	if (!ok)
 		return QByteArray();
 	return localeName.toLatin1();
+}
+
+/**
+ \return a value from MS Windows native registry for shell folder \a folder.
+*/
+KDEWIN32_EXPORT 
+QString getWin32ShellFoldersPath(const QString& folder) 
+{
+	return getWin32RegistryValue(HKEY_CURRENT_USER, 
+			"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", folder);
 }
