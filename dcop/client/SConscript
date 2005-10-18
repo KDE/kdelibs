@@ -12,7 +12,14 @@ for prog in progs1:
 	if env['WINDOWS']:
 		obj.libpaths += '../../win '
 		obj.libs     += 'kdewin32 ws2_32'
-		obj.cxxflags += '-Dkdemain=main '
+		if env['CC'] == 'cl':
+			# this is a really bad hack to get dcop compiling with msvc 
+			# because otherwise class KURL will be marked as 
+			# __declspec(dllimport) and not be found during link time
+			obj.ccflags  += '-DKDECORE_EXPORT='
+		elif env['CC'] == 'gcc':
+			obj.ccflags  += '-Dkdemain=main'
+		
 
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	obj.execute()
@@ -24,6 +31,8 @@ for prog in progs2:
 	obj.source    = prog+'.c'
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	obj.instdir   = env['KDEBIN']
+	if env['WINDOWS'] and env['CC'] == 'gcc':
+		obj.ccflags  += '-Dkdemain=main'
 	obj.execute()
 
 """
