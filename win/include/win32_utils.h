@@ -52,7 +52,7 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
  \return a value from MS Windows native registry for shell folder \a folder.
 */
 KDEWIN32_EXPORT 
-QString getWin32ShellFoldersPath(const QString& folder) 
+QString getWin32ShellFoldersPath(const QString& folder);
 
 /**
  Shows native MS Windows file property dialog for a file \a fileName.
