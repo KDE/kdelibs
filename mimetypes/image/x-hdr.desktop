@@ -7,6 +7,7 @@ Patterns=*.hdr;*.HDR;*.pic;*.PIC
 Comment=High Dynamic Range Image
 Comment[bg]=Изображение с висока динамичност (High Dynamic Range Image)
 Comment[ca]=Imatge de rang altament dinàmic
+Comment[cs]=Obrázek ve formátu HDRI
 Comment[da]=Billede med højt dynamisk område
 Comment[el]=Εικόνα υψηλής δυναμικής περιοχής
 Comment[es]=Imagen de gran rango dinámico
