@@ -6,15 +6,17 @@ env.subdirs('kconfig_compiler tests')
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: env.subdirs('svgicons')
 
 core_files="""
-libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
+libintl.cpp kapplication.cpp kauthorized.cpp
 kdebug.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
 kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp
 kstandarddirs.cpp kprocess.cpp kprocctrl.cpp
 klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp
 kiconloader.cpp krootprop.cpp kcharsets.cpp
-kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp
+kckey.cpp kshortcut.cpp 
+kkeynative_x11.cpp 
+kkeyserver_x11.cpp
 kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp
-kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp
+kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp
 kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp
 kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp
 kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp
@@ -42,7 +44,10 @@ ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 
 if not env['WINDOWS']:
 	core_files +="""
-ksocks.cpp netsupp.cpp netwm.cpp kwin.cpp kwinmodule.cpp 
+kglobalaccel_x11.cpp 
+ktoolinvocation_x11.cpp 
+ksocks.cpp netsupp.cpp netwm.cpp 
+kwin.cpp kwinmodule.cpp 
 network/kresolver.cpp
 network/kresolvermanager.cpp
 network/kresolverworkerbase.cpp
@@ -65,6 +70,7 @@ else:
 	core_files +="""
 kapplication_win.cpp 
 kglobalaccel_win.cpp
+ktoolinvocation_win.cpp 
 """
 inst_headers="""
 kconfig.h kconfigskeleton.h
