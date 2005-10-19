@@ -21,6 +21,9 @@
 #include "kcharselect.h"
 #include "kcharselect.moc"
 
+#include "kcharselect_p.h"
+#include "kcharselect_p.moc"
+
 #include <qbrush.h>
 #include <qcolor.h>
 #include <qevent.h>
@@ -43,6 +46,8 @@
 #include <kdialog.h>
 #include <klocale.h>
 #include <kvbox.h>
+#include <qheaderview.h>
+
 
 class KCharSelect::KCharSelectPrivate
 {
@@ -65,35 +70,41 @@ void KCharSelect::cleanupFontDatabase()
 //==================================================================
 KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
 				    const QChar &_chr, int _tableNum )
-    : Q3GridView( parent, name ), vFont( _font ), vChr( _chr ),
-      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ), d(0)
+    : QTableView( parent), vFont( _font ), vChr( _chr ),
+      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ),m_model(0), d(0)
 {
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::SingleSelection);
     setBackgroundColor( colorGroup().base() );
-
+    verticalHeader()->setVisible(false);
+    verticalHeader()->setResizeMode(QHeaderView::Custom);
+    horizontalHeader()->setVisible(false);
+    horizontalHeader()->setResizeMode(QHeaderView::Custom);
+    setTableNum(_tableNum);
+/*
     setCellWidth( 20 );
     setCellHeight( 25 );
-
-    setNumCols( 32 );
-    setNumRows( 8 );
-
-    repaintContents( false );
+*/
+    //repaintContents( false );
     
     setFocusPolicy( Qt::StrongFocus );
-    setBackgroundMode( Qt::NoBackground );
+    //setBackgroundMode( Qt::NoBackground );
 }
 
 //==================================================================
 void KCharSelectTable::setFont( const QString &_font )
 {
     vFont = _font;
-    repaintContents( false );
+    if (m_model) m_model->setFont(_font);
 }
 
 //==================================================================
 void KCharSelectTable::setChar( const QChar &_chr )
 {
+    //const uint short chr=_chr;
+    //if (chr)
     vChr = _chr;
-    repaintContents( false );
+    #warning fixme //repaintContents( false );
 }
 
 //==================================================================
@@ -102,17 +113,37 @@ void KCharSelectTable::setTableNum( int _tableNum )
     focusItem = QChar( _tableNum * 256 );
 
     vTableNum = _tableNum;
-    repaintContents( false );
+    
+    KCharSelectItemModel *m=m_model;
+    m_model=new KCharSelectItemModel(_tableNum,vFont,this);
+    setModel(m_model);
+    QItemSelectionModel *selectionModel=new QItemSelectionModel(m_model);
+    setSelectionModel(selectionModel);
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(selectionModel,SIGNAL(currentChanged ( const QModelIndex & ,const QModelIndex &)), this, SLOT(slotCurrentChanged ( const QModelIndex &, const QModelIndex &)));
+    delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
+    #warning fixme //repaintContents( false );
 }
+
+//==================================================================
+void KCharSelectTable::slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ) {
+	if (!m_model) return;
+	focusItem = m_model->data(current,KCharSelectItemModel::CharacterRole).toChar();
+	emit focusItemChanged( focusItem );
+	emit focusItemChanged();
+}
+
 
 //==================================================================
 QSize KCharSelectTable::sizeHint() const
 {
-    int w = cellWidth();
-    int h = cellHeight();
+    if (!model()) return QTableView::sizeHint();
+    int w = columnWidth(0);
+    int h = rowHeight(0);
 
-    w *= numCols();
-    h *= numRows();
+    w *= model()->columnCount(QModelIndex());
+    h *= model()->rowCount(QModelIndex());
 
     return QSize( w, h );
 }
@@ -120,99 +151,57 @@ QSize KCharSelectTable::sizeHint() const
 //==================================================================
 void KCharSelectTable::resizeEvent( QResizeEvent * e )
 {
-    const int new_w   = (e->size().width()  - 2*(margin()+frameWidth())) / numCols();
-    const int new_h   = (e->size().height() - 2*(margin()+frameWidth())) / numRows();
-
-    if( new_w !=  cellWidth())
-        setCellWidth( new_w );
-    if( new_h !=  cellHeight())
-        setCellHeight( new_h );
-}
-
-//==================================================================
-void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
-{
-    const int w = cellWidth();
-    const int h = cellHeight();
-    const int x2 = w - 1;
-    const int y2 = h - 1;
-
-    //if( row == 0 && col == 0 ) {
-    //    printf("Repaint %d\n", temp++);
-    //    fflush( stdout );
-    //    }
-
-    QFont font = QFont( vFont );
-    font.setPixelSize( int(.7 * h) );
-
-    unsigned short c = vTableNum * 256;
-    c += row * numCols();
-    c += col;
-
-    if ( c == vChr.unicode() ) {
-	p->setBrush( QBrush( colorGroup().highlight() ) );
-	p->setPen( Qt::NoPen );
-	p->drawRect( 0, 0, w, h );
-	p->setPen( colorGroup().highlightedText() );
-	vPos = QPoint( col, row );
-    } else {
-	QFontMetrics fm = QFontMetrics( font );
-	if( fm.inFont( c ) )
-		p->setBrush( QBrush( colorGroup().base() ) );
-	else
-		p->setBrush( QBrush( colorGroup().button() ) );
-	p->setPen( Qt::NoPen );
-	p->drawRect( 0, 0, w, h );
-	p->setPen( colorGroup().text() );
+    if (!model()) return;
+    const int new_w   = (e->size().width()  /*- 2*(margin()+frameWidth())*/) / model()->columnCount(QModelIndex());
+    const int new_h   = (e->size().height() /*- 2*(margin()+frameWidth())*/) / model()->rowCount(QModelIndex());
+    const int columns=model()->columnCount(QModelIndex());
+    const int rows=model()->rowCount(QModelIndex());
+    setUpdatesEnabled(false);
+    QHeaderView* hv=horizontalHeader();
+    for (int i=0;i<columns;i++) {
+    	qDebug("Setting new width");
+    	hv->resizeSection(i,new_w);
+    }
+    hv=verticalHeader();
+    for (int i=0;i<rows;i++) {
+    	qDebug("Setting new height");
+    	hv->resizeSection(i,new_h);
     }
 
-    if ( c == focusItem.unicode() && hasFocus() ) {
-	QStyleOptionFocusRect frOpt;
-	frOpt.init(this);
-	frOpt.rect            = QRect( 2, 2, w - 4, h - 4 );
-	frOpt.backgroundColor = p->brush().color();
-	style()->drawPrimitive( QStyle::PE_FrameFocusRect, &frOpt, p, this );
-	focusPos = QPoint( col, row );
-    }
-
-    p->setFont( font );
-
-    p->drawText( 0, 0, x2, y2, Qt::AlignHCenter | Qt::AlignVCenter, QString( QChar( c ) ) );
-
-    p->setPen( colorGroup().text() );
-    p->drawLine( x2, 0, x2, y2 );
-    p->drawLine( 0, y2, x2, y2 );
-
-    if ( row == 0 )
-	p->drawLine( 0, 0, x2, 0 );
-    if ( col == 0 )
-	p->drawLine( 0, 0, 0, y2 );
+    setUpdatesEnabled(true);
+    QTableView::resizeEvent(e);
 }
 
+#warning fix all below
 //==================================================================
 void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 {
+    if (!model()) return;
+    const int numRows=model()->rowCount(QModelIndex());
+    const int numCols=model()->columnCount(QModelIndex());
     const int row = rowAt( e->y() );
     const int col = columnAt( e->x() );
-    if ( row >= 0 && row < numRows() && col >= 0 && col < numCols() ) {
+    if ( row >= 0 && row < numRows && col >= 0 && col < numCols ) {
 	const QPoint oldPos = vPos;
 
 	vPos.setX( col );
 	vPos.setY( row );
 
-	vChr = QChar( vTableNum * 256 + numCols() * vPos.y() + vPos.x() );
+	vChr = QChar( vTableNum * 256 + numCols * vPos.y() + vPos.x() );
 
 	const QPoint oldFocus = focusPos;
 
 	focusPos = vPos;
 	focusItem = vChr;
 
+#warning fixme
+/*	
 	repaintCell( oldFocus.y(), oldFocus.x(), true );
 	repaintCell( oldPos.y(), oldPos.x(), true );
 	repaintCell( vPos.y(), vPos.x(), true );
-
-	emit highlighted( vChr );
-	emit highlighted();
+*/
+	/*emit highlighted( vChr );
+	emit highlighted();*/
 
 	emit focusItemChanged( focusItem );
 	emit focusItemChanged();
@@ -222,136 +211,37 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 //==================================================================
 void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 {
+    if (m_model)
     switch ( e->key() ) {
-    case Qt::Key_Left:
-	gotoLeft();
-	break;
-    case Qt::Key_Right:
-	gotoRight();
-	break;
-    case Qt::Key_Up:
-	gotoUp();
-	break;
-    case Qt::Key_Down:
-	gotoDown();
-	break;
     case Qt::Key_PageDown:
-	emit tableDown();
-	break;
+        emit tableDown();
+	return;
+        break;
     case Qt::Key_PageUp:
-	emit tableUp();
-	break;
+        emit tableUp();
+	return;
+        break;
     case Qt::Key_Space:
 	emit activated( ' ' );
 	emit activated();
-	emit highlighted( ' ' );
-	emit highlighted();
+	return;
         break;
     case Qt::Key_Enter: case Qt::Key_Return: {
-	const QPoint oldPos = vPos;
+    	if (!currentIndex().isValid()) return;
+            const QPoint oldPos = vPos;
 
-	vPos = focusPos;
-	vChr = focusItem;
+	    vPos = focusPos;
+	    vChr = focusItem;
 
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( vPos.y(), vPos.x(), true );
-
-	emit activated( vChr );
-	emit activated();
-	emit highlighted( vChr );
-	emit highlighted();
-    } break;
+	    emit activated( m_model->data(currentIndex(),KCharSelectItemModel::CharacterRole).toChar());
+	    emit activated();
+        }
+	return;
+	break;
     }
+    QTableView::keyPressEvent(e);
 }
 
-//==================================================================
-void KCharSelectTable::gotoLeft()
-{
-    if ( focusPos.x() > 0 ) {
-	const QPoint oldPos = focusPos;
-
-	focusPos.setX( focusPos.x() - 1 );
-
-	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
-
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( focusPos.y(), focusPos.x(), true );
-
-	emit focusItemChanged( vChr );
-	emit focusItemChanged();
-    }
-}
-
-//==================================================================
-void KCharSelectTable::gotoRight()
-{
-    if ( focusPos.x() < numCols()-1 ) {
-	const QPoint oldPos = focusPos;
-
-	focusPos.setX( focusPos.x() + 1 );
-
-	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
-
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( focusPos.y(), focusPos.x(), true );
-
-	emit focusItemChanged( vChr );
-	emit focusItemChanged();
-    }
-}
-
-//==================================================================
-void KCharSelectTable::gotoUp()
-{
-    if ( focusPos.y() > 0 ) {
-	const QPoint oldPos = focusPos;
-
-	focusPos.setY( focusPos.y() - 1 );
-
-	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
-
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( focusPos.y(), focusPos.x(), true );
-
-	emit focusItemChanged( vChr );
-	emit focusItemChanged();
-    }
-}
-
-//==================================================================
-void KCharSelectTable::gotoDown()
-{
-    if ( focusPos.y() < numRows()-1 ) {
-	const QPoint oldPos = focusPos;
-
-	focusPos.setY( focusPos.y() + 1 );
-
-	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
-
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( focusPos.y(), focusPos.x(), true );
-
-	emit focusItemChanged( vChr );
-	emit focusItemChanged();
-    }
-}
-
-bool KCharSelectTable::event ( QEvent *e )
-{
-    if ( e->type() ==  QEvent::ToolTip)
-    {
-	QHelpEvent* he = static_cast<QHelpEvent*>( e );
-	int row = he->y() / cellHeight();
-	int col = he->x() / cellWidth();
-    
-	const ushort uni = vTableNum * 256 + numCols()*row + col;
-	QString s;
-	s.sprintf( "%04X", uint( uni ) );
-	QToolTip::showText (he->globalPos(), i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) ), this);
-    }
-    
-    return Q3GridView::event( e );
-}
 
 /******************************************************************/
 /* Class: KCharSelect						  */
@@ -370,7 +260,8 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
 
-    fontCombo = new QComboBox( true, bar );
+    fontCombo = new QComboBox(bar );
+    fontCombo->setEditable(true);
     fillFontCombo();
     fontCombo->resize( fontCombo->sizeHint() );
 
@@ -381,7 +272,9 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     lTable->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lTable->setMaximumWidth( lTable->sizeHint().width() );
 
-    tableSpinBox = new QSpinBox( 0, 255, 1, bar );
+    tableSpinBox = new QSpinBox( bar );
+    tableSpinBox->setRange(0,255);
+    tableSpinBox->setSingleStep(1);
     tableSpinBox->resize( tableSpinBox->sizeHint() );
 
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
@@ -403,20 +296,27 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
     charTable = new KCharSelectTable( this, name, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
+
+    const QSize sz( 200,
+                    200 );    
+    #warning fixme
+    #if 0    
     const QSize sz( charTable->contentsWidth()  +  4 ,
                     charTable->contentsHeight() +  4 );
+    #endif
     charTable->resize( sz );
     //charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
-    charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
-    charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );
+    #warning fixme
+/*    charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
+    charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );*/
 
     setFont( _font.isEmpty() ? KVBox::font().family() : _font );
     setTableNum( _tableNum );
 
-    connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
-    connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( charHighlighted( const QChar & ) ) );
-    connect( charTable, SIGNAL( highlighted() ), this, SLOT( charHighlighted() ) );
+    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
+    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( charHighlighted( const QChar & ) ) );
+    connect( charTable, SIGNAL( focusItemChanged() ), this, SLOT( charHighlighted() ) );
     connect( charTable, SIGNAL( activated( const QChar & ) ), this, SLOT( charActivated( const QChar & ) ) );
     connect( charTable, SIGNAL( activated() ), this, SLOT( charActivated() ) );
     connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ),
@@ -447,7 +347,7 @@ void KCharSelect::setFont( const QString &_font )
 {
     int pos = fontList.indexOf ( _font );
     if ( pos != 1 ) {
-	fontCombo->setCurrentItem( pos );
+	fontCombo->setCurrentIndex( pos );
 	charTable->setFont( _font );
     }
     else
@@ -476,7 +376,7 @@ void KCharSelect::fillFontCombo()
 	qAddPostRoutine( cleanupFontDatabase );
     }
     fontList=fontDataBase->families();
-    fontCombo->insertStringList( fontList );
+    fontCombo->addItems( fontList );
 }
 
 //==================================================================

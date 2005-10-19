@@ -76,6 +76,8 @@ struct ColorPaletteNameType
     const char* m_displayName;
 };
 
+
+
 const ColorPaletteNameType colorPaletteName[]=
 {
     { "Recent_Colors", I18N_NOOP2( "palette name", "* Recent Colors *" ) },
@@ -87,14 +89,16 @@ const ColorPaletteNameType colorPaletteName[]=
     { 0, 0 } // end of data
 };
 
-const int recentColorIndex = 0;
+static const int recentColorIndex = 0;
+static const int customColorIndex = 1;
+static const int fortyColorIndex = 2;
 
 class KColorSpinBox : public QSpinBox
 {
 public:
   KColorSpinBox(int minValue, int maxValue, int step, QWidget* parent)
-   : QSpinBox(minValue, maxValue, step, parent, "kcolorspinbox")
-  { }
+   : QSpinBox(parent)
+  { setRange(minValue,maxValue); setSingleStep(step);}
 
 
   // Override Qt's braindead auto-selection.
@@ -151,7 +155,7 @@ KColor::setHsv(int _h, int _s, int _v)
 {
   h = _h; s = _s; v = _v;
   QColor::setHsv(h, s, v);
-  QColor::rgb(&r, &g, &b);
+  QColor::getRgb(&r, &g, &b);
 }
 
 void
@@ -159,7 +163,7 @@ KColor::setRgb(int _r, int _g, int _b)
 {
   r = _r; g = _g; b = _b;
   QColor::setRgb(r, g, b);
-  QColor::hsv(&h, &s, &v);
+  QColor::getHsv(&h, &s, &v);
 }
 
 void
@@ -231,7 +235,7 @@ void KHSSelector::drawContents( QPainter *painter )
 void KHSSelector::drawPalette( QPixmap *pixmap )
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
-	QImage image( xSize, ySize, 32 );
+	QImage image( QSize(xSize, ySize), QImage::Format_RGB32 );
 	QColor col;
 	int h, s;
 	uint *p;
@@ -252,7 +256,7 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	pixmap->convertFromImage( image );
+	*pixmap=QPixmap::fromImage( image );
 }
 
 
@@ -288,7 +292,7 @@ void KValueSelector::drawContents( QPainter *painter )
 void KValueSelector::drawPalette( QPixmap *pixmap )
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
-	QImage image( xSize, ySize, 32 );
+	QImage image( QSize(xSize, ySize), QImage::Format_RGB32 );
 	QColor col;
 	uint *p;
 	QRgb rgb;
@@ -325,7 +329,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	pixmap->convertFromImage( image );
+	*pixmap=QPixmap::fromImage( image );
 }
 
 //-----------------------------------------------------------------------------
@@ -426,7 +430,7 @@ int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
 
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
 {
-    if( !(e->state() && Qt::LeftButton)) return;
+    if( !(e->buttons() & Qt::LeftButton)) return;
 
     if(inMouse) {
         int delay = KGlobalSettings::dndEventDelay();
@@ -444,7 +448,7 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->accept( acceptDrags && KColorMimeData::canDecode( event->mimeData()));
+     event->setAccepted( acceptDrags && KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorCells::dropEvent( QDropEvent *event)
@@ -519,13 +523,13 @@ void KColorPatch::paintEvent ( QPaintEvent* pe )
 void KColorPatch::mouseMoveEvent( QMouseEvent *e )
 {
         // Drag color object
-        if( !(e->state() && Qt::LeftButton)) return;
+        if( !(e->buttons() & Qt::LeftButton)) return;
 	KColorMimeData::createDrag( color, this)->start();
 }
 
 void KColorPatch::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->accept( KColorMimeData::canDecode( event->mimeData()));
+     event->setAccepted( KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorPatch::dropEvent( QDropEvent *event)
@@ -556,7 +560,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   // We must replace the untranslated file names by translate names (of course only for KDE's standard palettes)
   for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
   {
-      diskPaletteList.remove( colorPaletteName[i].m_fileName );
+      diskPaletteList.removeAll( colorPaletteName[i].m_fileName );
       paletteList.append( i18n( "palette name", colorPaletteName[i].m_displayName ) );
   }
   paletteList += diskPaletteList;
@@ -564,8 +568,9 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 
   QVBoxLayout *layout = new QVBoxLayout( this );
 
-  combo = new QComboBox( false, this );
-  combo->insertStringList( paletteList );
+  combo = new QComboBox( this );
+  combo->setEditable(false);
+  combo->addItems( paletteList );
   layout->addWidget(combo);
 
   sv = new Q3ScrollView( this );
@@ -664,8 +669,8 @@ KPaletteTable::readNamedColor( void )
 	//
 	QString name = line.mid(pos).trimmed();
 	QByteArray s1 = line.mid(pos);
-	if( name.isNull() || name.find(' ') != -1 ||
-	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )
+	if( name.isNull() || name.indexOf(' ') != -1 ||
+	    name.indexOf( "gray" ) != -1 ||  name.indexOf( "grey" ) != -1 )
 	{
 	  continue;
 	}
@@ -673,7 +678,7 @@ KPaletteTable::readNamedColor( void )
         const QColor color ( red, green, blue );
         if ( color.isValid() )
         {
-            const QString colorName( i18n("color", name.latin1() ) );
+            const QString colorName( i18n("color", name.toLatin1().data()) );
             list.append( colorName );
             d->m_namedColorMap[ colorName ] = color;
         }
@@ -758,15 +763,15 @@ KPaletteTable::setPalette( const QString &_paletteName )
      {
         if (combo->text(i) == paletteName)
         {
-           combo->setCurrentItem(i);
+           combo->setCurrentIndex(i);
            found = true;
            break;
         }
      }
      if (!found)
      {
-        combo->insertItem(paletteName);
-        combo->setCurrentItem(combo->count()-1);
+        combo->addItem(paletteName);
+        combo->setCurrentIndex(combo->count()-1);
      }
   }
 
@@ -859,12 +864,12 @@ KPaletteTable::slotColorTextSelected( const QString &colorText )
 void
 KPaletteTable::addToCustomColors( const QColor &color)
 {
-  setPalette(i18n_customColors);
+  setPalette(i18n("palette name",colorPaletteName[customColorIndex].m_displayName));
   mPalette->addColor( color );
   mPalette->save();
   delete mPalette;
   mPalette = 0;
-  setPalette(i18n_customColors);
+  setPalette(i18n("palette name",colorPaletteName[customColorIndex].m_displayName));
 }
 
 void
@@ -937,7 +942,7 @@ public:
     if (event->type == ButtonRelease)
     {
         QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
-                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
+                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , Qt::NoButton, Qt::NoButton,Qt::NoModifier );
         QApplication::sendEvent( parentWidget(), &e );
         return true;
     }
@@ -1105,7 +1110,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   d->l_right->addSpacing(10);
 
-  QHBoxLayout *l_hbox = new QHBoxLayout( d->l_right );
+  QHBoxLayout *l_hbox = new QHBoxLayout();
+  d->l_right->addItem(l_hbox);
 
   //
   // The add to custom colors button
@@ -1119,7 +1125,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   // The color picker button
   //
   button = new QPushButton( page );
-  button->setPixmap( BarIcon("colorpicker"));
+  button->setIcon( BarIconSet("colorpicker"));
   l_hbox->addWidget(button, 0, Qt::AlignHCenter );
   connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));
 
@@ -1266,6 +1272,7 @@ KColorDialog::readSettings()
 
   config->setGroup("Colors");
   QString palette = config->readEntry("CurrentPalette");
+  if (palette.isEmpty()) palette=i18n("palette name",colorPaletteName[fortyColorIndex].m_displayName);
   d->table->setPalette(palette);
   config->setGroup( oldgroup );
 }
@@ -1283,7 +1290,7 @@ KColorDialog::slotWriteSettings()
   }
   else
   {
-     config->writeEntry("CurrentPalette", d->table->palette());
+     config->writeEntry("CurrentPalette", d->table->palette()); //Shouldn't here the unstranslated name be saved ??
   }
 }
 
@@ -1489,7 +1496,7 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
   d->valuePal->setValue( v );
   d->valuePal->updateContents();
   d->valuePal->blockSignals(false);
-  d->valuePal->repaint( false );
+  d->valuePal->repaint(); // false );
   d->bRecursion = false;
 }
 
@@ -1530,7 +1537,7 @@ KColorDialog::grabColor(const QPoint &p)
 {
     QWidget *desktop = QApplication::desktop();
     QPixmap pm = QPixmap::grabWindow( desktop->winId(), p.x(), p.y(), 1, 1);
-    QImage i = pm.convertToImage();
+    QImage i = pm.toImage();
     return i.pixel(0,0);
 }
 

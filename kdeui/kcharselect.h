@@ -21,7 +21,7 @@
 #ifndef kcharselect_h
 #define kcharselect_h
 
-#include <q3gridview.h>
+#include <qtableview.h>
 
 #include <qcombobox.h>
 #include <qspinbox.h>
@@ -38,7 +38,7 @@ class QMouseEvent;
 class QSpinBox;
 class KCharSelectTablePrivate;
 class KCharSelectPrivate;
-
+class KCharSelectItemModel;
 /**
  * @short Character selection table
  *
@@ -49,7 +49,7 @@ class KCharSelectPrivate;
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KDEUI_EXPORT KCharSelectTable : public Q3GridView
+class KDEUI_EXPORT KCharSelectTable : public QTableView
 {
     Q_OBJECT
 
@@ -62,26 +62,19 @@ public:
 
     virtual void setFont( const QString &_font );
     virtual void setChar( const QChar &_chr );
-    virtual void setTableNum( int _tableNum );
+    /*virtual no more*/ void setTableNum( int _tableNum );
 
     virtual QChar chr() { return vChr; }
 
 protected:
-    virtual void paintCell( class QPainter *p, int row, int col );
+    //virtual void paintCell( class QPainter *p, int row, int col );
 
-    virtual void mousePressEvent( QMouseEvent *e ) {  mouseMoveEvent( e ); }
+    virtual void mousePressEvent( QMouseEvent *e ) {  mouseMoveEvent( e ); QTableView::mousePressEvent(e);}
     virtual void mouseDoubleClickEvent ( QMouseEvent *e ){  mouseMoveEvent( e ); emit doubleClicked();}
     virtual void mouseReleaseEvent( QMouseEvent *e ) { mouseMoveEvent( e ); emit activated( chr() ); emit activated(); }
     virtual void mouseMoveEvent( QMouseEvent *e );
 
     virtual void keyPressEvent( QKeyEvent *e );
-
-    virtual bool event ( QEvent *e );
-
-    void gotoLeft();
-    void gotoRight();
-    void gotoUp();
-    void gotoDown();
 
     QString vFont;
     QChar vChr;
@@ -92,8 +85,6 @@ protected:
     int temp;
 
 signals:
-    void highlighted( const QChar &c );
-    void highlighted();
     void activated( const QChar &c );
     void activated();
     void focusItemChanged();
@@ -102,11 +93,15 @@ signals:
     void tableDown();
     void doubleClicked();
 
+private slots:
+    void slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous );
+    
 private:
-    virtual void setFont(const QFont &f) { Q3GridView::setFont(f); }
+    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    KCharSelectItemModel *m_model;
     KCharSelectTablePrivate* const d;
 };
 

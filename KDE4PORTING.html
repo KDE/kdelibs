@@ -249,6 +249,14 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <li>kdualcolorbtn.h went away, use kdualcolorbutton.h</li>
 <li>kxmlgui.h went away, use kxmlguifactory.h</li>
 
+<H4>KCharSelectTable</H4>
+<ul>
+<li>there is no separation between focused and selected item anymore, only between selected and activated</li>
+<li>focusItemChanged is no emitted with the currently selected/focused character, not with the most recent activated one</li>
+<li>signal highlighted(...) has been removed</li>
+<li> protected memgers gotoleft/right/up/down are gone, if you really need to simulate them, use the qitemselectionmodel</li>
+<ul>
+
 <H4>KColorDrag</H4>
 <ul>
 <li>has been moved as K3ColorDrag to kde3support</li>

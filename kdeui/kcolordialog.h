@@ -221,8 +221,6 @@ protected:
   void readNamedColor( void );
 
 protected:
-  /// \deprecated
-  QString i18n_customColors; /// ### KDE4: remove
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;

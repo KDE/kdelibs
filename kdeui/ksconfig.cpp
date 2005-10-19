@@ -117,22 +117,22 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   glay->addWidget( dictlist, 2 ,0 );
 
   encodingcombo = new QComboBox( this, "Encoding" );
-  encodingcombo->insertItem( "US-ASCII" );
-  encodingcombo->insertItem( "ISO 8859-1" );
-  encodingcombo->insertItem( "ISO 8859-2" );
-  encodingcombo->insertItem( "ISO 8859-3" );
-  encodingcombo->insertItem( "ISO 8859-4" );
-  encodingcombo->insertItem( "ISO 8859-5" );
-  encodingcombo->insertItem( "ISO 8859-7" );
-  encodingcombo->insertItem( "ISO 8859-8" );
-  encodingcombo->insertItem( "ISO 8859-9" );
-  encodingcombo->insertItem( "ISO 8859-13" );
-  encodingcombo->insertItem( "ISO 8859-15" );
-  encodingcombo->insertItem( "UTF-8" );
-  encodingcombo->insertItem( "KOI8-R" );
-  encodingcombo->insertItem( "KOI8-U" );
-  encodingcombo->insertItem( "CP1251" );
-  encodingcombo->insertItem( "CP1255" );
+  encodingcombo->addItem( "US-ASCII" );
+  encodingcombo->addItem( "ISO 8859-1" );
+  encodingcombo->addItem( "ISO 8859-2" );
+  encodingcombo->addItem( "ISO 8859-3" );
+  encodingcombo->addItem( "ISO 8859-4" );
+  encodingcombo->addItem( "ISO 8859-5" );
+  encodingcombo->addItem( "ISO 8859-7" );
+  encodingcombo->addItem( "ISO 8859-8" );
+  encodingcombo->addItem( "ISO 8859-9" );
+  encodingcombo->addItem( "ISO 8859-13" );
+  encodingcombo->addItem( "ISO 8859-15" );
+  encodingcombo->addItem( "UTF-8" );
+  encodingcombo->addItem( "KOI8-R" );
+  encodingcombo->addItem( "KOI8-U" );
+  encodingcombo->addItem( "CP1251" );
+  encodingcombo->addItem( "CP1255" );
 
   connect( encodingcombo, SIGNAL(activated(int)), this,
 	   SLOT(sChangeEncoding(int)) );
@@ -143,10 +143,10 @@ KSpellConfig::KSpellConfig( QWidget *parent,
 
 
   clientcombo = new QComboBox( this, "Client" );
-  clientcombo->insertItem( i18n("International Ispell") );
-  clientcombo->insertItem( i18n("Aspell") );
-  clientcombo->insertItem( i18n("Hspell") );
-  clientcombo->insertItem( i18n("Zemberek") );
+  clientcombo->addItem( i18n("International Ispell") );
+  clientcombo->addItem( i18n("Aspell") );
+  clientcombo->addItem( i18n("Hspell") );
+  clientcombo->addItem( i18n("Zemberek") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
@@ -230,12 +230,12 @@ KSpellConfig::sChangeClient( int i )
     {
       langfnames.clear();
       dictcombo->clear();
-      dictcombo->insertItem( i18n("Hebrew") );
+      dictcombo->addItem( i18n("Hebrew") );
       sChangeEncoding( KS_E_CP1255 );
     } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
       langfnames.clear();
       dictcombo->clear();
-      dictcombo->insertItem( i18n("Turkish") );
+      dictcombo->addItem( i18n("Turkish") );
       sChangeEncoding( KS_E_UTF8 );
     }
     else
@@ -264,7 +264,7 @@ KSpellConfig::interpret( QString &fname, QString &lname,
 
   QString extension;
 
-  int i = dname.find('-');
+  int i = dname.indexOf('-');
   if ( i != -1 )
   {
     extension = dname.mid(i+1);
@@ -379,8 +379,8 @@ KSpellConfig::fillInDialog ()
 
   cb1->setChecked( noRootAffix() );
   cb2->setChecked( runTogether() );
-  encodingcombo->setCurrentItem( encoding() );
-  clientcombo->setCurrentItem( client() );
+  encodingcombo->setCurrentIndex( encoding() );
+  clientcombo->setCurrentIndex( client() );
 
   // get list of available dictionaries
   if ( iclient == KS_CLIENT_ISPELL )
@@ -390,12 +390,12 @@ KSpellConfig::fillInDialog ()
     langfnames.clear();
     dictcombo->clear();
     langfnames.append(""); // Default
-    dictcombo->insertItem( i18n("Hebrew") );
+    dictcombo->addItem( i18n("Hebrew") );
   } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
     langfnames.clear();
     dictcombo->clear();
     langfnames.append("");
-    dictcombo->insertItem( i18n("Turkish") );
+    dictcombo->addItem( i18n("Turkish") );
   }
   else
     getAvailDictsAspell();
@@ -412,14 +412,14 @@ KSpellConfig::fillInDialog ()
   {
     setDictFromList (true);
     if (whichelement!=-1)
-      dictcombo->setCurrentItem(whichelement);
+      dictcombo->setCurrentIndex(whichelement);
   }
   else
     // Current dictionary vanished, present the user with a default if possible.
     if ( !langfnames.empty() )
     {
       setDictFromList( true );
-      dictcombo->setCurrentItem(0);
+      dictcombo->setCurrentIndex(0);
     }
     else
       setDictFromList( false );
@@ -435,7 +435,7 @@ void KSpellConfig::getAvailDictsIspell () {
   langfnames.clear();
   dictcombo->clear();
   langfnames.append(""); // Default
-  dictcombo->insertItem( i18n("ISpell Default") );
+  dictcombo->addItem( i18n("ISpell Default") );
 
   // dictionary path
   QFileInfo dir ("/usr/lib/ispell");
@@ -477,7 +477,7 @@ void KSpellConfig::getAvailDictsIspell () {
     { // This one is the KDE default language
       // so place it first in the lists (overwrite "Default")
 
-      langfnames.remove ( langfnames.begin() );
+      langfnames.removeFirst();
       langfnames.prepend ( fname );
 
       hname=i18n("default spelling dictionary"
@@ -490,7 +490,7 @@ void KSpellConfig::getAvailDictsIspell () {
       langfnames.append (fname);
       hname=hname+" ["+fname+"]";
 
-      dictcombo->insertItem (hname);
+      dictcombo->addItem (hname);
     }
   }
 }
@@ -501,7 +501,7 @@ void KSpellConfig::getAvailDictsAspell () {
   dictcombo->clear();
 
   langfnames.append(""); // Default
-  dictcombo->insertItem (i18n("ASpell Default"));
+  dictcombo->addItem (i18n("ASpell Default"));
 
   // dictionary path
   // FIXME: use "aspell dump config" to find out the dict-dir
@@ -571,7 +571,7 @@ void KSpellConfig::getAvailDictsAspell () {
       else
       {
         langfnames.append (fname);
-        dictcombo->insertItem (hname);
+        dictcombo->addItem (hname);
       }
     }
   }
@@ -585,7 +585,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
     if ( iclient == KS_CLIENT_ISPELL ) {
       box->clear();
       langfnames.append(""); // Default
-      box->insertItem( i18n("ISpell Default") );
+      box->addItem( i18n("ISpell Default") );
 
       // dictionary path
       QFileInfo dir ("/usr/lib/ispell");
@@ -640,24 +640,24 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           langfnames.append (fname);
           hname=hname+" ["+fname+"]";
 
-          box->insertItem (hname);
+          box->addItem (hname);
         }
       }
     } else if ( iclient == KS_CLIENT_HSPELL ) {
       box->clear();
-      box->insertItem( i18n("Hebrew") );
+      box->addItem( i18n("Hebrew") );
       langfnames.append(""); // Default
       sChangeEncoding( KS_E_CP1255 );
     } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
       box->clear();
-      box->insertItem( i18n("Turkish") );
+      box->addItem( i18n("Turkish") );
       langfnames.append("");
       sChangeEncoding( KS_E_UTF8 );
     }
     else {
       box->clear();
       langfnames.append(""); // Default
-      box->insertItem (i18n("ASpell Default"));
+      box->addItem (i18n("ASpell Default"));
 
       // dictionary path
       // FIXME: use "aspell dump config" to find out the dict-dir
@@ -727,14 +727,14 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           else
           {
             langfnames.append (fname);
-            box->insertItem (hname);
+            box->addItem (hname);
           }
         }
       }
     }
     int whichelement = langfnames.findIndex(qsdict);
     if ( whichelement >= 0 ) {
-      box->setCurrentItem( whichelement );
+      box->setCurrentIndex( whichelement );
     }
     if ( dictionaries )
       *dictionaries = langfnames;
@@ -751,7 +751,7 @@ KSpellConfig::setClient (int c)
   iclient = c;
 
   if (clientcombo)
-    clientcombo->setCurrentItem(c);
+    clientcombo->setCurrentIndex(c);
 }
 
 void
@@ -791,7 +791,7 @@ KSpellConfig::setDictionary (const QString s)
 
       if(whichelement >= 0)
       {
-        dictcombo->setCurrentItem(whichelement);
+        dictcombo->setCurrentIndex(whichelement);
       }
     }
   }
@@ -819,7 +819,7 @@ KSpellConfig::setEncoding (int enctype)
   enc=enctype;
 
   if(encodingcombo)
-    encodingcombo->setCurrentItem(enctype);
+    encodingcombo->setCurrentIndex(enctype);
 }
 
 /*
