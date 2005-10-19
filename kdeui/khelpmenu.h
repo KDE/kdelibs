@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _KHELPMENU_H_
-#define _KHELPMENU_H_
+#ifndef KHELPMENU_H
+#define KHELPMENU_H
 
 #include <qobject.h>
 #include <qstring.h>
@@ -53,14 +53,14 @@ class KHelpMenuPrivate;
  *
  * \code
  * mHelpMenu = new KHelpMenu( this, <someText> );
- * kmenubar->insertItem(i18n("&Help"), mHelpMenu->menu() );
+ * kmenubar->addMenu(mHelpMenu->menu() );
  * \endcode
  *
  * or if you just want to open a dialog box:
  *
  * \code
  * mHelpMenu = new KHelpMenu( this, <someText> );
- * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
+ * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(aboutKDE()));
  * \endcode
  *
  * IMPORTANT:
@@ -85,14 +85,10 @@ class KHelpMenuPrivate;
  *
  * The standard "about application" dialog box is quite simple. If you
  * need a dialog box with more functionality you must design that one
- * yourself. When you want to display the dialog you can choose one of
- * two methods. Common for both is that you must make a help menu object
- * with no text argument If the text is missing the default dialog box
- * will not be displayed:
+ * yourself. When you want to display the dialog, you simply need to
+ * connect the help menu signal showAboutApplication() to your slot.
  *
- * Example 1 Using showAboutApplication signal (preferred)
  * \code
- *
  * void MyClass::myFunc()
  * {
  *   ..
@@ -100,23 +96,6 @@ class KHelpMenuPrivate;
  *   connect( helpMenu, SIGNAL(showAboutApplication()),
  *          this, SLOT(myDialogSlot()));
  *   ..
- * }
- *
- * void MyClass::myDialogSlot()
- * {
- *   <activate your custom dialog>
- * }
- * \endcode
- *
- *
- * Example 2 Old style - connecting directly to the menu entry.
- * \code
- *
- * void MyClass::myFunc()
- * {
- *   KHelpMenu *helpMenu = new KHelpMenu( this );
- *   KMenu *help = mHelpMenu->menu();
- *   help->connectItem( KHelpMenu::menuAboutApp, this, SLOT(myDialogSlot()) );
  * }
  *
  * void MyClass::myDialogSlot()
@@ -139,9 +118,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * @param parent The parent of the dialog boxes. The boxes are modeless
      *        and will be centered with respect to the parent.
      * @param aboutAppText User definable string that is used in the
-     *        application specific dialog box. Note: The help menu will
-     *        not open this dialog box if you don't define a string. See
-     *        showAboutApplication() for more information.
+     *        default application dialog box.
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
      *
@@ -179,8 +156,12 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * Returns a popup menu you can use in the menu bar or where you
      * need it.
      *
+     * The returned menu is configured with an icon, a title and
+     * menu entries. Therefore adding the returned pointer to your menu
+     * is enougth to have access to the help menu.
+     *
      * Note: This method will only create one instance of the menu. If
-     * you call this method twice or more the same pointer is returned
+     * you call this method twice or more the same pointer is returned.
      */
     KMenu *menu();
 
@@ -198,9 +179,13 @@ class KDEUI_EXPORT KHelpMenu : public QObject
     void contextHelpActivated();
 
     /**
-     * Opens an application specific dialog box. The dialog box will display
-     * the string that was defined in the constructor. If that string was
-     * empty the showAboutApplication() is emitted instead.
+     * Opens an application specific dialog box.
+     *
+     * The method will try to open the about box using the following steps:
+     * - If the showAboutApplication() signal is connected, then it will be called.
+     *   This means there is an application defined aboutBox.
+     * - If the aboutData was set in the constructor a KAboutApplication will be created.
+     * - Else a default about box using the aboutAppText from the constructor will be created.
      */
     void aboutApplication();
 

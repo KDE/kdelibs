@@ -84,9 +84,6 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 
   d->mAboutData = aboutData;
 
-  if (!aboutData)
-    mAboutAppText = QString::null;
-
   if (actions)
   {
     KStdAction::helpContents(this, SLOT(appHelpActivated()), actions);
@@ -112,11 +109,6 @@ KMenu* KHelpMenu::menu()
 {
   if( !mMenu )
   {
-    //
-    // 1999-12-02 Espen Sand:
-    // I use hardcoded menu id's here. Reason is to stay backward
-    // compatible.
-    //
     const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::instance()->aboutData();
     QString appName = (aboutData)? aboutData->programName() : qApp->applicationName();
 
@@ -129,8 +121,8 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      mMenu->addAction( BarIconSet( "contents", KIcon::SizeSmall),
-                     i18n( "%1 &Handbook" ).arg( appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
+      mMenu->addAction(BarIconSet( "contents", KIcon::SizeSmall),
+                     i18n("%1 &Handbook").arg(appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
       need_separator = true;
     }
 
@@ -179,7 +171,11 @@ void KHelpMenu::appHelpActivated()
 
 void KHelpMenu::aboutApplication()
 {
-  if (d->mAboutData)
+  if (receivers(SIGNAL(showAboutApplication())) > 0)
+  {
+    emit showAboutApplication();
+  }
+  else if (d->mAboutData)
   {
     if( !mAboutApp )
     {
@@ -187,10 +183,6 @@ void KHelpMenu::aboutApplication()
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     mAboutApp->show();
-  }
-  else if( mAboutAppText.isEmpty() )
-  {
-    emit showAboutApplication();
   }
   else
   {
@@ -217,7 +209,6 @@ void KHelpMenu::aboutApplication()
       mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
       mAboutApp->disableResize();
     }
-
     mAboutApp->show();
   }
 }
