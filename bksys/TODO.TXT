@@ -29,6 +29,9 @@ generic
 -	n	cleanup QT related component definition
 		QT is something like QT + zlib, QTGUI is QtCore + QTGui
 
+-	n	find a platform independent way to include all symbols from static libraries into a 
+    shared library (gcc-notation: -Wl,--whole-archive ... -Wl,--no-whole-archive )
+
 mac related
 -----------
 
@@ -43,12 +46,13 @@ unix related
 win32 related 
 -------------
   			 						
-2	    n     fix installation of files  (dll's are in lib dir instead of bin, which is in path)
+2 n fix installation of files  (dll's are in lib dir instead of bin, which is in path)
 
-1     n		  QT requires some component relates defines like QT_<component>_LIB they have 
-            to be added in win32/detect_qt4.py 
-            
+1 n QT requires some component relates defines like QT_<component>_LIB they have 
+    to be added in win32/detect_qt4.py 
 
+3 n document platform option platform=<QT Platform specifier>  
+    currently supported: win32-g++, win32-msvc.net 
 
 
 
