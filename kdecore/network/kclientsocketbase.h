@@ -88,7 +88,6 @@ public:
    * Default constructor.
    *
    * @param parent	the parent QObject object
-   * @param name	the name of this object
    */
   KClientSocketBase(QObject* parent);
 

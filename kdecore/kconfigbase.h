@@ -2061,7 +2061,7 @@ public:
    * object you want to work with and a string indicating the _new_
    * group.
    *
-   * @param config The KConfigBase-derived object this
+   * @param pConfig The KConfigBase-derived object this
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */

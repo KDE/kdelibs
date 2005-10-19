@@ -138,7 +138,6 @@ public:
    * @param global If @p true, then the global resource file will also
    *               be parsed.
    * @param parent The parent of the dialog.
-   * @param name An internal name.
    */
   KEditToolbar(KActionCollection *collection,
                const QString& xmlfile = QString::null, bool global = true,
@@ -176,7 +175,6 @@ public:
    *
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
-   * @param name An internal name.
    *
    * Some people seem tempted to use this also in non-KParts apps, using KMainWindow::guiFactory().
    * This works, but only _if_ setting conserveMemory to false when calling

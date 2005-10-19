@@ -199,7 +199,6 @@ protected:
     /**
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      */
     KScanDialogFactory( QObject *parent=0 );
 
@@ -261,7 +260,6 @@ protected:
      * @param buttonMask a ORed mask of all buttons (see
      * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      */
     KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
@@ -324,7 +322,6 @@ public:
      * Your library should reimplement this method to return your KOCRDialog
      * derived dialog.
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      */
     virtual KOCRDialog * createDialog( QWidget *parent=0,
@@ -334,7 +331,6 @@ protected:
     /**
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      */
     KOCRDialogFactory( QObject *parent=0 );
 

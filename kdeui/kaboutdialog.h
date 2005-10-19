@@ -328,7 +328,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
     * @param buttonMask Specifies what buttons will be visible.
     * @param defaultButton Specifies what button will be marked as the default.
     * @param parent Parent of the dialog.
-    * @param name Dialog name (for internal use only)
     * @param modal Sets dialog modality. If false, the rest of the
     *        program interface (other dialogs, for example) is accessible while
     *        the dialog is open.

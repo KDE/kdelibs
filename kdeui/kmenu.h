@@ -54,6 +54,7 @@ public:
      * Constructs a KMenu.
      * \param title The text displayed in a parent menu when it is inserted
      *              into another menu as a submenu.
+     * \param parent the parent QWidget object
      */
     KMenu(const QString& title, QWidget *parent = 0L);
 

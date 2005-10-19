@@ -171,7 +171,6 @@ public:
     /**
      * Create a new factory.
      * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
      */
     KLibFactory( QObject* parent = 0 );
     virtual ~KLibFactory();
@@ -208,8 +207,8 @@ public:
      *     MyPlugin *plugin = factory->create&lt;MyPlugin&gt;( factory, parent );
      * \endcode
      *
-     * @param parent The parent object (see QObject constructor)
-     * @param name The name of the object to create (see QObject constructor)
+     * @param pParent The parent object (see QObject constructor)
+     * @param pName The name of the object to create (see QObject constructor)
      * @param args A list of string arguments, passed to the factory and possibly
      *             to the component (see KLibFactory)
      * @return A pointer to the newly created object or a null pointer if the

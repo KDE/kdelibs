@@ -52,7 +52,6 @@ public:
      * the parent.
      *
      * @param parent The KFileDialog this preview widget is going to be used in
-     * @param name The internal name of this object
      */
     KPreviewWidgetBase(QWidget *parent);
     ~KPreviewWidgetBase();

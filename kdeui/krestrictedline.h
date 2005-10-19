@@ -52,7 +52,6 @@ public:
    * Constructor: This contructor takes three - optional - arguments.
    *  The first two parameters are simply passed on to QLineEdit.
    *  @param parent   pointer to the parent widget
-   *  @param name     pointer to the name of this widget
    */
   KRestrictedLine( QWidget* parent );
 

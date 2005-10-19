@@ -81,7 +81,6 @@ public:
    * Construct a separator button
    *
    * @param parent This button's parent
-   * @param name   This button's internal name
    */
   KToolBarButton(QWidget *parent=0L);
 

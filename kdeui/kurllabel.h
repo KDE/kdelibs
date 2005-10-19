@@ -88,7 +88,6 @@ public:
    * @param text is the displayed string. If it's equal to QString::null
    * the @p url will be used instead.
    * @param parent Passed to lower level constructor
-   * @param name Passed to lower level constructor
    *
    * @p parent and @p name are passed to QLabel, which in turn passes
    * them further down

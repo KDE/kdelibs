@@ -117,7 +117,6 @@ public:
    * operating system.
    *
    * @param parent		the parent QObject object
-   * @param name		the name of this object
    */
   KServerSocket(QObject* parent = 0L);
 
@@ -136,7 +135,6 @@ public:
    *
    * @param service		the service name to listen on
    * @param parent		the parent QObject object
-   * @param name		the name of this object
    */
   KServerSocket(const QString& service, QObject* parent = 0L);
 
@@ -156,7 +154,6 @@ public:
    * @param node		the node to bind to
    * @param service		the service port to listen on
    * @param parent		the parent QObject object
-   * @param name		the name of this object
    */
   KServerSocket(const QString& node, const QString& service,
 		QObject* parent = 0L);

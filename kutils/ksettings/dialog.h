@@ -141,7 +141,6 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param name         name
          */
         Dialog( const QStringList & components, ContentInListView
                 content, QWidget * parent = 0 );

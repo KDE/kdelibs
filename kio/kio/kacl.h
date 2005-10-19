@@ -127,7 +127,7 @@ public:
 
   /**
    * Return the entry for the permissions mask if there is one and sets
-   * @param exists to true. If there is no such entry, @param is set to false.
+   * @p exists to true. If there is no such entry, @p exists is set to false.
    * @return the permissions mask entry */
   unsigned short maskPermissions( bool &exists ) const;
 
@@ -142,7 +142,7 @@ public:
    * exists. @param exists is set to true if a matching entry exists and
    * to false otherwise.
    * @return the permissions for a user entry with the name in @p name */
-  unsigned short namedUserPermissions( const QString& name, bool *exits ) const;
+  unsigned short namedUserPermissions( const QString& name, bool *exists ) const;
   /** Set the permissions for a user with the name @p name. Will fail
    * if the user doesn't exist, in which case the ACL will be unchanged.
    * @return success or failure. */

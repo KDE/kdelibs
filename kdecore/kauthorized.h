@@ -72,7 +72,7 @@ public:
    * otherwise be subject to KIOSK restrictions.
    * @param action The name of the action.
    * @param baseURL The url where the action originates from
-   * @param destURL The object of the action
+   * @param _destURL The object of the action
    * @since 3.2
    */
   static void allowURLAction(const QString& action, const KURL& baseURL, const KURL&  _destURL);

@@ -93,7 +93,6 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
      * Constructs a KSpellConfig with default or custom settings.
      *
      * @param parent Parent of the widget.
-     * @param name Widget name.
      * @param spellConfig Predefined configuration. If this parameter
      *        is 0, a default configuration will be used.
      * @param addHelpButton Enabled or hides a help button. See

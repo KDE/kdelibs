@@ -97,7 +97,6 @@ public:
    *
    * @param col Initial color of the LED.
    * @param parent   Will be handed over to QWidget.
-   * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
   KLed(const QColor &col, QWidget *parent=0);
@@ -113,7 +112,6 @@ public:
    * @param look     Sets the Look.
    * @param shape    Sets the Shape (rectangular or circular)
    * @param parent   Will be handed over to QWidget.
-   * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
   KLed(const QColor& col, KLed::State state, KLed::Look look, KLed::Shape shape,
