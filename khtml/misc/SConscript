@@ -2,19 +2,19 @@
 #generated from khtml/misc/Makefile.am by am2bksys.py
 Import('env')
 
-libkhtmlmisc_sources = """
-arena.cpp decoder.cpp guess_ja.cpp helper.cpp
-htmlhashes.cpp loader.cpp stringit.cpp
-"""
+#libkhtmlmisc_sources = """
+#arena.cpp decoder.cpp guess_ja.cpp helper.cpp
+#htmlhashes.cpp loader.cpp stringit.cpp
+#"""
 
-includes = '#/dcop #/kio #/libltdl #/khtml #/kutils '
+#includes = '#/dcop #/kio #/libltdl #/khtml #/kutils '
 
-obj = env.kdeobj('convenience',env)
-obj.target = 'libkhtmlmisc'
-obj.source = libkhtmlmisc_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 JPEG '
-obj.execute()
+#obj = env.kdeobj('convenience',env)
+#obj.target = 'libkhtmlmisc'
+#obj.source = libkhtmlmisc_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 JPEG '
+#obj.execute()
 
 
 """Unhandled Defines 

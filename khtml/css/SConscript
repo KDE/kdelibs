@@ -2,11 +2,11 @@
 #generated from khtml/css/Makefile.am by am2bksys.py
 Import('env')
 
-khtmlcss_sources = """
-css_base.cpp css_renderstyledeclarationimpl.cpp css_ruleimpl.cpp css_stylesheetimpl.cpp
-css_valueimpl.cpp csshelper.cpp cssparser.cpp cssstyleselector.cpp
-parser.cpp
-"""
+#khtmlcss_sources = """
+#css_base.cpp css_renderstyledeclarationimpl.cpp css_ruleimpl.cpp css_stylesheetimpl.cpp
+#css_valueimpl.cpp csshelper.cpp cssparser.cpp cssstyleselector.cpp
+#parser.cpp
+#"""
 
 noinst_headers = """
 css_base.h css_extensionsimpl.h css_renderstyledeclarationimpl.h css_ruleimpl.h
@@ -14,14 +14,14 @@ css_stylesheetimpl.h css_valueimpl.h csshelper.h cssparser.h
 cssstyleselector.h parser.h
 """
 
-includes = '#/kimgio #/kio #/dcop #/khtml #/libltdl #/kwallet/client #/kutils '
+#includes = '#/kimgio #/kio #/dcop #/khtml #/libltdl #/kwallet/client #/kutils '
 
-obj = env.kdeobj('convenience')
-obj.target = 'khtmlcss'
-obj.source = khtmlcss_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'khtmlcss'
+#obj.source = khtmlcss_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+#obj.execute()
 
 
 """Unhandled Defines 

@@ -2,15 +2,15 @@
 #generated from khtml/dom/Makefile.am by am2bksys.py
 Import('env')
 
-khtmldom_sources = """
-css_rule.cpp css_stylesheet.cpp css_value.cpp dom2_events.cpp
-dom2_range.cpp dom2_traversal.cpp dom2_views.cpp dom_doc.cpp
-dom_element.cpp dom_misc.cpp dom_node.cpp dom_string.cpp
-dom_text.cpp dom_xml.cpp html_base.cpp html_block.cpp
-html_document.cpp html_element.cpp html_form.cpp html_head.cpp
-html_image.cpp html_inline.cpp html_list.cpp html_misc.cpp
-html_object.cpp html_table.cpp
-"""
+#khtmldom_sources = """
+#css_rule.cpp css_stylesheet.cpp css_value.cpp dom2_events.cpp
+#dom2_range.cpp dom2_traversal.cpp dom2_views.cpp dom_doc.cpp
+#dom_element.cpp dom_misc.cpp dom_node.cpp dom_string.cpp
+#dom_text.cpp dom_xml.cpp html_base.cpp html_block.cpp
+#html_document.cpp html_element.cpp html_form.cpp html_head.cpp
+#html_image.cpp html_inline.cpp html_list.cpp html_misc.cpp
+#html_object.cpp html_table.cpp
+#"""
 
 myinclude_headers = """
 css_rule.h css_stylesheet.h css_value.h dom2_events.h
@@ -23,14 +23,14 @@ html_inline.h html_list.h html_misc.h html_object.h
 html_table.h
 """
 
-includes = '#/kimgio #/kio #/dcop #/khtml '
+#includes = '#/kimgio #/kio #/dcop #/khtml '
 
-obj = env.kdeobj('convenience')
-obj.target = 'khtmldom'
-obj.source = khtmldom_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'khtmldom'
+#obj.source = khtmldom_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+#obj.execute()
 
 
 """Unhandled Defines 

@@ -2,15 +2,15 @@
 #generated from khtml/rendering/Makefile.am by am2bksys.py
 Import('env')
 
-libkhtmlrender_sources = """
-bidi.cpp break_lines.cpp counter_tree.cpp enumerate.cpp
-font.cpp render_arena.cpp render_block.cpp render_body.cpp
-render_box.cpp render_br.cpp render_canvas.cpp render_container.cpp
-render_flow.cpp render_form.cpp render_frames.cpp render_generated.cpp
-render_image.cpp render_inline.cpp render_layer.cpp render_line.cpp
-render_list.cpp render_object.cpp render_replaced.cpp render_style.cpp
-render_table.cpp render_text.cpp table_layout.cpp
-"""
+#libkhtmlrender_sources = """
+#bidi.cpp break_lines.cpp counter_tree.cpp enumerate.cpp
+#font.cpp render_arena.cpp render_block.cpp render_body.cpp
+#render_box.cpp render_br.cpp render_canvas.cpp render_container.cpp
+#render_flow.cpp render_form.cpp render_frames.cpp render_generated.cpp
+#render_image.cpp render_inline.cpp render_layer.cpp render_line.cpp
+#render_list.cpp render_object.cpp render_replaced.cpp render_style.cpp
+#render_table.cpp render_text.cpp table_layout.cpp
+#"""
 
 noinst_headers = """
 bidi.h break_lines.h enumerate.h font.h
@@ -21,14 +21,14 @@ render_list.h render_object.h render_replaced.h render_style.h
 render_table.h render_text.h table_layout.h
 """
 
-includes = '#/kimgio #/kio #/dcop #/kfile #/khtml #/kutils '
+#includes = '#/kimgio #/kio #/dcop #/kfile #/khtml #/kutils '
 
-obj = env.kdeobj('convenience')
-obj.target = 'libkhtmlrender'
-obj.source = libkhtmlrender_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'libkhtmlrender'
+#obj.source = libkhtmlrender_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+#obj.execute()
 
 
 """Unhandled Defines 

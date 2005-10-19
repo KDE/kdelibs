@@ -4,22 +4,22 @@ Import('env')
 
 env.subdirs("decoders")
 
-libkhtmlimload_sources = """
-animprovider.cpp animtimer.cpp image.cpp imagemanager.cpp
-imagepainter.cpp imageplane.cpp pixmapplane.cpp rawimageplane.cpp
-scaledimageplane.cpp updater.cpp
-"""
+#libkhtmlimload_sources = """
+#animprovider.cpp animtimer.cpp image.cpp imagemanager.cpp
+#imagepainter.cpp imageplane.cpp pixmapplane.cpp rawimageplane.cpp
+#scaledimageplane.cpp updater.cpp
+#"""
 
-includes = ' '
+#includes = ' '
 
-obj = env.kdeobj('convenience')
-obj.target = 'libkhtmlimload'
-obj.source = libkhtmlimload_sources
-obj.includes = includes
-obj.libpaths = "decoders"
-obj.libs = 'decoders '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'libkhtmlimload'
+#obj.source = libkhtmlimload_sources
+#obj.includes = includes
+#obj.libpaths = "decoders"
+#obj.libs = 'decoders '
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
+#obj.execute()
 
 
 """Unhandled Defines 

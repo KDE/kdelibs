@@ -2,21 +2,21 @@
 #generated from khtml/imload/decoders/Makefile.am by am2bksys.py
 Import('env')
 
-libdecoders_sources = """
-gifloader.cpp jpegloader.cpp pngloader.cpp
-"""
+#libdecoders_sources = """
+#gifloader.cpp jpegloader.cpp pngloader.cpp
+#"""
 
 noinst_headers = """
 gifloader.h jpegloader.h pngloader.h
 """
 
-includes = '#/khtml/imload '
+#includes = '#/khtml/imload '
 
-obj = env.kdeobj('convenience')
-obj.target = 'libdecoders'
-obj.source = libdecoders_sources
-obj.includes = includes
-obj.libs = '-ljpeg -lungif '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'libdecoders'
+#obj.source = libdecoders_sources
+#obj.includes = includes
+#obj.libs = '-ljpeg -lungif '
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+#obj.execute()
 
