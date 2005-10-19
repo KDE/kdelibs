@@ -578,10 +578,15 @@ static int skipInfString(const char *start)
 
   while (*c >= '0' && *c <= '9')
     c++;
+  const char * const at_dot = c;
   if (*c == '.')
     c++;
   while (*c >= '0' && *c <= '9')
     c++;
+
+  // don't accept a single dot as a number
+  if (c - at_dot == 1 && *at_dot == '.')
+    return at_dot-start;
 
   if (*c != 'e')
     return c-start;
