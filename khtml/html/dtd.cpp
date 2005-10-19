@@ -605,7 +605,8 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_H5:
     case ID_H6:
         // _0 *
-        return check_array(childID, tag_list_0);
+        return check_array(childID, tag_list_0) || 
+               (!strict && check_array(childID, tag_list_3) && (childID < ID_H1 || childID > ID_H6));
     case ID_BASEFONT:
     case ID_BR:
     case ID_AREA:
