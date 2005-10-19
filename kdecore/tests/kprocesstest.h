@@ -8,8 +8,8 @@
 //
 
 
-#ifndef __DUMMY_H__
-#define __DUMMY_H__
+#ifndef DUMMY_H
+#define DUMMY_H
 
 #include <stdio.h>
 #include <qobject.h>

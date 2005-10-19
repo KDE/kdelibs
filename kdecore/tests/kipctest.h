@@ -1,5 +1,5 @@
-#ifndef __blah__h__
-#define __blah__h__
+#ifndef blah_h
+#define blah_h
 
 #include <qobject.h>
 

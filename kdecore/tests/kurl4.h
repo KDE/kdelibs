@@ -18,8 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef __kurl_h__
-#define __kurl_h__
+#ifndef kurl_h
+#define kurl_h
 
 #include <qurl.h>
 #include "kdelibs_export.h"
