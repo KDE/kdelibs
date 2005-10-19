@@ -202,7 +202,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     int unusedNumber;
     if ( !name )
         { // no name given
-        objname = kapp->instanceName() + "-mainwindow#";
+        objname = (qApp->applicationName() + "-mainwindow#").latin1();
         s = objname + '1'; // start adding number immediately
         unusedNumber = 1;
         }
@@ -219,7 +219,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         unusedNumber = 0; // add numbers only when needed
         }
     for(;;) {
-        QList<QWidget*> list = kapp->topLevelWidgets();
+        QList<QWidget*> list = qApp->topLevelWidgets();
         bool found = false;
 		foreach ( QWidget* w, list ) {
 			if( w != this && w->objectName() == s )
