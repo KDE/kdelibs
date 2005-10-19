@@ -26,12 +26,18 @@ typedef unsigned int uid_t;
 typedef unsigned int gid_t;
 typedef int caddr_t;
 
+typedef unsigned int nlink_t;
+
 #ifndef KDEWIN32_EXPORT
 #define KDEWIN32_EXPORT
 #endif 
 
 #ifndef KDECORE_EXPORT
 #define KDECORE_EXPORT
+#endif 
+
+#ifndef KICE_EXPORT
+#define KICE_EXPORT
 #endif 
 
 #endif 
