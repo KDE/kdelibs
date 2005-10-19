@@ -473,7 +473,7 @@ void HTMLFormElementImpl::submitFromKeyboard()
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* const current = static_cast<HTMLButtonElementImpl *>(it.current());
             if (current->buttonType() == HTMLButtonElementImpl::SUBMIT && !current->disabled()) {
-                current->activate();
+                current->click();
                 return;
             }
         } else if (it.current()->id() == ID_INPUT) {
@@ -482,7 +482,7 @@ void HTMLFormElementImpl::submitFromKeyboard()
             case HTMLInputElementImpl::SUBMIT:
             case HTMLInputElementImpl::IMAGE:
 		if(!current->disabled()) {
-			current->activate();
+			current->click();
 			return;
 		}
 		break;
