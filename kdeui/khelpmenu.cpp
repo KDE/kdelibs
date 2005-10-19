@@ -123,6 +123,9 @@ KMenu* KHelpMenu::menu()
     mMenu = new KMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
+    mMenu->setIcon(SmallIcon("help"));
+    mMenu->setTitle(i18n("&Help"));
+
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
