@@ -2,8 +2,6 @@
 ::
 :: dcopidl wrapper for win32 
 :: 
-:: TODO: (rh) replace CYGWIN perl by native win32 perl
-:: 
 
 set LIBDIR=
 if "%1" == "--srcdir" (
@@ -19,7 +17,7 @@ if "%LIBDIR%" == "" (
   echo "TODO: implement -> LIBDIR='`$KDECONFIG --install data --expandvars`/dcopidl'
   rem set LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidl"
 )
-%CYGWIN%\bin\perl  -I%LIBDIR% %LIBDIR%\\kalyptus --quiet --allow_k_dcop_accessors -f dcopidl %1 >%2
+perl  -I%LIBDIR% %LIBDIR%\\kalyptus --quiet --allow_k_dcop_accessors -f dcopidl %1 >%2
 set RET=ERRORLEVEL
 if %RET%==0 (
 	rem
