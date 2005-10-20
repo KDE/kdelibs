@@ -5,7 +5,6 @@
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Boehm <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 1.4
- * $Revision$
  */
 
 #include "kaboutdialog.h"
