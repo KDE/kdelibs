@@ -18,7 +18,7 @@ int main( int argc, char * argv[] ) {
   KCmdLineArgs::init( argc, argv, "kmainwindowrestoretest", "kmainwindowrestoretest", "kmainwindow test app", "1.0" );
   KApplication app;
 
-  if ( kapp->isRestored() ) {
+  if ( kapp->isSessionRestored() ) {
     kRestoreMainWindows< MainWin1, MainWin2, MainWin3 >();
     kRestoreMainWindows< MainWin4, MainWin5 >();
     RESTORE(MainWin6);
