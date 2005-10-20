@@ -33,7 +33,7 @@ class Kded;
 /**
  * The base class for KDED modules.
  *
- * In KDE 2 and KDE 3, KDED modules are realized as shared
+ * KDED modules are realized as shared
  * libraries that are loaded on-demand into kded at runtime.
  *
  * To write a config module, you have to create a library
@@ -41,7 +41,7 @@ class Kded;
  *
  * \code
  *   extern "C" {
- *     KDE_EXPORT KDEDModule *create_xyz(QCString *name)
+ *     KDE_EXPORT KDEDModule *create_xyz(DCOPCString *name)
  *     {
  *       return new XYZ(name);
  *     }
@@ -56,9 +56,8 @@ class Kded;
 class KDE_EXPORT KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
-// For inclusion in KDE4 (since it's BIC) long-needed fix for allowing
-// DCOP-based kdedmodules -- Gav <gav@kde.org>.
-//  K_DCOP
+  K_DCOP
+
   friend class Kded;
 public:
   

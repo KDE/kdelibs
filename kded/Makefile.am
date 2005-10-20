@@ -25,7 +25,7 @@ kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
 
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_la_LIBADD = $(LIB_KIO)
-kded_la_SOURCES = kded.cpp kdedmodule.cpp
+kded_la_SOURCES = kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kbuildsycoca_la_LIBADD = $(LIB_KIO)
@@ -49,7 +49,7 @@ kde_menu_SOURCES = kde-menu.cpp
 
 METASOURCES = AUTO
 
-include_HEADERS = kdedmodule.h
+include_HEADERS = kdedmodule.h kdedmodule_stub.h
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h kbuildservicegroupfactory.h \
