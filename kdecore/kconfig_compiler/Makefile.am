@@ -1,6 +1,7 @@
 SUBDIRS = tests
 
 AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir) $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 bin_PROGRAMS = kconfig_compiler
 

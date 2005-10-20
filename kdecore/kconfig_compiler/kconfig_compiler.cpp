@@ -22,11 +22,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qdom.h>
-#include <qregexp.h>
-#include <q3ptrlist.h>
+#include <QFile>
+#include <QTextStream>
+#include <QDomDocument>
+#include <QRegExp>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -539,7 +538,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         int i = index.toInt(&ok);
         if (!ok)
         {
-          i = paramValues.findIndex(index);
+          i = paramValues.indexOf(index);
           if (i == -1)
           {
             kdError() << "Index '" << index << "' for default value is unknown." << endl;
@@ -845,7 +844,7 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
 QString memberAccessorBody( CfgEntry *e )
 {    
     QString result;
-    QTextStream out(&result, IO_WriteOnly);
+    QTextStream out(&result, QIODevice::WriteOnly);
     QString n = e->name();
     QString t = e->type();
 
@@ -862,7 +861,7 @@ QString memberAccessorBody( CfgEntry *e )
 QString memberMutatorBody( CfgEntry *e )
 {
   QString result;
-  QTextStream out(&result, IO_WriteOnly);
+  QTextStream out(&result, QIODevice::WriteOnly);
   QString n = e->name();
   QString t = e->type();
 
@@ -927,7 +926,7 @@ QString memberMutatorBody( CfgEntry *e )
 QString itemAccessorBody( CfgEntry *e )
 {    
     QString result;
-    QTextStream out(&result, IO_WriteOnly);
+    QTextStream out(&result, QIODevice::WriteOnly);
 
     out << "return " << itemPath(e);
     if (!e->param().isEmpty()) out << "[i]";
@@ -940,8 +939,8 @@ QString itemAccessorBody( CfgEntry *e )
 QString indent(QString text, int spaces)
 {    
     QString result;
-    QTextStream out(&result, IO_WriteOnly);
-    QTextStream in(&text, IO_ReadOnly);
+    QTextStream out(&result, QIODevice::WriteOnly);
+    QTextStream in(&text, QIODevice::ReadOnly);
     QString currLine;
     while ( !in.atEnd() )
     {
@@ -1048,8 +1047,7 @@ int main( int argc, char **argv )
   QList<Param> parameters;
   QStringList includes;
 
-  Q3PtrList<CfgEntry> entries;
-  entries.setAutoDelete( true );
+  QList<CfgEntry*> entries;
 
   QDomNode n;
   for ( n = cfgElement.firstChild(); !n.isNull(); n = n.nextSibling() ) {
@@ -1180,9 +1178,9 @@ int main( int argc, char **argv )
   h << "  public:" << endl;
 
   // enums
-  CfgEntry *e;
-  for( e = entries.first(); e; e = entries.next() ) {
-    QList<CfgEntry::Choice> choices = e->choices();
+  QList<CfgEntry*>::ConstIterator itEntry;
+  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    QList<CfgEntry::Choice> choices = (*itEntry)->choices();
     if ( !choices.isEmpty() ) {
       QStringList values;
       QList<CfgEntry::Choice>::ConstIterator itChoice;
@@ -1192,29 +1190,29 @@ int main( int argc, char **argv )
       if ( globalEnums ) {
         h << "    enum { " << values.join( ", " ) << " };" << endl;
       } else {
-        h << "    class " << enumName(e->name()) << endl;
+        h << "    class " << enumName( (*itEntry)->name() ) << endl;
         h << "    {" << endl;
         h << "      public:" << endl;
         h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "    };" << endl;
       }
     }
-    QStringList values = e->paramValues();
+    QStringList values = (*itEntry)->paramValues();
     if ( !values.isEmpty() ) {
       if ( globalEnums ) {
         h << "    enum { " << values.join( ", " ) << " };" << endl;
-        h << "    static const char* const " << enumName(e->param()) << "ToString[];" << endl;
-        cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "ToString[] = " +
-            "{ \"" + values.join( "\", \"" ) + "\" };\n";
+        h << "    static const char* const " << enumName( (*itEntry)->param() ) << "ToString[];" << endl;
+        cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
+           "ToString[] = { \"" + values.join( "\", \"" ) + "\" };\n";
       } else {
-        h << "    class " << enumName(e->param()) << endl;
+        h << "    class " << enumName( (*itEntry)->param() ) << endl;
         h << "    {" << endl;
         h << "      public:" << endl;
         h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "      static const char* const enumToString[];" << endl;
         h << "    };" << endl;
-        cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "::enumToString[] = " +
-            "{ \"" + values.join( "\", \"" ) + "\" };\n";
+        cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
+           "::enumToString[] = { \"" + values.join( "\", \"" ) + "\" };\n";
       }
     }
   }
@@ -1249,28 +1247,28 @@ int main( int argc, char **argv )
   else
     Const = " const";
 
-  for( e = entries.first(); e; e = entries.next() ) {
-    QString n = e->name();
-    QString t = e->type();
+  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    QString n = (*itEntry)->name();
+    QString t = (*itEntry)->type();
 
     // Manipulator
     if (allMutators || mutators.contains(n))
     {
       h << "    /**" << endl;
-      h << "      Set " << e->label() << endl;
+      h << "      Set " << (*itEntry)->label() << endl;
       h << "    */" << endl;
       if (staticAccessors)
         h << "    static" << endl;
       h << "    void " << setFunction(n) << "( ";
-      if (!e->param().isEmpty())
-        h << cppType(e->paramType()) << " i, ";
+      if (!(*itEntry)->param().isEmpty())
+        h << cppType((*itEntry)->paramType()) << " i, ";
       h << param( t ) << " v )";
       // function body inline only if not using dpointer
       // for BC mode
       if ( !dpointer )
       {
         h << endl << "    {" << endl;
-        h << indent(memberMutatorBody(e), 6 );      
+        h << indent(memberMutatorBody(*itEntry), 6 );      
         h << "    }" << endl;
       }
       else
@@ -1281,20 +1279,20 @@ int main( int argc, char **argv )
     h << endl;
     // Accessor
     h << "    /**" << endl;
-    h << "      Get " << e->label() << endl;
+    h << "      Get " << (*itEntry)->label() << endl;
     h << "    */" << endl;
     if (staticAccessors)
       h << "    static" << endl;
     h << "    " << cppType(t) << " " << getFunction(n) << "(";
-    if (!e->param().isEmpty())
-      h << " " << cppType(e->paramType()) <<" i ";
+    if (!(*itEntry)->param().isEmpty())
+      h << " " << cppType((*itEntry)->paramType()) <<" i ";
     h << ")" << Const;
     // function body inline only if not using dpointer
     // for BC mode
     if ( !dpointer )
     {
        h << endl << "    {" << endl;
-      h << indent(memberAccessorBody(e), 6 );      
+      h << indent(memberAccessorBody((*itEntry)), 6 );      
        h << "    }" << endl;
     }
     else
@@ -1309,16 +1307,16 @@ int main( int argc, char **argv )
       h << "      Get Item object corresponding to " << n << "()"
         << endl;
       h << "    */" << endl;
-      h << "    Item" << itemType( e->type() ) << " *"
+      h << "    Item" << itemType( (*itEntry)->type() ) << " *"
         << getFunction( n ) << "Item(";
-      if (!e->param().isEmpty()) {
-        h << " " << cppType(e->paramType()) << " i ";
+      if (!(*itEntry)->param().isEmpty()) {
+        h << " " << cppType((*itEntry)->paramType()) << " i ";
       }
       h << ")";
       if (! dpointer )
       {
         h << endl << "    {" << endl;
-        h << indent( itemAccessorBody(e), 6);
+        h << indent( itemAccessorBody((*itEntry)), 6);
         h << "    }" << endl;
       }
       else
@@ -1365,25 +1363,25 @@ int main( int argc, char **argv )
   if ( memberVariables != "dpointer" )
   {
     QString group;
-    for( e = entries.first(); e; e = entries.next() ) {
-      if ( e->group() != group ) {
-        group = e->group();
+    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+      if ( (*itEntry)->group() != group ) {
+        group = (*itEntry)->group();
         h << endl;
         h << "    // " << group << endl;
       }
-      h << "    " << cppType(e->type()) << " " << varName(e->name());
-      if (!e->param().isEmpty())
+      h << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name() );
+      if ( !(*itEntry)->param().isEmpty() )
       {
-        h << QString("[%1]").arg(e->paramMax()+1);
+        h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
       }
       h << ";" << endl;
     }
 
     h << endl << "  private:" << endl;
     if ( itemAccessors ) {
-      for( e = entries.first(); e; e = entries.next() ) {
-        h << "    Item" << itemType( e->type() ) << " *" << itemVar( e );
-        if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 );
+       for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+        h << "    Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
+        if ( !(*itEntry)->param().isEmpty() ) h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         h << ";" << endl;
       }
     }
@@ -1445,23 +1443,23 @@ int main( int argc, char **argv )
     cpp << "class " << className << "Private" << endl;
     cpp << "{" << endl;
     cpp << "  public:" << endl;
-    for( e = entries.first(); e; e = entries.next() ) {
-      if ( e->group() != group ) {
-        group = e->group();
+    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+      if ( (*itEntry)->group() != group ) {
+        group = (*itEntry)->group();
         cpp << endl;
         cpp << "    // " << group << endl;
       }
-      cpp << "    " << cppType(e->type()) << " " << varName(e->name());
-      if (!e->param().isEmpty())
+      cpp << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name() );
+      if ( !(*itEntry)->param().isEmpty() )
       {
-        cpp << QString("[%1]").arg(e->paramMax()+1);
+        cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
       }
       cpp << ";" << endl;
     }
     cpp << endl << "    // items" << endl;
-    for( e = entries.first(); e; e = entries.next() ) {
-      cpp << "    KConfigSkeleton::Item" << itemType( e->type() ) << " *" << itemVar( e );
-      if (!e->param().isEmpty() ) cpp << QString("[%1]").arg( e->paramMax()+1 );
+    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+      cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
+      if ( !(*itEntry)->param().isEmpty() ) cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         cpp << ";" << endl;
     }
 
@@ -1545,22 +1543,22 @@ int main( int argc, char **argv )
     cpp << "  mSelf = this;" << endl;
 
   group = QString::null;
-  for( e = entries.first(); e; e = entries.next() ) {
-    if ( e->group() != group ) {
+  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    if ( (*itEntry)->group() != group ) {
       if ( !group.isEmpty() ) cpp << endl;
-      group = e->group();
+      group = (*itEntry)->group();
       cpp << "  setCurrentGroup( " << paramString(group, parameters) << " );" << endl << endl;
     }
 
-    QString key = paramString(e->key(), parameters);
-    if ( !e->code().isEmpty())
+    QString key = paramString( (*itEntry)->key(), parameters );
+    if ( !(*itEntry)->code().isEmpty())
     {
-      cpp << e->code() << endl;
+      cpp << (*itEntry)->code() << endl;
     }
-    if ( e->type() == "Enum" ) {
+    if ( (*itEntry)->type() == "Enum" ) {
       cpp << "  QList<KConfigSkeleton::ItemEnum::Choice> values"
-          << e->name() << ";" << endl;
-      QList<CfgEntry::Choice> choices = e->choices();
+          << (*itEntry)->name() << ";" << endl;
+      QList<CfgEntry::Choice> choices = (*itEntry)->choices();
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.begin(); it != choices.end(); ++it ) {
         cpp << "  {" << endl;
@@ -1572,65 +1570,65 @@ int main( int argc, char **argv )
           if ( !(*it).whatsThis.isEmpty() )
             cpp << "    choice.whatsThis = i18n(" << quoteString((*it).whatsThis) << ");" << endl;
         }
-        cpp << "    values" << e->name() << ".append( choice );" << endl;
+        cpp << "    values" << (*itEntry)->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;
       }
     }
 
     if (!dpointer)
-      cpp << itemDeclaration(e);
+      cpp << itemDeclaration( *itEntry );
 
-    if (e->param().isEmpty())
+    if ( (*itEntry)->param().isEmpty() )
     {
       // Normal case
-      cpp << "  " << itemPath(e) << " = "
-          << newItem( e->type(), e->name(), key, e->defaultValue() ) << endl;
+      cpp << "  " << itemPath( *itEntry ) << " = "
+          << newItem( (*itEntry)->type(), (*itEntry)->name(), key, (*itEntry)->defaultValue() ) << endl;
 
-      if ( !e->minValue().isEmpty() )
-        cpp << "  " << itemPath(e) << "->setMinValue(" << e->minValue() << ");" << endl;
-      if ( !e->maxValue().isEmpty() )
-        cpp << "  " << itemPath(e) << "->setMaxValue(" << e->maxValue() << ");" << endl;
+      if ( !(*itEntry)->minValue().isEmpty() )
+        cpp << "  " << itemPath( *itEntry ) << "->setMinValue(" << (*itEntry)->minValue() << ");" << endl;
+      if ( !(*itEntry)->maxValue().isEmpty() )
+        cpp << "  " << itemPath( *itEntry ) << "->setMaxValue(" << (*itEntry)->maxValue() << ");" << endl;
 
       if ( setUserTexts )
-        cpp << userTextsFunctions( e );
+        cpp << userTextsFunctions( (*itEntry) );
 
-      cpp << "  addItem( " << itemPath(e);
-      QString quotedName = e->name();
+      cpp << "  addItem( " << itemPath( *itEntry );
+      QString quotedName = (*itEntry)->name();
       addQuotes( quotedName );
-      if ( quotedName != key ) cpp << ", QString::fromLatin1( \"" << e->name() << "\" )";
+      if ( quotedName != key ) cpp << ", QString::fromLatin1( \"" << (*itEntry)->name() << "\" )";
       cpp << " );" << endl;
     }
     else
     {
       // Indexed
-      for(int i = 0; i <= e->paramMax(); i++)
+      for(int i = 0; i <= (*itEntry)->paramMax(); i++)
       {
         QString defaultStr;
-        QString itemVarStr(itemPath(e)+QString("[%1]").arg(i));
+        QString itemVarStr(itemPath( *itEntry )+QString("[%1]").arg(i));
 
-        if ( !e->paramDefaultValue(i).isEmpty() )
-          defaultStr = e->paramDefaultValue(i);
-        else if ( !e->defaultValue().isEmpty() )
-          defaultStr = paramString(e->defaultValue(), e, i);
+        if ( !(*itEntry)->paramDefaultValue(i).isEmpty() )
+          defaultStr = (*itEntry)->paramDefaultValue(i);
+        else if ( !(*itEntry)->defaultValue().isEmpty() )
+          defaultStr = paramString( (*itEntry)->defaultValue(), (*itEntry), i );
         else
-          defaultStr = defaultValue( e->type() );
+          defaultStr = defaultValue( (*itEntry)->type() );
 
         cpp << "  " << itemVarStr << " = "
-            << newItem( e->type(), e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
+            << newItem( (*itEntry)->type(), (*itEntry)->name(), paramString(key, *itEntry, i), defaultStr, QString("[%1]").arg(i) )
             << endl;
 
         if ( setUserTexts )
-          cpp << userTextsFunctions( e, itemVarStr, e->paramName() );
+          cpp << userTextsFunctions( *itEntry, itemVarStr, (*itEntry)->paramName() );
 
         // Make mutators for enum parameters work by adding them with $(..) replaced by the
         // param name. The check for isImmutable in the set* functions doesn't have the param
         // name available, just the corresponding enum value (int), so we need to store the
         // param names in a separate static list!.
         cpp << "  addItem( " << itemVarStr << ", QString::fromLatin1( \"";
-        if ( e->paramType()=="Enum" )
-          cpp << e->paramName().replace( "$("+e->param()+")", "%1").arg(e->paramValues()[i] );
+        if ( (*itEntry)->paramType()=="Enum" )
+          cpp << (*itEntry)->paramName().replace( "$("+(*itEntry)->param()+")", "%1").arg((*itEntry)->paramValues()[i] );
         else
-          cpp << e->paramName().replace( "$("+e->param()+")", "%1").arg(i);
+          cpp << (*itEntry)->paramName().replace( "$("+(*itEntry)->param()+")", "%1").arg(i);
         cpp << "\" ) );" << endl;
       }
     }
@@ -1641,48 +1639,47 @@ int main( int argc, char **argv )
   if (dpointer)
   {
     // setters and getters go in Cpp if in dpointer mode
-    for( e = entries.first(); e; e = entries.next() )
-    {
-      QString n = e->name();
-      QString t = e->type();
+    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+      QString n = (*itEntry)->name();
+      QString t = (*itEntry)->type();
   
       // Manipulator
       if (allMutators || mutators.contains(n))
       {
         cpp << "void " << setFunction(n, className) << "( ";
-        if (!e->param().isEmpty())
-          cpp << cppType(e->paramType()) << " i, ";
+        if ( !(*itEntry)->param().isEmpty() )
+          cpp << cppType( (*itEntry)->paramType() ) << " i, ";
         cpp << param( t ) << " v )" << endl;
         // function body inline only if not using dpointer
         // for BC mode
         cpp << "{" << endl;
-        cpp << indent(memberMutatorBody(e), 6);      
+        cpp << indent(memberMutatorBody( *itEntry ), 6);      
         cpp << "}" << endl << endl;
       }
   
       // Accessor
       cpp << cppType(t) << " " << getFunction(n, className) << "(";
-      if (!e->param().isEmpty())
-        cpp << " " << cppType(e->paramType()) <<" i ";
+      if ( !(*itEntry)->param().isEmpty() )
+        cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
       cpp << ")" << Const << endl;
       // function body inline only if not using dpointer
       // for BC mode
       cpp << "{" << endl;
-      cpp << indent(memberAccessorBody(e), 2);      
+      cpp << indent(memberAccessorBody( *itEntry ), 2);      
       cpp << "}" << endl << endl;
   
       // Item accessor
       if ( itemAccessors )
       {
         cpp << endl;
-        cpp << "KConfigSkeleton::Item" << itemType( e->type() ) << " *"
+        cpp << "KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *"
           << getFunction( n, className ) << "Item(";
-        if (!e->param().isEmpty()) {
-          cpp << " " << cppType(e->paramType()) << " i ";
+        if ( !(*itEntry)->param().isEmpty() ) {
+          cpp << " " << cppType( (*itEntry)->paramType() ) << " i ";
         }
         cpp << ")" << endl;
         cpp << "{" << endl;
-        cpp << indent(itemAccessorBody(e), 2);
+        cpp << indent(itemAccessorBody( *itEntry ), 2);
         cpp << "}" << endl;
       }
   
@@ -1700,6 +1697,9 @@ int main( int argc, char **argv )
     cpp << "    static" << className << "Deleter.setObject( mSelf, 0, false );" << endl;
   }
   cpp << "}" << endl << endl;
+
+  // clear entries list
+  qDeleteAll( entries );
 
   implementation.close();
 }
