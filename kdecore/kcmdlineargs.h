@@ -584,16 +584,22 @@ private:
   /**
    * @internal for KApplication only:
    *
-   * Return argc
+   * Returns the number of arguments returned by qt_argv()
+   *
+   * @see qt_argv
    */
   static int *qt_argc();
 
   /**
    * @internal for KApplication only:
    *
-   * Return argv
+   * Returns command line options for consumption by Qt after parsing them in a way that
+   * is consistent with KDE's general command line handling. In particular this ensures
+   * that Qt command line options can be specified as either -option or --option and that
+   * any options specified after '--' will be ignored.
+   *
+   * @see qt_argc
    */
-
   static char ***qt_argv();
 
   /**
