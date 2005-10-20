@@ -32,7 +32,6 @@
 
 #include <qfile.h>
 #include <qtimer.h>
-#include <qx11info_x11.h>
 
 #include <dcopclient.h>
 
@@ -51,6 +50,7 @@
 #include <ktoolinvocation.h>
 
 #ifdef Q_WS_X11
+#include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #endif
