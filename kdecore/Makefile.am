@@ -95,7 +95,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	netsupp.cpp kprocio.cpp krandom.cpp \
-	kpixmapprovider.cpp \
+	kpixmapprovider.cpp ktoolinvocation.cpp \
 	kcodecs.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalog.cpp \

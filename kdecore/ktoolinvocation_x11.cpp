@@ -591,5 +591,3 @@ KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
         name, args, error, 0, pid, startup_id, false);
 }
 
-
-#include "ktoolinvocation.moc"
