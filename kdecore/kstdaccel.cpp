@@ -17,7 +17,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#define __KSTDACCEL_CPP_ 1
+#define KSTDACCEL_CPP 1
 
 #include "kstdaccel.h"
 
@@ -348,4 +348,4 @@ bool ShortcutList::save() const
 
 }
 
-#undef __KSTDACCEL_CPP_
+#undef KSTDACCEL_CPP

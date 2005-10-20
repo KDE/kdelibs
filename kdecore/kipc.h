@@ -19,8 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KIPC_h_Included__
-#define __KIPC_h_Included__
+#ifndef KIPC_h
+#define KIPC_h
 
 #include <qwindowdefs.h>
 #include "kdelibs_export.h"

@@ -24,8 +24,8 @@
 */
 
 
-#ifndef   __net_wm_h
-#define   __net_wm_h
+#ifndef   netwm_h
+#define   netwm_h
 
 #include "kdelibs_export.h"
 #include <qwidget.h>
@@ -1401,4 +1401,4 @@ private:
 //#define KWIN_FOCUS
 
 #endif
-#endif // __net_wm_h
+#endif // netwm_h

@@ -27,7 +27,7 @@
 #include "kprocess.h"
 
 #ifdef __sgi
-#define __svr4__
+#define SVR4
 #endif
 
 #ifdef __osf__
@@ -307,7 +307,7 @@ bool KPty::open()
     return false;
   }
 
-#if (defined(__svr4__) || defined(__sgi__))
+#if (defined(SVR4) || defined(__sgi__))
   // Solaris
   ioctl(d->slaveFd, I_PUSH, "ptem");
   ioctl(d->slaveFd, I_PUSH, "ldterm");
@@ -388,7 +388,7 @@ void KPty::setCTty()
 
     // make our new process group the foreground group on the pty
     int pgrp = getpid();
-#if defined(_POSIX_VERSION) || defined(__svr4__)
+#if defined(_POSIX_VERSION) || defined(SVR4)
     tcsetpgrp (d->slaveFd, pgrp);
 #elif defined(TIOCSPGRP)
     ioctl(d->slaveFd, TIOCSPGRP, (char *)&pgrp);

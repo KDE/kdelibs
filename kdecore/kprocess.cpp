@@ -26,7 +26,7 @@
 #include <config.h>
 
 #ifdef __sgi
-#define __svr4__
+#define SVR4
 #endif
 
 #ifdef __osf__

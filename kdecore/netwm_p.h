@@ -24,8 +24,8 @@
 */
 
 
-#ifndef   __net_wm_p_h
-#define   __net_wm_p_h
+#ifndef   netwm_p_h
+#define   netwm_p_h
 
 /**
    Resizable array class.
@@ -149,4 +149,4 @@ struct NETWinInfoPrivate {
 };
 
 
-#endif // __net_wm_p_h
+#endif // netwm_p_h
