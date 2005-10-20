@@ -406,7 +406,7 @@ public:
 
     ~RegisteredEventListener() { listener->deref(); listener = 0; }
 
-    bool operator==(const RegisteredEventListener &other)
+    bool operator==(const RegisteredEventListener &other) const
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
 
 
