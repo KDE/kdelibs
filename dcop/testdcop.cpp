@@ -191,7 +191,7 @@ void TestObject::slotCallBack(int callId, const DCOPCString &replyType, const QB
 
 int main(int argc, char **argv)
 {
-  QApplication app(argc, argv, "testdcop");
+  QCoreApplication app(argc, argv);
 
   DCOPCString replyType;
   QByteArray data, reply;
