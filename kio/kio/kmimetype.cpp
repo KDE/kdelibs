@@ -629,7 +629,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
       dp = opendir( QFile::encodeName(_url.path()) );
       if ( dp )
       {
-        Q3ValueList<Q3CString> entries;
+        Q3ValueList<QByteArray> entries;
         // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
         ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
         ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
@@ -1004,7 +1004,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
   
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
     QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
-    const Q3CString app = dcopcall.section(' ', 0,0).toUtf8();
+    const DCOPCString app = dcopcall.section(' ', 0,0).toUtf8();
     
     QByteArray dataToSend;
     QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
