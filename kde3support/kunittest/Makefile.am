@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_srcdir)/kde3support $(all_includes)
 METASOURCES = AUTO
 
 lib_LTLIBRARIES = libkunittest.la
