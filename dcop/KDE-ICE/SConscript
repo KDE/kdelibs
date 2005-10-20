@@ -36,12 +36,13 @@ if env['WINDOWS']:
 	# (js)
 	if env['CC'] == 'cl':
 		obj.ccflags += " /FI./../../win/include/kdelibs_export_win.h -DWIN32_LEAN_AND_MEAN " 
+		obj.ccflags += ' -DMAKE_KICE_LIB '
 else:
 	obj          = env.genobj('convenience', env)
 	obj.ccflags  ="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP "
 
 obj.target   = 'kICE'
 obj.source   = ice_sources
-obj.includes = '. ..'
+obj.includes = '. .. ../../kdecore'
 obj.execute()
 
