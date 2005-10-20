@@ -147,7 +147,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       KDE_struct_stat buf;
-      Q3CString path = QFile::encodeName(m_url.path( -1 ));
+      QByteArray path = QFile::encodeName(m_url.path( -1 ));
       if ( KDE_lstat( path.data(), &buf ) == 0 )
       {
         mode = buf.st_mode;
