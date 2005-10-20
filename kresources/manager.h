@@ -96,8 +96,8 @@ class Manager : private ManagerNotifier
         Iterator &operator++( int ) { mIt++; return *this; }
         Iterator &operator--() { mIt--; return *this; }
         Iterator &operator--( int ) { mIt--; return *this; }
-        bool operator==( const Iterator &it ) { return mIt == it.mIt; }
-        bool operator!=( const Iterator &it ) { return mIt != it.mIt; }
+        bool operator==( const Iterator &it ) const { return mIt == it.mIt; }
+        bool operator!=( const Iterator &it ) const { return mIt != it.mIt; }
 
       private:
         Resource::List::Iterator mIt;
@@ -158,8 +158,8 @@ class Manager : private ManagerNotifier
           do { mIt--; } while ( checkActive() );
           return *this;
         }
-        bool operator==( const ActiveIterator &it ) { return mIt == it.mIt; }
-        bool operator!=( const ActiveIterator &it ) { return mIt != it.mIt; }
+        bool operator==( const ActiveIterator &it ) const { return mIt == it.mIt; }
+        bool operator!=( const ActiveIterator &it ) const { return mIt != it.mIt; }
 
       private:
         /**
