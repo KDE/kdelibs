@@ -29,15 +29,13 @@
 
 #include <kdatastream.h>
 
-#include <q3cstring.h>
 
-
-KDirNotify_stub::KDirNotify_stub( const Q3CString& app, const Q3CString& obj )
+KDirNotify_stub::KDirNotify_stub( const DCOPCString& app, const DCOPCString& obj )
   : DCOPStub( app, obj )
 {
 }
 
-KDirNotify_stub::KDirNotify_stub( DCOPClient* client, const Q3CString& app, const Q3CString& obj )
+KDirNotify_stub::KDirNotify_stub( DCOPClient* client, const DCOPCString& app, const DCOPCString& obj )
   : DCOPStub( client, app, obj )
 {
 }
