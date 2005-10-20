@@ -2768,23 +2768,25 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 			continue;
 		}
 
-		subtransform[0] = subtransform[0].trimmed().toLower();
-		if (subtransform.size()>=2)
-			subtransform[1] = subtransform[1].simplified();
 		QRegExp reg("([-]?\\d*\\.?\\d+(?:e[-]?\\d+)?)");
 
                 int pos = 0;
                 QStringList params;
 
-                while(pos >= 0)
-                {
-                        pos = reg.indexIn(subtransform[1], pos);
-                        if(pos != -1)
-                        {
-                                params += reg.cap(1);
-                                pos += reg.matchedLength();
-                        }
-                }
+		subtransform[0] = subtransform[0].trimmed().toLower();
+		if (subtransform.size()>=2)
+		{
+			subtransform[1] = subtransform[1].simplified();
+	                while(pos >= 0)
+	                {
+	                        pos = reg.indexIn(subtransform[1], pos);
+	                        if(pos != -1)
+	                        {
+	                                params += reg.cap(1);
+	                                pos += reg.matchedLength();
+	                        }
+	                }
+		}
 
 		if(subtransform[0].startsWith(";") || subtransform[0].startsWith(","))
 			subtransform[0] = subtransform[0].right(subtransform[0].length() - 1);
