@@ -38,13 +38,18 @@ kuserprofile.cpp kservicegroupfactory.cpp
 kurifilter.cpp
 kfilterbase.cpp kfilterdev.cpp
 kshellcompletion.cpp kurlcompletion.cpp
-kautomount.cpp krun.cpp
+krun.cpp
 kfileitem.cpp kdirlister.cpp kimageio.cpp
 yacc.c lex.c
 chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp
 kdatatool.cpp karchive.cpp kfilefilter.cpp
 kfilemetainfo.cpp kdcopservicestarter.cpp
 dataslave.cpp dataprotocol.cpp
+"""
+
+if not env['WINDOWS']:
+	ksycoca_sources += """
+kautomount.cpp 
 """
 
 env.Moc('jobclasses.h')
