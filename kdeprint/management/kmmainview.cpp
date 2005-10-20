@@ -287,7 +287,7 @@ void KMMainView::initActions()
 	m_actions->action("printer_tool")->plug( menu );
 	menu->insertSeparator();
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
-	m_menubar->insertButton( "printer2", 1, true, i18n( "Printer" ) );
+	m_menubar->insertButton( "printer1", 1, true, i18n( "Printer" ) );
 	m_menubar->getButton( 1 )->setPopup( menu, true );
 	menu = new QPopupMenu( this );
 	m_actions->action("server_restart")->plug( menu );
@@ -299,7 +299,7 @@ void KMMainView::initActions()
 	m_actions->action("manager_configure")->plug( menu );
 	m_actions->action("view_refresh")->plug( menu );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
-	m_menubar->insertButton( "konsole3", 3, true, i18n( "Print Manager" ) );
+	m_menubar->insertButton( "kdeprint_configmgr", 3, true, i18n( "Print Manager" ) );
 	m_menubar->getButton( 3 )->setPopup( menu, true );
 	menu = new QPopupMenu( this );
 	m_actions->action("view_printerinfos")->plug( menu );
