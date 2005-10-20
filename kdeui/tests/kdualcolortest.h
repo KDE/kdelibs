@@ -1,5 +1,5 @@
-#ifndef __KDUALCOLORTEST_H
-#define __KDUALCOLORTEST_H
+#ifndef KDUALCOLORTEST_H
+#define KDUALCOLORTEST_H
 
 #include <qlabel.h>
 #include <kdualcolorbutton.h>

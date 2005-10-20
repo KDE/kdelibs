@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kxmlguifactory_h__
-#define __kxmlguifactory_h__
+#ifndef kxmlguifactory_h
+#define kxmlguifactory_h
 
 #include <qobject.h>
 #include <q3ptrlist.h>

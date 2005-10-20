@@ -1,5 +1,5 @@
-#ifndef __KCOLORTEST_H
-#define __KCOLORTEST_H
+#ifndef KCOLORTEST_H
+#define KCOLORTEST_H
 
 #include <qwidget.h>
 #include <qimage.h>

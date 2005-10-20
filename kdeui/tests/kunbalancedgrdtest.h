@@ -4,8 +4,8 @@
 // (C) KDE Artistic Daniel M. Duley <mosfet@kde.org>
 //
 
-#ifndef __KGRADIENT_TEST_H
-#define __KGRADIENT_TEST_H
+#ifndef KGRADIENT_TEST_H
+#define KGRADIENT_TEST_H
 
 #include <qwidget.h>
 #include <kpixmap.h>

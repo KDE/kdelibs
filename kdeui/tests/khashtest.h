@@ -4,8 +4,8 @@
 // (C) KDE Artistic Daniel M. Duley <mosfet@kde.org>
 //
 
-#ifndef __KHASH_TEST_H
-#define __KHASH_TEST_H
+#ifndef KHASH_TEST_H
+#define KHASH_TEST_H
 
 #include <qwidget.h>
 #include <kpixmap.h>

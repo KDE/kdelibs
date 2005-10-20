@@ -4,8 +4,8 @@
 // (C) KDE Artistic Cristian Tibirna <tibirna@kde.org>
 //
 
-#ifndef __KBLEND_TEST_H
-#define __KBLEND_TEST_H
+#ifndef KBLEND_TEST_H
+#define KBLEND_TEST_H
 
 #include <qwidget.h>
 #include <qimage.h>
