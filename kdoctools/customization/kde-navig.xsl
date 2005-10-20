@@ -46,9 +46,6 @@
           <img src="{$kde.common}top-right-konqueror.png"
             style="margin: 0px" alt="" />
           </div>
-          <div style="position: absolute; left: 0px;">
-            <img src="{$kde.common}top-left.png" style="margin: 0px" alt="" />
-            </div>
             <div style="position: absolute;
                         top: 25px; 
                         right: 100px; 
