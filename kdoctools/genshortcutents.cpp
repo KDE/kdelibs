@@ -316,7 +316,7 @@ int main( int argc, char **argv )
 	const QString outputFileName = args->getOption( "output" );
 	QFile outputFile( outputFileName );
 	if ( !outputFile.open( QIODevice::WriteOnly ) ) {
-		qDebug( "Failed to open %s for writing.", outputFileName.toLatin1() );
+		qDebug( "Failed to open %s for writing.", qPrintable( outputFileName ) );
 		return 1;
 	}
 
