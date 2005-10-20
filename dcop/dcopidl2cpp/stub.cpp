@@ -59,8 +59,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	ifdefstring = ifdefstring.left( pos );
 
     QString ifdefsuffix = "_STUB__";
-    str << "#ifndef __" << ifdefstring << ifdefsuffix << endl;
-    str << "#define __" << ifdefstring << ifdefsuffix << endl << endl;
+    str << "#ifndef __" << ifdefstring.replace("\\","_") << ifdefsuffix << endl;
+    str << "#define __" << ifdefstring.replace("\\","_") << ifdefsuffix << endl << endl;
 
     str << "#include <dcopstub.h>" << endl;
     str << "#include <kdatastream.h>" << endl;
