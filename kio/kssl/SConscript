@@ -35,6 +35,12 @@ obj.target   = 'libkssl'
 obj.source   = sources
 obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'
 obj.includes = '../../kdecore/network ../../kwallet/client'
+if env['WINDOWS']:
+	# TODO: (rh) remove when openssl detection under win32 runs 
+	obj.includes += ' c:/openssl/include'
+	if env['CC'] == 'gcc': 
+		obj.libpaths += ' c:/openssl/lib/mingw'
+		obj.libs += ' eay32'
 obj.execute()
 #TODO other stuffs
 
