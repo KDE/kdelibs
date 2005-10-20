@@ -1,5 +1,5 @@
 #include "test.h"
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <iostream>
 #include <dcopclient.h>
 #include <qtextstream.h>
@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 		batch();
 		return 0;
 	}
-	QApplication app( argc, argv );
+	QCoreApplication app( argc, argv );
         DCOPClient* dcopClient = new DCOPClient;
 	if (!dcopClient->attach())
 		return -1;

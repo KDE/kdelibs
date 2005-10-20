@@ -1,5 +1,5 @@
 #include "driver.h"
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <iostream>
 #include <dcopclient.h>
 #include <qtimer.h>
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	if ( argc < 2 ) { qWarning("Usage: driver <appid>"); return 1; }
 	const char* appname = strdup( argv[ 1 ] );
 	argv[ 1 ] = 0; // sue me
-	QApplication app( argc, argv );
+	QCoreApplication app( argc, argv );
         DCOPClient* dcopClient = new DCOPClient;
 	dcopClient->attach(  );
 	dcopClient->registerAs( "TestAppDriver" );
