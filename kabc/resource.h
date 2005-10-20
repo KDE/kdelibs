@@ -79,8 +79,8 @@ class KABC_EXPORT Resource : public KRES::Resource
         virtual Iterator &operator++( int );
         virtual Iterator &operator--();
         virtual Iterator &operator--( int );
-        virtual bool operator==( const Iterator &it );
-        virtual bool operator!=( const Iterator &it );
+        virtual bool operator==( const Iterator &it ) const;
+        virtual bool operator!=( const Iterator &it ) const;
 
         struct IteratorData;
         IteratorData *d;
@@ -105,8 +105,8 @@ class KABC_EXPORT Resource : public KRES::Resource
         virtual ConstIterator &operator++( int );
         virtual ConstIterator &operator--();
         virtual ConstIterator &operator--( int );
-        virtual bool operator==( const ConstIterator &it );
-        virtual bool operator!=( const ConstIterator &it );
+        virtual bool operator==( const ConstIterator &it ) const;
+        virtual bool operator!=( const ConstIterator &it ) const;
 
         struct ConstIteratorData;
         ConstIteratorData *d;

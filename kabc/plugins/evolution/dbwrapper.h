@@ -26,8 +26,8 @@ namespace Evolution {
         DBIterator &operator++();
         DBIterator &operator--();
 
-        bool operator==( const DBIterator& );
-        bool operator!=( const DBIterator& );
+        bool operator==( const DBIterator& ) const;
+        bool operator!=( const DBIterator& ) const;
     private:
         struct Data;
         Data* data;

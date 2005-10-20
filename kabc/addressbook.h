@@ -69,8 +69,8 @@ class KABC_EXPORT AddressBook : public QObject
         Iterator &operator++(int);
         Iterator &operator--();
         Iterator &operator--(int);
-        bool operator==( const Iterator &it );
-        bool operator!=( const Iterator &it );
+        bool operator==( const Iterator &it ) const;
+        bool operator!=( const Iterator &it ) const;
 
         struct IteratorData;
         IteratorData *d;
@@ -96,8 +96,8 @@ class KABC_EXPORT AddressBook : public QObject
         ConstIterator &operator++(int);
         ConstIterator &operator--();
         ConstIterator &operator--(int);
-        bool operator==( const ConstIterator &it );
-        bool operator!=( const ConstIterator &it );
+        bool operator==( const ConstIterator &it ) const;
+        bool operator!=( const ConstIterator &it ) const;
 
         struct ConstIteratorData;
         ConstIteratorData *d;

@@ -86,12 +86,12 @@ DBIterator& DBIterator::operator--() {
     data->data = QString::fromUtf8( (char*)val.data, val.size );
     return *this;
 }
-bool DBIterator::operator==( const DBIterator& rhs ) {
+bool DBIterator::operator==( const DBIterator& rhs ) const {
     if ( data->atEnd && data->atEnd == rhs.data->atEnd ) return true;
 
     return false;
 }
-bool DBIterator::operator!=( const DBIterator& rhs ) {
+bool DBIterator::operator!=( const DBIterator& rhs ) const {
     return !this->operator==(rhs );
 }
 struct DBWrapper::Data {

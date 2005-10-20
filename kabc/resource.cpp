@@ -114,12 +114,12 @@ Resource::Iterator &Resource::Iterator::operator--( int )
   return *this;
 }
 
-bool Resource::Iterator::operator==( const Iterator &it )
+bool Resource::Iterator::operator==( const Iterator &it ) const
 {
   return ( d->mIt == it.d->mIt );
 }
 
-bool Resource::Iterator::operator!=( const Iterator &it )
+bool Resource::Iterator::operator!=( const Iterator &it ) const
 {
   return ( d->mIt != it.d->mIt );
 }
@@ -186,12 +186,12 @@ Resource::ConstIterator &Resource::ConstIterator::operator--( int )
   return *this;
 }
 
-bool Resource::ConstIterator::operator==( const ConstIterator &it )
+bool Resource::ConstIterator::operator==( const ConstIterator &it ) const
 {
   return ( d->mIt == it.d->mIt );
 }
 
-bool Resource::ConstIterator::operator!=( const ConstIterator &it )
+bool Resource::ConstIterator::operator!=( const ConstIterator &it ) const
 {
   return ( d->mIt != it.d->mIt );
 }

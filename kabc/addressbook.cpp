@@ -170,12 +170,12 @@ AddressBook::Iterator &AddressBook::Iterator::operator--( int )
   return *this;
 }
 
-bool AddressBook::Iterator::operator==( const Iterator &it )
+bool AddressBook::Iterator::operator==( const Iterator &it ) const
 {
   return ( d->mIt == it.d->mIt );
 }
 
-bool AddressBook::Iterator::operator!=( const Iterator &it )
+bool AddressBook::Iterator::operator!=( const Iterator &it ) const
 {
   return ( d->mIt != it.d->mIt );
 }
@@ -290,12 +290,12 @@ AddressBook::ConstIterator &AddressBook::ConstIterator::operator--(int)
   return *this;
 }
 
-bool AddressBook::ConstIterator::operator==( const ConstIterator &it )
+bool AddressBook::ConstIterator::operator==( const ConstIterator &it ) const
 {
   return ( d->mIt == it.d->mIt );
 }
 
-bool AddressBook::ConstIterator::operator!=( const ConstIterator &it )
+bool AddressBook::ConstIterator::operator!=( const ConstIterator &it ) const
 {
   return ( d->mIt != it.d->mIt );
 }
