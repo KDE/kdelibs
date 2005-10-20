@@ -2762,8 +2762,15 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 	{
 		QStringList subtransform = (*it).split( '(');
 
+		if (subtransform.size()==0)
+		{
+//			do kdDebug on empty QStringList ?
+			continue;
+		}
+
 		subtransform[0] = subtransform[0].trimmed().toLower();
-		subtransform[1] = subtransform[1].simplified();
+		if (subtransform.size()>=2)
+			subtransform[1] = subtransform[1].simplified();
 		QRegExp reg("([-]?\\d*\\.?\\d+(?:e[-]?\\d+)?)");
 
                 int pos = 0;
