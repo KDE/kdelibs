@@ -25,10 +25,6 @@
 
 #include <config.h>
 
-#ifdef __sgi
-#define SVR4
-#endif
-
 #ifdef __osf__
 #define _OSF_SOURCE
 #include <float.h>
