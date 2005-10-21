@@ -203,8 +203,11 @@ void KSocketDevice::close()
       delete d->exception;
 
       d->input = d->output = d->exception = 0L;
-
+#ifdef Q_WS_WIN
+      ::closesocket(m_sockfd);
+#else
       ::close(m_sockfd);
+#endif
     }
   setOpenMode(0);		// closed
 
@@ -797,8 +800,9 @@ KSocketDevice* KSocketDevice::createDefault(KSocketBase* parent)
   if (device != 0L)
     return device;
 
+#ifndef Q_WS_WIN
   KSocksSocketDevice::initSocks();
-
+#endif
   if (defaultImplFactory)
     return defaultImplFactory->create(parent);
 
