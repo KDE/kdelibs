@@ -464,7 +464,7 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 		pConfig = KGlobal::config();
 	KConfigGroupSaver cs( pConfig, sGroup );
 
-	for( uint i = 0; i < m_actions.size() ; i++ ) {
+	for( int i = 0; i < m_actions.size() ; i++ ) {
 		if( m_actions.at(i) == 0 ) {
 			kdWarning(125) << "KAccelActions::writeActions(): encountered null pointer at m_prgActions[" << i << "]" << endl;
 			continue;
