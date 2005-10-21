@@ -446,7 +446,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   }
 
   // Reject all banned headers. See BANNED_HTTP_HEADERS above.
-  qDebug("Banned HTTP Headers: %s", BANNED_HTTP_HEADERS);
+  // kdDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
   QStringList bannedHeaders = QStringList::split(',',
                                   QString::fromLatin1(BANNED_HTTP_HEADERS));
 
