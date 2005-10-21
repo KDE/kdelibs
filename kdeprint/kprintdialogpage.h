@@ -53,7 +53,7 @@ class DrMain;
  *
  * private:
  *   QComboBox *m_fontcombo;
- * }
+ * };
  *
  * MyDialogPage::MyDialogPage( QWidget *parent, const char *name )
  * : KPrintDialogPage( parent, name )
