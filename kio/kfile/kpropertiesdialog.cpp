@@ -905,7 +905,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   grid->addWidget(nameArea, curRow++, 2);
 
-  KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
+  KSeparator* sep = new KSeparator( Qt::Horizontal, d->m_frame);
   grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
   ++curRow;
 
@@ -1045,7 +1045,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if ( isLocal && hasDirs )  // only for directories
   {
-    sep = new KSeparator( KSeparator::HLine, d->m_frame);
+    sep = new KSeparator( Qt::Horizontal, d->m_frame);
     grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
     ++curRow;
 
@@ -2827,7 +2827,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_freeSpaceLabel->hide();
   d->m_freeSpaceBar->hide();
 
-  KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
+  KSeparator* sep = new KSeparator( Qt::Horizontal, d->m_frame);
   layout->addMultiCellWidget(sep, 6, 6, 0, 1);
 
   unmounted = new KIconButton( d->m_frame );
