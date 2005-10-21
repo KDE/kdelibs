@@ -1,3 +1,13 @@
+2005-10-20  Dawit Alemayehu <adawit@kde.org>
+       * ecma/xmlhttprequest.cpp:
+       -Add support for default HTTP referer header. Fixes bug# 113962.
+       - Sanitize all setRequestHeader calls:
+         - We now use a BANNED_HTTP_HEADERS list to filter out 
+           potentially problematic headers.
+         - We always call open on "get" and "post" requests set 
+           through this function.
+         - We sanitize any attempts to set the "referer" field.
+	 
 2005-10-15  Dawit Alemayehu <adawit@kde.org>
         * ecma/xmlhttprequest.cpp: Handle HTTP response headers case insensitively.
         Fix for bug 110768.
