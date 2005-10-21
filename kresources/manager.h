@@ -335,7 +335,7 @@ class Manager : private ManagerNotifier
             ++it ) {
         QString desc = mFactory->typeName( *it );
         if ( !mFactory->typeDescription( *it ).isEmpty() )
-          desc += " (" + mFactory->typeDescription( *it ) + ")";
+          desc += QString::fromLatin1(" (") + mFactory->typeDescription( *it ) + QString::fromLatin1(")");
 
         typeDescs.append( desc );
       }
