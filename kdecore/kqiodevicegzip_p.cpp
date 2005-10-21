@@ -27,7 +27,9 @@ KQIODeviceGZip::KQIODeviceGZip(const QString& filename)
     m_gzfile=0;
     m_ungetchar=-1;
     m_filename=filename;
+#ifdef __GNUC__
 #warning "QT4 porting ???? setFlags(IO_Sequential); ";	
+#endif
     //setFlags(IO_Sequential); // We have no direct access, so it is sequential!
     // NOTE: "sequential" also means that you cannot use size()
 }

@@ -43,7 +43,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <qglobal.h>
+#ifdef __GNUC__
 #warning used non public api for now
+#endif
 
 extern bool kde_kiosk_exception;
 

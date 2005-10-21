@@ -78,7 +78,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <qglobal.h>
+#ifdef __GNUC__
 #warning used non public api for now
+#endif
 Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
 
 
@@ -147,7 +149,9 @@ void KToolInvocation::invokeHelp( const QString& anchor,
    {
        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
        {
+#ifdef __GNUC__
 #warning fixme once there is a kcoreapp and kapp class
+#endif
 #if 0
            if (Tty != qApp->type())
                QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
@@ -398,7 +402,9 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
    // with sending more ASN data
    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
 {}
+#ifdef __GNUC__
 #warning fixme once there is kcoreapp and kapp
+#endif
 #if 0
      if (Tty != qApp->type())
        QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
@@ -415,7 +421,9 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
    if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
    {
+#ifdef __GNUC__
 #warning fixme once there is kcoreapp and kapp
+#endif
 #if 0
       if (Tty != qApp->type())
           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),

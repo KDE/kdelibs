@@ -22,7 +22,7 @@
  * Generated:	Sat May  1 02:08:43 EST 1999
  */
 
-#undef QT3_SUPPORT
+#undef KDE3_SUPPORT
 
 #include <qglobal.h>
 #include <qlist.h>

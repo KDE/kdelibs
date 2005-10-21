@@ -243,7 +243,9 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
+#ifdef __GNUC__
 #warning "Why check for these two pointers here, if they're not used anyway. At any rate, it's broken to connect this to the slot taking int"
+#endif
 		//((Q3Accel*)m_pAccel)->connectItem( nID, this, SLOT(slotKeyPressed(int)));
 		if( !action.isEnabled() )
 			((Q3Accel*)m_pAccel)->setItemEnabled( nID, false );
