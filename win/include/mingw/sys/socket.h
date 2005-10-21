@@ -22,50 +22,51 @@
 
 #include <sys/time.h>
 
-//#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
-#if 0
-#ifdef __cplusplus
-/*extern "C" {*/
+
+#ifndef socklen_t
+#define socklen_t int
 #endif
 
-/* SUS symbolic values for the second parm to shutdown(2) */
-#define SHUT_RD   0		/* == Win32 SD_RECEIVE */
-#define SHUT_WR   1		/* == Win32 SD_SEND    */
-#define SHUT_RDWR 2		/* == Win32 SD_BOTH    */
+#define EALREADY      WSAEALREADY    
+#define ECONNABORTED  WSAECONNABORTED
+#define ECONNREFUSED  WSAECONNREFUSED
+#define ECONNRESET    WSAECONNRESET  
+#define EHOSTDOWN     WSAEHOSTDOWN   
+#define EHOSTUNREACH  WSAEHOSTUNREACH
+#define EINPROGRESS   WSAEINPROGRESS 
+#define EISCONN       WSAEISCONN     
+#define ENETDOWN      WSAENETDOWN    
+#define ENETRESET     WSAENETRESET   
+#define ENETUNREACH   WSAENETUNREACH 
+#define EWOULDBLOCK   WSAEWOULDBLOCK 
+#define EADDRINUSE    WSAEADDRINUSE
 
-  int accept (int, struct sockaddr *__peer, int *);
-  int bind (int, const struct sockaddr *__my_addr, int __addrlen);
-  int connect (int, const struct sockaddr *, int);
-  int getpeername (int, struct sockaddr *__peer, int *);
-  int getsockname (int, struct sockaddr *__addr, int *);
-  int listen (int, int __n);
-  int recv (int, void *__buff, int __len, unsigned int __flags);
-  int recvfrom (int, char *__buff, int __len, int __flags,
-                struct sockaddr *__from, int *__fromlen);
-  int recvmsg(int s, struct msghdr *msg, int flags);
-  int send (int, const void *__buff, int __len, unsigned int __flags);
-  int sendmsg(int s, const struct msghdr *msg, int flags);
-  int sendto (int, const void *, int, unsigned int, const struct sockaddr *, int);
-  int setsockopt (int __s, int __level, int __optname, const void *optval, int __optlen);
-  int getsockopt (int __s, int __level, int __optname, void *__optval, int *__optlen);
-  int shutdown (int, int);
-/* defined in winsock2:  int socket (int __family, int __type, int __protocol);*/
-  int socketpair (int __domain, int __type, int __protocol, int *__socket_vec);
+#include <sys/ioctl.h>
+#undef ioctl
+#define ioctl(a,b,c) ioctlsocket(a,b,(u_long*)c)
 
-/*defined in winsock2:  struct servent *getservbyname (const char *__name, const char *__proto); */
+/*
+ does not work yet, replaces to many close functions()
+#include <io.h>
 
-//#define WIN32_LEAN_AND_MEAN
-#include <winsock2.h>
+// replacement for unix close function 
+inline void kde_close(int fd, char *a, int b)
+{
+	u_long res; 
+	if (ioctlsocket(fd,FIONREAD,&res) == 0) {
+		fprintf(stderr,"%s socket close() called at %s %d",a,b);
+		closesocket(fd);
+	}
+	else {
+		fprintf(stderr,"%s close() called at %s %d",a,b);
+		close(fd);
+	}
+}
 
-#if 0
-#ifdef __cplusplus
-/*};*/
-#endif
+#define close(a) kde_close(a,__FILE__,__LINE__)
+*/ 
 
-#endif
-
-#endif
 
 #endif /* _SYS_SOCKET_H */
