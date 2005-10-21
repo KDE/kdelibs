@@ -24,7 +24,7 @@ generic
 		is no support for this 
 		
 -	n	implement library dependency support like libtool does, required for static libraries 
-		and uninstalled shared (from kde-buildsystem@kde.org)
+		like KDE-ICE and libltdlc.a and uninstalled shared (from kde-buildsystem@kde.org) 
 
 -	n	cleanup QT related component definition
 		QT is something like QT + zlib, QTGUI is QtCore + QTGui
