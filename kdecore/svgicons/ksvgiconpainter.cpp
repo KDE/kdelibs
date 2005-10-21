@@ -182,8 +182,8 @@ public:
 	quint32 toArtColor(const QColor &color)
 	{
 		// Convert in a libart suitable form
-		QString tempName = color.name();
-		const char *str = tempName.toLatin1().constData();
+		QByteArray tempName = color.name().toLatin1();
+		const char *str = tempName.constData();
 
 		int result = 0;
 
@@ -1716,6 +1716,7 @@ static const char *getCoord(const char *ptr, double &number)
 	return ptr;
 }
 
+#warning INFINTE LOOP HERE
 void KSVGIconPainter::drawPath(const QString &data, bool filled)
 {
 	if (!data.isEmpty())
@@ -1729,9 +1730,9 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	unsigned int lastCommand = 0;
 
 	QString _d = value.replace(",", " ");
-	_d = _d.simplified();
-	const char *ptr = _d.toLatin1();
-	const char *end = _d.toLatin1().data() + _d.length() + 1;
+	QByteArray __d = _d.simplified().toLatin1();
+	const char *ptr = __d.constData();
+	const char *end = ptr + qstrlen(ptr) + 1;
 
 	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
 	bool largeArc, sweep;
@@ -2663,12 +2664,12 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 	if(s.isEmpty())
 		return 0.0;
 
-	QString check = s;
+	QByteArray check = s.toLatin1();
 
 	double ret = 0.0;
 
 	double value = 0;
-	const char *start = check.toLatin1().constData();
+	const char *start = check.constData();
 	const char *end = getCoord(start, value);
 
 	if(int(end - start) < check.length())
@@ -2793,43 +2794,95 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 
 		if(subtransform[0] == "rotate")
 		{
-			if(params.count() == 3)
+			switch(params.count())
 			{
-				double x = params[1].toDouble();
-				double y = params[2].toDouble();
+			case 3:
+				{
+					double x = params[1].toDouble();
+					double y = params[2].toDouble();
 
-				result.translate(x, y);
+					result.translate(x, y);
+					result.rotate(params[0].toDouble());
+					result.translate(-x, -y);
+				}
+				break;
+			case 1:
 				result.rotate(params[0].toDouble());
-				result.translate(-x, -y);
+				break;
+//			default:
+//				report error
 			}
-			else
-				result.rotate(params[0].toDouble());
 		}
 		else if(subtransform[0] == "translate")
 		{
-			if(params.count() == 2)
+			switch(params.count())
+			{
+			case 2:
 				result.translate(params[0].toDouble(), params[1].toDouble());
-			else    // Spec : if only one param given, assume 2nd param to be 0
+				break;
+			case 1: // Spec : if only one param given, assume 2nd param to be 0
 				result.translate(params[0].toDouble() , 0);
+				break;
+//			default:
+//				report error
+			}
 		}
 		else if(subtransform[0] == "scale")
 		{
-			if(params.count() == 2)
+			switch(params.count())
+			{
+			case 2:
 				result.scale(params[0].toDouble(), params[1].toDouble());
-			else    // Spec : if only one param given, assume uniform scaling
+				break;
+			case 1: // Spec : if only one param given, assume uniform scaling
 				result.scale(params[0].toDouble(), params[0].toDouble());
+				break;
+//			default:
+//				report error
+			}
 		}
 		else if(subtransform[0] == "skewx")
-			result.shear(tan(params[0].toDouble() * deg2rad), 0.0F);
+		{
+			switch(params.count())
+			{
+			case 1:
+				result.shear(tan(params[0].toDouble() * deg2rad), 0.0F);
+				break;
+//			default:
+//				report error
+			}
+		}
+		else if(subtransform[0] == "skewxy")
+		{
+			switch(params.count())
+			{
+			case 2:
+				result.shear(tan(params[0].toDouble() * deg2rad), tan(params[1].toDouble() * deg2rad));
+				break;
+//			default:
+//				report error
+			}
+		}
 		else if(subtransform[0] == "skewy")
-			result.shear(tan(params[0].toDouble() * deg2rad), 0.0F);
-		else if(subtransform[0] == "skewy")
-			result.shear(0.0F, tan(params[0].toDouble() * deg2rad));
+		{
+			switch(params.count())
+			{
+			case 1:
+				result.shear(0.0F, tan(params[0].toDouble() * deg2rad));
+				break;
+//			default:
+//				report error
+			}
+		}
 		else if(subtransform[0] == "matrix")
 		{
-			if(params.count() >= 6)
+			switch(params.count())
 			{
-				result.setMatrix(params[0].toDouble(), params[1].toDouble(), params[2].toDouble(), params[3].toDouble(), params[4].toDouble(), params[5].toDouble());
+			case 6:
+				result.setMatrix(params[0].toDouble(), params[1].toDouble(), params[2].toDouble(),
+					params[3].toDouble(), params[4].toDouble(), params[5].toDouble());
+//			default:
+//				report error
 			}
 		}
 	}
