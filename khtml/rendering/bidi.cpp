@@ -1705,6 +1705,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     bool prevLineBrokeCleanly = previousLineBrokeAtBR;
     previousLineBrokeAtBR = false;
+    
+    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
 
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
@@ -1782,9 +1784,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 lastWS = last->layer()->marquee()->whiteSpace();
 
             // Break on replaced elements if either has normal white-space.
-            // FIXME: This does not match WinIE, Opera, and Mozilla.  They treat replaced elements
-            // like characters in a word, and require spaces between the replaced elements in order
-            // to break.
             if (currWS == NORMAL || lastWS == NORMAL) {
                 w += tmpW;
                 tmpW = 0;
@@ -2008,7 +2007,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
         RenderObject* next = Bidinext(start.par, o, bidi);
         bool isNormal = o->style()->autoWrap();
-        bool checkForBreak = isNormal;
+        bool checkForBreak = isNormal && (!isTcQuirk || !o->isReplaced() || o->isFloatingOrPositioned());
         if (w && w + tmpW > width+1 && lBreak.obj && !o->style()->preserveLF())
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {

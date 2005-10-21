@@ -2572,6 +2572,9 @@ void RenderBlock::calcInlineMinMaxWidth()
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
+    
+    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
+    
     RenderObject* trailingSpaceChild = 0;
 
     bool normal, oldnormal;
@@ -2652,13 +2655,15 @@ void RenderBlock::calcInlineMinMaxWidth()
             }
 
             if (!child->isRenderInline() && !child->isText()) {
+                
+                bool qBreak = isTcQuirk && !child->isFloatingOrPositioned();
                 // Case (2). Inline replaced elements and floats.
                 // Go ahead and terminate the current line as far as
                 // minwidth is concerned.
                 childMin += child->minWidth();
                 childMax += child->maxWidth();
 
-                if (normal || oldnormal) {
+                if (!qBreak && (normal || oldnormal)) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
                 }
@@ -2687,7 +2692,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // Add our width to the max.
                 inlineMax += childMax;
 
-                if (!normal)
+                if (!normal||qBreak)
                     inlineMin += childMin;
                 else {
                     // Now check our line.

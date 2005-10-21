@@ -1,3 +1,10 @@
+2005-10-21  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (findNextLineBreak): implement needed quirk for line breaking of 
+        replaced elements within table cells.
+        * rendering/render_block.cpp (calcInlineMinMaxWidth): ditto.
+        Bugs #93745, #72457
+
 2005-10-20  Dawit Alemayehu <adawit@kde.org>
        * ecma/xmlhttprequest.cpp:
        -Add support for default HTTP referer header. Fixes bug# 113962.
