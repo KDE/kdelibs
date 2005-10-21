@@ -28,6 +28,9 @@ typedef int caddr_t;
 
 typedef unsigned int nlink_t;
 
+// uint32
+#include <stdint.h>
+
 #ifndef KDEWIN32_EXPORT
 #define KDEWIN32_EXPORT
 #endif 
