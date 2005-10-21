@@ -273,8 +273,8 @@ public:
   /**
     Sets the iconset for button @p button to @p iconset.
     You can use this method to et a costum icon set. Either
-    created by @ref QIconSet, or use the application instance of
-    @ref KIconLoader (recommended).
+    created by QIconSet, or use the application instance of
+    KIconLoader (recommended).
   */
   void setButtonIconSet( const QIcon &iconset, MoveButton button );
 
