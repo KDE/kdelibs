@@ -25,12 +25,41 @@ class QColor;
 class KDEFX_EXPORT KPixmapEffect
 {
 public:
-    enum GradientType { VerticalGradient, HorizontalGradient,
-			DiagonalGradient, CrossDiagonalGradient,
-			PyramidGradient, RectangleGradient,
-			PipeCrossGradient, EllipticGradient };
+    /** 
+     * Gradient types. This enum is used when either drawing
+     * a gradient explicitly or when blending a pixmap into 
+     * a background.
+     *
+     * @see gradient()
+     * @see unbalancedGradient()
+     * @see blend()
+     */
+    enum GradientType { 
+	VerticalGradient,     /**< Gradient changes along the Y axis. */
+	HorizontalGradient,   /**< Gradient changes along the X axis. */
+	DiagonalGradient,     /**< Gradient changes along both axes; which
+				   direction is meant exactly is unspecified. */
+	CrossDiagonalGradient,
+	PyramidGradient, 
+	RectangleGradient,
+	PipeCrossGradient, 
+	EllipticGradient
+    };
+    /**
+     * RGB color space channels.
+     *
+     * @see channelIntensity()
+     */
     enum RGBComponent { Red, Green, Blue };
 
+    /**
+     * Direction lighting is from, for certain effects. These
+     * are the eight cardinal directions.
+     *
+     * @see hash()
+     * @todo Define which direction is North -- is that towards
+     *       0 on the Y axis in a pixmap?
+     */
     enum Lighting {NorthLite, NWLite, WestLite, SWLite,
 		   SouthLite, SELite, EastLite, NELite};
 
