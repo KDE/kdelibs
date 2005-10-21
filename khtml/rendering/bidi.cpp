@@ -1705,8 +1705,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     bool prevLineBrokeCleanly = previousLineBrokeAtBR;
     previousLineBrokeAtBR = false;
-    
-    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
 
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
@@ -2007,7 +2005,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
         RenderObject* next = Bidinext(start.par, o, bidi);
         bool isNormal = o->style()->autoWrap();
-        bool checkForBreak = isNormal && (!isTcQuirk || !o->isReplaced() || o->isFloatingOrPositioned());
+        bool checkForBreak = isNormal;
         if (w && w + tmpW > width+1 && lBreak.obj && !o->style()->preserveLF())
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
