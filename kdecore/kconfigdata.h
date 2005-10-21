@@ -33,9 +33,11 @@ class QByteArray;
  */
 struct KDECORE_EXPORT KEntry
 {
+  /** Constructor. @internal @todo Constructor in a struct? */
   KEntry()
     : mValue(), bDirty(false), bNLS(false), 
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
+  /** @internal */
   QByteArray mValue;
   /**
    * Must the entry be written back to disk?
@@ -70,6 +72,7 @@ struct KDECORE_EXPORT KEntry
  */
 struct KDECORE_EXPORT KEntryKey
 {
+  /** Constructor. @internal @todo Constructor in a struct? */
   KEntryKey(const QByteArray& _group = QByteArray(),
 	    const QByteArray& _key = QByteArray())
       : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
