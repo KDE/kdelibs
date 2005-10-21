@@ -222,11 +222,11 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream& operator<<(KDBGFUNC f);
     /**
      * Prints the given value.
-     * @param d the double to print
+     * @param f the double to print
      * @return this stream
      */
-    kdbgstream& operator<<(double d) {
-        return *this << QString::number( d );
+    kdbgstream& operator<<(double f) {
+        return *this << QString::number( f );
     }
     /**
      * Prints the string @p format which can contain

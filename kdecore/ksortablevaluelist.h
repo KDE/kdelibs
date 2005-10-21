@@ -21,15 +21,15 @@
 #define KSORTABLEVALUELIST_H
 
 #include <qpair.h>
-#include <q3valuelist.h>
-#include "kdelibs_export.h"
+#include <qlist.h>
+#include <kdelibs_export.h>
 
 /**
  * KSortableItem is a QPair that provides several operators
  * for sorting.
  * @see KSortableValueList
  */
-template<class T, class Key = int> class KSortableItem : public QPair<Key,T>
+template<typename T, typename Key = int> class KSortableItem : public QPair<Key,T>
 {
 public:
     /**
@@ -126,7 +126,7 @@ public:
  * to get the first value of the KSortableItem and a method
  * to sort all items.
  */
-template <class T, class Key = int>
+template <typename T, typename Key = int>
 class KSortableValueList : public QList<KSortableItem<T, Key> >
 {
 public:

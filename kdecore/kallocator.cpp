@@ -28,7 +28,8 @@
  */
 
 #include "kallocator.h"
-#include <kdebug.h>
+#include "kdebug.h"
+#include <qlist.h>
 
 class KZoneAllocator::MemBlock
 {

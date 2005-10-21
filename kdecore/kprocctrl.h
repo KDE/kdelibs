@@ -20,9 +20,8 @@
 #ifndef KPROCCTRL_H
 #define KPROCCTRL_H
 
-#include <q3valuelist.h>
-
-#include "kprocess.h"
+#include <qlist.h>
+#include <kprocess.h>
 
 class QSocketNotifier;
 

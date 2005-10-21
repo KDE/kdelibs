@@ -26,13 +26,11 @@
 #ifdef Q_WS_X11 //FIXME
 
 #include "kxerrorhandler.h"
-#include <assert.h>
-#include <stdlib.h>
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;
 int KXErrorHandler::pos = 0;
 int KXErrorHandler::size = 0;
-    
+
 KXErrorHandler::KXErrorHandler( Display* dpy )
     :   user_handler1( NULL ),
         user_handler2( NULL ),
@@ -69,7 +67,7 @@ KXErrorHandler::KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Displa
 KXErrorHandler::~KXErrorHandler()
     {
     XSetErrorHandler( old_handler );
-    assert( this == handlers[ pos - 1 ] ); // destroy in reverse order
+    Q_ASSERT_X( this == handlers[ pos-1 ], __FUNCTION__, "out of order" );
     --pos;
     }
 
@@ -78,7 +76,7 @@ void KXErrorHandler::addHandler()
     if( size == pos )
         {
         size += 16;
-        handlers = static_cast< KXErrorHandler** >( realloc( handlers, size * sizeof( KXErrorHandler* )));
+        handlers = static_cast< KXErrorHandler** >( qRealloc( handlers, size * sizeof( KXErrorHandler* )));
         }
     handlers[ pos++ ] = this;
     }

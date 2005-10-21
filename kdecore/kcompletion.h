@@ -506,10 +506,10 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
-     * @param match the match to process
+     * @param pMatch the match to process
      * @see postProcessMatches
      */
-    virtual void postProcessMatch( QString *match ) const { Q_UNUSED(match) }
+    virtual void postProcessMatch( QString *pMatch ) const { Q_UNUSED(pMatch) }
 
     /**
      * This method is called before a list of all available completions is
@@ -518,10 +518,10 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
-     * @param matches the matches to process
+     * @param pMatches the matches to process
      * @see postProcessMatch
      */
-    virtual void postProcessMatches( QStringList * matches ) const { Q_UNUSED(matches)}
+    virtual void postProcessMatches( QStringList * pMatches ) const { Q_UNUSED(pMatches)}
 
     /**
      * This method is called before a list of all available completions is
@@ -533,7 +533,7 @@ protected:
      * @param matches the matches to process
      * @see postProcessMatch
      */
-    virtual void postProcessMatches( KCompletionMatches * matches ) const {Q_UNUSED(matches)}
+    virtual void postProcessMatches( KCompletionMatches * pMatches ) const {Q_UNUSED(pMatches)}
 
 private:
     void            addWeightedItem( const QString& );

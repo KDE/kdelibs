@@ -17,15 +17,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef kprocess_h
-#define kprocess_h
+#ifndef KPROCESS_H
+#define KPROCESS_H
 
 #include <sys/types.h> // for pid_t
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
 #include <qobject.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
 class QSocketNotifier;
 class KProcessPrivate;

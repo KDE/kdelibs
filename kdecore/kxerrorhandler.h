@@ -25,11 +25,10 @@
 #ifndef KXERRORHANDLER_H
 #define KXERRORHANDLER_H
 
-#include <q3valuelist.h>
 #include <qwindowdefs.h>
-#include <kdelibs_export.h>
-#include <QX11Info>
+#include <qx11info_x11.h>
 #include <X11/Xlib.h>
+#include <kdelibs_export.h>
 
 /**
  * This class simplifies handling of X errors. It shouldn't be necessary to use
@@ -72,7 +71,7 @@ class KDECORE_EXPORT KXErrorHandler
         /**
          * This constructor takes pointer to a function whose prototype matches
          * the one that's used with the XSetErrorHandler() Xlib function.
-         * NOTE: For the error flag to be set, the function must return non-zero
+         * NOTE: For the error flag to be set, the function must return a non-zero
          * value.
          */
         KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = QX11Info::display());
@@ -81,7 +80,7 @@ class KDECORE_EXPORT KXErrorHandler
          * function was used and there was any error, or the custom handler indicated
          * an error by its return value).
          *
-         * @param sync if true, and explicit XSync() will be done. Not necessary
+         * @param sync if true, an explicit XSync() will be done. Not necessary
          *             when the last X request required a roundtrip.
          */
         bool error( bool sync ) const;
@@ -99,7 +98,8 @@ class KDECORE_EXPORT KXErrorHandler
         static KXErrorHandler** handlers;
         static int pos;
         static int size;
-        class KXErrorHandlerPrivate* d;
+        class Private;
+        Private * d;
     };
 
 #endif

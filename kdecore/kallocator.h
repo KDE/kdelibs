@@ -26,9 +26,9 @@
 #ifndef KALLOCATOR_H
 #define KALLOCATOR_H
 
-#include <q3valuelist.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
+template <typename T> class QList;
 
 
 /**
