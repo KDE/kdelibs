@@ -40,6 +40,18 @@ kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp klockfile.cpp
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
+network/kresolver.cpp
+network/kresolvermanager.cpp
+network/kresolverworkerbase.cpp
+network/ksocketaddress.cpp
+network/kresolverstandardworkers.cpp
+network/kreverseresolver.cpp
+network/ksocketbase.cpp
+network/ksocketdevice.cpp
+network/kclientsocketbase.cpp
+network/kstreamsocket.cpp
+network/kbufferedsocket.cpp
+network/ksocketbuffer.cpp
 """
 
 if not env['WINDOWS']:
@@ -48,26 +60,15 @@ kglobalaccel_x11.cpp
 ktoolinvocation_x11.cpp 
 ksocks.cpp netsupp.cpp netwm.cpp kpty.cpp
 kwin.cpp kwinmodule.cpp 
-network/kresolver.cpp
-network/kresolvermanager.cpp
-network/kresolverworkerbase.cpp
-network/ksocketaddress.cpp
-network/kresolverstandardworkers.cpp
-network/kreverseresolver.cpp
-network/ksocketdevice.cpp
-network/ksocketbase.cpp
-network/kclientsocketbase.cpp
-network/kstreamsocket.cpp
 network/kserversocket.cpp
 network/kdatagramsocket.cpp
 network/khttpproxysocketdevice.cpp
 network/ksockssocketdevice.cpp
-network/kbufferedsocket.cpp
-network/ksocketbuffer.cpp
 network/knetworkinterface.cpp
 """
 else:
 	core_files +="""
+netsupp_win32.cpp
 kapplication_win.cpp 
 kglobalaccel_win.cpp
 ktoolinvocation_win.cpp 
