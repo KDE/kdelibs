@@ -288,10 +288,14 @@ def generate(env):
 				self.executed=1
 				self.xml()
 				return
-			if (self.type=='shlib' or self.type=='kioslave'):
+			if self.type=='shlib':
 				self.instdir=self.orenv.getInstDirForResType('KDELIB')
-			if self.type=='module':
+			elif self.type=='kioslave':
+				self.instdir=self.orenv.getInstDirForResType('KDELIB')
+				self.libprefix=''
+			elif self.type=='module':
 				self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
+				self.libprefix=''
 			elif self.type=='program':
 				self.instdir=self.orenv.getInstDirForResType('KDEBIN')
 				self.perms=0755
