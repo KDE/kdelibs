@@ -45,6 +45,11 @@
 using KIO::NetAccess;
 #endif
 
+#define BANNED_HTTP_HEADERS "authorization,proxy-authorization,"\
+                            "content-length,host,connect,copy,move,"\
+                            "delete,head,trace,put,propfind,proppatch,"\
+                            "mkcol,lock,unlock,options,via"
+
 using namespace KJS;
 using khtml::Decoder;
 
@@ -257,6 +262,10 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
 
 bool XMLHttpRequest::urlMatchesDocumentDomain(const KURL& _url) const
 {
+  // No need to do work if _url is not valid...
+  if (!_url.isValid())
+    return false;
+
   KURL documentURL(doc->URL());
 
   // a local file can load anything
@@ -297,7 +306,7 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
   }
 
 
-  method = _method;
+  method = _method.lower();
   url = _url;
   async = _async;
 
@@ -308,9 +317,19 @@ void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
 
-  if (method.lower() == "post" && (url.protocol().lower().startsWith("http"))) {
-    // FIXME: determine post encoding correctly by looking in headers for charset
+  if (method == "post") {
+    QString protocol = url.protocol().lower();
 
+    // Abondon the request when the protocol is other than "http",
+    // instead of blindly changing it to a "get" request.
+    if (!protocol.startsWith("http") && !protocol.startsWith("webdav"))
+    {
+      abort();
+      return;
+    }
+
+    // FIXME: determine post encoding correctly by looking in headers
+    // for charset.
     QByteArray buf;
     buf.duplicate(_body.utf8().data(), _body.length());
 
@@ -333,9 +352,22 @@ void XMLHttpRequest::send(const QString& _body)
         rh += "\r\n";
       rh += i.key() + ": " + i.data();
     }
+
     job->addMetaData("customHTTPHeader", rh);
   }
-  job->addMetaData( "PropagateHttpHeader", "true" );
+
+  job->addMetaData("PropagateHttpHeader", "true");
+
+  // Set the default referrer if one is not already supplied
+  // through setRequestHeader. NOTE: the user can still disable
+  // this feature at the protocol level (kio_http).
+  if (requestHeaders.find("Referer") == requestHeaders.end()) {
+    KURL documentURL(doc->URL());
+    documentURL.setPass(QString::null);
+    documentURL.setUser(QString::null);
+    job->addMetaData("referrer", documentURL.url());
+    // kdDebug() << "Adding referrer: " << documentURL << endl;
+  }
 
   if (!async) {
     QByteArray data;
@@ -385,17 +417,43 @@ void XMLHttpRequest::abort()
   aborted = true;
 }
 
-void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
+void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
 {
+  QString name = _name.lower().stripWhiteSpace();
+
   // Content-type needs to be set seperately from the other headers
-  if(name.lower() == "content-type") {
+  if(name == "content-type") {
     contentType = "Content-type: " + value;
     return;
   }
-  if(name.lower() == "content-length") {
-    return; // Denied - we set it ourselves.
+
+  // Sanitize the referrer header to protect against spoofing...
+  if(name == "referer") {
+    KURL referrerURL(value);
+    if (urlMatchesDocumentDomain(referrerURL))
+      requestHeaders[name] = referrerURL.url();
+    return;
   }
-  requestHeaders[name] = value;
+
+  // Sanitize the request headers below and handle them as if they are
+  // calls to open. Otherwise, we will end up ignoring them all together!
+  // TODO: Do something about "put" which kio_http sort of supports and
+  // the webDAV headers such as PROPFIND etc...
+  if (name == "get"  || name == "post") {
+    KURL reqURL (doc->URL(), value.stripWhiteSpace());
+    open(name, reqURL, async);
+    return;
+  }
+
+  // Reject all banned headers. See BANNED_HTTP_HEADERS above.
+  qDebug("Banned HTTP Headers: %s", BANNED_HTTP_HEADERS);
+  QStringList bannedHeaders = QStringList::split(',',
+                                  QString::fromLatin1(BANNED_HTTP_HEADERS));
+
+  if (bannedHeaders.contains(name))
+    return;   // Denied
+
+  requestHeaders[name] = value.stripWhiteSpace();
 }
 
 Value XMLHttpRequest::getAllResponseHeaders() const
