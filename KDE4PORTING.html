@@ -89,8 +89,8 @@ by QX11Info::display()</li>
 <pre>
  QString geometry;
  KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
- if (args->isSet("geometry"))
-    geometry = args->getOption("geometry");
+ if (args &amp;&amp; args-&gt;isSet("geometry"))
+	geometry = args-&gt;getOption("geometry");
 </pre>
 </li>
 <li>installSigpipeHandler() was removed.</li>

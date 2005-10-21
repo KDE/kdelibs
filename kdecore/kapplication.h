@@ -489,7 +489,7 @@ public:
     * <code>
     * QString geometry;
     * KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    * if (args->isSet("geometry"))
+    * if (args && args->isSet("geometry"))
     *     geometry = args->getOption("geometry");
     *    
     * </code>
