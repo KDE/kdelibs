@@ -56,7 +56,7 @@ KMWSocket::KMWSocket(QWidget *parent)
 
 	m_scanner = new NetworkScanner( 9100, this );
 
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	sep->setFixedHeight(40);
 
 	connect(m_list,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));

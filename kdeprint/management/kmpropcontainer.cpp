@@ -29,7 +29,7 @@
 KMPropContainer::KMPropContainer(QWidget *parent)
     : QWidget(parent)
 {
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	sep->setFixedHeight(5);
 
 	m_button = new KPushButton(KGuiItem(i18n("Change..."), "edit"), this);

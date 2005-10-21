@@ -33,7 +33,7 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	m_title = new QLabel(this);
 	m_titlepixmap = new QLabel(this);
 	m_titlepixmap->setAlignment(Qt::AlignCenter);
-        KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+        KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	m_type = new QLabel(this);
 	m_description = new QLabel(this);
 	m_state = new QLabel(this);

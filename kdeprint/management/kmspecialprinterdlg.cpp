@@ -59,7 +59,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_desclabel->setBuddy(m_description);
 	m_loclabel->setBuddy(m_location);
 
-	KSeparator* sep = new KSeparator( KSeparator::HLine, dummy);
+	KSeparator* sep = new KSeparator( dummy);
 
 	sep->setFixedHeight(10);
 	Q3GroupBox	*m_gb = new Q3GroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);

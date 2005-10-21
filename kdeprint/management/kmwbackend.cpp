@@ -153,7 +153,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 {
 	if (ID == -1)
 	{
-		KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+		KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 		m_layout->insertWidget(m_count, sep);
 	}
 	else

@@ -67,7 +67,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 
 	m_scanner = new NetworkScanner( 631, this );
 
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator(this);
 	sep->setFixedHeight(20);
 
 	connect(m_list,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));

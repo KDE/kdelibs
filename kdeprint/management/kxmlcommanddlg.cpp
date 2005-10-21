@@ -156,7 +156,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_up->setToolTip(i18n("Move up"));
 	m_down->setToolTip(i18n("Move down"));
 
-	KSeparator	*sep1 = new KSeparator(KSeparator::HLine, m_dummy);
+	KSeparator	*sep1 = new KSeparator(m_dummy);
 
 	Q3GroupBox	*gb_input = new Q3GroupBox(0, Qt::Horizontal, i18n("&Input From"), this);
 	Q3GroupBox	*gb_output = new Q3GroupBox(0, Qt::Horizontal, i18n("O&utput To"), this);
@@ -873,7 +873,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	f.setBold(true);
 	m_idname->setFont(f);
 
-	KSeparator	*sep1 = new KSeparator(Q3Frame::HLine, dummy);
+	KSeparator	*sep1 = new KSeparator(dummy);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(topmain, 0, 10);
 	QGridLayout	*l5 = new QGridLayout(0, 2, 2, 0, 5);

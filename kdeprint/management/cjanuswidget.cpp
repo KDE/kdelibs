@@ -137,7 +137,7 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 	f.setBold(true);
 	m_header->setFont(f);
 
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	sep->setFixedHeight(5);
 
 	m_iconlist = new CListBox(this);

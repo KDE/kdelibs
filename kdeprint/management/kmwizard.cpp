@@ -70,9 +70,9 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	QFont	f(m_title->font());
 	f.setBold(true);
 	m_title->setFont(f);
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	sep->setFixedHeight(5);
-	KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep2 = new KSeparator( Qt::Horizontal, this);
 	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
