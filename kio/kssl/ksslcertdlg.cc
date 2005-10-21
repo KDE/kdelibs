@@ -64,7 +64,7 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
    _save = new QCheckBox(i18n("Save selection for this host."), this);
    grid->addMultiCellWidget(_save, 5, 5, 0, 3);
 
-   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, this), 6, 6, 0, 5);
+   grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, this), 6, 6, 0, 5);
 
    _ok = new KPushButton(KStdGuiItem::cont(), this);
    grid->addWidget(_ok, 7, 5);
