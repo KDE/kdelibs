@@ -26,11 +26,10 @@
 #include <kcompletion.h>
 #include <kio/jobclasses.h>
 #include <qstring.h>
-#include <qstringlist.h>
 
+class QStringList;
 class KURL;
 class KURLCompletionPrivate;
-class QCustomEvent;
 
 /**
  * This class does completion of URLs including user directories (~user)
@@ -174,7 +173,7 @@ protected:
 	void postProcessMatches( QStringList *matches ) const;
 	void postProcessMatches( KCompletionMatches* matches ) const;
 
-	virtual void customEvent( QCustomEvent *e );
+	virtual void customEvent( QEvent *e );
 
 protected slots:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
@@ -205,7 +204,7 @@ private:
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 
-	void listURLs( const Q3ValueList<KURL *> &urls,
+	void listURLs( const QList<KURL *> &urls,
 	               const QString &filter = QString::null,
 	               bool only_exe = false,
 	               bool no_hidden = false );
