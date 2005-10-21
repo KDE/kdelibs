@@ -68,19 +68,19 @@ public:
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) { return false; }
+    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); Q_UNUSED(size); return false; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool doneWriting( uint size ) { return false; }
+    virtual bool doneWriting( uint size ) { Q_UNUSED(size); return false; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group )  { return false; }
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group )  { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); return false; }
 
 protected:
     /**

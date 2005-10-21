@@ -4,4 +4,5 @@ WARN_IF_UNDOCUMENTED = YES
 ## Predefined macros, to remove all the _EXPORT things
 ## from function definitions.
 PREDEFINED = KDECORE_EXPORT="" \
-	KDEUI_EXPORT=""
+	KDEUI_EXPORT="" \
+	Q_OS_UNIX=""
