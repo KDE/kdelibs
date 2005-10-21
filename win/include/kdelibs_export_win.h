@@ -156,3 +156,10 @@
 #else
 #define KDE3SUPPORT_EXPORT KDE_IMPORT
 #endif
+
+#ifdef MAKE_KHTML_LIB
+# define KHTML_EXPORT KDE_EXPORT
+#else
+# define KHTML_EXPORT KDE_IMPORT
+#endif
+
