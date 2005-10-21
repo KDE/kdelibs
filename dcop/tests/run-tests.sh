@@ -11,12 +11,12 @@ echo '* Running batch mode'
 echo -n '* Starting test app '
 ./dcop_test >shell.stdout &
 
-while ! dcop | grep -q TestApp; do echo -n '.'; sleep 2; done
+while ! ../client/dcop | grep -q TestApp; do echo -n '.'; sleep 2; done
 
 echo ' started'
 
 echo '* Running driver mode'
-./driver `dcop 'TestApp-*'` >driver.stdout
+./driver `../client/dcop 'TestApp-*'` >driver.stdout
 
 echo '* Running shell mode'
 source shell.generated >shell.returns
