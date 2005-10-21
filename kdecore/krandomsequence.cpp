@@ -25,8 +25,9 @@
 
 static const int m_nShuffleTableSize = 32;
 
-struct KRandomSequence::Private
+class KRandomSequence::Private
 {
+public:
   long _lngSeed1;
 #define m_lngSeed1 d->_lngSeed1
   long _lngSeed2;

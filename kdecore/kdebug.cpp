@@ -367,7 +367,9 @@ kdbgstream kdFatal(bool cond, int area)
     return kdbgstream(0,0,false);
 }
 
-struct kdbgstream::Private {
+class kdbgstream::Private
+{
+public:
     QString output;
     unsigned int area, level;
     bool print;

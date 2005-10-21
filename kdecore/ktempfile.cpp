@@ -56,8 +56,9 @@
 #include "kde_file.h"
 #include "kdebug.h"
 
-struct KTempFile::Private
+class KTempFile::Private
 {
+public:
    int _Error;
 #define mError d->_Error
    QString _TmpName;

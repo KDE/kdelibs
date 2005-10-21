@@ -52,7 +52,9 @@
 // The purpose of these limitations is to limit the impact
 // of database corruption.
 
-struct KSycoca::Private {
+class KSycoca::Private
+{
+public:
     Private() {
         database = 0;
         readError = false;

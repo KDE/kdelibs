@@ -52,8 +52,9 @@ static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalog = 0;
 
-struct KLocale::Private
+class KLocale::Private
 {
+public:
   int weekStartDay;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)

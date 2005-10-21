@@ -28,8 +28,9 @@
 #include <qimage.h>
 #include <qlist.h>
 
-struct KAboutPerson::Private
+class KAboutPerson::Private
 {
+public:
    const char *_name;
 #define mName d->_name
    const char *_task;

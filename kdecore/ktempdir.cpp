@@ -52,8 +52,9 @@
 #include "kprocess.h"
 #include <kdebug.h>
 
-struct KTempDir::Private
+class KTempDir::Private
 {
+public:
    int _error;
 #define mError d->_error
    QString _tmpName;

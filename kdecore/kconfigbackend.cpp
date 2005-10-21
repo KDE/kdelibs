@@ -214,8 +214,9 @@ static QByteArray encodeGroup(const QByteArray &str)
   return result;
 }
 
-struct KConfigBackEnd::Private
+class KConfigBackEnd::Private
 {
+public:
    QDateTime localLastModified;
    uint      localLastSize;
    KLockFile::Ptr localLockFile;

@@ -74,7 +74,9 @@ struct DCOPRequest {
    DCOPClientTransaction *transaction;
 };
 
-struct KUniqueApplication::Private {
+class KUniqueApplication::Private
+{
+public:
    QList <DCOPRequest *> requestList;
    bool processingRequest;
    bool firstInstance;

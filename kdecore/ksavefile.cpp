@@ -43,8 +43,9 @@
 #include "kstandarddirs.h"
 #include "ktempfile.h"
 
-struct KSaveFile::Private
+class KSaveFile::Private
 {
+public:
    QString _fileName;
 #define mFileName d->_fileName
    KTempFile *_tempFile;

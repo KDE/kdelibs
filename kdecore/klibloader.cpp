@@ -56,8 +56,9 @@ enum UnloadMode {UNKNOWN, UNLOAD, DONT_UNLOAD};
 /* This helper class is needed, because KLibraries can go away without
    being unloaded. So we need some info about KLibraries even after its
    death. */
-struct KLibWrapPrivate
+class KLibWrapPrivate
 {
+public:
     KLibWrapPrivate(KLibrary *l, lt_dlhandle h);
 
     KLibrary *lib;
@@ -68,8 +69,9 @@ struct KLibWrapPrivate
     QString filename;
 };
 
-struct KLibLoader::Private
+class KLibLoader::Private
 {
+public:
     ~Private() {
     	while (!loaded_stack.isEmpty())
 	    delete loaded_stack.pop();

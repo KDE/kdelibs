@@ -29,8 +29,9 @@
 #include <stdlib.h>
 #include <grp.h>
 
-struct KUser::Private : public KShared
+class KUser::Private : public KShared
 {
+public:
 	uid_t uid;
 	gid_t gid;
 	QString loginName, fullName;
@@ -239,8 +240,9 @@ QStringList KUser::allUserNames() {
 KUser::~KUser() {
 }
 
-struct KUserGroup::Private : public KShared
+class KUserGroup::Private : public KShared
 {
+public:
   gid_t gid;
   QString name;
   QList<KUser> users;

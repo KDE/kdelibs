@@ -37,8 +37,9 @@ struct string_entry {
 };
 }
 
-struct KSycocaDictStringList : public QList<string_entry*>
+class KSycocaDictStringList : public QList<string_entry*>
 {
+public:
    ~KSycocaDictStringList() {
        while(!isEmpty())
           delete takeFirst();

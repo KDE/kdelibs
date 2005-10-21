@@ -44,7 +44,9 @@
 
 // TODO: http://www.spinnaker.de/linux/nfs-locking.html
 
-struct KLockFile::Private {
+class KLockFile::Private
+{
+public:
    QString file;
    int staleTime;
    bool isLocked;
