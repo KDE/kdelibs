@@ -21,7 +21,6 @@
 #define KSEPARATOR_H
 
 #include <qframe.h>
-
 #include <kdelibs_export.h>
 
 /**
@@ -32,7 +31,8 @@
 class KDEUI_EXPORT KSeparator : public QFrame
 {
   Q_OBJECT
-  Q_PROPERTY( int orientation READ orientation WRITE setOrientation )
+  Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+
  public:
   /**
    * Constructor.
@@ -44,35 +44,35 @@ class KDEUI_EXPORT KSeparator : public QFrame
   /**
    * Constructor.
    * @param orientation Set the orientation of the separator.
-   * Possible values are HLine or Horizontal and VLine or Vertical.
+   * Possible values are Horizontal or Vertical.
    * @param parent parent object.
    * @param f extra QWidget flags.
    **/
-  KSeparator(int orientation, QWidget* parent=0, 
-	     Qt::WFlags f=0);
+  KSeparator(Qt::Orientation orientation, QWidget* parent=0, Qt::WFlags f=0);
   
   /**
    * Returns the orientation of the separator.
-   * @return int Possible values are VLine and HLine.
+   * @return int Possible values Horizontal or Vertical.
    **/
-  int orientation() const;
+  Qt::Orientation orientation() const;
   
   /**
-   * Set the orientation of the separator to @p orient
+   * Set the orientation of the separator to @p orientation
    *
-   * @param orient Possible values are VLine and HLine.
+   * @param orientation Possible values are Vertical and Horizontal.
    */
-  void setOrientation(int orient);
+  void setOrientation(Qt::Orientation orientation);
   
   /**
    * The recommended height (width) for a horizontal (vertical) separator.
    **/
-  virtual QSize sizeHint() const;
+  QSize sizeHint() const;
 
 protected:
-  void paintEvent(QPaintEvent* pe);
+  void paintEvent(QPaintEvent* event);
 
   virtual void virtual_hook( int id, void* data );
+
 private:
   class KSeparatorPrivate* d;
 };

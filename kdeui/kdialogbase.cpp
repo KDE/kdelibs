@@ -354,7 +354,7 @@ void KDialogBase::setButtonBoxOrientation( int orientation )
     if( mActionSep )
     {
       mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
-				  QFrame::HLine : QFrame::VLine );
+				  Qt::Horizontal : Qt::Vertical );
     }
     if( mButtonOrientation == Qt::Vertical )
     {
@@ -401,7 +401,7 @@ void KDialogBase::enableButtonSeparator( bool state )
     mActionSep = new KSeparator( this );
     mActionSep->setFocusPolicy(Qt::NoFocus);
     mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
-				QFrame::HLine : QFrame::VLine );
+				Qt::Horizontal : Qt::Vertical );
     mActionSep->show();
   }
   else

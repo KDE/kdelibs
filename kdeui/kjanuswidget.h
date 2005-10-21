@@ -138,7 +138,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      */
     /// KDE4 remove name argument
     KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
-
+    
     /**
      * Destructor.
      */

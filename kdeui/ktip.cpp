@@ -286,7 +286,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	rect.y() + (rect.height() - sh.height())/2);
     }
 
-    KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+    KSeparator* sep = new KSeparator( Qt::Horizontal, this);
     vbox->addWidget(sep);
 
     QHBoxLayout *hbox2 = new QHBoxLayout(vbox, 4);

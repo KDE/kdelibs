@@ -17,26 +17,20 @@
  *
  */
 
-#include <qstyle.h>
-
-#include <kdebug.h>
+#include "kseparator.h"
+#include <QStyle>
 #include <QStyleOption>
 #include <QPainter>
 
-#include "kseparator.moc"
-
-
-KSeparator::KSeparator(QWidget* parent, Qt::WFlags f)
-   : QFrame(parent, f)
+KSeparator::KSeparator(QWidget* parent, Qt::WFlags f) : QFrame(parent, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
-   setOrientation( HLine );
+   setOrientation( Qt::Horizontal );
 }
 
 
-
-KSeparator::KSeparator(int orientation, QWidget* parent, Qt::WFlags f)
+KSeparator::KSeparator(Qt::Orientation orientation, QWidget* parent, Qt::WFlags f)
    : QFrame(parent, f)
 {
    setLineWidth(1);
@@ -45,42 +39,26 @@ KSeparator::KSeparator(int orientation, QWidget* parent, Qt::WFlags f)
 }
 
 
-
-void KSeparator::setOrientation(int orientation)
+void KSeparator::setOrientation(Qt::Orientation orientation)
 {
-   switch(orientation)
-   {
-      case Qt::Vertical:
-      case VLine:
-         setFrameShape ( QFrame::VLine );
-         setFrameShadow( QFrame::Sunken );
-         setMinimumSize(2, 0);
-         break;
-      
-      default:
-         kdWarning() << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine" << endl;
-         
-      case Qt::Horizontal:
-      case HLine:
-         setFrameShape ( QFrame::HLine );
-         setFrameShadow( QFrame::Sunken );
-         setMinimumSize(0, 2);
-         break;
+   if (orientation == Qt::Vertical) {
+      setFrameShape ( QFrame::VLine );
+      setFrameShadow( QFrame::Sunken );
+      setMinimumSize(2, 0);
+   }
+   else {
+      setFrameShape ( QFrame::HLine );
+      setFrameShadow( QFrame::Sunken );
+      setMinimumSize(0, 2);
    }
 }
 
 
-
-int KSeparator::orientation() const
+Qt::Orientation KSeparator::orientation() const
 {
-   if ( frameStyle() & VLine )
-      return VLine;
-   
-   if ( frameStyle() & HLine )
-      return HLine;
-   
-   return 0;
+   return ( frameStyle() & VLine ) ? Qt::Vertical : Qt::Horizontal;
 }
+
 
 void KSeparator::paintEvent(QPaintEvent*)
 {
@@ -108,15 +86,11 @@ void KSeparator::paintEvent(QPaintEvent*)
 
 QSize KSeparator::sizeHint() const
 {
-   if ( frameStyle() & VLine )
-      return QSize(2, 0);
-   
-   if ( frameStyle() & HLine )
-      return QSize(0, 2);
-   
-   return QSize(-1, -1);
+   return ( frameStyle() & VLine ) ? QSize(2, 0) : QSize(0, 2);
 }
+
 
 void KSeparator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+#include "kseparator.moc"

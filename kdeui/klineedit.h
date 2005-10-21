@@ -27,14 +27,13 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KLINEEDIT_H
-#define _KLINEEDIT_H
+#ifndef KLINEEDIT_H
+#define KLINEEDIT_H
 
 #include <qlineedit.h>
 #include <kcompletion.h>
 
 class QMenu;
-
 class KCompletionBox;
 class KURL;
 
