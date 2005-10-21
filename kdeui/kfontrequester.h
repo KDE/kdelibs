@@ -123,7 +123,9 @@ class KDEUI_EXPORT KFontRequester : public QWidget
     virtual void setTitle( const QString & title );
 
   signals:
-
+    /**
+     * Emitted when a new @p font has been selected in the underlying dialog
+     */
     void fontSelected( const QFont &font );
 
   protected:

@@ -99,7 +99,7 @@ class KDialogBaseTile;
  * signals that are related to the standard action buttons will be used
  * when you don't use these buttons.
  *
- * <b>sect Dialog shapes:</b>\n
+ * <b>Dialog shapes:</b>\n
  *
  * You can either use one of the prebuilt, easy to use, faces or
  * define your own main widget. The dialog provides ready to use

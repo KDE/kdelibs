@@ -252,7 +252,7 @@ signals:
   void inserted( KAction* );
   void removed( KAction* );
 
-  /** Emitted when "action" is highlighted.
+  /** Emitted when @p action is highlighted.
    *  This is only emitted if you have setHighlightingEnabled()
    * @see connectHighlight()
    * @see disconnectHighlight()
@@ -261,7 +261,7 @@ signals:
    * @see highlightingEnabled()
    */
   void actionHighlighted( KAction *action );
-  /** Emitted when "action" is highlighed or loses highlighting.
+  /** Emitted when @p action is highlighed or loses highlighting.
    *  This is only emitted if you have setHighlightingEnabled()
    * @see connectHighlight()
    * @see disconnectHighlight()

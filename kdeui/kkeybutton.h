@@ -28,7 +28,7 @@
  *
  * You must call setShortcut() to set the widget's currently displayed key.
  * You can call captureShortcut() to get a new shortcut from the user.
- * If captureShortcut() suceeds, then the capturedShortcut signal will be
+ * If captureShortcut() succeeds, then the capturedShortcut() signal will be
  * emitted with the value of the new shortcut.  The widget containing
  * a KKeyButton widget must connect to this signal and check if the shortcut
  * is valid.  If it is, you will need to call setShortcut() with the new
@@ -69,7 +69,7 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
  public slots:
 	/**
 	 * Call this method to capture a shortcut from the keyboard.
-	 * If it succeeds, the capturedShortcut() will be emitted.
+	 * If it succeeds, the capturedShortcut() signal will be emitted.
 	 */
 	void captureShortcut();
 
