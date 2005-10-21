@@ -1716,7 +1716,6 @@ static const char *getCoord(const char *ptr, double &number)
 	return ptr;
 }
 
-#warning INFINTE LOOP HERE
 void KSVGIconPainter::drawPath(const QString &data, bool filled)
 {
 	if (!data.isEmpty())
