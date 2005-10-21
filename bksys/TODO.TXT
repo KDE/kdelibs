@@ -32,7 +32,11 @@ generic
 -	n	find a platform independent way to include all symbols from static libraries into a 
     shared library (gcc-notation: -Wl,--whole-archive ... -Wl,--no-whole-archive )
 
-- n cleanup multiple definitions of command line options like PREFIX, which is defined in generic.py, kde3.py and qt4.py 
+- n cleanup multiple definitions of command line options like PREFIX, which is defined in 
+    generic.py, kde3.py and qt4.py 
+
+- n cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
+    '##' refers to ?? (I found it refers to /)
 
 
 mac related
@@ -57,3 +61,4 @@ win32 related
 3 n document platform option platform=<QT Platform specifier>  
     currently supported: win32-g++, win32-msvc.net 
 
+- n implement openssl detection without pkgconfig 
