@@ -152,10 +152,15 @@ public:
     static void deleteStaticDeleters();
 
     //private:
+    /** Data which ought to be private but isn't. @internal */
     static  KStringDict         *_stringDict;
+    /** Data which ought to be private but isn't. @internal */
     static  KInstance           *_instance;
+    /** Data which ought to be private but isn't. @internal */
     static  KLocale             *_locale;
+    /** Data which ought to be private but isn't. @internal */
     static  KCharsets	        *_charsets;
+    /** Data which ought to be private but isn't. @internal */
     static  KStaticDeleterList  *_staticDeleters;
 
     /**
@@ -164,9 +169,17 @@ public:
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      * @internal
      */
-    static void setActiveInstance(KInstance *d);
     static KInstance *activeInstance() { return _activeInstance; }
 
+    /**
+     * Set the active instance for use by KAboutDialog and KBugReport.
+     * To be used only by a multi-instance (KParts) application.
+     *
+     * @see activeInstance()
+     */
+    static void setActiveInstance(KInstance *d);
+
+    /** Data which ought to be private but isn't. @internal */
     static  KInstance           *_activeInstance;
 };
 
