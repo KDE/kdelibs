@@ -361,7 +361,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
     if (fileUploads.count()) {
         const int result = KMessageBox::warningContinueCancelList( 0,
-                                                             i18n("You're about to transfer the following files from "
+                                                             i18n("You are about to transfer the following files from "
                                                                   "your local computer to the Internet.\n"
                                                                   "Do you really want to continue?"),
                                                              fileUploads,
