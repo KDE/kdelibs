@@ -364,7 +364,7 @@ _blankFrame->show();
 //
 // Finish it off
 //
-_baseGrid->addMultiCellWidget(new KSeparator(KSeparator::HLine, _frame), 13, 13, 2, 8);
+_baseGrid->addMultiCellWidget(new KSeparator(_frame), 13, 13, 2, 8);
 _launch = new QPushButton(i18n("&Crypto Manager..."), _frame);
 _import = new QPushButton(i18n("&Import"), _frame);
 _save = new QPushButton(i18n("&Save..."), _frame);
