@@ -98,7 +98,7 @@ def dist(env, appname, version=None):
 	if 'dist' in sys.argv:
                 sys.path.append('bksys'+os.sep+'unix')
                 from detect_generic import dist
-                dist(env)
+                dist(env, appname, version)
 
 	if 'distclean' in sys.argv:
                 sys.path.append('bksys'+os.sep+'unix')

@@ -72,7 +72,7 @@ def detect(env):
 
 
 
-def dist(env):
+def dist(env, appname, version=''):
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
 	else: VERSION=version
 	FOLDER  = appname+'-'+VERSION
@@ -90,7 +90,7 @@ def dist(env):
 	os.popen("mv "+TMPFOLD+" "+FOLDER)
 
 	## remove scons-local if it is unpacked
-	os.popen("rm -rf %s/scons %s/sconsign %s/scons-local-0.96.1" % (FOLDER, FOLDER, FOLDER))
+	os.popen("rm -rf %s/scons %s/sconsign %s/scons-local-*" % (FOLDER, FOLDER, FOLDER))
 
 	## remove our object files first
 	os.popen("find %s -name \"cache\" | xargs rm -rf" % FOLDER)
