@@ -105,6 +105,7 @@ void Addressee::detach()
     mData->uid = KRandom::randomString( 10 );
     return;
   }
+  else return;
 
   AddresseeData data = *mData;
   mData = new AddresseeData( data );
