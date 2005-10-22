@@ -1,0 +1,12 @@
+/** \page config_cache Configuration cache 
+
+The configuration cache holds all collected informations from the configuration process and provides 
+them to the later performed building process. 
+
+topics: 
+- 
+
+\todo: fill in 
+
+
+*/ 

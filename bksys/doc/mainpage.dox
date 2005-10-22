@@ -1,0 +1,18 @@
+/** 
+ \mainpage BKSYS - Build Kde SYStem
+
+\section Introduction 
+
+no introduction yet available. 
+
+See related pages for available topics or the top menu for doxygen generated informations.
+
+Please note that doxygen 1.4.4 has a python parsing problem (or I have misunderstand the 
+doxygen rules), which results in wrong class descriptions. 
+
+
+\section Authors
+
+Ralf Habacker - initial version 
+
+*/ 

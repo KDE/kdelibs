@@ -1,0 +1,37 @@
+/** \page config_header Config header support
+
+bksys provides support for creating configuration related include headers (config.h), which 
+contains definitions collected by the configuration process performed with \b scons \bconfigure like 
+autotool does. 
+
+The developer only have to include the global config.h file into his source and to write conditional code 
+for using specific functions or headers. 
+
+\section config_types supported configuration types 
+
+
+- c header files
+- c/c++ functions 
+- additional libraries 
+
+\section config_include_source using config.h
+
+Developers apply config header support by wrapping related include files with a preproccesor conditional 
+like shown below for the system include header <b>sys/types.h</b>: 
+
+\code
+#include "config.h"
+...
+...
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif 
+\endcode
+
+
+\section config_header_internals config.h internals 
+
+The global config.h is build from .... 
+
+\todo: complete
+*/ 

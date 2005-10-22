@@ -1,0 +1,12 @@
+/** \page debug Writing debugging code 
+
+BKSYS is prepared 
+
+\code
+if env['BKS_DEBUG']: 
+	do_something()
+\endcode 
+
+
+
+*/ 

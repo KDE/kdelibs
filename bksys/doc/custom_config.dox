@@ -1,0 +1,140 @@
+/** \page custom_configure Custom configuring 
+
+What means custom configuring: \n 
+developers would like to be able to define "configure needs" in subdirs of a svn module,
+i.e. to have a file under kdecore that says "I need the headers sys/stat.h, sys/mntent.h, 
+sys/param.h, paths.h, limits.h, execinfo.h" etc. and I need the c functions "mmap, getmntinfo, 
+setmntent", etc. 
+
+Custom configuration means that developers can customize the configure process on a 
+directory or package related way. 
+This is done by adding specific files named 'SConfigure' into the required directory (like autotool's 
+directory based configure.in.in). \n
+On the configuring process the settings in this files are collected and stored in the 
+\ref config_cache configuration cache. Then the configuration process performs the requested 
+actions, that means searching for headers, c function and additional libraries. The results are 
+stored into the configuration cache too. 
+	
+\section sconfigure_format Format of 'SConfigure' files
+
+SConfigure files are regular python scripts which are executed by the configure process with a 
+previously created PackageConfigure object named 'conf'. The PackageConfigure class provides several attributes, 
+which allows to customize the configuration. 
+
+[question: or better named 'env' or 'config' ? ] 
+<ul>
+
+<li>add required c header file(s) \n
+example:
+
+\code
+conf.cheaders += "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
+\endcode
+
+the given filenames are automatically mapped to a related define in the config header config-<dirname>.h 
+which is included by the global config.h file. \n 
+If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
+
+<li>
+add required c function(s) 
+example: 
+
+\code
+conf.cfunctions += "mmap getmntinfo setmntent"
+\endcode
+
+the available functions are mapped automatically to a related define in the config header config-<dirname>.h 
+which is included by the global config.h file. \n
+if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
+
+
+<li>
+add a required c header files(s) \n
+like \b conf.cheaders with the exception, that if the header file wasn't found, the configuration process will 
+be canceled with an error message. \n
+
+example:
+		
+\code
+conf.required_cheaders += "sys/socket.h"
+\endcode
+
+<li>add required c function(s) \n
+like \b conf.cfunction with the exception, that if the header file wasn't found, the configuration process will 
+be canceled with an error message. \n
+example: 
+	
+\code
+conf.required_cfunctions += "xyz"
+\endcode
+
+<li>
+add a user selectable option for an optional package, setting the package name, a description, 
+the default case and special options for further processing like error message ... 
+example: 
+
+\code
+conf.modules['tiff']    = ['Enable tiff support','yes',<options or handler how to detect>,....]
+conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
+conf.modules['openexr'] = ['Enable openexr support','no']
+\endcode
+			
+\note: the name 'modules' could be also another name for example 'uselib', but should be unique 
+       for whole bksys, because these 'modules' are usable by the genobj and friends uselib attribute 
+
+\note: if many parameters are possible, it may be better to use a dict type as values in the form 
+		desc = 'Enable tiff support', default = 'yes', message = ['notfound','found']
+			
+The related package could be referenced later in the SConscript file using: 
+
+\code
+if env.conf['tiff']: 
+	obj.src += "xxx"
+\endcode
+
+\todo: it must be possible to use prefined checks and custom checks in the above mentioned settings, 
+may be through python code or functions or ..., don't know how to implement 
+
+<li>add a package related selectable message at the end of the configuring process 
+
+\code
+	conf.messages['tiff'] = ['not found message','found message']
+\endcode
+
+\note: another probably better approach would be to specify this message as parameter of conf.modules[...}
+
+
+<li>platform support for configuring is performed by checking the currently used platform. For this 
+the conf object includes several attributes ?? 
+- platform 
+- CC 
+\todo: finish
+	
+\code
+if conf['WINDOWS']: 
+	conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
+\endcode
+
+</ul>
+
+\section Implementation hints 
+
+- put in here requirements/options for the implementation 
+
+
+\section custom_config_notes notes
+- later on we could then even automate the creation of that file by a script
+that scans the source files for those headers and functions, but not at compile
+time imho, just as an easy way to keep those files in sync
+
+- But we can include in the recursive lookup a way to look for _<PLATFORM> files 
+additionally, so we can have both.
+
+- we might want per-subdir .h files (e.g. config-kdecore.h and config-kdeui.h), so that
+it's easier to move a subdir to another module... but then we have to run the same tests 
+more than once if both kdecore and kdeui need sys/stat.h. Although, with the caching
+it would be fast, just a bit strange on stdout.
+
+*/
+
+

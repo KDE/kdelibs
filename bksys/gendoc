@@ -4,11 +4,12 @@
 # 
 # (@) 2005 by Ralf Habacker 
 #  
-echo "/** @page design Design" >design.dox
-echo "<pre>" >>design.dox
-cat design >>design.dox
-echo "</pre> */" >>design.dox 
-doxygen bksys.doxy
-rm design.dox
+echo "/** @page design Design" >doc/design.dox
+echo "<pre>" >>doc/design.dox
+cat design >>doc/design.dox
+echo "</pre> */" >>doc/design.dox 
+
+doxygen doc/bksys.doxy
+rm doc/design.dox
 
  

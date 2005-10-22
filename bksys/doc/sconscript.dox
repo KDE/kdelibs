@@ -1,0 +1,162 @@
+/** \page sconscript_format Sconscript format 
+
+BKSYS provides several classes based on the genobj class, which provides support for generating general, 
+qt and KDE related binary objects like programs, shared library with several extensions and static libs. 
+
+- genobj:     build generic c++ or c applications, depending on the sources given to build
+- qt4obj:     build a qt4 object, scanning for moc files and adding the dependencies on .rcc files
+- kde4obj:    build a kde4 object, scanning for moc files and kidl files ...  
+- kdeinitobj: build a kdeinit object, ... 
+\todo complete object short description
+
+All classes provides a set of attributes, which controls the behavior of the binary object creation. 
+  
+An overview over the available attributes is shown below and described later in details: 
+\code
+obj = env.qt4obj('shlib',env)
+obj.target   = 'libDCOP'
+obj.vnum     = '6.0.2'
+obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
+obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.libpaths = 'KDE-ICE'
+obj.libs     = 'kICE'
+obj.includes = '../kio #/kio'
+obj.ccflags  = '-DXYZ=a'
+obj.cxxflags  = '-DXYZ=a'
+obj.linkflags =
+obj.libprefix
+obj.instdir
+obj.perms
+obj.execute()
+\endcode
+
+
+Attributes could be assigned by either using strings (see line 1,2 in the examples below) 
+or using a list (line 3,4):
+
+\code
+obj.attribute    = 'DCOP'    (1) 
+obj.attribute   += ' DCOP'   (2) 
+obj.attribute    = ['DCOP']  (3) 
+obj.attribute   += ['DCOP']  (4) 
+\endcode
+\note: If you are adding values as string, please prefix the added value with a space. This avoids 
+unwanted concatenation. 
+
+\section attribute_details Attributes detail description
+This section describes each attribute in detail. The displayed examples uses the string form; using 
+the list form mentioned above is also possible.
+
+<ul>
+<li>
+\code
+obj.target     = 'DCOP'
+\endcode
+This attribute specifies the name of the target. For shared libraries a platform and/or compiler specific 
+prefix will be added by scons, in many cases this will be 'lib'. To be platform independent you should 
+not add any prefix. 
+<li>
+\code
+obj.vnum     = '6.0.2'
+\endcode
+This attribute specifies the version number for shared libraries. On windows platforms only the first number, 
+the major number, is used to generate the shared library name. 
+<li>
+\code
+obj.source      = 'file1.cpp file2.cpp file3.cpp'
+\endcode
+This attribute specifies the source, which will be included to this target. 
+<li>
+\code
+obj.includes     = 'kio ../kdecore'
+obj.includes     = '/usr/include c:/openssl/include'
+obj.includes     = '#/DCOP'    
+obj.includes     = '##/DCOP'
+\endcode
+This attribute specifies additional include paths containing header files, which will be added to the 
+compiler command. The given directory path is defined relative to the source dir, where the related SConscript file is located.\n
+\n
+In the examples above 
+- 'kio' specifies a subdir of the current directory, 
+- '../kdecore' specifies a subdir on the same level as the current dir. 
+- '/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes.
+Platform depending pathes  should be avoided and either replaced by a \ref configuration option or 
+only activated when compiling for the related platform like shown below:
+\code
+if  env['WINDOWS']:
+	obj.includes += ' c:/openssl/include'
+else: 
+	obj.includes += ' /usr/include/openssl'
+\endcode
+- '#/DCOP' specifies an absolute path based on the \ref source_root of the recent project.
+- '##/DCOP' specifies an absolute path based on the \ref build_root and an absolute path based on the \ref 
+source_root of the recent project.
+
+
+<li>
+\code
+obj.libs     = 'DCOP kICE'
+\endcode
+This attribute specifies additional libraries, which will be linked to the target. To be platform independent, 
+you should not add any prefix in library names. Using this form requires to specific the \b libpaths attribute 
+below, otherwise your library may not found. 
+
+<li>
+\code
+obj.libpaths     = 'kio ../kdecore'
+obj.libpaths     = '/usr/lib/openssl c:/Programme/openssl'
+obj.libpaths     = '#/DCOP'    
+obj.libpaths     = '##/DCOP'
+\endcode
+This attribute specifies library pathes, in which libraries specified with the \b obj.libs attribute will be 
+searched.
+
+In the examples above 
+- 'kio' specifies a subdir of the current directory, 
+- '../kdecore' specifies a subdir on the same level as the current dir. 
+- '/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes.
+Platform depending pathes  should be avoided and either replaced by a \ref configuration option or 
+only activated when linking for the related platform like shown below:
+\code
+if  env['WINDOWS']:
+	obj.libpaths += ' c:/openssl/lib'
+else: 
+	obj.libpaths += ' /usr/lib/openssl'
+\endcode
+- '#/DCOP' specifies an absolute path based on the build dir of the recent project
+- '##/DCOP' specifies an absolute path based on the build root and an absolute path based on the source 
+root of the recent project.
+
+<li>
+\code
+obj.ccflags     = '-DXYz=x'
+\endcode
+This attribute specifies definitions and options for the c compiler/preprocessor when compiling c source. 
+Compiler options are compiler specific and should be limited to the related platform/compiler as shown 
+in the example below: 
+\code
+if  env['WINDOWS'] and env['CC'] == 'cl':
+	obj.ccflags = ' /G133'
+else: 
+	obj.ccflags = ' -fcommon'
+\endcode
+These definitions are also used for the c++ compiler, that means definitions required for the c and c++ 
+compiler have only to be specified with this attribute. 
+
+<li>
+\code
+obj.cxxflags     = '-DXYz=x'
+\endcode
+This attribute specifies definitions used by the c++ compiler/preprocessor when compiling c++ source. 
+Compiler options are compiler specific and should be limited to the related platform/compiler as shown 
+in the example below: 
+\code
+if  env['WINDOWS'] and env['CC'] == 'cl':
+	obj.cxxflags = ' /G133'
+else: 
+	obj.cxxflags = ' -fcommon'
+\endcode
+
+</ul>
+
+*/

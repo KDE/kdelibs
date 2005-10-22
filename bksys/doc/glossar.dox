@@ -1,0 +1,19 @@
+/** \page glossar  Glossar
+
+\section source_root source root 
+the top level directory of the source tree 
+\section build_root build root 
+the top level directory of the build tree. The build tree is located by default in \ref source_root/build. The setting could 
+be changed in the \ref SConstruct file. 
+\section SConstruct 
+top level scons configuration file 
+\section SConstrict 
+scons configuration file located in sub dirs. The format of the SConscript file is documentated 
+in the \ref sconscript_format page
+
+
+ 
+
+
+
+*/
