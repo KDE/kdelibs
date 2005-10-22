@@ -1325,7 +1325,7 @@ void RenderBox::calcAbsoluteHorizontalValues(WidthType widthType, RenderObject* 
 
         //1. solve left & width.
         if (l==AUTO && w==AUTO && r!=AUTO) {
-            w = qMin(kMax(m_minWidth - pab, cw - (r + ml + mr + pab)), m_maxWidth - pab);
+            w = qMin(qMax(m_minWidth - pab, cw - (r + ml + mr + pab)), m_maxWidth - pab);
             l = cw - ( r + w + ml + mr + pab);
         }
         else
@@ -1343,7 +1343,7 @@ void RenderBox::calcAbsoluteHorizontalValues(WidthType widthType, RenderObject* 
         else
         //3. solve width & right.
         if (l!=AUTO && w==AUTO && r==AUTO) {
-            w = qMin(kMax(m_minWidth - pab, cw - (l + ml + mr + pab)), m_maxWidth - pab);
+            w = qMin(qMax(m_minWidth - pab, cw - (l + ml + mr + pab)), m_maxWidth - pab);
             r = cw - ( l + w + ml + mr + pab);
         }
         else

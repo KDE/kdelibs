@@ -629,7 +629,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
         case Hexadecimal:
         {
             int uc = EntityChar.unicode();
-            int ll = kMin<uint>(src.length(), 8);
+            int ll = qMin<uint>(src.length(), 8);
             while(ll--) {
                 QChar csrc(src->lower());
                 cc = csrc.cell();

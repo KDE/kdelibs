@@ -164,7 +164,7 @@ void RenderFrameSet::layout( )
 
             for(int i = 0; i < gridLen; i++)
                 if(grid[i].isPercent()) {
-                    gridLayout[i] = qMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
+                    gridLayout[i] = qMin(qMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
                     totalPercent += grid[i].value();
                     countPercent++;

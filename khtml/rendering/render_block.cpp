@@ -1056,7 +1056,7 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
             // For self-collapsing blocks that clear, they may end up collapsing
             // into the bottom of the parent block.  We simulate this behavior by
             // setting our positive margin value to compensate for the clear.
-            marginInfo.setPosMargin(kMax(0, child->yPos() - m_height));
+            marginInfo.setPosMargin(qMax(0, child->yPos() - m_height));
             marginInfo.setNegMargin(0);
             marginInfo.setSelfCollapsingBlockClearedFloat(true);
         }

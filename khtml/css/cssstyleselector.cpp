@@ -411,8 +411,8 @@ void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetr
     const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
         factor = scale*factors[i];
-        fontSizes[i] = int(kMax( mediumFontSize*factor +.5f, minFontSize));
-        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(kMax( mediumFontSize*factor +.5f, minFontSize)) << endl;
+        fontSizes[i] = int(qMax( mediumFontSize*factor +.5f, minFontSize));
+        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(qMax( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 
@@ -3620,7 +3620,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return; // Error case.
 
         // Clamp opacity to the range 0-1
-        style->setOpacity(kMin(1.0f, qMax(0.0f, (float)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER))));
+        style->setOpacity(qMin(1.0f, qMax(0.0f, (float)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER))));
         break;
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;

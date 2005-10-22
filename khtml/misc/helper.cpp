@@ -93,7 +93,7 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
       }
       hdist = qMin(hdist, HUE_DISTANCE*2);
   }
-  return hdist + (kAbs(s1-s2)*128)/(160+kMin(s1,s2)) + qAbs(v1-v2) > CONTRAST_DISTANCE;
+  return hdist + (qAbs(s1-s2)*128)/(160+qMin(s1,s2)) + qAbs(v1-v2) > CONTRAST_DISTANCE;
 
 #undef CONTRAST_DISTANCE
 #undef HUE_DISTANCE
@@ -103,9 +103,9 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
 // ### arbitrary value, to be adapted if necessary (LS)
 #define CONTRAST_DISTANCE 32
 
-  if (kAbs(c1.Qt::red() - c2.Qt::red()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.Qt::green() - c2.Qt::green()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.Qt::blue() - c2.Qt::blue()) > CONTRAST_DISTANCE) return true;
+  if (qAbs(c1.Qt::red() - c2.Qt::red()) > CONTRAST_DISTANCE) return true;
+  if (qAbs(c1.Qt::green() - c2.Qt::green()) > CONTRAST_DISTANCE) return true;
+  if (qAbs(c1.Qt::blue() - c2.Qt::blue()) > CONTRAST_DISTANCE) return true;
 
   return false;
 

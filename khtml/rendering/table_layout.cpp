@@ -920,7 +920,7 @@ void AutoTableLayout::layout()
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isPercent() ) {
-                int w = kMax ( int( layoutStruct[i].effMinWidth ), width.minWidth( tableWidth ) );
+                int w = qMax ( int( layoutStruct[i].effMinWidth ), width.minWidth( tableWidth ) );
 		available += layoutStruct[i].calcWidth - w;
 		layoutStruct[i].calcWidth = w;
 	    }

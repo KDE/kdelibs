@@ -2271,7 +2271,7 @@ void KHTMLPart::checkCompleted()
   d->m_paUseStylesheet->setEnabled( sheets.count() > 2);
   if (sheets.count() > 2)
   {
-    d->m_paUseStylesheet->setCurrentItem(kMax(sheets.findIndex(d->m_sheetUsed), 0));
+    d->m_paUseStylesheet->setCurrentItem(qMax(sheets.findIndex(d->m_sheetUsed), 0));
     slotUseStylesheet();
   }
 

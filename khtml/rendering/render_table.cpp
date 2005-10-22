@@ -1395,7 +1395,7 @@ int RenderTableSection::layoutRows( int toAdd )
                 o = o->nextSibling();
             }
             if (cellChildrenFlex) {
-                cell->setCellPercentageHeight(kMax(0,
+                cell->setCellPercentageHeight(qMax(0,
                                                    rHeight - cell->borderTop() - cell->paddingTop() -
                                                    cell->borderBottom() - cell->paddingBottom()));
                 cell->layoutIfNeeded();

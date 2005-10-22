@@ -302,7 +302,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
         // no digits!
         if (j == 0) return;
 
-        int v = kClamp( QConstString(s, i).string().toInt(), -8192, 8191 ) ;
+        int v = qBound( -8192, QConstString(s, i).string().toInt(), 8191 ) ;
         const char* suffix = "px";
         if (!numOnly || multiLength) {
             // look if we find a % or *

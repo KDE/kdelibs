@@ -1121,7 +1121,7 @@ int RenderText::minXPos() const
     int retval=6666666;
     for (unsigned i=0;i < m_lines.count(); i++)
     {
-	retval = kMin ( retval, int( m_lines[i]->m_x ));
+	retval = qMin ( retval, int( m_lines[i]->m_x ));
     }
     return retval;
 }
