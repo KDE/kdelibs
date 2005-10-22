@@ -4,8 +4,9 @@ def detect(env):
 	import os, sys
 	import SCons.Util
 
-	if env['ARGS'].get('debug', None):
-		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
+	env['BKS_DEBUG']=0
+	if env['ARGS'].get('debug', 0):
+		env['BKS_DEBUG'] = env['ARGS'].get('debug', 0)
 		env.pprint('CYAN','** Enabling debug for the project **')
 		env['GENCXXFLAGS'] = ['-g']
 		env['GENCCFLAGS'] = ['-g']

@@ -18,10 +18,8 @@ def detect(env):
 	# This values could be taken from QTDIR/.qmake.conf 
 	#  debug -> CONFIG 
 	#  library version extension -> QMAKE_QT_VERSION_OVERRIDE (=4 yet) 
-	if env['ARGS'].get('debug', None):
-		lib_addon = 'd4'
-	else:
-		lib_addon = '4'
+	if env['BKS_DEBUG']: lib_addon = 'd4'
+	else:                lib_addon = '4'
 
 	prefix		= getpath('prefix')
 	execprefix	= getpath('execprefix')

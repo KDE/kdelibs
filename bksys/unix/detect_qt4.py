@@ -149,9 +149,9 @@ def detect(env):
         env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
         env['LIB_XRENDER']         = ['Xrender']
 
-	if env.has_key('BKS_DEBUG'):
-		if env['BKS_DEBUG']:
-			debug='_debug'
+	# link against libqt_debug when appropriate
+	if env['BKS_DEBUG']: debug='_debug'
+	else:                debug=''
 
         ########## QT
         # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
