@@ -2080,9 +2080,9 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     if ( properties->items().first()->isDir() )
       extendedACLs->setAllowDefaults( true );
   }
+#endif
   if (dlg.exec() != KDialogBase::Accepted)
     return;
-#endif
 
   mode_t andPermissions = mode_t(~0);
   mode_t orPermissions = 0;
