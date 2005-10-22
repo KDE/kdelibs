@@ -51,7 +51,7 @@
 
 namespace KLibLoader_cpp {
 enum UnloadMode {UNKNOWN, UNLOAD, DONT_UNLOAD};
-};
+}
 
 /* This helper class is needed, because KLibraries can go away without
    being unloaded. So we need some info about KLibraries even after its
