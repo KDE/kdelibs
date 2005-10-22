@@ -699,7 +699,7 @@ public:
   {
   	FindLinksOnly   = 1 * KFind::MinimumUserOption,
   	FindNoPopups    = 2 * KFind::MinimumUserOption
-  	//FindIncremental = 4 * KFindDialog::MinimumUserOption
+  	//FindIncremental = 4 * KFind::MinimumUserOption
   };
 
   /**

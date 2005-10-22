@@ -79,7 +79,7 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
   c1.hsv(&h1,&s1,&v1);
   c2.hsv(&h2,&s2,&v2);
   if(h1!=-1 && h2!=-1) { // grey values have no hue
-      hdist = kAbs(h1-h2);
+      hdist = qAbs(h1-h2);
       if (hdist > 180) hdist = 360-hdist;
       if (hdist < HUE_DISTANCE) {
           hdist -= HUE_DISTANCE;
@@ -91,9 +91,9 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
           else if (!hk1 && !hk2)
               hdist = (7*hdist)/4;
       }
-      hdist = kMin(hdist, HUE_DISTANCE*2);
+      hdist = qMin(hdist, HUE_DISTANCE*2);
   }
-  return hdist + (kAbs(s1-s2)*128)/(160+kMin(s1,s2)) + kAbs(v1-v2) > CONTRAST_DISTANCE;
+  return hdist + (kAbs(s1-s2)*128)/(160+kMin(s1,s2)) + qAbs(v1-v2) > CONTRAST_DISTANCE;
 
 #undef CONTRAST_DISTANCE
 #undef HUE_DISTANCE

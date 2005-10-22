@@ -681,9 +681,9 @@ static void calc3DColor(QColor &color, bool darken)
     else
       color.setRgb(r, g, b);
   } else {
-    int r = kMin(rb + (f1 * (MAX_COLOR - rb) / 100), 255);
-    int g = kMin(gb + (f1 * (MAX_COLOR - gb) / 100), 255);
-    int b = kMin(bb + (f1 * (MAX_COLOR - bb) / 100), 255);
+    int r = qMin(rb + (f1 * (MAX_COLOR - rb) / 100), 255);
+    int g = qMin(gb + (f1 * (MAX_COLOR - gb) / 100), 255);
+    int b = qMin(bb + (f1 * (MAX_COLOR - bb) / 100), 255);
     if ((r == rb) && (g == gb) && (b == bb))
       color = (color == Qt::white) ? LIGHT_GRAY : Qt::white;
     else
@@ -1141,7 +1141,7 @@ QString RenderObject::information() const
     if ( continuation() )
         ts << " continuation=" << continuation();
     if (isText())
-        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), kMin(static_cast<const RenderText *>(this)->length(), 10u)).string() << "\"";
+        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), qMin(static_cast<const RenderText *>(this)->length(), 10u)).string() << "\"";
     return str;
 }
 
@@ -1592,7 +1592,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
         if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
             continue;
 
-//        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), kMin(static_cast<RenderText *>(child)->length(), 10u)).string() + "\"" : QString::null) << endl;
+//        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)).string() + "\"" : QString::null) << endl;
 //        kdDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
 //        kdDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;

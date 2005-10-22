@@ -383,7 +383,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
 int InlineTextBox::widthFromStart(int pos) const
 {
   // gasp! sometimes pos is i < 0 which crashes Font::width
-  pos = kMax(pos, 0);
+  pos = qMax(pos, 0);
 
   const RenderText *t = renderText();
   Q_ASSERT(t->isText());
@@ -633,7 +633,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 //kdDebug(6040) << "nearest_idx " << nearest_idx << " count " << count << endl;
     if (si >= count) s = m_lines[nearest_idx];
     // we are now in the correct text box
-    pos = kMin(offset - s->m_start, int( s->m_len ));
+    pos = qMin(offset - s->m_start, int( s->m_len ));
     //kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
     return s;
 }
@@ -932,8 +932,8 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 	        }
 		else {
                     int offset = s->m_start;
-                    int sPos = kMax( startPos - offset, 0 );
-                    int ePos = kMin( endPos - offset, int( s->m_len ) );
+                    int sPos = qMax( startPos - offset, 0 );
+                    int ePos = qMin( endPos - offset, int( s->m_len ) );
 // selected text is always separate in konqueror
 #ifdef APPLE_CHANGES
                     if (paintSelectedTextSeparately) {
@@ -979,8 +979,8 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
             if (haveSelection && pI.phase == PaintActionSelection) {
 		int offset = s->m_start;
-		int sPos = kMax( startPos - offset, 0 );
-		int ePos = kMin( endPos - offset, int( s->m_len ) );
+		int sPos = qMax( startPos - offset, 0 );
+		int ePos = qMin( endPos - offset, int( s->m_len ) );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
 		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);
@@ -1278,7 +1278,7 @@ short RenderText::width() const
             maxx = s->m_x + s->m_width;
     }
 
-    w = kMax(0, maxx-minx);
+    w = qMax(0, maxx-minx);
 
     return w;
 }

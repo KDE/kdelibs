@@ -700,8 +700,8 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     layoutPositionedObjects( relayoutChildren );
 
     // Always ensure our overflow width/height are at least as large as our width/height.
-    m_overflowWidth = kMax(m_overflowWidth, (int)m_width);
-    m_overflowHeight = kMax(m_overflowHeight, m_height);
+    m_overflowWidth = qMax(m_overflowWidth, (int)m_width);
+    m_overflowHeight = qMax(m_overflowHeight, m_height);
 
     if (canCollapseOwnMargins && m_height == 0) {
         // We are a block with no border and padding and a computed height
@@ -889,7 +889,7 @@ void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compac
                 adj = vpos;
             compactYPos += adj;
         }
-        Length newLineHeight( kMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)), khtml::Fixed);
+        Length newLineHeight( qMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)), khtml::Fixed);
         child->style()->setLineHeight( newLineHeight );
         child->setNeedsLayout( true, false );
         child->layout();
@@ -936,8 +936,8 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
     // For self-collapsing blocks, collapse our bottom margins into our
     // top to get new posTop and negTop values.
     if (child->isSelfCollapsingBlock()) {
-        posTop = kMax(posTop, (int)child->maxBottomMargin(true));
-        negTop = kMax(negTop, (int)child->maxBottomMargin(false));
+        posTop = qMax(posTop, (int)child->maxBottomMargin(true));
+        negTop = qMax(negTop, (int)child->maxBottomMargin(false));
     }
 
     // See if the top margin is quirky. We only care if this child has
@@ -949,8 +949,8 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
         // block.  If it has larger margin values, then we need to update
         // our own maximal values.
         if (!style()->htmlHacks() || !marginInfo.quirkContainer() || !topQuirk) {
-            m_maxTopPosMargin = kMax(posTop, (int)m_maxTopPosMargin);
-            m_maxTopNegMargin = kMax(negTop, (int)m_maxTopNegMargin);
+            m_maxTopPosMargin = qMax(posTop, (int)m_maxTopPosMargin);
+            m_maxTopNegMargin = qMax(negTop, (int)m_maxTopNegMargin);
         }
 
         // The minute any of the margins involved isn't a quirk, don't
@@ -979,8 +979,8 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
         // This child has no height.  We need to compute our
         // position before we collapse the child's margins together,
         // so that we can get an accurate position for the zero-height block.
-        int collapsedTopPos = kMax(marginInfo.posMargin(), (int)child->maxTopMargin(true));
-        int collapsedTopNeg = kMax(marginInfo.negMargin(), (int)child->maxTopMargin(false));
+        int collapsedTopPos = qMax(marginInfo.posMargin(), (int)child->maxTopMargin(true));
+        int collapsedTopNeg = qMax(marginInfo.negMargin(), (int)child->maxTopMargin(false));
         marginInfo.setMargin(collapsedTopPos, collapsedTopNeg);
 
         // Now collapse the child's margins together, which means examining our
@@ -1012,7 +1012,7 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
              && (!style()->htmlHacks() || !marginInfo.quirkContainer() || !marginInfo.topQuirk()))) {
             // We're collapsing with a previous sibling's margins and not
             // with the top of the block.
-            m_height += kMax(marginInfo.posMargin(), posTop) - kMax(marginInfo.negMargin(), negTop);
+            m_height += qMax(marginInfo.posMargin(), posTop) - qMax(marginInfo.negMargin(), negTop);
             ypos = m_height;
         }
 
@@ -1167,7 +1167,7 @@ int RenderBlock::estimateVerticalPosition(RenderObject* child, const MarginInfo&
     int yPosEstimate = m_height;
     if (!marginInfo.canCollapseWithTop()) {
         int childMarginTop = child->selfNeedsLayout() ? child->marginTop() : child->collapsedMarginTop();
-        yPosEstimate += kMax(marginInfo.margin(), childMarginTop);
+        yPosEstimate += qMax(marginInfo.margin(), childMarginTop);
     }
     return yPosEstimate;
 }
@@ -1187,7 +1187,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
             if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
                 if (child->marginLeft() < 0)
                     leftOff += child->marginLeft();
-                chPos = kMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
+                chPos = qMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
             }
             else if (leftOff != xPos) {
                 // The object is shifting right. The object might be centered, so we need to
@@ -1211,7 +1211,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
             if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isVariable()) {
                 if (child->marginRight() < 0)
                     rightOff -= child->marginRight();
-                chPos = kMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
+                chPos = qMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
             } else if (rightOff != xPos) {
                 // The object is shifting left. The object might be centered, so we need to
                 // recalculate our horizontal margins. Note that the containing block content
@@ -1235,8 +1235,8 @@ void RenderBlock::setCollapsedBottomMargin(const MarginInfo& marginInfo)
 #endif
         // Update our max pos/neg bottom margins, since we collapsed our bottom margins
         // with our children.
-        m_maxBottomPosMargin = kMax((int)m_maxBottomPosMargin, marginInfo.posMargin());
-        m_maxBottomNegMargin = kMax((int)m_maxBottomNegMargin, marginInfo.negMargin());
+        m_maxBottomPosMargin = qMax((int)m_maxBottomPosMargin, marginInfo.posMargin());
+        m_maxBottomNegMargin = qMax((int)m_maxBottomNegMargin, marginInfo.negMargin());
 
         if (!marginInfo.bottomQuirk())
             m_bottomMarginQuirk = false;
@@ -1266,10 +1266,10 @@ void RenderBlock::handleBottomOfBlock(int top, int bottom, MarginInfo& marginInf
 
     // Negative margins can cause our height to shrink below our minimal height (border/padding).
     // If this happens, ensure that the computed height is increased to the minimal height.
-    m_height = kMax(m_height, top + bottom);
+    m_height = qMax(m_height, top + bottom);
 
     // Always make sure our overflow height is at least our height.
-    m_overflowHeight = kMax(m_height, m_overflowHeight);
+    m_overflowHeight = qMax(m_height, m_overflowHeight);
 
     // Update our bottom collapsed margin info.
     setCollapsedBottomMargin(marginInfo);
@@ -1394,7 +1394,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             overflowDelta += child->overflowHeight();
 
         // See if this child has made our overflow need to grow.
-        int rightChildPos = child->xPos() + kMax(child->effectiveWidth(), (int)child->width());
+        int rightChildPos = child->xPos() + qMax(child->effectiveWidth(), (int)child->width());
         if (child->isRelPositioned()) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
             // ### left overflow support
@@ -1406,8 +1406,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                overflowDelta += yoff;
         }
 
-        m_overflowHeight = kMax(m_height + overflowDelta, m_overflowHeight);
-        m_overflowWidth = kMax(rightChildPos, m_overflowWidth);
+        m_overflowHeight = qMax(m_height + overflowDelta, m_overflowHeight);
+        m_overflowWidth = qMax(rightChildPos, m_overflowWidth);
 
         // Insert our compact into the block margin if we have one.
         insertCompactIfNeeded(child, compactInfo);
@@ -1816,9 +1816,9 @@ void RenderBlock::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
 
         if ( o->style()->clear() & CLEFT )
-            y = kMax( leftBottom(), y );
+            y = qMax( leftBottom(), y );
         if ( o->style()->clear() & CRIGHT )
-            y = kMax( rightBottom(), y );
+            y = qMax( rightBottom(), y );
 
         if (o->style()->floating() == FLEFT)
         {
@@ -1827,7 +1827,7 @@ void RenderBlock::positionNewFloats()
             int fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
             while (rightRelOffset(y,ro, false, &heightRemainingRight)-fx < fwidth)
             {
-                y += kMin( heightRemainingLeft, heightRemainingRight );
+                y += qMin( heightRemainingLeft, heightRemainingRight );
                 fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
             }
             if (fx<0) fx=0;
@@ -1842,7 +1842,7 @@ void RenderBlock::positionNewFloats()
             int fx = rightRelOffset(y,ro, false, &heightRemainingRight);
             while (fx - leftRelOffset(y,lo, false, &heightRemainingLeft) < fwidth)
             {
-                y += kMin(heightRemainingLeft, heightRemainingRight);
+                y += qMin(heightRemainingLeft, heightRemainingRight);
                 fx = rightRelOffset(y,ro, false, &heightRemainingRight);
             }
             if (fx<f->width) fx=f->width;
@@ -1982,7 +1982,7 @@ RenderBlock::nearestFloatBottom(int height) const
     for ( ; (r = it.current()); ++it )
         if (r->endY>height && (r->endY<bottom || bottom==0))
             bottom=r->endY;
-    return kMax(bottom, height);
+    return qMax(bottom, height);
 }
 
 int RenderBlock::floatBottom() const
@@ -2011,7 +2011,7 @@ int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) 
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
                 int lp = r->startY + r->node->lowestPosition(false);
-                bottom = kMax(bottom, lp);
+                bottom = qMax(bottom, lp);
             }
         }
     }
@@ -2023,13 +2023,13 @@ int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) 
         Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
             int lp = r->yPos() + r->lowestPosition(false);
-            bottom = kMax(bottom, lp);
+            bottom = qMax(bottom, lp);
         }
     }
 
     if (!includeSelf && lastLineBox()) {
         int lp = lastLineBox()->yPos() + lastLineBox()->height();
-        bottom = kMax(bottom, lp);
+        bottom = qMax(bottom, lp);
     }
 
     return bottom;
@@ -2049,7 +2049,7 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
                 int rp = r->left + r->node->rightmostPosition(false);
-           	right = kMax(right, rp);
+           	right = qMax(right, rp);
             }
         }
     }
@@ -2059,14 +2059,14 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
             int rp = r->xPos() + r->rightmostPosition(false);
-            right = kMax(right, rp);
+            right = qMax(right, rp);
         }
     }
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox()) {
             int rp = currBox->xPos() + currBox->width();
-            right = kMax(right, rp);
+            right = qMax(right, rp);
         }
     }
 
@@ -2087,7 +2087,7 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
                 int lp = r->left + r->node->leftmostPosition(false);
-                left = kMin(left, lp);
+                left = qMin(left, lp);
             }
         }
     }
@@ -2097,13 +2097,13 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
         Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
             int lp = r->xPos() + r->leftmostPosition(false);
-            left = kMin(left, lp);
+            left = qMin(left, lp);
         }
     }
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox())
-            left = kMin(left, (int)currBox->xPos());
+            left = qMin(left, (int)currBox->xPos());
     }
 
     return left;
@@ -2308,12 +2308,12 @@ int RenderBlock::getClearDelta(RenderObject *child)
     // We also clear floats if we are too big to sit on the same line as a float, and happen to flow around floats.
     // FIXME: Note that the remaining space checks aren't quite accurate, since you should be able to clear only some floats (the minimum # needed
     // to fit) and not all (we should be using nearestFloatBottom and looping).
-    int result = clearSet ? kMax(0, bottom - child->yPos()) : 0;
+    int result = clearSet ? qMax(0, bottom - child->yPos()) : 0;
     if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
         if ((child->style()->width().isPercent() && child->width() > lineWidth(child->yPos())) ||
             (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) && 
               child->minWidth() <= contentWidth()))
-            result = kMax(0, floatBottom() - child->yPos());
+            result = qMax(0, floatBottom() - child->yPos());
     }
     return result;
 }
@@ -2406,19 +2406,19 @@ void RenderBlock::calcMinMaxWidth()
 
      if (style()->width().isFixed() && style()->width().value() > 0) {
         if (isTableCell())
-            m_maxWidth = kMax(m_minWidth,short(style()->width().value()));
+            m_maxWidth = qMax(m_minWidth,short(style()->width().value()));
         else
             m_minWidth = m_maxWidth = short(style()->width().value());
     }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxWidth = kMax(m_maxWidth, short(style()->minWidth().value()));
-        m_minWidth = kMax(m_minWidth, short(style()->minWidth().value()));
+        m_maxWidth = qMax(m_maxWidth, short(style()->minWidth().value()));
+        m_minWidth = qMax(m_minWidth, short(style()->minWidth().value()));
     }
 
     if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
-        m_maxWidth = kMin(m_maxWidth, short(style()->maxWidth().value()));
-        m_minWidth = kMin(m_minWidth, short(style()->maxWidth().value()));
+        m_maxWidth = qMin(m_maxWidth, short(style()->maxWidth().value()));
+        m_minWidth = qMin(m_minWidth, short(style()->maxWidth().value()));
     }
 
     int toAdd = 0;
@@ -2652,7 +2652,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                     if (prevFloat &&
                         ((prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
                          (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
-                        m_maxWidth = kMax(inlineMax, (int)m_maxWidth);
+                        m_maxWidth = qMax(inlineMax, (int)m_maxWidth);
                         inlineMax = 0;
                     }
                     prevFloat = child;
@@ -2808,7 +2808,7 @@ void RenderBlock::calcBlockMinMaxWidth()
         if (prevFloat && (!child->isFloating() ||
                           (prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
                           (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
-            m_maxWidth = kMax(floatWidths, m_maxWidth);
+            m_maxWidth = qMax(floatWidths, m_maxWidth);
             floatWidths = 0;
         }
 
@@ -2880,7 +2880,7 @@ void RenderBlock::calcBlockMinMaxWidth()
             prevFloat = child;
         child = child->nextSibling();
     }
-    m_maxWidth = kMax(floatWidths, m_maxWidth);
+    m_maxWidth = qMax(floatWidths, m_maxWidth);
 }
 
 void RenderBlock::close()

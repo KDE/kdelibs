@@ -188,7 +188,7 @@ int main( int argc, char **argv )
     KCmdLineArgs::addCmdLineOptions( options );
 
     // Add options from other components
-    //KApplication::addCmdLineOptions();
+    //KCmdLineArgs::addStdCmdLineOptions();
     
     KApplication app;
 

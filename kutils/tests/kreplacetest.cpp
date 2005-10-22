@@ -61,7 +61,7 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
     {
         if ( m_text.isEmpty() )
             return;
-        if ( m_replace->options() & KFindDialog::FindBackwards ) {
+        if ( m_replace->options() & KFind::FindBackwards ) {
             m_currentPos = --m_text.end();
         } else {
             m_currentPos = m_text.begin();
@@ -101,7 +101,7 @@ void KReplaceTest::slotReplaceNext()
 {
     //kdDebug() << k_funcinfo << endl;
     KFind::Result res = KFind::NoMatch;
-    int backwards = m_replace->options() & KFindDialog::FindBackwards;
+    int backwards = m_replace->options() & KFind::FindBackwards;
     while ( res == KFind::NoMatch ) {
         if ( m_replace->needData() ) {
             m_replace->setData( *m_currentPos );
@@ -114,7 +114,7 @@ void KReplaceTest::slotReplaceNext()
             QStringList::iterator lastItem = backwards ? m_text.begin() : --m_text.end();
             if ( m_currentPos == lastItem )
                 break;
-            if ( m_replace->options() & KFindDialog::FindBackwards ) {
+            if ( m_replace->options() & KFind::FindBackwards ) {
                 m_currentPos--;
             } else {
                 m_currentPos++;
@@ -125,7 +125,7 @@ void KReplaceTest::slotReplaceNext()
 #if 0 // commented out so that this test doesn't require interaction
     if ( res == KFind::NoMatch ) // i.e. at end
         if ( m_replace->shouldRestart() ) {
-            if ( m_replace->options() & KFindDialog::FindBackwards )
+            if ( m_replace->options() & KFind::FindBackwards )
                 m_currentPos = m_text.fromLast();
             else
                 m_currentPos = m_text.begin();
@@ -326,7 +326,7 @@ int main( int argc, char **argv )
 
     test.replace( "GNU", "KDE", 0 );
     test.replace( "free", "*free*", 0 );
-    test.replace( "This", "THIS*", KFindDialog::FindBackwards );
+    test.replace( "This", "THIS*", KFind::FindBackwards );
 
     test.print();
     //return app.exec();

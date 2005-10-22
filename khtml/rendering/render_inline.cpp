@@ -521,9 +521,9 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
         if (!pointArray.isEmpty()) {
             QPoint lastPnt = pointArray.back();
             if (newPnt.x()>lastPnt.x() && !left)
-                pointArray.back().setY( kMin(lastPnt.y(), root->topOverflow()) );
+                pointArray.back().setY( qMin(lastPnt.y(), root->topOverflow()) );
             else if (newPnt.x()<lastPnt.x() && left)
-                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()) );
+                pointArray.back().setY( qMax(lastPnt.y(), root->bottomOverflow()) );
             QPoint insPnt(newPnt.x(), pointArray.back().y());
 //         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
             appendPoint(pointArray, insPnt);
@@ -936,7 +936,7 @@ inline int minXPos(const RenderInline *o)
     int retval=6666666;
     if (!o->firstLineBox()) return 0;
     for (InlineRunBox* curr = o->firstLineBox(); curr; curr = curr->nextLineBox())
-        retval = kMin( retval, int( curr->m_x ));
+        retval = qMin( retval, int( curr->m_x ));
     return retval;
 }
 

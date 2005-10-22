@@ -151,8 +151,8 @@ void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
     // its bigger )
-    h = kMin( h, 3072 );
-    w = kMin( w, 2000 );
+    h = qMin( h, 3072 );
+    w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
         m_resizePending = !strcmp(m_widget->name(), "__khtml");
@@ -401,8 +401,8 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
             }
 //             qDebug("calculated yNew=%d", yNew);
         }
-        yNew = kMin( yNew, yPos + m_height - childh );
-        yNew = kMax( yNew, yPos );
+        yNew = qMin( yNew, yPos + m_height - childh );
+        yNew = qMax( yNew, yPos );
         if ( yNew != childy || xNew != childx ) {
             if ( vw->contentsHeight() < yNew - yPos + childh )
                 vw->resizeContents( vw->contentsWidth(), yNew - yPos + childh );
@@ -459,8 +459,8 @@ protected:
         m_grabbed = true;
         bool cur_overflow = false;
 
-        int nw = kMax(m_buf.width(), s.width());
-        int nh = kMax(m_buf.height(), s.height());
+        int nw = qMax(m_buf.width(), s.width());
+        int nh = qMax(m_buf.height(), s.height());
 
         if (!m_overflow && (nw*nh > maxPixelBuffering))
             cur_overflow = true;

@@ -1970,9 +1970,9 @@ static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
             l = m+1;
     }
     if (!l)
-        return smaller ? (v*5)/6 : kMin((v*6)/5, a[0]);
+        return smaller ? (v*5)/6 : qMin((v*6)/5, a[0]);
     if (l == int(a.count()))
-        return smaller ? kMax((v*5)/6, a[r]) : (v*6)/5;
+        return smaller ? qMax((v*5)/6, a[r]) : (v*6)/5;
 
     return smaller ? a[r] : a[l];
 }
@@ -3620,7 +3620,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return; // Error case.
 
         // Clamp opacity to the range 0-1
-        style->setOpacity(kMin(1.0f, kMax(0.0f, (float)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER))));
+        style->setOpacity(kMin(1.0f, qMax(0.0f, (float)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER))));
         break;
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;

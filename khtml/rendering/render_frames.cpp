@@ -153,7 +153,7 @@ void RenderFrameSet::layout( )
             // percentage ones and distribute remaining over relative
             for(int i = 0; i< gridLen; ++i)
                 if (grid[i].isFixed()) {
-                    gridLayout[i] = kMin(grid[i].value() > 0 ? grid[i].value() : 0, remainingLen[k]);
+                    gridLayout[i] = qMin(grid[i].value() > 0 ? grid[i].value() : 0, remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
                     totalFixed += gridLayout[i];
                 }
@@ -164,7 +164,7 @@ void RenderFrameSet::layout( )
 
             for(int i = 0; i < gridLen; i++)
                 if(grid[i].isPercent()) {
-                    gridLayout[i] = kMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
+                    gridLayout[i] = qMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
                     totalPercent += grid[i].value();
                     countPercent++;

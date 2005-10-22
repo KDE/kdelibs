@@ -730,7 +730,7 @@ kdDebug(6200) << "== recursive invocation end" << endl;
 
     } else if (box->isInlineTextBox()) {
 #if DEBUG_ACIB
-kdDebug(6200) << "isinlinetextbox " << box << (box->object() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(box->object())->str->s+box->minOffset(), kMin(box->maxOffset() - box->minOffset(), 15L)).string()) : QString::null) << endl;
+kdDebug(6200) << "isinlinetextbox " << box << (box->object() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(box->object())->str->s+box->minOffset(), qMin(box->maxOffset() - box->minOffset(), 15L)).string()) : QString::null) << endl;
 #endif
       caret_boxes.append(new CaretBox(box, false, false));
       sbp.check(preEnd());
@@ -867,7 +867,7 @@ CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
         if (!outsideEnd ^ rtl)
             _y -= fm.leading() / 2;
         else
-            _y += kMax(cb->height() - fm.ascent() - hl, 0);
+            _y += qMax(cb->height() - fm.ascent() - hl, 0);
     } else {
         _y += baseline - fm.ascent() - hl;
     }
@@ -1000,7 +1000,7 @@ static CaretBoxLine* findCaretBoxLine(DOM::NodeImpl *node, long offset,
     outside = false;	// text boxes cannot have outside positions
     InlineFlowBox *baseFlowBox = seekBaseFlowBox(b, base);
 #if DEBUG_CARETMODE > 2
-  kdDebug(6200) << "text-box b: " << b << " baseFlowBox: " << baseFlowBox << (b && b->object() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(b->object())->str->s+b->minOffset(), kMin(b->maxOffset() - b->minOffset(), 15L)).string()) : QString::null) << endl;
+  kdDebug(6200) << "text-box b: " << b << " baseFlowBox: " << baseFlowBox << (b && b->object() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(b->object())->str->s+b->minOffset(), qMin(b->maxOffset() - b->minOffset(), 15L)).string()) : QString::null) << endl;
 #endif
 #if 0
     if (t->containingBlock()->isListItem()) dumpLineBoxes(static_cast<RenderFlow *>(t->containingBlock()));
@@ -2638,7 +2638,7 @@ static void moveIteratorByPage(LinearDocument &ld,
       kdDebug(6200) << "absdiff " << diff << endl;
 #endif
     } else {
-      diff = kAbs(fby - lastfby);
+      diff = qAbs(fby - lastfby);
     }/*end if*/
 #if DEBUG_CARETMODE > 2
     kdDebug(6200) << "cbl->begin().data()->yPos(): " << fby << " diff " << diff << endl;
@@ -2646,7 +2646,7 @@ static void moveIteratorByPage(LinearDocument &ld,
 
     mindist -= diff;
 
-    lastheight = kAbs(fby - lastfby);
+    lastheight = qAbs(fby - lastfby);
     lastfby = fby;
     lastcb = cb;
     it = copy;

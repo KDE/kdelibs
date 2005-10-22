@@ -220,7 +220,7 @@ void RenderTable::calcWidth()
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
     } else {
-        m_width = kMin(short( availableWidth ),m_maxWidth);
+        m_width = qMin(short( availableWidth ),m_maxWidth);
     }
 
     // restrict width to what we really have
@@ -228,9 +228,9 @@ void RenderTable::calcWidth()
 
     availableWidth = cb->lineWidth( m_y );
     if ( widthType != Percent )
-        m_width = kMin( short( availableWidth ), m_width );
+        m_width = qMin( short( availableWidth ), m_width );
 
-    m_width = kMax(m_width, m_minWidth);
+    m_width = qMax(m_width, m_minWidth);
 
     // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;
@@ -479,12 +479,12 @@ void RenderTable::paintBoxDecorations(PaintInfo &pI, int _tx, int _ty)
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    int my = kMax(_ty,pI.r.y());
+    int my = qMax(_ty,pI.r.y());
     int mh;
     if (_ty<pI.r.y())
-        mh= kMax(0,h-(pI.r.y()-_ty));
+        mh= qMax(0,h-(pI.r.y()-_ty));
     else
-        mh = kMin(pI.r.height(),h);
+        mh = qMin(pI.r.height(),h);
 
     paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
 
@@ -1291,10 +1291,10 @@ int RenderTableSection::layoutRows( int toAdd )
 	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
 		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
-		    int toAdd = kMin( dh, (totalHeight * grid[r].height.value() / 100)-rh );
+		    int toAdd = qMin( dh, (totalHeight * grid[r].height.value() / 100)-rh );
 		    // If toAdd is negative, then we don't want to shrink the row (this bug
                     // affected Outlook Web Access).
-                    toAdd = kMax(0, toAdd);
+                    toAdd = qMax(0, toAdd);
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
@@ -1491,22 +1491,22 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
     for ( ; startrow < totalRows; startrow++, trow = nextTableRow(trow) ) {
-	if ( ty + rowPos[startrow+1] + kMax(cbsw21, os) > y - os )
+	if ( ty + rowPos[startrow+1] + qMax(cbsw21, os) > y - os )
 	    break;
     }
     for ( ; endrow > 0; endrow-- ) {
-	if ( ty + rowPos[endrow-1] - kMax(cbsw2, os) < y + h + os )
+	if ( ty + rowPos[endrow-1] - qMax(cbsw2, os) < y + h + os )
 	    break;
     }
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
     if ( style()->direction() == LTR ) {
 	for ( ; startcol < totalCols; startcol++ ) {
-	    if ( tx + table()->columnPos[startcol+1] + kMax(cbsw21, os) > x - os )
+	    if ( tx + table()->columnPos[startcol+1] + qMax(cbsw21, os) > x - os )
 		break;
 	}
 	for ( ; endcol > 0; endcol-- ) {
-	    if ( tx + table()->columnPos[endcol-1] - kMax(cbsw2, os) < x + w + os )
+	    if ( tx + table()->columnPos[endcol-1] - qMax(cbsw2, os) < x + w + os )
 		break;
 	}
     }
@@ -2427,7 +2427,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     RenderTable *tbl = table();
 
     // check if we need to do anything at all...
-    int os = kMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
+    int os = qMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
     if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
          || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
 
@@ -2639,8 +2639,8 @@ void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 	}
     }
 
-    int my = kMax(_ty,pI.r.y());
-    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
+    int my = qMax(_ty,pI.r.y());
+    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
     int mh = end - my;
 
     if (bgLayer->hasImage() || c.isValid())

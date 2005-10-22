@@ -303,7 +303,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
 
     computeLogicalBoxHeights(maxPositionTop, maxPositionBottom, maxAscent, maxDescent, strictMode);
 
-    if (maxAscent + maxDescent < kMax(maxPositionTop, maxPositionBottom))
+    if (maxAscent + maxDescent < qMax(maxPositionTop, maxPositionBottom))
         adjustMaxAscentAndDescent(maxAscent, maxDescent, maxPositionTop, maxPositionBottom);
 
     int maxHeight = maxAscent + maxDescent;
@@ -340,7 +340,7 @@ void InlineFlowBox::adjustMaxAscentAndDescent(int& maxAscent, int& maxDescent,
                     maxAscent = curr->height() - maxDescent;
             }
 
-            if ( maxAscent + maxDescent >= kMax( maxPositionTop, maxPositionBottom ) )
+            if ( maxAscent + maxDescent >= qMax( maxPositionTop, maxPositionBottom ) )
                 break;
         }
 
@@ -444,7 +444,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
             newHeight = newBaseline+fm.descent();
 #else
             // only adjust if the leading delta is superior to the font's natural leading
-            if ( kAbs(fm.ascent() - curr->baseline()) > fm.leading()/2 ) {
+            if ( qAbs(fm.ascent() - curr->baseline()) > fm.leading()/2 ) {
                 int ascent = fm.ascent()+fm.leading()/2;
                 newBaseline = ascent;
                 newY += curr->baseline() - newBaseline;
@@ -480,7 +480,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         setYPos(yPos() + baseline() - fm.ascent());
         setBaseline(fm.ascent());
 #else
-        if ( kAbs(fm.ascent() - baseline()) > fm.leading()/2 ) {
+        if ( qAbs(fm.ascent() - baseline()) > fm.leading()/2 ) {
             int ascent = fm.ascent()+fm.leading()/2;
             setHeight(fm.lineSpacing());
             setYPos(yPos() + baseline() - ascent);
@@ -565,12 +565,12 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     int w = width();
     int h = height();
 
-    int my = kMax(_ty, pI.r.y());
+    int my = qMax(_ty, pI.r.y());
     int mh;
     if (_ty<pI.r.y())
-        mh= kMax(0,h-(pI.r.y()-_ty));
+        mh= qMax(0,h-(pI.r.y()-_ty));
     else
-        mh = kMin(pI.r.height(),h);
+        mh = qMin(pI.r.height(),h);
 
     // You can use p::first-line to specify a background. If so, the root line boxes for
     // a line may actually have to paint a background.

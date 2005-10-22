@@ -569,7 +569,7 @@ void RenderLineEdit::calcMinMaxWidth()
     opt.init(widget());
 
     int margin = static_cast<LineEditWidget*>(widget())->hasFrame() ? 4 : 0;
-    s = QSize(w + margin, kMax(h, 14) + margin);
+    s = QSize(w + margin, qMax(h, 14) + margin);
     s = widget()->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s);
     s = s.expandedTo(QApplication::globalStrut());
 
@@ -636,8 +636,8 @@ RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
             xPos = m_width - paddingRight() - borderRight() - legend->width() - legend->marginRight();
         int b = borderTop();
         int h = legend->height();
-        legend->setPos(xPos, kMax((b-h)/2, 0));
-        m_height = kMax(b,h) + paddingTop();
+        legend->setPos(xPos, qMax((b-h)/2, 0));
+        m_height = qMax(b,h) + paddingTop();
     }
     return legend;
 }
@@ -666,8 +666,8 @@ void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
     h -= yOff;
     _ty += yOff - borderTopExtra();
 
-    int my = kMax(_ty,pI.r.y());
-    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
+    int my = qMax(_ty,pI.r.y());
+    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
     int mh = end - my;
 
     paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
@@ -791,12 +791,12 @@ void RenderFileButton::calcMinMaxWidth()
     opt.init(edit);
     QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
                                              &opt,
-          QSize(w + 2 + 2, kMax(h, 14) + 2 + 2), edit)
+          QSize(w + 2 + 2, qMax(h, 14) + 2 + 2), edit)
         .expandedTo(QApplication::globalStrut());
     QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
-    setIntrinsicHeight( kMax(s.height(), bs.height()) );
+    setIntrinsicHeight( qMax(s.height(), bs.height()) );
 
     RenderFormElement::calcMinMaxWidth();
 }
@@ -1078,8 +1078,8 @@ void RenderSelect::layout( )
         int width = 0;
         int height = 0;
         while(p) {
-            width = kMax(width, p->width(p->listBox()));
-            height = kMax(height, p->height(p->listBox()));
+            width = qMax(width, p->width(p->listBox()));
+            height = qMax(height, p->height(p->listBox()));
             p = p->next();
         }
         if ( !height )
@@ -1089,12 +1089,12 @@ void RenderSelect::layout( )
 
         int size = m_size;
         // check if multiple and size was not given or invalid
-        // Internet Exploder sets size to kMin(number of elements, 4)
+        // Internet Exploder sets size to qMin(number of elements, 4)
         // Netscape seems to simply set it to "number of elements"
-        // the average of that is IMHO kMin(number of elements, 10)
+        // the average of that is IMHO qMin(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = kMin(static_cast<KListBox*>(m_widget)->count(), 10u);
+            size = qMin(static_cast<KListBox*>(m_widget)->count(), 10u);
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = size*height + 2*w->frameWidth();
@@ -1637,9 +1637,9 @@ void RenderTextArea::calcMinMaxWidth()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
     w->setTabStopWidth(8 * m.width(" "));
-    QSize size( kMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
+    QSize size( qMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                kMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
+                qMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
                 (w->wordWrap() == Q3TextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );

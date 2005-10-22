@@ -517,7 +517,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
         region = QRegion(points);
     }
     else if (shape==Circle && m_coordsLen>=3 || shape==Unknown && m_coordsLen == 3) {
-        int r = kMin(m_coords[2].minWidth(width_), m_coords[2].minWidth(height_));
+        int r = qMin(m_coords[2].minWidth(width_), m_coords[2].minWidth(height_));
         region = QRegion(m_coords[0].minWidth(width_)-r,
                          m_coords[1].minWidth(height_)-r, 2*r, 2*r,QRegion::Ellipse);
     }

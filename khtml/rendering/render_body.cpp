@@ -70,8 +70,8 @@ void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    int my = kMax(_ty, paintInfo.r.y());
-    int end = kMin( paintInfo.r.y()+paintInfo.r.height(), _ty + h );
+    int my = qMax(_ty, paintInfo.r.y());
+    int end = qMin( paintInfo.r.y()+paintInfo.r.height(), _ty + h );
     int mh = end - my;
 
     paintBackgrounds(paintInfo.p, bgColor, bgLayer, my, mh, _tx, _ty, w, h);
@@ -117,5 +117,5 @@ int RenderBody::availableHeight() const
     if( style()->marginBottom().isFixed() )
         h -= style()->marginBottom().value();
 
-    return kMax(0, h);
+    return qMax(0, h);
 }

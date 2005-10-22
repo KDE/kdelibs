@@ -191,12 +191,12 @@ void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
   b = blue;
 
   if ( r > g ) {
-    max = kMax( r, b );
-    min = kMin( g, b );
+    max = qMax( r, b );
+    min = qMin( g, b );
   }
   else {
-    max = kMax( g, b );
-    min = kMin( r, b );
+    max = qMax( g, b );
+    min = qMin( r, b );
   }
 
   v = max;
@@ -304,12 +304,12 @@ void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
   int min, max;
 
   if ( r > g ) {
-    max = kMax( r, b );
-    min = kMin( g, b );
+    max = qMax( r, b );
+    min = qMin( g, b );
   }
   else {
-    max = kMax( g, b );
-    min = kMin( r, b );
+    max = qMax( g, b );
+    min = qMin( r, b );
   }
 
   double h;

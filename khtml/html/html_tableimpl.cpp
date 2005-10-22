@@ -469,7 +469,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_CELLPADDING:
         if (!attr->value().isEmpty())
-	    padding = kMax( 0, attr->value().toInt() );
+	    padding = qMax( 0, attr->value().toInt() );
         else
 	    padding = 1;
         if (m_render && m_render->isTable()) {

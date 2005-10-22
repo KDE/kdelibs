@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::init( argc, argv, "testKJASSever", "testKJASServer", "test program", "0.0" );
 
     KCmdLineArgs::addCmdLineOptions( options );
-    //KApplication::addCmdLineOptions();
+    //KCmdLineArgs::addStdCmdLineOptions();
 
     KApplication app;
 

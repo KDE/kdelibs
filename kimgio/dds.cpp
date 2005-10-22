@@ -830,7 +830,7 @@ static int FaceOffset( const DDSHeader & header ) {
 
     DDSType type = GetType( header );
 
-    int mipmap = kMax(header.mipmapcount, 1U);
+    int mipmap = qMax(header.mipmapcount, 1U);
     int size = 0;
     int w = header.width;
     int h = header.height;
@@ -838,7 +838,7 @@ static int FaceOffset( const DDSHeader & header ) {
     if( type >= DDS_DXT1 ) {
         int multiplier = (type == DDS_DXT1) ? 8 : 16;
         do {
-            int face_size = kMax(w/4,1) * kMax(h/4,1) * multiplier;
+            int face_size = qMax(w/4,1) * qMax(h/4,1) * multiplier;
             size += face_size;
             w >>= 1;
             h >>= 1;
@@ -849,8 +849,8 @@ static int FaceOffset( const DDSHeader & header ) {
         do {
             int face_size = w * h * multiplier;
             size += face_size;
-            w = kMax( w>>1, 1 );
-            h = kMax( h>>1, 1 );
+            w = qMax( w>>1, 1 );
+            h = qMax( h>>1, 1 );
         } while( --mipmap );
     }
 

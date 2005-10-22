@@ -275,7 +275,7 @@ void SlaveBase::dispatchLoop()
        else
        {
           struct timeval tv;
-          tv.tv_sec = kMax(d->timeout-time(0),(time_t) 1);
+          tv.tv_sec = qMax(d->timeout-time(0),(time_t) 1);
           tv.tv_usec = 0;
           retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
        }

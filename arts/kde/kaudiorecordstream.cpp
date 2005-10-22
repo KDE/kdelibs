@@ -110,7 +110,7 @@ int KAudioRecordStream::read( char * buffer, int size )
 				return size - remaining;
 		}
 		QByteArray * data = d->inqueue.head();
-		unsigned int tocopy = kMin( remaining, data->size() - d->pos );
+		unsigned int tocopy = qMin( remaining, data->size() - d->pos );
 		memcpy( buffer, data->data() + d->pos, tocopy );
 		d->pos += tocopy;
 		buffer += tocopy;

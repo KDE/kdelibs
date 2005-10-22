@@ -566,8 +566,8 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
     // if we are shrinking the view, don't allow the content to overflow
     // before the layout occurs - we don't know if we need scrollbars yet
-    dw = dw>0 ? kMax(0, contentsWidth()-dw) : contentsWidth();
-    dh = dh>0 ? kMax(0, contentsHeight()-dh) : contentsHeight();
+    dw = dw>0 ? qMax(0, contentsWidth()-dw) : contentsWidth();
+    dh = dh>0 ? qMax(0, contentsHeight()-dh) : contentsHeight();
 
     resizeContents(dw, dh);
 
@@ -2190,8 +2190,8 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
 	        lab->setMargin(3);
 	        lab->adjustSize();
 	        addChild(lab,
-                    kMin(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
-                    kMin(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
+                    qMin(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
+                    qMin(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
 	        showChild(lab);
                 taken.append( accesskey[ 0 ] );
 	    }
@@ -2783,7 +2783,7 @@ void KHTMLView::print(bool quick)
         if (printHeader)
         {
             int available_width = metrics.width() - 10 -
-                2 * kMax(p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
+                2 * qMax(p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
                          p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
             if (available_width < 150)
                available_width = 150;
@@ -3633,7 +3633,7 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
     d->caretViewContext();
     NodeImpl *caretNode = m_part->d->caretNode().handle();
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, kMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString::null) << endl;
+  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString::null) << endl;
 #endif
     caretNode->getCaret(m_part->d->caretOffset(), caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,

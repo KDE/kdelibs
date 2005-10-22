@@ -590,9 +590,9 @@ public:
     virtual bool isTopMarginQuirk() const { return false; }
     virtual bool isBottomMarginQuirk() const { return false; }
     virtual short maxTopMargin(bool positive) const
-    { return positive ? kMax( int( marginTop() ), 0 ) : - kMin( int( marginTop() ), 0 ); }
+    { return positive ? qMax( int( marginTop() ), 0 ) : - qMin( int( marginTop() ), 0 ); }
     virtual short maxBottomMargin(bool positive) const
-    { return positive ? kMax( int( marginBottom() ), 0 ) : - kMin( int( marginBottom() ), 0 ); }
+    { return positive ? qMax( int( marginBottom() ), 0 ) : - qMin( int( marginBottom() ), 0 ); }
 
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }

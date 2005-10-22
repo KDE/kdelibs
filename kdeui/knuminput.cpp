@@ -307,7 +307,7 @@ void KIntNumInput::init(int val, int _base)
 
 void KIntNumInput::setReferencePoint( int ref ) {
     // clip to valid range:
-    ref = kMin( maxValue(), kMax( minValue(),  ref ) );
+    ref = qMin( maxValue(), qMax( minValue(),  ref ) );
     d->referencePoint = ref;
 }
 
@@ -330,8 +330,8 @@ void KIntNumInput::slotEmitRelativeValueChanged( int value ) {
 
 void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 {
-    upper = kMax(upper, lower);
-    lower = kMin(upper, lower);
+    upper = qMax(upper, lower);
+    lower = qMin(upper, lower);
     m_spin->setMinValue(lower);
     m_spin->setMaxValue(upper);
     m_spin->setLineStep(step);
@@ -728,7 +728,7 @@ void KDoubleNumInput::setRelativeValue( double r )
 void KDoubleNumInput::setReferencePoint( double ref )
 {
     // clip to valid range:
-    ref = kMin( maxValue(), kMax( minValue(), ref ) );
+    ref = qMin( maxValue(), qMax( minValue(), ref ) );
     d->referencePoint = ref;
 }
 
@@ -1017,8 +1017,8 @@ void KDoubleSpinBox::setAcceptLocalizedNumbers( bool accept ) {
 
 void KDoubleSpinBox::setRange( double lower, double upper, double step,
 			       int precision ) {
-  lower = kMin(upper, lower);
-  upper = kMax(upper, lower);
+  lower = qMin(upper, lower);
+  upper = qMax(upper, lower);
   setPrecision( precision, true ); // disable bounds checking, since
   setMinValue( lower );            // it's done in set{Min,Max}Value
   setMaxValue( upper );            // anyway and we want lower, upper
@@ -1049,7 +1049,7 @@ int KDoubleSpinBox::maxPrecision() const {
     // ==> 10^precision < INT_MAX / maxAbsValue
     // ==> precision < log10 ( INT_MAX / maxAbsValue )
     // ==> maxPrecision = floor( log10 ( INT_MAX / maxAbsValue ) );
-    double maxAbsValue = kMax( fabs(minValue()), fabs(maxValue()) );
+    double maxAbsValue = qMax( fabs(minValue()), fabs(maxValue()) );
     if ( maxAbsValue == 0 ) return 6; // return arbitrary value to avoid dbz...
 
     return int( floor( log10( double(INT_MAX) / maxAbsValue ) ) );
@@ -1106,7 +1106,7 @@ void KDoubleSpinBox::setSingleStep( double step ) {
   if ( step > maxValue() - minValue() )
     base::setSingleStep( 1 );
   else
-    base::setSingleStep( kMax( d->mapToInt( step, &ok ), 1 ) );
+    base::setSingleStep( qMax( d->mapToInt( step, &ok ), 1 ) );
 }
 
 QString KDoubleSpinBox::textFromValue( int value ) const{

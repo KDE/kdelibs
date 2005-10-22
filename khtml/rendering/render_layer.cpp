@@ -246,7 +246,7 @@ short RenderLayer::width() const
 {
     int w = m_object->width();
     if (!m_object->style()->hidesOverflow())
-        w = kMax(m_object->overflowWidth(), w);
+        w = qMax(m_object->overflowWidth(), w);
     return w;
 }
 
@@ -254,7 +254,7 @@ int RenderLayer::height() const
 {
     int h = m_object->height();
     if (!m_object->style()->hidesOverflow())
-        h = kMax(m_object->overflowHeight(), h);
+        h = qMax(m_object->overflowHeight(), h);
     return h;
 }
 
@@ -1392,7 +1392,7 @@ int Marquee::marqueeSpeed() const
     DOM::NodeImpl* elt = m_layer->renderer()->element();
     if (elt && elt->id() == ID_MARQUEE) {
         HTMLMarqueeElementImpl* marqueeElt = static_cast<HTMLMarqueeElementImpl*>(elt);
-        result = kMax(result, marqueeElt->minimumDelay());
+        result = qMax(result, marqueeElt->minimumDelay());
     }
     return result;
 }
@@ -1446,13 +1446,13 @@ int Marquee::computePosition(EMarqueeDirection dir, bool stopAtContentEdge)
         }
         if (dir == MRIGHT) {
             if (stopAtContentEdge)
-                return kMax(0, ltr ? (contentWidth - clientWidth) : (clientWidth - contentWidth));
+                return qMax(0, ltr ? (contentWidth - clientWidth) : (clientWidth - contentWidth));
             else
                 return ltr ? contentWidth : clientWidth;
         }
         else {
             if (stopAtContentEdge)
-                return kMin(0, ltr ? (contentWidth - clientWidth) : (clientWidth - contentWidth));
+                return qMin(0, ltr ? (contentWidth - clientWidth) : (clientWidth - contentWidth));
             else
                 return ltr ? -clientWidth : -contentWidth;
         }
@@ -1463,13 +1463,13 @@ int Marquee::computePosition(EMarqueeDirection dir, bool stopAtContentEdge)
         int clientHeight = m_layer->renderer()->clientHeight();
         if (dir == MUP) {
             if (stopAtContentEdge)
-                 return kMin(contentHeight - clientHeight, 0);
+                 return qMin(contentHeight - clientHeight, 0);
             else
                 return -clientHeight;
         }
         else {
             if (stopAtContentEdge)
-                return kMax(contentHeight - clientHeight, 0);
+                return qMax(contentHeight - clientHeight, 0);
             else
                 return contentHeight;
         }
@@ -1631,14 +1631,14 @@ void Marquee::timerEvent(QTimerEvent* /*evt*/)
         bool positive = range > 0;
         int clientSize = isUnfurlMarquee() ? abs(range) :
             (isHorizontal() ? m_layer->renderer()->clientWidth() : m_layer->renderer()->clientHeight());
-        int increment = kMax(1, abs(m_layer->renderer()->style()->marqueeIncrement().width(clientSize)));
+        int increment = qMax(1, abs(m_layer->renderer()->style()->marqueeIncrement().width(clientSize)));
         int currentPos = isUnfurlMarquee() ? m_unfurlPos :
             (isHorizontal() ? m_layer->scrollXOffset() : m_layer->scrollYOffset());
         newPos =  currentPos + (addIncrement ? increment : -increment);
         if (positive)
-            newPos = kMin(newPos, endPoint);
+            newPos = qMin(newPos, endPoint);
         else
-            newPos = kMax(newPos, endPoint);
+            newPos = qMax(newPos, endPoint);
     }
 
     if (newPos == endPoint) {

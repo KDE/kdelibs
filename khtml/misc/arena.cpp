@@ -50,7 +50,7 @@
 
 #ifdef HAVE_GETPAGESIZE
 #include <unistd.h>
-#define POOL_SIZE kMax(8192u, 2*( unsigned ) getpagesize())
+#define POOL_SIZE qMax(8192u, 2*( unsigned ) getpagesize())
 #else
 #define POOL_SIZE 8192
 #endif
@@ -191,7 +191,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
         if (pool->cumul > pool->largealloc) {
             // High memory pressure. Switch to a fractional allocation strategy
             // so that malloc gets a chance to successfully trim us down when it's over.
-            sz = kMin(pool->cumul/25, MAX_DISCRETE_ALLOCATION(pool));
+            sz = qMin(pool->cumul/25, MAX_DISCRETE_ALLOCATION(pool));
         } else
 #endif
            sz = pool->arenasize > nb ? pool->arenasize : nb;

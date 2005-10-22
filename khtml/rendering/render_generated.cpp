@@ -106,7 +106,7 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
             t = t/10;
             decimals++;
         }
-        decimals = kMax(decimals, 2);
+        decimals = qMax(decimals, 2);
         QString num = QString::number(value);
         m_item.fill('0',decimals-num.length());
         m_item.append(num);

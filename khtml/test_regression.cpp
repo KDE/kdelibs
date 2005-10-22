@@ -1103,7 +1103,7 @@ QImage RegressionTest::renderToImage()
             QImage chunk = m_paintBuffer->convertToImage();
             assert( chunk.depth() == 32 );
             for ( int y = 0; y < 128 && py + y < eh; ++y )
-                memcpy( img.scanLine( py+y ) + px*4, chunk.scanLine( y ), kMin( 512, ew-px )*4 );
+                memcpy( img.scanLine( py+y ) + px*4, chunk.scanLine( y ), qMin( 512, ew-px )*4 );
         }
     }
 

@@ -362,7 +362,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     QFontDatabase db;
 
     int size = fontDef.size;
-    const int lDpiY = kMax(devMetrics->logicalDpiY(), 96);
+    const int lDpiY = qMax(devMetrics->logicalDpiY(), 96);
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
@@ -397,7 +397,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     }
 
     // make sure we don't bust up X11
-    size = kMax(0, kMin(255, size));
+    size = qMax(0, qMin(255, size));
 
 //       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
 //    	   fontDef.weight, size );

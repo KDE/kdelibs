@@ -172,7 +172,7 @@ short RenderListItem::marginLeft() const
     if (m_insideList)
         return RenderBlock::marginLeft();
     else
-        return kMax(m_marker->markerWidth(), RenderBlock::marginLeft());
+        return qMax(m_marker->markerWidth(), RenderBlock::marginLeft());
 }
 
 short RenderListItem::marginRight() const
@@ -454,7 +454,7 @@ void RenderListMarker::calcMinMaxWidth()
             t = t/10;
             decimals++;
         }
-        decimals = kMax(decimals, 2);
+        decimals = qMax(decimals, 2);
         QString num = QString::number(value);
         m_item.fill('0',decimals-num.length());
         m_item.append(num);

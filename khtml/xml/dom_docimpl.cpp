@@ -1585,7 +1585,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             pos = str.find(QRegExp("[ \t]"));
 
         bool ok = false;
-	int delay = kMax( 0, content.implementation()->toInt(&ok) );
+	int delay = qMax( 0, content.implementation()->toInt(&ok) );
         if ( !ok && str.length() && str[0] == '.' )
             ok = true;
 

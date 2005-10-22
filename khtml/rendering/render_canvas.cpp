@@ -195,11 +195,11 @@ void RenderCanvas::layout()
 
         if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
             docW <= m_width)
-            hDocW = kMin( docW, s.width() );
+            hDocW = qMin( docW, s.width() );
 
         if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
             docH <= m_height)
-            hDocH = kMin( docH, s.height() );
+            hDocH = qMin( docH, s.height() );
 
         // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
         // think again if we are falling downright in the hysteresis zone
@@ -223,9 +223,9 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 
-//     kdDebug(6040) << "RenderCanvas::resize layer to " << kMax( docW,int( m_width ) ) << "x"  << kMax( docH,m_height ) << endl;
+//     kdDebug(6040) << "RenderCanvas::resize layer to " << qMax( docW,int( m_width ) ) << "x"  << qMax( docH,m_height ) << endl;
 
-    layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
+    layer()->resize( qMax( docW,int( m_width ) ), qMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
 
     scheduleDeferredRepaints();
@@ -689,7 +689,7 @@ int RenderCanvas::docHeight() const
     }
 
     RenderLayer *layer = m_layer;
-    h = kMax( h, layer->yPos() + layer->height() );
+    h = qMax( h, layer->yPos() + layer->height() );
 // kdDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
     return h;
 }
@@ -714,7 +714,7 @@ int RenderCanvas::docWidth() const
     }
 
     RenderLayer *layer = m_layer;
-    w = kMax( w, layer->xPos() + layer->width() );
+    w = qMax( w, layer->xPos() + layer->width() );
 // kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
 }

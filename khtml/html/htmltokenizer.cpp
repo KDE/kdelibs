@@ -456,7 +456,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
 
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         qDebug("comment is now: *%s*",
-               QConstString((QChar*)src.current(), kMin(16U, src.length())).string().latin1());
+               QConstString((QChar*)src.current(), qMin(16U, src.length())).string().latin1());
 #endif
 
         if (strict)
@@ -648,7 +648,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
         case Decimal:
         {
             int uc = EntityChar.unicode();
-            int ll = kMin(src.length(), 9-cBufferPos);
+            int ll = qMin(src.length(), 9-cBufferPos);
             while(ll--) {
                 cc = src->cell();
 
@@ -667,7 +667,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
         }
         case EntityName:
         {
-            int ll = kMin(src.length(), 9-cBufferPos);
+            int ll = qMin(src.length(), 9-cBufferPos);
             while(ll--) {
                 QChar csrc = *src;
                 cc = csrc.cell();
@@ -792,7 +792,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             }
 
             bool finish = false;
-            unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
+            unsigned int ll = qMin(src.length(), CBUFLEN-cBufferPos);
             while(ll--) {
                 ushort curchar = src->unicode();
                 if(curchar <= ' ' || curchar == '>' ) {
@@ -889,7 +889,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 qDebug("AttributeName");
 #endif
             ushort curchar;
-            int ll = kMin(src.length(), CBUFLEN-cBufferPos);
+            int ll = qMin(src.length(), CBUFLEN-cBufferPos);
 
             while(ll--) {
                 curchar = src->unicode();
@@ -1699,7 +1699,7 @@ HTMLTokenizer::~HTMLTokenizer()
 
 void HTMLTokenizer::enlargeBuffer(int len)
 {
-    int newsize = kMax(size*2, size+len);
+    int newsize = qMax(size*2, size+len);
     int oldoffs = (dest - buffer);
 
     buffer = KHTML_REALLOC_QCHAR_VEC(buffer, newsize);
@@ -1709,7 +1709,7 @@ void HTMLTokenizer::enlargeBuffer(int len)
 
 void HTMLTokenizer::enlargeScriptBuffer(int len)
 {
-    int newsize = kMax(scriptCodeMaxSize*2, scriptCodeMaxSize+len);
+    int newsize = qMax(scriptCodeMaxSize*2, scriptCodeMaxSize+len);
     scriptCode = KHTML_REALLOC_QCHAR_VEC(scriptCode, newsize);
     scriptCodeMaxSize = newsize;
 }

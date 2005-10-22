@@ -68,7 +68,7 @@ void KFindTest::find(const QString &pattern, long options)
 	KFind::Result result = KFind::NoMatch;
 	do
 	{
-		if(options & KFindDialog::FindIncremental)
+		if(options & KFind::FindIncremental)
 			m_find->setData(m_line, m_text[m_line]);
 		else
 			m_find->setData(m_text[m_line]);
@@ -98,7 +98,7 @@ void KFindTest::findNext(const QString &pattern)
 		if(result == KFind::NoMatch && m_line < m_text.count())
 		{
 			//kdDebug() << "incrementing m_line..." << endl;
-			if(m_find->options() & KFindDialog::FindIncremental)
+			if(m_find->options() & KFind::FindIncremental)
 				m_find->setData(m_line, m_text[m_line]);
 			else
 				m_find->setData(m_text[m_line]);
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 	kdDebug() << "FindIncremental with static contents..." << endl;
 
 	// now we'll do some searches using FindIncremental
-	test->find("", KFindDialog::FindIncremental);
+	test->find("", KFind::FindIncremental);
 	test->findNext("i");
 	test->findNext("is");
 	test->findNext("ist");
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
 	kdDebug() << "FindIncremental with dynamic contents..." << endl;
 
 	// now do that again but with pages that change between searches
-	test->find("", KFindDialog::FindIncremental);
+	test->find("", KFind::FindIncremental);
 	test->findNext("i");
 	test->findNext("is");
 	test->findNext("ist");

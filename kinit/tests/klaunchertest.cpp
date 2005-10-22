@@ -39,13 +39,13 @@ int main(int argc, char *argv[])
    QString error;
    QByteArray dcopService;
    int pid;
-   int result = KApplication::startServiceByDesktopName(
+   int result = KToolInvocation::startServiceByDesktopName(
 		QLatin1String("konsole"), QString::null, &error, &dcopService, &pid );
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
       result, error.ascii(), dcopService.data(), pid);
 
-   result = KApplication::startServiceByDesktopName(
+   result = KToolInvocation::startServiceByDesktopName(
 		QLatin1String("konqueror"), QString::null,  &error, &dcopService, &pid );
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",

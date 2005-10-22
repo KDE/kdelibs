@@ -55,8 +55,8 @@ protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
     {
       Q3ScrollView::viewportResizeEvent(ev);
-      m_frame->resize( kMax(m_frame->sizeHint().width(), ev->size().width()),
-                       kMax(m_frame->sizeHint().height(), ev->size().height()));
+      m_frame->resize( qMax(m_frame->sizeHint().width(), ev->size().width()),
+                       qMax(m_frame->sizeHint().height(), ev->size().height()));
     };
 
 private:
