@@ -30,7 +30,7 @@ int main( int argc, char** argv )
     KApplication app;
 
     Broker::Ptr broker = Broker::openBroker();
-    ConfigDialog *dialog = new ConfigDialog( broker, 0 );
+    ConfigDialog *dialog = new ConfigDialog( broker.get(), 0 );
 
     dialog->show();
 
