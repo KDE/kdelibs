@@ -13,8 +13,11 @@ class QProcessJob : public Job
 public:
     QProcessJob ( QObject * parent = 0 );
 
-protected:
+    QString result();
+private:
     void run ();
+
+    QByteArray m_result ;
 };
 
 #endif

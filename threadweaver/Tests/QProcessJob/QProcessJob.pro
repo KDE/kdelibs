@@ -1,8 +1,12 @@
 TEMPLATE = app
-SOURCES += main.cpp QProcessJob.cpp
-HEADERS += QProcessJob.h
-# FORMS += JobsBase.ui
+SOURCES += main.cpp QProcessJob.cpp MainWindow.cpp
+HEADERS += QProcessJob.h MainWindow.h
+FORMS += MainWindowUi.ui
+
 INCLUDEPATH += ../../Weaver/
+
 LIBS += -L../../Weaver -lThreadWeaver
+
 CONFIG += qt warn_on debug thread
-TARGET = QProcessExample
+
+TARGET = QProcessJob
