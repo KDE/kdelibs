@@ -22,8 +22,8 @@
 
 #include <stdio.h>
 #include "kdelibs_export.h"
+#include <QString>
 
-class QString;
 class QFile;
 class QTextStream;
 class QDataStream;
