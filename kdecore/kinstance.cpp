@@ -210,7 +210,7 @@ KConfig	*KInstance::config() const
 
         }
 
-        if ( d->sharedConfig == 0 )
+        if ( d->sharedConfig == KSharedPtr<KSharedConfig>(0) )
         {
 	    if ( !_name.isEmpty() )
 	        d->sharedConfig = KSharedConfig::openConfig( _name + "rc");
