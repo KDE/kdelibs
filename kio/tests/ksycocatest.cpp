@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
-      KSycocaEntry *p = (*it);
+      KSycocaEntry *p = (*it).get();
       if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
@@ -278,7 +278,7 @@ int main(int argc, char *argv[])
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
-      KSycocaEntry *p = (*it);
+      KSycocaEntry *p = (*it).get();
       if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
    for( KService::List::ConstIterator it = sl.begin();
        it != sl.end(); it++)
    {
-      KService *service = static_cast<KService *>(*it);
+      KService *service = (*it).get();
       debug(service->name());
    }
    debug("--End of list--");
