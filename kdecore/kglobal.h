@@ -183,7 +183,7 @@ public:
     static  KInstance           *_activeInstance;
 };
 
-#ifdef QT3_SUPPORT
+#ifdef KDE_SUPPORT
 /**
  * \relates KGlobal
  * A typesafe function to find the smaller of the two arguments.
