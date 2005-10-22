@@ -17,7 +17,7 @@ obj.libpaths = 'KDE-ICE'
 obj.libs     = 'kICE'
 obj.ccflags += '-DMAKE_DCOP_LIB'
 obj.cxxflags += '-DMAKE_DCOP_LIB'
-if env['WINDOWS'] and env['CC'] == 'gcc':
+if env['WINDOWS']:
 	obj.libpaths += ' ../win/'
 	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
@@ -31,10 +31,11 @@ obj.libpaths = '. KDE-ICE '
 obj.libs     = 'DCOP kICE '
 
 if env['WINDOWS']: 
-	obj.ccflags  = '-Dkdemain=main'
 	obj.libpaths += '../win/'
 	obj.libs     += 'kdewin32 ws2_32'
-
+ 	obj.ccflags += '-Dkdemain=main '
+	obj.ccflags += '-DWIN32_LEAN_AND_MEAN '
+ 		
 obj.execute()
 
 # generate dcop-path.h, depends on PREFIX (rebuild if the variable PREFIX changes)
@@ -50,7 +51,7 @@ obj=env.genobj('program', env)
 obj.target='dcopserver_shutdown'
 obj.source='dcopserver_shutdown.c'
 obj.instdir  = env['KDEBIN']
-if env['WINDOWS'] and env['CC'] == 'gcc':
+if env['WINDOWS']:
 	obj.libpaths = '../win/'
 	obj.libs     = 'kdewin32 ws2_32'
 
