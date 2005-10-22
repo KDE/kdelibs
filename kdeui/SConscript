@@ -48,7 +48,7 @@ kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
 """
 
-for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kdatetable.h kwhatsthismanager_p.h kstdaction_p.h".split():
+for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kdatetable.h kwhatsthismanager_p.h kstdaction_p.h kcharselect_p.h".split():
        env.Moc(i)
 
 if not env['WINDOWS']:

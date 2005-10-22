@@ -37,7 +37,7 @@ kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp
 kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
-kuser.cpp kconfigskeleton.cpp klockfile.cpp
+kuser.cpp kconfigskeleton.cpp klockfile.cpp ktoolinvocation.cpp
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 network/kresolver.cpp
@@ -99,7 +99,7 @@ kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
 
 # not finished (ita)
-for i in "kacceleratormanager_private.h kaccelprivate.h ktoolinvocation.h".split():
+for i in "kacceleratormanager_private.h kaccelprivate.h".split():
 	env.Moc(i)
 
 obj = env.kdeobj('shlib', env)

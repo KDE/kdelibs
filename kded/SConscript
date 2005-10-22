@@ -15,7 +15,7 @@ obj.execute()
 
 obj = env.kdeinitobj(env)
 obj.target   = 'kded'
-obj.source   =  'kded.cpp kdedmodule.cpp'
+obj.source   =  'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
 obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
 obj.libs     = [ '../kdecore/libkdecore.la', '../kdefx/libkdefx.la', '../kdeui/libkdeui.la', '../dcop/libDCOP.la' ]
 obj.execute()
