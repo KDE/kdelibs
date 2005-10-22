@@ -104,7 +104,7 @@ void BrowserRun::scanFile()
   if ( m_strURL.query().isEmpty() && !m_strURL.protocol().startsWith("http") )
   {
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
-    assert( mime != 0L );
+    assert( mime.get() != 0L );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
       kdDebug(1000) << "Scanfile: MIME TYPE is " << mime->name() << endl;
