@@ -69,7 +69,6 @@ Addressee::AddresseeData* Addressee::shared_null = 0;
 Addressee::AddresseeData* Addressee::makeSharedNull()
 {
   Addressee::shared_null = new AddresseeData;
-  shared_null->_KShared_ref(); //just in case (we should add KSD)
   shared_null->empty = true;
   shared_null->changed = false;
   shared_null->resource = 0;
@@ -105,7 +104,7 @@ void Addressee::detach()
     mData->resource = 0;
     mData->uid = KRandom::randomString( 10 );
     return;
-  } else if ( mData.count() == 1 ) return;
+  }
 
   AddresseeData data = *mData;
   mData = new AddresseeData( data );

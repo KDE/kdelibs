@@ -41,7 +41,7 @@ namespace KSpell2
         QObject *receiver() const { return m_recv; }
 
         void setBroker( const Broker::Ptr& broker );
-        Broker *broker() const { return m_broker; }
+        Broker *broker() const { return m_broker.get(); }
 
         void setText( const QString& );
         QString text() const;

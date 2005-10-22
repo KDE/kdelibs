@@ -73,7 +73,7 @@ KBuildImageIOFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
            it != formatList->end();
            ++it )
    {
-      KImageIOFormat *_format = (*it);
+      KImageIOFormat *_format = (*it).get();
       if (format->mType == _format->mType)
       {
          // Already in list

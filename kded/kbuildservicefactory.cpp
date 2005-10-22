@@ -146,7 +146,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
        itserv != m_entryDict->end();
        ++itserv)
    {
-      KService *service = (KService *) ((KSycocaEntry *)(*itserv));
+      KService *service = (KService *) ((KSycocaEntry *)(*itserv).get());
       QStringList serviceTypeList = service->serviceTypes();
       KServiceType::List serviceTypes;
       QStringList::ConstIterator it = serviceTypeList.begin();
@@ -198,7 +198,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
       for(KService::List::ConstIterator it2 = services.begin();
           it2 != services.end(); ++it2)
       {
-         const KService *service = *it2;
+         const KService *service = (*it2).get();
          str << (qint32) entry->offset();
          str << (qint32) service->offset();
       }
@@ -218,7 +218,7 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
        itserv != m_entryDict->end();
        ++itserv)
    {
-      KService::Ptr service = (KService *) ((KSycocaEntry *) *itserv);
+      KService::Ptr service = (KService *) ((KSycocaEntry *)(*itserv).get());
       if ( !service->init().isEmpty() )
       {
           initList.append(service);

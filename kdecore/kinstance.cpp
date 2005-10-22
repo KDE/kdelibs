@@ -226,7 +226,7 @@ KConfig	*KInstance::config() const
             return config(); // Reread...
         }
 
-	_config = d->sharedConfig;
+	_config = d->sharedConfig.get();
         if (_dirs)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
@@ -241,7 +241,7 @@ KSharedConfig *KInstance::sharedConfig() const
     if (_config == 0)
        (void) config(); // Initialize config
 
-    return d->sharedConfig;
+    return d->sharedConfig.get();
 }
 
 void KInstance::setConfigName(const QString &configName)

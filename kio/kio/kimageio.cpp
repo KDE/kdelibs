@@ -204,7 +204,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
        it != formatList->end();
        ++it )
   {
-     KImageIOFormat *format = (*it);
+     KImageIOFormat *format = (*it).get();
      if (((_mode == KImageIO::Reading) && format->bRead) ||
          ((_mode == KImageIO::Writing) && format->bWrite))
      {
@@ -304,7 +304,7 @@ KImageIOFactory::load()
         it != list.end();
         ++it)
    {
-      KSycocaEntry *entry = static_cast<KSycocaEntry *>(*it);
+      KSycocaEntry *entry = static_cast<KSycocaEntry *>((*it).get());
       KImageIOFormat *format = static_cast<KImageIOFormat *>(entry);
 
       // Since Qt doesn't allow us to unregister image formats
@@ -315,7 +315,7 @@ KImageIOFactory::load()
            it != formatList->end();
            ++it )
       {
-         KImageIOFormat *_format = (*it);
+         KImageIOFormat *_format = (*it).get();
          if (format->mType == _format->mType)
          {
             // Already in list
@@ -408,7 +408,7 @@ bool KImageIO::canWrite(const QString& type)
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mType == type)
               return format->bWrite;
       }
@@ -427,7 +427,7 @@ bool KImageIO::canRead(const QString& type)
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mType == type)
               return format->bRead;
       }
@@ -446,7 +446,7 @@ QStringList KImageIO::types(Mode _mode ) {
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (((_mode == Reading) && format->bRead) ||
               ((_mode == Writing) && format->bWrite))
               types.append(format->mType);
@@ -466,7 +466,7 @@ QString KImageIO::suffix(const QString& type)
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mType == type)
               return format->mSuffices[0];
       }
@@ -485,7 +485,7 @@ QString KImageIO::typeForMime(const QString& mimeType)
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mMimetype == mimeType)
               return format->mType;
       }
@@ -508,7 +508,7 @@ QString KImageIO::type(const QString& filename)
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mSuffices.contains(suffix))
               return format->mType;
       }
@@ -528,7 +528,7 @@ QStringList KImageIO::mimeTypes( Mode _mode )
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (((_mode == Reading) && format->bRead) ||
               ((_mode == Writing) && format->bWrite))
             if ( !format->mMimetype.isEmpty() )
@@ -549,7 +549,7 @@ bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
            it != formatList->end();
            ++it )
       {
-          KImageIOFormat *format = (*it);
+          KImageIOFormat *format = (*it).get();
           if (format->mMimetype == _mimeType)
           {
               if (((_mode == Reading) && format->bRead) ||

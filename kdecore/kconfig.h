@@ -281,9 +281,10 @@ public:
   static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
     bool bUseKDEGlobals = true);
 
+  ~KSharedConfig();
+
 private:
   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
-  ~KSharedConfig();
 
   static QList<KSharedConfig*> *s_list;
 };

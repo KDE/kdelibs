@@ -70,7 +70,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
    KServiceGroup::List::ConstIterator it = list.begin();
    for (; it != list.end(); ++it)
    {
-      KSycocaEntry * e = *it;
+      KSycocaEntry * e = (*it).get();
 
       if (e->isType(KST_KServiceGroup))
       {

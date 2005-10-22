@@ -111,7 +111,7 @@ void ServiceBrowser::serviceResolved(bool success)
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
 	QList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
 	QList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
-	while ( it!= itEnd && svr!= (*it)) ++it;
+	while ( it!= itEnd && svr!= (*it).get()) ++it;
 	if (it != itEnd) {
 		if (success) {
 		  	d->m_services+=(*it);
@@ -137,7 +137,7 @@ void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
 {
 	if (findDuplicate(svr)==(d->m_services.end()))  {
 		if (d->m_flags & AutoResolve) {
-			connect(svr,SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
+			connect(svr.get(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
 			d->m_duringResolve+=svr;
 			svr->resolveAsync();
 		} else	{

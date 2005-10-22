@@ -185,7 +185,7 @@ QString KDesktopFile::readURL() const
         for(KMountPoint::List::ConstIterator it = mountPoints.begin();
             it != mountPoints.end(); ++it)
         {
-            KMountPoint *mp = *it;
+            const KSharedPtr<KMountPoint> mp = *it;
             if (mp->mountedFrom() == device)
             {
                 KURL u;

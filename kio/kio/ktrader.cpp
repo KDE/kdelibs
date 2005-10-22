@@ -138,7 +138,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     KServiceTypeProfile::OfferList::Iterator it = lst.begin();
     while( it != lst.end() )
     {
-      if ( matchConstraint( constr, (*it).service(), lst ) != 1 )
+      if ( matchConstraint( constr.get(), (*it).service(), lst ) != 1 )
 	it = lst.remove( it );
       else
 	++it;
@@ -151,7 +151,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     KServiceTypeProfile::OfferList::Iterator it = lst.begin();
     for( ; it != lst.end(); ++it )
     {
-      PreferencesReturn p = matchPreferences( prefs, (*it).service(), lst );
+      PreferencesReturn p = matchPreferences( prefs.get(), (*it).service(), lst );
       if ( p.type == PreferencesReturn::PRT_DOUBLE )
 	sorter.append( KTraderSorter( (*it).service(), p.f, (*it).preference(), (*it).allowAsDefault() ) );
     }

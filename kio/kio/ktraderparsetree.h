@@ -125,10 +125,9 @@ class KIO_EXPORT ParseTreeBase : public KShared
 public:
   typedef KSharedPtr<ParseTreeBase> Ptr;
   ParseTreeBase() { }
+  virtual ~ParseTreeBase() { };
 
   virtual bool eval( ParseContext *_context ) const = 0;
-protected:
-  virtual ~ParseTreeBase() { };
 };
 
 KIO_EXPORT ParseTreeBase::Ptr parseConstraints( const QString& _constr );

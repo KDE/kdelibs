@@ -79,7 +79,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   if (ptr)
   {
     kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!" << endl;
-    return static_cast<KServiceGroup *>(static_cast<KSycocaEntry *>(ptr));
+    return static_cast<KServiceGroup *>(static_cast<KSycocaEntry *>(ptr.get()));
   }
 
   // Create new group entry

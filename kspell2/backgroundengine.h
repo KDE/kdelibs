@@ -39,7 +39,7 @@ namespace KSpell2
         ~BackgroundEngine();
 
         void setBroker( const Broker::Ptr& broker );
-        Broker *broker() const { return m_broker; }
+        Broker *broker() const { return m_broker.get(); }
 
         void setText( const QString& );
         QString text() const;

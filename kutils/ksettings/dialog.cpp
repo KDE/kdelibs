@@ -446,7 +446,7 @@ QList<KService::Ptr> Dialog::instanceServices() const
 		for( KServiceGroup::List::ConstIterator it = list.begin();
 				it != list.end(); ++it )
 		{
-			KSycocaEntry * p = *it;
+			KSycocaEntry * p = (*it).get();
 			if( p->isType( KST_KService ) )
 			{
 				kdDebug( 700 ) << "found service" << endl;

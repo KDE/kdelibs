@@ -77,7 +77,7 @@ static void listModules(const QString &baseGroup)
   for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
   {
-     KSycocaEntry *p = (*it);
+     KSycocaEntry *p = (*it).get();
      if (p->isType(KST_KService))
      {
         KService *s = static_cast<KService*>(p);

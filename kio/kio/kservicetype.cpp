@@ -239,7 +239,7 @@ static void addUnique(KService::List &lst, Q3Dict<KService> &dict, const KServic
   Q3ValueListConstIterator<KService::Ptr> it = newLst.begin();
   for( ; it != newLst.end(); ++it )
   {
-     KService *service = static_cast<KService*>(*it);
+     KService *service = static_cast<KService*>((*it).get());
      if (dict.find(service->desktopEntryPath()))
         continue;
      dict.insert(service->desktopEntryPath(), service);
@@ -262,7 +262,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
     kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
 
   // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain    
-  KMimeType::Ptr mime = dynamic_cast<KMimeType*>(static_cast<KServiceType *>(serv));
+  KMimeType::Ptr mime = dynamic_cast<KMimeType*>(static_cast<KServiceType *>((serv).get()));
   bool isAMimeType = (mime != 0);
   if (mime)
   {
@@ -278,7 +278,8 @@ KService::List KServiceType::offers( const QString& _servicetype )
         addUnique(lst, dict, KServiceFactory::self()->offers( mime->offset() ), false);
      }
   }
-  serv = mime = 0;
+  serv = 0;
+  mime = 0;
 
   //QValueListIterator<KService::Ptr> it = lst.begin();
   //for( ; it != lst.end(); ++it )

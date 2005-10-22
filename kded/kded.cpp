@@ -162,7 +162,7 @@ void Kded::initModules()
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
          autoload = config->readBoolEntry("autoload", autoload);
          if (autoload && kde_running)
-            loadModule(service, false);
+            loadModule(service.get(), false);
 
          bool dontLoad = false;
          QVariant p = service->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
@@ -188,7 +188,7 @@ KDEDModule *Kded::loadModule(const DCOPCString &obj, bool onDemand)
   if (module)
      return module;
   KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
-  return loadModule(s, onDemand);
+  return loadModule(s.get(), onDemand);
 }
 
 KDEDModule *Kded::loadModule(const KService *s, bool onDemand)

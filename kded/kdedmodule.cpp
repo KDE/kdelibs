@@ -91,7 +91,7 @@ KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
    if (it == d->objMap->end())
       return 0;
 
-   return it.value();
+   return it.value().get();
 }
 
 void KDEDModule::remove(const DCOPCString &app, const DCOPCString &key)

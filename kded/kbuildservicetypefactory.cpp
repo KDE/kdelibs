@@ -62,7 +62,7 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
    KSycocaEntry::Ptr servType = (*m_entryDict)[ _name ];
    if (!servType.data())
       return 0;
-   return (KServiceType *) ((KSycocaEntry*)servType);
+   return (KServiceType *) ((KSycocaEntry*)servType.get());
 }
 
 
@@ -168,7 +168,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
        it != m_entryDict->end();
        ++it)
    {
-      KSycocaEntry *entry = (*it);
+      KSycocaEntry *entry = (*it).get();
       if ( entry->isType( KST_KMimeType ) )
       {
         KMimeType *mimeType = static_cast<KMimeType *>( entry );

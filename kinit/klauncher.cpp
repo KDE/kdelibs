@@ -1047,7 +1047,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
         return;
     bool silent;
     DCOPCString wmclass;
-    if( !KRun::checkStartupNotify( QString::null, service, &silent, &wmclass ))
+    if( !KRun::checkStartupNotify( QString::null, service.get(), &silent, &wmclass ))
         return;
     KStartupInfoId id;
     id.initId( startup_id );

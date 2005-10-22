@@ -276,7 +276,7 @@ bool KBuildSycoca::build()
             it != list.end();
             ++it)
          {
-            entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>(*it));
+            entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>((*it).get()));
          }
      }
      if ((*factory) == g_bsf)
@@ -413,7 +413,7 @@ void KBuildSycoca::createMenuAttribute( KServiceGroup::Ptr entry )
     KServiceGroup::List list = entry->entries(true, true);
     KServiceGroup::List::ConstIterator it = list.begin();
     for (; it != list.end(); ++it) {
-        KSycocaEntry * e = *it;
+        KSycocaEntry * e = (*it).get();
         if (e->isType(KST_KServiceGroup)) {
             KServiceGroup::Ptr g(static_cast<KServiceGroup *>(e));
             createMenuAttribute( g );

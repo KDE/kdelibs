@@ -2759,7 +2759,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   for(KMountPoint::List::ConstIterator it = mountPoints.begin();
       it != mountPoints.end(); ++it)
   {
-     KMountPoint *mp = *it;
+     KMountPoint *mp = (*it).get();
      QString mountPoint = mp->mountPoint();
      QString device = mp->mountedFrom();
      kdDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType()<<endl;

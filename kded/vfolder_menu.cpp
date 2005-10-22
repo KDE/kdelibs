@@ -919,7 +919,7 @@ VFolderMenu::processCondition(QDomElement &domElem, Q3Dict<KService> *items)
    {
       FOR_CATEGORY(domElem.text(), it)
       {
-         KService *s = *it;
+         KService *s = (*it).get();
          items->replace(s->menuId(), s);
       }
       FOR_CATEGORY_END

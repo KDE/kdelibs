@@ -87,7 +87,7 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
 
   QMap<QString,KProtocolInfo::Ptr>::iterator it = m_cache.find(protocol);
   if (it != m_cache.end())
-     return (*it);
+     return (*it).get();
 
   int offset;
 
