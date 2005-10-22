@@ -202,7 +202,7 @@ public:
    * @see sessionConfig()
    * @deprecated use qApp->isSessionRestored()
    */
-  KDE_DEPRECATED inline bool isRestored() const { return QApplication::isSessionRestored(); }
+  inline KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
   
   /**
@@ -268,7 +268,7 @@ public:
    * @return the application icon
    * @deprecated Use QApplication::windowIcon()
    */
-  KDE_DEPRECATED inline QPixmap icon() const {
+  inline KDE_DEPRECATED QPixmap icon() const {
       int size = IconSize(KIcon::Desktop);
       return windowIcon().pixmap(size,size);
   };
@@ -278,7 +278,7 @@ public:
    * @return the application's mini icon
    * @deprecated Use QApplication::windowIcon()
    */
-  KDE_DEPRECATED inline QPixmap miniIcon() const {
+  inline KDE_DEPRECATED QPixmap miniIcon() const {
       int size = IconSize(KIcon::Small);
       return windowIcon().pixmap(size,size);
   };
@@ -361,7 +361,7 @@ public:
    * @return the X11 Display
    * @deprecated use QX11Info::display()
    */
-  KDE_DEPRECATED static inline Display *getDisplay() { return QX11Info::display(); } ;
+  static inline KDE_DEPRECATED Display *getDisplay() { return QX11Info::display(); } ;
 #endif
 #endif
 
@@ -406,7 +406,7 @@ public:
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    * @deprecated Use KMath::random()
    */
-  static inline int random() KDE_DEPRECATED { return KRandom::random(); } ;
+  static inline KDE_DEPRECATED int random() { return KRandom::random(); } ;
 
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
@@ -414,7 +414,7 @@ public:
    * @return the random string
    * @deprecated use KRandom::randomString() instead.
    */
-  static inline QString randomString(int length) KDE_DEPRECATED { return KRandom::randomString(length); } ;
+  static inline KDE_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); } ;
 #endif
 
   /**
