@@ -23,12 +23,7 @@ if env['WINDOWS'] and env['CC'] == 'gcc':
 obj.execute()
 
 # dcopserver program
-if env['WINDOWS']: 
-	# (rh) temporary hack, will be reduced to kdeinitobj
-	obj = env.qt4obj('program',env)
-else: 
-	obj = env.kdeinitobj(env)
-
+obj = env.kdeinitobj(env)
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
