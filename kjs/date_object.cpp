@@ -54,6 +54,7 @@
 #include <locale.h>
 #include <ctype.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "date_object.h"
 #include "error_object.h"
@@ -99,17 +100,27 @@ static UString formatDateUTCVariant(struct tm &tm)
 
 static UString formatTime(struct tm &tm)
 {
+    int tz;
     char buffer[100];
-    if (tm.tm_gmtoff == 0) {
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+    tz = tm.tm_gmtoff;
+#else
+#  if defined(__BORLANDC__)
+    tz = - _timezone;
+#  else
+    tz = - timezone;
+#  endif
+#endif
+    if (tz == 0) {
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", tm.tm_hour, tm.tm_min, tm.tm_sec);
     } else {
-        int offset = tm.tm_gmtoff;
+        int offset = tz;
         if (offset < 0) {
             offset = -offset;
         }
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
                 tm.tm_hour, tm.tm_min, tm.tm_sec,
-                tm.tm_gmtoff < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+                tz < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
     }
     return UString(buffer);
 }
