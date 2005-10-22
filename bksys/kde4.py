@@ -323,14 +323,22 @@ def generate(env):
 			if not senv:
 				senv = env
 			SConsEnvironment.kdeobj.__init__(self, 'shlib', senv)
-			self.binary = kdeobj('program', senv)
-			self.binary.libprefix = ''
-			self.kdeinitlib = kdeobj('shlib', senv)
-			self.kdeinitlib.libprefix = ''
+		
+			if env['WINDOWS']:
+				self.type = 'program'
+			else:
+				self.binary = kdeobj('program', senv)
+				self.binary.libprefix = ''
+				self.kdeinitlib = kdeobj('shlib', senv)
+				self.kdeinitlib.libprefix = ''
 
 		def execute(self):
 			if self.executed: return
 
+			if env['WINDOWS']:
+				SConsEnvironment.kdeobj.execute(self)
+				return
+        
 			# 'dcopserver' is the real one
 			self.binary.target   = self.target
 			# 'libkdeinit_dcopserver'
@@ -385,9 +393,7 @@ def generate(env):
 			# TODO scons clean?
 						
 			SConsEnvironment.kdeobj.execute(self)
-
-			
-			
+		
 	SConsEnvironment.kdeinitobj = kdeinitobj
 
 	# (js) apply KDE***FLAGS
