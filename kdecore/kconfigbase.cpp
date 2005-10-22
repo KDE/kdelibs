@@ -1065,7 +1065,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
 
    unsigned int len = homeDir.length();
    // replace by "$HOME" if possible
-   if (path.length() == len || path[len] == '/') {
+   if (len && (path.length() == len || path[len] == '/')) {
         path.replace(0, len, QString::fromLatin1("$HOME"));
         return true;
    } else
