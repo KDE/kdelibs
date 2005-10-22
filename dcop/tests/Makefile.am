@@ -34,5 +34,5 @@ driver.generated: shell.generated
 shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
 	perl $(srcdir)/generate.pl < $(srcdir)/testcases
 
-check-local: dcop_test driver
+check-local: dcop_test driver ../client/dcop
 	sh $(srcdir)/run-tests.sh
