@@ -1,2 +1,2 @@
 TEMPLATE = subdirs 
-SUBDIRS = Construction Jobs SMIV
+SUBDIRS = Construction Jobs SMIV QProcessJob
