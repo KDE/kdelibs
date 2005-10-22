@@ -19,15 +19,17 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a5">distclean</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Remove the cache directory.  <a href="#a5"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a6">bksys_shlib</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a6">dist</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Function for building shared libraries.  <a href="#a6"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a7">build_la_file</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a7">bksys_shlib</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">create .la file used by libtool  <a href="#a7"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Function for building shared libraries.  <a href="#a7"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedetect__generic.html#a8">build_la_file</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">create .la file used by libtool  <a href="#a8"></a><br></td></tr>
 </table>
 <hr><h2>Function Documentation</h2>
-<a class="anchor" name="a6"></a><!-- doxytag: member="detect_generic::bksys_shlib" ref="a6" args="" --><p>
+<a class="anchor" name="a7"></a><!-- doxytag: member="detect_generic::bksys_shlib" ref="a7" args="" --><p>
 <table class="mdTable" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -100,7 +102,7 @@ Function for building shared libraries.
 Definition at line <a class="el" href="win32_2detect__generic_8py-source.html#l00149">149</a> of file <a class="el" href="win32_2detect__generic_8py-source.html">win32/detect_generic.py</a>.    </td>
   </tr>
 </table>
-<a class="anchor" name="a7"></a><!-- doxytag: member="detect_generic::build_la_file" ref="a7" args="" --><p>
+<a class="anchor" name="a8"></a><!-- doxytag: member="detect_generic::build_la_file" ref="a8" args="" --><p>
 <table class="mdTable" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -179,13 +181,13 @@ detect win32 specific settings
 Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00003">3</a> of file <a class="el" href="unix_2detect__generic_8py-source.html">unix/detect_generic.py</a>.    </td>
   </tr>
 </table>
-<a class="anchor" name="a4"></a><!-- doxytag: member="detect_generic::dist" ref="a4" args="" --><p>
+<a class="anchor" name="a6"></a><!-- doxytag: member="detect_generic::dist" ref="a6" args="" --><p>
 <table class="mdTable" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top">def detect_generic::dist           </td>
+          <td class="md" nowrap valign="top">def detect_generic.dist           </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">&nbsp;</td>
           <td class="mdname1" valign="top" nowrap> <em>env</em>          </td>
@@ -204,11 +206,56 @@ Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00
     <td>
 
 <p>
+
+<p>
+Definition at line <a class="el" href="win32_2detect__generic_8py-source.html#l00097">97</a> of file <a class="el" href="win32_2detect__generic_8py-source.html">win32/detect_generic.py</a>.    </td>
+  </tr>
+</table>
+<a class="anchor" name="a4"></a><!-- doxytag: member="detect_generic::dist" ref="a4" args="" --><p>
+<table class="mdTable" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top">def detect_generic.dist           </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">&nbsp;</td>
+          <td class="mdname" nowrap> <em>env</em>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>&nbsp;</td>
+          <td class="mdname" nowrap> <em>appname</em>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>&nbsp;</td>
+          <td class="mdname" nowrap> <em>version</em> = <code>''</code></td>
+        </tr>
+        <tr>
+          <td class="md"></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing="5" cellpadding="0" border="0">
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
 no colors if user does not want them 
 <p>
 
 <p>
-Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00075">75</a> of file <a class="el" href="unix_2detect__generic_8py-source.html">unix/detect_generic.py</a>.    </td>
+Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00076">76</a> of file <a class="el" href="unix_2detect__generic_8py-source.html">unix/detect_generic.py</a>.    </td>
   </tr>
 </table>
 <a class="anchor" name="a5"></a><!-- doxytag: member="detect_generic::distclean" ref="a5" args="" --><p>
@@ -240,10 +287,10 @@ Remove the cache directory.
 <p>
 
 <p>
-Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00119">119</a> of file <a class="el" href="unix_2detect__generic_8py-source.html">unix/detect_generic.py</a>.    </td>
+Definition at line <a class="el" href="unix_2detect__generic_8py-source.html#l00120">120</a> of file <a class="el" href="unix_2detect__generic_8py-source.html">unix/detect_generic.py</a>.    </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:11:54 2005 for BKSYS - Build Kde SYStem by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:55:17 2005 for BKSYS - Build Kde SYStem by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.4 </small></address>
 </body>

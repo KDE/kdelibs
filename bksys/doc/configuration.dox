@@ -1,4 +1,19 @@
-/** \page configuration Configuration process
+/** \page configuration configuration process
+
+\ref proposal_state
+
+Configuration is a prebuild step to setup the build environment depending of the used platform and or compiler.  
+
+
+required steps 
+<ol>
+<li>parse command line options related to the configure process 
+<li>scan all directories for \ref config_custom scripts (SConfigure) and collect all required cheader, cfunction, modules and other options
+<li>perform the required task for detecting the requested configure options 
+<li>store the results in the \ref config_cache 
+<li>create the required \ref config_header
+
+
 
 \todo: fill in
 

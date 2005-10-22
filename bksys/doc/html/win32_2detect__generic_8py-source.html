@@ -103,7 +103,7 @@
 <a name="l00094"></a>00094                 env[<span class="stringliteral">'GENCXXFLAGS'</span>]  += qtmingwflags.split()
 <a name="l00095"></a>00095         
 <a name="l00096"></a>00096 <span class="comment">## create source package</span>
-<a name="l00097"></a>00097 <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a4">dist</a>(env):
+<a name="l00097"></a><a class="code" href="namespacedetect__generic.html#a6">00097</a> <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a4">dist</a>(env):
 <a name="l00098"></a>00098         <span class="keywordflow">if</span> <span class="keywordflow">not</span> version: VERSION=os.popen(<span class="stringliteral">"cat VERSION"</span>).read().rstrip()
 <a name="l00099"></a>00099         <span class="keywordflow">else</span>: VERSION=version
 <a name="l00100"></a>00100         FOLDER  = appname+<span class="stringliteral">'-'</span>+VERSION
@@ -155,7 +155,7 @@
 <a name="l00146"></a>00146         env.Exit(0)
 <a name="l00147"></a>00147 
 <a name="l00148"></a>00148 <span class="comment">## Function for building shared libraries</span>
-<a name="l00149"></a><a class="code" href="namespacedetect__generic.html#a6">00149</a> <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a6">bksys_shlib</a>(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=None):
+<a name="l00149"></a><a class="code" href="namespacedetect__generic.html#a7">00149</a> <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a7">bksys_shlib</a>(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=None):
 <a name="l00150"></a>00150         <span class="stringliteral">"""Installs a shared library, with or without a version number  </span>
 <a name="l00151"></a>00151 <span class="stringliteral">        note: on win32 platforms only the major version number is used </span>
 <a name="l00152"></a>00152 <span class="stringliteral">        """</span>
@@ -198,7 +198,7 @@
 <a name="l00189"></a>00189         <span class="keywordflow">return</span> library_list
 <a name="l00190"></a>00190 
 <a name="l00191"></a>00191 <span class="comment">## create .la file used by libtool</span>
-<a name="l00192"></a><a class="code" href="namespacedetect__generic.html#a7">00192</a> <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a7">build_la_file</a>(target, source, env):
+<a name="l00192"></a><a class="code" href="namespacedetect__generic.html#a8">00192</a> <span class="keyword">def </span><a class="code" href="namespacedetect__generic.html#a8">build_la_file</a>(target, source, env):
 <a name="l00193"></a>00193         <span class="stringliteral">""" Writes a .la file, used by libtool """</span>
 <a name="l00194"></a>00194         dest=open(target[0].path, <span class="stringliteral">'w'</span>)
 <a name="l00195"></a>00195         sname=source[0].name
@@ -221,7 +221,7 @@
 <a name="l00212"></a>00212         dest.write(<span class="stringliteral">"libdir='%s'"</span> % env[<span class="stringliteral">'BKSYS_DESTDIR'</span>])
 <a name="l00213"></a>00213         dest.close()
 <a name="l00214"></a>00214         <span class="comment">#return 0</span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:11:54 2005 for BKSYS - Build Kde SYStem by&nbsp;
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:55:16 2005 for BKSYS - Build Kde SYStem by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.4 </small></address>
 </body>

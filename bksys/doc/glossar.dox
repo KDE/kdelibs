@@ -11,6 +11,11 @@ top level scons configuration file
 scons configuration file located in sub dirs. The format of the SConscript file is documentated 
 in the \ref sconscript_format page
 
+\section proposal_state proposal state 
+means that the related page or chapter is in a proposal state and need to be reviewed by the build system guru's 
+
+\section specification_state specification state
+means that the related page or chapter is a valid specification and could be implemented
 
  
 

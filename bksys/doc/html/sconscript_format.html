@@ -53,7 +53,7 @@ obj.includes     = '##/DCOP'
 </pre></div> This attribute specifies additional include paths containing header files, which will be added to the compiler command. The given directory path is defined relative to the source dir, where the related SConscript file is located.<br>
  <br>
  In the examples above<ul>
-<li>'kio' specifies a subdir of the current directory,</li><li>'../kdecore' specifies a subdir on the same level as the current dir.</li><li>'/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes. Platform depending pathes should be avoided and either replaced by a <a class="el" href="configuration.html">Configuration process</a> option or only activated when compiling for the related platform like shown below: <div class="fragment"><pre class="fragment"><span class="keywordflow">if</span>  env['WINDOWS']:
+<li>'kio' specifies a subdir of the current directory,</li><li>'../kdecore' specifies a subdir on the same level as the current dir.</li><li>'/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes. Platform depending pathes should be avoided and either replaced by a <a class="el" href="configuration.html">configuration process</a> option or only activated when compiling for the related platform like shown below: <div class="fragment"><pre class="fragment"><span class="keywordflow">if</span>  env['WINDOWS']:
         obj.includes += ' c:/openssl/include'
 <span class="keywordflow">else</span>: 
         obj.includes += ' /usr/include/openssl'
@@ -71,7 +71,7 @@ obj.libpaths     = '#/DCOP'
 obj.libpaths     = '##/DCOP'
 </pre></div> This attribute specifies library pathes, in which libraries specified with the <b>obj.libs</b> attribute will be searched.<p>
 In the examples above<ul>
-<li>'kio' specifies a subdir of the current directory,</li><li>'../kdecore' specifies a subdir on the same level as the current dir.</li><li>'/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes. Platform depending pathes should be avoided and either replaced by a <a class="el" href="configuration.html">Configuration process</a> option or only activated when linking for the related platform like shown below: <div class="fragment"><pre class="fragment"><span class="keywordflow">if</span>  env['WINDOWS']:
+<li>'kio' specifies a subdir of the current directory,</li><li>'../kdecore' specifies a subdir on the same level as the current dir.</li><li>'/usr/include' and 'c:/Programme/openssl' specifies absolute (platform depending) pathes. Platform depending pathes should be avoided and either replaced by a <a class="el" href="configuration.html">configuration process</a> option or only activated when linking for the related platform like shown below: <div class="fragment"><pre class="fragment"><span class="keywordflow">if</span>  env['WINDOWS']:
         obj.libpaths += ' c:/openssl/lib'
 <span class="keywordflow">else</span>: 
         obj.libpaths += ' /usr/lib/openssl'
@@ -95,7 +95,7 @@ In the examples above<ul>
 </pre></div><p>
 </li>
 </ul>
-<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:11:54 2005 for BKSYS - Build Kde SYStem by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:55:17 2005 for BKSYS - Build Kde SYStem by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.4 </small></address>
 </body>

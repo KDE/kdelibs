@@ -1,4 +1,6 @@
-/** \page config_header Config header support
+/** \page config_header configuration header 
+
+\proposal_state 
 
 bksys provides support for creating configuration related include headers (config.h), which 
 contains definitions collected by the configuration process performed with \b scons \bconfigure like 
@@ -8,7 +10,6 @@ The developer only have to include the global config.h file into his source and 
 for using specific functions or headers. 
 
 \section config_types supported configuration types 
-
 
 - c header files
 - c/c++ functions 
@@ -31,7 +32,12 @@ like shown below for the system include header <b>sys/types.h</b>:
 
 \section config_header_internals config.h internals 
 
-The global config.h is build from .... 
+The global config.h is includes .... 
+
+topics: 
+- use of directory related config-<dir>.h files 
+- use of module related config-<module>.h files 
+
 
 \todo: complete
 */ 

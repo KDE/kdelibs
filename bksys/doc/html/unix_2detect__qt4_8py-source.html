@@ -158,52 +158,60 @@
 <a name="l00149"></a>00149         env[<span class="stringliteral">'LIBPATH_X11'</span>]         = [<span class="stringliteral">'/usr/X11R6/lib/'</span>]
 <a name="l00150"></a>00150         env[<span class="stringliteral">'LIB_XRENDER'</span>]         = [<span class="stringliteral">'Xrender'</span>]
 <a name="l00151"></a>00151 
-<a name="l00152"></a>00152         <span class="comment"># ######### QT</span>
-<a name="l00153"></a>00153         <span class="comment"># QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)</span>
-<a name="l00154"></a>00154         env[<span class="stringliteral">'CPPPATH_QT'</span>]          = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'Qt'</span>), env[<span class="stringliteral">'QTINCLUDEPATH'</span>] ] <span class="comment"># TODO QTINCLUDEPATH (ita)</span>
-<a name="l00155"></a>00155         env[<span class="stringliteral">'LIBPATH_QT'</span>]          = env[<span class="stringliteral">'LIBPATH_X11'</span>]+[env[<span class="stringliteral">'QTLIBPATH'</span>]]
-<a name="l00156"></a>00156         env[<span class="stringliteral">'LIB_QT'</span>]              = [<span class="stringliteral">'QtGui_debug'</span>, <span class="stringliteral">'pthread'</span>, <span class="stringliteral">'Xext'</span>]+env[<span class="stringliteral">'LIB_Z'</span>]+env[<span class="stringliteral">'LIB_PNG'</span>]+env[<span class="stringliteral">'LIB_X11'</span>]+env[<span class="stringliteral">'LIB_SM'</span>]
-<a name="l00157"></a>00157         env[<span class="stringliteral">'RPATH_QT'</span>]            = env[<span class="stringliteral">'LIBPATH_X11'</span>]+[env[<span class="stringliteral">'QTLIBPATH'</span>]]
+<a name="l00152"></a>00152 &lt;&lt;&lt;&lt;&lt;&lt;&lt; .mine
+<a name="l00153"></a>00153         <span class="comment"># ######### QT</span>
+<a name="l00154"></a>00154 =======
+<a name="l00155"></a>00155         <span class="comment"># link against libqt_debug when appropriate</span>
+<a name="l00156"></a>00156         <span class="keywordflow">if</span> env[<span class="stringliteral">'BKS_DEBUG'</span>]: debug=<span class="stringliteral">'_debug'</span>
+<a name="l00157"></a>00157         <span class="keywordflow">else</span>:                debug=<span class="stringliteral">''</span>
 <a name="l00158"></a>00158 
-<a name="l00159"></a>00159         env[<span class="stringliteral">'CXXFLAGS_QT3SUPPORT'</span>] = [<span class="stringliteral">'-DQT3_SUPPORT'</span>]
-<a name="l00160"></a>00160         env[<span class="stringliteral">'CPPPATH_QT3SUPPORT'</span>]  = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'Qt3Support'</span>) ]
-<a name="l00161"></a>00161         env[<span class="stringliteral">'LIB_QT3SUPPORT'</span>]      = [<span class="stringliteral">'Qt3Support_debug'</span>]
-<a name="l00162"></a>00162         env[<span class="stringliteral">'RPATH_QT3SUPPORT'</span>]    = env[<span class="stringliteral">'RPATH_QT'</span>]
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164         env[<span class="stringliteral">'CPPPATH_QTCORE'</span>]      = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtCore'</span>) ]
-<a name="l00165"></a>00165         env[<span class="stringliteral">'LIB_QTCORE'</span>]          = [<span class="stringliteral">'QtCore_debug'</span>]
-<a name="l00166"></a>00166         env[<span class="stringliteral">'RPATH_QTCORE'</span>]        = env[<span class="stringliteral">'RPATH_QT'</span>]
-<a name="l00167"></a>00167 
-<a name="l00168"></a>00168         env[<span class="stringliteral">'CPPPATH_QTASSISTANT'</span>] = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtAssistant'</span>) ]
-<a name="l00169"></a>00169         env[<span class="stringliteral">'LIB_QTASSISTANT'</span>]     = [<span class="stringliteral">'QtAssistant_debug'</span>]
-<a name="l00170"></a>00170 
-<a name="l00171"></a>00171         env[<span class="stringliteral">'CPPPATH_QTDESIGNER'</span>]  = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtDesigner'</span>) ]
-<a name="l00172"></a>00172         env[<span class="stringliteral">'LIB_QTDESIGNER'</span>]      = [<span class="stringliteral">'QtDesigner_debug'</span>]
-<a name="l00173"></a>00173 
-<a name="l00174"></a>00174         env[<span class="stringliteral">'CPPPATH_QTNETWORK'</span>]   = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtNetwork'</span>) ]
-<a name="l00175"></a>00175         env[<span class="stringliteral">'LIB_QTNETWORK'</span>]       = [<span class="stringliteral">'QtNetwork_debug'</span>]
-<a name="l00176"></a>00176         env[<span class="stringliteral">'RPATH_QTNETWORK'</span>]     = env[<span class="stringliteral">'RPATH_QT'</span>]
-<a name="l00177"></a>00177 
-<a name="l00178"></a>00178         env[<span class="stringliteral">'CPPPATH_QTGUI'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtGui'</span>) ]
-<a name="l00179"></a>00179         env[<span class="stringliteral">'LIB_QTGUI'</span>]           = [<span class="stringliteral">'QtCore_debug'</span>, <span class="stringliteral">'QtGui_debug'</span>]
-<a name="l00180"></a>00180         env[<span class="stringliteral">'RPATH_QTGUI'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00159"></a>00159         <span class="comment">########## QT</span>
+<a name="l00160"></a>00160 &gt;&gt;&gt;&gt;&gt;&gt;&gt; .r473225
+<a name="l00161"></a>00161         <span class="comment"># QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)</span>
+<a name="l00162"></a>00162         env[<span class="stringliteral">'CPPPATH_QT'</span>]          = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'Qt'</span>), env[<span class="stringliteral">'QTINCLUDEPATH'</span>] ] <span class="comment"># TODO QTINCLUDEPATH (ita)</span>
+<a name="l00163"></a>00163         env[<span class="stringliteral">'LIBPATH_QT'</span>]          = env[<span class="stringliteral">'LIBPATH_X11'</span>]+[env[<span class="stringliteral">'QTLIBPATH'</span>]]
+<a name="l00164"></a>00164         env[<span class="stringliteral">'LIB_QT'</span>]              = [<span class="stringliteral">'QtGui'</span>+debug, <span class="stringliteral">'pthread'</span>, <span class="stringliteral">'Xext'</span>]+env[<span class="stringliteral">'LIB_Z'</span>]+env[<span class="stringliteral">'LIB_PNG'</span>]+env[<span class="stringliteral">'LIB_X11'</span>]+env[<span class="stringliteral">'LIB_SM'</span>]
+<a name="l00165"></a>00165         env[<span class="stringliteral">'RPATH_QT'</span>]            = env[<span class="stringliteral">'LIBPATH_X11'</span>]+[env[<span class="stringliteral">'QTLIBPATH'</span>]]
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167         env[<span class="stringliteral">'CXXFLAGS_QT3SUPPORT'</span>] = [<span class="stringliteral">'-DQT3_SUPPORT'</span>]
+<a name="l00168"></a>00168         env[<span class="stringliteral">'CPPPATH_QT3SUPPORT'</span>]  = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'Qt3Support'</span>) ]
+<a name="l00169"></a>00169         env[<span class="stringliteral">'LIB_QT3SUPPORT'</span>]      = [<span class="stringliteral">'Qt3Support'</span>+debug]
+<a name="l00170"></a>00170         env[<span class="stringliteral">'RPATH_QT3SUPPORT'</span>]    = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172         env[<span class="stringliteral">'CPPPATH_QTCORE'</span>]      = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtCore'</span>) ]
+<a name="l00173"></a>00173         env[<span class="stringliteral">'LIB_QTCORE'</span>]          = [<span class="stringliteral">'QtCore'</span>+debug]
+<a name="l00174"></a>00174         env[<span class="stringliteral">'RPATH_QTCORE'</span>]        = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176         env[<span class="stringliteral">'CPPPATH_QTASSISTANT'</span>] = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtAssistant'</span>) ]
+<a name="l00177"></a>00177         env[<span class="stringliteral">'LIB_QTASSISTANT'</span>]     = [<span class="stringliteral">'QtAssistant'</span>+debug]
+<a name="l00178"></a>00178 
+<a name="l00179"></a>00179         env[<span class="stringliteral">'CPPPATH_QTDESIGNER'</span>]  = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtDesigner'</span>) ]
+<a name="l00180"></a>00180         env[<span class="stringliteral">'LIB_QTDESIGNER'</span>]      = [<span class="stringliteral">'QtDesigner'</span>+debug]
 <a name="l00181"></a>00181 
-<a name="l00182"></a>00182         env[<span class="stringliteral">'CPPPATH_OPENGL'</span>]      = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtOpengl'</span>) ]
-<a name="l00183"></a>00183         env[<span class="stringliteral">'LIB_QTOPENGL'</span>]        = [<span class="stringliteral">'QtOpenGL_debug'</span>]
-<a name="l00184"></a>00184         env[<span class="stringliteral">'RPATH_QTOPENGL'</span>]      = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00182"></a>00182         env[<span class="stringliteral">'CPPPATH_QTNETWORK'</span>]   = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtNetwork'</span>) ]
+<a name="l00183"></a>00183         env[<span class="stringliteral">'LIB_QTNETWORK'</span>]       = [<span class="stringliteral">'QtNetwork'</span>+debug]
+<a name="l00184"></a>00184         env[<span class="stringliteral">'RPATH_QTNETWORK'</span>]     = env[<span class="stringliteral">'RPATH_QT'</span>]
 <a name="l00185"></a>00185 
-<a name="l00186"></a>00186         env[<span class="stringliteral">'CPPPATH_QTSQL'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtSql'</span>) ]
-<a name="l00187"></a>00187         env[<span class="stringliteral">'LIB_QTSQL'</span>]           = [<span class="stringliteral">'QtSql_debug'</span>]
-<a name="l00188"></a>00188         env[<span class="stringliteral">'RPATH_QTSQL'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00186"></a>00186         env[<span class="stringliteral">'CPPPATH_QTGUI'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtGui'</span>) ]
+<a name="l00187"></a>00187         env[<span class="stringliteral">'LIB_QTGUI'</span>]           = [<span class="stringliteral">'QtCore'</span>+debug, <span class="stringliteral">'QtGui'</span>+debug]
+<a name="l00188"></a>00188         env[<span class="stringliteral">'RPATH_QTGUI'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
 <a name="l00189"></a>00189 
-<a name="l00190"></a>00190         env[<span class="stringliteral">'CPPPATH_QTXML'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtXml'</span>) ]
-<a name="l00191"></a>00191         env[<span class="stringliteral">'LIB_QTXML'</span>]           = [<span class="stringliteral">'QtXml_debug'</span>]
-<a name="l00192"></a>00192         env[<span class="stringliteral">'RPATH_QTXML'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
-<a name="l00193"></a>00193         
-<a name="l00194"></a>00194         env[<span class="stringliteral">'QTLOCALE'</span>]=env.join(datadir, <span class="stringliteral">'locale'</span>)
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196 
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:11:54 2005 for BKSYS - Build Kde SYStem by&nbsp;
+<a name="l00190"></a>00190         env[<span class="stringliteral">'CPPPATH_OPENGL'</span>]      = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtOpengl'</span>) ]
+<a name="l00191"></a>00191         env[<span class="stringliteral">'LIB_QTOPENGL'</span>]        = [<span class="stringliteral">'QtOpenGL'</span>+debug]
+<a name="l00192"></a>00192         env[<span class="stringliteral">'RPATH_QTOPENGL'</span>]      = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00193"></a>00193 
+<a name="l00194"></a>00194         env[<span class="stringliteral">'CPPPATH_QTSQL'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtSql'</span>) ]
+<a name="l00195"></a>00195         env[<span class="stringliteral">'LIB_QTSQL'</span>]           = [<span class="stringliteral">'QtSql'</span>+debug]
+<a name="l00196"></a>00196         env[<span class="stringliteral">'RPATH_QTSQL'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198         env[<span class="stringliteral">'CPPPATH_QTXML'</span>]       = [ env.join(env[<span class="stringliteral">'QTINCLUDEPATH'</span>], <span class="stringliteral">'QtXml'</span>) ]
+<a name="l00199"></a>00199         env[<span class="stringliteral">'LIB_QTXML'</span>]           = [<span class="stringliteral">'QtXml'</span>+debug]
+<a name="l00200"></a>00200         env[<span class="stringliteral">'RPATH_QTXML'</span>]         = env[<span class="stringliteral">'RPATH_QT'</span>]
+<a name="l00201"></a>00201         
+<a name="l00202"></a>00202         env[<span class="stringliteral">'QTLOCALE'</span>]=env.join(datadir, <span class="stringliteral">'locale'</span>)
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204 
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:55:16 2005 for BKSYS - Build Kde SYStem by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.4 </small></address>
 </body>

@@ -1,11 +1,17 @@
-/** \page config_cache Configuration cache 
+/** \page config_cache configuration cache 
+
+\ref proposal_state
 
 The configuration cache holds all collected informations from the configuration process and provides 
 them to the later performed building process. 
 
 topics: 
-- 
-
+- storing of module related settings 
+- storing of \ref config_custem settings and detected state
+	- c header 
+	- c functions
+	- external libraries and applications (modules ?)
+	
 \todo: fill in 
 
 

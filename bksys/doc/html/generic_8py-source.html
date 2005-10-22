@@ -105,7 +105,7 @@
 <a name="l00098"></a>00098         <span class="keywordflow">if</span> <span class="stringliteral">'dist'</span> <span class="keywordflow">in</span> sys.argv:
 <a name="l00099"></a>00099                 sys.path.append(<span class="stringliteral">'bksys'</span>+os.sep+<span class="stringliteral">'unix'</span>)
 <a name="l00100"></a>00100                 <span class="keyword">from</span> detect_generic <span class="keyword">import</span> dist
-<a name="l00101"></a>00101                 dist(env)
+<a name="l00101"></a>00101                 dist(env, appname, version)
 <a name="l00102"></a>00102 
 <a name="l00103"></a>00103         <span class="keywordflow">if</span> <span class="stringliteral">'distclean'</span> <span class="keywordflow">in</span> sys.argv:
 <a name="l00104"></a>00104                 sys.path.append(<span class="stringliteral">'bksys'</span>+os.sep+<span class="stringliteral">'unix'</span>)
@@ -966,7 +966,7 @@
 <a name="l00959"></a>00959                         env.AppendUnique(CXXFLAGS = [<span class="stringliteral">'-DDEBUG'</span>, <span class="stringliteral">'-g'</span>, <span class="stringliteral">'-Wall'</span>])
 <a name="l00960"></a>00960 
 <a name="l00961"></a>00961         env.Export(<span class="stringliteral">'env'</span>)
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:11:54 2005 for BKSYS - Build Kde SYStem by&nbsp;
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 23 01:55:16 2005 for BKSYS - Build Kde SYStem by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.4 </small></address>
 </body>

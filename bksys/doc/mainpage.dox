@@ -3,9 +3,18 @@
 
 \section Introduction 
 
-no introduction yet available. 
+This documentation of the coming KDE buildsystem is currently in a very uncomplete state. 
+
+Some chapters describes the recent implementation and are mostly ready, some chapters 
+are in a 'design' state and should be seen as a proposal or specification how thing should 
+go. Such pages are marked with 
+- 'proposal', when they contains collected informations from discussions and brain storming 
+sessions. They need to be reviewed by the build system guru's  before they can marked as 
+- 'specification', when they are ready for implementing 
+
 
 See related pages for available topics or the top menu for doxygen generated informations.
+
 
 Please note that doxygen 1.4.4 has a python parsing problem (or I have misunderstand the 
 doxygen rules), which results in wrong class descriptions. 

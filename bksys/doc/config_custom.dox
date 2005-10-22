@@ -1,4 +1,6 @@
-/** \page custom_configure Custom configuring 
+/** \page config_custom custom configuring 
+
+\ref proposal_state
 
 What means custom configuring: \n 
 developers would like to be able to define "configure needs" in subdirs of a svn module,
