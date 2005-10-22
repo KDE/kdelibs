@@ -263,7 +263,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
 
   // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain    
   KMimeType::Ptr mime = dynamic_cast<KMimeType*>(static_cast<KServiceType *>((serv).get()));
-  bool isAMimeType = (mime != 0);
+  bool isAMimeType = mime.get() != 0;
   if (mime)
   {
      while(true)
