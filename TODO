@@ -39,13 +39,6 @@ that we would like to make for the next binary incompatible release.
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
   (Ben Meyer)
 
-- Remove the smart-to-dumb-pointer conversion operator from KSharedPtr
-  and replace it with a T* Get() member function. An implict conversion is
-  far too dangerous.
-  See: http://groups.google.com/groups?selm=4ognb0%243cd%40linda.teleport.com&oe=UTF-8&output=gplain
-  Also free the client from the requirement to inherit from KShared.
-  (Frerich)
-
 - Remvoe all KSocks references throughout KDE in favor of KNetwork's
   socket implementations. 
   (Thiago)
