@@ -32,7 +32,11 @@
 
 template class Q3PtrList<KURIFilterPlugin>;
 
+#ifdef KDE3_SUPPORT
+KURIFilterPlugin::KURIFilterPlugin( QObject *parent, const char *name, double pri )
+#else
 KURIFilterPlugin::KURIFilterPlugin( const QString & name, QObject *parent, double pri )
+#endif
                  :QObject( parent ), m_strName( name )
 {
     m_dblPriority = pri;
