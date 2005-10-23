@@ -6,7 +6,7 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000 Simon Hausmann <hausmann@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
- *                     2001-2003 George Staikos <staikos@kde.org>
+ *                     2001-2005 George Staikos <staikos@kde.org>
  *                     2001-2003 Dirk Mueller <mueller@kde.org>
  *                     2000-2005 David Faure <faure@kde.org>
  *                     2002 Apple Computer, Inc.
@@ -245,7 +245,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
 
-  d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
   d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
@@ -1540,19 +1539,16 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
 
   QString iconName;
   switch (sec)  {
-  case NotCrypted:
+  case Encrypted:
+    iconName = "encrypted";
+    break;
+  default:
     iconName = "decrypted";
     if ( d->m_statusBarIconLabel )  {
       d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarIconLabel );
       delete d->m_statusBarIconLabel;
       d->m_statusBarIconLabel = 0L;
     }
-    break;
-  case Encrypted:
-    iconName = "encrypted";
-    break;
-  case Mixed:
-    iconName = "halfencrypted";
     break;
   }
   d->m_paSecurity->setIcon( iconName );
@@ -1594,7 +1590,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
     d->m_pageReferrer = d->m_job->queryMetaData("referrer");
 
-    d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
 
     {
@@ -1602,8 +1597,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
 	while (p->parentPart()) p = p->parentPart();
 
-        p->setPageSecurity( Mixed );
-        p->d->m_bSecurityInQuestion = true;
+        p->setPageSecurity( NotCrypted );
     }
     }
 
@@ -4119,9 +4113,6 @@ void KHTMLPart::slotSecurity()
 //                   << endl;
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
-
-  if (d->m_bSecurityInQuestion)
-	  kid->setSecurityInQuestion(true);
 
   if (d->m_ssl_in_use) {
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.toLocal8Bit());

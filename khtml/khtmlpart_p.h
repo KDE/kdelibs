@@ -9,7 +9,7 @@
  *                     2000-2001 Simon Hausmann <hausmann@kde.org>
  *                     2000-2001 Dirk Mueller <mueller@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
- *                     2001-2003 George Stiakos <staikos@kde.org>
+ *                     2001-2005 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -463,7 +463,6 @@ public:
   bool m_bFirstData:1;
   bool m_bClearing:1;
   bool m_bCleared:1;
-  bool m_bSecurityInQuestion:1;
   bool m_focusNodeRestored:1;
 
   int m_focusNodeNumber;
