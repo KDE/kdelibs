@@ -7,11 +7,11 @@
     where X is an upper case hexadecimal, and XXXX is the Unicode
     value for the character (e.g. \U-00F3).
  -->
-<gentext key="Default" text="Default"/>
-<gentext key="Documentation.by" text="Documentation by"/>
-<gentext key="LastUpdated" text="Last updated"/>
+<gentext key="Default" text="F&#246;rval"/>
+<gentext key="Documentation.by" text="Dokumentation av"/>
+<gentext key="LastUpdated" text="Senaste uppdatering"/>
 <gentext key="Swedish" text="Svenska"/>
 <gentext key="Version" text="Version"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<gentext key="logo-alt" text="Logotyp f&#246;r K-skrivbordsmilj&#246;n"/>
 </localization>
