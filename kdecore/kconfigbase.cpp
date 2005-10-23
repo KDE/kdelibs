@@ -23,7 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define KDE3_SUPPORT
 #include "kconfigbase.h"
+#undef KDE3_SUPPORT
 #include "kconfigbackend.h"
 #include "kconfigdata.h"
 #include "kdebug.h"

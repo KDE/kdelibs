@@ -1,4 +1,4 @@
-SUBDIRS = .
+AM_CPPFLAGS = -DKDE3_SUPPORT
 
 INCLUDES = -I$(top_srcdir)/kutils -I$(top_srcdir) -I$(top_srcdir)/kde3support/kdeui -I$(top_srcdir)/kde3support/kparts $(all_includes)
 

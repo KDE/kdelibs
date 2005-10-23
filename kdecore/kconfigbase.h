@@ -220,7 +220,7 @@ public:
   QVariant readPropertyEntry( const char *pKey,
                               const QVariant &aDefault) const;
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /**
    * Reads a list of strings.
    *
@@ -826,7 +826,7 @@ public:
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
   /**
    * writeEntry() overridden to accept a list of strings.
    *
