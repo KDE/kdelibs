@@ -218,9 +218,21 @@ public:
 
 
    /*
+    *   SSLv2_client_method - return a SSLv2 client method object
+    */
+   SSL_METHOD *SSLv2_client_method();
+
+
+   /*
     *   SSLv3_client_method - return a SSLv3 client method object
     */
    SSL_METHOD *SSLv3_client_method();
+
+
+   /*
+    *   SSLv23_client_method - return a SSLv23 client method object
+    */
+   SSL_METHOD *SSLv23_client_method();
 
 
    /*
