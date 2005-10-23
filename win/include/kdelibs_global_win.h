@@ -166,6 +166,10 @@ declared but not defined. The compiler was unable to find any destructors for th
 
 /* disable 4996: warnings for deprecated symbols */
 #  pragma warning(disable: 4996)
+
+/* temporary disable for Qt4 BUG: "no suitable definition provided for explicit template" */
+#  pragma warning(disable: 4661)
+
 # endif
 
 #endif
