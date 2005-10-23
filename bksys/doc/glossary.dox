@@ -1,4 +1,4 @@
-/** \page glossar  Glossar
+/** \page glossary  Glossary
 
 \section source_root source root 
 the top level directory of the source tree 
@@ -7,12 +7,12 @@ the top level directory of the build tree. The build tree is located by default 
 be changed in the \ref SConstruct file. 
 \section SConstruct 
 top level scons configuration file 
-\section SConstrict 
+\section SConscript 
 scons configuration file located in sub dirs. The format of the SConscript file is documentated 
 in the \ref sconscript_format page
 
 \section proposal_state proposal state 
-means that the related page or chapter is in a proposal state and need to be reviewed by the build system guru's 
+means that the related page or chapter is in a proposal state and need to be reviewed by the build system gurus 
 
 \section specification_state specification state
 means that the related page or chapter is a valid specification and could be implemented
