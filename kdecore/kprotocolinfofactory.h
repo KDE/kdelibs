@@ -59,7 +59,7 @@ public:
    * @param protocol the protocol to search for
    * @return the pointer to the KProtocolInfo, or 0 if not found
    */
-  KProtocolInfo *findProtocol(const QString &protocol);
+  KProtocolInfo::Ptr findProtocol(const QString &protocol);
 
   /**
    * Returns list of all known protocols.
