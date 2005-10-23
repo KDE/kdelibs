@@ -21,6 +21,7 @@
 #define KDEWIN_STRING_H
 
 #include <kdecore/kdelibs_export.h>
+#include "config.h" /* use build/config.h for strlcpy(), etc. */
 
 #define strncasecmp strnicmp
 #define strcasecmp stricmp
@@ -32,10 +33,10 @@ extern "C" {
 #endif
 
 /* implemented in fakes.c */
-KDECORE_EXPORT unsigned long strlcpy(char *dst, const char *src, unsigned long siz);
+//KDECORE_EXPORT unsigned long strlcpy(char *dst, const char *src, unsigned long siz);
 
 /* implemented in fakes.c */
-KDECORE_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long siz);
+//KDECORE_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long siz);
 
 KDEWIN32_EXPORT char* strndup(const char *src, size_t n);
 

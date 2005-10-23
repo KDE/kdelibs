@@ -23,6 +23,8 @@
 
 #include <kdecore/kdelibs_export.h>
 
+#include "config.h" /* use build/config.h for setenv()/unsetenv() */
+
 /* regular header from msvc includes */
 # include <../include/stdlib.h>
 
@@ -44,8 +46,10 @@ extern "C" {
 #define EXIT_SUCCESS 0
 
 /* from fakes.c */
-KDECORE_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
-KDECORE_EXPORT void unsetenv(const char *__string);
+/*KDECORE_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
+KDECORE_EXPORT void unsetenv(const char *__string);*/
+
+KDEWIN32_EXPORT void srandom(unsigned int seed);
 
 #ifdef __cplusplus
 }

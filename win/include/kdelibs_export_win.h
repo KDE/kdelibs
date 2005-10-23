@@ -49,7 +49,7 @@
 #ifdef MAKE_KDEUI_LIB
 # define KDEUI_EXPORT KDE_EXPORT
 # define EXPORT_DOCKCLASS KDE_EXPORT
-#elif KDE_MAKE_LIB
+#elif defined(KDE_MAKE_LIB)
 # define KDEUI_EXPORT KDE_IMPORT
 # define EXPORT_DOCKCLASS KDE_IMPORT /* for library build export docklass by default */
 #else

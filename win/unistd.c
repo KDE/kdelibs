@@ -175,6 +175,11 @@ KDEWIN32_EXPORT long int random()
 	return rand();
 }
 
+KDEWIN32_EXPORT void srandom(unsigned int seed)
+{
+	srand(seed);
+}
+
 KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid)
 {
 	/*! @todo */
