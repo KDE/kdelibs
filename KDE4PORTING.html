@@ -1,17 +1,16 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML Level 2//EN//2.0"> <HTML> <HEAD>
-	<TITLE>Guide to Porting Applications to KDE 4.0</TITLE>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><HTML><HEAD>
+<TITLE>Guide to Porting Applications to KDE 4.0</TITLE>
 </HEAD>
 <BODY>
 
 <h2>Note</h2>
-Before the changes were made kdelibs has been branched to branches/work/kdelibs4_snapshot. You should use that one if you're not interested in developing kdelibs. Expect trunk/KDE/kdelibs to be broken at any random time (for now).  For the time being other kde modules should not develop against kdelibs, but use the branch.
+<p>Before the changes were made kdelibs has been branched to branches/work/kdelibs4_snapshot. You should use that one if you're not interested in developing kdelibs. Expect trunk/KDE/kdelibs to be broken at any random time (for now).  For the time being other kde modules should not develop against kdelibs, but use the branch.</p>
 
 <H2>Porting Applications to KDE 4.0</H2>
-This document contains the changes you have to apply to programs written for
-KDE 3.x when you want to port them to KDE 4.0.<P>
-
+<p>This document contains the changes you have to apply to programs written for
+KDE 3.x when you want to port them to KDE 4.0.<br>
 As a start you should have a look at doc/porting.doc in the Qt package,
-or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
+or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.</p>
 
 <H3><A NAME="TOC">Table of Contents</A></H3>
 
@@ -31,28 +30,30 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H3><A NAME="gettingstarted">Getting started</A></H3>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kab">Changes in kab</A></H3>
 
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kdecore">Changes in kdecore</A></H3>
 
 
 <H4>Header file names</H4>
-<UL>
-  kuniqueapp.h =&gt; kuniqueapplication.h
-  klargefile.h =&gt; kde_file.h
-  kcatalogue.h =&gt; kcatalog.h
-  kaccelmanager.h =&gt; kacceleratormanager.h
-</UL>
+<ul>
+<li>kuniqueapp.h =&gt; kuniqueapplication.h</li>
+<li>klargefile.h =&gt; kde_file.h</li>
+<li>kcatalogue.h =&gt; kcatalog.h</li>
+<li>kaccelmanager.h =&gt; kacceleratormanager.h</li>
+</ul>
 
 
 <H4>KCompletion</H4>
+<ul>
 <li>enableSounds() was removed, use setEnableSounds()</li>
 <li>disableSounds() was removed, use setEnableSounds()</li>
+</ul>
 
 <H4>KGlobalSettings</H4>
 <ul>
@@ -60,17 +61,23 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 </ul>
 
 <H4>KAccel</H4>
+<ul>
 <li>Removed methods that were marked deprecated from KDE2</li>
+</ul>
 
 <H4>KAccelBase</H4>
+<ul>
 <li>insert() only takes one KShortcut "default" argument now instead of two</li>
+</ul>
 
 <H4>KAccelAction</H4>
+<ul>
 <li>KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
     support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of
     shortcut3 and shortcut4 have been reduced just to "shortcut".</li>
 <li>The constructor, init(), and insert() functions now only take only KShortcut "default" argument instead of two</li>
 <li>Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
+</ul>
 
 <H4>KApplication</H4>
 <ul>
@@ -99,16 +106,22 @@ by QX11Info::display()</li>
 </ul>
 
 <H4>KCatalogue</H4>
+<ul>
 <li>Has been renamed to KCatalog. Method name parts with "catalogue" have been also renamed to contain "catalog".
+</ul>
 
 <H4>KCodecs</H4>
+<ul>
 <li>All methods using a Q(3)CString removed. The methods use QByteArray (and thus Q3CStrings) now. </li>
 <li><b>TODO:</b> Rename header to match classname.</li>
+</ul>
 
 <H4>KLibFactory</H4>
 
 <H4>KMacroExpander</H4>
-KMacroExpander now takes a QHash and not a QMap
+<ul>
+<li>KMacroExpander now takes a QHash and not a QMap</li>
+</ul>
 
 <H4>NETRootInfo</H4>
 <ul>
@@ -137,76 +150,102 @@ Desktop Entry Spec</a>
 </ul>
 
 <H4>KExtendedSocket</H4>
-<p>This class has been removed. Use KNetwork::KStreamSocket or
-  KNetwork::KServerSocket instead.</p>
+<ul>
+<li>This class has been removed. Use KNetwork::KStreamSocket or KNetwork::KServerSocket instead.</li>
+</ul>
 
 <H4>KGlobalAccel</H4>
+<ul>
 <li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
 <li>The constructor only takes one KShortcut "default" argument now instead of two.</li>
+</ul>
 
 <H4>KKey</H4>
+<ul>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
+</ul>
 
 <H4>KKeySequence</H4>
+<ul>
 <li>Is being phased out.  It was originally created to hold multiple key sequence before
    QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.
    A K3KeySequence convenience class is also available.
 </li>
+</ul>
 
 <H4>KKeyNative</H4>
-<p>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -&gt; modXWin()</p>
+<ul>
+<li>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -&gt; modXWin()</li>
+</ul>
 
 <H4>KPalette</H4>
-<p>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</p>
+<ul>
+<li>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</li>
+</ul>
 
 <H4>KProcess</h4>
+<ul>
 <li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
 <li>getPid() was removed for just pid()</li>
+</ul>
 
 <H4>KPixmapSplitter</H4>
 
 <H4>KRegExp</H4>
+<ul>
 <li>This class has been removed.  Use QRegExp instead</li>
+</ul>
 
 <H4>KShortcut</H4>
-<p>Is being phased out.  A K3Shortcut class is available.  Watch here for more
-   info.
-</p>
+<ul>
+<li>Is being phased out.  A K3Shortcut class is available.  Watch here for more info.</li>
+</ul>
 
 <H4>KStringHandler</H4>
+<ul>
 <li>static QString ljust( const QString &amp;text , int width ) -&gt; QString::leftJustified</li>
 <li>static QString rjust( const QString &amp;text , int width ) -&gt; QString::rightJustified</li>
 <li>matchFilename -&gt; matchFileName</li>
 <li>static QString word( const QString &amp;text , int pos ) -&gt; QString::section </li>
 <li>::randomString() has been moved to KRandom::randomString()</li>
+</ul>
 
 <H4>KStdAccel</H4>
+<ul>
 <li>Removed deprecated methods</li>
 <li>Removed WhatThis, use WhatsThis</li>
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
+</ul>
 
 <H4>KStyle</H4>
 
 <H4>KTempDir</H4>
+<ul>
 <li>existing() was removed, use exists() instead</li>
+</ul>
 
 <H4>KURL</H4>
+<ul>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
+</ul>
 
 <H4>KURLDrag</H4>
+<ul>
 <li>This class has been moved to kde3support. Use KURL::populateMimeData() and
 KURL::List::populateMimeData() in the drag/copy side,
 and the static methods KURL::List::canDecode() and KURL::List::fromMimeData()
-in the drop/paste side.<br />
+in the drop/paste side.<br>
 Example: Replace <pre>  KURL::List uriList;
   if ( KURLDrag::canDecode(e) &amp;&amp; KURLDrag::decode( e, uriList ) ) {</pre>
 by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
   if ( !uriList.isEmpty() ) {</pre></li>
+</ul>
 
 <H4>KMD5</H4>
 
 <H4>KLocale</H4>
+<ul>
 <li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;</li>
 <li> bool weekStartsMonday() const -&gt; int weekStartDay() const</li>
 <li> QString monthName(int i, bool shortName = false) const -&gt; QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate &amp; date, bool shortName = false ) const = 0;<li>
@@ -218,42 +257,54 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <li> charset() -&gt; gone</li>
 <li> setCharset() -&gt; gone</li>
 <li>removeCatalogue was renamed to removeCatalog</li>
+</ul>
 
 <H4>KCmdLineArgs</H4>
+<ul>
 <li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
 <li> noKApp parameter is gone, instead:   Q_FLAGS(StdCmdLineArgs)</li>
+</ul>
 
 <H4>KCharsets</H4>
-<p>KCharsets::codecForName cannot use glibc's i18n data anymore currently</p>
-<p><b>TODO</b>: see which member functions can be removed</p>
-<p><b>TODO</b>: simplification of the encoding list tables
-   (simply name and description, no need of two tables and an lists of aliases.</p>
+<ul>
+<li>KCharsets::codecForName cannot use glibc's i18n data anymore currently</li>
+<li><b>TODO</b>: see which member functions can be removed</li>
+<li><b>TODO</b>: simplification of the encoding list tables
+   (simply name and description, no need of two tables and an lists of aliases.</li>
+</ul>
 
 <H4>KWin</H4>
+<ul>
 <li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
 <li>info(WId win) removed, use windowInfo() instead</li>
 <li>struct Info was removed, use WindowInfo instead</li>
+</ul>
 
 <H4>KNetwork::KResolver</H4>
+<ul>
 <li>the signal finished(KResolverResults) is now finished(const KNetwork::KResolverResults&amp;)</li>
+</ul>
 
 <H4>KVMAllocator</H4>
-<p>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</p>
+<ul>
+<li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
+</ul>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
+<ul>
 <li>kcolordlg.h went away, use kcolordialog.h</li>
 <li>kcolorbtn.h went away, use kcolorbutton.h</li>
 <li>kdatapik.h went away, use kdatepicker.h</li>
 <li>kdualcolorbtn.h went away, use kdualcolorbutton.h</li>
 <li>kxmlgui.h went away, use kxmlguifactory.h</li>
-
+</ul>
 
 <H4>KSeperator</H4>
 <ul>
 <li>KSeperator now uses Qt::Vertical and Qt::Horizontal rather then QFrame's HFrame and VFrame.</li>
-<ul>
+</ul>
 
 <H4>KCharSelectTable</H4>
 <ul>
@@ -261,7 +312,7 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <li>focusItemChanged is no emitted with the currently selected/focused character, not with the most recent activated one</li>
 <li>signal highlighted(...) has been removed</li>
 <li> protected memgers gotoleft/right/up/down are gone, if you really need to simulate them, use the qitemselectionmodel</li>
-<ul>
+</ul>
 
 <H4>KColorDrag</H4>
 <ul>
@@ -272,7 +323,7 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <H4>KAction</H4>
 <ul>
 <li>void activated( KAction::ActivationReason reason, Qt::ButtonState state ); -&gt; void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );</li>
-<li>void setStatusText(const QString &text) was depricated during KDE3. Instead use void setToolTip(const QString &test)</li>
+<li>void setStatusText(const QString &amp;text) was depricated during KDE3. Instead use void setToolTip(const QString &amp;test)</li>
 <li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
 </ul>
 
@@ -283,7 +334,9 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 
 
 <H4>KConfigBackend</H4>
+<ul>
 <li>Removed filename(), use fileName()</li>
+</ul>
 
 <H4>KConfigDialog</H4>
 <ul>
@@ -293,10 +346,13 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 </ul>
 
 <H4>KJanusWidget</H4>
+<ul>
 <li>Q3[HV]Box -&gt; K[HV]Box</li>
 <li>usage of QFrame, instead of Q3Frame</li>
+</ul>
 
 <H4>KDialogBase</H4>
+<ul>
 <li>setButtonOKText -&gt; setButtonOk</li>
 <li>setButtonApplyText -&gt; setButtonApply</li>
 <li>setButtonCancelText -&gt; setButtonCancel</li>
@@ -304,106 +360,152 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <li>getContentsRect -&gt; gone</li>
 <li>getBorderWidths -&gt; gone</li>
 <li>Q3[HV]Box -&gt; K[HV]Box</li>
+</ul>
 
 <H4>KDatePicker</H4>
+<ul>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);</li>
 <li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);</li>
 <li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)</li>
 <li>removed getData() method.  Use date() instead</li>
-<li>removed protected slot <tt>void selectWeekClicked()</tt>
+<li>removed protected slot <tt>void selectWeekClicked()</tt></li>
+</ul>
 
 <H4>KDockWindow</H4>
-<p>This class is obsolete, it is provided for compatibility only.
-Use KSystemTray instead.</p>
+<ul>
+<li>This class is obsolete, it is provided for compatibility only.
+Use KSystemTray instead.</li>
+</ul>
 
 <H4>KDateWidget</H4>
+<ul>
 <li>signal void changed(QDate); was changed by void changed(const QDate&amp;)</li>
+</ul>
 
 <H4>KDateTable</H4>
+<ul>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);</li>
+</ul>
 
 <H4>KKeyDialog</H4>
+<ul>
 <li>removed KDE2 deprecated functions</li>
+</ul>
 
 <H4>KMainWindowInterface</H4>
+<ul>
 <li>functionsDynamic() now returns a DCOPCStringList</li>
 <li>function processDynamic arguments uses DCOPCString instead of QCString :
-	   <pre>bool processDynamic(const DCOPCString &amp;fun, const QByteArray &amp;data, DCOPCString&amp; replyType, QByteArray &amp;replyData);</pre>
-<li>actions() now returns a DCOPCString
+	   <pre>bool processDynamic(const DCOPCString &amp;fun, const QByteArray &amp;data, DCOPCString&amp; replyType, QByteArray &amp;replyData);</pre></li>
+<li>actions() now returns a DCOPCString</li>
+</ul>
 
 <H4>KMainWindow</H4>
-<li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private
+<ul>
+<li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private</li>
 <li>sizeForCentralWidgetSize(QSize size) returned the size the mainwindow should have so that the central widget will be of size.  You normally don't need this, the recommended way to achieve a certain central widget size is as follows.<br>
  * Override sizeHint() in the central widget so that it returns the desired size.<br>
  * Call updateGeometry() in the central widget whenever the desired size changes. This ensures that the new sizeHint() is properly propagated to any parent layout.<br>
- * Now call adjustSize() in the mainwindow to resize the mainwindow such that the central widget will become the desired size.
-</li>
+ * Now call adjustSize() in the mainwindow to resize the mainwindow such that the central widget will become the desired size.</li>
+</ul>
 
 <H4>KAboutDialog</H4>
+<ul>
 <li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed</li>
 <li>addContainerPage int args are now Qt::Alignment args</li>
 <li>addScrolledContainerPage int args are now Qt::Alignment args</li>
 <li>addContainer int args are now Qt::Alignment args</li>
+</ul>
 
 <H4>KAboutContainer</H4>
+<ul>
 <li>KAboutContainer constructor int args have been replaced by Qt::Alignment</li>
 <li>addTitle int args replaced by Qt::Alignment</li>
 <li>addImage int args replaced by Qt::Alignment</li>
+</ul>
 
 <H4>KRecentFilesAction</H4>
+<ul>
 <li>the maxItem property is now an int (was a uint) (affects all accessors methods)</li>
+</ul>
 
 <H4>KPasswdEdit</H4>
+<ul>
 <li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated</li>
+</ul>
 
 <H4>KPassivePopup</H4>
+<ul>
 <li>clicked single now emits a const QPoint reference</li>
+</ul>
 
 <H4>KPopupMenu</H4>
+<ul>
 <li>Renamed to KMenu to reflect change in Qt</li>
 <li>indexes replaced by QAction*</li>
 <li>title, titlePixmap, and changeTitle removed - use QAction::text(), QAction::icon(), QAction::setText() and QAction::setIcon</li>
 <li>contextMenuFocusItem changed to contextMenuFocusAction in line with the change from indexes to actions</li>
+</ul>
 
 <H4>KPopupTitle</H4>
+<ul>
 <li>Removed - QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in KDE3</li>
+</ul>
 
 <H4>KStatusBar</H4>
+<ul>
 <li>The unused BarStatus enum was removed.</li>
+</ul>
 
 <H4>KEditListBox</H4>
+<ul>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
+</ul>
 
 <H4>KEdit</H4>
+<ul>
 <li>The signal gotUrlDrop was removed, nobody used it, and it's easy to do in the application
 if needed (see the KURLDrag section)</li>
+</ul>
 
 <H4>KTabBar</H4>
+<ul>
 <li>colors, close buttons on individual tabs not working at the moment</li>
 <li>The old insertTab and removeTab have been removed, use addTab / insertTab / removeTab from QTabBar instead (uses indices, not QTab*s)</li>
+</ul>
 
 <H4>KTimeWidget</H4>
-<li>Removed, use QTimeEdit</H4>
+<ul>
+<li>Removed, use QTimeEdit
+</ul>
 
 <H4>KNetwork::K*Socket</H4>
+<ul>
 <li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
 <li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
+</ul>
 
 <H4>KStdAction</H4>
+<ul>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
+</ul>
 
 <H4>KInputDialog</H4>
+<ul>
 <li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)</li>
+</ul>
 
 <h4>KToolBar</h4>
+<ul>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
-removed
+removed</li>
 <li><tt>void enableMoving(bool flag)</tt> and <tt>void enableFloating (bool
-flag)</tt> have been removed in favor of <tt>setMovingEnabled(bool)</tt>
+flag)</tt> have been removed in favor of <tt>setMovingEnabled(bool)</tt></li>
 <li><tt>int maxHeight()/int maxWidth()</tt> removed in favor of
-<tt>maximumHeight()/maximumWidth()</tt>
+<tt>maximumHeight()/maximumWidth()</tt></li>
 <li><tt>void setMaxHeight (int h)</tt> and <tt>void setMaxWidth (int dw)</tt>
-removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
+removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
+</ul>
 
 <h4>KToolBarButton</h4>
 <ul>
@@ -426,16 +528,17 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 </ul>
 
 <h4>KLineEdit</h4>
+<ul>
 <li>void cursorAtEnd() removed, use QLineEdit::end(false) instead</li>
 <li>unused protected slots removed: void slotAboutToShow() and void slotCancelled()</li>
+</ul>
 
 <h4>KLineEditDlg</h4>
+<ul>
 <li>Was deprecated, has been removed. Use KInputDialog instead.</li>
+</ul>
 
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kio">Changes in kio</A></H3>
 
@@ -470,6 +573,7 @@ a listDir result.</li>
 </ul>
 
 <H4>RenameDlg</H4>
+<ul>
 <li>void b0Pressed() renamed to void cancelPressed()</li>
 <li>void b1Pressed() renamed to void renamePressed()</li>
 <li>void b2Pressed() renamed to void skipPressed()</li>
@@ -479,6 +583,7 @@ a listDir result.</li>
 <li>void b6Pressed() renamed to void resumePressed()</li>
 <li>void b7Pressed() renamed to void resumeAllPressed()</li>
 <li>void b8Pressed() renamed to void suggestNewNamePressed()</li>
+</ul>
 
 <H4>KURLCombo</H4>
 <ul>
@@ -498,23 +603,29 @@ a listDir result.</li>
 </ul>
 
 <H4>KFileDialog</H4>
+<ul>
 <li>void toolbarCallback(int) was removed</li>
 <li>void pathComboChanged( const QString&amp; ); was removed</li>
 <li>void dirCompletion( const QString&amp; ); was removed</li>
 <li>void setFilterMimeType(const QString &amp;label, const KMimeType::List &amp;types, const KMimeType::Ptr &amp;defaultType) was removed</li>
 <li>void setPreviewWidget(const QWidget *w) was removed</li>
 <li>void updateStatusLine(int dirs, int files); was removed</li>
+</ul>
 
 <h4>KFileOpenWithHandler</h4>
-<p>This class has been removed.</p>
+<ul>
+<li>This class has been removed.</li>
+</ul>
 
 <H4>KBookmark classes</H4>
+<ul>
 <li>KBookmarkDrag class has been moved to kde3support. Use KBookmark::populateMimeData() and
 KBookmark::List::populateMimeData() in the drag/copy side,
 and the static methods KBookmark::List::canDecode() and KBookmark::List::fromMimeData()
 in the drop/paste side.</li>
+</ul>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kparts">Changes in kparts</A></H3>
 
@@ -524,25 +635,21 @@ in the drop/paste side.</li>
 <li>createInstanceFromLibrary is now KLibLoader::createInstance&lt;T&gt;</li>
 </ul>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kspell">Changes in kspell</A></H3>
 
 <H4>KSpell</H4>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="khtmlpart">API-cleanups in KHTML</A></H3>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kfile">Changes in kfile</A></H3>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-
-<p>
-
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kcontrol">Changes in KControl</A></H3>
 <ul>
@@ -550,21 +657,23 @@ in the drop/paste side.</li>
    name for the translations to work.</li>
 </ul>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-<p>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kicker">Panel Applets and Extensions</A></H3>
 
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-<p>
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 
-<p>KDockWidgets -&gt; kde3support K3DockWidget<br>
-KParts::DockWindow -&gt; kde3support KParts::DockWindow3<br>
-KMDI* --&gt; kdeSupport K3MDI*</p>
+<ul>
+<li>KDockWidgets -&gt; kde3support K3DockWidget</li>
+<li>KParts::DockWindow -&gt; kde3support KParts::DockWindow3</li>
+<li>KMDI* --&gt; kdeSupport K3MDI*</li>
+</ul>
 
 <H3>libkmid</H3>
-<p>Moved to kdemultimedia, where atm it is only used by kmid.</p>
+<ul>
+<li>Moved to kdemultimedia, where atm it is only used by kmid.</li>
+</ul>
 
 </BODY>
 </HTML>
