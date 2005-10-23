@@ -104,7 +104,7 @@ for i in "kacceleratormanager_private.h kaccelprivate.h".split():
 
 obj = env.kdeobj('shlib', env)
 obj.vnum     = '6.0.2'
-obj.target   = 'libkdecore'
+obj.target   = 'kdecore'
 obj.source   = core_files
 #FIXME: DL is required for ../libltdl/libltdlc.a, although it is specified
 #when compiling libltdlc.a, we still need it here. We need a better static
@@ -114,8 +114,10 @@ obj.libpaths = '../dcop'
 obj.libs     = '../libltdl/libltdlc.a DCOP'
 obj.iskdelib = 1
 obj.includes = 'network'
+obj.cxxflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
-	obj.libpaths += ' ../win'
+	obj.libpaths += ' ../win '
+	obj.includes += ' ../win/3rdparty/zlib '
 	obj.libs     += ' kdewin32 ws2_32'
 
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
@@ -125,6 +127,7 @@ if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     obj.libpaths += " svgicons"
     obj.libs += " libkdesvgicons"
 obj.execute()
+
 
 """
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore/network $(all_includes) $(LIBART_CFLAGS)

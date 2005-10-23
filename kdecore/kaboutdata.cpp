@@ -99,8 +99,9 @@ KAboutPerson::operator=(const KAboutPerson& other)
    return *this;
 }
 
-struct KAboutTranslator::Private
+class KAboutTranslator::Private
 {
+public:
    QString _name;
    QString _email;
 #define mEmail d->_email
