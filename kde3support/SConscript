@@ -5,7 +5,6 @@ Import('env')
 #env.subdirs("kdecore kdeui kio kparts kmdi")
 
 kde3support_sources = """
-dummy.cpp
 kdecore/k3shortcut.cpp
 kdecore/k3keysequence.cpp
 kdecore/k3shortcutmenu.cpp
@@ -38,9 +37,12 @@ obj.source = kde3support_sources
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
 obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libs = 'kdecore '
+obj.libpaths = '../kdecore ../kdeui ../kmdi ../kparts ../kio '
+obj.cxxflags += ' -DMAKE_KDE3SUPPORT_LIB ' # todo: will be generated automatically
 obj.execute()
 
-env.CreateFile('dummy.cpp', Value(''))
+#env.CreateFile('dummy.cpp', Value(''))
 
 #Do we need this?  For now ;(
 #env.Depends('libkde3support.so.6.0.2', 'kdecore')
