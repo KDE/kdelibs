@@ -2,18 +2,41 @@
 #generated from kde3support/Makefile.am by am2bksys.py
 Import('env')
 
-env.subdirs("kdecore kdeui kio kparts kmdi")
+#env.subdirs("kdecore kdeui kio kparts kmdi")
 
 kde3support_sources = """
 dummy.cpp
+kdecore/k3shortcut.cpp
+kdecore/k3keysequence.cpp
+kdecore/k3shortcutmenu.cpp
+kdecore/k3urldrag.cpp
+kdeui/k3dockwidget_private.cpp
+kdeui/k3textedit.cpp
+kdeui/k3dockwidget.cpp
+kdeui/k3colordrag.cpp
+kdeui/k3popupmenu.cpp
+kio/k3bookmarkdrag.cpp
+kmdi/k3mdidockcontainer.cpp
+kmdi/k3mdichildfrm.cpp
+kmdi/k3mdimainfrm.cpp
+kmdi/k3mdidocumentviewtabwidget.cpp
+kmdi/k3mditaskbar.cpp
+kmdi/k3mdichildarea.cpp
+kmdi/k3mdiguiclient.cpp
+kmdi/k3mdichildview.cpp
+kmdi/k3mditoolviewaccessor.cpp
+kmdi/k3mdichildfrmcaption.cpp
+kmdi/k3mdifocuslist.cpp
+kparts/dockmainwindow3.cpp
 """
 
 obj = env.kdeobj('shlib')
 obj.target = 'kde3support'
 obj.source = kde3support_sources
-obj.linkflags = '-Wl,--whole-archive build/kde3support/kmdi/libk3mdi.a build/kde3support/kparts/libk3parts.a build/kde3support/kio/libk3io.a build/kde3support/kdeui/libkde3ui.a build/kde3support/kdecore/libkde3core.a -Wl,--no-whole-archive'
+#obj.linkflags = '-Wl,--whole-archive build/kde3support/kmdi/libk3mdi.a build/kde3support/kparts/libk3parts.a build/kde3support/kio/libk3io.a build/kde3support/kdeui/libkde3ui.a build/kde3support/kdecore/libkde3core.a -Wl,--no-whole-archive'
 #obj.libpaths = 'kmdi kparts kio kdeui kdecore '
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
+obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 

@@ -2,22 +2,22 @@
 #generated from kde3support/kio/Makefile.am by am2bksys.py
 Import('env')
 
-libk3io_sources = """
-k3bookmarkdrag.cpp
-"""
+#libk3io_sources = """
+#k3bookmarkdrag.cpp
+#"""
 
 include_headers = """
 k3bookmarkdrag.h
 """
 
-includes = '#/kio/bookmarks #/kde3support/kdecore '
+#includes = '#/kio/bookmarks #/kde3support/kdecore '
 
-obj = env.kdeobj('convenience')
-obj.target = 'libk3io'
-obj.source = libk3io_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'libk3io'
+#obj.source = libk3io_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+#obj.execute()
 
 
 """Unhandled Defines 

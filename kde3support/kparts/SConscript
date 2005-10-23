@@ -2,22 +2,22 @@
 #generated from kde3support/kparts/Makefile.am by am2bksys.py
 Import('env')
 
-libk3parts_sources = """
-dockmainwindow3.cpp
-"""
+#libk3parts_sources = """
+#dockmainwindow3.cpp
+#"""
 
 include_headers = """
 dockmainwindow3.h
 """
 
-includes = '#/kutils #/kde3support/kparts #/kde3support/kdeui '
+#includes = '#/kutils #/kde3support/kparts #/kde3support/kdeui '
 
-obj = env.kdeobj('convenience')
-obj.target = 'libk3parts'
-obj.source = libk3parts_sources
-obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.execute()
+#obj = env.kdeobj('convenience')
+#obj.target = 'libk3parts'
+#obj.source = libk3parts_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+#obj.execute()
 
 
 """Unhandled Defines 
