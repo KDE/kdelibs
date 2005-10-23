@@ -186,6 +186,15 @@ void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
   opt->icon      = icon();
   opt->iconSize  = QSize(d->m_iconSize, d->m_iconSize);
   opt->text      = textLabel();
+  if (d->m_iconText == KToolBar::IconTextBottom) {
+    opt->toolButtonStyle = Qt::ToolButtonTextUnderIcon;
+  } else if (d->m_iconText == KToolBar::IconOnly)
+    opt->toolButtonStyle = Qt::ToolButtonIconOnly;
+  else if (d->m_iconText ==   KToolBar::TextOnly)
+    opt->toolButtonStyle = Qt::ToolButtonTextBesideIcon;
+  else 
+    opt->toolButtonStyle = Qt::ToolButtonTextBesideIcon;
+
   opt->features  = QStyleOptionToolButton::None; //We don't Qt know about the menu, since we don't want the split-button!
 	//### delay stuff?
   opt->subControls       = QStyle::SC_ToolButton;
@@ -203,6 +212,7 @@ void KToolBarButton::modeChange()
 
     d->m_iconSize = d->m_parent->iconSize();
   }
+
   if (!d->m_iconName.isNull())
     setIcon(d->m_iconName);
 
@@ -490,12 +500,9 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
   }
 }
 
-void KToolBarButton::paintEvent( QPaintEvent* )
+void KToolBarButton::paintEvent( QPaintEvent*e )
 {
   QPainter painter(this);
-#ifdef __GNUC__
-    #warning "KDE4 port: Most of this can be removed, Qt can do this stuff now! -- Maks"
-#endif
   QStyle::State flags   = QStyle::State_None;
   QStyle::SubControls active = QStyle::SC_None;
 
@@ -515,125 +522,6 @@ void KToolBarButton::paintEvent( QPaintEvent* )
   opt.activeSubControls = active;
 
   style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &painter, this);
-
-  int dx, dy;
-  QFont tmp_font(KGlobalSettings::toolBarFont());
-  QFontMetrics fm(tmp_font);
-  QRect textRect;
-  int textFlags = 0;
-
-  if (d->m_iconText == KToolBar::IconOnly) // icon only
-  {
-    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
-        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
-            	QIcon::Disabled,
-        isOn() ? QIcon::On : QIcon::Off );
-    if( !pixmap.isNull())
-    {
-      dx = ( width() - pixmap.width() ) / 2;
-      dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      painter.drawPixmap( dx, dy, pixmap );
-    }
-  }
-  else if (d->m_iconText == KToolBar::IconTextRight) // icon and text (if any)
-  {
-    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
-        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
-            	QIcon::Disabled,
-        isOn() ? QIcon::On : QIcon::Off );
-    if( !pixmap.isNull())
-    {
-      dx = 4;
-      dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      painter.drawPixmap( dx, dy, pixmap );
-    }
-
-    if (!textLabel().isNull())
-    {
-      textFlags = Qt::AlignVCenter|Qt::AlignLeft;
-      if (!pixmap.isNull())
-        dx = 4 + pixmap.width() + 2;
-      else
-        dx = 4;
-      dy = 0;
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      textRect = QRect(dx, dy, width()-dx, height());
-    }
-  }
-  else if (d->m_iconText == KToolBar::TextOnly)
-  {
-    if (!textLabel().isNull())
-    {
-      textFlags = Qt::AlignVCenter|Qt::AlignLeft;
-      dx = (width() - fm.width(textLabel())) / 2;
-      dy = (height() - fm.lineSpacing()) / 2;
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      textRect = QRect( dx, dy, fm.width(textLabel()), fm.lineSpacing() );
-    }
-  }
-  else if (d->m_iconText == KToolBar::IconTextBottom)
-  {
-    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
-        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
-            	QIcon::Disabled,
-        isOn() ? QIcon::On : QIcon::Off );
-    if( !pixmap.isNull())
-    {
-      dx = (width() - pixmap.width()) / 2;
-      dy = (height() - fm.lineSpacing() - pixmap.height()) / 2;
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      painter.drawPixmap( dx, dy, pixmap );
-    }
-
-    if (!textLabel().isNull())
-    {
-      textFlags = Qt::AlignBottom|Qt::AlignHCenter;
-      dx = (width() - fm.width(textLabel())) / 2;
-      dy = height() - fm.lineSpacing() - 4;
-
-      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      textRect = QRect( dx, dy, fm.width(textLabel()), fm.lineSpacing() );
-    }
-  }
-
-  // Draw the text at the position given by textRect, and using textFlags
-  if (!textLabel().isNull() && !textRect.isNull())
-  {
-      painter.setFont(KGlobalSettings::toolBarFont());
-      if (!isEnabled())
-        painter.setPen(palette().disabled().dark());
-      else if(d->m_isRaised)
-        painter.setPen(KGlobalSettings::toolBarHighlightColor());
-      else
-	painter.setPen( colorGroup().buttonText() );
-      painter.drawText(textRect, textFlags, textLabel());
-  }
 
   if (QToolButton::popup())
   {
