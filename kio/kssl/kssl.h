@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2005 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -171,23 +171,12 @@ public:
 	bool setClientCertificate(KSSLPKCS12 *pkcs);
 
 	/**
-	 *  Set the status of the connection with respect to proxies.
-	 *
-	 *  @param active is not used
-	 *  @param realIP is the IP address of the host you're connecting to
-	 *  @param realPort is the port of the host you're connecting to
-	 *  @param proxy is the IP or hostname of the proxy server
-	 *  @deprecated
-	 */
-	void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null) KDE_DEPRECATED;
-
-	/**
 	 *  Set the peer hostname to be used for certificate verification.
 	 *
 	 *  @param realHost the remote hostname as the user believes to be
 	 *         connecting to
 	 */
-	void setPeerHost(QString realHost = QString::null);
+	void setPeerHost(const QString& realHost = QString::null);
 
 	/**
 	 *  Connect the SSL session to the remote host using the provided
@@ -296,7 +285,6 @@ private:
 
 	void setConnectionInfo();
 	void setPeerInfo();
-	bool setVerificationLogic();
 };
 
 

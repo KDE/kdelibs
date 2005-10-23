@@ -132,10 +132,7 @@ bool KSSL::TLSInit() {
 		return false;
 
 	if (m_bAutoReconfig)
-	m_cfg->load();
-
-	if (!m_cfg->tlsv1())
-		return false;
+		m_cfg->load();
 
 	seedWithEGD();
 	d->m_meth = d->kossl->TLSv1_client_method();
@@ -170,23 +167,11 @@ bool KSSL::initialize() {
 		m_cfg->load();
 
 	seedWithEGD();
-	// FIXME: we should be able to force SSL off entirely.
 	d->lastInitTLS = false;
 
 	m_pi.reset();
 
-	if (m_cfg->sslv2() && !m_cfg->sslv3())
-		d->m_meth = d->kossl->SSLv2_client_method();
-	else if (m_cfg->sslv3() && !m_cfg->sslv2())
-		d->m_meth = d->kossl->SSLv3_client_method();
-	else d->m_meth = d->kossl->SSLv23_client_method();
-
-/*
-if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug(7029) << "Double method" << endl;
-else if (m_cfg->sslv2()) kdDebug(7029) << "SSL2 method" << endl;
-else if (m_cfg->sslv3()) kdDebug(7029) << "SSL3 method" << endl;
-*/
-
+	d->m_meth = d->kossl->SSLv3_client_method();
 	d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
 	if (d->m_ctx == 0L) {
 		return false;
@@ -261,16 +246,6 @@ return initialize();
 //#include "ksslcallback.c"
 
 
-bool KSSL::setVerificationLogic() {
-#if 0
-#ifdef KSSL_HAVE_SSL
-  //  SSL_set_verify_result(d->m_ssl, X509_V_OK);
-  //  SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
-#endif
-#endif
-return true;
-}
-
 // KDE4 FIXME: temporary code
 int KSSL::accept(QIODevice* dev) {
 	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
@@ -305,15 +280,6 @@ int rc;
 			d->session = 0;
 		}
 	}
-
-/*
-	if (!setVerificationLogic()) {
-		d->kossl->SSL_shutdown(d->m_ssl);
-		d->kossl->SSL_free(d->m_ssl);
-		d->m_ssl = 0;
-		return -1;
-	}
-*/
 
 	if (!d->lastInitTLS)
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
@@ -400,15 +366,6 @@ int rc;
 			d->session = 0;
 		}
 	}
-
-/*
-	if (!setVerificationLogic()) {
-		d->kossl->SSL_shutdown(d->m_ssl);
-		d->kossl->SSL_free(d->m_ssl);
-		d->m_ssl = 0;
-		return -1;
-	}
-*/
 
 	if (!d->lastInitTLS)
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
@@ -629,15 +586,9 @@ KSSLConnectionInfo& KSSL::connectionInfo() {
 }
 
 
-// KDE 4: Make it const QString &
-void KSSL::setPeerHost(QString realHost) {
+void KSSL::setPeerHost(const QString& realHost) {
 	d->proxyPeer = realHost;
 }
-
-// deprecated
-void KSSL::setProxyUse(bool, QString, int, QString) {
-}
-
 
 KSSLPeerInfo& KSSL::peerInfo() {
 	return m_pi;
