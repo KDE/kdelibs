@@ -128,32 +128,38 @@ public:
     virtual void insertTab( QWidget *, QTab *, int index = -1 );*/
 
     /*!
-      Reimplemented for internal reasons.
+      @deprecated use setTabText
     */
     void changeTab( QWidget *, const QString & ) KDE_DEPRECATED;
 
     /*!
-      Reimplemented for internal reasons.
+      @deprecated use setTabText and setTabIcon
     */
     void changeTab( QWidget *child, const QIcon& iconset, const QString &label ) KDE_DEPRECATED;
 
     /*!
-      Reimplemented for internal reasons.
+      @deprecated use tabText
     */
     QString label( int ) const KDE_DEPRECATED;
 
+    /*!
+      Reimplemented for internal reasons.
+    */
     QString tabText( int ) const;
 
     /*!
-      Reimplemented for internal reasons.
+      @deprecated use tabText
     */
     QString tabLabel( QWidget * ) const KDE_DEPRECATED;
 
     /*!
-      Reimplemented for internal reasons.
+      @deprecated use setTabText
     */
     void setTabLabel( QWidget *, const QString & ) KDE_DEPRECATED;
 
+    /*!
+      Reimplemented for internal reasons.
+    */
     void setTabText( int , const QString & );
 
 public slots:
