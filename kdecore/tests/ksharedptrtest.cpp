@@ -21,64 +21,75 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "ksharedptrtest.h"
 #include "ksharedptr.h"
 
 #include <QString>
 
-int main()
+#include <QtTest/qttest_kde.h>
+
+QTTEST_KDEMAIN( KSharedPtrTest, NoGUI )
+
+void KSharedPtrTest::testAll()
 {
-	KSharedPtr<QString> u = new QString( "Hello" );
-	Q_ASSERT( *u == "Hello" );
-	Q_ASSERT( u.isUnique() == true );
+	QString s = QLatin1String( "Hello" );
+	QString s2 = QLatin1String( "Foo" );
+	QString s3 = QLatin1String( "Bar" );
+
+	KSharedPtr<QString> u = new QString( s );
+	COMPARE( *u, s );
+	VERIFY( u.isUnique() );
 
 	KSharedPtr<QString> v;
-	Q_ASSERT( v == 0 );
-	Q_ASSERT( u.isUnique() == true );
+	VERIFY( u.isUnique() );
+	VERIFY( !v );
 
 	v = u;
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( *v == "Hello" );
-	Q_ASSERT( v.isUnique() == false );
+	VERIFY( !u.isUnique() );
+	COMPARE( *v, s );
+	VERIFY( !v.isUnique() );
 
 	KSharedPtr<QString> w = v.copy();
-	Q_ASSERT( *u == "Hello" );
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( *v == "Hello" );
-	Q_ASSERT( v.isUnique() == false );
-	Q_ASSERT( *w == "Hello" );
-	Q_ASSERT( w.isUnique() == true );
+	COMPARE( *u, s );
+	VERIFY( !u.isUnique() );
+	COMPARE( *v, s );
+	VERIFY( !v.isUnique() );
+	COMPARE( *w, s );
+	VERIFY( w.isUnique() );
 
 	v->clear();
-	Q_ASSERT( u->isEmpty() );
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( v->isEmpty() );
-	Q_ASSERT( v.isUnique() == false );
-	Q_ASSERT( *w == "Hello" );
-	Q_ASSERT( w.isUnique() == true );
+	VERIFY( u->isEmpty() );
+	VERIFY( !u.isUnique() );
+	VERIFY( v->isEmpty() );
+	VERIFY( !v.isUnique() );
+	COMPARE( *w, s );
+	VERIFY( w.isUnique() );
 
 	u = v = w;
-	Q_ASSERT( *u == "Hello" );
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( *v == "Hello" );
-	Q_ASSERT( v.isUnique() == false );
-	Q_ASSERT( *w == "Hello" );
-	Q_ASSERT( w.isUnique() == false );
+	COMPARE( *u, s );
+	VERIFY( !u.isUnique() );
+	COMPARE( *v, s );
+	VERIFY( !v.isUnique() );
+	COMPARE( *w, s );
+	VERIFY( !w.isUnique() );
 
-	*u.get() = "Foo";
-	Q_ASSERT( *u == "Foo" );
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( *v == "Foo" );
-	Q_ASSERT( v.isUnique() == false );
-	Q_ASSERT( *w == "Foo" );
-	Q_ASSERT( w.isUnique() == false );
+	*u.get() = s2;
+	COMPARE( *u, s2 );
+	VERIFY( !u.isUnique() );
+	COMPARE( *v, s2 );
+	VERIFY( !v.isUnique() );
+	COMPARE( *w, s2 );
+	VERIFY( !w.isUnique() );
 
 	w.detach();
-	*w = "Bar";
-	Q_ASSERT( *u == "Foo" );
-	Q_ASSERT( u.isUnique() == false );
-	Q_ASSERT( *v == "Foo" );
-	Q_ASSERT( v.isUnique() == false );
-	Q_ASSERT( *w == "Bar" );
-	Q_ASSERT( w.isUnique() == true );
+	*w = s3;
+	COMPARE( *u, s2 );
+	VERIFY( !u.isUnique() );
+	COMPARE( *v, s2 );
+	VERIFY( !v.isUnique() );
+	COMPARE( *w, s3 );
+	VERIFY( w.isUnique() );
 }
+
+#include "ksharedptrtest.moc"
 
