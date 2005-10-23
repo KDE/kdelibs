@@ -1,9 +1,14 @@
+dcopserver_pid=
 
 clean_up() {
 	rm -f batch.stdout shell.stdout shell.returns batch.returns
+	test -n "$dcopserver_pid" && kill $dcopserver_pid
 }
 
 clean_up
+
+dcopserver --nofork &
+dcopserver_pid=$!
 
 echo '* Running batch mode'
 ./dcop_test --batch >batch.stdout
