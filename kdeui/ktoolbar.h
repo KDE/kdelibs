@@ -111,6 +111,7 @@ class KDEUI_EXPORT KToolBar : public Q3ToolBar
     Q_PROPERTY( QString text READ text WRITE setText )
 
 public:
+// KDE4: Reuse QStyleToolButton
     enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
     /**
      * Possible bar positions.
