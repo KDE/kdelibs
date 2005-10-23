@@ -115,7 +115,7 @@ bool KProtocolInfo::isKnownProtocol( const QString &protocol )
 {
   // We call the findProtocol (const QString&) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-  return prot.get() != 0;
+  return prot;
 }
 
 bool KProtocolInfo::supportsListing( const KURL &url )

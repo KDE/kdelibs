@@ -292,7 +292,7 @@ bool KProtocolInfo::isHelperProtocol( const QString& _protocol )
 bool KProtocolInfo::isKnownProtocol( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  return prot != KProtocolInfo::Ptr(0);
+  return prot;
 }
 
 bool KProtocolInfo::supportsListing( const QString& _protocol )
