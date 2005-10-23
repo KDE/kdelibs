@@ -638,7 +638,9 @@ public slots:
 	 * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
 	 * @deprecated use setToolviewStyle(int flags) instead
 	 */
+#ifdef __GNUC__
 #warning remove setIDEAlModeStyle
+#endif
 	void setIDEAlModeStyle( int flags );
 	//KDE4: Get rid of the above.
 	/**

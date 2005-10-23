@@ -596,7 +596,7 @@ bool K3MdiChildView::eventFilter( QObject *obj, QEvent *e )
 		if ( ( pNewChild != 0L ) && ( pNewChild->isWidgetType() ) )
 		{
 			QWidget * pNewWidget = ( QWidget* ) pNewChild;
-			if ( pNewWidget->windowFlags() & Qt::Dialog == Qt::Dialog &&
+			if ( (pNewWidget->windowFlags() & Qt::Dialog) == Qt::Dialog &&
 			     pNewWidget->testAttribute( Qt::WA_ShowModal ) )
 				return false;
 			QObjectList list = pNewWidget->queryList( "QWidget" );

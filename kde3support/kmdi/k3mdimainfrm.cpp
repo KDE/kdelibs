@@ -65,7 +65,10 @@
 #include <q3valuelist.h>
 #include <QResizeEvent>
 #include <QFocusEvent>
+
+#ifdef Q_WS_X11
 #include <qx11info_x11.h>
+#endif
 
 #include "k3mdimainfrm.h"
 #include "k3mditaskbar.h"
