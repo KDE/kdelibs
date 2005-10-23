@@ -1,7 +1,7 @@
 /**
  * crypto.h
  *
- * Copyright (c) 2000-2001 George Staikos <staikos@kde.org>
+ * Copyright (c) 2000-2005 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published
@@ -273,7 +273,6 @@ public slots:
   void slotCAChecked();
 
 protected:
-  void cwCompatible();
   void cwUS();
   void cwExp();
   void cwAll();
@@ -289,8 +288,7 @@ private:
 
   QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts, *tabAuth;
 
-  Q3ListView *SSLv2Box, *SSLv3Box;
-  QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
+  Q3ListView *SSLv3Box;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave;
 
   /* EGD stuff */

@@ -267,48 +267,6 @@ QString whatstr;
   tabSSL = new Q3Frame(this);
   grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
                                        KDialog::spacingHint() );
-  mUseTLS = new QCheckBox(i18n("Enable &TLS support if supported by the server"), tabSSL);
-  connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mUseTLS, 0, 0);
-  whatstr = i18n("TLS is the newest revision of the SSL protocol."
-                 " It integrates better with other protocols and has"
-                 " replaced SSL in protocols such as POP3 and SMTP.");
-  mUseTLS->setWhatsThis( whatstr);
-
-  mUseSSLv2 = new QCheckBox(i18n("Enable SSLv&2"), tabSSL);
-  connect(mUseSSLv2, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mUseSSLv2, 1, 0);
-  whatstr = i18n("SSL v2 is the second revision of the SSL protocol."
-                " It is most common to enable v2 and v3.");
-  mUseSSLv2->setWhatsThis( whatstr);
-
-  mUseSSLv3 = new QCheckBox(i18n("Enable SSLv&3"), tabSSL);
-  connect(mUseSSLv3, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mUseSSLv3, 1, 1);
-  whatstr = i18n("SSL v3 is the third revision of the SSL protocol."
-                " It is most common to enable v2 and v3.");
-  mUseSSLv3->setWhatsThis( whatstr);
-
-#ifdef HAVE_SSL
-  SSLv2Box = new Q3ListView(tabSSL, "v2ciphers");
-  (void) SSLv2Box->addColumn(i18n("SSLv2 Ciphers to Use"));
-  whatstr = i18n("Select the ciphers you wish to enable when using the"
-                " SSL v2 protocol. The actual protocol used will be"
-                " negotiated with the server at connection time.");
-  SSLv2Box->setWhatsThis( whatstr);
-  SSLv2Box->setSelectionMode(Q3ListView::NoSelection);
-
-  grid->addWidget( SSLv2Box, 2, 0 );
-  connect( mUseSSLv2, SIGNAL( toggled( bool ) ),
-	   SSLv2Box, SLOT( setEnabled( bool )));
-#else
-  QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
-                               " because this module was not linked"
-                               " with OpenSSL."), tabSSL);
-  grid->addMultiCellWidget(nossllabel, 2, 2, 0, 1);
-  grid->addRowSpacing( 3, 100 ); // give minimum height to look better
-#endif
-
   // no need to parse kdeglobals.
   config = new KConfig("cryptodefaults", false, false);
   policies = new KSimpleConfig("ksslpolicies", false);
@@ -317,13 +275,13 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   SSLv3Box = new Q3ListView(tabSSL, "v3ciphers");
-  (void) SSLv3Box->addColumn(i18n("SSLv3 Ciphers to Use"));
+  SSLv3Box->addColumn(i18n("SSL Ciphers to Use"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
-                " SSL v3 protocol. The actual protocol used will be"
+                " SSL protocol. The actual protocol used will be"
                 " negotiated with the server at connection time.");
   SSLv3Box->setWhatsThis( whatstr);
   SSLv3Box->setSelectionMode(Q3ListView::NoSelection);
-  grid->addWidget(SSLv3Box, 2, 1);
+  grid->addMultiCellWidget(SSLv3Box, 2, 2, 0, 1);
   connect( mUseSSLv3, SIGNAL( toggled( bool ) ),
 	   SSLv3Box, SLOT( setEnabled( bool )));
 
@@ -341,10 +299,8 @@ QString whatstr;
   QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
 
   cwcb->insertItem(QString::null);
-  cwcb->insertItem(i18n("Most Compatible"));
-  whatStr += i18n("<li><b>Most Compatible:</b> Select the settings found to be most compatible.</li>");
-  cwcb->insertItem(i18n("US Ciphers Only"));
-  whatStr += i18n("<li><b>US Ciphers Only:</b> Select only the US strong (&gt;= 128 bit) encryption ciphers.</li>");
+  cwcb->insertItem(i18n("Strong Ciphers Only"));
+  whatStr += i18n("<li><b>Strong Ciphers Only:</b> Select only the strong (&gt;= 128 bit) encryption ciphers.</li>");
   cwcb->insertItem(i18n("Export Ciphers Only"));
   whatStr += i18n("<li><b>Export Ciphers Only:</b> Select only the weak ciphers (&lt;= 56 bit).</li>");
   cwcb->insertItem(i18n("Enable All"));
@@ -353,9 +309,6 @@ QString whatstr;
   cwcb->setWhatsThis( whatStr);
 
   connect(cwcb, SIGNAL(activated(int)), SLOT(slotSelectCipher(int)));
-
-
-
 
 #endif
 
@@ -878,15 +831,6 @@ void KCryptoConfig::load()
   yourCertDelList.clear();
   authDelList.clear();
   caDelList.clear();
-  config->setGroup("TLS");
-  mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
-
-  config->setGroup("SSLv2");
-  mUseSSLv2->setChecked(config->readBoolEntry("Enabled", true));
-
-  config->setGroup("SSLv3");
-  mUseSSLv3->setChecked(config->readBoolEntry("Enabled", true));
-
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
@@ -918,14 +862,6 @@ void KCryptoConfig::load()
   oPath->setURL(config->readPathEntry("Path"));
 #endif
 
-  config->setGroup("SSLv2");
-  CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
-  while ( item ) {
-      item->setOn(config->readBoolEntry(item->configName(),
-					item->bits() >= 56));
-      item = static_cast<CipherItem *>(item->nextSibling());
-  }
-
   config->setGroup("SSLv3");
   item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
@@ -933,9 +869,6 @@ void KCryptoConfig::load()
 					item->bits() >= 56));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
-
-  SSLv2Box->setEnabled( mUseSSLv2->isChecked() );
-  SSLv3Box->setEnabled( mUseSSLv3->isChecked() );
 
   QStringList groups = policies->groupList();
 
@@ -1035,23 +968,6 @@ void KCryptoConfig::load()
 void KCryptoConfig::save()
 {
 #ifdef HAVE_SSL
-  if (!mUseSSLv2->isChecked() &&
-      !mUseSSLv3->isChecked())
-    KMessageBox::information(this, i18n("If you do not select at least one"
-                                       " SSL algorithm, either SSL will not"
-                                       " work or the application may be"
-                                       " forced to choose a suitable default."),
-                                   i18n("SSL"));
-
-  config->setGroup("TLS");
-  config->writeEntry("Enabled", mUseTLS->isChecked());
-
-  config->setGroup("SSLv2");
-  config->writeEntry("Enabled", mUseSSLv2->isChecked());
-
-  config->setGroup("SSLv3");
-  config->writeEntry("Enabled", mUseSSLv3->isChecked());
-
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
@@ -1077,23 +993,6 @@ void KCryptoConfig::save()
 #endif
 
   int ciphercount = 0;
-  config->setGroup("SSLv2");
-  CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
-  while ( item ) {
-    if (item->isOn()) {
-      config->writeEntry(item->configName(), true);
-      ciphercount++;
-    } else config->writeEntry(item->configName(), false);
-
-    item = static_cast<CipherItem *>(item->nextSibling());
-  }
-
-  if (mUseSSLv2->isChecked() && ciphercount == 0)
-    KMessageBox::information(this, i18n("If you do not select at least one"
-                                       " cipher, SSLv2 will not work."),
-                                   i18n("SSLv2 Ciphers"));
-
-  ciphercount = 0;
   config->setGroup("SSLv3");
   item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
@@ -1107,10 +1006,10 @@ void KCryptoConfig::save()
 
   KSSLCertificateCache _cc;
 
-  if (mUseSSLv3->isChecked() && ciphercount == 0)
+  if (ciphercount == 0)
     KMessageBox::information(this, i18n("If you do not select at least one"
-                                       " cipher, SSLv3 will not work."),
-                                   i18n("SSLv3 Ciphers"));
+                                       " cipher, SSL will not work."),
+                                   i18n("SSL Ciphers"));
   // SSL Policies code
   for (OtherCertItem *x = otherCertDelList.first(); x != 0; x = otherCertDelList.next()) {
      KSSLX509Map cert(x->configName());
@@ -1229,9 +1128,6 @@ void KCryptoConfig::save()
 
 void KCryptoConfig::defaults()
 {
-  mUseTLS->setChecked(true);
-  mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(true);
   mWarnOnEnter->setChecked(false);
   mWarnOnLeave->setChecked(true);
   mWarnOnUnencrypted->setChecked(false);
@@ -1249,11 +1145,6 @@ void KCryptoConfig::defaults()
     // on me after tracing the https ioslave on a suspicion.
 
   CipherItem *item;
-  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 56 );
-  }
-
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
     item->setOn( item->bits() >= 56 );
@@ -1279,53 +1170,23 @@ void KCryptoConfig::genCAList() {
 void KCryptoConfig::slotSelectCipher(int id) {
     switch(id) {
 	    case 1:
-		    cwCompatible();
-		    break;
-	    case 2:
 		    cwUS();
 		    break;
-	    case 3:
+	    case 2:
 		    cwExp();
 		    break;
-	    case 4:
+	    case 3:
 		    cwAll();
     }
 }
 
-void KCryptoConfig::cwCompatible() {
-  #ifdef HAVE_SSL
-  CipherItem *item;
-  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 56 && item->bits() <= 128 );
-  }
-
-  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 56 && item->bits() <= 128 );
-  }
-
-  mUseTLS->setChecked(true);
-  mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(true);
-  configChanged();
-  #endif
-}
-
-
 void KCryptoConfig::cwUS() {
   #ifdef HAVE_SSL
   CipherItem *item;
-  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 128 );
-  }
-
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
     item->setOn( item->bits() >= 128 );
   }
-
   configChanged();
   #endif
 }
@@ -1334,16 +1195,10 @@ void KCryptoConfig::cwUS() {
 void KCryptoConfig::cwExp() {
   #ifdef HAVE_SSL
   CipherItem *item;
-  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() <= 56 && item->bits() > 0);
-  }
-
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
     item->setOn( item->bits() <= 56 && item->bits() > 0);
   }
-
   configChanged();
   #endif
 }
@@ -1352,19 +1207,10 @@ void KCryptoConfig::cwExp() {
 void KCryptoConfig::cwAll() {
   #ifdef HAVE_SSL
   CipherItem *item;
-  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
-	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( true );
-  }
-
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
     item->setOn( true );
   }
-
-  mUseTLS->setChecked(true);
-  mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(true);
   configChanged();
   #endif
 }
@@ -2365,37 +2211,7 @@ SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
 
-  SSLv2Box->clear();
   SSLv3Box->clear();
-
-  meth = SSLv2_client_method();
-  SSLeay_add_ssl_algorithms();
-  ctx = SSL_CTX_new(meth);
-  if (ctx == NULL) return false;
-
-  ssl = SSL_new(ctx);
-  if (!ssl) return false;
-
-  CipherItem *item;
-  for (i=0; ; i++) {
-    int j, k;
-    SSL_CIPHER *sc;
-    sc = (meth->get_cipher)(i);
-    if (!sc)
-      break;
-    // Leak of sc*?
-    if (QString(sc->name).contains("ADH-")) {
-      continue;
-    }
-    k = SSL_CIPHER_get_bits(sc, &j);
-
-    item = new CipherItem( SSLv2Box, sc->name, k, j, this );
-  }
-
-  if (ctx) SSL_CTX_free(ctx);
-  if (ssl) SSL_free(ssl);
-
-  // We repeat for SSLv3
   meth = SSLv3_client_method();
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
