@@ -526,11 +526,7 @@ void TCPSlaveBase::setSSLMetaData() {
 
 bool TCPSlaveBase::canUseTLS()
 {
-    if (m_bIsSSL || d->needSSLHandShake || !KSSL::doesSSLWork())
-        return false;
-
-    KSSLSettings kss;
-    return kss.tlsv1();
+    return !(m_bIsSSL || d->needSSLHandShake || !KSSL::doesSSLWork());
 }
 
 
