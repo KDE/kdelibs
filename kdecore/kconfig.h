@@ -22,9 +22,9 @@
 #ifndef KCONFIG_H
 #define KCONFIG_H
 
+#include <klockfile.h>
 #include <kconfigbase.h>
 #include <kconfigdata.h>
-#include <klockfile.h>
 
 /**
 * Access KDE Configuration entries.

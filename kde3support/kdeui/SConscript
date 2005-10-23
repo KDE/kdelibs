@@ -2,7 +2,7 @@
 #generated from kde3support/kdeui/Makefile.am by am2bksys.py
 Import('env')
 
-libkde3ui_sources = """
+kde3ui_sources = """
 k3colordrag.cpp k3dockwidget.cpp k3dockwidget_private.cpp k3popupmenu.cpp
 k3textedit.cpp
 """
@@ -14,14 +14,10 @@ k3colordrag.h k3dockwidget.h k3popupmenu.h k3textedit.h
 includes = '#/kutils #/kde3support/kdeui #/kde3support/kparts '
 
 obj = env.kdeobj('convenience')
-obj.target = 'libkde3ui'
-obj.source = libkde3ui_sources
+obj.target = 'kde3ui'
+obj.source = kde3ui_sources
+#obj.cxxflags += ' -DKDE3_SUPPORT '
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 
-
-"""Unhandled Defines 
-METASOURCES = AUTO
-SUBDIRS = .
-"""

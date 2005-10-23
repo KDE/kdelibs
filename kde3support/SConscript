@@ -4,13 +4,13 @@ Import('env')
 
 env.subdirs("kdecore kdeui kio kparts kmdi")
 
-libkde3support_sources = """
+kde3support_sources = """
 dummy.cpp
 """
 
 obj = env.kdeobj('shlib')
-obj.target = 'libkde3support'
-obj.source = libkde3support_sources
+obj.target = 'kde3support'
+obj.source = kde3support_sources
 obj.linkflags = '-Wl,--whole-archive build/kde3support/kmdi/libk3mdi.a build/kde3support/kparts/libk3parts.a build/kde3support/kio/libk3io.a build/kde3support/kdeui/libkde3ui.a build/kde3support/kdecore/libkde3core.a -Wl,--no-whole-archive'
 #obj.libpaths = 'kmdi kparts kio kdeui kdecore '
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '

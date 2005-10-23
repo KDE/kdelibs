@@ -413,7 +413,7 @@ void KAccelBase::createKeyList( QVector<struct X>& rgKeys )
 
 	// create the list
 	// For each action
-	for( uint iAction = 0; iAction < m_rgActions.count(); iAction++ ) {
+	for( int iAction = 0; iAction < m_rgActions.count(); iAction++ ) {
 		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
 		if( pAction && pAction->m_pObjSlot && pAction->m_psMethodSlot && pAction != mtemp_pActionRemoving ) {
 			// For each key sequence associated with action
