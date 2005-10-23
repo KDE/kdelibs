@@ -123,16 +123,16 @@ int KServiceGroup::childCount()
      for( List::ConstIterator it = m_serviceList.begin();
           it != m_serviceList.end(); it++)
      {
-        KSycocaEntry *p = (*it).get();
+        KSycocaEntry::Ptr p = *it;
         if (p->isType(KST_KService))
         {
-           KService *service = static_cast<KService *>(p);
+           KService *service = static_cast<KService *>(p.get());
            if (!service->noDisplay())
               m_childCount++;
         }
         else if (p->isType(KST_KServiceGroup))
         {
-           KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+           KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p.get());
            m_childCount += serviceGroup->childCount();
         }
      }
@@ -228,14 +228,14 @@ void KServiceGroup::load( QDataStream& s )
         QString path = *it;
         if (path[path.length()-1] == '/')
         {
-           KServiceGroup *serviceGroup;
+           KServiceGroup::Ptr serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
            if (serviceGroup)
               m_serviceList.append( SPtr(serviceGroup) );
         }
         else
         {
-           KService *service;
+           KService::Ptr service;
            service = KServiceFactory::self()->findServiceByDesktopPath(path);
            if (service)
               m_serviceList.append( SPtr(service) );
@@ -257,15 +257,15 @@ void KServiceGroup::save( QDataStream& s )
   for( List::ConstIterator it = m_serviceList.begin();
        it != m_serviceList.end(); it++)
   {
-     KSycocaEntry *p = (*it).get();
+     KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
      {
-        KService *service = static_cast<KService *>(p);
+        KService *service = static_cast<KService *>(p.get());
         groupList.append( service->desktopEntryPath());
      }
      else if (p->isType(KST_KServiceGroup))
      {
-        KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+        KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p.get());
         groupList.append( serviceGroup->relPath());
      }
      else
@@ -310,7 +310,7 @@ static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, boo
 KServiceGroup::List
 KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName)
 {
-    KServiceGroup *group = this;
+    KServiceGroup::Ptr group = this;
 
     // If the entries haven't been loaded yet, we have to reload ourselves
     // together with the entries. We can't only load the entries afterwards

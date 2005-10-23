@@ -66,7 +66,7 @@ KServiceGroupFactory * KServiceGroupFactory::self()
   return _self;
 }
 
-KServiceGroup * KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)
+KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)
 {
    if (!m_sycocaDict) return 0; // Error!
 
@@ -77,19 +77,18 @@ KServiceGroup * KServiceGroupFactory::findGroupByDesktopPath(const QString &_nam
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
 
-   KServiceGroup * newGroup = createGroup(offset, deep);
+   KServiceGroup::Ptr newGroup = createGroup(offset, deep);
 
    // Check whether the dictionary was right.
    if (newGroup && (newGroup->relPath() != _name))
    {
       // No it wasn't...
-      delete newGroup;
-      newGroup = 0; // Not found
+      return 0; // Not found
    }
    return newGroup;
 }
 
-KServiceGroup * KServiceGroupFactory::findBaseGroup(const QString &_baseGroupName, bool deep)
+KServiceGroup::Ptr KServiceGroupFactory::findBaseGroup(const QString &_baseGroupName, bool deep)
 {
    if (!m_baseGroupDict) return 0; // Error!
 
@@ -100,14 +99,13 @@ KServiceGroup * KServiceGroupFactory::findBaseGroup(const QString &_baseGroupNam
    int offset = m_baseGroupDict->find_string( _baseGroupName );
    if (!offset) return 0; // Not found
 
-   KServiceGroup * newGroup = createGroup(offset, deep);
+   KServiceGroup::Ptr newGroup = createGroup(offset, deep);
 
    // Check whether the dictionary was right.
    if (newGroup && (newGroup->baseGroupName() != _baseGroupName))
    {
       // No it wasn't...
-      delete newGroup;
-      newGroup = 0; // Not found
+      return 0; // Not found
    }
    return newGroup;
 }

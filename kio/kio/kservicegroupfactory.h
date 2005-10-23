@@ -52,12 +52,12 @@ public:
   /**
    * Find a group ( by desktop path, e.g. "Applications/Editors")
    */
-  KServiceGroup * findGroupByDesktopPath( const QString &_name, bool deep = true );
+  KServiceGroup::Ptr findGroupByDesktopPath( const QString &_name, bool deep = true );
 
   /**
    * Find a base group by name, e.g. "settings"
    */
-  KServiceGroup * findBaseGroup( const QString &_baseGroupName, bool deep = true );
+  KServiceGroup::Ptr findBaseGroup( const QString &_baseGroupName, bool deep = true );
 
   /**
    * @return the unique service group factory, creating it if necessary

@@ -102,7 +102,7 @@ KSycocaFactory::save(QDataStream &str)
    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
        it != m_entryDict->end(); ++it)
    {
-      KSycocaEntry *entry = (*it).data();
+      KSycocaEntry::Ptr entry = *it;
       entry->save(str);
       entryCount++;
    }
@@ -132,7 +132,7 @@ KSycocaFactory::save(QDataStream &str)
 }
 
 void 
-KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
+KSycocaFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
@@ -145,7 +145,7 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
 }
 
 void 
-KSycocaFactory::removeEntry(KSycocaEntry *newEntry)
+KSycocaFactory::removeEntry(KSycocaEntry::Ptr newEntry)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
