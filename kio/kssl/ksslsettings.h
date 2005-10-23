@@ -51,24 +51,6 @@ public:
 	~KSSLSettings();
 
 	/**
-	 *  Does the user allow SSLv2
-	 *  @return true if the user allows SSLv2
-	 */
-	bool sslv2() const;
-
-	/**
-	 *  Does the user allow SSLv3
-	 *  @return true if the user allows SSLv3
-	 */
-	bool sslv3() const;
-
-	/**
-	 *  Does the user allow TLSv1
-	 *  @return true if the user allows TLSv1
-	 */
-	bool tlsv1() const;
-
-	/**
 	 *  Does the user want to be warned on entering SSL mode
 	 *  @return true if the user wants to be warned
 	 */
@@ -147,24 +129,6 @@ public:
 	bool useEFile() const;
   
 	/**
-	 *  Change the user's TLSv1 preference
-	 *  @param enabled true if TLSv1 is enabled
-	 */
-	void setTLSv1(bool enabled);
-  
-	/**
-	 *  Change the user's SSLv2 preference
-	 *  @param enabled true if SSLv2 is enabled
-	 */
-	void setSSLv2(bool enabled);
-  
-	/**
-	 *  Change the user's SSLv3 preference
-	 *  @param enabled true if SSLv3 is enabled
-	 */
-	void setSSLv3(bool enabled);
-
-	/**
 	 *  Does the user want X.509 client certificates to always be sent when
 	 *  possible?
 	 *  @return true if the user always wants a certificate sent
@@ -209,12 +173,11 @@ public:
 
 private:
 	KConfig *m_cfg;
-	bool m_bUseSSLv2, m_bUseSSLv3, m_bUseTLSv1;
 	bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
 	bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
 
-	QValueList<QString> v2ciphers, v2selectedciphers, v3ciphers, v3selectedciphers;
-	QValueList<int> v2bits, v3bits;
+	QValueList<QString> v3ciphers, v3selectedciphers;
+	QValueList<int> v3bits;
 
 	KSSLSettingsPrivate *d;
 };

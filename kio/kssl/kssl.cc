@@ -129,10 +129,7 @@ bool KSSL::TLSInit() {
 		return false;
 
 	if (m_bAutoReconfig)
-	m_cfg->load();
-
-	if (!m_cfg->tlsv1())
-		return false;
+		m_cfg->load();
 
 	seedWithEGD();
 	d->m_meth = d->kossl->TLSv1_client_method();
@@ -167,23 +164,11 @@ bool KSSL::initialize() {
 		m_cfg->load();
 
 	seedWithEGD();
-	// FIXME: we should be able to force SSL off entirely.
 	d->lastInitTLS = false;
 
 	m_pi.reset();
 
-	if (m_cfg->sslv2() && !m_cfg->sslv3())
-		d->m_meth = d->kossl->SSLv2_client_method();
-	else if (m_cfg->sslv3() && !m_cfg->sslv2())
-		d->m_meth = d->kossl->SSLv3_client_method();
-	else d->m_meth = d->kossl->SSLv23_client_method();
-
-/*
-if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug(7029) << "Double method" << endl;
-else if (m_cfg->sslv2()) kdDebug(7029) << "SSL2 method" << endl;
-else if (m_cfg->sslv3()) kdDebug(7029) << "SSL3 method" << endl;
-*/
-
+	d->m_meth = d->kossl->SSLv3_client_method();
 	d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
 	if (d->m_ctx == 0L) {
 		return false;
