@@ -30,7 +30,7 @@
 // This file only contains a few static class-functions that depend on
 // KProtocolManager
 
-KProtocolInfo* KProtocolInfo::findProtocol(const KURL &url)
+KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KURL &url)
 {
 #ifdef MAKE_KDECORE_LIB
    return 0;

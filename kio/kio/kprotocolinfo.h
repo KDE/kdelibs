@@ -663,7 +663,7 @@ protected:
   bool canRenameToFile() const; // for kprotocolinfo_kdecore
   bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
   FileNameUsedForCopying fileNameUsedForCopying() const; // for kprotocolinfo_kdecore
-  static KProtocolInfo* findProtocol(const KURL &url); // for kprotocolinfo_kdecore
+  static KProtocolInfo::Ptr findProtocol(const KURL &url); // for kprotocolinfo_kdecore
 
 protected:
   virtual void virtual_hook( int id, void* data );
