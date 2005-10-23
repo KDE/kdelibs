@@ -63,6 +63,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
 		 case Help: sLabel = i18n("show help", "&Help"); break;
 		 case Preferences:
+		 case AboutApp:
 		 case HelpContents:
 			{
 			const KAboutData *aboutData = KGlobal::instance()->aboutData();
