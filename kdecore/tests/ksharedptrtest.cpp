@@ -29,37 +29,56 @@ int main()
 {
 	KSharedPtr<QString> u = new QString( "Hello" );
 	Q_ASSERT( *u == "Hello" );
+	Q_ASSERT( u.isUnique() == true );
 
 	KSharedPtr<QString> v;
 	Q_ASSERT( v == 0 );
+	Q_ASSERT( u.isUnique() == true );
 
 	v = u;
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( *v == "Hello" );
+	Q_ASSERT( v.isUnique() == false );
 
 	KSharedPtr<QString> w = v.copy();
 	Q_ASSERT( *u == "Hello" );
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( *v == "Hello" );
+	Q_ASSERT( v.isUnique() == false );
 	Q_ASSERT( *w == "Hello" );
+	Q_ASSERT( w.isUnique() == true );
 
 	v->clear();
 	Q_ASSERT( u->isEmpty() );
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( v->isEmpty() );
+	Q_ASSERT( v.isUnique() == false );
 	Q_ASSERT( *w == "Hello" );
+	Q_ASSERT( w.isUnique() == true );
 
 	u = v = w;
 	Q_ASSERT( *u == "Hello" );
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( *v == "Hello" );
+	Q_ASSERT( v.isUnique() == false );
 	Q_ASSERT( *w == "Hello" );
+	Q_ASSERT( w.isUnique() == false );
 
 	*u.get() = "Foo";
 	Q_ASSERT( *u == "Foo" );
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( *v == "Foo" );
+	Q_ASSERT( v.isUnique() == false );
 	Q_ASSERT( *w == "Foo" );
+	Q_ASSERT( w.isUnique() == false );
 
 	w.detach();
 	*w = "Bar";
 	Q_ASSERT( *u == "Foo" );
+	Q_ASSERT( u.isUnique() == false );
 	Q_ASSERT( *v == "Foo" );
+	Q_ASSERT( v.isUnique() == false );
 	Q_ASSERT( *w == "Bar" );
+	Q_ASSERT( w.isUnique() == true );
 }
 

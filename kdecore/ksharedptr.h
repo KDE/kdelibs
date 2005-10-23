@@ -90,6 +90,7 @@ bool operator!=( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs )
 template <class T>
 class KSharedPtr
 {
+	template <class U> friend class KSharedPtr;
 	friend bool operator==<>( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs );
 	friend bool operator!=<>( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs );
 	public:
@@ -113,9 +114,18 @@ class KSharedPtr
 		 */
 		KSharedPtr( const KSharedPtr<T> &other )
 		{
-			KSharedData *x = other.d;
-			x = qAtomicSetPtr( &d, x );
-			d->ref.ref();
+			acquire( other.d );
+		}
+
+		/**
+		 * Constructs a copy of another shared pointer, doing a
+		 * shallow copy of the contained object.
+		 * @param other Another shared pointer to copy.
+		 */
+		template <class U>
+		KSharedPtr( const KSharedPtr<U> &other )
+		{
+			acquire<U>( other.d );
 		}
 
 		/**
@@ -151,10 +161,26 @@ class KSharedPtr
 		 */
 		KSharedPtr<T> &operator=( const KSharedPtr<T> &rhs )
 		{
-			rhs.d->ref.ref();
-			deref();
-			KSharedData *x = rhs.d;
-			x = qAtomicSetPtr( &d, x );
+			if ( this != &rhs ) {
+				deref();
+				acquire( rhs.d );
+			}
+			return *this;
+		}
+
+		/**
+		 * Makes this shared pointer refer to the pointee of the
+		 * given shared pointer.
+		 * @param rhs A shared pointer whose pointee shall be referenced.
+		 * @return A reference to this shared pointer.
+		 */
+		template <class U>
+		KSharedPtr<U> &operator=( const KSharedPtr<U> &rhs )
+		{
+			if ( d != rhs.d ) {
+				deref();
+				acquire<U>( rhs.d );
+			}
 			return *this;
 		}
 
@@ -204,6 +230,16 @@ class KSharedPtr
 		}
 #endif
 
+		/**
+		 * @return Whether this is the only shared pointer pointing to
+		 * to the pointee, or whether it's shared among multiple
+		 * shared pointers.
+		 */
+		bool isUnique() const
+		{
+			return d->ref == 1;
+		}
+
 	private:
 		struct KSharedData
 		{
@@ -218,6 +254,23 @@ class KSharedPtr
 				delete d;
 				d = 0;
 			}
+		}
+
+		void acquire( KSharedData *ptr )
+		{
+			ptr = qAtomicSetPtr( &d, ptr );
+			d->ref.ref();
+		}
+
+		template <class U>
+		void acquire( typename KSharedPtr<U>::KSharedData *ptr )
+		{
+			/* Unfortunately both arguments to qAtomicSetPtr have
+			 * to have the same type. */
+			void *vd = static_cast<void *>( d );
+			void *vPtr = static_cast<void *>( ptr );
+			vPtr = qAtomicSetPtr( &vd, vPtr );
+			d->ref.ref();
 		}
 
 		KSharedData *d;
