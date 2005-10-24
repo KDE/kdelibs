@@ -58,7 +58,7 @@ Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     return Undefined();
   case GC:
     Interpreter::lock();
-    Collector::collect();
+    Interpreter::collect();
     Interpreter::unlock();
     return Undefined();
   case Quit:
