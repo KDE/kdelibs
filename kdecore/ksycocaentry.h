@@ -38,15 +38,17 @@ class QStringList;
  * @internal
  * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html
  */
-class KDECORE_EXPORT KSycocaEntry : public KShared
+class KDECORE_EXPORT KSycocaEntry
 {
 
 public:
+   virtual ~KSycocaEntry();
+
    virtual bool isType(KSycocaType t) const { return (t == KST_KSycocaEntry); }
    virtual KSycocaType sycocaType() const { return KST_KSycocaEntry; }
 
-  typedef KSharedPtr<KSycocaEntry> Ptr;
-  typedef QList<Ptr> List;
+   typedef KSharedPtr<KSycocaEntry> Ptr;
+   typedef QList<Ptr> List;
 
    /**
     * Default constructor

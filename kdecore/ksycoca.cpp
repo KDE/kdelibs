@@ -237,10 +237,10 @@ void KSycoca::closeDatabase()
    d->database = 0;
    // It is very important to delete all factories here
    // since they cache information about the database file
-#if 0   
+#if 0
    while( !m_lstFactories->isEmpty() )
        delete m_lstFactories->takeFirst();
-#endif   
+#endif
    delete m_lstFactories;
    m_lstFactories = 0L;
 }
@@ -479,6 +479,10 @@ void KSycocaEntry::read( QDataStream &s, QString &str )
   } else {
       str = "";
   }
+}
+
+KSycocaEntry::~KSycocaEntry()
+{
 }
 
 void KSycocaEntry::read( QDataStream &s, QStringList &list )
