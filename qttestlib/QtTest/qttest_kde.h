@@ -2,6 +2,7 @@
 #define QTTEST_KDE_H
 
 #include "qttest.h"
+#include <stdlib.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
@@ -19,6 +20,7 @@ Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
 #define QTTEST_KDEMAIN(TestObject, flags) \
 int main(int argc, char *argv[]) \
 { \
+    setenv("LC_ALL", "C", 1); \
     KAboutData aboutData( "qttest", "qttest", "version" ); \
     KDEMainFlags mainFlags( flags );                 \
     if ( (mainFlags & AutoDcopRegistration) == 0 ) \
@@ -35,6 +37,7 @@ int main(int argc, char *argv[]) \
 #define QTTEST_KDEMAIN(TestObject, flags) \
 int main(int argc, char *argv[]) \
 { \
+    setenv("LC_ALL", "C", 1); \
     KAboutData aboutData( "qttest", "qttest", "version" ); \
     KCmdLineArgs::init( argc, argv, &aboutData );   \
     KDEMainFlags mainFlags( flags );                 \
