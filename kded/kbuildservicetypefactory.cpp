@@ -30,8 +30,6 @@
 #include <kdesktopfile.h>
 #include <qhash.h>
 
-template class Q3Dict<KMimeType>;
-
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
 {
@@ -59,8 +57,8 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 {
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
-   KSycocaEntry::Ptr servType = (*m_entryDict)[ _name ];
-   if (!servType.data())
+   KSycocaEntry::Ptr servType = m_entryDict->value( _name );
+   if (!servType)
       return 0;
    return (KServiceType *) ((KSycocaEntry*)servType.get());
 }
@@ -161,17 +159,17 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // Store each patterns in one of the 2 string lists (for sorting)
    QStringList fastPatterns;  // for *.a to *.abcd
    QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   Q3Dict<KMimeType> dict;
+   QHash<QString, KMimeType*> dict; // KMimeType::Ptr not needed here, this is short term
 
    // For each mimetype in servicetypeFactory
    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
        it != m_entryDict->end();
        ++it)
    {
-      KSycocaEntry *entry = (*it).get();
+      const KSycocaEntry::Ptr& entry = (*it);
       if ( entry->isType( KST_KMimeType ) )
       {
-        KMimeType *mimeType = static_cast<KMimeType *>( entry );
+        KMimeType* mimeType = static_cast<KMimeType *>( entry.get() );
         const QStringList pat = mimeType->patterns();
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )
@@ -187,7 +185,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
               otherPatterns.append( pattern );
            // Assumption : there is only one mimetype for that pattern
            // It doesn't really make sense otherwise, anyway.
-           dict.replace( pattern, mimeType );
+           dict.insert( pattern, mimeType );
         }
       }
    }
@@ -242,10 +240,10 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
 }
 
 void
-KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
+KBuildServiceTypeFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
 {
-   KServiceType * serviceType = (KServiceType *) newEntry;
-   if ( (*m_entryDict)[ newEntry->name() ] )
+   KServiceType::Ptr serviceType = newEntry;
+   if ( m_entryDict->value( newEntry->name() ) )
    {
      // Already exists
      if (serviceType->desktopEntryPath().endsWith("kdelnk"))
@@ -256,14 +254,13 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    }
    KSycocaFactory::addEntry(newEntry, resource);
 
-
    const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
    QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
    for( ; pit != pd.end(); ++pit )
    {
      if (!m_propertyTypeDict.contains(pit.key()))
        m_propertyTypeDict.insert(pit.key(), pit.value());
-     else if (m_propertyTypeDict[pit.key()] != static_cast<int>(pit.value()))
+     else if (m_propertyTypeDict.value(pit.key()) != static_cast<int>(pit.value()))
        kdWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
    }
 }

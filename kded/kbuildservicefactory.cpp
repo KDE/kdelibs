@@ -34,8 +34,8 @@
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 	KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
-  m_serviceDict(977),
-  m_dupeDict(977),
+  m_serviceDict(),
+  m_dupeDict(),
   m_serviceTypeFactory( serviceTypeFactory ),
   m_serviceGroupFactory( serviceGroupFactory )
 {
@@ -58,9 +58,10 @@ KBuildServiceFactory::~KBuildServiceFactory()
    delete m_resourceList;
 }
 
+// Return a KService* (as in KServiceFactory); the serviceDict retains ownership.
 KService * KBuildServiceFactory::findServiceByName(const QString &_name)
 {
-   return m_serviceDict[_name];
+   return m_serviceDict.value( _name ).get();
 }
 
 
@@ -73,9 +74,6 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   {
      name = name.mid(pos+1);
   }
-
-  if (name.isEmpty())
-     return 0;
 
   // Is it a .desktop file?
   if (!name.endsWith(".desktop") && !name.endsWith(".kdelnk"))
@@ -146,7 +144,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
        itserv != m_entryDict->end();
        ++itserv)
    {
-      KService *service = (KService *) ((KSycocaEntry *)(*itserv).get());
+      KService::Ptr service = (*itserv);
       QStringList serviceTypeList = service->serviceTypes();
       KServiceType::List serviceTypes;
       QStringList::ConstIterator it = serviceTypeList.begin();
@@ -198,7 +196,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
       for(KService::List::ConstIterator it2 = services.begin();
           it2 != services.end(); ++it2)
       {
-         const KService *service = (*it2).get();
+         const KService::Ptr &service = (*it2);
          str << (qint32) entry->offset();
          str << (qint32) service->offset();
       }
@@ -218,14 +216,14 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
        itserv != m_entryDict->end();
        ++itserv)
    {
-      KService::Ptr service = (KService *) ((KSycocaEntry *)(*itserv).get());
+      const KService::Ptr& service = (*itserv);
       if ( !service->init().isEmpty() )
       {
           initList.append(service);
       }
    }
    str << (qint32) initList.count(); // Nr of init services.
-   for(KService::List::Iterator it = initList.begin();
+   for(KService::List::const_iterator it = initList.begin();
        it != initList.end();
        ++it)
    {
@@ -234,15 +232,16 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 }
 
 void
-KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
+KBuildServiceFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
 {
-   if (m_dupeDict.find(newEntry))
+   Q_ASSERT( newEntry );
+   if (m_dupeDict.contains(newEntry))
       return;
 
    KSycocaFactory::addEntry(newEntry, resource);
 
-   KService * service = (KService *) newEntry;
-   m_dupeDict.insert(newEntry, service);
+   KService::Ptr service = newEntry;
+   m_dupeDict.insert(newEntry);
 
    if (!service->isDeleted())
    {
@@ -253,7 +252,7 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 
    QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );
-   m_serviceDict.replace(name, service);
+   m_serviceDict.insert(name, service);
 
    QString relName = service->desktopEntryPath();
    m_relNameDict->add( relName, newEntry );

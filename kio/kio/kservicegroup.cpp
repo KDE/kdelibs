@@ -244,7 +244,7 @@ void KServiceGroup::load( QDataStream& s )
   }
 }
 
-void KServiceGroup::addEntry( KSycocaEntry *entry)
+void KServiceGroup::addEntry( const KSycocaEntry::Ptr& entry)
 {
   m_serviceList.append(entry);
 }
@@ -261,12 +261,12 @@ void KServiceGroup::save( QDataStream& s )
      if (p->isType(KST_KService))
      {
         KService *service = static_cast<KService *>(p.get());
-        groupList.append( service->desktopEntryPath());
+        groupList.append( service->desktopEntryPath() );
      }
      else if (p->isType(KST_KServiceGroup))
      {
         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p.get());
-        groupList.append( serviceGroup->relPath());
+        groupList.append( serviceGroup->relPath() );
      }
      else
      {

@@ -297,7 +297,7 @@ protected:
    * @internal
    * Add a service to this group
    */
-  void addEntry( KSycocaEntry *entry);
+  void addEntry( const KSycocaEntry::Ptr& entry);
 
   QString m_strCaption;
   QString m_strIcon;

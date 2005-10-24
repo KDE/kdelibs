@@ -21,12 +21,12 @@
 #ifndef __k_build_service_factory_h__
 #define __k_build_service_factory_h__
 
-#include <q3ptrdict.h>
 #include <qstringlist.h>
 
 #include <kservicefactory.h>
 // We export the services to the service group factory!
 #include <kbuildservicegroupfactory.h>
+#include <QSet>
 
 /**
  * Service factory for building ksycoca
@@ -43,7 +43,8 @@ public:
 
   virtual ~KBuildServiceFactory();
 
-  KService *findServiceByName(const QString &_name);
+  /// Reimplemented from KServiceFactory
+  virtual KService *findServiceByName(const QString &_name);
 
   /**
    * Construct a KService from a config file.
@@ -55,7 +56,7 @@ public:
   /**
    * Add a new entry.
    */
-  void addEntry(KSycocaEntry *newEntry, const char *resource);
+  void addEntry(KSycocaEntry::Ptr newEntry, const char *resource);
 
   /**
    * Write out service specific index files.
@@ -72,14 +73,15 @@ public:
 
   /**
    * Returns all resource types for this service factory
-   */  
+   */
   static QStringList resourceTypes();
+
 private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);
 
-  Q3Dict<KService> m_serviceDict;
-  Q3PtrDict<KService> m_dupeDict;
+  QHash<QString, KService::Ptr> m_serviceDict;
+  QSet<KSycocaEntry::Ptr> m_dupeDict;
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
 };

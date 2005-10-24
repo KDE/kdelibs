@@ -58,11 +58,11 @@ KBuildImageIOFactory::createEntry( const QString& file, const char *resource )
 }
 
 void
-KBuildImageIOFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
+KBuildImageIOFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
 {
    KSycocaFactory::addEntry(newEntry, resource);
 
-   KImageIOFormat *format = (KImageIOFormat *) newEntry;
+   KImageIOFormat::Ptr format = newEntry;
    rPath += format->rPaths;
 
    // Since Qt doesn't allow us to unregister image formats
@@ -73,8 +73,7 @@ KBuildImageIOFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
            it != formatList->end();
            ++it )
    {
-      KImageIOFormat *_format = (*it).get();
-      if (format->mType == _format->mType)
+      if (format->mType == (*it)->mType)
       {
          // Already in list
          format = 0;

@@ -57,12 +57,12 @@ KBuildServiceGroupFactory::createEntry( const QString&, const char * )
 }
 
 
-void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService *newEntry)
+void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KService::Ptr& newEntry)
 {
-  KServiceGroup *entry = 0;
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
-  if (ptr.data())
-     entry = dynamic_cast<KServiceGroup *>(ptr.data());
+  KServiceGroup::Ptr entry = 0;
+  if (ptr && ptr->isType(KST_KServiceGroup))
+     entry = ptr;
 
   if (!entry)
   {
@@ -72,14 +72,14 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService
   entry->addEntry( newEntry );
 }
 
-KServiceGroup *
-KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup *entry, bool isDeleted)
+KServiceGroup::Ptr
+KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup::Ptr entry, bool isDeleted)
 {
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
   if (ptr)
   {
     kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!" << endl;
-    return static_cast<KServiceGroup *>(static_cast<KSycocaEntry *>(ptr.get()));
+    return ptr;
   }
 
   // Create new group entry
@@ -93,7 +93,6 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   if (menuName != "/")
   {
      // Make sure parent dir exists.
-     KServiceGroup *parentEntry = 0;
      QString parent = menuName.left(menuName.length()-1);
      int i = parent.lastIndexOf('/');
      if (i > 0) {
@@ -101,10 +100,10 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      } else {
         parent = "/";
      }
-     parentEntry = 0;
+     KServiceGroup *parentEntry = 0;
      ptr = m_entryDict->value(parent);
      if (ptr)
-        parentEntry = dynamic_cast<KServiceGroup *>(ptr.data());
+        parentEntry = dynamic_cast<KServiceGroup *>(ptr.get());
      if (!parentEntry)
      {
         kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): parent menu does not exist!" << endl;
@@ -118,12 +117,12 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   return entry;
 }
 
-KServiceGroup *
-KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resource, KSycocaEntry *newEntry)
+void
+KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resource, const KSycocaEntry::Ptr& newEntry)
 {
   QString name = "#parent#"+parent;
 
-  KServiceGroup *entry = 0;
+  KServiceGroup::Ptr entry = 0;
   KSycocaEntry::Ptr ptr = m_entryDict->value(name);
   if (ptr)
      entry = dynamic_cast<KServiceGroup *>(ptr.data());
@@ -135,16 +134,13 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resou
   }
   if (newEntry)
      entry->addEntry( newEntry );
-
-  return entry;
-
 }
 
 void
-KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry, const char *resource)
+KBuildServiceGroupFactory::addEntry( KSycocaEntry::Ptr newEntry, const char *resource)
 {
    KSycocaFactory::addEntry(newEntry, resource);
-   KServiceGroup * serviceGroup = (KServiceGroup *) newEntry;
+   KServiceGroup::Ptr serviceGroup = newEntry;
    serviceGroup->m_serviceList.clear();
 
    if ( !serviceGroup->baseGroupName().isEmpty() )

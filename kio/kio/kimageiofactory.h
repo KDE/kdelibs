@@ -10,6 +10,7 @@
 
 #include "ksycocafactory.h"
 #include "kimageio.h"
+#include <QList>
 
 class QImageIO;
 class KImageIOFormat;
@@ -22,29 +23,29 @@ class KIO_EXPORT KImageIOFormat : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KImageIOFormat> Ptr;
-  typedef Q3ValueList<Ptr> List;
+  typedef QList<Ptr> List;
 public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * Read a KImageIOFormat description file
    */
   KImageIOFormat( const QString & path);
-  
+
   /**
    * @internal construct a ImageIOFormat from a stream
-   */ 
+   */
   KImageIOFormat( QDataStream& _str, int offset);
 
   virtual ~KImageIOFormat();
 
   virtual QString name() const { return mType; }
 
-  virtual bool isValid() const { return true; } 
+  virtual bool isValid() const { return true; }
 
   /**
    * @internal
    * Load the image format from a stream.
    */
-  virtual void load(QDataStream& ); 
+  virtual void load(QDataStream& );
 
   /**
    * @internal
@@ -53,12 +54,12 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   virtual void save(QDataStream& );
 
   /**
-   * @internal 
+   * @internal
    * Calls image IO function
    */
   void callLibFunc( bool read, QImageIO *);
 
-public:  
+public:
   QString mType;
   QString mHeader;
   QString mFlags;
@@ -90,7 +91,7 @@ class KIO_EXPORT KImageIOFactory : public KSycocaFactory
   friend class KImageIO;
   K_SYCOCAFACTORY( KST_KImageIO )
 public:
-  static KImageIOFactory *self() 
+  static KImageIOFactory *self()
   { if (!_self) new KImageIOFactory(); return _self; }
   KImageIOFactory();
   virtual ~KImageIOFactory();
@@ -112,10 +113,10 @@ protected: // Internal stuff
    * @internal Not used.
    */
   virtual KSycocaEntry *createEntry(const QString &, const char *)
-    { return 0; }                                                    
+    { return 0; }
 
   /**
-   * @internal 
+   * @internal
    */
   virtual KSycocaEntry *createEntry(int offset);
 
@@ -128,9 +129,9 @@ protected: // Internal stuff
    * @internal Write an image
    **/
   static void writeImage( QImageIO *iio);
-  
+
 protected:
-  static KImageIOFactory *_self;  
+  static KImageIOFactory *_self;
   static KImageIOFormatList *formatList;
   QString mReadPattern;
   QString mWritePattern;

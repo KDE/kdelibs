@@ -16,13 +16,12 @@
  *  Boston, MA 02111-1307, USA.
  **/
 #ifndef __kbuildsycoca_h__
-#define __kbuildsycoca_h__ 
+#define __kbuildsycoca_h__
 
 #include <sys/stat.h>
 
 #include <qobject.h>
 #include <qstring.h>
-#include <q3dict.h>
 
 #include <kservice.h>
 #include <ksycoca.h>
@@ -50,12 +49,12 @@ public:
    static bool checkTimestamps( quint32 timestamp, const QStringList &dirs );
 
    static QStringList existingResourceDirs();
-   
+
    void setTrackId(const QString &id) { m_trackId = id; }
 
 protected slots:
-   void slotCreateEntry(const QString &file, KService **entry);
-       
+   void slotCreateEntry(const QString &file, KService::Ptr *entry);
+
 protected:
 
    /**
@@ -67,7 +66,7 @@ protected:
     * Add single entry to the sycoca database.
     * Either from a previous database or regenerated from file.
     */
-   KSycocaEntry *createEntry(const QString &file, bool addToFactory);
+   KSycocaEntry::Ptr createEntry(const QString &file, bool addToFactory);
 
    /**
     * Convert a VFolderMenu::SubMenu to KServiceGroups.
@@ -78,7 +77,7 @@ protected:
     * Build the whole system cache, from .desktop files
     */
    bool build();
-   
+
    /**
     * Save the ksycoca file
     */
@@ -88,9 +87,9 @@ protected:
     * Clear the factories
     */
    void clear();
-   
+
    static bool checkDirTimestamps( const QString& dir, const QDateTime& stamp, bool top );
-   
+
    /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);

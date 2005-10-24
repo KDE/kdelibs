@@ -20,7 +20,7 @@
 #define __k_ctime_factory_h__
 
 #include <ksycocafactory.h>
-#include <q3dict.h>
+#include <QHash>
 
 /**
  * Service group factory for building ksycoca
@@ -43,21 +43,22 @@ public:
   virtual void saveHeader(QDataStream &str);
 
   /**
-   * Write out data 
+   * Write out data
    */
   virtual void save(QDataStream &str);
 
   KSycocaEntry * createEntry(const QString &, const char *) { return 0; }
   KSycocaEntry * createEntry(int) { return 0; }
-  
+
   void addCTime(const QString &path, quint32 ctime);
 
   quint32 ctime(const QString &path);
 
-  void fillCTimeDict(Q3Dict<quint32> &dict);
+  typedef QHash<QString, quint32> Dict;
+  void fillCTimeDict(Dict &dict);
 
 protected:
-  Q3Dict<quint32> ctimeDict;
+  Dict ctimeDict;
   int m_dictOffset;
 };
 

@@ -20,7 +20,6 @@
 #define __k_build_service_group_factory_h__
 
 #include <kservicegroupfactory.h>
-#include <q3dict.h>
 #include <qstringlist.h>
 
 /**
@@ -47,7 +46,7 @@ public:
   /**
    * Adds the entry @p newEntry to the menu @p menuName
    */
-  void addNewEntryTo( const QString &menuName, KService *newEntry);
+  void addNewEntryTo( const QString &menuName, const KService::Ptr& newEntry);
 
   /**
    * Adds the entry @p newEntry to the "parent group" @p parent, creating
@@ -55,19 +54,19 @@ public:
    * A "parent group" is a group of services that all have the same
    * "X-KDE-ParentApp".
    */
-  KServiceGroup *addNewChild( const QString &parent, const char *resource, KSycocaEntry *newEntry);
- 
+  void addNewChild( const QString &parent, const char *resource, const KSycocaEntry::Ptr& newEntry);
+
   /**
    * Add new menu @p menuName defined by @p file
    * When @p entry is non-null it is re-used, otherwise a new group is created.
    * A pointer to the group is returned.
    */
-  KServiceGroup *addNew( const QString &menuName, const QString& file, KServiceGroup *entry, bool isDeleted);
+  KServiceGroup::Ptr addNew( const QString &menuName, const QString& file, KServiceGroup::Ptr entry, bool isDeleted);
 
   /**
    * Add a new menu entry
    */
-  virtual void addEntry( KSycocaEntry *newEntry, const char *resource );
+  virtual void addEntry( KSycocaEntry::Ptr newEntry, const char *resource );
 
   /**
    * Write out servicegroup  specific index files.
@@ -81,7 +80,7 @@ public:
 
   /**
    * Returns all resource types for this service factory
-   */  
+   */
   static QStringList resourceTypes();
 };
 
