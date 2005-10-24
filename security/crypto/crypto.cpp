@@ -2229,7 +2229,7 @@ SSL_METHOD *meth;
     }
     k = SSL_CIPHER_get_bits(sc, &j);
 
-    item = new CipherItem( SSLv3Box, sc->name, k, j, this );
+    new CipherItem( SSLv3Box, sc->name, k, j, this );
   }
 
   if (ctx) SSL_CTX_free(ctx);
