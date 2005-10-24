@@ -175,9 +175,9 @@ class KSharedPtr
 		 * @return A reference to this shared pointer.
 		 */
 		template <class U>
-		KSharedPtr<U> &operator=( const KSharedPtr<U> &rhs )
+		KSharedPtr<T> &operator=( const KSharedPtr<U> &rhs )
 		{
-			if ( d != rhs.d ) {
+			if ( d->obj != rhs.d->obj ) {
 				deref();
 				acquire<U>( rhs.d );
 			}

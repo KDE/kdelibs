@@ -128,6 +128,11 @@ void KSharedPtrTest::testDifferentTypes()
 		KSharedPtr<Derived> ptrDerived = ptrBase;
 		COMPARE( dtor_called, 0 ); // no dtor called yet
 		COMPARE( ptrDerived.get(), obj );
+
+		// now test assignment operator
+		ptrDerived = ptrBase;
+		COMPARE( dtor_called, 0 ); // no dtor called yet
+		COMPARE( ptrDerived.get(), obj );
 	}
 	COMPARE( dtor_called, 1 );
 }
