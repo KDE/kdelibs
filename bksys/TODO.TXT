@@ -2,10 +2,11 @@ TODO.TXT
 
 Priority	Status          Description 	 
 (1-3)      n-not started
-					 s-started
-					 w-waiting
-					 f-finished
+           s-started
+           w-waiting
+           f-finished
  
+note: use tabs to indent columns  
 
 generic
 -------
@@ -30,13 +31,18 @@ generic
 		QT is something like QT + zlib, QTGUI is QtCore + QTGui
 
 -	n	find a platform independent way to include all symbols from static libraries into a 
-    shared library (gcc-notation: -Wl,--whole-archive ... -Wl,--no-whole-archive )
+		shared library (gcc-notation: -Wl,--whole-archive ... -Wl,--no-whole-archive )
 
-- n cleanup multiple definitions of command line options like PREFIX, which is defined in 
-    generic.py, kde3.py and qt4.py 
+-	n	cleanup multiple definitions of command line options like PREFIX, which is defined in 
+		generic.py, kde3.py and qt4.py 
 
-- n cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
-    '##' refers to ?? (I found it refers to /)
+-	n	cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
+		'##' refers to ?? (I found it refers to /)
+
+-	n	fix dependency checking for static libraries (recent idea it to create libtool file for 
+		static libs too and to add relating dependency)
+    
+-	n	fix or report doxygen parsing problem in generic.py 
 
 
 mac related
@@ -48,7 +54,7 @@ mac related
 unix related
 ------------
 
-
+- n some configure checks does not setup the related compiler/linker flags from pkgconfig for example openssl 
 
 win32 related 
 -------------
