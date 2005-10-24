@@ -97,7 +97,7 @@ testkjs_static_LDADD = $(LIBPCRE) libkjs.la
 testkjs_static_LDFLAGS = -static
 
 ## test program (linked to libkjs)
-check_PROGRAMS = testkjs
+noinst_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp
 testkjs_LDADD = libkjs.la
 
