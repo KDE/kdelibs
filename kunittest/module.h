@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C)  2005  Jeroen Wijnhout <Jeroen.Wijnhout@kdemail.net>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,6 +21,11 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*!
+ * @file module.h
+ * Provides macros to ease building unit tests as shared libraries
  */
 
 #ifndef KUNITTEST_MODULE_H

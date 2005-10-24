@@ -1,4 +1,4 @@
-/**
+/*
  * tester.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
@@ -100,9 +100,9 @@
  * }
  * @endcode
  *
- * CHECK is implemented using a template, so you get type safe
+ * CHECK() is implemented using a template, so you get type safe
  * comparison. All that is needed is that the argument types have an
- * operator==() defined.
+ * @c operator==() defined.
  *
  * Now that you did that the only other thing to do is to tell the
  * framework to add this test case, by using the KUNITTEST_REGISTER_TESTER(x) macro. Just
@@ -215,13 +215,13 @@ SampleTest - 1 test passed, 1 test failed
  * KUNITTEST_MODULE_REGISTER_TESTER( SomeSampleTester );
  * @endcode
  *
- * The first macro, KUNITTEST_MODULE, makes sure that the module can be loaded and that
+ * The first macro, KUNITTEST_MODULE(), makes sure that the module can be loaded and that
  * the test classes are created. The first argument "kunittest_samplemodule" is the library
  * name, in this case the library we're creating a kunittest_samplemodule.la module. The
  * second argument is name which will appear in the test runner for this test suite.
  *
- * The tester class are now added by the KUNITTEST_MODULE_REGISTER_TESTER macro, not the
- * KUNITTEST_REGISTER_TESTER. The only difference between the two is that you have to
+ * The tester class are now added by the KUNITTEST_MODULE_REGISTER_TESTER() macro, not the
+ * KUNITTEST_REGISTER_TESTER(). The only difference between the two is that you have to
  * pass the module class name to this macro.
  *
  * The Makefile.am is also a bit different, but not much:
@@ -290,7 +290,7 @@ SampleTest - 1 test passed, 1 test failed
  *
  * KUnitTest comes with simple support for testing whether an exception, such as a function call,
  * throws an exception or not. Simply, for the usual macros there corresponding ones for
- * exception testing: CHECK_EXCEPTION, XFAIL_EXCEPTION, and SKIP_EXCEPTION. They all take two
+ * exception testing: CHECK_EXCEPTION(), XFAIL_EXCEPTION(), and SKIP_EXCEPTION(). They all take two
  * arguments: the expression that will catch the exception, and the expression that is supposed
  * to throw the exception.
  *
@@ -315,6 +315,11 @@ SampleTest - 1 test passed, 1 test failed
  * @li kunittest_debughelper [dcopobject] : A PERL script that is able to redirect debug output to a RunnerGUI instance.
  *
  * These scripts are part of the kdesdk/kunittest module.
+ */
+
+/*!
+ * @file tester.h
+ * Defines macros for unit testing as well as some test classes.
  */
 
 #include <iostream>
@@ -351,7 +356,7 @@ using namespace std;
 #define SKIP( x ) skip( __FILE__, __LINE__, QString::fromLatin1(#x))
 
 /*!
- * An macro testing that @p expression throws an exception that is catched
+ * A macro testing that @p expression throws an exception that is catched
  * with @p exceptionCatch. Use it to test that an expression, such as a function call,
  * throws a certain exception.
  * 
@@ -409,6 +414,9 @@ using namespace std;
 	skip( __FILE__, __LINE__, QString("Exception catch: ")\
 			.arg(QString(#exceptionCatch)).arg(QString(" Test expression: ")).arg(QString(#expression)))
 
+/**
+ * Namespace for Unit testing classes
+ */
 namespace KUnitTest
 {
     /*! A simple class that encapsulates a test result. A Tester class usually

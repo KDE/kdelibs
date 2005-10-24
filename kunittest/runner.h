@@ -1,4 +1,4 @@
-/**
+/*
  * kunittest.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
@@ -23,6 +23,11 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*!
+ * @file runner.h
+ * Defines a set of macros and classes for running unit tests
  */
 
 #ifndef KUNITTEST_RUNNER_H

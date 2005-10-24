@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  * Copyright (C)  2005  Jeroen Wijnhout <Jeroen.Wijnhout@kdemail.net>
