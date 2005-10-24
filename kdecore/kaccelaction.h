@@ -88,8 +88,7 @@ class KDECORE_EXPORT KAccelAction
 	 * @param sName the name of the accelerator
 	 * @param sLabel the label of the accelerator (i18n!)
 	 * @param sWhatsThis the What's This text (18n!)
-	 * @param cutDef3 the default shortcut for 3 modifier systems
-	 * @param cutDef4 the default shortcut for 4 modifier systems
+	 * @param cutDef the default shortcut
 	 * @param pObjSlot the receiver of a signal when the key has been 
 	 *                 pressed
 	 * @param psMethodSlot the slot to connect for key presses. Receives
@@ -118,8 +117,7 @@ class KDECORE_EXPORT KAccelAction
 	 * @param sName the name of the accelerator
 	 * @param sLabel the label of the accelerator (i18n!)
 	 * @param sWhatsThis the What's This text (18n!)
-	 * @param cutDef3 the default shortcut for 3 modifier systems
-	 * @param cutDef4 the default shortcut for 4 modifier systems
+	 * @param cutDef the default shortcut
 	 * @param pObjSlot the receiver of a signal when the key has been 
 	 *                 pressed
 	 * @param psMethodSlot the slot to connect for key presses. Receives

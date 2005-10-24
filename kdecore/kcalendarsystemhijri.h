@@ -29,13 +29,14 @@ class KCalendarSystemHijriPrivate;
  * @internal
  * This is the Hijri calendar implementation.
  *
- * The Hijri calendar is the traditional Islamic calendar used in the Midle
+ * The Hijri calendar is the traditional Islamic calendar used in the Middle
  * East.
+ *
+ * @b license GNU-GPL v.2
  *
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem

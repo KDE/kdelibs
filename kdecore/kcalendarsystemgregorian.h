@@ -32,10 +32,11 @@ class KCalendarSystemGregorianPrivate;
  * The Gregorian calender is the most used calendar today. The first year in
  * the calendar is set to the birth of Christ.
  *
+ * @b license GNU-GPL v.2
+ *
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem
