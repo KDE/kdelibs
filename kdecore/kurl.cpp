@@ -2378,14 +2378,15 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
 // static
 KURL KURL::fromPathOrURL( const QString& text )
 {
-    if ( text.isEmpty() )
-        return KURL();
-
     KURL url;
-    if (!QDir::isRelativePath(text))
-        url.setPath( text );
-    else
-        url = text;
+    
+    if ( !text.isEmpty() )
+    {
+        if (!QDir::isRelativePath(text))
+            url.setPath( text );
+        else
+            url = text;
+    }
 
     return url;
 }
