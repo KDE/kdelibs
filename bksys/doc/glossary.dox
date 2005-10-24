@@ -4,7 +4,7 @@
 the top level directory of the build tree. The build tree is located by default in \ref source_root/build. The setting could 
 be changed in the \ref SConstruct file. 
 \section library_module library modules
-library modules covers compiler and linker flags for external libraries. There 
+library modules covers compiler and linker flags for external libraries. See \ref library_modules for more informations.
 \section proposal_state proposal state 
 means that the related page or chapter is in a proposal state and need to be reviewed by the build system gurus 
 \section SConstruct 
@@ -18,6 +18,9 @@ See \ref config_custom for more information.
 the top level directory of the source tree 
 \section specification_state specification state
 means that the related page or chapter is a valid specification and could be implemented
+\section kde4_module 
+The kde4 python module provides specific kde4 related informations like \ref library_module, installation pathes, include pathes, 
+compiler and linker settings.  
 
 
 

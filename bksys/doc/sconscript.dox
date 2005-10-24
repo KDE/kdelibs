@@ -23,8 +23,8 @@ obj.libs     = 'kICE'
 obj.includes = '../kio #/kio'
 obj.ccflags  = '-DXYZ=a'
 obj.cxxflags  = '-DXYZ=a'
-obj.linkflags =
-obj.libprefix
+obj.linkflags = ''
+obj.libprefix = ''
 obj.instdir
 obj.perms
 obj.execute()
@@ -159,19 +159,39 @@ else:
 
 <li>
 \code
+obj.linkflags     = '-Wl,--no-undefined'
+\endcode
+This attribute specifies setting and flags for the linker when linking libraries or applications.
+Linker options are compiler specific and should be limited to the related platform/compiler as shown 
+in the example below: 
+\code
+if  env['WINDOWS'] and env['CC'] == 'cl':
+	obj.linkflags = ' /G133'
+else: 
+	obj.linkflags = '-Wl,--no-undefined'
+\endcode
+
+<li>
+\code
+obj.instdir     = '/usr/local/bin'
+obj.instdir     = 'c:/Programme/xyz'
+\endcode
+specifies the installation dir of related target. This attribute is platform specific. 
+\note: The \ref kde4_module defines some installation directories, which could be used to set the installation dir like shown 
+in the below mentioned example:
+\code
+obj.instdir     = env['KDEBIN']
+\endcode
+
+\todo: check default value
+
+
+<li>
+\code
 obj.uselib   = 'QTCORE QT3SUPPORT KDE4 xml'
 \endcode
 BKSYS contains support for adding compiler and linker related flags depending of predefined \ref library_module. 
 
-This attribute specifies definitions used by the c++ compiler/preprocessor when compiling c++ source. 
-Compiler options are compiler specific and should be limited to the related platform/compiler as shown 
-in the example below: 
-\code
-if  env['WINDOWS'] and env['CC'] == 'cl':
-	obj.cxxflags = ' /G133'
-else: 
-	obj.cxxflags = ' -fcommon'
-\endcode
 
 
 </ul>
