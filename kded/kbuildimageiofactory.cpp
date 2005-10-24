@@ -51,10 +51,8 @@ KBuildImageIOFactory::~KBuildImageIOFactory()
 KSycocaEntry *
 KBuildImageIOFactory::createEntry( const QString& file, const char *resource )
 {
-   QString fullPath = locate( resource, file);
-
-   KImageIOFormat *format = new KImageIOFormat(fullPath);
-   return format;
+   const QString fullPath = locate( resource, file);
+   return new KImageIOFormat(fullPath);
 }
 
 void
@@ -76,8 +74,7 @@ KBuildImageIOFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
       if (format->mType == (*it)->mType)
       {
          // Already in list
-         format = 0;
-         break;
+         return;
       }
    }
    if (format)
