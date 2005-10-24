@@ -1,4 +1,4 @@
-/** \page sconscript_format Sconscript format 
+/** \page sconscript_format Sconscript file format 
 
 BKSYS provides several classes based on the genobj class, which provides support for generating general, 
 qt and KDE related binary objects like programs, shared library with several extensions and static libs. 
@@ -157,6 +157,25 @@ else:
 	obj.cxxflags = ' -fcommon'
 \endcode
 
+<li>
+\code
+obj.uselib   = 'QTCORE QT3SUPPORT KDE4 xml'
+\endcode
+BKSYS contains support for adding compiler and linker related flags depending of predefined \ref library_module. 
+
+This attribute specifies definitions used by the c++ compiler/preprocessor when compiling c++ source. 
+Compiler options are compiler specific and should be limited to the related platform/compiler as shown 
+in the example below: 
+\code
+if  env['WINDOWS'] and env['CC'] == 'cl':
+	obj.cxxflags = ' /G133'
+else: 
+	obj.cxxflags = ' -fcommon'
+\endcode
+
+
 </ul>
+
+
 
 */

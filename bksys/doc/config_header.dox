@@ -1,6 +1,6 @@
 /** \page config_header configuration header 
 
-\proposal_state 
+\ref proposal_state
 
 bksys provides support for creating configuration related include headers (config.h), which 
 contains definitions collected by the configuration process performed with \b scons \bconfigure like 
@@ -37,6 +37,9 @@ The global config.h is includes ....
 topics: 
 - use of directory related config-<dir>.h files 
 - use of module related config-<module>.h files 
+- usage of library presence -> #define HAVE_LIBART 
+- usage of library version  -> #define HAVE_LIBART <version>
+
 
 
 \todo: complete

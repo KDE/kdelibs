@@ -31,12 +31,6 @@ specifiy used config header file
 example: 
 
 \code
-conf.configHeader = "config-kdecore.h"
-\endcode
-
-alternative proposal by Stephan Kulow
-
-\code
 conf.setConfigHeader("dcop/config-dcop.h")
 \endcode
 
@@ -44,12 +38,6 @@ conf.setConfigHeader("dcop/config-dcop.h")
 <li>
 specify required c header file(s) \n
 example:
-
-\code
-conf.Header = "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
-\endcode
-
-alternative proposal by Stephan Kulow
 
 \code
 conf.checkHeaders('sys/time.h unistd.h')
@@ -63,36 +51,8 @@ which is included by the global config.h file. \n
 If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
 
 <li>
-specify required c function(s) 
-example: 
-
-\code
-conf.Functions = "mmap getmntinfo setmntent"
-\endcode
-
-alternative proposal by Stephan Kulow
-
-\code
-conf.checkFunction(['setenv','gethostname'])
-conf.checkFunction('setenv gethostname')
-\endcode
-
-If the function wasn't found in the configuration process, the configuration process will be canceled with an error message.
-
-The available functions are mapped automatically to a related define in the related config header which is included 
-by the global config.h file. \n
-if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
-
-
-<li>
 specify optional c header file(s) \n
 example:
-
-\code
-conf.optionalHeader = "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
-\endcode
-
-alternative proposal by Stephan Kulow
 
 \code
 conf.checkOptionalHeaders('sys/time.h unistd.h')
@@ -106,18 +66,27 @@ by the global config.h file. \n
 If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
 
 <li>
+specify required c function(s) 
+example: 
+
+\code
+conf.checkFunctions('setenv gethostname')
+conf.checkFunctions(['setenv','gethostname'])
+\endcode
+
+If the function wasn't found in the configuration process, the configuration process will be canceled with an error message.
+
+The available functions are mapped automatically to a related define in the related config header which is included 
+by the global config.h file. \n
+if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
+
+<li>
 specify optional c function(s) 
 example: 
 
 \code
-conf.optionslFunctions = "mmap getmntinfo setmntent"
-\endcode
-
-alternative proposal by Stephan Kulow
-
-\code
-conf.checkOptionalFunctions(['setenv','gethostname'])
 conf.checkOptionalFunctions('setenv gethostname')
+conf.checkOptionalFunctions(['setenv','gethostname'])
 \endcode
 
 If the function wasn't found while configuration, a warning is printed and the configuration process goes on.
@@ -131,41 +100,39 @@ add a user selectable option for an optional package, setting the package name, 
 the default case and special options for further processing like error message ... 
 example: 
 
-\code
-conf.modules['tiff']    = ['Enable tiff support','yes',<options or handler how to detect>,....]
-conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
-conf.modules['openexr'] = ['Enable openexr support','no']
-\endcode
+check build in module, see \ref library_modules for details: 
 
 \code
-conf.checkModule(<key>,<description>,<default value>):
+conf.checkModule(<key>):
+conf.checkModule('openssl'):
+conf.checkModule('OPENSSL'):
+\endcode
+\todo: why using uppercase names ? 
+
+
+custom defined module definition 
+		
+\code
+conf.checkModule(<key>,<description>,<default value>,<messages>):
 conf.checkModule('dpms','disable DPMS power saving',no):
+conf.checkModule(key='dpms', description='disable DPMS power saving',default='no',
+                 message = ['notfound','found'], checkHandler=mycheckHandler,)
 \endcode
-			
-\note: the name 'modules' could be also another name for example 'uselib', but should be unique 
-       for whole bksys, because these 'modules' are usable by the genobj and friends uselib attribute 
-
-\note: if many parameters are possible, it may be better to use a dict type as values in the form 
-		desc = 'Enable tiff support', default = 'yes', message = ['notfound','found']
+\todo: complete ... 
+- key: module key, under which the required lib definition could be retrieved in the SConscripts file using 
+- description: module description, used for message while configuring and help display 
+- default: no/yes - default value
+- message: optional found/not found message, which will be printed on the end of the configure process. \n
+           format: message="notfound" or message = ['notfound','found']
+- checkHandler: function, which do the custom checking \todo: specifiy parameter list 
 			
 The related package could be referenced later in the SConscript file using: 
 
 \code
 if env.conf['tiff']: 
-	obj.src += "xxx"
+	obj.source += "xxx"
+	obj.includes += env.conf['tiff'].includes
 \endcode
-
-\todo: it must be possible to use prefined checks and custom checks in the above mentioned settings, 
-may be through python code or functions or ..., don't know how to implement 
-
-<li>add a package related selectable message at the end of the configuring process 
-
-\code
-	conf.messages['tiff'] = ['not found message','found message']
-\endcode
-
-\note: another probably better approach would be to specify this message as parameter of conf.modules[...}
-
 
 <li>platform support for configuring is performed by checking the currently used platform. For this 
 the conf object includes several attributes ?? 
@@ -175,7 +142,7 @@ the conf object includes several attributes ??
 	
 \code
 if conf['WINDOWS']: 
-	conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
+	conf.CheckModule('jasper','Enable jasper (jpeg2k) support','yes')
 \endcode
 
 

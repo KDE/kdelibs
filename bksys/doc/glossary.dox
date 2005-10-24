@@ -1,23 +1,23 @@
 /** \page glossary  Glossary
 
-\section source_root source root 
-the top level directory of the source tree 
 \section build_root build root 
 the top level directory of the build tree. The build tree is located by default in \ref source_root/build. The setting could 
 be changed in the \ref SConstruct file. 
-\section SConstruct 
-top level scons configuration file 
-\section SConscript 
-scons configuration file located in sub dirs. The format of the SConscript file is documentated 
-in the \ref sconscript_format page
-
+\section library_module library modules
+library modules covers compiler and linker flags for external libraries. There 
 \section proposal_state proposal state 
 means that the related page or chapter is in a proposal state and need to be reviewed by the build system gurus 
-
+\section SConstruct 
+top level scons configuration file. The format of the SConstruct file is documentated in the \ref sconstruct_format page
+\section SConscript 
+scons configuration file located in sub dirs. The format of the SConscript file is documentated in the \ref sconscript_format page
+\section SConfigure  
+bksys introduced file containing python code with directory related requirements for the configuration process. 
+See \ref config_custom for more information. 
+\section source_root source root 
+the top level directory of the source tree 
 \section specification_state specification state
 means that the related page or chapter is a valid specification and could be implemented
-
- 
 
 
 
