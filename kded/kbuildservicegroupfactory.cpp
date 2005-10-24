@@ -100,10 +100,12 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      } else {
         parent = "/";
      }
-     KServiceGroup *parentEntry = 0;
+
+
+     KServiceGroup::Ptr parentEntry = 0;
      ptr = m_entryDict->value(parent);
-     if (ptr)
-        parentEntry = dynamic_cast<KServiceGroup *>(ptr.get());
+     if (ptr && ptr->isType(KST_KServiceGroup))
+         parentEntry = ptr;
      if (!parentEntry)
      {
         kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): parent menu does not exist!" << endl;
@@ -124,8 +126,8 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resou
 
   KServiceGroup::Ptr entry = 0;
   KSycocaEntry::Ptr ptr = m_entryDict->value(name);
-  if (ptr)
-     entry = dynamic_cast<KServiceGroup *>(ptr.data());
+  if (ptr && ptr->isType(KST_KServiceGroup))
+     entry = ptr;
 
   if (!entry)
   {

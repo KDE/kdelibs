@@ -63,7 +63,7 @@ public:
    * Find a service type in the database file (allocates it)
    * Overloaded by KBuildServiceTypeFactory to return a memory one.
    */
-  virtual KServiceType * findServiceTypeByName(const QString &_name);
+  virtual KServiceType::Ptr findServiceTypeByName(const QString &_name);
 
   /**
    * Find a the property type of a named property.

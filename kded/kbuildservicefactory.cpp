@@ -58,10 +58,9 @@ KBuildServiceFactory::~KBuildServiceFactory()
    delete m_resourceList;
 }
 
-// Return a KService* (as in KServiceFactory); the serviceDict retains ownership.
-KService * KBuildServiceFactory::findServiceByName(const QString &_name)
+KService::Ptr KBuildServiceFactory::findServiceByName(const QString &_name)
 {
-   return m_serviceDict.value( _name ).get();
+   return m_serviceDict.value( _name );
 }
 
 

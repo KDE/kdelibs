@@ -53,14 +53,12 @@ KBuildServiceTypeFactory::~KBuildServiceTypeFactory()
    delete m_resourceList;
 }
 
-KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_name)
+KServiceType::Ptr KBuildServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
    KSycocaEntry::Ptr servType = m_entryDict->value( _name );
-   if (!servType)
-      return 0;
-   return (KServiceType *) ((KSycocaEntry*)servType.get());
+   return servType;
 }
 
 

@@ -169,7 +169,7 @@ void KBuildSycoca::processGnomeVfs()
           QString mimetypes = QLatin1String(line+12);
           mimetypes.truncate(mimetypes.length()-1);
           mimetypes.replace(QRegExp("\\*"), "all");
-          KService *s = g_bsf->findServiceByName(app);
+          KService::Ptr s = g_bsf->findServiceByName(app);
           if (!s)
              continue;
 

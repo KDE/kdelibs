@@ -69,12 +69,12 @@ void KMimeType::buildDefaultType()
 {
   assert ( !s_pDefaultType );
   // Try to find the default type
-  KServiceType * mime = KServiceTypeFactory::self()->
+  KServiceType::Ptr mime = KServiceTypeFactory::self()->
         findServiceTypeByName( defaultMimeType() );
 
   if (mime && mime->isType( KST_KMimeType ))
   {
-      s_pDefaultType = KMimeType::Ptr((KMimeType *) mime);
+      s_pDefaultType = mime;
   }
   else
   {
@@ -140,21 +140,17 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
-  KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
+  KServiceType::Ptr mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
 
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
-    // When building ksycoca, findServiceTypeByName doesn't create an object
-    // but returns one from a dict.
-    if ( !KSycoca::self()->isBuilding() )
-        delete mime;
     if ( !s_pDefaultType )
       buildDefaultType();
     return s_pDefaultType;
   }
 
   // We got a mimetype
-  return KMimeType::Ptr((KMimeType *) mime);
+  return mime;
 }
 
 KMimeType::List KMimeType::allMimeTypes()
@@ -518,7 +514,7 @@ QString KMimeType::iconNameForURL( const KURL & _url, mode_t _mode )
     // if we don't find an icon, maybe we can use the one for the protocol
     if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
-        || _url.path().length() <= 1 ) 
+        || _url.path().length() <= 1 )
     {
         i = favIconForURL( _url ); // maybe there is a favicon?
 
@@ -1001,11 +997,11 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
   }
 
   QStringList keys;
-  
+
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
     QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
     const DCOPCString app = dcopcall.section(' ', 0,0).toUtf8();
-    
+
     QByteArray dataToSend;
     QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
     dataStream.setVersion(QDataStream::Qt_3_1);
@@ -1021,7 +1017,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
                    function,
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {
-	      
+
         QDataStream dataStreamIn(replyData);
         dataStreamIn.setVersion(QDataStream::Qt_3_1);
         dataStreamIn >> keys;
@@ -1030,7 +1026,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
   }
 
   keys += cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
-  
+
   if ( keys.count() == 0 )
     return result;
 

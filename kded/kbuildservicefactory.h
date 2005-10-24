@@ -44,7 +44,7 @@ public:
   virtual ~KBuildServiceFactory();
 
   /// Reimplemented from KServiceFactory
-  virtual KService *findServiceByName(const QString &_name);
+  virtual KService::Ptr findServiceByName(const QString &_name);
 
   /**
    * Construct a KService from a config file.

@@ -230,8 +230,7 @@ KServiceType::propertyDefNames() const
 
 KServiceType::Ptr KServiceType::serviceType( const QString& _name )
 {
-  KServiceType * p = KServiceTypeFactory::self()->findServiceTypeByName( _name );
-  return KServiceType::Ptr( p );
+  return KServiceTypeFactory::self()->findServiceTypeByName( _name );
 }
 
 static void addUnique(KService::List &lst, Q3Dict<KService> &dict, const KService::List &newLst, bool lowPrio)
@@ -261,25 +260,27 @@ KService::List KServiceType::offers( const QString& _servicetype )
   else
     kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
 
-  // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain    
-  KMimeType::Ptr mime = dynamic_cast<KMimeType*>(static_cast<KServiceType *>((serv).get()));
-  bool isAMimeType = (bool)mime;
-  if (mime)
+  // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain
+  bool isAMimeType = serv && serv->isType( KST_KMimeType );
+  if (isAMimeType)
   {
+     KMimeType::Ptr mime = serv;;
      while(true)
      {
         QString parent = mime->parentMimeType();
         if (parent.isEmpty())
            break;
-        mime = dynamic_cast<KMimeType *>(KServiceTypeFactory::self()->findServiceTypeByName( parent ));
+        KServiceType::Ptr servType = KServiceTypeFactory::self()->findServiceTypeByName( parent );
+        if ( !servType || servType->isType( KST_KMimeType ) )
+           break;
+        mime = servType;
         if (!mime)
            break;
-        
+
         addUnique(lst, dict, KServiceFactory::self()->offers( mime->offset() ), false);
      }
   }
   serv = 0;
-  mime = 0;
 
   //QValueListIterator<KService::Ptr> it = lst.begin();
   //for( ; it != lst.end(); ++it )
@@ -293,26 +294,24 @@ KService::List KServiceType::offers( const QString& _servicetype )
        && !_servicetype.startsWith( QLatin1String( "all/" ) ) )
   {
     // Support for services associated with "all"
-    KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
+    KServiceType::Ptr servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
     if ( servAll )
     {
         addUnique(lst, dict, KServiceFactory::self()->offers( servAll->offset() ), true);
     }
     else
       kdWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
-    delete servAll;
 
     // Support for services associated with "allfiles"
     if ( _servicetype != "inode/directory" && _servicetype != "inode/directory-locked" )
     {
-      KServiceType * servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
+      KServiceType::Ptr servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
       if ( servAllFiles )
       {
         addUnique(lst, dict, KServiceFactory::self()->offers( servAllFiles->offset() ), true);
       }
       else
         kdWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;
-      delete servAllFiles;
     }
   }
 
@@ -328,10 +327,10 @@ KServiceType::Ptr KServiceType::parentType()
 {
   if (d && d->parentTypeLoaded)
      return d->parentType;
-  
+
   if (!d)
      d = new KServiceTypePrivate;
-     
+
   QString parentSt = parentServiceType();
   if (!parentSt.isEmpty())
   {
@@ -339,7 +338,7 @@ KServiceType::Ptr KServiceType::parentType()
     if (!d->parentType)
       kdWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
   }
-  
+
   d->parentTypeLoaded = true;
 
   return d->parentType;
@@ -349,10 +348,10 @@ void KServiceType::addService(KService::Ptr service)
 {
   if (!d)
      d = new KServiceTypePrivate;
-  
+
   if (d->services.count() && d->services.last() == service)
      return;
-     
+
   d->services.append(service);
 }
 

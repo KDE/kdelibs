@@ -77,7 +77,7 @@ KServiceTypeFactory * KServiceTypeFactory::self()
   return _self;
 }
 
-KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
+KServiceType::Ptr KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    assert (!KSycoca::self()->isBuilding());
