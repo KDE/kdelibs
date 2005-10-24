@@ -537,7 +537,7 @@ void Kded::readDirectory( const QString& _path )
   }
 }
 
-bool Kded::isWindowRegistered(long windowId)
+bool Kded::isWindowRegistered(long windowId) const
 {
   return m_globalWindowIdList.contains(windowId);
 

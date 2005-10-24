@@ -113,7 +113,7 @@ public:
   /**
    * Returns whether a certain mainwindow has registered itself with KDED
    */
-  bool isWindowRegistered(long windowId);
+  bool isWindowRegistered(long windowId) const;
   
 public slots:
   /**

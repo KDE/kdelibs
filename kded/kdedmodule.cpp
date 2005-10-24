@@ -122,7 +122,7 @@ void KDEDModule::removeAll(const DCOPCString &app)
    resetIdle();
 }
 
-bool KDEDModule::isWindowRegistered(long windowId)
+bool KDEDModule::isWindowRegistered(long windowId) const
 {
    return Kded::self()->isWindowRegistered(windowId);
 }
