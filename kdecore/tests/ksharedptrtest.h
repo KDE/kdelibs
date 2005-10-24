@@ -7,7 +7,9 @@ class KSharedPtrTest : public QObject
 {
 	Q_OBJECT
 	private slots:
-		void testAll();
+		void testWithStrings();
+		void testDeletion();
+		void testDifferentTypes();
 };
 
 #endif /* KSHAREDPTRTEST_H */

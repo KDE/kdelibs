@@ -30,7 +30,7 @@
 
 QTTEST_KDEMAIN( KSharedPtrTest, NoGUI )
 
-void KSharedPtrTest::testAll()
+void KSharedPtrTest::testWithStrings()
 {
 	QString s = QLatin1String( "Hello" );
 	QString s2 = QLatin1String( "Foo" );
@@ -91,5 +91,45 @@ void KSharedPtrTest::testAll()
 	VERIFY( w.isUnique() );
 }
 
-#include "ksharedptrtest.moc"
+static int dtor_called = 0;
+class Base
+{
+public:
+	virtual ~Base() { ++dtor_called; }
+};
 
+void KSharedPtrTest::testDeletion()
+{
+	dtor_called = 0;
+	{
+		Base* obj = new Base;
+		KSharedPtr<Base> ptrBase = obj;
+		COMPARE( ptrBase.get(), obj );
+		COMPARE( dtor_called, 0 ); // no dtor called yet
+	}
+	COMPARE( dtor_called, 1 );
+}
+
+class Derived : public Base
+{
+public:
+	Derived() { /*qDebug( "Derived created %p", (void*)this );*/ }
+	virtual ~Derived() { /*qDebug( "Derived deleted %p", (void*)this );*/ }
+};
+
+void KSharedPtrTest::testDifferentTypes()
+{
+	dtor_called = 0;
+	{
+		Derived* obj = new Derived;
+		KSharedPtr<Base> ptrBase = obj;
+		// then we call some method that takes a KSharedPtr<Base> as argument
+		// and there we downcast again:
+		KSharedPtr<Derived> ptrDerived = ptrBase;
+		COMPARE( dtor_called, 0 ); // no dtor called yet
+		COMPARE( ptrDerived.get(), obj );
+	}
+	COMPARE( dtor_called, 1 );
+}
+
+#include "ksharedptrtest.moc"
