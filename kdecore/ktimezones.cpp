@@ -443,16 +443,6 @@ bool KTimezone::isDst(time_t) const
     return false;
 }
 
-bool KTimezone::isValidLatitude(float latitude)
-{
-    return ::fabsf(latitude) <= 90.0;
-}
-
-bool KTimezone::isValidLongitude(float longitude)
-{
-    return ::fabsf(longitude) <= 180.0;
-}
-
 
 /******************************************************************************/
 

@@ -66,7 +66,7 @@ class KTzfileTimezoneSourcePrivate;
  * A collection of time zones is represented by the KTimezones class, which acts
  * as a container of KTimezone objects. Within any KTimezones object, each
  * KTimezone instance is uniquely identified by its name. Typically, each
- * individual source of time zone information might be represented by a different
+ * individual source of time zone information would be represented by a different
  * KTimezones object. This scheme allows conflicting time zone definitions
  * between the different sources to be handled, since KTimezone names need only
  * be unique within a single KTimezones object. Note that KTimezone instances do
@@ -79,7 +79,7 @@ class KTzfileTimezoneSourcePrivate;
  * specific time zone in a KTimezoneData object. Both of these are base classes
  * from which should be derived other classes which know about the particular
  * data format (KTimezoneSource) and which details are actually provided
- * (KTimezoneData). So, when a KTimezone instance needs its time zone's
+ * (KTimezoneData). When a KTimezone instance needs its time zone's
  * definition, it calls KTimezoneSource::parse() and receives the data back in a
  * KTimezoneData object.
  *
@@ -104,30 +104,30 @@ class KTzfileTimezoneSourcePrivate;
  *   If it is known that two source databases are definitely compatible, they can
  *   be grouped together into the same KTimezones instance.
  *
- * The KSystemTimezones, KSystemTimezone, KSystemTimezoneSource and KSystemTimezoneData
- * classes allow access to system time zones via the zone.tab file and libc library
- * functions.
+ * Access to system time zones is provided by the KSystemTimezones class, which reads
+ * the zone.tab file to obtain the list of system time zones, and creates a
+ * KSystemTimezone instance for each one. KSystemTimezone uses the KSystemTimezoneSource
+ * and KSystemTimezoneData classes to obtain time zone data via libc library functions.
  */
 
 /**
  * The KTimezones class represents a time zone database which consists of a
- * collection of individual time zone definitions. Each individual time zone is
- * defined in a KTimezone instance. It provides generic support for private or
- * system time zones. If you want to access system time zones, use the
- * KSystemTimezones class.
+ * collection of individual time zone definitions.
  *
- * The time zones in the collection are indexed by name, which must be unique
- * within the collection.
- *
+ * Each individual time zone is defined in a KTimezone instance, which provides
+ * generic support for private or system time zones. The time zones in the
+ * collection are indexed by name, which must be unique within the collection.
  * KTimezone instances in the collection are owned by the KTimezones instance,
  * and are deleted when the KTimezones instance is destructed.
  *
  * Different time zone sources can define the same time zone differently. (For
  * example, a calendar file originating from another system might hold its own
  * time zone definitions, which may not necessarily be identical to your own
- * system's definitions.) In order to keep conflicting definitions separate, it
- * will often be necessary when dealing with multiple time zone sources to create
- * a separate KTimezones instance for each source collection.
+ * system's definitions.) In order to keep conflicting definitions separate,
+ * it will often be necessary when dealing with multiple time zone sources to
+ * create a separate KTimezones instance for each source collection.
+ *
+ * If you want to access system time zones, use the KSystemTimezones class.
  *
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -175,7 +175,7 @@ public:
      * The caller assumes responsibility for deleting the removed KTimezone.
      *
      * @param zone time zone to remove
-     * @return the time zone which was removed, or 0 either if not found or if not a deletable object
+     * @return the time zone which was removed, or 0 if either not found or not a deletable object
      */
     KTimezone *detach(KTimezone *zone);
 
@@ -214,22 +214,25 @@ private:
  *
  * The KTimezone base class contains general descriptive data about the time zone, and
  * provides an interface for methods to read and parse time zone definitions, and to
- * translate between UTC and local time. If this class is instantiated, it represents
- * the UTC time zone.
+ * translate between UTC and local time. Derived classes must implement these methods,
+ * and may also hold the actual details of the dates and times of daylight savings
+ * changes, offsets from UTC, etc. They should be tailored to deal with the type and
+ * format of data held by a particular type of time zone database.
  *
- * Derived classes must implement these methods, and may also hold the actual details
- * of the dates and times of daylight savings changes, offsets from UTC, etc. They will
- * be tailored to deal with the type and format of data held by a particular type of
- * time zone database.
+ * If this class is instantiated, it represents the UTC time zone.
  *
- * KTimezone is designed to work in partnership with {@link KTimezoneSource}. KTimezone
+ * KTimezone is designed to work in partnership with KTimezoneSource. KTimezone
  * provides access to individual time zones, while classes derived from
- * {@link KTimezoneSource} read and parse a particular format of time zone definition.
+ * KTimezoneSource read and parse a particular format of time zone definition.
  * Because time zone sources can differ in what information they provide about time zones,
- * the parsed data retured by {@link KTimezoneSource} can vary between different sources,
+ * the parsed data retured by KTimezoneSource can vary between different sources,
  * resulting in the need to create different KTimezone classes to handle the data.
  *
- * @see KTimezoneSource
+ * KTimezone instances are often grouped into KTimezones collections. If a KTimezone is
+ * part of such a collection, it is owned by the KTimezones instance and should not be
+ * deleted.
+ *
+ * @see KTimezoneSource, KTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
@@ -391,7 +394,7 @@ public:
      *
      * @param utcDateTime the UTC date/time. An error occurs if
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
-     * @return true if daylight savings time is in operation
+     * @return @c true if daylight savings time is in operation, @c false otherwise
      */
     bool isDstAtUTC(const QDateTime &utcDateTime) const;
 
@@ -421,18 +424,6 @@ public:
      * that does not represent a real latitude or longitude.
      */
     static const float UNKNOWN;
-
-    /**
-     * A test for a valid latitude. The valid range is +90.0 (North Pole)
-     * to -90.0 (South Pole).
-     */
-    static bool isValidLatitude(float latitude);
-
-    /**
-     * A test for a valid longitude. The valid range is +180.0 (east of
-     * Greenwich) to -180.0 (west of Greenwich).
-     */
-    static bool isValidLongitude(float longitude);
 
 protected:
     /**
@@ -476,6 +467,7 @@ private:
  * KTimezoneSource itself may be used as a dummy source which returns empty
  * time zone details.
  *
+ * @see KTimezone, KTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
@@ -506,6 +498,9 @@ public:
 /**
  * Base class for the parsed data returned by a KTimezoneSource class.
  *
+ * This base class can be instantiated, but contains no data.
+ *
+ * @see KTimezone, KTimezoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
@@ -550,14 +545,18 @@ private:
 /**
  * The KSystemTimezones class represents the system time zone database, consisting
  * of a collection of individual system time zone definitions, indexed by name.
- * Each individual time zone is defined in a KTimezone instance. Additional
- * time zones may be added if desired.
+ * Each individual time zone is defined in a KSystemTimezone instance. Additional
+ * time zones (of any class derived from KTimezone) may be added if desired.
  *
- * There is one unique KTimezones instance containing the system time zone database.
- * Convenience static methods are defined to access its data, or alternatively you
- * can access it directly with the timezones() method.
+ * At initialisation, KSystemTimezones reads the zone.tab file to obtain the list
+ * of system time zones, and creates a KSystemTimezone instance for each one.
  *
- * @see KTimezones KSystemTimezone KSystemTimezoneSource
+ * Note that KSystemTimezones is not derived from KTimezones, but instead contains
+ * a KTimezones instance which holds the system time zone database. Convenience
+ * static methods are defined to access its data, or alternatively you can access
+ * the KTimezones instance directly via the timezones() method.
+ *
+ * @see KTimezones, KSystemTimezone, KSystemTimezoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
@@ -626,7 +625,7 @@ private:
  *
  * Typically, instances are created and accessed via the KSystemTimezones class.
  *
- * @see KSystemTimezones KSystemTimezoneSource
+ * @see KSystemTimezones, KSystemTimezoneSource, KSystemTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
@@ -665,6 +664,7 @@ private:
  *
  * Access is performed via the system time zone library functions.
  *
+ * @see KSystemTimezones, KSystemTimezone, KSystemTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
@@ -673,13 +673,14 @@ class KDECORE_EXPORT KSystemTimezoneSource : public KTimezoneSource
 {
 public:
     /**
-     * Construct a time zone source.
+     * Construct a system time zone source.
      */
     KSystemTimezoneSource();
     virtual ~KSystemTimezoneSource();
 
     /**
-     * Parse a tzfile file to extract detailed information for one time zone.
+     * Extract detailed information for one time zone, via the system time zone
+     * library functions.
      *
      * @param zone the time zone for which data is to be extracted
      * @return a KSystemTimezoneData instance containing the parsed data.
