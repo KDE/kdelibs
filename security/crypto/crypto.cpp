@@ -282,9 +282,6 @@ QString whatstr;
   SSLv3Box->setWhatsThis( whatstr);
   SSLv3Box->setSelectionMode(Q3ListView::NoSelection);
   grid->addMultiCellWidget(SSLv3Box, 2, 2, 0, 1);
-  connect( mUseSSLv3, SIGNAL( toggled( bool ) ),
-	   SSLv3Box, SLOT( setEnabled( bool )));
-
   loadCiphers();
 
   //
