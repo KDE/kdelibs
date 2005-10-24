@@ -860,7 +860,7 @@ void KCryptoConfig::load()
 #endif
 
   config->setGroup("SSLv3");
-  item = static_cast<CipherItem *>(SSLv3Box->firstChild());
+  CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
       item->setOn(config->readBoolEntry(item->configName(),
 					item->bits() >= 56));
