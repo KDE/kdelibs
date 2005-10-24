@@ -20,7 +20,7 @@
 #include "klibloadertest.h"
 #include "klibloadertest.moc"
 
-QTTEST_KDEMAIN( KLibLoaderTest, GUI ) // GUI needed because we instanciate a KHTMLPart
+QTTEST_KDEMAIN( KLibLoaderTest, NoGUI )
 
 #include <klibloader.h>
 #include <kstandarddirs.h>
@@ -36,12 +36,12 @@ void KLibLoaderTest::testNonWorking()
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
-static const char* s_module = "libkhtmlpart";
+static const char* s_module = "libklibloadertestmodule";
 
 void KLibLoaderTest::testWorking()
 {
     int error = 0;
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "../../khtml/.libs/" );
+    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() );
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, 0, QStringList(), &error );
     if ( error )
         kdWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
@@ -50,7 +50,7 @@ void KLibLoaderTest::testWorking()
 
 void KLibLoaderTest::testWrongClass()
 {
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "../../khtml/.libs/" );
+    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() );
     int error = 0;
 
     KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, 0, QStringList(), &error );

@@ -38,6 +38,11 @@ TESTS = kurltest kcompletiontest\
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
 	kstringhandlertest krfcdatetest kcalendartest klibloadertest
 
+# Test module for klibloadertest. Ideally we shouldn't install it.
+kde_module_LTLIBRARIES = libklibloadertestmodule.la
+libklibloadertestmodule_la_SOURCES = klibloadertest_module.cpp
+klibloadertest: libklibloadertestmodule.la
+
 METASOURCES = AUTO
 
 LDADD = ../libkdecore.la $(top_builddir)/qttestlib/libqttestlib.la
