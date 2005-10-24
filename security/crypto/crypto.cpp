@@ -991,7 +991,7 @@ void KCryptoConfig::save()
 
   int ciphercount = 0;
   config->setGroup("SSLv3");
-  item = static_cast<CipherItem *>(SSLv3Box->firstChild());
+  CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
     if (item->isOn()) {
       config->writeEntry(item->configName(), true);
