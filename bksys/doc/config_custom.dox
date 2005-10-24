@@ -26,49 +26,105 @@ which allows to customize the configuration.
 [question: or better named 'env' or 'config' ? ] 
 <ul>
 
-<li>add required c header file(s) \n
+<li>
+specifiy used config header file
+example: 
+
+\code
+conf.configHeader = "config-kdecore.h"
+\endcode
+
+alternative proposal by Stephan Kulow
+
+\code
+conf.setConfigHeader("dcop/config-dcop.h")
+\endcode
+
+
+<li>
+specify required c header file(s) \n
 example:
 
 \code
-conf.cheaders += "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
+conf.Header = "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
 \endcode
+
+alternative proposal by Stephan Kulow
+
+\code
+conf.checkHeaders('sys/time.h unistd.h')
+conf.checkHeaders(['sys/time.h', 'unistd.h'])
+\endcode
+
+If the header file wasn't found, the configuration process will be canceled with an error message.
 
 the given filenames are automatically mapped to a related define in the config header config-<dirname>.h 
 which is included by the global config.h file. \n 
 If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
 
 <li>
-add required c function(s) 
+specify required c function(s) 
 example: 
 
 \code
-conf.cfunctions += "mmap getmntinfo setmntent"
+conf.Functions = "mmap getmntinfo setmntent"
 \endcode
 
-the available functions are mapped automatically to a related define in the config header config-<dirname>.h 
-which is included by the global config.h file. \n
+alternative proposal by Stephan Kulow
+
+\code
+conf.checkFunction(['setenv','gethostname'])
+conf.checkFunction('setenv gethostname')
+\endcode
+
+If the function wasn't found in the configuration process, the configuration process will be canceled with an error message.
+
+The available functions are mapped automatically to a related define in the related config header which is included 
+by the global config.h file. \n
 if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
 
 
 <li>
-add a required c header files(s) \n
-like \b conf.cheaders with the exception, that if the header file wasn't found, the configuration process will 
-be canceled with an error message. \n
-
+specify optional c header file(s) \n
 example:
-		
+
 \code
-conf.required_cheaders += "sys/socket.h"
+conf.optionalHeader = "sys/stat.h sys/mntent.h sys/param.h paths.h limits.h execinfo.h"
 \endcode
 
-<li>add required c function(s) \n
-like \b conf.cfunction with the exception, that if the header file wasn't found, the configuration process will 
-be canceled with an error message. \n
-example: 
-	
+alternative proposal by Stephan Kulow
+
 \code
-conf.required_cfunctions += "xyz"
+conf.checkOptionalHeaders('sys/time.h unistd.h')
+conf.checkOptionalHeaders(['sys/time.h', 'unistd.h'])
 \endcode
+
+If the header file wasn't found while configuration, a warning is printed and the configuration process goes on.
+
+The given filenames are automatically mapped to a related define in the related config header which is included 
+by the global config.h file. \n 
+If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
+
+<li>
+specify optional c function(s) 
+example: 
+
+\code
+conf.optionslFunctions = "mmap getmntinfo setmntent"
+\endcode
+
+alternative proposal by Stephan Kulow
+
+\code
+conf.checkOptionalFunctions(['setenv','gethostname'])
+conf.checkOptionalFunctions('setenv gethostname')
+\endcode
+
+If the function wasn't found while configuration, a warning is printed and the configuration process goes on.
+
+The available functions are mapped automatically to a related define in the related config header which is included 
+by the global config.h file. \n
+if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
 
 <li>
 add a user selectable option for an optional package, setting the package name, a description, 
@@ -79,6 +135,11 @@ example:
 conf.modules['tiff']    = ['Enable tiff support','yes',<options or handler how to detect>,....]
 conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
 conf.modules['openexr'] = ['Enable openexr support','no']
+\endcode
+
+\code
+conf.checkModule(<key>,<description>,<default value>):
+conf.checkModule('dpms','disable DPMS power saving',no):
 \endcode
 			
 \note: the name 'modules' could be also another name for example 'uselib', but should be unique 
@@ -116,6 +177,7 @@ the conf object includes several attributes ??
 if conf['WINDOWS']: 
 	conf.modules['jasper']  = ['Enable jasper (jpeg2k) support','yes']
 \endcode
+
 
 </ul>
 
