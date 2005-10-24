@@ -44,14 +44,18 @@ public:
 };
 
 KServiceGroup::KServiceGroup( const QString & name )
- : KSycocaEntry(name), m_childCount(-1)
+ : KSycocaEntry(name)
+ , m_bDeep(false)
+ , m_childCount(-1)
 {
   d = new KServiceGroup::Private;
   m_bDeleted = false;
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(_relpath), m_childCount(-1)
+ : KSycocaEntry(_relpath)
+ , m_bDeep(false)
+ , m_childCount(-1)
 {
   d = new KServiceGroup::Private;
   m_bDeleted = false;
@@ -126,13 +130,13 @@ int KServiceGroup::childCount()
         KSycocaEntry::Ptr p = *it;
         if (p->isType(KST_KService))
         {
-           KService *service = static_cast<KService *>(p.get());
+           KService::Ptr service = p;
            if (!service->noDisplay())
               m_childCount++;
         }
         else if (p->isType(KST_KServiceGroup))
         {
-           KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p.get());
+           KServiceGroup::Ptr serviceGroup = p;
            m_childCount += serviceGroup->childCount();
         }
      }
@@ -260,12 +264,12 @@ void KServiceGroup::save( QDataStream& s )
      KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
      {
-        KService *service = static_cast<KService *>(p.get());
+        KService::Ptr service = p;
         groupList.append( service->desktopEntryPath() );
      }
      else if (p->isType(KST_KServiceGroup))
      {
-        KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p.get());
+        KServiceGroup::Ptr serviceGroup = p;
         groupList.append( serviceGroup->relPath() );
      }
      else
@@ -310,7 +314,7 @@ static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, boo
 KServiceGroup::List
 KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName)
 {
-    KServiceGroup::Ptr group = this;
+    KServiceGroup* group = this;
 
     // If the entries haven't been loaded yet, we have to reload ourselves
     // together with the entries. We can't only load the entries afterwards
@@ -319,7 +323,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     if (!m_bDeep) {
 
         group =
-            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
+            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true).get();
 
         if (0 == group) // No guarantee that we still exist!
             return List();
@@ -335,21 +339,21 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     KSortableValueList<SPtr,QByteArray> glist;
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
     {
-        KSycocaEntry *p = (*it).get();
+        KSycocaEntry::Ptr p = (*it);
 	bool noDisplay = p->isType(KST_KServiceGroup) ?
-                                   static_cast<KServiceGroup *>(p)->noDisplay() :
-                                   static_cast<KService *>(p)->noDisplay();
+                                   static_cast<KServiceGroup *>(p.get())->noDisplay() :
+                                   static_cast<KService *>(p.get())->noDisplay();
         if (excludeNoDisplay && noDisplay)
            continue;
         // Choose the right list
         KSortableValueList<SPtr,QByteArray> & list = p->isType(KST_KServiceGroup) ? glist : slist;
         QString name;
         if (p->isType(KST_KServiceGroup))
-          name = static_cast<KServiceGroup *>(p)->caption();
+          name = static_cast<KServiceGroup *>(p.get())->caption();
         else if (sortByGenericName)
-          name = static_cast<KService *>(p)->genericName() + " " + p->name();
+          name = static_cast<KService *>(p.get())->genericName() + " " + p->name();
         else
-          name = p->name() + " " + static_cast<KService *>(p)->genericName();
+          name = p->name() + " " + static_cast<KService *>(p.get())->genericName();
 
         QByteArray key( name.length() * 4 + 1 );
         // strxfrm() crashes on Solaris
