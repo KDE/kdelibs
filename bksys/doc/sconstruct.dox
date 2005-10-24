@@ -1,0 +1,15 @@
+/** \page sconstruct_format SConstruct file format 
+
+
+\code
+config = {
+	'modules'  : 'generic lowlevel libxml kde4 libart2 libidn libpcre openssl fam',
+	'builddir' : 'build', # put all object files under 'build/'
+	'config.h' : 1, # mechanism should be ok
+	'rpath'    : 1, # incomplete
+	'bootstrap': 1, # incomplete
+#	'colorful' : not os.environ.has_key('NOCOLORS') and not sys.platform == 'win32', # only with scons >= 0.96.91 - now miniscons
+}
+\endcode
+
+*/

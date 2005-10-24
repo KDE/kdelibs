@@ -1,0 +1,44 @@
+/** \page library_filename_specification library filename specification
+
+This page gives an overview about the filenam prefix and suffix for several operating systems/compiler. 
+
+Notes: 
+- A filename is build using the template <prefix><library-name><suffix>
+- Columns with ??? are currently unspecified  
+
+<pre>
+                                                                                                                                                                                                   
+                                                                        Operating systems                                                                                                                                                                      
+                                                                                                                                                                                                   
+library type                  -- linux --                   -- darwin --                  -- cygwin --                  -- mingw --                   -- msvc --                                   
+                              prefix         suffix         prefix         suffix         prefix         suffix         prefix         suffix         prefix         suffix                        
+                                                                                                                                                                                                   
+RELEASE VERSIONS                                                                                                                                                                                                                 
+ static library               lib            .a             ???            ???            lib            .a             lib            .a             ????           ????                          
+ convenience                  lib            c.a            ???            ???            lib            c.a            lib            c.a            ????           ????                          
+ shared library               lib            .so            ???            ???            cyg            .dll           lib            .dll           ????           ????                          
+ shared library (versioned)   lib            .so.x.y.z      ???            ???            cyg            -x.dll [2]     lib            -x.dll [2]     ????           ????                          
+ la-file                      lib            .la            ???            ???            lib            .la            lib            .la            ????           ????                          
+ module                       ---            .so            ???            ???            ---            .dll           ---            .dll           ????           ????                          
+ kioslave module              kio_           .so            ???            ???            kio_           .dll           kio_           .dll           ????           ????                          
+ kdeinit module               kdeinit_[1]    .so            ???            ???            kdeinit_       .dll           kdeinit_       .dll           ????           ????                          
+                                                                                                                                                                                                   
+DEBUG VERSIONS                                                                                                                                                                                                    
+ static library               lib            ?.a [3]        ???            ???            lib            .a             lib            d.a            ????           ????                          
+ convenience                  lib            ?c.a           ???            ???            lib            c.a            lib            dc.a           ????           ????                          
+ shared library               lib            ?.so           ???            ???            cyg            .dll           lib            d.dll          ????           ????                          
+ shared (versioned)           lib            ?.so.x.y.z     ???            ???            cyg            -x.dll [2]     lib            -dx.dll [2]    ????           ????                          
+ la-file                      lib            .la            ???            ???            lib            .la            lib            .la            ????           ????                          
+ module                       ---            ?.so           ???            ???            ---            .dll           ---            d.dll          ????           ????                          
+ kioslave module              kio_           ?.so           ???            ???            kio_           .dll           kio_           d.dll          ????           ????                          
+ kdeinit module               kdeinit_       ?.so           ???            ???            kdeinit_       .dll           kdeinit_       d.dll          ????           ????                          
+                                                     
+Notes:                                                                                                                                                                                                    
+[1] Debian libkdeinit_:...                                                                                                                                                                                        
+[2] Only major number is used
+\todo [3] How to name debug libraries - qt under linux uses _debug.so prefix                                                                                                                                                                                                    
+                                                                                                                                                                                                   
+
+</pre>
+
+*/

@@ -1,0 +1,103 @@
+/** \page library_modules library modules
+
+\ref proposal_state
+
+KDE applications and libraries are build up with source files and several internal and external libraries. 
+When using external or internal libraries they may be present or not. Depending on this it may be required  
+
+- to disable whole subdirs, single source files or specific targets 
+- to add/remove additional include pathes and libraries 
+- conditionalize source code (optional depending on the library version)
+
+For all this requirements BKSYS has build in support named \b library \b modules, by providing descriptive shortcuts usable 
+by the generic::genobj classes. 
+
+The presence of library modules are checked in the configuration process controlled by \b config relating settings 
+in the \ref SConstruct file or by directory depending settings in a subdirs \ref SConfigure file. 
+
+
+
+library modules could be used in \ref SConscript files by specifing  the \b uselib attribute. 
+
+\code
+obj.uselib = 'QT KIO OPENSSL'
+\endcode 
+
+
+To conditionalize single source files you may use the following statement: 
+
+\code
+if env.conf['OPENSSL']: 
+	obj.source += 'openssl-support.cpp'
+\endcode 
+
+To disable subdirs you may use the following statement: 
+
+\code
+if env.conf['OPENSSL']: 
+	env.subdirs('openssl-stuff')
+\endcode
+
+To disable targets you may use the following statement: 
+
+\code
+if env.conf['OPENSSL']: 
+	obj = genobj('openssl-related library')
+\endcode
+
+
+The env.conf[<key>] object has several public attributes (see configure::PackageConfiguration for more informations), 
+which could be used for special purposes for example emulating the uselib attribute as shown below:
+\code
+if env.conf['OPENSSL']: 
+	obj.includes += env.conf['OPENSSL'].includes
+	obj.libs += env.conf['OPENSSL'].libs
+	obj.libpaths += env.conf['OPENSSL'].libpaths
+\endcode
+
+
+
+Currently build in library modules are: 
+- FAM
+- LIBART
+- LIBIDN 
+- OPENSSL
+- PCRE 
+- XML 
+- XSLT
+- QT
+- QTCORE
+- QTGUI
+- QTXML
+- QT3SUPPORT
+- QTASSISTANT
+- QTDESIGNER
+- QTNETWORK
+- QTSQL
+- QTOPENGL
+- KDE4
+- KIO
+- KDECORE
+- QTTEST
+
+
+\note: because this support is named library modules a better name as obj.uselib may be good. 
+It would be always good to name the same thing with a uniqe name. Currently we have: 
+
+\code
+
+SConfigure
+conf.checkModule('QT')
+\endcode
+
+
+SConscript
+obj.uselib = 'QT KIO OPENSSL'
+
+better ->>>>
+SConscript
+obj.useModule = 'QT KIO OPENSSL'
+
+\todo: how to setup custom build configuration option 
+
+*/
