@@ -42,8 +42,9 @@ def generate(env):
 		ret = context.TryAction(pkg_config_command+' %s --atleast-version=%s' % (module, version))[0]
 		if ret:
 			env.ParseConfig(pkg_config_command+' %s --cflags --libs' % module);
-			env['CXXFLAGS_'+pkgname] = SCons.Util.CLVar( 
+			env['CCFLAGS_'+pkgname] = SCons.Util.CLVar( 
 				os.popen(pkg_config_command+" %s --cflags 2>/dev/null" % module).read().strip() );
+			env['CXXFLAGS_'+pkgname] = env['CCFLAGS_'+pkgname]
 			env['LINKFLAGS_'+pkgname] = SCons.Util.CLVar( 
 					os.popen(pkg_config_command+" %s --libs 2>/dev/null" % module).read().strip() );
 		context.Result(ret)
@@ -58,19 +59,21 @@ def generate(env):
 		opts = Options(optionFile)
 		opts.AddOptions(
 				('CACHED_'+pkgname, 'whether '+pkgname+' was found'),
+				('CCFLAGS_'+pkgname, 'additional compilation flags'),
 				('CXXFLAGS_'+pkgname, 'additional compilation flags'),
 				('LINKFLAGS_'+pkgname, 'link flags')
 				)
 		opts.Update(env)
 
-		if not env.has_key('CACHED_'+pkgname):
+		if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_'+pkgname)):
+			env['_CONFIGURE_']=1
 			conf = env.Configure(custom_tests =
 					     { 'Check_pkg_config' : Check_pkg_config,
 					       'Check_package' : Check_package }
 					     )
 
-			if env.has_key('CXXFLAGS_'+pkgname):  env.__delitem__('CXXFLAGS_'+pkgname)
-			if env.has_key('LINKFLAGS_'+pkgname): env.__delitem__('LINKFLAGS_'+pkgname)
+			for i in ['CXXFLAGS_'+pkgname, 'LINKFLAGS_'+pkgname, 'CCFLAGS_'+pkgname]:
+				if env.has_key(i): env.__delitem__(i)
 
 			if not env.has_key('CACHE_PKGCONFIG'):
 				if not conf.Check_pkg_config('0.15'):
