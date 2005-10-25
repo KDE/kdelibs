@@ -80,10 +80,15 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 class KDECORE_EXPORT kdbgstream {
  public:
     /**
+     * Create for a given area and severity; suppress printing if
+     * @p _print is @c false.
      * @internal
      */
     kdbgstream(unsigned int _area, unsigned int _level, bool _print = true);
     /**
+     * Create for a given area and severity; suppress printing if
+     * @p _print is @c false. The string @p initialString is printed
+     * before each line of output.
      * @internal
      */
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true);

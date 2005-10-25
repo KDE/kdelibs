@@ -62,11 +62,10 @@ class KDECORE_EXPORT KInstance
     KInstance( const KAboutData * aboutData );
 
     /**
-     * @internal
      * Only for K(Unique)Application
      * Initialize from src and delete it.
+     * @internal
      */
-
     KInstance( KInstance* src );
 
     /**
@@ -132,6 +131,7 @@ protected:
      * @since 3.1
      */
     void setConfigName(const QString &name);
+    /** Standard trick to add virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );
 
 private:
