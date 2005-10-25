@@ -1,0 +1,36 @@
+#! /usr/bin/env python
+Import('env')
+
+
+check_PROGRAMS = """
+ksycocatest getalltest kruntest ktartest kziptest
+kioslavetest kdirwatchtest speed kurifiltertest
+kdefaultprogresstest kmimemagictest
+kfiltertest kiopassdlgtest kscantest kdirlistertest
+previewtest kionetrctest kdcopcheck metatest
+kmimefromext kpropsdlgtest kmfitest dataprotocoltest
+kprotocolinfotest ksycocaupdatetest netaccesstest jobtest
+kurlcompletiontest kmimetypetest kbookmarktest kacltest
+"""
+
+for appname in check_PROGRAMS.split():
+	if appname[:1] == '#':
+		if env['WINDOWS']:
+			continue
+		else:
+			appname = appname[1:]
+			
+	obj = env.kdeobj('program', env)
+	obj.vnum     = '6.0.2'
+	obj.target   = appname
+	obj.source   = appname + '.cpp'
+	obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
+	obj.libpaths = '.. ../../kdeui ../../kdecore ../../dcop ../../qttestlib #/kio'
+	obj.libs     = 'kio kdeui kdecore DCOP QtTest'
+	obj.includes = '. .. ../kssl ../bookmarks ../kfile ../kio ../misc ../../kdecore ../../kdefx ../../qttestlib '
+	if env['WINDOWS']:
+		obj.libs     += ' kdewin32 ws2_32'
+
+	obj.execute()
+
+
