@@ -200,5 +200,51 @@ be limited to the related platform.
 
 </ul>
 
+\section usefull_sconscript_functions usefull scons/bksys functions
+
+<ul>
+<li>
+set an additional dependency to a target
+\code
+env.Depends(<target>,<source>)
+\endcode
+
+<li>
+install a target 
+\code
+env.bksys_install(<subdir>, <files>, <destfile=None>, <perms=None>):
+\endcode 
+
+<li>
+install a target using a predefined resource type 
+\code
+env.bksys_insttype(<resoucetype>,<subdir>,<files>)
+\endcode 
+
+Resource types depends on available python modules. kde4.py for examples defines 
+
+- KDEBIN inst path of the kde binaries
+- KDEINCLUDE inst path of the kde include files
+- KDELIB inst path of the kde libraries
+- KDEMODULE inst path of the parts and libs
+- KDEDATA	inst path of the application data
+- KDELOCALE
+- KDEDOC
+- KDEKCFG
+- KDEXDG
+- KDEXDGDIR
+- KDEMENU
+- KDEMIME
+- KDEICONS
+- KDESERV
+- KDESERVTYPES
+- KDEAPPS 
+- KDECONF
+
+\todo: make available resourcetypes help online readable for including in help and as command line help option
+
+
+</ul>
+
 
 */
