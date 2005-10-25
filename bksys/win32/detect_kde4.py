@@ -46,7 +46,7 @@ def bootstrap(env):
 	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp.exe')
 
 	env['LIB_KDECORE'] = ['kdecore']
-	env['LIB_KIO']     = ['kio', 'kwalletclient', 'kdesu']
+	env['LIB_KIO']     = ['kio', 'kwalletclient']  # TODO: kdesu isn't supported yet
 	env['LIB_KDEUI']   = ['kdeui']
 
 	env['LIBPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore') ]
