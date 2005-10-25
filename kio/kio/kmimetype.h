@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include <qstringlist.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 #include <qpixmap.h>
 
 #include <kicontheme.h>
@@ -50,7 +50,7 @@ class KIO_EXPORT KMimeType : public KServiceType
 
 public:
   typedef KSharedPtr<KMimeType> Ptr;
-  typedef Q3ValueList<Ptr> List;
+  typedef QList<Ptr> List;
 public:
   /**
    * Constructor.
@@ -555,7 +555,7 @@ public:
    * by kio itself. Namely mount/unmount for FSDevice files.
    * @return the list of services
    */
-  static Q3ValueList<Service> builtinServices( const KURL& _url );
+  static QList<Service> builtinServices( const KURL& _url );
   /**
    * Returns a list of services defined by the user as possible actions
    * on the given .desktop file. May include empty actions which represent where
@@ -566,14 +566,14 @@ public:
    * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
    * @return the list of user deviced actions
    */
-  static Q3ValueList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
+  static QList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
 
   /**
    * Overload of userDefinedServices for speed purposes: it takes a KConfig* so that
    * the caller can check things in the file without having it parsed twice.
    * @since 3.4
    */
-  static Q3ValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
+  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
 
   /**
    * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
@@ -581,7 +581,7 @@ public:
    * the X-KDE-GetActionMenu extension.
    * @since 3.5
    */
-  static Q3ValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KURL::List & file_list);
+  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KURL::List & file_list);
 
   /**
    * @param path is the path of the desktop entry.

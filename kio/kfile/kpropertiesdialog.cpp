@@ -2248,7 +2248,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
   case PermissionsOnlyDirs:
     enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
-    // if this is a dir, and we can change permissions, don't dis-allow 
+    // if this is a dir, and we can change permissions, don't dis-allow
     // recursive, we can do that for ACL setting.
     if ( d->cbRecursive )
        d->cbRecursive->setEnabled( d->canChangePermissions && !d->isIrregular );
@@ -2419,7 +2419,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
   const bool ACLChange = ( d->extendedACL !=  properties->item()->ACL() );
   const bool defaultACLChange = ( d->defaultACL != properties->item()->defaultACL() );
 
-  if ( owner.isEmpty() && group.isEmpty() && !recursive 
+  if ( owner.isEmpty() && group.isEmpty() && !recursive
       && !permissionChange && !ACLChange && !defaultACLChange )
     return;
 
@@ -3166,7 +3166,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
      QMap<QString,Q3ListViewItem*> majorMap;
      Q3ListViewItem *majorGroup;
      KMimeType::List mimetypes = KMimeType::allMimeTypes();
-     Q3ValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
+     KMimeType::List::const_iterator it = mimetypes.begin();
      for (; it != mimetypes.end(); ++it) {
         QString mimetype = (*it)->name();
         if (mimetype == KMimeType::defaultMimeType())
@@ -3929,9 +3929,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
 
   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-  Q3ValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
+  KMimeType::List::const_iterator it2 = mimeTypes.begin();
   for ( ; it2 != mimeTypes.end(); ++it2 )
-    addMimeType ( (*it2)->name() );
+    addMimeType( (*it2)->name() );
 
   updateButton();
 

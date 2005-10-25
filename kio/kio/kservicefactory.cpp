@@ -272,7 +272,6 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             // Create Service
             KService * serv = createEntry( aServiceOffset );
             if (serv) {
-                kdDebug() << k_funcinfo << "loaded " << serv->desktopEntryName() << endl;
                 list.append( KService::Ptr( serv ) );
             }
             // Restore position

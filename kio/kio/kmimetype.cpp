@@ -18,29 +18,16 @@
  **/
 
 #include <config.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <assert.h>
-#include <dirent.h>
-#include <errno.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-#include <kprotocolinfo.h>
-#include <kio/global.h>
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
 #include "kmimemagic.h"
 #include "kservice.h"
 #include "krun.h"
 #include "kautomount.h"
+#include <kprotocolinfo.h>
+#include <kio/global.h>
 #include <kdirnotify_stub.h>
 
-#include <qstring.h>
-#include <qfile.h>
 #include <kmessageboxwrapper.h>
 
 #include <dcopclient.h>
@@ -59,8 +46,21 @@
 #include <ksycoca.h>
 #include <kde_file.h>
 
+#include <qset.h>
+#include <qstring.h>
+#include <qfile.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <assert.h>
+#include <dirent.h>
+#include <errno.h>
+#include <stddef.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 template class KSharedPtr<KMimeType>;
-template class Q3ValueList<KMimeType::Ptr>;
 
 KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
@@ -625,19 +625,19 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
       dp = opendir( QFile::encodeName(_url.path()) );
       if ( dp )
       {
-        Q3ValueList<QByteArray> entries;
+        QSet<QByteArray> entries;
         // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
-        ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
-        ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
+        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
+        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
         if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
           isempty = true;
         else {
-          entries.append( ep->d_name );
+          entries.insert( ep->d_name );
           if ( readdir( dp ) == 0 ) { // only three
             // check if we got "." ".." and ".directory"
-            isempty = entries.find( "." ) != entries.end() &&
-                      entries.find( ".." ) != entries.end() &&
-                      entries.find( ".directory" ) != entries.end();
+            isempty = entries.contains( "." ) &&
+                      entries.contains( ".." ) &&
+                      entries.contains( ".directory" );
           }
         }
         if (!isempty && !strcmp(ep->d_name, ".directory"))
@@ -914,9 +914,9 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   return p.pid();
 }
 
-Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
 {
-  Q3ValueList<Service> result;
+  QList<Service> result;
 
   if ( !_url.isLocalFile() )
     return result;
@@ -967,20 +967,20 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( co
   return result;
 }
 
-Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
   KSimpleConfig cfg( path, true );
   return userDefinedServices( path, cfg, bLocalFiles );
 }
 
-Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
 {
  return userDefinedServices( path, cfg, bLocalFiles, KURL::List() );
 }
 
-Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
 {
-  Q3ValueList<Service> result;
+  QList<Service> result;
 
   cfg.setDesktopGroup();
 

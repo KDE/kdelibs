@@ -18,15 +18,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_chmodjob_h__
-#define __kio_chmodjob_h__
+#ifndef KIO_CHMODJOB_H
+#define KIO_CHMODJOB_H
 
 #include <kurl.h>
-#include <qstring.h>
-
 #include <kio/global.h>
 #include <kio/job.h>
 #include <kfileitem.h>
+
+#include <qlinkedlist.h>
 
 /*
 
@@ -76,7 +76,7 @@ namespace KIO {
         int m_newGroup;
         bool m_recursive;
         KFileItemList m_lstItems;
-        Q3ValueList<ChmodInfo> m_infos;
+        QLinkedList<ChmodInfo> m_infos; // linkedlist since we keep removing the first item
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:

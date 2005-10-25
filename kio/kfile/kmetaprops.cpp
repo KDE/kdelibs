@@ -34,6 +34,7 @@
 #include <q3stylesheet.h>
 #include <q3groupbox.h>
 #include <QResizeEvent>
+#include <qlinkedlist.h>
 
 #undef Bool
 
@@ -119,7 +120,7 @@ void KFileMetaPropsPlugin::createLayout()
     QStringList groupList = d->m_info.preferredGroups();
 
     const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
-    if (!mtinfo) 
+    if (!mtinfo)
     {
         kdDebug(7034) << "no mimetype info there\n";
         return;
@@ -140,7 +141,7 @@ void KFileMetaPropsPlugin::createLayout()
     QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
 
-    for (QStringList::Iterator git=groupList.begin(); 
+    for (QStringList::Iterator git=groupList.begin();
             git!=groupList.end(); ++git)
     {
         kdDebug(7033) << *git << endl;
@@ -149,16 +150,16 @@ void KFileMetaPropsPlugin::createLayout()
         if (itemList.isEmpty())
             continue;
 
-        Q3GroupBox *groupBox = new Q3GroupBox(2, Qt::Horizontal, 
-            Q3StyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()), 
+        Q3GroupBox *groupBox = new Q3GroupBox(2, Qt::Horizontal,
+            Q3StyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()),
             d->m_frame);
 
         toplayout->addWidget(groupBox);
 
-        Q3ValueList<KFileMetaInfoItem> readItems;
-        Q3ValueList<KFileMetaInfoItem> editItems;
+        QLinkedList<KFileMetaInfoItem> readItems;
+        QLinkedList<KFileMetaInfoItem> editItems;
 
-        for (QStringList::Iterator iit = itemList.begin(); 
+        for (QStringList::Iterator iit = itemList.begin();
                 iit!=itemList.end(); ++iit)
         {
             KFileMetaInfoItem item = d->m_info[*git][*iit];
@@ -174,7 +175,7 @@ void KFileMetaPropsPlugin::createLayout()
 
         KFileMetaInfoWidget* w = 0L;
         // then first add the editable items to the layout
-        for (Q3ValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); 
+        for (QLinkedList<KFileMetaInfoItem>::Iterator iit= editItems.begin();
                 iit!=editItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
@@ -186,7 +187,7 @@ void KFileMetaPropsPlugin::createLayout()
         }
 
         // and then the read only items
-        for (Q3ValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); 
+        for (QLinkedList<KFileMetaInfoItem>::Iterator iit= readItems.begin();
                 iit!=readItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));

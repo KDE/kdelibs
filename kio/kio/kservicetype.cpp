@@ -233,16 +233,16 @@ KServiceType::Ptr KServiceType::serviceType( const QString& _name )
   return KServiceTypeFactory::self()->findServiceTypeByName( _name );
 }
 
-static void addUnique(KService::List &lst, QHash<QString, KService::Ptr> &dict, const KService::List &newLst, bool lowPrio)
+static void addUnique(KService::List &lst, QHash<QString, KService::Ptr> &hash, const KService::List &newLst, bool lowPrio)
 {
   KService::List::const_iterator it = newLst.begin();
   const KService::List::const_iterator end = newLst.end();
   for( ; it != end; ++it )
   {
      KService::Ptr service = *it;
-     if (dict.find(service->desktopEntryPath()))
+     if (hash.contains(service->desktopEntryPath()))
         continue;
-     dict.insert(service->desktopEntryPath(), service);
+     hash.insert(service->desktopEntryPath(), service);
      lst.append(service);
      if (lowPrio)
         service->setInitialPreference( 0 );
@@ -251,13 +251,13 @@ static void addUnique(KService::List &lst, QHash<QString, KService::Ptr> &dict, 
 
 KService::List KServiceType::offers( const QString& _servicetype )
 {
-  QHash<QString, KService::Ptr> dict;
+  QHash<QString, KService::Ptr> hash;
   KService::List lst;
 
   // Services associated directly with this servicetype (the normal case)
   KServiceType::Ptr serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
-    addUnique(lst, dict, KServiceFactory::self()->offers( serv->offset() ), false);
+    addUnique(lst, hash, KServiceFactory::self()->offers( serv->offset() ), false);
   else
     kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
 
@@ -278,7 +278,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         if (!mime)
            break;
 
-        addUnique(lst, dict, KServiceFactory::self()->offers( mime->offset() ), false);
+        addUnique(lst, hash, KServiceFactory::self()->offers( mime->offset() ), false);
      }
   }
   serv = 0;
@@ -298,7 +298,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
     KServiceType::Ptr servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
     if ( servAll )
     {
-        addUnique(lst, dict, KServiceFactory::self()->offers( servAll->offset() ), true);
+        addUnique(lst, hash, KServiceFactory::self()->offers( servAll->offset() ), true);
     }
     else
       kdWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
@@ -309,7 +309,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
       KServiceType::Ptr servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
       if ( servAllFiles )
       {
-        addUnique(lst, dict, KServiceFactory::self()->offers( servAllFiles->offset() ), true);
+        addUnique(lst, hash, KServiceFactory::self()->offers( servAllFiles->offset() ), true);
       }
       else
         kdWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;

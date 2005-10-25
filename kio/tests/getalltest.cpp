@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
    kdDebug() << "All mimeTypes" << endl;
    KMimeType::List mimeTypes = KMimeType::allMimeTypes();
    kdDebug() << "got " << mimeTypes.count() << " mimeTypes" << endl;
-   Q3ValueListIterator<KMimeType::Ptr> m = mimeTypes.begin();
+   KMimeType::List::const_iterator m = mimeTypes.begin();
    for ( ; m != mimeTypes.end() ; ++m )
    {
      kdDebug() << (*m)->name() << endl;

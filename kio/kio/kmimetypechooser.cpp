@@ -123,14 +123,15 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
   QMap<QString,Q3ListViewItem*> groups;
   // thanks to kdebase/kcontrol/filetypes/filetypesview
   KMimeType::List mimetypes = KMimeType::allMimeTypes();
-  Q3ValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
 
   Q3ListViewItem *groupItem;
   bool agroupisopen = false;
   Q3ListViewItem *idefault = 0; //open this, if all other fails
   Q3ListViewItem *firstChecked = 0; // make this one visible after the loop
 
-  for (; it != mimetypes.end(); ++it)
+  KMimeType::List::const_iterator it = mimetypes.begin();
+  const KMimeType::List::const_iterator end = mimetypes.end();
+  for (; it != end; ++it)
   {
     QString mimetype = (*it)->name();
     int index = mimetype.find("/");

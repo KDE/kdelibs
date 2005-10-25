@@ -48,8 +48,8 @@
 #include <kcodecs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-
 #include <kio/kservice.h>
+#include <qlinkedlist.h>
 
 #include "previewjob.moc"
 
@@ -71,7 +71,8 @@ struct KIO::PreviewJobPrivate
     KFileItemList initialItems;
     const QStringList *enabledPlugins;
     // Our todo list :)
-    Q3ValueList<PreviewItem> items;
+    // We remove the first item at every step, so use QLinkedList
+    QLinkedList<PreviewItem> items;
     // The current item
     PreviewItem currentItem;
     // The modification time of that URL
@@ -217,7 +218,7 @@ void PreviewJob::startPreview()
 
 void PreviewJob::removeItem( const KFileItem *item )
 {
-    for (Q3ValueList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
+    for (QLinkedList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
         if ((*it).item == item)
         {
             d->items.remove(it);
