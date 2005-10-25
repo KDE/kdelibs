@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
    kdDebug() << "All services" << endl;
    KService::List services = KService::allServices();
    kdDebug() << "got " << services.count() << " services" << endl;
-   Q3ValueListIterator<KService::Ptr> s = services.begin();
+   KService::List::const_iterator s = services.begin();
    for ( ; s != services.end() ; ++s )
    {
      kdDebug() << (*s)->name() << " " << (*s)->desktopEntryPath() << endl;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
    kdDebug() << "All service types" << endl;
    KServiceType::List list = KServiceType::allServiceTypes();
    kdDebug() << "got " << list.count() << " service types" << endl;
-   Q3ValueListIterator<KServiceType::Ptr> st = list.begin();
+   KServiceType::List::const_iterator st = list.begin();
    for ( ; st != list.end() ; ++st )
    {
      kdDebug() << (*st)->name() << endl;

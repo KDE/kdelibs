@@ -271,8 +271,10 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             const int savedPos = str->device()->at();
             // Create Service
             KService * serv = createEntry( aServiceOffset );
-            if (serv)
+            if (serv) {
+                kdDebug() << k_funcinfo << "loaded " << serv->desktopEntryName() << endl;
                 list.append( KService::Ptr( serv ) );
+            }
             // Restore position
             str->device()->at( savedPos );
          } else if ( aServiceTypeOffset > (qint32)serviceTypeOffset )

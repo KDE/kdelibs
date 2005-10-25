@@ -21,7 +21,7 @@
 #define __kservices_h__
 
 #include <qstringlist.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 #include <qmap.h>
 #include <qvariant.h>
 #include <kicontheme.h>
@@ -32,7 +32,6 @@ class QDataStream;
 class KDesktopFile;
 class KService;
 class KBuildSycoca;
-template<typename T> class Q3ValueList;
 class QWidget;
 
 /**
@@ -55,7 +54,7 @@ class KIO_EXPORT KService : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KService> Ptr;
-  typedef Q3ValueList<Ptr> List;
+  typedef QList<Ptr> List;
 public:
   /**
    * Construct a temporary service with a given name, exec-line and icon.
@@ -536,11 +535,7 @@ private:
   bool m_bAllowAsDefault;
   int m_initialPreference;
   bool m_bTerminal;
-  //bool m_bSuid;
-  //QString m_strUsername;
   QString m_strDesktopEntryName;
-  //QString m_docPath;
-  //bool m_bHideFromPanel;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;

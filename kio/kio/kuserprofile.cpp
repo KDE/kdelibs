@@ -154,7 +154,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
     KService::List list = KServiceType::offers( _servicetype );
     //kdDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
-    Q3ValueListIterator<KService::Ptr> it = list.begin();
+    KService::List::const_iterator it = list.begin();
     for( ; it != list.end(); ++it )
     {
         if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
@@ -259,8 +259,9 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
   kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
   KService::List list = KServiceType::offers( m_strServiceType );
-  Q3ValueListIterator<KService::Ptr> it = list.begin();
-  for( ; it != list.end(); ++it )
+  KService::List::const_iterator it = list.begin();
+  const KService::List::const_iterator end = list.end();
+  for( ; it != end; ++it )
   {
     //kdDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
     if ( m_strGenericServiceType.isEmpty() || (*it)->hasServiceType( m_strGenericServiceType ) )
@@ -283,8 +284,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
       {
         //kdDebug(7014) << "not found in mapServices. Appending." << endl;
         // We use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
-        KServiceOffer o( (*it), 0, (*it)->allowAsDefault() );
-        offers.append( o );
+        offers.append( KServiceOffer( (*it), 0, (*it)->allowAsDefault() ) );
       }
     }/* else
       kdDebug(7014) << "Doesn't have " << m_strGenericServiceType << endl;*/
