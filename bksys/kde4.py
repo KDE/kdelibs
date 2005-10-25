@@ -72,7 +72,7 @@ def generate(env):
 		detect(env)
 
 		dest=open(env.join(env['_BUILDDIR_'], 'config-kde.h'), 'w')
-		dest.write('/* kde configuration */\n')
+		dest.write('/* kde configuration created by bksys */\n')
 		dest.write(('#define KDELIBSUFF "%s"\n') % env['LIBSUFFIXEXT']);
 		dest.close()
 		env['_CONFIG_H_'].append('kde')

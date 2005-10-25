@@ -8,11 +8,19 @@ def generate(env):
 	def get_compiler_version():
 		import re, os
 
+		if env['CC'] == 'cl':
+			syspf=os.popen4('cl')
+			verline=syspf[1].readline()
+			verstr=re.match('.*([0-9][0-9]\.[0-9][0-9]\.[0-9][0-9][0-9][0-9]).*', verline).group(1)
+			major=int(verstr[0:2])-6
+			minor=int(verstr[3:5])/10
+			return "msvc %d.%d (%s)" % (major, minor, verstr)
+
 		# TODO check this with other compilers
 		# TODO: and convert xlC and KCC code from kdelibs/configure.in.in
-		if env['CC'] != 'gcc' and env['CC'] != 'cl':
+		if env['CC'] != 'gcc':
 			return False
-	
+
 		error_regexp = re.compile('Usage|ERROR|unrecognized option|unknown option|WARNING|missing|###')
 		unused_regexp = re.compile('Reading specs|Using built|Configured with|Thread model|Copyright|###')
 	

@@ -586,9 +586,6 @@ def detect(lenv,dest):
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "/sw/etc"
 
-/* what OS used for compilation */
-#define KDE_COMPILING_OS "Darwin 8.3.0 Power Macintosh"
-
 /* Distribution Text to append to OS */
 #define KDE_DISTRIBUTION_TEXT "Fink/Mac OS X"
 

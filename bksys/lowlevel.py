@@ -95,7 +95,7 @@ def generate(env):
 	cachefile=env['CACHEDIR']+'lowlevel.cache.py'
 	opts = Options(cachefile)
 	opts.AddOptions(
-	        ('LOWLEVEL_ISCONFIGURED', ''),
+		('LOWLEVEL_ISCONFIGURED', ''),
 	)
 	opts.Update(env)
 
@@ -109,57 +109,61 @@ def generate(env):
 		
 		## The platform-independent checks
 		dest=open(env.join(env['_BUILDDIR_'], 'config-lowlevel.h'), 'w')
-		dest.write('/* lowlevel configuration */\n')
+		dest.write('/* lowlevel configuration created by bksys */\n\n#include <kdelibs_export.h>\n')
 
 		conf = env.Configure( custom_tests = { 'CheckFuncWithKdefakeImpl' : CheckFuncWithKdefakeImpl } )
 		## TODO let the caller specify which checks they want? Hopefully not turning this into one-file-per-check though...
-        	conf.CheckFuncWithKdefakeImpl(dest, 'setenv', '#include <stdlib.h>',
-					      'setenv("VAR", "VALUE", 1);',
-					      'int setenv (const char *, const char *, int)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'unsetenv', '#include <stdlib.h>',
-					      'unsetenv("VAR");',
-					      'void unsetenv (const char *)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'getdomainname', '#include <stdlib.h>\n#include <unistd.h>\n#include <netdb.h>',
-					      'char buffer[200]; getdomainname(buffer, 200);',
-					      '#include <sys/types.h>\nint getdomainname (char *, size_t)')
-        	# TODO: does not work yet on mingw
-        	if not (env['WINDOWS'] and env['CC'] == 'gcc'):
-        	        conf.CheckFuncWithKdefakeImpl(dest, 'gethostname', '#include <stdlib.h>\n#include <unistd.h>',
-					      'char buffer[200]; gethostname(buffer, 200);',
-					      'int gethostname (char *, unsigned int)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'usleep', '#include <unistd.h>',
-					      'sleep (200);',
-					      'int usleep (unsigned int)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'random', '#include <stdlib.h>',
-					      'random();',
-					      'long int random(void)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'srandom', '#include <stdlib.h>',
-					      'srandom(27);',
-					      'void srandom(unsigned int)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'initgroups', '#include <sys/types.h>\n#include <unistd.h>\n#include <grp.h>',
-					      'char buffer[200]; initgroups(buffer, 27);',
-					      'int initgroups(const char *, gid_t)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'mkstemps', '#include <stdlib.h>\n#include <unistd.h>',
-					      'mkstemps("/tmp/aaaXXXXXX", 6);',
-					      'int mkstemps(char *, int)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'mkstemp', '#include <stdlib.h>\n#include <unistd.h>',
-					      'mkstemp("/tmp/aaaXXXXXX");',
-					      'int mkstemp(char *)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'mkdtemp', '#include <stdlib.h>\n#include <unistd.h>',
-					      'mkdtemp("/tmp/aaaXXXXXX");',
-					      'char* mkdtemp(char *)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'strlcpy', '#include <string.h>',
-					      'char buf[20]; strlcpy(buf, "KDE function test", sizeof(buf));',
-					      'unsigned long strlcpy(char*, const char*, unsigned long)')
-        	conf.CheckFuncWithKdefakeImpl(dest, 'strlcat', '#include <string.h>',
-					      'char buf[20]; buf[0]=0; strlcat(buf, "KDE function test", sizeof(buf));',
-					      'unsigned long strlcat(char*, const char*, unsigned long)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'setenv', '#include <stdlib.h>',
+			'setenv("VAR", "VALUE", 1);',
+			'KDECORE_EXPORT int setenv (const char *, const char *, int)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'unsetenv', '#include <stdlib.h>',
+			'unsetenv("VAR");',
+			'void unsetenv (const char *)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'getdomainname', '#include <stdlib.h>\n#include <unistd.h>\n#include <netdb.h>',
+			'char buffer[200]; getdomainname(buffer, 200);',
+			'#include <sys/types.h>\nint getdomainname (char *, size_t)')
+		# TODO: does not work yet on mingw
+		if not env['WINDOWS']:
+			conf.CheckFuncWithKdefakeImpl(dest, 'gethostname', '#include <stdlib.h>\n#include <unistd.h>',
+				'char buffer[200]; gethostname(buffer, 200);',
+				'int gethostname (char *, unsigned int)')
+			conf.CheckFuncWithKdefakeImpl(dest, 'usleep', '#include <unistd.h>',
+				'sleep (200);',
+				'int usleep (unsigned int)')
+			conf.CheckFuncWithKdefakeImpl(dest, 'random', '#include <stdlib.h>',
+				'random();',
+				'long int random(void)')
+			conf.CheckFuncWithKdefakeImpl(dest, 'srandom', '#include <stdlib.h>',
+				'srandom(27);',
+				'void srandom(unsigned int)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'initgroups', '#include <sys/types.h>\n#include <unistd.h>\n#include <grp.h>',
+			'char buffer[200]; initgroups(buffer, 27);',
+			'int initgroups(const char *, gid_t)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'mkstemps', '#include <stdlib.h>\n#include <unistd.h>',
+			'mkstemps("/tmp/aaaXXXXXX", 6);',
+			'int mkstemps(char *, int)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'mkstemp', '#include <stdlib.h>\n#include <unistd.h>',
+			'mkstemp("/tmp/aaaXXXXXX");',
+			'int mkstemp(char *)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'mkdtemp', '#include <stdlib.h>\n#include <unistd.h>',
+			'mkdtemp("/tmp/aaaXXXXXX");',
+			'char* mkdtemp(char *)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'strlcpy', '#include <string.h>',
+			'char buf[20]; strlcpy(buf, "KDE function test", sizeof(buf));',
+			'unsigned long strlcpy(char*, const char*, unsigned long)')
+		conf.CheckFuncWithKdefakeImpl(dest, 'strlcat', '#include <string.h>',
+			'char buf[20]; buf[0]=0; strlcat(buf, "KDE function test", sizeof(buf));',
+			'unsigned long strlcat(char*, const char*, unsigned long)')
 		# TODO finish (AC_CHECK_RES_QUERY and AC_CHECK_DN_SKIPNAME)
 		# TODO AC_CHECK_RES_INIT is a bit more complicated
 
 		env = conf.Finish()
 
 		## The platform-dependent checks
+
+		if not env['WINDOWS']:
+			dest.write("\n/* What OS used for compilation */\n#define KDE_COMPILING_OS \"%s %s %s\"\n" 
+				% (os.uname()[0], os.uname()[2], os.uname()[4]))
 
 		if sys.platform == 'darwin':
 			sys.path.insert(0,'bksys'+os.sep+'osx')

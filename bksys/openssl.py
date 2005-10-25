@@ -19,7 +19,7 @@ def generate(env):
 		have_openssl = env.pkgConfig_findPackage('OPENSSL', 'openssl', '0.9.6')
 
 		dest=open(env.join(env['_BUILDDIR_'], 'ksslconfig.h'), 'w')
-		dest.write('/* openssl configuration */\n')
+		dest.write('/* openssl configuration created by bksys */\n')
 		if have_openssl: dest.write('#define KSSL_HAVE_SSL 1\n');
 		dest.close()
 		#env['_CONFIG_H_'].append('openssl')

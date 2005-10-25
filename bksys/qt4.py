@@ -227,6 +227,7 @@ def generate(env):
 
 			h_file=''
 			dir=cppfile.dir
+#			print 'dir=' , dir
 			for n_h_ext in header_ext:
 				afile=dir.File(bs+n_h_ext)
 				if afile.rexists():

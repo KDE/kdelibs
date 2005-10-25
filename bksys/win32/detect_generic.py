@@ -14,6 +14,7 @@ def detect(env):
 	import SCons.Util
 	env['GENCXXFLAGS'] = []
 	env['CPPPATH'] = []
+	env['BKS_DEBUG']=0
 
 	# (rh) The flags from GENCCFLAGS seems to be added to GENCXXFLAGS, 
 	# so there is no need to duplicate settings in GENCXXGLAGS
@@ -24,11 +25,11 @@ def detect(env):
 			env['GENCCFLAGS'] = ['-g']
 			env['GENLINKFLAGS'] = ['-g']
 		elif env['CC'] == 'cl':
-			env['GENCCFLAGS'] = ['-Od','-ZI','-MDd']
+			env['GENCCFLAGS'] = ['-Od','-ZI','-MDd','-GX','-GR']
 			env['GENLINKFLAGS'] = ['/INCREMENTAL', '/DEBUG']
 	else:
 		if env['CC'] == 'gcc':
-			env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
+			env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG','-GX','-GR']
 			env['GENLINKFLAGS'] = []
 		elif env['CC'] == 'cl':
 			env['GENCCFLAGS'] = ['-MD']

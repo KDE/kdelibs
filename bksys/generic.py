@@ -17,12 +17,12 @@ from SCons.Options import Options, PathOption
 def write_config_h(lenv):
 	# put the files into the builddir
 	dest=open(lenv.join(lenv['_BUILDDIR_'], 'config.h'), 'w')
-	dest.write('/* defines are added below */\n')
+	dest.write('#ifndef BKSYS_CONFIG_H\n#define BKSYS_CONFIG_H\n\n/* defines are added below */\n')
 
 	# write the config.h including all others
 	if lenv.has_key('_CONFIG_H_'):
 		for file in lenv['_CONFIG_H_']: dest.write('#include "config-%s.h"\n' % file)
-	dest.write('\n')
+	dest.write('\n\n#endif\n')
 	dest.close()
 
 	lenv.pprint('GREEN','configuration done - run scons to compile now')
@@ -113,13 +113,14 @@ def pprint(env, col, str, label=''):
 	except: mycol=''
 	print "%s%s%s %s" % (mycol, str, env['BKS_COLORS']['NORMAL'], label)
 
-## class for building binary targets like programs, shared libraries, static libs, loadable modules and convenience libraries 
+## class for building binary targets like programs, shared libraries, static libs, 
+#  loadable modules and convenience libraries 
 #
 #
 class genobj:
 	## construct a binary target 
 	#
-	# @val type of binary object "program", "shlib", staticlib", "module", "convenience"
+	# @val type of binary object "program", "shlib", "staticlib", "module", "convenience"
 	# @env used scons environment 
 	def __init__(self, val, env):
 		# NOTE: (rh) is kioslave not a kde module ? 
@@ -167,7 +168,10 @@ class genobj:
 		# this value will be added at the beginning of the binary object target name 
 		# on linux e.g if the target is named \b xyaz and \b libprefix is set to \b 'lib' 
 		# the real library is named libxyz 
-		self.libprefix='lib'
+		if env['WINDOWS']:
+			self.libprefix=''
+		else:
+			self.libprefix='lib'
 
 		## a directory where to install the targets (optional)
 		self.instdir=''
@@ -277,7 +281,7 @@ class genobj:
 		# copy the environment if a subclass has not already done it
 		if not self.env: self.env = self.orenv.Copy()
 
-		# remove libprefix is one is given to avoid repeated libprefix
+		# remove libprefix if one is given to avoid repeated libprefix
 		if self.libprefix != '' and self.target[:len(self.libprefix)] == self.libprefix:
 			self.target = self.target[len(self.libprefix):]
 
