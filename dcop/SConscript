@@ -23,8 +23,8 @@ if env['WINDOWS']:
 obj.execute()
 
 # dcopserver program
-if env['WINDOWS']: 
-	# (rh) temporary hack, will be reduced to kdeinitobj
+if env['CC'] == 'cl':
+	# (js) temporary hack, will be reduced to kdeinitobj
 	obj = env.qt4obj('program',env)
 else: 
 	obj = env.kdeinitobj(env)
