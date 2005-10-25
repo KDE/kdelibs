@@ -27,7 +27,8 @@ watch.c
 """
 
 if env['WINDOWS']:
-	obj          = env.genobj('shlib', env)
+#	obj          = env.genobj('shlib', env)
+	obj          = env.genobj('staticlib', env)
 	obj.ccflags  ="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP"
 	obj.libpaths = '../../win '
 	obj.libs     = 'kdewin32 ws2_32'

@@ -15,15 +15,20 @@ obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libpaths = 'KDE-ICE'
 obj.libs     = 'kICE'
-obj.ccflags += '-DMAKE_DCOP_LIB'
-obj.cxxflags += '-DMAKE_DCOP_LIB'
+obj.ccflags += ' -DMAKE_DCOP_LIB '
+obj.cxxflags += ' -DMAKE_DCOP_LIB '
 if env['WINDOWS']:
 	obj.libpaths += ' ../win/'
 	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
 
 # dcopserver program
-obj = env.kdeinitobj(env)
+if env['WINDOWS']: 
+	# (rh) temporary hack, will be reduced to kdeinitobj
+	obj = env.qt4obj('program',env)
+else: 
+	obj = env.kdeinitobj(env)
+
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
@@ -31,9 +36,11 @@ obj.libpaths = '. KDE-ICE '
 obj.libs     = 'DCOP kICE '
 
 if env['WINDOWS']: 
+	if env['CC'] != 'cl':
+		obj.ccflags  = '-Dkdemain=main'
+
 	obj.libpaths += '../win/'
 	obj.libs     += 'kdewin32 ws2_32'
- 	obj.ccflags += '-Dkdemain=main '
 	obj.ccflags += '-DWIN32_LEAN_AND_MEAN '
  		
 obj.execute()
