@@ -16,6 +16,7 @@ def generate(env):
 			else:
 				env['CXXFLAGS_LIBART'] = SCons.Util.CLVar( 
 					os.popen('libart2-config --cflags').read().strip() );
+				env['CCFLAGS_LIBART'] = env['CXXFLAGS_LIBART']
 				env['LINKFLAGS_LIBART'] = SCons.Util.CLVar( 
 					os.popen('libart2-config --libs').read().strip() );
 		env['CACHED_LIBART'] = ret;
@@ -30,6 +31,7 @@ def generate(env):
 	opts.AddOptions(
 		('CACHED_LIBART', 'Whether libart2 is available'),
 		('CXXFLAGS_LIBART',''),
+		('CCFLAGS_LIBART',''),
 		('LINKFLAGS_LIBART',''),
 		)
 	opts.Update(env)
