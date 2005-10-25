@@ -16,9 +16,21 @@ local TODO
 		the cygsetup tool from http://sf.net/projects/kde-cygwin (see cvs repository 
 		tools/cygsetup) may be used a starting point 
 
+- check if Winsock initialisation is performed in any way 
 
 History
 -------
+2005-10-25 Ralf Habacker 
+- merged kio convenience libs directly in kio library generation 
+- added la file creating for static libs 
+
+
+2005-10-19 Ralf Habacker 
+used additional packages 
+perl    - http://downloads.activestate.com/ActivePerl/Windows/5.8/ActivePerl-5.8.7.813-MSWin32-x86-148120.zip
+openssl - http://www.slproweb.com/download/Win32OpenSSL-v0.9.8.exe
+
+
 2005-10-18 Ralf Habacker 
 - fixed dcopserver 100% cpu problem by using custom event loop
 
