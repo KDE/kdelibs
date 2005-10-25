@@ -46,10 +46,6 @@ class KSystemTimezonePrivate;
 class KSystemTimezonesPrivate;
 class KSystemTimezoneSourcePrivate;
 class KSystemTimezoneDataPrivate;
-class KTzfileTimezoneSource;
-class KTzfileTimezonePrivate;
-class KTzfileTimezoneDataPrivate;
-class KTzfileTimezoneSourcePrivate;
 
 /** @defgroup timezones Timezone classes
  *
@@ -153,14 +149,14 @@ public:
     typedef QMap<QString, KTimezone*> ZoneMap;
 
     /**
-     * Return all the time zones defined in this collection.
+     * Returns all the time zones defined in this collection.
      *
      * @return time zone collection
      */
     const ZoneMap zones() const;
 
     /**
-     * Add a time zone to the collection.
+     * Adds a time zone to the collection.
      * KTimezones takes ownership of the KTimezone instance, which will be deleted
      * when the KTimezones instance is destructed.
      * The time zone's name must be unique within the collection.
@@ -171,25 +167,25 @@ public:
     bool add(KTimezone *zone);
 
     /**
-     * Remove a time zone from the collection.
+     * Removes a time zone from the collection.
      * The caller assumes responsibility for deleting the removed KTimezone.
      *
      * @param zone time zone to remove
-     * @return the time zone which was removed, or 0 if either not found or not a deletable object
+     * @return the time zone which was removed, or 0 if not found or not a deletable object
      */
     KTimezone *detach(KTimezone *zone);
 
     /**
-     * Remove a time zone from the collection.
+     * Removes a time zone from the collection.
      * The caller assumes responsibility for deleting the removed KTimezone.
      *
      * @param name name of time zone to remove
-     * @return the time zone which was removed, or 0 either if not found or if not a deletable object
+     * @return the time zone which was removed, or 0 if not found or not a deletable object
      */
     KTimezone *detach(const QString &name);
 
     /**
-     * Return a standard UTC time zone, with name "UTC".
+     * Returns a standard UTC time zone, with name "UTC".
      *
      * @note The KTimezone returned by this method does not belong to any
      * KTimezones collection, and is statically allocated and therefore cannot
@@ -307,7 +303,7 @@ public:
     QByteArray abbreviation(const QDateTime &utcDateTime) const;
 
     /**
-     * Convert a date/time, which is interpreted as being local time in this
+     * Converts a date/time, which is interpreted as being local time in this
      * time zone, into local time in another time zone.
      *
      * @param newZone other time zone which the time is to be converted into
@@ -318,7 +314,7 @@ public:
     QDateTime convert(const KTimezone *newZone, const QDateTime &zoneDateTime) const;
 
     /**
-     * Convert a date/time, which is interpreted as local time in this time
+     * Converts a date/time, which is interpreted as local time in this time
      * zone, into UTC.
      *
      * Because of daylight savings time shifts, the date/time may occur twice. In
@@ -332,7 +328,7 @@ public:
     QDateTime toUTC(const QDateTime &zoneDateTime) const;
 
     /**
-     * Convert a UTC date/time into local time in this time zone.
+     * Converts a UTC date/time into local time in this time zone.
      *
      * @param utcDateTime UTC date/time. An error occurs if
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
@@ -357,7 +353,7 @@ public:
      * Returns the offset of this time zone to UTC at the given local date/time.
      * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
      * the offsets at both occurrences of @p dateTime are calculated.
-     * The base class implemetation always returns 0.
+     * The base class implementation always returns 0.
      *
      * @param zoneDateTime the date/time at which the offset is to be calculated. This
      *                     is interpreted as a local time in this time zone. An error
@@ -380,11 +376,11 @@ public:
     int offsetAtUTC(const QDateTime &utcDateTime) const;
 
     /**
-     * Returns the offset of this time zone to UTC at a specified UTC time measured
-     * in time_t (as returned by time(2)).
-     * The base class implemetation always returns 0.
+     * Returns the offset of this time zone to UTC at a specified UTC time.
+     * The base class implementation always returns 0.
      *
-     * @param t the UTC time at which the offset is to be calculated
+     * @param t the UTC time at which the offset is to be calculated, measured in seconds
+     *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
      * @return offset in seconds, or 0 if error
      */
     virtual int offset(time_t t) const;
@@ -401,7 +397,8 @@ public:
     /**
      * Returns whether daylight savings time is in operation at a specified UTC time.
      *
-     * @param t the UTC time in time_t units
+     * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
+     *          (as returned by time(2))
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
     virtual bool isDst(time_t t) const;
@@ -414,10 +411,10 @@ public:
     KTimezoneSource *source() const;
 
     /**
-     * Extract time zone detail information for this time zone from the source database.
+     * Extracts time zone detail information for this time zone from the source database.
      *
      * @return @c false if the parse encountered errors, @c true otherwise     */
-    virtual bool parse() const;
+    bool parse() const;
 
     /**
      * A representation for unknown locations; this is a float
@@ -427,15 +424,15 @@ public:
 
 protected:
     /**
-     * Construct a time zone.
+     * Constructs a time zone.
      *
      * @param source      reader/parser for the database containing this time zone. This will
      *                    be an instance of a class derived from KTimezoneSource.
      * @param name        in system-dependent format. The name must be unique within any
      *                    KTimezones instance which contains this KTimezone.
      * @param countryCode ISO 3166 2-character country code, empty if unknown
-     * @param latitude    in degrees, UNKNOWN if not known
-     * @param longitude   in degrees, UNKNOWN if not known
+     * @param latitude    in degrees (between -90 and +90), UNKNOWN if not known
+     * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
      * @param comment     description of the time zone, if any
      */
     KTimezone(
@@ -444,7 +441,7 @@ protected:
         const QString &comment = QString());
 
     /**
-     * Return the detailed parsed data for the time zone.
+     * Returns the detailed parsed data for the time zone.
      * This will return null unless either parse() has been called beforehand, or
      * @p create is true.
      *
@@ -480,7 +477,7 @@ public:
     virtual ~KTimezoneSource()  {};
 
     /**
-     * Extract detail information for one time zone from the source database.
+     * Extracts detail information for one time zone from the source database.
      * In this base class, the method always succeeds and returns an empty data
      * instance. Derived classes should reimplement this method to return an
      * appropriate data class derived from KTimezoneData.
@@ -512,7 +509,7 @@ public:
     virtual ~KTimezoneData();
 
     /**
-     * Create a new copy of this object.
+     * Creates a new copy of this object.
      * The caller is responsible for deleting the copy.
      * Derived classes must reimplement this method to return a copy of the
      * calling instance.
@@ -556,6 +553,15 @@ private:
  * static methods are defined to access its data, or alternatively you can access
  * the KTimezones instance directly via the timezones() method.
  *
+ * As an example, find the local time in Oman corresponding to the local system
+ * time of 12:15:00 on 13th November 1999:
+ * \code
+ * QDateTime sampleTime(QDate(1999,11,13), QTime(12,15,0), Qt::LocalTime);
+ * const KTimezone *local = KSystemTimezones::local();
+ * const KTimezone *oman  = KSystemTimezones::zone("Asia/Muscat");
+ * QDateTime omaniTime = local->convert(oman, sampleTime);
+ * \endcode
+ *
  * @see KTimezones, KSystemTimezone, KSystemTimezoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -565,7 +571,7 @@ class KDECORE_EXPORT KSystemTimezones
 {
 public:
     /**
-     * Return all the time zones defined in this collection.
+     * Returns all the time zones defined in this collection.
      *
      * @return time zone collection
      */
@@ -580,12 +586,12 @@ public:
     static const KTimezone *zone(const QString &name)   { return timezones()->zone(name); }
 
     /**
-     * Returns the current local system time zone. The idea of this routine is to provide
-     * a robust lookup of the local time zone.
+     * Returns the current local system time zone.
      *
-     * The problem is that on Unix systems, there are a variety of mechanisms for
-     * setting this information, and no well defined way of getting it. For example,
-     * if you set your time zone to "Europe/London", then the tzname[]
+     * The idea of this routine is to provide a robust lookup of the local time
+     * zone. The problem is that on Unix systems, there are a variety of mechanisms
+     * for setting this information, and no well defined way of getting it. For
+     * example, if you set your time zone to "Europe/London", then the tzname[]
      * maintained by tzset() typically returns { "GMT", "BST" }. The point of
      * this routine is to actually return "Europe/London" (or rather, the
      * corresponding KTimezone).
@@ -635,13 +641,13 @@ class KDECORE_EXPORT KSystemTimezone : public KTimezone
 public:
 
     /**
-     * Create a time zone.
+     * Creates a time zone.
      *
      * @param source      tzfile reader and parser
      * @param name        time zone's unique name
      * @param countryCode ISO 3166 2-character country code, empty if unknown
-     * @param latitude    in degrees, UNKNOWN if not known
-     * @param longitude   in degrees, UNKNOWN if not known
+     * @param latitude    in degrees (between -90 and +90), UNKNOWN if not known
+     * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
      * @param comment     description of the time zone, if any
      */
     KSystemTimezone(KSystemTimezoneSource *source, const QString &name,
@@ -650,7 +656,29 @@ public:
 
     ~KSystemTimezone();
 
+    /**
+     * Returns the offset of this time zone to UTC at the given local date/time.
+     * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
+     * the offsets at both occurrences of @p dateTime are calculated.
+     *
+     * @param zoneDateTime the date/time at which the offset is to be calculated. This
+     *                     is interpreted as a local time in this time zone. An error
+     *                     occurs if @p zoneDateTime.timeSpec() is not Qt::LocalTime.
+     * @param secondOffset if non-null, and the @p zoneDateTime occurs twice, receives the
+     *                     UTC offset for the second occurrence. Otherwise, it is set
+     *                     the same as the return value.
+     * @return offset in seconds. If @p zoneDateTime occurs twice, it is the offset at the
+     *         first occurrence which is returned.
+     */
     virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
+
+    /**
+     * Returns the offset of this time zone to UTC at a specified UTC time.
+     *
+     * @param t the UTC time at which the offset is to be calculated, measured in seconds
+     *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
+     * @return offset in seconds, or 0 if error
+     */
     virtual int offset(time_t t) const;
     virtual bool isDst(time_t t) const;
 
@@ -673,7 +701,7 @@ class KDECORE_EXPORT KSystemTimezoneSource : public KTimezoneSource
 {
 public:
     /**
-     * Construct a system time zone source.
+     * Constructs a system time zone source.
      */
     KSystemTimezoneSource();
     virtual ~KSystemTimezoneSource();
@@ -712,9 +740,9 @@ private:
 
 
 /**
- * The parsed data returned by KSystemTimezoneSource.
+ * The parsed time zone data returned by KSystemTimezoneSource.
  *
- * @see KSystemTimezoneSource
+ * @see KSystemTimezoneSource, KSystemTimezone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
@@ -731,7 +759,7 @@ public:
     KSystemTimezoneData &operator=(const KSystemTimezoneData &);
 
     /**
-     * Create a new copy of this object.
+     * Creates a new copy of this object.
      * The caller is responsible for deleting the copy.
      * Derived classes must reimplement this method to return a copy of the
      * calling instance 
@@ -740,229 +768,15 @@ public:
      */
     virtual KTimezoneData *clone();
 
+    /** Returns the list of time zone abbreviations.
+     *
+     * @return the list of abbreviations
+     */
     virtual QList<QByteArray> abbreviations() const;
     virtual QByteArray abbreviation(const QDateTime &utcDateTime) const;
 
 private:
     KSystemTimezoneDataPrivate *d;
-};
-
-
-/**
- * The KTzfileTimezone class represents a time zone defined in tzfile(5) format.
- *
- * It works in partnership with the KTzfileTimezoneSource class which reads and parses the
- * time zone definition files.
- *
- * @see KTzfileTimezoneSource
- * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
- */
-class KDECORE_EXPORT KTzfileTimezone : public KTimezone
-{
-public:
-    /** Time adjustment details */
-    struct Adjustment
-    {
-        int        utcOffset;   /**< Number of seconds to be added to UTC. */
-        bool       isDst;       /**< Whether tm_isdst should be set by localtime(3). */
-        QByteArray abbrev;      /**< Time zone abbreviation. */
-    };
-
-    /**
-     * Create a time zone.
-     *
-     * @param source      tzfile reader and parser
-     * @param name        time zone's unique name
-     * @param countryCode ISO 3166 2-character country code, empty if unknown
-     * @param latitude    in degrees, UNKNOWN if not known
-     * @param longitude   in degrees, UNKNOWN if not known
-     * @param comment     description of the time zone, if any
-     */
-    KTzfileTimezone(KTzfileTimezoneSource *source, const QString &name,
-        const QString &countryCode = QString(), float latitude = UNKNOWN, float longitude = UNKNOWN,
-        const QString &comment = QString());
-
-    ~KTzfileTimezone();
-
-    virtual int offsetAtZoneTime(const QDateTime &dateTime, int *secondOffset) const;
-    virtual int offset(time_t t) const;
-    virtual bool isDst(time_t t) const;
-
-    /**
-     * Return time adjustment details for a given date and time.
-     *
-     * @param utcDateTime UTC date/time for which details are to be returned.
-     *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
-     * @param adjustment receives the time adjustment details
-     * @return @c true if successful, @c false if error
-     */
-    bool transitionTime(const QDateTime &utcDateTime, Adjustment &adjustment);
-
-private:
-    KTzfileTimezonePrivate *d;
-};
-
-
-/**
- * A class to read and parse tzfile time zone definition files.
- *
- * tzfile is the format used by zoneinfo files in the system time zone database.
- * The format is documented in the tzfile(5) manpage.
- *
- * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
- */
-class KDECORE_EXPORT KTzfileTimezoneSource : public KTimezoneSource
-{
-public:
-    /**
-     * Construct a time zone source.
-     *
-     * @param location the local directory containing the time zone definition files
-     */
-    KTzfileTimezoneSource(const QString &location);
-    virtual ~KTzfileTimezoneSource();
-
-    /**
-     * Return the local directory containing the time zone definition files.
-     *
-     * @return path to time zone definition files
-     */
-    QString location();
-
-    /**
-     * Parse a tzfile file to extract detailed information for one time zone.
-     *
-     * @param zone the time zone for which data is to be extracted
-     * @return a KTzfileTimezoneData instance containing the parsed data.
-     *         The caller is responsible for deleting the KTimezoneData instance.
-     *         Null is returned on error.
-     */
-    virtual KTimezoneData *parse(const KTimezone *zone) const;
-
-private:
-    KTzfileTimezoneSourcePrivate *d;
-};
-
-
-/**
- * The parsed data returned by KTzfileTimezoneSource.
- *
- * @see KTzfileTimezoneSource
- * @see KTzfileTimezone
- * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
- */
-class KTzfileTimezoneData : public KTimezoneData
-{
-    friend class KTzfileTimezoneSource;
-
-public:
-    KTzfileTimezoneData();
-    KTzfileTimezoneData(const KTzfileTimezoneData &);
-    virtual ~KTzfileTimezoneData();
-
-    KTzfileTimezoneData &operator=(const KTzfileTimezoneData &);
-
-    /**
-     * Create a new copy of this object.
-     * The caller is responsible for deleting the copy.
-     * Derived classes must reimplement this method to return a copy of the
-     * calling instance 
-     *
-     * @return copy of this instance. This is a KTzfileTimezoneData pointer.
-     */
-    virtual KTimezoneData *clone();
-
-    /** Details of a change in the rules for computing local time. */
-    struct TransitionTime
-    {
-        Q_INT32 time;             /**< Time (as returned by time(2)) at which the rules for computing local time change. */
-        Q_UINT8  localTimeIndex;  /**< Index into the LocalTimeType array. */
-    };
-    /** The characteristics of a local time type. */
-    struct LocalTimeType
-    {
-        Q_INT32 gmtoff;     /**< Number of seconds to be added to UTC. */
-        bool    isdst;      /**< Whether tm_isdst should be set by localtime(3). */
-        Q_UINT8 abbrIndex;  /**< Index into the list of time zone abbreviations. */
-    };
-    /** Details of a leap second adjustment. */
-    struct LeapSecondAdjust
-    {
-        Q_INT32 time;          /**< Time (as returned by time(2)) at which the leap second occurs. */
-        Q_UINT32 leapSeconds;  /**< Total number of leap seconds to be applied after this time. */
-    };
-
-    /** The number of transition times in the array m_transitionTimes */
-    Q_UINT32 nTransitionTimes() const   { return m_nTransitionTimes; }
-    /** The number of local time types in the array m_localTimeTypes */
-    Q_UINT32 nLocalTimeTypes() const   { return m_nLocalTimeTypes; }
-    /** The number of leap seconds adjustments in the array m_leapSecondAdjusts */
-    Q_UINT32 nLeapSecondAdjustments() const   { return m_nLeapSecondAdjusts; }
-    /** The number of standard/wall indicators in the array m_isStandard */
-    Q_UINT32 nIsStandard() const   { return m_nIsStandard; }
-    /** The number of UTC/local indicators in the array m_isUTC */
-    Q_UINT32 nIsUTC() const   { return m_nIsUTC; }
-
-    const TransitionTime *transitionTime(int index) const;
-    const LocalTimeType *localTimeType(int index) const;
-    const LeapSecondAdjust *leapSecondAdjustment(int index) const;
-    bool isStandard(int index) const;
-    bool isUTC(int index) const;
-
-    /**
-     * Return the m_transitionTimes details for a given UTC time.
-     *
-     * @param t UTC time in time_t units
-     * @return pointer to details, or 0 if the time is before the start of data
-     */
-    const TransitionTime *getTransitionTime(time_t t) const;
-
-    /**
-     * Return the m_localTimeTypes details for a given UTC time.
-     *
-     * @param t UTC time in time_t units
-     * @return pointer to details, or 0 if the time is before the start of data
-     */
-    const LocalTimeType *getLocalTime(time_t t) const;
-
-    /**
-     * Return the number of leap seconds to be applied after a given UTC time.
-     *
-     * @param t UTC time in time_t units
-     * @return adjustment, or 0 if the time is before the start of data
-     */
-    Q_UINT32 getLeapSeconds(time_t t) const;
-
-    virtual QList<QByteArray> abbreviations() const;
-    virtual QByteArray abbreviation(const QDateTime &utcDateTime) const;
-
-    /**
-     * Returns the time zone abbreviation at a given index.
-     *
-     * @param index abbreviation's index, as contained in LocalTimeType's abbrIndex element
-     * @return time zone abbreviation, or empty string if invalid index
-     */
-    QByteArray abbreviation(int index) const;
-
-private:
-    Q_UINT32 m_nTransitionTimes;
-    Q_UINT32 m_nLocalTimeTypes;
-    Q_UINT32 m_nLeapSecondAdjusts;
-    Q_UINT32 m_nIsStandard;
-    Q_UINT32 m_nIsUTC;
-    TransitionTime *m_transitionTimes;
-    LocalTimeType  *m_localTimeTypes;
-    QList<QByteArray> m_abbreviations;
-    LeapSecondAdjust *m_leapSecondAdjusts;
-    bool *m_isStandard;
-    bool *m_isUTC;
-    KTzfileTimezoneDataPrivate *d;
 };
 
 #endif

@@ -19,6 +19,7 @@
 #include <QtTest/qttest_kde.h>
 #include <QDateTime>
 #include "ktimezones.h"
+#include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
 
 
@@ -121,7 +122,7 @@ void KTimezonesTest::currentOffset()
     const KTimezone *local = KSystemTimezones::local();
     VERIFY((bool)local);
     int offset = local->currentOffset(Qt::UTC);
-    QString msg = QString("Please manually verify that the current local time zone offset is %1h:%2m:%3s").arg(offset/3600).arg((offset/60)%60, 2, QChar('0')).arg(offset%3600, 2, QChar('0'));
+    QString msg = QString("Please manually verify that the current local time zone offset is %1h%2m%3s").arg(offset/3600).arg((offset/60)%60, 2, 10, QChar('0')).arg(offset%3600, 2, 10, QChar('0'));
     WARN(msg.toLatin1().data());
 }
 
@@ -136,6 +137,30 @@ void KTimezonesTest::offsetAtUTC()
     COMPARE(london->offsetAtUTC(summer), 3600);;
     COMPARE(losAngeles->offsetAtUTC(winter), -28800);
     COMPARE(losAngeles->offsetAtUTC(summer), -25200);;
+}
+
+void KTimezonesTest::offsetAtZoneTime()
+{
+    QDateTime aGmt(QDate(2005,3,27), QTime(0,30,0), Qt::LocalTime);
+    QDateTime aInvalid(QDate(2005,3,27), QTime(1,30,0), Qt::LocalTime);
+    QDateTime aBst(QDate(2005,3,27), QTime(2,30,0), Qt::LocalTime);
+    QDateTime bBst(QDate(2005,10,30), QTime(0,30,0), Qt::LocalTime);
+    QDateTime bBstBeforeGmt(QDate(2005,10,30), QTime(1,30,0), Qt::LocalTime);
+    QDateTime bGmt(QDate(2005,10,30), QTime(2,30,0), Qt::LocalTime);
+    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    int offset2;
+    COMPARE(london->offsetAtZoneTime(aGmt, &offset2), 0);
+    COMPARE(offset2, 0);
+    COMPARE(london->offsetAtZoneTime(aInvalid, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(aBst, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(bBst, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(bBstBeforeGmt, &offset2), 3600);
+    COMPARE(offset2, 0);
+    COMPARE(london->offsetAtZoneTime(bGmt, &offset2), 0);
+    COMPARE(offset2, 0);
 }
 
 void KTimezonesTest::abbreviation()
@@ -221,6 +246,32 @@ void KTimezonesTest::tzfile()
     tzcairo = new KTzfileTimezone(&tzsource, "Africa/Cairo");
     COMPARE(tzcairo->offsetAtUTC(winter), 7200);
     delete tzcairo;
+}
+
+void KTimezonesTest::tzfileOffsetAtZoneTime()
+{
+    QDateTime aGmt(QDate(2005,3,27), QTime(0,30,0), Qt::LocalTime);
+    QDateTime aInvalid(QDate(2005,3,27), QTime(1,30,0), Qt::LocalTime);
+    QDateTime aBst(QDate(2005,3,27), QTime(2,30,0), Qt::LocalTime);
+    QDateTime bBst(QDate(2005,10,30), QTime(0,30,0), Qt::LocalTime);
+    QDateTime bBstBeforeGmt(QDate(2005,10,30), QTime(1,30,0), Qt::LocalTime);
+    QDateTime bGmt(QDate(2005,10,30), QTime(2,30,0), Qt::LocalTime);
+    KTzfileTimezoneSource tzsource(KSystemTimezones::zoneinfoDir());
+    KTimezone *london = new KTzfileTimezone(&tzsource, "Europe/London");
+    int offset2;
+    COMPARE(london->offsetAtZoneTime(aGmt, &offset2), 0);
+    COMPARE(offset2, 0);
+    COMPARE(london->offsetAtZoneTime(aInvalid, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(aBst, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(bBst, &offset2), 3600);
+    COMPARE(offset2, 3600);
+    COMPARE(london->offsetAtZoneTime(bBstBeforeGmt, &offset2), 3600);
+    COMPARE(offset2, 0);
+    COMPARE(london->offsetAtZoneTime(bGmt, &offset2), 0);
+    COMPARE(offset2, 0);
+    delete london;
 }
 
 #if 0

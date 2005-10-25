@@ -33,11 +33,13 @@ private slots:
     void zoneinfoDir();
     void currentOffset();
     void offsetAtUTC();
+    void offsetAtZoneTime();
     void abbreviation();
     void toUTC();
     void toZoneTime();
     void convert();
     void tzfile();
+    void tzfileOffsetAtZoneTime();
 };
 
 #endif
