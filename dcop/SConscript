@@ -5,9 +5,13 @@ Import('env')
 
 # TODO tests directory is incomplete (ita)
 
-#env.subdirs('dcopidl2cpp dcopidlng client tests')
+env.subdirs('dcopidl2cpp dcopidlng client tests')
 
-ice_ccflags = ' -DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP ' 
+if env['WINDOWS']:
+	ice_ccflags = ' -DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP ' 
+else:
+	ice_ccflags = '-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP'
+
 ice_sources="""
 KDE-ICE/accept.c
 KDE-ICE/authutil.c
