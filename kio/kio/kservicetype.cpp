@@ -272,7 +272,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         if (parent.isEmpty())
            break;
         KServiceType::Ptr servType = KServiceTypeFactory::self()->findServiceTypeByName( parent );
-        if ( !servType || servType->isType( KST_KMimeType ) )
+        if ( !servType || !servType->isType( KST_KMimeType ) )
            break;
         mime = servType;
         if (!mime)
