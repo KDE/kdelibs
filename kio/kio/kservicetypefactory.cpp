@@ -219,9 +219,9 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
         it != list.end();
         ++it)
    {
-      KMimeType *newMimeType = dynamic_cast<KMimeType *>((*it).data());
+      KMimeType::Ptr newMimeType = *it;
       if (newMimeType)
-         result.append( KMimeType::Ptr( newMimeType ) );
+         result.append( newMimeType );
    }
    return result;
 }
@@ -234,13 +234,9 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
         it != list.end();
         ++it)
    {
-#ifndef Q_WS_QWS
-      KServiceType *newServiceType = dynamic_cast<KServiceType *>((*it).data());
-#else //FIXME
-      KServiceType *newServiceType = (KServiceType*)(*it).data();
-#endif
+      KServiceType::Ptr newServiceType = *it;
       if (newServiceType)
-         result.append( KServiceType::Ptr( newServiceType ) );
+         result.append( newServiceType );
    }
    return result;
 }

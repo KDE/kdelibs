@@ -38,6 +38,7 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <QMimeData>
 #include <qtextstream.h>
 #include <QMimeData>
 

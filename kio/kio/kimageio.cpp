@@ -200,26 +200,21 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
   QString allPatterns;
   QString wildCard("*.");
   QString separator("|");
-  for( KImageIOFormatList::ConstIterator it = formatList->begin();
-       it != formatList->end();
-       ++it )
+  foreach( const KSharedPtr<KImageIOFormat> &format, *formatList )
   {
-     KImageIOFormat *format = (*it).get();
      if (((_mode == KImageIO::Reading) && format->bRead) ||
          ((_mode == KImageIO::Writing) && format->bWrite))
      {
         QString pattern;
         QStringList suffices = format->mSuffices;
-        for( QStringList::ConstIterator it = suffices.begin();
-             it != suffices.end();
-             ++it)
+        foreach(const QString &suffix, format->mSuffices)
         {
            if (!pattern.isEmpty())
               pattern += " ";
-           pattern = pattern + wildCard+(*it);
+           pattern = pattern + wildCard + suffix;
            if (!allPatterns.isEmpty())
               allPatterns += " ";
-           allPatterns = allPatterns + wildCard +(*it);
+           allPatterns = allPatterns + wildCard + suffix;
         }
         if (!pattern.isEmpty())
         {
