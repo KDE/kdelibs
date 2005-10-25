@@ -168,7 +168,7 @@ class genobj:
 		# this value will be added at the beginning of the binary object target name 
 		# on linux e.g if the target is named \b xyaz and \b libprefix is set to \b 'lib' 
 		# the real library is named libxyz 
-		if env['WINDOWS']:
+		if env['WINDOWS'] and env['CC'] == 'cl':
 			self.libprefix=''
 		else:
 			self.libprefix='lib'
