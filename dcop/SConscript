@@ -5,43 +5,61 @@ Import('env')
 
 # TODO tests directory is incomplete (ita)
 
-env.subdirs('KDE-ICE dcopidl2cpp dcopidlng client tests')
+#env.subdirs('dcopidl2cpp dcopidlng client tests')
+
+ice_ccflags = ' -DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP ' 
+ice_sources="""
+KDE-ICE/accept.c
+KDE-ICE/authutil.c
+KDE-ICE/connect.c
+KDE-ICE/error.c
+KDE-ICE/getauth.c
+KDE-ICE/globals.c
+KDE-ICE/iceauth.c
+KDE-ICE/listen.c
+KDE-ICE/listenwk.c
+KDE-ICE/locking.c
+KDE-ICE/misc.c
+KDE-ICE/ping.c
+KDE-ICE/process.c
+KDE-ICE/protosetup.c
+KDE-ICE/register.c
+KDE-ICE/replywait.c
+KDE-ICE/setauth.c
+KDE-ICE/shutdown.c
+KDE-ICE/transport.c
+KDE-ICE/watch.c
+"""
 
 # libDCOP - library for DCOP support
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'DCOP'
-obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
+obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp' + ice_sources
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
-obj.libpaths = 'KDE-ICE'
-obj.libs     = 'kICE'
+obj.includes = 'KDE-ICE'
 obj.ccflags += ' -DMAKE_DCOP_LIB '
-obj.cxxflags += ' -DMAKE_DCOP_LIB '
+obj.ccflags += ice_ccflags
 if env['WINDOWS']:
 	obj.libpaths += ' ../win/'
 	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
 
 # dcopserver program
-if env['CC'] == 'cl':
-	# (js) temporary hack, will be reduced to kdeinitobj
-	obj = env.qt4obj('program',env)
-else: 
-	obj = env.kdeinitobj(env)
-
+obj = env.kdeinitobj(env)
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
-obj.libpaths = '. KDE-ICE '
-obj.libs     = 'DCOP kICE '
+obj.libpaths = '.'
+obj.libs     = 'DCOP'
 
 if env['WINDOWS']: 
 	if env['CC'] != 'cl':
-		obj.ccflags  = '-Dkdemain=main'
+		obj.ccflags  = ' -Dkdemain=main'
 
-	obj.libpaths += '../win/'
-	obj.libs     += 'kdewin32 ws2_32'
-	obj.ccflags += '-DWIN32_LEAN_AND_MEAN '
+	obj.libpaths += ' ../win/'
+	obj.libs     += ' kdewin32 ws2_32'
+	obj.ccflags  += ' -DWIN32_LEAN_AND_MEAN '
  		
 obj.execute()
 
