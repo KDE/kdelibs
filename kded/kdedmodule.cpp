@@ -26,23 +26,29 @@
 #include "kdedmodule.h"
 #include "kconfigdata.h"
 
+#if 0 // KDED_OBJECTS
 typedef QMap<KEntryKey, KSharedPtr<KShared> > KDEDObjectMap;
+#endif
 
 class KDEDModulePrivate
 {
 public:
+#if 0 // KDED_OBJECTS
   KDEDObjectMap *objMap;
   int timeout;
   QTimer timer;
+#endif
 };
 
 KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name)
 {
    d = new KDEDModulePrivate;
+#if 0 // KDED_OBJECTS
    d->objMap = 0;
    d->timeout = 0;
    d->timer.setSingleShot( true );
    connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
+#endif
 }
 
 KDEDModule::~KDEDModule()
@@ -51,6 +57,7 @@ KDEDModule::~KDEDModule()
    delete d; d = 0;
 }
 
+#if 0 // see header (grep keyword: KDED_OBJECTS)
 void KDEDModule::setIdleTimeout(int secs)
 {
    d->timeout = secs*1000;
@@ -63,7 +70,6 @@ void KDEDModule::resetIdle()
       d->timer.start(d->timeout);
 }
 
-#if 0 // test
 void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared *obj)
 {
    if (!d->objMap)
@@ -81,7 +87,6 @@ void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared 
    d->objMap->insert(indexKey, _obj);
    resetIdle();
 }
-#endif
 
 KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
 {
@@ -123,6 +128,7 @@ void KDEDModule::removeAll(const DCOPCString &app)
    }
    resetIdle();
 }
+#endif
 
 bool KDEDModule::isWindowRegistered(long windowId) const
 {

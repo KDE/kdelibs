@@ -24,7 +24,7 @@
 
 #include <qobject.h>
 #include <dcopobject.h>
-#include <ksharedptr.h>
+//#include <ksharedptr.h>
 #include <QByteArray>
 
 class KDEDModulePrivate;
@@ -68,6 +68,14 @@ public:
 
   virtual ~KDEDModule();
 
+#if 0 // does anyone really use this? I found no kdedmodule using it.
+     // and since KShared is deprecated, this would have to be ported to something else.
+     // For instance a KDEDObject base class (doing nothing, just an interface),
+     // and saying that the kdedmodule gets ownership; no need for kshared[ptr] here, right?
+
+     // Same for setIdleTimeout/resetIdle - no hit in lxr.kde.org
+     // Grep for KDED_OBJECTS if you re-enable the feature.
+
   /**
    * Specifies the idle timeout in seconds. The default is 0.
    *
@@ -83,6 +91,7 @@ public:
    */
   void resetIdle();
 
+
   /**
    * Insert @p obj indexed with @p app and @p key. The
    * object will be automatically deleted when the application
@@ -91,7 +100,7 @@ public:
    * Any previous object inserted with the same values for @p app
    * and @p key will be removed.
    */
-///////////////  void insert(const DCOPCString &app, const DCOPCString &key, KShared *obj);
+  void insert(const DCOPCString &app, const DCOPCString &key, KShared *obj);
 
   /**
    * Lookup object indexed with @p app and @p key
@@ -109,12 +118,14 @@ public:
    * The objects will be deleted when they are no more referenced.
    */
   void removeAll(const DCOPCString &app);
+#endif
 
   /**
    * Returns whether a certain mainwindow has registered itself with KDED
    */
   bool isWindowRegistered(long windowId) const;
 
+#if 0
 public slots:
   /**
    * Called whenever the last referenced object gets dereferenced.
@@ -123,7 +134,8 @@ public slots:
    *
    * You may delete the module from this slot.
    */
-  virtual void idle() { };
+  virtual void idle() { }
+#endif
 
 signals:
   /**

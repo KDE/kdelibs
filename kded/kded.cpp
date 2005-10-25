@@ -307,10 +307,12 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 
 void Kded::slotApplicationRemoved(const QByteArray &appId)
 {
+#if 0 // see kdedmodule.cpp (KDED_OBJECTS)
   foreach( KDEDModule* module, m_modules )
   {
      module->removeAll(appId);
   }
+#endif
 
   const QList<long> windowIds = m_windowIdList.value(appId);
   for( QList<long>::ConstIterator it = windowIds.begin();
