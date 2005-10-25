@@ -38,6 +38,7 @@ class KDECORE_EXPORT KClipboardSynchronizer : public QObject
     Q_OBJECT
 
 public:
+    /** Systray widget for manipulating the clipboard. */
     friend class KlipperWidget;
     friend class KApplication;
 
