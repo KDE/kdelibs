@@ -711,13 +711,25 @@ def generate(env):
 			vnum=env['BKSYS_VNUM']
 			nums=vnum.split('.')
 			src=source[0].name
-			name = src.split('so.')[0] + 'so'
-			strn = src+" "+name+"."+str(nums[0])+" "+name
-			dest.write("dlname='%s'\n" % (name+'.'+str(nums[0])) )
-			dest.write("library_names='%s'\n" % (strn) )
+			if env['WINDOWS']: # TODO: add support for msvc 
+				name = src.split('-')[0] + '.a'
+				dest.write("dlname='%s'\n" % (sname) )
+				dest.write("library_names='%s %s'\n" % (sname,name) )
+			else:
+				name = src.split('so.')[0] + 'so'
+				strn = src+" "+name+"."+str(nums[0])+" "+name
+				dest.write("dlname='%s'\n" % (name+'.'+str(nums[0])) )
+				dest.write("library_names='%s'\n" % (strn) )
 		else:
-			dest.write("dlname='%s'\n" % sname)
-			dest.write("library_names='%s %s %s'\n" % (sname, sname, sname) )
+			if env['WINDOWS']: # TODO: add support for msvc 
+				src=source[0].name
+				name = src.split('.')[0] + '.a'
+				dest.write("dlname='%s'\n" % sname)
+				dest.write("library_names='%s %s'\n" % (sname, name) )
+			else:
+				dest.write("dlname='%s'\n" % sname)
+				dest.write("library_names='%s %s %s'\n" % (sname, sname, sname) )
+
 		dest.write("old_library=''\ndependency_libs=''\ncurrent=0\n")
 		dest.write("age=0\nrevision=0\ninstalled=yes\nshouldnotlink=no\n")
 		dest.write("dlopen=''\ndlpreopen=''\n")
@@ -734,9 +746,6 @@ def generate(env):
 			normal=env['BKS_COLORS']['NORMAL']
 		return "%screating%s %s" % (blue, normal, target[0].path)
 
-	if env['WINDOWS']:
-		sys.path.append('bksys'+os.sep+'win32')
-		from detect_generic import build_la_file
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
