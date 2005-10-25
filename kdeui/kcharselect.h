@@ -54,16 +54,25 @@ class KDEUI_EXPORT KCharSelectTable : public QTableView
     Q_OBJECT
 
 public:
+    /**
+     * Constructor. Using @p _font, draw a table of chars from unicode
+     * table @p _tableNum. Character @p _chr in this table is highlighted.
+     */
     KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
 		      const QChar &_chr, int _tableNum );
 
     virtual QSize sizeHint() const;
     virtual void resizeEvent( QResizeEvent * );
 
+    /** Set the font (name) to be displayed to @p _font . */
     virtual void setFont( const QString &_font );
+    /** Set the highlighted character to @p _chr . */
     virtual void setChar( const QChar &_chr );
+    /** Set the table number (offset of 256 characters into
+        the font) to @p _tableNum . */
     /*virtual no more*/ void setTableNum( int _tableNum );
 
+    /** @return Currently highlighted character. */
     virtual QChar chr() { return vChr; }
 
 protected:
@@ -76,8 +85,11 @@ protected:
 
     virtual void keyPressEvent( QKeyEvent *e );
 
+    /** Current font name. @see setFont() */
     QString vFont;
+    /** Currently highlighted character. @see chr() @see setChar() */
     QChar vChr;
+    /** Current table number. @see setTable() */
     int vTableNum;
     QPoint vPos;
     QChar focusItem;
@@ -99,6 +111,7 @@ private slots:
 private:
     virtual void setFont(const QFont &f) { QTableView::setFont(f); }
 protected:
+    /** Standard hack to add virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );
 private:
     KCharSelectItemModel *m_model;
@@ -194,7 +207,6 @@ public:
     virtual void enableFontCombo( bool e ) { fontCombo->setEnabled( e ); }
 
     /**
-
      * If @p e is set to true, the spinbox which allows the user to
      * specify which characters of the font should be displayed, is
      * enabled, else disabled.
