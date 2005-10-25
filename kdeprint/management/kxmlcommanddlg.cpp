@@ -919,8 +919,8 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	connect(m_addreq, SIGNAL(clicked()), SLOT(slotAddReq()));
 	connect(m_removereq, SIGNAL(clicked()), SLOT(slotRemoveReq()));
 
-	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (Q3ValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	const KMimeType::List	list = KMimeType::allMimeTypes();
+	for (KMimeType::List::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString	mimetype = (*it)->name();
 		m_mimelist << mimetype;

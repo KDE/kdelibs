@@ -70,8 +70,8 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);
 
 	m_mimetype = new QComboBox(m_outfile_gb);
-	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (Q3ValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	const KMimeType::List	list = KMimeType::allMimeTypes();
+	for (KMimeType::List::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString	mimetype = (*it)->name();
 		m_mimelist << mimetype;
