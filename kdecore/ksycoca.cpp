@@ -211,6 +211,11 @@ KSycoca::~KSycoca()
    _self = 0L;
 }
 
+bool KSycoca::isAvailable()
+{
+   return !self()->bNoDatabase;
+}
+
 void KSycoca::closeDatabase()
 {
    QIODevice *device = 0;

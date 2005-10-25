@@ -19,6 +19,7 @@
 #include "kmimetypetest.h"
 #include "kmimetypetest.moc"
 #include <kmimetype.h>
+#include <ksycoca.h>
 #include <QtTest/qttest_kde.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -33,9 +34,11 @@ QTTEST_KDEMAIN( KMimeTypeTest, NoGUI )
 
 void KMimeTypeTest::testIcons()
 {
+    if ( !KSycoca::isAvailable() )
+        SKIP( "ksycoca not available", SkipSingle );
+
     // Obviously those tests will need to be fixed if we ever change the name of the icons
     // but at least they unit-test KMimeType::iconNameForURL.
-
     checkIcon( "file:/tmp/", "folder" );
     checkIcon( "file:/root/", "folder_locked" );
 }

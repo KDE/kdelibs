@@ -67,7 +67,17 @@ public:
 
    virtual ~KSycoca();
 
+   /**
+    * @return the compiled-in version, i.e. the one used when writing a new ksycoca
+    */
    static int version();
+
+   /**
+    * @return true if the ksycoca database is available
+    * This is usually the case, except if KDE isn't installed yet,
+    * or before kded is started.
+    */
+   static bool isAvailable();
 
    /**
     * @internal - called by factories in read-only mode
@@ -158,27 +168,31 @@ k_dcop:
 
 signals:
    /**
-        * Connect to this to get notified when the database changes
-        * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
-        */
+    * Connect to this to get notified when the database changes
+    * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
+    */
    void databaseChanged();
 
-protected:
+protected: // used by KBuildSycoca
+   KSycocaFactoryList *m_lstFactories;
+   QDataStream *m_str;
+
+private:
    bool checkVersion(bool abortOnError=true);
    bool openDatabase(bool openDummyIfNotFound=true);
    void closeDatabase();
-   KSycocaFactoryList *m_lstFactories;
-   QDataStream *m_str;
    bool bNoDatabase;
    size_t m_sycoca_size;
    const char *m_sycoca_mmap;
    quint32 m_timeStamp;
 
 public:
-   static KSycoca *_self; // Internal use only.
+   /// @internal use only
+   static KSycoca *_self;
 
 protected:
-  virtual void virtual_hook( int id, void* data );
+   virtual void virtual_hook( int id, void* data );
+
 private:
    class Private;
    Private *const d;
