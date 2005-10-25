@@ -131,6 +131,12 @@ def detect(env):
 
 	########## QT
 	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+
+	# taken from qt4 qmake generated example 
+
+	env['CXXFLAGS_QT']         = '-DQT_EDITION=QT_EDITION_DESKTOP -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_DLL'.split()
+	if not env['ARGS'].get('debug', None):
+		env['CXXFLAGS_QT']       = ['-DQT_NO_DEBUG']
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
 	env['LIB_QT']              = ['QtGui'+lib_addon]+env['LIB_Z']
@@ -142,6 +148,7 @@ def detect(env):
 	env['LIB_QT3SUPPORT']      = ['Qt3Support'+lib_addon]
 	env['RPATH_QT3SUPPORT']    = env['RPATH_QT']
 	
+	env['CXXFLAGS_QTCORE']     = ['-DQT_CORE_LIB']
 	env['CPPPATH_QTCORE']      = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
 	env['LIB_QTCORE']          = ['QtCore'+lib_addon]
 	env['RPATH_QTCORE']        = env['RPATH_QT']
