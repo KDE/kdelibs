@@ -24,9 +24,8 @@ obj.includes = '../kio #/kio'
 obj.ccflags  = '-DXYZ=a'
 obj.cxxflags  = '-DXYZ=a'
 obj.linkflags = ''
-obj.libprefix = ''
-obj.instdir
-obj.perms
+obj.instdir   = ''
+obj.perms     = ''
 obj.execute()
 \endcode
 
@@ -192,10 +191,14 @@ obj.uselib   = 'QTCORE QT3SUPPORT KDE4 xml'
 \endcode
 BKSYS contains support for adding compiler and linker related flags depending of predefined \ref library_module. 
 
-
+<li>
+\code
+obj.perms     = ''
+\endcode
+This attribute sets the file permission for the installed target. Permissions are platform specific and should 
+be limited to the related platform. 
 
 </ul>
-
 
 
 */
