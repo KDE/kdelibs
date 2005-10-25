@@ -483,13 +483,11 @@ public:
   void pasteRequest();
 
 // KDE invents support for public signals...
-// Would be nicer if we did a public_signals macro, in fact.
 #ifndef Q_MOC_RUN
 #undef signals
 #define signals public
 #endif
 signals:
-//public signals: // TODO
 #ifndef Q_MOC_RUN
 #undef signals
 #define signals protected
