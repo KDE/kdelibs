@@ -22,12 +22,83 @@
 	still add it :)
  Holger: Now we add a Template to create the TypeList
 */
+
+/**
+ * @file ktypelist.h
+ *
+ * This file defines typelist structures as well as convenience macros
+ * to create typelists. Additionally, a few typelist compile-time
+ * algorithms are provided.
+ */
+
+/**
+ * @defgroup ktypelist Typelist classes, algorithms and macros
+ *
+ * Typelists are lists of C++ types of arbitrary length. They are used
+ * to carry type information at compile-time.
+ *
+ * Internally, typelists are represented by the KTypeList template
+ * class. The KTypeList class uses the recursive structure of
+ * singly-linked lists which is common in functional programming
+ * languages:
+ *
+ * - an empty list is of type KDE::NullType (the terminal marker)
+ * - a one-element list with element @c T is of type
+ *   KTypeList\<T, KDE::NullType\>.
+ * - a two-element list with elements @c T and @c U is of type
+ *   KTypeList\<T, KTypeList\<U, KDE::NullType\> \>.
+ * - an N-Element list with the first element @c T and the remaining
+ *   elements @c Rest is of type KTypeList\<T, Rest\>.
+ *
+ * Note that the last element of a typelist is always KDE::NullType.
+ * Also note that this is only a convention, it is not enforced by
+ * anything. But if these rules are broken, the compile-time algorithms
+ * defined for typelists don't work.
+ *
+ * To ease the definition of typelists, there are some macros which
+ * expand to nested KTypeList definitions. These macros have the form
+ *
+ * @code
+ *   K_TYPELIST_N(T1, T2, ..., TN)
+ * @endcode
+ *
+ * where @c N is the number of types in the list (e.g. K_TYPELIST_3())
+ *
+ * In addition to that, and also as the preferred way, there is the
+ * KMakeTypeList template which takes an arbitrary number of type
+ * arguments (up to 18) and exports a nested typedef called @c Result
+ * which equals a KTypeList with the list of provided arguments.
+ *
+ * To work with typelists, several compile-time algorithms are provided:
+ *
+ * - KTypeListLength: determine the number of elements in a typelist
+ * - KTypeListIndexOf: find a given type in a typelist
+ *
+ * For a detailed discussion about typelists, see the book "Modern C++
+ * Design: Generic Programming and Design Patterns Applied" by Andrei
+ * Alexandrescu, and/or the Loki Library at
+ * <a href="http://sourceforge.net/projects/loki-lib/">http://sourceforge.net/projects/loki-lib/</a>
+ */
+
 #ifndef ktypelist_h
 #define ktypelist_h
 
-// Convenience macros for transforming flat type enumerations into the
-// recursive typelist structure
-
+/**
+ * @name Typelist macros
+ *
+ * Convenience macros for transforming flat type enumerations into the
+ * recursive typelist structure. For a typelist with @c N items, the
+ * @c K_TYPELIST_N macro is used. For example:
+ *
+ * @code
+ *  typedef K_TYPELIST_4(char, short, int, long) IntegralTypes;
+ * @endcode
+ *
+ * However, the preferred way is to use the KMakeTypeList template.
+ *
+ * @ingroup ktypelist
+ */
+//@{
 #define K_TYPELIST_1(T1) KTypeList<T1, ::KDE::NullType>
 
 #define K_TYPELIST_2(T1, T2) KTypeList<T1, K_TYPELIST_1(T2) >
@@ -345,29 +416,71 @@
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48, T49, T50) >
+//@}
 
 namespace KDE
 {
+    /**
+     * @class KDE::NullType
+     *
+     * This empty class serves as a terminal marker for typelists.
+     * The last element in a KTypeList is always this class.
+     *
+     * @ingroup ktypelist
+     */
     class NullType;
 }
 
 /**
  * The building block of typelists of any length.
- * Use it through the K_TYPELIST_NN macros.
- * Defines nested types:
- *   @li Head (first element, a non-typelist type by convention)
- *   @li Tail (second element, can be another typelist)
+ * Rather than using it directly, you should use it through the
+ * KMakeTypeList template class or one of the K_TYPELIST_NN macros,
+ * such as K_TYPELIST_3().
+ *
+ * This struct defines two nested types:
+ *   @li Head (first element, a non-typelist type by convention),
+ *       is the same as the type parameter @p T.
+ *   @li Tail (second element, must be either another typelist
+ *       or KDE::NullType), is the same as the type parameter @p U.
+ *
+ * @param T the head of the type list
+ * @param U the tail of the type list
+ *
+ * @ingroup ktypelist
  */
 template <class T, class U>
 struct KTypeList
 {
   /// first element, a non-typelist type by convention
    typedef T Head;
-  /// second element, can be another typelist
+  /// second element, must be either another typelist or KDE::NullType
    typedef U Tail;
 };
 
 // forward decl.
+/**
+ * @class KTypeListLength
+ *
+ * This class template implements a compile-time algorithm
+ * for processing typelists. It expects one type argument:
+ * @p TList.
+ *
+ * KTypeListLength determines the number of elements (the
+ * length) of the typelist @p TList and exports it through
+ * the member @c Value. The length of KDE::NullType is 0.
+ * Example:
+ *
+ * @code
+ *   typedef KMakeTypeList<char, short, int, long>::Result IntegralTypes;
+ *   assert(KTypeListLength<IntegralTypes>::Value == 4);
+ *   assert(KTypeListLength<KDE::NullType>::Value == 0);
+ * @endcode
+ *
+ * @param TList the typelist of which the length is to be
+ *        calculated
+ *
+ * @ingroup ktypelist
+ */
 template <class TList> struct KTypeListLength;
 
 template <>
@@ -379,16 +492,12 @@ struct KTypeListLength<KDE::NullType>
     enum { Value = 0 };
 };
 
-/**
- * A class template for determining the length of a typelist. To be
- * used like KTypeListLength< typelist >::Value;
- */
 template <class T, class U>
 struct KTypeListLength< KTypeList<T, U> >
 {
-  /**
-   * The length of the type list.
-   */
+    /**
+     * The length of the type list.
+     */
     enum { Value = 1 + KTypeListLength<U>::Value };
 };
 
@@ -400,6 +509,28 @@ struct KTypeListLength< KTypeList<T, U> >
 // returns the position of T in TList, or NullType if T is not found in TList
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @class KTypeListIndexOf
+ *
+ * This class template implements a compile-time algorithm
+ * for processing typelists. It expects two type arguments:
+ * @p TList and @p T.
+ *
+ * KTypeListIndexOf finds the index of @p T in @p TList
+ * starting at 0 and exports it through the @c value member.
+ * If @p T is not found, @c value is -1. Example:
+ *
+ * @code
+ *   typedef KMakeTypeList<char, short, int, long>::Result IntegralTypes;
+ *   assert(KTypeListIndexOf<IntegralTypes, int>::value == 3);
+ *   assert(KTypeListIndexOf<IntegralTypes, double>::value == -1);
+ * @endcode
+ *
+ * @param TList either a KTypeList or KDE::NullType
+ * @param T the type to search for in the typelist
+ *
+ * @ingroup ktypelist
+ */
 template <class TList, class T> struct KTypeListIndexOf;
 
 template <class T>
@@ -426,17 +557,22 @@ public:
 
 
 /**
- * KMakeTypeList the prefered way to create a typelist for you.
- * 
+ * This class template implements a compile-time algorithm
+ * for generating typelists.
+ *
+ * KMakeTypeList the preferred way to create a typelist for you.
+ * You can specify up to 18 types for the typelist. This template
+ * class calculates the desired typelist and stores it in the
+ * nested @c Result typedef. Example:
+ *
  * \code
  * typedef KMakeTypeList<MyType1,MyWidget,MyQobject,MyKoffice>::Result Products;
- * K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; )
- *
+ * K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory<Products> )
  * \endcode 
- *
  *
  * @author Holger Freyther based on the Loki library. See copyright statement at the top
  * @since 3.3
+ * @ingroup ktypelist
  */
 template<
     typename T1  = KDE::NullType, typename T2  = KDE::NullType, typename T3  = KDE::NullType,
@@ -459,6 +595,10 @@ typedef typename KMakeTypeList
 >::Result TailResult;
 
 public:
+    /**
+     * The resulting KTypeList calculated by this compile-time
+     * algorithm.
+     */
     typedef KTypeList<T1, TailResult> Result;
 };
 
