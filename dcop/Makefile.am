@@ -67,5 +67,5 @@ testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 EXTRA_DIST = HOWTO ICE Mainpage.dox
 
 DOXYGEN_REFERENCES = kdecore
-DOXYGEN_EXCLUDE = KDE-ICE
+DOXYGEN_EXCLUDE = KDE-ICE testdcop.h testdcop.cpp
 include ../admin/Doxyfile.am

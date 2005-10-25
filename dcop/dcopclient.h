@@ -108,10 +108,10 @@ class DCOP_EXPORT DCOPClient : public QObject
   bool attach();
 
   /**
-   * @internal
    * Internal function for KUniqueApplication to register the DCOPClient
    * with the application in case the application didn't exist at the
    * time the DCOPClient was created.
+   * @internal
    */
   void bindToApp();
 
@@ -398,7 +398,10 @@ class DCOP_EXPORT DCOPClient : public QObject
   void emitDCOPSignal( const DCOPCString &object, const DCOPCString &signal,
                        const QByteArray &data);
 
-  /* For backwards compatibility */
+  /** 
+   * For backwards compatibility, like emitDCOPSignal( const DCOPCString&, 
+   * const DCOPCString &, const QByteArray &) with an anonymous object.
+   */
   void emitDCOPSignal( const DCOPCString &signal, const QByteArray &data);
 
   /**
@@ -557,7 +560,6 @@ class DCOP_EXPORT DCOPClient : public QObject
   DCOPCStringList remoteFunctions( const DCOPCString& remApp, const DCOPCString& remObj , bool *ok = 0 );
 
   /**
-   * @internal
    * Receives a DCOPSend or DCOPCall message from the server.
    *
    * @param app The application the message was intended for.  Should be
@@ -569,13 +571,13 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param replyType write the reply type in this string
    * @param replyData write the reply data in this array
    * @return true if successful, false otherwise
+   * @internal
    */
   bool receive(const DCOPCString &app, const DCOPCString &obj,
 	       const DCOPCString &fun, const QByteArray& data,
 	       DCOPCString& replyType, QByteArray &replyData);
 
   /**
-   * @internal
    * Receives a @p DCOPFind message from the server.
    *
    * @param app The application the message was intended for.  Should be
@@ -586,6 +588,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param data The arguments for the function.
    * @param replyType write the reply type in this string
    * @param replyData write the reply data in this array
+   * @internal
    */
   bool find(const DCOPCString &app, const DCOPCString &obj,
 	    const DCOPCString &fun, const QByteArray& data,
@@ -662,9 +665,8 @@ class DCOP_EXPORT DCOPClient : public QObject
   void setDaemonMode( bool daemonMode );
 
   /**
-   * @internal
-   *
    * Switch to priority call mode.
+   * @internal
    */
   void setPriorityCall(bool);
 
@@ -694,19 +696,19 @@ class DCOP_EXPORT DCOPClient : public QObject
   static DCOPClient* findLocalClient( const DCOPCString &_appId );
 
   /**
+    * Danger will Robinson!
     * @internal Do not use.
     */
   static void emergencyClose();
 
   /**
-    * @internal Do not use.
-    *
     * Provides information about the last DCOP call for debugging purposes.
+    * @internal Do not use.
     */
   static const char *postMortemSender();
-  /** @internal */
+  /** Information about last DCOP call. @internal */
   static const char *postMortemObject();
-  /** @internal */
+  /** Information about last DCOP call. @internal */
   static const char *postMortemFunction();
 
   /**
@@ -780,13 +782,12 @@ signals:
   void blockUserInput( bool block );
 
   /**
-   * @internal
-   *
    * Signal used for callbacks of async calls.
    * This signal is automatically connected to the call back
    * slot specified in the async call.
    * @see callAsync()
    * @since 3.2
+   * @internal
    */
   void callBack(int, const DCOPCString&, const QByteArray &);
 
@@ -808,6 +809,7 @@ public:
   class ReplyStruct;
 
   /**
+   * Process an async reply in @p replyStruct.
    * @internal
    **/
   void handleAsyncReply(ReplyStruct *replyStruct);
@@ -830,6 +832,7 @@ private:
             bool useEventLoop, int timeout, int minor_opcode);
 
 protected:
+  /** Standard hack for adding virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
   DCOPClientPrivate *d;

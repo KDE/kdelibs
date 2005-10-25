@@ -282,8 +282,9 @@ public:
   DCOPClient *callingDcopClient();
 
   /**
-   * @internal Sets DCOPClient returned by callingDcopClient()
+   * Sets DCOPClient returned by callingDcopClient()
    * @since 3.1
+   * @internal
    */
   void setCallingDcopClient(DCOPClient *);
 
@@ -331,6 +332,7 @@ private:
   DCOPCString ident;
 
 protected:
+  /** Standard hack for adding virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
   class DCOPObjectPrivate;
@@ -398,6 +400,7 @@ private:
     friend class DCOPClient;
     static QList<DCOPObjectProxy*>* proxies;
 protected:
+    /** Standard hack for adding virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );
 private:
     DCOPObjectProxyPrivate* d;

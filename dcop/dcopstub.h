@@ -76,6 +76,7 @@ public:
      */
     DCOPCString obj() const;
 
+    /** Status enum. @see status() */
     enum Status{ CallSucceeded, CallFailed };
     /**
      * Return the status of the last call, either @p CallSucceeded or
@@ -118,17 +119,17 @@ protected:
     DCOPClient* dcopClient();
 
     /**
-     * @internal
      * Never use. Used only for default ctors of inherited stubs,
      * because of the way ctors of virtual base classes work.
      * Otherwise dcopidl2cpp would have to call ctors of all, even
      * indirect, bases.
      * @since 3.1
+     * @internal
      */
     enum never_use_t { never_use };
     /**
-     * @internal
      * @since 3.1
+     * @internal
      */
     DCOPStub( never_use_t ) { abort(); }
     
@@ -138,6 +139,7 @@ private:
     Status m_status;
 
 protected:
+    /** Standard hack for adding virtuals later. @internal */
     virtual	void virtual_hook( int id, void* data );
 private:
     DCOPStubPrivate *d;
