@@ -25,6 +25,10 @@ See related pages for available topics or the top menu for doxygen generated inf
 Please note that doxygen 1.4.4 has a python parsing problem (or I have misunderstand the 
 doxygen rules), which results in wrong class descriptions. 
 
+\section Links
+
+<a href="http://www.scons.org/doc/HTML/scons-user/book1.html">Scons manual</a>
+
 
 \section Authors
 
