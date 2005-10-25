@@ -36,11 +36,6 @@ void KMimeTypeTest::testIcons()
     // Obviously those tests will need to be fixed if we ever change the name of the icons
     // but at least they unit-test KMimeType::iconNameForURL.
 
-    // TODO test data-driven testing :)
-
     checkIcon( "file:/tmp/", "folder" );
     checkIcon( "file:/root/", "folder_locked" );
-    checkIcon( "trash:/", "trashcan_full" ); // #100321
-    checkIcon( "trash:/foo/", "folder" );
-
 }
