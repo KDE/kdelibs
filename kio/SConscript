@@ -1,29 +1,258 @@
 #! /usr/bin/env python
 
+# TODO: import headers and additional target
+
 Import('env')
 
-env.subdirs('kssl kio bookmarks kfile kpasswdserver')
+env.subdirs('kpasswdserver tests') 
+
+kiocore_sources = """
+kio/authinfo.cpp
+kio/kprotocolmanager.cpp
+kio/slave.cpp 
+kio/slaveinterface.cpp
+kio/sessiondata.cpp 
+kio/scheduler.cpp
+kio/connection.cpp
+kio/job.cpp 
+kio/global.cpp
+kio/slaveconfig.cpp 
+kio/kurlpixmapprovider.cpp
+kio/netaccess.cpp 
+kio/paste.cpp 
+kio/pastedialog.cpp
+kio/kmimemagic.cpp
+kio/tcpslavebase.cpp 
+kio/slavebase.cpp 
+kio/passdlg.cpp
+kio/forwardingslavebase.cpp
+kio/progressbase.cpp 
+kio/defaultprogress.cpp
+kio/statusbarprogress.cpp
+kio/kdirnotify.cpp 
+kio/kdirnotify.skel 
+kio/kdirnotify_stub.cpp
+misc/uiserver.stub 
+kio/observer.cpp 
+kio/observer.skel 
+kio/observer.stub
+kio/kemailsettings.cpp
+kio/kprotocolinfo.cpp
+kio/renamedlg.cpp 
+kio/skipdlg.cpp 
+kio/kremoteencoding.cpp
+kio/kmimetypechooser.cpp
+"""
+
+
+env.Depends('kio/observer.cpp', 'kio/observer_stub.cpp')
+env.Depends('kio/observer.cpp', 'misc/uiserver_stub.cpp')
+env.Depends('misc/uiserver_stub.cpp', 'misc/uiserver_stub.h')
+env.Depends('kio/observer_stub.cpp', 'kio/observer_stub.h')
+
+env.Moc('kio/jobclasses.h')
+env.Moc('kio/kdirlister_p.h')
+env.Moc('kio/kdirwatch_p.h')
+env.Moc('kio/kmimetyperesolver.h')
+env.Moc('kio/kservice_p.h')
+
+# TODO: kio/kacl.cpp is bound to USE_POSIX_ACL
+
+ksycoca_sources = """
+kio/kdirwatch.cpp 
+kio/kacl.cpp
+kio/kfileshare.cpp 
+kio/ksambashare.cpp 
+kio/knfsshare.cpp
+kio/ktrader.cpp 
+kio/ktraderparse.cpp 
+kio/ktraderparsetree.cpp
+kio/kservicetypefactory.cpp 
+kio/kservicetype.cpp
+kio/kmimetype.cpp 
+kio/kservicegroup.cpp
+kio/kservice.cpp 
+kio/kservicefactory.cpp
+kio/kuserprofile.cpp 
+kio/kservicegroupfactory.cpp
+kio/kurifilter.cpp
+kio/kfilterbase.cpp 
+kio/kfilterdev.cpp
+kio/kshellcompletion.cpp 
+kio/kurlcompletion.cpp
+kio/krun.cpp
+kio/kfileitem.cpp 
+kio/kdirlister.cpp 
+kio/kimageio.cpp
+kio/yacc.c 
+kio/lex.c
+kio/chmodjob.cpp 
+kio/kscan.cpp 
+kio/kar.cpp 
+kio/ktar.cpp 
+kio/kzip.cpp 
+kio/previewjob.cpp 
+kio/metainfojob.cpp 
+kio/davjob.cpp
+kio/kdatatool.cpp 
+kio/karchive.cpp 
+kio/kfilefilter.cpp
+kio/kfilemetainfo.cpp 
+kio/kdcopservicestarter.cpp
+kio/dataslave.cpp 
+kio/dataprotocol.cpp
+"""
+
+if not env['WINDOWS']:
+	ksycoca_sources += """
+kio/kautomount.cpp 
+"""
+
+kssl_sources = """
+kssl/kssl.cc
+kssl/ksslcertificatehome.cc
+kssl/ksslsettings.cc
+kssl/ksslcertificate.cc
+kssl/ksslconnectioninfo.cc
+kssl/ksslcertificatefactory.cc
+kssl/ksslcertificatecache.cc
+kssl/ksslpeerinfo.cc
+kssl/ksslinfodlg.cc
+kssl/ksslcertdlg.cc
+kssl/ksslutils.cc
+kssl/kopenssl.cc
+kssl/ksslpkcs12.cc
+kssl/ksslcertchain.cc
+kssl/ksslkeygen.cc
+kssl/ksslx509v3.cc
+kssl/ksslsigners.cc
+kssl/ksslpkcs7.cc
+kssl/ksslpemcallback.cc
+kssl/ksslx509map.cc
+kssl/ksslsession.cc
+kssl/keygenwizard.ui3
+kssl/keygenwizard2.ui3
+kssl/ksmimecrypto.cc
+kssl/ksslcsessioncache.cc
+"""
+
+kfile_sources = """
+kfile/kfilefiltercombo.cpp 
+kfile/kfileview.cpp 
+kfile/kfileiconview.cpp
+kfile/krecentdocument.cpp 
+kfile/kfiledialog.cpp 
+kfile/kdiroperator.cpp
+kfile/kfiledetailview.cpp 
+kfile/kcombiview.cpp 
+kfile/kurlrequester.cpp
+kfile/kfilepreview.cpp 
+kfile/kurlcombobox.cpp 
+kfile/kurlrequesterdlg.cpp
+kfile/kopenwith.cpp 
+kfile/kicondialog.cpp 
+kfile/kdirsize.cpp
+kfile/krecentdirs.cpp 
+kfile/kdiskfreesp.cpp 
+kfile/kimagefilepreview.cpp 
+kfile/kfilesharedlg.cpp
+kfile/kurlbar.cpp 
+kfile/kmetaprops.cpp 
+kfile/kpreviewprops.cpp
+kfile/kfiletreeview.cpp 
+kfile/kfiletreeviewitem.cpp 
+kfile/kfiletreebranch.cpp
+kfile/kdirselectdialog.cpp 
+kfile/kfilebookmarkhandler.cpp
+kfile/kfilemetainfowidget.cpp 
+kfile/kcustommenueditor.cpp 
+kfile/knotifydialog.cpp
+kfile/knotifywidgetbase.ui3 
+kfile/kfilespeedbar.cpp 
+kfile/kpreviewwidgetbase.cpp
+kfile/kfilemetapreview.cpp 
+kfile/kpropertiesdesktopbase.ui3
+kfile/kpropertiesdesktopadvbase.ui3 
+kfile/kpropertiesmimetypebase.ui3
+kfile/kencodingfiledialog.cpp
+kfile/kpropertiesdialog.cpp 
+"""
+
+env.Moc('kfile/kopenwith_p.h')
+
+bookmarks_sources = """
+bookmarks/kbookmark.cc 
+bookmarks/kbookmarkbar.cc 
+bookmarks/kbookmarkimporter.cc 
+bookmarks/kbookmarkmanager.cc 
+bookmarks/kbookmarkmenu.cc 
+bookmarks/kbookmarkimporter_crash.cc 
+bookmarks/kbookmarkimporter_opera.cc 
+bookmarks/kbookmarkimporter_ie.cc 
+bookmarks/kbookmarkimporter_ns.cc 
+bookmarks/kbookmarkimporter_kde1.cc 
+bookmarks/kbookmarkdombuilder.cc 
+bookmarks/kbookmarkmanager.skel 
+bookmarks/kbookmarknotifier.skel
+"""
+
+# not used currently 
+bookmarks_inst_headers = """
+bookmarks/kbookmark.h 
+bookmarks/kbookmarkbar.h 
+bookmarks/kbookmarkexporter.h 
+bookmarks/kbookmarkimporter.h 
+bookmarks/kbookmarkmanager.h 
+bookmarks/kbookmarkmenu.h 
+bookmarks/kbookmarknotifier.h 
+bookmarks/kbookmarkimporter_crash.h 
+bookmarks/kbookmarkimporter_opera.h 
+bookmarks/kbookmarkimporter_ie.h 
+bookmarks/kbookmarkimporter_ns.h 
+bookmarks/kbookmarkimporter_kde1.h 
+bookmarks/kbookmarkdombuilder.h 
+"""
+
+env.Moc("bookmarks/kbookmarkmenu_p.h")
 
 obj = env.kdeobj('shlib', env)
-obj.target   = 'libkio'
+obj.target   = 'kio'
 obj.vnum     = '6.0.2'
-obj.source   = "dummy.cpp"
-obj.iskdelib = 1
-obj.linkflags = '-Wl,--whole-archive build/kio/kssl/libkssl.a build/kio/kio/libkiocore.a build/kio/kio/libksycoca.a build/kio/bookmarks/libkbookmarks.a build/kio/kfile/libkfile.a -Wl,--no-whole-archive'
-obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
-obj.libpaths = '../kdecore ../dcop'
-obj.libs     = '../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la kdecore DCOP'
-#$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+obj.source   = kiocore_sources + ksycoca_sources + kssl_sources + kfile_sources + bookmarks_sources
+obj.includes = '. .. kio kssl ../interfaces kfile bookmarks misc ../kdecore/network '
+# kssl 
+obj.includes += ' ../kwallet/client'
+#kfile
+obj.includes += ' ../kdefx ../libltdl '
 
-env.CreateFile('dummy.cpp', Value(''))
+obj.iskdelib = 1
+# kiocore 
+obj.uselib = "Z FAM VOLMGT"
+
+obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop'
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32'
+	# TODO: (rh) remove when openssl detection under win32 runs 
+	obj.includes += ' c:/openssl/include'
+	if env['CC'] == 'gcc': 
+		obj.libpaths += ' c:/openssl/lib/mingw'
+		obj.libs += ' eay32'
+
+else:
+	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP'
+obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
+
+#$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 obj.execute()
 # For now ;(
-env.Depends('libkio.so.6.0.2', 'kio/libkiocore.a')
-env.Depends('libkio.so.6.0.2', 'kio/libksycoca.a')
-env.Depends('libkio.so.6.0.2', 'bookmarks/libkbookmarks.a')
-env.Depends('libkio.so.6.0.2', 'kfile/libkfile.a')
-env.Depends('libkio.so.6.0.2', 'kssl/libkssl.a')
+if not env['WINDOWS']:
+	env.Depends('libkio.so.6.0.2', 'kio/libkiocore.a')
+	env.Depends('libkio.so.6.0.2', 'kio/libksycoca.a')
+	env.Depends('libkio.so.6.0.2', 'bookmarks/libkbookmarks.a')
+	env.Depends('libkio.so.6.0.2', 'kfile/libkfile.a')
+	env.Depends('libkio.so.6.0.2', 'kssl/libkssl.a')
 
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]
@@ -33,3 +262,8 @@ env.bksys_insttype('KDESERV','', 'data.protocol')
 env.bksys_insttype('KDESERV','kded', 'kpasswdserver.desktop')
 env.bksys_insttype('KDEAPPS','kconf_update', [ 'kioslave.upd', 'proxytype.pl', 'useragent.pl' ])
 env.bksys_insttype('KDEMIME','','magic')
+
+env.bksys_insttype('KDECONF', '', 'kssl/kssl/ksslcalist')
+env.bksys_insttype('KDEAPPS', 'kssl', 'kssl/kssl/caroot/ca-bundle.crt')
+
+env.bksys_insttype('KDESERVTYPES','', 'kfile/kpropsdlgplugin.desktop')
