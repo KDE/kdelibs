@@ -26,7 +26,9 @@
 #include <qcstring.h>
 #include "kbufferedio.h"
 
-/*
+/**
+ * @section impldetails Implementation Details
+ *
  * The KBufferedIO class has two purposes: first, it defines an API on how
  * that classes providing buffered I/O should provide. Next, it implements on
  * top of that API a generic buffering, that should suffice for most cases.

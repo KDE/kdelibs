@@ -207,17 +207,18 @@ signals:
 protected:
   /**
    * For an explanation on how this buffer work, please refer to the comments
-   * at the top of kbufferedio.cpp
+   * at the top of kbufferedio.cpp, @ref impldetails .
    */
   QPtrList<QByteArray> inBuf;
 
   /**
    * For an explanation on how this buffer work, please refer to the comments
-   * at the top of kbufferedio.cpp
+   * at the top of kbufferedio.cpp, @ref impldetails .
    */
   QPtrList<QByteArray> outBuf;
 
-  unsigned inBufIndex, outBufIndex;
+  unsigned inBufIndex /** Offset into first input buffer. */, 
+    outBufIndex /** Offset into first output buffer. */ ;
 
   /**
    * Consumes data from the input buffer.
