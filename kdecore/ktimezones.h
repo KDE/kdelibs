@@ -51,7 +51,7 @@ class KTzfileTimezonePrivate;
 class KTzfileTimezoneDataPrivate;
 class KTzfileTimezoneSourcePrivate;
 
-/** @defgroup timezones
+/** @defgroup timezones Timezone classes
  *
  * The time zone classes provide a framework for accessing time zone data, and
  * converting times and dates between different time zones. They provide access
