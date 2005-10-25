@@ -642,7 +642,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
     if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
-        m_height = floatBottom() + toAdd;
+        m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
     calcHeight();
@@ -661,7 +661,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // blocks that have overflowed content.
         // Check for an overhanging float first.
         // FIXME: This needs to look at the last flow, not the last child.
-        if (lastChild() && lastChild()->hasOverhangingFloats()) {
+        if (lastChild() && lastChild()->hasOverhangingFloats() && !lastChild()->style()->hidesOverflow()) {
             KHTMLAssert(lastChild()->isRenderBlock());
             m_height = lastChild()->yPos() + static_cast<RenderBlock*>(lastChild())->floatBottom();
             m_height += borderBottom() + paddingBottom();
@@ -1842,6 +1842,10 @@ void RenderBlock::positionNewFloats()
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
+
+        if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
+            m_overflowWidth = o->xPos()+o->width();
+                 
         f->startY = y;
         f->endY = f->startY + _height;
 
