@@ -60,24 +60,24 @@ class KDE_EXPORT KDEDModule : public QObject, public DCOPObject
 
   friend class Kded;
 public:
-  
+
   /**
    * Create a DCOPObject named @p name
    */
   KDEDModule(const DCOPCString &name);
-  
+
   virtual ~KDEDModule();
-  
+
   /**
-   * Specifies the idle timeout in seconds. The default is 0. 
+   * Specifies the idle timeout in seconds. The default is 0.
    *
-   * This will call the idle slot @p secs seconds after the last 
+   * This will call the idle slot @p secs seconds after the last
    * reference was removed.
    */
   void setIdleTimeout(int secs);
 
   /**
-   * Reset the idle timeout counter. 
+   * Reset the idle timeout counter.
    *
    * (re)starts the timeout counter if no objects are being referenced.
    */
@@ -88,16 +88,16 @@ public:
    * object will be automatically deleted when the application
    * @p app unregisters with DCOP.
    *
-   * Any previous object inserted with the same values for @p app 
+   * Any previous object inserted with the same values for @p app
    * and @p key will be removed.
    */
-  void insert(const DCOPCString &app, const DCOPCString &key, KShared *obj);
+///////////////  void insert(const DCOPCString &app, const DCOPCString &key, KShared *obj);
 
   /**
    * Lookup object indexed with @p app and @p key
    */
   KShared *find(const DCOPCString &app, const DCOPCString &key);
-  
+
   /**
    * remove object indexed with @p app and @p key.
    * The object will be deleted when it is no more referenced.
@@ -105,7 +105,7 @@ public:
   void remove(const DCOPCString &app, const DCOPCString &key);
 
   /**
-   * remove all objects indexed with @p app. 
+   * remove all objects indexed with @p app.
    * The objects will be deleted when they are no more referenced.
    */
   void removeAll(const DCOPCString &app);
@@ -114,7 +114,7 @@ public:
    * Returns whether a certain mainwindow has registered itself with KDED
    */
   bool isWindowRegistered(long windowId) const;
-  
+
 public slots:
   /**
    * Called whenever the last referenced object gets dereferenced.

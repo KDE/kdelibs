@@ -56,9 +56,9 @@ KBuildImageIOFactory::createEntry( const QString& file, const char *resource )
 }
 
 void
-KBuildImageIOFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
+KBuildImageIOFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-   KSycocaFactory::addEntry(newEntry, resource);
+   KSycocaFactory::addEntry(newEntry);
 
    KImageIOFormat::Ptr format = newEntry;
    rPath += format->rPaths;

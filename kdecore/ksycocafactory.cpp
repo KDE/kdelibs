@@ -47,7 +47,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 
           int saveOffset = m_str->device()->pos();
           // Init index tables
-          m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);   
+          m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);
           saveOffset = m_str->device()->seek(saveOffset);
       }
    }
@@ -119,7 +119,7 @@ KSycocaFactory::save(QDataStream &str)
    }
 
    // Dictionary index
-   m_sycocaDictOffset = str.device()->pos();      
+   m_sycocaDictOffset = str.device()->pos();
    m_sycocaDict->save(str);
 
    int endOfFactoryData = str.device()->pos();
@@ -131,28 +131,28 @@ KSycocaFactory::save(QDataStream &str)
    str.device()->seek(endOfFactoryData);
 }
 
-void 
-KSycocaFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *)
+void
+KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
 
    if (!m_sycocaDict) return; // Error!
 
-   QString name = newEntry->name();
+   const QString name = newEntry->name();
    m_entryDict->insert( name, KSycocaEntry::Ptr(newEntry) );
    m_sycocaDict->add( name, newEntry );
 }
 
-void 
-KSycocaFactory::removeEntry(KSycocaEntry::Ptr newEntry)
+void
+KSycocaFactory::removeEntry(const KSycocaEntry::Ptr& newEntry)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
 
    if (!m_sycocaDict) return; // Error!
 
-   QString name = newEntry->name();
+   const QString name = newEntry->name();
    m_entryDict->remove( name );
    m_sycocaDict->remove( name );
 }
@@ -167,7 +167,7 @@ KSycocaEntry::List KSycocaFactory::allEntries()
    m_str->device()->seek(m_endEntryOffset);
    qint32 entryCount;
    (*m_str) >> entryCount;
-   
+
    if (entryCount > 8192)
    {
       KSycoca::flagError();

@@ -53,7 +53,7 @@ public:
   /**
    * Add entry
    */
-  virtual void addEntry(KSycocaEntry::Ptr newEntry, const char *resource);
+  virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
   /**
    * Write out service type specific index files.

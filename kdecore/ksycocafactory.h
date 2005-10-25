@@ -69,13 +69,13 @@ public:
    /**
     * Add an entry
     */
-   virtual void addEntry(KSycocaEntry::Ptr newEntry, const char *resource);
+   virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
    /**
     * Remove an entry
     * Not very fast, use with care. O(N)
     */
-   void removeEntry(KSycocaEntry::Ptr newEntry);
+   void removeEntry(const KSycocaEntry::Ptr& newEntry);
 
    /**
     * Read an entry from the database

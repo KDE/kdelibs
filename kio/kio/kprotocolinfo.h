@@ -16,18 +16,16 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kprotocolinfo_h__
-#define __kprotocolinfo_h__
-
-#include <qstring.h>
-#include <qstringlist.h>
+#ifndef KPROTOCOLINFO_H
+#define KPROTOCOLINFO_H
 
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
+#include <qvariant.h>
+#include <qstringlist.h>
 
 class QDataStream;
-template<typename T> class Q3ValueList;
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.
@@ -171,14 +169,17 @@ public:
    * @since 3.2
    */
   struct ExtraField {
-    ExtraField() {} // for QValueList
-    ExtraField(const QString& _name, const QString& _type )
+
+    enum Type { String = QVariant::String, DateTime = QVariant::DateTime, Invalid = QVariant::Invalid };
+
+    ExtraField() : type(Invalid) {}
+    ExtraField(const QString& _name, Type _type )
       : name(_name), type(_type) {
     }
     QString name;
-    QString type; // KDE4: make it QVariant::Type
+    Type type;
   };
-  typedef Q3ValueList<ExtraField > ExtraFieldList;
+  typedef QList<ExtraField> ExtraFieldList;
   /**
    * Definition of extra fields in the UDS entries, returned by a listDir operation.
    *

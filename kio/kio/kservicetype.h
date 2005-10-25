@@ -26,9 +26,8 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3ptrlist.h>
 #include <qmap.h>
-#include <q3shared.h>
+#include <qlist.h>
 #include <qdatastream.h>
 #include <qvariant.h>
 
@@ -48,7 +47,7 @@ class KIO_EXPORT KServiceType : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef Q3ValueList<Ptr> List;
+  typedef QList<Ptr> List;
 public:
 
   /**
@@ -185,7 +184,7 @@ public:
    * Pointer to parent serice type
    */
   // gcc 2.95.x doesn't understand KServiceType::Ptr here
-  /* KServiceType:: */ Ptr parentType(); 
+  /* KServiceType:: */ Ptr parentType();
   /**
    * @internal
    * Register service that provides this service type

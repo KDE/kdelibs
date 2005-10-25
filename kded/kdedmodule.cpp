@@ -63,6 +63,7 @@ void KDEDModule::resetIdle()
       d->timer.start(d->timeout);
 }
 
+#if 0 // test
 void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared *obj)
 {
    if (!d->objMap)
@@ -80,6 +81,7 @@ void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared 
    d->objMap->insert(indexKey, _obj);
    resetIdle();
 }
+#endif
 
 KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
 {

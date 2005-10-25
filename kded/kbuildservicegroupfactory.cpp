@@ -88,7 +88,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
 
   entry->m_childCount = -1; // Recalculate
 
-  addEntry( entry, "apps" ); // "vfolder" ??
+  addEntry(entry);
 
   if (menuName != "/")
   {
@@ -120,7 +120,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
 }
 
 void
-KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resource, const KSycocaEntry::Ptr& newEntry)
+KBuildServiceGroupFactory::addNewChild( const QString &parent, const KSycocaEntry::Ptr& newEntry)
 {
   QString name = "#parent#"+parent;
 
@@ -132,16 +132,16 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resou
   if (!entry)
   {
      entry = new KServiceGroup(name);
-     addEntry( entry, resource );
+     addEntry( entry );
   }
   if (newEntry)
      entry->addEntry( newEntry );
 }
 
 void
-KBuildServiceGroupFactory::addEntry( KSycocaEntry::Ptr newEntry, const char *resource)
+KBuildServiceGroupFactory::addEntry( const KSycocaEntry::Ptr& newEntry)
 {
-   KSycocaFactory::addEntry(newEntry, resource);
+   KSycocaFactory::addEntry(newEntry);
    KServiceGroup::Ptr serviceGroup = newEntry;
    serviceGroup->m_serviceList.clear();
 

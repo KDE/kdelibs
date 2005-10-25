@@ -180,16 +180,9 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
        it != m_serviceTypeFactory->entryDict()->end();
        ++it)
    {
-       const KSycocaEntry* baseEntry = (*it).data();
       // export associated services
-#ifdef __GNUC__
-#warning I added this here, but it should not be 0 in the first place (coolo)
-#endif
-      if ( !baseEntry ) {
-         kdDebug() << "no entry\n";
-         continue;
-      }
-      const KServiceType *entry = static_cast<const KServiceType*>( baseEntry );
+      const KServiceType::Ptr entry = *it;
+      Q_ASSERT( entry );
       const KService::List services = entry->services();
 
       for(KService::List::ConstIterator it2 = services.begin();
@@ -231,31 +224,31 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 }
 
 void
-KBuildServiceFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
+KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-   Q_ASSERT( newEntry );
+   Q_ASSERT(newEntry);
    if (m_dupeDict.contains(newEntry))
       return;
 
-   KSycocaFactory::addEntry(newEntry, resource);
+   KSycocaFactory::addEntry(newEntry);
 
-   KService::Ptr service = newEntry;
+   const KService::Ptr service = newEntry;
    m_dupeDict.insert(newEntry);
 
    if (!service->isDeleted())
    {
       QString parent = service->parentApp();
       if (!parent.isEmpty())
-         m_serviceGroupFactory->addNewChild(parent, resource, service);
+         m_serviceGroupFactory->addNewChild(parent, service);
    }
 
-   QString name = service->desktopEntryName();
+   const QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );
    m_serviceDict.insert(name, service);
 
-   QString relName = service->desktopEntryPath();
+   const QString relName = service->desktopEntryPath();
    m_relNameDict->add( relName, newEntry );
-   QString menuId = service->menuId();
+   const QString menuId = service->menuId();
    if (!menuId.isEmpty())
       m_menuIdDict->add( menuId, newEntry );
 }

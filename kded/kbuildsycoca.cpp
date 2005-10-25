@@ -238,7 +238,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    if ( entry && entry->isValid() )
    {
       if (addToFactory)
-         g_factory->addEntry( entry, g_resource );
+         g_factory->addEntry(entry);
       else
          g_tempStorage.append(entry);
       return entry;
@@ -474,7 +474,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      }
      else
      {
-        g_bsf->addEntry( p, g_resource );
+        g_bsf->addEntry( p );
         g_bsgf->addNewEntryTo( name, p );
      }
   }

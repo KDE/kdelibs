@@ -238,7 +238,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
 }
 
 void
-KBuildServiceTypeFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resource)
+KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
    KServiceType::Ptr serviceType = newEntry;
    if ( m_entryDict->value( newEntry->name() ) )
@@ -250,7 +250,7 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry::Ptr newEntry, const char *resou
      // Replace
      KSycocaFactory::removeEntry(newEntry);
    }
-   KSycocaFactory::addEntry(newEntry, resource);
+   KSycocaFactory::addEntry(newEntry);
 
    const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
    QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();

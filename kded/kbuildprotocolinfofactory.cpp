@@ -52,10 +52,3 @@ KBuildProtocolInfoFactory::createEntry( const QString& file, const char * )
 {
    return new KProtocolInfo(file);
 }
-
-void
-KBuildProtocolInfoFactory::addEntry( KSycocaEntry::Ptr newEntry, const char *resource)
-{
-   KSycocaFactory::addEntry(newEntry, resource);
-}
-

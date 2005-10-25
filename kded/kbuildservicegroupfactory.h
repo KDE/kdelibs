@@ -54,7 +54,7 @@ public:
    * A "parent group" is a group of services that all have the same
    * "X-KDE-ParentApp".
    */
-  void addNewChild( const QString &parent, const char *resource, const KSycocaEntry::Ptr& newEntry);
+  void addNewChild( const QString &parent, const KSycocaEntry::Ptr& newEntry);
 
   /**
    * Add new menu @p menuName defined by @p file
@@ -66,7 +66,7 @@ public:
   /**
    * Add a new menu entry
    */
-  virtual void addEntry( KSycocaEntry::Ptr newEntry, const char *resource );
+  virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
   /**
    * Write out servicegroup  specific index files.

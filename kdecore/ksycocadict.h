@@ -53,7 +53,7 @@ public:
     * 'payload' should have a valid offset by the time  
     * the dictionary gets saved.
     **/
-   void add(const QString &key, KSycocaEntry::Ptr payload);
+   void add(const QString &key, const KSycocaEntry::Ptr& payload);
 
    /**
     * Removes the 'payload' from the dictionary with key 'key'.

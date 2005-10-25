@@ -53,7 +53,7 @@ public:
 
   virtual KSycocaEntry * createEntry( int ) { assert(0); return 0L; }
 
-  virtual void addEntry(KSycocaEntry::Ptr newEntry, const char *);
+  virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
   /**
    * Returns all resource types for this service factory

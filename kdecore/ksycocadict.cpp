@@ -27,7 +27,7 @@
 namespace
 {
 struct string_entry {
-  string_entry(QString _key, KSycocaEntry::Ptr _payload) 
+  string_entry(QString _key, const KSycocaEntry::Ptr& _payload) 
   { keyStr = _key; key = keyStr.unicode(); length = keyStr.length(); payload = _payload; hash = 0; }
   uint hash;
   int length;
@@ -77,7 +77,7 @@ KSycocaDict::~KSycocaDict()
 }
 
 void 
-KSycocaDict::add(const QString &key, KSycocaEntry::Ptr payload)
+KSycocaDict::add(const QString &key, const KSycocaEntry::Ptr& payload)
 {
    if (key.isEmpty()) return; // Not allowed (should never happen)
    if (!payload) return; // Not allowed!

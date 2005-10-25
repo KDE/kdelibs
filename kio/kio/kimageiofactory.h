@@ -137,7 +137,7 @@ protected:
   QString mWritePattern;
   QStringList rPath;
 protected:
-    virtual void virtual_hook( int id, void* data );
+  virtual void virtual_hook( int id, void* data );
 };
 
 #endif

@@ -108,12 +108,14 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));
 
-  QStringList extraNames = config.readListEntry( "ExtraNames" );
-  QStringList extraTypes = config.readListEntry( "ExtraTypes" );
-  QStringList::Iterator it = extraNames.begin();
-  QStringList::Iterator typeit = extraTypes.begin();
+  const QStringList extraNames = config.readListEntry( "ExtraNames" );
+  const QStringList extraTypes = config.readListEntry( "ExtraTypes" );
+  QStringList::const_iterator it = extraNames.begin();
+  QStringList::const_iterator typeit = extraTypes.begin();
   for( ; it != extraNames.end() && typeit != extraTypes.end(); ++it, ++typeit ) {
-      d->extraFields.append( ExtraField( *it, *typeit ) );
+      QVariant::Type type = QVariant::nameToType( (*typeit).toLatin1() );
+      // currently QVariant::Type and ExtraField::Type use the same subset of values, so we can just cast.
+      d->extraFields.append( ExtraField( *it, static_cast<ExtraField::Type>(type) ) );
   }
 
   d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
@@ -543,13 +545,15 @@ KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() co
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {
   s >> field.name;
-  s >> field.type;
+  int type;
+  s >> type;
+  field.type = static_cast<KProtocolInfo::ExtraField::Type>( type );
   return s;
 }
 
 QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field )  {
   s << field.name;
-  s << field.type;
+  s << static_cast<int>( field.type );
   return s;
 }
 

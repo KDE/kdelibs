@@ -45,11 +45,6 @@ public:
   virtual KProtocolInfo* createEntry(int) { assert(0); return 0L; }
 
   /**
-   * Add a new entry
-   */
-  virtual void addEntry( KSycocaEntry::Ptr newEntry, const char *resource );
-
-  /**
    * Returns all resource types for this service factory
    */
   static QStringList resourceTypes();
