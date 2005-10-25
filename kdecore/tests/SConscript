@@ -1,0 +1,147 @@
+#! /usr/bin/env python
+
+Import('env')
+
+if env.has_key('RUNTESTS') and env['RUNTESTS']:
+	
+	check_PROGRAMS = {
+		'kconfigtestgui' : 'kconfigtestgui.cpp',
+		'kdebugtest' : 'kdebugtest.cpp',
+		'klocaletest' : 'klocaletest.cpp',
+		#'klocaletest2' : 'klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp',
+		#'kcatalog' : 'kcatalog.cpp libintl.cpp',
+		'ksimpleconfigtest' : 'ksimpleconfigtest.cpp',
+		'kurltest' : 'kurltest.cpp',
+		'kstddirstest' : 'kstddirstest.cpp',
+		'kprocesstest' : 'kprocesstest.cpp',
+		'kuniqueapptest' : 'kuniqueapptest.cpp',
+		'kapptest' : 'kapptest.cpp',
+		'krandomsequencetest' : 'krandomsequencetest.cpp',
+		'kcmdlineargstest' : 'kcmdlineargstest.cpp',
+		'dcopkonqtest' : 'dcopkonqtest.cpp',
+		'kmemtest' : 'kmemtest.cpp',
+		#'kidlservertest' : 'KIDLTest.cpp KIDLTest.skel',
+		# TODO: stub processing does not work 
+		#'kidlclienttest' : 'KIDLTestClient.cpp KIDLTest.stub',
+		#'$(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
+		'kipctest' : 'kipctest.cpp',
+		'cplusplustest' : 'cplusplustest.cpp',
+		'kiconloadertest' : 'kiconloadertest.cpp',
+		'kmdcodectest' : 'kmdcodectest.cpp',
+		'knotifytest' : 'knotifytest.cpp',
+		'ksortablevaluelisttest' : 'ksortablevaluelisttest.cpp',
+		'testqtargs' : 'testqtargs.cpp',
+		'kprociotest' : 'kprociotest.cpp',
+		'kcharsetstest' : 'kcharsetstest.cpp',
+		'kmacroexpandertest' : 'kmacroexpandertest.cpp',
+		'kshelltest' : 'kshelltest.cpp',
+		# TODO x related 
+		#'kxerrorhandlertest' : 'kxerrorhandlertest.cpp',
+		'startserviceby' : 'startserviceby.cpp',
+		'kglobaltest' : 'kglobaltest.cpp',
+		'ktimezonestest' : 'ktimezonestest.cpp',
+		'ktempfiletest' : 'ktempfiletest.cpp',
+		'kurlmimetest' : 'kurlmimetest.cpp',
+		'kconfigtest' : 'kconfigtest.cpp',
+		'krfcdatetest' : 'krfcdatetest.cpp',
+		'kstdacceltest' : 'kstdacceltest.cpp',
+		'kstringhandlertest' : 'kstringhandlertest.cpp',
+		'kurltest4' : 'kurltest4.cpp kurl4.cpp',
+		'kcalendartest' : 'kcalendartest.cpp',
+		'klibloadertest' : 'klibloadertest.cpp',
+		'kcompletiontest' : 'kcompletiontest.cpp',
+		'klockfiletest' : 'klockfiletest.cpp',
+		'ktempdirtest' : 'ktempdirtest.cpp'
+	}
+	
+	for appname in check_PROGRAMS.keys():
+		print appname 
+	
+		if appname[:1] == '#':
+			continue
+		obj = env.kdeobj('program', env)
+		obj.vnum     = '6.0.2'
+		obj.target   = appname
+		obj.source   = check_PROGRAMS[appname]
+		obj.uselib   = 'QTCORE QTGUI QT3SUPPORT KDE4'
+		obj.libpaths = '.. ../../dcop ../../qttestlib '
+		obj.libs     = 'kdecore DCOP QtTest'
+		obj.includes += '../../qttestlib'
+		if env['WINDOWS']:
+			obj.libs     += ' kdewin32 ws2_32'
+	
+		obj.execute()
+
+"""
+INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/qttestlib $(all_includes)
+
+AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
+
+check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
+        kstddirstest kurltest kurltest4 kuniqueapptest krandomsequencetest \
+        kdebugtest kstringhandlertest kcmdlineargstest kapptest \
+        kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
+        cplusplustest kiconloadertest kmdcodectest knotifytest \
+        ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
+        kcharsetstest kcalendartest kmacroexpandertest kshelltest \
+        kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
+        kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
+        kcompletiontest klockfiletest ktempdirtest
+
+# TODO kurltest4 when it works
+
+TESTS = kurltest kcompletiontest\
+        kconfigtest ktempfiletest kurlmimetest kstdacceltest \
+        kstringhandlertest krfcdatetest kcalendartest klibloadertest
+
+METASOURCES = AUTO
+
+LDADD = ../libkdecore.la $(top_builddir)/qttestlib/libqttestlib.la
+
+kconfigtestgui_SOURCES = kconfigtestgui.cpp
+kdebugtest_SOURCES = kdebugtest.cpp
+klocaletest_SOURCES = klocaletest.cpp
+#klocaletest2_SOURCES = klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp
+#kcatalog_SOURCES = kcatalog.cpp libintl.cpp
+ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
+kurltest_SOURCES = kurltest.cpp
+kstddirstest_SOURCES = kstddirstest.cpp
+kprocesstest_SOURCES = kprocesstest.cpp
+kuniqueapptest_SOURCES = kuniqueapptest.cpp
+kapptest_SOURCES = kapptest.cpp
+krandomsequencetest_SOURCES = krandomsequencetest.cpp
+kcmdlineargstest_SOURCES = kcmdlineargstest.cpp
+dcopkonqtest_SOURCES = dcopkonqtest.cpp
+kmemtest_SOURCES = kmemtest.cpp
+kidlservertest_SOURCES = KIDLTest.cpp KIDLTest.skel
+kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
+$(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
+kipctest_SOURCES = kipctest.cpp
+cplusplustest_SOURCES = cplusplustest.cpp
+kiconloadertest_SOURCES = kiconloadertest.cpp
+kmdcodectest_SOURCES = kmdcodectest.cpp
+knotifytest_SOURCES = knotifytest.cpp
+ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
+testqtargs_SOURCES = testqtargs.cpp
+kprociotest_SOURCES = kprociotest.cpp
+kcharsetstest_SOURCES = kcharsetstest.cpp
+kmacroexpandertest_SOURCES = kmacroexpandertest.cpp
+kshelltest_SOURCES = kshelltest.cpp
+kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
+startserviceby_SOURCES = startserviceby.cpp
+kglobaltest_SOURCES = kglobaltest.cpp
+ktimezonestest_SOURCES = ktimezonestest.cpp
+
+ktempfiletest_SOURCES = ktempfiletest.cpp
+kurlmimetest_SOURCES = kurlmimetest.cpp
+kconfigtest_SOURCES = kconfigtest.cpp
+krfcdatetest_SOURCES = krfcdatetest.cpp
+kstdacceltest_SOURCES = kstdacceltest.cpp
+kstringhandlertest_SOURCES = kstringhandlertest.cpp
+kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
+kcalendartest_SOURCES = kcalendartest.cpp
+klibloadertest_SOURCES = klibloadertest.cpp
+kcompletiontest_SOURCES = kcompletiontest.cpp
+klockfiletest_SOURCES = klockfiletest.cpp
+ktempdirtest_SOURCES = ktempdirtest.cpp
+"""
