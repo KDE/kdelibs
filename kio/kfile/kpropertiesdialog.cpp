@@ -129,6 +129,7 @@ extern "C" {
 
 #ifdef Q_WS_WIN
 # include <win32_utils.h>
+# warning TODO: port completly to win32 
 #endif
 
 static QString nameFromFileName(QString nameStr)
