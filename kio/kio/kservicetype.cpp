@@ -26,7 +26,7 @@
 #include <assert.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
-#include <q3dict.h>
+#include <qhash.h>
 
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
@@ -233,12 +233,13 @@ KServiceType::Ptr KServiceType::serviceType( const QString& _name )
   return KServiceTypeFactory::self()->findServiceTypeByName( _name );
 }
 
-static void addUnique(KService::List &lst, Q3Dict<KService> &dict, const KService::List &newLst, bool lowPrio)
+static void addUnique(KService::List &lst, QHash<QString, KService::Ptr> &dict, const KService::List &newLst, bool lowPrio)
 {
-  Q3ValueListConstIterator<KService::Ptr> it = newLst.begin();
-  for( ; it != newLst.end(); ++it )
+  KService::List::const_iterator it = newLst.begin();
+  const KService::List::const_iterator end = newLst.end();
+  for( ; it != end; ++it )
   {
-     KService *service = static_cast<KService*>((*it).get());
+     KService::Ptr service = *it;
      if (dict.find(service->desktopEntryPath()))
         continue;
      dict.insert(service->desktopEntryPath(), service);
@@ -250,7 +251,7 @@ static void addUnique(KService::List &lst, Q3Dict<KService> &dict, const KServic
 
 KService::List KServiceType::offers( const QString& _servicetype )
 {
-  Q3Dict<KService> dict(53);
+  QHash<QString, KService::Ptr> dict;
   KService::List lst;
 
   // Services associated directly with this servicetype (the normal case)

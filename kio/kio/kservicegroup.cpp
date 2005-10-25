@@ -402,7 +402,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
            // Remove entry from sorted list of services.
           for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
           {
-             KServiceGroup *group = (KServiceGroup *)((KSycocaEntry *)((*it2).value()).get());
+             const KServiceGroup::Ptr group = (*it2).value();
              if (group->relPath() == groupPath)
              {
                 glist.remove(it2);
@@ -417,7 +417,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
            // TODO: This prevents duplicates
           for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
           {
-             KService *service = (KService *)((KSycocaEntry *)((*it2).value()).get());
+             const KService::Ptr service = (*it2).value();
              if (service->menuId() == item)
              {
                 slist.remove(it2);
@@ -464,7 +464,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
               }
               for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
               {
-                  KServiceGroup *group = (KServiceGroup *)((KSycocaEntry *)(*it2).value().get());
+                  KServiceGroup::Ptr group = (*it2).value();
                   group->setShowEmptyMenu(  showEmptyMenu  );
                   group->setAllowInline( showInline );
                   group->setShowInlineHeader( showInlineHeader );
@@ -535,7 +535,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
             {
                 if (!(*it2)->isType(KST_KServiceGroup))
                     continue;
-                KServiceGroup *group = (KServiceGroup *)((KSycocaEntry *)(*it2).get());
+                KServiceGroup::Ptr group = (*it2);
                 if (group->relPath() == groupPath)
                 {
                     if (!excludeNoDisplay || !group->noDisplay())
@@ -581,7 +581,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
             {
                 if (!(*it2)->isType(KST_KService))
                     continue;
-                KService *service = (KService *)((KSycocaEntry *)(*it2).get());
+                const KService::Ptr service = (*it2);
                 if (service->menuId() == item)
                 {
                     if (!excludeNoDisplay || !service->noDisplay())
