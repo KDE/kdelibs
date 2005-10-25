@@ -275,7 +275,7 @@ bool KBuildSycoca::build()
             it != list.end();
             ++it)
          {
-            entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>((*it).get()));
+            entryDict->insert( (*it)->entryPath(), *it );
          }
      }
      if ((*factory) == g_bsf)

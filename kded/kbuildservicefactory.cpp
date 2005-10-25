@@ -73,7 +73,6 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   {
      name = name.mid(pos+1);
   }
-
   // Is it a .desktop file?
   if (!name.endsWith(".desktop") && !name.endsWith(".kdelnk"))
       return 0;
@@ -139,12 +138,13 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    m_offerListOffset = str.device()->pos();
 
    bool isNumber;
-   for(KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
-       itserv != m_entryDict->end();
-       ++itserv)
+   KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
+   const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
+   for( ; itserv != endserv ; ++itserv )
    {
       KService::Ptr service = (*itserv);
-      QStringList serviceTypeList = service->serviceTypes();
+      const QStringList serviceTypeList = service->serviceTypes();
+      //kdDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
       KServiceType::List serviceTypes;
       QStringList::ConstIterator it = serviceTypeList.begin();
       for( ; it != serviceTypeList.end(); ++it )
@@ -162,6 +162,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          serviceTypes.append(serviceType);
       }
 
+      // Add this service to all its servicetypes (and their parents)
       while(serviceTypes.count())
       {
          KServiceType::Ptr serviceType = serviceTypes.first();
@@ -176,21 +177,20 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    }
 
    // For each entry in servicetypeFactory
-   for(KSycocaEntryDict::Iterator it = m_serviceTypeFactory->entryDict()->begin();
-       it != m_serviceTypeFactory->entryDict()->end();
-       ++it)
+   KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->begin();
+   const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
+   for( ; itstf != endstf; ++itstf )
    {
       // export associated services
-      const KServiceType::Ptr entry = *it;
+      const KServiceType::Ptr entry = *itstf;
       Q_ASSERT( entry );
       const KService::List services = entry->services();
 
       for(KService::List::ConstIterator it2 = services.begin();
           it2 != services.end(); ++it2)
       {
-         const KService::Ptr &service = (*it2);
          str << (qint32) entry->offset();
-         str << (qint32) service->offset();
+         str << (qint32) (*it2)->offset();
       }
    }
 

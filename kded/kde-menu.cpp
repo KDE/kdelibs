@@ -70,17 +70,17 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
    KServiceGroup::List::ConstIterator it = list.begin();
    for (; it != list.end(); ++it)
    {
-      KSycocaEntry * e = (*it).get();
+      KSycocaEntry::Ptr e = (*it);
 
       if (e->isType(KST_KServiceGroup))
       {
-         KServiceGroup::Ptr g(static_cast<KServiceGroup *>(e));
-         
+         KServiceGroup::Ptr g = e;
+
          findMenuEntry(g, name.isEmpty() ? g->caption() : name+"/"+g->caption(), menuId);
       }
       else if (e->isType(KST_KService))
       {
-         KService::Ptr s(static_cast<KService *>(e));
+         KService::Ptr s = e;
          if (s->menuId() == menuId)
          {
             if (bPrintMenuId)
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
    "This tool can be used to find in which menu a specific application is shown.\n"
    "The --highlight option can be used to visually indicate to the user where\n"
    "in the KDE menu a specific application is located.");
-   
+
    KAboutData d(appName, I18N_NOOP("kde-menu"), appVersion,
                 description,
                 KAboutData::License_GPL, "(c) 2003 Waldo Bastian");
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
    QString menuId = QFile::decodeName(args->arg(0));
    KService::Ptr s = KService::serviceByMenuId(menuId);
-   
+
    if (!s)
       error(1, i18n("No menu item '%1'.").arg(menuId));
 

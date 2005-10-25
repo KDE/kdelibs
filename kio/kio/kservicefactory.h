@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -44,32 +44,32 @@ public:
    */
   KServiceFactory();
   virtual ~KServiceFactory();
-  
+
   /**
    * Construct a KService from a config file.
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *) 
+  virtual KSycocaEntry *createEntry(const QString &, const char *)
     { assert(0); return 0; }
 
   /**
    * Find a service (by name, e.g. "Terminal")
    */
-  KService * findServiceByName( const QString &_name );
+  KService::Ptr findServiceByName( const QString &_name );
 
   /**
    * Find a service (by desktop file name, e.g. "konsole")
    */
-  KService * findServiceByDesktopName( const QString &_name );
+  KService::Ptr findServiceByDesktopName( const QString &_name );
 
   /**
    * Find a service ( by desktop path, e.g. "System/konsole.desktop")
    */
-  KService * findServiceByDesktopPath( const QString &_name );
+  KService::Ptr findServiceByDesktopPath( const QString &_name );
 
   /**
    * Find a service ( by menu id, e.g. "kde-konsole.desktop")
    */
-  KService * findServiceByMenuId( const QString &_menuId );
+  KService::Ptr findServiceByMenuId( const QString &_menuId );
 
   /**
    * @return the services supporting the given service type
@@ -94,7 +94,7 @@ public:
 protected:
   virtual KService * createEntry(int offset);
   int m_offerListOffset;
-  int m_initListOffset;  
+  int m_initListOffset;
   KSycocaDict *m_nameDict;
   int m_nameDictOffset;
   KSycocaDict *m_relNameDict;

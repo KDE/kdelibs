@@ -283,9 +283,9 @@ KService::List KServiceType::offers( const QString& _servicetype )
   }
   serv = 0;
 
-  //QValueListIterator<KService::Ptr> it = lst.begin();
-  //for( ; it != lst.end(); ++it )
-  //    kdDebug() << (*it).data() << " " << (*it)->name() << endl;
+  //debug
+  //foreach( KService::Ptr serv, lst )
+  //    kdDebug() << serv.get() << " " << serv->name() << endl;
 
   // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
   // (and makes no sense when querying for an "all" servicetype itself
@@ -345,7 +345,7 @@ KServiceType::Ptr KServiceType::parentType()
   return d->parentType;
 }
 
-void KServiceType::addService(KService::Ptr service)
+void KServiceType::addService(const KService::Ptr& service)
 {
   if (!d)
      d = new KServiceTypePrivate;

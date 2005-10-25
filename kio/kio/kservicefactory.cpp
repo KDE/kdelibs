@@ -87,7 +87,7 @@ KServiceFactory * KServiceFactory::self()
     return _self;
 }
 
-KService * KServiceFactory::findServiceByName(const QString &_name)
+KService::Ptr KServiceFactory::findServiceByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0; // Error!
 
@@ -110,12 +110,12 @@ KService * KServiceFactory::findServiceByName(const QString &_name)
    return newService;
 }
 
-KService * KServiceFactory::findServiceByDesktopName(const QString &_name)
+KService::Ptr KServiceFactory::findServiceByDesktopName(const QString &_name)
 {
    if (!m_nameDict) return 0; // Error!
 
    // Warning : this assumes we're NOT building a database
-   // But since findServiceByName isn't called in that case...
+   // But since this method isn't called in that case, we should be fine.
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_nameDict->find_string( _name );
@@ -133,12 +133,12 @@ KService * KServiceFactory::findServiceByDesktopName(const QString &_name)
    return newService;
 }
 
-KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
+KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
 {
    if (!m_relNameDict) return 0; // Error!
 
    // Warning : this assumes we're NOT building a database
-   // But since findServiceByName isn't called in that case...
+   // But since this method isn't called in that case, we should be fine.
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_relNameDict->find_string( _name );
@@ -156,12 +156,12 @@ KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
    return newService;
 }
 
-KService * KServiceFactory::findServiceByMenuId(const QString &_menuId)
+KService::Ptr KServiceFactory::findServiceByMenuId(const QString &_menuId)
 {
    if (!m_menuIdDict) return 0; // Error!
 
    // Warning : this assumes we're NOT building a database
-   // But since findServiceByMenuId isn't called in that case...
+   // But since this method isn't called in that case, we should be fine.
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_menuIdDict->find_string( _menuId );
@@ -206,14 +206,14 @@ KService* KServiceFactory::createEntry(int offset)
 KService::List KServiceFactory::allServices()
 {
    KService::List result;
-   KSycocaEntry::List list = allEntries();
-   for( KSycocaEntry::List::Iterator it = list.begin();
-        it != list.end();
-        ++it)
+   const KSycocaEntry::List list = allEntries();
+   KSycocaEntry::List::const_iterator it = list.begin();
+   const KSycocaEntry::List::const_iterator end = list.begin();
+   for( ; it != end; ++it )
    {
-      KService *newService = dynamic_cast<KService *>((*it).data());
-      if (newService)
-         result.append( KService::Ptr( newService ) );
+      const KSycocaEntry::Ptr entry = *it;
+      if ( entry->isType( KST_KService ) )
+         result.append( KService::Ptr( entry ) );
    }
    return result;
 }
@@ -268,7 +268,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
             // Save stream position !
-            int savedPos = str->device()->at();
+            const int savedPos = str->device()->at();
             // Create Service
             KService * serv = createEntry( aServiceOffset );
             if (serv)

@@ -606,28 +606,25 @@ KService::List KService::allServices()
 
 KService::Ptr KService::serviceByName( const QString& _name )
 {
-  KService * s = KServiceFactory::self()->findServiceByName( _name );
-  return KService::Ptr( s );
+  return KServiceFactory::self()->findServiceByName( _name );
 }
 
 KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 {
-  KService * s = KServiceFactory::self()->findServiceByDesktopPath( _name );
-  return KService::Ptr( s );
+  return KServiceFactory::self()->findServiceByDesktopPath( _name );
 }
 
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
-  KService * s = KServiceFactory::self()->findServiceByDesktopName( _name.toLower() );
+  KService::Ptr s = KServiceFactory::self()->findServiceByDesktopName( _name.toLower() );
   if (!s && !_name.startsWith("kde-"))
      s = KServiceFactory::self()->findServiceByDesktopName( "kde-"+_name.toLower() );
-  return KService::Ptr( s );
+  return s;
 }
 
 KService::Ptr KService::serviceByMenuId( const QString& _name )
 {
-  KService * s = KServiceFactory::self()->findServiceByMenuId( _name );
-  return KService::Ptr( s );
+  return KServiceFactory::self()->findServiceByMenuId( _name );
 }
 
 KService::Ptr KService::serviceByStorageId( const QString& _storageId )
@@ -705,10 +702,10 @@ bool KService::noDisplay() const {
      if (aList.contains("KDE"))
         return true;
   }
-  
+
   if (!KAuthorized::authorizeControlModule(d->menuId))
      return true;
-  
+
   return false;
 }
 

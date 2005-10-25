@@ -186,12 +186,12 @@ public:
   // gcc 2.95.x doesn't understand KServiceType::Ptr here
   /* KServiceType:: */ Ptr parentType();
   /**
-   * @internal
+   * @internal  only used by kbuildsycoca
    * Register service that provides this service type
    */
-  void addService(KService::Ptr service);
+  void addService(const KService::Ptr& service);
   /**
-   * @internal
+   * @internal  only used by kbuildsycoca
    * List services that provide this service type
    */
   KService::List services() const;

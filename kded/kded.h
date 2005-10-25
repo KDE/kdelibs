@@ -33,9 +33,9 @@
 #include <ksycocatype.h>
 #include <kdedmodule.h>
 #include <klibloader.h>
+#include <kservice.h>
 
 class KDirWatch;
-class KService;
 
 // No need for this in libkio - apps only get readonly access
 class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
@@ -65,7 +65,7 @@ public:
    void noDemandLoad(const QString &obj); // Don't load obj on demand
 
    KDEDModule *loadModule(const DCOPCString &obj, bool onDemand);
-   KDEDModule *loadModule(const KService *service, bool onDemand);
+   KDEDModule *loadModule(const KService::Ptr& service, bool onDemand);
    DCOPCStringList loadedModules();
    bool unloadModule(const DCOPCString &obj);
    bool isWindowRegistered(long windowId) const;
