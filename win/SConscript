@@ -16,9 +16,10 @@ bootstrap.cpp
 """
 
 obj.ccflags += ' -DMAKE_KDEWIN32_LIB '
+obj.includes += ' ../kdecore '
 
 if env['CC'] == 'cl':
-	obj.includes = 'include include/msvc'
+	obj.includes += ' include include/msvc '
 	obj.ccflags += ' /FI./include/kdelibs_export_win.h /FI./include/kdemacros.h '
 	obj.linkflags += ' advapi32.lib shell32.lib '
 
