@@ -160,6 +160,7 @@ def bksys_shlib(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=
 	thisenv['BKSYS_DESTDIR']=libdir
 	thisenv['BKSYS_VNUM']=vnum
 	thisenv['SHLIBPREFIX']=libprefix
+	thisenv['BKSYS_STATICLIB']=0
 
 	if len(vnum)>0:
 		if thisenv['CC'] == 'gcc':
