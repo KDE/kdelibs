@@ -43,82 +43,82 @@ class KStandardDirsPrivate;
  *
  * To this end it insulates the application from all information
  * and applications always refer to a file with a resource type
- * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
+ * (e.g. icon) and a filename (e.g. <tt>khexdit.xpm</tt>). In an ideal world
  * the application would make no assumption where this file is and
  * leave it up to KStandardDirs::findResource("apps", "Home.desktop")
- * to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
+ * to apply this knowledge to return <tt>/opt/kde/share/applnk/Home.desktop</tt>
  * or ::locate("data", "kgame/background.jpg") to return
- * /opt/kde/share/apps/kgame/background.jpg
+ * <tt>/opt/kde/share/apps/kgame/background.jpg</tt>
  *
  * The main idea behind KStandardDirs is that there are several
  * toplevel prefixes below which the files lie. One of these prefixes is
  * the one where the user installed kdelibs, one is where the
- * application was installed, and one is $HOME/.kde, but there
+ * application was installed, and one is <tt>$HOME/.kde</tt>, but there
  * may be even more. Under these prefixes there are several well
  * defined suffixes where specific resource types are to be found.
- * For example, for the resource type "html" the suffixes could be
- * share/doc/HTML and share/doc/kde/HTML.
+ * For example, for the resource type @c "html" the suffixes could be
+ * @c share/doc/HTML and @c share/doc/kde/HTML.
  * So the search algorithm basically appends to each prefix each registered
  * suffix and tries to locate the file there.
  * To make the thing even more complex, it's also possible to register
  * absolute paths that KStandardDirs looks up after not finding anything
  * in the former steps. They can be useful if the user wants to provide
- * specific directories that aren't in his $HOME/.kde directory for,
+ * specific directories that aren't in his <tt>$HOME/.kde</tt> directory for,
  * for example, icons.
  *
  * <b>Standard resources that kdelibs allocates are:</b>\n
  *
- * @li apps - Applications menu (.desktop files).
- * @li cache - Cached information (e.g. favicons, web-pages)
- * @li cgi - CGIs to run from kdehelp.
- * @li config - Configuration files.
- * @li data - Where applications store data.
- * @li exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
- * @li html - HTML documentation.
- * @li icon - Icons, see KIconLoader.
- * @li lib - Libraries.
- * @li locale - Translation files for KLocale.
- * @li mime - Mime types.
- * @li module - Module (dynamically loaded library).
- * @li qtplugins - Qt plugins (dynamically loaded objects for Qt)
- * @li services - Services.
- * @li servicetypes - Service types.
- * @li scripts - Application scripting additions.
- * @li sound - Application sounds.
- * @li templates - Templates
- * @li wallpaper - Wallpapers.
- * @li tmp - Temporary files (specific for both current host and current user)
- * @li socket - UNIX Sockets (specific for both current host and current user)
- * @li emoticons - Emoticons themes  (Since KDE 3.4)
+ * @li @c apps - Applications menu (.desktop files).
+ * @li @c cache - Cached information (e.g. favicons, web-pages)
+ * @li @c cgi - CGIs to run from kdehelp.
+ * @li @c config - Configuration files.
+ * @li @c data - Where applications store data.
+ * @li @c exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
+ * @li @c html - HTML documentation.
+ * @li @c icon - Icons, see KIconLoader.
+ * @li @c lib - Libraries.
+ * @li @c locale - Translation files for KLocale.
+ * @li @c mime - Mime types.
+ * @li @c module - Module (dynamically loaded library).
+ * @li @c qtplugins - Qt plugins (dynamically loaded objects for Qt)
+ * @li @c services - Services.
+ * @li @c servicetypes - Service types.
+ * @li @c scripts - Application scripting additions.
+ * @li @c sound - Application sounds.
+ * @li @c templates - Templates
+ * @li @c wallpaper - Wallpapers.
+ * @li @c tmp - Temporary files (specific for both current host and current user)
+ * @li @c socket - UNIX Sockets (specific for both current host and current user)
+ * @li @c emoticons - Emoticons themes  (Since KDE 3.4)
  *
  * A type that is added by the class KApplication if you use it, is
- * appdata. This one makes the use of the type data a bit easier as it
+ * @c appdata. This one makes the use of the type data a bit easier as it
  * appends the name of the application.
  * So while you had to ::locate("data", "appname/filename") so you can
  * also write ::locate("appdata", "filename") if your KApplication instance
- * is called "appname" (as set via KApplication's constructor or KAboutData, if
+ * is called @c "appname" (as set via KApplication's constructor or KAboutData, if
  * you use the global KStandardDirs object KGlobal::dirs()).
- * Please note though that you cannot use the "appdata"
+ * Please note though that you cannot use the @c "appdata"
  * type if you intend to use it in an applet for Kicker because 'appname' would
- * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
+ * be @c "Kicker" instead of the applet's name. Therefore, for applets, you've got
  * to work around this by using ::locate("data", "appletname/filename").
  *
  * <b>KStandardDirs supports the following environment variables:</b>
  *
- * @li KDEDIRS: This may set an additional number of directory prefixes to
+ * @li @c KDEDIRS - This may set an additional number of directory prefixes to
  *          search for resources. The directories should be separated
- *          by ':'. The directories are searched in the order they are
+ *          by <tt>':'</tt>. The directories are searched in the order they are
  *          specified.
- * @li KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
- *          directory may be specified. If KDEDIRS is set KDEDIR is
+ * @li @c KDEDIR - Used for backwards compatibility. As @c KDEDIRS but only a single
+ *          directory may be specified. If @c KDEDIRS is set @c KDEDIR is
  *          ignored.
- * @li KDEHOME: The directory where changes are saved to. This directory is
- *          used to search for resources first. If KDEHOME is not
- *          specified it defaults to "$HOME/.kde"
- * @li KDEROOTHOME: Like KDEHOME, but used for the root user.
- *          If KDEROOTHOME is not set it defaults to the .kde directory in the
- *          home directory of root, usually "/root/.kde".
- *          Note that the setting of $HOME is ignored in this case.
+ * @li @c KDEHOME - The directory where changes are saved to. This directory is
+ *          used to search for resources first. If @c KDEHOME is not
+ *          specified it defaults to @c "$HOME/.kde"
+ * @li @c KDEROOTHOME - Like KDEHOME, but used for the root user.
+ *          If @c KDEROOTHOME is not set it defaults to the <tt>.kde</tt> directory in the
+ *          home directory of root, usually @c "/root/.kde".
+ *          Note that the setting of @c $HOME is ignored in this case.
  *
  * @see KGlobalSettings
  */
@@ -139,7 +139,7 @@ public:
 	 * Adds another search dir to front of the @p fsstnd list.
 	 *
 	 * @li When compiling kdelibs, the prefix is added to this.
-	 * @li KDEDIRS or KDEDIR is taking into account
+	 * @li @c KDEDIRS or @c KDEDIR is taken into account
 	 * @li Additional dirs may be loaded from kdeglobals.
 	 *
 	 * @param dir The directory to append relative paths to.
@@ -147,18 +147,18 @@ public:
 	void addPrefix( const QString& dir );
 
 	/**
-	 * Adds another search dir to front of the XDG_CONFIG_XXX list
+	 * Adds another search dir to front of the @c XDG_CONFIG_XXX list
 	 * of prefixes.
-	 * This prefix is only used for resources that start with "xdgconf-"
+	 * This prefix is only used for resources that start with @c "xdgconf-"
 	 *
 	 * @param dir The directory to append relative paths to.
 	 */
 	void addXdgConfigPrefix( const QString& dir );
 
 	/**
-	 * Adds another search dir to front of the XDG_DATA_XXX list
+	 * Adds another search dir to front of the @c XDG_DATA_XXX list
 	 * of prefixes.
-	 * This prefix is only used for resources that start with "xdgdata-"
+	 * This prefix is only used for resources that start with @c "xdgdata-"
 	 *
 	 * @param dir The directory to append relative paths to.
 	 */
@@ -169,7 +169,7 @@ public:
 	 *
 	 * You may add as many as you need, but it is advised that there
 	 * is exactly one to make writing definite.
-	 * All basic types ( kde_default) are added by addKDEDefaults(),
+	 * All basic types (kde_default()) are added by addKDEDefaults(),
 	 * but for those you can add more relative paths as well.
 	 *
 	 * The later a suffix is added, the higher its priority. Note, that the
@@ -230,9 +230,9 @@ public:
 	 * framework. When a resource is restricted it means that user-
 	 * specific files in the resource are ignored.
 	 *
-	 * E.g. by restricting the "wallpaper" resource, only system-wide
+	 * E.g. by restricting the @c "wallpaper" resource, only system-wide
 	 * installed wallpapers will be found by this class. Wallpapers
-	 * installed under the $KDEHOME directory will be ignored.
+	 * installed under the @c $KDEHOME directory will be ignored.
 	 *
 	 * @param type The type of the resource to check
 	 * @param relPath A relative path in the resource.
@@ -265,7 +265,7 @@ public:
 	 * @li /opt/kde/share/applnk/Settings/
 	 * @li /home/joe/.kde/share/applnk/Settings/
 	 *
-	 * Note that it appends / to the end of the directories,
+	 * Note that it appends @c / to the end of the directories,
 	 * so you can use this right away as directory names.
 	 *
 	 * @param type The type of the base directory.
@@ -310,8 +310,8 @@ public:
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRegExp
-	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
-	 *        if you do not want a filter.
+	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+	 *        Use QString::null if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param unique If specified,  only return items which have
@@ -335,8 +335,8 @@ public:
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRegExp
-	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
-	 *        if you do not want a filter.
+	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+	 *        Use QString::null if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param unique If specified,  only return items which have
@@ -357,7 +357,7 @@ public:
 	 * Returns a QStringList list of pathnames in the system path.
 	 *
 	 * @param pstr  The path which will be searched. If this is
-	 * 		null (default), the $PATH environment variable will
+	 * 		null (default), the @c $PATH environment variable will
 	 *		be searched.
 	 *
 	 * @return a QStringList list of pathnames in the system path.
@@ -372,7 +372,7 @@ public:
 	 *
 	 * @param appname The name of the executable file for which to search.
 	 * @param pathstr The path which will be searched. If this is
-	 * 		null (default), the $PATH environment variable will
+	 * 		null (default), the @c $PATH environment variable will
 	 *		be searched.
 	 * @param ignoreExecBit	If true, an existing file will be returned
 	 *			even if its executable bit is not set.
@@ -394,7 +394,7 @@ public:
 	 * @param appname	The name of the executable for which to
 	 *	 		search.
 	 * @param pathstr	The path list which will be searched. If this
-	 *		is 0 (default), the $PATH environment variable will
+	 *		is 0 (default), the @c $PATH environment variable will
 	 *		be searched.
 	 * @param ignoreExecBit If true, an existing file will be returned
 	 *			even if its executable bit is not set.
@@ -424,7 +424,7 @@ public:
 	 *
 	 * @param config The object the entries are read from. This should
 	 *        contain global config files
-	 * @return true if new config paths have been added
+	 * @return @c true if new config paths have been added
 	 * from @p config.
 	 **/
 	bool addCustomized(KConfig *config);
@@ -483,7 +483,7 @@ public:
          * @param absPath An absolute path to make relative.
          *
          * @return A relative path relative to resource @p type that
-         * will find @p absPath. If no such relative path exists, absPath
+         * will find @p absPath. If no such relative path exists, @p absPath
          * will be returned unchanged.
          */
          QString relativeLocation(const char *type, const QString &absPath);
@@ -492,7 +492,7 @@ public:
 	 * Recursively creates still-missing directories in the given path.
 	 *
 	 * The resulting permissions will depend on the current umask setting.
-	 * permission = mode & ~umask.
+	 * <tt>permission = mode & ~umask</tt>.
 	 *
 	 * @param dir Absolute path of the directory to be made.
 	 * @param mode Directory permissions.
@@ -505,21 +505,21 @@ public:
 	 * resource types. Below is a list of them so you get an idea
 	 * of what this is all about.
 	 *
-	 * @li data - share/apps
-	 * @li html - share/doc/HTML
-	 * @li icon - share/icon
-	 * @li config - share/config
-	 * @li pixmap - share/pixmaps
-	 * @li apps - share/applnk
-	 * @li sound - share/sounds
-	 * @li locale - share/locale
-	 * @li services - share/services
-	 * @li servicetypes - share/servicetypes
-	 * @li mime - share/mimelnk
-	 * @li wallpaper - share/wallpapers
-	 * @li templates - share/templates
-	 * @li exe - bin
-	 * @li lib - lib
+	 * @li @c data - @c share/apps
+	 * @li @c html - @c share/doc/HTML
+	 * @li @c icon - @c share/icon
+	 * @li @c config - @c share/config
+	 * @li @c pixmap - @c share/pixmaps
+	 * @li @c apps - @c share/applnk
+	 * @li @c sound - @c share/sounds
+	 * @li @c locale - @c share/locale
+	 * @li @c services - @c share/services
+	 * @li @c servicetypes - @c share/servicetypes
+	 * @li @c mime - @c share/mimelnk
+	 * @li @c wallpaper - @c share/wallpapers
+	 * @li @c templates - @c share/templates
+	 * @li @c exe - @c bin
+	 * @li @c lib - @c lib
 	 *
 	 * @returns Static default for the specified resource.  You
 	 *          should probably be using locate() or locateLocal()
@@ -546,8 +546,8 @@ public:
 
 	/**
 	 * Returns the toplevel directory in which KStandardDirs
-	 * will store things. Most likely $HOME/.kde
-	 * Don't use this function if you can use locateLocal
+	 * will store things. Most likely <tt>$HOME/.kde</tt>.
+	 * Don't use this function if you can use locateLocal()
 	 * @return the toplevel directory
 	 */
 	QString localkdedir() const;
@@ -565,13 +565,13 @@ public:
 	static QString kfsstnd_defaultbindir();
 
 	/**
-	 * @return $XDG_DATA_HOME
+	 * @return @c $XDG_DATA_HOME
 	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
 	 */
 	QString localxdgdatadir() const;
 
 	/**
-	 * @return $XDG_CONFIG_HOME
+	 * @return @c $XDG_CONFIG_HOME
 	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
 	 */
 	QString localxdgconfdir() const;
@@ -581,7 +581,7 @@ public:
 	 * Faster than creating a QFileInfo first.
 	 * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
 	 *                 (and no slash for a file, obviously).
-	 * @return true if the directory exists
+	 * @return @c true if the directory exists, @c false otherwise
 	 */
 	static bool exists(const QString &fullPath);
 
@@ -700,7 +700,14 @@ public:
 /*!
  * \relates KStandardDirs
  * This function is just for convenience. It simply calls
- *instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
+ * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
+ *
+ * @param type   The type of the wanted resource, see KStandardDirs
+ * @param filename   A relative filename of the resource
+ * @param instance   The KInstance object
+ *
+ * @return A full path to the filename specified in the second
+ *         argument, or QString::null if not found
  **/
 KDECORE_EXPORT QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
@@ -708,10 +715,16 @@ KDECORE_EXPORT QString locate( const char *type, const QString& filename, const 
  * \relates KStandardDirs
  * This function is much like locate. However it returns a
  * filename suitable for writing to. No check is made if the
- * specified filename actually exists. Missing directories
- * are created. If filename is only a directory, without a
- * specific file, filename must have a trailing slash.
+ * specified @p filename actually exists. Missing directories
+ * are created. If @p filename is only a directory, without a
+ * specific file, @p filename must have a trailing slash.
  *
+ * @param type   The type of the wanted resource, see KStandardDirs
+ * @param filename   A relative filename of the resource
+ * @param instance   The KInstance object
+ *
+ * @return A full path to the filename specified in the second
+ *         argument, or QString::null if not found
  **/
 KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
@@ -719,10 +732,18 @@ KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, c
  * \relates KStandardDirs
  * This function is much like locate. No check is made if the
  * specified filename actually exists. Missing directories
- * are created if @p createDir is true. If filename is only
- * a directory, without a specific file,
- * filename must have a trailing slash.
+ * are created if @p createDir is true. If @p filename is only
+ * a directory, without a specific file, @p filename must have
+ * a trailing slash.
  *
+ * @param type   The type of the wanted resource, see KStandardDirs
+ * @param filename   A relative filename of the resource
+ * @param createDir  If @c true, missing directories are created,
+ *        if @c false, no directory is created
+ * @param instance   The KInstance object
+ *
+ * @return A full path to the filename specified in the second
+ *         argument, or QString::null if not found
  **/
 KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
 
