@@ -25,8 +25,8 @@ ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp
 kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp
 kaudioplayer.cpp kdcoppropertyproxy.cpp
 kprocio.cpp krandom.cpp
-kpixmapprovider.cpp
-kcodecs.cpp fakes.c
+kpixmapprovider.cpp ktoolinvocation.cpp
+kcodecs.cpp 
 ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp
 kxmessages.cpp kstartupinfo.cpp kcatalog.cpp
 kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp
@@ -37,7 +37,7 @@ kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp
 kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
-kuser.cpp kconfigskeleton.cpp klockfile.cpp ktoolinvocation.cpp
+kuser.cpp kconfigskeleton.cpp klockfile.cpp 
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 network/kresolver.cpp
@@ -73,7 +73,7 @@ kapplication_win.cpp
 kglobalaccel_win.cpp
 ktoolinvocation_win.cpp 
 """
-inst_headers="""
+install_headers="""
 kconfig.h kconfigskeleton.h
 kconfigdata.h ksimpleconfig.h
 kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h
@@ -95,7 +95,7 @@ ktypelist.h ksortablevaluelist.h kclipboard.h
 kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h
 kmanagerselection.h kmountpoint.h kuser.h klockfile.h
 kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
-kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
+kdemacros.h.in kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
 
 # not finished (ita)
@@ -110,15 +110,17 @@ obj.source   = core_files
 #when compiling libltdlc.a, we still need it here. We need a better static
 #library support (liucougar)
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN DL'
-obj.libpaths = '../dcop'
-obj.libs     = '../libltdl/libltdlc.a DCOP'
+obj.libpaths = '../dcop ../libltdl'
+obj.libs     = 'DCOP ltdlc'
 obj.iskdelib = 1
 obj.includes = 'network'
 obj.cxxflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../win '
 	obj.includes += ' ../win/3rdparty/zlib '
-	obj.libs     += ' kdewin32 ws2_32'
+	obj.libs     += ' kdewin32 ws2_32 user32 '
+	if env['CC'] == 'cl':
+		obj.ccflags += ' -wd4661 -DKIO_EXPORT= '
 
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     #FIXME: QTXML is used in libkdesvgicons
@@ -127,6 +129,9 @@ if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     obj.libpaths += " svgicons"
     obj.libs += " libkdesvgicons"
 obj.execute()
+
+
+env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 
 
 """
