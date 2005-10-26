@@ -34,6 +34,7 @@ class DCOPObject;
 #include <krandom.h>
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
+#include <kicontheme.h>
 #include <qpixmap.h>
 #include <qicon.h>
 #endif
@@ -204,7 +205,7 @@ public:
    */
   inline KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
-  
+
   /**
    * Disables session management for this application.
    *
@@ -283,7 +284,7 @@ public:
       return windowIcon().pixmap(size,size);
   };
 #endif
-  
+
   /**
    *  Sets the top widget of the application.
    *  This means basically applying the right window caption.
@@ -312,7 +313,7 @@ public:
    * executable.
    * @return the text for the window caption
    */
-  static QString caption(); 
+  static QString caption();
 
   /**
    * Builds a caption that contains the application name along with the
@@ -491,7 +492,7 @@ public:
     * KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     * if (args && args->isSet("geometry"))
     *     geometry = args->getOption("geometry");
-    *    
+    *
     * </code>
     */
   static inline KDE_DEPRECATED QString geometryArgument() {
@@ -554,7 +555,7 @@ private slots:
 
 private:
   QString sessionConfigName() const;
-  
+
   KConfig* pSessionConfig; //instance specific application config object
   bool bSessionManagement;
   bool useStyles;
@@ -720,10 +721,10 @@ signals:
 
      Do not do any closing at this point! The user may still select
      Cancel  wanting to continue working with your
-     application. Cleanups could be done after aboutToQuit(). 
+     application. Cleanups could be done after aboutToQuit().
   */
   void saveYourself();
-  
+
 private:
   void propagateSettings(SettingsCategory category);
   void kdisplaySetPalette();

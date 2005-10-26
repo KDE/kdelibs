@@ -20,6 +20,7 @@
 
 #include "kdelibs_export.h"
 
+#include "ksharedptr.h"
 class QByteArray;
 class QString;
 class KAboutData;
@@ -89,7 +90,7 @@ class KDECORE_EXPORT KInstance
      * Returns the general config object ("appnamerc").
      * @return the KConfig object for the instance.
      */
-    KSharedConfig*      sharedConfig() const;
+    KSharedPtr<KSharedConfig>      sharedConfig() const;
 
     /**
      *  Returns an iconloader object.

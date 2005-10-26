@@ -20,6 +20,8 @@
 
 #include "kdelibs_export.h"
 
+#include <ksharedptr.h>
+
 class KInstance;
 class KCharsets;
 class KConfig;
@@ -69,7 +71,7 @@ public:
      *  Returns the general config object.
      * @return the global configuration object.
      */
-    static KSharedConfig        *sharedConfig();
+    static KSharedPtr<KSharedConfig>        sharedConfig();
 
     /**
      *  Returns an iconloader object.

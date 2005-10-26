@@ -20,6 +20,7 @@
 #    Boston, MA 02110-1301, USA.
 
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore/network $(all_includes) $(LIBART_CFLAGS)
+AM_CPPFLAGS = -DKDE3_SUPPORT
 
 if include_SVGICONS
 SVGICONS=svgicons

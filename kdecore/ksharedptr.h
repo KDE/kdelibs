@@ -27,8 +27,6 @@
 #ifndef KSHAREDPTR_H
 #define KSHAREDPTR_H
 
-#define KDE3_SUPPORT
-
 #ifdef KDE3_SUPPORT
 #include "kdelibs_export.h"
 struct KDECORE_EXPORT KShared

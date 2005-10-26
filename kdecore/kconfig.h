@@ -166,7 +166,7 @@ public:
    *
    * NOTE: KConfig::sync() requires a lock on both the normal and global
    * config file. When calling KConfig::sync() while having a lock on the
-   * global config file, the normal config file MUST be locked AS WELL and the 
+   * global config file, the normal config file MUST be locked AS WELL and the
    * normal config file MUST be locked BEFORE the global config file!
    * Otherwise there is a risk of deadlock.
    * @since 3.3
@@ -266,12 +266,12 @@ private:
  * KSharedConfig provides a reference counted, shared memory variant
  * of KConfig.
  */
-class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
+class KDECORE_EXPORT KSharedConfig : public KConfig
 {
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;
 
-public:  
+public:
   /**
    * Returns a ref-counted pointer to a shared read-write config object.
    * @param fileName the name of the file to use for the configuration
@@ -285,8 +285,6 @@ public:
 
 private:
   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
-
-  static QList<KSharedConfig*> *s_list;
 };
 
 #endif

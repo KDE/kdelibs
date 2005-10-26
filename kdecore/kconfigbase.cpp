@@ -23,9 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define KDE3_SUPPORT
 #include "kconfigbase.h"
-#undef KDE3_SUPPORT
 #include "kconfigbackend.h"
 #include "kconfigdata.h"
 #include "kdebug.h"
@@ -346,7 +344,7 @@ QVariant KConfigBase::readPropertyEntry( const QString& pKey,
 QVariant KConfigBase::readPropertyEntry( const char *pKey,
                                           QVariant::Type type ) const
 {
-  if ( !hasKey( pKey ) ) 
+  if ( !hasKey( pKey ) )
     return QVariant();
   else
     return readPropertyEntry(pKey, QVariant(type));
