@@ -151,7 +151,7 @@ public:
   KIO::filesize_t processedSize() { return m_iProcessedSize; }
   unsigned long processedFiles() { return m_iProcessedFiles; }
   unsigned long speed() { return m_iSpeed; }
-  QTime remainingTime() { return m_remainingTime; }
+  unsigned int remainingSeconds() { return m_remainingSeconds; }
 
   const QString& fullLengthAddress() const {return m_fullLengthAddress;}
   void setText(ListProgress::ListProgressFields field, const QString& text);
@@ -188,7 +188,7 @@ protected:
   KIO::filesize_t m_iProcessedSize;
   unsigned long m_iProcessedFiles;
   unsigned long m_iSpeed;
-  QTime m_remainingTime;
+  int m_remainingSeconds;
   QTimer m_showTimer;
   QString m_fullLengthAddress;
 };
