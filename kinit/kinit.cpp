@@ -125,6 +125,8 @@ static char sock_file_old[MAX_SOCK_FILE];
 #define DISPLAY "MAC_DISPLAY"
 #elif defined(K_WS_QTONLY)
 #define DISPLAY "QT_DISPLAY"
+#elif defined(Q_WS_WIN)
+#define DISPLAY "WIN_DISPLAY"
 #else
 #error Use QT/X11 or QT/Embedded
 #endif
