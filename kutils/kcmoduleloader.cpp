@@ -32,6 +32,7 @@
 #include <kmessagebox.h>
 #include <klibloader.h>
 
+#include <fixx11h.h>
 #include "kcmoduleloader.h"
 
 

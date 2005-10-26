@@ -41,7 +41,7 @@
 #include <kaboutdata.h>
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
-#include <kcmoduleloader.h>
+
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
@@ -51,6 +51,9 @@
 #include <kuser.h>
 
 #include <kvbox.h>
+
+#include <fixx11h.h>
+#include <kcmoduleloader.h>
 
 #include "kcmoduleproxy.h"
 #include "kcmoduleproxyIface.h"
