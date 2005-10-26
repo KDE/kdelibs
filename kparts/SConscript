@@ -11,13 +11,17 @@ partmanager.cpp plugin.cpp statusbarextension.cpp
 includes = '../ #/kio/ #/libltdl #/kfile '
 
 obj = env.kdeobj('shlib')
-obj.target = 'libkparts'
+obj.target = 'kparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kdeui ../dcop"
-obj.libs = "kdecore kdeui DCOP"
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KIO '
+obj.libpaths = "../kdecore ../kdeui ../kio ../dcop"
+obj.libs = "kdecore kdeui kio DCOP"
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
+if env['WINDOWS']:
+	obj.libpaths += " ../win"
+	obj.libs     += " kdewin32"
+
 obj.execute()
 
 
