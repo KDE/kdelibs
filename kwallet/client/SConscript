@@ -10,7 +10,7 @@ include_headers = """
 kwallet.h kwallettypes.h
 """
 
-includes = 'srcdir '
+includes = '. '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kwalletclient'
