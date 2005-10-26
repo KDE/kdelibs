@@ -158,6 +158,32 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
   return true;
 }
 
+/*
+  Eliminates any custom header that could potentically alter the request
+*/
+static QString sanitizeCustomHTTPHeader(const QString& _header)
+{
+  QString sanitizedHeaders;
+  QStringList headers = QStringList::split("\r\n", _header);
+
+  for(QStringList::Iterator it = headers.begin(); it != headers.end(); ++it)
+  {
+    QString header = (*it).lower();
+    // Do not allow Request line to be specified and ignore
+    // the other HTTP headers.
+    if (header.find(':') == -1 || header.startsWith("host") ||
+        header.startsWith("authorization") ||
+        header.startsWith("proxy-authorization") ||
+        header.startsWith("via"))
+      continue;
+
+    sanitizedHeaders += (*it);
+    sanitizedHeaders += "\r\n";
+  }
+
+  return sanitizedHeaders.stripWhiteSpace();
+}
+
 
 #define NO_SIZE		((KIO::filesize_t) -1)
 
@@ -710,9 +736,9 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     QDomElement thisResponse = n.toElement();
     if (thisResponse.isNull())
       continue;
-  
+
     hasResponse = true;
-    
+
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
     if ( !href.isNull() )
     {
@@ -1760,7 +1786,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         m_request.cache = parseCacheControl(tmp);
      else
         m_request.cache = DEFAULT_CACHE_CONTROL;
-     
+
      m_request.passwd = url.pass();
      m_request.user = url.user();
      m_request.doProxy = m_bUseProxy;
@@ -2409,7 +2435,7 @@ bool HTTPProtocol::httpOpen()
     QString customHeader = metaData( "customHTTPHeader" );
     if (!customHeader.isEmpty())
     {
-      header += customHeader;
+      header += sanitizeCustomHTTPHeader(customHeader);
       header += "\r\n";
     }
 
@@ -3465,7 +3491,7 @@ try_again:
         if ( getAuthorization() )
         {
            // for NTLM Authentication we have to keep the connection open!
-           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 ) 
+           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 )
            {
              m_bKeepAlive = true;
              readBody( true );
@@ -4214,7 +4240,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
          .arg( m_request.hostname ) );
     }
     else
-    {    
+    {
        totalSize ( 0 );
     }
   }
@@ -4896,7 +4922,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     };
   }
 #endif
-  else if ( strncasecmp( p, "NTLM", 4 ) == 0 && 
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0 &&
     (( b && m_bPersistentProxyConnection ) || !b ) )
   {
     f = AUTH_NTLM;
@@ -4924,7 +4950,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   */
   if (b)
   {
-    if ((f == AUTH_None) || 
+    if ((f == AUTH_None) ||
         ((m_iProxyAuthCount > 0) && (f < ProxyAuthentication)))
     {
       // Since I purposefully made the Proxy-Authentication settings
@@ -4935,13 +4961,13 @@ void HTTPProtocol::configAuth( char *p, bool b )
         ProxyAuthentication = f;
       kdDebug(7113) << "(" << m_pid << ") Rejected proxy auth method: " << f << endl;
       return;
-    } 
-    m_iProxyAuthCount++;   
+    }
+    m_iProxyAuthCount++;
     kdDebug(7113) << "(" << m_pid << ") Accepted proxy auth method: " << f << endl;
   }
   else
   {
-    if ((f == AUTH_None) || 
+    if ((f == AUTH_None) ||
         ((m_iWWWAuthCount > 0) && (f < Authentication)))
     {
       kdDebug(7113) << "(" << m_pid << ") Rejected auth method: " << f << endl;
@@ -5463,7 +5489,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     // create a response
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
-    KNTLM::getAuth( buf, challenge, user, passwd, domain, 
+    KNTLM::getAuth( buf, challenge, user, passwd, domain,
 		    KNetwork::KResolver::localHostName(), false, false );
   }
   else
