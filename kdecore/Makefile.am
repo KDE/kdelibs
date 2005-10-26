@@ -54,7 +54,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kprocio.h kasyncio.h krandom.h\
 	kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	genericfactory.h kgenericfactory.tcc \
+	kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
