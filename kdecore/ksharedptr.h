@@ -68,18 +68,18 @@ public:
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { if ( ptr ) ptr->ref.deref(); }
+    ~KSharedPtr() { if ( ptr ) deref(); }
 
     KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
         if ( ptr == p.ptr ) return *this;
-        if ( ptr ) ptr->ref.deref();
+        if ( ptr ) deref();
         ptr = p.ptr;
         if ( ptr ) ptr->ref.ref();
         return *this;
     }
     KSharedPtr<T>& operator= ( T* p ) {
         if ( ptr == p ) return *this;
-        if ( ptr ) ptr->ref.deref();
+        if ( ptr ) deref();
         ptr = p;
         if ( ptr ) ptr->ref.ref();
         return *this;
@@ -139,6 +139,12 @@ public:
     template <class U>
     static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
         return KSharedPtr<T>( dynamic_cast<T *>( other.ptr ) );
+    }
+
+private:
+    void deref() {
+        if ( !ptr->ref.deref() )
+            delete ptr;
     }
 
 private:
