@@ -24,6 +24,7 @@
 #include <qmap.h>
 #include <QString>
 #include <ksharedptr.h>
+#include <kdelibs_export.h>
 
 class QDataStream;
 namespace DNSSD
@@ -31,8 +32,8 @@ namespace DNSSD
 class ServiceBasePrivate;
 
 /**
-This class is used to carry information about service. It can be remote, local, 
-metaservice or domain. Metaservice has only type and domain - it means that 
+This class is used to carry information about service. It can be remote, local,
+metaservice or domain. Metaservice has only type and domain - it means that
 services of given type are present in given domain.
 @short Describes any type of service.
 @author Jakub Stachowski
@@ -41,7 +42,7 @@ class KDNSSD_EXPORT ServiceBase : public KShared
 {
 public:
 	typedef KSharedPtr<ServiceBase> Ptr;
-			
+
 	/**
 	@param name Service name - empty for metaservices
 	@param type Service type - empty for domains
@@ -68,27 +69,27 @@ public:
 	it is empty for domains.
 	 */
 	const QString& type() const;
-	
+
 	/**
 	Returns domain that given service belongs to. It is "local." for link-local services.
 	 */
 	const QString& domain() const;
-	
-	/** 
+
+	/**
 	Returns hostname. It is only valid for local and resolved remote services.
 	 */
 	const QString& hostName() const;
-	
+
 	/**
 	Returns port number. It is only valid for local and resolved remote services.
 	 */
 	unsigned short port() const;
-	
+
 	/**
 	Returns read only map of text properties.  It is only valid for local and resolved remote services.
 	 */
 	const QMap<QString,QString>& textData() const;
-	
+
 protected:
 	QString m_serviceName;
 	QString m_type;
@@ -105,7 +106,7 @@ protected:
 	 */
 	QString encode();
 	/**
-	Decode PTR label returned by DNS resolver into service name, type and domain. It also 
+	Decode PTR label returned by DNS resolver into service name, type and domain. It also
 	handles special cases - metaservices and domains.
 	 */
 	void decode(const QString& name);

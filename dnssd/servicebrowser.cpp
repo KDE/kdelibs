@@ -32,10 +32,10 @@ namespace DNSSD
 
 const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
 
-class ServiceBrowserPrivate 
+class ServiceBrowserPrivate
 {
-public:	
-	ServiceBrowserPrivate() : m_running(false) 
+public:
+	ServiceBrowserPrivate() : m_running(false)
 	{}
 	QList<RemoteService::Ptr> m_services;
 	QList<RemoteService::Ptr> m_duringResolve;
@@ -85,7 +85,7 @@ const ServiceBrowser::State ServiceBrowser::isAvailable()
 {
 #ifdef HAVE_DNSSD
 //	DNSServiceRef ref;
-//	bool ok (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError); 
+//	bool ok (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError);
 //	if (ok) DNSServiceRefDeallocate(ref);
 //	return (ok) ? Working : Stopped;
 	return Working;
@@ -111,7 +111,7 @@ void ServiceBrowser::serviceResolved(bool success)
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
 	QList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
 	QList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
-	while ( it!= itEnd && svr!= (*it).get()) ++it;
+	while ( it!= itEnd && svr!= (*it).data()) ++it;
 	if (it != itEnd) {
 		if (success) {
 		  	d->m_services+=(*it);
@@ -137,7 +137,7 @@ void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
 {
 	if (findDuplicate(svr)==(d->m_services.end()))  {
 		if (d->m_flags & AutoResolve) {
-			connect(svr.get(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
+			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
 			d->m_duringResolve+=svr;
 			svr->resolveAsync();
 		} else	{
@@ -161,7 +161,7 @@ void ServiceBrowser::removeDomain(const QString& domain)
 {
 	while (d->resolvers[domain]) d->resolvers.remove(domain);
 	QList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
-	while (it!=d->m_services.end()) 
+	while (it!=d->m_services.end())
 		// use section to skip possible trailing dot
 		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
 			emit serviceRemoved(*it);
@@ -212,7 +212,7 @@ void ServiceBrowser::virtual_hook(int, void*)
 QList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
 {
 	QList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
-	for (QList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it) 
+	for (QList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it)
 		if ((src->type()==(*it)->type()) && (src->serviceName()==(*it)->serviceName()) &&
 				   (src->domain() == (*it)->domain())) return it;
 	return itEnd;
