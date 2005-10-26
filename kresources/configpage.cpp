@@ -46,7 +46,7 @@
 
 namespace KRES {
 
-ResourcePageInfo::ResourcePageInfo() : KShared() {
+ResourcePageInfo::ResourcePageInfo() {
   mManager = 0L;
   mConfig = 0L;
 }
