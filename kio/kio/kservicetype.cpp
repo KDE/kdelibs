@@ -265,7 +265,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
   bool isAMimeType = serv && serv->isType( KST_KMimeType );
   if (isAMimeType)
   {
-     KMimeType::Ptr mime = serv;;
+     KMimeType::Ptr mime = KMimeType::Ptr::staticCast( serv );
      while(true)
      {
         QString parent = mime->parentMimeType();
@@ -274,7 +274,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         KServiceType::Ptr servType = KServiceTypeFactory::self()->findServiceTypeByName( parent );
         if ( !servType || !servType->isType( KST_KMimeType ) )
            break;
-        mime = servType;
+        mime = KMimeType::Ptr::staticCast( servType );
         if (!mime)
            break;
 

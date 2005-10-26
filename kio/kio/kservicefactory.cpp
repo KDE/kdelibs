@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure <faure@kde.org>
  *
@@ -213,7 +214,7 @@ KService::List KServiceFactory::allServices()
    {
       const KSycocaEntry::Ptr entry = *it;
       if ( entry->isType( KST_KService ) )
-         result.append( KService::Ptr( entry ) );
+         result.append( KService::Ptr::staticCast( entry ) );
    }
    return result;
 }

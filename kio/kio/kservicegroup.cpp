@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
  *
@@ -130,13 +131,13 @@ int KServiceGroup::childCount()
         KSycocaEntry::Ptr p = *it;
         if (p->isType(KST_KService))
         {
-           KService::Ptr service = p;
+            KService::Ptr service = KService::Ptr::staticCast( p );
            if (!service->noDisplay())
               m_childCount++;
         }
         else if (p->isType(KST_KServiceGroup))
         {
-           KServiceGroup::Ptr serviceGroup = p;
+           KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( p );
            m_childCount += serviceGroup->childCount();
         }
      }
@@ -235,14 +236,14 @@ void KServiceGroup::load( QDataStream& s )
            KServiceGroup::Ptr serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
            if (serviceGroup)
-              m_serviceList.append( SPtr(serviceGroup) );
+              m_serviceList.append( SPtr::staticCast(serviceGroup) );
         }
         else
         {
            KService::Ptr service;
            service = KServiceFactory::self()->findServiceByDesktopPath(path);
            if (service)
-              m_serviceList.append( SPtr(service) );
+              m_serviceList.append( SPtr::staticCast(service) );
         }
      }
   }
@@ -264,12 +265,12 @@ void KServiceGroup::save( QDataStream& s )
      KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
      {
-        KService::Ptr service = p;
+        KService::Ptr service = KService::Ptr::staticCast( p );
         groupList.append( service->desktopEntryPath() );
      }
      else if (p->isType(KST_KServiceGroup))
      {
-        KServiceGroup::Ptr serviceGroup = p;
+        KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( p );
         groupList.append( serviceGroup->relPath() );
      }
      else
@@ -323,7 +324,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     if (!m_bDeep) {
 
         group =
-            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true).get();
+            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true).data();
 
         if (0 == group) // No guarantee that we still exist!
             return List();
@@ -341,19 +342,19 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     {
         KSycocaEntry::Ptr p = (*it);
 	bool noDisplay = p->isType(KST_KServiceGroup) ?
-                                   static_cast<KServiceGroup *>(p.get())->noDisplay() :
-                                   static_cast<KService *>(p.get())->noDisplay();
+                                   static_cast<KServiceGroup *>(p.data())->noDisplay() :
+                                   static_cast<KService *>(p.data())->noDisplay();
         if (excludeNoDisplay && noDisplay)
            continue;
         // Choose the right list
         KSortableValueList<SPtr,QByteArray> & list = p->isType(KST_KServiceGroup) ? glist : slist;
         QString name;
         if (p->isType(KST_KServiceGroup))
-          name = static_cast<KServiceGroup *>(p.get())->caption();
+          name = static_cast<KServiceGroup *>(p.data())->caption();
         else if (sortByGenericName)
-          name = static_cast<KService *>(p.get())->genericName() + " " + p->name();
+          name = static_cast<KService *>(p.data())->genericName() + " " + p->name();
         else
-          name = p->name() + " " + static_cast<KService *>(p.get())->genericName();
+          name = p->name() + " " + static_cast<KService *>(p.data())->genericName();
 
         QByteArray key( name.length() * 4 + 1 );
         // strxfrm() crashes on Solaris
@@ -402,7 +403,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
            // Remove entry from sorted list of services.
           for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
           {
-             const KServiceGroup::Ptr group = (*it2).value();
+             const KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast( (*it2).value() );
              if (group->relPath() == groupPath)
              {
                 glist.remove(it2);
@@ -417,7 +418,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
            // TODO: This prevents duplicates
           for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
           {
-             const KService::Ptr service = (*it2).value();
+             const KService::Ptr service = KService::Ptr::staticCast( (*it2).value() );
              if (service->menuId() == item)
              {
                 slist.remove(it2);
@@ -464,7 +465,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
               }
               for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
               {
-                  KServiceGroup::Ptr group = (*it2).value();
+                  KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast( (*it2).value() );
                   group->setShowEmptyMenu(  showEmptyMenu  );
                   group->setAllowInline( showInline );
                   group->setShowInlineHeader( showInlineHeader );
@@ -476,7 +477,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
           else if (item == ":M")
           {
             // Add sorted list of sub-menus
-            for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
+            for(KSortableValueList<SPtr,QByteArray>::const_iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
             {
               addItem(sorted, (*it2).value(), needSeparator);
             }
@@ -484,7 +485,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
           else if (item == ":F")
           {
             // Add sorted list of services
-            for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
+            for(KSortableValueList<SPtr,QByteArray>::const_iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
             {
               addItem(sorted, (*it2).value(), needSeparator);
             }
@@ -535,7 +536,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
             {
                 if (!(*it2)->isType(KST_KServiceGroup))
                     continue;
-                KServiceGroup::Ptr group = (*it2);
+                KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast( *it2 );
                 if (group->relPath() == groupPath)
                 {
                     if (!excludeNoDisplay || !group->noDisplay())
@@ -569,7 +570,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
                         else
                             it--;
 
-                        addItem(sorted, (group), needSeparator);
+                        addItem(sorted, SPtr::staticCast(group), needSeparator);
                     }
                     break;
                 }
@@ -581,7 +582,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
             {
                 if (!(*it2)->isType(KST_KService))
                     continue;
-                const KService::Ptr service = (*it2);
+                const KService::Ptr service = KService::Ptr::staticCast( *it2 );
                 if (service->menuId() == item)
                 {
                     if (!excludeNoDisplay || !service->noDisplay())

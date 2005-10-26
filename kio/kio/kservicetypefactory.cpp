@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
  *
@@ -219,7 +220,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
         it != list.end();
         ++it)
    {
-      KMimeType::Ptr newMimeType = *it;
+      KMimeType::Ptr newMimeType = KMimeType::Ptr::staticCast( *it );
       if (newMimeType)
          result.append( newMimeType );
    }
@@ -234,7 +235,7 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
         it != list.end();
         ++it)
    {
-      KServiceType::Ptr newServiceType = *it;
+      KServiceType::Ptr newServiceType = KServiceType::Ptr::staticCast( *it );
       if (newServiceType)
          result.append( newServiceType );
    }

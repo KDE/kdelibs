@@ -74,7 +74,7 @@ void KMimeType::buildDefaultType()
 
   if (mime && mime->isType( KST_KMimeType ))
   {
-      s_pDefaultType = mime;
+      s_pDefaultType = KMimeType::Ptr::staticCast( mime );
   }
   else
   {
@@ -150,7 +150,7 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   }
 
   // We got a mimetype
-  return mime;
+  return KMimeType::Ptr::staticCast( mime );
 }
 
 KMimeType::List KMimeType::allMimeTypes()
