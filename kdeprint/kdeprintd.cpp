@@ -72,7 +72,9 @@ StatusWindow::StatusWindow(int pid)
 	m_icon = new QLabel(this);
 	m_icon->setPixmap(DesktopIcon("fileprint"));
 	m_icon->setAlignment(Qt::AlignCenter);
+#ifdef Q_WS_X11
 	KWin::setIcons(winId(), *(m_icon->pixmap()), SmallIcon("fileprint"));
+#endif
 	QGridLayout	*l0 = new QGridLayout(this, 2, 3, 10, 10);
 	l0->setRowStretch(0, 1);
 	l0->setColStretch(1, 1);
