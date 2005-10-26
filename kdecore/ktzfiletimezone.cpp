@@ -19,17 +19,9 @@
 
 #include <config.h>
 
-//#include <cmath>
-//#include <climits>
-//#include <cstdlib>
-
 #include <QFile>
 #include <QDataStream>
 
-//#include <kcodecs.h>
-//#include <kprocess.h>
-//#include <kstringhandler.h>
-//#include <ktempfile.h>
 #include <kdebug.h>
 #include <ktzfiletimezone.h>
 

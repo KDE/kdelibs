@@ -986,7 +986,6 @@ int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
     int offset1 = (t == (time_t)-1) ? 0 : gmtoff(t);
     if (secondOffset)
     {
-#warning Check secondOffset works
         int offset2 = offset1;
         if (t != (time_t)-1)
         {

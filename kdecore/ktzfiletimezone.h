@@ -25,7 +25,6 @@
 #ifndef _KTZFILETIMEZONE_H
 #define _KTZFILETIMEZONE_H
 
-//#include <ctime>
 #include <QDateTime>
 #include <QList>
 #include <QString>
@@ -44,6 +43,7 @@ class KTzfileTimezoneSourcePrivate;
  * It works in partnership with the KTzfileTimezoneSource class which reads and parses the
  * time zone definition files.
  *
+ * @short Represents a time zone defined in tzfile(5) format
  * @see KTzfileTimezoneSource, KTzfileTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -123,6 +123,7 @@ private:
  * tzfile is the format used by zoneinfo files in the system time zone database.
  * The format is documented in the tzfile(5) manpage.
  *
+ * @short Reads and parses tzfile(5) time zone definition files
  * @see KTzfileTimezone, KTzfileTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -164,6 +165,7 @@ private:
 /**
  * The parsed data returned by KTzfileTimezoneSource.
  *
+ * @short Parsed data from tzfile(5) time zone definition files
  * @see KTzfileTimezoneSource, KTzfileTimezone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.

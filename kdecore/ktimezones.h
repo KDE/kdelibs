@@ -47,7 +47,7 @@ class KSystemTimezonesPrivate;
 class KSystemTimezoneSourcePrivate;
 class KSystemTimezoneDataPrivate;
 
-/** @defgroup timezones Timezone classes
+/** @defgroup timezones Time zone classes
  *
  * The time zone classes provide a framework for accessing time zone data, and
  * converting times and dates between different time zones. They provide access
@@ -125,6 +125,7 @@ class KSystemTimezoneDataPrivate;
  *
  * If you want to access system time zones, use the KSystemTimezones class.
  *
+ * @short Represents a time zone database or collection
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
@@ -228,6 +229,7 @@ private:
  * part of such a collection, it is owned by the KTimezones instance and should not be
  * deleted.
  *
+ * @short Base class representing a time zone
  * @see KTimezoneSource, KTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -464,6 +466,7 @@ private:
  * KTimezoneSource itself may be used as a dummy source which returns empty
  * time zone details.
  *
+ * @short Base class representing a source of time zone information
  * @see KTimezone, KTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -497,6 +500,7 @@ public:
  *
  * This base class can be instantiated, but contains no data.
  *
+ * @short Base class for parsed time zone data
  * @see KTimezone, KTimezoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -562,6 +566,7 @@ private:
  * QDateTime omaniTime = local->convert(oman, sampleTime);
  * \endcode
  *
+ * @short System time zone access
  * @see KTimezones, KSystemTimezone, KSystemTimezoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -631,6 +636,7 @@ private:
  *
  * Typically, instances are created and accessed via the KSystemTimezones class.
  *
+ * @short System time zone
  * @see KSystemTimezones, KSystemTimezoneSource, KSystemTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -692,6 +698,7 @@ private:
  *
  * Access is performed via the system time zone library functions.
  *
+ * @short Reads and parses system time zone data
  * @see KSystemTimezones, KSystemTimezone, KSystemTimezoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -740,8 +747,9 @@ private:
 
 
 /**
- * The parsed time zone data returned by KSystemTimezoneSource.
+ * The parsed system time zone data returned by KSystemTimezoneSource.
  *
+ * @short Parsed system time zone data
  * @see KSystemTimezoneSource, KSystemTimezone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
