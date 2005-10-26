@@ -1154,7 +1154,12 @@ public:
   /**
    * Return the @ref KConfig object used for reading and writing the settings.
    */
-  KConfig *config() const;
+  KConfig *config();
+
+  /**
+   * Return the @ref KConfig object used for reading and writing the settings.
+   */
+  const KConfig *config() const;
 
   /**
    * Return list of items managed by this KConfigSkeleton object.

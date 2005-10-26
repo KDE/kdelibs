@@ -908,9 +908,14 @@ void KConfigSkeleton::setCurrentGroup( const QString &group )
   mCurrentGroup = group;
 }
 
-KConfig *KConfigSkeleton::config() const
+KConfig *KConfigSkeleton::config()
 {
-  return mConfig.get();
+  return mConfig.data();
+}
+
+const KConfig *KConfigSkeleton::config() const
+{
+  return mConfig.data();
 }
 
 bool KConfigSkeleton::useDefaults(bool b)
@@ -949,7 +954,7 @@ void KConfigSkeleton::readConfig()
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
-    (*it)->readConfig( mConfig.get() );
+    (*it)->readConfig( mConfig.data() );
   }
 
   usrReadConfig();
@@ -966,7 +971,7 @@ void KConfigSkeleton::writeConfig()
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
-    (*it)->writeConfig( mConfig.get() );
+    (*it)->writeConfig( mConfig.data() );
   }
 
   usrWriteConfig();
@@ -983,7 +988,7 @@ void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
   item->setName( name.isEmpty() ? item->key() : name );
   mItems.append( item );
   mItemDict.insert( item->name(), item );
-  item->readDefault( mConfig.get() );
+  item->readDefault( mConfig.data() );
 }
 
 KConfigSkeleton::ItemString *KConfigSkeleton::addItemString( const QString &name, QString &reference,

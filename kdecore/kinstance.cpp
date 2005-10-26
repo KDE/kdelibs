@@ -226,7 +226,7 @@ KConfig	*KInstance::config() const
             return config(); // Reread...
         }
 
-	_config = d->sharedConfig.get();
+	_config = d->sharedConfig.data();
         if (_dirs)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
