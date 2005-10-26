@@ -30,17 +30,13 @@ DEALINGS IN THE SOFTWARE.
 
 #ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
 
-#include <q3cstring.h>
 #include <qstring.h>
-#include <q3valuelist.h>
 #include <qcoreevent.h>
 #include <qwindowdefs.h>
-#include "kdelibs_export.h"
+#include <kdelibs_export.h>
 
 class KStartupInfoId;
 class KStartupInfoData;
-
-class KStartupInfoPrivate;
 
 /**
  * Class for manipulating the application startup notification.
@@ -369,12 +365,10 @@ class KDECORE_EXPORT KStartupInfo
         void clean_all_noncompliant();
         static QString check_required_startup_fields( const QString& msg,
             const KStartupInfoData& data, int screen );
-        bool clean_on_cantdetect_; // KDE4 remove unused
         unsigned int timeout;
-        KStartupInfoPrivate* d;
+        class Private;
+        Private* d;
     };
-
-class KStartupInfoIdPrivate;
 
 /**
  * Class representing an identification of application startup notification.
@@ -444,10 +438,9 @@ class KDECORE_EXPORT KStartupInfoId
         KStartupInfoId( const QString& txt );
         QString to_text() const;
         friend class KStartupInfo;
-        KStartupInfoIdPrivate* d;
+        class Private;
+        Private *const d;
     };
-
-class KStartupInfoDataPrivate;
 
 /**
  * Class representing data about an application startup notification.
@@ -660,7 +653,8 @@ class KDECORE_EXPORT KStartupInfoData
         void remove_pid( pid_t pid );
         friend class KStartupInfo;
         friend class KStartupInfo::Data;
-        KStartupInfoDataPrivate* d;
+        class Private;
+        Private *const d;
     };
 
 #endif //Q_WS_X11

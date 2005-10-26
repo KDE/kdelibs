@@ -45,12 +45,12 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kstartupinfo.h"
 
-#include <QtGui/qx11info_x11.h>
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <qtimer.h>
 #include <qx11info_x11.h>
+#include <qevent.h>
 #ifdef Q_WS_X11
 #include <netwm.h>
 #endif
@@ -89,7 +89,7 @@ class KStartupInfo::Data
         unsigned int age;
     };
 
-struct KStartupInfoPrivate
+class KStartupInfo::Private
     {
     public:
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
@@ -103,7 +103,7 @@ struct KStartupInfoPrivate
 #endif
 	QTimer* cleanup;
 	int flags;
-	KStartupInfoPrivate( int flags_P )
+	Private( int flags_P )
     	    :
 #ifdef Q_WS_X11
 	    msgs( NET_STARTUP_MSG, NULL, false ),
@@ -133,7 +133,7 @@ void KStartupInfo::init( int flags_P )
     if( !QX11Info::display())
         return;
 
-    d = new KStartupInfoPrivate( flags_P );
+    d = new Private( flags_P );
 #ifdef Q_WS_X11
     if( !( d->flags & DisableKWinModule ))
         {
@@ -159,11 +159,11 @@ void KStartupInfo::got_message( const QString& msg_P )
 // TODO do something with SCREEN= ?
     kdDebug( 172 ) << "got:" << msg_P << endl;
     QString msg = msg_P.trimmed();
-    if( msg.startsWith( "new:" )) // must match length below
+    if( msg.startsWith( QLatin1String("new:") )) // must match length below
         got_startup_info( msg.mid( 4 ), false );
-    else if( msg.startsWith( "change:" )) // must match length below
+    else if( msg.startsWith( QLatin1String("change:") )) // must match length below
         got_startup_info( msg.mid( 7 ), true );
-    else if( msg.startsWith( "remove:" )) // must match length below
+    else if( msg.startsWith( QLatin1String("remove:") )) // must match length below
         got_remove_startup_info( msg.mid( 7 ));
     }
 
@@ -176,12 +176,13 @@ void KStartupInfo::got_message( const QString& msg_P )
 namespace
 {
 class DelayedWindowEvent
-    : public QCustomEvent
+    : public QEvent
     {
     public:
 	DelayedWindowEvent( WId w_P )
-	    : QCustomEvent( QEvent::User + 15 ), w( w_P ) {}
+	    : QEvent( uniqueType() ), w( w_P ) {}
 	Window w;
+	static Type uniqueType() { return Type(QEvent::User+15); }
     };
 }
 
@@ -192,7 +193,7 @@ void KStartupInfo::slot_window_added( WId w_P )
 
 void KStartupInfo::customEvent( QEvent* e_P )
     {
-    if( e_P->type() == QEvent::User + 15 )
+    if( e_P->type() == DelayedWindowEvent::uniqueType() )
 	window_added( static_cast< DelayedWindowEvent* >( e_P )->w );
     else
 	QObject::customEvent( e_P );
@@ -912,7 +913,7 @@ void KStartupInfo::clean_all_noncompliant()
          it != d->startups.end();
          )
         {
-        if( ( *it ).WMClass() != "0" )
+        if( ( *it ).WMClass() != QLatin1String("0") )
             {
             ++it;
             continue;
@@ -939,16 +940,16 @@ QByteArray KStartupInfo::createNewStartupId()
 #else
     long qt_x_user_time = 0;
 #endif
-    QByteArray id = QString( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
+    QByteArray id = QString::fromLatin1( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).toUtf8();
     kdDebug( 172 ) << "creating: " << id << ":" << qAppName() << endl;
     return id;
     }
 
 
-struct KStartupInfoIdPrivate
+struct KStartupInfoId::Private
     {
-    KStartupInfoIdPrivate() : id( "" ) {};
+    Private() : id( "" ) {};
     QByteArray id; // id
     };
 
@@ -963,11 +964,10 @@ QString KStartupInfoId::to_text() const
     return QString::fromLatin1( " ID=\"%1\" " ).arg( escape_str( id()));
     }
 
-KStartupInfoId::KStartupInfoId( const QString& txt_P )
+KStartupInfoId::KStartupInfoId( const QString& txt_P ) : d(new Private)
     {
-    d = new KStartupInfoIdPrivate;
     QStringList items = get_fields( txt_P );
-    const QString id_str = QString::fromLatin1( "ID=" );
+    const QString id_str = QLatin1String( "ID=" );
     for( QStringList::Iterator it = items.begin();
          it != items.end();
          ++it )
@@ -1025,9 +1025,8 @@ void KStartupInfo::resetStartupEnv()
     unsetenv( NET_STARTUP_ENV );
     }
 
-KStartupInfoId::KStartupInfoId()
+KStartupInfoId::KStartupInfoId() : d(new Private)
     {
-    d = new KStartupInfoIdPrivate;
     }
 
 KStartupInfoId::~KStartupInfoId()
@@ -1035,17 +1034,15 @@ KStartupInfoId::~KStartupInfoId()
     delete d;
     }
 
-KStartupInfoId::KStartupInfoId( const KStartupInfoId& id_P )
+KStartupInfoId::KStartupInfoId( const KStartupInfoId& id_P ) : d(new Private(*id_P.d))
     {
-    d = new KStartupInfoIdPrivate( *id_P.d );
     }
 
 KStartupInfoId& KStartupInfoId::operator=( const KStartupInfoId& id_P )
     {
     if( &id_P == this )
         return *this;
-    delete d;
-    d = new KStartupInfoIdPrivate( *id_P.d );
+    *d = *id_P.d;
     return *this;
     }
 
@@ -1067,7 +1064,7 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
 
 bool KStartupInfoId::none() const
     {
-    return d->id.isEmpty() || d->id == "0";
+    return d->id.isEmpty() || d->id == QLatin1String("0");
     }
 
 unsigned long KStartupInfoId::timestamp() const
@@ -1102,10 +1099,10 @@ unsigned long KStartupInfoId::timestamp() const
     return 0;
     }
 
-struct KStartupInfoDataPrivate
+struct KStartupInfoData::Private
     {
-    KStartupInfoDataPrivate() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-	silent( KStartupInfoData::Unknown ), timestamp( -1U ), screen( -1 ) {};
+    Private() : desktop( 0 ), wmclass( "" ), hostname( "" ),
+	silent( KStartupInfoData::Unknown ), timestamp( -1U ), screen( -1 ) { }
     QString bin;
     QString name;
     QString description;
@@ -1121,7 +1118,7 @@ struct KStartupInfoDataPrivate
 
 QString KStartupInfoData::to_text() const
     {
-    QString ret = "";
+    QString ret;
     if( !d->bin.isEmpty())
         ret += QString::fromLatin1( " BIN=\"%1\"" ).arg( escape_str( d->bin ));
     if( !d->name.isEmpty())
@@ -1150,9 +1147,8 @@ QString KStartupInfoData::to_text() const
     return ret;
     }
 
-KStartupInfoData::KStartupInfoData( const QString& txt_P )
+KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
     {
-    d = new KStartupInfoDataPrivate;
     QStringList items = get_fields( txt_P );
     const QString bin_str = QString::fromLatin1( "BIN=" );
     const QString name_str = QString::fromLatin1( "NAME=" );
@@ -1198,17 +1194,15 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
         }
     }
 
-KStartupInfoData::KStartupInfoData( const KStartupInfoData& data )
+KStartupInfoData::KStartupInfoData( const KStartupInfoData& data ) : d(new Private(*data.d))
 {
-    d = new KStartupInfoDataPrivate( *data.d );
 }
 
 KStartupInfoData& KStartupInfoData::operator=( const KStartupInfoData& data )
 {
     if( &data == this )
         return *this;
-    delete d;
-    d = new KStartupInfoDataPrivate( *data.d );
+    *d = *data.d;
     return *this;
 }
 
@@ -1240,9 +1234,8 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         d->screen = data_P.screen();
     }
 
-KStartupInfoData::KStartupInfoData()
+KStartupInfoData::KStartupInfoData() : d(new Private)
 {
-    d = new KStartupInfoDataPrivate;
 }
 
 KStartupInfoData::~KStartupInfoData()
@@ -1328,7 +1321,7 @@ void KStartupInfoData::setWMClass( const QByteArray& wmclass_P )
 
 const QByteArray KStartupInfoData::findWMClass() const
     {
-    if( !WMClass().isEmpty() && WMClass() != "0" )
+    if( !WMClass().isEmpty() && WMClass() != QLatin1String("0") )
         return WMClass();
     return bin().toUtf8();
     }
@@ -1365,7 +1358,7 @@ void KStartupInfoData::addPid( pid_t pid_P )
 
 void KStartupInfoData::remove_pid( pid_t pid_P )
     {
-    d->pids.remove( pid_P );
+    d->pids.removeAll( pid_P );
     }
 
 const QList< pid_t >& KStartupInfoData::pids() const
@@ -1398,9 +1391,9 @@ unsigned long KStartupInfoData::timestamp() const
     return d->timestamp;
     }
 
-void KStartupInfoData::setScreen( int screen )
+void KStartupInfoData::setScreen( int _screen )
     {
-    d->screen = screen;
+    d->screen = _screen;
     }
 
 int KStartupInfoData::screen() const
@@ -1411,24 +1404,24 @@ int KStartupInfoData::screen() const
 static
 long get_num( const QString& item_P )
     {
-    unsigned int pos = item_P.find( '=' );
+    unsigned int pos = item_P.indexOf( QLatin1Char('=') );
     return item_P.mid( pos + 1 ).toLong();
     }
 
 static
 unsigned long get_unum( const QString& item_P )
     {
-    unsigned int pos = item_P.find( '=' );
+    unsigned int pos = item_P.indexOf( QLatin1Char('=') );
     return item_P.mid( pos + 1 ).toULong();
     }
 
 static
 QString get_str( const QString& item_P )
     {
-    int pos = item_P.find( '=' );
-    if( item_P.length() > pos + 2 && item_P[ pos + 1 ] == '\"' )
+    int pos = item_P.indexOf( QLatin1Char('=') );
+    if( item_P.length() > pos + 2 && item_P.at( pos + 1 ) == QLatin1Char('\"') )
         {
-        int pos2 = item_P.left( pos + 2 ).find( '\"' );
+        int pos2 = item_P.left( pos + 2 ).indexOf( QLatin1Char('\"') );
         if( pos2 < 0 )
             return QString::null;                      // 01234
         return item_P.mid( pos + 2, pos2 - 2 - pos );  // A="C"

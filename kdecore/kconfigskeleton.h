@@ -20,19 +20,17 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KCONFIGSKELETON_H
-#define _KCONFIGSKELETON_H
+#ifndef KCONFIGSKELETON_H
+#define KCONFIGSKELETON_H
 
 #include <qcolor.h>
 #include <qdatetime.h>
 #include <qfont.h>
-#include <qpoint.h>
-#include <q3ptrlist.h>
-#include <q3dict.h>
+#include <qhash.h>
 #include <qrect.h>
-#include <qsize.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+#include <kdelibs_export.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
 
@@ -51,8 +49,8 @@
   {
   public:
     typedef QList < KConfigSkeletonItem * >List;
-    typedef Q3Dict < KConfigSkeletonItem > Dict;
-    typedef Q3DictIterator < KConfigSkeletonItem > DictIterator;
+    typedef QHash < QString, KConfigSkeletonItem* > Dict;
+    typedef QHash < QString, KConfigSkeletonItem* >::Iterator DictIterator;
 
     /**
      * Constructor.
@@ -60,8 +58,8 @@
      * @param group Config file group.
      * @param key Config file key.
      */
-    KConfigSkeletonItem(const QString & group, const QString & key)
-      :mGroup(group),mKey(key), mIsImmutable(true)
+    KConfigSkeletonItem(const QString & _group, const QString & _key)
+      :mGroup(_group),mKey(_key), mIsImmutable(true)
     {
     }
 
@@ -75,9 +73,9 @@
     /**
      * Set config file group.
      */
-    void setGroup( const QString &group )
+    void setGroup( const QString &_group )
     {
-      mGroup = group;
+      mGroup = _group;
     }
 
     /**
@@ -91,9 +89,9 @@
     /**
      * Set config file key.
      */
-    void setKey( const QString &key )
+    void setKey( const QString &_key )
     {
-      mKey = key;
+      mKey = _key;
     }
     
     /**
@@ -107,9 +105,9 @@
     /**
      * Set internal name of entry.
      */
-    void setName(const QString &name)
+    void setName(const QString &_name)
     {
-      mName = name;
+      mName = _name;
     }
 
     /**
@@ -231,9 +229,9 @@
 template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
-    KConfigSkeletonGenericItem(const QString & group, const QString & key, T & reference,
+    KConfigSkeletonGenericItem(const QString & _group, const QString & _key, T & reference,
                 T defaultValue)
-      : KConfigSkeletonItem(group, key), mReference(reference),
+      : KConfigSkeletonItem(_group, _key), mReference(reference),
         mDefault(defaultValue), mLoadedValue(defaultValue)
     {
     }

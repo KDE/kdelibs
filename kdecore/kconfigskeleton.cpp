@@ -19,18 +19,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qcolor.h>
-#include <qvariant.h>
-
-#include <kconfig.h>
-#include <kstandarddirs.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kdebug.h>
-
-#include "kstringhandler.h"
-
 #include "kconfigskeleton.h"
+#include "kstandarddirs.h"
+#include "kglobal.h"
+#include "kdebug.h"
+#include "kstringhandler.h"
 
 void KConfigSkeletonItem::readImmutability( KConfig *config )
 {
@@ -38,11 +31,11 @@ void KConfigSkeletonItem::readImmutability( KConfig *config )
 }
 
 
-KConfigSkeleton::ItemString::ItemString( const QString &group, const QString &key,
+KConfigSkeleton::ItemString::ItemString( const QString &_group, const QString &_key,
                                     QString &reference,
                                     const QString &defaultValue,
                                     Type type )
-  : KConfigSkeletonGenericItem<QString>( group, key, reference, defaultValue ),
+  : KConfigSkeletonGenericItem<QString>( _group, _key, reference, defaultValue ),
     mType( type )
 {
 }
@@ -74,9 +67,9 @@ void KConfigSkeleton::ItemString::readConfig( KConfig *config )
   }
   else if ( mType == Password ) 
   {
-    QString value = config->readEntry( mKey,
+    QString val = config->readEntry( mKey,
                                        KStringHandler::obscure( mDefault ) );
-    mReference = KStringHandler::obscure( value );
+    mReference = KStringHandler::obscure( val );
   }
   else
   {
@@ -98,25 +91,25 @@ QVariant KConfigSkeleton::ItemString::property() const
   return QVariant(mReference);
 }
 
-KConfigSkeleton::ItemPassword::ItemPassword( const QString &group, const QString &key,
+KConfigSkeleton::ItemPassword::ItemPassword( const QString &_group, const QString &_key,
                                     QString &reference,
                                     const QString &defaultValue)
-  : ItemString( group, key, reference, defaultValue, Password )
+  : ItemString( _group, _key, reference, defaultValue, Password )
 {
 }
 
-KConfigSkeleton::ItemPath::ItemPath( const QString &group, const QString &key,
+KConfigSkeleton::ItemPath::ItemPath( const QString &_group, const QString &_key,
                                     QString &reference,
                                     const QString &defaultValue)
-  : ItemString( group, key, reference, defaultValue, Path )
+  : ItemString( _group, _key, reference, defaultValue, Path )
 {
 }
 
-KConfigSkeleton::ItemProperty::ItemProperty( const QString &group,
-                                        const QString &key,
+KConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
+                                        const QString &_key,
                                         QVariant &reference,
                                         QVariant defaultValue )
-  : KConfigSkeletonGenericItem<QVariant>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QVariant>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -139,9 +132,9 @@ QVariant KConfigSkeleton::ItemProperty::property() const
   return mReference;
 }
 
-KConfigSkeleton::ItemBool::ItemBool( const QString &group, const QString &key,
+KConfigSkeleton::ItemBool::ItemBool( const QString &_group, const QString &_key,
                                 bool &reference, bool defaultValue )
-  : KConfigSkeletonGenericItem<bool>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<bool>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -161,13 +154,13 @@ void KConfigSkeleton::ItemBool::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemBool::property() const
 {
-  return QVariant( mReference, 42 /* dummy */ );
+  return QVariant( mReference );
 }
 
 
-KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &key,
+KConfigSkeleton::ItemInt::ItemInt( const QString &_group, const QString &_key,
                               int &reference, int defaultValue )
-  : KConfigSkeletonGenericItem<int>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<int>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -222,9 +215,9 @@ void KConfigSkeleton::ItemInt::setMaxValue(int v)
 }
 
 
-KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &key,
+KConfigSkeleton::ItemInt64::ItemInt64( const QString &_group, const QString &_key,
                               qint64 &reference, qint64 defaultValue )
-  : KConfigSkeletonGenericItem<qint64>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<qint64>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -278,11 +271,11 @@ void KConfigSkeleton::ItemInt64::setMaxValue(qint64 v)
   mMax = v;
 }
 
-KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &key,
+KConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_key,
                                      int &reference,
-                                     const QList<Choice> &choices,
+                                     const QList<Choice> &choicesList,
                                      int defaultValue )
-  : ItemInt( group, key, reference, defaultValue ), mChoices( choices )
+  : ItemInt( _group, _key, reference, defaultValue ), mChoices( choicesList )
 {
 }
 
@@ -335,10 +328,10 @@ QList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() co
 }
 
 
-KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &key,
+KConfigSkeleton::ItemUInt::ItemUInt( const QString &_group, const QString &_key,
                                 unsigned int &reference,
                                 unsigned int defaultValue )
-  : KConfigSkeletonGenericItem<unsigned int>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned int>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -393,9 +386,9 @@ void KConfigSkeleton::ItemUInt::setMaxValue(unsigned int v)
 }
 
 
-KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &key,
+KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &_group, const QString &_key,
                               quint64 &reference, quint64 defaultValue )
-  : KConfigSkeletonGenericItem<quint64>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<quint64>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -449,9 +442,9 @@ void KConfigSkeleton::ItemUInt64::setMaxValue(quint64 v)
   mMax = v;
 }
 
-KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &key,
+KConfigSkeleton::ItemLong::ItemLong( const QString &_group, const QString &_key,
                                 long &reference, long defaultValue )
-  : KConfigSkeletonGenericItem<long>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<long>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -506,10 +499,10 @@ void KConfigSkeleton::ItemLong::setMaxValue(long v)
 }
 
 
-KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &key,
+KConfigSkeleton::ItemULong::ItemULong( const QString &_group, const QString &_key,
                                   unsigned long &reference,
                                   unsigned long defaultValue )
-  : KConfigSkeletonGenericItem<unsigned long>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned long>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -564,9 +557,9 @@ void KConfigSkeleton::ItemULong::setMaxValue(unsigned long v)
 }
 
 
-KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &key,
+KConfigSkeleton::ItemDouble::ItemDouble( const QString &_group, const QString &_key,
                                     double &reference, double defaultValue )
-  : KConfigSkeletonGenericItem<double>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<double>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -621,10 +614,10 @@ void KConfigSkeleton::ItemDouble::setMaxValue(double v)
 }
 
 
-KConfigSkeleton::ItemColor::ItemColor( const QString &group, const QString &key,
+KConfigSkeleton::ItemColor::ItemColor( const QString &_group, const QString &_key,
                                   QColor &reference,
                                   const QColor &defaultValue )
-  : KConfigSkeletonGenericItem<QColor>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QColor>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -648,10 +641,10 @@ QVariant KConfigSkeleton::ItemColor::property() const
 }
 
 
-KConfigSkeleton::ItemFont::ItemFont( const QString &group, const QString &key,
+KConfigSkeleton::ItemFont::ItemFont( const QString &_group, const QString &_key,
                                 QFont &reference,
                                 const QFont &defaultValue )
-  : KConfigSkeletonGenericItem<QFont>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QFont>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -675,10 +668,10 @@ QVariant KConfigSkeleton::ItemFont::property() const
 }
 
 
-KConfigSkeleton::ItemRect::ItemRect( const QString &group, const QString &key,
+KConfigSkeleton::ItemRect::ItemRect( const QString &_group, const QString &_key,
                                 QRect &reference,
                                 const QRect &defaultValue )
-  : KConfigSkeletonGenericItem<QRect>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QRect>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -702,10 +695,10 @@ QVariant KConfigSkeleton::ItemRect::property() const
 }
 
 
-KConfigSkeleton::ItemPoint::ItemPoint( const QString &group, const QString &key,
+KConfigSkeleton::ItemPoint::ItemPoint( const QString &_group, const QString &_key,
                                   QPoint &reference,
                                   const QPoint &defaultValue )
-  : KConfigSkeletonGenericItem<QPoint>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QPoint>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -729,10 +722,10 @@ QVariant KConfigSkeleton::ItemPoint::property() const
 }
 
 
-KConfigSkeleton::ItemSize::ItemSize( const QString &group, const QString &key,
+KConfigSkeleton::ItemSize::ItemSize( const QString &_group, const QString &_key,
                                 QSize &reference,
                                 const QSize &defaultValue )
-  : KConfigSkeletonGenericItem<QSize>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QSize>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -756,10 +749,10 @@ QVariant KConfigSkeleton::ItemSize::property() const
 }
 
 
-KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &group, const QString &key,
+KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &_group, const QString &_key,
                                         QDateTime &reference,
                                         const QDateTime &defaultValue )
-  : KConfigSkeletonGenericItem<QDateTime>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QDateTime>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -783,10 +776,10 @@ QVariant KConfigSkeleton::ItemDateTime::property() const
 }
 
 
-KConfigSkeleton::ItemStringList::ItemStringList( const QString &group, const QString &key,
+KConfigSkeleton::ItemStringList::ItemStringList( const QString &_group, const QString &_key,
                                             QStringList &reference,
                                             const QStringList &defaultValue )
-  : KConfigSkeletonGenericItem<QStringList>( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QStringList>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -813,10 +806,10 @@ QVariant KConfigSkeleton::ItemStringList::property() const
 }
 
 
-KConfigSkeleton::ItemPathList::ItemPathList( const QString &group, const QString &key,
+KConfigSkeleton::ItemPathList::ItemPathList( const QString &_group, const QString &_key,
                                             QStringList &reference,
                                             const QStringList &defaultValue )
-  : ItemStringList( group, key, reference, defaultValue )
+  : ItemStringList( _group, _key, reference, defaultValue )
 {
 }
 
@@ -847,10 +840,10 @@ void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 }
 
 
-KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &key,
+KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,
                                       const QList<int> &defaultValue )
-  : KConfigSkeletonGenericItem<QList<int> >( group, key, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QList<int> >( _group, _key, reference, defaultValue )
 {
 }
 
@@ -893,11 +886,11 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
   }
 }
 
-KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr config)
+KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr pConfig)
   : mCurrentGroup( "No Group" ), mUseDefaults(false)
 {
   kdDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
-  mConfig = config;
+  mConfig = pConfig;
 }
 
 
@@ -1202,5 +1195,5 @@ bool KConfigSkeleton::isImmutable(const QString &name)
 
 KConfigSkeletonItem *KConfigSkeleton::findItem(const QString &name)
 {
-  return mItemDict.find(name);
+  return mItemDict.value(name);
 }
