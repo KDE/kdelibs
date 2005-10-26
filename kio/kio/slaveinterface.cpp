@@ -367,25 +367,9 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit needSubURLData();
         break;
     }
-    case MSG_AUTH_KEY: {
-        bool keep;
-        Q3CString key, group;
-        stream >> key >> group >> keep;
-        kdDebug(7007) << "Got auth-key:      " << key << endl
-                      << "    group-key:     " << group << endl
-                      << "    keep password: " << keep << endl;
-        emit authorizationKey( key, group, keep );
-        break;
-    }
-    case MSG_DEL_AUTH_KEY: {
-        Q3CString key;
-        stream >> key;
-        kdDebug(7007) << "Delete auth-key: " << key << endl;
-        emit delAuthorization( key );
-    }
     default:
         kdWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;
-	return false;
+        return false;
     }
     return true;
 }

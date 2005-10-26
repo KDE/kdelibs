@@ -1130,11 +1130,10 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
 
   // we need to do bit AND 777 to get permissions, in case
   // we were sent a full mode (unlikely)
-  Q3CString cmd;
-  cmd.sprintf("SITE CHMOD %o ", permissions & 511 );
-  cmd += remoteEncoding()->encode(path);
+  QString cmd = QString::fromLatin1("SITE CHMOD ") + QString::number( permissions & 511, 8 /*octal*/ ) + " ";
+  cmd += path;
 
-  ftpSendCmd(cmd);
+  ftpSendCmd(remoteEncoding()->encode(cmd));
   if(m_iRespType == 2)
      return true;
 
@@ -2153,8 +2152,8 @@ bool Ftp::ftpDataMode(char cMode)
   if(m_cDataMode == cMode)
     return true;
 
-  Q3CString buf;
-  buf.sprintf("TYPE %c", cMode);
+  QByteArray buf = "TYPE ";
+  buf += cMode;
   if( !ftpSendCmd(buf) || (m_iRespType != 2) )
       return false;
   m_cDataMode = cMode;

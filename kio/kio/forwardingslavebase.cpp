@@ -34,9 +34,9 @@ class ForwardingSlaveBasePrivate
 {
 };
 
-ForwardingSlaveBase::ForwardingSlaveBase(const Q3CString &protocol,
-                                         const Q3CString &poolSocket,
-                                         const Q3CString &appSocket)
+ForwardingSlaveBase::ForwardingSlaveBase(const QByteArray &protocol,
+                                         const QByteArray &poolSocket,
+                                         const QByteArray &appSocket)
     : QObject(), SlaveBase(protocol, poolSocket, appSocket), eventLoop(this)
 {
 }

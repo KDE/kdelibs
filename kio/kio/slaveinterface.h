@@ -31,8 +31,6 @@
 
 class KURL;
 
-class Q3CString;
-
 namespace KIO {
 
 class Connection;
@@ -129,32 +127,22 @@ signals:
     void needSubURLData();
     void needProgressId();
 
-    void canResume( KIO::filesize_t ) ;
+    void canResume( KIO::filesize_t );
 
     ///////////
     // Info sent by the slave
     //////////
     void metaData( const KIO::MetaData & );
-    void totalSize( KIO::filesize_t ) ;
-    void processedSize( KIO::filesize_t ) ;
-    void redirection( const KURL& ) ;
+    void totalSize( KIO::filesize_t );
+    void processedSize( KIO::filesize_t );
+    void redirection( const KURL& );
 
-    void speed( unsigned long ) ;
-    void errorPage() ;
-    void mimeType( const QString & ) ;
-    void warning( const QString & ) ;
-    void infoMessage( const QString & ) ;
+    void speed( unsigned long );
+    void errorPage();
+    void mimeType( const QString & );
+    void warning( const QString & );
+    void infoMessage( const QString & );
     void connectFinished();
-
-    /**
-     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
-     */
-    void authorizationKey( const Q3CString&, const Q3CString&, bool );
-
-    /**
-     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
-     */
-    void delAuthorization( const Q3CString& grpkey );
 
 protected:
     /////////////////

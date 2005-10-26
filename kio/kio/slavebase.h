@@ -23,7 +23,7 @@
 #include <kio/global.h>
 #include <kio/authinfo.h>
 
-#include <q3cstring.h>
+#include <qbytearray.h>
 
 class DCOPClient;
 class KConfigBase;
@@ -47,7 +47,7 @@ class SlaveBasePrivate;
 class KIO_EXPORT SlaveBase
 {
 public:
-    SlaveBase( const Q3CString &protocol, const Q3CString &pool_socket, const Q3CString &app_socket);
+    SlaveBase( const QByteArray &protocol, const QByteArray &pool_socket, const QByteArray &app_socket);
     virtual ~SlaveBase();
 
     /**
@@ -704,7 +704,7 @@ public:
      * Cache authentication information is now stored automatically
      * by openPassDlg.
      */
-    void sendAuthenticationKey( const Q3CString& gKey, const Q3CString& key, bool keep );
+    void sendAuthenticationKey( const QByteArray& gKey, const QByteArray& key, bool keep );
 
     /**
      * @obsolete as of 3.1. Use openPassDlg instead.
@@ -783,7 +783,7 @@ public:
     /**
      * Name of the protocol supported by this slave
      */
-    Q3CString mProtocol;
+    QByteArray mProtocol;
 
     Connection * m_pConnection;
 

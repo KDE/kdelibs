@@ -46,11 +46,11 @@ namespace KIO {
 class KIO_EXPORT TCPSlaveBase : public SlaveBase
 {
 public:
-    TCPSlaveBase(unsigned short int defaultPort, const Q3CString &protocol,
-                 const Q3CString &poolSocket, const Q3CString &appSocket);
+    TCPSlaveBase(unsigned short int defaultPort, const QByteArray &protocol,
+                 const QByteArray &poolSocket, const QByteArray &appSocket);
 
-    TCPSlaveBase(unsigned short int defaultPort, const Q3CString &protocol,
-                 const Q3CString &poolSocket, const Q3CString &appSocket,
+    TCPSlaveBase(unsigned short int defaultPort, const QByteArray &protocol,
+                 const QByteArray &poolSocket, const QByteArray &appSocket,
                  bool useSSL);
 
     virtual ~TCPSlaveBase();
@@ -298,9 +298,6 @@ protected:
      */
     void setRealHost( const QString& realHost );
 
-    // don't use me!
-    void doConstructorStuff();
-
     // For the certificate verification code
     int verifyCertificate();
 
@@ -319,10 +316,11 @@ protected:
     bool m_bIsSSL;
     QString m_port;
     unsigned short int m_iDefaultPort;
-    Q3CString m_sServiceName;
+    QByteArray m_sServiceName;
 
 private:
     bool doSSLHandShake( bool sendError );
+    void init();
 
 protected:
     virtual void virtual_hook( int id, void* data );

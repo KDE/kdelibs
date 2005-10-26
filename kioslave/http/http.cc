@@ -167,8 +167,8 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 
 /************************************** HTTPProtocol **********************************************/
 
-HTTPProtocol::HTTPProtocol( const Q3CString &protocol, const Q3CString &pool,
-                            const Q3CString &app )
+HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
+                            const QByteArray &app )
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https" || protocol == "webdavs") )
 {

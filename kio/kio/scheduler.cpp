@@ -546,11 +546,6 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
                 SLOT(slotSlaveDied(KIO::Slave *)));
       connect(slave, SIGNAL(slaveStatus(pid_t,const QByteArray&,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QByteArray&, const QString &, bool)));
-
-      connect(slave,SIGNAL(authorizationKey(const Q3CString&, const Q3CString&, bool)),
-              sessionData,SLOT(slotAuthData(const Q3CString&, const Q3CString&, bool)));
-      connect(slave,SIGNAL(delAuthorization(const Q3CString&)), sessionData,
-              SLOT(slotDelAuthData(const Q3CString&)));
    }
    else
    {

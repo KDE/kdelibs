@@ -32,7 +32,7 @@
 // Recognized metadata entries:
 // mimeType     - the mime type of the file, so we need not extra determine it
 // what         - what to load
- 
+
 using namespace KIO;
 
 extern "C"
@@ -61,7 +61,7 @@ int kdemain(int argc, char **argv)
     return 0;
 }
 
-MetaInfoProtocol::MetaInfoProtocol(const Q3CString &pool, const Q3CString &app)
+MetaInfoProtocol::MetaInfoProtocol(const QByteArray &pool, const QByteArray &app)
     : SlaveBase("metainfo", pool, app)
 {
 }
@@ -74,7 +74,7 @@ void MetaInfoProtocol::get(const KURL &url)
 {
     QString mimeType = metaData("mimeType");
     KFileMetaInfo info(url.path(), mimeType);
-    
+
     QByteArray arr;
     QDataStream stream(&arr, QIODevice::WriteOnly);
 
@@ -84,25 +84,25 @@ void MetaInfoProtocol::get(const KURL &url)
     finished();
 }
 
-void MetaInfoProtocol::put(const KURL& url, int, bool, bool) 
+void MetaInfoProtocol::put(const KURL& url, int, bool, bool)
 {
     QString mimeType = metaData("mimeType");
     KFileMetaInfo info;
-    
+
     QByteArray arr;
     readData(arr);
     QDataStream stream(arr);
-    
+
     stream >> info;
 
     if (info.isValid())
     {
         info.applyChanges();
-    } 
-    else 
+    }
+    else
     {
         error(ERR_NO_CONTENT, i18n("No metainfo for %1").arg(url.path()));
         return;
     }
     finished();
-}  
+}

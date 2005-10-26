@@ -291,21 +291,6 @@ void SessionData::reset()
     KProtocolManager::reparseConfiguration();
 }
 
-void SessionData::slotAuthData( const Q3CString& key, const Q3CString& gkey,
-                                 bool keep )
-{
-  if (!authData)
-    authData = new AuthDataList;
-  authData->addData( new SessionData::AuthData(key, gkey, keep) );
-}
-
-void SessionData::slotDelAuthData( const Q3CString& gkey )
-{
-  if (!authData)
-     return;
-  authData->removeData( gkey );
-}
-
 void SessionData::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

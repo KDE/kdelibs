@@ -43,7 +43,7 @@ class FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT
 public:
-  FileProtocol( const Q3CString &pool, const Q3CString &app);
+  FileProtocol( const QByteArray &pool, const QByteArray &app);
   virtual ~FileProtocol() { }
 
   virtual void get( const KURL& url );
@@ -79,7 +79,7 @@ protected slots:
 
 protected:
 
-  bool createUDSEntry( const QString & filename, const Q3CString & path, KIO::UDSEntry & entry,
+  bool createUDSEntry( const QString & filename, const QByteArray & path, KIO::UDSEntry & entry,
                        short int details, bool withACL );
   int setACL( const char *path, mode_t perm, bool _directoryDefault );
 

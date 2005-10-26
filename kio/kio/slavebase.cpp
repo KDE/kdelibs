@@ -65,8 +65,8 @@
 
 using namespace KIO;
 
-typedef Q3ValueList<Q3CString> AuthKeysList;
-typedef QMap<QString,Q3CString> AuthKeysMap;
+typedef Q3ValueList<QByteArray> AuthKeysList;
+typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
 
@@ -154,9 +154,9 @@ static void genericsig_handler(int sigNumber)
 
 //////////////
 
-SlaveBase::SlaveBase( const Q3CString &protocol,
-                      const Q3CString &pool_socket,
-                      const Q3CString &app_socket )
+SlaveBase::SlaveBase( const QByteArray &protocol,
+                      const QByteArray &pool_socket,
+                      const QByteArray &app_socket )
     : mProtocol(protocol), m_pConnection(0),
       mPoolSocket( QFile::decodeName(pool_socket)),
       mAppSocket( QFile::decodeName(app_socket))
@@ -698,8 +698,8 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     d->sentListEntries+=(uint)list.count();
 }
 
-void SlaveBase::sendAuthenticationKey( const Q3CString& key,
-                                       const Q3CString& group,
+void SlaveBase::sendAuthenticationKey( const QByteArray& key,
+                                       const QByteArray& group,
                                        bool keepPass )
 {
     KIO_DATA << key << group << keepPass;

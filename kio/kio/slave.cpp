@@ -104,8 +104,7 @@ void Slave::accept()
 void Slave::unlinkSocket()
 {
     if (m_socket.isEmpty()) return;
-    Q3CString filename = QFile::encodeName(m_socket);
-    unlink(filename.data());
+    QFile::remove( m_socket );
     m_socket = QString::null;
 }
 
@@ -376,14 +375,14 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
-    
+
     QString sockname = socketfile.name();
 
 #ifdef __CYGWIN__
    socketfile.close();
 #endif
    socketfile.unlink(); // can't bind if there is such a file
-    
+
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
     kss->setFamily(KResolver::LocalFamily);
@@ -402,7 +401,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
     static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
-    
+
     if (bForkSlaves || !client->isAttached() || client->isAttachedToForeignServer())
     {
        QString _name = KProtocolInfo::exec(protocol);

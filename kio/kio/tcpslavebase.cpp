@@ -98,36 +98,36 @@ KNetwork::KStreamSocket& TCPSlaveBase::socket()
 
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
-                           const Q3CString &protocol,
-                           const Q3CString &poolSocket,
-                           const Q3CString &appSocket)
+                           const QByteArray &protocol,
+                           const QByteArray &poolSocket,
+                           const QByteArray &appSocket)
              :SlaveBase (protocol, poolSocket, appSocket),
               m_iDefaultPort(defaultPort),
               m_sServiceName(protocol)
 {
     // We have to have two constructors, so don't add anything
-    // else in here. Put it in doConstructorStuff() instead.
-    doConstructorStuff();
+    // else in here. Put it in init() instead.
+    init();
     m_bIsSSL = false;
 }
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
-                           const Q3CString &protocol,
-                           const Q3CString &poolSocket,
-                           const Q3CString &appSocket,
+                           const QByteArray &protocol,
+                           const QByteArray &poolSocket,
+                           const QByteArray &appSocket,
                            bool useSSL)
              :SlaveBase (protocol, poolSocket, appSocket),
               m_bIsSSL(useSSL),
               m_iDefaultPort(defaultPort),
               m_sServiceName(protocol)
 {
-    doConstructorStuff();
+    init();
     if (useSSL)
         m_bIsSSL = initializeSSL();
 }
 
-// The constructor procedures go here now.
-void TCPSlaveBase::doConstructorStuff()
+// The constructor procedures go here
+void TCPSlaveBase::init()
 {
     d = new TcpSlaveBasePrivate;
     d->kssl = 0L;
