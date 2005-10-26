@@ -5,7 +5,7 @@
 #include <kapplication.h>
 
 KHBoxTest::KHBoxTest( QWidget* parentWidget )
-    : KVBox( parentWidget )
+    : KHBox( parentWidget )
 {
     pbAdd = new QPushButton( "Add a button", this );
     connect( pbAdd, SIGNAL( clicked() ), this, SLOT( slotAdd() ) );

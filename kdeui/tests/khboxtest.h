@@ -1,10 +1,10 @@
 #ifndef KHBOXTEST_H
 #define KHBOXTEST_H
 
-#include "kvbox.h"
+#include "khbox.h"
 class QPushButton;
 
-class KHBoxTest : public KVBox {
+class KHBoxTest : public KHBox {
     Q_OBJECT
 
 public:
