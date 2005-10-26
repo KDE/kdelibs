@@ -126,12 +126,26 @@ class KDECORE_EXPORT KURL
 public:
 
   typedef QMap<QString, QString> MetaDataMap;
-  enum MimeDataFlags { None = 0, NoTextExport = 1 };
 
+  /** Flags values for populateMimeData.
+      @see KURL::List::populateMimeData()
+      @see populateMimeData()
+  */
+  enum MimeDataFlags { 
+    None = 0         /**< Export normally */, 
+    NoTextExport = 1 /**< Suppress text/plain (ie. the prettyprinted data) */
+  };
+
+  /** Flags for prettyURL.
+      @see prettyURL()
+      @todo Fix typo in typename (see comment at prettyURL()), and
+            perhaps deprecate entirely since prettyURL seems to be
+            deprecated as well.
+  */
   enum AdjustementFlags
   {
-    NoAdjustements = 0,
-    StripFileProtocol = 1
+    NoAdjustements = 0    /**< Format normally */ ,
+    StripFileProtocol = 1 /**< Do not print the protocol if the protocol is file:// */
   };
 
   /**
@@ -653,7 +667,9 @@ public:
   enum QueryItemsOptions { CaseInsensitiveKeys = 1 };
 
   /**
-   * @internal, override for the below function
+   * Override for queryItems(int,int), below.
+   * @param options any of QueryItemsOptions <em>or</em>ed together.
+   * @internal
    */
   QMap< QString, QString > queryItems( int options=0 ) const;
 
