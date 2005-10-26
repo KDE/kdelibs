@@ -152,7 +152,7 @@ KOCRDialogFactory::~KOCRDialogFactory()
     delete m_instance;
 }
 
-QObject *KOCRDialogFactory::createObject( QObject *parent, const char *name,
+QObject *KOCRDialogFactory::createObject( QObject *parent, const char * /*name*/,
                                            const char *classname,
                                            const QStringList &args )
 {

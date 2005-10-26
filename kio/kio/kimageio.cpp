@@ -92,7 +92,7 @@ KImageIOFormat::save( QDataStream& _str)
 }
 
 void
-KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
+KImageIOFormat::callLibFunc( bool /*read*/, QImageIO * /*iio*/)
 {
 #warning QImageIO does not exist anymore
 #if 0
@@ -233,7 +233,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
 }
 
 void
-KImageIOFactory::readImage( QImageIO *iio)
+KImageIOFactory::readImage( QImageIO * /*iio*/)
 {
    (void) self(); // Make sure we exist
 #warning QImageIO does not exist
@@ -263,7 +263,7 @@ KImageIOFactory::readImage( QImageIO *iio)
 }
 
 void
-KImageIOFactory::writeImage( QImageIO *iio)
+KImageIOFactory::writeImage( QImageIO * /*iio*/)
 {
 #warning QImageIO does not exist
 #if 0
