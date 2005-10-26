@@ -62,14 +62,14 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KS
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
   KServiceGroup::Ptr entry = 0;
   if (ptr && ptr->isType(KST_KServiceGroup))
-     entry = ptr;
+    entry = KServiceGroup::Ptr::staticCast( ptr );
 
   if (!entry)
   {
     kdWarning(7021) << "KBuildServiceGroupFactory::addNewEntryTo( " << menuName << ", " << newEntry->name() << " ): menu does not exists!" << endl;
     return;
   }
-  entry->addEntry( newEntry );
+  entry->addEntry( KSycocaEntry::Ptr::staticCast( newEntry ) );
 }
 
 KServiceGroup::Ptr
@@ -79,7 +79,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   if (ptr)
   {
     kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!" << endl;
-    return ptr;
+    return KServiceGroup::Ptr::staticCast( ptr );
   }
 
   // Create new group entry
@@ -88,7 +88,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
 
   entry->m_childCount = -1; // Recalculate
 
-  addEntry(entry);
+  addEntry( KSycocaEntry::Ptr::staticCast(entry) );
 
   if (menuName != "/")
   {
@@ -105,7 +105,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      KServiceGroup::Ptr parentEntry = 0;
      ptr = m_entryDict->value(parent);
      if (ptr && ptr->isType(KST_KServiceGroup))
-         parentEntry = ptr;
+         parentEntry = KServiceGroup::Ptr::staticCast( ptr );
      if (!parentEntry)
      {
         kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): parent menu does not exist!" << endl;
@@ -113,7 +113,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      else
      {
         if (!isDeleted && !entry->isDeleted())
-           parentEntry->addEntry( entry );
+           parentEntry->addEntry( KSycocaEntry::Ptr::staticCast( entry ) );
      }
   }
   return entry;
@@ -127,12 +127,12 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const KSycocaEntr
   KServiceGroup::Ptr entry = 0;
   KSycocaEntry::Ptr ptr = m_entryDict->value(name);
   if (ptr && ptr->isType(KST_KServiceGroup))
-     entry = ptr;
+     entry = KServiceGroup::Ptr::staticCast( ptr );
 
   if (!entry)
   {
      entry = new KServiceGroup(name);
-     addEntry( entry );
+     addEntry( KSycocaEntry::Ptr::staticCast( entry ) );
   }
   if (newEntry)
      entry->addEntry( newEntry );
@@ -142,7 +142,7 @@ void
 KBuildServiceGroupFactory::addEntry( const KSycocaEntry::Ptr& newEntry)
 {
    KSycocaFactory::addEntry(newEntry);
-   KServiceGroup::Ptr serviceGroup = newEntry;
+   KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( newEntry );
    serviceGroup->m_serviceList.clear();
 
    if ( !serviceGroup->baseGroupName().isEmpty() )

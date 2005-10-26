@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
  *
@@ -74,13 +75,13 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
 
       if (e->isType(KST_KServiceGroup))
       {
-         KServiceGroup::Ptr g = e;
+         KServiceGroup::Ptr g = KServiceGroup::Ptr::staticCast( e );
 
          findMenuEntry(g, name.isEmpty() ? g->caption() : name+"/"+g->caption(), menuId);
       }
       else if (e->isType(KST_KService))
       {
-         KService::Ptr s = e;
+         KService::Ptr s = KService::Ptr::staticCast( e );
          if (s->menuId() == menuId)
          {
             if (bPrintMenuId)

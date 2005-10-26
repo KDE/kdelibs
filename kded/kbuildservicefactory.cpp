@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure   <faure@kde.org>
  *                1999 Waldo Bastian <bastian@kde.org>
@@ -142,7 +143,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
    for( ; itserv != endserv ; ++itserv )
    {
-      KService::Ptr service = (*itserv);
+      KService::Ptr service = KService::Ptr::staticCast(*itserv);
       const QStringList serviceTypeList = service->serviceTypes();
       //kdDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
       KServiceType::List serviceTypes;
@@ -182,7 +183,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    for( ; itstf != endstf; ++itstf )
    {
       // export associated services
-      const KServiceType::Ptr entry = *itstf;
+      const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
       Q_ASSERT( entry );
       const KService::List services = entry->services();
 
@@ -208,7 +209,7 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
        itserv != m_entryDict->end();
        ++itserv)
    {
-      const KService::Ptr& service = (*itserv);
+      const KService::Ptr service = KService::Ptr::staticCast(*itserv);
       if ( !service->init().isEmpty() )
       {
           initList.append(service);
@@ -232,14 +233,14 @@ KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
    KSycocaFactory::addEntry(newEntry);
 
-   const KService::Ptr service = newEntry;
+   const KService::Ptr service = KService::Ptr::staticCast( newEntry );
    m_dupeDict.insert(newEntry);
 
    if (!service->isDeleted())
    {
       QString parent = service->parentApp();
       if (!parent.isEmpty())
-         m_serviceGroupFactory->addNewChild(parent, service);
+         m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
    }
 
    const QString name = service->desktopEntryName();

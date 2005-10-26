@@ -60,7 +60,7 @@ KBuildImageIOFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
    KSycocaFactory::addEntry(newEntry);
 
-   KImageIOFormat::Ptr format = newEntry;
+   KImageIOFormat::Ptr format = KImageIOFormat::Ptr::staticCast( newEntry );
    rPath += format->rPaths;
 
    // Since Qt doesn't allow us to unregister image formats

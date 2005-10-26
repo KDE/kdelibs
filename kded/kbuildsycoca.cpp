@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure <faure@kde.org>
  *  Copyright (C) 2002-2003 Waldo Bastian <bastian@kde.org>
@@ -250,7 +251,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
 void KBuildSycoca::slotCreateEntry(const QString &file, KService::Ptr *service)
 {
    KSycocaEntry::Ptr entry = createEntry(file, false);
-   *service = entry;
+   *service = KService::Ptr::staticCast( entry );
 }
 
 // returns false if the database is up to date
@@ -416,7 +417,7 @@ void KBuildSycoca::createMenuAttribute( KServiceGroup::Ptr entry )
     KServiceGroup::List::ConstIterator it = list.begin();
     for (; it != list.end(); ++it) {
         if ((*it)->isType(KST_KServiceGroup)) {
-            KServiceGroup::Ptr g( *it );
+            KServiceGroup::Ptr g = KServiceGroup::Ptr::staticCast( *it );
             createMenuAttribute( g );
         }
     }
@@ -448,7 +449,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
             KSycocaEntry::Ptr group = g_serviceGroupEntryDict->value(subName);
             if ( group )
             {
-                entry = group;
+                entry = KServiceGroup::Ptr::staticCast( group );
                 if (entry->directoryEntryPath() != directoryFile)
                     entry = 0; // Can't reuse this one!
             }
@@ -474,7 +475,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      }
      else
      {
-        g_bsf->addEntry( p );
+        g_bsf->addEntry( KSycocaEntry::Ptr::staticCast( p ) );
         g_bsgf->addNewEntryTo( name, p );
      }
   }

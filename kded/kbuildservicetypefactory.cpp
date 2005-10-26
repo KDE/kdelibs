@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure   <faure@kde.org>
  *
@@ -58,7 +59,7 @@ KServiceType::Ptr KBuildServiceTypeFactory::findServiceTypeByName(const QString 
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
    KSycocaEntry::Ptr servType = m_entryDict->value( _name );
-   return servType;
+   return KServiceType::Ptr::staticCast( servType );
 }
 
 
@@ -157,7 +158,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // Store each patterns in one of the 2 string lists (for sorting)
    QStringList fastPatterns;  // for *.a to *.abcd
    QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   QHash<QString, KMimeType*> dict; // KMimeType::Ptr not needed here, this is short term
+   QHash<QString, const KMimeType*> dict; // KMimeType::Ptr not needed here, this is short term
 
    // For each mimetype in servicetypeFactory
    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
@@ -167,7 +168,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
       const KSycocaEntry::Ptr& entry = (*it);
       if ( entry->isType( KST_KMimeType ) )
       {
-        KMimeType* mimeType = static_cast<KMimeType *>( entry.get() );
+        const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
         const QStringList pat = mimeType->patterns();
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )
@@ -183,7 +184,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
               otherPatterns.append( pattern );
            // Assumption : there is only one mimetype for that pattern
            // It doesn't really make sense otherwise, anyway.
-           dict.insert( pattern, mimeType );
+           dict.insert( pattern, mimeType.constData() );
         }
       }
    }
@@ -240,7 +241,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
 void
 KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-   KServiceType::Ptr serviceType = newEntry;
+   KServiceType::Ptr serviceType = KServiceType::Ptr::staticCast( newEntry );
    if ( m_entryDict->value( newEntry->name() ) )
    {
      // Already exists
