@@ -54,7 +54,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kprocio.h kasyncio.h krandom.h\
 	kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
+	genericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
@@ -100,7 +100,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kcodecs.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalog.cpp \
-	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
+	kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \
 	kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
