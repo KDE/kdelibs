@@ -43,7 +43,9 @@ extern "C" int XShmQueryExtension(Display *display);
 #undef HAVE_MITSHM
 #endif
 
+#ifdef HAVE_MITSHM
 extern GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
+#endif
 
 // d pointer
 
