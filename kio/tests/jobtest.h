@@ -48,6 +48,7 @@ private slots:
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
     void newApiPerformance();
+    void calculateRemainingSeconds();
 
 signals:
     void exitLoop();

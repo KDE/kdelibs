@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <klocale.h>
 
 QTTEST_KDEMAIN( JobTest, GUI )
 
@@ -745,6 +746,19 @@ void JobTest::newApiPerformance()
         COMPARE( displayName, QString::fromLatin1( "name" ) );
         VERIFY( url.isEmpty() );
     }
+}
+
+void JobTest::calculateRemainingSeconds()
+{
+    unsigned int seconds = KIO::calculateRemainingSeconds( 2 * 86400 - 60, 0, 1 );
+    COMPARE( seconds, static_cast<unsigned int>( 2 * 86400 - 60 ) );
+    QString text = KIO::convertSeconds( seconds );
+    COMPARE( text, i18n( "1 day 23:59:00" ) );
+
+    seconds = KIO::calculateRemainingSeconds( 520, 20, 10 );
+    COMPARE( seconds, static_cast<unsigned int>( 50 ) );
+    text = KIO::convertSeconds( seconds );
+    COMPARE( text, i18n( "00:00:50" ) );
 }
 
 #include "jobtest.moc"
