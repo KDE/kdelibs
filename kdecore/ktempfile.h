@@ -187,13 +187,28 @@ protected:
    KTempFile(bool);
 
    /**
+    * Create function used internally by KTempFile and KSaveFile.
+    * The file is opened by this function (and no other).
+    * @see KTempFile()
+    * @see isOpen()
     * @internal
-    * Create function used internally by KTempFile and KSaveFile
     **/
    bool create(const QString &filePrefix,
                const QString &fileExtension, int mode);
 
+   /**
+    * Set the error value (for subclasses).
+    * @param error An error number. Error numbers should
+    *        come from the standard list of error numbers in
+    *        errno.h .
+    * @see status()
+    */
    void setError(int error);
+   /**
+    * @return Whether the temporary file is open (for writing,
+    *         or whatever.
+    * @see create()
+    */
    bool isOpen() const;
 private:
 

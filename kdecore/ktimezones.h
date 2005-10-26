@@ -761,9 +761,11 @@ class KSystemTimezoneData : public KTimezoneData
 
 public:
     KSystemTimezoneData();
+    /** Copy constructor; no special ownership assumed. */
     KSystemTimezoneData(const KSystemTimezoneData &);
     virtual ~KSystemTimezoneData();
 
+    /** Assignment; no special ownership assumed. Everything is value based. */
     KSystemTimezoneData &operator=(const KSystemTimezoneData &);
 
     /**
