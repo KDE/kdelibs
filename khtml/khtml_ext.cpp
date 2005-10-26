@@ -39,7 +39,6 @@
 #include <qfileinfo.h>
 #include <q3popupmenu.h>
 #include <qmetaobject.h>
-#include <q3dragobject.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -57,7 +56,6 @@
 #include <kurifilter.h>
 #include <kiconloader.h>
 #include <kdesktopfile.h>
-#include <kmultipledrag.h>
 #include <kinputdialog.h>
 #include <ktempfile.h>
 #include "khtml_factory.h"
@@ -233,16 +231,13 @@ void KHTMLPartBrowserExtension::copy()
 	*/
 	//if(!cb->selectionModeEnabled())
 	    htmltext = m_part->selectedTextAsHTML();
-	Q3TextDrag *textdrag = new Q3TextDrag(text, 0L);
-	KMultipleDrag *drag = new KMultipleDrag( m_editableFormWidget );
-	drag->addDragObject( textdrag );
+	QMimeData *mimeData = new QMimeData;
+	mimeData->setText(text);
 	if(!htmltext.isEmpty()) {
 	    htmltext.replace( QChar( 0xa0 ), ' ' );
-	    Q3TextDrag *htmltextdrag = new Q3TextDrag(htmltext, 0L);
-	    htmltextdrag->setSubtype("html");
-	    drag->addDragObject( htmltextdrag );
+	    mimeData->setHtml(htmltext);
 	}
-        cb->setData(drag);
+        cb->setMimeData(mimeData);
 #else
 	cb->setText(text);
 #endif
