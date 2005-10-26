@@ -319,7 +319,7 @@ KLibLoader::~KLibLoader()
 {
 //    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
 
-    for (QHash<const char*, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
+    for (QHash<QString, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
     {
       Q_ASSERT((*it) != 0);
       kdDebug(150) << "The KLibLoader contains the library " << (*it)->name
@@ -489,12 +489,12 @@ void KLibLoader::slotLibraryDestroyed()
 {
   const KLibrary *lib = static_cast<const KLibrary *>( sender() );
 
-  for (QHash<const char*, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
+  for (QHash<QString, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
     if ( (*it)->lib == lib )
     {
       KLibWrapPrivate *wrap = *it;
       wrap->lib = 0;  /* the KLibrary object is already away */
-      m_libs.take( it.key() );
+      m_libs.remove( it.key() );
       close_pending( wrap );
       return;
     }

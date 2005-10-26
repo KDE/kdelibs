@@ -484,7 +484,7 @@ private slots:
     void slotLibraryDestroyed();
 private:
     void close_pending( KLibWrapPrivate * );
-    QHash<const char*, KLibWrapPrivate*> m_libs;
+    QHash<QString, KLibWrapPrivate*> m_libs;
 
     static KLibLoader* s_self;
 
