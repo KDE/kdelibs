@@ -5,7 +5,7 @@ Import('env')
 
 obj = env.kdeobj('shlib',env)
 obj.vnum     = '2.0.1'
-obj.target   = 'libQtTest'
+obj.target   = 'QtTest'
 obj.source   = Split("""qtestcase.cpp 
     qtestlog.cpp qtesttable.cpp qtestdata.cpp qtestresult.cpp
     qasciikey.cpp qplaintestlogger.cpp qxmltestlogger.cpp
