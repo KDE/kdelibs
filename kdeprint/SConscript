@@ -56,18 +56,26 @@ obj.target = 'libkdeprint'
 obj.vnum = '6.0.2'
 obj.source = libkdeprint_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop"
-obj.libs = "kdecore kdeui kio DCOP"
+obj.libpaths = "../kdecore ../kdeui ../kio ../kded ../dcop"
+obj.libs = "kdecore kdeui kio kded DCOP"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KPARTS Z '
+obj.ccflags = '-DYY_NO_UNISTD_H'
+if env['WINDOWS']:
+	obj.libpaths += " ../win"
+	obj.libs += " kdewin32"
+	
 obj.execute()
 
 obj = env.kdeobj('module')
 obj.target = 'kded_kdeprintd'
 obj.source = kded_kdeprintd_sources
 obj.includes = includes
-obj.libpaths = "../kdecore"
-obj.libs = "kdecore"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kded"
+obj.libs = "kdecore kdeui kio DCOP kded"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDED '
+if env['WINDOWS']:
+	obj.libpaths += " ../win"
+	obj.libs += " kdewin32"
 obj.execute()
 
 
