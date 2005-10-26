@@ -30,7 +30,9 @@
 
 template <typename KT, typename KV> class QMap;
 class QString;
-class Q3StrList; // only needed for KDE3 compatibility
+#ifdef KDE3_SUPPORT
+class Q3StrList;
+#endif
 
 class KConfigBackEnd;
 class KConfigBasePrivate;

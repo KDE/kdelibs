@@ -446,7 +446,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
   return QVariant();
 }
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
 #include <q3strlist.h>
 int KConfigBase::readListEntry( const QString& pKey,
                                 Q3StrList &list, char sep ) const
@@ -1325,7 +1325,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
   Q_ASSERT( 0 );
 }
 
-#ifdef QT3_SUPPORT
+#ifdef KDE3_SUPPORT
 void KConfigBase::writeEntry ( const QString& pKey, const Q3StrList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
