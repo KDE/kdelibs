@@ -197,10 +197,10 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
       QString relPath;
       QString exec;
       bool isDir = false;
-      KSycocaEntry *p = (*it).get();
+      const KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
       {
-         KService *service = static_cast<KService *>(p);
+         const KService::Ptr service = KService::Ptr::staticCast(p);
 
          if (service->noDisplay())
             continue;
@@ -211,7 +211,7 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
       }
       else if (p->isType(KST_KServiceGroup))
       {
-         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         const KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
 
          if (serviceGroup->noDisplay())
             continue;

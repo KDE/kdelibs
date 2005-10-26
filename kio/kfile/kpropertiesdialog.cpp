@@ -129,7 +129,7 @@ extern "C" {
 
 #ifdef Q_WS_WIN
 # include <win32_utils.h>
-# warning TODO: port completly to win32 
+# warning TODO: port completly to win32
 #endif
 
 static QString nameFromFileName(QString nameStr)
@@ -2760,7 +2760,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   for(KMountPoint::List::ConstIterator it = mountPoints.begin();
       it != mountPoints.end(); ++it)
   {
-     KMountPoint *mp = (*it).get();
+     const KMountPoint::Ptr mp = (*it);
      QString mountPoint = mp->mountPoint();
      QString device = mp->mountedFrom();
      kdDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType()<<endl;
