@@ -46,7 +46,7 @@ static bool emailsEquals( const QStringList&, const QStringList& );
 
 KABC::SortMode *Addressee::mSortMode = 0;
 
-struct Addressee::AddresseeData
+struct Addressee::AddresseeData : public KShared
 {
   QString uid;
   --VARIABLES--
@@ -97,7 +97,7 @@ Addressee &Addressee::operator=( const Addressee &a )
 
 void Addressee::detach()
 {
-  if ( mData.get() == shared_null ) {
+  if ( mData.data() == shared_null ) {
     mData = new AddresseeData;
     mData->empty = true;
     mData->changed = false;

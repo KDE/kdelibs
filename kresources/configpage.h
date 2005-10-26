@@ -38,7 +38,7 @@ class QPushButton;
 
 namespace KRES {
 
-class KRESOURCES_EXPORT ResourcePageInfo
+class KRESOURCES_EXPORT ResourcePageInfo : public KShared
 {
   public:
     ResourcePageInfo();

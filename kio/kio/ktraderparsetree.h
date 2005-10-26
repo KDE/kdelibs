@@ -120,7 +120,7 @@ public:
 /**
  * @internal
  */
-class KIO_EXPORT ParseTreeBase
+class KIO_EXPORT ParseTreeBase : public KShared
 {
 public:
   typedef KSharedPtr<ParseTreeBase> Ptr;
