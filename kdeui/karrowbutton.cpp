@@ -22,6 +22,8 @@
 #include <QStyleOptionFrame>
 #include <QPainter>
 
+#include <assert.h>
+
 class KArrowButtonPrivate
 {
 	public:
@@ -73,6 +75,9 @@ void KArrowButton::paintEvent(QPaintEvent*)
         
 	style()->drawPrimitive( QStyle::PE_Frame, &opt, &p, this);
 
+	if (d->arrow == Qt::NoArrow)
+		return;
+
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
 	    static_cast<unsigned int>(height()) < arrowSize + margin)
 		return; // don't draw arrows if we are too small
@@ -104,6 +109,7 @@ void KArrowButton::paintEvent(QPaintEvent*)
 		case Qt::RightArrow: e = QStyle::PE_IndicatorArrowRight; break;
 		case Qt::UpArrow: e = QStyle::PE_IndicatorArrowUp; break;
 		case Qt::DownArrow: e = QStyle::PE_IndicatorArrowDown; break;
+		case Qt::NoArrow: assert( 0 ); break;
 	}
 
 	opt.state |= QStyle::State_Enabled;
