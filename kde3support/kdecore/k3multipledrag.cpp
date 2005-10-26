@@ -17,20 +17,20 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kmultipledrag.h"
+#include "k3multipledrag.h"
 #include "kdebug.h"
 
 #ifndef QT_NO_DRAGANDDROP
 
-KMultipleDrag::KMultipleDrag( QWidget *dragSource, const char *name )
+K3MultipleDrag::K3MultipleDrag( QWidget *dragSource, const char *name )
     : Q3DragObject( dragSource, name )
 {
     m_dragObjects.setAutoDelete( true );
 }
 
-void KMultipleDrag::addDragObject( Q3DragObject *dragObject )
+void K3MultipleDrag::addDragObject( Q3DragObject *dragObject )
 {
-    //kdDebug() << "KMultipleDrag::addDragObject" << endl;
+    //kdDebug() << "K3MultipleDrag::addDragObject" << endl;
     m_dragObjects.append( dragObject );
     // We need to find out how many formats this dragObject supports
     int i = 0;
@@ -39,9 +39,9 @@ void KMultipleDrag::addDragObject( Q3DragObject *dragObject )
     m_numberFormats.append( i ); // e.g. if it supports two formats, 0 and 1, store 2.
 }
 
-QByteArray KMultipleDrag::encodedData( const char *mime ) const
+QByteArray K3MultipleDrag::encodedData( const char *mime ) const
 {
-    //kdDebug() << "KMultipleDrag::encodedData " << mime << endl;
+    //kdDebug() << "K3MultipleDrag::encodedData " << mime << endl;
     // Iterate over the drag objects, and find the format in the right one
     Q3PtrListIterator<Q3DragObject> it( m_dragObjects );
     for ( ; it.current(); ++it )
@@ -55,9 +55,9 @@ QByteArray KMultipleDrag::encodedData( const char *mime ) const
     return QByteArray();
 }
 
-const char* KMultipleDrag::format( int i ) const
+const char* K3MultipleDrag::format( int i ) const
 {
-    //kdDebug() << "KMultipleDrag::format " << i << endl;
+    //kdDebug() << "K3MultipleDrag::format " << i << endl;
     // example: m_numberFormats: 1, 4
     //          m_dragObjects: storeddrag, textdrag
     // i=0 -> storeddrag->format( 0 )
@@ -74,9 +74,9 @@ const char* KMultipleDrag::format( int i ) const
     return 0;
 }
 
-void KMultipleDrag::virtual_hook( int, void* )
+void K3MultipleDrag::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "kmultipledrag.moc"
+#include "k3multipledrag.moc"
 
 #endif

@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KMULTIPLEDRAG_H
-#define KMULTIPLEDRAG_H
+#ifndef K3MULTIPLEDRAG_H
+#define K3MULTIPLEDRAG_H
 
 #ifndef QT_NO_DRAGANDDROP
 
@@ -26,7 +26,7 @@
 #include <q3valuelist.h>
 #include "kdelibs_export.h"
 
-class KMultipleDragPrivate;
+class K3MultipleDragPrivate;
 /**
  * This class makes it easy for applications to provide a drag object
  * (for drag-n-drop or for clipboard) that has several representations
@@ -34,15 +34,15 @@ class KMultipleDragPrivate;
  *
  * Instead of creating a specific class for each case (as would otherwise
  * be necessary), you can simply create independent drag objects (e.g.
- * a QImageDrag object and a KURLDrag object), and bundle them together
- * using KMultipleDrag.
+ * a Q3ImageDrag object and a K3URLDrag object), and bundle them together
+ * using K3MultipleDrag.
  *
  * Sample code for this:
  *
  * \code
- * KMultipleDrag *drag = new KMultipleDrag( parentWidget );
- * drag->addDragObject( new QImageDrag( someQImage, 0 ) );
- * drag->addDragObject( new KURLDrag( someKURL, 0 ) );
+ * K3MultipleDrag *drag = new K3MultipleDrag( parentWidget );
+ * drag->addDragObject( new Q3ImageDrag( someQImage, 0 ) );
+ * drag->addDragObject( new K3URLDrag( someKURL, 0 ) );
  * drag->drag();
  * \endcode
  *
@@ -51,18 +51,18 @@ class KMultipleDragPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDECORE_EXPORT KMultipleDrag : public Q3DragObject
+class KDE3SUPPORT_EXPORT K3MultipleDrag : public Q3DragObject
 {
     Q_OBJECT
 
 public:
     /**
-     * Create a new KMultipleDrag object.
+     * Create a new K3MultipleDrag object.
      * @param dragSource the parent object which is the source of the data,
      *                   0 for a parent-less object
      * @param name the name of the object, can be 0
      */
-    KMultipleDrag( QWidget *dragSource = 0, const char *name = 0 );
+    K3MultipleDrag( QWidget *dragSource = 0, const char *name = 0 );
 
     /**
      * Call this to add each underlying drag object to the multiple drag object.
@@ -95,9 +95,9 @@ protected:
 private:
     Q3PtrList<Q3DragObject> m_dragObjects;
     QList<int> m_numberFormats;
-    KMultipleDragPrivate* d;
+    K3MultipleDragPrivate* d;
 };
 
 #endif // QT_NO_DRAGANDDROP
 
-#endif // KMULTIPLEDRAG_H
+#endif // K3MULTIPLEDRAG_H
