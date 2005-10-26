@@ -38,16 +38,14 @@ generic
 
 -	n	cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
 		'##' refers to ?? (I found it refers to /)
-
--	n	fix dependency checking for static libraries (recent idea it to create libtool file for 
-		static libs too and to add relating dependency)
     
 -	n	fix or report doxygen parsing problem in generic.py 
 
+- n make libtool support optional, disable by default and create <target-name>.dep 
+    without content for each library target as platform independent dependency link 
 
 mac related
 -----------
-
 
 
 
@@ -60,9 +58,6 @@ win32 related
 -------------
   			 						
 2 n fix installation of files  (dll's are in lib dir instead of bin, which is in path)
-
-1 n QT requires some component relates defines like QT_<component>_LIB they have 
-    to be added in win32/detect_qt4.py 
 
 3 n document platform option platform=<QT Platform specifier>  
     currently supported: win32-g++, win32-msvc.net 
