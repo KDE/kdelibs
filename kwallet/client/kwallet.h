@@ -23,7 +23,6 @@
 #define _KWALLET_H
 
 #include <qglobal.h>
-#ifdef Q_OS_UNIX
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -514,8 +513,6 @@ class KIO_EXPORT Wallet : public QObject, public DCOPObject {
 };
 
 }
-
-#endif //Q_OS_UNIX
 
 #endif //_KWALLET_H
 
