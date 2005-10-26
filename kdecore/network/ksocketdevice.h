@@ -406,6 +406,10 @@ public:
   KSocketDeviceFactory() {}
   virtual ~KSocketDeviceFactory() {}
 
+  /** Create the socket implementation. 
+      @param parent Parent socket for this implementation
+      @todo Who owns the parent afterwards?
+  */
   virtual KSocketDevice* create(KSocketBase* parent) const
   { return new Impl(parent); }
 };

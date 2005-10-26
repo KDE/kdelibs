@@ -264,6 +264,7 @@ public:
   void setAddress(const QString& host, const QString& service);
 
 protected:
+  /** Standard hack to add virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
   QSharedDataPointer<KResolverResultsPrivate> d;
@@ -930,6 +931,7 @@ protected:
    */
   void setError(int errorcode, int systemerror = 0);
 
+  /** Standard hack to add virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
   KResolverPrivate* d;

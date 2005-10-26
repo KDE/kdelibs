@@ -477,7 +477,7 @@ public:
   { return QIODevice::errorString(); }
 
   /**
-   * @reimplemented
+   * @reimp
    */
   virtual void setSocketDevice(KSocketDevice* device);
 
@@ -511,6 +511,8 @@ public:
    * if the connection has succeeded in the mean time.
    *
    * @param address		the address to connect to
+   * @param mode                mode for connection, from QIODevice
+   * 
    * @returns true if the connection was successful or has been successfully
    *          queued; false if an error occurred.
    */
