@@ -23,6 +23,7 @@
 #define KSPELL_BROKER_H
 
 #include <ksharedptr.h>
+#include <kdelibs_export.h>
 
 #include <qobject.h>
 #include <qstringlist.h>
