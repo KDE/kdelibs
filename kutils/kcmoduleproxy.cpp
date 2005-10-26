@@ -31,8 +31,11 @@
 
 #include <qwidget.h>
 
+#ifdef Q_WS_X11
 #include <QX11EmbedWidget>
 #include <qx11info_x11.h>
+#include <X11/Xlib.h>
+#endif 
 
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -47,7 +50,6 @@
 #include <kstandarddirs.h>
 #include <kuser.h>
 
-#include <X11/Xlib.h>
 #include <kvbox.h>
 
 #include "kcmoduleproxy.h"
