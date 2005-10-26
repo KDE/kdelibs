@@ -30,26 +30,34 @@
 
 QTTEST_KDEMAIN( KSharedPtrTest, NoGUI )
 
+class SharedString : public KShared
+{
+public:
+    SharedString( const QString& data ) : mStr( data ) {}
+    QString mStr;
+};
+
 void KSharedPtrTest::testWithStrings()
 {
-	QString s = QLatin1String( "Hello" );
-	QString s2 = QLatin1String( "Foo" );
-	QString s3 = QLatin1String( "Bar" );
+	SharedString s = QString::fromLatin1( "Hello" );
+	SharedString s2 = QString::fromLatin1( "Foo" );
+	SharedString s3 = QString::fromLatin1( "Bar" );
 
-	KSharedPtr<QString> u = new QString( s );
-	COMPARE( *u, s );
+	KSharedPtr<SharedString> u = new SharedString( s );
+	COMPARE( u->mStr, s.mStr );
 	VERIFY( u.isUnique() );
 
-	KSharedPtr<QString> v;
+	KSharedPtr<SharedString> v;
 	VERIFY( u.isUnique() );
 	VERIFY( !v );
 
 	v = u;
 	VERIFY( !u.isUnique() );
-	COMPARE( *v, s );
+	COMPARE( v->mStr, s.mStr );
 	VERIFY( !v.isUnique() );
 
-	KSharedPtr<QString> w = v.copy();
+#if 0
+	KSharedPtr<SharedString> w = v.copy();
 	COMPARE( *u, s );
 	VERIFY( !u.isUnique() );
 	COMPARE( *v, s );
@@ -72,15 +80,17 @@ void KSharedPtrTest::testWithStrings()
 	VERIFY( !v.isUnique() );
 	COMPARE( *w, s );
 	VERIFY( !w.isUnique() );
+#endif
 
-	*u.get() = s2;
-	COMPARE( *u, s2 );
+	u->mStr = s2.mStr;
+	COMPARE( u->mStr, s2.mStr );
 	VERIFY( !u.isUnique() );
-	COMPARE( *v, s2 );
+	COMPARE( v->mStr, s2.mStr );
 	VERIFY( !v.isUnique() );
-	COMPARE( *w, s2 );
-	VERIFY( !w.isUnique() );
+//	COMPARE( *w, s2 );
+//	VERIFY( !w.isUnique() );
 
+#if 0
 	w.detach();
 	*w = s3;
 	COMPARE( *u, s2 );
@@ -89,10 +99,11 @@ void KSharedPtrTest::testWithStrings()
 	VERIFY( !v.isUnique() );
 	COMPARE( *w, s3 );
 	VERIFY( w.isUnique() );
+#endif
 }
 
 static int dtor_called = 0;
-class Base
+class Base : public KShared
 {
 public:
 	virtual ~Base() { ++dtor_called; }
@@ -104,7 +115,7 @@ void KSharedPtrTest::testDeletion()
 	{
 		Base* obj = new Base;
 		KSharedPtr<Base> ptrBase = obj;
-		COMPARE( ptrBase.get(), obj );
+		COMPARE( ptrBase.data(), obj );
 		COMPARE( dtor_called, 0 ); // no dtor called yet
 	}
 	COMPARE( dtor_called, 1 );
@@ -125,14 +136,14 @@ void KSharedPtrTest::testDifferentTypes()
 		KSharedPtr<Base> ptrBase = obj;
 		// then we call some method that takes a KSharedPtr<Base> as argument
 		// and there we downcast again:
-		KSharedPtr<Derived> ptrDerived = ptrBase;
+		KSharedPtr<Derived> ptrDerived = KSharedPtr<Derived>::staticCast( ptrBase );
 		COMPARE( dtor_called, 0 ); // no dtor called yet
-		COMPARE( ptrDerived.get(), obj );
+		COMPARE( ptrDerived.data(), obj );
 
 		// now test assignment operator
-		ptrDerived = ptrBase;
+		ptrDerived = KSharedPtr<Derived>::dynamicCast( ptrBase );
 		COMPARE( dtor_called, 0 ); // no dtor called yet
-		COMPARE( ptrDerived.get(), obj );
+		COMPARE( ptrDerived.data(), obj );
 	}
 	COMPARE( dtor_called, 1 );
 }

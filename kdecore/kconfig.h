@@ -266,7 +266,7 @@ private:
  * KSharedConfig provides a reference counted, shared memory variant
  * of KConfig.
  */
-class KDECORE_EXPORT KSharedConfig : public KConfig
+class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;

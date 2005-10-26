@@ -38,7 +38,7 @@ class QStringList;
  * @internal
  * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html
  */
-class KDECORE_EXPORT KSycocaEntry
+class KDECORE_EXPORT KSycocaEntry : public KShared
 {
 
 public:

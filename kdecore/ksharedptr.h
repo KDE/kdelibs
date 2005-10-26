@@ -27,249 +27,122 @@
 #ifndef KSHAREDPTR_H
 #define KSHAREDPTR_H
 
-#ifdef KDE3_SUPPORT
-#include "kdelibs_export.h"
-struct KDECORE_EXPORT KShared
-{
-	virtual ~KShared() {}
-};
-#endif
+#include <qshareddata.h>
+#include <kdemacros.h>
 
-#include <QAtomic>
-
-template <class T>
-class KSharedPtr;
-
-template <class T>
-bool operator==( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs )
-{
-	return lhs.d == rhs.d;
-}
-
-template <class T>
-bool operator!=( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs )
-{
-	return !operator==( lhs, rhs );
-}
+typedef QSharedData KShared;
 
 /**
- * A reference-counting pointer.
+ * Can be used to control the lifetime of an object that has derived
+ * KShared. As long a someone holds a KSharedPtr on some QSharedData
+ * object it won't become deleted but is deleted once its reference
+ * count is 0.  This struct emulates C++ pointers virtually perfectly.
+ * So just use it like a simple C++ pointer.
  *
- * This class serves as a replacement for ordinary C++ pointers, allowing
- * you to handle objects as if they are explicitely shared, handling
- * reference counting behind the scenes.
- *
- * An explicitely shared object provides very cheap copying since only a
- * pointer is copied and a reference count is updated. When an explicitely
- * shared object goes out of scope, the internal reference count gets
- * decreased. The data which multiple explicitely shared objects share is
- * only deleted when the last object which references it goes out of scope.
- *
- * Explicitely shared objects do not provide copy-on-write semantics; this
- * means that changing one object will also change all other objects which
- * share the data. Consider this:
- * \code
- * KSharedPtr<QString> w = new QString( "Hello" );
- * KSharedPtr<QString> v = w; // Now both v and w say 'Hello'
- * v->clear();                // Clears both v and w!
- * \endcode
- * The last line of code will clear both v and w, since they share the same
- * QString internally. To acquire a copy of the contained object which is
- * independant of all other copies, use the copy() function, as in:
- * \code
- * KSharedPtr<QString> w = new QString( "Hello" );
- * KSharedPtr<QString> v = w.copy(); // Make v a detached copy of w
- * v->clear();                       // v is cleared, w still says 'Hello'
- * \endcode
- *
- * @author Frerich Raabe <raabe@kde.org>
- * @short A reference counting pointer.
+ * @author Waldo Bastian <bastian@kde.org>
  */
-template <class T>
+template< class T >
 class KSharedPtr
 {
-	template <class U> friend class KSharedPtr;
-	friend bool operator==<>( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs );
-	friend bool operator!=<>( const KSharedPtr<T> &lhs, const KSharedPtr<T> &rhs );
-	public:
-		/**
-		 * Constructs a shared pointer from a dumb pointer. Ownership
-		 * of the referenced object is transferred to this shared
-		 * pointer.
-		 * @param obj A dumb pointer to mimic. May be a null pointer.
-		 */
-		KSharedPtr( T *obj = 0 )
-		{
-			d = new KSharedData;
-			d->ref = 1;
-			obj = qAtomicSetPtr( &d->obj, obj );
-		}
+public:
+    /**
+     * Creates a null pointer.
+     */
+    KSharedPtr()
+        : ptr(0) { }
+    /**
+     * Creates a new pointer.
+     * @param t the pointer
+     */
+    KSharedPtr( T* t ) // TODO explicit
+        : ptr(t) { if ( ptr ) ptr->ref.ref(); }
 
-		/**
-		 * Constructs a copy of another shared pointer, doing a
-		 * shallow copy of the contained object.
-		 * @param other Another shared pointer to copy.
-		 */
-		KSharedPtr( const KSharedPtr<T> &other )
-		{
-			acquire( other.d );
-		}
+    /**
+     * Copies a pointer.
+     * @param p the pointer to copy
+     */
+    KSharedPtr( const KSharedPtr& p )
+        : ptr(p.ptr) { if ( ptr ) ptr->ref.ref(); }
 
-		/**
-		 * Constructs a copy of another shared pointer, doing a
-		 * shallow copy of the contained object.
-		 * @param other Another shared pointer to copy.
-		 */
-		template <class U>
-		KSharedPtr( const KSharedPtr<U> &other )
-		{
-			acquire<U>( other.d );
-		}
+    /**
+     * Unreferences the object that this pointer points to. If it was
+     * the last reference, the object will be deleted.
+     */
+    ~KSharedPtr() { if ( ptr ) ptr->ref.deref(); }
 
-		/**
-		 * Destructs this shared pointer. The contained object will
-		 * only be deleted if no other pointers are pointing to it.
-		 */
-		~KSharedPtr()
-		{
-			deref();
-		}
+    KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
+        if ( ptr == p.ptr ) return *this;
+        if ( ptr ) ptr->ref.deref();
+        ptr = p.ptr;
+        if ( ptr ) ptr->ref.ref();
+        return *this;
+    }
+    KSharedPtr<T>& operator= ( T* p ) {
+        if ( ptr == p ) return *this;
+        if ( ptr ) ptr->ref.deref();
+        ptr = p;
+        if ( ptr ) ptr->ref.ref();
+        return *this;
+    }
+    bool operator== ( const KSharedPtr<T>& p ) const { return ( ptr == p.ptr ); }
+    bool operator!= ( const KSharedPtr<T>& p ) const { return ( ptr != p.ptr ); }
+    bool operator== ( const T* p ) const { return ( ptr == p ); }
+    bool operator!= ( const T* p ) const { return ( ptr != p ); }
+    operator bool() const { return ( ptr != 0 ); }
 
-		/**
-		 * Makes this shared pointer refer to the pointee of the given
-		 * dumb pointer. Ownership of the pointee is transferred to
-		 * this shared pointer.
-		 * @param rhs A dumb pointer whose pointee shall be referenced.
-		 * @return A reference to this shared pointer.
-		 */
-		KSharedPtr<T> &operator=( T *rhs )
-		{
-			deref();
-			d = new KSharedData;
-			rhs = qAtomicSetPtr( &d->obj, rhs );
-			d->ref = 1;
-			return *this;
-		}
+    /**
+     * @deprecated use data()
+     */
+    KDE_DEPRECATED T *get() const { return ptr; }
 
-		/**
-		 * Makes this shared pointer refer to the pointee of the
-		 * given shared pointer.
-		 * @param rhs A shared pointer whose pointee shall be referenced.
-		 * @return A reference to this shared pointer.
-		 */
-		KSharedPtr<T> &operator=( const KSharedPtr<T> &rhs )
-		{
-			if ( this != &rhs ) {
-				deref();
-				acquire( rhs.d );
-			}
-			return *this;
-		}
+    /**
+     * @return the pointer
+     */
+    T* data() { return ptr; }
 
-		/**
-		 * Makes this shared pointer refer to the pointee of the
-		 * given shared pointer.
-		 * @param rhs A shared pointer whose pointee shall be referenced.
-		 * @return A reference to this shared pointer.
-		 */
-		template <class U>
-		KSharedPtr<T> &operator=( const KSharedPtr<U> &rhs )
-		{
-			if ( d->obj != rhs.d->obj ) {
-				deref();
-				acquire<U>( rhs.d );
-			}
-			return *this;
-		}
+    /**
+     * @return the pointer
+     */
+    const T* data() const { return ptr; }
+    /**
+     * @return a const pointer to the shared object.
+     */
+    const T* constData() const { return ptr; }
 
-		const T &operator*() const { return *d->obj; }
-		T &operator*() { return *d->obj; }
-		const T *operator->() const { return d->obj; }
-		T *operator->() { return d->obj; }
-		operator bool() const { return d->obj != 0; }
+    const T& operator*() const { return *ptr; }
+    T& operator*() { return *ptr; }
+    const T* operator->() const { return ptr; }
+    T* operator->() { return ptr; }
 
-		/**
-		 * @return A pointer which points to a detached copy of the
-		 * referenced object. Modifications done via the returned
-		 * pointer will not affect any other objects.
-		 */
-		KSharedPtr<T> copy()
-		{
-			if ( !d->obj ) {
-				return KSharedPtr<T>();
-			}
-			return KSharedPtr<T>( new T( *d->obj ) );
-		}
+    /**
+     * Returns the number of references.
+     * @return the number of references
+     */
+    int count() const { return ptr->ref; } // for debugging purposes
 
-		/**
-		 * Detach this pointer from other shared pointers pointing
-		 * to the same object. Future modifications done through this
-		 * pointer will no longer affect other pointers.
-		 */
-		void detach()
-		{
-			*this = copy();
-		}
+    /**
+     * @return Whether this is the only shared pointer pointing to
+     * to the pointee, or whether it's shared among multiple
+     * shared pointers.
+     */
+    bool isUnique() const { return count() == 1; }
 
-		/**
-		 * @return A dumb pointer to the contained object. This is
-		 * rarely needed, and very dangerous since it completely
-		 * circumvents the reference counting. Use with care!
-		 */
-		T *get() const
-		{
-			return d->obj;
-		}
+    template <class U> friend class KSharedPtr;
 
-#ifdef KDE3_SUPPORT
-		T *data() const
-		{
-			return get();
-		}
-#endif
+    /**
+     *
+     */
+    template <class U>
+    static KSharedPtr<T> staticCast( const KSharedPtr<U>& other ) {
+        return KSharedPtr<T>( static_cast<T *>( other.ptr ) );
+    }
+    template <class U>
+    static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
+        return KSharedPtr<T>( dynamic_cast<T *>( other.ptr ) );
+    }
 
-		/**
-		 * @return Whether this is the only shared pointer pointing to
-		 * to the pointee, or whether it's shared among multiple
-		 * shared pointers.
-		 */
-		bool isUnique() const
-		{
-			return d->ref == 1;
-		}
-
-	private:
-		struct KSharedData
-		{
-			QAtomic ref;
-			T *obj;
-		};
-
-		void deref()
-		{
-			if ( !d->ref.deref() ) {
-				delete d->obj;
-				delete d;
-				d = 0;
-			}
-		}
-
-		void acquire( KSharedData *ptr )
-		{
-			ptr = qAtomicSetPtr( &d, ptr );
-			d->ref.ref();
-		}
-
-		template <class U>
-		void acquire( typename KSharedPtr<U>::KSharedData *ptr )
-		{
-			/* Unfortunately both arguments to qAtomicSetPtr have
-			 * to have the same type. */
-			qAtomicSetPtr( reinterpret_cast<void **>( &d ), static_cast<void *>( ptr ) );
-			d->ref.ref();
-		}
-
-		KSharedData *d;
+private:
+    T* ptr;
 };
 
 #endif // KSHAREDPTR_H
