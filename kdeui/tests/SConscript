@@ -52,7 +52,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 	ktabwidgettest
 	ktextedittest
 	ktoolbarlabelactiontest
-	kunbalancedgrdtest
+	#kunbalancedgrdtest
 	kwindowtest
 	kwizardtest
 	kwordwraptest
