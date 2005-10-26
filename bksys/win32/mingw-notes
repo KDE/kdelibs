@@ -20,6 +20,20 @@ local TODO
 
 History
 -------
+2005-10-26 Ralf Habacker 
+- detected a bug in the qt release 4.0.1. The file qconfig.h does not contain a valid QT_EDITION string, which should be set after 
+  a finished configuration process. Because of this a defines QT_EDITION=QT_EDITION_DESKTOP or QT_EDITION_OPENSOURCE is required on the 
+  commandline. Funny thing that .qmake.cache contains a line which includes in all qmake generated Makefiles such a define. 
+  A reconfigure and recompile of the qt release helps, but this seems not to be very good for users to recompile the whole qt release 
+  before compiling any kde application. 
+	Note: mingw32-make does not work for compiling the qt release as stated as the end of the configuration process. 
+	I got it compile with the msys make command. 
+		
+		make --win32 
+	
+  
+ 
+
 2005-10-25 Ralf Habacker 
 - merged kio convenience libs directly in kio library generation 
 - added la file creating for static libs 
