@@ -281,7 +281,7 @@ void ProgressItem::setInfoMessage( const QString & msg ) {
 
 void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
   m_iSpeed = bytes_per_second;
-  m_remainingTime = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, m_iSpeed );
+  m_remainingSeconds = KIO::calculateRemainingSeconds( m_iTotalSize, m_iProcessedSize, m_iSpeed );
 
   QString tmps, tmps2;
   if ( m_iSpeed == 0 ) {
@@ -289,7 +289,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
     tmps2 = tmps;
   } else {
     tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
-    tmps2 = m_remainingTime.toString();
+    tmps2 = KIO::convertSeconds( m_remainingSeconds );
   }
   setText( ListProgress::TB_SPEED, tmps );
   setText( ListProgress::TB_REMAINING_TIME, tmps2 );
@@ -1073,7 +1073,7 @@ void UIServer::slotUpdate() {
   int iTotalFiles = 0;
   KIO::filesize_t iTotalSize = 0;
   int iTotalSpeed = 0;
-  QTime totalRemTime;
+  unsigned int totalRemTime = 0; // in seconds
 
   ProgressItem *item;
 
@@ -1088,8 +1088,8 @@ void UIServer::slotUpdate() {
     iTotalFiles += ( item->totalFiles() - item->processedFiles() );
     iTotalSpeed += item->speed();
 
-    if ( item->remainingTime() > totalRemTime ) {
-      totalRemTime = item->remainingTime();
+    if ( item->remainingSeconds() > totalRemTime ) {
+      totalRemTime = item->remainingSeconds();
     }
   }
 
@@ -1097,7 +1097,7 @@ void UIServer::slotUpdate() {
   statusBar()->changeItem( i18n( " Files: %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
   statusBar()->changeItem( i18n( "Remaining Size", " Rem. Size: %1 ").arg( KIO::convertSize( iTotalSize ) ),
                            ID_TOTAL_SIZE);
-  statusBar()->changeItem( i18n( "Remaining Time", " Rem. Time: %1 ").arg( totalRemTime.toString() ),
+  statusBar()->changeItem( i18n( "Remaining Time", " Rem. Time: %1 ").arg( KIO::convertSeconds( totalRemTime ) ),
                            ID_TOTAL_TIME);
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
                            ID_TOTAL_SPEED);
