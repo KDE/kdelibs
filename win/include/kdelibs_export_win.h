@@ -29,11 +29,13 @@
 #define KDE_IMPORT __declspec(dllimport)
 #endif 
 
-#ifdef MAKE_KDECORE_LIB
-# define KDECORE_EXPORT KDE_EXPORT
-#else
-# ifndef KDECORE_EXPORT
-#  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
+#ifndef KDECORE_EXPORT
+# ifdef MAKE_KDECORE_LIB
+#  define KDECORE_EXPORT KDE_EXPORT
+# else
+#  ifndef KDECORE_EXPORT
+#   define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
+#  endif
 # endif
 #endif
 
