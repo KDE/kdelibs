@@ -57,8 +57,7 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName,
                      const Value &value, int attr = None);
     virtual void tryPut(ExecState *exec, const Identifier &propertyName,
-                        const Value& value, int attr = None)
-      { ObjectImp::put(exec,propertyName,value,attr); }
+                        const Value& value, int attr = None);
 
     virtual UString toString(ExecState *exec) const;
   };
@@ -102,10 +101,20 @@ namespace KJS {
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
       m_domObjects.insert( objectHandle, obj );
     }
+    void customizedDOMObject( DOMObject* obj ) {
+      m_customizedDomObjects.replace( obj, this );
+    }
     bool deleteDOMObject( void* objectHandle ) {
-      return m_domObjects.remove( objectHandle );
+      DOMObject* obj = m_domObjects.take( objectHandle );
+      if (obj) {
+        m_customizedDomObjects.remove( obj );
+        return true;
+      }
+      else
+        return false;
     }
     void clear() {
+      m_customizedDomObjects.clear();
       m_domObjects.clear();
     }
     /**
@@ -135,6 +144,8 @@ namespace KJS {
   private:
     khtml::ChildFrame* m_frame;
     QPtrDict<DOMObject> m_domObjects;
+    QPtrDict<void> m_customizedDomObjects; //Objects which had custom properties set,
+                                           //and should not be GC'd. key is DOMObject*
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;

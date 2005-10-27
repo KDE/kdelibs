@@ -80,6 +80,13 @@ void DOMObject::put(ExecState *exec, const Identifier &propertyName,
   }
 }
 
+void DOMObject::tryPut(ExecState *exec, const Identifier &propertyName,
+                        const Value& value, int attr)
+{
+    static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->customizedDOMObject(this);
+    ObjectImp::put(exec,propertyName,value,attr);
+}
+
 UString DOMObject::toString(ExecState *) const
 {
   return "[object " + className() + "]";
@@ -184,11 +191,11 @@ void ScriptInterpreter::mark()
 {
   Interpreter::mark();
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
+  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_customizedDomObjects.count() << " DOM objects" << endl;
 #endif
-  QPtrDictIterator<DOMObject> it( m_domObjects );
+  QPtrDictIterator<void> it( m_customizedDomObjects );
   for( ; it.current(); ++it )
-    it.current()->mark();
+    static_cast<DOMObject*>(it.currentKey())->mark();
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {
