@@ -278,8 +278,7 @@ QChar Filter::skipToLetter( uint &fromPosition ) const
 
     QChar currentChar = m_buffer[ fromPosition ];
     while ( !currentChar.isLetter() &&
-            fromPosition < m_buffer.length() ) {
-        ++fromPosition;
+            ++fromPosition < m_buffer.length() ) {
         currentChar = m_buffer[ fromPosition ];
     }
     return currentChar;
