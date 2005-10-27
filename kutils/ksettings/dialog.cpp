@@ -446,15 +446,15 @@ QList<KService::Ptr> Dialog::instanceServices() const
 		for( KServiceGroup::List::ConstIterator it = list.begin();
 				it != list.end(); ++it )
 		{
-			KSycocaEntry * p = (*it).get();
+			KSycocaEntry::Ptr p = (*it);
 			if( p->isType( KST_KService ) )
 			{
-				kdDebug( 700 ) << "found service" << endl;
-				ret << static_cast<KService *>( p );
+				//kdDebug( 700 ) << "found service" << endl;
+				ret << KService::Ptr::staticCast( p );
 			}
 			else
 				kdWarning( 700 ) << "KServiceGroup::childGroup returned"
-					" something else than a KService (kinda)" << endl;
+					" something else than a KService" << endl;
 		}
 	}
 

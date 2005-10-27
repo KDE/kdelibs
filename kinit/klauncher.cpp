@@ -942,9 +942,7 @@ bool
 KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
     const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind)
 {
-   KService::Ptr service = 0;
-   // Find service
-   service = KService::serviceByDesktopName(serviceName);
+   KService::Ptr service = KService::serviceByDesktopName(serviceName);
    if (!service)
    {
       DCOPresult.result = ENOENT;
@@ -1047,7 +1045,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
         return;
     bool silent;
     DCOPCString wmclass;
-    if( !KRun::checkStartupNotify( QString::null, service.get(), &silent, &wmclass ))
+    if( !KRun::checkStartupNotify( QString::null, service.data(), &silent, &wmclass ))
         return;
     KStartupInfoId id;
     id.initId( startup_id );
@@ -1282,7 +1280,8 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list.append(arg2);
     arg_list.append(arg3);
 
-//    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << protocol << endl;
+    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << protocol
+        << " args=" << arg_list << endl;
     if (mSlaveDebug == arg1)
     {
        klauncher_header request_header;
