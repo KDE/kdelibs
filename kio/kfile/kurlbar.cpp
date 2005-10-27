@@ -556,27 +556,26 @@ KURL KURLBar::currentURL() const
 void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
     m_isImmutable = appConfig->groupIsImmutable( itemGroup );
-    KConfigGroupSaver cs( appConfig, itemGroup );
+    KConfigGroup appGroup( appConfig, itemGroup );
     d->defaultIconSize = m_iconSize;
-    m_iconSize = appConfig->readNumEntry( "Speedbar IconSize", m_iconSize );
+    m_iconSize = appGroup.readNumEntry( "Speedbar IconSize", m_iconSize );
 
     if ( m_useGlobal ) { // read global items
-        KConfig *globalConfig = KGlobal::config();
-        KConfigGroupSaver cs( globalConfig, (QString)(itemGroup +" (Global)"));
-        int num = globalConfig->readNumEntry( "Number of Entries" );
+        KConfigGroup globalGroup( KGlobal::config(), (QString)(itemGroup +" (Global)"));
+        int num = globalGroup.readNumEntry( "Number of Entries" );
         for ( int i = 0; i < num; i++ ) {
-            readItem( i, globalConfig, false );
+            readItem( i, &globalGroup, false );
         }
     }
 
     // read application local items
-    int num = appConfig->readNumEntry( "Number of Entries" );
+    int num = appGroup.readNumEntry( "Number of Entries" );
     for ( int i = 0; i < num; i++ ) {
-        readItem( i, appConfig, true );
+        readItem( i, &appGroup, true );
     }
 }
 
-void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
+void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
     KURL url = KURL::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
@@ -593,11 +592,11 @@ void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 
 void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 {
-    KConfigGroupSaver cs1( config, itemGroup );
-    if(!config->hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
-        config->revertToDefault("Speedbar IconSize");
+    KConfigGroup cg( config, itemGroup );
+    if(!cg.hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
+        cg.revertToDefault("Speedbar IconSize");
     else
-        config->writeEntry( "Speedbar IconSize", m_iconSize );
+        cg.writeEntry( "Speedbar IconSize", m_iconSize );
 
     if ( !m_isModified )
         return;
@@ -620,7 +619,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
         }
         item = static_cast<KURLBarItem*>( item->next() );
     }
-    config->writeEntry("Number of Entries", numLocal);
+    cg.writeEntry("Number of Entries", numLocal);
 
 
     // write the global entries to kdeglobals, if any

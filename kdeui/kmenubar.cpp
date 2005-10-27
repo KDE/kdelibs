@@ -233,9 +233,8 @@ bool KMenuBar::isTopLevelMenu() const
 
 void KMenuBar::slotReadConfig()
 {
-  KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver( config, "KDE" );
-  setTopLevelMenuInternal( config->readBoolEntry( "macStyle", false ) );
+  KConfigGroup cg( KGlobal::config(), "KDE" );
+  setTopLevelMenuInternal( cg.readBoolEntry( "macStyle", false ) );
 }
 
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)

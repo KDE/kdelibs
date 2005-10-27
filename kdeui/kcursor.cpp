@@ -46,11 +46,10 @@ QCursor KCursor::handCursor()
 
         if (!hand_cursor)
         {
-                KConfig *config = KGlobal::config();
-                KConfigGroupSaver saver( config, "General" );
+                KConfigGroup cg( KGlobal::config(), "General" );
 
 #ifndef Q_WS_WIN // this mask doesn't work too well on win32
-                if ( config->readEntry("handCursorStyle", "Windows") == "Windows" )
+                if ( cg.readEntry("handCursorStyle", "Windows") == "Windows" )
                 {
                         static const unsigned char HAND_BITS[] = {
                                 0x80, 0x01, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02,
@@ -366,9 +365,8 @@ KCursorPrivate::KCursorPrivate()
 {
     hideCursorDelay = 5000; // 5s default value
 
-    KConfig *kc = KGlobal::config();
-    KConfigGroupSaver ks( kc, QLatin1String("KDE") );
-    enabled = kc->readBoolEntry(
+    KConfigGroup cg( KGlobal::config(), QLatin1String("KDE") );
+    enabled = cg.readBoolEntry(
 		  QLatin1String("Autohiding cursor enabled"), true );
 }
 

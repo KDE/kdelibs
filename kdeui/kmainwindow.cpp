@@ -842,13 +842,13 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 {
     kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
 
-    KConfigGroupSaver saver( config, configGroup.isEmpty() ? config->group() : configGroup );
+    KConfigGroup cg( config, configGroup.isEmpty() ? config->group() : configGroup );
 
-    restoreWindowSize(config);
+    restoreWindowSize(&cg);
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
-        QString entry = config->readEntry("StatusBar", "Enabled");
+        QString entry = cg.readEntry("StatusBar", "Enabled");
         if ( entry == "Disabled" )
            sb->hide();
         else
@@ -859,7 +859,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
-        QString entry = config->readEntry ("MenuBar", "Enabled");
+        QString entry = cg.readEntry ("MenuBar", "Enabled");
         if ( entry == "Disabled" )
            mb->hide();
         else
@@ -933,7 +933,7 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
      config->writeEntry(heightString, h );
 }
 
-void KMainWindow::restoreWindowSize( KConfig * config )
+void KMainWindow::restoreWindowSize( KConfigBase * config )
 {
     if (d->care_about_geometry) {
         parseGeometry(true);

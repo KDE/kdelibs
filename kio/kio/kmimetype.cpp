@@ -536,9 +536,8 @@ QString KMimeType::favIconForURL( const KURL& url )
     static bool check = true;
     if ( check ) {
         check = false;
-        KConfig *config = KGlobal::config();
-        KConfigGroupSaver cs( config, "HTML Settings" );
-        useFavIcons = config->readBoolEntry( "EnableFavicon", true );
+        KConfigGroup cg( KGlobal::config(), "HTML Settings" );
+        useFavIcons = cg.readBoolEntry( "EnableFavicon", true );
     }
 
     if ( url.isLocalFile() || !url.protocol().startsWith("http")

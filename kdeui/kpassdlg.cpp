@@ -106,10 +106,9 @@ KPasswordEdit::KPasswordEdit(QWidget *parent) : QLineEdit(parent)
 {
     init();
 
-    KConfig* const cfg = KGlobal::config();
-    KConfigGroupSaver saver(cfg, "Passwords");
+    KConfigGroup cg(KGlobal::config(), "Passwords");
 
-    const QString val = cfg->readEntry("EchoMode", "OneStar");
+    const QString val = cg.readEntry("EchoMode", "OneStar");
     if (val == "ThreeStars")
 	m_EchoMode = ThreeStars;
     else if (val == "NoEcho")
@@ -315,9 +314,8 @@ void KPasswordDialog::init()
 {
     m_Row = 0;
 
-    KConfig* const cfg = KGlobal::config();
-    const KConfigGroupSaver saver(cfg, "Passwords");
-    if (m_Keep && cfg->readBoolEntry("Keep", false))
+    KConfigGroup cg(KGlobal::config(), "Passwords");
+    if (m_Keep && cg.readBoolEntry("Keep", false))
 	++m_Keep;
 
     m_pMain = new QWidget(this);

@@ -80,15 +80,15 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
 {
     setObjectName( "kapp_accel_filter" );
     parent->installEventFilter( this );
-    KConfigGroupSaver saver( KGlobal::config(), "Development" );
-    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).trimmed();
+    KConfigGroup cg( KGlobal::config(), "Development" );
+    QString sKey = cg.readEntry( "CheckAccelerators" ).trimmed();
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( cuts.count() > 0 )
         key = int(cuts.seq(0).qt());
     }
-    alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", false );
-    autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", true );
+    alwaysShow = cg.readBoolEntry( "AlwaysShowCheckAccelerators", false );
+    autoCheck = cg.readBoolEntry( "AutoCheckAccelerators", true );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
 

@@ -41,12 +41,11 @@
 #include <qstringlist.h>
 #include <qtextstream.h>
 
-class KConfigBase::KConfigBasePrivate
+class KConfigBase::Private
 {
 public:
-     KConfigBasePrivate() : readDefaults(false) { };
+     Private() : readDefaults(false) { };
 
-public:
      bool readDefaults;
 };
 
@@ -1713,7 +1712,7 @@ void KConfigBase::setReadDefaults(bool b)
   if (!d)
   {
      if (!b) return;
-     d = new KConfigBasePrivate();
+     d = new Private;
   }
 
   d->readDefaults = b;
@@ -1773,8 +1772,6 @@ bool KConfigBase::hasDefault(const QString &key) const
 
   return false;
 }
-
-
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
 {

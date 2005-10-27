@@ -334,9 +334,8 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   if( sizeIsRelativeState && sizeIsRelativeCheckBox )
     setSizeIsRelative( *sizeIsRelativeState );
 
-  KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver(config, QLatin1String("General"));
-  showXLFDArea(config->readBoolEntry(QLatin1String("fontSelectorShowXLFD"), false));
+  KConfigGroup cg(KGlobal::config(), QLatin1String("General"));
+  showXLFDArea(cg.readBoolEntry(QLatin1String("fontSelectorShowXLFD"), false));
 }
 
 KFontChooser::~KFontChooser()

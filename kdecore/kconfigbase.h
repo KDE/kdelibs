@@ -35,7 +35,6 @@ class Q3StrList;
 #endif
 
 class KConfigBackEnd;
-class KConfigBasePrivate;
 class KConfigGroup;
 struct KEntry;
 struct KEntryKey;
@@ -267,7 +266,7 @@ public:
   QStringList readListEntry( const char *pKey, char sep = ',' ) const;
 
   /**
-   * Reads a list of strings, but returns a default if the key 
+   * Reads a list of strings, but returns a default if the key
    * did not exist.
    * @param pKey The key to search for.
    * @param aDefault The default value to use if the key does not exist.
@@ -275,7 +274,7 @@ public:
    * @return The list. Contains @p aDefault if the Key does not exist.
    * @since 3.3
    */
-  QStringList readListEntry( const char* pKey, const QStringList& aDefault, 
+  QStringList readListEntry( const char* pKey, const QStringList& aDefault,
 		  char sep = ',' ) const;
 
   /**
@@ -898,7 +897,7 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
-  
+
   /**
    * writeEntry() overridden to accept a list of strings.
    *
@@ -1881,7 +1880,7 @@ public:
    *    config->writeEntry(key, value)
    * \endcode
    *
-   * This ensures that as long as the entry is not modified to differ from 
+   * This ensures that as long as the entry is not modified to differ from
    * the computed default, the application will keep using the computed default
    * and will follow changes the computed default makes over time.
    * @param key The key of the entry to check.
@@ -2013,12 +2012,11 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KConfigBasePrivate;
-  KConfigBasePrivate *d;
+  class Private;
+  Private *d;
 };
 
-class KConfigGroupSaverPrivate;
-
+#ifdef KDE3_SUPPORT
 /**
   * Helper class to facilitate working with KConfig / KSimpleConfig
   * groups.
@@ -2054,7 +2052,6 @@ class KConfigGroupSaverPrivate;
   * @see KConfigBase, KConfig, KSimpleConfig, KConfigGroup
   * @short Helper class for easier use of KConfig/KSimpleConfig groups
   */
-
 class KDECORE_EXPORT KConfigGroupSaver // KDE4 remove
 {
 public:
@@ -2067,15 +2064,15 @@ public:
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */
-  KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
+  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* pConfig, const char *group )
+  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const char *group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
+  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
@@ -2090,10 +2087,10 @@ private:
   KConfigGroupSaver(const KConfigGroupSaver&);
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 
-  KConfigGroupSaverPrivate *d;
+  class Private;
+  Private *d;
 };
-
-class KConfigGroupPrivate;
+#endif
 
 /**
  * A KConfigBase derived class for one specific group in a KConfig object.
@@ -2170,7 +2167,9 @@ private:
 protected:
    virtual void virtual_hook( int id, void* data );
 private:
-   KConfigGroupPrivate* d;
+   Q_DISABLE_COPY(KConfigGroup);
+   class Private;
+   Private* d;
 };
 
 #endif

@@ -2005,7 +2005,7 @@ bool KListView::shadeSortColumn() const
 
 void KListView::saveLayout(KConfig *config, const QString &group) const
 {
-  KConfigGroupSaver saver(config, group);
+  KConfigGroup cg(config, group);
   QStringList widths, order;
 
   const int colCount = columns();
@@ -2015,16 +2015,16 @@ void KListView::saveLayout(KConfig *config, const QString &group) const
     widths << QString::number(columnWidth(i));
     order << QString::number(thisHeader->mapToIndex(i));
   }
-  config->writeEntry("ColumnWidths", widths);
-  config->writeEntry("ColumnOrder", order);
-  config->writeEntry("SortColumn", d->sortColumn);
-  config->writeEntry("SortAscending", d->sortAscending);
+  cg.writeEntry("ColumnWidths", widths);
+  cg.writeEntry("ColumnOrder", order);
+  cg.writeEntry("SortColumn", d->sortColumn);
+  cg.writeEntry("SortAscending", d->sortAscending);
 }
 
 void KListView::restoreLayout(KConfig *config, const QString &group)
 {
-  KConfigGroupSaver saver(config, group);
-  QStringList cols = config->readListEntry("ColumnWidths");
+  KConfigGroup cg(config, group);
+  QStringList cols = cg.readListEntry("ColumnWidths");
   int i = 0;
   { // scope the iterators
     QStringList::ConstIterator it = cols.constBegin();
@@ -2036,7 +2036,7 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
   // move sections in the correct sequence: from lowest to highest index position
   // otherwise we move a section from an index, which modifies
   // all index numbers to the right of the moved one
-  cols = config->readListEntry("ColumnOrder");
+  cols = cg.readListEntry("ColumnOrder");
   const int colCount = columns();
   for (i = 0; i < colCount; ++i)   // final index positions from lowest to highest
   {
@@ -2052,8 +2052,8 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
     }
   }
 
-  if (config->hasKey("SortColumn"))
-    setSorting(config->readNumEntry("SortColumn"), config->readBoolEntry("SortAscending", true));
+  if (cg.hasKey("SortColumn"))
+    setSorting(cg.readNumEntry("SortColumn"), cg.readBoolEntry("SortAscending", true));
 }
 
 void KListView::setSorting(int column, bool ascending)

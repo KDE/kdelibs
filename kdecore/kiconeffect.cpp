@@ -79,15 +79,13 @@ void KIconEffect::init()
     QString _none("none");
     QString _tomonochrome("tomonochrome");
 
-    KConfigGroupSaver cs(config, "default");
-
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	// Default effects
 	mEffect[i][0] = NoEffect;
 	mEffect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
-	mEffect[i][2] = ToGray; 
-	
+	mEffect[i][2] = ToGray;
+
 	mTrans[i][0] = false;
 	mTrans[i][1] = false;
 	mTrans[i][2] = true;
@@ -101,10 +99,10 @@ void KIconEffect::init()
         d->mColor2[i][1] = QColor(0,0,0);
         d->mColor2[i][2] = QColor(0,0,0);
 
-	config->setGroup(*it + "Icons");
+	KConfigGroup cg(config, *it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
 	{
-	    QString tmp = config->readEntry(*it2 + "Effect");
+	    QString tmp = cg.readEntry(*it2 + "Effect");
 	    if (tmp == _togray)
 		effect = ToGray;
 	    else if (tmp == _colorize)
@@ -121,13 +119,13 @@ void KIconEffect::init()
 		continue;
 	    if(effect != -1)
                 mEffect[i][j] = effect;
-	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
-	    mColor[i][j] = config->readColorEntry(*it2 + "Color");
-	    d->mColor2[i][j] = config->readColorEntry(*it2 + "Color2");
-	    mTrans[i][j] = config->readBoolEntry(*it2 + "SemiTransparent");
+	    mValue[i][j] = cg.readDoubleNumEntry(*it2 + "Value");
+	    mColor[i][j] = cg.readColorEntry(*it2 + "Color");
+	    d->mColor2[i][j] = cg.readColorEntry(*it2 + "Color2");
+	    mTrans[i][j] = cg.readBoolEntry(*it2 + "SemiTransparent");
 
 	}
-    }    
+    }
 }
 
 bool KIconEffect::hasEffect(int group, int state) const
@@ -158,10 +156,10 @@ QString KIconEffect::fingerprint(int group, int state) const
             cached += ':';
             cached += d->mColor2[group][state].name();
         }
-    
-        d->mKey[group][state] = cached;    
+
+        d->mKey[group][state] = cached;
     }
-    
+
     return cached;
 }
 
@@ -278,7 +276,7 @@ struct KIEImgEdit
     QVector <QRgb> colors;
     unsigned int*  data;
     unsigned int   pixels;
-    
+
     KIEImgEdit(QImage& _img):img(_img)
     {
 	if (img.depth() > 8)
@@ -293,7 +291,7 @@ struct KIEImgEdit
 	    data   = (unsigned int*)colors.data();
 	}
     }
-    
+
     ~KIEImgEdit()
     {
 	if (img.depth() <= 8)
@@ -308,8 +306,8 @@ void KIconEffect::toGray(QImage &img, float value)
 {
     KIEImgEdit ii(img);
     unsigned int* data = ii.data;
-    
-    
+
+
     int rval, gval, bval, val, alpha;
     for (unsigned int i=0; i<ii.pixels; i++)
     {
@@ -375,7 +373,7 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
    int rval, gval, bval, alpha, i;
    int rw = white.red(), gw = white.green(), bw = white.blue();
    int rb = black.red(), gb = black.green(), bb = black.blue();
-   
+
    double values = 0, sum = 0;
    bool grayscale = true;
    // Step 1: determine the average brightness
@@ -423,7 +421,7 @@ void KIconEffect::deSaturate(QImage &img, float value)
     KIEImgEdit ii(img);
     unsigned int* data = ii.data;
     int         pixels = ii.pixels;
-    
+
     QColor color;
     int h, s, v, i;
     for (i=0; i<pixels; i++)
@@ -442,7 +440,7 @@ void KIconEffect::toGamma(QImage &img, float value)
     unsigned int* data = ii.data;
     int         pixels = ii.pixels;
 
-    
+
     QColor color;
     int i, rval, gval, bval;
     float gamma;
@@ -468,7 +466,7 @@ void KIconEffect::semiTransparent(QImage &img)
     {
 	int width  = img.width();
 	int height = img.height();
-	
+
 	if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
 	  for (y=0; y<height; y++)
 	  {
@@ -731,8 +729,10 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 {
 #ifdef __GNUC__
+    Q_UNUSED(widget);
+    Q_UNUSED(rect);
     #warning "visualActivate is stubbed out. Needs fixing (or better) replacement"
-#endif    
+#endif
 #if 0
     if (!KGlobalSettings::visualActivate())
         return;
@@ -797,6 +797,6 @@ KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 
         p.drawRect(rect);
     }
-#endif    
+#endif
 }
 

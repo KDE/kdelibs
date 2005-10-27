@@ -1506,12 +1506,11 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 
 QPalette KApplication::createApplicationPalette()
 {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver( config, "General" );
-    return createApplicationPalette( config, KGlobalSettings::contrast() );
+    KConfigGroup cg( KGlobal::config(), "General" );
+    return createApplicationPalette( &cg, KGlobalSettings::contrast() );
 }
 
-QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
+QPalette KApplication::createApplicationPalette( KConfigBase *config, int contrast_ )
 {
     QColor kde34Background( 239, 239, 239 );
     QColor kde34Blue( 103,141,178 );
@@ -1607,10 +1606,9 @@ void KApplication::kdisplaySetPalette()
 #ifdef Q_WS_MACX
     //Can I have this on other platforms, please!? --Sam
     {
-        KConfig *config = KGlobal::config();
-        KConfigGroupSaver saver( config, "General" );
+        KConfigGroup cg( KGlobal::config(), "General" );
         bool do_not_set_palette = false;
-        if(config->readBoolEntry("nopaletteChange", &do_not_set_palette))
+        if(cg.readBoolEntry("nopaletteChange", &do_not_set_palette))
             return;
     }
 #endif
@@ -1651,35 +1649,34 @@ void KApplication::kdisplaySetStyle()
 
 void KApplication::propagateSettings(SettingsCategory arg)
 {
-    KConfigBase* config = KGlobal::config();
-    KConfigGroupSaver saver( config, "KDE" );
+    KConfigGroup cg( KGlobal::config(), "KDE" );
 
-    int num = config->readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
+    int num = cg.readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if ((num != 0) && (num < 200))
         num = 200;
     if (num > 2000)
         num = 2000;
     QApplication::setCursorFlashTime(num);
-    num = config->readNumEntry("DoubleClickInterval", QApplication::doubleClickInterval());
+    num = cg.readNumEntry("DoubleClickInterval", QApplication::doubleClickInterval());
     QApplication::setDoubleClickInterval(num);
-    num = config->readNumEntry("StartDragTime", QApplication::startDragTime());
+    num = cg.readNumEntry("StartDragTime", QApplication::startDragTime());
     QApplication::setStartDragTime(num);
-    num = config->readNumEntry("StartDragDist", QApplication::startDragDistance());
+    num = cg.readNumEntry("StartDragDist", QApplication::startDragDistance());
     QApplication::setStartDragDistance(num);
-    num = config->readNumEntry("WheelScrollLines", QApplication::wheelScrollLines());
+    num = cg.readNumEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
-    bool b = config->readBoolEntry("EffectAnimateMenu", false);
+    bool b = cg.readBoolEntry("EffectAnimateMenu", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
-    b = config->readBoolEntry("EffectFadeMenu", false);
+    b = cg.readBoolEntry("EffectFadeMenu", false);
     QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = config->readBoolEntry("EffectAnimateCombo", false);
+    b = cg.readBoolEntry("EffectAnimateCombo", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
-    b = config->readBoolEntry("EffectAnimateTooltip", false);
+    b = cg.readBoolEntry("EffectAnimateTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
-    b = config->readBoolEntry("EffectFadeTooltip", false);
+    b = cg.readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
-    //b = !config->readBoolEntry("EffectNoTooltip", false);
+    //b = !cg.readBoolEntry("EffectNoTooltip", false);
     //QToolTip::setGloballyEnabled( b ); ###
 
     emit settingsChanged(arg);

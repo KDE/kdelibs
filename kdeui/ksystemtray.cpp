@@ -307,9 +307,8 @@ KActionCollection* KSystemTray::actionCollection()
     
 QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
 {
-    KConfig *appCfg = kapp->config();
-    KConfigGroupSaver configSaver(appCfg, "System Tray");
-    int iconWidth = appCfg->readNumEntry("systrayIconWidth", 22);
+    KConfigGroup cg(kapp->config(), "System Tray");
+    int iconWidth = cg.readNumEntry("systrayIconWidth", 22);
     return instance->iconLoader()->loadIcon( icon, KIcon::Panel, iconWidth );
 }
 

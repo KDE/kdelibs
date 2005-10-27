@@ -29,6 +29,7 @@
 #include <kurl.h>
 
 class KConfig;
+class KConfigBase;
 class KURLBar;
 
 /**
@@ -344,7 +345,7 @@ public:
      * After reading a KURLBarItem is created and initialized with the read
      * values (as well as the given @p applicationLocal).
      */
-    virtual void readItem( int i, KConfig *config, bool applicationLocal );
+    virtual void readItem( int i, KConfigBase *config, bool applicationLocal );
     /**
      * Called from writeConfig() to save the KURLBarItem @p item as the
      * i'th entry in the config-object.

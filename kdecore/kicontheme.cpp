@@ -424,10 +424,9 @@ QString KIconTheme::current()
     if (_theme != 0L)
         return *_theme;
 
-    _theme = new QString();
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver(config, "Icons");
-    *_theme = config->readEntry("Theme",defaultThemeName());
+    _theme = new QString;
+    KConfigGroup cg(KGlobal::config(), "Icons");
+    *_theme = cg.readEntry("Theme",defaultThemeName());
     if ( *_theme == QLatin1String("hicolor") ) *_theme = defaultThemeName();
 /*    if (_theme->isEmpty())
     {
@@ -446,7 +445,7 @@ QStringList KIconTheme::list()
     if (_theme_list != 0L)
         return *_theme_list;
 
-    _theme_list = new QStringList();
+    _theme_list = new QStringList;
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
     for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)

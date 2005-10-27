@@ -515,12 +515,11 @@ void KURLCompletion::init()
 	d->mode = KURLCompletion::FileCompletion;
 
 	// Read settings
-	KConfig *c = KGlobal::config();
-	KConfigGroupSaver cgs( c, "URLCompletion" );
+	KConfigGroup cg( KGlobal::config(), "URLCompletion" );
 
-	d->url_auto_completion = c->readBoolEntry("alwaysAutoComplete", true);
-	d->popup_append_slash = c->readBoolEntry("popupAppendSlash", true);
-	d->onlyLocalProto = c->readBoolEntry("LocalProtocolsOnly", false);
+	d->url_auto_completion = cg.readBoolEntry("alwaysAutoComplete", true);
+	d->popup_append_slash = cg.readBoolEntry("popupAppendSlash", true);
+	d->onlyLocalProto = cg.readBoolEntry("LocalProtocolsOnly", false);
 }
 
 void KURLCompletion::setDir(const QString &_dir)

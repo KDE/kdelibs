@@ -676,13 +676,13 @@ void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfi
 	kdDebug(125) << "KKeyChooser::syncToConfig( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
-	KConfigGroupSaver cgs( pConfig, sConfigGroup );
+	KConfigGroup cg( pConfig, sConfigGroup );
 
 	Q3ListViewItemIterator it( d->pList );
 	for( ; it.current(); ++it ) {
 		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
 		if( pItem ) {
-			QString sEntry = pConfig->readEntry( pItem->actionName() );
+			QString sEntry = cg.readEntry( pItem->actionName() );
 			if( !sEntry.isNull() || bClearUnset ) {
 				if( sEntry == "none" )
 					sEntry = QString::null;

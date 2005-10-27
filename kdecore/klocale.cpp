@@ -137,9 +137,9 @@ void KLocale::initMainCatalogs(const QString & catalog)
 
 void KLocale::initLanguageList(KConfigBase * config, bool useEnv)
 {
-  KConfigGroupSaver saver(config, "Locale");
+  KConfigGroup cg(config, "Locale");
 
-  m_country = config->readEntry( "Country" );
+  m_country = cg.readEntry( "Country" );
   if ( m_country.isEmpty() )
     m_country = defaultCountry();
 
@@ -148,7 +148,7 @@ void KLocale::initLanguageList(KConfigBase * config, bool useEnv)
   if ( useEnv )
     list += QFile::decodeName( ::getenv("KDE_LANG") ).split(':');
 
-  list += config->readListEntry("Language", ':');
+  list += cg.readListEntry("Language", ':');
 
   // same order as setlocale use
   if ( useEnv )
@@ -292,7 +292,7 @@ void KLocale::initFormat()
   KLocale *lsave = KGlobal::_locale;
   KGlobal::_locale = this;
 
-  KConfigGroupSaver saver(config, "Locale");
+  KConfigGroup cg(config, "Locale");
 
   KSimpleConfig entry(locate("locale",
                              QString::fromLatin1("l10n/%1/entry.desktop")
@@ -302,15 +302,15 @@ void KLocale::initFormat()
   // Numeric
 #define readConfigEntry(key, default, save) \
   save = entry.readEntry(key, QString::fromLatin1(default)); \
-  save = config->readEntry(key, save);
+  save = cg.readEntry(key, save);
 
 #define readConfigNumEntry(key, default, save, type) \
   save = (type)entry.readNumEntry(key, default); \
-  save = (type)config->readNumEntry(key, save);
+  save = (type)cg.readNumEntry(key, save);
 
 #define readConfigBoolEntry(key, default, save) \
   save = entry.readBoolEntry(key, default); \
-  save = config->readBoolEntry(key, save);
+  save = cg.readBoolEntry(key, save);
 
   readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
@@ -361,7 +361,7 @@ void KLocale::initFormat()
 #define read3ConfigBoolEntry(key, default, save) \
   save = entry.readBoolEntry(key, default); \
   save = lang.readBoolEntry(key, save); \
-  save = config->readBoolEntry(key, save);
+  save = cg.readBoolEntry(key, save);
 
   read3ConfigBoolEntry("NounDeclension", false, d->nounDeclension);
   read3ConfigBoolEntry("DateMonthNamePossessive", false,

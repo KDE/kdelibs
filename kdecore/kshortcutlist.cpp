@@ -84,12 +84,12 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 	kdDebug(125) << "\treadSettings( \"" << sGroup << "\", " << pConfig << " )" << endl;
 	if( !pConfig->hasGroup( sGroup ) )
 		return true;
-	KConfigGroupSaver cgs( pConfig, sGroup );
+	KConfigGroup cg( pConfig, sGroup );
 
 	uint nSize = count();
 	for( uint i = 0; i < nSize; i++ ) {
 		if( isConfigurable(i) ) {
-			QString sEntry = pConfig->readEntry( name(i) );
+			QString sEntry = cg.readEntry( name(i) );
 			if( !sEntry.isEmpty() ) {
 				if( sEntry == "none" )
 					setShortcut( i, KShortcut() );
@@ -118,13 +118,13 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 	if( pConfig->hasGroup( "Keys" ) )
 		pConfig->deleteGroup( "Keys", true );
 
-	KConfigGroupSaver cs( pConfig, sGroup );
+	KConfigGroup cg( pConfig, sGroup );
 
 	uint nSize = count();
 	for( uint i = 0; i < nSize; i++ ) {
 		if( isConfigurable(i) ) {
 			const QString& sName = name(i);
-			bool bConfigHasAction = !pConfig->readEntry( sName ).isEmpty();
+			bool bConfigHasAction = !cg.readEntry( sName ).isEmpty();
 			bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
 			// If we're using a global config or this setting
 			//  differs from the default, then we want to write.
@@ -133,13 +133,13 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 				if( s.isEmpty() )
 					s = "none";
 				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
-				pConfig->writeEntry( sName, s, true, bGlobal );
+				cg.writeEntry( sName, s, true, bGlobal );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
 				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
-				pConfig->deleteEntry( sName, false, bGlobal );
+				cg.deleteEntry( sName, false, bGlobal );
 			}
 		}
 	}

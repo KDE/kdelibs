@@ -462,7 +462,7 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 	kdDebug(125) << "KAccelActions::writeActions( " << sGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
-	KConfigGroupSaver cs( pConfig, sGroup );
+	KConfigGroup cg( pConfig, sGroup );
 
 	for( int i = 0; i < m_actions.size() ; i++ ) {
 		if( m_actions.at(i) == 0 ) {
@@ -472,7 +472,7 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 		const KAccelAction& action = *m_actions.at(i);
 
 		QString s;
-		bool bConfigHasAction = !pConfig->readEntry( action.m_sName ).isEmpty();
+		bool bConfigHasAction = !cg.readEntry( action.m_sName ).isEmpty();
 		bool bSameAsDefault = true;
 		bool bWriteAction = false;
 
@@ -493,13 +493,13 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 				kdDebug(125) << "\twriting " << action.m_sName << " = " << s << endl;
 				// Is passing bGlobal irrelevant, since if it's true,
 				//  then we're using the global config anyway? --ellis
-				pConfig->writeEntry( action.m_sName, s, true, bGlobal );
+				cg.writeEntry( action.m_sName, s, true, bGlobal );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
 				kdDebug(125) << "\tremoving " << action.m_sName << " because == default" << endl;
-				pConfig->deleteEntry( action.m_sName, bGlobal );
+				cg.deleteEntry( action.m_sName, bGlobal );
 			}
 
 		}

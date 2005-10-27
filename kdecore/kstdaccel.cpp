@@ -143,7 +143,7 @@ static KStdAccelInfo* infoPtr( StdAccel id )
 */
 static void initialize( StdAccel id )
 {
-	KConfigGroupSaver saver( KGlobal::config(), "Shortcuts" );
+	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
 	KStdAccelInfo* pInfo = infoPtr( id );
 
 	if( !pInfo ) {
@@ -151,8 +151,8 @@ static void initialize( StdAccel id )
 		return;
 	}
 
-	if( saver.config()->hasKey( pInfo->psName ) ) {
-		QString s = saver.config()->readEntry( pInfo->psName );
+	if( cg.hasKey( pInfo->psName ) ) {
+		QString s = cg.readEntry( pInfo->psName );
 		if( s != "none" )
 			pInfo->cut.init( s );
 		else

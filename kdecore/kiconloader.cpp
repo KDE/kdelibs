@@ -228,7 +228,6 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
     KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs(config, "dummy");
 
     // loading config and default sizes
     d->mpGroups = new KIconGroup[(int) KIcon::LastGroup];
@@ -236,11 +235,12 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     {
 	if (groups[i] == 0L)
 	    break;
-	config->setGroup(QLatin1String(groups[i]) + "Icons");
-	d->mpGroups[i].size = config->readNumEntry("Size", 0);
-	d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
+
+	KConfigGroup cg(config, QLatin1String(groups[i]) + "Icons");
+	d->mpGroups[i].size = cg.readNumEntry("Size", 0);
+	d->mpGroups[i].dblPixels = cg.readBoolEntry("DoublePixels", false);
 	if (QPixmap::defaultDepth()>8)
-	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", true);
+	    d->mpGroups[i].alphaBlending = cg.readBoolEntry("AlphaBlending", true);
 	else
 	    d->mpGroups[i].alphaBlending = false;
 

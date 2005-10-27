@@ -290,6 +290,28 @@ by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
 <li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
 </ul>
 
+<H4>KConfigGroupSaver</H4>
+<p>
+The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
+difference is a KConfigGroupSaver object direcly affects the config object it
+is acting on, while a KConfigGroup object only ensures the entries read or
+written through it are in the correct group.</p>
+<p>Instead of:
+<pre>
+KConfig *config = KGlobal::config();
+KConfigGroupSaver saver(config, "group name");
+	...
+config->readXXX("entry name");
+</pre>
+should be rewritten as:
+<pre>
+KConfig *config = KGlobal::config();
+KConfigGroup cg(config, "group name");
+	...
+cg.readXXX("entry name");
+</pre>
+</p>
+
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>

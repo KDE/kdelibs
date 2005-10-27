@@ -36,10 +36,13 @@ KContextMenuManager* KContextMenuManager::manager = 0;
 KContextMenuManager::KContextMenuManager( QObject* parent )
     : QObject( parent )
 {
-    KConfigGroupSaver saver ( KGlobal::config(), QLatin1String("Shortcuts") ) ;
-    menuKey = KShortcut( saver.config()->readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
-    saver.config()->setGroup( QLatin1String("ContextMenus") ) ;
-    showOnPress = saver.config()->readBoolEntry(QLatin1String("ShowOnPress"), true );
+    KConfigBase *config = KGlobal::config();
+    QString oldgroup = config->group();
+    config->setGroup( QLatin1String("Shortcuts") ) ;
+    menuKey = KShortcut( config->readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
+    config->setGroup( QLatin1String("ContextMenus") ) ;
+    showOnPress = config->readBoolEntry(QLatin1String("ShowOnPress"), true );
+    config->setGroup( oldgroup );
 }
 
 KContextMenuManager::~KContextMenuManager()

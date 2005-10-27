@@ -348,8 +348,8 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
     if ( dontShowAgainName.isEmpty() ) return true;
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroupSaver saver( config, grpNotifMsgs );
-    QString dontAsk = config->readEntry(dontShowAgainName).toLower();
+    KConfigGroup cg( config, grpNotifMsgs );
+    QString dontAsk = cg.readEntry(dontShowAgainName).toLower();
     if (dontAsk == "yes") {
         result = Yes;
         return false;
@@ -367,8 +367,8 @@ KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) return true;
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroupSaver saver( config, grpNotifMsgs );
-    return config->readBoolEntry(dontShowAgainName,  true);
+    KConfigGroup cg( config, grpNotifMsgs );
+    return cg.readBoolEntry(dontShowAgainName,  true);
 }
 
 void
@@ -378,8 +378,8 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     if ( dontShowAgainName.isEmpty() ) return;
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroupSaver saver( config, grpNotifMsgs );
-    config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no", true, (dontShowAgainName[0] == ':'));
+    KConfigGroup cg( config, grpNotifMsgs );
+    cg.writeEntry( dontShowAgainName, result==Yes ? "yes" : "no", true, (dontShowAgainName[0] == ':'));
     config->sync();
 }
 
@@ -389,8 +389,8 @@ KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) return;
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroupSaver saver( config, grpNotifMsgs );
-    config->writeEntry( dontShowAgainName, false, true, (dontShowAgainName[0] == ':'));
+    KConfigGroup cg( config, grpNotifMsgs );
+    cg.writeEntry( dontShowAgainName, false, true, (dontShowAgainName[0] == ':'));
     config->sync();
 }
 
@@ -944,7 +944,8 @@ KMessageBox::enableAllMessages()
    if (!config->hasGroup(grpNotifMsgs))
       return;
 
-   KConfigGroupSaver saver( config, grpNotifMsgs );
+   QString oldgroup = config->group();
+   config->setGroup( grpNotifMsgs );
 
    typedef QMap<QString, QString> configMap;
 
@@ -954,6 +955,7 @@ KMessageBox::enableAllMessages()
    for (it = map.begin(); it != map.end(); ++it)
       config->deleteEntry( it.key() );
    config->sync();
+   config->setGroup( oldgroup );
 }
 
 void
@@ -964,9 +966,9 @@ KMessageBox::enableMessage(const QString &dontShowAgainName)
    if (!config->hasGroup(grpNotifMsgs))
       return;
 
-   KConfigGroupSaver saver( config, grpNotifMsgs );
+   KConfigGroup cg( config, grpNotifMsgs );
 
-   config->deleteEntry(dontShowAgainName);
+   cg.deleteEntry(dontShowAgainName);
    config->sync();
 }
 

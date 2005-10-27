@@ -852,10 +852,9 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
   }
 
   if (dontShowAgain) {
-    KConfig *config = kapp->config();
-    KConfigGroupSaver saver(config,QLatin1String("Java/JavaScript Settings"));
-    config->writeEntry("ReportJavaScriptErrors",QVariant(false,0));
-    config->sync();
+    KConfigGroup cg(kapp->config(), QLatin1String("Java/JavaScript Settings"));
+    cg.writeEntry("ReportJavaScriptErrors",QVariant(false,0));
+    cg.sync();
     QByteArray data;
     KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
   }

@@ -190,12 +190,12 @@ KFileIconView::~KFileIconView()
 void KFileIconView::readConfig( KConfig *kc, const QString& group )
 {
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    KConfigGroupSaver cs( kc, gr );
+    KConfigGroup cg( kc, gr );
     QString small = QLatin1String("SmallColumns");
-    d->previewIconSize = kc->readNumEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
-    d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
+    d->previewIconSize = cg.readNumEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
+    d->previews->setChecked( cg.readBoolEntry( "ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
 
-    if ( kc->readEntry("ViewMode", DEFAULT_VIEW_MODE ) == small ) {
+    if ( cg.readEntry("ViewMode", DEFAULT_VIEW_MODE ) == small ) {
 	d->smallColumns->setChecked( true );
 	slotSmallColumns();
     }
@@ -211,27 +211,27 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 void KFileIconView::writeConfig( KConfig *kc, const QString& group )
 {
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    KConfigGroupSaver cs( kc, gr );
+    KConfigGroup cg( kc, gr );
 
     QString viewMode =  d->smallColumns->isChecked() ?
         QLatin1String("SmallColumns") :
         QLatin1String("LargeRows");
-    if(!kc->hasDefault( "ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
-        kc->revertToDefault( "ViewMode" );
+    if(!cg.hasDefault( "ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
+        cg.revertToDefault( "ViewMode" );
     else
-        kc->writeEntry( "ViewMode", viewMode );
+        cg.writeEntry( "ViewMode", viewMode );
 
     int previewsIconSize = d->previewIconSize;
-    if(!kc->hasDefault( "Preview Size" ) && previewsIconSize == DEFAULT_PREVIEW_SIZE )
-        kc->revertToDefault( "Preview Size" );
+    if(!cg.hasDefault( "Preview Size" ) && previewsIconSize == DEFAULT_PREVIEW_SIZE )
+        cg.revertToDefault( "Preview Size" );
     else
-        kc->writeEntry( "Preview Size", previewsIconSize );
+        cg.writeEntry( "Preview Size", previewsIconSize );
 
     bool showPreviews = d->previews->isChecked();
-    if(!kc->hasDefault( "ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
-        kc->revertToDefault( "ShowPreviews" );
+    if(!cg.hasDefault( "ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
+        cg.revertToDefault( "ShowPreviews" );
     else
-        kc->writeEntry( "ShowPreviews", showPreviews );
+        cg.writeEntry( "ShowPreviews", showPreviews );
 }
 
 void KFileIconView::removeToolTip()

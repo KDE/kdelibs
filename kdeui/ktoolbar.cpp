@@ -1009,35 +1009,35 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     //kdDebug(220) << name() << "                position=" << position << " index=" << index << " offset=" << offset() << " newLine=" << newLine() << endl;
 
-    KConfigGroupSaver saver(config, configGroup);
+    KConfigGroup cg(config, configGroup);
 
-    if(!config->hasDefault("Position") && position == d->PositionDefault )
-      config->revertToDefault("Position");
+    if(!cg.hasDefault("Position") && position == d->PositionDefault )
+      cg.revertToDefault("Position");
     else
-      config->writeEntry("Position", position);
+      cg.writeEntry("Position", position);
 
     //kdDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
 
-    if(d->m_honorStyle && icontext == d->IconTextDefault && !config->hasDefault("IconText") )
+    if(d->m_honorStyle && icontext == d->IconTextDefault && !cg.hasDefault("IconText") )
     {
       //kdDebug(220) << name() << "                reverting icontext to default" << endl;
-      config->revertToDefault("IconText");
+      cg.revertToDefault("IconText");
     }
     else
     {
       //kdDebug(220) << name() << "                writing icontext " << icontext << endl;
-      config->writeEntry("IconText", icontext);
+      cg.writeEntry("IconText", icontext);
     }
 
-    if(!config->hasDefault("IconSize") && iconSize() == iconSizeDefault() )
-      config->revertToDefault("IconSize");
+    if(!cg.hasDefault("IconSize") && iconSize() == iconSizeDefault() )
+      cg.revertToDefault("IconSize");
     else
-      config->writeEntry("IconSize", iconSize());
+      cg.writeEntry("IconSize", iconSize());
 
-    if(!config->hasDefault("Hidden") && isHidden() == d->HiddenDefault )
-      config->revertToDefault("Hidden");
+    if(!cg.hasDefault("Hidden") && isHidden() == d->HiddenDefault )
+      cg.revertToDefault("Hidden");
     else
-      config->writeEntry("Hidden", isHidden());
+      cg.writeEntry("Hidden", isHidden());
 
     // Note that index, unlike the other settings, depends on the other toolbars
     // So on the first run with a clean local config file, even the usual
@@ -1064,19 +1064,19 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 		}
     }
     if ( !kmw || toolbarList.count() > 1 )
-        config->writeEntry("Index", index);
+        cg.writeEntry("Index", index);
     else
-        config->revertToDefault("Index");
+        cg.revertToDefault("Index");
 
-    if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
-      config->revertToDefault("Offset");
+    if(!cg.hasDefault("Offset") && offset() == d->OffsetDefault )
+      cg.revertToDefault("Offset");
     else
-      config->writeEntry("Offset", offset());
+      cg.writeEntry("Offset", offset());
 
-    if(!config->hasDefault("NewLine") && newLine() == d->NewLineDefault )
-      config->revertToDefault("NewLine");
+    if(!cg.hasDefault("NewLine") && newLine() == d->NewLineDefault )
+      cg.revertToDefault("NewLine");
     else
-      config->writeEntry("NewLine", newLine());
+      cg.writeEntry("NewLine", newLine());
 }
 
 
@@ -1406,24 +1406,24 @@ void KToolBar::slotAppearanceChanged()
 bool KToolBar::highlightSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
-    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    return KGlobal::config()->readBoolEntry(QLatin1String("Highlighting"),true);
+    KConfigGroup cg(KGlobal::config(), grpToolbar);
+    return cg.readBoolEntry(QLatin1String("Highlighting"),true);
 }
 
 //static
 bool KToolBar::transparentSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
-    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    return KGlobal::config()->readBoolEntry(QLatin1String("TransparentMoving"),true);
+    KConfigGroup cg(KGlobal::config(), grpToolbar);
+    return cg.readBoolEntry(QLatin1String("TransparentMoving"),true);
 }
 
 //static
 KToolBar::IconText KToolBar::iconTextSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
-    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    QString icontext = KGlobal::config()->readEntry(QLatin1String("IconText"),QString::fromLatin1("IconTextBottom"));
+    KConfigGroup cg(KGlobal::config(), grpToolbar);
+    QString icontext = cg.readEntry(QLatin1String("IconText"),QString::fromLatin1("IconTextBottom"));
     if ( icontext == "IconTextRight" )
         return IconTextRight;
     else if ( icontext == "IconTextBottom" )
@@ -1466,22 +1466,22 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
     // this is the first iteration
     QString grpToolbar(QLatin1String("Toolbar style"));
-    { // start block for KConfigGroupSaver
-        KConfigGroupSaver saver(gconfig, grpToolbar);
+    { // start block for KConfigGroup
+        KConfigGroup cg(gconfig, grpToolbar);
 
         // first, get the generic settings
-        highlight   = gconfig->readBoolEntry(attrHighlight, true);
-        transparent = gconfig->readBoolEntry(attrTrans, true);
+        highlight   = cg.readBoolEntry(attrHighlight, true);
+        transparent = cg.readBoolEntry(attrTrans, true);
 
         // we read in the IconText property *only* if we intend on actually
         // honoring it
         if (d->m_honorStyle)
-            d->IconTextDefault = gconfig->readEntry(attrIconText, d->IconTextDefault);
+            d->IconTextDefault = cg.readEntry(attrIconText, d->IconTextDefault);
         else
             d->IconTextDefault = "IconTextBottom";
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = gconfig->readNumEntry(attrIconSize, d->IconSizeDefault);
+        d->IconSizeDefault = cg.readNumEntry(attrIconSize, d->IconSizeDefault);
 
         iconSize = d->IconSizeDefault;
         iconText = d->IconTextDefault;
@@ -1509,7 +1509,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         }
 
         // revert back to the old group
-    } // end block for KConfigGroupSaver
+    } // end block for KConfigGroup
 
     bool doUpdate = false;
 
@@ -1582,7 +1582,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
     // ...and now the position stuff
     if ( config->hasGroup(configGroup) || force )
     {
-        KConfigGroupSaver cgs(config, configGroup);
+        KConfigGroup cg(config, configGroup);
 
         static const QString &attrPosition  = KGlobal::staticQString("Position");
         static const QString &attrIndex  = KGlobal::staticQString("Index");
@@ -1590,11 +1590,11 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         static const QString &attrNewLine  = KGlobal::staticQString("NewLine");
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
-        QString position = config->readEntry(attrPosition, d->PositionDefault);
-        int index = config->readNumEntry(attrIndex, -1);
-        int offset = config->readNumEntry(attrOffset, d->OffsetDefault);
-        bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
-        bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
+        QString position = cg.readEntry(attrPosition, d->PositionDefault);
+        int index = cg.readNumEntry(attrIndex, -1);
+        int offset = cg.readNumEntry(attrOffset, d->OffsetDefault);
+        bool newLine = cg.readBoolEntry(attrNewLine, d->NewLineDefault);
+        bool hidden = cg.readBoolEntry(attrHidden, d->HiddenDefault);
 
         Qt::ToolBarDock pos(Qt::DockTop);
         if ( position == "Top" )

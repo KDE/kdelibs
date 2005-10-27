@@ -200,9 +200,8 @@ void PreviewJob::startPreview()
     }
 
   // Read configuration value for the maximum allowed size
-    KConfig * config = KGlobal::config();
-    KConfigGroupSaver cgs( config, "PreviewSettings" );
-    d->maximumSize = config->readNumEntry( "MaximumSize", 1024*1024 /* 1MB */ );
+    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
+    d->maximumSize = cg.readNumEntry( "MaximumSize", 1024*1024 /* 1MB */ );
 
     if (bNeedCache)
     {

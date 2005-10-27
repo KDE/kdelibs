@@ -26,6 +26,7 @@
 #include "kdelibs_export.h"
 
 class KConfig;
+class KConfigBase;
 class KCharsets;
 class DCOPClient;
 class DCOPObject;
@@ -618,8 +619,9 @@ public:
   /**
    * @internal
    * Raw access for use by KDM.
+   * note: expects config to be in the correct group already.
    */
-  static QPalette createApplicationPalette( KConfig *config, int contrast );
+  static QPalette createApplicationPalette( KConfigBase *config, int contrast );
 
 signals:
   /**

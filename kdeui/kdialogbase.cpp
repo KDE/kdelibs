@@ -1661,9 +1661,9 @@ QSize KDialogBase::configDialogSize( KConfig& config,
    w = sizeHint().width();
    h = sizeHint().height();
 
-   KConfigGroupSaver cs(&config, groupName);
-   w = config.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
-   h = config.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
+   KConfigGroup cg(&config, groupName);
+   w = cg.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
+   h = cg.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
 
    return QSize( w, h );
 }
@@ -1681,13 +1681,13 @@ void KDialogBase::saveDialogSize( KConfig& config, const QString& groupName,
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
-   KConfigGroupSaver cs(&config, groupName);
+   KConfigGroup cg(&config, groupName);
    QSize sizeToSave = size();
 
-   config.writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
-		      QString::number( sizeToSave.width()), true, global);
-   config.writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
-		      QString::number( sizeToSave.height()), true, global);
+   cg.writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
+		  QString::number( sizeToSave.width()), true, global);
+   cg.writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
+		  QString::number( sizeToSave.height()), true, global);
 }
 
 

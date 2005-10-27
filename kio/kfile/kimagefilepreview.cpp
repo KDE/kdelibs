@@ -34,9 +34,8 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     : KPreviewWidgetBase( parent ),
       m_job( 0L )
 {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    autoMode = config->readBoolEntry( "Automatic Preview", true );
+    KConfigGroup cg( KGlobal::config(), ConfigGroup );
+    autoMode = cg.readBoolEntry( "Automatic Preview", true );
 
     QGridLayout *vb = new QGridLayout( this, 2, 2, 0, KDialog::spacingHint() );
     vb->addItem( new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0 );
@@ -71,9 +70,8 @@ KImageFilePreview::~KImageFilePreview()
     if ( m_job )
         m_job->kill();
 
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    config->writeEntry( "Automatic Preview", autoPreview->isChecked() );
+    KConfigGroup cg( KGlobal::config(), ConfigGroup );
+    cg.writeEntry( "Automatic Preview", autoPreview->isChecked() );
 }
 
 void KImageFilePreview::showPreview()

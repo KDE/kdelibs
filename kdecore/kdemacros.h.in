@@ -218,7 +218,7 @@
 #endif
 
 /** @name RESERVE_VIRTUAL_N macros */
-// @{
+/** @{ */
 
 /**
  * This macro, and it's friends going up to 10 reserve a fixed number of virtual
@@ -261,6 +261,6 @@
 #define RESERVE_VIRTUAL_10 \
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
-// @}
+/** @} */
 
 #endif /* _KDE_MACROS_H_ */

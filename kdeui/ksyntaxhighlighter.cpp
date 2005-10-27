@@ -289,11 +289,10 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     d->checksDone = 0;
     d->completeRehighlightRequired = false;
 
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, "KSpell" );
-    d->disablePercentage = config->readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
+    KConfigGroup cg( KGlobal::config(), "KSpell" );
+    d->disablePercentage = cg.readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
     d->disablePercentage = qMin( d->disablePercentage, 101 );
-    d->disableWordCount = config->readNumEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
+    d->disableWordCount = cg.readNumEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -531,21 +530,20 @@ void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
 
 QString KDictSpellingHighlighter::spellKey()
 {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, "KSpell" );
-    config->reparseConfiguration();
+    KGlobal::config()->reparseConfiguration();
+    KConfigGroup cg( KGlobal::config(), "KSpell" );
     QString key;
-    key += QString::number( config->readNumEntry( "KSpell_NoRootAffix", 0 ));
+    key += QString::number( cg.readNumEntry( "KSpell_NoRootAffix", 0 ));
     key += '/';
-    key += QString::number( config->readNumEntry( "KSpell_RunTogether", 0 ));
+    key += QString::number( cg.readNumEntry( "KSpell_RunTogether", 0 ));
     key += '/';
-    key += config->readEntry( "KSpell_Dictionary", "" );
+    key += cg.readEntry( "KSpell_Dictionary", "" );
     key += '/';
-    key += QString::number( config->readNumEntry( "KSpell_DictFromList", false ));
+    key += QString::number( cg.readNumEntry( "KSpell_DictFromList", false ));
     key += '/';
-    key += QString::number( config->readNumEntry( "KSpell_Encoding", KS_E_ASCII ));
+    key += QString::number( cg.readNumEntry( "KSpell_Encoding", KS_E_ASCII ));
     key += '/';
-    key += QString::number( config->readNumEntry( "KSpell_Client", KS_CLIENT_ISPELL ));
+    key += QString::number( cg.readNumEntry( "KSpell_Client", KS_CLIENT_ISPELL ));
     return key;
 }
 

@@ -36,6 +36,7 @@
 class KMenu;
 class KXMLGUIFactory;
 class KConfig;
+class KConfigBase;
 class KHelpMenu;
 class KStatusBar;
 class QStatusBar;
@@ -905,7 +906,7 @@ protected:
      * Note that the group must be set before calling, and that
      * a -geometry on the command line has priority.
      */
-    void restoreWindowSize( KConfig * config );
+    void restoreWindowSize( KConfigBase * config );
 
     /// parse the geometry from the geometry command line argument
     void parseGeometry(bool parsewidth);

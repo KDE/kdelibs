@@ -295,13 +295,12 @@ void Field::deleteFields()
 void Field::saveFields( const QString &identifier,
                         const Field::List &fields )
 {
-  KConfig *cfg = KGlobal::config();
-  KConfigGroupSaver( cfg, "KABCFields" );
+  KConfigGroup cg( KGlobal::config(), "KABCFields" );
 
-  saveFields( cfg, identifier, fields );
+  saveFields( &cg, identifier, fields );
 }
 
-void Field::saveFields( KConfig *cfg, const QString &identifier,
+void Field::saveFields( KConfigBase *cfg, const QString &identifier,
                         const Field::List &fields )
 {
   QList<int> fieldIds;
@@ -325,13 +324,12 @@ void Field::saveFields( KConfig *cfg, const QString &identifier,
 
 Field::List Field::restoreFields( const QString &identifier )
 {
-  KConfig *cfg = KGlobal::config();
-  KConfigGroupSaver( cfg, "KABCFields" );
+  KConfigGroup cg( KGlobal::config(), "KABCFields" );
  
-  return restoreFields( cfg, identifier );
+  return restoreFields( &cg, identifier );
 }
 
-Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
+Field::List Field::restoreFields( KConfigBase *cfg, const QString &identifier )
 {
   const QList<int> fieldIds = cfg->readIntListEntry( identifier );
 

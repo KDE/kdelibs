@@ -588,8 +588,8 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 #if 0
     QString dir;
     {
-    KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
-    dir = KGlobal::config()->readPathEntry("i18ndir", QLatin1String("/usr/share/i18n/charmaps"));
+    KConfigGroup cg( KGlobal::config(), "i18n" );
+    dir = cg.readPathEntry("i18ndir", QLatin1String("/usr/share/i18n/charmaps"));
     }
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap

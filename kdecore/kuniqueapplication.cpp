@@ -354,8 +354,8 @@ KInstance* KUniqueApplication::initHack( bool configUnique )
   KInstance* inst = new KInstance( KCmdLineArgs::about );
   if (configUnique)
   {
-    KConfigGroupSaver saver( inst->config(), "KDE" );
-    s_multipleInstances = inst->config()->readBoolEntry("MultipleInstances", false);
+    KConfigGroup cg( inst->config(), "KDE" );
+    s_multipleInstances = cg.readBoolEntry("MultipleInstances", false);
   }
   if( !start())
          // Already running

@@ -75,8 +75,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->nRow = 0;
     d->keepCheckBox = 0;
 
-    KConfig* cfg = KGlobal::config();
-    KConfigGroupSaver saver( cfg, "Passwords" );
+    KConfigGroup cg( KGlobal::config(), "Passwords" );
 
     d->layout = new QGridLayout( main, 9, 3, spacingHint(), marginHint());
     d->layout->addItem(new QSpacerItem(5,0),0,1); //addColSpacing(1, 5);
@@ -129,7 +128,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl->setFixedSize( lbl->sizeHint() );
     KHBox* hbox = new KHBox( main );
     d->passEdit = new KLineEdit( hbox );
-    if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
+    if ( cg.readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
     else
         d->passEdit->setEchoMode( QLineEdit::Password );
@@ -148,7 +147,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         hbox = new KHBox( main );
         d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
         d->keepCheckBox->setFixedSize( d->keepCheckBox->sizeHint() );
-        d->keep = cfg->readBoolEntry("Keep", false );
+        d->keep = cg.readBoolEntry("Keep", false );
         d->keepCheckBox->setChecked( d->keep );
         connect(d->keepCheckBox, SIGNAL(toggled( bool )), SLOT(slotKeep( bool )));
         d->layout->addWidget( hbox, 8, 2 );

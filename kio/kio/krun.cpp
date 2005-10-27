@@ -426,8 +426,8 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 */
 
   if (_service.terminal()) {
-    KConfigGroupSaver gs(KGlobal::config(), "General");
-    QString terminal = KGlobal::config()->readPathEntry("TerminalApplication", "konsole");
+    KConfigGroup cg(KGlobal::config(), "General");
+    QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
     if (terminal == "konsole")
       terminal += " -caption=%c %i %m";
     terminal += " ";

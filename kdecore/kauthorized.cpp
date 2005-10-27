@@ -228,9 +228,8 @@ bool KAuthorized::authorize(const QString &genericAction)
    if (!d->actionRestrictions)
       return true;
 
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Action Restrictions" );
-   return config->readBoolEntry(genericAction, true);
+   KConfigGroup cg( KGlobal::config(), "KDE Action Restrictions" );
+   return cg.readBoolEntry(genericAction, true);
 }
 
 bool KAuthorized::authorizeKAction(const char *action)
@@ -249,20 +248,18 @@ bool KAuthorized::authorizeControlModule(const QString &menuId)
 {
    if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
-   return config->readBoolEntry(menuId, true);
+   KConfigGroup cg( KGlobal::config(), "KDE Control Module Restrictions" );
+   return cg.readBoolEntry(menuId, true);
 }
 
 QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
 {
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   KConfigGroup cg( KGlobal::config(), "KDE Control Module Restrictions" );
    QStringList result;
    for(QStringList::ConstIterator it = menuIds.begin();
        it != menuIds.end(); ++it)
    {
-      if (config->readBoolEntry(*it, true))
+      if (cg.readBoolEntry(*it, true))
          result.append(*it);
    }
    return result;
@@ -307,14 +304,13 @@ static void initUrlActionRestrictions()
   d->urlActionRestrictions.append(
 	URLActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
 
-  KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver( config, "KDE URL Restrictions" );
-  int count = config->readNumEntry("rule_count");
+  KConfigGroup cg( KGlobal::config(), "KDE URL Restrictions" );
+  int count = cg.readNumEntry("rule_count");
   QString keyFormat = QString("rule_%1");
   for(int i = 1; i <= count; i++)
   {
     QString key = keyFormat.arg(i);
-    QStringList rule = config->readListEntry(key);
+    QStringList rule = cg.readListEntry(key);
     if (rule.count() != 8)
       continue;
     QString action = rule[0];

@@ -166,9 +166,8 @@ void KRecentDocument::clear()
 
 int KRecentDocument::maximumItems()
 {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver sa(config, QLatin1String("RecentDocuments"));
-    return config->readNumEntry(QLatin1String("MaxEntries"), 10);
+    KConfigGroup cg(KGlobal::config(), QLatin1String("RecentDocuments"));
+    return cg.readNumEntry(QLatin1String("MaxEntries"), 10);
 }
 
 

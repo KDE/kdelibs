@@ -32,9 +32,8 @@
 KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
     : KURLBar( true, parent, name )
 {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    m_initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
+    KConfigGroup cg( KGlobal::config(), ConfigGroup );
+    m_initializeSpeedbar = cg.readBoolEntry( "Set speedbar defaults",
                                                    true );
     setIconSize(KIcon::SizeSmallMedium);
     readConfig( KGlobal::config(), "KFileDialog Speedbar" );

@@ -179,14 +179,14 @@ KSpellConfig::dictFromList() const
 bool
 KSpellConfig::readGlobalSettings()
 {
-  KConfigGroupSaver cs( kc,"KSpell" );
+  KConfigGroup cg( kc,"KSpell" );
 
-  setNoRootAffix   ( kc->readNumEntry("KSpell_NoRootAffix", 0) );
-  setRunTogether   ( kc->readNumEntry("KSpell_RunTogether", 0) );
-  setDictionary    ( kc->readEntry("KSpell_Dictionary") );
-  setDictFromList  ( kc->readNumEntry("KSpell_DictFromList", false) );
-  setEncoding ( kc->readNumEntry ("KSpell_Encoding", KS_E_ASCII) );
-  setClient ( kc->readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL) );
+  setNoRootAffix   ( cg.readNumEntry("KSpell_NoRootAffix", 0) );
+  setRunTogether   ( cg.readNumEntry("KSpell_RunTogether", 0) );
+  setDictionary    ( cg.readEntry("KSpell_Dictionary") );
+  setDictFromList  ( cg.readNumEntry("KSpell_DictFromList", false) );
+  setEncoding ( cg.readNumEntry ("KSpell_Encoding", KS_E_ASCII) );
+  setClient ( cg.readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL) );
 
   return true;
 }
@@ -194,15 +194,15 @@ KSpellConfig::readGlobalSettings()
 bool
 KSpellConfig::writeGlobalSettings ()
 {
-  KConfigGroupSaver cs( kc,"KSpell" );
+  KConfigGroup cg( kc,"KSpell" );
 
-  kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), true, true);
-  kc->writeEntry ("KSpell_RunTogether", (int) runTogether(), true, true);
-  kc->writeEntry ("KSpell_Dictionary", dictionary(), true, true);
-  kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), true, true);
-  kc->writeEntry ("KSpell_Encoding", (int) encoding(),
+  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), true, true);
+  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), true, true);
+  cg.writeEntry ("KSpell_Dictionary", dictionary(), true, true);
+  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), true, true);
+  cg.writeEntry ("KSpell_Encoding", (int) encoding(),
 		  true, true);
-  kc->writeEntry ("KSpell_Client", client(),
+  cg.writeEntry ("KSpell_Client", client(),
 		  true, true);
   kc->sync();
 
