@@ -68,7 +68,7 @@ public:
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { attach((T *)0); }
+    ~KSharedPtr() { attach(static_cast<T *>(0)); }
 
     inline KSharedPtr<T>& operator= ( const KSharedPtr& p ) { attach(p); return *this; }
     inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
@@ -143,12 +143,30 @@ public:
     template <class U> friend class KSharedPtr;
 
     /**
-     *
+     * Convert KSharedPtr<U> to KSharedPtr<T>, using a static_cast.
+     * This will compile whenever T* and U* are compatible, i.e.
+     * T is a subclass of U or vice-versa.
+     * Example syntax:
+     * <code>
+     *   KSharedPtr<T> tPtr;
+     *   KSharedPtr<U> uPtr = KSharedPtr<U>::staticCast( tPtr );
+     * </code>
      */
     template <class U>
     static KSharedPtr<T> staticCast( const KSharedPtr<U>& other ) {
         return KSharedPtr<T>( static_cast<T *>( other.ptr ) );
     }
+    /**
+     * Convert KSharedPtr<U> to KSharedPtr<T>, using a dynamic_cast.
+     * This will compile whenever T* and U* are compatible, i.e.
+     * T is a subclass of U or vice-versa.
+     * Example syntax:
+     * <code>
+     *   KSharedPtr<T> tPtr;
+     *   KSharedPtr<U> uPtr = KSharedPtr<U>::dynamicCast( tPtr );
+     * </code>
+     * Since a dynamic_cast is used, if U derives from T, and tPtr isn't an instance of U, uPtr will be 0.
+     */
     template <class U>
     static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
         return KSharedPtr<T>( dynamic_cast<T *>( other.ptr ) );
