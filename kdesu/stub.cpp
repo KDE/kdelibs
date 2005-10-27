@@ -143,8 +143,8 @@ int StubProcess::ConverseStub(int check)
 		 it != env.end();
 		 ++it )
 	    {
-		if( (*it).find( "KDE_STARTUP_ENV=" ) == 0 )
-		    tmp = (*it).mid( strlen( "KDE_STARTUP_ENV=" ));
+		if( (*it).find( "DESKTOP_STARTUP_ID=" ) == 0 )
+		    tmp = (*it).mid( strlen( "DESKTOP_STARTUP_ID=" ));
 	    }
 	    if( tmp.isEmpty())
 		tmp = "0";
