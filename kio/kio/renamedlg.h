@@ -113,8 +113,6 @@ private:
 };
 
   /**
-   * \addtogroup renamedlg "RenameDlg related Functions"
-   *  @{
    * \relates KIO::RenameDlg
    * Construct a modal, parent-less "rename" dialog, and return
    * a result code, as well as the new dest. Much easier to use than the
@@ -145,8 +143,6 @@ KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
                                  time_t mtimeSrc = (time_t) -1,
                                  time_t mtimeDest = (time_t) -1
                                  );
-
-/*! @} */
 
 }
 #endif
