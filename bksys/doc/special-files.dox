@@ -1,0 +1,22 @@
+/** \page special_file_processing Special file processing
+
+This page is intended to show how bksys converts specific definitions like moc 
+and dcopidl definitions into related output files.
+
+\dot 
+digraph example {
+kcfgh [label="xxx.h"]
+ 
+"xxx.h" -> moc -> "xxx.moc" -> compiler
+"xxx.h" -> dcopidl -> "xxx.kidl" -> dcopidl2cpp 
+dcopidl2cpp -> "xxx_stub.h" 
+dcopidl2cpp -> "xxx_stub.cpp" -> compiler
+dcopidl2cpp -> "xxx_skel.h"
+dcopidl2cpp -> "xxx_skel.cpp" -> compiler
+
+"xxx.kcfgc" -> kconfig_compiler -> kcfgh
+}
+\enddot
+
+
+*/ 
