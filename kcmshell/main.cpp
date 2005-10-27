@@ -77,10 +77,10 @@ static void listModules(const QString &baseGroup)
   for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
   {
-     KSycocaEntry *p = (*it).get();
+     KSycocaEntry::Ptr p = (*it);
      if (p->isType(KST_KService))
      {
-        KService *s = static_cast<KService*>(p);
+        KService::Ptr s = KService::Ptr::staticCast( p );
         if (!KAuthorized::authorizeControlModule(s->menuId()))
            continue;
         m_modules.append(s);
