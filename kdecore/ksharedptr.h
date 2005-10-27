@@ -55,20 +55,20 @@ public:
      * @param t the pointer
      */
     KSharedPtr( T* p ) // TODO: Make explicit
-        : ptr(0) { attach(p); }
+        : ptr(p) { if(ptr) ptr->ref.ref(); }
 
     /**
      * Copies a pointer.
      * @param p the pointer to copy
      */
     KSharedPtr( const KSharedPtr& p )
-        : ptr(0) { attach(p); }
+        : ptr(p.ptr) { if(ptr) ptr->ref.ref(); }
 
     /**
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { attach(static_cast<T *>(0)); }
+    ~KSharedPtr() { if (ptr && !ptr->ref.deref()) delete ptr; }
 
     inline KSharedPtr<T>& operator= ( const KSharedPtr& p ) { attach(p); return *this; }
     inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
@@ -95,8 +95,8 @@ public:
 
     inline const T& operator*() const { Q_ASSERT(ptr); return *ptr; }
     inline T& operator*() { Q_ASSERT(ptr); return *ptr; }
-    inline const T* operator->() const { return ptr; }
-    inline T* operator->() { return ptr; }
+    inline const T* operator->() const { Q_ASSERT(ptr); return ptr; }
+    inline T* operator->() { Q_ASSERT(ptr); return ptr; }
 
     /**
      * Attach the given pointer to the KSharedPtr.
