@@ -243,16 +243,16 @@ else:
 	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP'
 obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
 
+if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
+    obj.uselib += ' LIBART'
+            
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 obj.execute()
 # For now ;(
 if not env['WINDOWS']:
-	env.Depends('libkio.so.6.0.2', 'kio/libkiocore.a')
-	env.Depends('libkio.so.6.0.2', 'kio/libksycoca.a')
-	env.Depends('libkio.so.6.0.2', 'bookmarks/libkbookmarks.a')
-	env.Depends('libkio.so.6.0.2', 'kfile/libkfile.a')
-	env.Depends('libkio.so.6.0.2', 'kssl/libkssl.a')
+	env.Depends('libkio.so.6.0.2', '../kdesu/libkdesu.so')
+	env.Depends('libkio.so.6.0.2', '../kwallet/client/libkwalletclient.so')
 
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]

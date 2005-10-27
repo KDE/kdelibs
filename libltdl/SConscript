@@ -6,6 +6,7 @@ Import('env')
 obj = env.genobj('convenience',env)
 obj.target   = 'ltdlc'
 obj.source   = 'ltdl.c'
+obj.includes = '../kdecore'
 if env['WINDOWS']:
 	obj.source  += ' ltdl_win.c'
 obj.uselib   = 'DL'

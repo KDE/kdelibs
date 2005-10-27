@@ -39,7 +39,7 @@ obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdec
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.libs = 'kdecore '
 obj.libpaths = '../kdecore ../kdeui ../kmdi ../kparts ../kio '
-obj.cxxflags += ' -DMAKE_KDE3SUPPORT_LIB ' # todo: will be generated automatically
+obj.cxxflags += ' -DMAKE_KDE3SUPPORT_LIB -DKDE3_SUPPORT' # todo: will be generated automatically
 obj.execute()
 
 #env.CreateFile('dummy.cpp', Value(''))

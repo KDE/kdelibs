@@ -59,7 +59,7 @@ obj.includes = includes
 obj.libpaths = "../kdecore ../kdeui ../kio ../kded ../dcop"
 obj.libs = "kdecore kdeui kio kded DCOP"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KPARTS Z '
-obj.ccflags = '-DYY_NO_UNISTD_H'
+obj.ccflags = '-DYY_NO_UNISTD_H -DKDE3_SUPPORT'
 if env['WINDOWS']:
 	obj.libpaths += " ../win"
 	obj.libs += " kdewin32"

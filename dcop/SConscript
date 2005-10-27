@@ -79,6 +79,7 @@ env.Command('dcop-path.h', '', act) # no source needed
 obj=env.genobj('program', env)
 obj.target='dcopserver_shutdown'
 obj.source='dcopserver_shutdown.c'
+obj.includes = '../kdecore'
 obj.instdir  = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths = '../win/'

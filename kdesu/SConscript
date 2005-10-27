@@ -15,4 +15,5 @@ obj.execute()
 stubobj = env.qt4obj('program', env)
 stubobj.target = 'kdesu_stub'
 stubobj.source = 'kdesu_stub.c'
+stubobj.includes = '../kdecore'
 stubobj.execute()
