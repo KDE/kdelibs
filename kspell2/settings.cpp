@@ -69,7 +69,7 @@ Settings::~Settings()
 
 KSharedConfig *Settings::sharedConfig() const
 {
-    return d->config.get();
+    return d->config.data();
 }
 
 void Settings::setDefaultLanguage( const QString& lang )
@@ -180,7 +180,7 @@ bool Settings::ignore( const QString& word )
 
 void Settings::readIgnoreList()
 {
-    KConfigGroup conf( d->config.get(), "Spelling" );
+    KConfigGroup conf( d->config.data(), "Spelling" );
     QString ignoreEntry = QString( "ignore_%1" ).arg( d->defaultLanguage );
     QStringList ignores = conf.readListEntry( ignoreEntry );
     setQuietIgnoreList( ignores );
@@ -189,7 +189,7 @@ void Settings::readIgnoreList()
 void Settings::save()
 {
     if ( d->modified ) {
-        KConfigGroup conf( d->config.get(), "Spelling" );
+        KConfigGroup conf( d->config.data(), "Spelling" );
         conf.writeEntry( "defaultClient", d->defaultClient );
         conf.writeEntry( "defaultLanguage", d->defaultLanguage );
         conf.writeEntry( "checkUppercase", d->checkUppercase );
@@ -203,7 +203,7 @@ void Settings::save()
 
 void Settings::loadConfig()
 {
-    KConfigGroup conf( d->config.get(), "Spelling" );
+    KConfigGroup conf( d->config.data(), "Spelling" );
     d->defaultClient = conf.readEntry( "defaultClient",
                                         QString::null );
     d->defaultLanguage = conf.readEntry(

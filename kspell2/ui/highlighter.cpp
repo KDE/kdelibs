@@ -51,7 +51,7 @@ Highlighter::Highlighter( Q3TextEdit *textEdit,
     d = new Private;
     d->filter = filter;
     if ( !configFile.isEmpty() )
-        d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).get() );
+        d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
     else
         d->broker = Broker::openBroker();
 

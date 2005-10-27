@@ -245,7 +245,7 @@ bool Filter::trySkipLinks() const
 {
     QChar currentChar = m_buffer[ m_currentPosition ];
 
-    uint length = m_buffer.length();
+    int length = m_buffer.length();
     //URL - if so skip
     if ( currentChar == ':' &&
          ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= length ) ) {
@@ -273,7 +273,7 @@ bool Filter::ignore( const QString& word ) const
     return false;
 }
 
-QChar Filter::skipToLetter( uint &fromPosition ) const
+QChar Filter::skipToLetter( int &fromPosition ) const
 {
 
     QChar currentChar = m_buffer[ fromPosition ];

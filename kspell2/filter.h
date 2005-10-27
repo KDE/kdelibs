@@ -51,7 +51,7 @@ namespace KSpell2
             {}
 
         QString word;
-        uint    start;
+        int    start;
         bool    end;
     };
 
@@ -104,13 +104,13 @@ namespace KSpell2
     protected:
         bool trySkipLinks() const;
         bool ignore( const QString& word ) const;
-        QChar skipToLetter( uint &fromPosition ) const;
+        QChar skipToLetter( int &fromPosition ) const;
         bool shouldBeSkipped( bool wordWasUppercase, bool wordWasRunTogether,
                               const QString& foundWord ) const;
 
     protected:
         QString      m_buffer;
-        mutable uint m_currentPosition;
+        mutable int m_currentPosition;
 
     private:
         class Private;

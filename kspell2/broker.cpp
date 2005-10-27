@@ -65,12 +65,12 @@ Broker *Broker::openBroker( KSharedConfig *config )
         preventDeletion = config;
 
     if ( s_brokers ) {
-        Broker *broker = s_brokers->find( preventDeletion.get() );
+        Broker *broker = s_brokers->find( preventDeletion.data() );
         if ( broker )
             return broker;
     }
 
-    Broker *broker = new Broker( preventDeletion.get() );
+    Broker *broker = new Broker( preventDeletion.data() );
     return broker;
 }
 
