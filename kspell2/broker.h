@@ -54,18 +54,17 @@ namespace KSpell2
         /**
          * Constructs the broker.
          *
-         * It's very important that you assign it to Broker::Ptr
-         * as soon as possible. Broker is reference counted so
-         * if you don't want to have it deleted under you simply
-         * have to hold it in a Broker::Ptr for as long as you're
-         * using it.
+         * It's very important that you leave the return value in a Broker::Ptr.
+         * Broker is reference counted so if you don't want to have it deleted
+         * under you simply have to hold it in a Broker::Ptr for as long as
+         * you're using it.
          *
          * @param config is the name of config file which
          *        broker should use to read default language
          *        and default client values. If no value will
          *        be passed Broker will use global kspellrc file.
          */
-        static Broker *openBroker( KSharedConfig *config = 0 );
+        static Broker::Ptr openBroker( KSharedConfig *config = 0 );
 
     public:
         ~Broker();
@@ -128,8 +127,6 @@ namespace KSpell2
     private:
         class Private;
         Private *d;
-    private:
-        static Q3PtrDict<Broker> *s_brokers;
     };
 }
 

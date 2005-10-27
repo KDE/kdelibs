@@ -52,7 +52,7 @@ to start from scratch.\
 Mozilla XPath\
 -------------\
  \
-Seems to be incomplete, and though the code was originally standalone it now\\
+Seems to be incomplete, and though the code was originally standalone it now\
 seems to be tied to the mozilla codebase quite tightly. This makes porting it\
 a lot of work, and makes working with the mozilla team on fixing bugs\
 etc. hard as the code bases would have diverged quite a lot.\

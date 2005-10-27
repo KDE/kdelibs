@@ -34,7 +34,7 @@
 
 #include <kdebug.h>
 
-#include <q3ptrdict.h>
+#include <qhash.h>
 #include <qmap.h>
 
 #define DEFAULT_CONFIG_FILE   "kspellrc"
@@ -54,9 +54,10 @@ public:
     DefaultDictionary *defaultDictionary;
 };
 
-Q3PtrDict<Broker> *Broker::s_brokers = 0;
+// TODO KStaticDeleter
+static QHash<KSharedConfig*, Broker*> *s_brokers = 0;
 
-Broker *Broker::openBroker( KSharedConfig *config )
+Broker::Ptr Broker::openBroker( KSharedConfig *config )
 {
     KSharedConfig::Ptr preventDeletion;
     if ( !config ) {
@@ -65,13 +66,13 @@ Broker *Broker::openBroker( KSharedConfig *config )
         preventDeletion = config;
 
     if ( s_brokers ) {
-        Broker *broker = s_brokers->find( preventDeletion.data() );
+        Broker *broker = s_brokers->value( preventDeletion.data() );
         if ( broker )
-            return broker;
+            return Ptr( broker );
     }
 
     Broker *broker = new Broker( preventDeletion.data() );
-    return broker;
+    return Ptr( broker );
 }
 
 Broker::Broker( KSharedConfig *config )
@@ -80,7 +81,7 @@ Broker::Broker( KSharedConfig *config )
     Q_UNUSED( preventDeletion );
 
     if ( !s_brokers )
-        s_brokers = new Q3PtrDict<Broker>;
+        s_brokers = new QHash<KSharedConfig*, Broker*>;
     s_brokers->insert( config, this );
 
     d = new Private;
