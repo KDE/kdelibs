@@ -104,6 +104,10 @@ public:
      * A list of services.
      */
     typedef KService::List OfferList;
+
+    /**
+     * The iterator type for containers of type OfferList.
+     */
     typedef KService::List::const_iterator OfferListIterator;
 
     /**
