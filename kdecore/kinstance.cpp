@@ -235,13 +235,13 @@ KConfig	*KInstance::config() const
     return _config;
 }
 
-KSharedPtr<KSharedConfig> KInstance::sharedConfig() const
+KSharedConfig* KInstance::sharedConfig() const
 {
     DEBUG_CHECK_ALIVE
     if (_config == 0)
        (void) config(); // Initialize config
 
-    return d->sharedConfig;
+    return d->sharedConfig.data();
 }
 
 void KInstance::setConfigName(const QString &configName)

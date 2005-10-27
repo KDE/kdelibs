@@ -76,7 +76,7 @@ KConfig	*KGlobal::config()
     return _instance->config();
 }
 
-KSharedConfig::Ptr KGlobal::sharedConfig()
+KSharedConfig* KGlobal::sharedConfig()
 {
     MYASSERT(_instance);
 
