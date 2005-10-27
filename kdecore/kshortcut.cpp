@@ -434,7 +434,9 @@ bool KShortcut::init( const QString& s )
 				os << QString::number(vars.m_rgkey[j].keyCodeQt(),16) << ',';
 #endif
 		}
+#ifndef NDEBUG
 		kdDebug(125) << sDebug << endl;
+#endif
 	}
 
 	return bRet;
