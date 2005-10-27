@@ -541,7 +541,7 @@ class KDECORE_EXPORT KKeySequence
 * Note that a shortcut cannot have more than 2 key combinations associated with it, so the above
 * code would not do anything (and .append would return false) if the closeAction already had
 * an key and alternate key.
-* 
+*
 */
 
 class KDECORE_EXPORT KShortcut
@@ -791,7 +791,7 @@ class KDECORE_EXPORT KShortcut
 	*/
 	void remove( const KKeySequence& keySeq );
 
-	/**
+        /**
 	 * Converts this shortcut to a key sequence. The first key sequence
 	 * will be taken.
 	 */
@@ -821,8 +821,7 @@ class KDECORE_EXPORT KShortcut
 
  protected:
 	uint m_nSeqs;
-	KKeySequence m_rgseq[MAX_SEQUENCES];
-	QKeySequence m_seq;
+	KKeySequence m_seq[MAX_SEQUENCES];
 
  private:
 	class KShortcutPrivate* d;

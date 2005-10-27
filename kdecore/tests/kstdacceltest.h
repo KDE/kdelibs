@@ -25,11 +25,16 @@ class KStdAccelTest : public QObject
 {
     Q_OBJECT
 private slots:
+    // KStdAccel tests
     void testShortcutDefault();
     void testName();
     void testLabel();
     void testShortcut();
     void testFindStdAccel();
+    void testRemoveShortcut();
+
+    // KShortcut tests
+    void testKShortcut();
 };
 
 

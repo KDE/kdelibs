@@ -1,3 +1,4 @@
+// -*- indent-tabs-mode:t; tab-width:4; c-basic-offset: 4 -*-
 /*  This file is part of the KDE libraries
     Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
@@ -251,7 +252,7 @@ bool KKeySequence::init( const KKeySequence& seq )
 
 bool KKeySequence::init( const QString& s )
 {
-	m_seq = QKeySequence(s);	
+	m_seq = QKeySequence(s);
 	return true;
 }
 
@@ -270,7 +271,7 @@ bool KKeySequence::isTriggerOnRelease() const
 
 bool KKeySequence::setKey( uint iKey, const KKey& key )
 {
-	if(iKey >= 4) return false;	
+	if(iKey >= 4) return false;
 
 	int keys[4];
 	for(int i=0;i<4;++i) {
@@ -279,7 +280,7 @@ bool KKeySequence::setKey( uint iKey, const KKey& key )
 
 	keys[iKey] = key.keyCodeQt();
 
-	m_seq = QKeySequence(keys[0], keys[1], keys[2], keys[3]);	
+	m_seq = QKeySequence(keys[0], keys[1], keys[2], keys[3]);
 
 	return true;
 }
@@ -360,43 +361,43 @@ KShortcut::~KShortcut()
 
 void KShortcut::clear()
 {
-	m_seq = 0;
+	m_nSeqs = 0;
 }
 
 bool KShortcut::init( int keyQt )
 {
-	m_seq = QKeySequence(keyQt);
-	return true;
+	return init( QKeySequence( keyQt ) );
 }
 
-bool KShortcut::init( const QKeySequence& key )
+bool KShortcut::init( const QKeySequence& keySeq )
 {
-	m_seq = key;
+	m_nSeqs = 1;
+	m_seq[0] = keySeq;
 	return true;
 }
 
 bool KShortcut::init( const KKey& spec )
 {
-	m_seq = QKeySequence(spec.keyCodeQt());
-	return true;
+	return init( QKeySequence(spec.keyCodeQt()) );
 }
 
 bool KShortcut::init( const KKeySequence& seq )
 {
-	m_seq = seq.m_seq;
+	m_nSeqs = 1;
+	m_seq[0] = seq;
 	return true;
 }
 
 bool KShortcut::init( const KShortcut& cut )
 {
-	m_seq = cut.m_seq;
+	m_nSeqs = cut.m_nSeqs;
+	for( uint i = 0; i < m_nSeqs; i++ )
+		m_seq[i] = cut.m_seq[i];
 	return true;
 }
 
 bool KShortcut::init( const QString& s )
 {
-	m_seq = QKeySequence(s);
-/*
 	bool bRet = true;
 	QStringList rgs = s.split( ';');
 
@@ -408,8 +409,8 @@ bool KShortcut::init( const QString& s )
 			QString& sSeq = rgs[i];
 			if( sSeq.startsWith( "default(" ) )
 				sSeq = sSeq.mid( 8, sSeq.length() - 9 );
-			m_rgseq[i].init( sSeq );
-			//kdDebug(125) << "*\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
+			m_seq[i].init( sSeq );
+			//kdDebug(125) << "*\t'" << sSeq << "' => " << m_seq[i].toStringInternal() << endl;
 		}
 	} else {
 		clear();
@@ -417,56 +418,74 @@ bool KShortcut::init( const QString& s )
 	}
 
 	if( !s.isEmpty() ) {
+#ifndef NDEBUG
 		QString sDebug;
 		QTextStream os( &sDebug, QIODevice::WriteOnly );
 		os << "KShortcut::init( \"" << s << "\" ): ";
+#endif
 		for( uint i = 0; i < m_nSeqs; i++ ) {
-			os << " m_rgseq[" << i << "]: ";
+#ifndef NDEBUG
+			os << " m_seq[" << i << "]: ";
+#endif
 			KKeyServer::Variations vars;
-			vars.init( m_rgseq[i].key(0), true );
+			vars.init( m_seq[i].key(0), true );
+#ifndef NDEBUG
 			for( uint j = 0; j < vars.count(); j++ )
 				os << QString::number(vars.m_rgkey[j].keyCodeQt(),16) << ',';
+#endif
 		}
 		kdDebug(125) << sDebug << endl;
 	}
 
 	return bRet;
-*/
-	return true;
 }
 
 uint KShortcut::count() const
 {
-	return m_seq.count();
+	return m_nSeqs;
 }
 
 const KKeySequence KShortcut::seq( uint i ) const
 {
-	return KKeySequence( QKeySequence(m_seq[i]) );
+	return KKeySequence( m_seq[i] );
 }
 
 int KShortcut::keyCodeQt() const
 {
-	return m_seq[0];
+	if( m_nSeqs >= 1 )
+		return m_seq[0].keyCodeQt();
+	return 0;
 }
 
 bool KShortcut::isNull() const
 {
-	return m_seq.isEmpty();
+	return m_nSeqs == 0;
 }
 
 int KShortcut::compare( const KShortcut& cut ) const
 {
-	for( uint i = 0; i < m_seq.count(); ++i ) {
-		if ( m_seq[i] != cut.m_seq[i] ) return (int)(m_seq[i] - cut.m_seq[i]);
+	/*
+	  for( uint i = 0; i < m_seq.count(); ++i ) {
+	  if ( m_seq[i] != cut.m_seq[i] ) return (int)(m_seq[i] - cut.m_seq[i]);
+	  }
+	  return 0;
+	*/
+	for( uint i = 0; i < m_nSeqs && i < cut.m_nSeqs; i++ ) {
+		int ret = m_seq[i].compare( cut.m_seq[i] );
+		if( ret != 0 )
+			return ret;
 	}
-
-	return 0;
+	return m_nSeqs - cut.m_nSeqs;
 }
 
 bool KShortcut::contains( const KKey& key ) const
 {
-	return contains( KKeySequence(key) );
+	for( uint i = 0; i < m_nSeqs; i++ ) {
+		if( !m_seq[i].isNull()
+			&& m_seq[i].key(0) == key )
+			return true;
+	}
+	return false;
 }
 
 bool KShortcut::contains( const KKeyNative& keyNative ) const
@@ -478,48 +497,47 @@ bool KShortcut::contains( const KKeyNative& keyNative ) const
 
 bool KShortcut::contains( const KKeySequence& seq ) const
 {
-	return ( m_seq.matches(seq.m_seq) == QKeySequence::ExactMatch );
+	for( uint i = 0; i < count(); i++ ) {
+		if ( m_seq[i].m_seq.matches(seq.m_seq) == QKeySequence::ExactMatch )
+			return true;
+	}
+	return false;
 }
 
 bool KShortcut::setSeq( uint iSeq, const KKeySequence& seq )
 {
 	// TODO: check if seq is null, and act accordingly.
 	if(iSeq >= MAX_SEQUENCES) return false;
-	
-	int keys[MAX_SEQUENCES];
-	for(uint i=0;i<MAX_SEQUENCES;++i) {
-		keys[i] = m_seq[i];
-	}
 
-	keys[iSeq] = seq.m_seq[0];
-
-	return true;
+	if( iSeq <= m_nSeqs && iSeq < MAX_SEQUENCES ) {
+		m_seq[iSeq] = seq;
+		if( iSeq == m_nSeqs )
+			m_nSeqs++;
+		return true;
+	} else
+		return false;
 }
 
 void KShortcut::remove( const KKeySequence& seq )
 {
-	// FIXME: deprecate
 	if (seq.isNull()) return;
-	
+
 	for( uint iSeq = 0; iSeq < m_nSeqs; iSeq++ )
 	{
-		if (m_rgseq[iSeq] == seq)
+		if (m_seq[iSeq] == seq)
 		{
 			for( uint jSeq = iSeq + 1; jSeq < m_nSeqs; jSeq++)
-				m_rgseq[jSeq-1] = m_rgseq[jSeq];
+				m_seq[jSeq-1] = m_seq[jSeq];
 			m_nSeqs--;
 		}
 	}
-
 }
-
 
 bool KShortcut::append( const KKeySequence& seq )
 {
-	// FIXME: deprecate
 	if( m_nSeqs < MAX_SEQUENCES ) {
 		if( !seq.isNull() ) {
-			m_rgseq[m_nSeqs] = seq;
+			m_seq[m_nSeqs] = seq;
 			m_nSeqs++;
 		}
 		return true;
@@ -529,23 +547,28 @@ bool KShortcut::append( const KKeySequence& seq )
 
 KShortcut::operator QKeySequence () const
 {
-	return m_seq;
+	if ( count() >= 1 )
+		return m_seq[0].qt();
+	return QKeySequence();
 }
 
 QString KShortcut::toString() const
 {
-	return m_seq;
+	QString s;
+	for( uint i = 0; i < count(); i++ ) {
+		s += m_seq[i].toString();
+		if( i < count() - 1 )
+			s += ';';
+	}
+	return s;
 }
 
 QString KShortcut::toStringInternal( const KShortcut* pcutDefault ) const
 {
-	Q_UNUSED(pcutDefault)
-	return m_seq;
-/*
 	QString s;
 
 	for( uint i = 0; i < count(); i++ ) {
-		const KKeySequence& seq = m_rgseq[i];
+		const KKeySequence& seq = m_seq[i];
 		if( pcutDefault && i < pcutDefault->count() && seq == (*pcutDefault).seq(i) ) {
 			s += "default(";
 			s += seq.toStringInternal();
@@ -557,7 +580,6 @@ QString KShortcut::toStringInternal( const KShortcut* pcutDefault ) const
 	}
 
 	return s;
-*/
 }
 
 KShortcut& KShortcut::null()
