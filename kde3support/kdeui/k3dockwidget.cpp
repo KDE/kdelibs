@@ -2614,7 +2614,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         } else {
           c->writeEntry( cname+":parent", "yes");
         }
-        Q3StrList list;
+        QStringList list;
         for ( int i = 0; i < ((K3DockTabGroup*)obj->widget)->count(); ++i )
           list.append( ((K3DockTabGroup*)obj->widget)->page( i )->name() );
         c->writeEntry( cname+":tabNames", list );
@@ -2668,11 +2668,10 @@ void K3DockManager::readConfig( KConfig* c, QString group )
   if ( group.isEmpty() ) group = "dock_setting_default";
 
   c->setGroup( group );
-  Q3StrList nameList;
+  QStringList nameList;
   c->readListEntry( "NameList", nameList );
   QString ver = c->readEntry( "Version", "0.0.1" );
-  nameList.first();
-  if ( !nameList.current() || ver != DOCK_CONFIG_VERSION ){
+  if ( nameList.isEmpty() || ver != DOCK_CONFIG_VERSION ){
     activate();
     return;
   }
@@ -2697,9 +2696,8 @@ void K3DockManager::readConfig( KConfig* c, QString group )
 
   // firstly, only the common dockwidgets,
   // they must be restored before e.g. tabgroups are restored
-  nameList.first();
-  while ( nameList.current() ){
-    QString oname = nameList.current();
+  foreach( QString oname, nameList )
+  {
     c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
@@ -2731,13 +2729,11 @@ void K3DockManager::readConfig( KConfig* c, QString group )
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
-    nameList.next();
   }
 
   // secondly, after the common dockwidgets, restore the groups and tabgroups
-  nameList.first();
-  while ( nameList.current() ){
-    QString oname = nameList.current();
+  foreach( QString oname, nameList )
+  {
     c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
@@ -2757,20 +2753,17 @@ void K3DockManager::readConfig( KConfig* c, QString group )
     }
 
     if ( type == "TAB_GROUP" ){
-      Q3StrList list;
       K3DockWidget* tabDockGroup = 0L;
-      c->readListEntry( oname+":tabNames", list );
-      K3DockWidget* d1 = getDockWidgetFromName( list.first() );
-      list.next();
-      K3DockWidget* d2 = getDockWidgetFromName( list.current() );
+      QStringList list = c->readListEntry( oname+":tabNames" );
+      QStringList::const_iterator listit = list.begin();
+      K3DockWidget* d1 = getDockWidgetFromName( *listit++ );
+      K3DockWidget* d2 = getDockWidgetFromName( *listit++ );
       tabDockGroup = d2->manualDock( d1, K3DockWidget::DockCenter );
       if ( tabDockGroup ){
         K3DockTabGroup* tab = dynamic_cast<K3DockTabGroup*>(tabDockGroup->widget);
-        list.next();
-        while ( list.current() && tabDockGroup ){
-          K3DockWidget* tabDock = getDockWidgetFromName( list.current() );
+        while ( listit != list.end() && tabDockGroup ){
+          K3DockWidget* tabDock = getDockWidgetFromName( *listit++ );
           tabDockGroup = tabDock->manualDock( d1, K3DockWidget::DockCenter );
-          list.next();
         }
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
@@ -2786,14 +2779,12 @@ void K3DockManager::readConfig( KConfig* c, QString group )
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
-    nameList.next();
   }
 
   // thirdly, now that all ordinary dockwidgets are created,
   // iterate them again and link the toplevel ones of them with their corresponding dockwidget for the dockback action
-  nameList.first();
-  while ( nameList.current() ){
-    QString oname = nameList.current();
+  foreach( QString oname, nameList )
+  {
     c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
@@ -2807,8 +2798,6 @@ void K3DockManager::readConfig( KConfig* c, QString group )
       }
       obj->formerDockPos = K3DockWidget::DockPosition(c->readNumEntry( oname + ":dockBackToPos" ));
     }
-
-    nameList.next();
   }
 
   if ( main->inherits("K3DockMainWindow") ){
