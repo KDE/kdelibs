@@ -26,6 +26,7 @@
 #include "filter.h"
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 using namespace KSpell2;
 
@@ -54,7 +55,9 @@ void TestDialog::doneChecking( const QString& buf )
 
 int main( int argc, char** argv )
 {
-    KApplication app;
+    KApplication::disableAutoDcopRegistration();
+    KCmdLineArgs::init( argc, argv, "test_dialog", 0, 0, 0, 0 );
+    KApplication app; // with GUI
 
     TestDialog test;
     test.check( "This is a sample buffer. Whih this thingg will "
