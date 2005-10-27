@@ -73,10 +73,10 @@ int Highlighter::highlightParagraph( const QString& text,
     Q_UNUSED( endStateOfLastPara );
     int para, index;
     textEdit()->getCursorPosition( &para, &index );
-    int lengthPosition = text.length() - 1;
+    const int lengthPosition = text.length() - 1;
 
     if ( index != lengthPosition ||
-         !text[text.length()-2].isLetter() ) {
+         ( lengthPosition > 0 && !text[lengthPosition-1].isLetter() ) ) {
         d->filter->setBuffer( text );
         Word w = d->filter->nextWord();
         while ( !w.end ) {
