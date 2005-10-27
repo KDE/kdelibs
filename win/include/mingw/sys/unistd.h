@@ -1,0 +1,3 @@
+
+// isatty
+#include <io.h>
