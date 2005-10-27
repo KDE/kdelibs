@@ -2175,7 +2175,7 @@ bool CSSParser::parseShadow(int propId, bool important)
 
 bool CSSParser::parseCounter(int propId, bool increment, bool important)
 {
-    enum { ID, VAL } state = ID;
+    enum { ID, VAL, COMMA } state = ID;
 
     CSSValueListImpl *list = new CSSValueListImpl;
     DOMString c;
@@ -2183,6 +2183,15 @@ bool CSSParser::parseCounter(int propId, bool increment, bool important)
     while (true) {
         val = valueList->current();
         switch (state) {
+            // Commas are not allowed according to the standard, but Opera allows them and being the only
+            // other browser with counter support we need to match their behavior to work with current use
+            case COMMA:
+                state = ID;
+                if (val && val->unit == Value::Operator && val->iValue == ',') {
+                    valueList->next();
+                    continue;
+                }
+                // no break
             case ID:
                 if (val && val->unit == CSSPrimitiveValue::CSS_IDENT) {
                     c = qString(val->string);
@@ -2201,7 +2210,7 @@ bool CSSParser::parseCounter(int propId, bool increment, bool important)
 
                 CounterActImpl *cv = new CounterActImpl(c,i);
                 list->append(cv);
-                state = ID;
+                state = COMMA;
                 continue;
             }
         }
