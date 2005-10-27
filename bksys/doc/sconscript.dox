@@ -47,6 +47,53 @@ This section describes each attribute in detail. The displayed examples uses the
 the list form mentioned above is also possible.
 
 <ul>
+<li>create a generic binary object 
+\code
+obj = env.genobj(<type>,<env>)
+\endcode 
+
+type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+<li>create a qt4 object 
+\code
+obj = env.qt4obj(<type>,<env>)
+\endcode 
+When this object class is used bksys scans for moc files and adds the dependencies on .rcc files
+
+type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+<li>create a kde4 object 
+\code
+obj = env.kde4obj(<type>,<env>)
+\endcode 
+
+type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- kioslave - special module type prefixed with 'kio_'
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
+The it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
+
+<li>create a kdeinit object 
+\code
+obj = env.kdeinitobj('shlib',<env>)
+\endcode 
+create a shared library prefixed with 'kdeinit_' and a wrapper application. 
+
 <li>
 \code
 obj.target     = 'DCOP'
