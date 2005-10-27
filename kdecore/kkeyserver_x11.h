@@ -414,10 +414,13 @@ namespace KKeyServer
 	//wrapped for win32
 	KDECORE_EXPORT bool modXToModQt( uint modX, int& modQt );
 
+#ifdef Q_WS_WIN
 	/**
-	 * Converts the Qt-compatible button state to x11 modifier.
+	 * Converts the Qt-compatible button state to KKey modifier.
+         * Windows only.
 	 */
-	KDECORE_EXPORT int qtButtonStateToMod( Qt::ButtonState s );
+	KDECORE_EXPORT int qtButtonStateToMod( Qt::KeyboardModifier s );
+#endif
 
 	/**
 	 * Converts the mask of ORed X11 modifiers to
