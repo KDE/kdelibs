@@ -191,37 +191,12 @@ int main(int argc, char *argv[])
    }
 #endif
 
-
-   //
-   debug("\nTrying findByURL for $KDEDIR/bin/kdesktop");
-   KMimeType::Ptr mf  = KMimeType::findByURL( KStandardDirs::findExe( "kdesktop" ), 0,
-				 true, false );
-   assert( mf );
-   check( "A binary's mimetype", mf->name(), "application/x-executable" );
-
-   //
-   debug("\nTrying findByURL for folder_home.png");
-   QString fh;
-   (void)k.iconLoader()->loadIcon("folder_home.png",KIcon::Desktop,0,KIcon::DefaultState,&fh);
-   mf  = KMimeType::findByURL( fh, 0, true, false );
-   assert( mf );
-   check( "A PNG's mimetype", mf->name(), "image/png" );
-
    //
    //debug("\nTrying findByURL for Makefile.am");
    //mf = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
    //assert( mf );
    //debug(QString("Name is %1").arg(mf->name()));
    //debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
-
-   debug("\nTrying findByURL for man:/ls");
-   mf = KMimeType::findByURL( KURL("man:/ls") );
-   assert( mf );
-   check( "man:/ls", mf->name(), "text/html" );
-   check( "man:/ls/", mf->name(), "text/html" );
-
-   mf = KMimeType::findByURL( KURL("http://foo/bar.png") );
-   check( "HTTP URL", mf->name(), "application/octet-stream" ); // HTTP can't know before downloading
 
 #if 1
    KMimeType::List mtl;
@@ -252,16 +227,16 @@ int main(int argc, char *argv[])
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
-      KSycocaEntry *p = (*it).get();
+      KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
       {
-         KService *service = static_cast<KService *>(p);
+          KService::Ptr service = KService::Ptr::staticCast( p );
          debug(service->name());
          debug(service->desktopEntryPath());
       }
       else if (p->isType(KST_KServiceGroup))
       {
-         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
          debug(QString("             %1 -->").arg(serviceGroup->caption()));
          if (!first) first = serviceGroup;
       }
@@ -278,15 +253,15 @@ int main(int argc, char *argv[])
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
-      KSycocaEntry *p = (*it).get();
+      KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
       {
-         KService *service = static_cast<KService *>(p);
+         KService::Ptr service = KService::Ptr::staticCast( p );
          debug(QString("             %1").arg(service->name()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
-         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
          debug(QString("             %1 -->").arg(serviceGroup->caption()));
       }
       else
@@ -301,7 +276,7 @@ int main(int argc, char *argv[])
    for( KService::List::ConstIterator it = sl.begin();
        it != sl.end(); it++)
    {
-      KService *service = (*it).get();
+      KService::Ptr service = (*it);
       debug(service->name());
    }
    debug("--End of list--");
