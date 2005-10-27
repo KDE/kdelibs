@@ -133,7 +133,7 @@ int StubProcess::ConverseStub(int check)
 	    QByteArray tmp;
 	    for(int i = 0; i < env.count(); ++i)
 	    {
-                const char startup_env[] = "KDE_STARTUP_ENV=";
+                const char startup_env[] = "DESKTOP_STARTUP_ID=";
                 if (env.at(i).startsWith(startup_env))
                     tmp = env.at(i).mid(sizeof(startup_env) - 1);
 	    }

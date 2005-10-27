@@ -24,7 +24,7 @@
  * - user            Target user         string
  * - priority        Process priority    0 <= int <= 100
  * - scheduler       Process scheduler   "fifo" | "normal"
- * - app_startup_id  KDE_STARTUP_ENV     string
+ * - app_startup_id  DESKTOP_STARTUP_ID  string
  * - environment     Additional envvars  strings, last one is empty
  */
 
@@ -232,7 +232,7 @@ int main()
     fflush(stdout);
 
     xsetenv("PATH", params[P_PATH].value);
-    xsetenv("KDE_STARTUP_ENV", params[P_APP_STARTUP_ID].value);
+    xsetenv("DESKTOP_STARTUP_ID", params[P_APP_STARTUP_ID].value);
 
     /* Do we need to change uid? */
 
