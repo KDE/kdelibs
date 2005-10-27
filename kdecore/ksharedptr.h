@@ -54,78 +54,91 @@ public:
      * Creates a new pointer.
      * @param t the pointer
      */
-    KSharedPtr( T* t ) // TODO explicit
-        : ptr(t) { if ( ptr ) ptr->ref.ref(); }
+    KSharedPtr( T* p ) // TODO: Make explicit
+        : ptr(0) { attach(p); }
 
     /**
      * Copies a pointer.
      * @param p the pointer to copy
      */
     KSharedPtr( const KSharedPtr& p )
-        : ptr(p.ptr) { if ( ptr ) ptr->ref.ref(); }
+        : ptr(0) { attach(p); }
 
     /**
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { if ( ptr ) deref(); }
+    ~KSharedPtr() { attach((T *)0); }
 
-    KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
-        if ( ptr == p.ptr ) return *this;
-        if ( ptr ) deref();
-        ptr = p.ptr;
-        if ( ptr ) ptr->ref.ref();
-        return *this;
-    }
-    KSharedPtr<T>& operator= ( T* p ) {
-        if ( ptr == p ) return *this;
-        if ( ptr ) deref();
-        ptr = p;
-        if ( ptr ) ptr->ref.ref();
-        return *this;
-    }
-    bool operator== ( const KSharedPtr<T>& p ) const { return ( ptr == p.ptr ); }
-    bool operator!= ( const KSharedPtr<T>& p ) const { return ( ptr != p.ptr ); }
-    bool operator== ( const T* p ) const { return ( ptr == p ); }
-    bool operator!= ( const T* p ) const { return ( ptr != p ); }
-    operator bool() const { return ( ptr != 0 ); }
-
-    /**
-     * @deprecated use data()
-     */
-    KDE_DEPRECATED T *get() const { return ptr; }
+    inline KSharedPtr<T>& operator= ( const KSharedPtr& p ) { attach(p); return *this; }
+    inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
+    inline bool operator== ( const KSharedPtr& p ) const { return ( ptr == p.ptr ); }
+    inline bool operator!= ( const KSharedPtr& p ) const { return ( ptr != p.ptr ); }
+    inline bool operator== ( const T* p ) const { return ( ptr == p ); }
+    inline bool operator!= ( const T* p ) const { return ( ptr != p ); }
+    inline operator bool() const { return ( ptr != 0 ); }
 
     /**
      * @return the pointer
      */
-    T* data() { return ptr; }
+    inline T* data() { return ptr; }
 
     /**
      * @return the pointer
      */
-    const T* data() const { return ptr; }
+    inline const T* data() const { return ptr; }
+
     /**
      * @return a const pointer to the shared object.
      */
-    const T* constData() const { return ptr; }
+    inline const T* constData() const { return ptr; }
 
-    const T& operator*() const { return *ptr; }
-    T& operator*() { return *ptr; }
-    const T* operator->() const { return ptr; }
-    T* operator->() { return ptr; }
+    inline const T& operator*() const { Q_ASSERT(ptr); return *ptr; }
+    inline T& operator*() { Q_ASSERT(ptr); return *ptr; }
+    inline const T* operator->() const { return ptr; }
+    inline T* operator->() { return ptr; }
+
+    /**
+     * Attach the given pointer to the KSharedPtr.
+     * If the previous shared pointer is not owned by any KSharedPtr,
+     * it is deleted.
+     */
+    inline void attach(T *p)
+    {
+        if (ptr != p) {
+            T *x = p;
+            if (x) x->ref.ref();
+            x = qAtomicSetPtr(&ptr, x);
+            if (x && !x->ref.deref())
+                delete x;
+        }
+    }
+
+    /**
+     * Attach the given pointer to the KSharedPtr.
+     * @see KSharedPtr<T>::attach(T *p)
+     */
+    inline void attach(const KSharedPtr& p) { attach(p.ptr); }
 
     /**
      * Returns the number of references.
      * @return the number of references
      */
-    int count() const { return ptr->ref; } // for debugging purposes
+    inline int count() const { return ptr->ref; } // for debugging purposes
+
+    /**
+     * Detach the pointer by attaching a new copy of the pointer.
+     * The new copy is created only if the pointer is shared by other pointers
+     * and is not null.
+     */
+    inline void detach() { if (ptr && ptr->ref>1) attach(new T(*ptr)); }
 
     /**
      * @return Whether this is the only shared pointer pointing to
      * to the pointee, or whether it's shared among multiple
      * shared pointers.
      */
-    bool isUnique() const { return count() == 1; }
+    inline bool isUnique() const { return count() == 1; }
 
     template <class U> friend class KSharedPtr;
 
@@ -139,12 +152,6 @@ public:
     template <class U>
     static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
         return KSharedPtr<T>( dynamic_cast<T *>( other.ptr ) );
-    }
-
-private:
-    void deref() {
-        if ( !ptr->ref.deref() )
-            delete ptr;
     }
 
 private:
