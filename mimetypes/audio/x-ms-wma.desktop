@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 MimeType=audio/x-ms-wma
-Icon=audio
+Icon=sound
 Patterns=*.wma;*.WMA
 Comment=Windows Media Audio
 Comment[af]=Windows Media Klank
