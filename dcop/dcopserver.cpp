@@ -116,8 +116,8 @@ static Bool HostBasedAuthProc ( char* /*hostname*/)
 }
 
 extern "C" {
-extern IceWriteHandler _kde_IceWriteHandler;
-extern IceIOErrorHandler _kde_IceIOErrorHandler;
+#include <KDE-ICE/ICEmsg.h>
+#include <KDE-ICE/globals.h>
 void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr);
 }
 
@@ -989,11 +989,6 @@ static void sighandler(int sig)
     write(pipeOfDeath[1], "x", 1);
 }
 #endif
-
-extern "C"
-{
-	extern int _kde_IceLastMajorOpcode; // from libICE
-}
 
 DCOPServer::DCOPServer(bool _suicide)
     : suicide(_suicide),

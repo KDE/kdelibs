@@ -32,10 +32,11 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/ICEutil.h"
+#include "KDE-ICE/KICE.h"
 
 #define _IceDefaultErrorHandler _kde_IceDefaultErrorHandler
 
-extern void _IceDefaultErrorHandler (
+extern KICE_EXPORT void _IceDefaultErrorHandler (
 #if NeedFunctionPrototypes
     IceConn         /* iceConn */,
     Bool            /* swap */,
@@ -49,7 +50,7 @@ extern void _IceDefaultErrorHandler (
 
 #define _IceDefaultIOErrorHandler _kde_IceDefaultIOErrorHandler
 
-extern void _IceDefaultIOErrorHandler (
+extern KICE_EXPORT void _IceDefaultIOErrorHandler (
 #if NeedFunctionPrototypes
     IceConn 		/* iceConn */
 #endif
@@ -57,7 +58,7 @@ extern void _IceDefaultIOErrorHandler (
 
 #define _IcePoMagicCookie1Proc _kde_IcePoMagicCookie1Proc
 
-extern IcePoAuthStatus _IcePoMagicCookie1Proc (
+extern KICE_EXPORT IcePoAuthStatus _IcePoMagicCookie1Proc (
 #if NeedFunctionPrototypes
     IceConn         /* iceConn */,
     IcePointer *    /* authStatePtr */,
@@ -73,7 +74,7 @@ extern IcePoAuthStatus _IcePoMagicCookie1Proc (
 
 #define _IcePaMagicCookie1Proc _kde_IcePaMagicCookie1Proc
 
-extern IcePaAuthStatus _IcePaMagicCookie1Proc (
+extern KICE_EXPORT IcePaAuthStatus _IcePaMagicCookie1Proc (
 #if NeedFunctionPrototypes
     IceConn         /* iceConn */,
     IcePointer *    /* authStatePtr */,
@@ -88,7 +89,7 @@ extern IcePaAuthStatus _IcePaMagicCookie1Proc (
 
 #define _IceProcessCoreMessage _kde_IceProcessCoreMessage
 
-extern void _IceProcessCoreMessage (
+extern KICE_EXPORT void _IceProcessCoreMessage (
 #if NeedFunctionPrototypes
     IceConn          /* iceConn */,
     int              /* opcode */,
@@ -104,43 +105,43 @@ extern void _IceProcessCoreMessage (
 #define _IceConnectionStrings	_kde_IceConnectionStrings
 #define _IceConnectionCount	_kde_IceConnectionCount
 
-extern IceConn     	_IceConnectionObjs[256];
-extern char	    	*_IceConnectionStrings[256];
-extern int     		_IceConnectionCount;
+extern KICE_EXPORT IceConn     	_IceConnectionObjs[256];
+extern KICE_EXPORT char	    	*_IceConnectionStrings[256];
+extern KICE_EXPORT int     		_IceConnectionCount;
 
 #define _IceProtocols _kde_IceProtocols
 #define _IceLastMajorOpcode _kde_IceLastMajorOpcode
 
-extern _IceProtocol 	_IceProtocols[255];
-extern int         	_IceLastMajorOpcode;
+extern KICE_EXPORT _IceProtocol 	_IceProtocols[255];
+extern KICE_EXPORT int         	_IceLastMajorOpcode;
 
 #define _IceAuthCount		_kde_IceAuthCount
 #define _IceAuthNames		_kde_IceAuthNames
 #define _IcePoAuthProcs 	_kde_IcePoAuthProcs
 #define _IcePaAuthProcs 	_kde_IcePaAuthProcs
 
-extern int		_IceAuthCount;
-extern const char	*_IceAuthNames[];
-extern IcePoAuthProc	_IcePoAuthProcs[];
-extern IcePaAuthProc	_IcePaAuthProcs[];
+extern KICE_EXPORT int		_IceAuthCount;
+extern KICE_EXPORT const char	*_IceAuthNames[];
+extern KICE_EXPORT IcePoAuthProc	_IcePoAuthProcs[];
+extern KICE_EXPORT IcePaAuthProc	_IcePaAuthProcs[];
 
 #define _IceVersionCount	_kde_IceVersionCount
 #define _IceVersions		_kde_IceVersions
 #define _IceWatchProcs		_kde_IceWatchProcs
 
-extern int		_IceVersionCount;
-extern _IceVersion	_IceVersions[];
+extern KICE_EXPORT int		_IceVersionCount;
+extern KICE_EXPORT _IceVersion	_IceVersions[];
 
-extern _IceWatchProc	*_IceWatchProcs;
+extern KICE_EXPORT _IceWatchProc	*_IceWatchProcs;
 
 #define _IceErrorHandler 	_kde_IceErrorHandler
 #define _IceIOErrorHandler 	_kde_IceIOErrorHandler
 
-extern IceErrorHandler   _IceErrorHandler;
-extern IceIOErrorHandler _IceIOErrorHandler;
+extern KICE_EXPORT IceErrorHandler   _IceErrorHandler;
+extern KICE_EXPORT IceIOErrorHandler _IceIOErrorHandler;
 
 #define _IcePaAuthDataEntryCount _kde_IcePaAuthDataEntryCount
 #define _IcePaAuthDataEntries 	_kde_IcePaAuthDataEntries
 
-extern int            _IcePaAuthDataEntryCount;
-extern IceAuthDataEntry _IcePaAuthDataEntries[];
+extern KICE_EXPORT int            _IcePaAuthDataEntryCount;
+extern KICE_EXPORT IceAuthDataEntry _IcePaAuthDataEntries[];

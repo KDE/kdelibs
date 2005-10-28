@@ -32,6 +32,7 @@ Author: Ralph Mor, X Consortium
 #define _ICEUTIL_H_
 
 #include <stdio.h>
+#include "KDE-ICE/KICE.h"
 
 /*
  * Data structure for entry in ICE authority file
@@ -76,7 +77,7 @@ typedef struct {
 
 #define IceAuthFileName KDE_IceAuthFileName
 
-extern char *IceAuthFileName (
+extern KICE_EXPORT char *IceAuthFileName (
 #if NeedFunctionPrototypes
     void
 #endif
@@ -84,7 +85,7 @@ extern char *IceAuthFileName (
 
 #define IceLockAuthFile KDE_IceLockAuthFile
 
-extern int IceLockAuthFile (
+extern KICE_EXPORT int IceLockAuthFile (
 #if NeedFunctionPrototypes
     char *		/* file_name */,
     int			/* retries */,
@@ -95,7 +96,7 @@ extern int IceLockAuthFile (
 
 #define IceUnlockAuthFile KDE_IceUnlockAuthFile
 
-extern void IceUnlockAuthFile (
+extern KICE_EXPORT void IceUnlockAuthFile (
 #if NeedFunctionPrototypes
     char *		/* file_name */
 #endif
@@ -103,7 +104,7 @@ extern void IceUnlockAuthFile (
 
 #define IceReadAuthFileEntry KDE_IceReadAuthFileEntry
 
-extern IceAuthFileEntry *IceReadAuthFileEntry (
+extern KICE_EXPORT IceAuthFileEntry *IceReadAuthFileEntry (
 #if NeedFunctionPrototypes
     FILE *		/* auth_file */
 #endif
@@ -111,7 +112,7 @@ extern IceAuthFileEntry *IceReadAuthFileEntry (
 
 #define IceFreeAuthFileEntry KDE_IceFreeAuthFileEntry
 
-extern void IceFreeAuthFileEntry (
+extern KICE_EXPORT void IceFreeAuthFileEntry (
 #if NeedFunctionPrototypes
     IceAuthFileEntry *	/* auth */
 #endif
@@ -119,7 +120,7 @@ extern void IceFreeAuthFileEntry (
 
 #define IceWriteAuthFileEntry KDE_IceWriteAuthFileEntry
 
-extern Status KDE_IceWriteAuthFileEntry (
+extern KICE_EXPORT Status KDE_IceWriteAuthFileEntry (
 #if NeedFunctionPrototypes
     FILE *		/* auth_file */,
     IceAuthFileEntry *	/* auth */
@@ -128,7 +129,7 @@ extern Status KDE_IceWriteAuthFileEntry (
 
 #define IceGetAuthFileEntry KDE_IceGetAuthFileEntry
 
-extern IceAuthFileEntry *IceGetAuthFileEntry (
+extern KICE_EXPORT IceAuthFileEntry *IceGetAuthFileEntry (
 #if NeedFunctionPrototypes
     const char *		/* protocol_name */,
     const char *		/* network_id */,
@@ -138,7 +139,7 @@ extern IceAuthFileEntry *IceGetAuthFileEntry (
 
 #define IceGenerateMagicCookie KDE_IceGenerateMagicCookie
 
-extern char *IceGenerateMagicCookie (
+extern KICE_EXPORT char *IceGenerateMagicCookie (
 #if NeedFunctionPrototypes
     int			/* len */
 #endif
@@ -146,7 +147,7 @@ extern char *IceGenerateMagicCookie (
 
 #define IceSetPaAuthData KDE_IceSetPaAuthData
 
-extern void IceSetPaAuthData (
+extern KICE_EXPORT void IceSetPaAuthData (
 #if NeedFunctionPrototypes
     int			/* numEntries */,
     IceAuthDataEntry *	/* entries */

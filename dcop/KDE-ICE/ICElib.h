@@ -34,6 +34,8 @@ Author: Ralph Mor, X Consortium
 
 #include <KDE-ICE/ICE.h>
 #include <KDE-ICE/Xfuncproto.h>
+#include <KDE-ICE/KICE.h>
+
 #ifndef SIZEOF
 #define _SIZEOF(x) sz_##x
 #define SIZEOF(x) _SIZEOF(x)
@@ -250,7 +252,7 @@ _XFUNCPROTOBEGIN
 
 #define IceRegisterForProtocolSetup KDE_IceRegisterForProtocolSetup
 
-extern int IceRegisterForProtocolSetup (
+extern KICE_EXPORT int IceRegisterForProtocolSetup (
 #if NeedFunctionPrototypes
     char *			/* protocolName */,
     char *			/* vendor */,
@@ -266,7 +268,7 @@ extern int IceRegisterForProtocolSetup (
 
 #define IceRegisterForProtocolReply KDE_IceRegisterForProtocolReply
 
-extern int IceRegisterForProtocolReply (
+extern KICE_EXPORT int IceRegisterForProtocolReply (
 #if NeedFunctionPrototypes
     char *			/* protocolName */,
     char *			/* vendor */,
@@ -285,7 +287,7 @@ extern int IceRegisterForProtocolReply (
 
 #define IceOpenConnection KDE_IceOpenConnection
 
-extern IceConn IceOpenConnection (
+extern KICE_EXPORT IceConn IceOpenConnection (
 #if NeedFunctionPrototypes
     char *		/* networkIdsList */,
     IcePointer		/* context */,
@@ -298,7 +300,7 @@ extern IceConn IceOpenConnection (
 
 #define IceGetConnectionContext KDE_IceGetConnectionContext
 
-extern IcePointer IceGetConnectionContext (
+extern KICE_EXPORT IcePointer IceGetConnectionContext (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -306,7 +308,7 @@ extern IcePointer IceGetConnectionContext (
 
 #define IceListenForConnections KDE_IceListenForConnections
 
-extern Status IceListenForConnections (
+extern KICE_EXPORT Status IceListenForConnections (
 #if NeedFunctionPrototypes
     int *		/* countRet */,
     IceListenObj **	/* listenObjsRet */,
@@ -317,7 +319,7 @@ extern Status IceListenForConnections (
 
 #define IceListenForWellKnownConnections KDE_IceListenForWellKnownConnections
 
-extern Status IceListenForWellKnownConnections (
+extern KICE_EXPORT Status IceListenForWellKnownConnections (
 #if NeedFunctionPrototypes
     char *		/* port */,
     int *		/* countRet */,
@@ -329,7 +331,7 @@ extern Status IceListenForWellKnownConnections (
 
 #define IceGetListenConnectionNumber KDE_IceGetListenConnectionNumber
 
-extern int IceGetListenConnectionNumber (
+extern KICE_EXPORT int IceGetListenConnectionNumber (
 #if NeedFunctionPrototypes
     IceListenObj	/* listenObj */
 #endif
@@ -337,7 +339,7 @@ extern int IceGetListenConnectionNumber (
 
 #define IceGetListenConnectionString KDE_IceGetListenConnectionString
 
-extern char *IceGetListenConnectionString (
+extern KICE_EXPORT char *IceGetListenConnectionString (
 #if NeedFunctionPrototypes
     IceListenObj	/* listenObj */
 #endif
@@ -345,7 +347,7 @@ extern char *IceGetListenConnectionString (
 
 #define IceComposeNetworkIdList KDE_IceComposeNetworkIdList
 
-extern char *IceComposeNetworkIdList (
+extern KICE_EXPORT char *IceComposeNetworkIdList (
 #if NeedFunctionPrototypes
     int			/* count */,
     IceListenObj *	/* listenObjs */
@@ -354,7 +356,7 @@ extern char *IceComposeNetworkIdList (
 
 #define IceFreeListenObjs KDE_IceFreeListenObjs
 
-extern void IceFreeListenObjs (
+extern KICE_EXPORT void IceFreeListenObjs (
 #if NeedFunctionPrototypes
     int			/* count */,
     IceListenObj *	/* listenObjs */
@@ -363,7 +365,7 @@ extern void IceFreeListenObjs (
 
 #define IceSetHostBasedAuthProc KDE_IceSetHostBasedAuthProc
 
-extern void IceSetHostBasedAuthProc (
+extern KICE_EXPORT void IceSetHostBasedAuthProc (
 #if NeedFunctionPrototypes
     IceListenObj		/* listenObj */,
     IceHostBasedAuthProc   	/* hostBasedAuthProc */
@@ -372,7 +374,7 @@ extern void IceSetHostBasedAuthProc (
 
 #define IceAcceptConnection KDE_IceAcceptConnection
 
-extern IceConn IceAcceptConnection (
+extern KICE_EXPORT IceConn IceAcceptConnection (
 #if NeedFunctionPrototypes
     IceListenObj	/* listenObj */,
     IceAcceptStatus *	/* statusRet */
@@ -381,7 +383,7 @@ extern IceConn IceAcceptConnection (
 
 #define IceSetShutdownNegotiation KDE_IceSetShutdownNegotiation
 
-extern void IceSetShutdownNegotiation (
+extern KICE_EXPORT void IceSetShutdownNegotiation (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     Bool		/* negotiate */
@@ -390,7 +392,7 @@ extern void IceSetShutdownNegotiation (
 
 #define IceCheckShutdownNegotiation KDE_IceCheckShutdownNegotiation
 
-extern Bool IceCheckShutdownNegotiation (
+extern KICE_EXPORT Bool IceCheckShutdownNegotiation (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -398,7 +400,7 @@ extern Bool IceCheckShutdownNegotiation (
 
 #define IceCloseConnection KDE_IceCloseConnection
 
-extern IceCloseStatus IceCloseConnection (
+extern KICE_EXPORT IceCloseStatus IceCloseConnection (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -406,7 +408,7 @@ extern IceCloseStatus IceCloseConnection (
 
 #define IceAddConnectionWatch KDE_IceAddConnectionWatch
 
-extern Status IceAddConnectionWatch (
+extern KICE_EXPORT Status IceAddConnectionWatch (
 #if NeedFunctionPrototypes
     IceWatchProc		/* watchProc */,
     IcePointer			/* clientData */
@@ -415,7 +417,7 @@ extern Status IceAddConnectionWatch (
 
 #define IceRemoveConnectionWatch KDE_IceRemoveConnectionWatch
 
-extern void IceRemoveConnectionWatch (
+extern KICE_EXPORT void IceRemoveConnectionWatch (
 #if NeedFunctionPrototypes
     IceWatchProc		/* watchProc */,
     IcePointer			/* clientData */
@@ -424,7 +426,7 @@ extern void IceRemoveConnectionWatch (
 
 #define IceProtocolSetup KDE_IceProtocolSetup
 
-extern IceProtocolSetupStatus IceProtocolSetup (
+extern KICE_EXPORT IceProtocolSetupStatus IceProtocolSetup (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int 		/* myOpcode */,
@@ -441,7 +443,7 @@ extern IceProtocolSetupStatus IceProtocolSetup (
 
 #define IceProtocolShutdown KDE_IceProtocolShutdown
 
-extern Status IceProtocolShutdown (
+extern KICE_EXPORT Status IceProtocolShutdown (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int			/* majorOpcode */
@@ -450,7 +452,7 @@ extern Status IceProtocolShutdown (
 
 #define IceProcessMessages KDE_IceProcessMessages
 
-extern IceProcessMessagesStatus IceProcessMessages (
+extern KICE_EXPORT IceProcessMessagesStatus IceProcessMessages (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     IceReplyWaitInfo *	/* replyWait */,
@@ -460,7 +462,7 @@ extern IceProcessMessagesStatus IceProcessMessages (
 
 #define IcePing KDE_IcePing
 
-extern Status IcePing (
+extern KICE_EXPORT Status IcePing (
 #if NeedFunctionPrototypes
    IceConn		/* iceConn */,
    IcePingReplyProc	/* pingReplyProc */,
@@ -470,7 +472,7 @@ extern Status IcePing (
 
 #define IceAllocScratch KDE_IceAllocScratch
 
-extern char *IceAllocScratch (
+extern KICE_EXPORT char *IceAllocScratch (
 #if NeedFunctionPrototypes
    IceConn		/* iceConn */,
    unsigned long	/* size */
@@ -479,7 +481,7 @@ extern char *IceAllocScratch (
 
 #define IceFlush KDE_IceFlush
 
-extern void IceFlush (
+extern KICE_EXPORT void IceFlush (
 #if NeedFunctionPrototypes
    IceConn		/* iceConn */
 #endif
@@ -487,7 +489,7 @@ extern void IceFlush (
 
 #define IceGetOutBufSize KDE_IceGetOutBufSize
 
-extern int IceGetOutBufSize (
+extern KICE_EXPORT int IceGetOutBufSize (
 #if NeedFunctionPrototypes
    IceConn		/* iceConn */
 #endif
@@ -495,7 +497,7 @@ extern int IceGetOutBufSize (
 
 #define IceGetInBufSize KDE_IceGetInBufSize
 
-extern int IceGetInBufSize (
+extern KICE_EXPORT int IceGetInBufSize (
 #if NeedFunctionPrototypes
    IceConn		/* iceConn */
 #endif
@@ -503,7 +505,7 @@ extern int IceGetInBufSize (
 
 #define IceConnectionStatus KDE_IceConnectionStatus
 
-extern IceConnectStatus IceConnectionStatus (
+extern KICE_EXPORT IceConnectStatus IceConnectionStatus (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -511,7 +513,7 @@ extern IceConnectStatus IceConnectionStatus (
 
 #define IceVendor KDE_IceVendor
 
-extern char *IceVendor (
+extern KICE_EXPORT char *IceVendor (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -519,7 +521,7 @@ extern char *IceVendor (
 
 #define IceRelease KDE_IceRelease
 
-extern char *IceRelease (
+extern KICE_EXPORT char *IceRelease (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -527,7 +529,7 @@ extern char *IceRelease (
 
 #define IceProtocolVersion KDE_IceProtocolVersion
 
-extern int IceProtocolVersion (
+extern KICE_EXPORT int IceProtocolVersion (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -535,7 +537,7 @@ extern int IceProtocolVersion (
 
 #define IceProtocolRevision KDE_IceProtocolRevision
 
-extern int IceProtocolRevision (
+extern KICE_EXPORT int IceProtocolRevision (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -543,7 +545,7 @@ extern int IceProtocolRevision (
 
 #define IceConnectionNumber KDE_IceConnectionNumber
 
-extern int IceConnectionNumber (
+extern KICE_EXPORT int IceConnectionNumber (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -551,7 +553,7 @@ extern int IceConnectionNumber (
 
 #define IceConnectionString KDE_IceConnectionString
 
-extern char *IceConnectionString (
+extern KICE_EXPORT char *IceConnectionString (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -559,7 +561,7 @@ extern char *IceConnectionString (
 
 #define IceLastSentSequenceNumber KDE_IceLastSentSequenceNumber
 
-extern unsigned long IceLastSentSequenceNumber (
+extern KICE_EXPORT unsigned long IceLastSentSequenceNumber (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -567,7 +569,7 @@ extern unsigned long IceLastSentSequenceNumber (
 
 #define IceLastReceivedSequenceNumber KDE_IceLastReceivedSequenceNumber
 
-extern unsigned long IceLastReceivedSequenceNumber (
+extern KICE_EXPORT unsigned long IceLastReceivedSequenceNumber (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -575,7 +577,7 @@ extern unsigned long IceLastReceivedSequenceNumber (
 
 #define IceSwapping KDE_IceSwapping
 
-extern Bool IceSwapping (
+extern KICE_EXPORT Bool IceSwapping (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -583,7 +585,7 @@ extern Bool IceSwapping (
 
 #define IceSetErrorHandler KDE_IceSetErrorHandler
 
-extern IceErrorHandler IceSetErrorHandler (
+extern KICE_EXPORT IceErrorHandler IceSetErrorHandler (
 #if NeedFunctionPrototypes
     IceErrorHandler 	/* handler */
 #endif
@@ -591,7 +593,7 @@ extern IceErrorHandler IceSetErrorHandler (
 
 #define IceSetIOErrorHandler KDE_IceSetIOErrorHandler
 
-extern IceIOErrorHandler IceSetIOErrorHandler (
+extern KICE_EXPORT IceIOErrorHandler IceSetIOErrorHandler (
 #if NeedFunctionPrototypes
     IceIOErrorHandler 	/* handler */
 #endif
@@ -604,7 +606,7 @@ extern IceIOErrorHandler IceSetIOErrorHandler (
 
 #define IceInitThreads KDE_IceInitThreads
 
-extern Status IceInitThreads (
+extern KICE_EXPORT Status IceInitThreads (
 #if NeedFunctionPrototypes
     void
 #endif
@@ -612,7 +614,7 @@ extern Status IceInitThreads (
 
 #define IceAppLockConn KDE_IceAppLockConn
 
-extern void IceAppLockConn (
+extern KICE_EXPORT void IceAppLockConn (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif
@@ -620,7 +622,7 @@ extern void IceAppLockConn (
 
 #define IceAppUnlockConn KDE_IceAppUnlockConn
 
-extern void IceAppUnlockConn (
+extern KICE_EXPORT void IceAppUnlockConn (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */
 #endif

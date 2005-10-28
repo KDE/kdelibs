@@ -51,19 +51,12 @@ extern "C" {
 #include <KDE-ICE/ICEutil.h>
 #include <KDE-ICE/ICEmsg.h>
 #include <KDE-ICE/ICEproto.h>
+#include <KDE-ICE/globals.h>
 
 #ifdef __cplusplus
 }
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern IcePoAuthStatus _kde_IcePoMagicCookie1Proc (IceConn, void **, int, int, int, void *, int *, void **, char **);
-extern IcePaAuthStatus _kde_IcePaMagicCookie1Proc (IceConn, void **, int, int, void *, int *, void **, char **);
-#ifdef __cplusplus
-}
-#endif
 /* these 4 below are static, otherwise build with --disable-shared will fail */
 static IcePoAuthProc DCOPClientAuthProcs[] = {_kde_IcePoMagicCookie1Proc};
 static IcePaAuthProc DCOPServerAuthProcs[] = {_kde_IcePaMagicCookie1Proc};

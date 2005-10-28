@@ -32,6 +32,7 @@ Author: Ralph Mor, X Consortium
 #define _ICEMSG_H_
 
 #include <KDE-ICE/ICEconn.h>
+#include <KDE-ICE/KICE.h>
 
 /*
  * Function prototypes for internal ICElib functions
@@ -39,7 +40,7 @@ Author: Ralph Mor, X Consortium
 
 #define _IceRead _kde_IceRead
 
-extern Status _IceRead (
+extern KICE_EXPORT Status _IceRead (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     unsigned long	/* nbytes */,
@@ -49,7 +50,7 @@ extern Status _IceRead (
 
 #define _IceReadSkip _kde_IceReadSkip
 
-extern void _IceReadSkip (
+extern KICE_EXPORT void _IceReadSkip (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     unsigned long	/* nbytes */
@@ -58,7 +59,7 @@ extern void _IceReadSkip (
 
 #define _IceWrite _kde_IceWrite
 
-extern void _IceWrite (
+extern KICE_EXPORT void _IceWrite (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     unsigned long	/* nbytes */,
@@ -67,11 +68,11 @@ extern void _IceWrite (
 );
 
 #define _IceWriteHandler _kde_IceWriteHandler
-extern IceWriteHandler _IceWriteHandler;
+extern KICE_EXPORT IceWriteHandler _IceWriteHandler;
 
 #define _IceErrorBadMinor _kde_IceErrorBadMinor
 
-extern void _IceErrorBadMinor (
+extern KICE_EXPORT void _IceErrorBadMinor (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int			/* majorOpcode */,
@@ -82,7 +83,7 @@ extern void _IceErrorBadMinor (
 
 #define _IceErrorBadState _kde_IceErrorBadState
 
-extern void _IceErrorBadState (
+extern KICE_EXPORT void _IceErrorBadState (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int			/* majorOpcode */,
@@ -93,7 +94,7 @@ extern void _IceErrorBadState (
 
 #define _IceErrorBadLength _kde_IceErrorBadLength
 
-extern void _IceErrorBadLength (
+extern KICE_EXPORT void _IceErrorBadLength (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int			/* majorOpcode */,
@@ -104,7 +105,7 @@ extern void _IceErrorBadLength (
 
 #define _IceErrorBadValue _kde_IceErrorBadValue
 
-extern void _IceErrorBadValue (
+extern KICE_EXPORT void _IceErrorBadValue (
 #if NeedFunctionPrototypes
     IceConn		/* iceConn */,
     int			/* majorOpcode */,
