@@ -199,6 +199,8 @@ KURLRequester::~KURLRequester()
 
 void KURLRequester::init()
 {
+    setMargin(0);
+
     myFileDialog    = 0L;
     myShowLocalProt = false;
 
