@@ -2167,7 +2167,7 @@ private:
 protected:
    virtual void virtual_hook( int id, void* data );
 private:
-   Q_DISABLE_COPY(KConfigGroup);
+   Q_DISABLE_COPY(KConfigGroup)
    class Private;
    Private* d;
 };
