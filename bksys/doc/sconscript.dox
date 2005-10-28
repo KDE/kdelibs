@@ -1,4 +1,4 @@
-/** \page sconscript_format Sconscript file format 
+/** \page sconscript using Sconscript file
 
 BKSYS provides several classes based on the genobj class, which provides support for generating general, 
 qt and KDE related binary objects like programs, shared library with several extensions and static libs. 
@@ -88,10 +88,7 @@ type may be one of
 When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
 The it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
 
-<li>create a kdeinit object 
-\code
-obj = env.kdeinitobj('shlib',<env>)
-\endcode 
+<li>create a kdeinit object \code obj = env.kdeinitobj('shlib',<env>) \endcode 
 create a shared library prefixed with 'kdeinit_' and a wrapper application. 
 
 <li>

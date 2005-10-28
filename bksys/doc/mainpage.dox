@@ -12,18 +12,10 @@ go. Such pages are marked with
 sessions. They need to be reviewed by the build system guru's  before they can marked as 
 - 'specification', which they are ready for implementing 
 
-
-some important topics in work 
-
-- \ref sconscript_format (implemented)
-- \ref config_custom	 (proposal)
-- \ref library_filename_specification	 (proposal)
-
+See the \ref toc for the documentation structure \n
 See related pages for available topics or the top menu for doxygen generated informations.
 
-
-Please note that doxygen 1.4.4 has a python parsing problem (or I have misunderstand the 
-doxygen rules), which results in wrong class descriptions. 
+Please note that doxygen 1.4.4 has a python parsing problem, which results currently in wrong class descriptions. 
 
 \section Links
 

@@ -1,5 +1,6 @@
-/** \page sconstruct_format SConstruct file format 
+/** \page sconstruct using SConstruct file
 
+\todo: complete
 
 \code
 config = {
