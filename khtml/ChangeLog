@@ -1,3 +1,8 @@
+2005-10-28  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/table_layout.cpp (calcEffectiveWidth): do proportional distribution of overflowing minwidth
+        when all cols are percent (#104156)
+
 2005-10-21  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/bidi.cpp (findNextLineBreak): implement needed quirk for line breaking of 
