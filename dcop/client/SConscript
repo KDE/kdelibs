@@ -22,6 +22,7 @@ for prog in progs1:
 		
 
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
+	obj.instdir   = env['KDEBIN']
 	obj.execute()
 
 progs2='dcopclient dcopobject dcopref'.split()
