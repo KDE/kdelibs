@@ -116,6 +116,10 @@ def detect(env):
 			# Debian probably
 			p('YELLOW','the qt headers were found in /usr/include/qt4/')
 			qtincludes = "/usr/include/qt4"
+		elif os.path.isfile("/usr/include/QtGui/QFont"):
+			# e.g. SUSE 10
+			p('YELLOW','the qt headers were found in /usr/include/')
+			qtincludes = "/usr/include"
 		else:
 			p('RED',"the qt headers were not found")
 			env.Exit(1)
