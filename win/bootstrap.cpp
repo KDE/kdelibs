@@ -18,6 +18,7 @@
 */
 
 #include <windows.h>
+#include <winsock2.h>
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>

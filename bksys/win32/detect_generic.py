@@ -37,7 +37,7 @@ def detect(env):
 
 	if env['CC'] == 'cl':
 		# avoid some compiler warnings...
-		env.AppendUnique( GENCCFLAGS = ['-wd4619','-wd4820'] )
+		env.AppendUnique( GENCCFLAGS = ['-wd4619','-wd4820','-DWIN32_LEAN_AND_MEAN'] )
 	
 	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
 	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
