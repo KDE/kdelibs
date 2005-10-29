@@ -62,8 +62,8 @@ class KURL;
  * KComboBox will by default handle text rotation and completion events
  * internally whenever a completion object is created through either one of the
  * methods mentioned above.  If you do not need this functionality, simply use
- * KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
- * parameter in the @p setCompletionObject call to false.
+ * @p setHandleSignals(bool) or alternatively set the boolean parameter in the
+ * @p setCompletionObject call to false.
  *
  * Beware: The completion object can be deleted on you, especially if a call
  * such as setEditable(false) is made.  Store the pointer at your own risk,
@@ -378,10 +378,10 @@ signals:
    /**
     * Emitted when the text rotation key-bindings are pressed.
     *
-    * The argument indicates which key-binding was pressed. In this case this
-    * can be either one of four values: @p PrevCompletionMatch,
+    * The argument indicates which key-binding was pressed. In this
+    * case this can be either one of four values: @p PrevCompletionMatch,
     * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See
-    * KCompletionBase::setKeyBinding() for details.
+    * @p setKeyBinding() for details.
     *
     * Note that this signal is @em NOT emitted if the completion
     * mode is set to CompletionNone.
@@ -429,8 +429,7 @@ public slots:
     /**
      * Sets the completed text in the line-edit appropriately.
      *
-     * This function is an implementation for
-     * KCompletionBase::setCompletedText.
+     * This function is a re-implementation of @p setCompletedText.
      */
     virtual void setCompletedText( const QString& );
 
@@ -446,6 +445,7 @@ public slots:
      * no item is selected.
      */
     void setCurrentItem( const QString& item, bool insert = false, int index = -1 );
+
     /**
      * Simply calls QComboBox' implementation. Only here to not become
      * shadowed.
