@@ -211,7 +211,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     double fd = fractionDigits.toNumber(exec);
     if (isNaN(fd)) {
       f = 0;
-    } else if (finite(fd)) {
+    } else if (!isInf(fd)) {
       f = int(fd);
     }
     if (f < 0 || f > 20) {
