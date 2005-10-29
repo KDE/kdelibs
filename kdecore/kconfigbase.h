@@ -26,7 +26,6 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-#include <kdemacros.h>
 #include <kdelibs_export.h>
 
 template <typename KT, typename KV> class QMap;
@@ -2065,15 +2064,15 @@ public:
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */
-  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
+  KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const char *group )
+  KConfigGroupSaver( KConfigBase* pConfig, const char *group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
-  KDE_DEPRECATED KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
+  KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
       : _config(pConfig), _oldgroup(pConfig->group())
         { _config->setGroup( group ); }
 
