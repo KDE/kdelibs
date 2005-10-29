@@ -352,7 +352,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
         QString noProxy;
         // Check no proxy information iff the proxy type is either
-        // manual or environment variable based...
+        // ManualProxy or EnvVarProxy
         if ( (type == ManualProxy) || (type == EnvVarProxy) )
           noProxy = noProxyFor();
 
@@ -458,7 +458,8 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     }
     if( modifiers.contains('p') )
     {
-      supp += QString::fromLatin1("; X11");  // TODO: determine this valye instead of hardcoding...
+      // TODO: determine this value instead of hardcoding it...
+      supp += QString::fromLatin1("; X11");
     }
     if( modifiers.contains('m') )
     {
