@@ -171,50 +171,36 @@ dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
 AM_CONFIG_HEADER(kdecore/kdemacros.h)
 
-SVGICONS=
-	
-AC_ARG_WITH(libart,
-  [AC_HELP_STRING(--with-libart,
-    [enable support for libart @<:@default=check@:>@])],
-  [], with_libart=check)
+###############################################################################
+# BEGIN PKG-CONFIG AND AGG2 CHECK
+###############################################################################
 
-if test "x$with_libart" != xno; then
-  KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
-    AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
-  ])
+KDE_FIND_PATH(pkg-config, PKGCONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin], [AC_MSG_WARN([Could not find pkg-config, please install pkg-config ]) ])
 
-  if test -n "$LIBART_CONFIG"; then
-    vers=`$LIBART_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    if test -n "$vers" && test "$vers" -ge 2003008
+if test -n "$PKGCONFIG"; then
+    have_agg=no
+
+    vers=`$PKGCONFIG libagg --modversion 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3; }'`
+
+    if test -n "$vers" && test "$vers" -ge 2002000
     then
-      LIBART_LIBS="`$LIBART_CONFIG --libs`"
-      LIBART_RPATH=
-      for args in $LIBART_LIBS; do
-	  case $args in
-	    -L*)
-  	       LIBART_RPATH="$LIBART_RPATH $args"
- 	       ;;
-          esac
-      done
-      LIBART_RPATH=`echo $LIBART_RPATH | sed -e "s/-L/-R/g"`
-      LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
-      SVGICONS=svgicons
+        have_agg=yes
 
-      AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
-    else
-      AC_MSG_WARN([You need at least libart 2.3.8])
+        AC_DEFINE_UNQUOTED(HAVE_LIBAGG, 1, [Defines if your system has the libagg library])
+
+        AGG_LIBS=`$PKGCONFIG libagg --libs 2>/dev/null`
+        AGG_CFLAGS=`$PKGCONFIG libagg --cflags 2>/dev/null`
+
+        AC_SUBST(AGG_LIBS)
+        AC_SUBST(AGG_CFLAGS)
     fi
-  fi
-  if test "x$with_libart" != xcheck && test -z "$LIBART_LIBS"; then
-    AC_MSG_ERROR([--with-libart was given, but test for libart failed])
-  fi
+
+    AM_CONDITIONAL(with_agg, [test x$have_agg = xyes])
 fi
 
-
-AC_SUBST(LIBART_LIBS)
-AC_SUBST(LIBART_CFLAGS)
-AC_SUBST(LIBART_RPATH)
-AM_CONDITIONAL(include_SVGICONS, test -n "$SVGICONS")
+###############################################################################
+# END PKG-CONFIG AND AGG2 CHECK
+###############################################################################
 
 AC_CHECK_HEADERS([sys/stropts.h sys/select.h libutil.h util.h termios.h pty.h termio.h])
 AC_MSG_CHECKING([for revoke(tty) in unistd.h])
@@ -224,6 +210,7 @@ AC_TRY_LINK(dnl
       ],
       [
 	revoke("/dev/tty");
+
       ],
       [
         AC_DEFINE(HAVE_REVOKE, 1, [Define if revoke(tty) is present in unistd.h])

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
+    Copyright (C) 2002, 2004, 2005 Nikolas Zimmermann <wildfox@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 /** \internal DO NOT USE! */
 
+class QImage;
 class KSVGIconPainter;
 
 class KDECORE_EXPORT KSVGIconEngine
@@ -35,11 +36,11 @@ public:
 	
 	bool load(int width, int height, const QString &path);
 
-	KSVGIconPainter *painter();
-	QImage *image();
+	KSVGIconPainter *painter() const;
+	QImage *image() const;
 
-	double width();
-	double height();
+	double width() const;
+	double height() const;
 
 private:
 	struct Private;

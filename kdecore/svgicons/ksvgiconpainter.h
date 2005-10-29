@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
+    Copyright (C) 2002, 2004, 2005 Nikolas Zimmermann <wildfox@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -21,81 +21,69 @@
 #ifndef KSVGIconPainter_H
 #define KSVGIconPainter_H
 
-#include <libart_lgpl/art_render.h>
-#include <libart_lgpl/art_render_gradient.h>
-
 class QImage;
 class QColor;
 class QMatrix;
-class QDomElement;
 class QPolygon;
+class QDomElement;
 
-class KDECORE_EXPORT KSVGIconPainter
+class gradient_rendering_properties;
+
+class KSVGIconPainter
 {
 public:
-	KSVGIconPainter(int width, int height);
-	~KSVGIconPainter();
+    KSVGIconPainter(int width, int height);
+    ~KSVGIconPainter();
 
-	void setDrawWidth(int dwidth);
-	void setDrawHeight(int dheight);
+    void setDrawWidth(int dwidth);
+    void setDrawHeight(int dheight);
 
-	QImage *image();
+    QImage *image() const;
+    QMatrix *worldMatrix() const;
 
-	QMatrix *worldMatrix();
+    void setUseFill(bool fill);
+    void setUseStroke(bool stroke);
 
-	void finish();
+    void setStrokeWidth(double width);
+    void setStrokeMiterLimit(const QString &miter);
+    void setCapStyle(const QString &cap);
+    void setJoinStyle(const QString &join);
+    void setStrokeColor(const QString &stroke);
+    void setFillColor(const QString &fill);
+    void setFillRule(const QString &fillRule);
+    void setOpacity(const QString &opacity);
+    void setFillOpacity(const QString &fillOpacity);
+    void setStrokeOpacity(const QString &strokeOpacity);
+    void setStrokeDashOffset(const QString &dashOffset);
+    void setStrokeDashArray(const QString &dashes);
 
-	void setUseFill(bool fill);
-	void setUseStroke(bool stroke);
+    void setWorldMatrix(QMatrix *worldMatrix);
+    void setClippingRect(int x, int y, int w, int h);
 
-	void setStrokeWidth(double width);
-	void setStrokeMiterLimit(const QString &miter);
-	void setCapStyle(const QString &cap);
-	void setJoinStyle(const QString &join);
-	void setStrokeColor(const QString &stroke);
-	void setFillColor(const QString &fill);
-	void setFillRule(const QString &fillRule);
-	void setOpacity(const QString &opacity);
-	void setFillOpacity(const QString &fillOpacity);
-	void setStrokeOpacity(const QString &strokeOpacity);
-	void setStrokeDashOffset(const QString &dashOffset);
-	void setStrokeDashArray(const QString &dashes);
+    void drawRectangle(double x, double y, double w, double h, double rx, double ry);
+    void drawEllipse(double cx, double cy, double rx, double ry);
+    void drawLine(double x1, double y1, double x2, double y2);
+    void drawPolyline(const QPolygon &polyArray, int points = -1);
+    void drawPolygon(const QPolygon &polyArray);
+    void drawPath(const QString &data);
+    void drawImage(double x, double y, const QImage &image);
 
-	void setWorldMatrix(QMatrix *worldMatrix);
-	void setClippingRect(int x, int y, int w, int h);
+    QColor parseColor(const QString &param);
+    quint32 parseOpacity(const QString &data);
 
-	void drawRectangle(double x, double y, double w, double h, double rx, double ry);
-	void drawEllipse(double cx, double cy, double rx, double ry);
-	void drawLine(double x1, double y1, double x2, double y2);
-	void drawPolyline(QPolygon polyArray, int points = -1);
-	void drawPolygon(QPolygon polyArray);
-	void drawPath(const QString &data, bool fill);
-	void drawImage(double x, double y, QImage &image);
+    double toPixel(const QString &s, bool hmode) const;
+    double dpi() const;
 
-	QColor parseColor(const QString &param);
-	quint32 toArtColor(const QColor &color);
-	quint32 parseOpacity(const QString &data);
+    void addGradient(const QString &id, gradient_rendering_properties *gradient);
+    void addGradientElement(gradient_rendering_properties *gradient, QDomElement element);
 
-	double toPixel(const QString &s, bool hmode);
-	double dpi();
+    QMatrix parseTransform(const QString &transform);
 
-	ArtGradientLinear *linearGradient(const QString &id);
-	void addLinearGradient(const QString &id, ArtGradientLinear *gradient);
-
-	QDomElement linearGradientElement(ArtGradientLinear *linear);
-	void addLinearGradientElement(ArtGradientLinear *gradient, QDomElement element);
-
-	ArtGradientRadial *radialGradient(const QString &id);
-	void addRadialGradient(const QString &id, ArtGradientRadial *gradient);
-
-	QDomElement radialGradientElement(ArtGradientRadial *radial);
-	void addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element);
-
-	QMatrix parseTransform(const QString &transform);
+    void setMode(int m);
 
 private:
-	struct Private;
-	Private *d;
+    struct Private;
+    Private *d;
 };
 
 #endif
