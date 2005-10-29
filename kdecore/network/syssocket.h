@@ -88,6 +88,19 @@ namespace {
     return ::getsockname(fd, sa, len);
   }
 
+  // ioctl
+  inline int kde_ioctl(int fd, int cmd, int* argp)
+  {
+#if defined _WIN32 || defined _WIN64
+    ulong l_argp = *argp;
+    bool bRet = ::ioctlsocket(fd, cmd, &l_argp);
+    *argp = (int) l_argp;
+    return bRet;
+#else
+    return ::ioctl(fd, cmd, argp);
+#endif
+  }
+
 } // anonymous namespace
 
 #endif
