@@ -835,7 +835,7 @@ def generate(env):
 			thisenv.bksys_install(libdir, lafile_list)	
 
 		# Handle the versioning
-		if len(vnum)>0:
+		if not env['WINDOWS'] and len(vnum)>0:
 			nums=vnum.split('.')
 			symlinkcom = ('cd $SOURCE.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
 			if sys.platform == 'darwin':
