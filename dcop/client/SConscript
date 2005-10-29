@@ -9,15 +9,11 @@ for prog in progs1:
 	obj.source    = prog+'.cpp'
 	obj.libpaths  = '.. '
 	obj.libs      = 'DCOP '
+	obj.ccflags   = '-DKDECORE_EXPORT= '
 	if env['WINDOWS']:
-		obj.libpaths += '../../win '
-		obj.libs     += 'kdewin32 ws2_32'
-		if env['CC'] == 'cl':
-			# this is a really bad hack to get dcop compiling with msvc 
-			# because otherwise class KURL will be marked as 
-			# __declspec(dllimport) and not be found during link time
-			obj.ccflags  += '-DKDECORE_EXPORT='
-		elif env['CC'] == 'gcc':
+		obj.libpaths += ' ../../win '
+		obj.libs     += ' kdewin32 ws2_32 '
+		if env['CC'] == 'gcc':
 			obj.ccflags  += '-Dkdemain=main'
 		
 
