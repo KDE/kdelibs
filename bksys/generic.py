@@ -938,10 +938,6 @@ def generate(env):
 	
 	SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
-
-	if env['WINDOWS']:
-		sys.path.append('bksys'+os.sep+'win32')
-		from detect_generic import bksys_shlib
 	SConsEnvironment.bksys_shlib   = bksys_shlib
 	SConsEnvironment.bksys_staticlib   = bksys_staticlib
 
