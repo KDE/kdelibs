@@ -26,6 +26,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 
+#include <kdemacros.h>
 #include <kdelibs_export.h>
 
 template <typename KT, typename KV> class QMap;
