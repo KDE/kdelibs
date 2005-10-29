@@ -4386,10 +4386,7 @@ unsigned int KateDocument::wordWrapAt ()
 
 void KateDocument::applyWordWrap ()
 {
-  /*if (hasSelection())
-    wrapText (selectStart.line(), selectEnd.line());
-  else
-  wrapText (0, lastLine()); */
+  // dummy to make the API happy
 }
 
 void KateDocument::setPageUpDownMovesCursor (bool on)

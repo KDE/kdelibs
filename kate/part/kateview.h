@@ -392,6 +392,8 @@ class KateView : public Kate::View,
     void toggleDynWordWrap ();
     void toggleCmdLine ();
     void setDynWrapIndicators(int mode);
+    
+    void applyWordWrap ();
 
   public:
     KateRenderer *renderer ();
