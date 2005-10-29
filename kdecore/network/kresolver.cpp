@@ -60,7 +60,9 @@
 #include "ksocketaddress.h"
 
 #ifdef NEED_MUTEX
+#ifdef __GNUC__
 #warning "mutex"
+#endif
 QMutex getXXbyYYmutex;
 #endif
 
