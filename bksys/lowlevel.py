@@ -53,7 +53,9 @@ extern "C" {
 ## TODO move to platform lowlevel.py
 ## DF: only the platform-dependent parts, right?
 def generate(env):
-	if env['HELP']: return
+	if env['HELP']:
+		print "no help for lowlevel"
+		return
 
 	import sys
 

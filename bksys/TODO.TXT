@@ -11,10 +11,12 @@ note: use tabs to indent columns
 generic
 -------
 
-1	n	Add the configuration variables into another environment called "config"
+-	f	Add the configuration variables into another environment called "config"
 		and not into "env" directly.
 		The reason is that scons makes deep copies of everything and that
 		'env' needs to be duplicated for every new obj.
+		## after some testing it looks like this is wrong
+		## using copies is not exensive, gaining 3 seconds on 1 minute is not worth the effort
 
 2	n	extend bksys help option to display options defined set by the opts.AddOptions() 
 		this provides old configure help options list (used by 4) 
@@ -33,7 +35,7 @@ generic
 -	n	find a platform independent way to include all symbols from static libraries into a 
 		shared library (gcc-notation: -Wl,--whole-archive ... -Wl,--no-whole-archive )
 
--	n	cleanup multiple definitions of command line options like PREFIX, which is defined in 
+-	f	cleanup multiple definitions of command line options like PREFIX, which is defined in 
 		generic.py, kde3.py and qt4.py 
 
 -	n	cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
@@ -53,6 +55,7 @@ unix related
 ------------
 
 - n some configure checks does not setup the related compiler/linker flags from pkgconfig for example openssl 
+(ita: openssl configuration does work??)
 
 win32 related 
 -------------

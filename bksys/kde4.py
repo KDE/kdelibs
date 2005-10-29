@@ -6,10 +6,12 @@ def exists(env):
 	return True
 
 def generate(env):
-	if env['HELP']: return
-
 	from SCons.Tool import Tool
 	Tool('qt4', ['./bksys']).generate(env)
+
+	if env['HELP']:
+		print "no help for kde4"
+		return
 
 	from SCons.Options import Options
 	cachefile=env['CACHEDIR']+'kde4.cache.py'

@@ -627,6 +627,7 @@ def generate(env):
 	opts = Options(cachefile)
 	opts.AddOptions(
 		('PREFIX', 'prefix for installation' ),
+		('LIBSUFFIXEXT', 'library suffix, ie 64'),
 		('GENCCFLAGS', 'C flags' ),
 		('GENCXXFLAGS', 'additional cxx flags for the project' ),
 		('GENLINKFLAGS', 'additional link flags' ),

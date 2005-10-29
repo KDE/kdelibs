@@ -16,15 +16,10 @@ def generate(env):
                 p=env.pprint
                 p('BOLD','*** QT4 options ***')
                 p('BOLD','--------------------')
-                p('BOLD','* prefix     ','base install path,         ie: /usr/local')
-                p('BOLD','* execprefix ','install path for binaries, ie: /usr/bin')
-                p('BOLD','* datadir    ','install path for the data, ie: /usr/local/share')
-                p('BOLD','* libdir     ','install path for the libs, ie: /usr/lib')
-		p('BOLD','* libsuffix  ','suffix of libraries on amd64, ie: 64, 32')
 		p('BOLD','* qtincludes ','qt includes path (/usr/include/qt on debian, ..)')
 		p('BOLD','* qtlibs     ','qt libraries path, for linking the program')
 
-                p('BOLD','* scons configure libdir=/usr/local/lib qtincludes=/usr/include/qt\n')
+                p('BOLD','* scons configure qtincludes=/usr/include/qt qtlibs=/usr/qt4/lib\n')
 		return
 
 	import SCons.Defaults
@@ -41,9 +36,6 @@ def generate(env):
 	cachefile=env['CACHEDIR']+'qt4.cache.py'
 	opts = Options(cachefile)
 	opts.AddOptions(
-		('PREFIX', 'root of the program installation'),
-		('LIBSUFFIXEXT', 'suffix of libraries on amd64'),
-
 		('QTDIR', ''),
 		('QTLIBPATH', 'path to the qt libraries'),
 		('QTINCLUDEPATH', 'path to the qt includes'),

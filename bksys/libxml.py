@@ -9,6 +9,9 @@ def exists(env):
 	return true
 
 def generate(env):
+	if env['HELP']:
+		print "no help for libxml"
+		return
 	if env['WINDOWS']:
 		return #generate() doesn't work on win32, why? (js)
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_XML')):

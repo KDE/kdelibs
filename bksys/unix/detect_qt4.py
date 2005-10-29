@@ -10,25 +10,13 @@ def detect(env):
 		if v : v=os.path.abspath(v)
 		return v
 
-	prefix		= getpath('prefix')
-	execprefix	= getpath('execprefix')
-	datadir		= getpath('datadir')
-	libdir		= getpath('libdir')
 	qtincludes	= getpath('qtincludes')
 	qtlibs		= getpath('qtlibs')
-	libsuffix	= ''
-	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
-	if not libsuffix:
-		if sys.platform == 'darwin':
-			libsuffix='.dylib'
-		else:
-			libsuffix='.so'
-
 	p=env.pprint
 
 	# do our best to find the QTDIR (non-Debian systems)
 	qtdir = os.getenv("QTDIR")
-	if qtdir and env.find_file('lib/libqt-mt' + libsuffix, [qtdir]): qtdir=None # qtdir for qt3, not qt4
+	if qtdir and env.find_file('lib/libqt-mt' + env['LIBSUFFIX'], [qtdir]): qtdir=None # qtdir for qt3, not qt4
 	if not qtdir:
 		qtdir=env.find_path('include/', [ # lets find the qt include directory
 				'/usr/local/Trolltech/Qt-4.0.3/', # one never knows
@@ -125,22 +113,6 @@ def detect(env):
 			env.Exit(1)
 
 
-	## TODO make this specific to the the module QT4
-	if not prefix: prefix = "/usr/"
-		
-	## use the user-specified prefix
-	if not execprefix: execprefix = prefix
-	if not datadir:    datadir    = prefix+"/share"
-	if not libdir:     libdir     = execprefix+"/lib"
-
-	subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
-			 .replace('${datadir}', datadir)\
-			 .replace('${libdir}', libdir)
-	debian_fix = lambda x: x.replace('/usr/share', '${datadir}')
-
-	env['PREFIX'] = prefix
-	env['LIBSUFFIXEXT'] = libsuffix
-
 	#env['QTPLUGINS']=os.popen('kde-config --expandvars --install qtplugins').read().strip()
 
 	## qt libs and includes
@@ -199,6 +171,6 @@ def detect(env):
         env['LIB_QTXML']           = ['QtXml'+debug]
 	env['RPATH_QTXML']         = env['RPATH_QT']
 	
-	env['QTLOCALE']=env.join(datadir, 'locale')
+	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
 
 

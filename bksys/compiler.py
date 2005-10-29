@@ -4,6 +4,9 @@ def exists(env):
 	return true
 
 def generate(env):
+	if env['HELP']:
+		print "no help for compiler"
+		return
 
 	def get_compiler_version():
 		import re, os

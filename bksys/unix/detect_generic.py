@@ -52,6 +52,7 @@ def detect(env):
 		env.AppendUnique( GENCXXFLAGS = ['-I/usr/local/include', '-I/usr/X11R6/include'] )
 
 	# User-specified prefix
+	env['PREFIX']='/usr'
 	if env['ARGS'].has_key('prefix'):
 		env['PREFIX'] = os.path.abspath( env['ARGS'].get('prefix', '') )
 		env.pprint('CYAN','** installation prefix for the project set to:',env['PREFIX'])
@@ -67,6 +68,15 @@ def detect(env):
 	if env['EXTRALIBS']:
 		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
+
+	libsuffix	= ''
+	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
+	if not libsuffix:
+		if sys.platform == 'darwin':
+			libsuffix='.dylib'
+		else:
+			libsuffix='.so'
+	env['LIBSUFFIXEXT'] = libsuffix
 
 	## no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
