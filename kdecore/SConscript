@@ -114,7 +114,7 @@ obj.libpaths = '../dcop ../libltdl'
 obj.libs     = 'DCOP ltdlc'
 obj.iskdelib = 1
 obj.includes = 'network'
-obj.cxxflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
+obj.ccflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../win '
 	obj.includes += ' ../win/3rdparty/zlib '
