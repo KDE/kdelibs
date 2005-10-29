@@ -42,7 +42,7 @@ obj.target   = 'DCOP'
 obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp' + ice_sources
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.includes = 'KDE-ICE'
-obj.ccflags += ' -DMAKE_DCOP_LIB '
+obj.ccflags += ' -DMAKE_DCOP_LIB -DKDECORE_EXPORT= '
 obj.ccflags += ice_ccflags
 if env['WINDOWS']:
 	obj.libpaths += ' ../win/'
@@ -63,7 +63,6 @@ if env['WINDOWS']:
 
 	obj.libpaths += ' ../win/'
 	obj.libs     += ' kdewin32 ws2_32'
-	obj.ccflags  += ' -DWIN32_LEAN_AND_MEAN '
  		
 obj.execute()
 
