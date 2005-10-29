@@ -801,12 +801,14 @@ def generate(env):
 		thisenv['BKSYS_STATICLIB']=0
 
 		if len(vnum)>0:
+			num=vnum.split('.')[0]
 			if sys.platform == 'darwin':
 				thisenv['SHLIBSUFFIX']='.'+vnum+'.dylib'
+			elif env['WINDOWS']:
+				thisenv['SHLIBSUFFIX']='-'+num+'.dll'
 			else:
 				thisenv['SHLIBSUFFIX']='.so.'+vnum
 			thisenv.Depends(target, thisenv.Value(vnum))
-			num=vnum.split('.')[0]
 			lst=target.split(os.sep)
 			tname=lst[len(lst)-1]
 			libname=tname.split('.')[0]
@@ -817,7 +819,7 @@ def generate(env):
 			# IIRC windows DLLs can't have undefined symbols.
 			if sys.platform == 'darwin':
 				thisenv.AppendUnique(LINKFLAGS = ["-undefined","error","-install_name", "%s.%s.dylib" % (libname, num)] )
-			else:
+			elif not env['WINDOWS']:
 				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--no-undefined","-Wl,--soname=%s.so.%s" % (libprefix+libname, num)] )
 
 		# Fix against a scons bug - shared libs and ordinal out of range(128)
