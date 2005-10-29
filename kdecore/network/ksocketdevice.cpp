@@ -57,7 +57,9 @@
 #include "ksocketaddress.h"
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
+#ifndef Q_WS_WIN
 #include "ksockssocketdevice.h"
+#endif
 
 using namespace KNetwork;
 
@@ -385,7 +387,7 @@ qint64 KSocketDevice::bytesAvailable() const
     return -1;			// there's nothing to read in a closed socket
 
   int nchars;
-  if (ioctl(m_sockfd, FIONREAD, &nchars) == -1)
+  if (kde_ioctl(m_sockfd, FIONREAD, &nchars) == -1)
     return -1;			// error!
 
   return nchars;
