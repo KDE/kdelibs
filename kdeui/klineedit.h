@@ -68,27 +68,27 @@ class KURL;
  * KLineEdit will by default handle the text rotation and completion
  * events internally when a completion object is created through either one
  * of the methods mentioned above.  If you do not need this functionality,
- * simply use KCompletionBase::setHandleSignals( bool ) or set the
- * boolean parameter in the above functions to false.
+ * simply use @p setHandleSignals( bool ) or set the boolean parameter in
+ * the above functions to false.
  *
  * The default key-bindings for completion and rotation is determined
- * from the global settings in KStdAccel.  These values, however,
- * can be overridden locally by invoking KCompletionBase::setKeyBinding().
- * The values can easily be reverted back to the default setting, by simply
- * calling useGlobalSettings(). An alternate method would be to default
+ * from the global settings in KStdAccel. These values, however, can
+ * be overridden locally by invoking @p setKeyBinding(). You can easily
+ * revert these settings back to the default by simply calling
+ * @p useGlobalSettings(). An alternate method would be to default
  * individual key-bindings by using setKeyBinding() with the default
  * second argument.
  *
- * If @p EchoMode for this widget is set to something other than @p QLineEdit::Normal, 
- * the completion mode will always be defaulted to KGlobalSettings::CompletionNone.  
+ * If @p EchoMode for this widget is set to something other than @p QLineEdit::Normal,
+ * the completion mode will always be defaulted to KGlobalSettings::CompletionNone.
  * This is done purposefully to guard against protected entries such as passwords being
  * cached in KCompletion's list. Hence, if the @p EchoMode is not QLineEdit::Normal, the
  * completion mode is automatically disabled.
  *
- * A read-only KLineEdit will have the same background color as a 
- * disabled KLineEdit, but its foreground color will be the one used 
+ * A read-only KLineEdit will have the same background color as a
+ * disabled KLineEdit, but its foreground color will be the one used
  * for the read-write mode. This differs from QLineEdit's implementation
- * and is done to give visual distinction between the three different modes: 
+ * and is done to give visual distinction between the three different modes:
  * disabled, read-only, and read-write.
  *
  * \b Usage \n
@@ -113,10 +113,10 @@ class KURL;
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  * \endcode
  *
- * Note if you specify your own completion object you have to either delete 
- * it when you don't need it anymore, or you can tell KLineEdit to delete it 
+ * Note if you specify your own completion object you have to either delete
+ * it when you don't need it anymore, or you can tell KLineEdit to delete it
  * for you:
- * \code 
+ * \code
  * edit->setAutoDeleteCompletionObject( true );
  * \endcode
  *
@@ -295,9 +295,9 @@ public:
      *
      * @see QLineEdit
      * @since 3.2
-     */    
+     */
     void setEnableSqueezedText( bool enable );
-    
+
     /**
      * Returns true if text squeezing is enabled.
      * This is only valid when the widget is in read-only mode.
@@ -305,12 +305,12 @@ public:
      * @since 3.2
      */
     bool isSqueezedTextEnabled() const;
-    
+
     /**
      * Returns the original text if text squeezing is enabled.
      * If the widget is not in "read-only" mode, this function
      * returns the same thing as QLineEdit::text().
-     * 
+     *
      * @see QLineEdit
      * @since 3.2
      */
@@ -363,10 +363,11 @@ signals:
      * The argument indicates which key-binding was pressed.
      * In KLineEdit's case this can be either one of two values:
      * PrevCompletionMatch or NextCompletionMatch. See
-     * KCompletionBase::setKeyBinding for details.
+     * @p setKeyBinding for details.
      *
      * Note that this signal is @em not emitted if the completion
-     * mode is set to @p KGlobalSettings::CompletionNone or @p echoMode() is @em not  normal.
+     * mode is set to @p KGlobalSettings::CompletionNone or
+     * @p echoMode() is @em not  normal.
      */
     void textRotation( KCompletionBase::KeyBindingType );
 
@@ -416,12 +417,12 @@ public slots:
 
     /**
      * Sets @p items into the completion-box if completionMode() is
-     * CompletionPopup. The popup will be shown immediately. 
+     * CompletionPopup. The popup will be shown immediately.
      *
      * @param items list of completion matches to be shown in the completion box.
      */
     void setCompletedItems( const QStringList& items );
-    
+
     /**
      * Same as the above function except it allows you to temporarily
      * turn off text completion in CompletionPopupAuto mode.
@@ -451,8 +452,8 @@ public slots:
      * Re-implemented to enable text squeezing. API is not affected.
      */
     virtual void setText ( const QString& );
-    
-    
+
+
 protected slots:
 
     /**
@@ -470,10 +471,10 @@ protected slots:
      * @deprecated.  Will be removed in the next major release!
      */
     void slotCancelled() {}
-    
+
     /**
-     * Resets the current displayed text. 
-     * Call this function to revert a text completion if the user 
+     * Resets the current displayed text.
+     * Call this function to revert a text completion if the user
      * cancels the request. Mostly applies to popup completions.
      */
     void userCancelled(const QString & cancelText);
@@ -564,7 +565,7 @@ protected:
      * @since 3.4
     */
     bool autoSuggest() const;
-            
+
 private slots:
     void completionMenuActivated( int id );
     void tripleClickTimeout();  // resets possibleTripleClick
@@ -597,7 +598,7 @@ private:
     bool overrideAccel (const QKeyEvent* e);
 
     /**
-     * Properly sets the squeezed text whenever the widget is 
+     * Properly sets the squeezed text whenever the widget is
      * created or resized.
      */
     void setSqueezedText ();
