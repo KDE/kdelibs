@@ -61,6 +61,7 @@ manager_DATA = kabc_manager.desktop
 managerdir = $(kde_servicesdir)/kresources
 
 DOXYGEN_REFERENCES = kdecore kdeui
+DOXYGEN_EXCLUDE = scripts
 
 map_DATA = countrytransl.map
 mapdir = $(kde_datadir)/kabc
