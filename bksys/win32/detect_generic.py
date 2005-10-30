@@ -46,6 +46,7 @@ def detect(env):
 	if os.environ.has_key('LDFLAGS'):   env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LDFLAGS'] )
 
 	# User-specified prefix
+	env['PREFIX']='C:\\Qt\\'
 	if env['ARGS'].has_key('prefix'):
 		env['PREFIX'] = os.path.abspath( env['ARGS'].get('prefix', '') )
 		env.pprint('CYAN','** installation prefix for the project set to:',env['PREFIX'])

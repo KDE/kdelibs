@@ -1,9 +1,6 @@
 ##
 # @file 
 # win32 related QT 4 detection 
-# 
-# (\@) Thomas Nagy, 2005
-#
 
 import os, re, types, sys
 
@@ -20,13 +17,6 @@ def detect(env):
 	#  library version extension -> QMAKE_QT_VERSION_OVERRIDE (=4 yet) 
 	if env['BKS_DEBUG']: lib_addon = 'd4'
 	else:                lib_addon = '4'
-
-	prefix		= getpath('prefix')
-	execprefix	= getpath('execprefix')
-	datadir		= getpath('datadir')
-	libdir		= getpath('libdir')
-	qtincludes	= getpath('qtincludes')
-	qtlibs		= getpath('qtlibs')
 
 	# TODO (rh) libsuffix and lib_addon may be overlap in some areas, potential for cleanup 
 	libsuffix	= ''
@@ -107,21 +97,6 @@ def detect(env):
 			env.Exit(1)
 
 
-	## TODO make this specific to the module QT4
-	if not prefix: prefix = "c:/Qt/4"
-		
-	## use the user-specified prefix
-	if not execprefix: execprefix = prefix
-	if not datadir:    datadir    = prefix+"/share"
-	if not libdir:     libdir     = execprefix+"/lib"+libsuffix
-
-	subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
-			 .replace('${datadir}', datadir)\
-			 .replace('${libdir}', libdir)
-
-	env['PREFIX'] = prefix
-	env['LIBSUFFIXEXT'] = libsuffix
-
 	#env['QTPLUGINS']=os.popen('kde-config --expandvars --install qtplugins').read().strip()
 
 	## qt libs and includes
@@ -179,5 +154,5 @@ def detect(env):
 	env['LIB_QTXML']           = ['QtXml'+lib_addon]
 	env['RPATH_QTXML']         = env['RPATH_QT']
 	
-	env['QTLOCALE']=env.join(datadir, 'locale')
+	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
     
