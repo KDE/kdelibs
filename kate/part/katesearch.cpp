@@ -38,6 +38,7 @@
 #include <kdebug.h>
 #include <kfinddialog.h>
 #include <kreplacedialog.h>
+#include <kpushbutton.h>
 
 #include <qlayout.h>
 #include <qlabel.h>
@@ -733,26 +734,31 @@ KateReplacePrompt::KateReplacePrompt ( QWidget *parent )
 void KateReplacePrompt::slotOk ()
 { // Search Next
   done(KateSearch::srNo);
+  actionButton(Ok)->setFocus();
 }
 
 void KateReplacePrompt::slotClose ()
 { // Close
   done(KateSearch::srCancel);
+  actionButton(Close)->setFocus();
 }
 
 void KateReplacePrompt::slotUser1 ()
 { // Replace All
   done(KateSearch::srAll);
+  actionButton(User1)->setFocus();
 }
 
 void KateReplacePrompt::slotUser2 ()
 { // Replace & Close
   done(KateSearch::srLast);
+  actionButton(User2)->setFocus();
 }
 
 void KateReplacePrompt::slotUser3 ()
 { // Replace
   done(KateSearch::srYes);
+  actionButton(User3)->setFocus();
 }
 
 void KateReplacePrompt::done (int result)
