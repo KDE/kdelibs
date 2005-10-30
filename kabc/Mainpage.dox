@@ -1,12 +1,17 @@
-LIBKABC - new address book API for KDE
+/*
+  Mainpage.dox -- for now, copied from README
+ */
 
-PURPOSE:
+/**
+@mainpage LIBKABC - new address book API for KDE
+
+@section purpose Purpose
 
 libkabc provides an API for address book data. This can be used by all KDE
 application using data of this type, e.g. KAddressBook, KMail, KOrganizer,
 KPilot etc. It is meant as replacement for libkab (in kdebase/kab).
 
-FEATURES:
+@section features Features
 
 - Value based interface, addressbook entry data is implicitly shared.
 - Address book entries are identified by a unique id.
@@ -21,8 +26,7 @@ FEATURES:
 - Tool for converting data, written with libkab, to libkabc format.
 - Multiple backends (resources) for storing entries e.g. LDAP
 
-AUTHOR: Cornelius Schumacher <schumacher@kde.org>
+@author Cornelius Schumacher \<schumacher@kde.org\>
 
-LICENCE: LGPL
-
-DATE: 13 Oct 2001
+<b>LICENCE: LGPL</b>
+*/
