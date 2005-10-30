@@ -29,6 +29,7 @@
 #include "katesupercursor.h"
 #include "katearbitraryhighlight.h"
 #include "kateconfig.h"
+#include "katehighlight.h"
 
 #include <klocale.h>
 #include <kstdaction.h>
@@ -283,7 +284,7 @@ void KateSearch::wrapSearch()
       start.setCol (QMIN(s.selBegin.col(), s.selEnd.col()));
       end.setCol (QMAX(s.selBegin.col(), s.selEnd.col()));
     }
-    
+
     s.cursor = s.flags.backward ? end : start;
   }
   else
@@ -588,12 +589,36 @@ bool KateSearch::doSearch( const QString& text )
         found = doc()->searchText( line, col, m_re,
                                   &foundLine, &foundCol,
                                   &matchLen, backward );
-      } else if ( wholeWords ) {
-        QRegExp re( "\\b" + text + "\\b", caseSensitive );
-        found = doc()->searchText( line, col, re,
+      }
+      else if ( wholeWords )
+      {
+        bool maybefound = false;
+        do
+        {
+          maybefound = doc()->searchText( line, col, text,
                                   &foundLine, &foundCol,
-                                  &matchLen, backward );
-      } else {
+                                  &matchLen, caseSensitive, backward );
+          if ( maybefound )
+          {
+            found = (
+                      ( foundCol == 0 ||
+                        ! doc()->highlight()->isInWord( doc()->textLine( foundLine ).at( foundCol - 1 ) ) ) &&
+                      ( foundCol + matchLen == doc()->lineLength( foundLine ) ||
+                        ! doc()->highlight()->isInWord( doc()->textLine( foundLine ).at( foundCol + matchLen ) ) )
+                    );
+            if ( found )
+            {
+              break;
+            }
+            else
+            {
+              line = foundLine;
+              col = foundCol + 1;
+            }
+          }
+        } while ( maybefound );
+      }
+      else {
         found = doc()->searchText( line, col, text,
                                   &foundLine, &foundCol,
                                   &matchLen, caseSensitive, backward );
