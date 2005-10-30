@@ -68,18 +68,78 @@ class KABC_EXPORT Resource : public KRES::Resource
     class KABC_EXPORT Iterator
     {
       public:
+        /**
+         * Default constructor
+         */
         Iterator();
+        /**
+         * Copy constructor
+         */
         Iterator( const Iterator & );
         virtual ~Iterator();
 
+        /**
+         * Assignment operator. Assignes the given iterator to
+         * @c *this.
+         *
+         * @return this iterator, @c *this
+         */
         virtual Iterator &operator=( const Iterator & );
+        /**
+         * Constant Dereference operator.
+         * @note For invalid iterators, the result is undefined.
+         *
+         * @return the @c const Addressee object the iterator points to.
+         */
         virtual const Addressee &operator*() const;
+        /**
+         * Dereference operator.
+         * @note For invalid iterators, the result is undefined.
+         *
+         * @return the Addressee object the iterator points to.
+         */
         virtual Addressee &operator*();
+        /**
+         * Postincrement operator. Advances the iterator by one.
+         * @note This function does not copy the iterator object.
+         *
+         * @return this iterator, @c *this
+         */
         virtual Iterator &operator++();
+        /**
+         * Preincrement operator. Advances the iterator by one.
+         *
+         * @return this iterator, @c *this
+         */
         virtual Iterator &operator++( int );
+        /**
+         * Postdecrement operator. Decreases the iterator by one.
+         * @note This function does not copy the iterator object.
+         *
+         * @return this iterator, @c *this
+         */
         virtual Iterator &operator--();
+        /**
+         * Predecrement operator. Decreases the iterator by one.
+         *
+         * @return this iterator, @c *this
+         */
         virtual Iterator &operator--( int );
+        /**
+         * Equality operator. Compares this iterator to @p it
+         *
+         * @param it the iterator to compare this iterator to
+         * @return @c true if both iterators are equal,
+         *         @c false otherwise
+         */
         virtual bool operator==( const Iterator &it ) const;
+        /**
+         * Inequality operator. Compares this iterator to @p it
+         *
+         * @param it the iterator to compare this iterator to
+         * @return @c true if the iterators are not equal,
+         *         @c false otherwise
+         */
         virtual bool operator!=( const Iterator &it ) const;
 
         struct IteratorData;
@@ -94,18 +154,78 @@ class KABC_EXPORT Resource : public KRES::Resource
     class KABC_EXPORT ConstIterator
     {
       public:
+        /**
+         * Default constructor
+         */
         ConstIterator();
+        /**
+         * Copy constructor
+         */
         ConstIterator( const ConstIterator & );
+        /**
+         * Copy constructor. Constructs a ConstIterator from
+         * an non-@c const Iterator
+         */
         ConstIterator( const Iterator & );
         virtual ~ConstIterator();
 
+        /**
+         * Assignment operator. Assignes the given iterator to
+         * @c *this.
+         *
+         * @return this iterator, @c *this
+         */
         virtual ConstIterator &operator=( const ConstIterator & );
+        /**
+         * Constant Dereference operator.
+         * @note For invalid iterators, the result is undefined.
+         * @note Unlike in Iterator, there is no non-constant
+         *       dereference operator.
+         *
+         * @return the @c const Addressee object the iterator points to.
+         */
         virtual const Addressee &operator*() const ;
+        /**
+         * Postincrement operator. Advances the iterator by one.
+         * @note This function does not copy the iterator object.
+         *
+         * @return this iterator, @c *this
+         */
         virtual ConstIterator &operator++();
+        /**
+         * Preincrement operator. Advances the iterator by one.
+         *
+         * @return this iterator, @c *this
+         */
         virtual ConstIterator &operator++( int );
+        /**
+         * Postdecrement operator. Decreases the iterator by one.
+         * @note This function does not copy the iterator object.
+         *
+         * @return this iterator, @c *this
+         */
         virtual ConstIterator &operator--();
+        /**
+         * Predecrement operator. Decreases the iterator by one.
+         *
+         * @return this iterator, @c *this
+         */
         virtual ConstIterator &operator--( int );
+        /**
+         * Equality operator. Compares this iterator to @p it
+         *
+         * @param it the iterator to compare this iterator to
+         * @return @c true if both iterators are equal,
+         *         @c false otherwise
+         */
         virtual bool operator==( const ConstIterator &it ) const;
+        /**
+         * Inequality operator. Compares this iterator to @p it
+         *
+         * @param it the iterator to compare this iterator to
+         * @return @c true if the iterators are not equal,
+         *         @c false otherwise
+         */
         virtual bool operator!=( const ConstIterator &it ) const;
 
         struct ConstIteratorData;
