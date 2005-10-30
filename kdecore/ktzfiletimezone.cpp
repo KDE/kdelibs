@@ -41,6 +41,11 @@ KTzfileTimezone::~KTzfileTimezone()
 //    delete d;
 }
 
+int KTzfileTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+{
+    return offset(toTime_t(utcDateTime));
+}
+
 int KTzfileTimezone::offset(time_t t) const
 {
     if (t != (time_t)-1)
@@ -59,48 +64,56 @@ int KTzfileTimezone::offset(time_t t) const
 int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
 {
     int offset = 0;
-    const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
-    if (tdata)
+    if (zoneDateTime.isValid()  &&  zoneDateTime.timeSpec() == Qt::LocalTime)
     {
-        // Get the specified date/time as an offset from epoch (in zone time)
-        if (zoneDateTime.timeSpec() != Qt::LocalTime)
-            return 0;
-        QDateTime dt = zoneDateTime;
-        dt.setTimeSpec(Qt::UTC);
-        uint ut = dt.toTime_t();
-        time_t tztime = static_cast<time_t>(ut);
-        if (ut != (uint)-1  &&  tztime >= 0)
+        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        if (tdata)
         {
-            Q_UINT32 count = tdata->nTransitionTimes();
-            for (Q_UINT32 i = 0;  i < count;  ++i)
+            // Get the specified date/time as an offset from epoch (in zone time)
+            if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
+                return 0;
+            QDateTime dt = zoneDateTime;
+            dt.setTimeSpec(Qt::UTC);
+            uint ut = dt.toTime_t();
+            time_t tztime = static_cast<time_t>(ut);
+            if (ut != (uint)-1  &&  tztime >= 0)
             {
-                const KTzfileTimezoneData::TransitionTime *tt = tdata->transitionTime(i);
-                if (!tt)
-                    break;    // how the hell did we reach the end??
-                Q_INT32 t = tt->time;
-                const KTzfileTimezoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
-                if (!ltt)
-                    continue;   // something funny is going on here ...
-                int newOffset = ltt->gmtoff;
-                if (tztime - offset < t)
+                Q_UINT32 count = tdata->nTransitionTimes();
+                for (Q_UINT32 i = 0;  i < count;  ++i)
                 {
-                    // The date/time falls before this transition
-                    if (secondOffset)
+                    const KTzfileTimezoneData::TransitionTime *tt = tdata->transitionTime(i);
+                    if (!tt)
+                        break;    // how the hell did we reach the end??
+                    Q_INT32 t = tt->time;
+                    const KTzfileTimezoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
+                    if (!ltt)
+                        continue;   // something funny is going on here ...
+                    int newOffset = ltt->gmtoff;
+                    if (tztime - offset < t)
                     {
-                        if (tztime - newOffset >= t)
-                            *secondOffset = newOffset;   // and it falls again after this transition
-                        else
-                            *secondOffset = offset;
+                        // The date/time falls before this transition
+                        if (secondOffset)
+                        {
+                            if (tztime - newOffset >= t)
+                                *secondOffset = newOffset;   // and it falls again after this transition
+                            else
+                                *secondOffset = offset;
+                        }
+                        return offset;
                     }
-                    return offset;
+                    offset = newOffset;
                 }
-                offset = newOffset;
             }
         }
     }
     if (secondOffset)
         *secondOffset = offset;
     return offset;
+}
+
+bool KTzfileTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+{
+    return isDst(toTime_t(utcDateTime));
 }
 
 bool KTzfileTimezone::isDst(time_t t) const

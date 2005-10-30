@@ -93,6 +93,18 @@ public:
     virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const;
 
     /**
+     * Returns the offset of this time zone to UTC at the given UTC date/time.
+     *
+     * Note that tzfile times are represented by a 4-byte signed value. An error occurs
+     * if the date falls outside the range supported by time_t.
+     *
+     * @param utcDateTime the UTC date/time at which the offset is to be calculated.
+     *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
+     * @return offset in seconds, or 0 if error
+     */
+    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
+
+    /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
      *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
@@ -100,6 +112,26 @@ public:
      * @return offset in seconds, or 0 if error
      */
     virtual int offset(time_t t) const;
+
+    /**
+     * Returns whether daylight savings time is in operation at the given UTC date/time.
+     *
+     * Note that tzfile times are represented by a 4-byte signed value. An error occurs
+     * if the date falls outside the range supported by time_t.
+     *
+     * @param utcDateTime the UTC date/time. An error occurs if
+     *                    @p utcDateTime.timeSpec() is not Qt::UTC.
+     * @return @c true if daylight savings time is in operation, @c false otherwise
+     */
+    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
+
+    /**
+     * Returns whether daylight savings time is in operation at a specified UTC time.
+     *
+     * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
+     *          (as returned by time(2))
+     * @return @c true if daylight savings time is in operation, @c false otherwise
+     */
     virtual bool isDst(time_t t) const;
 
     /**
@@ -256,7 +288,8 @@ public:
      */
     Q_UINT32 getLeapSeconds(time_t t) const;
 
-    /** Returns the list of time zone abbreviations.
+    /**
+     * Returns the complete list of time zone abbreviations.
      *
      * @return the list of abbreviations
      */

@@ -74,10 +74,10 @@ class KSystemTimezoneDataPrivate;
  * parsing functions to access such data, handing off the parsed data for a
  * specific time zone in a KTimezoneData object. Both of these are base classes
  * from which should be derived other classes which know about the particular
- * data format (KTimezoneSource) and which details are actually provided
- * (KTimezoneData). When a KTimezone instance needs its time zone's
+ * access method and data format (KTimezoneSource) and which details are actually
+ * provided (KTimezoneData). When a KTimezone instance needs its time zone's
  * definition, it calls KTimezoneSource::parse() and receives the data back in a
- * KTimezoneData object.
+ * KTimezoneData object which it keeps for reference.
  *
  * The mapping of the different classes to external data is as follows:
  *
@@ -100,10 +100,139 @@ class KSystemTimezoneDataPrivate;
  *   If it is known that two source databases are definitely compatible, they can
  *   be grouped together into the same KTimezones instance.
  *
- * Access to system time zones is provided by the KSystemTimezones class, which reads
- * the zone.tab file to obtain the list of system time zones, and creates a
+ *
+ * \section sys System time zones
+ *
+ * Access to system time zones is provided by the KSystemTimezones class, which
+ * reads the zone.tab file to obtain the list of system time zones, and creates a
  * KSystemTimezone instance for each one. KSystemTimezone uses the KSystemTimezoneSource
- * and KSystemTimezoneData classes to obtain time zone data via libc library functions.
+ * and KSystemTimezoneData classes to obtain time zone data via libc library
+ * functions.
+ *
+ * Normally, KSystemTimezoneSource and KSystemTimezoneData operate in the
+ * background and you will not need to use them directly.
+ *
+ *
+ * \section tzfile Tzfile access
+ *
+ * The KTzfileTimezone class provides access to tzfile(5) time zone definition
+ * files, which are used to form the time zone database on UNIX systems. Usually,
+ * it is easier to use the KSystemTimezones class to access system tzfile data;
+ * you can use the KTzfileTimezone class to obtain more detailed information or
+ * to read non-system tzfile files.
+ *
+ * KTzfileTimezone uses the KTzfileTimezoneSource and KTzfileTimezoneData classes
+ * to obtain time zone data from tzfile files.
+ *
+ *
+ * \section deriving Handling time zone data from other sources
+ *
+ * To implement time zone classes to access a new time zone data source, you need
+ * as a minimum to derive a new class from KTimezoneSource, and implement one or
+ * more parse() methods. If can know in advance what KTimezone instances to create
+ * without having to parse the source data, you should reimplement the virtual method
+ * KTimezoneSource::parse(const KTimezone*). Otherwise, you need to define your
+ * own parse() methods with appropriate signatures, to both read and parse the new
+ * data, and create new KTimezone instances.
+ *
+ * If the data for each time zone which is available from the new source happens
+ * to be the same as for another source for which KTimezone classes already exist,
+ * you could simply use the existing KTimezone and KTimezoneData derived classes
+ * to receive the parsed data from your new KTimezoneSource class:
+ *
+ * \code
+ * class NewTimezoneSource : public KTimezoneSource
+ * {
+ *     public:
+ *         NewTimezoneSource(...);  // parameters might include location of data source ...
+ *         ~NewTimezoneSource();
+ *
+ *         // Option 1: reimplement KTimezoneSource::parse() if you can
+ *         // pre-create the KTimezone instances.
+ *         KTimezoneData *parse(const KTimezone *zone) const;
+ *
+ *         // Option 2: implement new parse() methods if you don't know
+ *         // in advance what KTimezone instances to create.
+ *         void parse(..., KTimezones *zones) const;
+ *         NewTimezone *parse(...) const;
+ * };
+ *
+ * // Option 1:
+ * KTimezoneData *NewTimezoneSource::parse(const KTimezone *zone) const
+ * {
+ *     QString zoneName = zone->name();
+ *     ExistingTimezoneData* data = new ExistingTimezoneData();
+ *
+ *     // Read the data for 'zoneName' from the new data source
+ *
+ *     // Parse what we have read, and write it into 'data'
+ *
+ *     return data;
+ * }
+ * \endcode
+ *
+ * If the data from the new source is different from what any existing
+ * KTimezoneData class contains, you will need to implement new KTimezone and
+ * KTimezoneData classes in addition to the KTimezoneSource class illustrated
+ * above:
+ *
+ * \code
+ * class NewTimezone : public KTimezone
+ * {
+ *     public:
+ *         NewTimezone(NewTimezoneSource *source, const QString &name, ...);
+ *         ~NewTimezone();
+ *
+ *         // Virtual methods which need to be reimplemented
+ *         int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
+ *         int offsetAtUTC(const QDateTime &utcDateTime) const;
+ *         int offset(time_t t) const;
+ *         int isDstAtUTC(const QDateTime &utcDateTime) const;
+ *         bool isDst(time_t t) const;
+ *
+ *         // Anything else which you need
+ * };
+ *
+ * class NewTimezoneData : public KTimezoneData
+ * {
+ *         friend class NewTimezoneSource;
+ *
+ *     public:
+ *         NewTimezoneData();
+ *         ~NewTimezoneData();
+ *
+ *         // Virtual methods which need to be reimplemented
+ *         KTimezoneData *clone();
+ *         QList<QByteArray> abbreviations() const;
+ *         QByteArray abbreviation(const QDateTime &utcDateTime) const;
+ *
+ *         // Data members containing whatever is read by NewTimezoneSource
+ * };
+ * \endcode
+ *
+ * Here is a guide to implementing the offset() and offsetAtUTC() methods, in
+ * the case where the source data does not use time_t for its time measurement:
+ *
+ * \code
+ * int NewTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+ * {
+ *     // Access this time zone's data. If we haven't already read it,
+ *     // force a read from source now.
+ *     NewTimezoneData *zdata = data(true);
+ *
+ *     // Use 'zdata' contents to work out the UTC offset
+ *
+ *     return offset;
+ * }
+ *
+ * int NewTimezone::offset(time_t t) const
+ * {
+ *     return offsetAtUTC(fromTime_t(t));
+ * }
+ * \endcode
+ *
+ * The other NewTimezone methods would work in an analogous way to
+ * NewTimezone::offsetAtUTC() and NewTimezone::offset().
  */
 
 /**
@@ -371,15 +500,35 @@ public:
     /**
      * Returns the offset of this time zone to UTC at the given UTC date/time.
      *
+     * The base class implementation always returns 0. Derived classes should always
+     * reimplement both this method and offset(). If the derived class needs to work
+     * in terms of time_t (as when accessing the system time functions, for example),
+     * it should implement its offset calculations in offset() and reimplement this
+     * method simply as
+     * \code
+     *     offset(toTime_t(utcDateTime));
+     * \endcode
+     *
      * @param utcDateTime the UTC date/time at which the offset is to be calculated.
      *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return offset in seconds, or 0 if error
      */
-    int offsetAtUTC(const QDateTime &utcDateTime) const;
+    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
-     * The base class implementation always returns 0.
+     *
+     * Note that time_t has a more limited range than QDateTime, so consider using
+     * offsetAtUTC() instead.
+     *
+     * The base class implementation always returns 0. Derived classes should always
+     * reimplement both this method and offsetAtUTC(). If the derived class can work
+     * in terms of QDateTime rather than time_t, it should implement its offset
+     * calculations in offsetAtUTC() and reimplement this
+     * method simply as
+     * \code
+     *     offsetAtUTC(fromTime_t(t));
+     * \endcode
      *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
      *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
@@ -390,14 +539,35 @@ public:
     /**
      * Returns whether daylight savings time is in operation at the given UTC date/time.
      *
+     * The base class implementation always returns false. Derived classes should always
+     * reimplement both this method and isDst(). If the derived class needs to work
+     * in terms of time_t (as when accessing the system time functions, for example),
+     * it should implement its offset calculations in isDst() and reimplement this
+     * method simply as
+     * \code
+     *     isDst(toTime_t(utcDateTime));
+     * \endcode
+     *
      * @param utcDateTime the UTC date/time. An error occurs if
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    bool isDstAtUTC(const QDateTime &utcDateTime) const;
+    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
 
     /**
      * Returns whether daylight savings time is in operation at a specified UTC time.
+     *
+     * Note that time_t has a more limited range than QDateTime, so consider using
+     * isDstAtUTC() instead.
+     *
+     * The base class implementation always returns false. Derived classes should always
+     * reimplement both this method and isDstAtUTC(). If the derived class can work
+     * in terms of QDateTime rather than time_t, it should implement its offset
+     * calculations in isDstAtUTC() and reimplement this
+     * method simply as
+     * \code
+     *     isDstAtUTC(fromTime_t(t));
+     * \endcode
      *
      * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      *          (as returned by time(2))
@@ -415,8 +585,26 @@ public:
     /**
      * Extracts time zone detail information for this time zone from the source database.
      *
-     * @return @c false if the parse encountered errors, @c true otherwise     */
+     * @return @c false if the parse encountered errors, @c true otherwise
+     */
     bool parse() const;
+
+    /**
+     * Converts a UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
+     * (as returned by time(2)), to a UTC QDateTime value.
+     *
+     * @return converted time, or QDateTime() if @p t < 0
+     */
+    static QDateTime fromTime_t(time_t t);
+
+    /**
+     * Converts a UTC QDateTime to a UTC time, measured in seconds since 00:00:00 UTC
+     * 1st January 1970 (as returned by time(2)).
+     *
+     * @return converted time, or -1 if the date is out of range for time_t or
+     *         @p utcDateTime.timeSpec() is not Qt::UTC 
+     */
+    static time_t toTime_t(const QDateTime &utcDateTime);
 
     /**
      * A representation for unknown locations; this is a float
@@ -452,6 +640,13 @@ protected:
      */
     const KTimezoneData *data(bool create = false) const;
 
+    /**
+     * Sets the detailed parsed data for the time zone.
+     *
+     * @param data parsed data
+     */
+    void setData(KTimezoneData *data);
+
 private:
     KTimezonePrivate *d;
 };
@@ -461,7 +656,11 @@ private:
  * Base class representing a source of time zone information.
  *
  * Derive subclasses from KTimezoneSource to read and parse time zone details
- * from a time zone database or other source of time zone information.
+ * from a time zone database or other source of time zone information. If can know
+ * in advance what KTimezone instances to create without having to parse the source
+ * data, you should reimplement the virtual method parse(const KTimezone*). Otherwise,
+ * you need to define your own parse() methods with appropriate signatures, to both
+ * read and parse the new data, and create new KTimezone instances.
  *
  * KTimezoneSource itself may be used as a dummy source which returns empty
  * time zone details.
@@ -522,7 +721,8 @@ public:
      */
     virtual KTimezoneData *clone();
 
-    /** Returns the list of time zone abbreviations.
+    /**
+     * Returns the complete list of time zone abbreviations.
      *
      * @return the list of abbreviations.
      *         In this base class, it consists of the single string "UTC".
@@ -679,6 +879,18 @@ public:
     virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
 
     /**
+     * Returns the offset of this time zone to UTC at the given UTC date/time.
+     *
+     * Note that system times are represented using time_t. An error occurs if the date
+     * falls outside the range supported by time_t.
+     *
+     * @param utcDateTime the UTC date/time at which the offset is to be calculated.
+     *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
+     * @return offset in seconds, or 0 if error
+     */
+    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
+
+    /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
      *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
@@ -686,6 +898,26 @@ public:
      * @return offset in seconds, or 0 if error
      */
     virtual int offset(time_t t) const;
+
+    /**
+     * Returns whether daylight savings time is in operation at the given UTC date/time.
+     *
+     * Note that system times are represented using time_t. An error occurs if the date
+     * falls outside the range supported by time_t.
+     *
+     * @param utcDateTime the UTC date/time. An error occurs if
+     *                    @p utcDateTime.timeSpec() is not Qt::UTC.
+     * @return @c true if daylight savings time is in operation, @c false otherwise
+     */
+    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
+
+    /**
+     * Returns whether daylight savings time is in operation at a specified UTC time.
+     *
+     * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
+     *          (as returned by time(2))
+     * @return @c true if daylight savings time is in operation, @c false otherwise
+     */
     virtual bool isDst(time_t t) const;
 
 private:
@@ -778,7 +1010,8 @@ public:
      */
     virtual KTimezoneData *clone();
 
-    /** Returns the list of time zone abbreviations.
+    /**
+     * Returns the complete list of time zone abbreviations.
      *
      * @return the list of abbreviations
      */

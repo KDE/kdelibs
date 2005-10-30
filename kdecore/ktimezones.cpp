@@ -347,6 +347,13 @@ const KTimezoneData *KTimezone::data(bool create) const
     return d->data;
 }
 
+void KTimezone::setData(KTimezoneData *data)
+{
+    if (d->data)
+        delete d->data;
+    d->data = data;
+}
+
 bool KTimezone::parse() const
 {
     delete d->data;
@@ -356,7 +363,7 @@ bool KTimezone::parse() const
 
 QDateTime KTimezone::toUTC(const QDateTime &zoneDateTime) const
 {
-    if (zoneDateTime.timeSpec() != Qt::LocalTime)
+    if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return QDateTime();
     int secs = offsetAtZoneTime(zoneDateTime);
     QDateTime dt = zoneDateTime;
@@ -368,11 +375,7 @@ QDateTime KTimezone::toZoneTime(const QDateTime &utcDateTime) const
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return QDateTime();
-    uint ut = utcDateTime.toTime_t();
-    time_t t = static_cast<time_t>(ut);
-    if (ut == (uint)-1  ||  t < 0)
-        return QDateTime();
-    int secs = offset(t);
+    int secs = offsetAtUTC(utcDateTime);
     QDateTime dt = utcDateTime.addSecs(secs);
     dt.setTimeSpec(Qt::LocalTime);
     return dt;
@@ -390,20 +393,18 @@ int KTimezone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
     return 0;
 }
 
-int KTimezone::offset(time_t) const
+int KTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
 {
+    if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
+        return 0;
     return 0;
 }
 
-int KTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KTimezone::offset(time_t t) const
 {
-    if (utcDateTime.timeSpec() != Qt::UTC)
+    if (t == (time_t)-1)    // check for invalid time
         return 0;
-    uint ut = utcDateTime.toTime_t();
-    time_t t = static_cast<time_t>(ut);
-    if (ut == (uint)-1  ||  t < 0)
-        return 0;
-    return offset(t);
+    return 0;
 }
 
 int KTimezone::currentOffset(Qt::TimeSpec basis) const
@@ -429,18 +430,39 @@ int KTimezone::currentOffset(Qt::TimeSpec basis) const
 
 bool KTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
 {
-    if (utcDateTime.timeSpec() != Qt::UTC)
+    if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return false;
-    uint ut = utcDateTime.toTime_t();
-    time_t t = static_cast<time_t>(ut);
-    if (ut == (uint)-1  ||  t < 0)
-        return false;
-    return isDst(t);
+    return false;
 }
 
-bool KTimezone::isDst(time_t) const
+bool KTimezone::isDst(time_t t) const
 {
+    if (t == (time_t)-1)    // check for invalid time
+        return false;
     return false;
+}
+
+QDateTime KTimezone::fromTime_t(time_t t)
+{
+    if (t < 0)
+      return QDateTime();
+    QDateTime utc;
+    utc.setTimeSpec(Qt::UTC);
+    utc.setTime_t(static_cast<uint>(t));
+    return utc;
+}
+
+time_t KTimezone::toTime_t(const QDateTime &utcDateTime)
+{
+    if (utcDateTime.timeSpec() != Qt::UTC)
+        return (time_t)-1;
+    uint ut = utcDateTime.toTime_t();
+    if (ut == (uint)-1)
+        return (time_t)-1;
+    time_t t = static_cast<time_t>(ut);
+    if (t < 0)
+        return (time_t)-1;
+    return t;
 }
 
 
@@ -928,6 +950,11 @@ KSystemTimezone::~KSystemTimezone()
 //    delete d;
 }
 
+int KSystemTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+{
+    return offset(toTime_t(utcDateTime));
+}
+
 int KSystemTimezone::offset(time_t t) const
 {
     if (t == (time_t)-1)
@@ -960,7 +987,7 @@ int KSystemTimezone::offset(time_t t) const
 
 int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
 {
-    if (zoneDateTime.timeSpec() != Qt::LocalTime)
+    if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return 0;
     // Make this time zone the current local time zone
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1025,6 +1052,11 @@ int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
         ::tzset();
     }
     return offset1;
+}
+
+bool KSystemTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+{
+    return isDst(toTime_t(utcDateTime));
 }
 
 bool KSystemTimezone::isDst(time_t t) const
