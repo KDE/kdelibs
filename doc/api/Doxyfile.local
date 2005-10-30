@@ -1,5 +1,7 @@
 ## In kdelibs, everything is supposed to be documented.
 WARN_IF_UNDOCUMENTED = YES
+## Show docs following @internal as well.
+INTERNAL_DOCS = YES
 
 ## Predefined macros, to remove all the _EXPORT things
 ## from function definitions.
