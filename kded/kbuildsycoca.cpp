@@ -936,7 +936,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       }
    }
 
-   if (!gGlobalDatabase)
+   if (!bGlobalDatabase)
    {
      // Recreate compatibility symlink
      QString oldPath = oldSycocaPath();
