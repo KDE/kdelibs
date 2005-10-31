@@ -377,7 +377,7 @@ public:
    * @return path that can be used for saving changes to this service
    * @since 3.2
    */
-  QString locateLocal();
+  QString locateLocal() const;
 
   /**
    * @internal

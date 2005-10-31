@@ -266,7 +266,6 @@ KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset
 
 KService::~KService()
 {
-  //debug("KService::~KService()");
   delete d;
 }
 
@@ -755,7 +754,7 @@ QString KService::storageId() const
   return entryPath();
 }
 
-QString KService::locateLocal()
+QString KService::locateLocal() const
 {
   if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") ||
       (QDir::isRelativePath(desktopEntryPath()) && d->categories.isEmpty()))
