@@ -119,7 +119,7 @@ KServiceGroup::~KServiceGroup()
   delete d;
 }
 
-int KServiceGroup::childCount()
+int KServiceGroup::childCount() const
 {
   if (m_childCount == -1)
   {

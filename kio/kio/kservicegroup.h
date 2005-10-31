@@ -137,7 +137,7 @@ public:
    * any of its subgroups.
    * @return the number of child services
    */
-  int childCount();
+  int childCount() const;
 
   /**
    * Returns true if the NoDisplay flag was set, i.e. if this
@@ -304,7 +304,7 @@ protected:
   List m_serviceList;
   bool m_bDeep;
   QString m_strBaseGroupName;
-  int m_childCount;
+  mutable int m_childCount;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
