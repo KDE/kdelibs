@@ -3,7 +3,6 @@
 Import('env')
 
 env.subdirs('kconfig_compiler tests')
-if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']: env.subdirs('svgicons')
 
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp
@@ -122,10 +121,11 @@ if env['WINDOWS']:
 	if env['CC'] == 'cl':
 		obj.ccflags += ' -wd4661 -DKIO_EXPORT= '
 
-if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
+# TODO check for libagg
+if env.has_key("CACHED_LIBAGG") and env['CACHED_LIBAGG']:
     #FIXME: QTXML is used in libkdesvgicons
-    obj.uselib += ' QTXML LIBART'
-    obj.cxxflags += ' -DHAVE_LIBART '
+    obj.uselib += ' QTXML LIBAGG'
+    obj.cxxflags += ' -DHAVE_LIBAGG '
     obj.libpaths += " svgicons"
     obj.libs += " libkdesvgicons"
 obj.execute()
