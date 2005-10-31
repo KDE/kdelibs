@@ -147,13 +147,15 @@ def generate(env):
 		comp_h   ='$QT_UIC3 -L $QTPLUGINS -nounload -o %s %s' % (target[0].path, source[0].path)
 		comp_c   ='$QT_UIC3 -L $QTPLUGINS -nounload -tr tr2i18n -impl %s %s' % (target[0].path, source[0].path)
 		comp_moc ='$QT_MOC -o %s %s' % (target[2].path, target[0].path)
-		if env.Execute(comp_h):
+		ret = env.Execute(comp_h)
+		if ret: 
 			return ret
 		if env.has_key('UIC3_PRE_INCLUDE'):
 			dest = open( target[1].path, "w" )
 			dest.write(env['UIC3_PRE_INCLUDE'])
 			dest.close()
-		if env.Execute( comp_c+" >> "+target[1].path ):
+		ret = env.Execute( comp_c+" >> "+target[1].path )
+		if ret:
 			return ret
 		dest = open( target[1].path, "a" )
 		dest.write(inc_moc)
