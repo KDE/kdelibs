@@ -65,7 +65,7 @@ public:
 	/**
 	 * Constructor. Create a KPlotObject according to the arguments.
 	 */
-	KPlotObject( const QString &name, const QString &color, PTYPE otype, unsigned int size=2, unsigned int param=0 );
+	KPlotObject( const QString &name, const QColor &color, PTYPE otype, unsigned int size=2, unsigned int param=0 );
 
 	/**
 	 * Destructor (empty)
@@ -86,13 +86,13 @@ public:
 	/**
 	 * @return the KPlotObject's Color
 	 */
-	QString color() const { return Color; }
+	QColor color() const { return Color; }
 
 	/**
 	 * Set the KPlotObject's Color
 	 * @param c the new color
 	 */
-	void setColor( const QString &c ) { Color = c; }
+	void setColor( const QColor &c ) { Color = c; }
 
 	/**
 	 * @return the KPlotObject's Type
@@ -170,7 +170,8 @@ private:
 	QList<QPointF*> pList;
 	PTYPE Type;
 	unsigned int Size, Parameter;
-	QString Color, Name;
+	QString Name;
+	QColor Color;
 };
 
 #endif

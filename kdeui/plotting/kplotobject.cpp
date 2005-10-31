@@ -21,10 +21,10 @@
 #include "kplotobject.h"
 
 KPlotObject::KPlotObject() {
-	KPlotObject( "", "white", POINTS );
+	KPlotObject( "", Qt::white, POINTS );
 }
 
-KPlotObject::KPlotObject( const QString &n, const QString &c, PTYPE t, unsigned int s, unsigned int p ) {
+KPlotObject::KPlotObject( const QString &n, const QColor &c, PTYPE t, unsigned int s, unsigned int p ) {
 	//We use the set functions because they may include data validation
 	setName( n );
 	setColor( c );

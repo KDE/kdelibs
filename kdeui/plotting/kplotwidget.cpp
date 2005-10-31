@@ -159,12 +159,12 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 		KPlotObject *po = ( *it );
 		if ( po->points()->count() ) {
 			//draw the plot object
-			p->setPen( QColor( po->color() ) );
+			p->setPen( po->color() );
 
 			switch ( po->type() ) {
 				case KPlotObject::POINTS :
 				{
-					p->setBrush( QColor( po->color() ) );
+					p->setBrush( po->color() );
 
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 					{
@@ -186,7 +186,7 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::CURVE :
 				{
-					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
+					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
 					QPolygon poly;
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 						poly << mapToPoint( **dpit );
@@ -203,9 +203,8 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::POLYGON :
 				{
-					QColor co( po->color() );
-					p->setPen( QPen( co, po->size(), (Qt::PenStyle)po->param() ) );
-					p->setBrush( co );
+					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
+					p->setBrush( po->color() );
 
 					QPolygon a( po->count() );
 
