@@ -316,22 +316,14 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-/*
- * ######## We have to keep a list of ::Ptr, in order to return the same Ptr every time,
- * since two independent Ptr on the same object lead to double-deletions.
- *
- * But this means ksharedconfig instances are never deleted until the app exists.
- * TODO: somehow detecting that isUnique became true and remove from list then, but how
- * to know when to detect that?
- */
-static KStaticDeleter< QList<KSharedConfig::Ptr> > sd;
-static QList<KSharedConfig::Ptr> *s_list = 0;
+static KStaticDeleter< QList<KSharedConfig*> > sd;
+QList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
 KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
 {
   if (s_list)
   {
-     for(QList<KSharedConfig::Ptr>::ConstIterator it = s_list->begin();
+     for(QList<KSharedConfig*>::ConstIterator it = s_list->begin();
          it != s_list->end(); ++it)
      {
         if ((*it)->backEnd->fileName() == fileName &&
@@ -340,24 +332,24 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
            return (*it);
      }
   }
-  KSharedConfig::Ptr conf = new KSharedConfig(fileName, immutable, useKDEGlobals);
-  if (!s_list)
-    sd.setObject(s_list, new QList<KSharedConfig::Ptr>());
-  s_list->append(conf);
-  return conf;
+  return new KSharedConfig(fileName, immutable, useKDEGlobals);
 }
 
 KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals)
  : KConfig(fileName, readonly, usekdeglobals)
 {
+  if (!s_list)
+  {
+    sd.setObject(s_list, new QList<KSharedConfig*>);
+  }
+
+  s_list->append(this);
 }
 
 KSharedConfig::~KSharedConfig()
 {
-#if 0 // can't happen, and wrong, see above
   if ( s_list )
     s_list->removeAll(this);
-#endif
 }
 
 #include "kconfig.moc"
