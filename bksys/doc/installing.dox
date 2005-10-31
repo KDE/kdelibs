@@ -1,0 +1,74 @@
+/** \page installing Installing bksys  
+
+The required steps of bksys installation depends on, which scons package you are using. 
+You can use the official scons release 0.96.91 from http://www.scons.org or the scons-mini release distributed with bksys. 
+
+
+The bksys provided scons is a reduced 0.96.1 release and may be usefull for distribution because it is much smaller than the offical version.
+For installing the bksys distributed scons see: 
+
+
+- \ref installing_local_scons_unix
+- \ref installing_local_scons_win
+
+After installation is finished you have to configure your project. See the section \ref configuration for more information. 
+
+
+\page installing_local_scons_unix Installing local scons on unix
+
+\code
+cd kdelibs
+tar xjvf bksys/scons-mini.tar.bz2
+\endcode
+
+Now you are able to run scons with 
+\code
+./scons -h
+\endcode
+
+add this to your .bashrc to run scons anywhere in the tree
+\code
+export SCONSFLAGS="-u"
+\endcode
+
+
+Miniscons is based on scons-0.96.1, but the version 0.96.91
+is about 30% faster at computing the dependencies
+
+To make scons run faster you may use these flags:
+export SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
+but in this case Miniscons and 0.96.91 are about as fast
+
+
+\page installing_local_scons_win Installing local scons on windows 
+
+\todo: provide a self extraction archive because tar isn't available as default 
+
+\code
+cd kdelibs
+tar xjvf bksys/scons-mini.tar.bz2
+set PATH=%CD%;%PATH%
+\endcode
+
+Now you are able to run scons with 
+\code
+scons -h
+\endcode
+
+add this in your cmd shell to run scons anywhere in the tree
+\code
+set SCONSFLAGS=-u
+\endcode
+
+Miniscons is based on scons-0.96.1, but the version 0.96.91
+is about 30% faster at computing the dependencies
+
+To make scons run faster you may use these flags:
+set SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
+but in this case Miniscons and 0.96.91 are about as fast
+
+*/
+
+
+
+
