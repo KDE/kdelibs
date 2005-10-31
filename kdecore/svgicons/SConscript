@@ -10,7 +10,7 @@ ksvgiconpainter.cpp
 obj = env.kdeobj('convenience',env)
 obj.target   = 'libkdesvgicons'
 obj.source   = sources
-obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 LIBART'
+obj.uselib   = 'QTCORE QTGUI QT QTXML QT3SUPPORT KDE4 LIBART'
 obj.execute()
 
 
