@@ -31,8 +31,6 @@
 
 using namespace KParts;
 
-template class Q3PtrList<Part>;
-
 namespace KParts {
 
 class PartManagerPrivate
@@ -76,14 +74,14 @@ public:
   Part * m_activePart;
   QWidget *m_activeWidget;
 
-  Q3PtrList<Part> m_parts;
+  QList<Part *> m_parts;
 
   PartManager::SelectionPolicy m_policy;
 
   Part *m_selectedPart;
   QWidget *m_selectedWidget;
 
-  Q3PtrList<QWidget> m_managedTopLevelWidgets;
+  QList<const QWidget *> m_managedTopLevelWidgets;
   short int m_activationButtonMask;
   bool m_bIgnoreScrollBars;
   bool m_bAllowNestedParts;
@@ -118,14 +116,15 @@ PartManager::PartManager( QWidget *topLevel, QObject *parent )
 
 PartManager::~PartManager()
 {
-  for ( Q3PtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
-        it.current(); ++it )
-    disconnect( it.current(), SIGNAL( destroyed() ),
-                this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
-
-  for ( Q3PtrListIterator<Part> it( d->m_parts ); it.current(); ++it )
+  foreach( const QWidget* w, d->m_managedTopLevelWidgets )
   {
-      it.current()->setManager( 0 );
+    disconnect( w, SIGNAL( destroyed() ),
+                this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+  }
+
+  foreach( Part* it, d->m_parts )
+  {
+      it->setManager( 0 );
   }
 
   // core dumps ... setActivePart( 0L );
@@ -206,7 +205,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   {
     QPoint pos;
 
-    if ( !d->m_managedTopLevelWidgets.containsRef( w->topLevelWidget() ) )
+    if ( !d->m_managedTopLevelWidgets.contains( w->topLevelWidget() ) )
       return false;
 
     if ( d->m_bIgnoreScrollBars && w->inherits( "QScrollBar" ) )
@@ -220,9 +219,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       part = findPartFromWidget( w );
 
 #ifdef DEBUG_PARTMANAGER
-    Q3CString evType = ( ev->type() == QEvent::MouseButtonPress ) ? "MouseButtonPress"
-                      : ( ev->type() == QEvent::MouseButtonDblClick ) ? "MouseButtonDblClick"
-                      : ( ev->type() == QEvent::FocusIn ) ? "FocusIn" : "OTHER! ERROR!";
+    const char* evType = ( ev->type() == QEvent::MouseButtonPress ) ? "MouseButtonPress"
+                         : ( ev->type() == QEvent::MouseButtonDblClick ) ? "MouseButtonDblClick"
+                         : ( ev->type() == QEvent::FocusIn ) ? "FocusIn" : "OTHER! ERROR!";
 #endif
     if ( part ) // We found a part whose widget is w
     {
@@ -309,11 +308,10 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
 Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 {
-  Q3PtrListIterator<Part> it ( d->m_parts );
-  for ( ; it.current() ; ++it )
+  for ( QList<Part *>::iterator it = d->m_parts.begin(), end = d->m_parts.end() ; it != end ; ++it )
   {
-    Part *part = it.current()->hitTest( widget, pos );
-    if ( part && d->m_parts.findRef( part ) != -1 )
+    Part *part = (*it)->hitTest( widget, pos );
+    if ( part && d->m_parts.contains( part ) )
       return part;
   }
   return 0L;
@@ -321,18 +319,17 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 
 Part * PartManager::findPartFromWidget( QWidget * widget )
 {
-  Q3PtrListIterator<Part> it ( d->m_parts );
-  for ( ; it.current() ; ++it )
+  for ( QList<Part *>::iterator it = d->m_parts.begin(), end = d->m_parts.end() ; it != end ; ++it )
   {
-    if ( widget == it.current()->widget() )
-      return it.current();
+    if ( widget == (*it)->widget() )
+      return (*it);
   }
   return 0L;
 }
 
 void PartManager::addPart( Part *part, bool setActive )
 {
-  if ( d->m_parts.findRef( part ) != -1 ) // don't add parts more than once :)
+  if ( d->m_parts.contains( part ) ) // don't add parts more than once :)
   {
 #ifdef DEBUG_PARTMANAGER
     kdWarning(1000) << k_funcinfo << part << " already added" << kdBacktrace(5) << endl;
@@ -368,7 +365,7 @@ void PartManager::addPart( Part *part, bool setActive )
 
 void PartManager::removePart( Part *part )
 {
-  if ( d->m_parts.findRef( part ) == -1 )
+  if ( !d->m_parts.contains( part ) )
   {
     kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
     return;
@@ -377,7 +374,7 @@ void PartManager::removePart( Part *part )
   //Warning. The part could be already deleted
   //kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   int nb = d->m_parts.count();
-  bool ok = d->m_parts.removeRef( part );
+  bool ok = d->m_parts.remove( part );
   Q_ASSERT( ok );
   Q_ASSERT( (int)d->m_parts.count() == nb-1 );
   part->setManager(0);
@@ -394,13 +391,13 @@ void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
 {
   //kdDebug(1000) << "replacePart " << oldPart->name() << "-> " << newPart->name() << " setActive=" << setActive << endl;
   // This methods does exactly removePart + addPart but without calling setActivePart(0) in between
-  if ( d->m_parts.findRef( oldPart ) == -1 )
+  if ( !d->m_parts.contains( oldPart ) )
   {
     kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
     return;
   }
 
-  d->m_parts.removeRef( oldPart );
+  d->m_parts.remove( oldPart );
   oldPart->setManager(0);
 
   emit partRemoved( oldPart );
@@ -410,7 +407,7 @@ void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
 
 void PartManager::setActivePart( Part *part, QWidget *widget )
 {
-  if ( part && d->m_parts.findRef( part ) == -1 )
+  if ( part && !d->m_parts.contains( part ) )
   {
       kdWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->name() << endl;
       return; // don't allow someone call setActivePart with a part we don't know about
@@ -555,9 +552,9 @@ void PartManager::slotWidgetDestroyed()
                          //part will delete itself anyway, invoking removePart() in its destructor
 }
 
-const Q3PtrList<Part> *PartManager::parts() const
+const QList<Part *> PartManager::parts() const
 {
-  return &d->m_parts;
+  return d->m_parts;
 }
 
 void PartManager::addManagedTopLevelWidget( const QWidget *topLevel )
@@ -565,7 +562,7 @@ void PartManager::addManagedTopLevelWidget( const QWidget *topLevel )
   if ( !topLevel->isTopLevel() )
     return;
 
-  if ( d->m_managedTopLevelWidgets.containsRef( topLevel ) )
+  if ( d->m_managedTopLevelWidgets.contains( topLevel ) )
     return;
 
   d->m_managedTopLevelWidgets.append( topLevel );
@@ -578,10 +575,7 @@ void PartManager::removeManagedTopLevelWidget( const QWidget *topLevel )
   if ( !topLevel->isTopLevel() )
     return;
 
-  if ( d->m_managedTopLevelWidgets.findRef( topLevel ) == -1 )
-    return;
-
-  d->m_managedTopLevelWidgets.remove();
+  d->m_managedTopLevelWidgets.remove( topLevel );
 }
 
 void PartManager::slotManagedTopLevelWidgetDestroyed()

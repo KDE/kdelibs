@@ -20,7 +20,6 @@
 
 #include "statusbarextension.h"
 
-#include <q3valuelist.h>
 #include <qobject.h>
 
 #include <kstatusbar.h>
@@ -116,13 +115,13 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
   if ( gae->activated() )
   {
-    Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
     for ( ; it != m_statusBarItems.end() ; ++it )
       (*it).ensureItemShown( sb );
   }
   else
   {
-    Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
     for ( ; it != m_statusBarItems.end() ; ++it )
       (*it).ensureItemHidden( sb );
   }
@@ -150,17 +149,17 @@ void StatusBarExtension::setStatusBar( KStatusBar* status )
 void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
 {
   m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
-  Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.fromLast();
+  StatusBarItem& it = m_statusBarItems.last();
   KStatusBar * sb = statusBar();
   Q_ASSERT(sb);
   if (sb)
-    (*it).ensureItemShown( sb );
+    it.ensureItemShown( sb );
 }
 
 void StatusBarExtension::removeStatusBarItem( QWidget * widget )
 {
   KStatusBar * sb = statusBar();
-  Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+  QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
   for ( ; it != m_statusBarItems.end() ; ++it )
     if ( (*it).widget() == widget )
     {

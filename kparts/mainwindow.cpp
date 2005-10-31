@@ -95,8 +95,6 @@ void MainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
-  Q3PtrList<Plugin> plugins;
-
   if ( d->m_activePart )
   {
     kdDebug(1000) << "deactivating GUI for " << d->m_activePart << " " << d->m_activePart->className()

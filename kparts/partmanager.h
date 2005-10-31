@@ -23,7 +23,6 @@
 
 #include <qobject.h>
 #include <qwidget.h>
-#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 
@@ -208,7 +207,7 @@ public:
   /**
    * Returns the list of parts being managed by the partmanager.
    */
-  const Q3PtrList<Part> *parts() const;
+  const QList<Part *> parts() const;
 
   /**
    * Adds the @p topLevel widget to the list of managed toplevel widgets.

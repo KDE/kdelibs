@@ -21,7 +21,6 @@
 #include "factory.h"
 #include "part.h"
 
-#include <q3cstring.h>
 #include <qwidget.h>
 
 #include <klocale.h>
@@ -56,7 +55,7 @@ const KInstance *Factory::partInstance()
     return params.instance;
 }
 
-const KInstance *Factory::partInstanceFromLibrary( const Q3CString &libraryName )
+const KInstance *Factory::partInstanceFromLibrary( const QByteArray &libraryName )
 {
     KLibrary *library = KLibLoader::self()->library( libraryName );
     if ( !library )

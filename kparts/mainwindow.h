@@ -20,7 +20,6 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <q3ptrlist.h>
 #include <kaction.h>
 
 #include <kmainwindow.h>

@@ -22,7 +22,7 @@
 
 #include <klibloader.h>
 
-class Q3CString;
+class QByteArray;
 class QWidget;
 
 namespace KParts
@@ -89,7 +89,7 @@ public:
       *
       * @param libraryName name of the library to query the instance from
       */
-     static const KInstance *partInstanceFromLibrary( const Q3CString &libraryName );
+     static const KInstance *partInstanceFromLibrary( const QByteArray &libraryName );
 
 protected:
 
