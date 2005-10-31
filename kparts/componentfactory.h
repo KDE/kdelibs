@@ -6,8 +6,6 @@
 #include <ktrader.h>
 #include <klibloader.h>
 
-#include <q3valuelist.h>
-
 namespace KParts
 {
     class ComponentFactory
@@ -247,7 +245,7 @@ namespace KParts
                                            const QStringList &args = QStringList(),
                                            int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, constraint );
+            const KTrader::OfferList offers = KTrader::self()->query( serviceType, constraint );
             if ( offers.isEmpty() )
             {
                 if ( error )
@@ -298,7 +296,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString::null );
+            const KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString::null );
             if ( offers.isEmpty() )
             {
                 if ( error )
