@@ -100,27 +100,27 @@ class KABC_EXPORT Resource : public KRES::Resource
          */
         virtual Addressee &operator*();
         /**
-         * Postincrement operator. Advances the iterator by one.
-         * @note This function does not copy the iterator object.
+         * Preincrement operator. Advances the iterator by one.
          *
          * @return this iterator, @c *this
          */
         virtual Iterator &operator++();
         /**
-         * Preincrement operator. Advances the iterator by one.
+         * Postincrement operator. Advances the iterator by one.
+         * @note This function does not copy the iterator object.
          *
          * @return this iterator, @c *this
          */
         virtual Iterator &operator++( int );
         /**
-         * Postdecrement operator. Decreases the iterator by one.
-         * @note This function does not copy the iterator object.
+         * Predecrement operator. Decreases the iterator by one.
          *
          * @return this iterator, @c *this
          */
         virtual Iterator &operator--();
         /**
-         * Predecrement operator. Decreases the iterator by one.
+         * Postdecrement operator. Decreases the iterator by one.
+         * @note This function does not copy the iterator object.
          *
          * @return this iterator, @c *this
          */
@@ -186,27 +186,27 @@ class KABC_EXPORT Resource : public KRES::Resource
          */
         virtual const Addressee &operator*() const ;
         /**
-         * Postincrement operator. Advances the iterator by one.
-         * @note This function does not copy the iterator object.
+         * Preincrement operator. Advances the iterator by one.
          *
          * @return this iterator, @c *this
          */
         virtual ConstIterator &operator++();
         /**
-         * Preincrement operator. Advances the iterator by one.
+         * Postincrement operator. Advances the iterator by one.
+         * @note This function does not copy the iterator object.
          *
          * @return this iterator, @c *this
          */
         virtual ConstIterator &operator++( int );
         /**
-         * Postdecrement operator. Decreases the iterator by one.
-         * @note This function does not copy the iterator object.
+         * Predecrement operator. Decreases the iterator by one.
          *
          * @return this iterator, @c *this
          */
         virtual ConstIterator &operator--();
         /**
-         * Predecrement operator. Decreases the iterator by one.
+         * Postdecrement operator. Decreases the iterator by one.
+         * @note This function does not copy the iterator object.
          *
          * @return this iterator, @c *this
          */
