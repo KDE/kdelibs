@@ -48,7 +48,7 @@ apt-get install python2.4
 <ul>
 <li>either in individual cmd shells
 \code
-set PATH=c:\\Python24;%PATH%
+set PATH=c:\Python24;%PATH%
 \endcode
 	<li>or for all cmd shells global in the registry using the system contol panel \n
 		Go to System->Extended->Environment and add the related path to the PATH enviromnent variable. 
@@ -84,13 +84,21 @@ but in this case Miniscons and 0.96.91 are about as fast
 
 \page installing_local_scons_win Installing scons-mini on windows 
 
-\todo: provide a self extraction archive because tar isn't available as default 
-
+using command line tar, which is available from http://sourceforge.net/project/showfiles.php?group_id=23617&package_id=39915
 \code
 cd kdelibs
-tar xjvf bksys/scons-mini.tar.bz2
+tar xjvf bksys\scons-mini.tar.bz2
 set PATH=%CD%;%PATH%
 \endcode
+
+using winzip(tm) or similar unpacking tool 
+\code
+cd kdelibs
+start bksys\scons-mini.tar.bz2
+set PATH=%CD%;%PATH%
+\endcode
+Please note that is important to unpack the archive in the kdelibs dir. 
+
 
 Now you are able to run scons with 
 \code
@@ -102,12 +110,7 @@ add this in your cmd shell to run scons anywhere in the tree
 set SCONSFLAGS=-u
 \endcode
 
-Miniscons is based on scons-0.96.1, but the version 0.96.91
-is about 30% faster at computing the dependencies
-
-To make scons run faster you may use these flags:
-set SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
-but in this case Miniscons and 0.96.91 are about as fast
+or add this globally to any cmd shell by appending this variable to the systems environment settings. 
 
 */
 
