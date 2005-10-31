@@ -549,20 +549,6 @@ bool KBuildSycoca::recreate()
     str << existingResourceDirs();
     if (g_vfolder)
         str << g_vfolder->allDirectories(); // Extra resource dirs
-
-    // Recreate compatibility symlink
-    QString oldPath = oldSycocaPath();
-    if (!oldPath.isEmpty())
-    {
-       KTempFile tmp;
-       if (tmp.status() == 0)
-       {
-          QString tmpFile = tmp.name();
-          tmp.unlink();
-          symlink(QFile::encodeName(path), QFile::encodeName(tmpFile));
-          rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
-       }
-    }
   }
   return true;
 }
@@ -948,6 +934,23 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString::null, false);
         ::rmdir(QFile::encodeName(servicetypesDir));
       }
+   }
+
+   if (!gGlobalDatabase)
+   {
+     // Recreate compatibility symlink
+     QString oldPath = oldSycocaPath();
+     if (!oldPath.isEmpty())
+     {
+       KTempFile tmp;
+       if (tmp.status() == 0)
+       {
+         QString tmpFile = tmp.name();
+         tmp.unlink();
+         symlink(QFile::encodeName(sycocaPath()), QFile::encodeName(tmpFile));
+         rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
+       }
+     }
    }
 
    if (args->isSet("signal"))
