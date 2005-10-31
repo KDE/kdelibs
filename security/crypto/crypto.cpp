@@ -445,7 +445,7 @@ QString whatstr;
   connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
   grid->addWidget(yourSSLPass, 5, 5);
 
-  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabYourSSLCert), 6, 6, 0, 5);
+  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 6, 0, 5);
   ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString::null));
   yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString::null));
   grid->addMultiCellWidget(ySubject, 7, 11, 0, 2);
@@ -504,7 +504,7 @@ QString whatstr;
   defCertBox = new KComboBox(false, tabAuth);
   grid->addMultiCellWidget(defCertBox, 2, 2, 3, 5);
 
-  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabAuth), 4, 4, 0, 5);
+  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabAuth), 4, 4, 0, 5);
 
 
   grid->addMultiCellWidget(new QLabel(i18n("Host authentication:"), tabAuth), 5, 5, 0, 1);
@@ -600,7 +600,7 @@ QString whatstr;
       otherSSLVerify->setEnabled(false);
       otherSSLRemove->setEnabled(false);
 
-  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabOtherSSLCert), 8, 8, 0, 5);
+  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert), 8, 8, 0, 5);
   oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString::null));
   oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString::null));
   grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
