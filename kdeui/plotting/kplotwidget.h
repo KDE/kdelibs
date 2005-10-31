@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _KPLOTWIDGET_H_
-#define _KPLOTWIDGET_H_
+#ifndef KPLOTWIDGET_H
+#define KPLOTWIDGET_H
 
 #include <qcolor.h>
 #include <qrect.h>

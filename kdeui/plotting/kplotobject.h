@@ -18,8 +18,7 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-class QPainter;
-
+#include <QColor>
 #include <QPointF>
 #include <QRectF>
 #include <QString>
