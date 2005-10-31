@@ -317,7 +317,7 @@ void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
 static KStaticDeleter< QList<KSharedConfig*> > sd;
-QList<KSharedConfig*> *KSharedConfig::s_list = 0;
+static QList<KSharedConfig*> *s_list = 0;
 
 KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
 {
