@@ -14,7 +14,7 @@ def detect(env):
 
 	# do our best to find the QTDIR (non-Debian systems)
 	qtdir = os.getenv("QTDIR")
-	if qtdir and env.find_file('lib/libqt-mt' + libsuffix, [qtdir]): qtdir=None # qtdir for qt3, not qt4
+	if qtdir and env.find_file('lib/libqt-mt'+env['LIBSUFFIX'], [qtdir]): qtdir=None # qtdir for qt3, not qt4
 	if not qtdir:
 		qtdir=env.find_path('include/', [ # lets find the qt include directory
 				'/usr/local/Trolltech/Qt-4.0.3/', # one never knows
