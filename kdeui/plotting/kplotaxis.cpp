@@ -15,9 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qpainter.h>
-#include <kdebug.h>
-#include <klocale.h>
 #include "kplotaxis.h"
 
 KPlotAxis::KPlotAxis() : m_visible(true), m_labelFieldWidth(0), m_labelFmt('g'),

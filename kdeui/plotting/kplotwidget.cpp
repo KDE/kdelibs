@@ -25,6 +25,8 @@
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
 
+#include "kplotobject.h"
+
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent )
  : QWidget( parent, Qt::WNoAutoErase ),
    dXtick(0.0), dYtick(0.0),

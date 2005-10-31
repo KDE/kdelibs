@@ -18,59 +18,87 @@
 #ifndef KPLOTAXIS_H
 #define KPLOTAXIS_H
 
-#include <qstring.h>
+#include <QString>
 
-/**class KPlotAxis
-	*@short Contains all data for drawing an axis including format specification axis labels.
-	*@author Andreas Nicolai
-	*@version 1.0
-	*/
+#include <kdemacros.h>
+
+/**
+ * @short Axis for KPlotWidget
+ *
+ * Contains all data for drawing an axis including format specification axis labels.
+ *
+ * @author Andreas Nicolai
+ * @version 1.0
+ */
 class KDE_EXPORT KPlotAxis {
 public:
 
-	/**@short Default constructor, creates a default axis. */
+	/**
+	 * Default constructor, creates a default axis.
+	 */
 	KPlotAxis();
-
-	/**@short Constructor, constructs a labeled axis. */
+	/**
+	 * Constructor, constructs an axis with the label @p label.
+	 */
 	KPlotAxis(const QString& label);
 
-	/**@short Destructor. */
+	/**
+	 * Destructor.
+	 */
 	virtual ~KPlotAxis() {}
 
-	/**@short Returns whether the axis is visible or not. */
+	/**
+	 * Returns whether the axis is visible or not.
+	 */
 	virtual bool isVisible() const { return m_visible; }
 
-	/**@short Sets the "visible" property of the axis. */
+	/**
+	 * Sets the "visible" property of the axis.
+	 */
 	virtual void setVisible(bool visible) { m_visible = visible; }
 
-	/**@short Shows the axis (axis will be shown at next update of plot widget). */
+	/**
+	 * Shows the axis (axis will be shown at next update of plot widget).
+	 */
 	virtual void show() { m_visible = true; }
 
-	/**@short Hides the axis (axis will be hidden at next update of plot widget). */
+	/**
+	 * Hides the axis (axis will be hidden at next update of plot widget).
+	 */
 	virtual void hide() { m_visible = false; }
 
-	/**@short Sets the axis label.
-		*@param label A short string describing the data plotted on the axis.
-		*Set the label to an empty string to omit the axis label.
-		*/
+	/**
+	 * Sets the axis label.
+	 * Set the label to an empty string to omit the axis label.
+	 * @param label a string describing the data plotted on the axis.
+	 */
 	virtual void setLabel( const QString& label ) { m_label = label; }
 
-	/**@short Returns the axis label. */
+	/**
+	 * Returns the axis label.
+	 */
 	virtual QString label() const { return m_label; }
 
-	/**@short Set the number format for the tick labels, see QString::arg() for 
-              description of arguments.	   
-        */
+	/**
+	 * Set the number format for the tick labels, see QString::arg() for
+	 * description of arguments.
+         */
 	virtual void setLabelFormat(int fieldWidth, char fmt = 'g', int prec=-1) {
 		m_labelFieldWidth = fieldWidth; m_labelFmt = fmt; m_labelPrec = prec; }
 
-	/**@short Returns the field width of the tick labels. */
+	/**
+	 * Returns the field width of the tick labels.
+	 */
 	virtual int labelFieldWidth() const { return m_labelFieldWidth; }
 
-	/**@short Returns the number format of the tick labels. */
+	/**
+	 * Returns the number format of the tick labels.
+	 */
 	virtual char labelFmt() const { return m_labelFmt; }
 
-	/**@short Returns the number precision of the tick labels. */
+	/**
+	 * short Returns the number precision of the tick labels.
+	 */
 	virtual int labelPrec() const { return m_labelPrec; }
 
 private:

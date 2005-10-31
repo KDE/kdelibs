@@ -31,7 +31,7 @@
  * @author Jason Harris
  * @version 1.0
  * Each KPlotObject consists of a list of QPoints, an object type, a color, a size,
- * and a QString name. An additional integer (param) specifies something further
+ * and a name. An additional integer (param) specifies something further
  * about the object's appearance, depending on its type.  There is a draw function
  * for plotting the object on a KPlotWidget's QPainter.
  */
@@ -67,7 +67,7 @@ public:
 	KPlotObject( const QString &name, const QColor &color, PTYPE otype, unsigned int size=2, unsigned int param=0 );
 
 	/**
-	 * Destructor (empty)
+	 * Destructor.
 	 */
 	~KPlotObject();
 

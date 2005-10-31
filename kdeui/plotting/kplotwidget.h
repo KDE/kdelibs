@@ -22,7 +22,6 @@
 #include <qrect.h>
 #include <qwidget.h>
 #include <qlist.h>
-#include "kplotobject.h"
 #include "kplotaxis.h"
 
 #define BIGTICKSIZE 10
@@ -31,6 +30,7 @@
 #define YPADDING 20
 
 class QPixmap;
+class KPlotObject;
 
 /**
  * @class KPlotWidget
@@ -55,7 +55,6 @@ public:
 	 * @param y1 the minimum Y value in data units
 	 * @param y2 the maximum Y value in data units
 	 * @param parent the parent widget
-	 * @param name name label for the KPlotWidget
 	 */
 	KPlotWidget( double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0, QWidget *parent=0 );
 
