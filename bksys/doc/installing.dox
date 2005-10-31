@@ -1,12 +1,23 @@
 /** \page installing Installing bksys  
 
-The required steps of bksys installation depends on, which scons package you are using. 
+The main bksys package lives currently in the KDE svn repository, see http://websvn.kde.org/trunk/KDE/kdelibs/bksys . 
+Informations how to get the sources could be found on http://developer.kde.org/source/ . 
+
+svn users could use the following command line: 
+\code 
+ svn co svn://anonsvn.kde.org/home/kde/trunk/KDE/kdelibs/bksys
+\endcode 
+
+BKSYS requires an installed python interpreter. Hints for several operation systems could be found here: 
+
+- \ref installing_python_unix
+- \ref installing_python_win
+
+The additional required steps of bksys installation depends on which scons package you are using. 
 You can use the official scons release 0.96.91 from http://www.scons.org or the scons-mini release distributed with bksys. 
+The scons-mini release is a reduced 0.96.1 release and may be usefull for distribution because it is much smaller than the offical version.
 
-
-The bksys provided scons is a reduced 0.96.1 release and may be usefull for distribution because it is much smaller than the offical version.
-For installing the bksys distributed scons see: 
-
+For installing the scons-mini release see: 
 
 - \ref installing_local_scons_unix
 - \ref installing_local_scons_win
@@ -14,7 +25,38 @@ For installing the bksys distributed scons see:
 After installation is finished you have to configure your project. See the section \ref configuration for more information. 
 
 
-\page installing_local_scons_unix Installing local scons on unix
+\page installing_python_unix Installing python on unix 
+
+The installation depend on which distribution you are running. 
+
+- SuSE
+\code
+yast2 --install python 
+\endcode
+
+- debian
+\code
+apt-get install python2.4
+\endcode
+
+\page installing_python_win Installing python on Windows
+
+<ul>
+<li>download a python 2.4 binary release from http://www.python.org/2.4.2
+<li>install it on your local harddisc e.g c:\\Python24 
+<li>add this path to your Environment 
+<ul>
+<li>either in individual cmd shells
+\code
+set PATH=c:\\Python24;%PATH%
+\endcode
+	<li>or for all cmd shells global in the registry using the system contol panel \n
+		Go to System->Extended->Environment and add the related path to the PATH enviromnent variable. 
+	</ul>
+</ul>
+
+
+\page installing_local_scons_unix Installing scons-mini on unix
 
 \code
 cd kdelibs
@@ -40,7 +82,7 @@ export SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
 but in this case Miniscons and 0.96.91 are about as fast
 
 
-\page installing_local_scons_win Installing local scons on windows 
+\page installing_local_scons_win Installing scons-mini on windows 
 
 \todo: provide a self extraction archive because tar isn't available as default 
 
