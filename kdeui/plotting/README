@@ -14,9 +14,8 @@ then calling updateTickmarks() to recompute the positions of tickmarks
 and ticklabels.
 
 Data to be plotted are stored using the KPlotObject class.  KPlotObject
-consists of a QPtrList of DPoints, each specifying the X,Y coordinates
-of a data point (DPoint is like QPoint, but the X and Y values are doubles 
-instead of ints).  KPlotObject also specifies the "type" of data to be 
+consists of a QList of QPointF's, each specifying the X,Y coordinates
+of a data point.  KPlotObject also specifies the "type" of data to be 
 plotted (POINTS or CURVE or POLYGON or LABEL).
 
 Jason Harris

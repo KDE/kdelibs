@@ -18,6 +18,8 @@
 #ifndef _KPLOTWIDGET_H_
 #define _KPLOTWIDGET_H_
 
+#include <qcolor.h>
+#include <qrect.h>
 #include <qwidget.h>
 #include <qlist.h>
 #include "kplotobject.h"
@@ -28,7 +30,6 @@
 #define XPADDING 20
 #define YPADDING 20
 
-class QColor;
 class QPixmap;
 
 /**
@@ -86,7 +87,7 @@ public:
 	/**
 	 * @return the maximum X value in data units
 	 */
-	virtual double x2() const { return DataRect.x2(); }
+	virtual double x2() const { return DataRect.x() + DataRect.width(); }
 
 	/**
 	 * @return the minimum Y value in data units
@@ -96,7 +97,7 @@ public:
 	/**
 	 * @return the maximum Y value in data units
 	 */
-	virtual double y2() const { return DataRect.y2(); }
+	virtual double y2() const { return DataRect.y() + DataRect.height(); }
 
 	/**
 	 * @return the width in data units
@@ -260,6 +261,12 @@ public:
 	 */
 	virtual void setDefaultPadding() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
+	QPoint mapToPoint( const QPointF& p ) {
+		int px = PixRect.left() + int( PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width() );
+		int py = PixRect.top() + int( PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height() );
+		return QPoint( px, py );
+	}
+
 	/**
 	 * The bottom X axis.
 	 */
@@ -314,7 +321,7 @@ protected:
 	//Limits of the plot area in pixel units
 	QRect PixRect;
 	//Limits of the plot area in data units
-	DRect DataRect;
+	QRectF DataRect;
 	/**
 	 * List of KPlotObjects
 	 */

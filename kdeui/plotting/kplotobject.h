@@ -18,66 +18,13 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-class QString;
 class QPainter;
 
+#include <QPointF>
+#include <QRectF>
+#include <QString>
+
 #include <kdemacros.h>
-
-/**
- * @class DRect
- * @short Equivalent of QRect with double x,y coordinates
- * @author Jason Harris
- * @version 1.0
- */
-class KDE_EXPORT DRect {
-public:
-	DRect() { DRect( 0.0, 0.0, 1.0, 1.0 ); }
-	DRect( double x, double y, double w, double h ) { X = x; Y = y; W = w; H = h; }
-	~DRect() {}
-
-	double x() const { return X; }
-	double y() const { return Y; }
-	double x2() const { return X + W; }
-	double y2() const { return Y + H; }
-	double width() const { return W; }
-	double height() const { return H; }
-
-	void setX( double x ) { X = x; }
-	void setY( double y ) { Y = y; }
-	void setWidth( double w ) { W = w; }
-	void setHeight( double h ) { H = h; }
-
-private:
-	double X,Y,W,H;
-};
-
-/**
- * @class DPoint
- * @short equivalent of QPoint with double x,y coordinates
- * @author Jason Harris
- * @version 1.0
- */
-class KDE_EXPORT DPoint {
-public:
-	DPoint() { DPoint( 0.0, 0.0 ); }
-	DPoint( double x, double y ) { setX( x ); setY( y ); }
-	~DPoint() {}
-
-	double x() const { return X; }
-	double y() const { return Y; }
-
-	QPoint qpoint( const QRect& pb, const DRect& db ) {
-		int px = pb.left() + int( pb.width()*( x() -  db.x() )/db.width() );
-		int py = pb.top() + int( pb.height()*( db.y2() - y() )/db.height() );
-		return QPoint( px, py );
-	}
-
-	void setX( double x ) { X = x; }
-	void setY( double y ) { Y = y; }
-
-private:
-	double X, Y;
-};
 
 /**
  * @class KPlotObject
@@ -183,25 +130,25 @@ public:
 	void setParam( unsigned int p ) { Parameter = p; }
 
 	/**
-	 * @return a pointer to the DPoint at position i
+	 * @return a pointer to the QPointF at position i
 	 * @param i the index of the desired point.
 	 */
-	DPoint* point( unsigned int i ) { return pList.at(i); }
+	QPointF* point( unsigned int i ) { return pList.at(i); }
 
-	QList<DPoint*> *points() { return &pList; }
+	QList<QPointF*> *points() { return &pList; }
 
 	/**
 	 * Add a point to the object's list.
-	 * @param p the DPoint to add.
+	 * @param p the QPointF to add.
 	 */
-	void addPoint( const DPoint &p ) { pList.append( new DPoint( p.x(), p.y() ) ); }
+	void addPoint( const QPointF &p ) { pList.append( new QPointF( p.x(), p.y() ) ); }
 
 	/**
 	 * Add a point to the object's list.
 	 * @overload
-	 * @param p pointer to the DPoint to add.
+	 * @param p pointer to the QPointF to add.
 	 */
-	void addPoint( DPoint *p ) { pList.append( p ); }
+	void addPoint( QPointF *p ) { pList.append( p ); }
 
 	/**
 	 * Remove the QPoint at position index from the list of points
@@ -220,7 +167,7 @@ public:
 	void clearPoints() { pList.clear(); }
 
 private:
-	QList<DPoint*> pList;
+	QList<QPointF*> pList;
 	PTYPE Type;
 	unsigned int Size, Parameter;
 	QString Color, Name;

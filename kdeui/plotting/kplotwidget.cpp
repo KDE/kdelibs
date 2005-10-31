@@ -62,7 +62,7 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 	if ( y2<y1) { YA1=y2; YA2=y1; }
 	else { YA1=y1; YA2=y2; }
 
-	DataRect = DRect( XA1, YA1, XA2-XA1, YA2-YA1 );
+	DataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
 	updateTickmarks();
 }
 
@@ -166,9 +166,9 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				{
 					p->setBrush( QColor( po->color() ) );
 
-					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 					{
-						QPoint q = ( *dpit )->qpoint( PixRect, DataRect );
+						QPoint q = mapToPoint( **dpit );
 						int x1 = q.x() - po->size()/2;
 						int y1 = q.y() - po->size()/2;
 
@@ -188,15 +188,15 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				{
 					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
 					QPolygon poly;
-					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-						poly << ( *dpit )->qpoint( PixRect, DataRect );
+					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+						poly << mapToPoint( **dpit );
 					p->drawPolyline( poly );
 					break;
 				}
 
 				case KPlotObject::LABEL : //draw label centered at point in x, and slightly below point in y.
 				{
-					QPoint q = po->points()->first()->qpoint( PixRect, DataRect );
+					QPoint q = mapToPoint( *(po->points()->first()) );
 					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::TextDontClip, po->name() );
 					break;
 				}
@@ -210,8 +210,8 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 					QPolygon a( po->count() );
 
 					unsigned int i=0;
-					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-						a.setPoint( i++, ( *dpit )->qpoint( PixRect, DataRect ) );
+					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+						a.setPoint( i++, mapToPoint( **dpit ) );
 
 					p->drawPolygon( a );
 					break;
