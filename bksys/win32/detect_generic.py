@@ -45,6 +45,9 @@ def detect(env):
 	# for make compatibility 
 	if os.environ.has_key('LDFLAGS'):   env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LDFLAGS'] )
 
+	# no colors if user does not want them
+	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
+
 	# User-specified prefix
 	env['PREFIX']='C:\\Qt\\'
 	if env['ARGS'].has_key('prefix'):
@@ -60,9 +63,6 @@ def detect(env):
 	if env['ARGS'].has_key('extralibs'):
 		env['EXTRALIBS'] = env['ARGS'].get('extralibs','').split(':')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
-
-	# no colors if user does not want them
-	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 
 	if env['CC'] == 'cl':
 		env.AppendUnique(CPPPATH = [os.environ['INCLUDE'].split()])

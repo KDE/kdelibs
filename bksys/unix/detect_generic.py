@@ -22,6 +22,9 @@ def detect(env):
 	# for make compatibility 
 	if os.environ.has_key('LDFLAGS'):   env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LDFLAGS'] )
 
+	## no colors if user does not want them
+	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
+
 	## Mac OS X settings
 	if sys.platform == 'darwin':
 		env['GENCXXFLAGS'] += ['-fno-common']
@@ -77,10 +80,6 @@ def detect(env):
 		else:
 			libsuffix='.so'
 	env['LIBSUFFIXEXT'] = libsuffix
-
-	## no colors if user does not want them
-	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
-
 
 
 def dist(env, appname, version=''):
