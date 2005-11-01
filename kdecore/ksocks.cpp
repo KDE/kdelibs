@@ -213,7 +213,7 @@ KSocks *KSocks::self() {
   // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
      if (kapp) {
-        KConfigGroup cfg(kapp->config(), "Socks");
+        KConfigGroup cfg(KGlobal::config(), "Socks");
         _me = new KSocks(&cfg);
      } else {
         _disabled = true;

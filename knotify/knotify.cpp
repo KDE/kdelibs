@@ -210,7 +210,7 @@ void KNotify::loadConfig() {
 
 void KNotify::reconfigure()
 {
-    kapp->config()->reparseConfiguration();
+    KGlobal::config()->reparseConfiguration();
     loadConfig();
 
     // clear loaded config files

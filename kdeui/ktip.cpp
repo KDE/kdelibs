@@ -308,7 +308,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     ok->setDefault(true);
     hbox2->addWidget(ok);
 
-    KConfigGroup config(kapp->config(), "TipOfDay");
+    KConfigGroup config(KGlobal::config(), "TipOfDay");
     mTipOnStart->setChecked(config.readBoolEntry("RunOnStart", true));
 
     connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
@@ -339,7 +339,7 @@ void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 
 void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool force)
 {
-    KConfigGroup configGroup(kapp->config(), "TipOfDay");
+    KConfigGroup configGroup(KGlobal::config(), "TipOfDay");
 
     const bool runOnStart = configGroup.readBoolEntry("RunOnStart", true);
 
@@ -358,7 +358,6 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
                return;
         }
         configGroup.writeEntry("TipLastShown", QDateTime::currentDateTime());
-        kapp->config()->sync();
         if (!hasLastShown)
            return; // Don't show tip on first start
     }
@@ -402,9 +401,8 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
 
   void KTipDialog::setShowOnStart(bool on)
   {
-      KConfigGroup config(kapp->config(), "TipOfDay");
+      KConfigGroup config(KGlobal::config(), "TipOfDay");
       config.writeEntry("RunOnStart", on);
-      config.sync();
   }
 
   bool KTipDialog::eventFilter(QObject *o, QEvent *e)

@@ -293,7 +293,7 @@ void DownloadDialog::slotResult(KIO::Job *job)
 
   kdDebug() << "got data: " << m_data[job] << endl;
 
-  kapp->config()->setGroup("KNewStuffStatus");
+  // KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
 
   dom.setContent(m_data[job]);
   knewstuff = dom.documentElement();
@@ -333,8 +333,8 @@ int DownloadDialog::installStatus(Entry *entry)
   QString datestring;
   int installed;
 
-  kapp->config()->setGroup("KNewStuffStatus");
-  datestring = kapp->config()->readEntry(entry->name());
+  KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
+  datestring = cg.readEntry(entry->name());
   if(datestring.isNull()) installed = 0;
   else
   {
@@ -477,9 +477,8 @@ void DownloadDialog::slotInstall()
 
 void DownloadDialog::install(Entry *e)
 {
-  kapp->config()->setGroup("KNewStuffStatus");
-  kapp->config()->writeEntry(m_entryname, e->releaseDate().toString(Qt::ISODate));
-  kapp->config()->sync();
+  KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
+  cg.writeEntry(m_entryname, e->releaseDate().toString(Qt::ISODate));
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
 

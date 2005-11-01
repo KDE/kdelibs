@@ -458,9 +458,8 @@ int main( int argc, char **argv )
   if ( args->isSet( "disable-autostart" ) ) {
     kdDebug() << "Disable autostart." << endl;
 
-    KConfig *config = app.config();
-    config->setGroup( "Startup" );
-    config->writeEntry( "EnableAutostart", false );
+    KConfigGroup cg(KGlobal::config(), "Startup" );
+    cg.writeEntry( "EnableAutostart", false );
   }
 
   KABC::AddressBook *kabcBook = StdAddressBook::self();

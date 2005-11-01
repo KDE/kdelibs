@@ -150,7 +150,7 @@ bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
 void Kded::initModules()
 {
      m_dontLoad.clear();
-     KConfig *config = kapp->config();
+     KConfig *config = KGlobal::config();
      bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
 
      // Preload kded modules.
@@ -779,7 +779,7 @@ public:
       return true;
     }
     else if (fun == "reconfigure()") {
-      config()->reparseConfiguration();
+      KGlobal::config()->reparseConfiguration();
       Kded::self()->initModules();
       replyType = "void";
       return true;

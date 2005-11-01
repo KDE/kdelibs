@@ -17,12 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KMOUNTPOINT_H_
-#define _KMOUNTPOINT_H_
+#ifndef KMOUNTPOINT_H
+#define KMOUNTPOINT_H
 
 #include <q3ptrlist.h>
 #include <qstringlist.h>
-
 #include <ksharedptr.h>
 
 /**

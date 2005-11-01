@@ -728,6 +728,9 @@ signals:
   void saveYourself();
 
 private:
+#ifndef KDE3_SUPPORT
+  KConfig *config() { return KInstance::config(); }
+#endif
   void propagateSettings(SettingsCategory category);
   void kdisplaySetPalette();
   void kdisplaySetStyle();

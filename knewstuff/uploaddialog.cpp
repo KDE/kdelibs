@@ -129,17 +129,16 @@ void UploadDialog::slotOk()
   entry->setSummary( mSummaryEdit->text(), mLanguageCombo->currentText() );
 
   if ( mPayloadUrl.isValid() ) {
-    KConfig *conf = kapp->config();
-    conf->setGroup( QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()) );
-    conf->writeEntry("name", mNameEdit->text());
-    conf->writeEntry("author", mAuthorEdit->text());
-    conf->writeEntry("version", mVersionEdit->text());
-    conf->writeEntry("release", mReleaseSpin->value());
-    conf->writeEntry("licence", mLicenceCombo->currentText());
-    conf->writeEntry("preview", mPreviewUrl->url());
-    conf->writeEntry("summary", mSummaryEdit->text());
-    conf->writeEntry("language", mLanguageCombo->currentText());
-    conf->sync();
+    KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
+    cg.writeEntry("name", mNameEdit->text());
+    cg.writeEntry("author", mAuthorEdit->text());
+    cg.writeEntry("version", mVersionEdit->text());
+    cg.writeEntry("release", mReleaseSpin->value());
+    cg.writeEntry("licence", mLicenceCombo->currentText());
+    cg.writeEntry("preview", mPreviewUrl->url());
+    cg.writeEntry("summary", mSummaryEdit->text());
+    cg.writeEntry("language", mLanguageCombo->currentText());
+    KGlobal::config()->sync();
   }
 
   mEngine->upload( entry );
@@ -156,16 +155,15 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
 {
   mPayloadUrl = payloadFile;
 
-  KConfig *conf = kapp->config();
-  conf->setGroup( QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()) );
-  QString name = conf->readEntry("name");
-  QString author = conf->readEntry("author");
-  QString version = conf->readEntry("version");
-  QString release = conf->readEntry("release");
-  QString preview = conf->readEntry("preview");
-  QString summary = conf->readEntry("summary");
-  QString lang = conf->readEntry("language");
-  QString licence = conf->readEntry("licence");
+  KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()) );
+  QString name = cg.readEntry("name");
+  QString author = cg.readEntry("author");
+  QString version = cg.readEntry("version");
+  QString release = cg.readEntry("release");
+  QString preview = cg.readEntry("preview");
+  QString summary = cg.readEntry("summary");
+  QString lang = cg.readEntry("language");
+  QString licence = cg.readEntry("licence");
 
   if(!name.isNull())
   {

@@ -852,7 +852,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
   }
 
   if (dontShowAgain) {
-    KConfigGroup cg(kapp->config(), QLatin1String("Java/JavaScript Settings"));
+    KConfigGroup cg(KGlobal::config(), QLatin1String("Java/JavaScript Settings"));
     cg.writeEntry("ReportJavaScriptErrors",QVariant(false,0));
     cg.sync();
     QByteArray data;
