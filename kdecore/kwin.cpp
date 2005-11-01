@@ -859,7 +859,7 @@ NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
         << "Pass NET::WMWindowType to KWin::windowInfo()" << endl;
     return d->info->windowType( supported_types );
 #else
-    return 0;
+    return (NET::WindowType)0;
 #endif
 }
 

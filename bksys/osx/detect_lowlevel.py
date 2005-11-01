@@ -306,9 +306,14 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 #if defined(__SVR4) && !defined(__svr4__)
 #define __svr4__ 1
+#endif
+
 #define kde_socklen_t socklen_t
 #define ksize_t socklen_t
-#endif
+
+#define LTDL_OBJDIR ".libs/"
+#define LTDL_SHLIBPATH_VAR "DYLD_LIBRARY_PATH"
+#define LTDL_SYSSEARCHPATH "/lib:/usr/lib"
 """
 	## commented out for now; the real fix is not the above, but to write real tests in lowlevel.py
 	dest.write(content)

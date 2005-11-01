@@ -51,8 +51,12 @@ def detect(env):
 			else:
 				env.AppendUnique( GENLINKFLAGS = ['-pthread'])
 
-		env.AppendUnique( GENLINKFLAGS = ['-L/usr/local/lib', '-L/usr/X11R6/lib'] )
-		env.AppendUnique( GENCXXFLAGS = ['-I/usr/local/include', '-I/usr/X11R6/include'] )
+		if sys.platform == 'darwin':
+			env.AppendUnique( GENLINKFLAGS = ['-L/usr/local/lib'] )
+			env.AppendUnique( GENCXXFLAGS = ['-I/usr/local/include'] )
+		else:
+			env.AppendUnique( GENLINKFLAGS = ['-L/usr/local/lib', '-L/usr/X11R6/lib'] )
+			env.AppendUnique( GENCXXFLAGS = ['-I/usr/local/include', '-I/usr/X11R6/include'] )
 
 	# User-specified prefix
 	env['PREFIX']='/usr'

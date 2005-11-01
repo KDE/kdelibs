@@ -121,6 +121,10 @@ if env['WINDOWS']:
 	if env['CC'] == 'cl':
 		obj.ccflags += ' -wd4661 -DKIO_EXPORT= '
 
+if env['MAC']:
+	obj.libs += ' resolv z '
+	obj.frameworks += ' Carbon '
+
 # TODO check for libagg
 if env.has_key("CACHED_LIBAGG") and env['CACHED_LIBAGG']:
     #FIXME: QTXML is used in libkdesvgicons

@@ -522,6 +522,14 @@ static pid_t launch(int argc, const char *_name, const char *args,
        QByteArray procTitle;
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
+#ifdef Q_WS_MAC
+       QString argvexe = s_instance->dirs()->findExe(QString::fromLatin1(d.argv[0]));
+       if (!argvexe.isEmpty()) {
+          QByteArray cstr = argvexe.local8Bit();
+          kdDebug() << "kdeinit: launch() setting argv: " << cstr.data() << endl;
+          d.argv[0] = strdup(cstr.data());
+       }
+#endif
        for (int i = 1;  i < argc; i++)
        {
           d.argv[i] = (char *) args;
@@ -587,7 +595,16 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
         setup_tty( tty );
 
-        execvp(execpath.data(), d.argv);
+        QByteArray executable = execpath.data();
+#ifdef Q_WS_MAC
+        QString bundlepath = s_instance->dirs()->findExe( execpath.data() );
+        if (!bundlepath.isEmpty())
+           executable = QFile::encodeName(bundlepath);
+#endif
+
+        if (!executable.isEmpty())
+           execvp(executable, d.argv);
+
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
@@ -1427,8 +1444,13 @@ static void kdeinit_library_path()
 {
    QStringList ltdl_library_path =
      QFile::decodeName(getenv("LTDL_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+#ifdef Q_OS_DARWIN
+   QStringList ld_library_path =
+     QFile::decodeName(getenv("DYLD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+#else
    QStringList ld_library_path =
      QFile::decodeName(getenv("LD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+#endif
 
    QByteArray extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");

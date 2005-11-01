@@ -154,6 +154,11 @@ class genobj:
 		# on linux e.g. use xyz for the real library named libxyz.so 
 		self.libs      =''
 
+		## list of path(s) containing required frameworks
+		self.frameworkpaths = ''
+		## list of frameworks which should be included in this binary object
+		self.frameworks = ''
+
 		# warning: uber-cool feature
 		# self.uselib='KIO XML' and all linkflags, etc are added
 		
@@ -190,6 +195,7 @@ class genobj:
 		self.p_local_shlibs=[]
 		self.p_local_staticlibs=[]
 		self.p_global_shlibs=[]
+		self.p_frameworks=[]
 
 		self.p_localsource=None
 		self.p_localtarget=None
@@ -327,6 +333,11 @@ class genobj:
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(lib)
 
+		# frameworks
+		if self.env['MAC']:
+			for framework in self.env.make_list(self.frameworks):
+				self.p_frameworks.append(framework)
+
 		# and now add the libraries from uselib
 		if self.uselib:
 			libs=SCons.Util.CLVar(self.uselib)
@@ -361,6 +372,9 @@ class genobj:
 		if len(self.p_local_staticlibs)>0: self.env.link_local_staticlib(self.p_local_staticlibs)
 		if len(self.p_local_shlibs)>0:     self.env.link_local_shlib(self.p_local_shlibs)
 		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
+		if len(self.p_frameworks)>0:       self.env.AppendUnique(FRAMEWORKS=self.p_frameworks)
+		if len(self.frameworkpaths)>0:     self.env.PrependUnique(FRAMEWORKPATH=self.frameworkpaths)
+
 		# The target to return - IMPORTANT no more self.env modification is possible after this part
 		ret=None
 		if self.type=='shlib' or self.type=='kioslave' or self.type=='module':
@@ -513,6 +527,7 @@ def getCompiler(env,sys):
 
 ## Entry point of the module generic
 def generate(env):
+	import sys
 
 	## (added by Coolo apparently)
 	## i see what it does now - however importing default tools causes performance issues (TODO ita)
@@ -523,6 +538,11 @@ def generate(env):
 		env['WINDOWS']=1
 	else:
 		env['WINDOWS']=0
+
+	if sys.platform == 'darwin':
+		env['MAC']=1
+	else:
+		env['MAC']=0
 
 	env['BKS_COLORS']={
 	'BOLD'  :"\033[1m",
@@ -919,7 +939,7 @@ def generate(env):
 
 			lenv.AppendUnique(LIBS = [link])
 			lenv.PrependUnique(LIBPATH = [dir])
-	
+
 	## Links against a static library made in the project 
 	def link_local_staticlib(lenv, str):
 		lst = lenv.make_list(str)
