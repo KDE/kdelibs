@@ -26,8 +26,9 @@
 #include <QFocusEvent>
 #include <QWhatsThis>
 
-struct KActiveLabelPrivate
+class KActiveLabelPrivate
 {
+public:
     KActiveLabelPrivate(KActiveLabel *qq);
 
     void updatePalette();
