@@ -285,6 +285,9 @@ class genobj:
 		if self.libprefix != '' and self.target[:len(self.libprefix)] == self.libprefix:
 			self.target = self.target[len(self.libprefix):]
 
+		if self.type in ['shlib','kioslave','module']:
+			self.env.AppendUnique( CCFLAGS = ['-DMAKE_'+self.target.upper()+'_LIB'] )
+
 		if not self.p_localtarget: self.p_localtarget = self.joinpath(self.target)
 		if not self.p_localsource: self.p_localsource = self.joinpath(self.env.make_list(self.source))
 
