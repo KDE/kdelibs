@@ -1743,7 +1743,7 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
         if ( charAttributes->bold() )
           style.append("font-weight: bold;");
         if ( charAttributes->italic() )
-          style.append("text-style: italic;");
+          style.append("font-style: italic;");
         if ( charAttributes->underline() )
           textdecoration = "underline";
         if ( charAttributes->overline() )
