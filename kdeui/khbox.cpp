@@ -16,8 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#undef QT3_SUPPORT
-
 #include "khbox.h"
 #include <qlayout.h>
 #include <qevent.h>
