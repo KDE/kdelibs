@@ -401,7 +401,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ? 
 		(QChar( e->key() & 0xff ).toLower().latin1() | (e->key() & 0xffff00) )
 		: e->key();
-	int modQt = KKeyServer::qtButtonStateToMod( e->state() );
+	int modQt = KKeyServer::qtButtonStateToMod( e->modifiers() );
 	KKeyNative keyNative( KKey(keyQt, modQt) );
 	m_mod = keyNative.mod();
 	uint keySym = keyNative.sym();
@@ -463,7 +463,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 bool KShortcutDialog::event ( QEvent * e )
 {
 	if (e->type()==QEvent::KeyRelease) {
-		int modQt = KKeyServer::qtButtonStateToMod( static_cast<QKeyEvent*>(e)->state() );
+		int modQt = KKeyServer::qtButtonStateToMod( static_cast<QKeyEvent*>(e)->modifiers() );
 		KKeyNative keyNative( KKey(static_cast<QKeyEvent*>(e)->key(), modQt) );
 		uint keySym = keyNative.sym();
 

@@ -206,7 +206,7 @@ KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool rea
       parent, false,
       name ? name : "mainToolBar")
 {
-    if ( !dynamic_cast<Q3MainWindow*>(parent) );
+    if ( !dynamic_cast<Q3MainWindow*>(parent) )
          setWindowFlags( windowFlags() & ~Qt::WindowType_Mask ); //We're not a top-level!
     init( readConfig, honorStyle );
 }
