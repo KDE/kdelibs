@@ -494,8 +494,6 @@ KLed::paintRectFrame(bool raised)
   QBrush darkBrush(d->offcolor);
   int w=width();
   int h=height();
-  QColor Qt::black=Qt::black;
-  QColor Qt::white=Qt::white;
   // -----
   if(raised)
     {
