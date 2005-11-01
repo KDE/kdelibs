@@ -76,7 +76,7 @@ class Q3SqlPropertyMap;
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KConfigDialogManager : public QObject {
+class KDEUI_EXPORT KConfigDialogManager : public QObject {
 
 Q_OBJECT
 
