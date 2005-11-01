@@ -286,6 +286,7 @@ def generate(env):
 			if senv: SConsEnvironment.qt4obj.__init__(self, val, senv)
 			else: SConsEnvironment.qt4obj.__init__(self, val, env)
 		def execute(self):
+			import sys
 			if self.executed: return
 			if self.orenv.has_key('DUMPCONFIG'):
 				self.executed=1
@@ -294,11 +295,15 @@ def generate(env):
 			if self.type=='shlib':
 				self.instdir=self.orenv.getInstDirForResType('KDELIB')
 			elif self.type=='kioslave':
-				self.instdir=self.orenv.getInstDirForResType('KDELIB')
+				self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
 				self.libprefix=''
+				if sys.platform == 'darwin':
+					self.libsuffix='.so'
 			elif self.type=='module':
 				self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
 				self.libprefix=''
+				if sys.platform == 'darwin':
+					self.libsuffix='.so'
 			elif self.type=='program':
 				self.instdir=self.orenv.getInstDirForResType('KDEBIN')
 				self.perms=0755
@@ -359,6 +364,9 @@ def generate(env):
 			#self.binary.libdirs      = "build/dcop"
 			self.binary.libpaths     = self.libpaths
 			env.Depends(self.binary.target, self.kdeinitlib.target + ".la")
+
+			self.type = 'module'
+			self.libs = [self.kdeinitlib.target + ".la"] + self.orenv.make_list(self.libs)
 
 			myname=None
 			myext=None
