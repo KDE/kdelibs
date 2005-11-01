@@ -84,14 +84,12 @@ void KTabCtl::setTabFont(const QFont & font)
 
 void KTabCtl::show()
 {
-    unsigned int i;
-
     if(isVisible())
 	return;
 
     setSizes();
 
-    for(i = 0; i < pages.size(); i++)
+    for(int i = 0; i < pages.size(); i++)
 	pages[i]->hide();
 
     QResizeEvent r(size(), size());
@@ -102,9 +100,7 @@ void KTabCtl::show()
 
 bool KTabCtl::isTabEnabled(const QString& name)
 {
-    unsigned int i;
-
-    for(i = 0; i < pages.size(); i++)
+    for(int i = 0; i < pages.size(); i++)
 	if (pages[i]->objectName() == name)
 	    return tabs->isTabEnabled(i);   /* return the enabled status */
     return false;     /* tab does not exist */
@@ -112,20 +108,16 @@ bool KTabCtl::isTabEnabled(const QString& name)
 
 void KTabCtl::setTabEnabled(const QString& name, bool state)
 {
-    unsigned i;
-
     if (name.isEmpty())
         return;
 
-    for (i = 0; i < pages.size(); i++)
+    for (int i = 0; i < pages.size(); i++)
 	if (pages[i]->objectName() == name)
 	    tabs->setTabEnabled(i, state);
 }
 
 void KTabCtl::setSizes()
 {
-    unsigned i;
-
     QSize min(tabs->sizeHint());    /* the minimum required size for the tabbar */
     tabs->resize(min);         /* make sure that the tabbar does not require more space than actually needed. */
 
@@ -133,7 +125,7 @@ void KTabCtl::setSizes()
     QSize max(QCOORD_MAX,QCOORD_MAX);
     //int th = min.height();          /* the height of the tabbar itself (without pages and stuff) */
 
-    for (i = 0; i < pages.size(); i++) {
+    for (int i = 0; i < pages.size(); i++) {
 
         /*
          * check the actual minimum and maximum sizes
@@ -161,7 +153,7 @@ void KTabCtl::setSizes()
      * now, apply the calculated size values to all of the pages
      */
 
-    for( i=0; i<(uint)pages.size(); i++ ) {
+    for( int i=0; i<pages.size(); i++ ) {
 	pages[i]->setMinimumSize(min);
 	pages[i]->setMaximumSize(max);
     }
@@ -198,7 +190,7 @@ KTabCtl::sizeHint() const
 
 	/* overall desired size of all pages */
 	QSize pageHint;
-	for (unsigned int i = 0; i < pages.size(); i++)
+	for (int i = 0; i < pages.size(); i++)
 	{
 		QSize sizeI(pages[i]->sizeHint());
 
@@ -291,14 +283,13 @@ QRect KTabCtl::getChildRect() const
 
 void KTabCtl::showTab(int i)
 {
-    unsigned int j;
-    for (j = 0; j < pages.size(); j++) {
-      if (j != (unsigned)i) {
+    for (int j = 0; j < pages.size(); j++) {
+      if (j != i) {
         pages[j]->hide();
       }
     }
 
-    if((unsigned)i < pages.size()) {
+    if(i < pages.size()) {
         emit(tabSelected(i));
 		if( pages.size() >= 2 ) {
 			pages[i]->raise();
