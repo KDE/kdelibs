@@ -28,12 +28,14 @@
 /**
  * @class KPlotObject
  * @short Encapsulates an object to be plotted in a KPlotWidget.
- * @author Jason Harris
- * @version 1.0
+ *
  * Each KPlotObject consists of a list of QPoints, an object type, a color, a size,
  * and a name. An additional integer (param) specifies something further
  * about the object's appearance, depending on its type.  There is a draw function
  * for plotting the object on a KPlotWidget's QPainter.
+ *
+ * @author Jason Harris
+ * @version 1.0
  */
 class KDE_EXPORT KPlotObject{
 public:
@@ -150,7 +152,7 @@ public:
 	void addPoint( QPointF *p ) { pList.append( p ); }
 
 	/**
-	 * Remove the QPoint at position index from the list of points
+	 * Remove the QPointF at position index from the list of points
 	 * @param index the index of the point to be removed.
 	 */
 	void removePoint( int index );
