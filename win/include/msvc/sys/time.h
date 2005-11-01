@@ -28,12 +28,10 @@
 #define INCL_WINSOCK_API_PROTOTYPES 1 //for ntohl(), etc.
 #include <winsock2.h> //timeval
 
-/*#ifndef _WINSOCK2API_
-struct timeval {
-  long tv_sec;
-  long tv_usec;
-}; 
-#endif*/
+struct itimerval {
+	struct timeval it_interval; /**< reset value*/
+	struct timeval it_value;    /**< current value*/
+};
 
 #include <../include/time.h>
 

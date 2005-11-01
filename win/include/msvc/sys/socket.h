@@ -17,55 +17,154 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_SOCKET_H
-#define _SYS_SOCKET_H
+#ifndef _SOCKET_H
+#define _SOCKET_H
 
-#include <sys/time.h>
+#include <sys/types.h>
 
-//#define WIN32_LEAN_AND_MEAN
-#include <winsock2.h>
-
-#if 0
 #ifdef __cplusplus
-/*extern "C" {*/
+extern "C" {
 #endif
 
-/* SUS symbolic values for the second parm to shutdown(2) */
-#define SHUT_RD   0		/* == Win32 SD_RECEIVE */
-#define SHUT_WR   1		/* == Win32 SD_SEND    */
-#define SHUT_RDWR 2		/* == Win32 SD_BOTH    */
+struct msghdr
+{
+	void	*	msg_name;	/* Socket name			*/
+	int		msg_namelen;	/* Length of name		*/
+	struct iovec *	msg_iov;	/* Data blocks			*/
+	int		msg_iovlen;	/* Number of blocks		*/
+	void	*	msg_accrights;	/* Per protocol magic (eg BSD file descriptor passing) */
+	int		msg_accrightslen;	/* Length of rights list */
+};
 
-  int accept (int, struct sockaddr *__peer, int *);
-  int bind (int, const struct sockaddr *__my_addr, int __addrlen);
-  int connect (int, const struct sockaddr *, int);
-  int getpeername (int, struct sockaddr *__peer, int *);
-  int getsockname (int, struct sockaddr *__addr, int *);
-  int listen (int, int __n);
-  int recv (int, void *__buff, int __len, unsigned int __flags);
-  int recvfrom (int, char *__buff, int __len, int __flags,
-                struct sockaddr *__from, int *__fromlen);
-  int recvmsg(int s, struct msghdr *msg, int flags);
-  int send (int, const void *__buff, int __len, unsigned int __flags);
-  int sendmsg(int s, const struct msghdr *msg, int flags);
-  int sendto (int, const void *, int, unsigned int, const struct sockaddr *, int);
-  int setsockopt (int __s, int __level, int __optname, const void *optval, int __optlen);
-  int getsockopt (int __s, int __level, int __optname, void *__optval, int *__optlen);
-  int shutdown (int, int);
-/* defined in winsock:  int socket (int __family, int __type, int __protocol);*/
-  int socketpair (int __domain, int __type, int __protocol, int *__socket_vec);
+#ifndef socklen_t
+#define socklen_t int
+#endif
 
-/*defined in winsock:  struct servent *getservbyname (const char *__name, const char *__proto); */
+/* Socket types. */
+#define SOCK_STREAM	1		/* stream (connection) socket	*/
+#define SOCK_DGRAM	2		/* datagram (conn.less) socket	*/
+#define SOCK_RAW	3		/* raw socket			*/
+#define SOCK_RDM	4		/* reliably-delivered message	*/
+#define SOCK_SEQPACKET	5		/* sequential packet socket	*/
 
-//#define WIN32_LEAN_AND_MEAN
-#include <winsock2.h>
+/* Supported address families. */
+/*
+ * Address families.
+ */
+#define AF_UNSPEC       0               /* unspecified */
+#define AF_UNIX         1               /* local to host (pipes, portals) */
+#define AF_LOCAL        1               /* POSIX name for AF_UNIX */
+#define AF_INET         2               /* internetwork: UDP, TCP, etc. */
+#define AF_IMPLINK      3               /* arpanet imp addresses */
+#define AF_PUP          4               /* pup protocols: e.g. BSP */
+#define AF_CHAOS        5               /* mit CHAOS protocols */
+#define AF_NS           6               /* XEROX NS protocols */
+#define AF_ISO          7               /* ISO protocols */
+#define AF_OSI          AF_ISO          /* OSI is ISO */
+#define AF_ECMA         8               /* european computer manufacturers */
+#define AF_DATAKIT      9               /* datakit protocols */
+#define AF_CCITT        10              /* CCITT protocols, X.25 etc */
+#define AF_SNA          11              /* IBM SNA */
+#define AF_DECnet       12              /* DECnet */
+#define AF_DLI          13              /* Direct data link interface */
+#define AF_LAT          14              /* LAT */
+#define AF_HYLINK       15              /* NSC Hyperchannel */
+#define AF_APPLETALK    16              /* AppleTalk */
+#define AF_NETBIOS      17              /* NetBios-style addresses */
+#define AF_INET6        23              /* IP version 6 */
 
-#if 0
+#define AF_MAX          32
+/*
+ * Protocol families, same as address families for now.
+ */
+#define PF_UNSPEC       AF_UNSPEC
+#define PF_UNIX         AF_UNIX
+#define PF_LOCAL        AF_LOCAL
+#define PF_INET         AF_INET
+#define PF_IMPLINK      AF_IMPLINK
+#define PF_PUP          AF_PUP
+#define PF_CHAOS        AF_CHAOS
+#define PF_NS           AF_NS
+#define PF_ISO          AF_ISO
+#define PF_OSI          AF_OSI
+#define PF_ECMA         AF_ECMA
+#define PF_DATAKIT      AF_DATAKIT
+#define PF_CCITT        AF_CCITT
+#define PF_SNA          AF_SNA
+#define PF_DECnet       AF_DECnet
+#define PF_DLI          AF_DLI
+#define PF_LAT          AF_LAT
+#define PF_HYLINK       AF_HYLINK
+#define PF_APPLETALK    AF_APPLETALK
+#define PF_NETBIOS      AF_NETBIOS
+#define PF_INET6        AF_INET6
+
+#define PF_MAX          AF_MAX
+
+/* Flags we can use with send/ and recv. */
+#define MSG_OOB         0x1             /* process out-of-band data */
+#define MSG_PEEK        0x2             /* peek at incoming message */
+#define MSG_DONTROUTE   0x4             /* send without using routing tables */
+
+/* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
+#define SOL_IP		0
+#define SOL_IPX		256
+#define SOL_AX25	257
+#define SOL_ATALK	258
+#define	SOL_NETROM	259
+#define SOL_TCP		6
+#define SOL_UDP		17
+
+/* IP options */
+#define	IPTOS_LOWDELAY		0x10
+#define	IPTOS_THROUGHPUT	0x08
+#define	IPTOS_RELIABILITY	0x04
+
+/* These need to appear somewhere around here */
+#define IP_DEFAULT_MULTICAST_TTL        1
+#define IP_DEFAULT_MULTICAST_LOOP       1
+#define IP_MAX_MEMBERSHIPS              20
+
+/* IP options for use with WinSock */
+
+#define IP_OPTIONS          1
+#define IP_MULTICAST_IF     2
+#define IP_MULTICAST_TTL    3
+#define IP_MULTICAST_LOOP   4
+#define IP_ADD_MEMBERSHIP   5
+#define IP_DROP_MEMBERSHIP  6
+#define IP_TTL              7
+#define IP_TOS              8
+#define IP_DONTFRAGMENT     9
+
+/* IPX options */
+#define IPX_TYPE	1
+
+/* TCP options - this way around because someone left a set in the c library includes */
+#define TCP_NODELAY     0x0001
+#define TCP_MAXSEG	2
+
+/* The various priorities. */
+#define SOPRI_INTERACTIVE	0
+#define SOPRI_NORMAL		1
+#define SOPRI_BACKGROUND	2
+
+#define EALREADY      WSAEALREADY    
+#define ECONNABORTED  WSAECONNABORTED
+#define ECONNREFUSED  WSAECONNREFUSED
+#define ECONNRESET    WSAECONNRESET  
+#define EHOSTDOWN     WSAEHOSTDOWN   
+#define EHOSTUNREACH  WSAEHOSTUNREACH
+#define EINPROGRESS   WSAEINPROGRESS 
+#define EISCONN       WSAEISCONN     
+#define ENETDOWN      WSAENETDOWN    
+#define ENETRESET     WSAENETRESET   
+#define ENETUNREACH   WSAENETUNREACH 
+#define EWOULDBLOCK   WSAEWOULDBLOCK 
+#define EADDRINUSE    WSAEADDRINUSE
+
 #ifdef __cplusplus
-/*};*/
+};
 #endif
 
 #endif
-
-#endif
-
-#endif /* _SYS_SOCKET_H */
