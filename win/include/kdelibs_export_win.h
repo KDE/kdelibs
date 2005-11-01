@@ -172,3 +172,11 @@
 #  define KICE_EXPORT KDE_IMPORT
 # endif 
 #endif 
+
+#ifndef KJS_EXPORT
+# ifdef MAKE_KJS_LIB
+#  define KJS_EXPORT KDE_EXPORT
+# else
+#  define KJS_EXPORT KDE_IMPORT
+# endif 
+#endif 
