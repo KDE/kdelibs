@@ -21,6 +21,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #define KDE_QT_ONLY
+#undef KDECORE_EXPORT
+#define KDECORE_EXPORT
 #include "../../kdecore/kurl.cpp"
 
 bool mkBool( const QString& s )
