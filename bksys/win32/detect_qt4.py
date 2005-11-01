@@ -24,7 +24,9 @@ def detect(env):
 
 	p=env.pprint
 	# do our best to find the QTDIR
-	qtdir = os.getenv("QTDIR")
+	qtdir       = os.getenv("QTDIR")
+	qtincludes	= os.getenv("QTINCLUDES")
+	qtlibs		= os.getenv("QTLIBS")
 	if not qtdir:
 		qtdir=env.find_path('include/', [ # lets find the qt include directory
 				'c:/Qt/4.0.3/', # one never knows
