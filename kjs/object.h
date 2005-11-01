@@ -39,7 +39,7 @@ namespace KJS {
 
   class ObjectImpPrivate;
   class PropertyMap;
-  class HashTable;
+  struct HashTable;
   struct HashEntry;
   class ListImp;
 

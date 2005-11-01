@@ -187,11 +187,11 @@ namespace KJS {
    * @short Unicode string class
    */
   class KJS_EXPORT UString {
-    friend bool operator==(const UString&, const UString&);
+    friend KJS_EXPORT bool operator==(const UString&, const UString&);
     friend class UCharReference;
     friend class Identifier;
     friend class PropertyMap;
-    friend class PropertyMapHashTableEntry;
+    friend struct PropertyMapHashTableEntry;
     /**
      * @internal
      */
