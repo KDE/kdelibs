@@ -82,7 +82,7 @@ for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h 
 
 obj = env.kdeobj('shlib', env)
 obj.vnum     = '6.0.2'
-obj.target   = 'libkdeui'
+obj.target   = 'kdeui'
 obj.source   = ui_files
 obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 obj.libpaths = '../kdecore/ ../kdefx/ ../dcop'
