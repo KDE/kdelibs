@@ -1,4 +1,4 @@
-#/!bin/sh
+#!/bin/sh
 # very simple shell script to compile the java
 # sources and generate the jar file
 set -e           # exit on error
