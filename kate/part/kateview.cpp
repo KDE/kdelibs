@@ -1723,6 +1723,8 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
   for (uint curPos=startCol;curPos<(length+startCol);curPos++)
   {
     if ( curPos == 0 || line->attribute( curPos ) != line->attribute( curPos - 1 ) &&
+         // Since many highlight files contains itemdatas that have the exact
+         // same styles, join those to keep the HTML text size down
          KateAttribute(*charAttributes) != KateAttribute(*m_renderer->attribute(line->attribute(curPos))) )
     {
       (*outputStream) << textcache;
