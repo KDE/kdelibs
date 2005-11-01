@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include "kaudiomanagerplay.h"
 #include <flowsystem.h>
+#include <kio/netaccess.h>
 
 using namespace std;
 
@@ -60,8 +61,16 @@ KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, bool createBU
 	return createPlayObject(url, mimetype->name(), createBUS);
 }
 
-KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString &mimetype, bool createBUS)
+
+KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& _url, const QString &mimetype, bool createBUS)
 {
+	// WHY DOES BROKEN KIO_MEDIA GIVE WRONG URLS?
+	// I hate it
+	// I hate it
+	// It sucks
+	// kio_media please die
+	KURL url = KIO::NetAccess::mostLocalURL(_url, 0);
+
 	if(!m_server.isNull())
 	{
 		if(mimetype == "application/octet-stream" && m_allowStreaming)
@@ -124,8 +133,15 @@ KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& url, bool 
 	return createPlayObject(url, mimetype->name(), createBUS);
 }
 
-KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& url, const QString &mimetype, bool createBUS)
+KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& _url, const QString &mimetype, bool createBUS)
 {
+	// WHY DOES BROKEN KIO_MEDIA GIVE WRONG URLS?
+	// I hate it
+	// I hate it
+	// It sucks
+	// kio_media please die
+	KURL url = KIO::NetAccess::mostLocalURL(_url, 0);
+	
 	// return a NULL playobject if the server is NULL
 	if ( d->server.isNull() || url.isEmpty() )
 		return new KDE::PlayObject();
