@@ -135,7 +135,9 @@ KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
 void KRuler::init(const char* name)
 {
   if (name) setObjectName(name);
+#ifdef __GNUC__
   #warning FIXME setFrameStyle(WinPanel | Raised);
+#endif
 
   tmDist = INIT_TINY_MARK_DISTANCE;
   lmDist = INIT_LITTLE_MARK_DISTANCE;

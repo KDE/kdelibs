@@ -104,7 +104,9 @@ void KCharSelectTable::setChar( const QChar &_chr )
     //const uint short chr=_chr;
     //if (chr)
     vChr = _chr;
+#ifdef __GNUC__
     #warning fixme //repaintContents( false );
+#endif
 }
 
 //==================================================================
@@ -123,7 +125,9 @@ void KCharSelectTable::setTableNum( int _tableNum )
     setSelectionMode(QAbstractItemView::SingleSelection);
     connect(selectionModel,SIGNAL(currentChanged ( const QModelIndex & ,const QModelIndex &)), this, SLOT(slotCurrentChanged ( const QModelIndex &, const QModelIndex &)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
+#ifdef __GNUC__
     #warning fixme //repaintContents( false );
+#endif
 }
 
 //==================================================================
@@ -172,7 +176,9 @@ void KCharSelectTable::resizeEvent( QResizeEvent * e )
     QTableView::resizeEvent(e);
 }
 
+#ifdef __GNUC__
 #warning fix all below
+#endif
 //==================================================================
 void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 {
@@ -194,7 +200,9 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 	focusPos = vPos;
 	focusItem = vChr;
 
+#ifdef __GNUC__
 #warning fixme
+#endif
 /*	
 	repaintCell( oldFocus.y(), oldFocus.x(), true );
 	repaintCell( oldPos.y(), oldPos.x(), true );
@@ -299,7 +307,9 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     const QSize sz( 200,
                     200 );    
+#ifdef __GNUC__
     #warning fixme
+#endif
     #if 0    
     const QSize sz( charTable->contentsWidth()  +  4 ,
                     charTable->contentsHeight() +  4 );
@@ -307,7 +317,9 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     charTable->resize( sz );
     //charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
+#ifdef __GNUC__
     #warning fixme
+#endif
 /*    charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
     charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );*/
 

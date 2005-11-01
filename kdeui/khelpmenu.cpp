@@ -128,7 +128,9 @@ KMenu* KHelpMenu::menu()
 
     if( mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
+#ifdef __GNUC__
       #warning find a better way to get the default iconset, or reconsider using BarIconSet
+#endif
       QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
       mMenu->addAction( wtb->icon(),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       delete wtb;

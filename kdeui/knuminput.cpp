@@ -293,7 +293,9 @@ void KIntNumInput::init(int val, int _base)
     // the KIntValidator is broken beyond believe for
     // spinboxes which have suffix or prefix texts, so
     // better don't use it unless absolutely necessary
+#ifdef __GNUC__
 #warning KDE4 we NEED to fix the validation of values here
+#endif
 //	if (_base != 10)
 //        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
 
@@ -1144,7 +1146,9 @@ void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
     d->mValidator =  new KDoubleSpinBoxValidator(this, minValue(), maxValue(), precision());
     d->mValidator->setObjectName("d->mValidator" );
+#ifdef __GNUC__
 #warning KDE4 we NEED to fix the validation of values here
+#endif
 //    base::setValidator( d->mValidator );
   } else
     d->mValidator->setRange( minValue(), maxValue(), precision() );

@@ -253,7 +253,9 @@ public:
 
 
   void setFrameStyle(int) {
+#ifdef __GNUC__
 	#warning implement me (jowenn)
+#endif
   }
 
 
