@@ -39,8 +39,8 @@
 #include <qpalette.h>
 #include <qstyleplugin.h>
 
-struct QStyleOptionProgressBar;
-struct QStyleOptionTab;
+class QStyleOptionProgressBar;
+class QStyleOptionTab;
 
 #include <kdelibs_export.h>
 

@@ -1720,7 +1720,7 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
                 //Perhaps we can avoid the extra margin...
                 if (tabOpt->text.isNull() && !tabOpt->icon.isNull())
                     return 0;
-                if (tabOpt->icon.isNull() && !tabOpt->text.isNull());
+                if (tabOpt->icon.isNull() && !tabOpt->text.isNull())
                     return 0;
             }
             
