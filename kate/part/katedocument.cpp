@@ -3866,21 +3866,28 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
 {
   editStart();
   uint cl( c.line() ), cc( c.col() );
+  bool selectionRestored = false;
 
   if ( hasSelection() )
   {
     // cache the selection and cursor, so we can be sure to restore.
-    KateTextCursor s = v->selStart();
-    KateTextCursor e = v->selEnd();
+    KateTextCursor selstart = v->selStart();
+    KateTextCursor selend = v->selEnd();
 
     int ln = v->selStartLine();
-    while ( ln <= v->selEndLine() )
+    while ( ln <= selend.line() )
     {
       uint start, end;
-      start = (ln == v->selStartLine() || v->blockSelectionMode()) ?
-          v->selStartCol() : 0;
-      end = (ln == v->selEndLine() || v->blockSelectionMode()) ?
-          v->selEndCol() : lineLength( ln );
+      start = (ln == selstart.line() || v->blockSelectionMode()) ?
+          selstart.col() : 0;
+      end = (ln == selend.line() || v->blockSelectionMode()) ?
+          selend.col() : lineLength( ln );
+      if ( start > end )
+      {
+        uint t = start;
+        start = end;
+        end = t;
+      }
       QString s = text( ln, start, ln, end );
 
       if ( t == Uppercase )
@@ -3898,7 +3905,7 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
           // 2. if blockselect or first line, and p == 0 and start-1 is not in a word, upper
           // 3. if p-1 is not in a word, upper.
           if ( ( ! start && ! p ) ||
-                   ( ( ln == selStartLine() || v->blockSelectionMode() ) &&
+                   ( ( ln == selstart.line() || v->blockSelectionMode() ) &&
                    ! p && ! highlight()->isInWord( l->getChar( start - 1 )) ) ||
                    ( p && ! highlight()->isInWord( s.at( p-1 ) ) )
              )
@@ -3914,7 +3921,8 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
     }
 
     // restore selection
-    v->setSelection( s, e );
+    v->setSelection( selstart, selend );
+    selectionRestored = true;
 
   } else {  // no selection
     QString s;
@@ -3941,9 +3949,10 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
     insertText( cl, n, s );
   }
 
-  editEnd();
+  if ( ! selectionRestored )
+    v->setCursorPosition( cl, cc );
 
-  v->setCursorPosition( cl, cc );
+  editEnd();
 }
 
 void KateDocument::joinLines( uint first, uint last )
