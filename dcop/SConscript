@@ -42,7 +42,9 @@ obj.target   = 'DCOP'
 obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp' + ice_sources
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.includes = 'KDE-ICE'
-obj.ccflags  = ' -DKICE_EXPORT=DCOP_EXPORT '
+#Do not add this here, if windows needs this, please add it below in the if segment
+#otherwise, this generate lots of warnings under linux
+#obj.ccflags  = ' -DKICE_EXPORT=DCOP_EXPORT '
 obj.ccflags += ice_ccflags
 if env['WINDOWS']:
 	obj.libpaths += ' ../win/'
