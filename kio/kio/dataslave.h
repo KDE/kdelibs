@@ -19,8 +19,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __KIO_DATASLAVE_H__
-#define __KIO_DATASLAVE_H__
+#ifndef KIO_DATASLAVE_H
+#define KIO_DATASLAVE_H
 
 #include <kio/global.h>
 #include <kio/slave.h>
@@ -96,7 +96,7 @@ namespace KIO {
 	  QueueStruct() {}
 	  QueueStruct(QueueType type) : type(type) {}
 	};
-        typedef Q3ValueList<QueueStruct> DispatchQueue;
+        typedef QList<QueueStruct> DispatchQueue;
 	DispatchQueue dispatchQueue;
 
 	DISPATCH_DECL1(mimeType, const QString &, s)
@@ -123,4 +123,4 @@ namespace KIO {
 #undef DISPATCH_DECL
 #undef DISPATCH_DECL1
 
-#endif /*__KIO_DATASLAVE_H__*/
+#endif
