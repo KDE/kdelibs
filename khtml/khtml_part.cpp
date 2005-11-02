@@ -1872,11 +1872,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     }
   }
 
-  clear();
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
+  clear();
 
   if(url.isValid()) {
       QString urlString = url.url();
