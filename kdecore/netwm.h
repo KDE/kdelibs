@@ -1235,7 +1235,7 @@ public:
     **/
     NETIcon icon(int width = -1, int height = -1) const;
 
-    /*
+    /**
      * Sets user timestamp @p time on the window (property _NET_WM_USER_TIME).
      * The timestamp is expressed as XServer time. If a window
      * is shown with user timestamp older than the time of the last
@@ -1251,7 +1251,7 @@ public:
      */
     Time userTime() const;
 
-    /*
+    /**
      * Sets the startup notification id @p id on the window.
      * @since 3.2
      */
@@ -1275,7 +1275,7 @@ public:
      */
     unsigned long allowedActions() const;
 
-    /*
+    /**
      * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
      * for this window.
      * @since 3.2

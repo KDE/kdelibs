@@ -237,61 +237,83 @@ public:
     /**
        Application role.  This is used internally to determine how several action
        should be performed (if at all).
-
-       @li Client indicates that the application is a client application.
-
-       @li WindowManager indicates that the application is a window manager
-       application.
     **/
 
     enum Role {
+	/**
+	   indicates that the application is a client application.
+	**/
 	Client,
+	/**
+	   indicates that the application is a window manager application.
+	**/
 	WindowManager
     };
 
     /**
        Window type.
-
-       @li Unknown indicates that the window did not define a window type.
-
-       @li Normal indicates that this is a normal, top-level window. Windows with
-       Unknown window type or WM_TRANSIENT_FOR unset must be taken as this type.
-
-       @li Desktop indicates a desktop feature. This can include a single window
-       containing desktop icons with the same dimensions as the screen, allowing
-       the desktop environment to have full control of the desktop, without the
-       need for proxying root window clicks.
-
-       @li Dock indicates a dock or panel feature. Typically a window manager would
-       keep such windows on top of all other windows.
-
-       @li Toolbar and Menu indicate toolbar and pinnable menu windows, respectively.
-
-       @li Dialog indicates that this is a dialog window. If _NET_WM_WINDOW_TYPE is
-       not set, then windows with WM_TRANSIENT_FOR set must be taken as this type.
-
-       @li Override indicates that this window wants to have no Window Manager
-       decorations. This is for windows that would normally use either override_redirect
-       or Motif hints to give no decorations.  This is a KDE extension to the
-       _NET_WM_WINDOW_TYPE mechanism.
-       
-       @li TopMenu indicates a toplevel menu (AKA macmenu). This is a KDE extension to the
-       _NET_WM_WINDOW_TYPE mechanism.
     **/
 
     enum WindowType {
+	/**
+	   indicates that the window did not define a window type.
+	**/
 	Unknown  = -1,
+	/**
+	   indicates that this is a normal, top-level window. Windows with
+	   Unknown window type or WM_TRANSIENT_FOR unset must be taken as this type.
+	**/
 	Normal   = 0,
+	/**
+	   indicates a desktop feature. This can include a single window
+	   containing desktop icons with the same dimensions as the screen, allowing
+	   the desktop environment to have full control of the desktop, without the
+	   need for proxying root window clicks.
+	**/
 	Desktop  = 1,
+	/**
+	   indicates a dock or panel feature. Typically a window manager would
+	   keep such windows on top of all other windows.
+	**/
 	Dock     = 2,
+	/**
+	   indicates a toolbar window
+	**/
 	Toolbar  = 3,
-       	Menu     = 4,
+	/**
+	   indicates a pinnable menu window
+	**/
+	Menu     = 4,
+	/**
+	   indicates that this is a dialog window. If _NET_WM_WINDOW_TYPE is
+	   not set, then windows with WM_TRANSIENT_FOR set must be taken as this type.
+	**/
 	Dialog   = 5,
+	/**
+	   indicates that this window wants to have no Window Manager
+	   decorations. This is for windows that would normally use either override_redirect
+	   or Motif hints to give no decorations.  This is a KDE extension to the
+	   _NET_WM_WINDOW_TYPE mechanism.
+	**/
 	Override = 6, // NON STANDARD
-        TopMenu  = 7, // NON STANDARD
+	/**
+	   indicates a toplevel menu (AKA macmenu). This is a KDE extension to the
+	   _NET_WM_WINDOW_TYPE mechanism.
+	**/
+	TopMenu  = 7, // NON STANDARD
+	/**
+	   @deprecated Use Toolbar instead
+	**/
 	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
-	Utility  = 8,	///< @since 3.2
-	Splash   = 9	///< @since 3.2
+	/**
+	   @since 3.2
+	**/
+	Utility  = 8,
+	/**
+	   indicates that this window is a splash screen window.
+	   @since 3.2
+	**/
+	Splash   = 9
     };
     
     /**
@@ -300,16 +322,16 @@ public:
         @since 3.2
     **/
     enum WindowTypeMask {
-	NormalMask   = 1<<0,
-	DesktopMask  = 1<<1,
-	DockMask     = 1<<2,
-	ToolbarMask  = 1<<3,
-	MenuMask     = 1<<4,
-	DialogMask   = 1<<5,
-	OverrideMask = 1<<6,
-        TopMenuMask  = 1<<7,
-	UtilityMask  = 1<<8,
-	SplashMask   = 1<<9
+	NormalMask   = 1<<0,   ///< @see Normal
+	DesktopMask  = 1<<1,   ///< @see Desktop
+	DockMask     = 1<<2,   ///< @see Dock
+	ToolbarMask  = 1<<3,   ///< @see Toolbar
+	MenuMask     = 1<<4,   ///< @see Menu
+	DialogMask   = 1<<5,   ///< @see Dialog
+	OverrideMask = 1<<6,   ///< @see Override
+	TopMenuMask  = 1<<7,   ///< @see TopMenu
+	UtilityMask  = 1<<8,   ///< @see Utility
+	SplashMask   = 1<<9    ///< @see Splash
     };
 
     // KDE4 move to WindowTypeMask
@@ -324,58 +346,79 @@ public:
     /**
        Window state.
 
-       @li Modal ndicates that this is a modal dialog box. The WM_TRANSIENT_FOR hint
-       MUST be set to indicate which window the dialog is a modal for, or set to
-       the root window if the dialog is a modal for its window group.
-
-       @li Sticky indicates that the Window Manager SHOULD keep the window's position
-       fixed on the screen, even when the virtual desktop scrolls. Note that this is
-       different from being kept on all desktops.
-
-       @li Max{Vert,Horiz} indicates that the window is {vertically,horizontally}
-       maximized.
-
-       @li Max is more convenient than MaxVert | MaxHoriz.
-
-       @li Shaded indicates that the window is shaded (rolled-up).
-
-       @li SkipTaskbar indicates that a window should not be included on a taskbar.
-
-       @li SkipPager indicates that a window should not be included on a pager.
-
-       @li Hidden indicates that a window should not be visible on the screen (e.g. when minimised).
-           Only the window manager is allowed to change it.
-
-       @li FullScreen indicates that a window should fill the entire screen and have no window decorations.
-
-       @li KeepAbove indicates that a window should on top of most windows (but below fullscreen windows).
-
-       @li KeepBelow indicates that a window should be below most windows (but above any desktop windows).
-
-       @li StaysOnTop is an obsolete name for KeepAbove.
-       
-       @li DemandsAttention there was an attempt to activate this window, but the window manager prevented
-           this. E.g. taskbar should mark such window specially to bring user's attention to this window.
-           Only the window manager is allowed to change it.
-
-       Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and applications
-       should avoid setting these states themselves.
+       Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and
+       applications should avoid setting these states themselves.
     **/
 
     enum State {
+	/**
+	   indicates that this is a modal dialog box. The WM_TRANSIENT_FOR hint
+	   MUST be set to indicate which window the dialog is a modal for, or set to
+	   the root window if the dialog is a modal for its window group.
+	**/
 	Modal        = 1<<0,
+	/**
+	   indicates that the Window Manager SHOULD keep the window's position
+	   fixed on the screen, even when the virtual desktop scrolls. Note that this is
+	   different from being kept on all desktops.
+	**/
 	Sticky       = 1<<1,
+	/**
+	   indicates that the window is vertically maximized.
+	**/
 	MaxVert      = 1<<2,
+	/**
+	   indicates that the window is horizontally maximized.
+	**/
 	MaxHoriz     = 1<<3,
+	/**
+	   convenience value. Equal to MaxVert | MaxHoriz.
+	**/
 	Max = MaxVert | MaxHoriz,
+	/**
+	   indicates that the window is shaded (rolled-up).
+	**/
 	Shaded       = 1<<4,
+	/**
+	   indicates that a window should not be included on a taskbar.
+	**/
 	SkipTaskbar  = 1<<5,
-	KeepAbove    = 1<<6,	///< @since 3.2
+	/**
+	   indicates that a window should on top of most windows (but below fullscreen
+	   windows).
+	   @since 3.2
+	**/
+	KeepAbove    = 1<<6,
+	/**
+	   @deprecated This is an obsolete name for KeepAbove.
+	**/
 	StaysOnTop   = KeepAbove,	// NOT STANDARD
+	/**
+	   indicates that a window should not be included on a pager.
+	**/
 	SkipPager    = 1<<7,
-	Hidden       = 1<<8,	///< @since 3.2
-	FullScreen   = 1<<9,	///< @since 3.2
-	KeepBelow    = 1<<10,	///< @since 3.2
+	/**
+	   indicates that a window should not be visible on the screen (e.g. when minimised).
+	   Only the window manager is allowed to change it.
+	   @since 3.2
+	**/
+	Hidden       = 1<<8,
+	/**
+	   indicates that a window should fill the entire screen and have no window
+	   decorations.
+	   @since 3.2
+	**/
+	FullScreen   = 1<<9,
+	/**
+	   indicates that a window should be below most windows (but above any desktop windows).
+	   @since 3.2
+	**/
+	KeepBelow    = 1<<10,
+	/**
+	   there was an attempt to activate this window, but the window manager prevented
+	   this. E.g. taskbar should mark such window specially to bring user's attention to
+	   this window. Only the window manager is allowed to change it.
+	**/
         DemandsAttention = 1<<11  ///< @since 3.2
     };
 
@@ -422,20 +465,23 @@ public:
        Client window mapping state.  The class automatically watches the mapping
        state of the client windows, and uses the mapping state to determine how
        to set/change different properties.
-
-       @li Visible indicates the client window is visible to the user.
-
-       @li Withdrawn indicates that neither the client window nor its icon is visible.
-
-       @li Iconic indicates that the client window is not visible, but its icon is.
-           This can be when the window is minimized or when it's on a
-           different virtual desktop. See also NET::Hidden.
     **/
 
     // KDE4 aaarghl, this doesn't map correctly to Xlib #defines
     enum MappingState {
+	/**
+	   indicates the client window is visible to the user.
+	**/
 	Visible, // ie. NormalState
+	/**
+	   indicates that neither the client window nor its icon is visible.
+	**/
 	Withdrawn,
+	/**
+	   indicates that the client window is not visible, but its icon is.
+	   This can be when the window is minimized or when it's on a
+	   different virtual desktop. See also NET::Hidden.
+	**/
 	Iconic
     };
 
@@ -592,14 +638,21 @@ public:
     
     /**
        Source of the request.
-       @li FromApplication the request comes from a normal application
-       @li FromTool the request comes from pager or similar tool
        @since 3.2
     **/
     // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
     enum RequestSource {
+        /**
+          @internal indicates that the source of the request is unknown
+        **/
         FromUnknown, // internal
+        /**
+           indicates that the request comes from a normal application
+        **/
         FromApplication,
+        /**
+           indicated that the request comes from pager or similar tool
+        **/
         FromTool
     };
 };
