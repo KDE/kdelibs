@@ -27,6 +27,11 @@
 
 #include <QString>
 
+/**
+ * @short Helper class to create random data
+ *
+ * This class provides static methods which generate random data.
+ */
 class KDECORE_EXPORT KRandom {
 public:
   /**
