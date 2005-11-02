@@ -26,10 +26,10 @@
 #include <kglobal.h>
 
 /**
- * Static deleters are used to manage static resources. They can register
- * themselves with KGlobal. KGlobal will call destructObject() when
- * KGlobal::deleteStaticDeleters() is called or when it the process
- * finishes.
+ * @short Base class for KStaticDeleter
+ *
+ * Don't use this class directly; this class is used as a base class for
+ * the KStaticDeleter template to allow polymprphism.
  *
  * @see KStaticDeleter
  * @see KGlobal::registerStaticDeleter()
@@ -48,16 +48,23 @@ public:
 };
 
 /**
- * Little helper class to clean up static objects that are
- * held as pointer.
+ * @short Automatically deletes an object on termination
+ *
+ * Little helper class to clean up static objects that are held as pointer.
+ *
+ * Static deleters are used to manage static resources. They can register
+ * themselves with KGlobal. KGlobal will call destructObject() when
+ * KGlobal::deleteStaticDeleters() is called or when it the process
+ * finishes.
+ *
  * When the library is unloaded, or the app terminated, all static deleters
  * are destroyed, which in turn destroys those static objects properly.
  * There are some rules which you should accept in the KStaticDeleter managed
  * class:
- * @li Don't rely on the global reference variable in the destructor of the 
+ * @li Don't rely on the global reference variable in the destructor of the
  * object, it will be '0' at destruction time.
- * @li Don't rely on other KStaticDeleter managed objects in the destructor 
- * of the object, because it may be destroyed before your destructor get called.
+ * @li Don't rely on other KStaticDeleter managed objects in the destructor
+ * of the object, because they may be destroyed before your destructor get called.
  * This one can be tricky, because you might not know that you actually use a
  * KStaticDeleter managed class. So try to keep your destructor simple.
  *
@@ -70,10 +77,18 @@ public:
  *   return *_self;
  * }
  * \endcode
+ *
+ * @warning Don't delete an object which is managed by KStaticDeleter without
+ * calling setObject() with a null pointer.
  */
 template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:
+    /**
+     * Constructor. Initializes the KStaticDeleter. Note that the static
+     * deleter ist not registered by the constructor.
+     */
     KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
+
     /**
      * Sets the object to delete and registers the object to be
      * deleted to KGlobal. If the given object is 0, the former
@@ -92,14 +107,16 @@ public:
 	    KGlobal::unregisterStaticDeleter(this);
         return obj;
     }
+
     /**
      * Sets the object to delete and registers the object to be
      * deleted to KGlobal. If the given object is 0, the former
      * registration is unregistered.
-     * @param globalRef the static pointer where this object is stored
+     * @param globalRef the static pointer where this object is stored.
      * This pointer will be reset to 0 after deletion of the object.
      * @param obj the object to delete
      * @param isArray tells the destructor to delete an array instead of an object
+     * @return the object to delete, @p obj
      **/
     type *setObject( type* & globalRef, type *obj, bool isArray = false) {
         globalReference = &globalRef;
@@ -126,6 +143,11 @@ public:
 	   delete deleteit;
     	deleteit = 0;
     }
+
+    /**
+     * Destructor. Unregisters the static deleter and destroys the
+     * object by calling destructObject().
+     */
     virtual ~KStaticDeleter() {
     	KGlobal::unregisterStaticDeleter(this);
 	destructObject();
