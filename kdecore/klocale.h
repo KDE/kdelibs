@@ -262,9 +262,28 @@ public:
    * Various positions for where to place the positive or negative
    * sign when they are related to a monetary value.
    */
-  enum SignPosition { ParensAround = 0, BeforeQuantityMoney = 1,
-		      AfterQuantityMoney = 2,
-		      BeforeMoney = 3, AfterMoney = 4 };
+  enum SignPosition {
+    /**
+     * Put parantheses around the quantity, e.g. "$ (217)"
+     */
+    ParensAround = 0,
+    /**
+     * Prefix the quantity with the sign, e.g. "$ -217"
+     */
+    BeforeQuantityMoney = 1,
+    /**
+     * Suffix the quanitity with the sign, e.g. "$ 217-"
+     */
+    AfterQuantityMoney = 2,
+    /**
+     * Prefix the currency symbol with the sign, e.g. "-$ 217"
+     */
+    BeforeMoney = 3,
+    /**
+     * Suffix the currency symbol with the sign, e.g. "$- 217"
+     */
+    AfterMoney = 4
+  };
 
   /**
    * Returns what a decimal point should look like ("." or "," etc.)
@@ -571,9 +590,12 @@ public:
    */
   QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
 
+  /**
+   * Flags for readDate()
+   */
   enum ReadDateFlags {
-      NormalFormat = 1,
-      ShortFormat = 2
+      NormalFormat = 1,  ///< Only accept a date string in normal (long) format
+      ShortFormat = 2    ///< Only accept a date string in short format
   };
 
   /**
@@ -605,9 +627,12 @@ public:
    */
   QTime readTime(const QString &str, bool* ok = 0) const;
 
+  /**
+   * Flags for readTime()
+   */
   enum ReadTimeFlags {
-      WithSeconds = 0, // default (no flag set)
-      WithoutSeconds = 1
+      WithSeconds = 0,    ///< Only accept a time string with seconds. Default (no flag set)
+      WithoutSeconds = 1  ///< Only accept a time string without seconds.
   }; // (maybe use this enum as a bitfield, if adding independent features?)
   /**
    * Converts a localized time string to a QTime.
@@ -904,7 +929,10 @@ public:
    * The Metric system will give you information in mm, while the
    * Imperial system will give you information in inches.
    */
-  enum MeasureSystem { Metric, Imperial };
+  enum MeasureSystem {
+    Metric,    ///< Metric system (used e.g. in Europe)
+    Imperial   ///< Imperial system (used e.g. in the United States)
+  };
 
   /**
    * Returns which measuring system we use.
