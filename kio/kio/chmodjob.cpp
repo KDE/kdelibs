@@ -146,8 +146,7 @@ void ChmodJob::chmodNextFile()
 {
     if ( !m_infos.isEmpty() )
     {
-        ChmodInfo info = m_infos.first();
-        m_infos.remove( m_infos.begin() );
+        ChmodInfo info = m_infos.takeFirst();
         // First update group / owner (if local file)
         // (permissions have to set after, in case of suid and sgid)
         if ( info.url.isLocalFile() && ( m_newOwner != -1 || m_newGroup != -1 ) )
@@ -169,12 +168,12 @@ void ChmodJob::chmodNextFile()
                       << " to " << QString::number(info.permissions,8) << endl;
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
         // copy the metadata for acl and default acl
-        const QString aclString = queryMetaData( "ACL_STRING" );
-        const QString defaultAclString = queryMetaData( "DEFAULT_ACL_STRING" );
+        const QString aclString = queryMetaData( QLatin1String("ACL_STRING") );
+        const QString defaultAclString = queryMetaData( QLatin1String("DEFAULT_ACL_STRING") );
         if ( !aclString.isEmpty() )
-            job->addMetaData( "ACL_STRING", aclString );
+            job->addMetaData( QLatin1String("ACL_STRING"), aclString );
         if ( !defaultAclString.isEmpty() )
-            job->addMetaData( "DEFAULT_ACL_STRING", defaultAclString );
+            job->addMetaData( QLatin1String("DEFAULT_ACL_STRING"), defaultAclString );
         addSubjob(job);
     }
     else
@@ -211,12 +210,11 @@ void ChmodJob::slotResult( KIO::Job * job )
     }
 }
 
-// antlarr: KDE 4: Make owner and group be const QString &
-KIO_EXPORT ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
-                      QString owner, QString group,
+ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
+                      const QString& owner, const QString& group,
                       bool recursive, bool showProgressInfo )
 {
-    uid_t newOwnerID = (uid_t)-1; // chown(2) : -1 means no change
+    uid_t newOwnerID = uid_t(-1); // chown(2) : -1 means no change
     if ( !owner.isEmpty() )
     {
         struct passwd* pw = getpwnam(QFile::encodeName(owner));
@@ -225,7 +223,7 @@ KIO_EXPORT ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions,
         else
             newOwnerID = pw->pw_uid;
     }
-    gid_t newGroupID = (gid_t)-1; // chown(2) : -1 means no change
+    gid_t newGroupID = gid_t(-1); // chown(2) : -1 means no change
     if ( !group.isEmpty() )
     {
         struct group* g = getgrnam(QFile::encodeName(group));

@@ -109,7 +109,7 @@ namespace KIO {
      * @return The job handling the operation.
      */
     KIO_EXPORT ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
-                      QString newOwner, QString newGroup,
+                      const QString& newOwner, const QString& newGroup,
                       bool recursive, bool showProgressInfo = true );
 
 }

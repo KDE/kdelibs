@@ -18,14 +18,13 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef __KIO_AUTHINFO_H
-#define __KIO_AUTHINFO_H
+#ifndef KIO_AUTHINFO_H
+#define KIO_AUTHINFO_H
 
 #include <qmap.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 #include <qstringlist.h>
 #include <kurl.h>
-
 
 namespace KIO {
 
@@ -252,12 +251,13 @@ public:
    *
    * @see lookup
    */
-  enum LookUpMode
+  enum LookUpModeFlag
   {
       exactOnly = 0x0002,
       defaultOnly = 0x0004,
       presetOnly = 0x0008
   };
+  Q_DECLARE_FLAGS(LookUpMode, LookUpModeFlag)
 
   /**
    * Contains auto login information.
@@ -291,7 +291,7 @@ public:
   bool lookup( const KURL& url, AutoLogin& login,
                bool userealnetrc = false,
                QString type = QString::null,
-               int mode = (exactOnly|defaultOnly) );
+               LookUpMode mode = exactOnly|defaultOnly );
   /**
    * Reloads the auto login information.
    */
@@ -309,7 +309,7 @@ private:
 private:
   bool isDirty;
 
-  typedef Q3ValueList<AutoLogin> LoginList;
+  typedef QList<AutoLogin> LoginList;
   typedef QMap<QString, LoginList> LoginMap;
   LoginMap loginMap;
 
@@ -318,4 +318,6 @@ private:
   NetRCPrivate* d;
 };
 }
+Q_DECLARE_OPERATORS_FOR_FLAGS(KIO::NetRC::LookUpMode)
+
 #endif

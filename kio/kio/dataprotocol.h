@@ -16,8 +16,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef __dataprotocol_h__
-#define __dataprotocol_h__
+#ifndef DATAPROTOCOL_H
+#define DATAPROTOCOL_H
 
 // dataprotocol.* interprets the following defines
 // DATAKIOSLAVE: define if you want to compile this into a stand-alone
@@ -27,7 +27,7 @@
 // DataProtocol for internal usage within libkiocore.
 
 class QString;
-class Q3CString;
+class QByteArray;
 
 class KURL;
 
@@ -53,7 +53,7 @@ class DataProtocol : public DataSlave {
 
 public:
 #if defined(DATAKIOSLAVE)
-  DataProtocol(const Q3CString &pool_socket, const Q3CString &app_socket);
+  DataProtocol(const QByteArray &pool_socket, const QByteArray &app_socket);
 #else
   DataProtocol();
 #endif

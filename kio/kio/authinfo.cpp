@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <q3cstring.h>
+#include <qbytearray.h>
 #include <qdir.h>
 #include <qfile.h>
 
@@ -77,25 +77,15 @@ QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
 {
     s << a.url << a.username << a.password << a.prompt << a.caption
       << a.comment << a.commentLabel << a.realmValue << a.digestInfo
-      << Q_UINT8(a.verifyPath ? 1:0) << Q_UINT8(a.readOnly ? 1:0)
-      << Q_UINT8(a.keepPassword ? 1:0) << Q_UINT8(a.modified ? 1:0);
+      << a.verifyPath << a.readOnly << a.keepPassword << a.modified;
     return s;
 }
 
 QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
 {
-    Q_UINT8 verify = 0;
-    Q_UINT8 ro = 0;
-    Q_UINT8 keep = 0;
-    Q_UINT8 mod  = 0;
-
     s >> a.url >> a.username >> a.password >> a.prompt >> a.caption
       >> a.comment >> a.commentLabel >> a.realmValue >> a.digestInfo
-      >> verify >> ro >> keep >> mod;
-    a.verifyPath = (verify != 0);
-    a.readOnly = (ro != 0);
-    a.keepPassword = (keep != 0);
-    a.modified = (mod != 0);
+      >> a.verifyPath >> a.readOnly >> a.keepPassword >> a.modified;
     return s;
 }
 
@@ -116,12 +106,12 @@ NetRC::~NetRC()
 NetRC* NetRC::self()
 {
     if ( !instance )
-        instance = new NetRC();
+        instance = new NetRC;
     return instance;
 }
 
 bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
-                    QString type, int mode )
+                    QString type, LookUpMode mode )
 {
   // kdDebug() << "AutoLogin lookup for: " << url.host() << endl;
   if ( !url.isValid() )
@@ -134,12 +124,12 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
   {
     loginMap.clear();
 
-    QString filename = locateLocal("config", "kionetrc");
+    QString filename = locateLocal("config", QLatin1String("kionetrc"));
     bool status = parse (openf (filename));
 
     if ( userealnetrc )
     {
-      filename =  QDir::homePath()+ QDir::separator() + ".netrc";
+      filename =  QDir::homePath() + QDir::separator() + QLatin1String(".netrc");
       status |= parse (openf(filename));
     }
 
@@ -150,16 +140,16 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
   if ( !loginMap.contains( type ) )
     return false;
 
-  LoginList l = loginMap[type];
+  const LoginList& l = loginMap[type];
   if ( l.isEmpty() )
     return false;
 
-  for (LoginList::Iterator it = l.begin(); it != l.end(); ++it)
+  for (LoginList::ConstIterator it = l.begin(); it != l.end(); ++it)
   {
-    AutoLogin &log = *it;
+    const AutoLogin &log = *it;
 
     if ( (mode & defaultOnly) == defaultOnly &&
-          log.machine == QString::fromLatin1("default") &&
+          log.machine == QLatin1String("default") &&
           (login.login.isEmpty() || login.login == log.login) )
     {
       login.type = log.type;
@@ -170,7 +160,7 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
     }
 
     if ( (mode & presetOnly) == presetOnly &&
-          log.machine == QString::fromLatin1("preset") &&
+          log.machine == QLatin1String("preset") &&
           (login.login.isEmpty() || login.login == log.login) )
     {
       login.type = log.type;
@@ -199,7 +189,7 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
 int NetRC::openf( const QString& f )
 {
   KDE_struct_stat sbuff;
-  Q3CString ef = QFile::encodeName(f);
+  QByteArray ef = QFile::encodeName(f);
   if ( KDE_stat(ef, &sbuff) != 0 )
     return -1;
 
@@ -295,12 +285,12 @@ bool NetRC::parse( int fd )
       if (strncasecmp(buf+pos, "default", 7) == 0 )
       {
         pos += 7;
-        l.machine = QString::fromLatin1("default");
+        l.machine = QLatin1String("default");
       }
       else if (strncasecmp(buf+pos, "preset", 6) == 0 )
       {
         pos += 6;
-        l.machine = QString::fromLatin1("preset");
+        l.machine = QLatin1String("preset");
       }
     }
     // kdDebug() << "Machine: " << l.machine << endl;
@@ -315,7 +305,7 @@ bool NetRC::parse( int fd )
 
     type = l.type = extract( buf, "type", pos );
     if ( l.type.isEmpty() && !l.machine.isEmpty() )
-      type = l.type = QString::fromLatin1("ftp");
+      type = l.type = QLatin1String("ftp");
     // kdDebug() << "Type: " << l.type << endl;
 
     macro = extract( buf, "macdef", pos );
