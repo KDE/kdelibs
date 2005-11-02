@@ -886,7 +886,7 @@ KLauncher::exec_blind( const DCOPCString &name, const DCOPCStringList &arg_list,
    KService::Ptr service = KService::serviceByDesktopName( name.mid( name.lastIndexOf( '/' ) + 1 ));
    if (service)
        send_service_startup_info( request,  service,
-           startup_id, Q3ValueList< DCOPCString >());
+           startup_id, DCOPCStringList());
    else // no .desktop file, no startup info
        cancel_service_startup_info( request, startup_id, envs );
 
@@ -1156,7 +1156,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
        if (service)
            send_service_startup_info( request,  service,
-               startup_id, Q3ValueList< DCOPCString >());
+               startup_id, DCOPCStringList());
        else // no .desktop file, no startup info
            cancel_service_startup_info( request, startup_id, envs );
    }
