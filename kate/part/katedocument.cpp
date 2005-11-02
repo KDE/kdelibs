@@ -105,6 +105,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_tabInterceptor(0)
 {
   m_undoComplexMerge=false;
+  m_isInUndo = false;
   // my dcop object
   setObjId ("KateDocument#"+documentDCOPSuffix());
 
@@ -694,7 +695,7 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
 
   QString buf;
 
-  bool replacetabs = ( config()->configFlags() & KateDocumentConfig::cfReplaceTabsDyn );
+  bool replacetabs = ( config()->configFlags() & KateDocumentConfig::cfReplaceTabsDyn && ! m_isInUndo );
   uint tw = config()->tabWidth();
 
   for (uint pos = 0; pos < len; pos++)
@@ -1162,7 +1163,7 @@ bool KateDocument::editInsertText ( uint line, uint col, const QString &str )
   if (!l)
     return false;
 
-    if ( config()->configFlags() & KateDocumentConfig::cfReplaceTabsDyn )
+    if ( config()->configFlags() & KateDocumentConfig::cfReplaceTabsDyn && ! m_isInUndo )
     {
       uint tw = config()->tabWidth();
       int pos = 0;
@@ -1505,6 +1506,7 @@ void KateDocument::setUndoSteps(uint steps)
 
 void KateDocument::undo()
 {
+  m_isInUndo = true;
   if ((undoItems.count() > 0) && undoItems.last())
   {
     clearSelection ();
@@ -1516,10 +1518,12 @@ void KateDocument::undo()
 
     emit undoChanged ();
   }
+  m_isInUndo = false;
 }
 
 void KateDocument::redo()
 {
+  m_isInUndo = true;
   if ((redoItems.count() > 0) && redoItems.last())
   {
     clearSelection ();
@@ -1531,6 +1535,7 @@ void KateDocument::redo()
 
     emit undoChanged ();
   }
+  m_isInUndo = false;
 }
 
 void KateDocument::updateModified()

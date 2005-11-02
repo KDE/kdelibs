@@ -214,10 +214,13 @@ class KateDocument : public Kate::Document,
      * @see editStart()
      */
     void editEnd ();
+  private:
+    bool m_isInUndo; ///< set to true in undo/redo
 
 //END editStart/editEnd
 
 //BEGIN LINE BASED INSERT/REMOVE STUFF (editStart() and editEnd() included)
+  public:
     /**
      * Add a string in the given line/column
      * @param line line number
