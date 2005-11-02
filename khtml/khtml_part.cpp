@@ -1870,6 +1870,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
   clear();
+  d->m_bCleared = false;
 
   if(url.isValid()) {
       QString urlString = url.url();
