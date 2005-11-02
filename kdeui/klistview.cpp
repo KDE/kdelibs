@@ -2003,9 +2003,15 @@ bool KListView::shadeSortColumn() const
   return d->shadeSortColumn;
 }
 
+
 void KListView::saveLayout(KConfig *config, const QString &group) const
 {
-  KConfigGroup cg(config, group);
+	KConfigGroup cg(config, group);
+	saveLayout(cg);
+}
+
+void KListView::saveLayout(KConfigGroup &cg) const
+{
   QStringList widths, order;
 
   const int colCount = columns();
@@ -2023,7 +2029,12 @@ void KListView::saveLayout(KConfig *config, const QString &group) const
 
 void KListView::restoreLayout(KConfig *config, const QString &group)
 {
-  KConfigGroup cg(config, group);
+	KConfigGroup cg(config, group);
+	restoreLayout( cg );
+}
+
+void KListView::restoreLayout(KConfigGroup & cg)
+{
   QStringList cols = cg.readListEntry("ColumnWidths");
   int i = 0;
   { // scope the iterators

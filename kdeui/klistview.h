@@ -28,6 +28,7 @@
 class Q3DragObject;
 class KConfig;
 class KLineEdit;
+class KConfigGroup;
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, AutoSelection and
@@ -347,6 +348,7 @@ public:
    * @param group the config group to use
    */
   void saveLayout(KConfig *config, const QString &group) const;
+  void saveLayout(KConfigGroup & cg) const;
   /**
    * Reads the list view's layout from a KConfig group as stored with
    * saveLayout
@@ -355,6 +357,9 @@ public:
    * @param group the config group to use
    */
   void restoreLayout(KConfig *config, const QString &group);
+  
+  void restoreLayout(KConfigGroup & cg);
+  
   /**
    * Reimplemented to remember the current sort column and order.
    * @param column is the column to be sorted, or -1 to sort in order of
