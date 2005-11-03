@@ -291,7 +291,7 @@ public:
   bool lookup( const KURL& url, AutoLogin& login,
                bool userealnetrc = false,
                QString type = QString::null,
-               LookUpMode mode = exactOnly|defaultOnly );
+               LookUpMode mode = LookUpMode(exactOnly) | defaultOnly );
   /**
    * Reloads the auto login information.
    */
