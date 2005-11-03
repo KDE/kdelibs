@@ -27,8 +27,10 @@ def detect(env):
 
 	## Mac OS X settings
 	if sys.platform == 'darwin':
-		env['GENCXXFLAGS'] += ['-fno-common']
-		#env['GENLINKFLAGS'] += ['-undefined', 'dynamic_lookup']
+		myarch=os.popen("/usr/bin/arch").read().strip()
+		env['GENCCFLAGS'] += [ '-fno-common', '-arch', myarch ]
+		env['GENCXXFLAGS'] += [ '-fno-common', '-arch', myarch ]
+		env['GENLINKFLAGS'] += [ '-arch', myarch ]
 
 	## Linux settings
 	if sys.platform == 'linux2':
