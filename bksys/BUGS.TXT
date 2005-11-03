@@ -5,10 +5,11 @@ BUGS
 generic
 -------
 * installing versioned libraries is broken at the very moment (ita: works with the miniscons provided)
-* duplicate PREFIX entry in modules (ita: done ?)
-	rh: not at all - if PREFIX isn't set on configuring, no PREFIX is in cache\generic.cache.py and 
+* duplicate PREFIX entry in modules:
+	rh: if PREFIX isn't set on configuring, no PREFIX is in cache\generic.cache.py and 
 	using env['PREFIX'] anywhere results in runtime error see dcop/SConscript
-
+	ita: PREFIX is set when setting the project configuration -> {win32,unix}/detect_generic.py
+	time to 'rm -rf cache/ build/' ?
     
 mac
 ----
@@ -19,7 +20,6 @@ unix
 * SConscript containing "#!/usr/bin/env scons -u" in the first line and run with ./SConscript 	
   does not work -> error "No such file or directory"  (from kde-buildsystem@kde.org)
 
-ita: This is provided so that text editors know SConscript files contain python code
 rh: but couldn't this be extended in any way so that running ./SConscript works too, may be a good feature. 
 
 
