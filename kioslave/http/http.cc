@@ -191,7 +191,6 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
 
   m_pid = getpid();
 
-  setMultipleAuthCaching( true );
   reparseConfiguration();
 }
 
@@ -4019,7 +4018,7 @@ int HTTPProtocol::readLimited()
   int bytesReceived;
   int bytesToReceive;
 
-  if (m_iBytesLeft > m_bufReceive.size())
+  if (m_iBytesLeft > KIO::filesize_t(m_bufReceive.size()))
      bytesToReceive = m_bufReceive.size();
   else
      bytesToReceive = m_iBytesLeft;
@@ -4063,7 +4062,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
 
    if (m_iContentLeft != NO_SIZE)
    {
-      if (m_iContentLeft >= _d.size())
+      if (m_iContentLeft >= KIO::filesize_t(_d.size()))
          m_iContentLeft -= _d.size();
       else
          m_iContentLeft = NO_SIZE;
