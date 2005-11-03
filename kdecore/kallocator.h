@@ -108,19 +108,29 @@ public:
     void free_since(void *ptr);
 
 protected:
+    /** A single chunk of memory from the heap. @internal */
     class MemBlock;
+    /**< A list of chunks. @internal */
     typedef QList<MemBlock *> MemList;
     void addBlock(MemBlock *b);
     void delBlock(MemBlock *b);
     void insertHash(MemBlock *b);
     void initHash();
-    MemBlock *currentBlock;
-    unsigned long blockSize;
+    /** One block is 'current' to satisfy requests. @internal */
+    MemBlock *currentBlock; 
+    /** Store block size from constructor. @internal */
+    unsigned long blockSize; 
+    /** Store offset into current block; size-offset is free. @internal */
     unsigned long blockOffset;
+    /** base-2 log of the block size. @internal */
     unsigned int log2;
+    /** Count total number of allocated blocks. @internal */
     unsigned int num_blocks;
+    /** Collection of lists of blocks, for lookups. @internal */
     MemList **hashList;
+    /** Count of hashes. @internal */
     unsigned int hashSize;
+    /** Flag the hashes as in need of reorganization. @internal */
     bool hashDirty;
 private:
     class Private;
