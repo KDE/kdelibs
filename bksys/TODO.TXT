@@ -41,10 +41,11 @@ generic
 -	n	cleanup '#' and '##' prefix meaning, recently '#' refers to the source root and 
 		'##' refers to ?? (I found it refers to /)
     
--	n	fix or report doxygen parsing problem in generic.py 
+-	f	fix or report doxygen parsing problem in generic.py 
+		## 1.4.5 works better 
 
-- n make libtool support optional, disable by default and create <target-name>.dep 
-    without content for each library target as platform independent dependency link 
+-	f	make libtool support optional, disable by default and create <target-name>.dep 
+		without content for each library target as platform independent dependency link 
 
 mac related
 -----------
@@ -54,15 +55,18 @@ mac related
 unix related
 ------------
 
-- n some configure checks does not setup the related compiler/linker flags from pkgconfig for example openssl 
-(ita: openssl configuration does work??)
+-	f	some configure checks does not setup the related compiler/linker flags from pkgconfig for example openssl 
 
 win32 related 
 -------------
   			 						
-2 n fix installation of files  (dll's are in lib dir instead of bin, which is in path)
+2	n	fix installation of files  (dll's are in lib dir instead of bin, which is in path)
 
-3 n document platform option platform=<QT Platform specifier>  
-    currently supported: win32-g++, win32-msvc.net 
+3	n	document platform option platform=<QT Platform specifier>  
+		currently supported: win32-g++, win32-msvc.net 
 
-- n implement openssl detection without pkgconfig 
+-	n	implement openssl detection without pkgconfig or support pkgconfig on windows
+
+-	n	split qt debug options from KDE debug options, it is not always required to use qt debug library with KDE 
+
+-	n	document how to debug KDE with gdb on windows 
