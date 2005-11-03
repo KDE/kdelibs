@@ -49,6 +49,7 @@ def bootstrap(env):
 	env['LIB_KDEUI']   = ['kdeui']
 	env['LIB_QTTEST']  = ['qttest']
 
+	env['LIBPATH_DCOP']    = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop') ]
 	env['LIBPATH_KDECORE'] = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore') ]
 	env['LIBPATH_KIO']     = [ env.join(os.getcwd(), env['_BUILDDIR_'], 'kio') ]
 	env['LIBPATH_KIO'].append( env.join(os.getcwd(), env['_BUILDDIR_'], 'kdesu'))

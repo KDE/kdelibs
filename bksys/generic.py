@@ -838,11 +838,12 @@ def generate(env):
 			libname=tname.split('.')[0]
 			# TODO: proper handling of bundles (LD* instead of LIB* in scons?)
 			# TODO: -undefined dynamic_lookup == "allow undefined", need proper support for
+			# TODO: -install_name is doing rpath-type-stuff manually, how do we want to handle rpath cleanly?
 			# -no-undefined and similar in such a way that's cross-platform
 			# DF: do we ever want shlibs with undefined symbols? How about we avoid that? :)
-			# IIRC windows DLLs can't have undefined symbols.
+			# IIRC windows DLLs can't have undefined symbols.  OSX can, but it can be tricky. dyld prefers all defined symbols
 			if sys.platform == 'darwin':
-				thisenv.AppendUnique(LINKFLAGS = ["-undefined","error","-install_name", "%s.%s.dylib" % (libname, num)] )
+				thisenv.AppendUnique(LINKFLAGS = ["-undefined","error","-install_name", "%s/%s.%s.dylib" % (libdir, libprefix+libname, num)] )
 			elif not env['WINDOWS']:
 				thisenv.AppendUnique(LINKFLAGS = ["-Wl,--no-undefined","-Wl,--soname=%s.so.%s" % (libprefix+libname, num)] )
 

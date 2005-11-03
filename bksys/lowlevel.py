@@ -79,7 +79,7 @@ def generate(env):
 	########## png
 	env['LIB_PNG']             = ['png', 'm'] + env['LIB_Z']
 
-	if not env['WINDOWS']:
+	if not env['WINDOWS'] and not env['MAC']:
 		########## sm
 		env['LIB_SM']              = ['SM', 'ICE']
 	
