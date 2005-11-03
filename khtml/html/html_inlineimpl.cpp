@@ -146,14 +146,17 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::AltButton;
 	      if ( k->checkModifier(Qt::ControlButton) )
                 state |= Qt::ControlButton;
-	      click();
 	    }
 
 	    // ### also check if focused node is editable if not in designmode,
 	    // and prevent link loading then (LS)
-	    if (getDocument()->view() && !getDocument()->designMode())
+	    if (getDocument()->view() && !getDocument()->designMode()) {
+	      if (k) 
+		click();
+	      else
 		getDocument()->view()->part()->
 		    urlSelected( url, button, state, utarget );
+	    }
         }
         evt->setDefaultHandled();
     }
