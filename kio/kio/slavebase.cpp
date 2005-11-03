@@ -65,7 +65,7 @@
 
 using namespace KIO;
 
-typedef Q3ValueList<QByteArray> AuthKeysList;
+typedef QList<QByteArray> AuthKeysList;
 typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
