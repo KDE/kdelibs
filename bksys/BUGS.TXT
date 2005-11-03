@@ -6,6 +6,8 @@ generic
 -------
 * installing versioned libraries is broken at the very moment (ita: works with the miniscons provided)
 * duplicate PREFIX entry in modules (ita: done ?)
+	rh: not at all - if PREFIX isn't set on configuring, no PREFIX is in cache\generic.cache.py and 
+	using env['PREFIX'] anywhere results in runtime error see dcop/SConscript
 
     
 mac
@@ -18,10 +20,13 @@ unix
   does not work -> error "No such file or directory"  (from kde-buildsystem@kde.org)
 
 ita: This is provided so that text editors know SConscript files contain python code
+rh: but couldn't this be extended in any way so that running ./SConscript works too, may be a good feature. 
 
 
 win32
 -----
 * mingw: fix bug in lowlevel.py not detecting winsock gethostname() function 
+* fix double global.h occurance (kjs/global.h and kio/kio/global.h), which lets in including the wrong file 
+
 
  
