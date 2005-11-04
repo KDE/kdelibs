@@ -49,7 +49,7 @@
 
 #include <q3header.h>
 #include <q3listview.h>
-
+#include <QStack>
 #include <dptrtemplate.h>
 
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {

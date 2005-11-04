@@ -28,6 +28,7 @@
 #include <q3ptrstack.h>
 #include <qobject.h>
 #include <q3listview.h>
+#include <QStack>
 
 #include <kdialogbase.h>
 #include <klocale.h>
@@ -258,7 +259,7 @@ protected slots:
   void endFolder();
 
 protected:
-  Q3PtrStack<KBookmarkMenu> mstack;
+  QStack<KBookmarkMenu*> mstack;
   KBookmarkMenu * m_menu;
   KActionCollection * m_actionCollection;
   KBookmarkManager* m_pManager;
