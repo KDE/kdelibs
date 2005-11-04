@@ -1671,18 +1671,25 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
-    if (d->accessKeysEnabled) {
-    if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
-    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
-	{
+    if (d->accessKeysEnabled) 
+    {
+        if (d->accessKeysPreActivate && _ke->key() != Key_Control) 
+            d->accessKeysPreActivate=false;
+        if (d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
+        {
 	    displayAccessKeys();
 	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
 	    d->accessKeysActivated = true;
 	    d->accessKeysPreActivate = false;
-	}
-	else if (d->accessKeysActivated) accessKeysTimeout();
-        _ke->accept();
-        return;
+            _ke->accept();
+            return;
+        }
+	else if (d->accessKeysActivated) 
+        {
+            accessKeysTimeout();
+            _ke->accept();
+            return;
+        }
     }
 
     // Send keyup event
