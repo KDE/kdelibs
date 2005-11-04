@@ -462,9 +462,9 @@ public:
      * This returns the maximum width set by setComboWidth
      */
     virtual int comboWidth() const;
-    
+
     /**
-     * Sets the maximum items that are visible at once if the action 
+     * Sets the maximum items that are visible at once if the action
      * is a combobox, that is the number of items in the combobox's viewport
      * Only works before the action is plugged
      * @since 3.5
@@ -493,6 +493,8 @@ public:
     void setMenuAccelsEnabled( bool b );
     /// @since 3.1
     bool menuAccelsEnabled() const;
+
+    virtual bool isShortcutConfigurable() const { return false; }
 
 public slots:
     /**
