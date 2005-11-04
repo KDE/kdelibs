@@ -220,7 +220,7 @@ void RenderTable::calcWidth()
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
     } else {
-        m_width = KMIN(short( availableWidth ),m_maxWidth);
+        m_width = KMIN(short( availableWidth ), short(m_maxWidth));
     }
 
     // restrict width to what we really have

@@ -195,7 +195,7 @@ public:
     // overrides
     virtual void calcMinMaxWidth();
     virtual short minWidth() const { return m_minWidth; }
-    virtual short maxWidth() const { return m_maxWidth; }
+    virtual int maxWidth() const { return m_maxWidth; }
 
     void trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
                             short& endMinW, bool& endWS,
@@ -280,7 +280,7 @@ protected: // members
 
     short m_lineHeight;
     short m_minWidth;
-    short m_maxWidth;
+    int   m_maxWidth;
     short m_beginMinWidth;
     short m_endMinWidth;
 

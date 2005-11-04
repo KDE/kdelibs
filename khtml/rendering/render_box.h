@@ -58,7 +58,7 @@ public:
     virtual void detach();
 
     virtual short minWidth() const { return m_minWidth; }
-    virtual short maxWidth() const { return m_maxWidth; }
+    virtual int maxWidth() const { return m_maxWidth; }
 
     virtual short contentWidth() const;
     virtual int contentHeight() const;
@@ -181,7 +181,7 @@ protected:
     /* The maximum width the element can fill horizontally
      * ( = the width of the element with line breaking disabled)
      */
-    short m_maxWidth;
+    int m_maxWidth;
 
     // Cached normal flow values for absolute positioned elements with static left/top values.
     short m_staticX;

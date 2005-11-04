@@ -2433,12 +2433,12 @@ void RenderBlock::calcMinMaxWidth()
     }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxWidth = KMAX(m_maxWidth, short(style()->minWidth().value()));
+        m_maxWidth = KMAX(m_maxWidth, int(style()->minWidth().value()));
         m_minWidth = KMAX(m_minWidth, short(style()->minWidth().value()));
     }
 
     if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
-        m_maxWidth = KMIN(m_maxWidth, short(style()->maxWidth().value()));
+        m_maxWidth = KMIN(m_maxWidth, int(style()->maxWidth().value()));
         m_minWidth = KMIN(m_minWidth, short(style()->maxWidth().value()));
     }
 
@@ -2822,7 +2822,7 @@ void RenderBlock::calcBlockMinMaxWidth()
 
     RenderObject *child = firstChild();
     RenderObject* prevFloat = 0;
-    short int floatWidths = 0;
+    int floatWidths = 0;
     while(child != 0)
     {
         // positioned children don't affect the minmaxwidth

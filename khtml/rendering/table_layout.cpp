@@ -460,7 +460,7 @@ void AutoTableLayout::recalcColumn( int effCol )
 	}
     }
 
-    l.maxWidth = kMax(l.maxWidth, l.minWidth);
+    l.maxWidth = kMax(l.maxWidth, int(l.minWidth));
 #ifdef DEBUG_LAYOUT
     qDebug("col %d, final min=%d, max=%d, width=%d(%d)", effCol, l.minWidth, l.maxWidth, l.width.value(),  l.width.type() );
 #endif
@@ -829,7 +829,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	    }
 	} else {
 	    for ( unsigned int pos = col; pos < lastCol; pos++ )
-		layoutStruct[pos].maxWidth = kMax(layoutStruct[pos].maxWidth, layoutStruct[pos].minWidth );
+		layoutStruct[pos].maxWidth = kMax(layoutStruct[pos].maxWidth, int(layoutStruct[pos].minWidth) );
 	}
     }
     effWidthDirty = false;
