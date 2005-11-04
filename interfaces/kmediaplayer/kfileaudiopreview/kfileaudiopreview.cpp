@@ -1,7 +1,7 @@
 #include "kfileaudiopreview.h"
 
 #include <qcheckbox.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qlayout.h>
 #include <qvgroupbox.h>
 
@@ -79,8 +79,8 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
         // So, reparent first the video widget, then the view.
         if ( view->videoWidget() )
         {
-            Q3HBox *frame = new Q3HBox( box );
-            frame->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+            KHBox *frame = new KHBox( box );
+            frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
             frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
             view->videoWidget()->reparent( frame, QPoint(0,0) );
         }
