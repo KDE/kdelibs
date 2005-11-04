@@ -24,7 +24,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qradiobutton.h>
 
 #include <kacceleratormanager.h>
@@ -51,7 +51,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent )
   cfg = new LdapConfigWidget( LdapConfigWidget::W_ALL, this );
 
   mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
-  Q3HBox *box = new Q3HBox( this );
+  KHBox *box = new KHBox( this );
   box->setSpacing( KDialog::spacingHint() );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), box );
   mCacheButton = new QPushButton( i18n( "Offline Use..." ), box );
