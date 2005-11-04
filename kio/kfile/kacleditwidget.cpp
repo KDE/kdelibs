@@ -26,8 +26,8 @@
 
 #include <qpainter.h>
 #include <q3ptrlist.h>
-#include <q3vbox.h>
-#include <q3hbox.h>
+#include <kvbox.h>
+#include <khbox.h>
 #include <qpushbutton.h>
 #include <QButtonGroup>
 #include <QGroupBox>
@@ -73,12 +73,12 @@ static const struct {
 KACLEditWidget::KACLEditWidget( QWidget *parent )
    :QWidget( parent )
 {
-    Q3HBox *hbox = new Q3HBox( parent );
+    KHBox *hbox = new KHBox( parent );
     hbox->setSpacing(  KDialog::spacingHint() );
     m_listView = new KACLListView( hbox );
     connect( m_listView, SIGNAL( selectionChanged() ),
             this, SLOT( slotUpdateButtons() ) );
-    Q3VBox *vbox = new Q3VBox( hbox );
+    KVBox *vbox = new KVBox( hbox );
     vbox->setSpacing(  KDialog::spacingHint() );
     m_AddBtn = new QPushButton( i18n( "Add Entry..." ), vbox, "add_entry_button" );
     connect( m_AddBtn, SIGNAL( clicked() ), m_listView, SLOT( slotAddEntry() ) );
@@ -423,10 +423,10 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_widgetStack = new Q3WidgetStack( page );
     mainLayout->addWidget( m_widgetStack );
 
-    Q3HBox *usersBox = new Q3HBox( m_widgetStack );
+    KHBox *usersBox = new KHBox( m_widgetStack );
     m_widgetStack->addWidget( usersBox, KACLListView::NamedUser );
 
-    Q3HBox *groupsBox = new Q3HBox( m_widgetStack );
+    KHBox *groupsBox = new KHBox( m_widgetStack );
     m_widgetStack->addWidget( groupsBox, KACLListView::NamedGroup );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
