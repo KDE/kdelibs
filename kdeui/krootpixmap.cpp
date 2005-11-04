@@ -17,7 +17,7 @@
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #else
-#include <Qapplication>
+#include <QApplication>
 #include <QDesktopWidget>
 #endif
 
