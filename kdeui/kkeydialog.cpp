@@ -488,7 +488,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !sName.isEmpty() && pList->isConfigurable(iAction) ) {
+		} else if( !sName.isEmpty() && sName != "unnamed"  && pList->isConfigurable(iAction) ) {
 			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
 			if(pAList)
 				pItem->setPixmap(0,pAList->action(iAction)->iconSet().pixmap(QIcon::Small,QIcon::Normal));
