@@ -1740,7 +1740,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
 void HTMLInputElementImpl::activate()
 {
-    if (!m_form || !m_render)
+    if (!m_form)
         return;
 
     m_clicked = true;
