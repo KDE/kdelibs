@@ -369,17 +369,6 @@ void KBugReport::slotSetFrom()
   m_from->setText( fromaddr );
 }
 
-void KBugReport::slotUrlClicked(const QString &urlText)
-{
-    KToolInvocation::invokeBrowser( urlText );
-
-  // When using the web form, a click can also close the window, as there's
-  // not much to do. It also gives the user a direct response to his click:
-  if ( d->submitBugButton )
-      KDialogBase::slotCancel();
-}
-
-
 void KBugReport::slotOk( void )
 {
     if ( d->submitBugButton ) {

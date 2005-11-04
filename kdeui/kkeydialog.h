@@ -174,7 +174,6 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	void fontChange( const QFont& _font );
 	void setShortcut( const KShortcut& cut );
 	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
-        bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText );
 	void _warning( const KKeySequence& seq, QString sAction, QString sTitle );
 
  protected slots:

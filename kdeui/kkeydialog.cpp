@@ -791,12 +791,6 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 	return false;
 }
 
-// KDE4 remove
-bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
-{
-    return isKeyPresentLocally( cut, ignoreItem, !warnText.isNull());
-}
-
 bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser )
 {
     if ( cut.toString().isEmpty())
