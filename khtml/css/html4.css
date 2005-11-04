@@ -349,10 +349,14 @@ INPUT, TEXTAREA {
         text-align: -khtml-auto;
 }
 
+INPUT, TEXTAREA, SELECT, BUTTON {
+        font-weight: normal;
+        margin: 0__qem;
+}
+
 INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
-        margin: 0__qem;
         border: 2px -khtml-native;
 }
 
@@ -387,13 +391,11 @@ SELECT {
         font-family: sans-serif;
         font-size: small;
         color: windowtext;
-        margin: 0__qem;
 }
 
 TEXTAREA {
         color: windowtext;
         font-family: monospace;
-        margin: 0__qem;
         border: 2px -khtml-native;
 }
 
