@@ -506,6 +506,9 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "MediumFontSize", 10 );
     cfg.writeEntry( "Fonts", QStringList() );
     cfg.writeEntry( "DefaultEncoding", "" );
+    cfg.setGroup("Java/JavaScript Settings");
+    cfg.writeEntry( "WindowOpenPolicy", KHTMLSettings::KJSWindowOpenAllow);
+
     cfg.sync();
 
     int rv = 1;
