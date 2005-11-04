@@ -19,6 +19,9 @@ def generate(env):
 
     		dest=open(env.join(env['_BUILDDIR_'], 'config-libidn.h'), 'w')
     		dest.write('/* libidn configuration created by bksys */\n')
-		if have_idn: dest.write('#define HAVE_IDNA_H 1\n');
+		if have_idn:
+			dest.write('#define HAVE_IDNA_H 1\n');
+			dest.write('#define HAVE_PUNYCODE_H 1\n');
+			dest.write('#define HAVE_STRINGPREP_H 1\n');
 		dest.close()
 		env['_CONFIG_H_'].append('libidn')

@@ -317,9 +317,6 @@ def detect(lenv,dest):
 /* Define to 1 if you have the <pty.h> header file. */
 #define HAVE_PTY_H 1
 
-/* Define to 1 if you have the <punycode.h> header file. */
-#define HAVE_PUNYCODE_H 1
-
 /* Define to 1 if you have the `putenv' function. */
 #define HAVE_PUTENV 1
 
@@ -403,9 +400,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the `strfmon' function. */
 #define HAVE_STRFMON 1
-
-/* Define to 1 if you have the <stringprep.h> header file. */
-#define HAVE_STRINGPREP_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 #define HAVE_STRINGS_H 1
