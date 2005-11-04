@@ -930,7 +930,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 bool HTMLGenericFormElementImpl::isFocusable() const
 {
-    return (m_render && m_render->isWidget() &&
+    return (!disabled() && m_render && m_render->isWidget() &&
         static_cast<RenderWidget*>(m_render)->widget() &&
         static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus) ||
 		/* INPUT TYPE="image" supports focus too */
