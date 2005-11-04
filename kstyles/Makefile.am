@@ -1,4 +1,4 @@
-SUBDIRS = keramik plastik
+SUBDIRS = keramik plastik utils
 # highcolor highcontrast themes light kthemestyle riscos utils keramik
 
 #kstyles should not be included in the apidocs
