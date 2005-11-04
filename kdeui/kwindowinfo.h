@@ -21,7 +21,7 @@
  * after a specified time. The simplest use displays a text message in the
  * window title:
  * \code
- *    KWindowInfo::showMessage( this, &quot;Message Body&quot; );
+ *    KWindowInfo::showMessage( this, i18n("Message Body") );
  * \endcode
  * This more complex example changes the window icon, as well as
  * displaying the text. In addition, this example overrides the
@@ -29,8 +29,8 @@
  * second.
  * \code
  *    QPixmap px;
- *    px.load( &quot;lo16-app-logtracker.png&quot; );
- *    KWindowInfo::showMessage( this, &quot;Message Body&quot;, px, 1000 );
+ *    px.load( "lo16-app-logtracker.png" );
+ *    KWindowInfo::showMessage( this, i18n("Message Body"), px, 1000 );
  * \endcode
  * If the parent window inherits KSystemTray then KWindowInfo changes the
  * pixmap and tooltip of the system window to display the message.
