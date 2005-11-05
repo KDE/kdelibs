@@ -1,3 +1,5 @@
+#define KDE3_SUPPORT 
+
 #include "kdockwidgetdemo.h"
 
 #include <q3header.h>
