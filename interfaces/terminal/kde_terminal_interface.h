@@ -20,7 +20,7 @@
 #define KDELIBS_TERMINAL_INTERFACE_H
 
 class QString;
-class Q3StrList;
+class QStringList;
 
 /**
  * TerminalInterface is an interface implemented by KonsolePart to
@@ -90,7 +90,7 @@ public:
    * This starts @p program, with arguments @p args
    */
   virtual void startProgram( const QString& program,
-                             const Q3StrList& args ) = 0;
+                             const QStringList& args ) = 0;
   /**
    * If a shell is currently shown, this sends it a cd
    * command. Otherwise, this starts a shell, and sends it a cd
