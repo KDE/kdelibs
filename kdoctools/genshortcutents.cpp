@@ -309,8 +309,7 @@ int main( int argc, char **argv )
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );
 
 	KApplication::disableAutoDcopRegistration();
-	// GUI/X11 is needed for KStdAccel
-	KApplication app( false, true );
+	KApplication app( false, false );
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
