@@ -6,8 +6,10 @@ Import('env')
 obj = env.qt4obj('program', env)
 obj.target = 'kconfig_compiler'
 obj.source = 'kconfig_compiler.cpp '
-obj.libs   = '../libkdecore.la ../../dcop/libDCOP.so'
+obj.libpaths = '.. ../../dcop'
+obj.libs   = 'kdecore DCOP'
 obj.uselib = 'QTCORE QTGUI QT3SUPPORT QT KDE4'
+obj.instdir = env['KDEBIN']
 obj.execute()
 """
 
