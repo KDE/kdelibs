@@ -80,17 +80,16 @@ KServiceTypeFactory * KServiceTypeFactory::self()
 
 KServiceType::Ptr KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
-   if (!m_sycocaDict) return 0L; // Error!
+   if (!m_sycocaDict) return KServiceType::Ptr(); // Error!
    assert (!KSycoca::self()->isBuilding());
    int offset = m_sycocaDict->find_string( _name );
-   if (!offset) return 0; // Not found
-   KServiceType * newServiceType = createEntry(offset);
+   if (!offset) return KServiceType::Ptr(); // Not found
+   KServiceType::Ptr newServiceType(createEntry(offset));
 
    // Check whether the dictionary was right.
    if (newServiceType && (newServiceType->name() != _name))
    {
      // No it wasn't...
-     delete newServiceType;
      newServiceType = 0; // Not found
    }
    return newServiceType;
@@ -187,7 +186,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    QStringList::const_iterator it = m_patterns.begin();
    QStringList::const_iterator end = m_patterns.end();
-   QVector<qint32>::const_iterator it_offset = m_pattern_offsets.begin();
+   QList<qint32>::const_iterator it_offset = m_pattern_offsets.begin();
 
   for ( ; it != end; ++it, ++it_offset )
    {

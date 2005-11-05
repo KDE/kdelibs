@@ -23,7 +23,6 @@
 #include <assert.h>
 
 #include <qstringlist.h>
-#include <q3valuevector.h>
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"
@@ -113,7 +112,7 @@ protected:
 
 private:
   QStringList m_patterns;
-  QVector<qint32> m_pattern_offsets;
+  QList<qint32> m_pattern_offsets;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
