@@ -1,5 +1,0 @@
-case $host in
-	*cygwin*) undefined_symbols_in_shared_libs_allowed=no;;
-	*) undefined_symbols_in_shared_libs_allowed=yes;;
-esac
-AM_CONDITIONAL(undefined_symbols_allowed, test "$undefined_symbols_in_shared_libs_allowed" = yes)
