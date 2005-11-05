@@ -7,7 +7,7 @@ them to the later performed building process.
 
 topics: 
 - storing of module related settings 
-- storing of \ref config_custem settings and detected state
+- storing of \ref config_custom settings and detected state
 	- c header 
 	- c functions
 	- external libraries and applications (modules ?)

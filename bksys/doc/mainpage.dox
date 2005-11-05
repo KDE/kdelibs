@@ -6,16 +6,16 @@
 This documentation of the coming KDE buildsystem is currently in a very uncomplete state. 
 
 Some chapters describes the recent implementation and are mostly ready, some chapters 
-are in a 'design' state and should be seen as a proposal or specification how thing should 
+are in a 'design' state and should be seen as a proposal or specification how things should 
 go. Such pages are marked with 
 - 'proposal', when they contains collected informations from discussions and brain storming 
-sessions. They need to be reviewed by the build system guru's  before they can marked as 
-- 'specification', which they are ready for implementing 
+sessions. They need to be reviewed by the build system guru's  before they can marked as \n\n
+- 'specification', which mean they are ready for implementing 
 
-See the \ref toc for the documentation structure \n
+See the \ref toc for the documentation structure \n\n
 See related pages for available topics or the top menu for doxygen generated informations.
 
-Please note that doxygen 1.4.4 has a python parsing problem, which results currently in wrong class descriptions. 
+Note: doxygen 1.4.4 has a python parsing problem which results in several wrong class descriptions. 
 
 \section Links
 
