@@ -2006,7 +2006,7 @@ int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) 
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int lp = r->startY + r->node->lowestPosition(false);
+                int lp = r->startY + r->node->marginTop() + r->node->lowestPosition(false);
                 bottom = kMax(bottom, lp);
             }
         }
