@@ -24,10 +24,11 @@
 #include "kdialogbase.h"
 #include <stdlib.h>
 
+#ifdef KDE3_SUPPORT
 #include <q3grid.h>
-#include <khbox.h>
+#endif
+
 #include <qlayout.h>
-#include <kvbox.h>
 #include <qtimer.h>
 #include <QKeyEvent>
 #include <QHideEvent>
@@ -44,6 +45,8 @@
 #include <kseparator.h>
 #include <kurllabel.h>
 #include <kdebug.h>
+#include <khbox.h>
+#include <kvbox.h>
 
 #include "kdialogbase_priv.h"
 #include "kdialogbase_priv.moc"
@@ -54,8 +57,6 @@ int KDialogBaseButton::id()
 {
     return mKey;
 }
-
-template class Q3PtrList<KDialogBaseButton>;
 
 /**
  * @internal
@@ -80,7 +81,7 @@ struct SButton
   QWidget *box;
   int mask;
   int style;
-  Q3PtrList<KDialogBaseButton> list;
+  QList<KDialogBaseButton*> list;
 };
 }// namespace
 
@@ -230,7 +231,7 @@ void SButton::resize( bool sameWidth, int margin,
   int w = 0;
   int t = 0;
 
-  for( p = list.first(); p; p =  list.next() )
+  foreach ( p, list )
   {
     const QSize s( p->sizeHint() );
     if( s.height() > h ) { h = s.height(); }
@@ -239,7 +240,7 @@ void SButton::resize( bool sameWidth, int margin,
 
   if( orientation == Qt::Horizontal )
   {
-    for( p = list.first(); p; p =  list.next() )
+    foreach ( p, list )
     {
       QSize s( p->sizeHint() );
       if( sameWidth ) { s.setWidth( w ); }
@@ -253,7 +254,7 @@ void SButton::resize( bool sameWidth, int margin,
   else
   {
     // sameWidth has no effect here
-    for( p = list.first(); p; p =  list.next() )
+    foreach ( p, list )
     {
       QSize s( p->sizeHint() );
       s.setWidth( w );
@@ -267,8 +268,7 @@ void SButton::resize( bool sameWidth, int margin,
 
 KPushButton *SButton::button( int key )
 {
-  KDialogBaseButton *p;
-  for( p = list.first(); p; p = list.next() )
+  foreach ( KDialogBaseButton *p, list )
   {
     if( p->id() == key )
     {
@@ -1271,7 +1271,7 @@ KHBox *KDialogBase::addHBoxPage( const QStringList &items,
   return ( mJanus ? mJanus->addHBoxPage( items, header, pixmap ) : 0);
 }
 
-
+#ifdef KDE3_SUPPORT
 Q3Grid *KDialogBase::addGridPage( int n, Qt::Orientation dir,
 				 const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
@@ -1285,6 +1285,7 @@ Q3Grid *KDialogBase::addGridPage( int n, Qt::Orientation dir,
 {
   return ( mJanus ? mJanus->addGridPage( n, dir, items, header, pixmap) : 0);
 }
+#endif
 
 void KDialogBase::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
 {
@@ -1337,7 +1338,7 @@ KHBox *KDialogBase::makeHBoxMainWidget()
   return mainWidget;
 }
 
-
+#ifdef KDE3_SUPPORT
 Q3Grid *KDialogBase::makeGridMainWidget( int n, Qt::Orientation dir )
 {
   if( mJanus || mMainWidget )
@@ -1351,7 +1352,7 @@ Q3Grid *KDialogBase::makeGridMainWidget( int n, Qt::Orientation dir )
   setMainWidget( mainWidget );
   return mainWidget;
 }
-
+#endif
 
 void KDialogBase::printMakeMainWidgetError()
 {
@@ -1388,13 +1389,11 @@ void KDialogBase::setMainWidget( QWidget *widget )
     /* There is no more QFocusData in Qt4, so i used QWidget::nextInFocusChain()
        instead - mattr */
     QWidget* prev = nextInFocusChain();
-    for( Q3PtrListIterator<KDialogBaseButton> it( d->mButton.list );
-	 it != NULL;
-	 ++it )
+    foreach ( KDialogBaseButton* button, d->mButton.list )
     {
-      if( prev != *it )
-	setTabOrder( prev, *it );
-      prev = *it;
+      if( prev != button )
+	setTabOrder( prev, button );
+      prev = button;
     }
   }
 }

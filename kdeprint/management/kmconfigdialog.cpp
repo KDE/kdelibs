@@ -34,6 +34,7 @@
 #include <kiconloader.h>
 #include <kinstance.h>
 #include <kconfig.h>
+#include <QFrame>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 : KDialogBase(IconList,i18n("KDE Print Configuration"),Ok|Cancel,Ok,parent,name,true,true)

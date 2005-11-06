@@ -28,6 +28,7 @@ class QCheckBox;
 class QSpinBox;
 class QComboBox;
 class Q3ListView;
+class Q3ListViewItem;
 class QListviewItem;
 class QStackedWidget;
 

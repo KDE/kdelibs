@@ -35,6 +35,7 @@
 #include <q3groupbox.h>
 #include <QResizeEvent>
 #include <qlinkedlist.h>
+#include <Q3ScrollView>
 
 #undef Bool
 

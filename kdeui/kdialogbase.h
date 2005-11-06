@@ -568,6 +568,8 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
+// Deprecated - use addPage() instead, and add a QGridLayout
+#ifdef KDE3_SUPPORT
     /**
      * Add a page to the dialog when the class is used in @p TreeList,
      * @p IconList or @p Tabbed mode.
@@ -609,6 +611,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
+#endif
 
 
     /**
@@ -664,6 +667,8 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      */
     KHBox *makeHBoxMainWidget();
 
+// Deprecated - use makeMainWidget() instead, and add a QGridLayout
+#ifdef KDE3_SUPPORT
     /**
      * Make a main widget.
      *
@@ -682,7 +687,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *         were broken.
      */
     Q3Grid *makeGridMainWidget( int n, Qt::Orientation dir );
-
+#endif
 
     /**
      * Hide or display the a separator line drawn between the action

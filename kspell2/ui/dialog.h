@@ -24,6 +24,8 @@
 
 #include <kdialogbase.h>
 
+class Q3ListViewItem;
+
 namespace KSpell2
 {
     class Filter;

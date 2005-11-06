@@ -45,6 +45,7 @@ class QPushButton;
 class KIconButton;
 class KPropsDlgPlugin;
 class QComboBox;
+class Q3ListBox;
 
 #define KPropsPage KPropsDlgPlugin
 

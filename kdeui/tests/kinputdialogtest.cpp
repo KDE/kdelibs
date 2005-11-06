@@ -6,6 +6,7 @@
 #include <kapplication.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
+#include <klistbox.h>
 
 #include <qstring.h>
 #include <qvalidator.h>

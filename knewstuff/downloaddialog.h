@@ -33,6 +33,7 @@ namespace KIO
 class KListView;
 class QTextBrowser;
 class QFrame;
+class Q3ListViewItem;
 template<typename T> class Q3ValueList;
 
 class KNewStuffGeneric;

@@ -30,6 +30,7 @@ class KFileTreeBranch;
 class KFileTreeView;
 class KFileTreeViewItem;
 class KToggleAction;
+class Q3ListViewItem;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.

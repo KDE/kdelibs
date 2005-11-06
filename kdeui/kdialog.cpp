@@ -38,13 +38,11 @@
 #include "config.h"
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
-#include <netwm.h> 
+#include <netwm.h>
 #endif
 
 const int KDialog::mMarginSize = 11;
 const int KDialog::mSpacingSize = 6;
-
-template class Q3PtrList<QLayoutItem>;
 
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, Qt::WFlags f)
   : QDialog(parent, name, modal, f), d(0)

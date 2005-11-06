@@ -1,6 +1,7 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espensa@online.no)
  *  Copyright (C) 2003 Ravikiran Rajagopal (ravi@kde.org)
+ *  Copyright (C) 2005 Hamish Rodda (rodda@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,20 +19,28 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include "kjanuswidget.h"
+
 #include <qbitmap.h>
-#include <q3grid.h>
-#include <khbox.h>
-#include <q3header.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qobject.h>
 #include <qpixmap.h>
 #include <qsplitter.h>
 #include <qtabwidget.h>
-#include <kvbox.h>
 #include <qpainter.h>
 #include <qstyle.h>
 #include <QStackedWidget>
+#include <QTreeWidgetItem>
+#include <QListWidget>
+#include <QHeaderView>
+
+#ifdef KDE3_SUPPORT
+#include <q3grid.h>
+#endif
+
+#include <khbox.h>
+#include <kvbox.h>
 #include <kapplication.h>
 #include <kdialog.h> // Access to some static members
 #include <klocale.h>
@@ -39,26 +48,36 @@
 #include <kglobalsettings.h>
 #include <kseparator.h>
 #include <kdebug.h>
-#include "kjanuswidget.h"
 #include <klistview.h>
-#include "kpushbutton.h"
-#include "kguiitem.h"
+#include <kpushbutton.h>
+#include <kguiitem.h>
 
-class KJanusWidget::IconListItem : public Q3ListBoxItem
+class IconListBox : public QListWidget
 {
   public:
-    IconListItem( Q3ListBox *listbox, const QPixmap &pixmap,
-		   const QString &text );
-    virtual int height( const Q3ListBox *lb ) const;
-    virtual int width( const Q3ListBox *lb ) const;
+    IconListBox( QWidget *parent=0 );
+    void updateMinimumHeight();
+    void updateWidth();
+    void invalidateHeight();
+    void invalidateWidth();
+    void setShowAll( bool showAll );
+
+  private:
+    bool mShowAll;
+    bool mHeightValid;
+    bool mWidthValid;
+};
+
+class IconListItem : public QListWidgetItem
+{
+  public:
+    IconListItem( QListWidget* parent, const QPixmap &pixmap, const QString &text );
     int expandMinimumWidth( int width );
 
   protected:
     const QPixmap &defaultPixmap();
-    void paint( QPainter *painter );
 
   private:
-    QPixmap mPixmap;
     int mMinimumWidth;
 };
 
@@ -79,9 +98,6 @@ public:
   QWidget * mListFrame;
   QSplitter * mSplitter;
 };
-
-template class Q3PtrList<Q3ListViewItem>;
-
 
 KJanusWidget::KJanusWidget( QWidget *parent, int face )
   : QWidget( parent ),
@@ -105,13 +121,11 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       d->mListFrame = new QWidget( d->mSplitter );
       QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
       dummy->setAutoAdd( true );
-      mTreeList = new KListView( d->mListFrame );
-      mTreeList->addColumn( QString::null );
+      mTreeList = new QTreeWidget( d->mListFrame );
+      mTreeList->setColumnCount(1);
       mTreeList->header()->hide();
-      mTreeList->setRootIsDecorated(true);
-      mTreeList->setSorting( -1 );
-      connect( mTreeList, SIGNAL(selectionChanged()), SLOT(slotShowPage()) );
-      connect( mTreeList, SIGNAL(clicked(Q3ListViewItem *)), SLOT(slotItemClicked(Q3ListViewItem *)));
+      connect( mTreeList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()) );
+      connect( mTreeList, SIGNAL(itemClicked(QTreeWidgetItem*)), SLOT(slotItemClicked(QTreeWidgetItem*)));
 
       //
       // Page area. Title at top with a separator below and a pagestack using
@@ -139,7 +153,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       mIconList->setFont( listFont );
 
       mIconList->verticalScrollBar()->installEventFilter( this );
-      connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
+      connect( mIconList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()));
       hbox->addSpacing( KDialog::marginHint() );
       page = new QFrame( this );
       hbox->addWidget( page, 10 );
@@ -221,10 +235,13 @@ int KJanusWidget::face() const
   return mFace;
 }
 
-QWidget *KJanusWidget::FindParent()
+QWidget *KJanusWidget::findParent()
 {
   if( mFace == Tabbed ) {
     return mTabControl;
+  }
+  else if (mFace == TreeList || mFace == IconList) {
+    return mPageStack;
   }
   else {
     return this;
@@ -240,7 +257,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
     return 0;
   }
 
-  QFrame *page = new QFrame( FindParent());
+  QFrame *page = new QFrame( findParent());
   addPageWidget( page, items, header, pixmap );
 
   return page;
@@ -251,10 +268,10 @@ void KJanusWidget::pageGone( QObject *obj )
   removePage( static_cast<QWidget*>( obj ) );
 }
 
-void KJanusWidget::slotReopen( Q3ListViewItem * item )
+void KJanusWidget::slotReopen( QTreeWidgetItem * item )
 {
   if( item )
-    item->setOpen( true );
+    item->treeWidget()->expandItem(item);
 }
 
 QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
@@ -277,7 +294,8 @@ KVBox *KJanusWidget::addVBoxPage( const QStringList &items,
     return 0;
   }
 
-  KVBox *page = new KVBox(FindParent());
+  QWidget* parent = findParent();
+  KVBox *page = new KVBox(parent);
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -302,7 +320,7 @@ KHBox *KJanusWidget::addHBoxPage( const QStringList &items,
     return 0;
   }
 
-  KHBox *page = new KHBox(FindParent());
+  KHBox *page = new KHBox(findParent());
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -318,6 +336,7 @@ KHBox *KJanusWidget::addHBoxPage( const QString &itemName,
   return addHBoxPage(items, header, pixmap);
 }
 
+#ifdef KDE3_SUPPORT
 Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
 				  const QStringList &items,
 				  const QString &header,
@@ -329,13 +348,12 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
     return 0;
   }
 
-  Q3Grid *page = new Q3Grid( n, dir, FindParent());
+  Q3Grid *page = new Q3Grid( n, dir, findParent());
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
   return page;
 }
-
 
 Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
 				  const QString &itemName,
@@ -346,37 +364,55 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
   items << itemName;
   return addGridPage(n, dir, items, header, pixmap);
 }
+#endif
 
-void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page)
+void KJanusWidget::insertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page)
 {
   bool isTop = true;
-  Q3ListViewItem *curTop = 0, *child, *last, *newChild;
-  int index = 1;
+  QTreeWidgetItem *curTop = 0, *child, *last, *newChild;
+  int index = 0;
   QStringList curPath;
 
-  for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it, index++ ) {
-    QString name = (*it);
+  foreach (QString name, items) {
+    ++index;
+
     bool isPath = ( index != items.count() );
 
-    // Find the first child.
+    child = last = 0;
+
+    // Search for a child with the current Name, and if it we don't
+    // find it, then remember the location of the last child.
     if (isTop) {
-      child = mTreeList->firstChild();
-    }
-    else {
-      child = curTop->firstChild();
+      int childIndex = -1;
+      while (++childIndex < mTreeList->topLevelItemCount()) {
+        last = child = mTreeList->topLevelItem(childIndex);
+        if (child->text(0) == name)
+          goto foundChild;
+      }
+
+    } else {
+      int childIndex = -1;
+      while (++childIndex < curTop->childCount()) {
+        last = child = curTop->child(childIndex);
+        if (child->text(0) == name)
+          goto foundChild;
+      }
     }
 
-    // Now search for a child with the current Name, and if it we doesn't
-    // find it, then remember the location of the last child.
-    for (last = 0; child && child->text(0) != name ; last = child, child = child->nextSibling());
+    child = 0L;
+
+    foundChild:
 
     if (!last && !child) {
       // This node didn't have any children at all, lets just insert the
       // new child.
-      if (isTop)
-        newChild = new Q3ListViewItem(mTreeList, name);
-      else
-        newChild = new Q3ListViewItem(curTop, name);
+      if (isTop) {
+        newChild = new QTreeWidgetItem(mTreeList);
+        newChild->setText(0, name);
+      } else {
+        newChild = new QTreeWidgetItem(curTop);
+        newChild->setText(0, name);
+      }
 
     }
     else if (child) {
@@ -392,16 +428,18 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
     }
     else {
       // the node had some children, but we didn't find the given name
-      if (isTop)
-        newChild = new Q3ListViewItem(mTreeList, last, name);
-      else
-        newChild = new Q3ListViewItem(curTop, last, name);
+      if (isTop) {
+        newChild = new QTreeWidgetItem(mTreeList, last);
+        newChild->setText(0, name);
+      } else {
+        newChild = new QTreeWidgetItem(curTop, last);
+        newChild->setText(0, name);
+      }
     }
 
     // Now make the element expandable if it is a path component, and make
     // ready for next loop
     if (isPath) {
-      newChild->setExpandable(true);
       curTop = newChild;
       isTop = false;
       curPath << name;
@@ -409,12 +447,12 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
       QString key = curPath.join("_/_");
       if (mFolderIconMap.contains(key)) {
         QPixmap p = mFolderIconMap[key];
-        newChild->setPixmap(0,p);
+        newChild->setIcon(0,p);
       }
     }
     else {
       if (mShowIconsInTreeList) {
-        newChild->setPixmap(0, pixmap);
+        newChild->setIcon(0, pixmap);
       }
       mTreeListToPageStack.insert(newChild, page);
     }
@@ -446,7 +484,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 
     if( mFace == TreeList )
     {
-      InsertTreeListItem(items, pixmap, page);
+      insertTreeListItem(items, pixmap, page);
     }
     else // mFace == IconList
     {
@@ -548,25 +586,29 @@ bool KJanusWidget::slotShowPage()
 
   if( mFace == TreeList )
   {
-    Q3ListViewItem *node = mTreeList->selectedItem();
-    if( !node ) { return false; }
+    QList<QTreeWidgetItem*> selectedItems = mTreeList->selectedItems();
+    if (!selectedItems.count())
+      return false;
 
-    QWidget *stackItem = mTreeListToPageStack[node];
+    QWidget *stackItem = mTreeListToPageStack[selectedItems.first()];
+
     // Make sure to call through the virtual function showPage(int)
     return showPage(d->mPageToInt[stackItem]);
   }
   else if( mFace == IconList )
   {
-    Q3ListBoxItem *node = mIconList->item( mIconList->currentItem() );
-    if( !node ) { return false; }
-    QWidget *stackItem = mIconListToPageStack[node];
+    QList<QListWidgetItem*> selectedItems = mIconList->selectedItems();
+    if (!selectedItems.count())
+      return false;
+
+    QWidget *stackItem = mIconListToPageStack[selectedItems.first()];
+
     // Make sure to call through the virtual function showPage(int)
     return showPage(d->mPageToInt[stackItem]);
   }
 
   return false;
 }
-
 
 bool KJanusWidget::showPage( int index )
 {
@@ -597,24 +639,20 @@ bool KJanusWidget::showPage( QWidget *w )
     mTitleLabel->setText( d->mIntToTitle[index] );
     if( mFace == TreeList )
     {
-      QMap<Q3ListViewItem *, QWidget *>::Iterator it;
-      for (it = mTreeListToPageStack.begin(); it != mTreeListToPageStack.end(); ++it){
-        Q3ListViewItem *key = it.key();
-        QWidget *val = it.data();
-        if (val == w) {
-          mTreeList->setSelected(key, true );
+      QMap<QTreeWidgetItem*, QWidget *>::ConstIterator it;
+      for (it = mTreeListToPageStack.constBegin(); it != mTreeListToPageStack.constEnd(); ++it) {
+        if (it.value() == w) {
+          mTreeList->setItemSelected(it.key(), true );
           break;
         }
       }
     }
     else
     {
-      QMap<Q3ListBoxItem *, QWidget *>::Iterator it;
-      for (it = mIconListToPageStack.begin(); it != mIconListToPageStack.end(); ++it){
-        Q3ListBoxItem *key = it.key();
-        QWidget *val = it.data();
-        if (val == w) {
-          mIconList->setSelected( key, true );
+      QMap<QListWidgetItem*, QWidget *>::ConstIterator it;
+      for (it = mIconListToPageStack.constBegin(); it != mIconListToPageStack.constEnd(); ++it) {
+        if (it.value() == w) {
+          mIconList->setItemSelected( it.key(), true );
           break;
         }
       }
@@ -637,15 +675,19 @@ bool KJanusWidget::showPage( QWidget *w )
 int KJanusWidget::activePageIndex() const
 {
   if( mFace == TreeList) {
-    Q3ListViewItem *node = mTreeList->selectedItem();
-    if( !node ) { return -1; }
-    QWidget *stackItem = mTreeListToPageStack[node];
+    QList<QTreeWidgetItem*> selectedItems = mTreeList->selectedItems();
+    if (!selectedItems.count())
+      return -1;
+
+    QWidget *stackItem = mTreeListToPageStack[selectedItems.first()];
     return d->mPageToInt[stackItem];
   }
   else if (mFace == IconList) {
-    Q3ListBoxItem *node = mIconList->item( mIconList->currentItem() );
-    if( !node ) { return false; }
-    QWidget *stackItem = mIconListToPageStack[node];
+    QList<QListWidgetItem*> selectedItems = mIconList->selectedItems();
+    if (!selectedItems.count())
+      return -1;
+
+    QWidget *stackItem = mIconListToPageStack[selectedItems.first()];
     return d->mPageToInt[stackItem];
   }
   else if( mFace == Tabbed ) {
@@ -711,10 +753,10 @@ void KJanusWidget::slotFontChanged()
 }
 
 // makes the treelist behave like the list of kcontrol
-void KJanusWidget::slotItemClicked(Q3ListViewItem *it)
+void KJanusWidget::slotItemClicked(QTreeWidgetItem *it)
 {
   if(it && (it->childCount()>0))
-    it->setOpen(!it->isOpen());
+    it->treeWidget()->setItemExpanded(it, !it->treeWidget()->isItemExpanded(it));
 }
 
 void KJanusWidget::setFocus()
@@ -836,17 +878,26 @@ void KJanusWidget::setRootIsDecorated( bool state )
   }
 }
 
+static void expandTree(QTreeWidgetItem* item)
+{
+  for (int i = 0; i < item->childCount(); ++i) {
+    QTreeWidgetItem* child = item->child(i);
+    item->treeWidget()->expandItem(child);
+    expandTree(child);
+  }
+}
+
 void KJanusWidget::unfoldTreeList( bool persist )
 {
   if( mFace == TreeList )
   {
     if( persist )
-      connect( mTreeList, SIGNAL( collapsed( Q3ListViewItem * ) ), this, SLOT( slotReopen( Q3ListViewItem * ) ) );
+      connect( mTreeList, SIGNAL( collapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
     else
-      disconnect( mTreeList, SIGNAL( collapsed( Q3ListViewItem * ) ), this, SLOT( slotReopen( Q3ListViewItem * ) ) );
+      disconnect( mTreeList, SIGNAL( collapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
 
-    for( Q3ListViewItem * item = mTreeList->firstChild(); item; item = item->itemBelow() )
-      item->setOpen( true );
+    for (int i = 0; i < mTreeList->topLevelItemCount(); ++i)
+      expandTree(mTreeList->topLevelItem(i));
   }
 }
 
@@ -893,6 +944,12 @@ void KJanusWidget::showEvent( QShowEvent * )
 // It should be obvious that this eventfilter must only be
 // be installed on the vertical scrollbar of the mIconList.
 //
+/*
+
+20051107 - Hamish Rodda
+Let's try to get away without using this... perhaps we should set the appropriate
+sizehint and sizepolicy.
+
 bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
 {
   if( e->type() == QEvent::Show )
@@ -915,7 +972,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
     }
   }
   return QWidget::eventFilter( o, e );
-}
+}*/
 
 
 
@@ -924,22 +981,21 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
 //
 
 
-KJanusWidget::IconListBox::IconListBox( QWidget *parent, const char *name,
-					Qt::WFlags f )
-  :KListBox( parent, name, f ), mShowAll(false), mHeightValid(false),
+IconListBox::IconListBox( QWidget *parent)
+  : QListWidget( parent ), mShowAll(false), mHeightValid(false),
    mWidthValid(false)
 {
 }
 
 
-void KJanusWidget::IconListBox::updateMinimumHeight()
+void IconListBox::updateMinimumHeight()
 {
   if( mShowAll && !mHeightValid )
   {
     int h = frameWidth()*2;
-    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
+    for (int i = 0; i < count(); ++i)
     {
-      h += i->height( this );
+      h += sizeHintForRow( i );
     }
     setMinimumHeight( h );
     mHeightValid = true;
@@ -947,20 +1003,21 @@ void KJanusWidget::IconListBox::updateMinimumHeight()
 }
 
 
-void KJanusWidget::IconListBox::updateWidth()
+void IconListBox::updateWidth()
 {
   if( !mWidthValid )
   {
-    int maxWidth = 10;
-    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
+    int maxWidth = qMax(10, sizeHintForColumn(0));
+    /*for (int i = 0; i < count(); ++i)
     {
-      int w = ((IconListItem *)i)->width(this);
+      // FIXME just gives a size hint for the whole column
+      int w = sizeHintForColumn(0);
       maxWidth = qMax( w, maxWidth );
-    }
+    }*/
 
-    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
+    for (int i = 0; i < count(); ++i)
     {
-      ((IconListItem *)i)->expandMinimumWidth( maxWidth );
+      ((IconListItem *)item(i))->expandMinimumWidth( maxWidth );
     }
 
     if( verticalScrollBar()->isVisible() )
@@ -974,19 +1031,19 @@ void KJanusWidget::IconListBox::updateWidth()
 }
 
 
-void KJanusWidget::IconListBox::invalidateHeight()
+void IconListBox::invalidateHeight()
 {
   mHeightValid = false;
 }
 
 
-void KJanusWidget::IconListBox::invalidateWidth()
+void IconListBox::invalidateWidth()
 {
   mWidthValid = false;
 }
 
 
-void KJanusWidget::IconListBox::setShowAll( bool showAll )
+void IconListBox::setShowAll( bool showAll )
 {
   mShowAll = showAll;
   mHeightValid = false;
@@ -994,28 +1051,31 @@ void KJanusWidget::IconListBox::setShowAll( bool showAll )
 
 
 
-KJanusWidget::IconListItem::IconListItem( Q3ListBox *listbox, const QPixmap &pixmap,
+IconListItem::IconListItem( QListWidget *parent, const QPixmap &pixmap,
                                           const QString &text )
-  : Q3ListBoxItem( listbox )
+  : QListWidgetItem( parent )
 {
-  mPixmap = pixmap;
-  if( mPixmap.isNull() )
+  if( pixmap.isNull() )
   {
-    mPixmap = defaultPixmap();
+    setIcon(defaultPixmap());
+  }
+  else
+  {
+    setIcon(pixmap);
   }
   setText( text );
   mMinimumWidth = 0;
 }
 
 
-int KJanusWidget::IconListItem::expandMinimumWidth( int width )
+int IconListItem::expandMinimumWidth( int width )
 {
   mMinimumWidth = qMax( mMinimumWidth, width );
   return mMinimumWidth;
 }
 
 
-const QPixmap &KJanusWidget::IconListItem::defaultPixmap()
+const QPixmap &IconListItem::defaultPixmap()
 {
   static QPixmap *pix=0;
   if( !pix )
@@ -1039,44 +1099,6 @@ const QPixmap &KJanusWidget::IconListItem::defaultPixmap()
   return *pix;
 }
 
-
-void KJanusWidget::IconListItem::paint( QPainter *painter )
-{
-  QFontMetrics fm = painter->fontMetrics();
-  int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
-  int wp = mPixmap.width();
-  int hp = mPixmap.height();
-
-  painter->drawPixmap( (mMinimumWidth-wp)/2, 5, mPixmap );
-  if( !text().isEmpty() )
-  {
-    painter->drawText( 0, hp+7, mMinimumWidth, ht, Qt::AlignCenter, text() );
-  }
-}
-
-int KJanusWidget::IconListItem::height( const Q3ListBox *lb ) const
-{
-  if( text().isEmpty() )
-  {
-    return mPixmap.height();
-  }
-  else
-  {
-    int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
-    return (mPixmap.height() + ht + 10);
-  }
-}
-
-
-int KJanusWidget::IconListItem::width( const Q3ListBox *lb ) const
-{
-  int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
-  int wp = mPixmap.width() + 10;
-  int w  = qMax( wt, wp );
-  return qMax( w, mMinimumWidth );
-}
-
-
 void KJanusWidget::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
@@ -1091,33 +1113,37 @@ void KJanusWidget::removePage( QWidget *page )
 
   if ( mFace == TreeList )
   {
-    QMap<Q3ListViewItem*, QWidget *>::Iterator i;
-    for( i = mTreeListToPageStack.begin(); i != mTreeListToPageStack.end(); ++i )
-      if (i.data()==page)
+    QMutableMapIterator<QTreeWidgetItem*, QWidget *> it = mTreeListToPageStack;
+    while (it.hasNext()) {
+      it.next();
+      if (it.value() == page)
       {
-        delete i.key();
+        delete it.key();
+        it.remove();
         mPageStack->removeWidget(page);
-        mTreeListToPageStack.remove(i);
         d->mIntToTitle.remove(index);
         d->mPageToInt.remove(page);
         d->mIntToPage.remove(index);
         break;
       }
+    }
   }
   else if ( mFace == IconList )
   {
-    QMap<Q3ListBoxItem*, QWidget *>::Iterator i;
-    for( i = mIconListToPageStack.begin(); i != mIconListToPageStack.end(); ++i )
-      if (i.data()==page)
+    QMutableMapIterator<QListWidgetItem*, QWidget *> it = mIconListToPageStack;
+    while (it.hasNext()) {
+      it.next();
+      if (it.value() == page)
       {
-        delete i.key();
+        delete it.key();
+        it.remove();
         mPageStack->removeWidget(page);
-        mIconListToPageStack.remove(i);
         d->mIntToTitle.remove(index);
         d->mPageToInt.remove(page);
         d->mIntToPage.remove(index);
         break;
       }
+    }
   }
   else // Tabbed
   {

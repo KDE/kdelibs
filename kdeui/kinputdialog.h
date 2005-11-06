@@ -28,6 +28,7 @@ class KDoubleSpinBox;
 class KComboBox;
 class KTextEdit;
 class KInputDialogPrivate;
+class KListBox;
 
 #include <kdialogbase.h>
 
@@ -117,7 +118,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
     static QString getText( const QString &caption, const QString &label,
         const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
         const char *name=0, QValidator *validator=0,
-        const QString &mask=QString::null, 
+        const QString &mask=QString::null,
 	const QString& whatsThis=QString::null  );
 
     /**
@@ -203,7 +204,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * @return Number user entered if Ok was pressed, else 0
      */
     static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-2147483647, 
+        double value=0, double minValue=-2147483647,
         double maxValue=2147483647, double step=0.1, int decimals=1,
         bool *ok=0, QWidget *parent=0, const char *name=0 );
 
@@ -212,7 +213,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * the above function.
      */
     static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-2147483647, 
+        double value=0, double minValue=-2147483647,
         double maxValue=2147483647, int decimals=1, bool *ok=0,
         QWidget *parent=0, const char *name=0 );
 
@@ -221,7 +222,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * list. caption is the text that is displayed in the title bar.
      * label is the text that appears as the label for the list. list
      * is the string list which is inserted into the list, and current
-     * is the number of the item which should be the selected item. If 
+     * is the number of the item which should be the selected item. If
      * editable is true, the user can enter their own text.
      *
      * @param caption  Caption of the dialog
@@ -245,7 +246,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * items from a listbox. caption is the text that is displayed in the
      * title bar. label is the text that appears as the label for the listbox.
      * list is the string list which is inserted into the listbox, select
-     * is the list of item(s) that should be the selected. If multiple is 
+     * is the list of item(s) that should be the selected. If multiple is
      * true, the user can select multiple items.
      *
      * @param caption  Caption of the dialog

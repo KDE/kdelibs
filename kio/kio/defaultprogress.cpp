@@ -142,9 +142,9 @@ void DefaultProgress::init()
   speedLabel = new QLabel(this);
   hBox->addWidget(speedLabel, 1);
 
-  Q3Frame *line = new Q3Frame( this );
-  line->setFrameShape( Q3Frame::HLine );
-  line->setFrameShadow( Q3Frame::Sunken );
+  QFrame *line = new QFrame( this );
+  line->setFrameShape( QFrame::HLine );
+  line->setFrameShadow( QFrame::Sunken );
   topLayout->addWidget( line );
 
   d->keepOpen = new QCheckBox( i18n("&Keep this window open after transfer is complete"), this);

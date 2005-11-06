@@ -55,7 +55,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
   m_pProgressBar = new KProgress( this );
-  m_pProgressBar->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
+  m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
   m_pProgressBar->setLineWidth( 1 );
   m_pProgressBar->setBackgroundMode( Qt::PaletteBackground );
   m_pProgressBar->installEventFilter( this );

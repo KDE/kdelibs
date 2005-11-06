@@ -1,5 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
+ *  Copyright (C) 2005 Hamish Rodda (rodda@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,12 +21,17 @@
 #ifndef _KJANUS_WIDGET_H_
 #define _KJANUS_WIDGET_H_
 
+#include <QWidget>
+#include <QMap>
+#include <QPixmap>
 
-#include <klistbox.h>
+#include <kdelibs_export.h>
 
-#include <q3ptrlist.h>
-#include <qmap.h>
-#include <qpixmap.h>
+#ifdef KDE3_SUPPORT
+class Q3Grid;
+#endif
+
+class IconListBox;
 
 class KGuiItem;
 class KHBox;
@@ -33,12 +39,14 @@ class KListView;
 class KSeparator;
 class KVBox;
 
-class Q3Grid;
-class Q3ListViewItem;
 class QStackedWidget;
 class QLabel;
 class QStringList;
 class QTabWidget;
+class QTreeWidgetItem;
+class QTreeWidget;
+class QListWidgetItem;
+class QFrame;
 
 /**
  * @short Easy to use widget with many layouts
@@ -62,28 +70,19 @@ class QTabWidget;
  * the QObject::deleteLater() function on the page as the main event loop
  * may have optimized UI update events of the page by scheduling them for later.
  *
+ * \todo KDE 4 port issues:
+ *       - size hint fiddling is not quite correct. Time to use size hint + size policy instead?
+ *         it should be able to be "corrected" by iterating the model and using the delegate to get
+ *         size hints.
+ *       - the icon list ? now puts the text to the right of the icon, instead of beneath.
+ *         if this needs fixing, a custom item delegate will be required.
+ *
  * @author Espen Sand (espen@kde.org)
+ * @author Hamish Rodda (rodda@kde.org) - KDE 4 porting
  */
 class KDEUI_EXPORT KJanusWidget : public QWidget
 {
   Q_OBJECT
-
-  private:
-    class IconListBox : public KListBox
-    {
-      public:
-        IconListBox( QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
-	void updateMinimumHeight();
-	void updateWidth();
-	void invalidateHeight();
-	void invalidateWidth();
-	void setShowAll( bool showAll );
-
-      private:
-	bool mShowAll;
-	bool mHeightValid;
-	bool mWidthValid;
-    };
 
   public:
     enum Face
@@ -314,6 +313,8 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
+// Deprecated - use addPage() instead, and add a QGridLayout
+#ifdef KDE3_SUPPORT
     /**
      * Add a new page when the class is used in either TreeList or Tabbed
      * mode. The returned widget is empty and you must add your widgets
@@ -358,6 +359,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
+#endif
 
     /**
      * @short Removes a page created with addPage, addVBoxPage,
@@ -514,7 +516,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @see pageIndex()
      * @since 3.2
      */
-    /*virtual*/ QString pageTitle(int index) const;
+    virtual QString pageTitle(int index) const;
     /**
      * Returns the page widget associated with a page index or null if there is
      * no such page.
@@ -522,7 +524,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @see pageIndex()
      * @since 3.2
      */
-    /*virtual*/ QWidget *pageWidget(int index) const;
+    virtual QWidget *pageWidget(int index) const;
 
   signals:
     /**
@@ -553,28 +555,28 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param o Object that has received an event.
      * @param e The event.
      */
-    virtual bool eventFilter( QObject *o, QEvent *e );
+    //virtual bool eventFilter( QObject *o, QEvent *e );
 
   private slots:
     bool slotShowPage();
     void slotFontChanged();
-    void slotItemClicked(Q3ListViewItem *it);
+    void slotItemClicked(QTreeWidgetItem *it);
     void pageGone(QObject *obj); // signal from the added page's "destroyed" signal
-    void slotReopen(Q3ListViewItem *item);
+    void slotReopen(QTreeWidgetItem *item);
     void slotCurrentChanged(int index);
 
   protected:
     bool showPage( QWidget *w );
     void addPageWidget( QFrame *page, const QStringList &items,
 			const QString &header, const QPixmap &pixmap );
-    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
-    QWidget *FindParent();
+    void insertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
+    QWidget *findParent();
 
   private:
     bool mValid;
 
     int          mFace;
-    KListView    *mTreeList;
+    QTreeWidget  *mTreeList;
     IconListBox  *mIconList;
     QStackedWidget *mPageStack;
     QLabel       *mTitleLabel;
@@ -585,14 +587,12 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     KSeparator   *mTitleSep;
     enum { KeepSize, Stretch } mTreeListResizeMode;
     bool         mShowIconsInTreeList;
-    QMap<Q3ListViewItem *, QWidget *> mTreeListToPageStack;
-    QMap<Q3ListBoxItem *, QWidget *> mIconListToPageStack;
+    QMap<QTreeWidgetItem*, QWidget *> mTreeListToPageStack;
+    QMap<QListWidgetItem*, QWidget *> mIconListToPageStack;
     QMap<QString, QPixmap> mFolderIconMap;
     QMap<QString, QStringList> mChildrenNames;
     QMap<QString, QWidget *> mChildPages;
 
-  public:
-    class IconListItem;
   protected:
     virtual void virtual_hook( int id, void* data );
   private:

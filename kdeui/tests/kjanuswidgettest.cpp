@@ -12,7 +12,7 @@ int main(int argc, char** argv)
   KCmdLineArgs::init( argc, argv, "januswidgettest", "JanusWidgetTest", "description", "version" );
   KApplication app;
   // -----
-  KJanusWidget* janus = new KJanusWidget( 0, 0, KJanusWidget::IconList );
+  KJanusWidget* janus = new KJanusWidget( 0, KJanusWidget::IconList );
 
   QWidget* page1 = janus->addVBoxPage( QString( "Page1" ) ); // use i18n in real apps
   QCheckBox* cb1 = new QCheckBox( "a", page1 );

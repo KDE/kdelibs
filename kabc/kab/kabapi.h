@@ -22,6 +22,7 @@
 class QPushButton;
 class Q3Frame;
 class KListBox;
+class Q3ListBoxItem;
 
 /**
   * The class KabAPI provides a public interface to access the

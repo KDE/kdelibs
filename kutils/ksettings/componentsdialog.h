@@ -27,6 +27,7 @@
 
 class QString;
 class KPluginInfo;
+class Q3ListViewItem;
 
 namespace KSettings
 {
