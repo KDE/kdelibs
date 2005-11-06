@@ -70,8 +70,6 @@ int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
         if (tdata)
         {
             // Get the specified date/time as an offset from epoch (in zone time)
-            if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
-                return 0;
             QDateTime dt = zoneDateTime;
             dt.setTimeSpec(Qt::UTC);
             uint ut = dt.toTime_t();
