@@ -25,16 +25,15 @@
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <ktextedit.h>
 #include <qobject.h>
 #include <qpainter.h>
 #include <qrect.h>
 #include <qtabwidget.h>
 #include <qtabbar.h>
-
+#include <QScrollArea>
 #include <qapplication.h>
-#include "ktoolinvocation.h"
 
+#include <ktoolinvocation.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
@@ -44,6 +43,7 @@
 #include <kiconloader.h>
 #include <kaboutdialog_private.h>
 #include <kdebug.h>
+#include <ktextedit.h>
 
 //MOC_SKIP_BEGIN
 template class QList<KAboutContributor *>;
@@ -70,7 +70,7 @@ public:
 
 
 
-KAboutContributor::KAboutContributor( QWidget *_parent, 
+KAboutContributor::KAboutContributor( QWidget *_parent,
 			              const QString &_name,const QString &_email,
 			              const QString &_url, const QString &_work,
 			              bool showHeader, bool showFrame,
@@ -551,15 +551,14 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 
   QFrame *const page = addEmptyPage( title );
   QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
-  Q3ScrollView* const scrollView = new Q3ScrollView( page );
-  scrollView->viewport()->setBackgroundMode( Qt::PaletteBackground );
+  QScrollArea* const scrollView = new QScrollArea( page );
   vbox->addWidget( scrollView );
 
   KAboutContainer* const container = new KAboutContainer( scrollView,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
     innerAlignment );
   container->setObjectName( "container" );
-  scrollView->addChild( container );
+  scrollView->setWidget( container );
 
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
