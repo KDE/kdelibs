@@ -18,12 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KSIMPLECONFIG_H
-#define _KSIMPLECONFIG_H
+#ifndef KSIMPLECONFIG_H
+#define KSIMPLECONFIG_H
 
-#include "kconfig.h"
-
-class KSimpleConfigPrivate;
+#include <kconfig.h>
 
 /**
  * KDE Configuration entries
@@ -64,16 +62,14 @@ public:
 
   virtual void sync();
 
-private:
-
-  // copy-construction and assignment are not allowed
-  KSimpleConfig( const KSimpleConfig& );
-  KSimpleConfig& operator= ( const KSimpleConfig& rConfig );
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KSimpleConfigPrivate *d;
+
+  Q_DISABLE_COPY(KSimpleConfig);
+
+  class Private;
+  Private *d;
 };
 
 #endif

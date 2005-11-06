@@ -19,8 +19,7 @@
 #ifndef KDESKTOPFILE_H
 #define KDESKTOPFILE_H
 
-#include "kconfig.h"
-#include "kdelibs_export.h"
+#include <kconfig.h>
 
 /**
  * KDE Desktop File Management.
@@ -222,15 +221,12 @@ public:
    */
   KDesktopFile* copyTo(const QString &file) const;
 
-private:
-
-  // copy-construction and assignment are not allowed
-  KDesktopFile( const KDesktopFile& );
-  KDesktopFile& operator= ( const KDesktopFile& );
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+
+  Q_DISABLE_COPY(KDesktopFile);
+
   class Private;
   Private *const d;
 };
