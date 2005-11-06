@@ -33,8 +33,8 @@
 #define COLUMN_COMMENT 2
 #define COLUMN_ZONE 3
 
-KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *db) :
-    KListView(parent),
+KTimezoneWidget::KTimezoneWidget(QWidget *parent, KTimezones *db) :
+    QTreeWidget(parent),
     d(0)
 {
     // If the user did not provide a timezone database, we'll use the system default.
@@ -42,14 +42,12 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
     if (!userDb)
         db = new KTimezones();
 
-    addColumn(i18n("Area"));
-    addColumn(i18n("Region"));
-    addColumn(i18n("Comment"));
+    setHeaderLabels(QStringList() << i18n("Area") << i18n("Region") << i18n("Comment"));
 
     const KTimezones::ZoneMap zones = db->zones();
     for (KTimezones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it)
     {
-        const KTimezone *zone = it.data();
+        const KTimezone *zone = it.value();
         QString tzName = zone->name();
         QString comment = zone->comment();
         if (!comment.isEmpty())
@@ -60,7 +58,8 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
         //  "Europe/London", "GB" -> "London", "Europe/GB".
         //  "UTC",           ""   -> "UTC",    "".
         QStringList continentCity = QStringList::split("/", displayName(zone));
-        Q3ListViewItem *listItem = new Q3ListViewItem(this, continentCity[continentCity.count() - 1]);
+        QTreeWidgetItem *listItem = new QTreeWidgetItem(this);
+        listItem->setText(0, continentCity[continentCity.count() - 1]);
         continentCity[continentCity.count() - 1] = zone->countryCode();
         listItem->setText(COLUMN_REGION, continentCity.join("/"));
         listItem->setText(COLUMN_COMMENT, comment);
@@ -69,7 +68,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
         // Locate the flag from /l10n/%1/flag.png.
         QString flag = locate("locale", QString("l10n/%1/flag.png").arg(zone->countryCode().toLower()));
         if (QFile::exists(flag))
-            listItem->setPixmap(COLUMN_REGION, QPixmap(flag));
+            listItem->setIcon(COLUMN_REGION, QPixmap(flag));
     }
 
     if (!userDb)
@@ -93,15 +92,9 @@ QStringList KTimezoneWidget::selection() const
     QStringList selection;
 
     // Loop through all entries.
-    Q3ListViewItem *listItem = firstChild();
-    while (listItem)
-    {
-        if (listItem->isSelected())
-        {
-            selection.append(listItem->text(COLUMN_ZONE));
-        }
-        listItem = listItem->nextSibling();
-    }
+    foreach (QTreeWidgetItem* listItem, selectedItems())
+        selection.append(listItem->text(COLUMN_ZONE));
+
     return selection;
 }
 
@@ -110,22 +103,16 @@ void KTimezoneWidget::setSelected(const QString &zone, bool selected)
     bool found = false;
 
     // Loop through all entries.
-    Q3ListViewItem *listItem = firstChild();
-    while (listItem)
+    foreach (QTreeWidgetItem* listItem, findItems(zone, Qt::MatchExactly, COLUMN_ZONE))
     {
-        if (listItem->text(COLUMN_ZONE) == zone)
-        {
-            KListView::setSelected(listItem, selected);
+        setItemSelected(listItem, selected);
 
-            // Ensure the selected item is visible as appropriate.
-            listItem = selectedItem();
-            if (listItem)
-                ensureItemVisible(listItem);
-            found = true;
-            break;
-        }
-        listItem = listItem->nextSibling();
+        // Ensure the selected item is visible as appropriate.
+        scrollTo(indexFromItem(listItem));
+
+        found = true;
     }
+
     if (!found)
         kdDebug() << "No such zone: " << zone << endl;
 }

@@ -20,9 +20,9 @@
 #ifndef KTIMEZONEWIDGET_H
 #define KTIMEZONEWIDGET_H
 
+#include <QTreeWidget>
+
 #include <kdelibs_export.h>
-#include <klistview.h>
-#include <qstring.h>
 
 class KTimezone;
 class KTimezones;
@@ -57,7 +57,7 @@ class KTimezoneWidgetPrivate;
  * @since 3.5
  */
 class KDEUI_EXPORT KTimezoneWidget :
-    public KListView
+    public QTreeWidget
 {
     Q_OBJECT
 
@@ -66,11 +66,10 @@ public:
      * Constructs a timezone selection widget.
      *
      * @param parent The parent widget.
-     * @param name The name of this widget.
      * @param db The timezone database to use. If 0, the system timezone
      *           database is used.
      */
-    KTimezoneWidget(QWidget *parent = 0,const char *name = 0, KTimezones *db = 0);
+    KTimezoneWidget(QWidget *parent = 0, KTimezones *db = 0);
 
     /**
      * Destroys the timezone selection widget.
