@@ -522,7 +522,7 @@ NodeImpl *TreeWalkerImpl::getFirstChild(NodeImpl *n)
 {
     short _result;
 
-    if( !n || n->firstChild() )
+    if( !n || !n->firstChild() )
         return 0;
     n = n->firstChild();
 
@@ -551,7 +551,7 @@ NodeImpl *TreeWalkerImpl::getLastChild(NodeImpl *n)
 {
     short _result;
 
-    if( !n || n->lastChild() )
+    if( !n || !n->lastChild() )
         return 0;
     n = n->lastChild();
     _result = isAccepted( n );
