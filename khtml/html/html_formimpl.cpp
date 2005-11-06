@@ -1986,7 +1986,7 @@ DOMString HTMLInputElementImpl::valueWithDefault() const
     if (v.isEmpty()) {
         switch (m_type) {
             case RESET:
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
                 v = resetButtonDefaultLabel();
 #else
                 v = i18n("Reset");
@@ -1994,7 +1994,7 @@ DOMString HTMLInputElementImpl::valueWithDefault() const
                 break;
 
             case SUBMIT:
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
                 v = submitButtonDefaultLabel();
 #else
                 v = i18n("Submit");
@@ -2009,7 +2009,7 @@ DOMString HTMLInputElementImpl::valueWithDefault() const
             case ISINDEX:
             case PASSWORD:
             case RADIO:
-        #if APPLE_CHANGES
+        #ifdef APPLE_CHANGES
             case RANGE:
             case SEARCH:
         #endif
