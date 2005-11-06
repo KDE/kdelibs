@@ -268,7 +268,6 @@ class KateViewInternal : public QWidget
     // column scrollbar + x position
     //
     QScrollBar *m_columnScroll;
-    bool m_columnScrollDisplayed;
     int m_startX;
     int m_oldStartX;
 
@@ -289,9 +288,11 @@ class KateViewInternal : public QWidget
     //
     QMemArray<KateLineRange> lineRanges;
 
-    // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
-    bool scrollbarVisible(uint startLine);
+    // maximal lenght of textlines visible from given startLine
     int maxLen(uint startLine);
+    
+    // are we allowed to scroll columns?
+    bool columnScrollingPossible ();
 
     // returns the maximum X value / col value a cursor can take for a specific line range
     int lineMaxCursorX(const KateLineRange& range);
