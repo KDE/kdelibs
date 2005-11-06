@@ -2325,6 +2325,11 @@ bool KateDocument::openFile(KIO::Job * job)
   if (pos != -1)
     setEncoding (serviceType.mid(pos+1));
 
+  // Try getting the filetype here, so that variables does not have to be reset.
+  int fileTypeFound = KateFactory::self()->fileTypeManager()->fileType (this);
+  if ( fileTypeFound > -1 )
+    updateFileType( fileTypeFound );
+
   // do we have success ?
   bool success = m_buffer->openFile (m_file);
   //
@@ -2346,8 +2351,9 @@ bool KateDocument::openFile(KIO::Job * job)
         m_buffer->setHighlight(hl);
     }
 
-    // update file type
-    updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
+    // update file type if we haven't allready done so.
+    if ( fileTypeFound < 0 )
+      updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
 
     // read dir config (if possible and wanted)
     readDirConfig ();
