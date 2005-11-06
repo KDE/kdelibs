@@ -276,6 +276,8 @@ public:
     DOMString value() const;
     void setValue(DOMString val);
 
+    DOMString valueWithDefault() const;
+
     void blur();
     void focus();
 
