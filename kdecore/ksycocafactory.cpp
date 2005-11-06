@@ -28,7 +28,6 @@
 #include <qhash.h>
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
- : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
   {
@@ -140,7 +139,7 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
    if (!m_sycocaDict) return; // Error!
 
    const QString name = newEntry->name();
-   m_entryDict->insert( name, KSycocaEntry::Ptr(newEntry) );
+   m_entryDict->insert( name, newEntry );
    m_sycocaDict->add( name, newEntry );
 }
 
