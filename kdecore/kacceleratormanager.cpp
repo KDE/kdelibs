@@ -838,8 +838,8 @@ void QWidgetStackAccelManager::manage( QStackedWidget *stack )
 QWidgetStackAccelManager::QWidgetStackAccelManager(QStackedWidget *stack)
   : QObject(stack), m_stack(stack)
 {
-    aboutToShow(stack->currentWidget()); // do one check and then connect to show
-    connect(stack, SIGNAL(aboutToShow(QWidget *)), SLOT(aboutToShow(QWidget *)));
+    currentChanged(stack->currentIndex()); // do one check and then connect to show
+    connect(stack, SIGNAL(currentChanged(int)), SLOT(currentChanged(int)));
 }
 
 bool QWidgetStackAccelManager::eventFilter ( QObject * watched, QEvent * e )
@@ -851,15 +851,15 @@ bool QWidgetStackAccelManager::eventFilter ( QObject * watched, QEvent * e )
     return false;
 }
 
-void QWidgetStackAccelManager::aboutToShow(QWidget *child)
+void QWidgetStackAccelManager::currentChanged(int child)
 {
-    if (!child)
+    if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kdDebug(125) << "null pointer given to aboutToShow" << endl;
+        kdDebug(125) << k_funcinfo << "invalid index provided" << endl;
         return;
     }
 
-    child->installEventFilter( this );
+    static_cast<QStackedWidget*>(parent())->widget(child)->installEventFilter( this );
 }
 
 void KAcceleratorManager::setNoAccel( QWidget *widget )

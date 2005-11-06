@@ -175,7 +175,7 @@ protected:
 
 private slots:
 
-  void aboutToShow(QWidget *);
+    void currentChanged(int child);
     bool eventFilter ( QObject * watched, QEvent * e );
 
 private:
