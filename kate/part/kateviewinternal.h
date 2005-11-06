@@ -363,8 +363,9 @@ class KateViewInternal : public QWidget
     static const int scrollTime = 30;
     static const int scrollMargin = 16;
 
-    // needed to stop the column scroll bar from hiding / unhiding during a dragScroll.
-    bool m_suppressColumnScrollBar;
+    // dyn wrap mode:
+    // used to set the lineScroll to the max value
+    bool m_maximizeLineScroll;
 
   private slots:
     void scrollTimeout ();

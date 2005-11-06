@@ -76,7 +76,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_scrollTimer (this)
   , m_cursorTimer (this)
   , m_textHintTimer (this)
-  , m_suppressColumnScrollBar(false)
+  , m_maximizeLineScroll (false)
   , m_textHintEnabled(false)
   , m_textHintMouseX(-1)
   , m_textHintMouseY(-1)
@@ -390,10 +390,8 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
   if (c > limit) {
     c = limit;
 
-    // overloading this variable, it's not used in non-word wrap
-    // used to set the lineScroll to the max value
     if (m_view->dynWordWrap())
-      m_suppressColumnScrollBar = true;
+      m_maximizeLineScroll = true;
 
     // Re-check we're not just scrolling to the same place
     if (!force && ((!m_view->dynWordWrap() && c.line() == (int)startLine()) || c == startPos()))
@@ -489,8 +487,8 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     maxLineScrollRange++;
   m_lineScroll->setRange(0, maxLineScrollRange);
 
-  if (m_view->dynWordWrap() && m_suppressColumnScrollBar) {
-    m_suppressColumnScrollBar = false;
+  if (m_view->dynWordWrap() && m_maximizeLineScroll) {
+    m_maximizeLineScroll = false;
     m_lineScroll->setValue(maxStart.line());
   } else {
     m_lineScroll->setValue(startPos().line());
@@ -3052,14 +3050,12 @@ void KateViewInternal::wheelEvent(QWheelEvent* e)
 void KateViewInternal::startDragScroll()
 {
   if ( !m_dragScrollTimer.isActive() ) {
-    m_suppressColumnScrollBar = true;
     m_dragScrollTimer.start( scrollTime );
   }
 }
 
 void KateViewInternal::stopDragScroll()
 {
-  m_suppressColumnScrollBar = false;
   m_dragScrollTimer.stop();
   updateView();
 }
