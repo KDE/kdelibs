@@ -37,8 +37,6 @@
 */
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
-  Q_OBJECT
-
 public:
 
   /**

@@ -76,5 +76,3 @@ void KSimpleConfig::sync()
 
 void KSimpleConfig::virtual_hook( int id, void* data )
 { KConfig::virtual_hook( id, data ); }
-
-#include "ksimpleconfig.moc"

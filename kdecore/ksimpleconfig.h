@@ -40,8 +40,6 @@ class KSimpleConfigPrivate;
  */
 class KDECORE_EXPORT KSimpleConfig : public KConfig
 {
-  Q_OBJECT
-
 public:
   /**
    * Construct a KSimpleConfig object and make it either read-write

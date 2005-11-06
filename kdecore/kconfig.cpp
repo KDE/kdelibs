@@ -351,5 +351,3 @@ KSharedConfig::~KSharedConfig()
   if ( s_list )
     s_list->removeAll(this);
 }
-
-#include "kconfig.moc"

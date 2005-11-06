@@ -23,7 +23,6 @@
 #ifndef KCONFIGBASE_H
 #define KCONFIGBASE_H
 
-#include <qobject.h>
 #include <qvariant.h>
 
 #include <kdelibs_export.h>
@@ -68,10 +67,8 @@ typedef QMap<KEntryKey, KEntry> KEntryMap;
  * @see KSimpleConfig
  * @see KSharedConfig
  */
-class KDECORE_EXPORT KConfigBase : public QObject
+class KDECORE_EXPORT KConfigBase
 {
-  Q_OBJECT
-
   friend class KConfigBackEnd;
   friend class KConfigINIBackEnd;
   friend class KConfigGroup;

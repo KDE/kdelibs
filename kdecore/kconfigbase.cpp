@@ -1870,5 +1870,3 @@ bool KConfigBase::checkConfigFilesWritable(bool warnUser)
   else
     return false;
 }
-
-#include "kconfigbase.moc"

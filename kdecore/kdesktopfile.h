@@ -31,8 +31,6 @@
  */
 class KDECORE_EXPORT KDesktopFile : public KConfig
 {
-  Q_OBJECT
-
 public:
   /**
    * Constructs a KDesktopFile object and make it either read-write
