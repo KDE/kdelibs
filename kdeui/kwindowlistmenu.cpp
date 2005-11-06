@@ -28,17 +28,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "config.h"
 #include <qpainter.h>
-#include <q3ptrlist.h>
 #include <QDesktopWidget>
 #include <QX11Info>
 
-#include <kwin.h> 
-#include <kwinmodule.h> 
+#include <kwin.h>
+#include <kwinmodule.h>
 
 #include <klocale.h>
 #include <kstringhandler.h>
 
-#include <netwm.h> 
+#include <netwm.h>
 #include <QApplication>
 #include <kstyle.h>
 #include <dcopclient.h>
@@ -47,32 +46,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kwindowlistmenu.h"
 #include "kwindowlistmenu.moc"
 
-// helper class
-namespace
+static bool compareKWinWindowInfo(KWin::WindowInfo* i1, KWin::WindowInfo* i2)
 {
-class NameSortedInfoList : public Q3PtrList<KWin::WindowInfo>
-{
-public:
-    NameSortedInfoList() { setAutoDelete(true); };
-    ~NameSortedInfoList() {};
-
-private:
-    int compareItems( Q3PtrCollection::Item s1, Q3PtrCollection::Item s2 );
-};
-
-int NameSortedInfoList::compareItems( Q3PtrCollection::Item s1, Q3PtrCollection::Item s2 )
-{
-    KWin::WindowInfo *i1 = static_cast<KWin::WindowInfo *>(s1);
-    KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
     QString title1, title2;
     if (i1)
         title1 = i1->visibleNameWithState().toLower();
     if (i2)
         title2 = i2->visibleNameWithState().toLower();
-    return title1.compare(title2);
+    return title1.compare(title2) >= 0;
 }
-
-} // namespace
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char */*name*/)
   : KMenu(parent)
@@ -87,17 +69,15 @@ KWindowListMenu::~KWindowListMenu()
 
 }
 
-static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfoList& list )
+static bool standaloneDialog( const KWin::WindowInfo* info, const QList<KWin::WindowInfo*>& list )
 {
     WId group = info->groupLeader();
     if( group == 0 )
     {
         return info->transientFor() == QX11Info::appRootWindow();
     }
-    for( Q3PtrListIterator< KWin::WindowInfo > it( list );
-         it.current() != NULL;
-         ++it )
-        if( (*it)->groupLeader() == group )
+    foreach (KWin::WindowInfo* info, list)
+        if( info->groupLeader() == group )
             return false;
     return true;
 }
@@ -112,7 +92,7 @@ void KWindowListMenu::init()
     WId active_window = kwin_module->activeWindow();
 
     // Make sure the popup is not too wide, otherwise clicking in the middle of kdesktop
-    // wouldn't leave any place for the popup, and release would activate some menu entry.    
+    // wouldn't leave any place for the popup, and release would activate some menu entry.
     int maxwidth = qApp->desktop()->screenGeometry( this ).width() / 2 - 100;
 
     clear();
@@ -136,28 +116,29 @@ void KWindowListMenu::init()
     bool show_all_desktops_group = ( nd > 1 );
     for (d = 1; d <= nd + (show_all_desktops_group ? 1 : 0); d++) {
         bool on_all_desktops = ( d > nd );
-    int items = 0;
+        int items = 0;
 
-    // KDE4 porting - huh? didn't know you could set an item checked before it's created?
-    //if (!active_window && d == cd)
-        //setItemChecked(1000 + d, true);
+        // KDE4 porting - huh? didn't know you could set an item checked before it's created?
+        //if (!active_window && d == cd)
+            //setItemChecked(1000 + d, true);
 
-    NameSortedInfoList list;
-    list.setAutoDelete(true);
+        QList<KWin::WindowInfo*> list;
 
-    foreach (KWin::WindowInfo wi, windows) {
-        if ((wi.desktop() == d) || (on_all_desktops && wi.onAllDesktops())
-                || (!show_all_desktops_group && wi.onAllDesktops())) {
-            list.inSort(new KWin::WindowInfo( wi.win(),
-                    NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
-                    NET::WM2GroupLeader | NET::WM2TransientFor ));
+        foreach (KWin::WindowInfo wi, windows) {
+            if ((wi.desktop() == d) || (on_all_desktops && wi.onAllDesktops())
+                    || (!show_all_desktops_group && wi.onAllDesktops())) {
+                list.append(new KWin::WindowInfo( wi.win(),
+                        NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
+                        NET::WM2GroupLeader | NET::WM2TransientFor ));
             }
         }
+
+        qStableSort(list.begin(), list.end(), compareKWinWindowInfo);
 
         foreach (KWin::WindowInfo* info, list) {
             ++i;
             QString itemText = KStringHandler::cPixelSqueeze(info->visibleNameWithState(), fontMetrics(), maxwidth);
-            
+
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
@@ -165,7 +146,7 @@ void KWindowListMenu::init()
             if ( (windowType == NET::Normal || windowType == NET::Unknown
                     || (windowType == NET::Dialog && standaloneDialog( info, list )))
                     && !(info->state() & NET::SkipTaskbar) ) {
-                
+
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
 
@@ -192,6 +173,8 @@ void KWindowListMenu::init()
             unclutter->setEnabled(items > 0);
             cascade->setEnabled(items > 0);
         }
+
+        qDeleteAll(list);
     }
 
     // no windows?
