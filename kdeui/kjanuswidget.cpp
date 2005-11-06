@@ -83,10 +83,9 @@ public:
 template class Q3PtrList<Q3ListViewItem>;
 
 
-KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
+KJanusWidget::KJanusWidget( QWidget *parent, int face )
   : QWidget( parent ),
-    mValid(false), mPageList(0),
-    mTitleList(0), mFace(face), mTitleLabel(0), mActivePageWidget(0),
+    mValid(false), mFace(face), mTitleLabel(0), mActivePageWidget(0),
     mShowIconsInTreeList(false), d(0)
 {
   QVBoxLayout *topLayout = new QVBoxLayout( this );
@@ -165,8 +164,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     vbox->addWidget( mTitleSep );
 
     mPageStack = new QStackedWidget( page );
-    connect(mPageStack, SIGNAL(aboutToShow(QWidget *)),
-            SIGNAL(aboutToShowPage(QWidget *)));
+    connect(mPageStack, SIGNAL(currentChanged(int)),
+            SLOT(slotCurrentChanged(int)));
     vbox->addWidget( mPageStack, 10 );
   }
   else if( mFace == Tabbed )
@@ -175,8 +174,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 
     mTabControl = new QTabWidget( this );
     mTabControl->setMargin (KDialog::marginHint());
-    connect(mTabControl, SIGNAL(currentChanged(QWidget *)),
-            SIGNAL(aboutToShowPage(QWidget *)));
+    connect(mTabControl, SIGNAL(currentChanged(int)),
+            SLOT(slotCurrentChanged(int)));
     topLayout->addWidget( mTabControl, 10 );
   }
   else if( mFace == Swallow )
@@ -1142,6 +1141,11 @@ QWidget *KJanusWidget::pageWidget(int index) const
     return 0;
   else
     return d->mIntToPage[index];
+}
+
+void KJanusWidget::slotCurrentChanged( int index )
+{
+  emit currentPageChanged(mPageStack->widget(index));
 }
 
 #include "kjanuswidget.moc"

@@ -129,11 +129,9 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
   Q3ListViewItem *idefault = 0; //open this, if all other fails
   Q3ListViewItem *firstChecked = 0; // make this one visible after the loop
 
-  KMimeType::List::const_iterator it = mimetypes.begin();
-  const KMimeType::List::const_iterator end = mimetypes.end();
-  for (; it != end; ++it)
+  foreach (const KMimeType::Ptr& mt, mimetypes)
   {
-    QString mimetype = (*it)->name();
+    QString mimetype = mt->name();
     int index = mimetype.find("/");
     QString maj = mimetype.left(index);
 
@@ -154,18 +152,18 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
         groupItem = mit.data();
 
     Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
-    item->setPixmap( 0, SmallIcon( (*it)->icon(QString::null,false) ) );
+    item->setPixmap( 0, SmallIcon( mt->icon(QString::null,false) ) );
 
     int cl = 1;
 
     if ( d->visuals & Comments )
     {
-      item->setText( cl, (*it)->comment(QString::null, false) );
+      item->setText( cl, mt->comment(QString::null, false) );
       cl++;
     }
 
     if ( d->visuals & Patterns )
-      item->setText( cl, (*it)->patterns().join("; ") );
+      item->setText( cl, mt->patterns().join("; ") );
 
     if ( selMimeTypes.contains(mimetype) )
     {

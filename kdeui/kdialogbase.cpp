@@ -135,9 +135,9 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   makeRelay();
   connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
-  mJanus = new KJanusWidget( this, "janus", dialogFace );
-  connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
-          this, SIGNAL(aboutToShowPage(QWidget *)));
+  mJanus = new KJanusWidget( this, dialogFace );
+  connect(mJanus, SIGNAL(currentPageChanged(QWidget *)),
+          this, SIGNAL(currentPageChanged(QWidget *)));
 
   if( !mJanus || !mJanus->isValid() ) { return; }
 
@@ -164,9 +164,9 @@ KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, Qt::WFlags f, QWi
   makeRelay();
   connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
-  mJanus = new KJanusWidget( this, "janus", dialogFace );
-  connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
-          this, SIGNAL(aboutToShowPage(QWidget *)));
+  mJanus = new KJanusWidget( this, dialogFace );
+  connect(mJanus, SIGNAL(currentPageChanged(QWidget *)),
+          this, SIGNAL(currentPageChanged(QWidget *)));
 
   if( !mJanus || !mJanus->isValid() ) { return; }
 

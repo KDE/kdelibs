@@ -371,6 +371,8 @@ cg.readXXX("entry name");
 <ul>
 <li>Q3[HV]Box -&gt; K[HV]Box</li>
 <li>usage of QFrame, instead of Q3Frame</li>
+<li>Signal aboutToChangePage(QWidget*) is no longer possible with the new QStackedWidget; it has been replaced with currentPageChanged(QWidget*), the only difference being that it is emitted after the page has changed.</li>
+<li>Removed name argument from the constructor.  Use setObjectName() instead, if needed.</li>
 </ul>
 
 <H4>KDialogBase</H4>
@@ -382,6 +384,7 @@ cg.readXXX("entry name");
 <li>getContentsRect -&gt; gone</li>
 <li>getBorderWidths -&gt; gone</li>
 <li>Q3[HV]Box -&gt; K[HV]Box</li>
+<li>Signal aboutToChangePage(QWidget*) is no longer possible with the new QStackedWidget; it has been replaced with currentPageChanged(QWidget*), the only difference being that it is emitted after the page has changed.  If you need such a notification, you will have to subclass the QWidgets you add to the stack, and override show().</li>
 </ul>
 
 <H4>KDatePicker</H4>

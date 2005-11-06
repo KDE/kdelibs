@@ -110,7 +110,7 @@ void DownloadDialog::init(Engine *engine)
   m_engine = engine;
   d->m_page = NULL;
 
-  connect(this, SIGNAL(aboutToShowPage(QWidget*)), SLOT(slotPage(QWidget*)));
+  connect(this, SIGNAL(currentPageChanged(QWidget*)), SLOT(slotPage(QWidget*)));
 
   if(!engine)
   {

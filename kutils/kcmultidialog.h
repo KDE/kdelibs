@@ -67,7 +67,7 @@ public:
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
      */
-    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0, 
+    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0,
             const char * name = 0, bool modal = false );
 
 
@@ -75,12 +75,12 @@ public:
      * Constructor for the predefined layout mode where you specify the
      * kind of layout (face) and also add buttons. Note that the User1 button
      * of KDialogBase is already used to provide a "Reset" button so only
-     * two more buttons are available to users of KCMultiDialog. When clicked 
-     * they trigger slotUser2() and slotUser3(). 
+     * two more buttons are available to users of KCMultiDialog. When clicked
+     * they trigger slotUser2() and slotUser3().
      *
-     * @note If any root modules are added to the dialog when this constructor is 
-     * used, it will not be able to run them with root privileges. Since that will 
-     * render them useless, it is a good idea to use another constructor. In KDE 4 
+     * @note If any root modules are added to the dialog when this constructor is
+     * used, it will not be able to run them with root privileges. Since that will
+     * render them useless, it is a good idea to use another constructor. In KDE 4
      * the argument @p user3 will be removed.
      *
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
@@ -214,7 +214,7 @@ protected slots:
      * It reads the DocPath field of the currently selected KControl
      * module's .desktop file to find the path to the documentation,
      * which it then attempts to load.
-     * 
+     *
      * You can reimplement this slot if needed.
      *
      * @note Make sure you call the original implementation.
@@ -223,7 +223,7 @@ protected slots:
 
 private slots:
 
-    void slotAboutToShow(QWidget *);
+    void slotCurrentPageChanged(QWidget *);
 
     void clientChanged(bool state);
 
@@ -237,7 +237,7 @@ private slots:
     void disableRModeButton();
 
     /**
-     * Called when the current module exits from root 
+     * Called when the current module exits from root
      * mode. Enables the Administrator Mode button, again.
      *
      * @since 3.4
@@ -247,7 +247,7 @@ private slots:
     /**
      *
      * Called when the dialog is hidden. It unregisters the modules,
-     * such that they don't hinder the same modules to be opened in 
+     * such that they don't hinder the same modules to be opened in
      * another application.
      *
      * @since 3.4

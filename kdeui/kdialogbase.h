@@ -1342,10 +1342,12 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     void aboutToShowDetails();
 
     /**
-     * A page is about to be shown. This signal is only emitted for the TreeList
+     * The current page being shown has changed. This signal is only emitted for the TreeList
      * and IconList faces.
+     *
+     * \since 4.0
      */
-    void aboutToShowPage(QWidget *page);
+    void currentPageChanged(QWidget *page);
 
   protected:
     /**

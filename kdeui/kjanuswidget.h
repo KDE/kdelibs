@@ -136,9 +136,8 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param face The kind of dialog, Use TreeList, Tabbed, Plain or
      * Swallow.
      */
-    /// KDE4 remove name argument
-    KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
-    
+    KJanusWidget( QWidget *parent=0, int face=Plain );
+
     /**
      * Destructor.
      */
@@ -527,11 +526,11 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 
   signals:
     /**
-     * This signal is emitted whenever the current page changes.
+     * This signal is emitted whenever the current page has changed.
      * @param page the new page.
-     * @since 3.4
+     * @since 4.0
      */
-    void aboutToShowPage(QWidget *page);
+    void currentPageChanged(QWidget *page);
 
   public slots:
     /**
@@ -562,6 +561,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     void slotItemClicked(Q3ListViewItem *it);
     void pageGone(QObject *obj); // signal from the added page's "destroyed" signal
     void slotReopen(Q3ListViewItem *item);
+    void slotCurrentChanged(int index);
 
   protected:
     bool showPage( QWidget *w );
@@ -572,10 +572,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 
   private:
     bool mValid;
-
-    // Obsolete members. Remove in KDE 4.
-    Q3PtrList<QWidget> *mPageList;
-    QStringList *mTitleList;
 
     int          mFace;
     KListView    *mTreeList;

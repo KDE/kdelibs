@@ -56,7 +56,7 @@ class KCMultiDialog::KCMultiDialogPrivate
         KCModuleProxy* currentModule;
 };
 
- 
+
 KCMultiDialog::KCMultiDialog(QWidget *parent, const char *name, bool modal)
     : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply |
             Ok | User1 | User2, Ok, parent, name, modal, true,
@@ -95,7 +95,7 @@ inline void KCMultiDialog::init()
     showButton( User1, false );
     showButton( User2, false );
     enableButton(Apply, false);
-    connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
+    connect(this, SIGNAL(currentPageChanged(QWidget *)), this, SLOT(slotCurrentPageChanged(QWidget *)));
     setInitialSize(QSize(640,480));
     moduleParentComponents.setAutoDelete( true );
 
@@ -235,7 +235,7 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         QStringList parentmodulenames, bool withfallback)
 {
-    kdDebug(710) << "KCMultiDialog::addModule " 
+    kdDebug(710) << "KCMultiDialog::addModule "
         << moduleinfo.moduleName() << endl;
 
     if( !moduleinfo.service() )
@@ -304,20 +304,20 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
 
         if( m_modules.count() == 0 )
-            aboutToShowPage( page );
+            slotCurrentPageChanged( page );
     }
     CreatedModule cm;
     cm.kcm = module;
     cm.service = moduleinfo.service();
     m_modules.append( cm );
-    if ( moduleinfo.needsRootPrivileges() && 
+    if ( moduleinfo.needsRootPrivileges() &&
             !d->hasRootKCM &&
             !KUser().isSuperUser() ) /* If we're embedded, it's true */
     {
         d->hasRootKCM = true;
         showButton( User2, true );
         if( plainPage() ) // returns 0 if we're not a Plain dialog
-            slotAboutToShow( page ); // Won't be called otherwise, necessary for adminMode button
+            slotCurrentPageChanged( page ); // Won't be called otherwise, necessary for adminMode button
     }
 }
 
@@ -351,7 +351,7 @@ void KCMultiDialog::show()
     KDialogBase::show();
 }
 
-void KCMultiDialog::slotAboutToShow(QWidget *page)
+void KCMultiDialog::slotCurrentPageChanged(QWidget *page)
 {
     kdDebug(710) << k_funcinfo << endl;
 
@@ -399,8 +399,8 @@ void KCMultiDialog::dialogClosed()
 {
     kdDebug(710) << k_funcinfo << endl;
 
-    /* If we don't delete them, the DCOP registration stays, and trying to load the KCMs 
-     * in other situations will lead to "module already loaded in Foo," while to the user 
+    /* If we don't delete them, the DCOP registration stays, and trying to load the KCMs
+     * in other situations will lead to "module already loaded in Foo," while to the user
      * doesn't appear so(the dialog is hidden) */
     ModuleList::Iterator end = m_modules.end();
     for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
