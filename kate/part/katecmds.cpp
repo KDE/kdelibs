@@ -373,6 +373,7 @@ int KateCommands::SedReplace::sedMagic( KateDocument *doc, int &line,
   // * the existing insertion is fine, including the line calculation.
 
   QStringList patterns = QStringList::split( QRegExp("(^\\\\n|(?![^\\\\])\\\\n)"), find, true );
+
   if ( patterns.count() > 1 )
   {
     for ( uint i = 0; i < patterns.count(); i++ )
@@ -487,6 +488,13 @@ bool KateCommands::SedReplace::exec (Kate::View *view, const QString &cmd, QStri
   QString replace=splitter.cap(2);
   exchangeAbbrevs(replace);
    kdDebug(13025)<< "SedReplace: replace=" << replace.latin1() <<endl;
+
+   if ( find.contains("\\n") )
+   {
+     // FIXME i18n this message (or make it work)
+     msg = "Sorry, but we can't replace newlines (yet)";
+     return false;
+   }
 
   KateDocument *doc = ((KateView*)view)->doc();
   if ( ! doc ) return false;
