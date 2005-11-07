@@ -26,10 +26,7 @@
 #include <qmap.h>
 #include <qmetaobject.h>
 #include <qregexp.h>
-#include <q3cstring.h>
-#include <q3strlist.h>
 #include <q3stylesheet.h>
-#include <q3valuelist.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -369,7 +366,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
       createActionSlotMap();
 
   // Build list with this extension's slot names.
-  Q3StrList slotNames;
+  QList<QByteArray> slotNames;
   int methodCount = metaObject()->methodCount();
   int methodOffset = metaObject()->methodOffset();
   for ( int i=0 ; i < methodCount; ++i )
@@ -386,6 +383,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
   for ( int i=0 ; it != itEnd ; ++it, ++i )
   {
       // Does the extension have a slot with the name of this action ?
+      // ######### KDE4 TODO: use QMetaObject::indexOfMethod() #######
       d->m_actionStatus.setBit( i, slotNames.contains( it.key()+"()" ) );
   }
 

@@ -33,7 +33,6 @@ template<typename T> class QList;
 
 class KFileItem;
 typedef Q3PtrList<KFileItem> KFileItemList;
-class Q3CString;
 class QDataStream;
 class QPoint;
 class QString;
@@ -433,7 +432,7 @@ public:
    */
   QString actionText( const char * name ) const;
 
-  typedef QMap<Q3CString,Q3CString> ActionSlotMap;
+  typedef QMap<QByteArray,QByteArray> ActionSlotMap;
   /**
    * Returns a map containing the action names as keys and corresponding
    * SLOT()'ified method names as data entries.
@@ -702,7 +701,7 @@ private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
 public:
-  typedef QMap<Q3CString,int> ActionNumberMap;
+  typedef QMap<QByteArray,int> ActionNumberMap;
 
 private:
   static ActionNumberMap * s_actionNumberMap;
