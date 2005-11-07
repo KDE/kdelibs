@@ -29,7 +29,7 @@ namespace KXMLCore {
     template <class T> class SharedPtr
     {
     public:
-        SharedPtr() : m_ptr(NULL) {}
+        SharedPtr() : m_ptr(0) {}
         SharedPtr(T *ptr) : m_ptr(ptr) { if (ptr) ptr->ref(); }
         SharedPtr(const SharedPtr &o) : m_ptr(o.m_ptr) { if (T *ptr = m_ptr) ptr->ref(); }
         ~SharedPtr() { if (T *ptr = m_ptr) ptr->deref(); }
@@ -37,11 +37,11 @@ namespace KXMLCore {
         template <class U> SharedPtr(const SharedPtr<U> &o) : m_ptr(o.get()) { if (T *ptr = m_ptr) ptr->ref(); }
         
         // FIXME: Deprecate in favor of operators below, then remove?
-        bool isNull() const { return m_ptr == NULL; }
-        bool notNull() const { return m_ptr != NULL; }
+        bool isNull() const { return m_ptr == 0; }
+        bool notNull() const { return m_ptr != 0; }
         
         // FIXME: Deprecate in favor of operator=, then remove?
-        void reset() { if (T *ptr = m_ptr) ptr->deref(); m_ptr = NULL; }
+        void reset() { if (T *ptr = m_ptr) ptr->deref(); m_ptr = 0; }
         void reset(T *o) { if (o) o->ref(); if (T *ptr = m_ptr) ptr->deref(); m_ptr = o; }
         
         T *get() const { return m_ptr; }
@@ -49,8 +49,8 @@ namespace KXMLCore {
         T &operator*() const { return *m_ptr; }
         T *operator->() const { return m_ptr; }
         
-        bool operator!() const { return m_ptr == NULL; }
-        operator bool() const { return m_ptr != NULL; }
+        bool operator!() const { return m_ptr == 0; }
+        operator bool() const { return m_ptr != 0; }
         
         SharedPtr &operator=(const SharedPtr &);
         SharedPtr &operator=(T *);
