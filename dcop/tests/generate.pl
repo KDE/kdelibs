@@ -195,16 +195,16 @@ END
 
 	print DRIVER <<END;
 		case $i:
-			output << "$return_type $function_name($argument_types)\\n{\\n";
-			output << "// $comment\\n";
-			output << object->$function_name($cpp_cur) << '\\n';
-			output << "}\\n";
+			output << "$return_type $function_name($argument_types)\\n{" << endl;
+			output << "// $comment" << endl;
+			output << object->$function_name($cpp_cur) << endl;
+			output << '}' << endl;
 			break;
 		case $i_1:
-			output << "$return_type ${function_name}_virtual($argument_types)\\n{\\n";
-			output << "// $comment\\n";
-			output << object->${function_name}_virtual($cpp_cur) << '\\n';
-			output << "}\\n";
+			output << "$return_type ${function_name}_virtual($argument_types)\\n{" << endl;
+			output << "// $comment" << endl;
+			output << object->${function_name}_virtual($cpp_cur) << endl;
+			output << '}' << endl;
 			break;
 END
 	$i += 2;

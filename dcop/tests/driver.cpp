@@ -3,7 +3,6 @@
 #include <iostream>
 #include <dcopclient.h>
 #include <qtimer.h>
-#include <qtextstream.h>
 
 using namespace std;
 
@@ -12,14 +11,14 @@ using namespace std;
 #endif
 
 Driver::Driver(const char* app)
-	:Test_stub( app, "TestInterface" ),
-	 DCOPStub( app, "TestInterface" ), // DCOPStub is *virtual* inherited
-	count( 0 )
+	:DCOPStub( app, "TestInterface" ), // DCOPStub is *virtual* inherited
+	 Test_stub( app, "TestInterface" ),
+	 count( 0 ),
+	 output(fopen("driver.returns", "w"), QIODevice::WriteOnly)
 {
 
 }
 
-QTextStream output(  fopen( "driver.returns", "w" ) , QIODevice::WriteOnly );	
 #include <iostream>
 void Driver::test()
 {
