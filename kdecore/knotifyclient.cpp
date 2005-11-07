@@ -65,7 +65,7 @@ static bool canAvoidStartupEvent( const QString& event, const QString& appname, 
 
 static int sendNotifyEvent(const QString &message, const QString &text,
                             int present, int level, const QString &sound,
-                            const QString &file, int winId )
+                            const QString &file, WId winId )
 {
   if (!kapp) return 0;
 
@@ -87,7 +87,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   // knotify daemon needs toplevel window
   QWidget* widget = QWidget::find( (WId)winId );
   if( widget )
-    winId = (int)widget->topLevelWidget()->winId();
+    winId = widget->topLevelWidget()->winId();
 
   if ( !KNotifyClient::startDaemon() )
       return 0;
@@ -118,7 +118,7 @@ int KNotifyClient::userEvent(const QString &text, int present, int level,
 }
 
 
-int KNotifyClient::event( int winId, StandardEvent type, const QString& text )
+int KNotifyClient::event( WId winId, StandardEvent type, const QString& text )
 {
     QString message;
     switch ( type ) {
@@ -144,13 +144,13 @@ int KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 			    QString::null, QString::null, winId );
 }
 
-int KNotifyClient::event(int winId, const QString &message,
+int KNotifyClient::event(WId winId, const QString &message,
                           const QString &text)
 {
   return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null, winId);
 }
 
-int KNotifyClient::userEvent(int winId, const QString &text, int present,
+int KNotifyClient::userEvent(WId winId, const QString &text, int present,
                               int level,
                               const QString &sound, const QString &file)
 {

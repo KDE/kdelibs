@@ -18,6 +18,7 @@
 #ifndef KNOTIFY_CLIENT
 #define KNOTIFY_CLIENT
 #include <qstring.h>
+#include <qwidget.h>
 #include "kdelibs_export.h"
 
 class KInstance;
@@ -226,8 +227,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	// KDE4: use WId instead of int
-	KDECORE_EXPORT int event( int winId, const QString& message,
+	KDECORE_EXPORT int event( WId winId, const QString& message,
                               const QString& text = QString::null );
 
 	/**
@@ -241,8 +241,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	// KDE4: use WId instead of int
-	KDECORE_EXPORT int event( int winId, StandardEvent event,
+	KDECORE_EXPORT int event( WId winId, StandardEvent event,
                               const QString& text = QString::null );
 
 	/**
@@ -259,8 +258,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	// KDE4: use WId instead of int
-	KDECORE_EXPORT int userEvent(int winId, const QString &text=QString::null, int present=Default, int level=Default,
+	KDECORE_EXPORT int userEvent(WId winId, const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
 	
 	/**
