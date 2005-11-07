@@ -387,7 +387,7 @@ qWarning("DCOPServer: slotOutputReady() %d bytes written", nwritten);
    }
    outputBufferStart += nwritten;
 
-   if (outputBufferStart == data.size())
+   if (outputBufferStart == (unsigned long)data.size())
    {
       outputBufferStart = 0;
       outputBuffer.erase(outputBuffer.begin());
@@ -773,7 +773,7 @@ if (opcode == DCOPSend)
 {
 //   QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
-   qWarning("Sending %d bytes from %s to %s. DCOPSend", length, fromApp.data(), toApp.data());//, fun.data());
+   qWarning("Sending %lu bytes from %s to %s. DCOPSend", length, fromApp.data(), toApp.data());//, fun.data());
 }
 //#endif
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
@@ -799,7 +799,7 @@ if (opcode == DCOPSend)
 {
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
-   qWarning("Sending %d bytes from %s to %s. DCOPSend ", length, fromApp.data(), toApp.data());//, fun.data());
+   qWarning("Sending %lu bytes from %s to %s. DCOPSend ", length, fromApp.data(), toApp.data());//, fun.data());
 }
 //#endif
 		// handle a multicast.
@@ -840,7 +840,7 @@ if (opcode == DCOPCall)
 {
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
-   qWarning("Sending %d bytes from %s to %s. DCOPCall ", length, fromApp.data(), toApp.data());//, fun.data());
+   qWarning("Sending %lu bytes from %s to %s. DCOPCall ", length, fromApp.data(), toApp.data());//, fun.data());
 }
 //#endif
 		target->waitingForReply.append( iceConn );
@@ -1732,7 +1732,7 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
 	else if (strcmp(argv[i], "--serverid") == 0)
 	    serverid = true;
 	else {
-	    fprintf(stdout, ABOUT );
+	    fputs( ABOUT, stdout );
 	    return 0;
 	}
     }
