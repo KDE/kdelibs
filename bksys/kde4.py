@@ -141,6 +141,7 @@ def generate(env):
 		print "processing %s to get %s and %s" % (source[0].name, target[0].name, target[1].name)
 		
 	def kcfgEmitter(target, source, env):
+		import os
 		adjustixes = SCons.Util.adjustixes
 		bs = SCons.Util.splitext(str(source[0].name))[0]
 		bs = os.path.join(str(target[0].get_dir()),bs)
