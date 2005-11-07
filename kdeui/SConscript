@@ -46,10 +46,8 @@ kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
-kpixmapio.cpp 
+kpixmapio.cpp krootpixmap.cpp
 """
-if not env['WINDOWS']:
-	ui_files += ' krootpixmap.cpp'
 
 install_headers = """
 kprogress.h kcolordialog.h kselect.h 
