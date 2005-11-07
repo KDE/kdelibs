@@ -7,9 +7,10 @@ class KMimeTypeTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void testByName();
     void testIcons();
-    void testFindByPath();
     void testFindByURL();
+    void testFindByPath();
 };
 
 

@@ -230,3 +230,18 @@ AC_CACHE_CHECK(for tm_gmtoff in struct tm, ac_cv_struct_tm_gmtoff,
 if test $ac_cv_struct_tm_gmtoff = yes; then
   AC_DEFINE(HAVE_TM_GMTOFF, 1, [Define if you have a tm_gmtoff member in struct tm])
 fi
+
+######################################################
+
+AC_DEFUN([KIOBZIP2_CHECK_BZIP2],
+[
+AC_REQUIRE([AC_FIND_BZIP2])
+
+AM_CONDITIONAL(include_bzip2, test -n "$BZIP2DIR")
+if test -n "$BZIP2DIR"; then
+  AC_DEFINE(HAVE_BZIP2_SUPPORT, 1, [Defines if bzip2 is compiled])
+fi
+])
+
+KIOBZIP2_CHECK_BZIP2
+

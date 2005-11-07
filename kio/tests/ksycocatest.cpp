@@ -33,23 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool check(QString txt, QString a, QString b)
-{
-  if (a.isEmpty())
-     a = QString::null;
-  if (b.isEmpty())
-     b = QString::null;
-  if (a == b) {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
-  }
-  else {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl
-;
-    exit(1);
-  }
-  return true;
-}
-
 void debug(QString txt)
 {
  fprintf(stderr, "%s\n", txt.ascii());
@@ -84,32 +67,6 @@ int main(int argc, char *argv[])
        qDebug( "found: %s", service->desktopEntryPath().latin1() );
    else
        qDebug( "not found" );
-
-   debug("Trying to look for text/plain");
-   KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
-   if ( s1 )
-   {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(s1->comment(KURL(),false)));
-   }
-   else
-   {
-     debug("Not found !");
-     exit(1);
-   }
-
-   debug("Trying to look for application/x-zerosize");
-   KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
-   if ( s0 )
-   {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(s0->comment(KURL(),false)));
-   }
-   else
-   {
-     debug("Not found !");
-     exit(1);
-   }
 
    debug("Trying to look for Desktop Pager");
    KService::Ptr se = KService::serviceByName("Desktop Pager");

@@ -16,27 +16,28 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kbzip2filter__h
-#define __kbzip2filter__h
-
-#include <config.h>
-
-#if defined( HAVE_BZIP2_SUPPORT )
+#ifndef __kgzipfilter__h
+#define __kgzipfilter__h
 
 #include "kfilterbase.h"
 
-class KBzip2Filter : public KFilterBase
+/**
+ * Internal class used by KFilterDev
+ * @internal
+ */
+class KGzipFilter : public KFilterBase
 {
 public:
-    KBzip2Filter();
-    virtual ~KBzip2Filter();
+    KGzipFilter();
+    virtual ~KGzipFilter();
 
-    virtual void init( int );
+    virtual void init( int mode );
     virtual int mode() const { return m_mode; }
     virtual void terminate();
     virtual void reset();
-    virtual bool readHeader() { return true; } // bzip2 handles it by itself ! Cool !
-    virtual bool writeHeader( const Q3CString & ) { return true; }
+    virtual bool readHeader();
+    virtual bool writeHeader( const QByteArray & fileName );
+    void writeFooter();
     virtual void setOutBuffer( char * data, uint maxlen );
     virtual void setInBuffer( const char * data, uint size );
     virtual int  inBufferAvailable() const;
@@ -44,11 +45,12 @@ public:
     virtual Result uncompress();
     virtual Result compress( bool finish );
 private:
-    class KBzip2FilterPrivate;
-    KBzip2FilterPrivate *d;
+    Result uncompress_noop();
     int m_mode;
+    ulong m_crc;
+    bool m_headerWritten;
+    class KGzipFilterPrivate;
+    KGzipFilterPrivate *d;
 };
-
-#endif
 
 #endif

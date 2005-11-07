@@ -33,7 +33,6 @@ libksycoca_la_SOURCES = \
 	kservice.cpp kservicefactory.cpp \
 	kuserprofile.cpp kservicegroupfactory.cpp \
 	kurifilter.cpp \
-	kfilterbase.cpp kfilterdev.cpp \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
@@ -41,26 +40,20 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
-	dataslave.cpp dataprotocol.cpp
-#if USE_POSIX_ACL
-  libksycoca_la_SOURCES += kacl.cpp
-#endif
+	dataslave.cpp dataprotocol.cpp kacl.cpp
 
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
 	krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
-    kdirlister.h kservicegroup.h \
+	kdirlister.h kservicegroup.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
-	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
+	kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
 	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h \
-	kmimetypechooser.h
-#if USE_POSIX_ACL
-include_HEADERS += kacl.h
-#endif
+	kmimetypechooser.h kacl.h
 
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)

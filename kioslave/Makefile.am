@@ -16,11 +16,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-if include_bzip2
-BZIP2DIR=bzip2
-endif
-
-SUBDIRS = file http ftp gzip $(BZIP2DIR) metainfo
+SUBDIRS = file http ftp metainfo
 
 messages: # they get into kio.pot
 

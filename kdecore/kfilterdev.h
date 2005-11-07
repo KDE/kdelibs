@@ -21,7 +21,6 @@
 #include <qiodevice.h>
 #include <qstring.h>
 #include <kdelibs_export.h>
-#include <Q3CString>
 
 class QFile;
 class KFilterBase;
@@ -34,16 +33,9 @@ class KFilterBase;
  *
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KFilterDev : public QIODevice
+class KDECORE_EXPORT KFilterDev : public QIODevice
 {
 public:
-    /**
-     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.).
-     * @param filter the KFilterBase to use
-     * @param autoDeleteFilterBase when true this object will become the
-     * owner of @p filter.
-     */
-    KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
     /**
      * Destructs the KFilterDev.
      * Calls close() if the filter device is still open.
@@ -66,7 +58,7 @@ public:
      * set the name of the original file, to be used in the gzip header.
      * @param fileName the name of the original file
      */
-    void setOrigFileName( const Q3CString & fileName );
+    void setOrigFileName( const QByteArray & fileName );
 
     /**
      * Call this let this device skip the gzip headers when reading/writing.
@@ -95,18 +87,10 @@ public:
     virtual int putChar( int );
     virtual int ungetChar( int );
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-    /**
-     * Call this to create the appropriate filter device for @p base
-     * working on @p file . The returned QIODevice has to be deleted
-     * after using.
-     * @deprecated. Use deviceForFile instead.
-     * To be removed in KDE 3.0
-     */
-    static QIODevice* createFilterDevice(KFilterBase* base, QFile* file) KDE_DEPRECATED;
 public:
+
+
+    // KDE4 TODO: turn those static methods into constructors
 
     /**
      * Creates an i/o device that is able to read from @p fileName,
@@ -180,6 +164,14 @@ public:
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice );
 
+private:
+    /**
+     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.).
+     * @param filter the KFilterBase to use
+     * @param autoDeleteFilterBase when true this object will become the
+     * owner of @p filter.
+     */
+    KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
 private:
     KFilterBase *filter;
     class KFilterDevPrivate;

@@ -21,7 +21,6 @@
 #include <qdir.h>
 #include <time.h>
 #include <kdebug.h>
-#include <q3ptrlist.h>
 #include <kmimetype.h>
 #include <qregexp.h>
 
@@ -93,9 +92,9 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 
     char *ar_longnames = 0;
     while (! dev->atEnd()) {
-        Q3CString ar_header;
+        QByteArray ar_header;
         ar_header.resize(61);
-        Q3CString name;
+        QByteArray name;
         int date, uid, gid, mode, size;
 
         dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary

@@ -21,7 +21,6 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -35,10 +34,10 @@ class QIODevice;
  * This is the base class for compression filters
  * such as gzip and bzip2. It's pretty much internal.
  * Don't use directly, use KFilterDev instead.
+ * @internal
  */
-class KIO_EXPORT KFilterBase : public QObject // needs to inherit QObject for KLibFactory::create
+class KFilterBase
 {
-    Q_OBJECT
 public:
     KFilterBase();
     virtual ~KFilterBase();
@@ -68,7 +67,7 @@ public:
     /** \internal */
     virtual bool readHeader() = 0;
     /** \internal */
-    virtual bool writeHeader( const Q3CString & filename ) = 0;
+    virtual bool writeHeader( const QByteArray & filename ) = 0;
     /** \internal */
     virtual void setOutBuffer( char * data, uint maxlen ) = 0;
     /** \internal */

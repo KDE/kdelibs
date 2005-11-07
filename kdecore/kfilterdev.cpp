@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <qfile.h>
-#include <q3cstring.h>
 
 #define BUFFER_SIZE 8*1024
 
@@ -39,8 +38,8 @@ public:
     bool bOpenedUnderlyingDevice;
     bool bIgnoreData;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
-    Q3CString ungetchBuffer;
-    Q3CString origFileName;
+    QByteArray ungetchBuffer;
+    QByteArray origFileName;
     KFilterBase::Result result;
 };
 
@@ -60,23 +59,6 @@ KFilterDev::~KFilterDev()
         delete filter;
     delete d;
 }
-
-#ifndef KDE_NO_COMPAT
-//this one is static
-// Cumbersome API. To be removed in KDE 3.0.
-QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
-{
-   if (file==0)
-      return 0;
-
-   //we don't need a filter
-   if (base==0)
-       return new QFile(file->name()); // A bit strange IMHO. We ask for a QFile but we create another one !?! (DF)
-
-   base->setDevice(file);
-   return new KFilterDev(base);
-}
-#endif
 
 //static
 QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype,
@@ -460,7 +442,7 @@ int KFilterDev::ungetChar( int ch )
     return ch;
 }
 
-void KFilterDev::setOrigFileName( const Q3CString & fileName )
+void KFilterDev::setOrigFileName( const QByteArray & fileName )
 {
     d->origFileName = fileName;
 }

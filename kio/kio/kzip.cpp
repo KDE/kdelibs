@@ -115,7 +115,7 @@ struct ParseFileInfo {
   time_t ctime;			// creation time (UNIX format)
   int uid;			// user id (-1 if not specified)
   int gid;			// group id (-1 if not specified)
-  Q3CString guessed_symlink;	// guessed symlink target
+  QByteArray guessed_symlink;	// guessed symlink target
   int extralen;			// length of extra field
 
   // parsing related info
@@ -477,7 +477,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    kdDebug(7040) << "archive size: " << dev->size() << endl;
 
 	    // read filename
-	    Q3CString filename(namelen + 1);
+	    QByteArray filename(namelen+1);
 	    n = dev->readBlock(filename.data(), namelen);
             if ( n < namelen ) {
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read (#2)" << endl;
@@ -668,7 +668,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             //kdDebug() << "general purpose flag=" << gpf << endl;
             // length of the filename (well, pathname indeed)
             int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
-            Q3CString bufferName( namelen + 1 );
+            QByteArray bufferName( namelen + 1 );
             n = dev->readBlock( bufferName.data(), namelen );
             if ( n < namelen )
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
@@ -912,7 +912,7 @@ bool KZip::closeArchive()
         //kdDebug(7040) << "closearchive: filename: " << it.current()->path()
         //              << " encoding: "<< it.current()->encoding() << endl;
 
-        Q3CString path = QFile::encodeName(it.current()->path());
+        QByteArray path = QFile::encodeName(it.current()->path());
 
 	const int extra_field_len = 9;
         int bufferSize = extra_field_len + path.length() + 46;
@@ -1158,7 +1158,7 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
         extra_field_len = 17;	// value also used in doneWriting()
 
     // write out zip header
-    Q3CString encodedName = QFile::encodeName(name);
+    QByteArray encodedName = QFile::encodeName(name);
     int bufferSize = extra_field_len + encodedName.length() + 30;
     //kdDebug(7040) << "KZip::prepareWriting bufferSize=" << bufferSize << endl;
     char* buffer = new char[ bufferSize ];
@@ -1320,7 +1320,7 @@ bool KZip::writeSymLink_impl(const QString &name, const QString &target,
     return false;
   }
 
-  Q3CString symlink_target = QFile::encodeName(target);
+  QByteArray symlink_target = QFile::encodeName(target);
   if (!writeData(symlink_target, symlink_target.length())) {
     kdWarning() << "KZip::writeFile writeData failed" << endl;
     setCompression(c);

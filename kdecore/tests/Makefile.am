@@ -30,10 +30,11 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
-	kcompletiontest klockfiletest ktempdirtest ksharedptrtest
+	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest
 
 # TODO kurltest4 when it works
 
+# List of tests to run automatically from "make check"
 TESTS = kurltest kcompletiontest\
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
 	kstringhandlertest krfcdatetest kcalendartest klibloadertest
@@ -47,6 +48,7 @@ METASOURCES = AUTO
 
 LDADD = ../libkdecore.la $(top_builddir)/qttestlib/libqttestlib.la
 
+# Interactive test programs
 kconfigtestgui_SOURCES = kconfigtestgui.cpp
 kdebugtest_SOURCES = kdebugtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
@@ -81,6 +83,7 @@ startserviceby_SOURCES = startserviceby.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
+# Automated unit tests
 ktempfiletest_SOURCES = ktempfiletest.cpp
 kurlmimetest_SOURCES = kurlmimetest.cpp
 kconfigtest_SOURCES = kconfigtest.cpp
@@ -94,3 +97,4 @@ kcompletiontest_SOURCES = kcompletiontest.cpp
 klockfiletest_SOURCES = klockfiletest.cpp
 ktempdirtest_SOURCES = ktempdirtest.cpp
 ksharedptrtest_SOURCES = ksharedptrtest.cpp
+kfiltertest_SOURCES = kfiltertest.cpp

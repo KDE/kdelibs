@@ -23,7 +23,7 @@ AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  kioslavetest kdirwatchtest speed kurifiltertest \
                  kdefaultprogresstest kmimemagictest \
-                 kfiltertest kiopassdlgtest kscantest kdirlistertest \
+                 kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest netaccesstest jobtest \
@@ -55,7 +55,6 @@ kruntest_SOURCES = kruntest.cpp
 kdirwatchtest_SOURCES = kdirwatchtest.cpp
 ktradertest_SOURCES = ktradertest.cpp
 kmimemagictest_SOURCES = kmimemagictest.cpp
-kfiltertest_SOURCES = kfiltertest.cpp
 kscantest_SOURCES = kscantest.cpp
 kdirlistertest_SOURCES = kdirlistertest.cpp
 previewtest_SOURCES = previewtest.cpp

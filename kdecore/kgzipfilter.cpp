@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 #include <time.h>
 #include <zlib.h>
 #include <kdebug.h>
-#include <klibloader.h>
+#include <qiodevice.h>
 
 /* gzip flag byte */
 #define ASCII_FLAG   0x01 /* bit 0 set: file probably ascii text */
@@ -30,23 +30,8 @@
 #define COMMENT      0x10 /* bit 4 set: file comment present */
 #define RESERVED     0xE0 /* bits 5..7: reserved */
 
-
 // #define DEBUG_GZIP
 
-class KGzipFilterFactory : public KLibFactory
-{
-public:
-    KGzipFilterFactory() : KLibFactory() {}
-    ~KGzipFilterFactory(){}
-    QObject *createObject( QObject *, const char *, const char*, const QStringList & )
-    {
-        return new KGzipFilter;
-    }
-};
-
-K_EXPORT_COMPONENT_FACTORY( kgzipfilter, KGzipFilterFactory )
-
-// Not really necessary anymore, now that this is a dynamically-loaded lib.
 class KGzipFilter::KGzipFilterPrivate
 {
 public:
@@ -202,7 +187,7 @@ bool KGzipFilter::readHeader()
     put_short((n) & 0xffff); \
     put_short(((ulong)(n)) >> 16);
 
-bool KGzipFilter::writeHeader( const Q3CString & fileName )
+bool KGzipFilter::writeHeader( const QByteArray & fileName )
 {
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,26 +36,12 @@ extern "C" {
 #endif
 
 #include <kdebug.h>
-#include <klibloader.h>
 
 #include "kbzip2filter.h"
+#include <qiodevice.h>
 
 // For docu on this, see /usr/doc/bzip2-0.9.5d/bzip2-0.9.5d/manual_3.html
 
-class KBzip2FilterFactory : public KLibFactory
-{
-public:
-    KBzip2FilterFactory() : KLibFactory() {}
-    virtual ~KBzip2FilterFactory(){}
-    QObject *createObject( QObject *, const char *, const char*, const QStringList & )
-    {
-        return new KBzip2Filter;
-    }
-};
-
-K_EXPORT_COMPONENT_FACTORY( kbzip2filter, KBzip2FilterFactory )
-
-// Not really useful anymore
 class KBzip2Filter::KBzip2FilterPrivate
 {
 public:
@@ -182,4 +168,4 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
     }
 }
 
-#endif
+#endif  /* HAVE_BZIP2_SUPPORT */

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,10 +17,14 @@
 */
 
 #include "kfilterbase.h"
-#include <klibloader.h>
-#include <kmimetype.h>
-#include <ktrader.h>
+#include <config.h>
+
 #include <kdebug.h>
+#include <qiodevice.h>
+#include "kgzipfilter.h"
+#ifdef HAVE_BZIP2_SUPPORT
+#include "kbzip2filter.h"
+#endif
 
 KFilterBase::KFilterBase()
     : m_dev( 0L ), m_bAutoDel( false )
@@ -41,33 +45,46 @@ void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
 
 KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
-    KMimeType::Ptr mime = KMimeType::findByPath( fileName );
-    kdDebug(7005) << "KFilterBase::findFilterByFileName mime=" << mime->name() << endl;
-    return findFilterByMimeType(mime->name());
+    if ( fileName.endsWith( ".gz", Qt::CaseInsensitive ) )
+    {
+        return new KGzipFilter;
+    }
+#ifdef HAVE_BZIP2_SUPPORT
+    if ( fileName.endsWith( ".bz2", Qt::CaseInsensitive ) )
+    {
+        return new KBzip2Filter;
+    }
+#endif
+    else
+    {
+        // not a warning, since this is called often with other mimetypes (see #88574)...
+        // maybe we can avoid that though?
+        kdDebug(7005) << "KFilterBase::findFilterByFileName : no filter found for " << fileName << endl;
+    }
+
+    return 0;
 }
 
 KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 {
-    KTrader::OfferList offers = KTrader::self()->query( "KDECompressionFilter",
-                                                        QString("'") + mimeType + "' in ServiceTypes" );
-    KTrader::OfferList::ConstIterator it = offers.begin();
-    KTrader::OfferList::ConstIterator end = offers.end();
-
-    kdDebug(7005) << "KFilterBase::findFilterByMimeType(" << mimeType << ") got " << offers.count() << " offers" << endl;
-    for (; it != end; ++it )
+    if ( mimeType == QLatin1String( "application/x-gzip" ) )
     {
-        if ((*it)->library().isEmpty()) { continue; }
-        KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());
-        if (!factory) { continue; }
-        KFilterBase *filter = static_cast<KFilterBase*>( factory->create(0, (*it)->desktopEntryName().latin1() ) );
-        if ( filter )
-            return filter;
+        return new KGzipFilter;
+    }
+#ifdef HAVE_BZIP2_SUPPORT
+    else if ( mimeType == QLatin1String( "application/x-bzip2" ) )
+    {
+        return new KBzip2Filter;
+    }
+#endif
+    else
+    {
+        // not a warning, since this is called often with other mimetypes (see #88574)...
+        // maybe we can avoid that though?
+        kdDebug(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType << endl;
     }
 
-    if ( mimeType == "application/x-bzip2" || mimeType == "application/x-gzip" ) // #88574
-        kdWarning(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType << endl;
-
-    return 0L;
+    return 0;
 }
 
 void KFilterBase::virtual_hook( int, void* )

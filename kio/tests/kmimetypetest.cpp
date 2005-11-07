@@ -34,6 +34,22 @@ static void checkIcon( const KURL& url, const QString& expectedIcon )
 
 QTTEST_KDEMAIN( KMimeTypeTest, NoGUI )
 
+void KMimeTypeTest::testByName()
+{
+    if ( !KSycoca::isAvailable() )
+        SKIP( "ksycoca not available", SkipAll );
+
+    KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
+    VERIFY( s0 );
+    COMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
+    qDebug("Comment is %s", qPrintable(s0->comment(KURL(),false)) );
+
+    KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
+    VERIFY( s1 );
+    COMPARE( s1->name(), QString::fromLatin1("text/plain") );
+    qDebug("Comment is %s", qPrintable(s1->comment(KURL(),false)) );
+}
+
 void KMimeTypeTest::testIcons()
 {
     if ( !KSycoca::isAvailable() )
