@@ -3712,7 +3712,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
     // to use KFileItem::statusBarText()
-    Q3CString path = QFile::encodeName( u.path() );
+    QByteArray path = QFile::encodeName( u.path() );
 
     struct stat buff;
     bool ok = !stat( path.data(), &buff );
@@ -6895,11 +6895,9 @@ void KHTMLPart::preloadScript(const QString &url, const QString &script)
     khtml::Cache::preloadScript(url, script);
 }
 
-Q3CString KHTMLPart::dcopObjectId() const
+DCOPCString KHTMLPart::dcopObjectId() const
 {
-  Q3CString id;
-  id.sprintf("html-widget%d", d->m_dcop_counter);
-  return id;
+  return QByteArray( "html-widget" ) + QByteArray::number( d->m_dcop_counter );
 }
 
 long KHTMLPart::cacheId() const
