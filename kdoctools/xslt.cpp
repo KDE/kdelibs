@@ -23,8 +23,6 @@
 #include <stdarg.h>
 #include <klibloader.h>
 #include <kcharsets.h>
-#include <gzip/kgzipfilter.h>
-#include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
 #include <q3cstring.h>
 #include <q3valuevector.h>
@@ -197,20 +195,9 @@ void fillInstance(KInstance &ins, const QString &srcdir) {
     xmlLoadCatalogs(catalogs.toLatin1());
 }
 
-extern "C" void *init_kbzip2filter();
-
 static QIODevice *getBZip2device(const QString &fileName )
 {
-    QFile * f = new QFile( fileName );
-    KLibFactory * factory = static_cast<KLibFactory*>(init_kbzip2filter());
-    KFilterBase * base = static_cast<KFilterBase*>( factory->create(0, "bzip2" ) );
-
-    if ( base )
-    {
-        base->setDevice(f, true);
-        return new KFilterDev(base, true);
-    }
-    return 0;
+    return KFilterDev::deviceForFile(fileName);
 }
 
 bool saveToCache( const QString &contents, const QString &filename )

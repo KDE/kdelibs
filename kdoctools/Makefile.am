@@ -2,21 +2,16 @@
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 AM_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 
-noinst_LTLIBRARIES = libkbzipfilter_dummy.la
-
-libkbzipfilter_dummy_la_SOURCES = kbzip2filter.cpp
-libkbzipfilter_dummy_la_LIBADD = $(LIB_KIO) $(LIBBZ2)
-
 ####### Files
 
 kde_module_LTLIBRARIES = kio_help.la kio_ghelp.la
 
 kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
-kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS)  libkbzipfilter_dummy.la
+kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(LIB_KIO)
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 kio_ghelp_la_SOURCES = kio_help.cpp main_ghelp.cpp xslt.cpp
-kio_ghelp_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
+kio_ghelp_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS) $(LIB_KIO)
 kio_ghelp_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 noinst_HEADERS = kio_help.h
@@ -25,7 +20,7 @@ kdelnk_DATA = help.protocol ghelp.protocol
 kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc 
-meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
+meinproc_LDADD = xslt_pure.o $(LIB_KDECORE) $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
 meinproc_SOURCES = meinproc.cpp
 
 noinst_PROGRAMS = genshortcutents
@@ -68,10 +63,7 @@ uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization	
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
 
-kbzip2filter.cpp:
-	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
-
-CLEANFILES = kbzip2filter.cpp xslt_pure.o xslt_pure.cpp checkXML kde-standard-accels.entities genshortcutents
+CLEANFILES = xslt_pure.o xslt_pure.cpp checkXML kde-standard-accels.entities genshortcutents
 
 include $(top_srcdir)/admin/Doxyfile.am
 
