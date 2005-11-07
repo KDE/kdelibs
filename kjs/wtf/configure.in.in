@@ -1,0 +1,1 @@
+AC_DEFINE(KXC_CHANGES, 1, [For KXMLCore])
