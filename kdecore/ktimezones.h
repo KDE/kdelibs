@@ -705,7 +705,7 @@ public:
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
  */
-class KTimezoneData
+class KDE_EXPORT KTimezoneData
 {
 public:
     KTimezoneData();
