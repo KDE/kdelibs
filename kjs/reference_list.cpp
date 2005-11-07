@@ -15,12 +15,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+#include "config.h"
 #include "reference_list.h"
+
+#include "protected_reference.h"
 
 namespace KJS {
   class ReferenceListNode {
@@ -31,15 +34,15 @@ namespace KJS {
     ReferenceListNode(const Reference &ref) : reference(ref), next(NULL) {}
 
   private:
-    Reference reference;
+    ProtectedReference reference;
     ReferenceListNode *next;
   };
 
-  class ReferenceListHeadNode : private ReferenceListNode {
+  class ReferenceListHeadNode : ReferenceListNode {
     friend class ReferenceList;
     friend class ReferenceListIterator;
-
-    ReferenceListHeadNode(const Reference &ref) : ReferenceListNode(ref), refcount(1), length(0) {}
+    
+    ReferenceListHeadNode(const Reference &ref) : ReferenceListNode(ref), refcount(1) {}
     int refcount;
     int length;
   };
@@ -50,7 +53,7 @@ using namespace KJS;
 
 // ReferenceList
 
-ReferenceList::ReferenceList() :
+ReferenceList::ReferenceList() : 
   head(NULL),
   tail(NULL)
 {
@@ -105,7 +108,7 @@ ReferenceList::~ReferenceList()
 {
   if (head != NULL && --(head->refcount) == 0) {
     ReferenceListNode *next;
-
+    
     for (ReferenceListNode *p = head; p != NULL; p = next) {
       next = p->next;
       if (p == head) {
@@ -116,7 +119,7 @@ ReferenceList::~ReferenceList()
     }
   }
 }
-
+    
 ReferenceListIterator ReferenceList::begin() const
 {
   return ReferenceListIterator(head);
@@ -136,17 +139,17 @@ ReferenceListIterator::ReferenceListIterator(ReferenceListNode *n) :
 {
 }
 
-bool ReferenceListIterator::operator!=(const ReferenceListIterator &it) const
-{
+bool ReferenceListIterator::operator!=(const ReferenceListIterator &it) const 
+{ 
   return node != it.node;
 }
 
-const Reference *ReferenceListIterator::operator->() const
-{
+const Reference *ReferenceListIterator::operator->() const 
+{ 
   return &node->reference;
 }
 
-const Reference &ReferenceListIterator::operator++(int /*i*/)
+const Reference &ReferenceListIterator::operator++(int i) 
 {
   const Reference &ref = node->reference;
   node = node->next;

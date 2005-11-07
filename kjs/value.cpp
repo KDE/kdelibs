@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
@@ -17,396 +16,207 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+#include "config.h"
 #include "value.h"
+
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
 
-#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
 
 #include "internal.h"
 #include "collector.h"
 #include "operations.h"
 #include "error_object.h"
 #include "nodes.h"
-#include "simple_number.h"
 
-using namespace KJS;
+namespace KJS {
 
-// ----------------------------- ValueImp -------------------------------------
+AllocatedValueImp *ConstantValues::undefined = NULL;
+AllocatedValueImp *ConstantValues::null = NULL;
+AllocatedValueImp *ConstantValues::jsTrue = NULL;
+AllocatedValueImp *ConstantValues::jsFalse = NULL;
 
-ValueImp::ValueImp() :
-  refcount(0),
-  // Tell the garbage collector that this memory block corresponds to a real object now
-  _flags(VI_CREATED)
+static const double D16 = 65536.0;
+static const double D32 = 4294967296.0;
+
+void *AllocatedValueImp::operator new(size_t size)
 {
-  //fprintf(stderr,"ValueImp::ValueImp %p\n",(void*)this);
+    return Collector::allocate(size);
 }
 
-ValueImp::~ValueImp()
+bool AllocatedValueImp::getUInt32(unsigned&) const
 {
-  //fprintf(stderr,"ValueImp::~ValueImp %p\n",(void*)this);
-  _flags |= VI_DESTRUCTED;
-}
-
-void ValueImp::mark()
-{
-  //fprintf(stderr,"ValueImp::mark %p\n",(void*)this);
-  _flags |= VI_MARKED;
-}
-
-bool ValueImp::marked() const
-{
-  // Simple numbers are always considered marked.
-  return SimpleNumber::is(this) || (_flags & VI_MARKED);
-}
-
-void ValueImp::setGcAllowed()
-{
-  //fprintf(stderr,"ValueImp::setGcAllowed %p\n",(void*)this);
-  // simple numbers are never seen by the collector so setting this
-  // flag is irrelevant
-  if (!SimpleNumber::is(this))
-    _flags |= VI_GCALLOWED;
-}
-
-void* ValueImp::operator new(size_t s)
-{
-  return Collector::allocate(s);
-}
-
-void ValueImp::operator delete(void*)
-{
-  // Do nothing. So far.
-}
-
-bool ValueImp::toUInt32(unsigned&) const
-{
-  return false;
+    return false;
 }
 
 // ECMA 9.4
-int ValueImp::toInteger(ExecState *exec) const
+double ValueImp::toInteger(ExecState *exec) const
 {
-  unsigned i;
-  if (dispatchToUInt32(i))
-    return static_cast<int>(i);
-  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
-  if (isInf(d))
-    return INT_MAX;
-  return static_cast<int>(d);
+    uint32_t i;
+    if (getUInt32(i))
+        return i;
+    return roundValue(exec, const_cast<ValueImp*>(this));
 }
 
-int ValueImp::toInt32(ExecState *exec) const
+int32_t ValueImp::toInt32(ExecState *exec) const
 {
-  unsigned i;
-  if (dispatchToUInt32(i))
-    return (int)i;
+    uint32_t i;
+    if (getUInt32(i))
+        return i;
 
-  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
-  if (isNaN(d) || isInf(d) || d == 0.0)
-    return 0;
-  double d32 = fmod(d, D32);
+    double d = roundValue(exec, const_cast<ValueImp*>(this));
+    if (isNaN(d) || isInf(d))
+        return 0;
+    double d32 = fmod(d, D32);
 
-  //Make sure we use the positive remainder. This matters since this may be
-  //less than MIN_INT (but still < 2^32), and we don't want the cast to clamp.
-  if (d32 < 0)
-    d32 += D32;
+    if (d32 >= D32 / 2)
+        d32 -= D32;
+    else if (d32 < -D32 / 2)
+        d32 += D32;
 
-  if (d32 >= D32 / 2.0)
-    d32 -= D32;
-
-  return static_cast<int>(d32);
+    return static_cast<int32_t>(d32);
 }
 
-unsigned int ValueImp::toUInt32(ExecState *exec) const
+uint32_t ValueImp::toUInt32(ExecState *exec) const
 {
-  unsigned i;
-  if (dispatchToUInt32(i))
-    return i;
+    uint32_t i;
+    if (getUInt32(i))
+        return i;
 
-  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
-  if (isNaN(d) || isInf(d) || d == 0.0)
-    return 0;
-  double d32 = fmod(d, D32);
+    double d = roundValue(exec, const_cast<ValueImp*>(this));
+    if (isNaN(d) || isInf(d))
+        return 0;
+    double d32 = fmod(d, D32);
 
-  if (d32 < 0)
-    d32 += D32;
+    if (d32 < 0)
+        d32 += D32;
 
-  //6.3.1.4 Real floating and integer
-  // 50) The remaindering operation performed when a value of integer type is
-  //   converted to unsigned type need not be performed when a value of real
-  //   floating type is converted to unsigned type. Thus, the range of
-  //   portable real floating values is (-1, Utype_MAX+1).
-  return static_cast<unsigned int>(d32);
+    return static_cast<uint32_t>(d32);
 }
 
-unsigned short ValueImp::toUInt16(ExecState *exec) const
+uint16_t ValueImp::toUInt16(ExecState *exec) const
 {
-  unsigned i;
-  if (dispatchToUInt32(i))
-    return (unsigned short)i;
+    uint32_t i;
+    if (getUInt32(i))
+        return i;
 
-  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
-  double d16 = fmod(d, D16);
+    double d = roundValue(exec, const_cast<ValueImp*>(this));
+    if (isNaN(d) || isInf(d))
+        return 0;
+    double d16 = fmod(d, D16);
 
-  // look at toUInt32 to see why this is necesary
-  int t_int = static_cast<int>(d16);
-  return static_cast<unsigned short>(t_int);
+    if (d16 < 0)
+        d16 += D16;
+
+    return static_cast<uint16_t>(d16);
 }
 
-// Dispatchers for virtual functions, to special-case simple numbers which
-// won't be real pointers.
-
-Type ValueImp::dispatchType() const
+ObjectImp *ValueImp::toObject(ExecState *exec) const
 {
-  if (SimpleNumber::is(this))
-    return NumberType;
-  return type();
+    if (SimpleNumber::is(this))
+        return static_cast<const NumberImp *>(this)->NumberImp::toObject(exec);
+    return downcast()->toObject(exec);
 }
 
-Value ValueImp::dispatchToPrimitive(ExecState *exec, Type preferredType) const
+bool AllocatedValueImp::getBoolean(bool &booleanValue) const
 {
-  if (SimpleNumber::is(this))
-    return Value(const_cast<ValueImp *>(this));
-  return toPrimitive(exec, preferredType);
-}
-
-bool ValueImp::dispatchToBoolean(ExecState *exec) const
-{
-  if (SimpleNumber::is(this))
-    return SimpleNumber::value(this);
-  return toBoolean(exec);
-}
-
-double ValueImp::dispatchToNumber(ExecState *exec) const
-{
-  if (SimpleNumber::is(this))
-    return SimpleNumber::value(this);
-  return toNumber(exec);
-}
-
-UString ValueImp::dispatchToString(ExecState *exec) const
-{
-  if (SimpleNumber::is(this))
-    return UString::from(SimpleNumber::value(this));
-  return toString(exec);
-}
-
-Object ValueImp::dispatchToObject(ExecState *exec) const
-{
-  if (SimpleNumber::is(this))
-    return static_cast<const NumberImp *>(this)->NumberImp::toObject(exec);
-  return toObject(exec);
-}
-
-bool ValueImp::dispatchToUInt32(unsigned& result) const
-{
-  if (SimpleNumber::is(this)) {
-    long i = SimpleNumber::value(this);
-    if (i < 0)
-      return false;
-    result = (unsigned)i;
+    if (!isBoolean())
+        return false;
+    booleanValue = static_cast<const BooleanImp *>(this)->value();
     return true;
-  }
-  return toUInt32(result);
 }
 
-// ------------------------------ Value ----------------------------------------
-
-Value::Value(ValueImp *v)
+bool AllocatedValueImp::getNumber(double &numericValue) const
 {
-  rep = v;
-#ifdef DEBUG_COLLECTOR
-  assert (!(rep && !SimpleNumber::is(rep) && *((uint32_t *)rep) == 0 ));
-  assert (!(rep && !SimpleNumber::is(rep) && rep->_flags & ValueImp::VI_MARKED));
-#endif
-  if (v)
-  {
-    v->ref();
-    //fprintf(stderr, "Value::Value(%p) imp=%p ref=%d\n", this, rep, rep->refcount);
-    v->setGcAllowed();
-  }
+    if (!isNumber())
+        return false;
+    numericValue = static_cast<const NumberImp *>(this)->value();
+    return true;
 }
 
-Value::Value(const Value &v)
+double AllocatedValueImp::getNumber() const
 {
-  rep = v.imp();
-#ifdef DEBUG_COLLECTOR
-  assert (!(rep && !SimpleNumber::is(rep) && *((uint32_t *)rep) == 0 ));
-  assert (!(rep && !SimpleNumber::is(rep) && rep->_flags & ValueImp::VI_MARKED));
-#endif
-  if (rep)
-  {
-    rep->ref();
-    //fprintf(stderr, "Value::Value(%p)(copying %p) imp=%p ref=%d\n", this, &v, rep, rep->refcount);
-  }
+    return isNumber() ? static_cast<const NumberImp *>(this)->value() : NaN;
 }
 
-Value::~Value()
+bool AllocatedValueImp::getString(UString &stringValue) const
 {
-  if (rep)
-  {
-    rep->deref();
-    //fprintf(stderr, "Value::~Value(%p) imp=%p ref=%d\n", this, rep, rep->refcount);
-  }
+    if (!isString())
+        return false;
+    stringValue = static_cast<const StringImp *>(this)->value();
+    return true;
 }
 
-Value& Value::operator=(const Value &v)
+UString AllocatedValueImp::getString() const
 {
-  ValueImp *tmpRep = v.imp();
-
-  //Avoid the destruction of the object underneath us by
-  //incrementing the reference on it first
-  if (tmpRep) {
-    tmpRep->ref();
-    //fprintf(stderr, "Value::operator=(%p)(copying %p) imp=%p ref=%d\n", this, &v, tmpRep, tmpRep->refcount);
-  }
-
-  if (rep) {
-    rep->deref();
-    //fprintf(stderr, "Value::operator=(%p)(copying %p) old imp=%p ref=%d\n", this, &v, rep, rep->refcount);
-  }
-  rep = tmpRep;
-
-  return *this;
+    return isString() ? static_cast<const StringImp *>(this)->value() : UString();
 }
 
-// ------------------------------ Undefined ------------------------------------
-
-Undefined::Undefined() : Value(UndefinedImp::staticUndefined)
+ObjectImp *AllocatedValueImp::getObject()
 {
+    return isObject() ? static_cast<ObjectImp *>(this) : 0;
 }
 
-Undefined Undefined::dynamicCast(const Value &v)
+const ObjectImp *AllocatedValueImp::getObject() const
 {
-  if (!v.isValid() || v.type() != UndefinedType)
-    return Undefined(0);
-
-  return Undefined();
+    return isObject() ? static_cast<const ObjectImp *>(this) : 0;
 }
 
-// ------------------------------ Null -----------------------------------------
-
-Null::Null() : Value(NullImp::staticNull)
+AllocatedValueImp *jsString(const char *s)
 {
+    return new StringImp(s ? s : "");
 }
 
-Null Null::dynamicCast(const Value &v)
+AllocatedValueImp *jsString(const UString &s)
 {
-  if (!v.isValid() || v.type() != NullType)
-    return Null(0);
-
-  return Null();
+    return s.isNull() ? new StringImp("") : new StringImp(s);
 }
 
-// ------------------------------ Boolean --------------------------------------
-
-Boolean::Boolean(bool b)
-  : Value(b ? BooleanImp::staticTrue : BooleanImp::staticFalse)
+ValueImp *jsNumber(double d)
 {
+  ValueImp *v = SimpleNumber::make(d);
+  return v ? v : new NumberImp(d);
 }
 
-bool Boolean::value() const
+void ConstantValues::init()
 {
-  assert(rep);
-  return ((BooleanImp*)rep)->value();
+    undefined = new UndefinedImp();
+    null = new NullImp();
+    jsTrue = new BooleanImp(true);
+    jsFalse = new BooleanImp(false);
 }
 
-Boolean Boolean::dynamicCast(const Value &v)
+void ConstantValues::clear()
 {
-  if (!v.isValid() || v.type() != BooleanType)
-    return static_cast<BooleanImp*>(0);
-
-  return static_cast<BooleanImp*>(v.imp());
+    undefined = NULL;
+    null = NULL;
+    jsTrue = NULL;
+    jsFalse = NULL;
 }
 
-// ------------------------------ String ---------------------------------------
-
-String::String(const UString &s) : Value(new StringImp(s))
+void ConstantValues::mark()
 {
-#ifndef NDEBUG
-  if (s.isNull())
-    fprintf(stderr, "WARNING: KJS::String constructed from null string\n");
-#endif
+    if (AllocatedValueImp *v = undefined)
+        if (!v->marked())
+            v->mark();
+    if (AllocatedValueImp *v = null)
+        if (!v->marked())
+            v->mark();
+    if (AllocatedValueImp *v = jsTrue)
+        if (!v->marked())
+            v->mark();
+    if (AllocatedValueImp *v = jsFalse)
+        if (!v->marked())
+            v->mark();
 }
 
-UString String::value() const
-{
-  assert(rep);
-  return ((StringImp*)rep)->value();
-}
-
-String String::dynamicCast(const Value &v)
-{
-  if (!v.isValid() || v.type() != StringType)
-    return String(0);
-
-  return String(static_cast<StringImp*>(v.imp()));
-}
-
-// ------------------------------ Number ---------------------------------------
-
-Number::Number(int i)
-  : Value(SimpleNumber::fits(i) ? SimpleNumber::make(i) : new NumberImp(static_cast<double>(i))) { }
-
-Number::Number(unsigned int u)
-  : Value(SimpleNumber::fits(u) ? SimpleNumber::make(u) : new NumberImp(static_cast<double>(u))) { }
-
-Number::Number(double d)
-#if defined(__alpha) && !defined(_IEEE_FP)
-  // check for NaN first if we werent't compiled with -mieee on Alpha
- : Value(KJS::isNaN(d) ? NumberImp::staticNaN : (SimpleNumber::fits(d) ? SimpleNumber::make((long)d) : new NumberImp(d))) { }
-#else
- : Value(SimpleNumber::fits(d) ? SimpleNumber::make((long)d) : (KJS::isNaN(d) ? NumberImp::staticNaN : new NumberImp(d))) { }
-#endif
-
-Number::Number(long int l)
-  : Value(SimpleNumber::fits(l) ? SimpleNumber::make(l) : new NumberImp(static_cast<double>(l))) { }
-
-Number::Number(long unsigned int l)
-  : Value(SimpleNumber::fits(l) ? SimpleNumber::make(l) : new NumberImp(static_cast<double>(l))) { }
-
-Number Number::dynamicCast(const Value &v)
-{
-  if (!v.isValid() || v.type() != NumberType)
-    return Number((NumberImp*)0);
-
-  return Number(static_cast<NumberImp*>(v.imp()));
-}
-
-double Number::value() const
-{
-  if (SimpleNumber::is(rep))
-    return (double)SimpleNumber::value(rep);
-  assert(rep);
-  return ((NumberImp*)rep)->value();
-}
-
-int Number::intValue() const
-{
-  if (SimpleNumber::is(rep))
-    return SimpleNumber::value(rep);
-  return (int)((NumberImp*)rep)->value();
-}
-
-bool Number::isNaN() const
-{
-  return rep == NumberImp::staticNaN;
-}
-
-bool Number::isInf() const
-{
-  if (SimpleNumber::is(rep))
-    return false;
-  return KJS::isInf(((NumberImp*)rep)->value());
 }

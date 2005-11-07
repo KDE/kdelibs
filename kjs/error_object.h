@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -30,11 +30,11 @@ namespace KJS {
   class ErrorInstanceImp : public ObjectImp {
   public:
     ErrorInstanceImp(ObjectImp *proto);
-
+    
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };
-
+  
   class ErrorPrototypeImp : public ObjectImp {
   public:
     ErrorPrototypeImp(ExecState *exec,
@@ -46,7 +46,7 @@ namespace KJS {
   public:
     ErrorProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
   };
 
   class ErrorObjectImp : public InternalFunctionImp {
@@ -55,15 +55,11 @@ namespace KJS {
                    ErrorPrototypeImp *errorProto);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
   };
-
-
-
-
 
   class NativeErrorPrototypeImp : public ObjectImp {
   public:
@@ -76,12 +72,12 @@ namespace KJS {
   class NativeErrorImp : public InternalFunctionImp {
   public:
     NativeErrorImp(ExecState *exec, FunctionPrototypeImp *funcProto,
-                   const Object &prot);
+                   ObjectImp *prot);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
     virtual void mark();
 

@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -50,44 +50,45 @@
      THIS = 276,
      DO = 277,
      WHILE = 278,
-     ELSE = 279,
-     IN = 280,
-     INSTANCEOF = 281,
-     TYPEOF = 282,
-     SWITCH = 283,
-     WITH = 284,
-     RESERVED = 285,
-     THROW = 286,
-     TRY = 287,
-     CATCH = 288,
-     FINALLY = 289,
-     EQEQ = 290,
-     NE = 291,
-     STREQ = 292,
-     STRNEQ = 293,
-     LE = 294,
-     GE = 295,
-     OR = 296,
-     AND = 297,
-     PLUSPLUS = 298,
-     MINUSMINUS = 299,
-     LSHIFT = 300,
-     RSHIFT = 301,
-     URSHIFT = 302,
-     PLUSEQUAL = 303,
-     MINUSEQUAL = 304,
-     MULTEQUAL = 305,
-     DIVEQUAL = 306,
-     LSHIFTEQUAL = 307,
-     RSHIFTEQUAL = 308,
-     URSHIFTEQUAL = 309,
-     ANDEQUAL = 310,
-     MODEQUAL = 311,
-     XOREQUAL = 312,
-     OREQUAL = 313,
-     IDENT = 314,
-     AUTOPLUSPLUS = 315,
-     AUTOMINUSMINUS = 316
+     IN = 279,
+     INSTANCEOF = 280,
+     TYPEOF = 281,
+     SWITCH = 282,
+     WITH = 283,
+     RESERVED = 284,
+     THROW = 285,
+     TRY = 286,
+     CATCH = 287,
+     FINALLY = 288,
+     IF_WITHOUT_ELSE = 289,
+     ELSE = 290,
+     EQEQ = 291,
+     NE = 292,
+     STREQ = 293,
+     STRNEQ = 294,
+     LE = 295,
+     GE = 296,
+     OR = 297,
+     AND = 298,
+     PLUSPLUS = 299,
+     MINUSMINUS = 300,
+     LSHIFT = 301,
+     RSHIFT = 302,
+     URSHIFT = 303,
+     PLUSEQUAL = 304,
+     MINUSEQUAL = 305,
+     MULTEQUAL = 306,
+     DIVEQUAL = 307,
+     LSHIFTEQUAL = 308,
+     RSHIFTEQUAL = 309,
+     URSHIFTEQUAL = 310,
+     ANDEQUAL = 311,
+     MODEQUAL = 312,
+     XOREQUAL = 313,
+     OREQUAL = 314,
+     IDENT = 315,
+     AUTOPLUSPLUS = 316,
+     AUTOMINUSMINUS = 317
    };
 #endif
 #define NULLTOKEN 258
@@ -111,50 +112,51 @@
 #define THIS 276
 #define DO 277
 #define WHILE 278
-#define ELSE 279
-#define IN 280
-#define INSTANCEOF 281
-#define TYPEOF 282
-#define SWITCH 283
-#define WITH 284
-#define RESERVED 285
-#define THROW 286
-#define TRY 287
-#define CATCH 288
-#define FINALLY 289
-#define EQEQ 290
-#define NE 291
-#define STREQ 292
-#define STRNEQ 293
-#define LE 294
-#define GE 295
-#define OR 296
-#define AND 297
-#define PLUSPLUS 298
-#define MINUSMINUS 299
-#define LSHIFT 300
-#define RSHIFT 301
-#define URSHIFT 302
-#define PLUSEQUAL 303
-#define MINUSEQUAL 304
-#define MULTEQUAL 305
-#define DIVEQUAL 306
-#define LSHIFTEQUAL 307
-#define RSHIFTEQUAL 308
-#define URSHIFTEQUAL 309
-#define ANDEQUAL 310
-#define MODEQUAL 311
-#define XOREQUAL 312
-#define OREQUAL 313
-#define IDENT 314
-#define AUTOPLUSPLUS 315
-#define AUTOMINUSMINUS 316
+#define IN 279
+#define INSTANCEOF 280
+#define TYPEOF 281
+#define SWITCH 282
+#define WITH 283
+#define RESERVED 284
+#define THROW 285
+#define TRY 286
+#define CATCH 287
+#define FINALLY 288
+#define IF_WITHOUT_ELSE 289
+#define ELSE 290
+#define EQEQ 291
+#define NE 292
+#define STREQ 293
+#define STRNEQ 294
+#define LE 295
+#define GE 296
+#define OR 297
+#define AND 298
+#define PLUSPLUS 299
+#define MINUSMINUS 300
+#define LSHIFT 301
+#define RSHIFT 302
+#define URSHIFT 303
+#define PLUSEQUAL 304
+#define MINUSEQUAL 305
+#define MULTEQUAL 306
+#define DIVEQUAL 307
+#define LSHIFTEQUAL 308
+#define RSHIFTEQUAL 309
+#define URSHIFTEQUAL 310
+#define ANDEQUAL 311
+#define MODEQUAL 312
+#define XOREQUAL 313
+#define OREQUAL 314
+#define IDENT 315
+#define AUTOPLUSPLUS 316
+#define AUTOMINUSMINUS 317
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 50 "grammar.y"
+#line 63 "grammar.y"
 typedef union YYSTYPE {
   int                 ival;
   double              dval;
@@ -165,7 +167,8 @@ typedef union YYSTYPE {
   ParameterNode       *param;
   FunctionBodyNode    *body;
   FuncDeclNode        *func;
-  FunctionBodyNode    *prog;
+  FuncExprNode        *funcExpr;
+  ProgramNode         *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
   StatListNode        *slist;
@@ -180,11 +183,9 @@ typedef union YYSTYPE {
   Operator            op;
   PropertyValueNode   *plist;
   PropertyNode        *pnode;
-  CatchNode           *cnode;
-  FinallyNode         *fnode;
 } YYSTYPE;
 /* Line 1249 of yacc.c.  */
-#line 187 "grammar.tab.h"
+#line 188 "grammar.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

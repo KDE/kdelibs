@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -23,7 +23,6 @@
 #define _OBJECT_OBJECT_H_
 
 #include "internal.h"
-#include "function.h"
 
 namespace KJS {
 
@@ -48,15 +47,12 @@ namespace KJS {
    */
   class ObjectProtoFuncImp : public InternalFunctionImp {
   public:
-    ObjectProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
-                       int i, int len, const Identifier &_ident);
+    ObjectProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *, ObjectImp *, const List &args);
 
-    enum { ToString, ToLocaleString, ValueOf, HasOwnProperty,
-	   IsPrototypeOf, PropertyIsEnumerable };
-
+    enum { ToString, ToLocaleString, ValueOf, HasOwnProperty };
   private:
     int id;
   };
@@ -74,9 +70,9 @@ namespace KJS {
                     FunctionPrototypeImp *funcProto);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *, const List &args);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *, ObjectImp *, const List &args);
   };
 
 } // namespace

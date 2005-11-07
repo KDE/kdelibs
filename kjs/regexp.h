@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -41,30 +41,26 @@ namespace KJS {
   class RegExp {
   public:
     enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
-    RegExp(const UString &p, int f = None);
+
+    RegExp(const UString &pattern, int flags = None);
     ~RegExp();
-    int flags() const { return flgs; }
-    UString pattern() const { return pat; }
-    bool isValid() const { return valid; }
+
+    int flags() const { return _flags; }
+
     UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
-    // test is unused. The JS spec says that RegExp.test should use
-    // RegExp.exec, so it has to store $1 etc.
-    // bool test(const UString &s, int i = -1);
-    unsigned int subPatterns() const { return nrSubPatterns; }
+    unsigned subPatterns() const { return _numSubPatterns; }
+
   private:
-    const UString pat;
-    int flgs;
-    bool m_notEmpty;
-    bool valid;
-
-#ifndef HAVE_PCREPOSIX
-    regex_t preg;
+#ifdef HAVE_PCREPOSIX
+    pcre *_regex;
 #else
-    pcre *pcregex;
+    regex_t _regex;
 #endif
-    unsigned int nrSubPatterns;
+    int _flags;
+    unsigned _numSubPatterns;
 
-    RegExp();
+    RegExp(const RegExp &);
+    RegExp &operator=(const RegExp &);
   };
 
 } // namespace

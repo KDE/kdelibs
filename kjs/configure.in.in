@@ -61,5 +61,7 @@ quite limited if libpcre isn't present.])
 AC_CHECK_PCREPOSIX
 AC_SUBST(LIBPCRE)
 AC_SUBST(PCRECFLAGS)
+AC_CHECK_HEADERS(errno.h)
 
 AM_CONFIG_HEADER([kjs/global.h])
+

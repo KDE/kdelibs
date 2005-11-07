@@ -16,22 +16,22 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
 #include "lookup.h"
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
 #endif
 
 using namespace KJS;
 
-static bool keysMatch(const UChar *c, unsigned len, const char *s)
+static inline bool keysMatch(const UChar *c, unsigned len, const char *s)
 {
   for (unsigned i = 0; i != len; i++, c++, s++)
     if (c->uc != (unsigned char)*s)
@@ -53,18 +53,16 @@ const HashEntry* Lookup::findEntry( const struct HashTable *table,
   const HashEntry *e = &table->entries[h];
 
   // empty bucket ?
-  if (!e->soffset)
+  if (!e->s)
     return 0;
 
-  while(1) {
+  do {
     // compare strings
-    if (keysMatch(c, len, &table->sbase[e->soffset]))
+    if (keysMatch(c, len, e->s))
       return e;
     // try next bucket
-    if(e->next < 0) break;
-
-    e = &table->entries[e->next];
-  }
+    e = e->next;
+  } while (e);
 
   return 0;
 }

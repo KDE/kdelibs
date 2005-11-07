@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -57,10 +57,10 @@ namespace KJS {
   class NumberProtoFuncImp : public InternalFunctionImp {
   public:
     NumberProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
-                       int i, int len, const Identifier &_ident);
+                       int i, int len);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
     enum { ToString, ToLocaleString, ValueOf, ToFixed, ToExponential, ToPrecision };
   private:
@@ -79,19 +79,20 @@ namespace KJS {
                     NumberPrototypeImp *numberProto);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
-    Value get(ExecState *exec, const Identifier &p) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    ValueImp *getValueProperty(ExecState *exec, int token) const;
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
     enum { NaNValue, NegInfinity, PosInfinity, MaxValue, MinValue };
 
     Completion execute(const List &);
-    Object construct(const List &);
+    ObjectImp *construct(const List &);
   };
 
 } // namespace

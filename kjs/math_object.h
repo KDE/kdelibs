@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -31,8 +31,8 @@ namespace KJS {
   public:
     MathObjectImp(ExecState *exec,
                   ObjectPrototypeImp *objProto);
-    Value get(ExecState *exec, const Identifier &p) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    ValueImp *getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
@@ -44,7 +44,7 @@ namespace KJS {
   public:
     MathFuncImp(ExecState *exec, int i, int l);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
   private:
     int id;
   };

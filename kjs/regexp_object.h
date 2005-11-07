@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -39,11 +39,11 @@ namespace KJS {
 
   class RegExpProtoFuncImp : public InternalFunctionImp {
   public:
-    RegExpProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len,
-                       const Identifier &_ident);
+    RegExpProtoFuncImp(ExecState *exec,
+                       FunctionPrototypeImp *funcProto, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
     enum { Exec, Test, ToString };
   private:
@@ -55,7 +55,7 @@ namespace KJS {
     RegExpImp(RegExpPrototypeImp *regexpProto);
     ~RegExpImp();
     void setRegExp(RegExp *r) { reg = r; }
-    RegExp* regExp() { return reg; }
+    RegExp* regExp() const { return reg; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -65,23 +65,40 @@ namespace KJS {
 
   class RegExpObjectImp : public InternalFunctionImp {
   public:
+    enum { Dollar1, Dollar2, Dollar3, Dollar4, Dollar5, Dollar6, Dollar7, Dollar8, Dollar9, 
+           Input, Multiline, LastMatch, LastParen, LeftContext, RightContext };
+    
     RegExpObjectImp(ExecState *exec,
                     FunctionPrototypeImp *funcProto,
                     RegExpPrototypeImp *regProto);
     virtual ~RegExpObjectImp();
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
-    Value get(ExecState *exec, const Identifier &p) const;
-    int ** registerRegexp( const RegExp* re, const UString& s );
-    void setSubPatterns(int num) { lastNrSubPatterns = num; }
-    Object arrayOfMatches(ExecState *exec, const UString &result) const;
+    virtual void put(ExecState *, const Identifier &, ValueImp *, int attr = None);
+    void putValueProperty(ExecState *, int token, ValueImp *, int attr);
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    ValueImp *getValueProperty(ExecState *, int token) const;
+    UString performMatch(RegExp *, const UString&, int startOffset = 0, int *endOffset = 0, int **ovector = 0);
+    ObjectImp *arrayOfMatches(ExecState *exec, const UString &result) const;
+    
+    virtual const ClassInfo *classInfo() const { return &info; }
   private:
-    UString lastString;
+    ValueImp *getBackref(unsigned) const;
+    ValueImp *getLastMatch() const;
+    ValueImp *getLastParen() const;
+    ValueImp *getLeftContext() const;
+    ValueImp *getRightContext() const;
+
+    // Global search cache / settings
+    bool multiline;
+    UString lastInput;
     int *lastOvector;
-    unsigned int lastNrSubPatterns;
+    unsigned lastNumSubPatterns;
+    
+    static const ClassInfo info;
   };
 
 } // namespace

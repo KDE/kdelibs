@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -22,16 +22,11 @@
 #ifndef KJS_SCOPE_CHAIN_H
 #define KJS_SCOPE_CHAIN_H
 
-#include "global.h"
-
 namespace KJS {
 
     class ObjectImp;
-
-/**
-* A scope chain node.
-*/
-    class KJS_EXPORT ScopeChainNode {
+    
+    class ScopeChainNode {
     public:
         ScopeChainNode(ScopeChainNode *n, ObjectImp *o)
             : next(n), object(o), refCount(1) { }
@@ -41,10 +36,25 @@ namespace KJS {
         int refCount;
     };
 
-/**
-* A scope chain object.
-*/
-    class KJS_EXPORT ScopeChain {
+    class ScopeChainIterator {
+    public:
+        ScopeChainIterator(ScopeChainNode *node) : m_node(node) {}
+
+        ObjectImp * const & operator*() const { return m_node->object; }
+        ObjectImp * const * operator->() const { return &(operator*()); }
+    
+        ScopeChainIterator& operator++() { m_node = m_node->next; return *this; }
+
+        // postfix ++ intentionally omitted
+
+        bool operator==(const ScopeChainIterator& other) const { return m_node == other.m_node; }
+        bool operator!=(const ScopeChainIterator& other) const { return m_node != other.m_node; }
+
+    private:
+        ScopeChainNode *m_node;
+    };
+
+    class ScopeChain {
     public:
         ScopeChain() : _node(0) { }
         ~ScopeChain() { deref(); }
@@ -55,22 +65,25 @@ namespace KJS {
 
         bool isEmpty() const { return !_node; }
         ObjectImp *top() const { return _node->object; }
-        ObjectImp *bottom() const { const ScopeChainNode *n = _node;
-				    while (n->next) n = n->next;
-				    return n->object; }
+
+	ObjectImp *bottom() const;
+
+        ScopeChainIterator begin() const { return ScopeChainIterator(_node); }
+        ScopeChainIterator end() const { return ScopeChainIterator(0); }
 
         void clear() { deref(); _node = 0; }
         void push(ObjectImp *);
+        void push(const ScopeChain &);
         void pop();
-
+        
         void mark();
-
+        
     private:
         ScopeChainNode *_node;
-
+        
         void deref() { if (_node && --_node->refCount == 0) release(); }
         void ref() const;
-
+        
         void release();
     };
 

@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -45,22 +45,18 @@ namespace KJS {
    *
    * @short Handle for a Completion type.
    */
-// delme
-  class KJS_EXPORT Completion : public Value {
-// fixme
-/*   class Completion : private Value { */
+  class Completion {
   public:
-    Completion(ComplType c = Normal, const Value& v = Value(),
-               const Identifier &t = Identifier::null())
+    Completion(ComplType c = Normal, ValueImp *v = NULL, const Identifier &t = Identifier::null())
         : comp(c), val(v), tar(t) { }
 
     ComplType complType() const { return comp; }
-    Value value() const { return val; }
+    ValueImp *value() const { return val; }
     Identifier target() const { return tar; }
-    bool isValueCompletion() const { return val.isValid(); }
+    bool isValueCompletion() const { return val; }
   private:
     ComplType comp;
-    Value val;
+    ValueImp *val;
     Identifier tar;
   };
 

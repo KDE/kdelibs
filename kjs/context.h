@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -26,6 +26,7 @@
 #define KJS_CONTEXT_H
 
 #include "function.h"
+#include "protect.h"
 
 namespace KJS  {
 
@@ -33,56 +34,43 @@ namespace KJS  {
    * @short Execution context.
    */
   class ContextImp {
-    friend class Context;
-    friend class StatementNode;
   public:
-    // TODO: remove glob parameter. deducable from exec.
-    ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV, int _sourceId, CodeType type = GlobalCode,
-               ContextImp *callingContext = 0L, FunctionImp *func = 0L, const List *args = 0);
-    virtual ~ContextImp();
+    ContextImp(ObjectImp *glob, InterpreterImp *, ObjectImp *thisV, CodeType type = GlobalCode,
+               ContextImp *callingContext = 0, FunctionImp *functiion = 0, const List *args = 0);
+    ~ContextImp();
 
     const ScopeChain &scopeChain() const { return scope; }
-    CodeType codeType() const { return m_codeType; }
-    Object variableObject() const { return variable; }
-    void setVariableObject(const Object &v) { variable = v; }
-    Object thisValue() const { return thisVal; }
+    CodeType codeType() { return m_codeType; }
+    ObjectImp *variableObject() const { return variable; }
+    void setVariableObject(ObjectImp *v) { variable = v; }
+    ObjectImp *thisValue() const { return thisVal; }
     ContextImp *callingContext() { return _callingContext; }
-    ObjectImp *activationObject() { return activation.imp(); }
+    ObjectImp *activationObject() { return activation; }
     FunctionImp *function() const { return _function; }
     const List *arguments() const { return _arguments; }
 
-    void pushScope(const Object &s) { scope.push(s.imp()); }
+    void pushScope(ObjectImp *s) { scope.push(s); }
     void popScope() { scope.pop(); }
     LabelStack *seenLabels() { return &ls; }
     
     void mark();
-
-    void pushTryCatch() { tryCatch++; };
-    void popTryCatch() { tryCatch--; };
-    bool inTryCatch() const;
-
-    void setLines(int l0, int l1) { line0 = l0; line1 = l1; }
 
   private:
     InterpreterImp *_interpreter;
     ContextImp *_callingContext;
     FunctionImp *_function;
     const List *_arguments;
-    Object activation;
+    // because ContextImp is always allocated on the stack,
+    // there is no need to protect various pointers from conservative
+    // GC since they will be caught by the conservative sweep anyway!
+    ObjectImp *activation;
     
     ScopeChain scope;
-    Object variable;
-    Object thisVal;
+    ObjectImp *variable;
+    ObjectImp *thisVal;
 
     LabelStack ls;
     CodeType m_codeType;
-
-    int tryCatch;
-    int sourceId;
-    int line0;
-    int line1;
-    Identifier functionName;
-    List args;
   };
 
 } // namespace KJS

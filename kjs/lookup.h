@@ -16,17 +16,16 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 #ifndef _KJSLOOKUP_H_
 #define _KJSLOOKUP_H_
 
-#include "identifier.h"
-#include "value.h"
-#include "object.h"
 #include "interpreter.h"
+#include "identifier.h"
+#include "object.h"
 #include <stdio.h>
 
 namespace KJS {
@@ -36,26 +35,26 @@ namespace KJS {
    */
   struct HashEntry {
     /**
-     * s is the offset to the string key (e.g. a property name)
+     * s is the key (e.g. a property name)
      */
-    unsigned short soffset;
+    const char *s;
     /**
      * value is the result value (usually an enum value)
      */
-    short int value;
+    int value;
     /**
      * attr is a set for flags (e.g. the property flags, see object.h)
      */
-    unsigned char attr;
+    short int attr;
     /**
      * params is another number. For property hashtables, it is used to
      * denote the number of argument of the function
      */
-    unsigned char params;
+    short int params;
     /**
-     * next is the index to the next entry for the same hash value
+     * next is the pointer to the next entry for the same hash value
      */
-    short next;
+    const HashEntry *next;
   };
 
   /**
@@ -84,22 +83,17 @@ namespace KJS {
      * pointer to the array of entries
      * Mind that some entries in the array are null (0,0,0,0).
      */
-    const HashEntry *const entries;
+    const HashEntry *entries;
     /**
      * the maximum value for the hash. Always smaller than size.
      */
     int hashSize;
-
-    /**
-     * pointer to the string table.
-     */
-    const char* const sbase;
   };
 
   /**
    * @short Fast keyword lookup.
    */
-  class KJS_EXPORT Lookup {
+  class Lookup {
   public:
     /**
      * Find an entry in the table, and return its value (i.e. the value field of HashEntry)
@@ -130,25 +124,33 @@ namespace KJS {
   class UString;
   /**
    * @internal
-   * Helper for lookupFunction and lookupValueOrFunction
+   * Helper for getStaticFunctionSlot and getStaticPropertySlot
    */
   template <class FuncImp>
-  inline Value lookupOrCreateFunction(ExecState *exec, const Identifier &propertyName,
-                                      const ObjectImp *thisObj, int token, int params, int attr)
+  inline ValueImp *staticFunctionGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
   {
       // Look for cached value in dynamic map of properties (in ObjectImp)
-      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
-      /*if (cachedVal)
-        fprintf(stderr, "lookupOrCreateFunction: Function -> looked up in ObjectImp, found type=%d\n", cachedVal->type());*/
+      ObjectImp *thisObj = slot.slotBase();
+      ValueImp *cachedVal = thisObj->getDirect(propertyName);
       if (cachedVal)
-        return Value(cachedVal);
+        return cachedVal;
 
-      ObjectImp* func = new FuncImp( exec, token, params );
-      Value val( func );
-      func->setFunctionName( propertyName );
-      ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
-      thatObj->ObjectImp::put(exec, propertyName, val, attr);
+      const HashEntry *entry = slot.staticEntry();
+      ValueImp *val = new FuncImp(exec, entry->value, entry->params);
+      thisObj->putDirect(propertyName, val, entry->attr);
       return val;
+  }
+
+  /**
+   * @internal
+   * Helper for getStaticValueSlot and getStaticPropertySlot
+   */
+  template <class ThisImp>
+  inline ValueImp *staticValueGetter(ExecState *exec, const Identifier&, const PropertySlot& slot)
+  {
+      ThisImp *thisObj = static_cast<ThisImp *>(slot.slotBase());
+      const HashEntry *entry = slot.staticEntry();
+      return thisObj->getValueProperty(exec, entry->value);
   }
 
   /**
@@ -172,56 +174,59 @@ namespace KJS {
    * @param thisObj "this"
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value lookupGet(ExecState *exec, const Identifier &propertyName,
-                         const HashTable* table, const ThisImp* thisObj)
+  inline bool getStaticPropertySlot(ExecState *exec, const HashTable* table, 
+                                    ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::get(exec, propertyName);
+      return thisObj->ParentImp::getOwnPropertySlot(exec, propertyName, slot);
 
-    //fprintf(stderr, "lookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
-    return thisObj->getValueProperty(exec, entry->value);
+      slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
+    else 
+      slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
+
+    return true;
   }
 
   /**
-   * Simplified version of lookupGet in case there are only functions.
-   * Using this instead of lookupGet prevents 'this' from implementing a dummy getValueProperty.
+   * Simplified version of getStaticPropertySlot in case there are only functions.
+   * Using this instead of getStaticPropertySlot allows 'this' to avoid implementing 
+   * a dummy getValueProperty.
    */
   template <class FuncImp, class ParentImp>
-  inline Value lookupGetFunction(ExecState *exec, const Identifier &propertyName,
-                         const HashTable* table, const ObjectImp* thisObj)
+  inline bool getStaticFunctionSlot(ExecState *exec, const HashTable *table, 
+                                    ObjectImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
-      return static_cast<const ParentImp *>(thisObj)->ParentImp::get(exec, propertyName);
+      return static_cast<ParentImp *>(thisObj)->ParentImp::getOwnPropertySlot(exec, propertyName, slot);
 
-    if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
+    assert(entry->attr & Function);
 
-    fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
-    return Undefined();
+    slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
+    return true;
   }
 
   /**
-   * Simplified version of lookupGet in case there are no functions, only "values".
-   * Using this instead of lookupGet removes the need for a FuncImp class.
+   * Simplified version of getStaticPropertySlot in case there are no functions, only "values".
+   * Using this instead of getStaticPropertySlot removes the need for a FuncImp class.
    */
   template <class ThisImp, class ParentImp>
-  inline Value lookupGetValue(ExecState *exec, const Identifier &propertyName,
-                           const HashTable* table, const ThisImp* thisObj)
+  inline bool getStaticValueSlot(ExecState *exec, const HashTable* table, 
+                                 ThisImp* thisObj, const Identifier &propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::get(exec, propertyName);
+      return thisObj->ParentImp::getOwnPropertySlot(exec, propertyName, slot);
 
-    if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupGetValue! propertyName was %s\n", propertyName.ascii() );
-    return thisObj->getValueProperty(exec, entry->value);
+    assert(!(entry->attr & Function));
+
+    slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
+    return true;
   }
 
   /**
@@ -230,7 +235,7 @@ namespace KJS {
    */
   template <class ThisImp, class ParentImp>
   inline void lookupPut(ExecState *exec, const Identifier &propertyName,
-                        const Value& value, int attr,
+                        ValueImp *value, int attr,
                         const HashTable* table, ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -248,8 +253,7 @@ namespace KJS {
     else
       thisObj->putValueProperty(exec, entry->value, value, attr);
   }
-
-
+  
   /**
    * This template method retrieves or create an object that is unique
    * (for a given interpreter) The first time this is called (for a given
@@ -258,19 +262,18 @@ namespace KJS {
    * that cached object. Note that the object constructor must take 1 argument, exec.
    */
   template <class ClassCtor>
-  inline KJS::Object cacheGlobalObject(ExecState *exec, const Identifier &propertyName)
+  inline ObjectImp *cacheGlobalObject(ExecState *exec, const Identifier &propertyName)
   {
-    ValueImp *obj = static_cast<KJS::ObjectImp*>(exec->interpreter()->globalObject().imp())->getDirect(propertyName);
-    if (obj)
-      return KJS::Object::dynamicCast(Value(obj));
-    else
-    {
-      KJS::Object newObject(new ClassCtor(exec));
-      exec->interpreter()->globalObject().put(exec, propertyName, newObject, Internal);
-      return newObject;
+    ObjectImp *globalObject = static_cast<ObjectImp *>(exec->lexicalInterpreter()->globalObject());
+    ValueImp *obj = globalObject->getDirect(propertyName);
+    if (obj) {
+      assert(obj->isObject());
+      return static_cast<ObjectImp *>(obj);
     }
+    ObjectImp *newObject = new ClassCtor(exec);
+    globalObject->put(exec, propertyName, newObject, Internal);
+    return newObject;
   }
-
 
   /**
    * Helpers to define prototype objects (each of which simply implements
@@ -289,82 +292,50 @@ namespace KJS {
    * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
    */
 #define DEFINE_PROTOTYPE(ClassName,ClassProto) \
-  namespace KJS { \
-  class ClassProto : public KJS::ObjectImp { \
-    friend KJS::Object cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
+  class ClassProto : public ObjectImp { \
+    friend ObjectImp *cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
   public: \
-    static KJS::Object self(KJS::ExecState *exec) \
+    static ObjectImp *self(ExecState *exec) \
     { \
-      return cacheGlobalObject<ClassProto>( exec, "[[" ClassName ".prototype]]" ); \
+      return cacheGlobalObject<ClassProto>(exec, "[[" ClassName ".prototype]]"); \
     } \
   protected: \
-    ClassProto( KJS::ExecState *exec ) \
-      : KJS::ObjectImp( exec->interpreter()->builtinObjectPrototype() ) {} \
+    ClassProto( ExecState *exec ) \
+      : ObjectImp( exec->lexicalInterpreter()->builtinObjectPrototype() ) {} \
     \
   public: \
-    virtual const KJS::ClassInfo *classInfo() const { return &info; } \
-    static const KJS::ClassInfo info; \
-    KJS::Value get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
-    bool hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
+    virtual const ClassInfo *classInfo() const { return &info; } \
+    static const ClassInfo info; \
+    bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&); \
   }; \
-  const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
-  }
+  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 };
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
-    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
+    bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
-      /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
-      return lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
-    } \
-    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
-    { /*stupid but we need this to have a common macro for the declaration*/ \
-      return KJS::ObjectImp::hasProperty(exec, propertyName); \
+      return getStaticFunctionSlot<ClassFunc,ObjectImp>(exec, &ClassProto##Table, this, propertyName, slot); \
     }
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
-    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
+    bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
-      /*fprintf( stderr, "%sProto::get(%s) [in macro]\n", info.className, propertyName.ascii());*/ \
-      KJS::Value val = lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
-      if ( val.type() != UndefinedType ) return val; \
-      /* Not found -> forward request to "parent" prototype */ \
-      return ParentProto::self(exec).get( exec, propertyName ); \
-    } \
-    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
-    { \
-      if (KJS::ObjectImp::hasProperty(exec, propertyName)) \
-        return true; \
-      return ParentProto::self(exec).hasProperty(exec, propertyName); \
+      if (getStaticFunctionSlot<ClassFunc,ObjectImp>(exec, &ClassProto##Table, this, propertyName, slot)) \
+          return true; \
+      return ParentProto::self(exec)->getOwnPropertySlot(exec, propertyName, slot); \
     }
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \
-  namespace KJS { \
-  class ClassFunc : public ObjectImp { \
+  class ClassFunc : public DOMFunction { \
   public: \
-    ClassFunc(KJS::ExecState *exec, int i, int len) \
-       : ObjectImp( /*proto? */ ), id(i) { \
-       KJS::Value protect(this); \
-       put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
+    ClassFunc(ExecState *exec, int i, int len) : id(i) \
+    { \
+       put(exec, lengthPropertyName, Number(len), DontDelete|ReadOnly|DontEnum); \
     } \
-    virtual bool implementsCall() const { return true; } \
-    /** You need to implement that one */ \
-    virtual KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args); \
+    /* Macro user needs to implement the callAsFunction function. */ \
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args); \
   private: \
     int id; \
-  }; \
-  }
-
-  // To be used in all call() implementations, before casting the type of thisObj
-#define KJS_CHECK_THIS( ClassName, theObj ) \
-  if (!theObj.isValid() || !theObj.inherits(&ClassName::info)) { \
-    KJS::UString errMsg = "Attempt at calling a function that expects a "; \
-    errMsg += ClassName::info.className; \
-    errMsg += " on a "; \
-    errMsg += thisObj.className(); \
-    KJS::Object err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
-    exec->setException(err); \
-    return err; \
-  }
+  };
 
   /*
    * List of things to do when porting an objectimp to the 'static hashtable' mechanism:

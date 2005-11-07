@@ -30,7 +30,7 @@ libkjs_la_SOURCES =  ustring.cpp date_object.cpp collector.cpp nodes.cpp \
 		     debugger.cpp value.cpp list.cpp object.cpp \
 		     interpreter.cpp property_map.cpp nodes2string.cpp \
 		     identifier.cpp reference.cpp reference_list.cpp \
-		     scope_chain.cpp dtoa.cpp
+		     scope_chain.cpp dtoa.cpp protected_values.cpp fpconst.cpp
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = value.h types.h object.h interpreter.h operations.h \
@@ -50,7 +50,8 @@ endif
 
 libkjs_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(VSCRIPT) \
           $(USER_LDFLAGS) $(all_libraries)
-libkjs_la_LIBADD = -lm $(LIBPCRE)
+# FIXME: remove dependencies and cleanup once we have our own unicode support
+libkjs_la_LIBADD = -lm $(LIBPCRE) ../kxmlcore/libkxmlcore.la -lpthread -licuuc
 
 EXTRA_DIST = grammar.y
 
@@ -62,7 +63,7 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
-LUT_FILES = math_object.lut.h lexer.lut.h array_object.lut.h date_object.lut.h string_object.lut.h number_object.lut.h
+LUT_FILES = math_object.lut.h lexer.lut.h array_object.lut.h date_object.lut.h string_object.lut.h number_object.lut.h regexp_object.lut.h
 
 CREATE_HASH_TABLE = $(srcdir)/create_hash_table
 
@@ -87,6 +88,9 @@ number_object.lo: number_object.lut.h
 string_object.lut.h : $(srcdir)/string_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/string_object.cpp -i > $@
 string_object.lo: string_object.lut.h
+regexp_object.lut.h : $(srcdir)/regexp_object.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/regexp_object.cpp -i > $@
+regexp_object.lo: regexp_object.lut.h
 
 CLEANFILES = $(LUT_FILES)
 
@@ -97,7 +101,7 @@ testkjs_static_LDADD = $(LIBPCRE) libkjs.la
 testkjs_static_LDFLAGS = -static
 
 ## test program (linked to libkjs)
-noinst_PROGRAMS = testkjs
+check_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp
 testkjs_LDADD = libkjs.la
 

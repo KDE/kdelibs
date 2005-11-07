@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -24,41 +24,143 @@
 #ifndef _KJS_FUNCTION_H_
 #define _KJS_FUNCTION_H_
 
-#include "object.h"
+#include "internal.h"
+#include "array_instance.h"
 
 namespace KJS {
 
-  class FunctionPrototypeImp;
+  class Parameter;
+  class ActivationImp;
 
   /**
-   * Base class for all function objects.
-   * It implements the hasInstance method (for instanceof, which only applies to function objects)
-   * and allows to give the function a name, used in toString().
-   *
-   * Constructors and prototypes of internal objects (implemented in C++) directly inherit from this.
-   * FunctionImp also does, for functions implemented in JS.
+   * @short Implementation class for internal Functions.
    */
-  class KJS_EXPORT InternalFunctionImp : public ObjectImp {
+  class FunctionImp : public InternalFunctionImp {
+    friend class ActivationImp;
   public:
-    /**
-     * Constructor. For C++-implemented functions, @p funcProto is usually
-     * static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-     */
-    InternalFunctionImp(FunctionPrototypeImp *funcProto);
-    InternalFunctionImp(ExecState *exec);
+    FunctionImp(ExecState *exec, const Identifier &n = Identifier::null());
+    virtual ~FunctionImp();
 
-    bool implementsHasInstance() const;
-    Boolean hasInstance(ExecState *exec, const Value &value);
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
+    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+
+    virtual bool implementsCall() const;
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+
+    void addParameter(const Identifier &n);
+    Identifier getParameterName(int index);
+    // parameters in string representation, e.g. (a, b, c)
+    UString parameterString() const;
+    virtual CodeType codeType() const = 0;
+
+    virtual Completion execute(ExecState *exec) = 0;
+    Identifier name() const { return ident; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    Identifier name() const { return ident; }
-    /// You might want to use the helper function ObjectImp::setFunctionName for this
-    void setName(Identifier _ident) { ident = _ident; }
-
   protected:
+    Parameter *param;
     Identifier ident;
+
+  private:
+    static ValueImp *argumentsGetter(ExecState *, const Identifier &, const PropertySlot&);
+    static ValueImp *lengthGetter(ExecState *, const Identifier &, const PropertySlot&);
+
+    void processParameters(ExecState *exec, const List &);
+    virtual void processVarDecls(ExecState *exec);
   };
+
+  class DeclaredFunctionImp : public FunctionImp {
+  public:
+    DeclaredFunctionImp(ExecState *exec, const Identifier &n,
+			FunctionBodyNode *b, const ScopeChain &sc);
+
+    bool implementsConstruct() const;
+    ObjectImp *construct(ExecState *exec, const List &args);
+
+    virtual Completion execute(ExecState *exec);
+    CodeType codeType() const { return FunctionCode; }
+    SharedPtr<FunctionBodyNode> body;
+
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+  private:
+    virtual void processVarDecls(ExecState *exec);
+  };
+
+  class IndexToNameMap {
+  public:
+    IndexToNameMap(FunctionImp *func, const List &args);
+    ~IndexToNameMap();
+    
+    Identifier& operator[](int index);
+    Identifier& operator[](const Identifier &indexIdentifier);
+    bool isMapped(const Identifier &index) const;
+    void IndexToNameMap::unMap(const Identifier &index);
+    
+  private:
+    IndexToNameMap(); // prevent construction w/o parameters
+    int size;
+    Identifier * _map;
+  };
+  
+  class ArgumentsImp : public ObjectImp {
+  public:
+    ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act);
+    virtual void mark();
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
+    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+  private:
+    static ValueImp *mappedIndexGetter(ExecState *exec, const Identifier &, const PropertySlot& slot);
+
+    ActivationImp *_activationObject; 
+    mutable IndexToNameMap indexToNameMap;
+  };
+
+  class ActivationImp : public ObjectImp {
+  public:
+    ActivationImp(FunctionImp *function, const List &arguments);
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
+    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+    
+    virtual void mark();
+
+    bool isActivation() { return true; }
+  private:
+    static PropertySlot::GetValueFunc getArgumentsGetter();
+    static ValueImp *argumentsGetter(ExecState *exec, const Identifier &, const PropertySlot& slot);
+    void createArgumentsObject(ExecState *exec) const;
+    
+    FunctionImp *_function;
+    List _arguments;
+    mutable ArgumentsImp *_argumentsObject;
+  };
+
+  class GlobalFuncImp : public InternalFunctionImp {
+  public:
+    GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len);
+    virtual bool implementsCall() const;
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+    virtual CodeType codeType() const;
+    enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape,
+           DecodeURI, DecodeURIComponent, EncodeURI, EncodeURIComponent
+#ifndef NDEBUG
+	   , KJSPrint
+#endif
+};
+  private:
+    int id;
+  };
+
+
 
 } // namespace
 

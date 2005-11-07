@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -30,7 +30,7 @@ namespace KJS {
     struct ListImpBase {
         int size;
         int refCount;
-	int valueRefCount;
+	int valueRefCount; // FIXME: Get rid of this.
     };
     
     class ListIterator;
@@ -45,7 +45,7 @@ namespace KJS {
      * The list is explicitly shared. Note that while copyTail() returns a
      * copy of the list the referenced objects are still shared.
      */
-    class KJS_EXPORT List {
+    class List {
     public:
         List();
 	List(bool needsMarking);
@@ -53,7 +53,6 @@ namespace KJS {
 
         List(const List &b) : _impBase(b._impBase), _needsMarking(false) {
 	    ++_impBase->refCount; 
-	    if (!_impBase->valueRefCount) refValues(); 
 	    ++_impBase->valueRefCount; 
 	}
         List &operator=(const List &);
@@ -63,7 +62,6 @@ namespace KJS {
          *
          * @param val Pointer to object.
          */
-        void append(const Value& val) { append(val.imp()); }
         void append(ValueImp *val);
         /**
          * Remove all elements from the list.
@@ -105,13 +103,11 @@ namespace KJS {
          * @return Return the element at position i. KJS::Undefined if the
          * index is out of range.
          */
-        Value at(int i) const { return Value(impAt(i)); }
+        ValueImp *at(int i) const;
         /**
          * Equivalent to at.
          */
-        Value operator[](int i) const { return Value(impAt(i)); }
-        
-        ValueImp *impAt(int i) const;
+        ValueImp *operator[](int i) const { return at(i); }
     
         /**
          * Returns a pointer to a static instance of an empty list. Useful if a
@@ -120,15 +116,15 @@ namespace KJS {
         static const List &empty();
         
 	void mark() { if (_impBase->valueRefCount == 0) markValues(); }
+
+        static void markProtectedLists();
     private:
         ListImpBase *_impBase;
 	bool _needsMarking;
         
-        void deref() { if (!_needsMarking && --_impBase->valueRefCount == 0) derefValues(); if (--_impBase->refCount == 0) release(); }
+        void deref() { if (!_needsMarking) --_impBase->valueRefCount; if (--_impBase->refCount == 0) release(); }
 
         void release();
-        void refValues();
-        void derefValues();
         void markValues();
     };
   
@@ -147,25 +143,25 @@ namespace KJS {
          * Dereference the iterator.
          * @return A pointer to the element the iterator operates on.
          */
-        ValueImp *operator->() const { return _list->impAt(_i); }
-        Value operator*() const { return Value(_list->impAt(_i)); }
+        ValueImp *operator->() const { return _list->at(_i); }
+        ValueImp *operator*() const { return _list->at(_i); }
         /**
          * Prefix increment operator.
          * @return The element after the increment.
          */
-        Value operator++() { return Value(_list->impAt(++_i)); }
+        ValueImp *operator++() { return _list->at(++_i); }
         /**
          * Postfix increment operator.
          */
-        Value operator++(int) { return Value(_list->impAt(_i++)); }
+        ValueImp *operator++(int) { return _list->at(_i++); }
         /**
          * Prefix decrement operator.
          */
-        Value operator--() { return Value(_list->impAt(--_i)); }
+        ValueImp *operator--() { return _list->at(--_i); }
         /**
          * Postfix decrement operator.
          */
-        Value operator--(int) { return Value(_list->impAt(_i--)); }
+        ValueImp *operator--(int) { return _list->at(_i--); }
         /**
          * Compare the iterator with another one.
          * @return True if the two iterators operate on the same list element.
@@ -186,22 +182,6 @@ namespace KJS {
     inline ListIterator List::begin() const { return ListIterator(*this); }
     inline ListIterator List::end() const { return ListIterator(*this, size()); }
  
-    inline List &List::operator=(const List &b)
-    {
-        ListImpBase *bImpBase = b._impBase;
-        ++bImpBase->refCount;
-        deref();
-        _impBase = bImpBase;
-	if (!_needsMarking) {
-	    if (!_impBase->valueRefCount) {
-		refValues();
-	    }
-	    _impBase->valueRefCount++;
-	}
-
-        return *this;
-    }
-
- } // namespace KJS
+} // namespace KJS
 
 #endif // KJS_LIST_H

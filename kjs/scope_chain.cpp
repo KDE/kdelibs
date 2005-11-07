@@ -14,16 +14,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+#include "config.h"
 #include "scope_chain.h"
 
 #include "object.h"
-
-#include <assert.h>
 
 namespace KJS {
 
@@ -47,6 +46,16 @@ void ScopeChain::push(ObjectImp *o)
 {
     assert(o);
     _node = new ScopeChainNode(_node, o);
+}
+
+void ScopeChain::push(const ScopeChain &c)
+{
+    ScopeChainNode **tail = &_node;
+    for (ScopeChainNode *n = c._node; n; n = n->next) {
+        ScopeChainNode *newNode = new ScopeChainNode(*tail, n->object);
+        *tail = newNode;
+        tail = &newNode->next;
+    }
 }
 
 void ScopeChain::pop()
@@ -84,6 +93,21 @@ void ScopeChain::mark()
         if (!o->marked())
             o->mark();
     }
+}
+
+ObjectImp *ScopeChain::bottom() const
+{
+    ScopeChainNode *last = 0;
+    for (ScopeChainNode *n = _node; n; n = n->next) {
+	if (!n->next) {
+	    last = n;
+	}
+    }
+    if (!last) {
+	return 0;
+    }
+
+    return last->object;
 }
 
 } // namespace KJS

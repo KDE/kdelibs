@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2004 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -27,7 +27,7 @@
 
 namespace KJS {
 
-    class Object;
+    class ObjectImp;
     class ReferenceList;
     class ValueImp;
     
@@ -61,12 +61,13 @@ namespace KJS {
         UString::Rep *key;
         ValueImp *value;
         int attributes;
+        int index;
     };
 /**
 * Javascript Property Map.
 */
 
-    class KJS_EXPORT PropertyMap {
+    class PropertyMap {
     public:
         PropertyMap();
         ~PropertyMap();
@@ -77,20 +78,22 @@ namespace KJS {
         void remove(const Identifier &name);
         ValueImp *get(const Identifier &name) const;
         ValueImp *get(const Identifier &name, int &attributes) const;
+        ValueImp **getLocation(const Identifier &name);
 
         void mark() const;
-        void addEnumerablesToReferenceList(ReferenceList &, const Object &) const;
-	void addSparseArrayPropertiesToReferenceList(ReferenceList &, const Object &) const;
+        void addEnumerablesToReferenceList(ReferenceList &, ObjectImp *) const;
+	void addSparseArrayPropertiesToReferenceList(ReferenceList &, ObjectImp *) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);
 
     private:
-        int hash(const UString::Rep *) const;
         static bool keysMatch(const UString::Rep *, const UString::Rep *);
         void expand();
+        void rehash();
+        void rehash(int newTableSize);
         
-        void insert(UString::Rep *, ValueImp *value, int attributes);
+        void insert(UString::Rep *, ValueImp *value, int attributes, int index);
         
         void checkConsistency();
         
@@ -101,6 +104,10 @@ namespace KJS {
         
         Entry _singleEntry;
     };
+
+inline PropertyMap::PropertyMap() : _table(NULL)
+{
+}
 
 } // namespace
 

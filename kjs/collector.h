@@ -17,25 +17,23 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
+#include "value.h"
+
 #define KJS_MEM_LIMIT 500000
-
-#include "global.h"
-
-#include <stdio.h> // for size_t
 
 namespace KJS {
 
   /**
    * @short Garbage collector.
    */
-  class KJS_EXPORT Collector {
+  class Collector {
     // disallow direct construction/destruction
     Collector();
   public:
@@ -55,7 +53,7 @@ namespace KJS {
      * on each object and freeing the used memory.
      */
     static bool collect();
-    static int size();
+    static size_t size();
     static bool outOfMemory() { return memoryFull; }
 
 #ifdef KJS_DEBUG_MEM
@@ -65,10 +63,27 @@ namespace KJS {
     static void finalCheck();
 #endif
 
+    static size_t numInterpreters();
+    static size_t numGCNotAllowedObjects();
+    static size_t numReferencedObjects();
+#if APPLE_CHANGES
+    static const void *rootObjectClasses(); // actually returns CFSetRef
+#endif
+
+    class Thread;
+    static void registerThread();
+
   private:
+
+    static void markProtectedObjects();
+    static void markCurrentThreadConservatively();
+    static void markOtherThreadConservatively(Thread *thread);
+    static void markStackObjectsConservatively();
+    static void markStackObjectsConservatively(void *start, void *end);
+
     static bool memoryFull;
   };
 
-}
+};
 
 #endif /* _KJSCOLLECTOR_H_ */

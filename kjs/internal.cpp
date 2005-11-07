@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
@@ -17,11 +16,12 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
@@ -45,33 +45,37 @@
 #include "regexp_object.h"
 #include "string_object.h"
 
-#define I18N_NOOP(s) s
+#include <kxmlcore/HashMap.h>
+
+#if WIN32
+#include <float.h>
+#define copysign(a, b) _copysign(a, b)
+#endif
 
 extern int kjsyyparse();
 
-using namespace KJS;
-
 namespace KJS {
-  /* work around some strict alignment requirements
-     for double variables on some architectures (e.g. PA-RISC) */
-  typedef union { unsigned char b[8]; double d; } kjs_double_t;
 
+#if !APPLE_CHANGES
+ 
 #ifdef WORDS_BIGENDIAN
-  static const kjs_double_t NaN_Bytes = { { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 } };
-  static const kjs_double_t Inf_Bytes = { { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 } };
+  const unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
+  const unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
 #elif defined(arm)
-  static const kjs_double_t NaN_Bytes = { { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 } };
-  static const kjs_double_t Inf_Bytes = { { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 } };
+  const unsigned char NaN_Bytes[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
+  const unsigned char Inf_Bytes[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
 #else
-  static const kjs_double_t NaN_Bytes = { { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f } };
-  static const kjs_double_t Inf_Bytes = { { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f } };
+  const unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+  const unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
 #endif
+ 
+  const double NaN = *(const double*) NaN_Bytes;
+  const double Inf = *(const double*) Inf_Bytes;
+ 
+#endif // APPLE_CHANGES
 
-  const double NaN = NaN_Bytes.d;
-  const double Inf = Inf_Bytes.d;
-}
+#if defined(KJS_MULTIPLE_THREADS) && KJS_MULTIPLE_THREADS
 
-#ifdef KJS_THREADSUPPORT
 static pthread_once_t interpreterLockOnce = PTHREAD_ONCE_INIT;
 static pthread_mutex_t interpreterLock;
 static int interpreterLockCount = 0;
@@ -85,177 +89,148 @@ static void initializeInterpreterLock()
 
   pthread_mutex_init(&interpreterLock, &attr);
 }
-#endif
 
 static inline void lockInterpreter()
 {
-#ifdef KJS_THREADSUPPORT
   pthread_once(&interpreterLockOnce, initializeInterpreterLock);
   pthread_mutex_lock(&interpreterLock);
   interpreterLockCount++;
-#endif
+  Collector::registerThread();
 }
 
 static inline void unlockInterpreter()
 {
-#ifdef KJS_THREADSUPPORT
   interpreterLockCount--;
   pthread_mutex_unlock(&interpreterLock);
-#endif
 }
 
+#else
 
+static inline void initializeInterpreterLock() { }
+static inline void lockInterpreter() { }
+static inline void unlockInterpreter() { }
+
+const int interpreterLockCount = 1;
+
+#endif
 
 // ------------------------------ UndefinedImp ---------------------------------
 
-UndefinedImp *UndefinedImp::staticUndefined = 0;
-
-Value UndefinedImp::toPrimitive(ExecState* /*exec*/, Type) const
+ValueImp *UndefinedImp::toPrimitive(ExecState *, Type) const
 {
-  return Value((ValueImp*)this);
+  return const_cast<UndefinedImp *>(this);
 }
 
-bool UndefinedImp::toBoolean(ExecState* /*exec*/) const
+bool UndefinedImp::toBoolean(ExecState *) const
 {
   return false;
 }
 
-double UndefinedImp::toNumber(ExecState* /*exec*/) const
+double UndefinedImp::toNumber(ExecState *) const
 {
   return NaN;
 }
 
-UString UndefinedImp::toString(ExecState* /*exec*/) const
+UString UndefinedImp::toString(ExecState *) const
 {
   return "undefined";
 }
 
-Object UndefinedImp::toObject(ExecState *exec) const
+ObjectImp *UndefinedImp::toObject(ExecState *exec) const
 {
-  Object err = Error::create(exec, TypeError, I18N_NOOP("Undefined value"));
-  exec->setException(err);
-  return err;
+  return throwError(exec, TypeError, "Undefined value");
 }
 
 // ------------------------------ NullImp --------------------------------------
 
-NullImp *NullImp::staticNull = 0;
-
-Value NullImp::toPrimitive(ExecState* /*exec*/, Type) const
+ValueImp *NullImp::toPrimitive(ExecState *, Type) const
 {
-  return Value((ValueImp*)this);
+  return const_cast<NullImp *>(this);
 }
 
-bool NullImp::toBoolean(ExecState* /*exec*/) const
+bool NullImp::toBoolean(ExecState *) const
 {
   return false;
 }
 
-double NullImp::toNumber(ExecState* /*exec*/) const
+double NullImp::toNumber(ExecState *) const
 {
   return 0.0;
 }
 
-UString NullImp::toString(ExecState* /*exec*/) const
+UString NullImp::toString(ExecState *) const
 {
   return "null";
 }
 
-Object NullImp::toObject(ExecState *exec) const
+ObjectImp *NullImp::toObject(ExecState *exec) const
 {
-  Object err = Error::create(exec, TypeError, I18N_NOOP("Null value"));
-  exec->setException(err);
-  return err;
+  return throwError(exec, TypeError, "Null value");
 }
 
 // ------------------------------ BooleanImp -----------------------------------
 
-BooleanImp* BooleanImp::staticTrue = 0;
-BooleanImp* BooleanImp::staticFalse = 0;
-
-Value BooleanImp::toPrimitive(ExecState* /*exec*/, Type) const
+ValueImp *BooleanImp::toPrimitive(ExecState *, Type) const
 {
-  return Value((ValueImp*)this);
+  return const_cast<BooleanImp *>(this);
 }
 
-bool BooleanImp::toBoolean(ExecState* /*exec*/) const
+bool BooleanImp::toBoolean(ExecState *) const
 {
   return val;
 }
 
-double BooleanImp::toNumber(ExecState* /*exec*/) const
+double BooleanImp::toNumber(ExecState *) const
 {
   return val ? 1.0 : 0.0;
 }
 
-UString BooleanImp::toString(ExecState* /*exec*/) const
+UString BooleanImp::toString(ExecState *) const
 {
   return val ? "true" : "false";
 }
 
-Object BooleanImp::toObject(ExecState *exec) const
+ObjectImp *BooleanImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<BooleanImp*>(this));
-  return Object::dynamicCast(exec->lexicalInterpreter()->builtinBoolean().construct(exec,args));
+  return static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinBoolean()->construct(exec,args));
 }
 
 // ------------------------------ StringImp ------------------------------------
 
-Value StringImp::toPrimitive(ExecState* /*exec*/, Type) const
+ValueImp *StringImp::toPrimitive(ExecState *, Type) const
 {
-  return Value((ValueImp*)this);
+  return const_cast<StringImp *>(this);
 }
 
-bool StringImp::toBoolean(ExecState* /*exec*/) const
+bool StringImp::toBoolean(ExecState *) const
 {
   return (val.size() > 0);
 }
 
-double StringImp::toNumber(ExecState* /*exec*/) const
+double StringImp::toNumber(ExecState *) const
 {
   return val.toDouble();
 }
 
-UString StringImp::toString(ExecState* /*exec*/) const
+UString StringImp::toString(ExecState *) const
 {
   return val;
 }
 
-Object StringImp::toObject(ExecState *exec) const
+ObjectImp *StringImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<StringImp*>(this));
-  return Object(static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinString().construct(exec, args).imp()));
+  return static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinString()->construct(exec, args));
 }
 
 // ------------------------------ NumberImp ------------------------------------
 
-NumberImp *NumberImp::staticNaN;
-
-ValueImp *NumberImp::create(int i)
+ValueImp *NumberImp::toPrimitive(ExecState *, Type) const
 {
-    if (SimpleNumber::fits(i))
-        return SimpleNumber::make(i);
-    NumberImp *imp = new NumberImp(static_cast<double>(i));
-    imp->setGcAllowedFast();
-    return imp;
-}
-
-ValueImp *NumberImp::create(double d)
-{
-    if (SimpleNumber::fits(d))
-        return SimpleNumber::make((int)d);
-    if (isNaN(d))
-        return staticNaN;
-    NumberImp *imp = new NumberImp(d);
-    imp->setGcAllowedFast();
-    return imp;
-}
-
-Value NumberImp::toPrimitive(ExecState *, Type) const
-{
-  return Number((NumberImp*)this);
+  return const_cast<NumberImp *>(this);
 }
 
 bool NumberImp::toBoolean(ExecState *) const
@@ -275,52 +250,24 @@ UString NumberImp::toString(ExecState *) const
   return UString::from(val);
 }
 
-Object NumberImp::toObject(ExecState *exec) const
+ObjectImp *NumberImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<NumberImp*>(this));
-  return Object::dynamicCast(exec->lexicalInterpreter()->builtinNumber().construct(exec,args));
+  return static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinNumber()->construct(exec,args));
 }
 
-bool NumberImp::toUInt32(unsigned& uint32) const
+bool NumberImp::getUInt32(uint32_t& uint32) const
 {
-  uint32 = (unsigned)val;
+  uint32 = (uint32_t)val;
   return (double)uint32 == val;
 }
 
-double SimpleNumber::negZero = -0.0;
-
 // ------------------------------ LabelStack -----------------------------------
-
-LabelStack::LabelStack(const LabelStack &other)
-{
-  tos = 0;
-  *this = other;
-}
-
-LabelStack &LabelStack::operator=(const LabelStack &other)
-{
-  clear();
-  tos = 0;
-  StackElem *cur = 0;
-  StackElem *se = other.tos;
-  while (se) {
-    StackElem *newPrev = new StackElem;
-    newPrev->prev = 0;
-    newPrev->id = se->id;
-    if (cur)
-      cur->prev = newPrev;
-    else
-      tos = newPrev;
-    cur = newPrev;
-    se = se->prev;
-  }
-  return *this;
-}
 
 bool LabelStack::push(const Identifier &id)
 {
-  if (id.isEmpty() || contains(id))
+  if (contains(id))
     return false;
 
   StackElem *newtos = new StackElem;
@@ -342,58 +289,22 @@ bool LabelStack::contains(const Identifier &id) const
   return false;
 }
 
-void LabelStack::pop()
-{
-  if (tos) {
-    StackElem *prev = tos->prev;
-    delete tos;
-    tos = prev;
-  }
-}
-
-LabelStack::~LabelStack()
-{
-  clear();
-}
-
-void LabelStack::clear()
-{
-  StackElem *prev;
-
-  while (tos) {
-    prev = tos->prev;
-    delete tos;
-    tos = prev;
-  }
-}
-
 // ------------------------------ ContextImp -----------------------------------
 
-
 // ECMA 10.2
-ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV, int _sourceId, CodeType type,
+ContextImp::ContextImp(ObjectImp *glob, InterpreterImp *interpreter, ObjectImp *thisV, CodeType type,
                        ContextImp *callingCon, FunctionImp *func, const List *args)
-  : _interpreter(interpreter), _function(func), _arguments(args)
+    : _interpreter(interpreter), _function(func), _arguments(args)
 {
   m_codeType = type;
   _callingContext = callingCon;
-  tryCatch = 0;
-
-  sourceId = _sourceId;
-  line0 = 1;
-  line1 = 1;
-
-  if (func && func->inherits(&DeclaredFunctionImp::info))
-    functionName = static_cast<DeclaredFunctionImp*>(func)->name();
-  else
-    functionName = Identifier::null();
 
   // create and initialize activation object (ECMA 10.1.6)
-  if (type == FunctionCode) {
-    activation = Object(new ActivationImp(func,*args));
+  if (type == FunctionCode || type == AnonymousCode ) {
+    activation = new ActivationImp(func, *args);
     variable = activation;
   } else {
-    activation = Object();
+    activation = NULL;
     variable = glob;
   }
 
@@ -402,27 +313,25 @@ ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV,
     case EvalCode:
       if (_callingContext) {
 	scope = _callingContext->scopeChain();
-#ifndef KJS_PURE_ECMA
-	if (thisV.imp() != glob.imp())
-	  scope.push(thisV.imp()); // for deprecated Object.prototype.eval()
-#endif
 	variable = _callingContext->variableObject();
 	thisVal = _callingContext->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
       scope.clear();
-      scope.push(glob.imp());
-#ifndef KJS_PURE_ECMA
-      if (thisV.isValid())
-          thisVal = thisV;
-      else
-#endif
-          thisVal = glob;
+      scope.push(glob);
+      thisVal = static_cast<ObjectImp*>(glob);
       break;
     case FunctionCode:
-      scope = func->scope();
-      scope.push(activation.imp());
+    case AnonymousCode:
+      if (type == FunctionCode) {
+	scope = func->scope();
+	scope.push(activation);
+      } else {
+	scope.clear();
+	scope.push(glob);
+	scope.push(activation);
+      }
       variable = activation; // TODO: DontDelete ? (ECMA 10.2.3)
       thisVal = thisV;
       break;
@@ -443,79 +352,82 @@ void ContextImp::mark()
   }
 }
 
-bool ContextImp::inTryCatch() const
-{
-  const ContextImp *c = this;
-  while (c && !c->tryCatch)
-    c = c->_callingContext;
-  return (c && c->tryCatch);
-}
-
-// ---------------------------- SourceCode -------------------------------------
-
-void SourceCode::cleanup()
-{
-  if (interpreter && interpreter->debugger())
-    interpreter->debugger()->sourceUnused(interpreter->globalExec(),sid);
-  if (interpreter)
-    interpreter->removeSourceCode(this);
-  delete this;
-}
-
 // ------------------------------ Parser ---------------------------------------
 
-FunctionBodyNode *Parser::progNode = 0;
+static SharedPtr<ProgramNode> *progNode;
 int Parser::sid = 0;
-SourceCode *Parser::source = 0;
 
-FunctionBodyNode *Parser::parse(const UChar *code, unsigned int length, SourceCode **src,
-				int *errLine, UString *errMsg)
+const int initialCapacity = 64;
+const int growthFactor = 2;
+
+static int numNewNodes;
+static int newNodesCapacity;
+static Node **newNodes;
+
+void Parser::saveNewNode(Node *node)
+{
+  if (numNewNodes == newNodesCapacity) {
+    newNodesCapacity = (newNodesCapacity == 0) ? initialCapacity : newNodesCapacity * growthFactor;
+    newNodes = (Node **)fastRealloc(newNodes, sizeof(Node *) * newNodesCapacity);
+  }
+
+  newNodes[numNewNodes++] = node;
+}
+
+static void clearNewNodes()
+{
+  for (int i = 0; i < numNewNodes; i++) {
+    if (newNodes[i]->refcount() == 0)
+      delete newNodes[i];
+  }
+  fastFree(newNodes);
+  newNodes = 0;
+  numNewNodes = 0;
+  newNodesCapacity = 0;
+}
+
+SharedPtr<ProgramNode> Parser::parse(const UString &sourceURL, int startingLineNumber,
+                                     const UChar *code, unsigned int length, int *sourceId,
+                                     int *errLine, UString *errMsg)
 {
   if (errLine)
     *errLine = -1;
   if (errMsg)
     *errMsg = 0;
+  if (!progNode)
+    progNode = new SharedPtr<ProgramNode>;
 
-  Lexer::curr()->setCode(code, length);
-  progNode = 0;
+  Lexer::curr()->setCode(sourceURL, startingLineNumber, code, length);
+  *progNode = 0;
   sid++;
-
-  source = new SourceCode(sid);
-  source->ref();
-  *src = source;
-
+  if (sourceId)
+    *sourceId = sid;
   // Enable this (and the #define YYDEBUG in grammar.y) to debug a parse error
   //extern int kjsyydebug;
   //kjsyydebug=1;
   int parseError = kjsyyparse();
-  if (Lexer::curr()->hadError())
-    parseError = 1;
+  bool lexError = Lexer::curr()->sawError();
   Lexer::curr()->doneParsing();
-  FunctionBodyNode *prog = progNode;
-  progNode = 0;
-  //sid = -1;
-  source = 0;
+  SharedPtr<ProgramNode> prog = *progNode;
+  *progNode = 0;
 
-  if (parseError) {
+  clearNewNodes();
+
+  if (parseError || lexError) {
     int eline = Lexer::curr()->lineNo();
     if (errLine)
       *errLine = eline;
     if (errMsg)
-      *errMsg = "Parse error at line " + UString::from(eline);
-#ifdef KJS_VERBOSE
-    fprintf( stderr, "%s\n", UString(code,length).ascii() );
-#endif
-#ifndef NDEBUG
-    fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", eline);
-#endif
-    delete prog;
-    return 0;
+      *errMsg = "Parse error";
+    return SharedPtr<ProgramNode>();
   }
-#ifdef KJS_VERBOSE
-  fprintf( stderr, "%s\n", prog->toCode().ascii() );
-#endif
 
   return prog;
+}
+
+void Parser::accept(ProgramNode *prog)
+{
+  *progNode = prog;
 }
 
 // ------------------------------ InterpreterImp -------------------------------
@@ -524,51 +436,31 @@ InterpreterImp* InterpreterImp::s_hook = 0L;
 
 void InterpreterImp::globalInit()
 {
-  //fprintf( stderr, "InterpreterImp::globalInit()\n" );
-  UndefinedImp::staticUndefined = new UndefinedImp();
-  UndefinedImp::staticUndefined->ref();
-  NullImp::staticNull = new NullImp();
-  NullImp::staticNull->ref();
-  BooleanImp::staticTrue = new BooleanImp(true);
-  BooleanImp::staticTrue->ref();
-  BooleanImp::staticFalse = new BooleanImp(false);
-  BooleanImp::staticFalse->ref();
-  NumberImp::staticNaN = new NumberImp(NaN);
-  NumberImp::staticNaN->ref();
+    ConstantValues::init();
 }
 
 void InterpreterImp::globalClear()
 {
-  //fprintf( stderr, "InterpreterImp::globalClear()\n" );
-  UndefinedImp::staticUndefined->deref();
-  UndefinedImp::staticUndefined->setGcAllowed();
-  UndefinedImp::staticUndefined = 0L;
-  NullImp::staticNull->deref();
-  NullImp::staticNull->setGcAllowed();
-  NullImp::staticNull = 0L;
-  BooleanImp::staticTrue->deref();
-  BooleanImp::staticTrue->setGcAllowed();
-  BooleanImp::staticTrue = 0L;
-  BooleanImp::staticFalse->deref();
-  BooleanImp::staticFalse->setGcAllowed();
-  BooleanImp::staticFalse = 0L;
-  NumberImp::staticNaN->deref();
-  NumberImp::staticNaN->setGcAllowed();
-  NumberImp::staticNaN = 0;
+    ConstantValues::clear();
 }
 
-InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
-  : m_interpreter(interp),
-    global(glob),
-    dbg(0),
-    m_compatMode(Interpreter::NativeMode),
-    _context(0),
-    recursion(0),
-    sources(0)
+typedef HashMap<ObjectImp *, InterpreterImp *, PointerHash<ObjectImp *> > InterpreterMap;
+
+static inline InterpreterMap &interpreterMap()
+{
+    static InterpreterMap *map = new InterpreterMap;
+    return *map;
+}
+
+InterpreterImp::InterpreterImp(Interpreter *interp, ObjectImp *glob)
+    : globExec(interp, 0)
+    , _context(0)
 {
   // add this interpreter to the global chain
   // as a root set for garbage collection
-  lockInterpreter();
+  InterpreterLock lock;
+
+  m_interpreter = interp;
   if (s_hook) {
     prev = s_hook;
     next = s_hook->next;
@@ -579,12 +471,17 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     s_hook = next = prev = this;
     globalInit();
   }
-  unlockInterpreter();
 
-  globExec = new ExecState(m_interpreter,0);
+  interpreterMap().set(glob, this);
+
+  global = glob;
+  dbg = 0;
+  m_compatMode = Interpreter::NativeMode;
 
   // initialize properties of the global object
   initGlobalObject();
+
+  recursion = 0;
 }
 
 void InterpreterImp::lock()
@@ -592,161 +489,139 @@ void InterpreterImp::lock()
   lockInterpreter();
 }
 
+int InterpreterImp::lockCount()
+{
+  return interpreterLockCount;
+}
+
 void InterpreterImp::unlock()
 {
   unlockInterpreter();
 }
 
-void InterpreterImp::initGlobalObject()
+ void InterpreterImp::initGlobalObject()
 {
+  Identifier::init();
+  
   // Contructor prototype objects (Object.prototype, Array.prototype etc)
 
-  FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(globExec);
-  b_FunctionPrototype = Object(funcProto);
-  ObjectPrototypeImp *objProto = new ObjectPrototypeImp(globExec,funcProto);
-  b_ObjectPrototype = Object(objProto);
+  FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(&globExec);
+  b_FunctionPrototype = funcProto;
+  ObjectPrototypeImp *objProto = new ObjectPrototypeImp(&globExec, funcProto);
+  b_ObjectPrototype = objProto;
   funcProto->setPrototype(b_ObjectPrototype);
 
-  ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto);
-  b_ArrayPrototype = Object(arrayProto);
-  StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto);
-  b_StringPrototype = Object(stringProto);
-  BooleanPrototypeImp *booleanProto = new BooleanPrototypeImp(globExec,objProto,funcProto);
-  b_BooleanPrototype = Object(booleanProto);
-  NumberPrototypeImp *numberProto = new NumberPrototypeImp(globExec,objProto,funcProto);
-  b_NumberPrototype = Object(numberProto);
-  DatePrototypeImp *dateProto = new DatePrototypeImp(globExec,objProto);
-  b_DatePrototype = Object(dateProto);
-  RegExpPrototypeImp *regexpProto = new RegExpPrototypeImp(globExec,objProto,funcProto);
-  b_RegExpPrototype = Object(regexpProto);
-  ErrorPrototypeImp *errorProto = new ErrorPrototypeImp(globExec,objProto,funcProto);
-  b_ErrorPrototype = Object(errorProto);
+  ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(&globExec, objProto);
+  b_ArrayPrototype = arrayProto;
+  StringPrototypeImp *stringProto = new StringPrototypeImp(&globExec, objProto);
+  b_StringPrototype = stringProto;
+  BooleanPrototypeImp *booleanProto = new BooleanPrototypeImp(&globExec, objProto, funcProto);
+  b_BooleanPrototype = booleanProto;
+  NumberPrototypeImp *numberProto = new NumberPrototypeImp(&globExec, objProto, funcProto);
+  b_NumberPrototype = numberProto;
+  DatePrototypeImp *dateProto = new DatePrototypeImp(&globExec, objProto);
+  b_DatePrototype = dateProto;
+  RegExpPrototypeImp *regexpProto = new RegExpPrototypeImp(&globExec, objProto, funcProto);
+  b_RegExpPrototype = regexpProto;
+  ErrorPrototypeImp *errorProto = new ErrorPrototypeImp(&globExec, objProto, funcProto);
+  b_ErrorPrototype = errorProto;
 
-  static_cast<ObjectImp*>(global.imp())->setPrototype(b_ObjectPrototype);
+  static_cast<ObjectImp*>(global)->setPrototype(b_ObjectPrototype);
 
   // Constructors (Object, Array, etc.)
-
-  b_Object = Object(new ObjectObjectImp(globExec, objProto, funcProto));
-  b_Function = Object(new FunctionObjectImp(globExec, funcProto));
-  b_Array = Object(new ArrayObjectImp(globExec, funcProto, arrayProto));
-  b_String = Object(new StringObjectImp(globExec, funcProto, stringProto));
-  b_Boolean = Object(new BooleanObjectImp(globExec, funcProto, booleanProto));
-  b_Number = Object(new NumberObjectImp(globExec, funcProto, numberProto));
-  b_Date = Object(new DateObjectImp(globExec, funcProto, dateProto));
-  b_RegExp = Object(new RegExpObjectImp(globExec, funcProto, regexpProto));
-  b_Error = Object(new ErrorObjectImp(globExec, funcProto, errorProto));
+  b_Object = new ObjectObjectImp(&globExec, objProto, funcProto);
+  b_Function = new FunctionObjectImp(&globExec, funcProto);
+  b_Array = new ArrayObjectImp(&globExec, funcProto, arrayProto);
+  b_String = new StringObjectImp(&globExec, funcProto, stringProto);
+  b_Boolean = new BooleanObjectImp(&globExec, funcProto, booleanProto);
+  b_Number = new NumberObjectImp(&globExec, funcProto, numberProto);
+  b_Date = new DateObjectImp(&globExec, funcProto, dateProto);
+  b_RegExp = new RegExpObjectImp(&globExec, funcProto, regexpProto);
+  b_Error = new ErrorObjectImp(&globExec, funcProto, errorProto);
 
   // Error object prototypes
-  b_evalErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,EvalError,
-                                                            "EvalError","EvalError"));
-  b_rangeErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,RangeError,
-                                                            "RangeError","RangeError"));
-  b_referenceErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,ReferenceError,
-                                                            "ReferenceError","ReferenceError"));
-  b_syntaxErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,SyntaxError,
-                                                            "SyntaxError","SyntaxError"));
-  b_typeErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,TypeError,
-                                                            "TypeError","TypeError"));
-  b_uriErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,URIError,
-                                                            "URIError","URIError"));
+  b_evalErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, EvalError, "EvalError", "EvalError");
+  b_rangeErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, RangeError, "RangeError", "RangeError");
+  b_referenceErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, ReferenceError, "ReferenceError", "ReferenceError");
+  b_syntaxErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, SyntaxError, "SyntaxError", "SyntaxError");
+  b_typeErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, TypeError, "TypeError", "TypeError");
+  b_uriErrorPrototype = new NativeErrorPrototypeImp(&globExec, errorProto, URIError, "URIError", "URIError");
 
   // Error objects
-  b_evalError = Object(new NativeErrorImp(globExec,funcProto,b_evalErrorPrototype));
-  b_rangeError = Object(new NativeErrorImp(globExec,funcProto,b_rangeErrorPrototype));
-  b_referenceError = Object(new NativeErrorImp(globExec,funcProto,b_referenceErrorPrototype));
-  b_syntaxError = Object(new NativeErrorImp(globExec,funcProto,b_syntaxErrorPrototype));
-  b_typeError = Object(new NativeErrorImp(globExec,funcProto,b_typeErrorPrototype));
-  b_uriError = Object(new NativeErrorImp(globExec,funcProto,b_uriErrorPrototype));
+  b_evalError = new NativeErrorImp(&globExec, funcProto, b_evalErrorPrototype);
+  b_rangeError = new NativeErrorImp(&globExec, funcProto, b_rangeErrorPrototype);
+  b_referenceError = new NativeErrorImp(&globExec, funcProto, b_referenceErrorPrototype);
+  b_syntaxError = new NativeErrorImp(&globExec, funcProto, b_syntaxErrorPrototype);
+  b_typeError = new NativeErrorImp(&globExec, funcProto, b_typeErrorPrototype);
+  b_uriError = new NativeErrorImp(&globExec, funcProto, b_uriErrorPrototype);
 
   // ECMA 15.3.4.1
-  funcProto->put(globExec,constructorPropertyName, b_Function, DontEnum);
+  funcProto->put(&globExec, "constructor", b_Function, DontEnum);
 
-  global.put(globExec,"Object", b_Object, DontEnum);
-  global.put(globExec,"Function", b_Function, DontEnum);
-  global.put(globExec,"Array", b_Array, DontEnum);
-  global.put(globExec,"Boolean", b_Boolean, DontEnum);
-  global.put(globExec,"String", b_String, DontEnum);
-  global.put(globExec,"Number", b_Number, DontEnum);
-  global.put(globExec,"Date", b_Date, DontEnum);
-  global.put(globExec,"RegExp", b_RegExp, DontEnum);
-  global.put(globExec,"Error", b_Error, DontEnum);
+  global->put(&globExec, "Object", b_Object, DontEnum);
+  global->put(&globExec, "Function", b_Function, DontEnum);
+  global->put(&globExec, "Array", b_Array, DontEnum);
+  global->put(&globExec, "Boolean", b_Boolean, DontEnum);
+  global->put(&globExec, "String", b_String, DontEnum);
+  global->put(&globExec, "Number", b_Number, DontEnum);
+  global->put(&globExec, "Date", b_Date, DontEnum);
+  global->put(&globExec, "RegExp", b_RegExp, DontEnum);
+  global->put(&globExec, "Error", b_Error, DontEnum);
   // Using Internal for those to have something != 0
   // (see kjs_window). Maybe DontEnum would be ok too ?
-  global.put(globExec,"EvalError",b_evalError, Internal);
-  global.put(globExec,"RangeError",b_rangeError, Internal);
-  global.put(globExec,"ReferenceError",b_referenceError, Internal);
-  global.put(globExec,"SyntaxError",b_syntaxError, Internal);
-  global.put(globExec,"TypeError",b_typeError, Internal);
-  global.put(globExec,"URIError",b_uriError, Internal);
+  global->put(&globExec, "EvalError",b_evalError, Internal);
+  global->put(&globExec, "RangeError",b_rangeError, Internal);
+  global->put(&globExec, "ReferenceError",b_referenceError, Internal);
+  global->put(&globExec, "SyntaxError",b_syntaxError, Internal);
+  global->put(&globExec, "TypeError",b_typeError, Internal);
+  global->put(&globExec, "URIError",b_uriError, Internal);
 
   // Set the "constructor" property of all builtin constructors
-  objProto->put(globExec, constructorPropertyName, b_Object, DontEnum | DontDelete | ReadOnly);
-  funcProto->put(globExec, constructorPropertyName, b_Function, DontEnum | DontDelete | ReadOnly);
-  arrayProto->put(globExec, constructorPropertyName, b_Array, DontEnum | DontDelete | ReadOnly);
-  booleanProto->put(globExec, constructorPropertyName, b_Boolean, DontEnum | DontDelete | ReadOnly);
-  stringProto->put(globExec, constructorPropertyName, b_String, DontEnum | DontDelete | ReadOnly);
-  numberProto->put(globExec, constructorPropertyName, b_Number, DontEnum | DontDelete | ReadOnly);
-  dateProto->put(globExec, constructorPropertyName, b_Date, DontEnum | DontDelete | ReadOnly);
-  regexpProto->put(globExec, constructorPropertyName, b_RegExp, DontEnum | DontDelete | ReadOnly);
-  errorProto->put(globExec, constructorPropertyName, b_Error, DontEnum | DontDelete | ReadOnly);
-  b_evalErrorPrototype.put(globExec, constructorPropertyName, b_evalError, DontEnum | DontDelete | ReadOnly);
-  b_rangeErrorPrototype.put(globExec, constructorPropertyName, b_rangeError, DontEnum | DontDelete | ReadOnly);
-  b_referenceErrorPrototype.put(globExec, constructorPropertyName, b_referenceError, DontEnum | DontDelete | ReadOnly);
-  b_syntaxErrorPrototype.put(globExec, constructorPropertyName, b_syntaxError, DontEnum | DontDelete | ReadOnly);
-  b_typeErrorPrototype.put(globExec, constructorPropertyName, b_typeError, DontEnum | DontDelete | ReadOnly);
-  b_uriErrorPrototype.put(globExec, constructorPropertyName, b_uriError, DontEnum | DontDelete | ReadOnly);
+  objProto->put(&globExec, "constructor", b_Object, DontEnum | DontDelete | ReadOnly);
+  funcProto->put(&globExec, "constructor", b_Function, DontEnum | DontDelete | ReadOnly);
+  arrayProto->put(&globExec, "constructor", b_Array, DontEnum | DontDelete | ReadOnly);
+  booleanProto->put(&globExec, "constructor", b_Boolean, DontEnum | DontDelete | ReadOnly);
+  stringProto->put(&globExec, "constructor", b_String, DontEnum | DontDelete | ReadOnly);
+  numberProto->put(&globExec, "constructor", b_Number, DontEnum | DontDelete | ReadOnly);
+  dateProto->put(&globExec, "constructor", b_Date, DontEnum | DontDelete | ReadOnly);
+  regexpProto->put(&globExec, "constructor", b_RegExp, DontEnum | DontDelete | ReadOnly);
+  errorProto->put(&globExec, "constructor", b_Error, DontEnum | DontDelete | ReadOnly);
+  b_evalErrorPrototype->put(&globExec, "constructor", b_evalError, DontEnum | DontDelete | ReadOnly);
+  b_rangeErrorPrototype->put(&globExec, "constructor", b_rangeError, DontEnum | DontDelete | ReadOnly);
+  b_referenceErrorPrototype->put(&globExec, "constructor", b_referenceError, DontEnum | DontDelete | ReadOnly);
+  b_syntaxErrorPrototype->put(&globExec, "constructor", b_syntaxError, DontEnum | DontDelete | ReadOnly);
+  b_typeErrorPrototype->put(&globExec, "constructor", b_typeError, DontEnum | DontDelete | ReadOnly);
+  b_uriErrorPrototype->put(&globExec, "constructor", b_uriError, DontEnum | DontDelete | ReadOnly);
 
   // built-in values
-  global.put(globExec, "NaN",        Number(NaN), DontEnum|DontDelete);
-  global.put(globExec, "Infinity",   Number(Inf), DontEnum|DontDelete);
-  global.put(globExec, "undefined",  Undefined(), DontEnum|DontDelete);
+  global->put(&globExec, "NaN",        jsNaN(), DontEnum|DontDelete);
+  global->put(&globExec, "Infinity",   Number(Inf), DontEnum|DontDelete);
+  global->put(&globExec, "undefined",  Undefined(), DontEnum|DontDelete);
 
   // built-in functions
-#ifdef KJS_PURE_ECMA // otherwise as deprecated Object.prototype property
-  global.put(globExec,"eval",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Eval,1,"eval")), DontEnum);
-#endif
-  global.put(globExec,"parseInt",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseInt,2,"parseInt")), DontEnum);
-  global.put(globExec,"parseFloat",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseFloat,1,"parseFloat")), DontEnum);
-  global.put(globExec,"isNaN",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsNaN,1,"isNaN")), DontEnum);
-  global.put(globExec,"isFinite",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsFinite,1,"isFinite")), DontEnum);
-  global.put(globExec,"decodeURI",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::DecodeURI,1,"decodeURI")),
-	     DontEnum);
-  global.put(globExec,"decodeURIComponent",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::DecodeURIComponent,1,"decodeURIComponent")),
-	     DontEnum);
-  global.put(globExec,"encodeURI",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::EncodeURI,1,"encodeURI")),
-	     DontEnum);
-  global.put(globExec,"encodeURIComponent",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::EncodeURIComponent,1,"encodeURIComponent")),
-	     DontEnum);
-  global.put(globExec,"escape",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Escape,1,"escape")), DontEnum);
-  global.put(globExec,"unescape",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,1,"unescape")), DontEnum);
+  global->put(&globExec, "eval",       new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Eval, 1), DontEnum);
+  global->put(&globExec, "parseInt",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseInt, 2), DontEnum);
+  global->put(&globExec, "parseFloat", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseFloat, 1), DontEnum);
+  global->put(&globExec, "isNaN",      new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsNaN, 1), DontEnum);
+  global->put(&globExec, "isFinite",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsFinite, 1), DontEnum);
+  global->put(&globExec, "escape",     new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Escape, 1), DontEnum);
+  global->put(&globExec, "unescape",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::UnEscape, 1), DontEnum);
+  global->put(&globExec, "decodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURI, 1), DontEnum);
+  global->put(&globExec, "decodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURIComponent, 1), DontEnum);
+  global->put(&globExec, "encodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURI, 1), DontEnum);
+  global->put(&globExec, "encodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURIComponent, 1), DontEnum);
 #ifndef NDEBUG
-  global.put(globExec,"kjsprint",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::KJSPrint,1,"kjsprint")), DontEnum);
+  global->put(&globExec, "kjsprint",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::KJSPrint, 1), DontEnum);
 #endif
 
   // built-in objects
-  global.put(globExec,"Math", Object(new MathObjectImp(globExec,objProto)), DontEnum);
+  global->put(&globExec, "Math", new MathObjectImp(&globExec, objProto), DontEnum);
 }
 
 InterpreterImp::~InterpreterImp()
 {
   if (dbg)
     dbg->detach(m_interpreter);
-  for (SourceCode *s = sources; s; s = s->next)
-    s->interpreter = 0;
-  delete globExec;
-  globExec = 0L;
   clear();
 }
 
@@ -754,7 +629,8 @@ void InterpreterImp::clear()
 {
   //fprintf(stderr,"InterpreterImp::clear\n");
   // remove from global chain (see init())
-  lockInterpreter();
+  InterpreterLock lock;
+
   next->prev = prev;
   prev->next = next;
   s_hook = next;
@@ -764,218 +640,197 @@ void InterpreterImp::clear()
     s_hook = 0L;
     globalClear();
   }
-  unlockInterpreter();
+  interpreterMap().remove(global);
 }
 
 void InterpreterImp::mark()
 {
-  //if (exVal && !exVal->marked())
-  //  exVal->mark();
-  //if (retVal && !retVal->marked())
-  //  retVal->mark();
-  if (UndefinedImp::staticUndefined && !UndefinedImp::staticUndefined->marked())
-    UndefinedImp::staticUndefined->mark();
-  if (NullImp::staticNull && !NullImp::staticNull->marked())
-    NullImp::staticNull->mark();
-  if (NumberImp::staticNaN && !NumberImp::staticNaN->marked())
-    NumberImp::staticNaN->mark();
-  if (BooleanImp::staticTrue && !BooleanImp::staticTrue->marked())
-    BooleanImp::staticTrue->mark();
-  if (BooleanImp::staticFalse && !BooleanImp::staticFalse->marked())
-    BooleanImp::staticFalse->mark();
-  //fprintf( stderr, "InterpreterImp::mark this=%p global.imp()=%p\n", this, global.imp() );
-  if (global.imp())
-    global.imp()->mark();
+  ConstantValues::mark();
   if (m_interpreter)
     m_interpreter->mark();
   if (_context)
     _context->mark();
-}
-
-bool InterpreterImp::checkSyntax(const UString &code, int *errLine, UString *errMsg)
-{
-  // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
-  SourceCode *source;
-  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,errLine,errMsg);
-  source->deref();
-  bool ok = (progNode != 0);
-  delete progNode;
-  return ok;
+  if (global)
+      global->mark();
+  if (globExec._exception)
+      globExec._exception->mark();
 }
 
 bool InterpreterImp::checkSyntax(const UString &code)
 {
+  InterpreterLock lock;
+
   // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
-  SourceCode *source;
-  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,0,0);
-  source->deref();
-  bool ok = (progNode != 0);
-  delete progNode;
-  return ok;
+  SharedPtr<ProgramNode> progNode = Parser::parse(UString(), 0, code.data(),code.size(),0,0,0);
+  return progNode;
 }
 
-Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
+Completion InterpreterImp::evaluate(const UString &code, ValueImp *thisV, const UString &sourceURL, int startingLineNumber)
 {
-  lockInterpreter();
+  InterpreterLock lock;
 
   // prevent against infinite recursion
   if (recursion >= 20) {
-    Completion result = Completion(Throw,Error::create(globExec,GeneralError,"Recursion too deep"));
-    unlockInterpreter();
+#if APPLE_CHANGES
+    Completion result = Completion(Throw, Error::create(&globExec, GeneralError, "Recursion too deep"));
     return result;
+#else
+    return Completion(Throw,Error::create(&globExec, GeneralError, "Recursion too deep"));
+#endif
   }
 
   // parse the source code
+  int sid;
   int errLine;
   UString errMsg;
-  SourceCode *source;
-  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
+  SharedPtr<ProgramNode> progNode = Parser::parse(sourceURL, startingLineNumber, code.data(),code.size(),&sid,&errLine,&errMsg);
 
   // notify debugger that source has been parsed
   if (dbg) {
-    bool cont = dbg->sourceParsed(globExec,source->sid,code,errLine);
-    if (!cont) {
-      source->deref();
-      if (progNode)
-	delete progNode;
-      unlockInterpreter();
+    bool cont = dbg->sourceParsed(&globExec, sid, sourceURL, code, errLine);
+    if (!cont)
       return Completion(Break);
-    }
   }
-
-  addSourceCode(source);
-
+  
   // no program node means a syntax error occurred
   if (!progNode) {
-    Object err = Error::create(globExec,SyntaxError,errMsg.ascii(),errLine);
-    err.put(globExec,"sid",Number(source->sid));
-    globExec->setException(err); // required to notify the debugger
-    globExec->clearException();
-    source->deref();
-    unlockInterpreter();
+    ObjectImp *err = Error::create(&globExec, SyntaxError, errMsg, errLine, sid, &sourceURL);
     return Completion(Throw,err);
   }
-  source->deref();
 
-  globExec->clearException();
+  globExec.clearException();
 
   recursion++;
-  progNode->ref();
 
-  Object &globalObj = globalObject();
-  Object thisObj = globalObject();
+  ObjectImp *globalObj = globalObject();
+  ObjectImp *thisObj = globalObject();
 
-  if (thisV.isValid()) {
+  if (thisV) {
     // "this" must be an object... use same rules as Function.prototype.apply()
-    if (thisV.isA(NullType) || thisV.isA(UndefinedType))
+    if (thisV->isUndefinedOrNull())
       thisObj = globalObject();
     else {
-      thisObj = thisV.toObject(globExec);
+      thisObj = thisV->toObject(&globExec);
     }
   }
 
   Completion res;
-  if (globExec->hadException()) {
-    // the thisArg.toObject() conversion above might have thrown an exception - if so,
+  if (globExec.hadException()) {
+    // the thisArg->toObject() conversion above might have thrown an exception - if so,
     // propagate it back
-    res = Completion(Throw,globExec->exception());
+    res = Completion(Throw, globExec.exception());
   }
   else {
     // execute the code
-    ContextImp ctx(globalObj, this, thisObj, source->sid);
-    ExecState newExec(m_interpreter,&ctx);
-
-    // create variables (initialized to undefined until var statements
-    // with optional initializers are executed)
+    ContextImp ctx(globalObj, this, thisObj);
+    ExecState newExec(m_interpreter, &ctx);
     progNode->processVarDecls(&newExec);
-
-    ctx.setLines(progNode->firstLine(),progNode->firstLine());
-    bool abort = false;
-    if (dbg) {
-      if (!dbg->enterContext(&newExec)) {
-	// debugger requested we stop execution
-	dbg->imp()->abort();
-	abort = true;
-      }
-    }
-
-    if (!abort) {
-      ctx.setLines(progNode->lastLine(),progNode->lastLine());
-      res = progNode->execute(&newExec);
-      if (dbg && !dbg->exitContext(&newExec,res)) {
-	// debugger requested we stop execution
-	dbg->imp()->abort();
-	unlockInterpreter();
-	res = Completion(ReturnValue,Undefined());
-      }
-    }
+    res = progNode->execute(&newExec);
   }
 
-  if (progNode->deref())
-    delete progNode;
   recursion--;
 
-  if (globExec->hadException()) {
-    res = Completion(Throw,globExec->exception());
-    globExec->clearException();
-  }
-
-  unlockInterpreter();
   return res;
 }
 
-void InterpreterImp::setDebugger(Debugger *d)
+void InterpreterImp::saveBuiltins (SavedBuiltins &builtins) const
 {
-  if (d == dbg)
-    return;
-  // avoid recursion
-  Debugger *old = dbg;
-  dbg = d;
-  if ( old )
-    old->detach(m_interpreter);
+  if (!builtins._internal) {
+    builtins._internal = new SavedBuiltinsInternal;
+  }
+
+  builtins._internal->b_Object = b_Object;
+  builtins._internal->b_Function = b_Function;
+  builtins._internal->b_Array = b_Array;
+  builtins._internal->b_Boolean = b_Boolean;
+  builtins._internal->b_String = b_String;
+  builtins._internal->b_Number = b_Number;
+  builtins._internal->b_Date = b_Date;
+  builtins._internal->b_RegExp = b_RegExp;
+  builtins._internal->b_Error = b_Error;
+  
+  builtins._internal->b_ObjectPrototype = b_ObjectPrototype;
+  builtins._internal->b_FunctionPrototype = b_FunctionPrototype;
+  builtins._internal->b_ArrayPrototype = b_ArrayPrototype;
+  builtins._internal->b_BooleanPrototype = b_BooleanPrototype;
+  builtins._internal->b_StringPrototype = b_StringPrototype;
+  builtins._internal->b_NumberPrototype = b_NumberPrototype;
+  builtins._internal->b_DatePrototype = b_DatePrototype;
+  builtins._internal->b_RegExpPrototype = b_RegExpPrototype;
+  builtins._internal->b_ErrorPrototype = b_ErrorPrototype;
+  
+  builtins._internal->b_evalError = b_evalError;
+  builtins._internal->b_rangeError = b_rangeError;
+  builtins._internal->b_referenceError = b_referenceError;
+  builtins._internal->b_syntaxError = b_syntaxError;
+  builtins._internal->b_typeError = b_typeError;
+  builtins._internal->b_uriError = b_uriError;
+  
+  builtins._internal->b_evalErrorPrototype = b_evalErrorPrototype;
+  builtins._internal->b_rangeErrorPrototype = b_rangeErrorPrototype;
+  builtins._internal->b_referenceErrorPrototype = b_referenceErrorPrototype;
+  builtins._internal->b_syntaxErrorPrototype = b_syntaxErrorPrototype;
+  builtins._internal->b_typeErrorPrototype = b_typeErrorPrototype;
+  builtins._internal->b_uriErrorPrototype = b_uriErrorPrototype;
 }
 
-void InterpreterImp::addSourceCode(SourceCode *code)
+void InterpreterImp::restoreBuiltins (const SavedBuiltins &builtins)
 {
-  assert(!code->next);
-  assert(!code->interpreter);
-  code->next = sources;
-  code->interpreter = this;
-  sources = code;
-}
-
-void InterpreterImp::removeSourceCode(SourceCode *code)
-{
-  assert(code);
-  assert(sources);
-
-  if (code == sources) {
-    sources = sources->next;
+  if (!builtins._internal) {
     return;
   }
 
-  SourceCode *prev = sources;
-  SourceCode *cur = sources->next;
-  while (cur != code) {
-    assert(cur);
-    prev = cur;
-    cur = cur->next;
-  }
-
-  prev->next = cur->next;
+  b_Object = builtins._internal->b_Object;
+  b_Function = builtins._internal->b_Function;
+  b_Array = builtins._internal->b_Array;
+  b_Boolean = builtins._internal->b_Boolean;
+  b_String = builtins._internal->b_String;
+  b_Number = builtins._internal->b_Number;
+  b_Date = builtins._internal->b_Date;
+  b_RegExp = builtins._internal->b_RegExp;
+  b_Error = builtins._internal->b_Error;
+  
+  b_ObjectPrototype = builtins._internal->b_ObjectPrototype;
+  b_FunctionPrototype = builtins._internal->b_FunctionPrototype;
+  b_ArrayPrototype = builtins._internal->b_ArrayPrototype;
+  b_BooleanPrototype = builtins._internal->b_BooleanPrototype;
+  b_StringPrototype = builtins._internal->b_StringPrototype;
+  b_NumberPrototype = builtins._internal->b_NumberPrototype;
+  b_DatePrototype = builtins._internal->b_DatePrototype;
+  b_RegExpPrototype = builtins._internal->b_RegExpPrototype;
+  b_ErrorPrototype = builtins._internal->b_ErrorPrototype;
+  
+  b_evalError = builtins._internal->b_evalError;
+  b_rangeError = builtins._internal->b_rangeError;
+  b_referenceError = builtins._internal->b_referenceError;
+  b_syntaxError = builtins._internal->b_syntaxError;
+  b_typeError = builtins._internal->b_typeError;
+  b_uriError = builtins._internal->b_uriError;
+  
+  b_evalErrorPrototype = builtins._internal->b_evalErrorPrototype;
+  b_rangeErrorPrototype = builtins._internal->b_rangeErrorPrototype;
+  b_referenceErrorPrototype = builtins._internal->b_referenceErrorPrototype;
+  b_syntaxErrorPrototype = builtins._internal->b_syntaxErrorPrototype;
+  b_typeErrorPrototype = builtins._internal->b_typeErrorPrototype;
+  b_uriErrorPrototype = builtins._internal->b_uriErrorPrototype;
 }
+
+InterpreterImp *InterpreterImp::interpreterWithGlobalObject(ObjectImp *global)
+{
+    return interpreterMap().get(global);
+}
+
 
 // ------------------------------ InternalFunctionImp --------------------------
 
 const ClassInfo InternalFunctionImp::info = {"Function", 0, 0, 0};
 
-InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
-  : ObjectImp(funcProto)
+InternalFunctionImp::InternalFunctionImp()
 {
 }
 
-InternalFunctionImp::InternalFunctionImp(ExecState *exec)
-  : ObjectImp(static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp()))
+InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
+  : ObjectImp(funcProto)
 {
 }
 
@@ -984,57 +839,47 @@ bool InternalFunctionImp::implementsHasInstance() const
   return true;
 }
 
-Boolean InternalFunctionImp::hasInstance(ExecState *exec, const Value &value)
+bool InternalFunctionImp::hasInstance(ExecState *exec, ValueImp *value)
 {
-  if (value.type() != ObjectType)
-    return Boolean(false);
+  if (!value->isObject())
+    return false;
 
-  Value prot = get(exec,prototypePropertyName);
-  if (prot.type() != ObjectType && prot.type() != NullType) {
-    Object err = Error::create(exec, TypeError, "Invalid prototype encountered "
-                               "in instanceof operation.");
-    exec->setException(err);
-    return Boolean(false);
+  ValueImp *prot = get(exec,prototypePropertyName);
+  if (!prot->isObject() && !prot->isNull()) {
+    throwError(exec, TypeError, "Invalid prototype encountered in instanceof operation.");
+    return false;
   }
 
-  Object v = Object(static_cast<ObjectImp*>(value.imp()));
-  while ((v = Object::dynamicCast(v.prototype())).imp()) {
-    if (v.imp() == prot.imp())
-      return Boolean(true);
+  ObjectImp *v = static_cast<ObjectImp *>(value);
+  while ((v = v->prototype()->getObject())) {
+    if (v == prot)
+      return true;
   }
-  return Boolean(false);
+  return false;
 }
 
 // ------------------------------ global functions -----------------------------
 
-double KJS::roundValue(ExecState *exec, const Value &v)
+double roundValue(ExecState *exec, ValueImp *v)
 {
-  double n = v.toNumber(exec);
-  if (isNaN(n) || isInf(n))
-    return n;
-  double an = fabs(n);
-  if (an == 0.0)
-    return n;
-  double d = floor(an);
-  if (n < 0)
-    d *= -1;
-
-  return d;
+  double d = v->toNumber(exec);
+  double ad = fabs(d);
+  if (ad == 0 || isNaN(d) || isInf(d))
+    return d;
+  return copysign(floor(ad), d);
 }
 
 #ifndef NDEBUG
 #include <stdio.h>
-void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
+void printInfo(ExecState *exec, const char *s, ValueImp *o, int lineno)
 {
-  if (!o.isValid())
+  if (!o)
     fprintf(stderr, "KJS: %s: (null)", s);
   else {
-    Value v = o;
-    unsigned int arrayLength = 0;
-    bool hadExcep = exec->hadException();
+    ValueImp *v = o;
 
     UString name;
-    switch ( v.type() ) {
+    switch (v->type()) {
     case UnspecifiedType:
       name = "Unspecified";
       break;
@@ -1053,31 +898,20 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     case NumberType:
       name = "Number";
       break;
-    case ObjectType: {
-      Object obj = Object::dynamicCast(v);
-      name = obj.className();
+    case ObjectType:
+      name = static_cast<ObjectImp *>(v)->className();
       if (name.isNull())
         name = "(unknown class)";
-      if ( obj.inherits(&ArrayInstanceImp::info) )
-        arrayLength = obj.get(exec,lengthPropertyName).toUInt32(exec);
-      }
       break;
     }
-    UString vString;
-    // Avoid calling toString on a huge array (e.g. 4 billion elements, in mozilla/js/js1_5/Array/array-001.js)
-    if ( arrayLength > 100 )
-      vString = UString( "[ Array with " ) + UString::from( arrayLength ) + " elements ]";
-    else
-      vString = v.toString(exec);
-    if ( !hadExcep )
-      exec->clearException();
+    UString vString = v->toString(exec);
     if ( vString.size() > 50 )
       vString = vString.substr( 0, 50 ) + "...";
     // Can't use two UString::ascii() in the same fprintf call
     CString tempString( vString.cstring() );
 
     fprintf(stderr, "KJS: %s: %s : %s (%p)",
-            s, tempString.c_str(), name.ascii(), (void*)v.imp());
+            s, tempString.c_str(), name.ascii(), (void*)v);
 
     if (lineno >= 0)
       fprintf(stderr, ", line %d\n",lineno);
@@ -1086,3 +920,5 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
   }
 }
 #endif
+
+}

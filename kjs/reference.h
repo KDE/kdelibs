@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -24,36 +24,19 @@
 #define _KJS_REFERENCE_H_
 
 #include "identifier.h"
-#include "value.h"
+#include "object.h"
 
 namespace KJS {
 
-// delme
-/**
-* Defines a Javascript reference.
-*/
-  class KJS_EXPORT Reference : public Value {
-// fixme
-/*   class Reference : private Value { */
+  class ObjectImp;
+
+  class Reference {
     friend class ReferenceList;
     friend class ReferenceListIterator;
   public:
-    Reference(const Object& b, const Identifier& p);
-    Reference(const Object& b, unsigned p);
     Reference(ObjectImp *b, const Identifier& p);
     Reference(ObjectImp *b, unsigned p);
-    Reference(const Null& b, const Identifier& p);
-    Reference(const Null& b, unsigned p);
-    static Reference makeValueReference(const Value& v);
     
-    /**
-     * Performs the GetBase type conversion operation on this value (ECMA 8.7)
-     *
-     * Since references are supposed to have an Object or null as their base,
-     * this method is guaranteed to return either Null() or an Object value.
-     */
-    Value getBase(ExecState *exec) const;
-
     /**
      * Performs the GetPropertyName type conversion operation on this value
      * (ECMA 8.7)
@@ -64,26 +47,25 @@ namespace KJS {
      * Performs the GetValue type conversion operation on this value
      * (ECMA 8.7.1)
      */
-    Value getValue(ExecState *exec) const;
+    ValueImp *getValue(ExecState *exec) const;
 
     /**
      * Performs the PutValue type conversion operation on this value
      * (ECMA 8.7.1)
      */
-    void putValue(ExecState *exec, const Value &w);
     bool deleteValue(ExecState *exec);
 
-    bool isMutable();
+  protected:
+    ValueImp *base;
 
   private:
-    Reference();
+    Reference() { }
 
-    Value base;
     unsigned propertyNameAsNumber;
-    bool baseIsValue;
     bool propertyNameIsNumber;
     mutable Identifier prop;
   };
+
 }
 
 #endif

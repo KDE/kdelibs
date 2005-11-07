@@ -4,6 +4,7 @@
 #
 # (c) 2000-2002 by Harri Porten <porten@kde.org> and
 #                  David Faure <faure@kde.org>
+# Modified (c) 2004 by Nikolas Zimmermann <wildfox@kde.org>
 
 $file = $ARGV[0];
 shift;
@@ -13,6 +14,10 @@ my $includelookup = 0;
 $findSize = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-s");
 # Use -i as second argument to make it include "lookup.h"
 $includelookup = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-i");
+# Use -n as second argument to make it use the third
+#      argument as namespace parameter ie. -n KDOM
+$useNameSpace = $ARGV[1] if (defined($ARGV[0]) && $ARGV[0] eq "-n");
+
 print STDERR "Creating hashtable for $file\n";
 open(IN, $file) or die "No such file $file";
 
@@ -59,7 +64,7 @@ while (<IN>) {
       @attrs = ();
       @params = ();
       $inside = 0;
-	} elsif (/^([-:\@\w\[\=\]]+)\s*([\w\:-]+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
+    } elsif (/^(\S+)\s*(\S+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
       my $key = $1;
       my $val = $2;
       my $att = $3;
@@ -71,7 +76,7 @@ while (<IN>) {
       push(@attrs, length($att) > 0 ? $att : "0");
       push(@params, length($param) > 0 ? $param : "0");
     } elsif ($inside) {
-      die "invalid data";
+      die "invalid data {" . $_ . "}";
     }
 }
 
@@ -143,50 +148,32 @@ sub output() {
 
   my $nameEntries = "${name}Entries";
   $nameEntries =~ s/:/_/g;
-  my $nameStringTable = "${name}Strings";
-  $nameStringTable =~ y/:/_/;
 
   print "\n#include \"lookup.h\"\n" if ($includelookup);
-  print "\nusing namespace KJS;\n"; # because of DontDelete etc.
-  print "\nnamespace KJS {\n";
-
-  # first, build the string table
-  my %soffset = ();
-  print "\nstatic const char $nameStringTable\[\] = {\n";
-  my $s = "\0";
-  print "    \"\\0\"\n";
-  for my $k (sort { length $b <=> length $a || $a cmp $b } @keys) {
-    if ($s =~ /^(.*)\Q$k\E\0/) {
-      $soffset{$k} = length $1;
-     } else {
-       $soffset{$k} = length $s;
-       print "    \"$k\\0\"\n";
-       $s .= $k;
-       $s .= "\0";
-     }
+  if ($useNameSpace) {
+    print "\nnamespace ${useNameSpace}\n{\n";
+    print "\nusing namespace KJS;";
+  } else {
+    print "\nnamespace KJS {\n";
   }
-  print "};\n\n";
-
-  # now, dump the hash table
-
   print "\nstatic const struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   #print STDERR "writing out table with ".($#table+1)." entries\n";
   foreach $entry (@table) {
     if (defined($entry)) {
       my $key = $keys[$entry];
-      print "   \{ " . $soffset{$key};
+      print "   \{ \"" . $key . "\"";
       print ", " . $values[$entry];
       print ", " . $attrs[$entry];
       print ", " . $params[$entry];
       print ", ";
       if (defined($links[$i])) {
-	print $links[$i] . " \}";
+	print "&${nameEntries}[$links[$i]]" . " \}";
       } else {
-	print "-1 \}"
+	print "0 \}"
       }
     } else {
-      print "   \{ 0, 0, 0, 0, -1 \}";
+      print "   \{ 0, 0, 0, 0, 0 \}";
     }
     print "," unless ($i == $size - 1);
     print "\n";
@@ -194,6 +181,6 @@ sub output() {
   }
   print "};\n\n";
   print "const struct HashTable $name = ";
-  print "\{ 2, $size, ".$nameEntries.", $hashsize, ".$nameStringTable."\};\n\n";
+  print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "} // namespace\n";
 }

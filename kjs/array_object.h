@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -31,7 +31,7 @@ namespace KJS {
   public:
     ArrayPrototypeImp(ExecState *exec,
                       ObjectPrototypeImp *objProto);
-    Value get(ExecState *exec, const Identifier &p) const;
+    bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };
@@ -41,10 +41,11 @@ namespace KJS {
     ArrayProtoFuncImp(ExecState *exec, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
     enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
-	   Reverse, Shift, Slice, Sort, Splice, UnShift };
+          Reverse, Shift, Slice, Sort, Splice, UnShift, 
+          Every, ForEach, Some };
   private:
     int id;
   };
@@ -56,9 +57,9 @@ namespace KJS {
                    ArrayPrototypeImp *arrayProto);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
   };
 

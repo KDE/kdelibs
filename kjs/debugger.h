@@ -16,25 +16,21 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
-#include "interpreter.h"
-
 namespace KJS {
 
   class DebuggerImp;
   class Interpreter;
   class ExecState;
-  class Value;
-  class Object;
+  class ObjectImp;
   class UString;
   class List;
-  class Completion;
 
   /**
    * @internal
@@ -49,7 +45,7 @@ namespace KJS {
    * anticipated that at some stage the interface will be frozen and made
    * available for general use.
    */
-  class KJS_EXPORT Debugger {
+  class Debugger {
   public:
 
     /**
@@ -105,13 +101,14 @@ namespace KJS {
      * @param exec The current execution state
      * @param sourceId The ID of the source code (corresponds to the
      * sourceId supplied in other functions such as atStatement()
+     * @param sourceURL Where the source code that was parsed came from
      * @param source The source code that was parsed
      * @param errorLine The line number at which parsing encountered an
      * error, or -1 if the source code was valid and parsed successfully
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool sourceParsed(ExecState *exec, int sourceId,
+    virtual bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
 			      const UString &source, int errorLine);
 
     /**
@@ -137,74 +134,83 @@ namespace KJS {
      * you want to process this event.
      *
      * @param exec The current execution state
-     * @param value The value of the exception
-     * @param inTryCatch Whether or not the exception will be caught by the
-     * script
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line at which the error occurred
+     * @param exceptionObj The exception object
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool exception(ExecState *exec, const Value &value,
-			   bool inTryCatch);
+    virtual bool exception(ExecState *exec, int sourceId, int lineno,
+                           ObjectImp *exceptionObj);
 
     /**
      * Called when a line of the script is reached (before it is executed)
-     *
-     * The exec pointer's Context object can be inspected to determine
-     * the line number and sourceId of the statement.
      *
      * The default implementation does nothing. Override this method if
      * you want to process this event.
      *
      * @param exec The current execution state
+     * @param sourceId The ID of the source code being executed
+     * @param firstLine The starting line of the statement  that is about to be
+     * executed
+     * @param firstLine The ending line of the statement  that is about to be
+     * executed (usually the same as firstLine)
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool atStatement(ExecState *exec);
+    virtual bool atStatement(ExecState *exec, int sourceId, int firstLine,
+                             int lastLine);
+    /**
+     * Called on each function call. Use together with @ref #returnEvent
+     * if you want to keep track of the call stack.
+     *
+     * Note: This only gets called for functions that are declared in ECMAScript
+     * source code or passed to eval(), not for internal KJS or
+     * application-supplied functions.
+     *
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line that is about to be executed
+     * @param function The function being called
+     * @param args The arguments that were passed to the function
+     * line is being executed
+     * @return true if execution should be continue, false if it should
+     * be aborted
+     */
+    virtual bool callEvent(ExecState *exec, int sourceId, int lineno,
+			   ObjectImp *function, const List &args);
 
     /**
-     * Called when the interpreter enters a new execution context (stack
-     * frame). This can happen in three situations:
-     * 
-     * <ul>
-     *   <li>A call to Interpreter::evaluate(). This has a codeType of
-     *   GlobalCode, and the sourceId is the id of the code passed to
-     *   evaluate(). The lineno here is always 0 since execution starts at the
-     *   beginning of the script.</li>
-     *   <li>A call to the builtin eval() function. The sourceId corresponds to
-     *   the code passed in to eval. This has a codeType of EvalCode. The
-     *   lineno here is always 0 since execution starts at the beginning of
-     *   the script.</li>
-     *   <li>A function call. This only occurs for functions defined in
-     *   ECMAScript code, whether via the normal function() { ... } syntax or
-     *   a call to the built-in Function() constructor (anonymous functions).
-     *   In the former case, the sourceId and lineno indicate the location at
-     *   which the function was defined. For anonymous functions, the sourceId
-     *   corresponds to the code passed into the Function() constructor.</li>
-     * </ul>
+     * Called on each function exit. The function being returned from is that
+     * which was supplied in the last callEvent().
      *
-     * enterContext() is not called for functions implemented in the native
-     * code, since these do not use an execution context.
-     * 
-     * @param exec The current execution state (corresponding to the new stack
-     * frame)
-     */
-    virtual bool enterContext(ExecState *exec);
-
-    /**
-     * Called when the inteprreter exits an execution context. This always
-     * corresponds to a previous call to enterContext()
+     * Note: This only gets called for functions that are declared in ECMAScript
+     * source code or passed to eval(), not for internal KJS or
+     * application-supplied functions.
      *
-     * @param exec The current execution state (corresponding to the stack frame
-     * being exited from)
-     * @param completion The result of execution of the context. Can be used to
-     * inspect exceptions and return values
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line that is about to be executed
+     * @param function The function being called
+     * @return true if execution should be continue, false if it should
+     * be aborted
      */
-    virtual bool exitContext(ExecState *exec, const Completion &completion);
+    virtual bool returnEvent(ExecState *exec, int sourceId, int lineno,
+                             ObjectImp *function);
 
   private:
     DebuggerImp *rep;
+
+  public:
+    static int debuggersPresent;
   };
 
-}
+};
 
 #endif

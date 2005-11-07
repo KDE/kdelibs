@@ -17,15 +17,19 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+#include "config.h"
 #include "value.h"
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
+#if APPLE_CHANGES
+#include "runtime.h"
+#endif
 
 #include <assert.h>
 #include <math.h>
@@ -35,7 +39,6 @@
 #include "collector.h"
 #include "operations.h"
 #include "error_object.h"
-#include "debugger.h"
 #include "nodes.h"
 #include "context.h"
 
@@ -48,12 +51,12 @@ const ScopeChain &Context::scopeChain() const
   return rep->scopeChain();
 }
 
-Object Context::variableObject() const
+ObjectImp *Context::variableObject() const
 {
   return rep->variableObject();
 }
 
-Object Context::thisValue() const
+ObjectImp *Context::thisValue() const
 {
   return rep->thisValue();
 }
@@ -63,62 +66,22 @@ const Context Context::callingContext() const
   return rep->callingContext();
 }
 
-CodeType Context::codeType() const
-{
-  return rep->codeType();
-}
+// ------------------------------ Interpreter ----------------------------------
 
-int Context::sourceId() const
+Interpreter::Interpreter(ObjectImp *global) 
+  : rep(0)
+  , m_argumentsPropertyName(&argumentsPropertyName)
+  , m_specialPrototypePropertyName(&specialPrototypePropertyName)
 {
-  return rep->sourceId;
-}
-
-int Context::curStmtFirstLine() const
-{
-  return rep->line0;
-}
-
-int Context::curStmtLastLine() const
-{
-  return rep->line1;
-}
-
-Object Context::function() const
-{
-  return Object(rep->function());
-}
-
-Identifier Context::functionName() const
-{
-  return rep->functionName;
-}
-
-List Context::args() const
-{
-  return rep->args;
-}
-
-bool KJS::operator==(const Context &c1, const Context &c2)
-{
-  return (c1.imp() == c2.imp());
-}
-
-bool KJS::operator!=(const Context &c1, const Context &c2)
-{
-  return (c1.imp() != c2.imp());
-}
-
-// ------------------------------ Interpreter ---------------------------------
-
-Interpreter::Interpreter(const Object &global)
-{
-  rep = new InterpreterImp(this,global);
+  rep = new InterpreterImp(this, global);
 }
 
 Interpreter::Interpreter()
+  : rep(0)
+  , m_argumentsPropertyName(&argumentsPropertyName)
+  , m_specialPrototypePropertyName(&specialPrototypePropertyName)
 {
-  Object global(new ObjectImp());
-  rep = new InterpreterImp(this,global);
+  rep = new InterpreterImp(this, new ObjectImp);
 }
 
 Interpreter::~Interpreter()
@@ -126,7 +89,7 @@ Interpreter::~Interpreter()
   delete rep;
 }
 
-Object &Interpreter::globalObject() const
+ObjectImp *Interpreter::globalObject() const
 {
   return rep->globalObject();
 }
@@ -146,14 +109,14 @@ void Interpreter::unlock()
   InterpreterImp::unlock();
 }
 
+int Interpreter::lockCount()
+{
+  return InterpreterImp::lockCount();
+}
+
 ExecState *Interpreter::globalExec()
 {
   return rep->globalExec();
-}
-
-bool Interpreter::checkSyntax(const UString &code, int *errLine, UString *errMsg)
-{
-  return rep->checkSyntax(code,errLine,errMsg);
 }
 
 bool Interpreter::checkSyntax(const UString &code)
@@ -161,162 +124,176 @@ bool Interpreter::checkSyntax(const UString &code)
   return rep->checkSyntax(code);
 }
 
-Completion Interpreter::evaluate(const UString &code, const Value &thisV)
+Completion Interpreter::evaluate(const UString &code, ValueImp *thisV, const UString &)
 {
-  return rep->evaluate(code,thisV);
+  return evaluate(UString(), 0, code, thisV);
 }
 
-InterpreterImp *Interpreter::imp()
+Completion Interpreter::evaluate(const UString &sourceURL, int startingLineNumber, const UString &code, ValueImp *thisV)
 {
-  return rep;
+  Completion comp = rep->evaluate(code,thisV, sourceURL, startingLineNumber);
+
+#if APPLE_CHANGES
+  if (shouldPrintExceptions() && comp.complType() == Throw) {
+    InterpreterLock lock;
+    ExecState *exec = rep->globalExec();
+    char *f = strdup(sourceURL.ascii());
+    const char *message = comp.value()->toObject(exec)->toString(exec).ascii();
+    printf("[%d] %s:%s\n", getpid(), f, message);
+
+    free(f);
+  }
+#endif
+
+  return comp;
 }
 
-Object Interpreter::builtinObject() const
+ObjectImp *Interpreter::builtinObject() const
 {
   return rep->builtinObject();
 }
 
-Object Interpreter::builtinFunction() const
+ObjectImp *Interpreter::builtinFunction() const
 {
   return rep->builtinFunction();
 }
 
-Object Interpreter::builtinArray() const
+ObjectImp *Interpreter::builtinArray() const
 {
   return rep->builtinArray();
 }
 
-Object Interpreter::builtinBoolean() const
+ObjectImp *Interpreter::builtinBoolean() const
 {
   return rep->builtinBoolean();
 }
 
-Object Interpreter::builtinString() const
+ObjectImp *Interpreter::builtinString() const
 {
   return rep->builtinString();
 }
 
-Object Interpreter::builtinNumber() const
+ObjectImp *Interpreter::builtinNumber() const
 {
   return rep->builtinNumber();
 }
 
-Object Interpreter::builtinDate() const
+ObjectImp *Interpreter::builtinDate() const
 {
   return rep->builtinDate();
 }
 
-Object Interpreter::builtinRegExp() const
+ObjectImp *Interpreter::builtinRegExp() const
 {
   return rep->builtinRegExp();
 }
 
-Object Interpreter::builtinError() const
+ObjectImp *Interpreter::builtinError() const
 {
   return rep->builtinError();
 }
 
-Object Interpreter::builtinObjectPrototype() const
+ObjectImp *Interpreter::builtinObjectPrototype() const
 {
   return rep->builtinObjectPrototype();
 }
 
-Object Interpreter::builtinFunctionPrototype() const
+ObjectImp *Interpreter::builtinFunctionPrototype() const
 {
   return rep->builtinFunctionPrototype();
 }
 
-Object Interpreter::builtinArrayPrototype() const
+ObjectImp *Interpreter::builtinArrayPrototype() const
 {
   return rep->builtinArrayPrototype();
 }
 
-Object Interpreter::builtinBooleanPrototype() const
+ObjectImp *Interpreter::builtinBooleanPrototype() const
 {
   return rep->builtinBooleanPrototype();
 }
 
-Object Interpreter::builtinStringPrototype() const
+ObjectImp *Interpreter::builtinStringPrototype() const
 {
   return rep->builtinStringPrototype();
 }
 
-Object Interpreter::builtinNumberPrototype() const
+ObjectImp *Interpreter::builtinNumberPrototype() const
 {
   return rep->builtinNumberPrototype();
 }
 
-Object Interpreter::builtinDatePrototype() const
+ObjectImp *Interpreter::builtinDatePrototype() const
 {
   return rep->builtinDatePrototype();
 }
 
-Object Interpreter::builtinRegExpPrototype() const
+ObjectImp *Interpreter::builtinRegExpPrototype() const
 {
   return rep->builtinRegExpPrototype();
 }
 
-Object Interpreter::builtinErrorPrototype() const
+ObjectImp *Interpreter::builtinErrorPrototype() const
 {
   return rep->builtinErrorPrototype();
 }
 
-Object Interpreter::builtinEvalError() const
+ObjectImp *Interpreter::builtinEvalError() const
 {
   return rep->builtinEvalError();
 }
 
-Object Interpreter::builtinRangeError() const
+ObjectImp *Interpreter::builtinRangeError() const
 {
   return rep->builtinRangeError();
 }
 
-Object Interpreter::builtinReferenceError() const
+ObjectImp *Interpreter::builtinReferenceError() const
 {
   return rep->builtinReferenceError();
 }
 
-Object Interpreter::builtinSyntaxError() const
+ObjectImp *Interpreter::builtinSyntaxError() const
 {
   return rep->builtinSyntaxError();
 }
 
-Object Interpreter::builtinTypeError() const
+ObjectImp *Interpreter::builtinTypeError() const
 {
   return rep->builtinTypeError();
 }
 
-Object Interpreter::builtinURIError() const
+ObjectImp *Interpreter::builtinURIError() const
 {
   return rep->builtinURIError();
 }
 
-Object Interpreter::builtinEvalErrorPrototype() const
+ObjectImp *Interpreter::builtinEvalErrorPrototype() const
 {
   return rep->builtinEvalErrorPrototype();
 }
 
-Object Interpreter::builtinRangeErrorPrototype() const
+ObjectImp *Interpreter::builtinRangeErrorPrototype() const
 {
   return rep->builtinRangeErrorPrototype();
 }
 
-Object Interpreter::builtinReferenceErrorPrototype() const
+ObjectImp *Interpreter::builtinReferenceErrorPrototype() const
 {
   return rep->builtinReferenceErrorPrototype();
 }
 
-Object Interpreter::builtinSyntaxErrorPrototype() const
+ObjectImp *Interpreter::builtinSyntaxErrorPrototype() const
 {
   return rep->builtinSyntaxErrorPrototype();
 }
 
-Object Interpreter::builtinTypeErrorPrototype() const
+ObjectImp *Interpreter::builtinTypeErrorPrototype() const
 {
   return rep->builtinTypeErrorPrototype();
 }
 
-Object Interpreter::builtinURIErrorPrototype() const
+ObjectImp *Interpreter::builtinURIErrorPrototype() const
 {
   return rep->builtinURIErrorPrototype();
 }
@@ -331,21 +308,12 @@ Interpreter::CompatMode Interpreter::compatMode() const
   return rep->compatMode();
 }
 
-bool Interpreter::collect()
-{
-  return Collector::collect();
-}
-
 #ifdef KJS_DEBUG_MEM
 #include "lexer.h"
 void Interpreter::finalCheck()
 {
   fprintf(stderr,"Interpreter::finalCheck()\n");
-  // Garbage collect - as many times as necessary
-  // (we could delete an object which was holding another object, so
-  // the deref() will happen too late for deleting the impl of the 2nd object).
-  while( Collector::collect() )
-    ;
+  Collector::collect();
 
   Node::finalCheck();
   Collector::finalCheck();
@@ -354,39 +322,47 @@ void Interpreter::finalCheck()
 }
 #endif
 
-// ------------------------------ ExecState --------------------------------------
+#if APPLE_CHANGES
+static bool printExceptions = false;
 
-void ExecState::setException(const Value &e)
+bool Interpreter::shouldPrintExceptions()
 {
-  if (e.isValid()) {
-    Debugger *dbg = _interpreter->imp()->debugger();
-    if (dbg)
-      dbg->exception(this,e,_context->inTryCatch());
-  }
-  _exception = e;
+  return printExceptions;
 }
 
-void ExecState::clearException()
+void Interpreter::setShouldPrintExceptions(bool print)
 {
-  terminate_request = false;
-  _exception = Value();
+  printExceptions = print;
 }
 
-bool ExecState::terminate_request = false;
 
-static bool defaultConfirm() { return true; }
-
-bool (*ExecState::confirmTerminate)() = defaultConfirm;
-
-bool ExecState::hadException()
+void *Interpreter::createLanguageInstanceForValue(ExecState *exec, int language, ObjectImp *value, const Bindings::RootObject *origin, const Bindings::RootObject *current)
 {
-  if (terminate_request) {
-    if (confirmTerminate())
-      _exception = Error::create((ExecState*)this);
-    terminate_request = false;
-  }
-  return _exception.isValid();
+    return Bindings::Instance::createLanguageInstanceForValue (exec, (Bindings::Instance::BindingLanguage)language, value, origin, current);
 }
+
+#endif
+
+void Interpreter::saveBuiltins (SavedBuiltins &builtins) const
+{
+  rep->saveBuiltins(builtins);
+}
+
+void Interpreter::restoreBuiltins (const SavedBuiltins &builtins)
+{
+  rep->restoreBuiltins(builtins);
+}
+
+SavedBuiltins::SavedBuiltins() : 
+  _internal(0)
+{
+}
+
+SavedBuiltins::~SavedBuiltins()
+{
+  delete _internal;
+}
+
 
 void Interpreter::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
@@ -394,10 +370,6 @@ void Interpreter::virtual_hook( int, void* )
 
 Interpreter *ExecState::lexicalInterpreter() const
 {
-  // TODO: use proper implementation
-#if 1
-  return dynamicInterpreter();
-#else
   if (!_context) {
     return dynamicInterpreter();
   }
@@ -409,5 +381,4 @@ Interpreter *ExecState::lexicalInterpreter() const
   }
 
   return result->interpreter();
-#endif
 }

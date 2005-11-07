@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003 Apple Computer, Inc
@@ -15,38 +14,129 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
-#ifndef _KJS_SIMPLE_NUMBER_H_
-#define _KJS_SIMPLE_NUMBER_H_
+#ifndef KJS_SIMPLE_NUMBER_H
+#define KJS_SIMPLE_NUMBER_H
 
+#include <assert.h>
+
+// We include these headers here because simple_number.h is the most low-level header we have.
+#include <float.h>
 #include <math.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
-#define IS_NEGATIVE_ZERO(num) (num == 0.0 && !memcmp(&num, &SimpleNumber::negZero, sizeof(double)))
+// Workaround for a bug in GCC library headers.
+// We'd prefer to just use math.h.
+#if !WIN32
+#include <cmath>
+using std::isfinite;
+using std::isinf;
+using std::isnan;
+using std::signbit;
+#endif
+
+
+#if defined(__GNUC__) && (__GNUC__ > 3)
+#define ALWAYS_INLINE __attribute__ ((always_inline))
+#else
+#define ALWAYS_INLINE inline
+#endif
 
 namespace KJS {
+
     class ValueImp;
 
     class SimpleNumber {
     public:
-	enum { tag = 1, shift = 2, mask = (1 << shift) - 1, sign = 1L << (sizeof(long) * 8 - 1 ), max = (1L << ((sizeof(long) * 8 - 1) - shift)) - 1, min = -max - 1, imax = (1L << ((sizeof(int) * 8 - 1) - shift)) - 1, imin = -imax - 1 };
+        static const unsigned long tag     = 1; // 01 is the full tag, since it's 2 bits long.
+        static const unsigned long tagMask = 3; // 11 is the tag mask, since it's 2 bits long.
+        
+        ALWAYS_INLINE
+        static ValueImp *make(double d)
+        {
+            if (sizeof(float) == sizeof(unsigned long) &&
+                sizeof(double) == sizeof(unsigned long long) &&
+                sizeof(ValueImp *) >= sizeof(unsigned long)) {
+                // 32-bit
+                union {
+                    unsigned long asBits;
+                    float         asFloat;
+                } floatUnion;
+                floatUnion.asFloat = d;
+                
+                if ((floatUnion.asBits & tagMask) != 0)
+                  return 0;
+                
+                // Check for loss in conversion to float
+                union {
+                    unsigned long long asBits;
+                    double             asDouble;
+                } doubleUnion1, doubleUnion2;
+                doubleUnion1.asDouble = floatUnion.asFloat;
+                doubleUnion2.asDouble = d;
+                if (doubleUnion1.asBits != doubleUnion2.asBits)
+                    return 0;
+                
+                return reinterpret_cast<ValueImp *>(floatUnion.asBits | tag);
+            } else if (sizeof(double) == sizeof(unsigned long) &&
+                       sizeof(ValueImp*) >= sizeof(unsigned long)) {
+                // 64-bit
+                union {
+                    unsigned long asBits;
+                    double        asDouble;
+                } doubleUnion;
+                doubleUnion.asDouble = d;
+                
+                if ((doubleUnion.asBits & tagMask) != 0)
+                    return 0;
 
-	static inline bool is(const ValueImp *imp) { return ((long)imp & mask) == tag; }
-	static inline long value(const ValueImp *imp) { return ((long)imp >> shift) | (((long)imp & sign) ? ~max : 0); }
+                return reinterpret_cast<ValueImp *>(doubleUnion.asBits | tag);
+            } else {
+                // could just return 0 here, but nicer to be explicit about not supporting the platform well
+                abort();
+            }
+        }
 
-	static inline bool fits(int i) { return i <= imax && i >= imin; }
-	static inline bool fits(unsigned i) { return i <= (unsigned)max; }
-	static inline bool fits(long i) { return i <= max && i >= min; }
-	static inline bool fits(unsigned long i) { return i <= (unsigned)max; }
-	static inline bool fits(double d) { return d >= min && d <= max && d == (double)(long)d && !IS_NEGATIVE_ZERO(d); }
-	static inline ValueImp *make(long i) { return (ValueImp *)((i << shift) | tag); }
-
-	static double negZero;
+        static bool is(const ValueImp *imp)
+        {
+            return (reinterpret_cast<unsigned long>(imp) & tagMask) == tag;
+        }
+        
+        ALWAYS_INLINE
+        static double value(const ValueImp *imp)
+        {
+            assert(is(imp));
+            
+            if (sizeof(float) == sizeof(unsigned long)) {
+                // 32-bit
+                union {
+                    unsigned long asBits;
+                    float         asFloat;
+                } floatUnion;
+                floatUnion.asBits = reinterpret_cast<unsigned long>(imp) & ~tagMask;
+                return floatUnion.asFloat;
+            } else if (sizeof(double) == sizeof(unsigned long)) {
+                // 64-bit
+                union {
+                    unsigned long asBits;
+                    double        asDouble;
+                } doubleUnion;
+                doubleUnion.asBits = reinterpret_cast<unsigned long>(imp) & ~tagMask;
+                return doubleUnion.asDouble;
+            } else {
+                // could just return 0 here, but nicer to be explicit about not supporting the platform well
+                abort();
+            }
+        }
+        
     };
+
 }
 
 #endif

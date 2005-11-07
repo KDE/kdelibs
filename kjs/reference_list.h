@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -31,10 +31,7 @@ namespace KJS {
   class ReferenceListNode;
   class ReferenceListHeadNode;
 
-/**
-* An iterator for a  @ref ReferenceList.
-*/
-  class KJS_EXPORT ReferenceListIterator {
+  class ReferenceListIterator {
     friend class ReferenceList;
   
   public:
@@ -48,10 +45,7 @@ namespace KJS {
     ReferenceListNode *node;
   };
   
-/**
-* A list of @ref Reference objects.
-*/
-  class KJS_EXPORT ReferenceList {
+  class ReferenceList {
   public:
     ReferenceList();
     ReferenceList(const ReferenceList &list);

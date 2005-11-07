@@ -14,16 +14,31 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
+// For JavaScriptCore we need to avoid having static constructors.
+// Our strategy is to declare the global objects with a different type (initialized to 0)
+// and then use placement new to initialize the global objects later. This is not completely
+// portable, and it would be good to figure out a 100% clean way that still avoids code that
+// runs at init time.
+
+#if !defined(WIN32) // can't get this to compile on Visual C++ yet
+#define AVOID_STATIC_CONSTRUCTORS 1
+#endif
+
+#if AVOID_STATIC_CONSTRUCTORS
+#define KJS_IDENTIFIER_HIDE_GLOBALS 1
+#endif
+
+#include "config.h"
 #include "identifier.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <kxmlcore/FastMalloc.h>
+#include <string.h> // for strlen
+#include <new> // for placement new
 
 #define DUMP_STATISTICS 0
 
@@ -47,19 +62,7 @@ IdentifierStatisticsExitLogger::~IdentifierStatisticsExitLogger()
 
 #endif
 
-extern const Identifier argumentsPropertyName("arguments");
-extern const Identifier calleePropertyName("callee");
-extern const Identifier constructorPropertyName("constructor");
-extern const Identifier lengthPropertyName("length");
-extern const Identifier messagePropertyName("message");
-extern const Identifier namePropertyName("name");
-extern const Identifier prototypePropertyName("prototype");
-extern const Identifier specialPrototypePropertyName("__proto__");
-extern const Identifier toLocaleStringPropertyName("toLocaleString");
-extern const Identifier toStringPropertyName("toString");
-extern const Identifier valueOfPropertyName("valueOf");
-
-static const int _minTableSize = 64;
+const int _minTableSize = 64;
 
 UString::Rep **Identifier::_table;
 int Identifier::_tableSize;
@@ -107,12 +110,12 @@ UString::Rep *Identifier::add(const char *c)
     int length = strlen(c);
     if (length == 0)
         return &UString::Rep::empty;
-
+    
     if (!_table)
         expand();
-
+    
     unsigned hash = UString::Rep::computeHash(c);
-
+    
     int i = hash & _tableSizeMask;
 #if DUMP_STATISTICS
     ++numProbes;
@@ -123,24 +126,22 @@ UString::Rep *Identifier::add(const char *c)
             return key;
         i = (i + 1) & _tableSizeMask;
     }
-
-    UChar *d = new UChar[length];
+    
+    UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * length));
     for (int j = 0; j != length; j++)
         d[j] = c[j];
-
-    UString::Rep *r = new UString::Rep;
-    r->dat = d;
-    r->len = length;
-    r->capacity = UString::Rep::capacityForIdentifier;
+    
+    UString::Rep *r = UString::Rep::create(d, length);
+    r->isIdentifier = 1;
     r->rc = 0;
     r->_hash = hash;
-
+    
     _table[i] = r;
     ++_keyCount;
-
+    
     if (_keyCount * 2 >= _tableSize)
         expand();
-
+    
     return r;
 }
 
@@ -148,12 +149,12 @@ UString::Rep *Identifier::add(const UChar *s, int length)
 {
     if (length == 0)
         return &UString::Rep::empty;
-
+    
     if (!_table)
         expand();
-
+    
     unsigned hash = UString::Rep::computeHash(s, length);
-
+    
     int i = hash & _tableSizeMask;
 #if DUMP_STATISTICS
     ++numProbes;
@@ -164,39 +165,37 @@ UString::Rep *Identifier::add(const UChar *s, int length)
             return key;
         i = (i + 1) & _tableSizeMask;
     }
-
-    UChar *d = new UChar[length];
+    
+    UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * length));
     for (int j = 0; j != length; j++)
         d[j] = s[j];
-
-    UString::Rep *r = new UString::Rep;
-    r->dat = d;
-    r->len = length;
-    r->capacity = UString::Rep::capacityForIdentifier;
+    
+    UString::Rep *r = UString::Rep::create(d, length);
+    r->isIdentifier = 1;
     r->rc = 0;
     r->_hash = hash;
-
+    
     _table[i] = r;
     ++_keyCount;
-
+    
     if (_keyCount * 2 >= _tableSize)
         expand();
-
+    
     return r;
 }
 
 UString::Rep *Identifier::add(UString::Rep *r)
 {
-    if (r->capacity == UString::Rep::capacityForIdentifier)
+    if (r->isIdentifier)
         return r;
     if (r->len == 0)
         return &UString::Rep::empty;
-
+    
     if (!_table)
         expand();
-
+    
     unsigned hash = r->hash();
-
+    
     int i = hash & _tableSizeMask;
 #if DUMP_STATISTICS
     ++numProbes;
@@ -207,22 +206,22 @@ UString::Rep *Identifier::add(UString::Rep *r)
             return key;
         i = (i + 1) & _tableSizeMask;
     }
-
-    r->capacity = UString::Rep::capacityForIdentifier;
-
+    
+    r->isIdentifier = 1;
+    
     _table[i] = r;
     ++_keyCount;
-
+    
     if (_keyCount * 2 >= _tableSize)
         expand();
-
+    
     return r;
 }
 
 inline void Identifier::insert(UString::Rep *key)
 {
     unsigned hash = key->hash();
-
+    
     int i = hash & _tableSizeMask;
 #if DUMP_STATISTICS
     ++numProbes;
@@ -230,16 +229,16 @@ inline void Identifier::insert(UString::Rep *key)
 #endif
     while (_table[i])
         i = (i + 1) & _tableSizeMask;
-
+    
     _table[i] = key;
 }
 
 void Identifier::remove(UString::Rep *r)
 {
     unsigned hash = r->hash();
-
+    
     UString::Rep *key;
-
+    
     int i = hash & _tableSizeMask;
 #if DUMP_STATISTICS
     ++numProbes;
@@ -252,15 +251,15 @@ void Identifier::remove(UString::Rep *r)
     }
     if (!key)
         return;
-
+    
     _table[i] = 0;
     --_keyCount;
-
+    
     if (_keyCount * 6 < _tableSize && _tableSize > _minTableSize) {
         shrink();
         return;
     }
-
+    
     // Reinsert all the items to the right in the same cluster.
     while (1) {
         i = (i + 1) & _tableSizeMask;
@@ -289,19 +288,51 @@ void Identifier::rehash(int newTableSize)
 
     _tableSize = newTableSize;
     _tableSizeMask = newTableSize - 1;
-    _table = (UString::Rep **)calloc(newTableSize, sizeof(UString::Rep *));
+    _table = (UString::Rep **)fastCalloc(newTableSize, sizeof(UString::Rep *));
 
     for (int i = 0; i != oldTableSize; ++i)
         if (UString::Rep *key = oldTable[i])
             insert(key);
 
-    free(oldTable);
+    fastFree(oldTable);
 }
 
-const Identifier &Identifier::null()
+// Global constants for property name strings.
+
+#if !AVOID_STATIC_CONSTRUCTORS
+    // Define an Identifier in the normal way.
+    #define DEFINE_GLOBAL(name, string) extern const Identifier name(string);
+#else
+    // Define an Identifier-sized array of pointers to avoid static initialization.
+    // Use an array of pointers instead of an array of char in case there is some alignment issue.
+    #define DEFINE_GLOBAL(name, string) \
+        void * name[(sizeof(Identifier) + sizeof(void *) - 1) / sizeof(void *)];
+#endif
+
+const char * const nullCString = 0;
+
+DEFINE_GLOBAL(nullIdentifier, nullCString)
+DEFINE_GLOBAL(specialPrototypePropertyName, "__proto__")
+
+#define DEFINE_PROPERTY_NAME_GLOBAL(name) DEFINE_GLOBAL(name ## PropertyName, #name)
+KJS_IDENTIFIER_EACH_PROPERTY_NAME_GLOBAL(DEFINE_PROPERTY_NAME_GLOBAL)
+
+void Identifier::init()
 {
-    static Identifier null;
-    return null;
+#if AVOID_STATIC_CONSTRUCTORS
+    static bool initialized;
+    if (!initialized) {
+        // Use placement new to initialize the globals.
+
+        new (&nullIdentifier) Identifier(nullCString);
+        new (&specialPrototypePropertyName) Identifier("__proto__");
+
+        #define PLACEMENT_NEW_PROPERTY_NAME_GLOBAL(name) new(&name ## PropertyName) Identifier(#name);
+        KJS_IDENTIFIER_EACH_PROPERTY_NAME_GLOBAL(PLACEMENT_NEW_PROPERTY_NAME_GLOBAL)
+
+        initialized = true;
+    }
+#endif
 }
 
 } // namespace KJS

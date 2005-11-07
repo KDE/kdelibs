@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -38,10 +38,11 @@ namespace KJS {
     ~Lexer();
     static Lexer *curr();
 
-    void setCode(const UChar *c, unsigned int len);
+    void setCode(const UString &sourceURL, int startingLineNumber, const UChar *c, unsigned int len);
     int lex();
 
-    int lineNo() const { return yylineno + 1; }
+    int lineNo() const { return yylineno; }
+    UString sourceURL() const { return m_sourceURL; }
 
     bool prevTerminator() const { return terminator; }
 
@@ -71,16 +72,10 @@ namespace KJS {
 
     bool scanRegExp();
     UString pattern, flags;
-    bool hadError() const { return foundBad; }
-
-    static bool isWhiteSpace(unsigned short c);
-    static bool isIdentLetter(unsigned short c);
-    static bool isDecimalDigit(unsigned short c);
-    static bool isHexDigit(unsigned short c);
-    static bool isOctalDigit(unsigned short c);
 
   private:
     int yylineno;
+    UString m_sourceURL;
     bool done;
     char *buffer8;
     UChar *buffer16;
@@ -95,7 +90,6 @@ namespace KJS {
     bool eatNextIdentifier;
     int stackToken;
     int lastToken;
-    bool foundBad;
 
     State state;
     void setDone(State s);
@@ -103,6 +97,10 @@ namespace KJS {
     void shift(unsigned int p);
     void nextLine();
     int lookupKeyword(const char *);
+
+    bool isWhiteSpace() const;
+    bool isLineTerminator();
+    bool isOctalDigit(unsigned short c) const;
 
     int matchPunctuator(unsigned short c1, unsigned short c2,
                         unsigned short c3, unsigned short c4);
@@ -114,6 +112,9 @@ namespace KJS {
     static unsigned char convertHex(unsigned short c1, unsigned short c2);
     static UChar convertUnicode(unsigned short c1, unsigned short c2,
                                 unsigned short c3, unsigned short c4);
+    static bool isIdentLetter(unsigned short c);
+    static bool isDecimalDigit(unsigned short c);
+    static bool isHexDigit(unsigned short c);
 
 #ifdef KJS_DEBUG_MEM
     /**
@@ -122,6 +123,7 @@ namespace KJS {
     static void globalClear();
 #endif
 
+    bool sawError() const { return error; }
     void doneParsing();
 
   private:
@@ -138,6 +140,7 @@ namespace KJS {
 #ifndef KJS_PURE_ECMA
     int bol;     // begin of line
 #endif
+    bool error;
 
     // current and following unicode characters
     unsigned short current, next1, next2, next3;

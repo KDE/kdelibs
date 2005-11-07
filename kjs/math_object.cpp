@@ -15,15 +15,14 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
+#include "config.h"
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
-#include <time.h>
 
 #include "value.h"
 #include "object.h"
@@ -34,13 +33,35 @@
 
 #include "math_object.lut.h"
 
+#if WIN32
+
+#include <float.h>
+static int signbit(double d)
+{
+    // FIXME: Not sure if this is exactly right.
+    switch (_fpclass(d)) {
+        case _FPCLASS_NINF:
+        case _FPCLASS_NN:
+        case _FPCLASS_ND:
+        case _FPCLASS_NZ:
+            // It's one of wacky negatives, report as negative.
+            return 1;
+        case _FPCLASS_PINF:
+        case _FPCLASS_PN:
+        case _FPCLASS_PD:
+        case _FPCLASS_PZ:
+            // It's one of wacky positives, report as positive.
+            return 0;
+        default:
+            return d < 0;
+    }
+}
+
+#endif
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif  /*  M_PI  */
-
-#ifndef signbit
-#define signbit(x) ((x) < 0.0 || IS_NEGATIVE_ZERO(x))
-#endif
 
 using namespace KJS;
 
@@ -49,7 +70,7 @@ using namespace KJS;
 const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 
 /* Source for math_object.lut.h
-@begin mathTable 31
+@begin mathTable 21
   E             MathObjectImp::Euler    DontEnum|DontDelete|ReadOnly
   LN2           MathObjectImp::Ln2      DontEnum|DontDelete|ReadOnly
   LN10          MathObjectImp::Ln10     DontEnum|DontDelete|ReadOnly
@@ -83,17 +104,16 @@ MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototypeImp *objProto)
   : ObjectImp(objProto)
 {
-   unsigned int seed = time(NULL);
-   ::srand(seed);
 }
 
 // ECMA 15.8
-Value MathObjectImp::get(ExecState *exec, const Identifier &propertyName) const
+
+bool MathObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
 {
-  return lookupGet<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
+  return getStaticPropertySlot<MathFuncImp, MathObjectImp, ObjectImp>(exec, &mathTable, this, propertyName, slot);
 }
 
-Value MathObjectImp::getValueProperty(ExecState *, int token) const
+ValueImp *MathObjectImp::getValueProperty(ExecState *, int token) const
 {
   double d = -42; // ;)
   switch (token) {
@@ -122,8 +142,7 @@ Value MathObjectImp::getValueProperty(ExecState *, int token) const
     d = sqrt(2.0);
     break;
   default:
-    fprintf( stderr, "Internal error in MathObjectImp: unhandled token %d\n", token );
-    break;
+    assert(0);
   }
 
   return Number(d);
@@ -133,10 +152,9 @@ Value MathObjectImp::getValueProperty(ExecState *, int token) const
 
 MathFuncImp::MathFuncImp(ExecState *exec, int i, int l)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype().imp())
+    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
     ), id(i)
 {
-  Value protect(this);
   putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
 }
 
@@ -145,10 +163,10 @@ bool MathFuncImp::implementsCall() const
   return true;
 }
 
-Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
 {
-  double arg = args[0].toNumber(exec);
-  double arg2 = args[1].toNumber(exec);
+  double arg = args[0]->toNumber(exec);
+  double arg2 = args[1]->toNumber(exec);
   double result;
 
   switch (id) {
@@ -186,7 +204,7 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
     unsigned int argsCount = args.size();
     result = -Inf;
     for ( unsigned int k = 0 ; k < argsCount ; ++k ) {
-      double val = args[k].toNumber(exec);
+      double val = args[k]->toNumber(exec);
       if ( isNaN( val ) )
       {
         result = NaN;
@@ -201,7 +219,7 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
     unsigned int argsCount = args.size();
     result = +Inf;
     for ( unsigned int k = 0 ; k < argsCount ; ++k ) {
-      double val = args[k].toNumber(exec);
+      double val = args[k]->toNumber(exec);
       if ( isNaN( val ) )
       {
         result = NaN;
@@ -214,15 +232,15 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
   }
   case MathObjectImp::Pow:
     // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
-    if (KJS::isNaN(arg2))
+    if (isNaN(arg2))
       result = NaN;
-#ifndef APPLE_CHANGES
+#if !APPLE_CHANGES
     else if (arg2 == 0)
       result = 1;
 #endif
-    else if (KJS::isNaN(arg) && arg2 != 0)
+    else if (isNaN(arg) && arg2 != 0)
       result = NaN;
-#ifndef APPLE_CHANGES
+#if !APPLE_CHANGES
     else if (::fabs(arg) > 1 && KJS::isPosInf(arg2))
       result = Inf;
     else if (::fabs(arg) > 1 && KJS::isNegInf(arg2))
@@ -230,7 +248,7 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 #endif
     else if (::fabs(arg) == 1 && KJS::isInf(arg2))
       result = NaN;
-#ifndef APPLE_CHANGES
+#if !APPLE_CHANGES
     else if (::fabs(arg) < 1 && KJS::isPosInf(arg2))
       result = +0;
     else if (::fabs(arg) < 1 && KJS::isNegInf(arg2))

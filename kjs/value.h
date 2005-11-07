@@ -1,9 +1,8 @@
-// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003-2005 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,384 +16,433 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
-#ifndef _KJS_VALUE_H_
-#define _KJS_VALUE_H_
+#ifndef KJS_VALUE_H
+#define KJS_VALUE_H
 
-#include <stdlib.h> // Needed for size_t
+#ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
-#include "ustring.h"
+// Uncomment this to enable very verbose output from KJS
+//#define KJS_VERBOSE
+// Uncomment this to debug memory allocation and garbage collection
+//#define KJS_DEBUG_MEM
+
+#endif
+
+#include <assert.h>
+#include <stdlib.h> // for size_t
 #include "simple_number.h"
-
-// Primitive data types
+#include "ustring.h"
 
 namespace KJS {
 
-  class Value;
-  class ValueImp;
-  class ValueImpPrivate;
-  class Undefined;
-  class UndefinedImp;
-  class Null;
-  class NullImp;
-  class Boolean;
-  class BooleanImp;
-  class String;
-  class StringImp;
-  class Number;
-  class NumberImp;
-  class Object;
-  class ObjectImp;
-  class Reference;
-  class List;
-  class ListImp;
-  class Completion;
-  class ExecState;
+class ClassInfo;
+class ExecState;
+class ObjectImp;
 
-  /**
-   * Primitive types
-   */
-  enum Type {
-    UnspecifiedType = 0,
-    UndefinedType   = 1,
-    NullType        = 2,
-    BooleanType     = 3,
-    StringType      = 4,
-    NumberType      = 5,
-    ObjectType      = 6
-  };
+/**
+ * Primitive types
+ */
+enum Type {
+    UnspecifiedType   = 0,
+    UndefinedType     = 1,
+    NullType          = 2,
+    BooleanType       = 3,
+    StringType        = 4,
+    NumberType        = 5,
+    ObjectType        = 6
+};
 
-  /**
-   * ValueImp is the base type for all primitives (Undefined, Null, Boolean,
-   * String, Number) and objects in ECMAScript.
-   *
-   * Note: you should never inherit from ValueImp as it is for primitive types
-   * only (all of which are provided internally by KJS). Instead, inherit from
-   * ObjectImp.
-   */
-  class KJS_EXPORT ValueImp {
-    friend class Collector;
-    friend class Value;
-    friend class ContextImp;
-  public:
+/**
+ * ValueImp is the base type for all primitives (Undefined, Null, Boolean,
+ * String, Number) and objects in ECMAScript.
+ *
+ * Note: you should never inherit from ValueImp as it is for primitive types
+ * only (all of which are provided internally by KJS). Instead, inherit from
+ * ObjectImp.
+ */
+class ValueImp {
+    friend class AllocatedValueImp; // so it can derive from this class
+    friend class ProtectedValues; // so it can call downcast()
+
+private:
     ValueImp();
     virtual ~ValueImp();
 
-    ValueImp* ref() { if (!SimpleNumber::is(this)) refcount++; return this; }
-    bool deref() { if (SimpleNumber::is(this)) return false; else return (!--refcount); }
+public:
+    // Querying the type.
+    Type type() const;
+    bool isUndefined() const;
+    bool isNull() const;
+    bool isUndefinedOrNull() const;
+    bool isBoolean() const;
+    bool isNumber() const;
+    bool isString() const;
+    bool isObject() const;
+    bool isObject(const ClassInfo *) const;
 
-    virtual void mark();
+    // Extracting the value.
+    bool getBoolean(bool&) const;
+    bool getNumber(double&) const;
+    double getNumber() const; // NaN if not a number
+    bool getString(UString&) const;
+    UString getString() const; // null string if not a string
+    ObjectImp *getObject(); // NULL if not an object
+    const ObjectImp *getObject() const; // NULL if not an object
+
+    // Extracting integer values.
+    bool getUInt32(uint32_t&) const;
+
+    // Basic conversions.
+    ValueImp *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
+    bool toBoolean(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
+    ObjectImp *toObject(ExecState *exec) const;
+
+    // Integer conversions.
+    double toInteger(ExecState *exec) const;
+    int32_t toInt32(ExecState *exec) const;
+    uint32_t toUInt32(ExecState *exec) const;
+    uint16_t toUInt16(ExecState *exec) const;
+
+    // Garbage collection.
+    void mark();
     bool marked() const;
-    void* operator new(size_t);
-    void operator delete(void*);
 
-    /**
-     * @internal
-     *
-     * set by Object() so that the collector is allowed to delete us
-     */
-    void setGcAllowed();
-
-    // Will crash if called on a simple number.
-    void setGcAllowedFast() { _flags |= VI_GCALLOWED; }
-
-    int toInteger(ExecState *exec) const;
-    int toInt32(ExecState *exec) const;
-    unsigned int toUInt32(ExecState *exec) const;
-    unsigned short toUInt16(ExecState *exec) const;
-
-    // Dispatch wrappers that handle the special small number case
-
-    Type dispatchType() const;
-    Value dispatchToPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
-    bool dispatchToBoolean(ExecState *exec) const;
-    double dispatchToNumber(ExecState *exec) const;
-    UString dispatchToString(ExecState *exec) const;
-    bool dispatchToUInt32(unsigned&) const;
-    Object dispatchToObject(ExecState *exec) const;
-
-    unsigned short int refcount;
-
-    bool isDestroyed() const { return _flags & VI_DESTRUCTED; }
-
-  private:
-    unsigned short int _flags;
-
-    virtual Type type() const = 0;
-
-    // The conversion operations
-
-    virtual Value toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const = 0;
-    virtual bool toBoolean(ExecState *exec) const = 0;
-    virtual double toNumber(ExecState *exec) const = 0;
-    // TODO: no need for the following 4 int conversions to be virtual
-    virtual UString toString(ExecState *exec) const = 0;
-    virtual Object toObject(ExecState *exec) const = 0;
-    virtual bool toUInt32(unsigned&) const;
-
-    enum {
-      VI_MARKED = 1,
-      VI_GCALLOWED = 2,
-      VI_CREATED = 4,
-      VI_DESTRUCTED = 8   // nice word we have here :)
-    }; // VI means VALUEIMPL
-
-    ValueImpPrivate *_vd;
+private:
+    // Implementation details.
+    AllocatedValueImp *downcast();
+    const AllocatedValueImp *downcast() const;
 
     // Give a compile time error if we try to copy one of these.
     ValueImp(const ValueImp&);
     ValueImp& operator=(const ValueImp&);
-  };
+};
 
-  /**
-   * Value objects are act as wrappers ("smart pointers") around ValueImp
-   * objects and their descendents. Instead of using ValueImps
-   * (and derivatives) during normal program execution, you should use a
-   * Value-derived class.
-   *
-   * Value maintains a pointer to a ValueImp object and uses a reference
-   * counting scheme to ensure that the ValueImp object is not deleted or
-   * garbage collected.
-   *
-   * Note: The conversion operations all return values of various types -
-   * if an error occurs during conversion, an error object will instead
-   * be returned (where possible), and the execution state's exception
-   * will be set appropriately.
-   */
-  class KJS_EXPORT Value {
-  public:
-    Value() : rep(0) { }
-    explicit Value(ValueImp *v);
-    Value(const Value &v);
-    ~Value();
-
-    Value& operator=(const Value &v);
-    /**
-     * Returns whether or not this is a valid value. An invalid value
-     * has a 0 implementation pointer and should not be used for
-     * any other operation than this check. Current use: as a
-     * distinct return value signalling failing dynamicCast() calls.
-     */
-    bool isValid() const { return rep != 0; }
-    /**
-     * @deprecated
-     * Use !isValid() instead.
-     */
-    bool isNull() const { return rep == 0; }
-    ValueImp *imp() const { return rep; }
-
-    /**
-     * Returns the type of value. This is one of UndefinedType, NullType,
-     * BooleanType, StringType, NumberType, or ObjectType.
-     *
-     * @return The type of value
-     */
-    Type type() const { return rep->dispatchType(); }
-
-    /**
-     * Checks whether or not the value is of a particular tpye
-     *
-     * @param t The type to compare with
-     * @return true if the value is of the specified type, otherwise false
-     */
-    bool isA(Type t) const { return rep->dispatchType() == t; }
-
-    /**
-     * Performs the ToPrimitive type conversion operation on this value
-     * (ECMA 9.1)
-     */
-    Value toPrimitive(ExecState *exec,
-                      Type preferredType = UnspecifiedType) const
-      { return rep->dispatchToPrimitive(exec, preferredType); }
-
-    /**
-     * Performs the ToBoolean type conversion operation on this value (ECMA 9.2)
-     */
-    bool toBoolean(ExecState *exec) const { return rep->dispatchToBoolean(exec); }
-
-    /**
-     * Performs the ToNumber type conversion operation on this value (ECMA 9.3)
-     */
-    double toNumber(ExecState *exec) const { return rep->dispatchToNumber(exec); }
-
-    /**
-     * Performs the ToInteger type conversion operation on this value (ECMA 9.4)
-     */
-    int toInteger(ExecState *exec) const { return rep->toInteger(exec); }
-
-    /**
-     * Performs the ToInt32 type conversion operation on this value (ECMA 9.5)
-     */
-    int toInt32(ExecState *exec) const { return rep->toInt32(exec); }
-
-    /**
-     * Performs the ToUInt32 type conversion operation on this value (ECMA 9.6)
-     */
-    unsigned int toUInt32(ExecState *exec) const { return rep->toUInt32(exec); }
-
-    /**
-     * Performs the ToUInt16 type conversion operation on this value (ECMA 9.7)
-     */
-    unsigned short toUInt16(ExecState *exec) const { return rep->toUInt16(exec); }
-
-    /**
-     * Performs the ToString type conversion operation on this value (ECMA 9.8)
-     */
-    UString toString(ExecState *exec) const { return rep->dispatchToString(exec); }
-
-    /**
-     * Performs the ToObject type conversion operation on this value (ECMA 9.9)
-     */
-    Object toObject(ExecState *exec) const;
-
-    /**
-     * Checks if we can do a lossless conversion to UInt32.
-     */
-    bool toUInt32(unsigned& i) const { return rep->dispatchToUInt32(i); }
-
-  protected:
-    ValueImp *rep;
-  };
-
-  // Primitive types
-
-  /**
-   * Represents an primitive Undefined value. All instances of this class
-   * share the same implementation object, so == will always return true
-   * for any comparison between two Undefined objects.
-   */
-  class KJS_EXPORT Undefined : public Value {
-  public:
-    Undefined();
-
-    /**
-     * Converts a Value into an Undefined. If the value's type is not
-     * UndefinedType, a null object will be returned (i.e. one with it's
-     * internal pointer set to 0). If you do not know for sure whether the
-     * value is of type UndefinedType, you should check the isValid()
-     * methods afterwards before calling any methods on the returned value.
-     *
-     * @return The value converted to an Undefined
-     */
-    static Undefined dynamicCast(const Value &v);
-  private:
+class AllocatedValueImp : public ValueImp {
+    friend class Collector;
     friend class UndefinedImp;
-    explicit Undefined(UndefinedImp *v);
-
-  };
-
-  /**
-   * Represents an primitive Null value. All instances of this class
-   * share the same implementation object, so == will always return true
-   * for any comparison between two Null objects.
-   */
-  class KJS_EXPORT Null : public Value {
-  public:
-    Null();
-
-    /**
-     * Converts a Value into an Null. If the value's type is not NullType,
-     * a null object will be returned (i.e. one with it's internal pointer set
-     * to 0). If you do not know for sure whether the value is of type
-     * NullType, you should check the isValid() methods afterwards before
-     * calling any methods on the returned value.
-     *
-     * @return The value converted to a Null
-     */
-    static Null dynamicCast(const Value &v);
-  private:
     friend class NullImp;
-    explicit Null(NullImp *v);
-  };
-
-  /**
-   * Represents an primitive Boolean value
-   */
-  class KJS_EXPORT Boolean : public Value {
-  public:
-    Boolean(bool b = false);
-
-    /**
-     * Converts a Value into an Boolean. If the value's type is not BooleanType,
-     * a null object will be returned (i.e. one with it's internal pointer set
-     * to 0). If you do not know for sure whether the value is of type
-     * BooleanType, you should check the isValid() methods afterwards before
-     * calling any methods on the returned value.
-     *
-     * @return The value converted to a Boolean
-     */
-    static Boolean dynamicCast(const Value &v);
-
-    bool value() const;
-  private:
     friend class BooleanImp;
-    explicit Boolean(BooleanImp *v);
-  };
-
-  /**
-   * Represents an primitive String value
-   */
-  class KJS_EXPORT String : public Value {
-  public:
-    String(const UString &s = "");
-
-    /**
-     * Converts a Value into an String. If the value's type is not StringType,
-     * a null object will be returned (i.e. one with it's internal pointer set
-     * to 0). If you do not know for sure whether the value is of type
-     * StringType, you should check the isValid() methods afterwards before
-     * calling any methods on the returned value.
-     *
-     * @return The value converted to a String
-     */
-    static String dynamicCast(const Value &v);
-
-    UString value() const;
-  private:
-    friend class StringImp;
-    explicit String(StringImp *v);
-  };
-
-  extern const double NaN;
-  extern const double Inf;
-
-  /**
-   * Represents an primitive Number value
-   */
-  class KJS_EXPORT Number : public Value {
-    friend class ValueImp;
-  public:
-    Number(int i);
-    Number(unsigned int u);
-    Number(double d = 0.0);
-    Number(long int l);
-    Number(long unsigned int l);
-
-    double value() const;
-    int intValue() const;
-
-    bool isNaN() const;
-    bool isInf() const;
-
-    /**
-     * Converts a Value into an Number. If the value's type is not NumberType,
-     * a null object will be returned (i.e. one with it's internal pointer set
-     * to 0). If you do not know for sure whether the value is of type
-     * NumberType, you should check the isNull() methods afterwards before
-     * calling any methods on the returned value.
-     *
-     * @return The value converted to a Number
-     */
-    static Number dynamicCast(const Value &v);
-  private:
     friend class NumberImp;
-    explicit Number(NumberImp *v);
-  };
+    friend class StringImp;
+    friend class ObjectImp;
+private:
+    AllocatedValueImp();
+    virtual ~AllocatedValueImp();
+public:
+    // Querying the type.
+    virtual Type type() const = 0;
+    bool isBoolean() const;
+    bool isNumber() const;
+    bool isString() const;
+    bool isObject() const;
+    bool isObject(const ClassInfo *) const;
+
+    // Extracting the value.
+    bool getBoolean(bool&) const;
+    bool getNumber(double&) const;
+    double getNumber() const; // NaN if not a number
+    bool getString(UString&) const;
+    UString getString() const; // null string if not a string
+    ObjectImp *getObject(); // NULL if not an object
+    const ObjectImp *getObject() const; // NULL if not an object
+
+    // Extracting integer values.
+    virtual bool getUInt32(uint32_t&) const;
+
+    // Basic conversions.
+    virtual ValueImp *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const = 0;
+    virtual bool toBoolean(ExecState *exec) const = 0;
+    virtual double toNumber(ExecState *exec) const = 0;
+    virtual UString toString(ExecState *exec) const = 0;
+    virtual ObjectImp *toObject(ExecState *exec) const = 0;
+
+    // Garbage collection.
+    void *operator new(size_t);
+    virtual void mark();
+    bool marked() const;
+
+private:
+    bool m_marked;
+};
+
+AllocatedValueImp *jsUndefined();
+AllocatedValueImp *jsNull();
+
+AllocatedValueImp *jsBoolean(bool = false);
+
+ValueImp *jsNumber(double);
+ValueImp *jsNaN();
+ValueImp *jsZero();
+ValueImp *jsOne();
+ValueImp *jsTwo();
+
+AllocatedValueImp *jsString(const UString &); // returns empty string if passed null string
+AllocatedValueImp *jsString(const char * = ""); // returns empty string if passed 0
+
+extern const double NaN;
+extern const double Inf;
+
+class ConstantValues {
+public:
+    static AllocatedValueImp *undefined;
+    static AllocatedValueImp *null;
+    static AllocatedValueImp *jsFalse;
+    static AllocatedValueImp *jsTrue;
+
+    static void init();
+    static void clear();
+    static void mark();
+};
+
+inline AllocatedValueImp *jsUndefined()
+{
+    return ConstantValues::undefined;
+}
+
+inline AllocatedValueImp *jsNull()
+{
+    return ConstantValues::null;
+}
+
+inline AllocatedValueImp *jsBoolean(bool b)
+{
+    return b ? ConstantValues::jsTrue : ConstantValues::jsFalse;
+}
+
+inline ValueImp *jsNaN()
+{
+    return SimpleNumber::make(NaN);
+}
+
+inline ValueImp::ValueImp()
+{
+}
+
+inline ValueImp::~ValueImp()
+{
+}
+
+inline AllocatedValueImp::AllocatedValueImp()
+    : m_marked(false)
+{
+}
+
+inline AllocatedValueImp::~AllocatedValueImp()
+{
+}
+
+inline bool AllocatedValueImp::isBoolean() const
+{
+    return type() == BooleanType;
+}
+
+inline bool AllocatedValueImp::isNumber() const
+{
+    return type() == NumberType;
+}
+
+inline bool AllocatedValueImp::isString() const
+{
+    return type() == StringType;
+}
+
+inline bool AllocatedValueImp::isObject() const
+{
+    return type() == ObjectType;
+}
+
+inline bool AllocatedValueImp::marked() const
+{
+    return m_marked;
+}
+
+inline void AllocatedValueImp::mark()
+{
+    m_marked = true;
+}
+
+inline AllocatedValueImp *ValueImp::downcast()
+{
+    assert(!SimpleNumber::is(this));
+    return static_cast<AllocatedValueImp *>(this);
+}
+
+inline const AllocatedValueImp *ValueImp::downcast() const
+{
+    assert(!SimpleNumber::is(this));
+    return static_cast<const AllocatedValueImp *>(this);
+}
+
+inline bool ValueImp::isUndefined() const
+{
+    return this == jsUndefined();
+}
+
+inline bool ValueImp::isNull() const
+{
+    return this == jsNull();
+}
+
+inline bool ValueImp::isUndefinedOrNull() const
+{
+    return this == jsUndefined() || this == jsNull();
+}
+
+inline bool ValueImp::isBoolean() const
+{
+    return !SimpleNumber::is(this) && downcast()->isBoolean();
+}
+
+inline bool ValueImp::isNumber() const
+{
+    return SimpleNumber::is(this) || downcast()->isNumber();
+}
+
+inline bool ValueImp::isString() const
+{
+    return !SimpleNumber::is(this) && downcast()->isString();
+}
+
+inline bool ValueImp::isObject() const
+{
+    return !SimpleNumber::is(this) && downcast()->isObject();
+}
+
+inline bool ValueImp::isObject(const ClassInfo *c) const
+{
+    return !SimpleNumber::is(this) && downcast()->isObject(c);
+}
+
+inline bool ValueImp::getBoolean(bool& v) const
+{
+    return !SimpleNumber::is(this) && downcast()->getBoolean(v);
+}
+
+inline bool ValueImp::getNumber(double& v) const
+{
+    if (SimpleNumber::is(this)) {
+        v = SimpleNumber::value(this);
+        return true;
+    }
+    return downcast()->getNumber(v);
+}
+
+inline double ValueImp::getNumber() const
+{
+    return SimpleNumber::is(this) ? SimpleNumber::value(this) : downcast()->getNumber();
+}
+
+inline bool ValueImp::getString(UString& s) const
+{
+    return !SimpleNumber::is(this) && downcast()->getString(s);
+}
+
+inline UString ValueImp::getString() const
+{
+    return SimpleNumber::is(this) ? UString() : downcast()->getString();
+}
+
+inline ObjectImp *ValueImp::getObject()
+{
+    return SimpleNumber::is(this) ? 0 : downcast()->getObject();
+}
+
+inline const ObjectImp *ValueImp::getObject() const
+{
+    return SimpleNumber::is(this) ? 0 : downcast()->getObject();
+}
+
+inline bool ValueImp::getUInt32(uint32_t& v) const
+{
+    if (SimpleNumber::is(this)) {
+        double d = SimpleNumber::value(this);
+        if (!(d >= 0) || d > 0xFFFFFFFFUL) // true for NaN
+            return false;
+        v = static_cast<uint32_t>(d);
+        return true;
+    }
+    return downcast()->getUInt32(v);
+}
+
+inline void ValueImp::mark()
+{
+    if (!SimpleNumber::is(this))
+        downcast()->mark();
+}
+
+inline bool ValueImp::marked() const
+{
+    return SimpleNumber::is(this) || downcast()->marked();
+}
+
+inline Type ValueImp::type() const
+{
+    return SimpleNumber::is(this) ? NumberType : downcast()->type();
+}
+
+inline ValueImp *ValueImp::toPrimitive(ExecState *exec, Type preferredType) const
+{
+    return SimpleNumber::is(this) ? const_cast<ValueImp *>(this) : downcast()->toPrimitive(exec, preferredType);
+}
+
+inline bool ValueImp::toBoolean(ExecState *exec) const
+{
+    if (SimpleNumber::is(this)) {
+        double d = SimpleNumber::value(this);
+        return d < 0 || d > 0; // false for NaN
+    }
+
+    return downcast()->toBoolean(exec);
+}
+
+inline double ValueImp::toNumber(ExecState *exec) const
+{
+    return SimpleNumber::is(this) ? SimpleNumber::value(this) : downcast()->toNumber(exec);
+}
+
+inline UString ValueImp::toString(ExecState *exec) const
+{
+    if (SimpleNumber::is(this)) {
+        double d = SimpleNumber::value(this);
+        if (d == 0.0) // +0.0 or -0.0
+            d = 0.0;
+        return UString::from(d);
+    }
+
+    return downcast()->toString(exec);
+}
+
+inline ValueImp *jsZero()
+{
+    return SimpleNumber::make(0.0);
+}
+
+inline ValueImp *jsOne()
+{
+    return SimpleNumber::make(1.0);
+}
+
+inline ValueImp *jsTwo()
+{
+    return SimpleNumber::make(2.0);
+}
+
+// compatibility names so we don't have to change so much code
+
+inline AllocatedValueImp *Undefined() { return jsUndefined(); }
+inline AllocatedValueImp *Null() { return jsNull(); }
+inline AllocatedValueImp *Boolean(bool b) { return jsBoolean(b); }
+inline ValueImp *Number(double n) { return jsNumber(n); }
+inline AllocatedValueImp *String(const UString& s) { return jsString(s); }
+inline AllocatedValueImp *String(const char *s) { return jsString(s); }
 
 } // namespace
 
-#endif // _KJS_VALUE_H_
+#endif // KJS_VALUE_H

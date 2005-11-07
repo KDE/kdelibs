@@ -169,15 +169,7 @@
  *	the result overflows to +-Infinity or underflows to 0.
  */
 
-// Put this before anything else that may import a definition of CONST. CONST from grammar.cpp conflicts with this.
-#ifdef KDE_USE_FINAL
-#undef CONST
-#endif
-
 #include <config.h>
-
-#include "stdlib.h"
-
 #ifdef WORDS_BIGENDIAN
 #define IEEE_MC68k
 #else
@@ -189,7 +181,7 @@
 
 
 #ifndef Long
-#define Long int
+#define Long long
 #endif
 #ifndef ULong
 typedef unsigned Long ULong;
@@ -200,6 +192,7 @@ typedef unsigned Long ULong;
 #define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
 #endif
 
+#include "stdlib.h"
 #include "string.h"
 
 #ifdef USE_LOCALE
@@ -260,6 +253,10 @@ static double private_mem[PRIVATE_mem], *pmem_next = private_mem;
 #define DBL_MAX 1.7014118346046923e+38
 #endif
 
+#ifndef LONG_MAX
+#define LONG_MAX 2147483647
+#endif
+
 #else /* ifndef Bad_float_h */
 #include "float.h"
 #endif /* Bad_float_h */
@@ -267,6 +264,10 @@ static double private_mem[PRIVATE_mem], *pmem_next = private_mem;
 #ifndef __MATH_H__
 #include "math.h"
 #endif
+
+#define strtod kjs_strtod
+#define dtoa kjs_dtoa
+#define freedtoa kjs_freedtoa
 
 #ifdef __cplusplus
 extern "C" {
@@ -1528,7 +1529,7 @@ hexnan
 #endif /* INFNAN_CHECK */
 
  double
-kjs_strtod
+strtod
 #ifdef KR_headers
 	(s00, se) CONST char *s00; char **se;
 #else
@@ -2586,9 +2587,9 @@ nrv_alloc(CONST char *s, char **rve, int n)
 
  void
 #ifdef KR_headers
-kjs_freedtoa(s) char *s;
+freedtoa(s) char *s;
 #else
-kjs_freedtoa(char *s)
+freedtoa(char *s)
 #endif
 {
 	Bigint *b = (Bigint *)((int *)s - 1);
@@ -2635,7 +2636,7 @@ kjs_freedtoa(char *s)
  */
 
  char *
-kjs_dtoa
+dtoa
 #ifdef KR_headers
 	(d, mode, ndigits, decpt, sign, rve)
 	double d; int mode, ndigits, *decpt, *sign; char **rve;
@@ -2697,7 +2698,7 @@ kjs_dtoa
 
 #ifndef MULTIPLE_THREADS
 	if (dtoa_result) {
-		kjs_freedtoa(dtoa_result);
+		freedtoa(dtoa_result);
 		dtoa_result = 0;
 		}
 #endif

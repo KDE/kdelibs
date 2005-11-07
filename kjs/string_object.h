@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -32,15 +32,16 @@ namespace KJS {
     StringInstanceImp(ObjectImp *proto);
     StringInstanceImp(ObjectImp *proto, const UString &string);
 
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
-    virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-    virtual ReferenceList propList(ExecState *exec, bool recursive);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
- };
+  private:
+    static ValueImp *lengthGetter(ExecState *exec, const Identifier&, const PropertySlot &slot);
+    static ValueImp *indexGetter(ExecState *exec, const Identifier&, const PropertySlot &slot);
+  };
 
   /**
    * @internal
@@ -52,7 +53,7 @@ namespace KJS {
   public:
     StringPrototypeImp(ExecState *exec,
                        ObjectPrototypeImp *objProto);
-    Value get(ExecState *exec, const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };
@@ -68,12 +69,12 @@ namespace KJS {
     StringProtoFuncImp(ExecState *exec, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, Concat, IndexOf, LastIndexOf,
 	   Match, Replace, Search, Slice, Split,
 	   Substr, Substring, FromCharCode, ToLowerCase, ToUpperCase,
-	   ToLocaleLowerCase, ToLocaleUpperCase
+           ToLocaleLowerCase, ToLocaleUpperCase
 #ifndef KJS_PURE_ECMA
 	   , Big, Small, Blink, Bold, Fixed, Italics, Strike, Sub, Sup,
 	   Fontcolor, Fontsize, Anchor, Link
@@ -95,9 +96,9 @@ namespace KJS {
                     StringPrototypeImp *stringProto);
 
     virtual bool implementsConstruct() const;
-    virtual Object construct(ExecState *exec, const List &args);
+    virtual ObjectImp *construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
   };
 
   /**
@@ -110,7 +111,7 @@ namespace KJS {
   public:
     StringObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto);
     virtual bool implementsCall() const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
   };
 
 } // namespace
