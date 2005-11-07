@@ -90,4 +90,3 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 void KFilterBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "kfilterbase.moc"
