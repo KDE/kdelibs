@@ -172,9 +172,21 @@ public:
    */
   KResolverEntry& operator=(const KResolverEntry& other);
 
+#ifdef MAKE_KDECORE_LIB
+  /**
+   * Dummy operator== for compilers which need a complete
+   * instantiated class when exporting to a shared lib
+   */
+  KDE_DUMMY_COMPARISON_OPERATOR(KResolverEntry)
+#endif
+
 private:
   QSharedDataPointer<KResolverEntryPrivate> d;
 };
+
+#ifdef MAKE_KDECORE_LIB
+KDE_DUMMY_QHASH_FUNCTION(KResolverEntry)
+#endif
 
 class KResolverResultsPrivate;
 /**

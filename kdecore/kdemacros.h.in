@@ -263,4 +263,20 @@
     RESERVE_VIRTUAL_9
 /** @} */
 
+#ifdef KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+# define KDE_DUMMY_COMPARISON_OPERATOR(C) \
+    bool operator==(const C&) const { \
+        qWarning(#C"::operator==(const "#C"&) was called"); \
+        return false; \
+    }
+# define KDE_DUMMY_QHASH_FUNCTION(C) \
+    inline uint qHash(const C) { \
+        qWarning("inline uint qHash(const "#C") was called"); \
+        return 0; \
+    }
+#else
+# define KDE_DUMMY_COMPARISON_OPERATOR(C)
+# define KDE_DUMMY_QHASH_FUNCTION(C)
+#endif
+
 #endif /* _KDE_MACROS_H_ */
