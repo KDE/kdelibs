@@ -419,7 +419,7 @@ namespace KKeyServer
 	 * Converts the Qt-compatible button state to KKey modifier.
          * Windows only.
 	 */
-	KDECORE_EXPORT int qtButtonStateToMod( Qt::KeyboardModifier s );
+	KDECORE_EXPORT int qtButtonStateToMod( Qt::KeyboardModifiers s );
 #endif
 
 	/**
