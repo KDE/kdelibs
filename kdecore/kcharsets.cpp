@@ -18,7 +18,7 @@
 */
 #include "kcharsets.h"
 
-#include "kqiodevicegzip_p.h"
+#include "kfilterdev.h"
 #include "kentities.c"
 
 #include "kconfig.h"
@@ -644,8 +644,8 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
     
     if (gzipped && !charMapFileName.isEmpty()) {
-        KQIODeviceGZip gzip(dir + "/" + charMapFileName);
-        if (gzip.open(IO_ReadOnly)) {
+        KFilterDev gzip(dir + "/" + charMapFileName);
+        if (gzip.open(QIODevice::ReadOnly)) {
             kdDebug() << "Loading gzipped charset..." << endl;
             codec = QTextCodec::loadCharmap(&gzip);
             gzip.close();

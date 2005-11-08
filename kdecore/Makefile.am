@@ -77,7 +77,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
-	kprotocolinfofactory.h kqiodevicegzip_p.h
+	kprotocolinfofactory.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
@@ -109,7 +109,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp \
 	kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp \
 	kuser.cpp kconfigskeleton.cpp klockfile.cpp \
-	kqiodevicegzip_p.cpp ktimezones.cpp ktzfiletimezone.cpp kmath.cpp \
+	ktimezones.cpp ktzfiletimezone.cpp kmath.cpp \
 	kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp kbzip2filter.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
