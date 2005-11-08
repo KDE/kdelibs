@@ -75,7 +75,10 @@ def detect(env):
 	# User-specified library search paths
 	env['EXTRALIBS'] = env['ARGS'].get('extralibs', None)
 	if env['EXTRALIBS']:
-		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
+		extralibs = []
+		for lib in env['EXTRALIBS'].split(':'):
+			extralibs = extralibs + [ '-L' + lib ]
+		env['EXTRALIBS'] = extralibs
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 
 	libsuffix	= ''
