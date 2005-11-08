@@ -1,3 +1,18 @@
+2005-11-08  Germain Garand  <germain@ebooksfrance.org>
+
+        sizing of percent objects within table cells
+
+        * rendering/render_box.cpp (calcPercentageHeight): transfer most of the logic for table cells in render_table as 
+        it was partly redundant here. Don't apply the table cell sizing hacks in strict mode - no other engine does that.
+        Don't forget anonymous blocks - those must not stop recursion obviously.
+        Move substraction of the border/padding after calculation (spotted in WC)
+
+        * rendering/render_table.{cpp,h}: 
+        had member booleans to hold whether flexing of cells in a row is
+        needed, and in the affirmative, whether we need to mark our anonymous childs for relayout (hence go one level deeper). 
+        Part of line 1394 comes from WebCore. 
+        Also: don't allow negative offset in vertical alignment when content overflows ; matches MSIE better.
+
 2005-10-28  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/table_layout.cpp (calcEffectiveWidth): do proportional distribution of overflowing minwidth
