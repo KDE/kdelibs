@@ -34,7 +34,7 @@
 KToolBarRadioGroup::KToolBarRadioGroup (KToolBar *_parent)
 : QObject(_parent)
 {
-  buttons = new KToolBarButtonList();
+  buttons = new QHash<int, KToolBarButton*>;
   tb = _parent;
   connect (tb, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
 }
@@ -53,22 +53,22 @@ void KToolBarRadioGroup::addButton (int id)
 
 void KToolBarRadioGroup::removeButton (int id)
 {
-  if (!buttons->find(id))
+  if (!buttons->contains(id))
      return;
-  buttons->find(id)->setRadio(false);
+  buttons->value(id)->setRadio(false);
   buttons->remove(id);
 }
 
 void KToolBarRadioGroup::slotToggled(int id)
 {
-  if (buttons->find(id) && buttons->find(id)->isOn())
+  if (buttons->contains(id) && buttons->value(id)->isOn())
   {
-    Q3IntDictIterator<KToolBarButton> it(*buttons);
-    while (it.current())
+    QHashIterator<int, KToolBarButton*> it = *buttons;
+    while (it.hasNext())
     {
-      if (it.currentKey() != id)
-        it.current()->on(false);
-      ++it;
+      it.next();
+      if (it.key() != id)
+        it.value()->on(false);
     }
   }
 }

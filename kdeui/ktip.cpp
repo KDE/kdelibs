@@ -121,15 +121,15 @@ void KTipDatabase::addTips(const QString& tipFile )
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
-       // to make translations work, tip extraction here must exactly 
-       // match what is done by the preparetips script 
-       QString tip = content 
+       // to make translations work, tip extraction here must exactly
+       // match what is done by the preparetips script
+       QString tip = content
            .mid(pos + 6, content.find("</html>", pos, false) - pos - 6)
            .replace(rx, "\n");
        if (!tip.endsWith("\n"))
            tip += "\n";
-       if (tip.startsWith("\n")) 
-            tip = tip.mid(1); 
+       if (tip.startsWith("\n"))
+            tip = tip.mid(1);
         if (tip.isEmpty())
         {
             kdDebug() << "Empty tip found! Skipping! " << pos << endl;
@@ -208,14 +208,14 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     mDatabase = db;
 
     setCaption(i18n("Tip of the Day"));
-       
+
     QIcon icon;
     QPixmap pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 32 );
     icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
     pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 16 );
     icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
     setWindowIcon(icon);
-       
+
     QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
 
     if (isTipDialog)
@@ -236,7 +236,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     KHBox *hbox = new KHBox(this);
     hbox->setSpacing(0);
-    hbox->setFrameStyle(Q3Frame::Panel | Q3Frame::Sunken);
+    hbox->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     vbox->addWidget(hbox);
 
     KHBox *tl = new KHBox(hbox);
@@ -252,7 +252,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     mTipText->setWrapPolicy( Q3TextEdit::AtWordOrDocumentBoundary );
     mTipText->mimeSourceFactory()->addFilePath(
 	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
-    mTipText->setFrameStyle(Q3Frame::NoFrame | Q3Frame::Plain);
+    mTipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
     mTipText->setHScrollBarMode(Q3ScrollView::AlwaysOff);
     mTipText->setLinkUnderline(false);
 

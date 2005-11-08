@@ -49,8 +49,6 @@
 // needed to get our instance
 #include <kmainwindow.h>
 
-template class Q3IntDict<KToolBarButton>;
-
 class KToolBarButtonPrivate
 {
 public:
@@ -192,7 +190,7 @@ void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
     opt->toolButtonStyle = Qt::ToolButtonIconOnly;
   else if (d->m_iconText ==   KToolBar::TextOnly)
     opt->toolButtonStyle = Qt::ToolButtonTextBesideIcon;
-  else 
+  else
     opt->toolButtonStyle = Qt::ToolButtonTextBesideIcon;
 
   opt->features  = QStyleOptionToolButton::None; //We don't Qt know about the menu, since we don't want the split-button!
@@ -661,12 +659,6 @@ int KToolBarButton::iconTextMode() const
 int KToolBarButton::id() const
 {
     return d->m_id;
-}
-
-// KToolBarButtonList
-KToolBarButtonList::KToolBarButtonList()
-{
-   setAutoDelete(false);
 }
 
 void KToolBarButton::virtual_hook( int, void* )

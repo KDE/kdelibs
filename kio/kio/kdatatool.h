@@ -216,7 +216,7 @@ public:
      * @param slot the slot that will receive the toolActivated() signals
      * @return the KActions
      */
-    static Q3PtrList<KAction> dataToolActionList( const Q3ValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
+    static QList<KAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
 
 signals:
     /**

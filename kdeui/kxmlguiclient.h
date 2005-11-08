@@ -20,7 +20,6 @@
 #define _KXMLGUICLIENT_H
 
 #include <qdom.h>
-#include <q3ptrlist.h>
 #include <qmap.h>
 #include <qstringlist.h>
 
@@ -167,7 +166,7 @@ public:
   /**
    * Retrieves a list of all child clients.
    */
-  const Q3PtrList<KXMLGUIClient> *childClients();
+  const QList<KXMLGUIClient*>& childClients();
 
   /**
    * A client can have an own KXMLGUIBuilder.
@@ -234,7 +233,7 @@ public:
    *       plugActionList() would leave the previous actions in the
    *       menu too..
    */
-  void plugActionList( const QString &name, const Q3PtrList<KAction> &actionList );
+  void plugActionList( const QString &name, const QList<KAction*> &actionList );
 
   /**
    * The complement of plugActionList() ...

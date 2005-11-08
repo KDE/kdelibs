@@ -27,8 +27,8 @@ class KProcess;
 class KActionCollection;
 class QComboBox;
 class QToolButton;
-class KListView;
-class Q3ListViewItem;
+class QListWidget;
+class QListWidgetItem;
 
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
@@ -388,10 +388,10 @@ signals:
 protected slots:
   void slotToolbarSelected(const QString& text);
 
-  void slotInactiveSelected(Q3ListViewItem *item);
-  void slotActiveSelected(Q3ListViewItem *item);
+  void slotInactiveSelected(QListWidgetItem *item);
+  void slotActiveSelected(QListWidgetItem *item);
 
-  void slotDropped(KListView *list, QDropEvent *e, Q3ListViewItem *after);
+  void slotDropped(QListWidget *list, QDropEvent *e, QListWidgetItem *after);
 
   void slotInsertButton();
   void slotRemoveButton();
@@ -406,9 +406,9 @@ private slots:
 private:
   void setupLayout();
 
-  void insertActive(ToolbarItem *item, Q3ListViewItem *before, bool prepend = false);
+  void insertActive(ToolbarItem *item, QListWidgetItem *before, bool prepend = false);
   void removeActive(ToolbarItem *item);
-  void moveActive(ToolbarItem *item, Q3ListViewItem *before);
+  void moveActive(ToolbarItem *item, QListWidgetItem *before);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
   void loadToolbarCombo(const QString& defaultToolbar = QString::null);

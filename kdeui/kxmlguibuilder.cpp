@@ -31,7 +31,6 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <qobject.h>
-#include <q3popupmenu.h>
 
 class KXMLGUIBuilderPrivate
 {

@@ -87,7 +87,7 @@ public:
     /*
      * List of all clients
      */
-    Q3PtrList<KXMLGUIClient> m_clients;
+    QList<KXMLGUIClient*> m_clients;
 
     QString tagActionList;
 
@@ -230,7 +230,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     d->guiClient = client;
 
     // add this client to our client list
-    if ( !d->m_clients.containsRef( client ) )
+    if ( !d->m_clients.contains( client ) )
         d->m_clients.append( client );
     else
         kdDebug(129) << "XMLGUI client already added " << client << endl;
@@ -297,13 +297,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     emit clientAdded( client );
 
     // build child clients
-    if ( client->childClients()->count() > 0 )
-    {
-        const Q3PtrList<KXMLGUIClient> *children = client->childClients();
-        Q3PtrListIterator<KXMLGUIClient> childIt( *children );
-        for (; childIt.current(); ++childIt )
-            addClient( childIt.current() );
-    }
+    foreach (KXMLGUIClient *child, client->childClients())
+        addClient( child );
 
 //    kdDebug() << "addClient took " << dt.elapsed() << endl;
 }
@@ -317,17 +312,11 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
         return;
 
     // remove this client from our client list
-    d->m_clients.removeRef( client );
+    d->m_clients.removeAll( client );
 
     // remove child clients first
-    if ( client->childClients()->count() > 0 )
-    {
-        const Q3PtrList<KXMLGUIClient> *children = client->childClients();
-        Q3PtrListIterator<KXMLGUIClient> childIt( *children );
-        childIt.toLast();
-        for (; childIt.current(); --childIt )
-            removeClient( childIt.current() );
-    }
+    while (client->childClients().count())
+        removeClient(client->childClients().last());
 
     kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
 
@@ -366,7 +355,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     emit clientRemoved( client );
 }
 
-Q3PtrList<KXMLGUIClient> KXMLGUIFactory::clients() const
+const QList<KXMLGUIClient*>& KXMLGUIFactory::clients() const
 {
     return d->m_clients;
 }
@@ -388,7 +377,7 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
     return result;
 }
 
-Q3PtrList<QWidget> KXMLGUIFactory::containers( const QString &tagName )
+QList<QWidget*> KXMLGUIFactory::containers( const QString &tagName )
 {
     return findRecursive( d->m_rootNode, tagName );
 }
@@ -426,10 +415,9 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
          ( !d->guiClient || node->client == d->guiClient ) )
         return node->container;
 
-    Q3PtrListIterator<ContainerNode> it( node->children );
-    for (; it.current(); ++it )
+    foreach (ContainerNode* child, node->children)
     {
-        QWidget *cont = findRecursive( it.current(), tag );
+        QWidget *cont = findRecursive( child, tag );
         if ( cont )
             return cont;
     }
@@ -437,28 +425,22 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
     return 0L;
 }
 
-Q3PtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
+QList<QWidget*> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
                                                  const QString &tagName )
 {
-    Q3PtrList<QWidget> res;
+    QList<QWidget*> res;
 
     if ( node->tagName == tagName.toLower() )
         res.append( node->container );
 
-    Q3PtrListIterator<KXMLGUI::ContainerNode> it( node->children );
-    for (; it.current(); ++it )
-    {
-        Q3PtrList<QWidget> lst = findRecursive( it.current(), tagName );
-        Q3PtrListIterator<QWidget> wit( lst );
-        for (; wit.current(); ++wit )
-            res.append( wit.current() );
-    }
+    foreach (KXMLGUI::ContainerNode* child, node->children)
+        res << findRecursive( child, tagName );
 
     return res;
 }
 
 void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
-                                     const Q3PtrList<KAction> &actionList )
+                                     const QList<KAction*> &actionList )
 {
     d->pushState();
     d->guiClient = client;
@@ -547,11 +529,8 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSettings )
 {
 	KKeyDialog dlg( bAllowLetterShortcuts, dynamic_cast<QWidget*>(parent()) );
-	Q3PtrListIterator<KXMLGUIClient> it( d->m_clients );
-	KXMLGUIClient *client;
-	while( (client=it.current()) !=0 )
+	foreach (KXMLGUIClient *client, d->m_clients)
 	{
-		++it;
 		if(!client->xmlFile().isEmpty())
 			dlg.insert( client->actionCollection() );
 	}

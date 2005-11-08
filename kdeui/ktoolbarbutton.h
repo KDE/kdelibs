@@ -25,8 +25,9 @@
 
 #include <qpixmap.h>
 #include <qtoolbutton.h>
-#include <q3intdict.h>
 #include <qstring.h>
+#include <QHash>
+
 #include <kglobal.h>
 
 class KToolBar;
@@ -312,17 +313,6 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   KToolBarButtonPrivate *d;
-};
-
-/**
-* List of KToolBarButton objects.
-* @internal
-*/
-class KDEUI_EXPORT KToolBarButtonList : public Q3IntDict<KToolBarButton>
-{
-public:
-   KToolBarButtonList();
-   ~KToolBarButtonList() {}
 };
 
 #endif

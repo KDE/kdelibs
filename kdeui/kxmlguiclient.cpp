@@ -58,7 +58,7 @@ public:
   QPointer<KXMLGUIFactory> m_factory;
   KXMLGUIClient *m_parent;
   //QPtrList<KXMLGUIClient> m_supers;
-  Q3PtrList<KXMLGUIClient> m_children;
+  QList<KXMLGUIClient*> m_children;
   KXMLGUIBuilder *m_builder;
   QString m_xmlFile;
   QString m_localXMLFile;
@@ -80,10 +80,9 @@ KXMLGUIClient::~KXMLGUIClient()
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
 
-  Q3PtrListIterator<KXMLGUIClient> it( d->m_children );
-  for ( ; it.current(); ++it ) {
-      assert( it.current()->d->m_parent == this );
-      it.current()->d->m_parent = 0;
+  foreach (KXMLGUIClient* client, d->m_children) {
+      assert( client->d->m_parent == this );
+      client->d->m_parent = 0;
   }
 
   delete d->m_actionCollection;
@@ -94,9 +93,8 @@ KAction *KXMLGUIClient::action( const char *name ) const
 {
   KAction* act = actionCollection()->action( name );
   if ( !act ) {
-    Q3PtrListIterator<KXMLGUIClient> childIt( d->m_children );
-    for (; childIt.current(); ++childIt ) {
-      act = childIt.current()->actionCollection()->action( name );
+    foreach (KXMLGUIClient* client, d->m_children) {
+      act = client->actionCollection()->action( name );
       if ( act )
         break;
     }
@@ -572,8 +570,8 @@ void KXMLGUIClient::insertChildClient( KXMLGUIClient *child )
 
 void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
 {
-  assert( d->m_children.containsRef( child ) );
-  d->m_children.removeRef( child );
+  assert( d->m_children.contains( child ) );
+  d->m_children.removeAll( child );
   child->d->m_parent = 0;
 }
 
@@ -585,9 +583,9 @@ void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
   return true;
 }*/
 
-const Q3PtrList<KXMLGUIClient> *KXMLGUIClient::childClients()
+const QList<KXMLGUIClient*>& KXMLGUIClient::childClients()
 {
-  return &d->m_children;
+  return d->m_children;
 }
 
 void KXMLGUIClient::setClientBuilder( KXMLGUIBuilder *builder )
@@ -602,7 +600,7 @@ KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const
   return d->m_builder;
 }
 
-void KXMLGUIClient::plugActionList( const QString &name, const Q3PtrList<KAction> &actionList )
+void KXMLGUIClient::plugActionList( const QString &name, const QList<KAction*> &actionList )
 {
   if ( !d->m_factory )
     return;
@@ -620,26 +618,23 @@ void KXMLGUIClient::unplugActionList( const QString &name )
 
 QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString &doc )
 {
+  QList<DocStruct> allDocuments;
 
-  Q3ValueList<DocStruct> allDocuments;
-
-  QStringList::ConstIterator it = files.begin();
-  QStringList::ConstIterator end = files.end();
-  for (; it != end; ++it )
+  foreach (QString file, files)
   {
     //kdDebug() << "KXMLGUIClient::findMostRecentXMLFile " << *it << endl;
-    QString data = KXMLGUIFactory::readConfigFile( *it );
+    QString data = KXMLGUIFactory::readConfigFile( file );
     DocStruct d;
-    d.file = *it;
+    d.file = file;
     d.data = data;
     allDocuments.append( d );
   }
 
-  Q3ValueList<DocStruct>::Iterator best = allDocuments.end();
+  QList<DocStruct>::Iterator best = allDocuments.end();
   uint bestVersion = 0;
 
-  Q3ValueList<DocStruct>::Iterator docIt = allDocuments.begin();
-  Q3ValueList<DocStruct>::Iterator docEnd = allDocuments.end();
+  QList<DocStruct>::Iterator docIt = allDocuments.begin();
+  QList<DocStruct>::Iterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
     QString versionStr = findVersionNumber( (*docIt).data );
@@ -664,7 +659,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   {
     if ( best != allDocuments.begin() )
     {
-      Q3ValueList<DocStruct>::Iterator local = allDocuments.begin();
+      QList<DocStruct>::Iterator local = allDocuments.begin();
 
       // load the local document and extract the action properties
       QDomDocument document;
@@ -926,25 +921,22 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 void KXMLGUIClient::beginXMLPlug( QWidget *w )
 {
   actionCollection()->beginXMLPlug( w );
-  Q3PtrListIterator<KXMLGUIClient> childIt( d->m_children );
-  for (; childIt.current(); ++childIt )
-    childIt.current()->actionCollection()->beginXMLPlug( w );
+  foreach (KXMLGUIClient* client, d->m_children)
+    client->actionCollection()->beginXMLPlug( w );
 }
 
 void KXMLGUIClient::endXMLPlug()
 {
   actionCollection()->endXMLPlug();
-  Q3PtrListIterator<KXMLGUIClient> childIt( d->m_children );
-  for (; childIt.current(); ++childIt )
-    childIt.current()->actionCollection()->endXMLPlug();
+  foreach (KXMLGUIClient* client, d->m_children)
+    client->actionCollection()->endXMLPlug();
 }
 
 void KXMLGUIClient::prepareXMLUnplug( QWidget * )
 {
   actionCollection()->prepareXMLUnplug();
-  Q3PtrListIterator<KXMLGUIClient> childIt( d->m_children );
-  for (; childIt.current(); ++childIt )
-    childIt.current()->actionCollection()->prepareXMLUnplug();
+  foreach (KXMLGUIClient* client, d->m_children)
+    client->actionCollection()->prepareXMLUnplug();
 }
 
 void KXMLGUIClient::virtual_hook( int, void* )

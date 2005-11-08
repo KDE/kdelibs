@@ -23,11 +23,11 @@
 #define _KTOOLBARRADIOGROUP_H
 
 #include <qobject.h>
+#include <QHash>
 
 #include <kdelibs_export.h>
 
 class KToolBar;
-class KToolBarButtonList;
 class KToolBarRadioGroupPrivate;
 
 /*************************************************************************
@@ -79,7 +79,7 @@ public slots:
   void slotToggled (int);
 
 private:
-  KToolBarButtonList *buttons;
+  QHash<int, class KToolBarButton*>* buttons;
   KToolBar *tb;
 
   KToolBarRadioGroupPrivate *d;

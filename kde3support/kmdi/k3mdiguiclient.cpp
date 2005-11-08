@@ -228,7 +228,7 @@ void K3MDIGUIClient::setupActions()
 	//    m_toolViewActions.append(new KAction( "TESTK3MDIGUICLIENT", QString::null, 0,
 	//             this, SLOT(blah()),actionCollection(),"nothing"));
 
-	Q3PtrList<KAction> addList;
+	QList<KAction*> addList;
 	if ( m_toolViewActions.count() < 3 )
 		for ( uint i = 0;i < m_toolViewActions.count();i++ )
 			addList.append( m_toolViewActions.at( i ) );

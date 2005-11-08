@@ -229,14 +229,14 @@ void KDataToolAction::slotActivated()
     emit toolActivated( m_info, m_command );
 }
 
-Q3PtrList<KAction> KDataToolAction::dataToolActionList( const Q3ValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
+QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
 {
-    Q3PtrList<KAction> actionList;
+    QList<KAction*> actionList;
     if ( tools.isEmpty() )
         return actionList;
 
     actionList.append( new KActionSeparator() );
-    Q3ValueList<KDataToolInfo>::ConstIterator entry = tools.begin();
+    QList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
         QStringList userCommands = (*entry).userCommands();

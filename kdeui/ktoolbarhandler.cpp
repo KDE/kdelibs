@@ -65,21 +65,21 @@ namespace
 
         bool needsRebuild() const { return m_needsRebuild; }
 
-        Q3PtrList<KAction> create()
+        QList<KAction*> create()
         {
+            QList<KAction*> actions;
+
             if ( !m_needsRebuild )
-                return Q3PtrList<KAction>();
+                return actions;
 
             foreach(KToolBar* bar, m_toolBars)
                 handleToolBar( bar );
-
-            Q3PtrList<KAction> actions;
 
             if ( m_toolBarActions.count() == 0 )
                 return actions;
 
             if ( m_toolBarActions.count() == 1 ) {
-                KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.getFirst() );
+                KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.first() );
                 action->setText( i18n( "Show Toolbar" ) );
                 action->setCheckedState( i18n( "Hide Toolbar" ) );
                 return m_toolBarActions;
@@ -87,9 +87,8 @@ namespace
 
             KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
 
-            Q3PtrListIterator<KAction> actionIt( m_toolBarActions );
-            for ( ; actionIt.current(); ++actionIt )
-                menuAction->insert( actionIt.current() );
+            foreach (KAction* action, m_toolBarActions)
+                menuAction->insert( action );
 
             actions.append( menuAction );
             return actions;
@@ -113,7 +112,7 @@ namespace
         KMainWindow *m_mainWindow;
 
         QLinkedList<KToolBar*> m_toolBars;
-        Q3PtrList<KAction> m_toolBarActions;
+        QList<KAction*> m_toolBarActions;
 
         bool m_needsRebuild : 1;
     };
@@ -135,14 +134,14 @@ ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent )
 
 ToolBarHandler::~ToolBarHandler()
 {
-    m_actions.setAutoDelete( true );
+    qDeleteAll(m_actions);
     m_actions.clear();
 }
 
 KAction *ToolBarHandler::toolBarMenuAction()
 {
     assert( m_actions.count() == 1 );
-    return m_actions.getFirst();
+    return m_actions.first();
 }
 
 void ToolBarHandler::setupActions()
@@ -157,9 +156,8 @@ void ToolBarHandler::setupActions()
 
     unplugActionList( actionListName );
 
-    m_actions.setAutoDelete( true );
+    qDeleteAll(m_actions);
     m_actions.clear();
-    m_actions.setAutoDelete( false );
 
     m_actions = builder.create();
 
@@ -215,9 +213,8 @@ void ToolBarHandler::init( KMainWindow *mainWindow )
 
 void ToolBarHandler::connectToActionContainers()
 {
-    Q3PtrListIterator<KAction> actionIt( m_actions );
-    for ( ; actionIt.current(); ++actionIt )
-        connectToActionContainer( actionIt.current() );
+    foreach (KAction* action, m_actions)
+        connectToActionContainer( action );
 }
 
 void ToolBarHandler::connectToActionContainer( KAction *action )

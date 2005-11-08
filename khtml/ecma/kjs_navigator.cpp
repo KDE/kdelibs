@@ -38,6 +38,8 @@
 #include <sys/utsname.h>
 #include "kjs_navigator.lut.h"
 
+#include <q3ptrlist.h>
+
 using namespace KJS;
 
 namespace KJS {

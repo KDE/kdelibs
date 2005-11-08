@@ -7,7 +7,7 @@
      (C) 1997-2000 Matthias Ettrich (ettrich@kde.org)
      (C) 1999 Chris Schlaeger (cs@kde.org)
      (C) 2002 Joseph Wenninger (jowenn@kde.org)
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2 as published by the Free Software Foundation.
@@ -32,6 +32,7 @@
 #include "kxmlguibuilder.h"
 #include <q3mainwindow.h>
 #include <qmetaobject.h>
+#include <q3ptrlist.h>
 
 class KMenu;
 class KXMLGUIFactory;

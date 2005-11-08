@@ -58,7 +58,7 @@ private:
     Data *d;
 
     QPointer<KMainWindow> m_mainWindow;
-    Q3PtrList<KAction> m_actions;
+    QList<KAction*> m_actions;
     QLinkedList<KToolBar*> m_toolBars;
 };
 

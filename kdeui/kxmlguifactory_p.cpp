@@ -32,16 +32,14 @@ using namespace KXMLGUI;
 
 void ActionList::plug( QWidget *container, int index ) const
 {
-    ActionListIt it( *this );
-    for (; it.current(); ++it )
-        it.current()->plug( container, index++ );
+    foreach (KAction* action, *this)
+        action->plug( container, index++ );
 }
 
 void ActionList::unplug( QWidget *container ) const
 {
-    ActionListIt it( *this );
-    for (; it.current(); ++it )
-        it.current()->unplug( container );
+    foreach (KAction* action, *this)
+        action->unplug( container );
 }
 
 ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
@@ -55,18 +53,30 @@ ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
       container( _container ), containerId( id ), tagName( _tagName ), name( _name ),
       groupName( _groupName ), index( 0 ), mergingName( _mergingName )
 {
-    children.setAutoDelete( true );
-    clients.setAutoDelete( true );
-
     if ( parent )
         parent->children.append( this );
 }
 
-void ContainerNode::removeChild( ContainerNode *child )
+ContainerNode::~ContainerNode()
+{
+    qDeleteAll(children);
+    qDeleteAll(clients);
+}
+
+void ContainerNode::removeChild( ContainerNode* child )
 {
     MergingIndexList::Iterator mergingIt = findIndex( child->mergingName );
     adjustMergingIndices( -1, mergingIt );
-    children.removeRef( child );
+    children.removeAll(child);
+    delete child;
+}
+
+void ContainerNode::removeChild( QMutableListIterator<ContainerNode*>& childIterator )
+{
+    MergingIndexList::Iterator mergingIt = findIndex( childIterator.peekNext()->mergingName );
+    adjustMergingIndices( -1, mergingIt );
+    delete childIterator.next();
+    childIterator.remove();
 }
 
 /*
@@ -89,11 +99,9 @@ MergingIndexList::Iterator ContainerNode::findIndex( const QString &name )
  */
 ContainerNode *ContainerNode::findContainerNode( QWidget *container )
 {
-    ContainerNodeListIt it( children );
-
-    for (; it.current(); ++it )
-        if ( it.current()->container == container )
-            return it.current();
+    foreach (ContainerNode* child, children )
+        if ( child->container == container )
+            return child;
 
     return 0L;
 }
@@ -109,10 +117,9 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
          ( !tag && name == _name ) )
         return this;
 
-    ContainerNodeListIt it( children );
-    for (; it.current(); ++it )
+    foreach (ContainerNode* child, children )
     {
-        ContainerNode *res = it.current()->findContainer( _name, tag );
+        ContainerNode *res = child->findContainer( _name, tag );
         if ( res )
             return res;
     }
@@ -126,19 +133,19 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
  * belongs to currClient.
  */
 ContainerNode *ContainerNode::findContainer( const QString &name, const QString &tagName,
-                                             const Q3PtrList<QWidget> *excludeList,
+                                             const QList<QWidget*> *excludeList,
                                              KXMLGUIClient * /*currClient*/ )
 {
     ContainerNode *res = 0L;
-    ContainerNodeListIt nIt( children );
+    ContainerNodeList::ConstIterator nIt = children.constBegin();
 
     if ( !name.isEmpty() )
     {
-        for (; nIt.current(); ++nIt )
-            if ( nIt.current()->name == name &&
-                 !excludeList->containsRef( nIt.current()->container ) )
+        for (; nIt != children.constEnd(); ++nIt )
+            if ( (*nIt)->name == name &&
+                 !excludeList->contains( (*nIt)->container ) )
             {
-                res = nIt.current();
+                res = *nIt;
                 break;
             }
 
@@ -146,10 +153,10 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
     }
 
     if ( !tagName.isEmpty() )
-        for (; nIt.current(); ++nIt )
+        for (; nIt != children.constEnd(); ++nIt )
         {
-            if ( nIt.current()->tagName == tagName &&
-                 !excludeList->containsRef( nIt.current()->container )
+            if ( (*nIt)->tagName == tagName &&
+                 !excludeList->contains( (*nIt)->container )
                  /*
                   * It is a bad idea to also compare the client, because
                   * we don't want to do so in situations like these:
@@ -163,11 +170,11 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
                   *   <Menu>
                   *    ...
                   *
-                 && nIt.current()->client == currClient )
+                 && (*nIt)->client == currClient )
                  */
                 )
             {
-                res = nIt.current();
+                res = *nIt;
                 break;
             }
         }
@@ -177,20 +184,18 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
 
 ContainerClient *ContainerNode::findChildContainerClient( KXMLGUIClient *currentGUIClient,
                                                           const QString &groupName,
-                                                          const MergingIndexList::Iterator &mergingIdx )
+                                                          const MergingIndexList::ConstIterator &mergingIdx )
 {
     if ( !clients.isEmpty() )
     {
-        ContainerClientListIt clientIt( clients );
-
-        for (; clientIt.current(); ++clientIt )
-            if ( clientIt.current()->client == currentGUIClient )
+        foreach (ContainerClient* client, clients)
+            if ( client->client == currentGUIClient )
             {
                 if ( groupName.isEmpty() )
-                    return clientIt.current();
+                    return client;
 
-                if ( groupName == clientIt.current()->groupName )
-                    return clientIt.current();
+                if ( groupName == client->groupName )
+                    return client;
             }
     }
 
@@ -213,9 +218,8 @@ void ContainerNode::plugActionList( BuildState &state )
     for (; mIt != mEnd; ++mIt )
         plugActionList( state, mIt );
 
-    Q3PtrListIterator<ContainerNode> childIt( children );
-    for (; childIt.current(); ++childIt )
-        childIt.current()->plugActionList( state );
+    foreach (ContainerNode* child, children)
+        child->plugActionList( state );
 }
 
 void ContainerNode::plugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt )
@@ -255,9 +259,8 @@ void ContainerNode::unplugActionList( BuildState &state )
     for (; mIt != mEnd; ++mIt )
         unplugActionList( state, mIt );
 
-    Q3PtrListIterator<ContainerNode> childIt( children );
-    for (; childIt.current(); ++childIt )
-        childIt.current()->unplugActionList( state );
+    foreach (ContainerNode* child, children)
+        child->unplugActionList( state );
 }
 
 void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt )
@@ -313,12 +316,10 @@ bool ContainerNode::destruct( QDomElement element, BuildState &state )
     unplugActions( state );
 
     // remove all merging indices the client defined
-    MergingIndexList::Iterator cmIt = mergingIndices.begin();
-    while ( cmIt != mergingIndices.end() )
-        if ( (*cmIt).clientName == state.clientName )
-            cmIt = mergingIndices.remove( cmIt );
-        else
-            ++cmIt;
+    QMutableListIterator<MergingIndex> cmIt = mergingIndices;
+    while ( cmIt.hasNext() )
+        if ( cmIt.next().clientName == state.clientName )
+            cmIt.remove();
 
     // ### check for merging index count, too?
     if ( clients.count() == 0 && children.count() == 0 && container &&
@@ -347,18 +348,18 @@ bool ContainerNode::destruct( QDomElement element, BuildState &state )
 
 void ContainerNode::destructChildren( const QDomElement &element, BuildState &state )
 {
-    Q3PtrListIterator<ContainerNode> childIt( children );
-    while ( childIt.current() )
+    QMutableListIterator<ContainerNode*> childIt = children;
+    while ( childIt.hasNext() )
     {
-        ContainerNode *childNode = childIt.current();
+        ContainerNode *childNode = childIt.peekNext();
 
         QDomElement childElement = findElementForChild( element, childNode );
 
         // destruct returns true in case the container really got deleted
         if ( childNode->destruct( childElement, state ) )
-            removeChild( childNode );
+            removeChild( childIt );
         else
-            ++childIt;
+            childIt.next();
     }
 }
 
@@ -385,7 +386,7 @@ void ContainerNode::unplugActions( BuildState &state )
     if ( !container )
         return;
 
-    ContainerClientListIt clientIt( clients );
+    QMutableListIterator<ContainerClient*> clientIt( clients );
 
     /*
         Disabled because it means in KToolBar::saveState isHidden is always true then,
@@ -398,16 +399,17 @@ void ContainerNode::unplugActions( BuildState &state )
                            // destruction faster
      */
 
-    while ( clientIt.current() )
+    while ( clientIt.hasNext() )
         //only unplug the actions of the client we want to remove, as the container might be owned
         //by a different client
-        if ( clientIt.current()->client == state.guiClient )
+        if ( clientIt.peekNext()->client == state.guiClient )
         {
-            unplugClient( clientIt.current() );
-            clients.removeRef( clientIt.current() );
+            unplugClient( clientIt.peekNext() );
+            delete clientIt.next();
+            clientIt.remove();
         }
         else
-            ++clientIt;
+            clientIt.next();
 }
 
 void ContainerNode::unplugClient( ContainerClient *client )
@@ -435,8 +437,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     // unplug all actionslists
 
-    ActionListMap::ConstIterator alIt = client->actionLists.begin();
-    ActionListMap::ConstIterator alEnd = client->actionLists.end();
+    ActionListMap::ConstIterator alIt = client->actionLists.constBegin();
+    ActionListMap::ConstIterator alEnd = client->actionLists.constEnd();
     for (; alIt != alEnd; ++alIt )
     {
         alIt.data().unplug( container );
@@ -460,9 +462,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
 void ContainerNode::reset()
 {
-    Q3PtrListIterator<ContainerNode> childIt( children );
-    for (; childIt.current(); ++childIt )
-        childIt.current()->reset();
+    foreach (ContainerNode* child, children)
+        child->reset();
 
     if ( client )
         client->setFactory( 0L );
