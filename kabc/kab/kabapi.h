@@ -76,6 +76,7 @@ public:
    * without failures. Thus you have to call init before you can
    * use the database.
    * @param parent The QWidget pointer to the parent widget.
+   * @param name   The name of the object (deprecated).
    */
   KabAPI(QWidget* parent=0, const char* name=0);
   /**
@@ -165,6 +166,7 @@ public:
    * for example, nearly similar email addresses. Empty parts of the
    * entry are not considered as criteria.
    * @short This method delivers the closest matches to the given entry.
+   * @param pattern Entry that serves as a pattern to look for.
    * @param entries Reference to a list of entries where matches are stored.
    * @param max Maximum number of returned entries.
    * @return NoError if an entry is found or NoEntry.
@@ -201,6 +203,9 @@ protected slots:
    * Capture status messages from book.
    */
   void setStatusSlot(const QString&);
+  /**
+   * Double clicked on an item. @reimp
+   */
   void slotDoubleClicked ( Q3ListBoxItem * );
   signals:
   /**

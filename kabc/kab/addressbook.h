@@ -59,7 +59,9 @@ protected:
    */
   Q3CString key;
 
+  /** Class for private data. */
   class KabKeyPrivate;
+  /** Private data pointer. @internal */
   KabKeyPrivate *d;
 };
 
@@ -263,62 +265,61 @@ public:
    *  An entry contains all settings that are expected to be unique for all
    *  addresses directly as key-value-pairs. Everything that is part of a
    *  specific address of this person is part of an object of the member list
-   *  \c addresses referenced in the next paragraph. <BR>
-   *  The keys defined directly in the entry sections are: <DL>
-   *  <DD> "title" The title of that person. </DD>
-   *  <DD> "rank" A possible military rank of that person. </DD>
-   *  <DD> "fn" The formatted name. If it is not empty, it replaces the
+   *  \c addresses referenced in the next paragraph.
+   *  The keys defined directly in the entry sections are:
+   *    -  "title" The title of that person.
+   *    -  "rank" A possible military rank of that person.
+   *    -  "fn" The formatted name. If it is not empty, it replaces the
    *       standard combination of the other name fields in the address
-   *       display. </DD>
-   *  <DD> "nameprefix" A possible name prefix. </DD>
-   *  <DD> "firstname" The first name. </DD>
-   *  <DD> "middlename" The middle name. </DD>
-   *  <DD> "lastname" The last name. </DD>
-   *  <DD> "birthday" The birthday (a QDate). </DD>
-   *  <DD> "comment" A free form comment. </DD>
-   *  <DD> "talk" The talk addresses (a string list). </DD>
-   *  <DD> "emails" The email addresses (a string list). </DD>
-   *  <DD> "keywords" A list of free-form keywords. </DD>
-   *  <DD> "telephone" A list of telephone numbers in a special format. </DD>
-   *  <DD> "URLs" A list of internet addresses. </DD>
-   *  <DD> "user_1" The first user-declared data field. </DD>
-   *  <DD> "user_2" The second user-declared data field. </DD>
-   *  <DD> "user_3" The third user-declared data field. </DD>
-   *  <DD> "user_4" The fourth user-declared data field. </DD>
-   *  </DL>
+   *       display.
+   *    -  "nameprefix" A possible name prefix.
+   *    -  "firstname" The first name.
+   *    -  "middlename" The middle name.
+   *    -  "lastname" The last name.
+   *    -  "birthday" The birthday (a QDate).
+   *    -  "comment" A free form comment.
+   *    -  "talk" The talk addresses (a string list).
+   *    -  "emails" The email addresses (a string list).
+   *    -  "keywords" A list of free-form keywords.
+   *    -  "telephone" A list of telephone numbers in a special format.
+   *    -  "URLs" A list of internet addresses.
+   *    -  "user_1" The first user-declared data field.
+   *    -  "user_2" The second user-declared data field.
+   *    -  "user_3" The third user-declared data field.
+   *    -  "user_4" The fourth user-declared data field.
+   * 
    *  See the next section for a description of the addresses subsections.
    * 
    *  \par The fields of the addresses subsections
    *  The section for each entry contains a subsection \c addresses with
    *  in turn a subsection for each address. The addresses are enumerated
    *  in the order they are inserted, their keys are the numbers of
-   *  inserting converted to a string. <BR>
-   *  The keys defined in an address subsection are: <DL>
-   *  <DD> "headline" A headline shown for the address. </DD>
-   *  <DD> "position" The position of the person. </DD>
-   *  <DD> "org" The organization. </DD>
-   *  <DD> "orgunit" The organizational unit. </DD>
-   *  <DD> "orgsubunit" The organizational subunit. </DD>
-   *  <DD> "role" The role of the person. </DD>
-   *  <DD> "deliverylabel" A label for delivering to this address. </DD>
-   *  <DD> "address" The street, house no., flat etc line. </DD>
-   *  <DD> "zip" A zip or postal code. </DD>
-   *  <DD> "town" The town the person lives in in this address. </DD>
-   *  <DD> "country" The country for federal states. </DD>
-   *  <DD> "state" The state for federal states. </DD>
-   *  </DL>
+   *  inserting converted to a string.
+   *  The keys defined in an address subsection are:
+   *    -  "headline" A headline shown for the address.
+   *    -  "position" The position of the person.
+   *    -  "org" The organization.
+   *    -  "orgunit" The organizational unit.
+   *    -  "orgsubunit" The organizational subunit.
+   *    -  "role" The role of the person.
+   *    -  "deliverylabel" A label for delivering to this address.
+   *    -  "address" The street, house no., flat etc line.
+   *    -  "zip" A zip or postal code.
+   *    -  "town" The town the person lives in in this address.
+   *    -  "country" The country for federal states.
+   *    -  "state" The state for federal states.
    *
    *  \par The local configuration section
    *  For each kab II database file there are some settings that apply
    *  only to the file itselfes, not to all kab databases the user works
    *  with. These settings are called the local configuration. The settings
    *  are stored in the \c config section of the local file. The following
-   *  keys are declared in this section: <DL>
-   *  <DD> "user_1" The \e name of the first user-declared field. </DD>
-   *  <DD> "user_2" The \e name of the second user-declared field. </DD>
-   *  <DD> "user_3" The \e name of the third user-declared field. </DD>
-   *  <DD> "user_4" The \e name of the fourth user-declared field. </DD>
-   *  </DL>
+   *  keys are declared in this section:
+   *    -  "user_1" The \e name of the first user-declared field.
+   *    -  "user_2" The \e name of the second user-declared field.
+   *    -  "user_3" The \e name of the third user-declared field.
+   *    -  "user_4" The \e name of the fourth user-declared field.
+   * 
    *  More fields will surely follow.
    **/
   class Entry {
@@ -372,6 +373,7 @@ public:
       /** The state for federal states. */ 
       QString state; 
     protected:
+      /** Map of field names */
       static KeyNameMap *fields;
     };
     /** Contains one or more Address objects. */
@@ -415,7 +417,7 @@ public:
     QStringList emails; /**< The email addresses. */
     QStringList keywords; /**< The user defined keywords for searching. */
     /**
-     * Telephon numbers and types. This list contains combinations of telephone
+     * Telephone numbers and types. This list contains combinations of telephone
      * numbers and the types of the phones, in this order. See enum
      * Telephone above.
      */
@@ -425,9 +427,10 @@ public:
     QString user2; /**< The second user-declared field. */
     QString user3; /**< The third user-declared field. */
     QString user4; /**< The fourth user-declared field. */    
-    QStringList custom;
+    QStringList custom;     /**< Custom fields (application specific). */
     QStringList categories; /**< The categories this entry is assigned to. */
   protected:
+    /** Map of field names */
     static KeyNameMap *fields;
   };
   /**
@@ -616,6 +619,7 @@ public:
 #ifdef KDE_NO_COMPAT
 private:
 #endif
+    /** Hack for once-broken camelcaps. @deprecated */
     QString getStandardFilename() { return getStandardFileName(); };
 
 protected:
