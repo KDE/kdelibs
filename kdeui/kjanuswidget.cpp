@@ -105,7 +105,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mTreeListResizeMode = QSplitter::KeepSize;
 
       d->mListFrame = new QWidget( d->mSplitter );
-      QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
+      QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, KDialog::spacingHint() );
       dummy->setAutoAdd( true );
       mTreeList = new KListView( d->mListFrame );
       mTreeList->addColumn( QString::null );
@@ -122,7 +122,6 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       QFrame *p = new QFrame( d->mSplitter );
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
-      hbox->addSpacing( KDialog::marginHint() );
 
       page = new QFrame( p );
       hbox->addWidget( page, 10 );
