@@ -991,7 +991,7 @@ def generate(env):
 	if env.has_key('GENCCFLAGS'):    env.AppendUnique( CCFLAGS   = env['GENCCFLAGS'] )
 	if env.has_key('GENLINKFLAGS'):  env.AppendUnique( LINKFLAGS = env['GENLINKFLAGS'] )
 	if env.has_key('EXTRAINCLUDES'): env.AppendUnique( CPPPATH   = env['EXTRAINCLUDES'])
-	if env.has_key('EXTRALIBS'):     env.AppendUnique( LINKFLAGS = env['EXTRALIBS'])
+	if env.has_key('EXTRALIBS'):     env.AppendUnique( LIBPATH   = env['EXTRALIBS'])
 
 	if env.has_key('BKS_DEBUG'):
 		if (env['BKS_DEBUG'] == "full"):
