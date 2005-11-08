@@ -383,6 +383,12 @@ QDateTime KTimezone::toZoneTime(const QDateTime &utcDateTime) const
 
 QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &zoneDateTime) const
 {
+    if (newZone == this)
+    {
+        if (zoneDateTime.timeSpec() != Qt::LocalTime)
+            return QDateTime();
+        return zoneDateTime;
+    }
     return newZone->toZoneTime(toUTC(zoneDateTime));
 }
 

@@ -229,6 +229,7 @@ void KTimezonesTest::convert()
     COMPARE(london->convert(losAngeles, bstAfterPdt), bstAfterPdtResult);
     COMPARE(london->convert(losAngeles, gmtBeforePst), gmtBeforePstResult);
     COMPARE(london->convert(losAngeles, gmtAfterPst), gmtAfterPstResult);
+    COMPARE(losAngeles->convert(losAngeles, bstBeforePdtResult), bstBeforePdtResult);
 }
 
 ////////////////////////
