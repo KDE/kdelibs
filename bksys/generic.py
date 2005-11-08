@@ -744,6 +744,10 @@ def generate(env):
 					name = src.split('-')[0] + '.a'
 					dest.write("dlname='%s'\n" % (sname) )
 					dest.write("library_names='%s %s'\n" % (sname,name) )
+				elif env['MAC']:
+					name = src.split('.')[0]
+					dest.write("dlname='%s'\n" % (name + '.' + str(nums[0]) + '.dylib') )
+					dest.write("library_names='%s %s %s'\n" % (sname, name + '.' + str(nums[0]) + '.dylib', name + '.' + nums[0] + '.dylib') )
 				else:
 					name = src.split('so.')[0] + 'so'
 					strn = src+" "+name+"."+str(nums[0])+" "+name
@@ -755,6 +759,11 @@ def generate(env):
 					name = src.split('.')[0] + '.a'
 					dest.write("dlname='%s'\n" % sname)
 					dest.write("library_names='%s %s'\n" % (sname, name) )
+				elif env['MAC']:
+					src=source[0].name
+					name = src.split('.')[0] + '.dylib'
+					dest.write("dlname='%s'\n" % (sname) )
+					dest.write("library_names='%s'\n" % (name) )
 				else:
 					dest.write("dlname='%s'\n" % sname)
 					dest.write("library_names='%s %s %s'\n" % (sname, sname, sname) )
