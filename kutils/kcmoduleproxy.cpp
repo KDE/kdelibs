@@ -67,7 +67,9 @@ class KCModuleProxy::KCModuleProxyPrivate
 			: args( 0 )
 			, kcm( 0 )
 			//, view( 0 )
+#ifdef Q_WS_X11
 			, embedWidget( 0 )
+#endif
 			, rootProcess ( 0 )
 			, embedFrame ( 0 )
 			, dcopObject( 0 )
@@ -86,7 +88,9 @@ class KCModuleProxy::KCModuleProxyPrivate
 		~KCModuleProxyPrivate()
 		{
 			delete rootInfo; // Delete before embedWidget!
+#ifdef Q_WS_X11
 			delete embedWidget; // Delete before embedFrame!
+#endif
 			delete embedFrame;
 			delete dcopClient;
 			delete dcopObject;
@@ -97,7 +101,9 @@ class KCModuleProxy::KCModuleProxyPrivate
 
 		QStringList							args;
 		KCModule							*kcm;
+#ifdef Q_WS_X11
 		QX11EmbedWidget							*embedWidget;
+#endif
 		KProcess							*rootProcess;
 		KVBox								*embedFrame;
 		KCModuleProxyIfaceImpl  			*dcopObject;
@@ -305,6 +311,7 @@ void KCModuleProxy::runAsRoot()
 	if ( !moduleInfo().needsRootPrivileges() )
 		return;
 
+#ifdef Q_WS_X11
 	QApplication::setOverrideCursor( Qt::WaitCursor );
 
 	delete d->rootProcess;
@@ -397,10 +404,12 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame = 0;
 
 	QApplication::restoreOverrideCursor();
+#endif
 }
 
 void KCModuleProxy::rootExited()
 {
+#ifdef Q_WS_X11
 	kdDebug(711) << k_funcinfo << endl;
 
 	if ( d->embedWidget->containerWinId() )
@@ -428,6 +437,7 @@ void KCModuleProxy::rootExited()
 
 	moduleChanged( false );
 	emit childClosed();
+#endif
 }
 
 KCModuleProxy::~KCModuleProxy()
@@ -440,6 +450,7 @@ KCModuleProxy::~KCModuleProxy()
 
 void KCModuleProxy::deleteClient()
 {
+#ifdef Q_WS_X11
 	if( d->embedWidget )
 		XKillClient(QX11Info::display(), d->embedWidget->containerWinId());
 
@@ -455,9 +466,9 @@ void KCModuleProxy::deleteClient()
 
 	delete d->dcopClient;
 	d->dcopClient = 0;
+#endif
 
 	kapp->syncX();
-
 }
 
 void KCModuleProxy::moduleChanged( bool c )
