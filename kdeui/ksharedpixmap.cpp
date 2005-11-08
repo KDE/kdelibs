@@ -19,7 +19,6 @@
 #include <qpixmap.h>
 #include <qwindowdefs.h>
 #include <qwidget.h>
-#include <q3cstring.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -28,6 +27,7 @@
 #include <ksharedpixmap.h>
 #include <kdebug.h>
 #include <stdlib.h> // for abs
+#include <stdio.h>
 
 #include <X11/Xlib.h>
 
@@ -81,10 +81,16 @@ KSharedPixmap::~KSharedPixmap()
 
 void KSharedPixmap::init()
 {
-    d->pixmap = XInternAtom(QX11Info::display(), "PIXMAP", false);
-    Q3CString atom;
-    atom.sprintf("target prop for window %lx", static_cast<unsigned long int>(winId()));
-    d->target = XInternAtom(QX11Info::display(), atom.data(), false);
+    char pixmapName[] = "PIXMAP";
+    char targetName[50];
+    snprintf(targetName, 49, "target prop for window %lx", 
+             static_cast<unsigned long>(winId()));
+    char *names[2] = { pixmapName, targetName };
+    
+    Atom atoms[2];
+    XInternAtoms(QX11Info::display(), names, 2, False, atoms);
+    d->pixmap = atoms[0];
+    d->target = atoms[1];
     d->selection = None;
 }
 
