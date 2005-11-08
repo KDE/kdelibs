@@ -229,10 +229,10 @@ obj.iskdelib = 1
 # kiocore 
 obj.uselib = "Z FAM VOLMGT"
 
-obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop'
+obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop ../kdefx '
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
-	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32'
+	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx '
 	# TODO: (rh) remove when openssl detection under win32 runs 
 	obj.includes += ' c:/openssl/include'
 	if env['CC'] == 'gcc': 
@@ -240,7 +240,7 @@ if env['WINDOWS']:
 		obj.libs += ' eay32'
 
 else:
-	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP'
+	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP kdefx z '
 obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
 
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
@@ -250,7 +250,10 @@ if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
 
 obj.execute()
 # For now ;(
-if not env['WINDOWS']:
+if env['MAC']:
+	env.Depends('libkio.6.0.2.dylib', '../kdesu/libkdesu.dylib')
+	env.Depends('libkio.6.0.2.dylib', '../kwallet/client/libkwalletclient.dylib')
+elif not env['WINDOWS']:
 	env.Depends('libkio.so.6.0.2', '../kdesu/libkdesu.so')
 	env.Depends('libkio.so.6.0.2', '../kwallet/client/libkwalletclient.so')
 
