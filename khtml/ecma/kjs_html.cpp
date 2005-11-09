@@ -66,7 +66,7 @@ using namespace KJS;
 
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
 
-Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLDocument, thisObj );
 
@@ -224,7 +224,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
   return DOMDocument::hasProperty(exec, p);
 }
 
-Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName) const
+ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
@@ -1153,7 +1153,7 @@ static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElem
   return 0L;
 }
 
-Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
+ValueImp* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -1210,7 +1210,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
   return DOMObjectLookupGet<KJS::HTMLElementFunction, KJS::HTMLElement, DOMElement>(exec, propertyName, &KJS::HTMLElementTable, this);
 }
 
-Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
+ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
   switch (element.elementId()) {
@@ -2111,7 +2111,7 @@ HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
   put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
-Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLElement, thisObj );
 
@@ -3129,7 +3129,7 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) cons
   return DOMObject::hasProperty(exec, p);
 }
 
-Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyName) const
+ValueImp* KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
@@ -3176,7 +3176,7 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyNam
 
 // HTMLCollections are strange objects, they support both get and call,
 // so that document.forms.item(0) and document.forms(0) both work.
-Value KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &args)
 {
   // This code duplication is necessary, HTMLCollection isn't a DOMFunction
   Value val;
@@ -3191,7 +3191,7 @@ Value KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &ar
   return val;
 }
 
-Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
+ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
 {
   // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
   /*if( thisObj.imp() != this )
@@ -3234,7 +3234,7 @@ Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
   return Undefined();
 }
 
-Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
+ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii() << endl;
@@ -3270,7 +3270,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &prop
   return Undefined();
 }
 
-Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::HTMLCollection, thisObj );
   DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj.imp())->toCollection();
@@ -3326,7 +3326,7 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   }
 }
 
-Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp* KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "selectedIndex")
     return Number(element.selectedIndex());
@@ -3481,7 +3481,7 @@ Object ImageConstructorImp::construct(ExecState *exec, const List &list)
   return Object::dynamicCast(getDOMNode(exec,image));
 }
 
-Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
+ValueImp* KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
 {
   Value coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
   if (hide) {
@@ -3491,7 +3491,7 @@ Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool
   return coll;
 }
 
-Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
+ValueImp* KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
 {
   DOMObject *ret;
   if (c.isNull())

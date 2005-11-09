@@ -202,7 +202,7 @@ namespace KJS {
   public: \
     ClassFunc(ExecState *exec, int i, int len) \
        : DOMFunction( exec ), id(i) { \
-       Value protect(this); \
+       /*Value protect(this);*/ \
        put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
     /** You need to implement that one */ \
