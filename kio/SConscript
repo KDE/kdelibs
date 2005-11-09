@@ -76,8 +76,6 @@ kio/kservicefactory.cpp
 kio/kuserprofile.cpp 
 kio/kservicegroupfactory.cpp
 kio/kurifilter.cpp
-kio/kfilterbase.cpp 
-kio/kfilterdev.cpp
 kio/kshellcompletion.cpp 
 kio/kurlcompletion.cpp
 kio/krun.cpp
