@@ -37,12 +37,12 @@ namespace KJS {
      * @param _win Window object, for memory management and caching.
      * Never create a JSEventListener directly, use Window::getJSEventListener.
      */
-    JSEventListener(Object _listener, ObjectImp *_compareListenerImp, const Object &_win, bool _html = false);
+    JSEventListener(ObjectImp* _listener, ObjectImp *_compareListenerImp, ObjectImp* _win, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     // Return the KJS function object executed when this event is emitted
-    virtual Object listenerObj() const;
+    virtual ObjectImp* listenerObj() const;
     ObjectImp *listenerObjImp() const { return listenerObj().imp(); }
     // for Window::clear(). This is a bad hack though. The JSEventListener might not get deleted
     // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
@@ -51,7 +51,7 @@ namespace KJS {
     bool isHTMLEventListener() const { return html; }
 
   protected:
-    mutable Object listener;
+    mutable ObjectImp* listener;
     // Storing a different ObjectImp ptr is needed to support addEventListener(.. [Object] ..) calls
     // In the real-life case (where a 'function' is passed to addEventListener) we can directly call
     // the 'listener' object and can cache the 'listener.imp()'. If the event listener should be removed
@@ -64,15 +64,15 @@ namespace KJS {
     // the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
     mutable ObjectImp *compareListenerImp;
     bool html;
-    Object win;
+    ObjectImp* win;
   };
 
   class JSLazyEventListener : public JSEventListener {
   public:
-    JSLazyEventListener(const QString &_code, const QString &_name, const Object &_win, DOM::NodeImpl* node);
+    JSLazyEventListener(const QString &_code, const QString &_name, ObjectImp* _win, DOM::NodeImpl* node);
     ~JSLazyEventListener();
     virtual void handleEvent(DOM::Event &evt);
-    Object listenerObj() const;
+    ObjectImp* listenerObj() const;
   private:
     void parseCode() const;
 
@@ -86,28 +86,26 @@ namespace KJS {
   class EventConstructor : public DOMObject {
   public:
     EventConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getEventConstructor(ExecState *exec);
+  ValueImp* getEventConstructor(ExecState *exec);
 
   class DOMEvent : public DOMObject {
   public:
     // Build a DOMEvent
     DOMEvent(ExecState *exec, DOM::Event e);
-    // Constructor for inherited classes
-    DOMEvent(const Object &proto, DOM::Event e);
     ~DOMEvent();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     virtual void tryPut(ExecState *exec, const Identifier &propertyName,
-			const Value& value, int attr = None);
-    virtual Value defaultValue(ExecState *exec, KJS::Type hint) const;
-    void putValueProperty(ExecState *exec, int token, const Value& value, int);
+			ValueImp* value, int attr = None);
+    virtual ValueImp* defaultValue(ExecState *exec, KJS::Type hint) const;
+    void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Type, Target, CurrentTarget, EventPhase, Bubbles,
@@ -119,35 +117,33 @@ namespace KJS {
     DOM::Event event;
   };
 
-  Value getDOMEvent(ExecState *exec, DOM::Event e);
+  ValueImp* getDOMEvent(ExecState *exec, DOM::Event e);
 
   /**
    * Convert an object to an Event. Returns a null Event if not possible.
    */
-  DOM::Event toEvent(const Value&);
+  DOM::Event toEvent(ValueImp*);
 
   // Constructor object EventException
   class EventExceptionConstructor : public DOMObject {
   public:
     EventExceptionConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getEventExceptionConstructor(ExecState *exec);
+  ValueImp* getEventExceptionConstructor(ExecState *exec);
 
   class DOMUIEvent : public DOMEvent {
   public:
     // Build a DOMUIEvent
     DOMUIEvent(ExecState *exec, DOM::UIEvent ue);
-    // Constructor for inherited classes
-    DOMUIEvent(const Object &proto, DOM::UIEvent ue);
     ~DOMUIEvent();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -159,8 +155,8 @@ namespace KJS {
   public:
     DOMMouseEvent(ExecState *exec, DOM::MouseEvent me);
     ~DOMMouseEvent();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -176,8 +172,8 @@ namespace KJS {
   public:
     DOMTextEvent(ExecState *exec, DOM::TextEvent ke);
     ~DOMTextEvent();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -190,21 +186,21 @@ namespace KJS {
   class MutationEventConstructor : public DOMObject {
   public:
     MutationEventConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getMutationEventConstructor(ExecState *exec);
+  ValueImp* getMutationEventConstructor(ExecState *exec);
 
   class DOMMutationEvent : public DOMEvent {
   public:
     DOMMutationEvent(ExecState *exec, DOM::MutationEvent me);
     ~DOMMutationEvent();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
