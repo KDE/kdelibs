@@ -297,7 +297,7 @@ namespace KJS {
   public: \
     static ObjectImp *self(ExecState *exec) \
     { \
-      return cacheGlobalObject<ClassProto>(exec, "[[" ClassName ".prototype]]"); \
+      return cacheGlobalObject<typename ClassProto>(exec, "[[" ClassName ".prototype]]"); \
     } \
   protected: \
     ClassProto( ExecState *exec ) \
