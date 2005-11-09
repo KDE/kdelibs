@@ -29,13 +29,13 @@
 #include "dom/html_document.h"
 #include "dom/dom2_range.h"
 
-#include <kdatastream.h> // for DCOPCString
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kdemacros.h>
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <qregexp.h>
+#include <Q3CString>
 
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
@@ -224,7 +224,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
-  Q_PROPERTY( DCOPCString dcopObjectId READ dcopObjectId )
+  Q_PROPERTY( Q3CString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
 
 public:
@@ -1202,7 +1202,7 @@ public slots:
    */
   void stopAnimations();
 
-  DCOPCString dcopObjectId() const;
+  Q3CString dcopObjectId() const;
 
   /**
    * Execute the specified snippet of JavaScript code.
