@@ -17,24 +17,20 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <q3dict.h>
+#include <QSet>
 
 #include <kapplication.h>
 
 #include "historyprovider.h"
 
 using namespace KParts;
-template class Q3Dict<void>;
 
 HistoryProvider * HistoryProvider::s_self = 0L;
 
 class HistoryProvider::HistoryProviderPrivate
 {
 public:
-    HistoryProviderPrivate()
-	: dict( 1009 ) {}
-
-    Q3Dict<void> dict;
+    QSet<QString> dict;
 };
 
 HistoryProvider * HistoryProvider::self()
@@ -65,18 +61,18 @@ HistoryProvider::~HistoryProvider()
 
 bool HistoryProvider::contains( const QString& item ) const
 {
-    return (bool) d->dict.find( item );
+    return d->dict.contains( item );
 }
 
 void HistoryProvider::insert( const QString& item )
 {
     // no need to allocate memory, we only want to have fast lookup, no mapping
-    d->dict.replace( item, (void*) 1 );
+    d->dict.insert( item );
 }
 
 void HistoryProvider::remove( const QString& item )
 {
-    (void) d->dict.remove( item );
+    d->dict.remove( item );
 }
 
 void HistoryProvider::clear()
