@@ -44,9 +44,6 @@ def detect(lenv,dest):
 /* Define if getaddrinfo is broken and should be replaced */
 /* #undef HAVE_BROKEN_GETADDRINFO */
 
-/* Defines if bzip2 is compiled */
-#define HAVE_BZIP2_SUPPORT 1
-
 /* Define to 1 if you have the <Carbon/Carbon.h> header file. */
 /* #undef HAVE_CARBON_CARBON_H */
 

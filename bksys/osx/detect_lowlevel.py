@@ -121,7 +121,6 @@ def detect(env,dest):
 
 	content += """
 #define HAVE_BOOL 1
-#define HAVE_BZIP2_SUPPORT 1
 #define HAVE_CUPS 1
 #define HAVE_CUPS_NO_PWD_CACHE 1
 #define HAVE_DLERROR 1
