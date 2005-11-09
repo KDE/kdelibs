@@ -153,7 +153,7 @@ UString::UString(const DOM::DOMString &d)
   rep = UString::Rep::create(dat, len);
 }
 
-DOM::DOMString UString::string() const
+DOM::DOMString UString::domString() const
 {
   return DOM::DOMString((QChar*) data(), size());
 }
@@ -168,7 +168,7 @@ QConstString UString::qconststring() const
   return QConstString((QChar*) data(), size());
 }
 
-DOM::DOMString Identifier::string() const
+DOM::DOMString Identifier::domString() const
 {
   return DOM::DOMString((QChar*) data(), size());
 }
