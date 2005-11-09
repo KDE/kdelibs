@@ -35,12 +35,6 @@
 
 #ifndef _PWD_H_
 
-#ifdef __MINGW32__
-#define KDEWIN32_EXPORT
-#else 
-#include <kdecore/kdelibs_export.h>
-#endif 
-
 #include <sys/types.h>
 
 #ifdef __cplusplus
