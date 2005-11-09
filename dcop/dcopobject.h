@@ -20,19 +20,19 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef _DCOPOBJECT_H
-#define _DCOPOBJECT_H
+#ifndef DCOPOBJECT_H
+#define DCOPOBJECT_H
 
 #include <QList>
+#include <kdelibs_export.h>
 #include <kdatastream.h> // needed for proper bool marshalling
-#include "kdelibs_export.h"
 
 class DCOPClient;
 typedef QList<DCOPCString> DCOPCStringList;
 
 class QObject;
 
-// Makros for DCOP interfaces
+// Macros for DCOP interfaces
 
 #define K_DCOP \
 public:        \
@@ -335,8 +335,8 @@ protected:
   /** Standard hack for adding virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
-  class DCOPObjectPrivate;
-  DCOPObjectPrivate *d;
+  class Private;
+  Private *const d;
 };
 
 class DCOPObjectProxyPrivate;
@@ -358,14 +358,6 @@ public:
     DCOPObjectProxy();
 
     /**
-     * Obsolete, do not use. DCOP clients know about object proxies
-     * automatically.
-     *
-     * @deprecated
-     */
-    DCOPObjectProxy( DCOPClient*);
-
-    /**
      * Destroy the proxy.
      */
     virtual ~DCOPObjectProxy();
@@ -379,7 +371,7 @@ public:
      *
      * The object id @p obj may be empty for app-wide function calls no
      * associated with any object.
-	 * @param obj the id of the object
+     * @param obj the id of the object
      * @param fun is the normalized function signature.
      *            Such a signature usually looks like
      *            foobar(QString,int). The return type,
@@ -395,8 +387,6 @@ public:
 			  const QByteArray& data,
 			  DCOPCString& replyType, QByteArray &replyData );
 private:
-    void* unused;
-    void* unused_too;
     friend class DCOPClient;
     static QList<DCOPObjectProxy*>* proxies;
 protected:

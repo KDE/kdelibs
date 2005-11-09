@@ -28,36 +28,33 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qmap.h>
 
+typedef QMap<DCOPCString, DCOPObject*> ObjectMap;
+ObjectMap* kde_dcopObjMap = 0;
 
-QMap<DCOPCString, DCOPObject *> *kde_dcopObjMap = 0;
-
-static inline QMap<DCOPCString, DCOPObject *> *objMap()
+static inline ObjectMap* objMap()
 {
   if (!kde_dcopObjMap)
-    kde_dcopObjMap = new QMap<DCOPCString, DCOPObject *>;
+    kde_dcopObjMap = new ObjectMap;
   return kde_dcopObjMap;
 }
 
-class DCOPObject::DCOPObjectPrivate
+class DCOPObject::Private
 {
 public:
-    DCOPObjectPrivate()
-        { m_signalConnections = 0; m_dcopClient = 0; }
+    Private() : m_signalConnections(0), m_dcopClient(0) { }
 
     unsigned int m_signalConnections;
     DCOPClient *m_dcopClient;
 };
 
-DCOPObject::DCOPObject()
+DCOPObject::DCOPObject() : d(new Private)
 {
-    d = new DCOPObjectPrivate;
     qsnprintf(ident.data(), ident.size(), "%p", this );
     objMap()->insert(ident, this );
 }
 
-DCOPObject::DCOPObject(QObject *obj)
+DCOPObject::DCOPObject(QObject *obj) : d(new Private)
 {
-    d = new DCOPObjectPrivate;
     QObject *currentObj = obj;
     while (currentObj != 0L) {
 #ifdef _GNUC
@@ -74,9 +71,8 @@ DCOPObject::DCOPObject(QObject *obj)
 }
 
 DCOPObject::DCOPObject(const DCOPCString &_objId)
-  : ident(_objId)
+  : ident(_objId), d(new Private)
 {
-    d = new DCOPObjectPrivate;
     if ( ident.isEmpty() )
         qsnprintf(ident.data(), ident.size(), "%p", this );
     objMap()->insert(ident, this);
@@ -104,7 +100,7 @@ void DCOPObject::setCallingDcopClient(DCOPClient *client)
 
 bool DCOPObject::setObjId(const DCOPCString &objId)
 {
-  if (objMap()->find(objId)!=objMap()->end()) return false;
+  if (objMap()->contains(objId)) return false;
 
   DCOPClient *client = DCOPClient::mainClient();
     if ( d->m_signalConnections > 0 && client )
@@ -123,29 +119,25 @@ DCOPCString DCOPObject::objId() const
 
 bool DCOPObject::hasObject(const DCOPCString &_objId)
 {
-  if (objMap()->contains(_objId))
-    return true;
-  else
-    return false;
+  return objMap()->contains(_objId);
 }
 
 DCOPObject *DCOPObject::find(const DCOPCString &_objId)
 {
-  QMap<DCOPCString, DCOPObject *>::ConstIterator it;
-  it = objMap()->find(_objId);
+  ObjectMap::ConstIterator it = objMap()->find(_objId);
   if (it != objMap()->end())
     return *it;
-  else
-    return 0L;
+
+  return 0L;
 }
 
 QList<DCOPObject*> DCOPObject::match(const DCOPCString &partialId)
 {
     QList<DCOPObject*> mlist;
-    QMap<DCOPCString, DCOPObject *>::ConstIterator it(objMap()->begin());
+    ObjectMap::ConstIterator it(objMap()->begin());
     for (; it != objMap()->end(); ++it)
-	if (it.key().left(partialId.length()) == partialId) // found it?
-	    mlist.append(it.value());
+	if (it.key().startsWith(partialId)) // found it?
+	    mlist << it.value();
     return mlist;
 }
 
@@ -260,13 +252,6 @@ bool DCOPObject::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCStr
 QList<DCOPObjectProxy*>* DCOPObjectProxy::proxies = 0;
 
 DCOPObjectProxy::DCOPObjectProxy()
-{
-    if ( !proxies )
-	proxies = new QList<DCOPObjectProxy*>;
-    proxies->append( this );
-}
-
-DCOPObjectProxy::DCOPObjectProxy( DCOPClient*)
 {
     if ( !proxies )
 	proxies = new QList<DCOPObjectProxy*>;
