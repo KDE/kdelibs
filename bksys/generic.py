@@ -952,7 +952,6 @@ def generate(env):
 	def subdirs(lenv, folderlist):
 		flist=lenv.make_list(folderlist)
 		for i in flist:
-			print i
 			lenv['CURBUILDDIR'] = i[1:]
 			lenv.SConscript(lenv.join(i, 'SConscript'))
 		# take all objects - warn those who are not already executed
