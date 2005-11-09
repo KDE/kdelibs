@@ -89,36 +89,34 @@ void KMdiDocumentViewTabWidget::updateCaptionInView( QWidget *w, const QString &
 
 void KMdiDocumentViewTabWidget::maybeShow()
 {
-	if ( m_visibility == KMdi::AlwaysShowTabs )
+	switch (m_visibility)
 	{
-		tabBar() ->show();
-		if ( cornerWidget() )
-		{
-			if ( count() == 0 )
-				cornerWidget() ->hide();
-			else
-				cornerWidget() ->show();
-		}
-	}
-
-	if ( m_visibility == KMdi::ShowWhenMoreThanOneTab )
-	{
-		if ( count() < 2 )
-			tabBar() ->hide();
-		if ( count() > 1 )
+		case KMdi::AlwaysShowTabs:
 			tabBar() ->show();
-		if ( cornerWidget() )
-		{
-			if ( count() < 2 )
-				cornerWidget() ->hide();
-			else
-				cornerWidget() ->show();
-		}
-	}
+			if ( cornerWidget() )
+			{
+				if ( count() == 0 )
+					cornerWidget() ->hide();
+				else
+					cornerWidget() ->show();
+			}
+			break;
 
-	if ( m_visibility == KMdi::NeverShowTabs )
-	{
-		tabBar() ->hide();
+		case KMdi::ShowWhenMoreThanOneTab:
+			if ( count() < 2 )
+				tabBar() ->hide();
+			else tabBar() ->show();
+			if ( cornerWidget() )
+			{
+				if ( count() < 2 )
+					cornerWidget() ->hide();
+				else
+					cornerWidget() ->show();
+			}
+			break;
+		case KMdi::NeverShowTabs:
+			tabBar() ->hide();
+			break;
 	}
 }
 
