@@ -43,11 +43,10 @@ namespace KJS {
     virtual DOM::DOMString eventListenerType();
     // Return the KJS function object executed when this event is emitted
     virtual ObjectImp* listenerObj() const;
-    ObjectImp *listenerObjImp() const { return listenerObj().imp(); }
     // for Window::clear(). This is a bad hack though. The JSEventListener might not get deleted
     // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
     // all nodes we're listening to is quite difficult.
-    void clear() { listener = Object(); }
+    void clear() { listener = 0; }
     bool isHTMLEventListener() const { return html; }
 
   protected:

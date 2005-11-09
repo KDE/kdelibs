@@ -30,8 +30,8 @@ namespace KJS {
   public:
     DOMRange(ExecState *exec, DOM::Range r);
     ~DOMRange();
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -51,20 +51,20 @@ namespace KJS {
   class RangeConstructor : public DOMObject {
   public:
     RangeConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
-    Value getValueProperty(ExecState *, int token) const;
+    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getDOMRange(ExecState *exec, DOM::Range r);
-  Value getRangeConstructor(ExecState *exec);
+  ValueImp* getDOMRange(ExecState *exec, DOM::Range r);
+  ValueImp* getRangeConstructor(ExecState *exec);
 
   /**
    * Convert an object to a Range. Returns a null Node if not possible.
    */
-  DOM::Range toRange(const Value&);
+  DOM::Range toRange(ValueImp*);
 
 } // namespace
 
