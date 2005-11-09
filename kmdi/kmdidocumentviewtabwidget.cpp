@@ -7,6 +7,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <qtimer.h>
+
 #include <ktabbar.h>
 #include <kpopupmenu.h>
 #include "kmdidocumentviewtabwidget.h"
@@ -30,28 +32,28 @@ void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QString & label 
 {
 	KTabWidget::addTab( child, label );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 }
 
 void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
 {
 	KTabWidget::addTab( child, iconset, label );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 }
 
 void KMdiDocumentViewTabWidget::addTab ( QWidget * child, QTab * tab )
 {
 	KTabWidget::addTab( child, tab );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 }
 
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & label, int index )
 {
 	KTabWidget::insertTab( child, label, index );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 	tabBar() ->repaint();
 }
 
@@ -59,7 +61,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & ic
 {
 	KTabWidget::insertTab( child, iconset, label, index );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 	tabBar() ->repaint();
 }
 
@@ -67,14 +69,14 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int ind
 {
 	KTabWidget::insertTab( child, tab, index );
 	showPage( child );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 	tabBar() ->repaint();
 }
 
 void KMdiDocumentViewTabWidget::removePage ( QWidget * w )
 {
 	KTabWidget::removePage( w );
-	maybeShow();
+	QTimer::singleShot(0, this, SLOT(maybeShow()));
 }
 
 void KMdiDocumentViewTabWidget::updateIconInView( QWidget *w, QPixmap icon )

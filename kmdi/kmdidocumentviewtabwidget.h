@@ -101,7 +101,7 @@ public slots:
 	/** Change the caption for the tab */
 	void updateCaptionInView( QWidget*, const QString& );
 
-private:
+private slots:
 
 	/**
 	 * Determine whether or not we should show the tab bar
@@ -109,6 +109,8 @@ private:
 	 * and shown if it's determined that it should be shown
 	 */
 	void maybeShow();
+
+private:
 
 	KMdi::TabWidgetVisibility m_visibility;
 	
