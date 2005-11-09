@@ -37,7 +37,8 @@ kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp klockfile.cpp 
-kqiodevicegzip_p.cpp ktimezones.cpp ktzfiletimezone.cpp kmath.cpp
+ktimezones.cpp ktzfiletimezone.cpp kmath.cpp
+kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 network/kresolver.cpp
 network/kresolvermanager.cpp
@@ -109,8 +110,8 @@ obj.source   = core_files
 #when compiling libltdlc.a, we still need it here. We need a better static
 #library support (liucougar)
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN DL'
-obj.libpaths = '../dcop ../libltdl'
-obj.libs     = 'DCOP ltdlc'
+obj.libpaths = '../libltdl'
+obj.libs     = '../dcop/libDCOP.la libltdlc'
 obj.iskdelib = 1
 obj.includes = 'network'
 obj.ccflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
@@ -124,6 +125,10 @@ if env['WINDOWS']:
 if env['MAC']:
 	obj.libs += ' resolv z '
 	obj.frameworks += ' Carbon '
+
+if env.has_key("CACHED_LIBBZ2") and env['CACHED_LIBBZ2']:
+	obj.uselib += ' LIBBZ2 '
+	obj.source += ' kbzip2filter.cpp'
 
 # TODO check for libagg
 if env.has_key("CACHED_LIBAGG") and env['CACHED_LIBAGG']:
