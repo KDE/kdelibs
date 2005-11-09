@@ -75,9 +75,9 @@ public:
    **/
   KStringListValidator( const QStringList & list=QStringList(),
 			bool rejecting=true, bool fixupEnabled=false,
-			QObject * parent=0, const char * name=0 )
+			QObject * parent=0 )
     : QValidator( parent ), mStringList( list ),
-      mRejecting( rejecting ), mFixupEnabled( fixupEnabled ) { setObjectName(name);}
+      mRejecting( rejecting ), mFixupEnabled( fixupEnabled ) { }
 
   virtual State validate( QString & input, int & pos ) const;
   virtual void fixup( QString & input ) const;
@@ -120,8 +120,8 @@ class KDEUI_EXPORT KMimeTypeValidator : public QValidator
 {
   Q_OBJECT
 public:
-  KMimeTypeValidator( QObject* parent, const char* name=0)
-    : QValidator( parent ) { setObjectName(name);}
+  KMimeTypeValidator( QObject* parent)
+    : QValidator( parent ) {}
 
   /**
    * Checks for well-formed mimetype. Returns
