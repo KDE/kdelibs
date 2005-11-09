@@ -30,7 +30,9 @@
 
 #include "khtml_part.h"
 #include "khtml_events.h"
+#ifdef Q_WS_X11
 #include <qx11info_x11.h>
+#endif
 
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
@@ -94,8 +96,10 @@
 
 //#define DEBUG_PIXEL
 
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
+#endif
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -1159,6 +1163,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
     }
 
+#ifdef Q_WS_X11
     if ( mailtoCursor && isVisible() && hasFocus() ) {
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
@@ -1182,6 +1187,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
     else if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
+#endif
 
     if (r && r->isWidget()) {
 	_mouse->ignore();

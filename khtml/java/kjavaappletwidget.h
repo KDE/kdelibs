@@ -25,10 +25,13 @@
 #define KJAVAAPPLETWIDGET_H
 
 #include <qwidget.h>
-#ifndef Q_WS_QWS //FIXME(?) I don't think this is possible with Qt Embedded
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"
+#ifdef Q_WS_X11
 #include <QX11EmbedContainer>
+#else
+#define QX11EmbedContainer QWidget
+#endif
 #include <kwinmodule.h>
 
 /**
@@ -120,6 +123,5 @@ private:
 
 };
 
-#endif
 #endif // KJAVAAPPLETWIDGET_H
 

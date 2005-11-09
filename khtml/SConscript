@@ -213,6 +213,12 @@ extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefacto
 
 """
 
+fulllibs = 'DCOP kdecore kdeui kjs kio kparts kjs_html ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la -ljpeg kdesu kdefx '
+fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ecma ../kdesu ../kdefx "
+fulluselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI PNG '
+if env.has_key("CACHED_GIFLIB") and env['CACHED_GIFLIB']:
+	fulluselib += ' GIFLIB '
+
 env.CreateFile('dummy.cpp', Value(dummy_cpp))
 env.CreateFile('imgdummy.cpp', Value(imgdummy_cpp))
 
@@ -221,32 +227,39 @@ obj.target = 'libkhtml'
 obj.vnum = '6.0.2'
 obj.source = libkhtml_sources+css_sources+dom_sources+imload_sources+misc_sources+render_sources+html_sources+xml_sources
 obj.includes = includes
+
 #obj.linkflags = '-Wl,--whole-archive build/khtml/imload/decoders/libdecoders.a -Wl,--no-whole-archive'
 #obj.libpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts xml html rendering css misc ecma dom imload imload/decoders"
 #obj.libs = 'DCOP kdecore kdeui kjs kio kparts khtmlxml khtmlhtml khtmlrender khtmlcss khtmlmisc kjs_html khtmldom khtmlimload ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la -ljpeg -lungif'
-obj.libs = 'DCOP kdecore kdeui kjs kio kparts kjs_html ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la -ljpeg -lungif'
-obj.libpaths="../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ecma"
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI '
+obj.libs = fulllibs
+obj.libpaths= fulllibpaths
+obj.uselib = fulluselib
 obj.execute()
 
 # For now ;(
-env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
-env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
+if env['MAC']:
+	env.Depends('libkhtml.6.0.2.dylib', '../kjs/libkjs.dylib')
+	env.Depends('libkhtml.6.0.2.dylib', '../kparts/libkparts.dylib')
+else:
+	env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
+	env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
 
 obj = env.kdeobj('module')
 obj.target = 'libkhtmlpart'
 obj.source = libkhtmlpart_sources
 obj.includes = includes
-obj.libs = 'libkhtml.la '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libs = 'libkhtml.la ' + fulllibs
+obj.uselib = fulluselib
+obj.libpaths = fulllibpaths
 obj.execute()
 
 obj = env.kdeobj('module')
 obj.target = 'khtmlimagepart'
 obj.source = khtmlimagepart_sources
 obj.includes = includes
-obj.libs = 'libkhtml.la '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libs = 'libkhtml.la ' + fulllibs
+obj.uselib = fulluselib
+obj.libpaths = fulllibpaths
 obj.execute()
 
 

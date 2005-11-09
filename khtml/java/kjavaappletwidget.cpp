@@ -28,6 +28,9 @@
 
 #include <qlabel.h>
 
+#ifndef Q_WS_X11
+#define QXEmbed QWidget
+#endif
 
 // For future expansion
 class KJavaAppletWidgetPrivate
@@ -46,7 +49,9 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
 
     m_applet = new KJavaApplet( this );
     d        = new KJavaAppletWidgetPrivate;
+#ifdef Q_WS_X11
     m_kwm    = new KWinModule( this );
+#endif
 
     d->tmplabel = new QLabel( this );
     d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
@@ -66,6 +71,7 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::showApplet()
 {
+#ifdef Q_WS_X11
     connect( m_kwm, SIGNAL( windowAdded( WId ) ),
 	         this,  SLOT( setWindow( WId ) ) );
 
@@ -74,10 +80,12 @@ void KJavaAppletWidget::showApplet()
     //Now we send applet info to the applet server
     if ( !m_applet->isCreated() )
         m_applet->create();
+#endif
 }
 
 void KJavaAppletWidget::setWindow( WId w )
 {
+#ifdef Q_WS_X11
     //make sure that this window has the right name, if so, embed it...
     KWin::WindowInfo w_info = KWin::windowInfo( w );
     if ( m_swallowTitle == w_info.name() ||
@@ -92,10 +100,10 @@ void KJavaAppletWidget::setWindow( WId w )
         disconnect( m_kwm, SIGNAL( windowAdded( WId ) ),
                     this,  SLOT( setWindow( WId ) ) );
 
-
         embedClient( w );
         setFocus();
     }
+#endif
 }
 
 QSize KJavaAppletWidget::sizeHint() const

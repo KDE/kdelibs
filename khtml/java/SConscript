@@ -30,8 +30,8 @@ obj.target = 'kjavaappletviewer'
 obj.source = kjavaappletviewer_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.libpaths = '.'
-obj.libs = 'kjava '
+obj.libpaths = '. ../../kparts ../../kdecore ../../dcop ../../kio ../../kdeui ../../kdefx ../../kdesu '
+obj.libs = 'kjava kparts kdecore DCOP kio kdeui kdefx kdesu '
 obj.execute()
 
 
