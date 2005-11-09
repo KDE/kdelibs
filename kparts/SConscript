@@ -15,14 +15,19 @@ obj.target = 'kparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kdeui ../kio ../dcop"
-obj.libs = "kdecore kdeui kio DCOP"
+obj.libpaths = "../kdecore ../kdeui ../kio ../dcop ../kdefx ../kdesu ../kwallet/client"
+obj.libs = "kdecore kdeui kio DCOP kdefx kdesu kwalletclient"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 if env['WINDOWS']:
 	obj.libpaths += " ../win"
 	obj.libs     += " kdewin32"
 
 obj.execute()
+
+if env['MAC']:
+	env.Depends('libkparts.3.0.1.dylib', '../kio/libkio.dylib')
+elif not env['WINDOWS']:
+	env.Depends('libkparts.so.3.0.1', '../kio/libkio.so')
 
 
 """Unhandled Defines 

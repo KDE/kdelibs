@@ -9,6 +9,7 @@ kdecore/k3shortcut.cpp
 kdecore/k3keysequence.cpp
 kdecore/k3shortcutmenu.cpp
 kdecore/k3urldrag.cpp
+kdecore/k3multipledrag.cpp
 kdeui/k3dockwidget_private.cpp
 kdeui/k3textedit.cpp
 kdeui/k3dockwidget.cpp
@@ -37,8 +38,8 @@ obj.source = kde3support_sources
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
 obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libs = 'kdecore '
-obj.libpaths = '../kdecore ../kdeui ../kmdi ../kparts ../kio '
+obj.libs = 'kdecore dcop kdeui kparts kio dcop kdefx kdesu kutils '
+obj.libpaths = '../kdecore ../kdeui ../kparts ../kio ../dcop ../kdefx ../kdesu ../kutils '
 obj.cxxflags += ' -DMAKE_KDE3SUPPORT_LIB -DKDE3_SUPPORT' # todo: will be generated automatically
 obj.execute()
 

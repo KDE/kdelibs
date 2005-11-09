@@ -19,8 +19,7 @@ obj.target = 'kwalletbackend'
 obj.vnum = '1.0'
 obj.source = kwalletbackend_sources
 obj.includes = includes
-obj.libpaths = '../../kdecore '
-obj.libs = 'kdecore '
+obj.libs = '../../kdecore/libkdecore.la ../../dcop/libDCOP.la'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 QT '
 obj.execute()
 

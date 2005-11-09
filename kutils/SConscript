@@ -33,6 +33,11 @@ obj.libs = 'kdecore kdeui DCOP kio ksettings kdesu kdefx kwalletclient '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
+if env['MAC']:
+	env.Depends('libkutils.3.0.2.dylib', '../kio/libkio.dylib')
+elif not env['WINDOWS']:
+	env.Depends('libkutils.so.3.0.2', '../kio/libkio.so')
+
 for i in noinst_headers.split():
 	env.Moc(i)
 	
