@@ -29,6 +29,69 @@ obj.perms     = ''
 obj.execute()
 \endcode
 
+\section object_types object types
+
+<ul>
+<li>create a generic binary object 
+\code
+obj = env.genobj(<type>,<env>)
+\endcode 
+
+\param type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+\param env is a pointer to the global sconbs environment 
+
+<li>create a qt4 object 
+\code
+obj = env.qt4obj(<type>,<env>)
+\endcode 
+When this object class is used bksys scans for moc files and adds the dependencies on .rcc files
+
+\param type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+\param env is a pointer to the global sconbs environment 
+
+<li>create a kde4 object 
+\code
+obj = env.kde4obj(<type>,<env>)
+\endcode 
+
+\param type may be one of 
+- program - application 
+- shlib - shared library 
+- module - loadable module 
+- kioslave - special module type prefixed with 'kio_'
+- staticlib - static library 
+- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
+
+\param env is a pointer to the global sconbs environment 
+
+When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
+Then it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
+
+
+<li>create a kdeinit object \code obj = env.kdeinitobj(<type>,<env>) \endcode 
+\param type may be one of 
+- shlib - shared library 
+
+\param env is a pointer to the global sconbs environment 
+
+This class creates a shared library prefixed with 'kdeinit_' and a wrapper application. 
+</ul>
+
+\section attribute_details Attributes detail description
+This section describes each attribute in detail. The displayed examples uses the string form; using 
+the list form mentioned above is also possible.
 
 Attributes could be assigned by either using strings (see line 1,2 in the examples below) 
 or using a list (line 3,4):
@@ -42,74 +105,30 @@ obj.attribute   += ['DCOP']  (4)
 \note: If you are adding values as string, please prefix the added value with a space. This avoids 
 unwanted concatenation. 
 
-\section attribute_details Attributes detail description
-This section describes each attribute in detail. The displayed examples uses the string form; using 
-the list form mentioned above is also possible.
 
 <ul>
-<li>create a generic binary object 
-\code
-obj = env.genobj(<type>,<env>)
-\endcode 
-
-type may be one of 
-- program - application 
-- shlib - shared library 
-- module - loadable module 
-- staticlib - static library 
-- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
-
-<li>create a qt4 object 
-\code
-obj = env.qt4obj(<type>,<env>)
-\endcode 
-When this object class is used bksys scans for moc files and adds the dependencies on .rcc files
-
-type may be one of 
-- program - application 
-- shlib - shared library 
-- module - loadable module 
-- staticlib - static library 
-- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
-
-<li>create a kde4 object 
-\code
-obj = env.kde4obj(<type>,<env>)
-\endcode 
-
-type may be one of 
-- program - application 
-- shlib - shared library 
-- module - loadable module 
-- kioslave - special module type prefixed with 'kio_'
-- staticlib - static library 
-- convenience - partial linked static libraries to be included in shared libraries (unix relating) 
-
-When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
-Then it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
-
-<li>create a kdeinit object \code obj = env.kdeinitobj('shlib',<env>) \endcode 
-create a shared library prefixed with 'kdeinit_' and a wrapper application. 
-
-<li>
+<li>target name 
 \code
 obj.target     = 'DCOP'
 \endcode
 This attribute specifies the name of the target. For shared libraries a platform and/or compiler specific 
 prefix will be added by scons, in many cases this will be 'lib'. To be platform independent you should 
 not add any prefix. 
-<li>
+
+<li>version number
 \code
 obj.vnum     = '6.0.2'
 \endcode
 This attribute specifies the version number for shared libraries. On windows platforms only the first number, 
 the major number, is used to generate the shared library name. 
-<li>
+
+<li>source files
 \code
 obj.source      = 'file1.cpp file2.cpp file3.cpp'
 \endcode
 This attribute specifies the source, which will be included to this target. 
-<li>
+
+<li>include pathes
 \code
 obj.includes     = 'kio ../kdecore'
 obj.includes     = '/usr/include c:/openssl/include'
@@ -136,7 +155,7 @@ else:
 source_root of the recent project.
 
 
-<li>
+<li>libraries
 \code
 obj.libs     = 'DCOP kICE'
 \endcode
@@ -144,7 +163,7 @@ This attribute specifies additional libraries, which will be linked to the targe
 you should not add any prefix in library names. Using this form requires to specific the \b libpaths attribute 
 below, otherwise your library may not found. 
 
-<li>
+<li>library pathes
 \code
 obj.libpaths     = 'kio ../kdecore'
 obj.libpaths     = '/usr/lib/openssl c:/Programme/openssl'
@@ -170,7 +189,7 @@ else:
 - '##/DCOP' specifies an absolute path based on the build root and an absolute path based on the source 
 root of the recent project.
 
-<li>
+<li>c compiler flags
 \code
 obj.ccflags     = '-DXYz=x'
 \endcode
@@ -186,7 +205,7 @@ else:
 These definitions are also used for the c++ compiler, that means definitions required for the c and c++ 
 compiler have only to be specified with this attribute. 
 
-<li>
+<li>c++ compiler flags
 \code
 obj.cxxflags     = '-DXYz=x'
 \endcode
@@ -200,7 +219,7 @@ else:
 	obj.cxxflags = ' -fcommon'
 \endcode
 
-<li>
+<li>linker flags
 \code
 obj.linkflags     = '-Wl,--no-undefined'
 \endcode
@@ -214,7 +233,7 @@ else:
 	obj.linkflags = '-Wl,--no-undefined'
 \endcode
 
-<li>
+<li>installation dir
 \code
 obj.instdir     = '/usr/local/bin'
 obj.instdir     = 'c:/Programme/xyz'
@@ -225,17 +244,16 @@ in the below mentioned example:
 \code
 obj.instdir     = env['KDEBIN']
 \endcode
+\todo check default value
 
-\todo: check default value
 
-
-<li>
+<li>prefined modules
 \code
 obj.uselib   = 'QTCORE QT3SUPPORT KDE4 xml'
 \endcode
 BKSYS contains support for adding compiler and linker related flags depending of predefined \ref library_module. 
 
-<li>
+<li>file permissions
 \code
 obj.perms     = ''
 \endcode
@@ -253,14 +271,12 @@ set an additional dependency to a target
 env.Depends(<target>,<source>)
 \endcode
 
-<li>
-install a target 
+<li>install a target 
 \code
 env.bksys_install(<subdir>, <files>, <destfile=None>, <perms=None>):
 \endcode 
 
-<li>
-install a target using a predefined resource type 
+<li>install a target using a predefined resource type 
 \code
 env.bksys_insttype(<resoucetype>,<subdir>,<files>)
 \endcode 
