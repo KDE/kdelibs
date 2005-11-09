@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
 """
 
 		env['CACHED_GIFLIB'] = 0
-		lastLIBS = env['LIBS']
+		if env.has_key('LIBS'):
+			lastLIBS = env['LIBS']
 
 		context.Message('Checking for giflib ... ')
 		for lib in [ 'ungif', 'gif' ]:
@@ -34,7 +35,8 @@ int main(int argc, char **argv) {
 				env['CACHED_GIFLIB'] = ret
 				break
 
-		env.Replace(LIBS = lastLIBS)
+		if lastLIBS:
+			env.Replace(LIBS = lastLIBS)
 		context.Result(env['CACHED_GIFLIB'])
 		return env['CACHED_GIFLIB']
 
