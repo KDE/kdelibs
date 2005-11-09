@@ -44,7 +44,7 @@ obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.includes = 'KDE-ICE'
 obj.ccflags += ice_ccflags
 if env['WINDOWS']:
-	obj.ccflags  = ' -DKICE_EXPORT=DCOP_EXPORT -DKDECORE_EXPORT= '
+	obj.ccflags  += ' -DKICE_EXPORT=DCOP_EXPORT -DKDECORE_EXPORT= '
 	obj.libpaths += ' ../win/'
 	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
