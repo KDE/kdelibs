@@ -31,16 +31,11 @@ typedef unsigned int nlink_t;
 // uint32
 #include <stdint.h>
 
-#ifndef KDEWIN32_EXPORT
-#define KDEWIN32_EXPORT
-#endif 
-
-#ifndef KDECORE_EXPORT
+#ifdef __cplusplus
+#include <kdelibs_export.h>
+#else
 #define KDECORE_EXPORT
-#endif 
-
-#ifndef KICE_EXPORT
-#define KICE_EXPORT
+#define KDEWIN32_EXPORT
 #endif 
 
 #endif 
