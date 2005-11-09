@@ -122,7 +122,7 @@ static void sendNotification( QString message,
     }
 
     if ( !message.isEmpty() )
-        KNotifyClient::event( (int)parent_id, messageType, message );
+        KNotifyClient::event( (WId)parent_id, messageType, message );
 }
 
 static QString qrichtextify( const QString& text )
