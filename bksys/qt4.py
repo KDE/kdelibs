@@ -46,6 +46,7 @@ def generate(env):
 		('QT_RCC', 'rcc command'),
 
 		('CPPPATH_QT', ''),
+		('CXXFLAGS_QT', ''),
 		('LIBPATH_QT', ''),
 		('LIB_QT', ''),
 		('RPATH_QT', ''),
