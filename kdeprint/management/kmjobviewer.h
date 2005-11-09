@@ -27,6 +27,7 @@
 #include <kmainwindow.h>
 #include "kmprinterpage.h"
 #include "kpreloadobject.h"
+#include <Q3PtrList>
 
 class KMJobManager;
 class KMJob;

@@ -32,7 +32,6 @@
 #include "kxmlguibuilder.h"
 #include <q3mainwindow.h>
 #include <qmetaobject.h>
-#include <q3ptrlist.h>
 
 class KMenu;
 class KXMLGUIFactory;
@@ -392,7 +391,7 @@ public:
      * List of members of KMainWindow class.
      * @since 3.4
      */
-    static Q3PtrList<KMainWindow>* memberList();
+    static const QList<KMainWindow*>& memberList();
 
     /**
      * Returns a pointer to the toolbar with the specified name.
@@ -985,7 +984,7 @@ private:
     /**
      * List of members of KMainWindow class.
      */
-    static Q3PtrList<KMainWindow>* mMemberList;
+    static QList<KMainWindow*> sMemberList;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

@@ -83,7 +83,7 @@ public:
     Q3PtrList<Q3DockWindow> hiddenDockWindows;
 };
 
-Q3PtrList<KMainWindow>* KMainWindow::mMemberList = 0L;
+QList<KMainWindow*> KMainWindow::sMemberList;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
 static KStaticDeleter<KMWSessionManaged> ksmd;
@@ -100,17 +100,16 @@ public:
     bool saveState( QSessionManager& )
     {
         KConfig* config = KApplication::kApplication()->sessionConfig();
-        if ( KMainWindow::memberList()->first() ){
+        if ( KMainWindow::memberList().count() ){
             // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
             // hook is useful for better document orientation
-            KMainWindow::memberList()->first()->saveGlobalProperties(config);
+            KMainWindow::memberList().first()->saveGlobalProperties(config);
         }
 
-        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
         int n = 0;
-        for (it.toFirst(); it.current(); ++it){
+        foreach (KMainWindow* mw, KMainWindow::memberList()) {
             n++;
-            it.current()->savePropertiesInternal(config, n);
+            mw->savePropertiesInternal(config, n);
         }
         config->setGroup(QLatin1String("Number"));
         config->writeEntry(QLatin1String("NumberOfWindows"), n );
@@ -122,9 +121,9 @@ public:
         // not really a fast method but the only compatible one
         if ( sm.allowsInteraction() ) {
             bool canceled = false;
-            Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
             ::no_query_exit = true;
-            for (it.toFirst(); it.current() && !canceled;){
+
+            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled; ++it) {
                 KMainWindow *window = *it;
                 ++it; // Update now, the current window might get deleted
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
@@ -152,7 +151,7 @@ public:
                return false;
 
             KMainWindow* last = 0;
-            for (it.toFirst(); it.current() && !canceled; ++it){
+            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled; ++it) {
                 KMainWindow *window = *it;
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     last = window;
@@ -191,8 +190,6 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
-    if( !mMemberList )
-        mMemberList = new Q3PtrList<KMainWindow>;
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
@@ -235,7 +232,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     }
     setName( s );
 
-    mMemberList->append( this );
+    sMemberList.append( this );
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
@@ -333,7 +330,7 @@ KMainWindow::~KMainWindow()
     delete mb;
     delete d->m_interface;
     delete d;
-    mMemberList->remove( this );
+    sMemberList.remove( this );
 }
 
 KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
@@ -656,9 +653,8 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         e->accept();
 
         int not_withdrawn = 0;
-        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
-        for (it.toFirst(); it.current(); ++it){
-            if ( !it.current()->isHidden() && it.current()->isTopLevel() && it.current() != this )
+        foreach (KMainWindow* mw, KMainWindow::memberList()) {
+            if ( !mw->isHidden() && mw->isTopLevel() && mw != this )
                 not_withdrawn++;
         }
 
@@ -1180,7 +1176,7 @@ void KMainWindow::setIcon( const QPixmap& p )
 #endif
 }
 
-Q3PtrList<KMainWindow>* KMainWindow::memberList() { return mMemberList; }
+const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 // DF: because they compile KDE much faster :)
