@@ -318,9 +318,9 @@ class genobj:
 		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
 		if self.env['WINDOWS']:
-			lext=['.la']
+			lext=['.la','.dep']
 		else:
-			lext=['.so', '.la', '.dylib','.dll']
+			lext=['.so', '.la', '.dylib','.dll','.dep']
 		sext=['.a']
 		for lib in llist:
 			sal=SCons.Util.splitext(lib)
@@ -328,8 +328,14 @@ class genobj:
 			# maybe find a way to read qmake.conf and decide what the libraries look like based on CONFIG = lib_version_first ?
 			# also really need to handle libsuffix better
 			if len(sal)>1:
-				if (sal[-1] in lext) and (sys.platform == 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.dylib')[0]);
-				elif (sal[1] in lext) and (sys.platform != 'darwin'): self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
+				if (sal[-1] in lext) and (sys.platform == 'darwin'): 
+					self.p_local_shlibs.append(self.fixpath(sal[0]+'.dylib')[0]);
+				elif (sal[1] in lext) and (sys.platform != 'darwin'): 
+					# rh: don't know if DEPFILE should be supported on darwin too
+					if self.env['DEPFILE']:
+						self.p_local_shlibs.append(self.fixpath(sal[0]+'.dep')[0])
+					elif self.env['LIBTOOL']:
+						self.p_local_shlibs.append(self.fixpath(sal[0]+'.la')[0])
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(lib)
 
@@ -533,6 +539,10 @@ def generate(env):
 	## i see what it does now - however importing default tools causes performance issues (TODO ita)
 	from SCons.Tool import Tool;
 	Tool('default').generate(env)
+	
+	# don't use libtool by default, use dependency file instead
+	env['LIBTOOL']=0
+	env['DEPFILE']=1
 
 	if env['PLATFORM'] in ('cygwin', 'mingw', 'win32', 'win64'):
 		env['WINDOWS']=1
@@ -789,10 +799,33 @@ def generate(env):
 			normal=env['BKS_COLORS']['NORMAL']
 		return "%screating%s %s" % (blue, normal, target[0].path)
 
-	la_file = env.Action(build_la_file, string_la_file)
-	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
-	la_file_static = env.Action(build_la_file, string_la_file)
-	env['BUILDERS']['LaFileStatic'] = env.Builder(action=la_file_static,suffix='.la',src_suffix=env['LIBSUFFIX'])
+	if env['LIBTOOL']:
+		la_file = env.Action(build_la_file, string_la_file)
+		env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
+		la_file_static = env.Action(build_la_file, string_la_file)
+		env['BUILDERS']['LaFileStatic'] = env.Builder(action=la_file_static,suffix='.la',src_suffix=env['LIBSUFFIX'])
+
+	## Writes a .dep file used for platform independent dependency checking 
+	def build_dep_file(target, source, env):
+		dest=open(target[0].path, 'w')
+		dest.write("#bksys dependency file\n")
+		dest.close()
+		#return 0
+	
+	## template for compiling message 
+	def string_dep_file(target, source, env):
+		blue=''
+		normal=''
+		if env['_USECOLORS_']:
+			blue=env['BKS_COLORS']['BLUE']
+			normal=env['BKS_COLORS']['NORMAL']
+		return "%screating%s %s" % (blue, normal, target[0].path)
+
+	if env['DEPFILE']:
+		dep_file = env.Action(build_dep_file, string_dep_file)
+		env['BUILDERS']['DepFile'] = env.Builder(action=dep_file,suffix='.dep',src_suffix=[env['SHLIBSUFFIX'],env['LIBSUFFIX']])
+		# in case DepFile does not handle multiple src_suffix 
+		#	env['BUILDERS']['DepFileStatic'] = env.Builder(action=dep_file,suffix='.dep',src_suffix=env['LIBSUFFIX'])
 
 	## Build symlinks
 	def symlink_command(target, source, env):
@@ -863,12 +896,16 @@ def generate(env):
 			source=src2
 
 		library_list = thisenv.SharedLibrary(target, source)
-		lafile_list  = thisenv.LaFile(libprefix+target, library_list)
+		if thisenv['LIBTOOL']:
+			lafile_list  = thisenv.LaFile(libprefix+target, library_list)
+		if thisenv['DEPFILE']:
+			depfile_list = thisenv.DepFile(libprefix+target, library_list)
 
 		# Install the libraries automatically
 		if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
 			inst_lib=thisenv.bksys_install(libdir, library_list)
-			thisenv.bksys_install(libdir, lafile_list)	
+			if thisenv['LIBTOOL']:
+				thisenv.bksys_install(libdir, lafile_list)	
 
 		# Handle the versioning
 		if not env['WINDOWS'] and len(vnum)>0:
@@ -895,13 +932,19 @@ def generate(env):
 		return library_list
 
 	## link static library 
-	def bksys_staticlib(lenv,target,source,libdir,libprefix='lib'):
+	def bksys_staticlib(lenv,target,source,libdir,libprefix='lib',noinst=None):
 		thisenv = lenv.Copy() 
 		library_list = thisenv.StaticLibrary(target, source)
 		thisenv['BKSYS_VNUM']=''
 		thisenv['BKSYS_DESTDIR']=libdir
 		thisenv['BKSYS_STATICLIB']=1
-		lafile_list  = thisenv.LaFileStatic(libprefix+target,library_list)
+		if thisenv['LIBTOOL']:
+			lafile_list  = thisenv.LaFileStatic(libprefix+target,library_list)
+			if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
+				thisenv.bksys_install(libdir, lafile_list)	
+
+		if thisenv['DEPFILE']:
+			depfile_list  = thisenv.DepFile(libprefix+target, library_list)
 		# TODO: install
 		return library_list
 
@@ -909,6 +952,7 @@ def generate(env):
 	def subdirs(lenv, folderlist):
 		flist=lenv.make_list(folderlist)
 		for i in flist:
+			print i
 			lenv['CURBUILDDIR'] = i[1:]
 			lenv.SConscript(lenv.join(i, 'SConscript'))
 		# take all objects - warn those who are not already executed
@@ -928,15 +972,15 @@ def generate(env):
 			file = slashify(afile)
 
 			if sys.platform == 'darwin':
-				reg=re.compile("(.*)/lib(.*).(la|so|dylib)$")
+				reg=re.compile("(.*)/lib(.*).(dep|la|so|dylib)$")
 			else:
-				reg=re.compile("(.*)/lib(.*).(la|so)$")
+				reg=re.compile("(.*)/lib(.*).(dep|la|so)$")
 			result=reg.match(file)
 			if not result:
 				if sys.platform == 'darwin':
-					reg = re.compile("(.*)/lib(.*)\.(\d+)\.(la|so|dylib)")
+					reg = re.compile("(.*)/lib(.*)\.(\d+)\.(dep|la|so|dylib)")
 				else:
-					reg = re.compile("(.*)/lib(.*)\.(la|so)\.(\d+)")
+					reg = re.compile("(.*)/lib(.*)\.(dep|la|so)\.(\d+)")
 				result=reg.match(file)
 				if not result:
 					print "Unknown la file given "+file
@@ -956,7 +1000,7 @@ def generate(env):
 		for afile in lst:
 			import re
 			file = slashify(afile)
-			reg = re.compile("(.*)/(lib.*.(la|a)$)")
+			reg = re.compile("(.*)/(lib.*.(dep|la|a)$)")
 			result = reg.match(file)
 			if not result:
 				print "Unknown archive file given "+file
