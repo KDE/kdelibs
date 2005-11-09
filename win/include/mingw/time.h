@@ -22,4 +22,6 @@
 #include <sys/types.h>
 #include_next <time.h>
 
+KDEWIN32_EXPORT struct tm*  localtime_r(const time_t *t,struct tm *p);
+
 #endif 

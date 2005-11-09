@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2003-2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2005 Ralf Habacker <ralf.habacker@freenet.de>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,5 +30,11 @@ KDEWIN32_EXPORT int settimeofday(const struct timeval *__p, const struct timezon
 {
 	/*! @todo */
 	return 1;
+}
+
+KDEWIN32_EXPORT struct tm* localtime_r(const time_t *t,struct tm *p)
+{
+	*p = *localtime(t);
+	return p; 
 }
 
