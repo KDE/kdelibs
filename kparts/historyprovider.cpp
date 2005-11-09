@@ -66,7 +66,6 @@ bool HistoryProvider::contains( const QString& item ) const
 
 void HistoryProvider::insert( const QString& item )
 {
-    // no need to allocate memory, we only want to have fast lookup, no mapping
     d->dict.insert( item );
 }
 
