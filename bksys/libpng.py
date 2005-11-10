@@ -15,7 +15,8 @@ def generate(env):
 			qtdir = os.getenv("QTDIR")
 			if qtdir: 
 				# TODO: check if libpng is really in QTCore lib 
-				env['CPPPATH_PNG'] = [qtdir + "\\src\\3rdparty\\libpng"]
+				# TODO: png lib requires zlib, so add it by default, this should be better solved by specifing a dependency 
+				env['CPPPATH_PNG'] = [qtdir + "\\src\\3rdparty\\libpng",qtdir + "\\src\\3rdparty\\zlib"]
 				env['LIBPATH_PNG'] = [qtdir + "\\lib"]
 				env['LIB_PNG'] = ['QtCore4'] # TODO: check if debug version is used 
 				env['CACHED_PNG'] = 1
