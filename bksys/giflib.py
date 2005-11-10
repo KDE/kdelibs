@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
 """
 
 		env['CACHED_GIFLIB'] = 0
+		lastLIBS = ''
 		if env.has_key('LIBS'):
 			lastLIBS = env['LIBS']
 
