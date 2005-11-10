@@ -95,7 +95,7 @@ ktypelist.h ksortablevaluelist.h kclipboard.h
 kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h
 kmanagerselection.h kmountpoint.h kuser.h klockfile.h
 kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
-kdemacros.h kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h
+kdemacros.h.in kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h
 """
 
 # not finished (ita)
@@ -119,8 +119,9 @@ if env['WINDOWS']:
 	obj.libpaths += ' ../win '
 	obj.includes += ' ../win/3rdparty/zlib '
 	obj.libs     += ' kdewin32 ws2_32 user32 '
+	obj.ccflags += ' -DKIO_EXPORT= '
 	if env['CC'] == 'cl':
-		obj.ccflags += ' -wd4661 -DKIO_EXPORT= '
+		obj.ccflags += ' -wd4661 '
 
 if env['MAC']:
 	obj.libs += ' resolv z '
@@ -131,12 +132,11 @@ if env.has_key("CACHED_LIBBZ2") and env['CACHED_LIBBZ2']:
 	obj.source += ' kbzip2filter.cpp'
 
 # TODO check for libagg
-if env.has_key("CACHED_LIBAGG") and env['CACHED_LIBAGG']:
+if env.has_key("CACHED_AGG") and env['CACHED_AGG']:
     #FIXME: QTXML is used in libkdesvgicons
-    obj.uselib += ' QTXML LIBAGG'
+    obj.uselib += ' QTXML AGG'
     obj.cxxflags += ' -DHAVE_LIBAGG '
-    obj.libpaths += " svgicons"
-    obj.libs += " libkdesvgicons"
+    obj.source   += " svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp"
 obj.execute()
 
 
