@@ -22,13 +22,14 @@
 
 #include <QObject>
 #include "state.h"
+#include <kdelibs_export.h>
 
 class KURL;
 
 namespace Kdem2m
 {
 
-class SimplePlayer : public QObject
+class KDEM2M_EXPORT SimplePlayer : public QObject
 {
 	Q_OBJECT
 	public:

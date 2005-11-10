@@ -22,13 +22,14 @@
 
 #include <QObject>
 
+#include <kdelibs_export.h>
 #include <kstaticdeleter.h>
 #include <kmimetype.h>
 
 namespace Kdem2m
 {
 
-class BackendCapabilities : public QObject
+class KDEM2M_EXPORT BackendCapabilities : public QObject
 {
 	friend void ::KStaticDeleter<BackendCapabilities>::destructObject();
 

@@ -20,6 +20,7 @@
 #define Kdem2m_AUDIOEFFECT_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 class QString;
 class QStringList;
@@ -35,7 +36,7 @@ namespace Kdem2m
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \since 4.0
 	 */
-	class AudioEffect : public QObject
+	class KDEM2M_EXPORT AudioEffect : public QObject
 	{
 		friend class AudioPath;
 		Q_OBJECT

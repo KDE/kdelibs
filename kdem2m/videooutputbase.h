@@ -20,6 +20,7 @@
 #define Kdem2m_VIDEOOUTPUTBASE_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 class QString;
 
@@ -30,7 +31,7 @@ namespace Kdem2m
 		class VideoOutputBase;
 	}
 
-	class VideoOutputBase : public QObject
+	class KDEM2M_EXPORT VideoOutputBase : public QObject
 	{
 		friend class VideoPath;
 		Q_OBJECT

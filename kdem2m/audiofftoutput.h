@@ -20,6 +20,7 @@
 #define Kdem2m_AUDIOFFTOUTPUT_H
 
 #include "audiooutputbase.h"
+#include <kdelibs_export.h>
 
 template<class T> class QVector;
 
@@ -30,7 +31,7 @@ namespace Kdem2m
 		class AudioFftOutput;
 	}
 
-	class AudioFftOutput : public AudioOutputBase
+	class KDEM2M_EXPORT AudioFftOutput : public AudioOutputBase
 	{
 		Q_OBJECT
 		public:

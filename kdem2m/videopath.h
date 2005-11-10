@@ -20,6 +20,7 @@
 #define Kdem2m_VIDEOPATH_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 namespace Kdem2m
 {
@@ -31,7 +32,7 @@ namespace Kdem2m
 		class VideoPath;
 	}
 
-	class VideoPath : public QObject
+	class KDEM2M_EXPORT VideoPath : public QObject
 	{
 		friend class MediaProducer;
 		Q_OBJECT

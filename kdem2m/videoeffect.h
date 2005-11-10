@@ -20,6 +20,7 @@
 #define Kdem2m_VIDEOEFFECT_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 class QString;
 
@@ -30,7 +31,7 @@ namespace Kdem2m
 		class VideoEffect;
 	}
 
-	class VideoEffect : public QObject
+	class KDEM2M_EXPORT VideoEffect : public QObject
 	{
 		friend class VideoPath;
 		Q_OBJECT

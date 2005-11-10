@@ -25,8 +25,7 @@
 #include <dcopobject.h>
 #include <kstaticdeleter.h>
 #include <kservice.h>
-
-class KURL;
+#include <kdelibs_export.h>
 
 /**
  * \brief The KDE Multimedia classes
@@ -82,7 +81,7 @@ namespace Kdem2m
  * \since 4.0
  * \internal
  */
-class Factory : public QObject, public DCOPObject
+class KDEM2M_EXPORT Factory : public QObject, public DCOPObject
 {
 	friend void ::KStaticDeleter<Factory>::destructObject();
 

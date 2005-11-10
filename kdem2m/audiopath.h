@@ -20,6 +20,7 @@
 #define Kdem2m_AUDIOPATH_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 namespace Kdem2m
 {
@@ -35,7 +36,7 @@ namespace Kdem2m
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \since 4.0
 	 */
-	class AudioPath : public QObject
+	class KDEM2M_EXPORT AudioPath : public QObject
 	{
 		friend class MediaProducer;
 		Q_OBJECT

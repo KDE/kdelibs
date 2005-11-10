@@ -20,6 +20,7 @@
 #define Kdem2m_BYTESTREAM_H
 
 #include "mediaproducer.h"
+#include <kdelibs_export.h>
 
 class QString;
 class QStringList;
@@ -31,7 +32,7 @@ namespace Kdem2m
 		class ByteStream;
 	}
 
-	class ByteStream : public MediaProducer
+	class KDEM2M_EXPORT ByteStream : public MediaProducer
 	{
 		Q_OBJECT
 		public:

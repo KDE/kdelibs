@@ -20,6 +20,7 @@
 #define Kdem2m_AUDIOOUTPUTBASE_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 namespace Kdem2m
 {
@@ -28,7 +29,7 @@ namespace Kdem2m
 		class AudioOutputBase;
 	}
 
-	class AudioOutputBase : public QObject
+	class KDEM2M_EXPORT AudioOutputBase : public QObject
 	{
 		friend class AudioPath;
 		Q_OBJECT

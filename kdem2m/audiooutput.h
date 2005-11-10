@@ -21,6 +21,7 @@
 
 #include "audiooutputbase.h"
 #include "mixeriface.h"
+#include <kdelibs_export.h>
 
 class QString;
 
@@ -31,7 +32,7 @@ namespace Kdem2m
 		class AudioOutput;
 	}
 
-	class AudioOutput : public AudioOutputBase, public MixerIface
+	class KDEM2M_EXPORT AudioOutput : public AudioOutputBase, public MixerIface
 	{
 		Q_OBJECT
 		public:

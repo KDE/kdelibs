@@ -21,6 +21,7 @@
 #define Kdem2m_TEMPLATE_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 namespace Kdem2m
 {
@@ -33,7 +34,7 @@ namespace Kdem2m
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \since 4.0
 	 */
-	class Template : public QObject
+	class KDEM2M_EXPORT Template : public QObject
 	{
 		Q_OBJECT
 		public:

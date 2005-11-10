@@ -21,6 +21,7 @@
 
 #include <QObject>
 
+#include <kdelibs_export.h>
 #include "state.h"
 
 template<class T> class QList;
@@ -35,7 +36,7 @@ namespace Kdem2m
 		class MediaProducer;
 	}
 
-	class MediaProducer : public QObject
+	class KDEM2M_EXPORT MediaProducer : public QObject
 	{
 		Q_OBJECT
 		public:

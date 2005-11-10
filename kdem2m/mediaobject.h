@@ -21,6 +21,7 @@
 
 #include "mediaproducer.h"
 #include <kmimetype.h>
+#include <kdelibs_export.h>
 
 class KURL;
 
@@ -37,7 +38,7 @@ namespace Kdem2m
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \since 4.0
 	 */
-	class MediaObject : public MediaProducer
+	class KDEM2M_EXPORT MediaObject : public MediaProducer
 	{
 		Q_OBJECT
 		public:
