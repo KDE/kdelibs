@@ -778,7 +778,7 @@ void KSelectAction::slotActivated( const QString &text )
 {
   if ( isEditable() )
   {
-    QStringList lst = items();
+    QStringList lst = d->m_list;
     if(!lst.contains(text))
     {
       lst.append( text );
@@ -786,7 +786,7 @@ void KSelectAction::slotActivated( const QString &text )
     }
   }
 
-  int i = items().findIndex( text );
+  int i = d->m_list.findIndex( text );
   if ( i > -1 )
       setCurrentItem( i );
   else
@@ -922,10 +922,7 @@ void KListAction::setCurrentItem( int index )
 
 QString KListAction::currentText() const
 {
-  if ( currentItem() < 0 )
-      return QString::null;
-
-  return items()[ currentItem() ];
+  return KSelectAction::currentText();
 }
 
 int KListAction::currentItem() const
@@ -1076,7 +1073,7 @@ uint KRecentFilesAction::maxItems() const
 
 void KRecentFilesAction::setMaxItems( uint maxItems )
 {
-    QStringList lst = items();
+    QStringList lst = KSelectAction::items();
     uint oldCount   = lst.count();
 
     // set new maxItems
@@ -1102,7 +1099,7 @@ void KRecentFilesAction::addURL( const KURL& url )
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
     QString     file = url.pathOrURL();
-    QStringList lst = items();
+    QStringList lst = KSelectAction::items();
     KURL u = url; //make a copy (increase the reference counter?). 
                   //Otherwise after d->m_urls.erase( title ) the url will be empty...
 
@@ -1145,7 +1142,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     KURL u = url; //make a copy (increase the reference counter?). 
                   //Otherwise after d->m_urls.erase( title ) the url will be empty...
     QString     file = url.pathOrURL();
-    QStringList lst = items();
+    QStringList lst = KSelectAction::items();
 
     // remove file if already in list
     QStringList::Iterator end = lst.end();
@@ -1180,7 +1177,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 
 void KRecentFilesAction::removeURL( const KURL& url )
 {
-    QStringList lst = items();
+    QStringList lst = KSelectAction::items();
     QString     file = url.pathOrURL();
 
     // remove url
@@ -1250,7 +1247,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     QString     key;
     QString     value;
     QString     oldGroup;
-    QStringList lst = items();
+    QStringList lst = KSelectAction::items();
 
     oldGroup = config->group();
 
@@ -1289,7 +1286,7 @@ void KRecentFilesAction::menuAboutToShow()
 {
     KPopupMenu *menu = d->m_popup;
     menu->clear();
-    QStringList list = items();
+    QStringList list = KSelectAction::items();
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {
        menu->insertItem(*it);
@@ -1354,6 +1351,26 @@ void KRecentFilesAction::slotActivated()
 {
   emit activated( currentItem() );
   emit activated( currentText() );
+}
+
+//KDE4: rename to urls() and return a KURL::List
+QStringList KRecentFilesAction::items() const
+{
+    QStringList lst = KSelectAction::items();
+    QStringList result;
+
+    for( unsigned int i = 1 ; i <= lst.count() ; i++ )
+    {
+        result += d->m_urls[ lst[ i - 1 ] ].prettyURL(0, KURL::StripFileProtocol);
+    }
+
+    return result;
+}
+
+//KDE4: remove
+QStringList KRecentFilesAction::completeItems() const
+{
+    return KSelectAction::items();
 }
 
 
