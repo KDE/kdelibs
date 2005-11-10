@@ -96,20 +96,19 @@ client_map_t *cliMap()
 
 DCOPClient *DCOPClient::findLocalClient( const DCOPCString &_appId )
 {
-    return (*cliMap())[(const QByteArray&)_appId];
+    return cliMap()->value(_appId);
 }
 
 static
 void registerLocalClient( const DCOPCString &_appId, DCOPClient *client )
 {
-    cliMap()->insert(_appId.data(), client);
+    cliMap()->insert(_appId, client);
 }
 
 static
 void unregisterLocalClient( const DCOPCString &_appId )
 {
-    client_map_t *map = cliMap();
-    map->remove(_appId.data());
+    cliMap()->remove(_appId);
 }
 /////////////////////////////////////////////////////////
 
@@ -412,13 +411,13 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
                 *replyWaitRet = True;
             }
 
-            QMutableListIterator<DCOPClient::ReplyStruct*> iter (d->pendingReplies);
-            while (iter.hasNext())
+            QList<DCOPClient::ReplyStruct*>::Iterator iter = d->pendingReplies.begin();
+            while (iter != d->pendingReplies.end())
             {
-                DCOPClient::ReplyStruct* rs = iter.next();
+                DCOPClient::ReplyStruct* rs = *iter;
                 if ((rs->transactionId == id) && (rs->calledApp == calledApp))
                 {
-                    iter.remove();
+                    d->pendingReplies.erase(iter);
                     QByteArray* b = rs->replyData;
                     DCOPCString* t =  rs->replyType;
                     ds >> *t >> *b;
@@ -431,6 +430,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
                     }
                     return;
                 }
+                ++iter;
             }
         }
         qWarning("Very strange! got a DCOPReplyDelayed opcode, but we were not waiting for a reply!");
@@ -446,14 +446,16 @@ void DCOPClient::processPostedMessagesInternal()
 {
     if ( d->messages.isEmpty() )
         return;
-    QMutableListIterator<DCOPClientMessage*> it (d->messages );
+    QList<DCOPClientMessage*>::Iterator it = d->messages.begin();
     DCOPClientMessage* msg;
 
-    while (it.hasNext()) {
-        msg = it.next();
-        if ( d->currentKey && msg->key != d->currentKey )
+    while (it != d->messages.end()) {
+        msg = *it;
+        if ( d->currentKey && msg->key != d->currentKey ) {
+            ++it;
             continue;
-        it.remove();
+        }
+        it = d->messages.erase(it);
         d->opcode = msg->opcode;
         DCOPProcessInternal( d, msg->opcode, msg->key, msg->data, false );
         delete msg;
@@ -634,11 +636,9 @@ DCOPClient::~DCOPClient()
 {
 #ifdef DCOPCLIENT_DEBUG
     qWarning("d->messages.count() = %d", d->messages.count());
-    QPtrListIterator<DCOPClientMessage> it (d->messages );
     DCOPClientMessage* msg ;
-    while ( ( msg = it.current() ) ) {
-        ++it;
-        d->messages.removeRef( msg );
+    while ( !d->messages.isEmpty() ) {
+        msg = d->messages.takeFirst();
         qWarning("DROPPING UNHANDLED DCOP MESSAGE:");
         qWarning("         opcode = %d key = %d", msg->opcode, msg->key);
         QDataStream ds( &msg->data, QIODevice::ReadOnly );
@@ -1134,14 +1134,6 @@ bool DCOPClient::send(const DCOPCString &remApp, const DCOPCString &remObjId,
 bool DCOPClient::findObject(const DCOPCString &remApp, const DCOPCString &remObj,
                             const DCOPCString &remFun, const QByteArray &data,
                             DCOPCString &foundApp, DCOPCString &foundObj,
-                            bool useEventLoop)
-{
-    return findObject( remApp, remObj, remFun, data, foundApp, foundObj, useEventLoop, -1 );
-}
-
-bool DCOPClient::findObject(const DCOPCString &remApp, const DCOPCString &remObj,
-                            const DCOPCString &remFun, const QByteArray &data,
-                            DCOPCString &foundApp, DCOPCString &foundObj,
                             bool useEventLoop, int timeout)
 {
     DCOPCStringList appList;
@@ -1463,7 +1455,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
 {
     if  ( objId == "qt" ) {
         if ( fun == "interfaces()" ) {
-            replyType = "QStringList";
+            replyType = "QCStringList";
             QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
@@ -1780,15 +1772,6 @@ bool DCOPClient::find(const DCOPCString &app, const DCOPCString &objId,
         }
     }
     return false;
-}
-
-
-bool DCOPClient::call(const DCOPCString &remApp, const DCOPCString &remObjId,
-                      const DCOPCString &remFun, const QByteArray &data,
-                      DCOPCString& replyType, QByteArray &replyData,
-                      bool useEventLoop)
-{
-    return call( remApp, remObjId, remFun, data, replyType, replyData, useEventLoop, -1 );
 }
 
 bool DCOPClient::call(const DCOPCString &remApp, const DCOPCString &remObjId,
@@ -2114,7 +2097,7 @@ DCOPClient::beginTransaction()
         d->transactionList = new QList<DCOPClientTransaction*>;
 
     d->transaction = true;
-    DCOPClientTransaction *trans = new DCOPClientTransaction();
+    DCOPClientTransaction *trans = new DCOPClientTransaction;
     trans->senderId = d->senderId;
     trans->id = ++d->transactionId;
     if (d->transactionId < 0)  // Ensure that ids > 0
@@ -2158,7 +2141,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, DCOPCString& replyType
     if (trans->senderId.isEmpty())
     {
         // Local transaction
-        DCOPClientPrivate::LocalTransactionResult *result = new DCOPClientPrivate::LocalTransactionResult();
+        DCOPClientPrivate::LocalTransactionResult *result = new DCOPClientPrivate::LocalTransactionResult;
         result->replyType = replyType;
         result->replyData = replyData;
 

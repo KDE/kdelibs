@@ -20,8 +20,8 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef _DCOPCLIENT_H
-#define _DCOPCLIENT_H
+#ifndef DCOPCLIENT_H
+#define DCOPCLIENT_H
 
 #include <Qt/qobject.h>
 #include <Qt/qlist.h>
@@ -298,15 +298,7 @@ class DCOP_EXPORT DCOPClient : public QObject
   bool call(const DCOPCString &remApp, const DCOPCString &remObj,
 	    const DCOPCString &remFun, const QByteArray &data,
 	    DCOPCString& replyType, QByteArray &replyData,
-	    bool useEventLoop/*=false*/, int timeout/*=-1*/);
-  /**
-   * @deprecated
-   */
-  // KDE4 merge with above
-  bool call(const DCOPCString &remApp, const DCOPCString &remObj,
-	    const DCOPCString &remFun, const QByteArray &data,
-	    DCOPCString& replyType, QByteArray &replyData,
-	    bool useEventLoop=false);
+	    bool useEventLoop=false, int timeout=-1);
 
   /**
    * Performs a asynchronous send with receive callback.
@@ -379,17 +371,7 @@ class DCOP_EXPORT DCOPClient : public QObject
   bool findObject(const DCOPCString &remApp, const DCOPCString &remObj,
 	    const DCOPCString &remFun, const QByteArray &data,
 	    DCOPCString &foundApp, DCOPCString &foundObj,
-	    bool useEventLoop/*=false*/, int timeout/*=-1*/);
-
-  /**
-   * @deprecated
-   */
-  // KDE4 merge with above
-  bool findObject(const DCOPCString &remApp, const DCOPCString &remObj,
-	    const DCOPCString &remFun, const QByteArray &data,
-	    DCOPCString &foundApp, DCOPCString &foundObj,
-	    bool useEventLoop=false);
-
+	    bool useEventLoop=false, int timeout=-1);
 
   /**
    * Emits @p signal as DCOP signal from object @p object with @p data as
