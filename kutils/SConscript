@@ -5,10 +5,15 @@ Import('env')
 env.subdirs('ksettings')
 
 kutils_sources = """
-kcmodulecontainer.cpp kcmoduleinfo.cpp kcmoduleloader.cpp kcmoduleproxy.cpp
-kcmoduleproxyIface.skel kcmoduleproxyIfaceImpl.cpp kcmultidialog.cpp kfind.cpp
-kfinddialog.cpp kmultitabbar.cpp kplugininfo.cpp kpluginselector.cpp
+kcmoduleinfo.cpp kcmoduleloader.cpp kfind.cpp
+kfinddialog.cpp kmultitabbar.cpp 
 kreplace.cpp kreplacedialog.cpp
+"""
+
+if not env['WINDOWS']:
+kutils_sources += """
+kcmodulecontainer.cpp kcmultidialog.cpp kplugininfo.cpp kpluginselector.cpp kcmoduleproxy.cpp
+kcmoduleproxyIface.skel kcmoduleproxyIfaceImpl.cpp 
 """
 
 include_headers = """
@@ -29,7 +34,9 @@ obj.vnum = '3.0.2'
 obj.source = kutils_sources
 obj.includes = includes
 obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ksettings ../kdesu ../kdefx ../kwallet/client '
-obj.libs = 'kdecore kdeui DCOP kio ksettings kdesu kdefx kwalletclient '
+obj.libs = 'kdecore kdeui DCOP kio ksettings kdefx kwalletclient '
+if not env['WINDOWS']:
+	obj.libs += ' kdesu'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
