@@ -175,6 +175,39 @@ kfile/kpropertiesmimetypebase.ui3
 kfile/kencodingfiledialog.cpp
 kfile/kpropertiesdialog.cpp 
 """
+kfile_inst_headers = """
+kfile/kfiledialog.h 
+kfile/kencodingfiledialog.h
+kfile/kdiroperator.h 
+kfile/kfileview.h 
+kfile/kfilefiltercombo.h 
+kfile/kfiledetailview.h 
+kfile/kcombiview.h 
+kfile/kdiskfreesp.h 
+kfile/kfileiconview.h 
+kfile/krecentdocument.h 
+kfile/kurlrequester.h 
+kfile/kfilepreview.h 
+kfile/kfile.h 
+kfile/kurlcombobox.h 
+kfile/kurlrequesterdlg.h 
+kfile/kopenwith.h 
+kfile/kpropsdlg.h 
+kfile/kicondialog.h 
+kfile/kdirsize.h 
+kfile/kpreviewwidgetbase.h 
+kfile/kimagefilepreview.h 
+kfile/kfilesharedlg.h 
+kfile/kfiletreeview.h 
+kfile/kfiletreeviewitem.h 
+kfile/kfiletreebranch.h 
+kfile/kdirselectdialog.h 
+kfile/kurlbar.h 
+kfile/kpropertiesdialog.h 
+kfile/knotifydialog.h 
+kfile/kcustommenueditor.h 
+kfile/knotifywidgetbase.h
+"""
 
 env.Moc('kfile/kopenwith_p.h')
 
@@ -239,7 +272,7 @@ if env['WINDOWS']:
 
 else:
 	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP kdefx z '
-obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 FAM'
+obj.uselib    += ' QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     obj.uselib += ' LIBART'
