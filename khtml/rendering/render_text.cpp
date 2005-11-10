@@ -30,6 +30,10 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif
+
 #include "rendering/render_text.h"
 #include "rendering/render_canvas.h"
 #include "rendering/break_lines.h"
