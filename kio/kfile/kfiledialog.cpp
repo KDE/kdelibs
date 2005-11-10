@@ -1879,7 +1879,7 @@ void KFileDialog::updateAutoSelectExtension (void)
 
                 // first try X-KDE-NativeExtension
                 QString nativeExtension = mime->property ("X-KDE-NativeExtension").toString ();
-                if (nativeExtension.at (0) == '.')
+                if (!nativeExtension.isEmpty() && nativeExtension.at (0) == '.')
                 {
                     d->extension = nativeExtension.toLower ();
                     kdDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
