@@ -108,7 +108,7 @@ DOMString HTMLDocumentImpl::lastModified() const
 
 DOMString HTMLDocumentImpl::cookie() const
 {
-    long windowId = 0;
+    WId windowId = 0;
     KHTMLView *v = view ();
 
     if ( v && v->topLevelWidget() )
@@ -136,7 +136,7 @@ DOMString HTMLDocumentImpl::cookie() const
 
 void HTMLDocumentImpl::setCookie( const DOMString & value )
 {
-    long windowId = 0;
+    WId windowId = 0;
     KHTMLView *v = view ();
 
     if ( v && v->topLevelWidget() )
