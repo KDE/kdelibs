@@ -1,0 +1,30 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=KDEMultimediaBackend
+Name=KDE Multimedia Backend
+
+[PropertyDef::X-KDE-MMBackendInfo-Version]
+Type=QString
+
+[PropertyDef::X-KDE-MMBackendInfo-Website]
+Type=QString
+
+#[PropertyDef::X-KDE-MMBackendInfo-Supports]
+#Type=QStringList
+#
+#[PropertyDef::X-KDE-MMBackendInfo-Depends]
+#Type=QStringList
+#
+#[PropertyDef::X-KDE-MMBackendInfo-License]
+#Type=QString
+#
+#[PropertyDef::X-KDE-MMBackendInfo-Author]
+#Type=QString
+#
+#[PropertyDef::X-KDE-MMBackendInfo-Email]
+#Type=QString
+#
+#[PropertyDef::X-KDE-MMBackendInfo-Name]
+#Type=QString
+#
