@@ -150,13 +150,13 @@ Form1::~Form1()
 
 void Form1::slotAdd()
 {
-    qDebug("** adding: %s", LineEdit1->text().latin1() );
+    qDebug("** adding: %s", LineEdit1->text().toLatin1() );
     edit->completionObject()->addItem( LineEdit1->text() );
 
     QStringList matches = edit->completionObject()->allMatches("S");
     QStringList::ConstIterator it = matches.begin();
     for ( ; it != matches.end(); ++it )
-        qDebug("-- %s", (*it).latin1());
+        qDebug("-- %s", (*it).toLatin1());
 }
 
 void Form1::slotRemove()

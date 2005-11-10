@@ -683,7 +683,7 @@ int KSelectAction::plug( QWidget *widget, int index )
         cb->setMinimumWidth( d->m_comboWidth );
         cb->setMaximumWidth( d->m_comboWidth );
       }
-      cb->setInsertionPolicy( QComboBox::NoInsert );
+      cb->setInsertPolicy( QComboBox::NoInsert );
       cb->setWhatsThis(whatsThis() );
       if ( d->m_maxComboViewCount != -1 ) cb->setMaxVisibleItems( d->m_maxComboViewCount );
     }

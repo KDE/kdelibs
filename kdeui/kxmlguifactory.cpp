@@ -513,7 +513,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     QVariant propertyValue;
 
-    QVariant::Type propertyType = action->property( attrName.latin1() ).type();
+    QVariant::Type propertyType = action->property( attrName.toLatin1() ).type();
 
     if ( propertyType == QVariant::Int )
         propertyValue = QVariant( attribute.value().toInt() );
@@ -522,7 +522,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
     else
         propertyValue = QVariant( attribute.value() );
 
-    action->setProperty( attrName.latin1(), propertyValue );
+    action->setProperty( attrName.toLatin1(), propertyValue );
 }
 
 

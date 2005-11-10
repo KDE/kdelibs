@@ -365,7 +365,7 @@ void KHistoryCombo::init( bool useCompletion )
     if ( useCompletion )
         completionObject()->setOrder( KCompletion::Weighted );
 
-    setInsertionPolicy( NoInsertion );
+    setInsertPolicy( NoInsert );
     myIterateIndex = -1;
     myRotated = false;
     myPixProvider = 0L;
@@ -679,11 +679,11 @@ void KHistoryCombo::slotClear()
 
 void KHistoryCombo::slotSimulateActivated( const QString& text )
 {
-    /* With the insertion policy NoInsertion, which we use by default,
+    /* With the insertion policy NoInsert, which we use by default,
        Qt doesn't emit activated on typed text if the item is not already there,
        which is perhaps reasonable. Generate the signal ourselves if that's the case
     */
-    if (insertionPolicy() == NoInsertion && findText(text) == -1)
+    if (insertPolicy() == NoInsert && findText(text) == -1)
         emit activated(text);
 }
 

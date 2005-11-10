@@ -98,7 +98,7 @@ void KSharedPixmap::init()
 bool KSharedPixmap::isAvailable(const QString & name) const
 {
     QString str = QString("KDESHPIXMAP:%1").arg(name);
-    Atom sel = XInternAtom(QX11Info::display(), str.latin1(), true);
+    Atom sel = XInternAtom(QX11Info::display(), str.toLatin1(), true);
     if (sel == None)
 	return false;
     return XGetSelectionOwner(QX11Info::display(), sel) != None;
@@ -115,7 +115,7 @@ bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
     QPixmap::resize(0, 0); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
-    d->selection = XInternAtom(QX11Info::display(), str.latin1(), true);
+    d->selection = XInternAtom(QX11Info::display(), str.toLatin1(), true);
     if (d->selection == None)
 	return false;
     if (XGetSelectionOwner(QX11Info::display(), d->selection) == None)

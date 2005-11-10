@@ -210,7 +210,7 @@ void KFontCombo::init()
     d = new KFontComboPrivate;
     d->displayFonts = displayFonts();
     setItemDelegate( new KFontComboDelegate( view(), this ) );
-    setInsertPolicy(NoInsertion);
+    setInsertPolicy(NoInsert);
     setAutoCompletion(true);
     setSize(12);
     connect( this, SIGNAL(highlighted(int)), SLOT(slotModified(int)));

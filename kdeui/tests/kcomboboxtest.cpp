@@ -72,7 +72,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_rw->setObjectName( "ReadWriteCombo" );
   lbl->setBuddy (m_rw);
   m_rw->setDuplicatesEnabled( true );
-  m_rw->setInsertionPolicy( QComboBox::NoInsert );
+  m_rw->setInsertPolicy( QComboBox::NoInsert );
   m_rw->setTrapReturnKey( true );
   QObject::connect (m_rw, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_rw, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
@@ -90,7 +90,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_hc->setObjectName( "HistoryCombo" );
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
-  m_hc->setInsertionPolicy( QComboBox::NoInsert );
+  m_hc->setInsertPolicy( QComboBox::NoInsert );
   QObject::connect (m_hc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_hc, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
   QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));

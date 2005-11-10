@@ -368,7 +368,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
 
     insertWidgetInternal( combo, index, id );
     combo->insertStringList (list);
-    combo->setInsertionPolicy(policy);
+    combo->setInsertPolicy(policy);
     combo->setEnabled( enabled );
     if ( size > 0 )
         combo->setMinimumWidth( size );
@@ -391,7 +391,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     KComboBox *combo = new KComboBox ( writable, this );
     insertWidgetInternal( combo, index, id );
     combo->insertItem(text);
-    combo->setInsertionPolicy(policy);
+    combo->setInsertPolicy(policy);
     combo->setEnabled( enabled );
     if ( size > 0 )
         combo->setMinimumWidth( size );
@@ -1706,7 +1706,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     {
-        QByteArray attrFullWidth = element.attribute( "fullWidth" ).toLower().latin1();
+        QByteArray attrFullWidth = element.attribute( "fullWidth" ).toLower().toLatin1();
         if ( !attrFullWidth.isEmpty() )
             setFullSize( attrFullWidth == "true" );
     }
@@ -1744,7 +1744,7 @@ void KToolBar::loadState( const QDomElement &element )
     Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).toLower() );
 
     {
-        QByteArray attrIconText = element.attribute( "iconText" ).toLower().latin1();
+        QByteArray attrIconText = element.attribute( "iconText" ).toLower().toLatin1();
         if ( !attrIconText.isEmpty() ) {
             //kdDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
             if ( attrIconText == "icontextright" )

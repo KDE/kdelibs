@@ -577,7 +577,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
     return 0;
   }
 
-  QFrame *const page = new QFrame( 0, title.latin1() );
+  QFrame *const page = new QFrame( 0, title.toLatin1() );
   page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );

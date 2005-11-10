@@ -199,7 +199,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     int unusedNumber;
     if ( !name )
         { // no name given
-        objname = (qApp->applicationName() + "-mainwindow#").latin1();
+        objname = (qApp->applicationName() + "-mainwindow#").toLatin1();
         s = objname + '1'; // start adding number immediately
         unusedNumber = 1;
         }
@@ -296,7 +296,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 #if defined Q_WS_X11
     int x, y;
     int w, h;
-    int m = XParseGeometry( cmdlineGeometry.latin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
+    int m = XParseGeometry( cmdlineGeometry.toLatin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
     if (parsewidth) {
         QSize minSize = minimumSize();
         QSize maxSize = maximumSize();
@@ -824,7 +824,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
     // restore the object name (window role)
     if ( config->hasKey(QLatin1String("ObjectName" )) )
-        setObjectName( config->readEntry(QLatin1String("ObjectName")).latin1()); // latin1 is right here
+        setObjectName( config->readEntry(QLatin1String("ObjectName")).toLatin1()); // latin1 is right here
 
     applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
 

@@ -532,7 +532,7 @@ public:
      * doesn't make much sense, so it is only available as read-write.
      * Completion will be used automatically for the items in the combo.
      *
-     * The insertion-policy is set to NoInsertion, you have to add the items
+     * The insertion-policy is set to NoInsert, you have to add the items
      * yourself via the slot addToHistory. If you want every item added,
      * use
      *

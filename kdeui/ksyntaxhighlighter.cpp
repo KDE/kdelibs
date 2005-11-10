@@ -416,7 +416,7 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
                                                 unsigned int pos)
 {
     Q_UNUSED( suggestions );
-    // kdDebug() << suggestions.join( " " ).latin1() << endl;
+    // kdDebug() << suggestions.join( " " ).toLatin1() << endl;
     if ( d->globalConfig )
         d->sDict()->replace( originalWord, NotOkay );
     else
