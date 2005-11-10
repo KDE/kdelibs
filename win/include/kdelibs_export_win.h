@@ -180,3 +180,11 @@
 #  define KJS_EXPORT KDE_IMPORT
 # endif 
 #endif 
+
+#ifndef KWALLET_EXPORT
+# ifdef MAKE_KWALLET_LIB
+#  define KWALLET_EXPORT KDE_EXPORT
+# else
+#  define KWALLET_EXPORT KDE_IMPORT
+# endif 
+#endif 
