@@ -155,7 +155,7 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   if (qop.isEmpty()) qop = "auth";
   qop = "auth";
   bool utf8 = qstricmp(charset, "utf-8") == 0;
-  QByteArray digestUri = QByteArray(mProtocol.latin1()) + "/" + realm;
+  QByteArray digestUri = QByteArray(mProtocol.toLatin1()) + "/" + realm;
 
   /* Calculate the response */
   /* Code based on code from the http io-slave
@@ -169,11 +169,11 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   cnonce = KCodecs::base64Encode( cnonce );
 
   // Calculate H(A1)
-  QByteArray authStr = (utf8) ? mUser.toUtf8() : QByteArray(mUser.latin1());
+  QByteArray authStr = (utf8) ? mUser.toUtf8() : QByteArray(mUser.toLatin1());
   authStr += ':';
   authStr += realm;
   authStr += ':';
-  authStr += (utf8) ? mPass.toUtf8() : QByteArray(mPass.latin1());
+  authStr += (utf8) ? mPass.toUtf8() : QByteArray(mPass.toLatin1());
 
   md.update( authStr );
   authStr = "";
@@ -227,7 +227,7 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   {
     result = "charset=utf-8,username=\"" + mUser.toUtf8();
   } else {
-    result = "charset=iso-8859-1,username=\"" + QByteArray(mUser.latin1());
+    result = "charset=iso-8859-1,username=\"" + QByteArray(mUser.toLatin1());
   }
   result += "\",realm=\"" + realm + "\",nonce=\"" + nonce;
   result += "\",nc=" + nc + ",cnonce=\"" + cnonce;
