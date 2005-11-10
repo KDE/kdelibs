@@ -31,6 +31,7 @@ namespace Ifaces
 	namespace Ui
 	{
 		class Backend;
+		class VideoWidget;
 	}
 }
 namespace Ui
@@ -65,7 +66,7 @@ class Factory : public QObject
 
 		Ifaces::Ui::VideoWidget* createVideoWidget( QWidget* parent = 0 );
 
-		const Ifaces::Ui::Backend* Factory::backend() const;
+		const Ifaces::Ui::Backend* backend() const;
 
 	signals:
 		/**

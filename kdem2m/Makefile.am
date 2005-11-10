@@ -17,7 +17,7 @@
 
 INCLUDES = -I$(top_srcdir) $(all_includes)
 
-SUBDIRS = . ifaces test
+SUBDIRS = . ifaces ui test
 
 lib_LTLIBRARIES = libkdem2mcore.la
 
@@ -44,7 +44,7 @@ libkdem2mcore_la_LIBADD = $(LIB_KIO) ifaces/libkdem2mifaces.la
 
 METASOURCES = AUTO
 
-kde_servicetypes_DATA = mmbackendinfo.desktop
+kde_servicetypes_DATA = kdem2mbackend.desktop
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdem2m
 

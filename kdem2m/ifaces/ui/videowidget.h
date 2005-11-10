@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Kdem2m_IFACES_VIDEOOUTPUT_H
-#define Kdem2m_IFACES_VIDEOOUTPUT_H
+#ifndef Kdem2m_IFACES_VIDEOWIDGET_H
+#define Kdem2m_IFACES_VIDEOWIDGET_H
 
 #include <QWidget>
 
@@ -27,12 +27,12 @@ namespace Kdem2m
 {
 namespace Ifaces
 {
-	class VideoOutput : public QWidget
+	class VideoWidget : public QWidget
 	{
 		Q_OBJECT
 		public:
-			VideoOutput( QWidget* parent ) : QWidget( parent ) {}
-			virtual ~VideoOutput() {}
+			VideoWidget( QWidget* parent ) : QWidget( parent ) {}
+			virtual ~VideoWidget() {}
 
 			// Attributes Getters:
 			virtual QString name() const = 0;
@@ -48,4 +48,4 @@ namespace Ifaces
 }} //namespace Kdem2m::Ifaces
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // Kdem2m_IFACES_VIDEOOUTPUT_H
+#endif // Kdem2m_IFACES_VIDEOWIDGET_H

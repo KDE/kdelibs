@@ -115,7 +115,8 @@ class Factory : public QObject, public DCOPObject
 		Ifaces::VideoEffect* createVideoEffect( QObject* parent = 0 );
 		Ifaces::VideoOutputBase* createVideoOutputBase( QObject* parent = 0 );
 
-		const Ifaces::Backend* Factory::backend() const;
+		const Ifaces::Backend* backend() const;
+		const KService::Ptr uiService() const;
 #if 0
 		/**
 		 * Checks whether a certain mimetype is playable.

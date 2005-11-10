@@ -18,7 +18,7 @@
 */
 
 #include "factory.h"
-#include <ifaces/ui/videowidget.h>
+#include <kdem2m/ifaces/ui/videowidget.h>
 #include <kdem2m/factory.h>
 
 #include <QFile>

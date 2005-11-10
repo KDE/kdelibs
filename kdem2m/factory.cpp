@@ -56,7 +56,7 @@ class Factory::Private
 
 		void createBackend()
 		{
-			KTrader::OfferList offers = KTrader::self()->query( "KDEMultimediaBackend", "Type == 'Service'" );
+			KTrader::OfferList offers = KTrader::self()->query( "Kdem2mBackend", "Type == 'Service'" );
 			KTrader::OfferListIterator it = offers.begin();
 			KTrader::OfferListIterator end = offers.end();
 			QStringList errormsg;
@@ -236,6 +236,11 @@ Ifaces::VideoOutputBase* Factory::createVideoOutputBase( QObject* parent )
 const Ifaces::Backend* Factory::backend() const
 {
 	return d->backend;
+}
+
+const KService::Ptr Factory::uiService() const
+{
+	return d->backend ? d->backend->uiService() : 
 }
 
 #if 0
