@@ -268,7 +268,7 @@ bool KonfUpdate::checkFile(const QString &filename)
 void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
 {
    QString file;
-   int i = _file.find(',');
+   int i = _file.indexOf(',');
    if (i == -1)
    {
       file = _file.trimmed();
@@ -486,7 +486,7 @@ void KonfUpdate::gotFile(const QString &_file)
    }
    newConfig = 0; 
 
-   int i = _file.find(',');
+   int i = _file.indexOf(',');
    if (i == -1)
    {
       oldFile = _file.trimmed();
@@ -541,7 +541,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
 void KonfUpdate::gotGroup(const QString &_group)
 {
-   int i = _group.find(',');
+   int i = _group.indexOf(',');
    if (i == -1)
    {
       oldGroup = _group.trimmed();
@@ -574,7 +574,7 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
 
 void KonfUpdate::gotKey(const QString &_key)
 {
-   int i = _key.find(',');
+   int i = _key.indexOf(',');
    if (i == -1)
    {
       oldKey = _key.trimmed();
@@ -690,7 +690,7 @@ void KonfUpdate::gotAllGroups()
 
 void KonfUpdate::gotOptions(const QString &_options)
 {
-   QStringList options = QStringList::split(',', _options);
+   QStringList options = _options.split(',');
    for(QStringList::ConstIterator it = options.begin();
        it != options.end();
        ++it)
@@ -724,7 +724,7 @@ void KonfUpdate::gotScriptArguments(const QString &_arguments)
 void KonfUpdate::gotScript(const QString &_script)
 {
    QString script, interpreter;
-   int i = _script.find(',');
+   int i = _script.indexOf(',');
    if (i == -1)
    {
       script = _script.trimmed();
@@ -860,7 +860,7 @@ void KonfUpdate::gotScript(const QString &_script)
          QString line = ts.readLine();
          if (line.startsWith("["))
          {
-            int j = line.find(']')+1;
+            int j = line.indexOf(']')+1;
             if (j > 0)
                group = line.mid(1, j-2);
          }
@@ -869,7 +869,7 @@ void KonfUpdate::gotScript(const QString &_script)
             QString key = line.mid(9);
             if (key[0] == '[')
             {
-               int j = key.find(']')+1;
+               int j = key.indexOf(']')+1;
                if (j > 0)
                {
                   group = key.mid(1,j-2);
@@ -888,7 +888,7 @@ void KonfUpdate::gotScript(const QString &_script)
             QString key = line.mid(13).trimmed();
             if (key[0] == '[')
             {
-               int j = key.find(']')+1;
+               int j = key.indexOf(']')+1;
                if (j > 0)
                {
                   group = key.mid(1,j-2);
