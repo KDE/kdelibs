@@ -325,7 +325,8 @@ void RMB::slotRMBActionProperties( int val )
     bookmark.internalElement().setAttribute("href", u.url(0, 106));
   }
 
-  kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
+#warning "Here dlg.finalAddress crash because when we modify a bookmark m_foldertree is null ! Bug ?"
+  //kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
 
   KBookmarkGroup parentBookmark = atAddress(m_parentAddress).toGroup();
   m_pManager->emitChanged( parentBookmark );
