@@ -24,7 +24,7 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class AudioOutput::Private
 {
@@ -128,7 +128,7 @@ Ifaces::AudioOutput* AudioOutput::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "audiooutput.moc"
 

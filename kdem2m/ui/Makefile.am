@@ -22,12 +22,12 @@ SUBDIRS = .
 lib_LTLIBRARIES = libkdem2mui.la
 
 kdem2mincludedir = $(includedir)/kdem2m/ui
-kdem2minclude_HEADERS = volumefader.h positionslider.h videowidget.h
+kdem2minclude_HEADERS = #volumefader.h positionslider.h videowidget.h
 
-libkdem2mcore_la_SOURCES = volumefader.cpp positionslider.cpp videowidget.cpp
-libkdem2mcore_la_LDFLAGS = -L.. $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) \
+libkdem2mui_la_SOURCES = factory.cpp #volumefader.cpp positionslider.cpp videowidget.cpp
+libkdem2mui_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) \
 			  $(USER_LDFLAGS) -version-info 0:0:0 -no-undefined
-libkdem2mcore_la_LIBADD = -lkdem2mcore
+libkdem2mui_la_LIBADD = $(top_builddir)/kdem2m/libkdem2mcore.la
 
 METASOURCES = AUTO
 

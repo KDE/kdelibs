@@ -22,7 +22,7 @@
 
 #include <kdebug.h>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class MediaObject::Private
 {
@@ -126,7 +126,7 @@ void MediaObject::setupIface()
 
 	// set up attributes
 	m_iface->setURL( d->url );
-	if( state() == KDEM2M::ErrorState )
+	if( state() == Kdem2m::ErrorState )
 	{
 		slotDeleteIface();
 		//TODO: at this point MediaObject should try to use an Ifaces::ByteStream
@@ -145,7 +145,7 @@ Ifaces::MediaObject* MediaObject::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "mediaobject.moc"
 

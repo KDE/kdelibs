@@ -21,7 +21,7 @@
 #include "ifaces/template.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class Template::Private
 {
@@ -87,7 +87,7 @@ Ifaces::Template* Template::iface()
 	return m_iface;
 }
 
-} // namespace KDEM2M
+} // namespace Kdem2m
 
 #include "template.moc"
 

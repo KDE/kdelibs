@@ -4,9 +4,17 @@ Type=ServiceType
 X-KDE-ServiceType=KDEMultimediaBackend
 Name=KDE Multimedia Backend
 
+##
+# The interface version is used by kdem2m to be able to only load binary
+# compatible backends.
+[PropertyDef::X-KDE-MMBackendInfo-InterfaceVersion]
+Type=int
+
+## This is information for the user
 [PropertyDef::X-KDE-MMBackendInfo-Version]
 Type=QString
 
+## This is information for the user
 [PropertyDef::X-KDE-MMBackendInfo-Website]
 Type=QString
 

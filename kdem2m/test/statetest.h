@@ -26,7 +26,7 @@
 
 class KURL;
 
-namespace KDEM2M
+namespace Kdem2m
 {
 	class MediaObject;
 }
@@ -41,13 +41,13 @@ class StateTester : public QObject
 		void run();
 
 	private slots:
-		void stateChanged( KDEM2M::State, KDEM2M::State );
+		void stateChanged( Kdem2m::State, Kdem2m::State );
 
 	private:
 		void testplaying();
 		void wrongStateChange();
 
-		KDEM2M::MediaObject* player;
+		Kdem2m::MediaObject* player;
 		KURL* m_url;
 };
 

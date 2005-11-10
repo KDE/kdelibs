@@ -23,7 +23,7 @@
 #include "audioeffect.h"
 #include "audiooutputbase.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class AudioPath::Private
 {
@@ -117,7 +117,7 @@ Ifaces::AudioPath* AudioPath::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "audiopath.moc"
 

@@ -27,7 +27,7 @@ class QSlider;
 class QLabel;
 class QString;
 class QPushButton;
-namespace KDEM2M
+namespace Kdem2m
 {
 	class MediaObject;
 	class AudioPath;
@@ -36,7 +36,7 @@ namespace KDEM2M
 	class VideoOutput;
 }
 
-using namespace KDEM2M;
+using namespace Kdem2m;
 
 class TestWidget : public QWidget
 {
@@ -47,7 +47,7 @@ class TestWidget : public QWidget
 		void volchanged( int );
 		void slotVolumeChanged( float );
 		void tick( long );
-		void stateChanged( KDEM2M::State );
+		void stateChanged( Kdem2m::State );
 		void seek( int );
 		void length( long );
 		void loadFile( const QString& );

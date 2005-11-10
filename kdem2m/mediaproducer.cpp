@@ -28,13 +28,13 @@
 
 #include <kdebug.h>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class MediaProducer::Private
 {
 	public:
 		Private()
-			: state( KDEM2M::LoadingState )
+			: state( Kdem2m::LoadingState )
 			, currentTime( 0 )
 			, tickInterval( 0 )
 		{ }
@@ -189,7 +189,7 @@ void MediaProducer::ifaceDeleted()
 void MediaProducer::slotCreateIface()
 {
 	kdDebug( 600 ) << k_funcinfo << endl;
-	if( d->state == KDEM2M::ErrorState )
+	if( d->state == Kdem2m::ErrorState )
 		return;
 	if( !m_iface )
 		m_iface = createIface();
@@ -202,7 +202,7 @@ void MediaProducer::setupIface()
 	if( !m_iface )
 		return;
 
-	connect( m_iface->qobject(), SIGNAL( stateChanged( KDEM2M::State, KDEM2M::State ) ), SIGNAL( stateChanged( KDEM2M::State, KDEM2M::State ) ) );
+	connect( m_iface->qobject(), SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ), SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ) );
 	connect( m_iface->qobject(), SIGNAL( tick( long ) ), SIGNAL( tick( long ) ) );
 
 	// set up attributes
@@ -243,7 +243,7 @@ Ifaces::MediaProducer* MediaProducer::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "mediaproducer.moc"
 

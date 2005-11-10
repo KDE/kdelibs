@@ -16,10 +16,10 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef KDEM2M_STATE_H
-#define KDEM2M_STATE_H
+#ifndef Kdem2m_STATE_H
+#define Kdem2m_STATE_H
 
-namespace KDEM2M
+namespace Kdem2m
 {
 	/**
 	 * The state the playobject is in at the moment
@@ -57,7 +57,7 @@ namespace KDEM2M
 		ErrorState
 	};
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // KDEM2M_STATE_H
+#endif // Kdem2m_STATE_H

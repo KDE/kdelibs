@@ -20,7 +20,7 @@
 #include "ifaces/soundcardcapture.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class SoundcardCapture::Private
 {
@@ -88,7 +88,7 @@ Ifaces::SoundcardCapture* SoundcardCapture::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "soundcardcapture.moc"
 

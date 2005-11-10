@@ -21,7 +21,7 @@
 #include "ifaces/backend.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 
 class BackendCapabilities::Private
@@ -93,6 +93,6 @@ void BackendCapabilities::slotBackendChanged()
 	emit capabilitesChanged();
 }
 
-} // namespace KDEM2M
+} // namespace Kdem2m
 #include "backendcapabilities.moc"
 // vim: sw=4 ts=4 noet

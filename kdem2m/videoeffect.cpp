@@ -20,7 +20,7 @@
 #include "ifaces/videoeffect.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class VideoEffect::Private
 {
@@ -111,7 +111,7 @@ Ifaces::VideoEffect* VideoEffect::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "videoeffect.moc"
 

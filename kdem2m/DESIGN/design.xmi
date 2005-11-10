@@ -33,7 +33,7 @@
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36509" isRoot="false" isAbstract="true" name="AudioOutputBase" />
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36510" isRoot="false" isAbstract="false" name="AudioPath" />
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36514" isRoot="false" isAbstract="true" name="AudioDataOutput" />
-        <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36515" isRoot="false" isAbstract="true" name="AudioFFTOutput" />
+        <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36515" isRoot="false" isAbstract="true" name="AudioFftOutput" />
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36516" isRoot="false" isAbstract="true" name="AudioOutput" />
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36517" isRoot="false" isAbstract="true" name="ByteStream" />
         <UML:Interface stereotype="36508" isSpecification="false" isLeaf="false" visibility="public" xmi.id="36518" isRoot="false" isAbstract="true" name="MediaObject" />
@@ -278,7 +278,7 @@
         <UML:Generalization xmi.idref="36530" />
        </UML:GeneralizableElement.generalization>
       </UML:Class>
-      <UML:Class isSpecification="false" isLeaf="false" visibility="public" xmi.id="36513" isRoot="false" isAbstract="false" name="AudioFFTOutput" >
+      <UML:Class isSpecification="false" isLeaf="false" visibility="public" xmi.id="36513" isRoot="false" isAbstract="false" name="AudioFftOutput" >
        <UML:GeneralizableElement.generalization>
         <UML:Generalization xmi.idref="36524" />
        </UML:GeneralizableElement.generalization>
@@ -3716,7 +3716,7 @@
        <textblocks>
         <cppheaderclassdeclarationblock parent_id="36515" tag="classDeclarationBlock" canDelete="false" >
          <header>
-          <cppcodedocumentation tag="" text="Interface AudioFFTOutput&amp;#010;" />
+          <cppcodedocumentation tag="" text="Interface AudioFftOutput&amp;#010;" />
          </header>
          <textblocks>
           <hierarchicalcodeblock tag="publicBlock" canDelete="false" >
@@ -3740,7 +3740,7 @@
                 <cppcodedocumentation tag="" indentLevel="1" text="Constructors" />
                </header>
                <textblocks>
-                <codeblockwithcomments tag="emptyconstructor" writeOutText="false" indentLevel="1" text="AudioFFTOutput ( ) { }" >
+                <codeblockwithcomments tag="emptyconstructor" writeOutText="false" indentLevel="1" text="AudioFftOutput ( ) { }" >
                  <header>
                   <cppcodedocumentation tag="" indentLevel="1" text="Empty Constructor" />
                  </header>
@@ -9929,7 +9929,7 @@
         </codeblockwithcomments>
         <cppheaderclassdeclarationblock parent_id="36513" tag="classDeclarationBlock" canDelete="false" >
          <header>
-          <cppcodedocumentation tag="" text="Class AudioFFTOutput&amp;#010;" />
+          <cppcodedocumentation tag="" text="Class AudioFftOutput&amp;#010;" />
          </header>
          <textblocks>
           <hierarchicalcodeblock tag="publicBlock" canDelete="false" >
@@ -9953,7 +9953,7 @@
                 <cppcodedocumentation tag="" indentLevel="1" text="Constructors" />
                </header>
                <textblocks>
-                <codeblockwithcomments tag="emptyconstructor" writeOutText="false" indentLevel="1" text="AudioFFTOutput ( ) { }" >
+                <codeblockwithcomments tag="emptyconstructor" writeOutText="false" indentLevel="1" text="AudioFftOutput ( ) { }" >
                  <header>
                   <cppcodedocumentation tag="" indentLevel="1" text="Empty Constructor" />
                  </header>

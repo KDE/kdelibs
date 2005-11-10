@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEM2M_BACKENDCAPABILITIES_H
-#define KDEM2M_BACKENDCAPABILITIES_H
+#ifndef Kdem2m_BACKENDCAPABILITIES_H
+#define Kdem2m_BACKENDCAPABILITIES_H
 
 #include <QObject>
 
 #include <kstaticdeleter.h>
 #include <kmimetype.h>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 
 class BackendCapabilities : public QObject
@@ -69,7 +69,7 @@ class BackendCapabilities : public QObject
 		class Private;
 		Private* d;
 };
-} // namespace KDEM2M
+} // namespace Kdem2m
 
-#endif // KDEM2M_BACKENDCAPABILITIES_H
+#endif // Kdem2m_BACKENDCAPABILITIES_H
 // vim: sw=4 ts=4 tw=80 noet

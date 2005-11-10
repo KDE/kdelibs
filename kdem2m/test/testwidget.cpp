@@ -36,7 +36,7 @@
 #include <klineedit.h>
 #include <kurlcompletion.h>
 
-using namespace KDEM2M;
+using namespace Kdem2m;
 
 TestWidget::TestWidget()
 	: QWidget( 0 )
@@ -125,26 +125,26 @@ void TestWidget::tick( long t )
 	m_ticking = false;
 }
 
-void TestWidget::stateChanged( KDEM2M::State newstate )
+void TestWidget::stateChanged( Kdem2m::State newstate )
 {
 	switch( newstate )
 	{
-		case KDEM2M::ErrorState:
+		case Kdem2m::ErrorState:
 			m_statelabel->setText( "Error" );
 			break;
-		case KDEM2M::LoadingState:
+		case Kdem2m::LoadingState:
 			m_statelabel->setText( "Loading" );
 			break;
-		case KDEM2M::StoppedState:
+		case Kdem2m::StoppedState:
 			m_statelabel->setText( "Stopped" );
 			break;
-		case KDEM2M::PausedState:
+		case Kdem2m::PausedState:
 			m_statelabel->setText( "Paused" );
 			break;
-		case KDEM2M::BufferingState:
+		case Kdem2m::BufferingState:
 			m_statelabel->setText( "Buffering" );
 			break;
-		case KDEM2M::PlayingState:
+		case Kdem2m::PlayingState:
 			m_statelabel->setText( "Playing" );
 			break;
 	}
@@ -187,8 +187,8 @@ void TestWidget::loadFile( const QString & file )
 	connect( m_media, SIGNAL(   tick( long ) ), SLOT(   tick( long ) ) );
 	connect( m_media, SIGNAL( length( long ) ), SLOT( length( long ) ) );
 	length( m_media->totalTime() );
-	connect( m_media, SIGNAL( stateChanged( KDEM2M::State, KDEM2M::State ) ),
-			SLOT( stateChanged( KDEM2M::State ) ) );
+	connect( m_media, SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ),
+			SLOT( stateChanged( Kdem2m::State ) ) );
 	connect( m_media, SIGNAL( finished() ), qApp, SLOT( quit() ) );
 }
 

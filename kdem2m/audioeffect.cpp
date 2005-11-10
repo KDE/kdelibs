@@ -20,7 +20,7 @@
 #include "ifaces/audioeffect.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class AudioEffect::Private
 {
@@ -108,7 +108,7 @@ Ifaces::AudioEffect* AudioEffect::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "audioeffect.moc"
 

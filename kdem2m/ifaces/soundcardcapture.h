@@ -16,15 +16,15 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef KDEM2M_IFACES_SOUNDCARDCAPTURE_H
-#define KDEM2M_IFACES_SOUNDCARDCAPTURE_H
+#ifndef Kdem2m_IFACES_SOUNDCARDCAPTURE_H
+#define Kdem2m_IFACES_SOUNDCARDCAPTURE_H
 
 #include "mediaproducer.h"
 
 class QString;
 class QStringList;
 
-namespace KDEM2M
+namespace Kdem2m
 {
 namespace Ifaces
 {
@@ -39,7 +39,7 @@ namespace Ifaces
 			class Private;
 			Private* d;
 	};
-}} //namespace KDEM2M::Ifaces
+}} //namespace Kdem2m::Ifaces
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // KDEM2M_IFACES_SOUNDCARDCAPTURE_H
+#endif // Kdem2m_IFACES_SOUNDCARDCAPTURE_H

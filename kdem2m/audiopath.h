@@ -16,12 +16,12 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef KDEM2M_AUDIOPATH_H
-#define KDEM2M_AUDIOPATH_H
+#ifndef Kdem2m_AUDIOPATH_H
+#define Kdem2m_AUDIOPATH_H
 
 #include <QObject>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 	class AudioEffect;
 	class AudioOutputBase;
@@ -65,7 +65,7 @@ namespace KDEM2M
 			class Private;
 			Private* d;
 	};
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // KDEM2M_AUDIOPATH_H
+#endif // Kdem2m_AUDIOPATH_H

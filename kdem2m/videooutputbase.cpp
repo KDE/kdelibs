@@ -20,7 +20,7 @@
 #include "ifaces/videooutputbase.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class VideoOutputBase::Private
 {
@@ -118,7 +118,7 @@ Ifaces::VideoOutputBase* VideoOutputBase::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "videooutputbase.moc"
 

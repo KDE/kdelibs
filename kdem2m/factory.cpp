@@ -43,7 +43,7 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class Factory::Private
 {
@@ -66,7 +66,7 @@ class Factory::Private
 				KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
 				if( factory )
 				{
-					backend = ( Ifaces::Backend* )factory->create( 0, "Multimedia Backend", "KDEM2M::Ifaces::Backend" );
+					backend = ( Ifaces::Backend* )factory->create( 0, "Multimedia Backend", "Kdem2m::Ifaces::Backend" );
 					if( 0 == backend )
 					{
 						QString e = i18n( "create method returned 0" );
@@ -129,7 +129,7 @@ Factory * Factory::self()
 }
 
 Factory::Factory()
-	: DCOPObject( "KDEM2MFactory" )
+	: DCOPObject( "Kdem2mFactory" )
 	, d( new Private )
 {
 	connectDCOPSignal( 0, 0, "kdem2mBackendChanged()", "kdem2mBackendChanged()", false);
@@ -213,9 +213,9 @@ Ifaces::AudioDataOutput* Factory::createAudioDataOutput( QObject* parent )
 	return d->backend ? registerObject( d->backend->createAudioDataOutput( parent ) ) : 0;
 }
 
-Ifaces::AudioFFTOutput* Factory::createAudioFFTOutput( QObject* parent )
+Ifaces::AudioFftOutput* Factory::createAudioFftOutput( QObject* parent )
 {
-	return d->backend ? registerObject( d->backend->createAudioFFTOutput( parent ) ) : 0;
+	return d->backend ? registerObject( d->backend->createAudioFftOutput( parent ) ) : 0;
 }
 
 Ifaces::VideoPath* Factory::createVideoPath( QObject* parent )
@@ -300,7 +300,7 @@ template<class T> inline T* Factory::registerObject( T* o )
 	return o;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "factory.moc"
 

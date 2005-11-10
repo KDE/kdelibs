@@ -20,9 +20,9 @@
 #include "ifaces/audiofftoutput.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
-class AudioFFTOutput::Private
+class AudioFftOutput::Private
 {
 	public:
 		Private()
@@ -33,38 +33,38 @@ class AudioFFTOutput::Private
 		int availableFTs;
 };
 
-AudioFFTOutput::AudioFFTOutput( QObject* parent )
+AudioFftOutput::AudioFftOutput( QObject* parent )
 	: AudioOutputBase( createIface( false ), parent )
 	, d( new Private() )
 {
 	setupIface();
 }
 
-AudioFFTOutput::AudioFFTOutput( Ifaces::AudioOutputBase* iface, QObject* parent )
+AudioFftOutput::AudioFftOutput( Ifaces::AudioOutputBase* iface, QObject* parent )
 	: AudioOutputBase( iface, parent )
-	, m_iface( dynamic_cast<Ifaces::AudioFFTOutput*>( iface ) )
+	, m_iface( dynamic_cast<Ifaces::AudioFftOutput*>( iface ) )
 	, d( new Private() )
 {
 }
 
-AudioFFTOutput::~AudioFFTOutput()
+AudioFftOutput::~AudioFftOutput()
 {
 	slotDeleteIface();
 	delete d;
 	d = 0;
 }
 
-void AudioFFTOutput::readFT( QVector<int>& buffer )
+void AudioFftOutput::readFT( QVector<int>& buffer )
 {
 	iface()->readFT( buffer );
 }
 
-int AudioFFTOutput::width() const
+int AudioFftOutput::width() const
 {
 	return m_iface ? m_iface->width() : d->width;
 }
 
-void AudioFFTOutput::setWidth( int newWidth )
+void AudioFftOutput::setWidth( int newWidth )
 {
 	if( m_iface )
 		d->width = m_iface->setWidth( newWidth );
@@ -72,12 +72,12 @@ void AudioFFTOutput::setWidth( int newWidth )
 		d->width = newWidth;
 }
 
-int AudioFFTOutput::rate() const
+int AudioFftOutput::rate() const
 {
 	return m_iface ? m_iface->rate() : d->rate;
 }
 
-void AudioFFTOutput::setRate( int newRate )
+void AudioFftOutput::setRate( int newRate )
 {
 	if( m_iface )
 		d->rate = m_iface->setRate( newRate );
@@ -85,12 +85,12 @@ void AudioFFTOutput::setRate( int newRate )
 		d->rate = newRate;
 }
 
-int AudioFFTOutput::availableFTs() const
+int AudioFftOutput::availableFTs() const
 {
 	return m_iface ? m_iface->availableFTs() : d->availableFTs;
 }
 
-bool AudioFFTOutput::aboutToDeleteIface()
+bool AudioFftOutput::aboutToDeleteIface()
 {
 	if( m_iface )
 	{
@@ -101,15 +101,15 @@ bool AudioFFTOutput::aboutToDeleteIface()
 	return AudioOutputBase::aboutToDeleteIface();
 }
 
-Ifaces::AudioOutputBase* AudioFFTOutput::createIface( bool initialized )
+Ifaces::AudioOutputBase* AudioFftOutput::createIface( bool initialized )
 {
 	if( initialized )
 		delete m_iface;
-  	m_iface = Factory::self()->createAudioFFTOutput( 0 );
+  	m_iface = Factory::self()->createAudioFftOutput( 0 );
 	return m_iface;
 }
 
-void AudioFFTOutput::setupIface()
+void AudioFftOutput::setupIface()
 {	AudioOutputBase::setupIface();
 
 	if( !m_iface )
@@ -121,14 +121,14 @@ void AudioFFTOutput::setupIface()
 	m_iface->setRate( d->rate );
 }
 
-Ifaces::AudioFFTOutput* AudioFFTOutput::iface()
+Ifaces::AudioFftOutput* AudioFftOutput::iface()
 {
 	if( !m_iface )
 		slotCreateIface();
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "audiofftoutput.moc"
 

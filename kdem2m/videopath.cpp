@@ -23,7 +23,7 @@
 #include "videoeffect.h"
 #include "videooutputbase.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class VideoPath::Private
 {
@@ -117,7 +117,7 @@ Ifaces::VideoPath* VideoPath::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "videopath.moc"
 

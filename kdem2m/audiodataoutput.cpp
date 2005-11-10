@@ -20,7 +20,7 @@
 #include "ifaces/audiodataoutput.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class AudioDataOutput::Private
 {
@@ -101,7 +101,7 @@ Ifaces::AudioDataOutput* AudioDataOutput::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "audiodataoutput.moc"
 

@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEM2M_SIMPLEPLAYER_H
-#define KDEM2M_SIMPLEPLAYER_H
+#ifndef Kdem2m_SIMPLEPLAYER_H
+#define Kdem2m_SIMPLEPLAYER_H
 
 #include <QObject>
 #include "state.h"
 
 class KURL;
 
-namespace KDEM2M
+namespace Kdem2m
 {
 
 class SimplePlayer : public QObject
@@ -53,14 +53,14 @@ class SimplePlayer : public QObject
 		void finished();
 
 	private slots:
-		void stateChanged( KDEM2M::State, KDEM2M::State );
+		void stateChanged( Kdem2m::State, Kdem2m::State );
 
 	private:
 		class Private;
 		Private * d;
 };
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
-#endif // KDEM2M_SIMPLEPLAYER_H
+#endif // Kdem2m_SIMPLEPLAYER_H
 // vim: sw=4 ts=4 noet tw=80

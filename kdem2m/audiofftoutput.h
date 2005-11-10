@@ -16,26 +16,26 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef KDEM2M_AUDIOFFTOUTPUT_H
-#define KDEM2M_AUDIOFFTOUTPUT_H
+#ifndef Kdem2m_AUDIOFFTOUTPUT_H
+#define Kdem2m_AUDIOFFTOUTPUT_H
 
 #include "audiooutputbase.h"
 
 template<class T> class QVector;
 
-namespace KDEM2M
+namespace Kdem2m
 {
 	namespace Ifaces
 	{
-		class AudioFFTOutput;
+		class AudioFftOutput;
 	}
 
-	class AudioFFTOutput : public AudioOutputBase
+	class AudioFftOutput : public AudioOutputBase
 	{
 		Q_OBJECT
 		public:
-			AudioFFTOutput( QObject* parent = 0 );
-			~AudioFFTOutput();
+			AudioFftOutput( QObject* parent = 0 );
+			~AudioFftOutput();
 
 			// Operations:
 			void readFT( QVector<int>& buffer );
@@ -53,18 +53,18 @@ namespace KDEM2M
 			void setRate( int newRate );
 
 		protected:
-			AudioFFTOutput( Ifaces::AudioOutputBase* iface, QObject* parent );
+			AudioFftOutput( Ifaces::AudioOutputBase* iface, QObject* parent );
 			virtual bool aboutToDeleteIface();
 			virtual Ifaces::AudioOutputBase* createIface( bool initialized = true );
 			virtual void setupIface();
 
 		private:
-			Ifaces::AudioFFTOutput* iface();
-			Ifaces::AudioFFTOutput* m_iface;
+			Ifaces::AudioFftOutput* iface();
+			Ifaces::AudioFftOutput* m_iface;
 			class Private;
 			Private* d;
 	};
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // KDEM2M_AUDIOFFTOUTPUT_H
+#endif // Kdem2m_AUDIOFFTOUTPUT_H

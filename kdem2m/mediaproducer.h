@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef KDEM2M_MEDIAPRODUCER_H
-#define KDEM2M_MEDIAPRODUCER_H
+#ifndef Kdem2m_MEDIAPRODUCER_H
+#define Kdem2m_MEDIAPRODUCER_H
 
 #include <QObject>
 
@@ -25,7 +25,7 @@
 
 template<class T> class QList;
 
-namespace KDEM2M
+namespace Kdem2m
 {
 	class VideoPath;
 	class AudioPath;
@@ -128,7 +128,7 @@ namespace KDEM2M
 			 * @param newstate The state the Player is in now.
 			 * @param oldstate The state the Player was in before.
 			 */
-			void stateChanged( KDEM2M::State newstate, KDEM2M::State oldstate );
+			void stateChanged( Kdem2m::State newstate, Kdem2m::State oldstate );
 			/**
 			 * This signal gets emitted every tickInterval milliseconds.
 			 *
@@ -156,7 +156,7 @@ namespace KDEM2M
 			class Private;
 			Private* d;
 	};
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // KDEM2M_MEDIAPRODUCER_H
+#endif // Kdem2m_MEDIAPRODUCER_H

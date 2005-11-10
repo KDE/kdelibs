@@ -20,7 +20,7 @@
 #include "ifaces/bytestream.h"
 #include "factory.h"
 
-namespace KDEM2M
+namespace Kdem2m
 {
 class ByteStream::Private
 {
@@ -75,7 +75,7 @@ Ifaces::ByteStream* ByteStream::iface()
 	return m_iface;
 }
 
-} //namespace KDEM2M
+} //namespace Kdem2m
 
 #include "bytestream.moc"
 

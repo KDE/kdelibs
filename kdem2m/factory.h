@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KDEM2M_FACTORY_H
-#define KDEM2M_FACTORY_H
+#ifndef Kdem2m_FACTORY_H
+#define Kdem2m_FACTORY_H
 
 #include <QObject>
 
@@ -36,11 +36,11 @@ class KURL;
  * exchangeable backends to do the "dirty" work.
  *
  * If you want to write a new backend you also find the necessary classes in
- * KDEM2M::Ifaces.
+ * Kdem2m::Ifaces.
  *
  * \since 4.0
  */
-namespace KDEM2M
+namespace Kdem2m
 {
 	namespace Ifaces
 	{
@@ -53,7 +53,7 @@ namespace KDEM2M
 		class AudioOutputBase;
 		class AudioOutput;
 		class AudioDataOutput;
-		class AudioFFTOutput;
+		class AudioFftOutput;
 
 		class VideoEffect;
 		class VideoPath;
@@ -109,7 +109,7 @@ class Factory : public QObject, public DCOPObject
 		Ifaces::AudioEffect* createAudioEffect( QObject* parent = 0 );
 		Ifaces::AudioOutput* createAudioOutput( QObject* parent = 0 );
 		Ifaces::AudioDataOutput* createAudioDataOutput( QObject* parent = 0 );
-		Ifaces::AudioFFTOutput* createAudioFFTOutput( QObject* parent = 0 );
+		Ifaces::AudioFftOutput* createAudioFftOutput( QObject* parent = 0 );
 
 		Ifaces::VideoPath* createVideoPath( QObject* parent = 0 );
 		Ifaces::VideoEffect* createVideoEffect( QObject* parent = 0 );
@@ -188,11 +188,11 @@ class Factory : public QObject, public DCOPObject
 	k_dcop:
 		/**
 		 * \internal
-		 * This is called via DCOP when the user changes the KDEM2M Backend.
+		 * This is called via DCOP when the user changes the Kdem2m Backend.
 		 */
 		void kdem2mBackendChanged();
 };
-} // namespace KDEM2M
+} // namespace Kdem2m
 
 #endif // BACKENDFACTORY_H
 // vim: sw=4 ts=4 tw=80 noet

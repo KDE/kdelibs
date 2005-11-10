@@ -31,28 +31,28 @@
 #include <cstdlib>
 #include <klocale.h>
 
-using namespace KDEM2M;
+using namespace Kdem2m;
 
-kdbgstream& operator<<( kdbgstream & stream, const KDEM2M::State state )
+kdbgstream& operator<<( kdbgstream & stream, const Kdem2m::State state )
 {
 	switch( state )
 	{
-		case KDEM2M::ErrorState:
+		case Kdem2m::ErrorState:
 			stream << "Error";
 			break;
-		case KDEM2M::LoadingState:
+		case Kdem2m::LoadingState:
 			stream << "LoadingState";
 			break;
-		case KDEM2M::StoppedState:
+		case Kdem2m::StoppedState:
 			stream << "StoppedState";
 			break;
-		case KDEM2M::PlayingState:
+		case Kdem2m::PlayingState:
 			stream << "PlayingState";
 			break;
-		case KDEM2M::BufferingState:
+		case Kdem2m::BufferingState:
 			stream << "BufferingState";
 			break;
-		case KDEM2M::PausedState:
+		case Kdem2m::PausedState:
 			stream << "PausedState";
 			break;
 	}
@@ -94,83 +94,83 @@ void StateTester::run()
 
 	kdDebug() << "loading " << *m_url << endl;
 	player = new MediaObject( *m_url, this );
-	connect( player, SIGNAL( stateChanged( KDEM2M::State, KDEM2M::State ) ),
-			SLOT( stateChanged( KDEM2M::State, KDEM2M::State ) ) );
+	connect( player, SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ),
+			SLOT( stateChanged( Kdem2m::State, Kdem2m::State ) ) );
 	connect( player, SIGNAL( finished() ), kapp, SLOT( quit() ) );
 
-	if( player->state() == KDEM2M::LoadingState )
-		kdDebug() << "wait until KDEM2M finished LoadingState" << endl;
-	else if( player->state() == KDEM2M::StoppedState )
+	if( player->state() == Kdem2m::LoadingState )
+		kdDebug() << "wait until Kdem2m finished LoadingState" << endl;
+	else if( player->state() == Kdem2m::StoppedState )
 		testplaying();
-	else if( player->state() == KDEM2M::ErrorState )
+	else if( player->state() == Kdem2m::ErrorState )
 	{
 		kdDebug() << "could not load media. exiting." << endl;
 		exit( 0 );
 	}
 }
 
-void StateTester::stateChanged( KDEM2M::State newstate, KDEM2M::State oldstate )
+void StateTester::stateChanged( Kdem2m::State newstate, Kdem2m::State oldstate )
 {
 	kdDebug() << "stateChanged( new = " << newstate << ", old = " << oldstate << " )" << endl;
 	switch( oldstate )
 	{
-		case KDEM2M::LoadingState:
+		case Kdem2m::LoadingState:
 			switch( newstate )
 			{
-				case KDEM2M::ErrorState:
+				case Kdem2m::ErrorState:
 					return;
-				case KDEM2M::StoppedState:
+				case Kdem2m::StoppedState:
 					testplaying();
 					return;
 				default:
 					break;
 			}
 			break;
-		case KDEM2M::StoppedState:
+		case Kdem2m::StoppedState:
 			switch( newstate )
 			{
-				case KDEM2M::PlayingState:
-				case KDEM2M::PausedState:
+				case Kdem2m::PlayingState:
+				case Kdem2m::PausedState:
 					return;
 				default:
 					break;
 			}
 			break;
-		case KDEM2M::PlayingState:
+		case Kdem2m::PlayingState:
 			switch( newstate )
 			{
-				case KDEM2M::BufferingState:
+				case Kdem2m::BufferingState:
 					//testbuffering();
-				case KDEM2M::PausedState:
-				case KDEM2M::StoppedState:
+				case Kdem2m::PausedState:
+				case Kdem2m::StoppedState:
 					return;
 				default:
 					break;
 			}
 			break;
-		case KDEM2M::BufferingState:
+		case Kdem2m::BufferingState:
 			switch( newstate )
 			{
-				case KDEM2M::PlayingState:
-				case KDEM2M::StoppedState:
-				case KDEM2M::PausedState:
-				case KDEM2M::ErrorState:
+				case Kdem2m::PlayingState:
+				case Kdem2m::StoppedState:
+				case Kdem2m::PausedState:
+				case Kdem2m::ErrorState:
 					return;
 				default:
 					break;
 			}
 			break;
-		case KDEM2M::PausedState:
+		case Kdem2m::PausedState:
 			switch( newstate )
 			{
-				case KDEM2M::PlayingState:
-				case KDEM2M::StoppedState:
+				case Kdem2m::PlayingState:
+				case Kdem2m::StoppedState:
 					return;
 				default:
 					break;
 			}
 			break;
-		case KDEM2M::ErrorState:
+		case Kdem2m::ErrorState:
 			break;
 	}
 
@@ -180,30 +180,30 @@ void StateTester::stateChanged( KDEM2M::State newstate, KDEM2M::State oldstate )
 void StateTester::testplaying()
 {
 	player->play();
-	if( player->state() == KDEM2M::StoppedState )
+	if( player->state() == Kdem2m::StoppedState )
 	{
 		kdDebug() << "could not play media. exiting." << endl;
 		exit( 0 );
 	}
-	else if( player->state() == KDEM2M::PlayingState )
+	else if( player->state() == Kdem2m::PlayingState )
 	{
 		player->pause();
-		if( player->state() != KDEM2M::PausedState )
+		if( player->state() != Kdem2m::PausedState )
 			wrongStateChange();
 		player->play();
-		if( player->state() != KDEM2M::PlayingState )
+		if( player->state() != Kdem2m::PlayingState )
 			wrongStateChange();
 		player->stop();
-		if( player->state() != KDEM2M::StoppedState )
+		if( player->state() != Kdem2m::StoppedState )
 			wrongStateChange();
 		player->play();
-		if( player->state() != KDEM2M::PlayingState )
+		if( player->state() != Kdem2m::PlayingState )
 			wrongStateChange();
 		player->pause();
-		if( player->state() != KDEM2M::PausedState )
+		if( player->state() != Kdem2m::PausedState )
 			wrongStateChange();
 		player->stop();
-		if( player->state() != KDEM2M::StoppedState )
+		if( player->state() != Kdem2m::StoppedState )
 			wrongStateChange();
 		kdDebug() << "success! playing the last 1/5 of the file now and quit on the finished signal" << endl;
 		player->play();
