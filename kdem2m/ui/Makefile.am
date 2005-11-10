@@ -27,7 +27,7 @@ kdem2minclude_HEADERS = #volumefader.h positionslider.h videowidget.h
 libkdem2mui_la_SOURCES = factory.cpp #volumefader.cpp positionslider.cpp videowidget.cpp
 libkdem2mui_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) \
 			  $(USER_LDFLAGS) -version-info 0:0:0 -no-undefined
-libkdem2mui_la_LIBADD = $(top_builddir)/kdem2m/libkdem2mcore.la
+libkdem2mui_la_LIBADD = $(top_builddir)/kdem2m/libkdem2mcore.la $(top_builddir)/kdem2m/ifaces/ui/libkdem2mifacesui.la
 
 METASOURCES = AUTO
 

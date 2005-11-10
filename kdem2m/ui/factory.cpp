@@ -19,6 +19,7 @@
 
 #include "factory.h"
 #include <kdem2m/ifaces/ui/videowidget.h>
+#include <kdem2m/ifaces/ui/backend.h>
 #include <kdem2m/factory.h>
 
 #include <QFile>
@@ -55,7 +56,7 @@ class Factory::Private
 			KLibFactory* factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
 			if( factory )
 			{
-				backend = static_cast<Ifaces::Backend*>( factory->create( 0, "Multimedia Ui Backend", "Kdem2m::Ifaces::Ui::Backend" ) );
+				backend = static_cast<Ifaces::Ui::Backend*>( factory->create( 0, "Multimedia Ui Backend", "Kdem2m::Ifaces::Ui::Backend" ) );
 				if( 0 == backend )
 				{
 					QString e = i18n( "create method returned 0" );
@@ -67,7 +68,6 @@ class Factory::Private
 				{
 					service = ptr;
 					kdDebug( 600 ) << "using ui backend: " << ptr->name() << endl;
-					break;
 				}
 			}
 			else
@@ -93,10 +93,10 @@ Factory* Factory::self()
 	{
 		m_self = new Factory();
 		Kdem2m::Factory* f = Kdem2m::Factory::self();
-		connect( f, SIGNAL( deleteYourObjects() ), SIGNAL( deleteYourObjects() ) );
-		connect( f, SIGNAL( recreateObjects() ), SIGNAL( recreateObjects() ) );
-		connect( f, SIGNAL( backendChanged() ), SIGNAL( backendChanged() ) );
-		connect( Kdem2m::Factory::self(), SIGNAL( destroyed( QObject* ) ), SLOT( deleteNow() ) );
+		connect( f, SIGNAL( deleteYourObjects() ), m_self, SIGNAL( deleteYourObjects() ) );
+		connect( f, SIGNAL( recreateObjects() ), m_self, SIGNAL( recreateObjects() ) );
+		connect( f, SIGNAL( backendChanged() ), m_self, SIGNAL( backendChanged() ) );
+		connect( Kdem2m::Factory::self(), SIGNAL( destroyed( QObject* ) ), m_self, SLOT( deleteNow() ) );
 	}
 	return m_self;
 }
@@ -124,14 +124,15 @@ Ifaces::Ui::VideoWidget* Factory::createVideoWidget( QWidget* parent )
 	return d->backend ? registerObject( d->backend->createVideoWidget( parent ) ) : 0;
 }
 
-const Ifaces::Backend* Factory::backend() const
+const Ifaces::Ui::Backend* Factory::backend() const
 {
 	return d->backend;
 }
 
 template<class T> inline T* Factory::registerObject( T* o )
 {
-	return Kdem2m::Factory::self()->registerObject( o );
+	Kdem2m::Factory::self()->registerQObject( o->qobject() );
+	return o;
 }
 
 }} //namespace Kdem2m::Ui

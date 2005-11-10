@@ -240,7 +240,17 @@ const Ifaces::Backend* Factory::backend() const
 
 const KService::Ptr Factory::uiService() const
 {
-	return d->backend ? d->backend->uiService() : 
+	if( !d->backend )
+		return 0;
+
+	KService::Ptr s = d->backend->uiService();
+	if( s )
+		return s;
+
+	KTrader::OfferList offers = KTrader::self()->query( "Kdem2mUiBackend", QString( "(Type == 'Service') and (Name == '%1')" ).arg( d->service->name() ) );
+	if( offers.size() > 0 )
+		return offers.first();
+	return 0;
 }
 
 #if 0
@@ -300,9 +310,14 @@ QString Factory::backendWebsite() const
 
 template<class T> inline T* Factory::registerObject( T* o )
 {
-	connect( o->qobject(), SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ) );
-	d->objects.append( o->qobject() );
+	registerQObject( o->qobject() );
 	return o;
+}
+
+void Factory::registerQObject( QObject* o )
+{
+	connect( o, SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ) );
+	d->objects.append( o );
 }
 
 } //namespace Kdem2m

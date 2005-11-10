@@ -19,7 +19,13 @@ INCLUDES = -I$(top_srcdir) $(all_includes)
 
 SUBDIRS = .
 
+lib_LTLIBRARIES = libkdem2mifacesui.la
+
 kdem2mincludedir = $(includedir)/kdem2m/ifaces/ui
 kdem2minclude_HEADERS = videowidget.h backend.h
+
+libkdem2mifacesui_la_SOURCES = backend.cpp
+libkdem2mifacesui_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) $(USER_LDFLAGS) -version-info 0:0:0 -no-undefined
+libkdem2mifacesui_la_LIBADD = $(LIB_KDECORE)
 
 METASOURCES = AUTO

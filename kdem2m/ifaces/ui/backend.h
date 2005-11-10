@@ -21,8 +21,6 @@
 #define Kdem2m_IFACES_UI_BACKEND_H
 
 #include <QObject>
-#include <kmimetype.h>
-class KURL;
 
 namespace Kdem2m
 {
@@ -45,7 +43,7 @@ namespace Ui
 	{
 		Q_OBJECT
 		public:
-			Backend( QObject* parent ) : QObject( parent ) {}
+			Backend( QObject* parent = 0 ) : QObject( parent ) {}
 			virtual ~Backend() {}
 
 			virtual VideoWidget*  createVideoWidget( QWidget* parent ) = 0;

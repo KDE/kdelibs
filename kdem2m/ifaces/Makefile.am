@@ -17,7 +17,7 @@
 
 INCLUDES = -I$(top_srcdir) $(all_includes)
 
-SUBDIRS = .
+SUBDIRS = . ui
 
 lib_LTLIBRARIES = libkdem2mifaces.la
 

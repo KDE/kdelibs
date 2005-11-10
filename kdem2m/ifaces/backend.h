@@ -73,6 +73,7 @@ namespace Ifaces
 			virtual VideoEffect*      createVideoEffect( QObject* parent ) = 0;
 			virtual VideoOutputBase*  createVideoOutputBase( QObject* parent ) = 0;
 
+			virtual KService::Ptr uiService() const = 0;
 			virtual bool supportsVideo() const = 0;
 			virtual bool supportsOSD() const = 0;
 			virtual bool supportsSubtitles() const = 0;

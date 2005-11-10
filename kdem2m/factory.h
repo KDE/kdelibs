@@ -24,6 +24,7 @@
 
 #include <dcopobject.h>
 #include <kstaticdeleter.h>
+#include <kservice.h>
 
 class KURL;
 
@@ -176,6 +177,11 @@ class Factory : public QObject, public DCOPObject
 
 	protected:
 		template<class T> T* Factory::registerObject( T* o );
+	public:
+		/**
+		 * \internal
+		 */
+		void registerQObject( QObject* o );
 
 	private slots:
 		void objectDestroyed( QObject * );

@@ -19,19 +19,17 @@
 #ifndef Kdem2m_IFACES_VIDEOWIDGET_H
 #define Kdem2m_IFACES_VIDEOWIDGET_H
 
-#include <QWidget>
-
 class QString;
 
 namespace Kdem2m
 {
 namespace Ifaces
 {
-	class VideoWidget : public QWidget
+namespace Ui
+{
+	class VideoWidget
 	{
-		Q_OBJECT
 		public:
-			VideoWidget( QWidget* parent ) : QWidget( parent ) {}
 			virtual ~VideoWidget() {}
 
 			// Attributes Getters:
@@ -41,11 +39,15 @@ namespace Ifaces
 			// Attributes Setters:
 			virtual QString setName( const QString& newName ) = 0;
 
+		public:
+			virtual QObject* qobject() = 0;
+			virtual const QObject* qobject() const = 0;
+
 		private:
 			class Private;
 			Private* d;
 	};
-}} //namespace Kdem2m::Ifaces
+}}} //namespace Kdem2m::Ifaces::Ui
 
 // vim: sw=4 ts=4 tw=80 noet
 #endif // Kdem2m_IFACES_VIDEOWIDGET_H
