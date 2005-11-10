@@ -507,6 +507,11 @@ char *kdeprint_foomatic2text;
 
 #include <qvariant.h>
 #include <qiodevice.h>
+#if __MINGW32__
+// isatty
+#include <io.h>
+#endif 
+
 #define YYSTYPE QVariant
 #include "fooparser.cpp.h"
 

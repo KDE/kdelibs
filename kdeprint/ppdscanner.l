@@ -20,6 +20,10 @@
 
 #include <qstringlist.h>
 #include <qiodevice.h>
+#if __MINGW32__
+// isatty
+#include <io.h>
+#endif 
 #define YYSTYPE QStringList
 #include "ppdparser.cpp.h"
 
