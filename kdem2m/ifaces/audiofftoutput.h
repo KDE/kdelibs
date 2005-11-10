@@ -33,13 +33,13 @@ namespace Ifaces
 			virtual ~AudioFftOutput() {}
 
 			// Operations:
-			virtual void readFT( QVector<int>& buffer ) = 0;
+			virtual void readFt( QVector<int>& buffer ) = 0;
 
 			// Attributes Getters:
 			virtual int width() const = 0;
 			/** FTs per second */
 			virtual int rate() const = 0;
-			virtual int availableFTs() const = 0;
+			virtual int availableFts() const = 0;
 
 			// Attributes Setters:
 			virtual int setWidth( int newWidth ) = 0;
