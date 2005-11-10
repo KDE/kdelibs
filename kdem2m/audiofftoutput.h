@@ -39,13 +39,13 @@ namespace Kdem2m
 			~AudioFftOutput();
 
 			// Operations:
-			void readFT( QVector<int>& buffer );
+			void readFt( QVector<int>& buffer );
 
 			// Attributes Getters:
 			int width() const;
 			/** FTs per second */
 			int rate() const;
-			int availableFTs() const;
+			int availableFts() const;
 
 		public slots:
 			// Attributes Setters:

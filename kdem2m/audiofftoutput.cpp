@@ -30,7 +30,7 @@ class AudioFftOutput::Private
 
 		int width;
 		int rate;
-		int availableFTs;
+		int availableFts;
 };
 
 AudioFftOutput::AudioFftOutput( QObject* parent )
@@ -54,9 +54,9 @@ AudioFftOutput::~AudioFftOutput()
 	d = 0;
 }
 
-void AudioFftOutput::readFT( QVector<int>& buffer )
+void AudioFftOutput::readFt( QVector<int>& buffer )
 {
-	iface()->readFT( buffer );
+	iface()->readFt( buffer );
 }
 
 int AudioFftOutput::width() const
@@ -85,9 +85,9 @@ void AudioFftOutput::setRate( int newRate )
 		d->rate = newRate;
 }
 
-int AudioFftOutput::availableFTs() const
+int AudioFftOutput::availableFts() const
 {
-	return m_iface ? m_iface->availableFTs() : d->availableFTs;
+	return m_iface ? m_iface->availableFts() : d->availableFts;
 }
 
 bool AudioFftOutput::aboutToDeleteIface()
@@ -96,7 +96,7 @@ bool AudioFftOutput::aboutToDeleteIface()
 	{
 		d->width = m_iface->width();
 		d->rate = m_iface->rate();
-		d->availableFTs = m_iface->availableFTs();
+		d->availableFts = m_iface->availableFts();
 	}
 	return AudioOutputBase::aboutToDeleteIface();
 }
