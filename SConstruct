@@ -40,7 +40,7 @@ sys.path.append('bksys')
 ## Import the main configuration tool
 from generic import configure
 config = {
-	'modules'  : 'generic lowlevel compiler libxml kde4 libz libpng libjpeg libagg libart2 libidn libpcre openssl fam libgif libbz2 yacc',
+	'modules'  : 'generic lowlevel compiler libxml kde4 libz libpng libjpeg libagg libart2 libidn libpcre openssl fam giflib bzip2 yacc',
 	'builddir' : 'build', # put all object files under 'build/'
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
@@ -76,21 +76,24 @@ kdefx
 mimetypes
 kdecore
 kdeui
-kdesu
 kwallet
-kjs
 kio
 qttestlib
 kded
 kparts
 kutils
-kdeprint
 khtml
 kde3support
 """
 
 if env['WINDOWS']:
 	subdirs = "win\n" + subdirs
+else:
+	subdirs += """
+kdesu
+kdeprint
+kjs
+"""
 
 # TODO this will not stay like this ..
 dirs=[] # the dirs to process are appended to this var in the loop below
