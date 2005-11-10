@@ -3,7 +3,7 @@
 Import('env')
 
 env.subdirs('kconfig_compiler tests')
-
+	
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp
 kdebug.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
@@ -73,6 +73,7 @@ kapplication_win.cpp
 kglobalaccel_win.cpp
 ktoolinvocation_win.cpp 
 """
+
 install_headers="""
 kconfig.h kconfigskeleton.h
 kconfigdata.h ksimpleconfig.h
@@ -131,12 +132,10 @@ if env.has_key("CACHED_LIBBZ2") and env['CACHED_LIBBZ2']:
 	obj.uselib += ' LIBBZ2 '
 	obj.source += ' kbzip2filter.cpp'
 
-# TODO check for libagg
 if env.has_key("CACHED_AGG") and env['CACHED_AGG']:
-    #FIXME: QTXML is used in libkdesvgicons
-    obj.uselib += ' QTXML AGG'
-    obj.cxxflags += ' -DHAVE_LIBAGG '
-    obj.source   += " svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp"
+	obj.uselib += ' QTXML AGG Z'
+	obj.cxxflags += ' -DHAVE_LIBAGG '
+	obj.source   += ' svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp'
 obj.execute()
 
 
