@@ -37,7 +37,7 @@ class KPARTS_EXPORT Event : public QCustomEvent
 {
 public:
   Event( const char *eventName );
-
+  virtual ~Event(){}
   virtual const char *eventName() const;
 
   static bool test( const QEvent *event );
@@ -77,7 +77,7 @@ class KPARTS_EXPORT PartActivateEvent : public Event
 {
 public:
   PartActivateEvent( bool activated, Part *part, QWidget *widget ) : Event( s_strPartActivateEvent ), m_bActivated( activated ), m_part( part ), m_widget( widget ) {}
-
+  virtual ~PartActivateEvent() {}
   bool activated() const { return m_bActivated; }
 
   Part *part() const { return m_part; }
@@ -100,7 +100,7 @@ class KPARTS_EXPORT PartSelectEvent : public Event
 {
 public:
   PartSelectEvent( bool selected, Part *part, QWidget *widget ) : Event( s_strPartSelectEvent ), m_bSelected( selected ), m_part( part ), m_widget( widget ) {}
-
+  virtual ~PartSelectEvent() { }
   bool selected() const { return m_bSelected; }
 
   Part *part() const { return m_part; }
