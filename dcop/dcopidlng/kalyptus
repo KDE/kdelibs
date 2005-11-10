@@ -610,7 +610,7 @@ sub identifyDecl
 	# Class/Struct
 	elsif ( $decl =~ /^\s*((?:template\s*<.*>)?)      # 1 template
 					\s*(class|struct|union|namespace) # 2 struct type
-					\s*([A-Z_]*EXPORT[A-Z_]*)?		  # 3 export
+					\s*([A-Z0-9_]*EXPORT[A-Z_]*)?		  # 3 export
 					(?:\s*Q_PACKED)?
 					(?:\s*Q_REFCOUNT)?
 					\s+([\w_]+						  # 4 name
