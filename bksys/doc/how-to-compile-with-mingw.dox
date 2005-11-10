@@ -1,0 +1,136 @@
+/** \page how-to-compile-with-mingw How to Compile with MingW
+
+\section mingw-requirements Requirements
+
+- latest QT Windows release with Mingw compiler package 
+	- download from http://www.trolltech.com/download/qt/windows.html
+	- install Qt into c:\\Qt\\4.0.1
+	- install MingW into c:\\Mingw 
+
+	-	alternative MingW download - http://prdownloads.sourceforge.net/mingw/MinGW-4.1.0.exe?download
+
+- Python 2.4  
+	- http://www.python.org/ftp/python/2.4.2/python-2.4.2.msi
+	- install into c:\\Python24
+	
+- perl
+  - perl is required because new dcopidl is a perl script :-(  
+	- download from http://downloads.activestate.com/ActivePerl/Windows/5.8/ActivePerl-5.8.7.813-MSWin32-x86-148120.zip
+	- install into c:\\Perl 
+
+-	openssl 
+	- download from http://www.slproweb.com/download/Win32OpenSSL-v0.9.8.exe
+	- install into c:\\OpenSSL 
+
+- agg library 
+	- download from http://antigrain.com/download/index.html
+	- unpack into c:\agg23
+		
+- optional msys 
+	- download from http://prdownloads.sourceforge.net/mingw/MSYS-1.0.10.exe?download
+	- install into c:\\MSYS\\1.0 
+		
+- sources from svn.kde.org 
+  - download subversion client from http://subversion.tigris.org/files/documents/15/25364/svn-1.2.3-setup.exe
+  - install to ???
+  - checkout source with svn co svn://anonsvn.kde.org/home/kde/trunk/KDE/kdelibs
+
+- install scons-mini.tar.bz  
+
+\section mingw-setup Setup
+
+- open a command prompt or run start->execute "cmd.exe" 
+
+- run the following commands from the cmd shell. Please note that if one of the above mentioned 
+package is installed under a different directory, that you update the related pathes. 
+
+\code
+cd < kdelibs-source-root >
+set MSYS=c:\MSYS\1.0
+set QTDIR=c:\Qt\4.0.1
+set QMAKESPEC=win32-g++
+set MINGW=c:\Mingw
+set PYTHON=c:\Python24
+set PERL=c:\Perl
+set PATH=%PYTHON%;%PATH%
+set PATH=%QTDIR%\bin;%PATH%
+set PATH=%MINGW%\bin;%PATH%
+set PATH=%MSYS%\bin;%PATH%
+set PATH=%PERL%\bin;%PATH%
+:: for scons.bat 
+set PATH=%CD%;%PATH%
+\endcode 
+
+\section mingw-configure Configure
+
+In the above mentioned cmd shell run 
+\code
+scons configure prefix=c:\KDE4  with-libagg=c:\agg23
+\endcode
+
+if you like to add debugging informations into libraries and applications you should use 
+\code
+scons configure debug=1 prefix=c:\KDE4  with-libagg=c:\agg23
+\endcode
+
+\section mingw-compile Compile
+run 
+\code
+scons 
+\endcode 
+
+\section mingw-install install applications 
+run 
+\code
+scons install 
+\endcode 
+
+Currently it is installed in c:\Qt\4 
+
+\section mingw-run run applications 
+run 
+\code
+cd c:\KDE4
+set PATH=%CD%\bin;%CD%\lib;%PATH%
+start dcopserver 
+\endcode 
+
+To verify that dcopserver is running you may run 
+\code
+dcopfind -l -a *
+\endcode
+
+Now switch to the dcopserver windows: you can see a message indicating dcopserver has recognized the client.
+\code
+Debug: DCOP: register 'anonymous-xxx' -> number of clients is now 1
+Debug: DCOP: unregister 'anonymous-xxxx'
+\endcode
+
+\section mingw-whats-next What's next 
+
+If you get trouble you should contact mailto:kde-windows@kde.org 
+
+
+\section mingw-debugging Debugging
+
+
+requirements: installed gdb from mingw site 
+
+gdb 
+
+
+\code
+type c:\.DCOP4server_*_NODISPLAY
+tcp/BRAMSCHE1:25481
+2020
+set DCOPSERVER=tcp/BRAMSCHE1:25481 
+set ICEAUTHORITY=c:\.ICEauthority
+
+gdb dcopfind
+
+r -l -a * 
+
+
+\endcode
+
+*/ 
