@@ -447,9 +447,8 @@ void KTabWidget::removePage( QWidget * w ) {
 }
 
 
-bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
+bool KTabWidget::isEmptyTabbarSpace( const QPoint &point ) const
 {
-    QPoint point( p );
     QSize size( tabBar()->sizeHint() );
     if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
         QWidget *rightcorner = cornerWidget( TopRight );
@@ -461,11 +460,8 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
         if ( leftcorner ) {
             if ( point.x()<=leftcorner->width() )
                 return false;
-            point.setX( point.x()-size.height() );
         }
-        if ( tabPosition()==Bottom )
-            point.setY( point.y()-( height()-size.height() ) );
-        QTab *tab = tabBar()->selectTab( point);
+        QTab *tab = tabBar()->selectTab( tabBar()->mapFromParent( point ) );
         if( !tab )
             return true;
     }
