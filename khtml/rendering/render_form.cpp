@@ -1550,7 +1550,11 @@ void TextAreaWidget::slotFind()
         return;
 
     if ( m_findDlg ) {
+#ifdef Q_WS_WIN
+			m_findDlg->activateWindow();
+#else
       KWin::activateWindow( m_findDlg->winId() );
+#endif
     } else {
       m_findDlg = new KFindDialog(false, this, "KHTML Text Area Find Dialog");
       connect( m_findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
@@ -1565,7 +1569,11 @@ void TextAreaWidget::slotReplace()
         return;
 
     if ( m_repDlg ) {
+#ifdef Q_WS_WIN
+			m_repDlg->activateWindow();
+#else
       KWin::activateWindow( m_repDlg->winId() );
+#endif
     } else {
       m_repDlg = new KReplaceDialog(this, "KHTMLText Area Replace Dialog", 0,
                                     QStringList(), QStringList(), false);
