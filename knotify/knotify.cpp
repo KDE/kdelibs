@@ -216,7 +216,7 @@ void KNotify::reconfigure()
     // clear loaded config files
     d->globalConfig->reparseConfiguration();
     for ( QMap<QString,KConfig*>::iterator it = d->configs.begin(); it != d->configs.end(); ++it )
-        delete it.data();
+        delete it.value();
     d->configs.clear();
 }
 
@@ -564,7 +564,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
     if ( senderWinId == 0 )
     {
         DCOPCString senderId = KApplication::dcopClient()->senderId();
-        DCOPCString compare = (appName + "-mainwindow").latin1();
+        DCOPCString compare = (appName + "-mainwindow").toLatin1();
         int len = compare.length();
 //         kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
 

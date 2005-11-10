@@ -1,6 +1,6 @@
 
 INCLUDES= $(all_includes) $(akode_includes)
-
+KDE_CXXFLAGS = -UQT3_SUPPORT
 ####### Files
 
 #kde_module_LTLIBRARIES = knotify.la
