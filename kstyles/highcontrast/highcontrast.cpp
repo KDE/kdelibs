@@ -993,7 +993,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			int  tab        = opt.tabWidth();
 			int  checkcol   = opt.maxIconWidth();
 			bool checkable  = popupmenu->isCheckable();
-			bool reverse    = QApplication::reverseLayout();
+			bool reverse    = QApplication::isRightToLeft();
 			int x, y, w, h;
 			r.rect( &x, &y, &w, &h );
 

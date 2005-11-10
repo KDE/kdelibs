@@ -2844,7 +2844,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //                               SFlags flags,
 //                               const QStyleOption& opt) const
 // {
-//     const bool reverseLayout = QApplication::reverseLayout();
+//     const bool reverseLayout = QApplication::isRightToLeft();
 // 
 //     const bool enabled = (flags & Style_Enabled);
 // 

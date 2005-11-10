@@ -559,7 +559,7 @@ void KListViewSearchLineWidget::createWidgets()
 
     if(!d->clearButton) {
         d->clearButton = new QToolButton(this);
-        QIcon icon = SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
+        QIcon icon = SmallIconSet(QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase");
         d->clearButton->setIcon(icon);
     }
 
@@ -598,7 +598,7 @@ void KListViewSearchLineWidget::positionInToolBar()
             if(toolBar->getWidget(id) == this) {
                 toolBar->setItemAutoSized(id);
                 if(!d->clearButton) {
-                    QString icon = QApplication::reverseLayout() ? "clear_left" : "locationbar_erase";
+                    QString icon = QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase";
                     d->clearButton = new KToolBarButton(icon, 2005, toolBar);
                 }
                 toolBar->insertWidget(2005, d->clearButton->width(), d->clearButton, index);

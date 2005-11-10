@@ -565,7 +565,7 @@ InactiveTabPainter::InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool 
 	tile.
     */
 
-	//Mode rightMost = QApplication::reverseLayout() ? First : Last;
+	//Mode rightMost = QApplication::isRightToLeft() ? First : Last;
 	//### RTL?
 	m_columns = (m_mode == QStyleOptionTab::End ? 3 : 2);
 }
@@ -575,7 +575,7 @@ InactiveTabPainter::InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool 
 int InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	//### RTL?
-	//Mode leftMost = QApplication::reverseLayout() ? Last : First;
+	//Mode leftMost = QApplication::isRightToLeft() ? Last : First;
 	if ( column == 0 && m_mode != QStyleOptionTab::Beginning)
 		return KeramikTileSeparator;
 	if ( m_bottom )

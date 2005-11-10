@@ -321,7 +321,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
   if( layoutType & AbtProduct )
   {
       QWidget* const productArea = new  QWidget( this );
-      mTopLayout->addWidget( productArea, 0, QApplication::reverseLayout() ? Qt::AlignRight : Qt::AlignLeft );
+      mTopLayout->addWidget( productArea, 0, QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft );
 
       QHBoxLayout* const hbox = new QHBoxLayout(productArea,0,KDialog::spacingHint());
       if( !hbox ) { return; }

@@ -200,7 +200,7 @@ void KURLBarItem::paint( QPainter *p )
 
             if ( isCurrent() || isSelected() ) {
                 p->setPen( box->colorGroup().highlight().dark(115) );
-                p->drawText( xPos + ( QApplication::reverseLayout() ? -1 : 1),
+                p->drawText( xPos + ( QApplication::isRightToLeft() ? -1 : 1),
                              yPos + 1, visibleText );
                 p->setPen( box->colorGroup().highlightedText() );
             }
@@ -232,7 +232,7 @@ void KURLBarItem::paint( QPainter *p )
 
             if ( isCurrent() || isSelected() ) {
                 p->setPen( box->colorGroup().highlight().dark(115) );
-                p->drawText( x + ( QApplication::reverseLayout() ? -1 : 1),
+                p->drawText( x + ( QApplication::isRightToLeft() ? -1 : 1),
                              y + 1, visibleText );
                 p->setPen( box->colorGroup().highlightedText() );
             }

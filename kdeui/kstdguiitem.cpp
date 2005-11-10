@@ -183,7 +183,7 @@ KGuiItem KStdGuiItem::defaults()
 
 KGuiItem KStdGuiItem::back( BidiMode useBidi )
 {
-  QString icon = ( useBidi == UseRTL && QApplication::reverseLayout() )
+  QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "forward" : "back";
   return KGuiItem( i18n( "go back", "&Back" ), icon,
                    i18n( "Go back one step" ) );
@@ -191,7 +191,7 @@ KGuiItem KStdGuiItem::back( BidiMode useBidi )
 
 KGuiItem KStdGuiItem::forward( BidiMode useBidi )
 {
-  QString icon = ( useBidi == UseRTL && QApplication::reverseLayout() )
+  QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "back" : "forward";
   return KGuiItem( i18n( "go forward", "&Forward" ), icon,
                    i18n( "Go forward one step" ) );

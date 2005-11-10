@@ -771,13 +771,13 @@ void KEditToolbarWidget::setupLayout()
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(this);
-  iconSet = QApplication::reverseLayout() ? SmallIconSet( "back" ) : SmallIconSet( "forward" );
+  iconSet = QApplication::isRightToLeft() ? SmallIconSet( "back" ) : SmallIconSet( "forward" );
   m_insertAction->setIcon( iconSet );
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(this);
-  iconSet = QApplication::reverseLayout() ? SmallIconSet( "forward" ) : SmallIconSet( "back" );
+  iconSet = QApplication::isRightToLeft() ? SmallIconSet( "forward" ) : SmallIconSet( "back" );
   m_removeAction->setIcon( iconSet );
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));

@@ -329,7 +329,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	m_vertgrp->insert(top, 0);
 	m_vertgrp->insert(vcenter, 1);
 	m_vertgrp->insert(bottom, 2);
-	if ( QApplication::reverseLayout() )
+	if ( QApplication::isRightToLeft() )
 	{
 	    m_horizgrp->insert(left, 2);
 	    m_horizgrp->insert(hcenter, 1);

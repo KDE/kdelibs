@@ -1439,7 +1439,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 bool checkable = popupmenu->isCheckable();
                 bool active = how & Style_Active;
                 bool etchtext = styleHint( SH_EtchDisabledText, 0 );
-                bool reverse = QApplication::reverseLayout();
+                bool reverse = QApplication::isRightToLeft();
 
                 const QColorGroup& cg_ours = *colorGroup( cg, active ? MenuItemDown : MenuItem );
                 //QColor btext = cg_ours.buttonText();
@@ -1681,7 +1681,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 const Q3ProgressBar* pb = (const Q3ProgressBar*)widget;
                 QRect cr = subRect(SR_ProgressBarContents, widget);
                 double progress = pb->progress();
-                bool reverse = QApplication::reverseLayout();
+                bool reverse = QApplication::isRightToLeft();
                 int steps = pb->totalSteps();
                 
                 int pstep = 0;

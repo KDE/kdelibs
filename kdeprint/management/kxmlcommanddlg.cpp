@@ -88,7 +88,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_view->header()->hide();
 	m_view->setSorting(-1);
 	m_apply = new QToolButton(this);
-	m_apply->setIcon( QApplication::reverseLayout()? SmallIconSet( "forward" ) : SmallIconSet("back"));
+	m_apply->setIcon( QApplication::isRightToLeft()? SmallIconSet( "forward" ) : SmallIconSet("back"));
 	m_addgrp = new QToolButton(this);
 	m_addgrp->setIcon(SmallIconSet("folder"));
 	m_addopt = new QToolButton(this);
@@ -853,9 +853,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_availablemime = new KListBox(m_gb1);
 	m_selectedmime = new KListBox(m_gb1);
 	m_addmime = new QToolButton(m_gb1);
-	m_addmime->setIcon(QApplication::reverseLayout()? SmallIconSet("forward") : SmallIconSet("back"));
+	m_addmime->setIcon(QApplication::isRightToLeft()? SmallIconSet("forward") : SmallIconSet("back"));
 	m_removemime = new QToolButton(m_gb1);
-	m_removemime->setIcon(QApplication::reverseLayout()? SmallIconSet("back" ) : SmallIconSet("forward"));
+	m_removemime->setIcon(QApplication::isRightToLeft()? SmallIconSet("back" ) : SmallIconSet("forward"));
 	m_gb2->setMinimumWidth(380);
 	m_gb1->setMinimumHeight(180);
 	m_requirements->setMaximumHeight(80);

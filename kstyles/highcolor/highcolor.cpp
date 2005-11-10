@@ -1292,7 +1292,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool checkable  = popupmenu->isCheckable();
 			bool active     = flags & Style_Active;
 			bool etchtext   = styleHint( SH_EtchDisabledText );
-			bool reverse    = QApplication::reverseLayout();
+			bool reverse    = QApplication::isRightToLeft();
 			int x, y, w, h;
 			r.rect( &x, &y, &w, &h );
 

@@ -175,7 +175,7 @@ void KDatePicker::init( const QDate &dt )
   setFontSize(fontsize);
   line->setValidator(val);
   line->installEventFilter( this );
-  if (  QApplication::reverseLayout() )
+  if (  QApplication::isRightToLeft() )
   {
       yearForward->setIcon(BarIconSet(QLatin1String("2leftarrow")));
       yearBackward->setIcon(BarIconSet(QLatin1String("2rightarrow")));

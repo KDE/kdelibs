@@ -944,7 +944,7 @@ void LightStyleV3::drawControl( ControlElement control,
 	    // item column
 	    ir.setCoords(cr.right() + 4, r.top(), tr.right() - 4, r.bottom());
 
-	    bool reverse = QApplication::reverseLayout();
+	    bool reverse = QApplication::isRightToLeft();
 	    if ( reverse ) {
 		cr = visualRect( cr, r );
 		sr = visualRect( sr, r );
@@ -1050,7 +1050,7 @@ void LightStyleV3::drawControl( ControlElement control,
 	    }
 
 	    if (mi->popup())
-		drawPrimitive( (QApplication::reverseLayout() ? PE_ArrowLeft : PE_ArrowRight),
+		drawPrimitive( (QApplication::isRightToLeft() ? PE_ArrowLeft : PE_ArrowRight),
 			       p, sr, cg, flags);
 	    break;
 	}

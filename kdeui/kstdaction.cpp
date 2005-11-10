@@ -51,12 +51,12 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		QString sLabel, iconName = pInfo->psIconName;
 		switch( id ) {
 		 case Back: sLabel = i18n("go back", "&Back");
-			if (QApplication::reverseLayout() )
+			if (QApplication::isRightToLeft() )
 			    iconName = "forward";
 			break;
 
 		 case Forward: sLabel = i18n("go forward", "&Forward");
-			if (QApplication::reverseLayout() )
+			if (QApplication::isRightToLeft() )
 			    iconName = "back";
 			break;
 
@@ -81,7 +81,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 default: sLabel = i18n(pInfo->psLabel);
 		}
 
-		if (QApplication::reverseLayout()){
+		if (QApplication::isRightToLeft()){
 			if (id == Prior) iconName = "next";
 			if (id == Next ) iconName = "previous";
 		}

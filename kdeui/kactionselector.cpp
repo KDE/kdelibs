@@ -51,8 +51,8 @@ KActionSelector::KActionSelector( QWidget *parent )
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
   d->iconSize = SmallIcon;
-  d->addIcon = QApplication::reverseLayout()? "back" : "forward";
-  d->removeIcon = QApplication::reverseLayout()? "forward" : "back";
+  d->addIcon = QApplication::isRightToLeft()? "back" : "forward";
+  d->removeIcon = QApplication::isRightToLeft()? "forward" : "back";
   d->upIcon = "up";
   d->downIcon = "down";
   d->availableInsertionPolicy = Sorted;

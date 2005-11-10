@@ -821,7 +821,7 @@ void LightStyleV2::drawControl( ControlElement control,
 	    // item column
 	    ir.setCoords(cr.right() + 4, r.top(), tr.right() - 4, r.bottom());
 
-	    bool reverse = QApplication::reverseLayout();
+	    bool reverse = QApplication::isRightToLeft();
 	    if ( reverse ) {
 		cr = visualRect( cr, r );
 		sr = visualRect( sr, r );
