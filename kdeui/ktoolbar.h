@@ -343,7 +343,7 @@ public:
 		     const char *slot, bool enabled=true,
 		     const QString& tooltiptext=QString::null,
 		     int size=70, int index=-1,
-		     QComboBox::Policy policy = QComboBox::InsertAtBottom);
+		     QComboBox::InsertPolicy policy = QComboBox::InsertAtBottom);
 
   /**
    * Insert a KComboBox with text.
@@ -359,7 +359,7 @@ public:
 		     const char *slot, bool enabled=true,
 		     const QString& tooltiptext=QString::null,
 		     int size=70, int index=-1,
-		     QComboBox::Policy policy = QComboBox::InsertAtBottom);
+		     QComboBox::InsertPolicy policy = QComboBox::InsertAtBottom);
 
     /**
      * Inserts a separator into the toolbar with the given @p id.

@@ -362,7 +362,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             const char *slot, bool enabled,
                             const QString& tooltiptext,
                             int size, int index,
-                            QComboBox::Policy policy )
+                            QComboBox::InsertPolicy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
 
@@ -386,7 +386,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                             const char *slot, bool enabled,
                             const QString& tooltiptext,
                             int size, int index,
-                            QComboBox::Policy policy )
+                            QComboBox::InsertPolicy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
     insertWidgetInternal( combo, index, id );
