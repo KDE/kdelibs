@@ -1418,7 +1418,7 @@ static bool expandEnv( QString &text )
  */
 static bool expandTilde(QString &text)
 {
-	if ( text.at(0) != QLatin1Char('~') )
+	if ( text.isEmpty() || ( text.at(0) != QLatin1Char('~') ))
 		return false;
 
 	bool expanded = false;
