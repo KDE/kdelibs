@@ -3,7 +3,7 @@ Import('env')
 
 
 check_PROGRAMS = """
-ksycocatest getalltest kruntest ktartest kziptest
+#ksycocatest getalltest kruntest ktartest kziptest
 kioslavetest kdirwatchtest speed kurifiltertest
 kdefaultprogresstest kmimemagictest
 kiopassdlgtest kscantest kdirlistertest
@@ -26,11 +26,13 @@ for appname in check_PROGRAMS.split():
 	obj.source   = appname + '.cpp'
 	obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 	obj.libpaths = '.. ../../kdeui ../../kdecore ../../kdesu ../../dcop ../../qttestlib #/kio ../../kdefx'
-	obj.libs     = 'kio kdeui kdecore DCOP QtTest kdesu kdefx'
+	obj.libs     = 'kio kdeui kdecore DCOP QtTest kdefx'
 	obj.includes = '. .. ../kssl ../bookmarks ../kfile ../kio ../misc ../../kdecore ../../kdefx ../../qttestlib '
 	if env['WINDOWS']:
 		obj.libs     += ' kdewin32 ws2_32'
-
+	else:
+		obj.libs     += ' kdesu'
+		
 	obj.execute()
 
 
