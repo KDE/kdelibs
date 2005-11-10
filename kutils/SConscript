@@ -11,7 +11,7 @@ kreplace.cpp kreplacedialog.cpp
 """
 
 if not env['WINDOWS']:
-kutils_sources += """
+	kutils_sources += """
 kcmodulecontainer.cpp kcmultidialog.cpp kplugininfo.cpp kpluginselector.cpp kcmoduleproxy.cpp
 kcmoduleproxyIface.skel kcmoduleproxyIfaceImpl.cpp 
 """
