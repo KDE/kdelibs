@@ -4,16 +4,8 @@ Import('env')
 
 #FIXME java is optional
 env.subdirs("""
-misc
-dom
-css
-xml
-html
-rendering
-java
-ecma
-imload
 """)
+#java
 
 testkhtml_sources = """
 domtreeview.cpp testkhtml.cpp
@@ -150,10 +142,10 @@ imload/pixmapplane.cpp
 imload/rawimageplane.cpp
 imload/scaledimageplane.cpp
 imload/updater.cpp
-imload/decoders/gifloader.cpp
-imload/decoders/jpegloader.cpp
-imload/decoders/pngloader.cpp
 """
+#imload/decoders/gifloader.cpp
+#imload/decoders/jpegloader.cpp
+#imload/decoders/pngloader.cpp
 
 kjs_sources = """
 ecma/domparser.cpp
@@ -199,7 +191,7 @@ noinst_headers = """
 khtmlpart_p.h
 """
 
-includes = '##/kjs #/kimgio java #/dcop misc dom xml html css rendering imload imload/decoders/ #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils '
+includes = '#/kjs ../kjs #/kimgio java #/dcop misc dom xml html css rendering imload imload/decoders/ #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils '
 
 dummy_cpp = """#include <kdelibs_export.h>
 extern "C" KDE_EXPORT void* init_libkhtml(); 
@@ -213,9 +205,12 @@ extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefacto
 
 """
 
-fulllibs = 'DCOP kdecore kdeui kjs kio kparts kjs_html ##/kdeprint/libkdeprint.la ##/kutils/libkutils.la ##/kde3support/libkde3support.la ##/kwallet/client/libkwalletclient.la -ljpeg kdesu kdefx '
+fulllibs = 'DCOP kdecore kdeui kjs kio kparts kjs_html kutils kde3support kwalletclient kdefx '
+if not env['WINDOWS']:
+	fulllibs += ' kdesu'
+
 fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ecma ../kdesu ../kdefx "
-fulluselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI PNG '
+fulluselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI PNG JPEG'
 if env.has_key("CACHED_GIFLIB") and env['CACHED_GIFLIB']:
 	fulluselib += ' GIFLIB '
 
@@ -223,7 +218,7 @@ env.CreateFile('dummy.cpp', Value(dummy_cpp))
 env.CreateFile('imgdummy.cpp', Value(imgdummy_cpp))
 
 obj = env.kdeobj('shlib')
-obj.target = 'libkhtml'
+obj.target = 'khtml'
 obj.vnum = '6.0.2'
 obj.source = libkhtml_sources+css_sources+dom_sources+imload_sources+misc_sources+render_sources+html_sources+xml_sources
 obj.includes = includes
@@ -236,19 +231,19 @@ obj.libpaths= fulllibpaths
 obj.uselib = fulluselib
 obj.execute()
 
-# For now ;(
+# TODO:  For now ;(
 if env['MAC']:
 	env.Depends('libkhtml.6.0.2.dylib', '../kjs/libkjs.dylib')
 	env.Depends('libkhtml.6.0.2.dylib', '../kparts/libkparts.dylib')
-else:
+elif not env['WINDOWS']:
 	env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
 	env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
 
 obj = env.kdeobj('module')
-obj.target = 'libkhtmlpart'
+obj.target = 'khtmlpart'
 obj.source = libkhtmlpart_sources
 obj.includes = includes
-obj.libs = 'libkhtml.la ' + fulllibs
+obj.libs = 'khtml ' + fulllibs
 obj.uselib = fulluselib
 obj.libpaths = fulllibpaths
 obj.execute()
@@ -257,7 +252,7 @@ obj = env.kdeobj('module')
 obj.target = 'khtmlimagepart'
 obj.source = khtmlimagepart_sources
 obj.includes = includes
-obj.libs = 'libkhtml.la ' + fulllibs
+obj.libs = 'khtml ' + fulllibs
 obj.uselib = fulluselib
 obj.libpaths = fulllibpaths
 obj.execute()
