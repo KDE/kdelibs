@@ -69,7 +69,7 @@ void KGzipFilter::init( int mode )
         if ( result != Z_OK )
             kdDebug(7005) << "deflateInit returned " << result << endl;
     } else {
-        kdWarning(7005) << "KGzipFilter: Unsupported mode " << mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
+        kdWarning(7005) << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
     }
     m_mode = mode;
     d->bCompressed = true;

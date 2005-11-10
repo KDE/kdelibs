@@ -40,7 +40,7 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 QCString& replyType, QByteArray &replyData)
 {
   if (fun == "function(QCString)") {
-    QDataStream args( data, IO_ReadOnly );
+    QDataStream args( data, QIODevice::ReadOnly );
     args >>  m_remoteName;
 
     struct timeval tv;
@@ -48,7 +48,7 @@ QCString& replyType, QByteArray &replyData)
 qWarning("%s: function('%s') %d:%06d", name(), m_remoteName.data(), tv.tv_sec % 100, tv.tv_usec);
 
     replyType = "QString";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
     reply << QString("Hey");
     m_timer.start(1000, true);
     return true;

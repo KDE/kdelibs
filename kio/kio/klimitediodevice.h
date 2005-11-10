@@ -51,14 +51,14 @@ public:
         if ( m & QIODevice::ReadOnly ) {
             /*bool ok = false;
             if ( m_dev->isOpen() )
-                ok = ( m_dev->mode() == IO_ReadOnly );
+                ok = ( m_dev->mode() == QIODevice::ReadOnly );
             else
                 ok = m_dev->open( m );
             if ( ok )*/
                 m_dev->seek( m_start ); // No concurrent access !
         }
         else
-            kdWarning(7005) << "KLimitedIODevice::open only supports IO_ReadOnly!" << endl;
+            kdWarning(7005) << "KLimitedIODevice::open only supports QIODevice::ReadOnly!" << endl;
         setOpenMode( QIODevice::ReadOnly );
         return true;
     }

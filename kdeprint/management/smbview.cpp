@@ -135,7 +135,7 @@ void SmbView::init()
 	m_wins_server = QString::null;
 	QLatin1String wins_keyword("wins server");	
 	QFile smb_conf ("/etc/samba/smb.conf");
-	if (smb_conf.exists () && smb_conf.open (IO_ReadOnly))
+	if (smb_conf.exists () && smb_conf.open (QIODevice::ReadOnly))
 	{
 		QTextStream smb_stream (&smb_conf);
 		while (!smb_stream.atEnd ())

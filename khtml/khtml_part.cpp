@@ -1318,7 +1318,7 @@ void KHTMLPart::slotDebugRenderTree()
     d->m_doc->renderer()->printTree();
     // dump out the contents of the rendering & DOM trees
 //    QString dumps;
-//    QTextStream outputStream(dumps,IO_WriteOnly);
+//    QTextStream outputStream(dumps,QIODevice::WriteOnly);
 //    d->m_doc->renderer()->layer()->dump( outputStream );
 //    kdDebug() << "dump output:" << "\n" + dumps;
   }

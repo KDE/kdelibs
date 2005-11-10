@@ -38,7 +38,7 @@ namespace KABC {
   \code
 
   QFile file( "myfile.vcf" );
-  file.open( IO_ReadOnly );
+  file.open( QIODevice::ReadOnly );
   
   QTextStream s( &file );
   s.setEncoding( QTextStream::UnicodeUTF8 );

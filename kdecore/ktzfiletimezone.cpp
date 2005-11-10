@@ -375,7 +375,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     Q_UINT8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
     QFile f(d->location + '/' + zone->name());
-    if (!f.open(IO_ReadOnly))
+    if (!f.open(QIODevice::ReadOnly))
     {
         kdError() << "Cannot open " << f.name() << endl;
         return 0;

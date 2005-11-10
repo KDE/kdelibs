@@ -579,17 +579,17 @@ void KSystemTimezonesPrivate::readZoneTab()
     QFile f;
     m_zoneinfoDir = "/usr/share/zoneinfo";
     f.setName(m_zoneinfoDir + "/zone.tab");
-    if (!f.open(IO_ReadOnly))
+    if (!f.open(QIODevice::ReadOnly))
     {
         kdDebug() << "Can't open " << f.name() << endl;
         m_zoneinfoDir = "/usr/lib/zoneinfo";
         f.setName(m_zoneinfoDir + "/zone.tab");
-        if (!f.open(IO_ReadOnly))
+        if (!f.open(QIODevice::ReadOnly))
         {
             kdDebug() << "Can't open " << f.name() << endl;
             m_zoneinfoDir = ::getenv("TZDIR");
             f.setName(m_zoneinfoDir + "/zone.tab");
-            if (m_zoneinfoDir.isEmpty() || !f.open(IO_ReadOnly))
+            if (m_zoneinfoDir.isEmpty() || !f.open(QIODevice::ReadOnly))
             {
                 kdDebug() << "Can't open " << f.name() << endl;
 
@@ -608,7 +608,7 @@ void KSystemTimezonesPrivate::readZoneTab()
                 temp.close();
                 reader.start(KProcess::Block);
                 f.setName(temp.name());
-                if (!temp.status() || !f.open(IO_ReadOnly))
+                if (!temp.status() || !f.open(QIODevice::ReadOnly))
                 {
                     kdDebug() << "Can't open " << f.name() << endl;
                     m_zoneinfoDir = QString::null;
@@ -703,7 +703,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                 }
             }
         }
-        else if (f.open(IO_ReadOnly))
+        else if (f.open(QIODevice::ReadOnly))
         {
             // SOLUTION 3: DEFINITIVE.
             // Try to match /etc/localtime against the list of zoneinfo files.
@@ -800,14 +800,14 @@ const KTimezone *KSystemTimezonesPrivate::local()
     QString fileZone;
     QFile f;
     f.setName("/etc/timezone");
-    if (!f.open(IO_ReadOnly))
+    if (!f.open(QIODevice::ReadOnly))
     {
         kdDebug() << "Can't open " << f.name() << endl;
 
         // SOLUTION 5: DEFINITIVE.
         // Solaris support using /etc/default/init.
         f.setName("/etc/default/init");
-        if (!f.open(IO_ReadOnly))
+        if (!f.open(QIODevice::ReadOnly))
         {
             kdDebug() << "Can't open " << f.name() << endl;
         }
@@ -899,7 +899,7 @@ QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, QIODevice
         // Only do the heavy lifting for file sizes which match.
         QFile f;
         f.setName(path);
-        if (f.open(IO_ReadOnly))
+        if (f.open(QIODevice::ReadOnly))
         { 
             KMD5 context("");
             context.reset();

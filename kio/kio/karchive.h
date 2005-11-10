@@ -55,7 +55,7 @@ public:
     /**
      * Opens the archive for reading or writing.
      * Inherited classes might want to reimplement openArchive instead.
-     * @param mode may be IO_ReadOnly or IO_WriteOnly
+     * @param mode may be QIODevice::ReadOnly or QIODevice::WriteOnly
      * @see close
      */
     virtual bool open( QIODevice::OpenMode mode );
@@ -84,7 +84,7 @@ public:
 
     /**
      * Returns the mode in which the archive was opened
-     * @return the mode in which the archive was opened (IO_ReadOnly or IO_WriteOnly)
+     * @return the mode in which the archive was opened (QIODevice::ReadOnly or QIODevice::WriteOnly)
      * @see open()
      */
     int mode() const { return m_mode; }
@@ -279,7 +279,7 @@ protected:
     /**
      * Opens an archive for reading or writing.
      * Called by open.
-     * @param mode may be IO_ReadOnly or IO_WriteOnly
+     * @param mode may be QIODevice::ReadOnly or QIODevice::WriteOnly
      */
     virtual bool openArchive( QIODevice::OpenMode mode ) = 0;
 

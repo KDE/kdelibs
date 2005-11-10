@@ -485,7 +485,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
 /*
  * Writes back the changes of the temporary file
  * to the original file.
- * Must only be called if in IO_WriteOnly mode
+ * Must only be called if in QIODevice::WriteOnly mode
  */
 bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     if ( ! tmpFile )

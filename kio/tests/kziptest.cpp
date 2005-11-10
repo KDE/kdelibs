@@ -389,7 +389,7 @@ int main( int argc, char** argv )
 
     printf("-----------------------\n");
 
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;

@@ -334,7 +334,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
     QByteArray qbd;
-    QDataStream ds(&qbd, IO_WriteOnly);
+    QDataStream ds(&qbd, QIODevice::WriteOnly);
     ds << event << fromApp << text << sound << file << present << level
         << winId << eventId;
     emitDCOPSignal("notifySignal(QString,QString,QString,QString,QString,int,int,int,int)", qbd);
@@ -495,7 +495,7 @@ bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 
     // open file in append mode
     QFile logFile(file);
-    if ( !logFile.open(IO_WriteOnly | IO_Append) )
+    if ( !logFile.open(QIODevice::WriteOnly | QIODevice::Append) )
         return false;
 
     // append msg
@@ -515,7 +515,7 @@ bool KNotify::notifyByStderr(const QString &text)
         return true;
 
     // open stderr for output
-    QTextStream strm( stderr, IO_WriteOnly );
+    QTextStream strm( stderr, QIODevice::WriteOnly );
 
     // output msg
     strm << "KNotify " << QDateTime::currentDateTime().toString() << ": ";
@@ -553,7 +553,7 @@ void KNotify::slotPlayerProcessExited( KProcess *proc )
 void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
 {
     QByteArray data;
-    QDataStream stream( &data, IO_WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << eventId << (int) reason;
 
     DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
@@ -577,7 +577,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
                 QByteArray data, replyData;
 
                 if ( KApplication::dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
-                    QDataStream answer(&replyData, IO_ReadOnly);
+                    QDataStream answer(&replyData, QIODevice::ReadOnly);
                     if (replyType == "int") {
                         answer >> senderWinId;
 //                         kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)

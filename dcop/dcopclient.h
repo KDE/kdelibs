@@ -55,7 +55,7 @@ class DCOPClientTransaction;
  *
  * \code
  *   QByteArray data;
- *   QDataStream arg(data, IO_WriteOnly);
+ *   QDataStream arg(data, QIODevice::WriteOnly);
  *   arg.setVersion(QDataStream::Qt_3_1);
  *   arg << QString("This is text I am serializing");
  *   client->send("someApp", "someObject", "someFunction(QString)", data);

@@ -148,7 +148,7 @@ The return value of send() indicates whether DCOP communication succeeded
 or not.
 
 QByteArray data;
-QDataStream arg(data, IO_WriteOnly);
+QDataStream arg(data, QIODevice::WriteOnly);
 arg << 5;
 if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
 	          data))
@@ -162,13 +162,13 @@ communication was successful.
 
 QByteArray data, replyData;
 QCString replyType;
-QDataStream arg(data, IO_WriteOnly);
+QDataStream arg(data, QIODevice::WriteOnly);
 arg << 5;
 if (!client->call("someAppId", "fooObject/barObject", "doIt(int)",
                   data, replyType, replyData))
   qDebug("there was some error using DCOP.");
 else {
-  QDataStream reply(replyData, IO_ReadOnly);
+  QDataStream reply(replyData, QIODevice::ReadOnly);
   if (replyType == "QString") {
     QString result;
     reply >> result;
@@ -207,11 +207,11 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &replyType, QByteArray &replyData)
 {
   if (fun == "doIt(int)") {
-    QDataStream arg(data, IO_ReadOnly);
+    QDataStream arg(data, QIODevice::ReadOnly);
     int i; // parameter
     arg >> i;
     QString result = self->doIt (i);
-    QDataStream reply(replyData, IO_WriteOnly);
+    QDataStream reply(replyData, QIODevice::WriteOnly);
     reply << result;
     replyType = "QString";
     return true;
@@ -241,7 +241,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &, QByteArray &)
 {
   if (fun == "doIt(int)") {
-    QDataStream arg(data, IO_ReadOnly);
+    QDataStream arg(data, QIODevice::ReadOnly);
     int i; // parameter
     arg >> i;
     QString result = self->doIt(i);
@@ -264,7 +264,7 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 {
     QCString replyType = "QString";
     QByteArray replyData;
-    QDataStream reply(replyData, IO_WriteOnly);
+    QDataStream reply(replyData, QIODevice::WriteOnly);
     reply << result;
     KApplication::dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
@@ -313,7 +313,7 @@ The following example shows how KLauncher emits a signal whenever it notices
 that an application that was started via KLauncher terminates.
 
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(params, QIODevice::WriteOnly);
    stream << pid;
    KApplication::dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
 

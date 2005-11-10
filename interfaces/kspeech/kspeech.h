@@ -937,7 +937,7 @@ class KSpeech : virtual public DCOPObject {
         * The following sample code will decode the stream:
                 @code
                     QByteArray jobInfo = getTextJobInfo(jobNum);
-                    QDataStream stream(jobInfo, IO_ReadOnly);
+                    QDataStream stream(jobInfo, QIODevice::ReadOnly);
                     int state;
                     QCString appId;
                     QString talker;

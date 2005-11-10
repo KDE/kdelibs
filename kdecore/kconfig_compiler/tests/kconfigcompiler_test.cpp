@@ -72,7 +72,7 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 	QFile file(fileName);
 	QFile fileRef(QString::fromLatin1(SRCDIR) + QString::fromLatin1("/") + fileName + QString::fromLatin1(".ref"));
 
-	if ( file.open(IO_ReadOnly) && fileRef.open(IO_ReadOnly) )
+	if ( file.open(QIODevice::ReadOnly) && fileRef.open(QIODevice::ReadOnly) )
 	{
 		QString content = file.readAll();
 		QString contentRef = fileRef.readAll();

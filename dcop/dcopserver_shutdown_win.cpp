@@ -143,7 +143,7 @@ static void cleanupDCOP(int dont_kill_dcop, int wait_for_exit)
 
 	pid_t	pid = 0;
 	QFile f(strDCOPServer);
-	if(f.open(IO_ReadOnly))
+	if(f.open(QIODevice::ReadOnly))
 	{
 		QString str;
 		while(f.readLine(str,2048))

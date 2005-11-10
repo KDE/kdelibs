@@ -78,7 +78,7 @@ int main( int argc, char **argv )
   addressee.setLogo( logo );
 
   QFile soundFile( "testsound.wav" );
-  soundFile.open( IO_ReadOnly );
+  soundFile.open( QIODevice::ReadOnly );
   QByteArray data = soundFile.readAll();
   soundFile.close();
   KABC::Sound sound;

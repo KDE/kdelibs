@@ -76,7 +76,7 @@ void KBzip2Filter::init( int mode )
         (void)bzCompressInit(&d->zStream, 5, 0, 0);
         //kdDebug(7118) << "bzDecompressInit returned " << result << endl;
     } else
-        kdWarning(7118) << "Unsupported mode " << mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
+        kdWarning(7118) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
     m_mode = mode;
 }
 
@@ -91,7 +91,7 @@ void KBzip2Filter::terminate()
         int result = bzCompressEnd(&d->zStream);
         kdDebug(7118) << "bzCompressEnd returned " << result << endl;
     } else
-        kdWarning(7118) << "Unsupported mode " << m_mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
+        kdWarning(7118) << "Unsupported mode " << m_mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
 }
 
 
