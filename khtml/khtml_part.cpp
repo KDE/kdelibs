@@ -94,6 +94,7 @@ using namespace DOM;
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
+#include <kde_file.h>
 #include "../kutils/kfinddialog.h"
 #include "../kutils/kfind.h"
 
@@ -2960,7 +2961,11 @@ void KHTMLPart::findText()
   // Raise if already opened
   if ( d->m_findDialog )
   {
+#ifdef Q_WS_WIN
+    d->m_findDialog->activateWindow();
+#else
     KWin::activateWindow( d->m_findDialog->winId() );
+#endif
     return;
   }
 
@@ -3718,7 +3723,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     bool ok = !stat( path.data(), &buff );
 
     struct stat lbuff;
-    if (ok) ok = !lstat( path.data(), &lbuff );
+    if (ok) ok = !KDE_lstat( path.data(), &lbuff );
 
     QString text = u.htmlURL();
     QString text2 = text;
