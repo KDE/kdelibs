@@ -16,12 +16,13 @@ obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
 obj.libpaths = "../kdecore ../kdeui ../kio ../dcop ../kdefx ../kdesu ../kwallet/client"
-obj.libs = "kdecore kdeui kio DCOP kdefx kdesu kwalletclient"
+obj.libs = "kdecore kdeui kio DCOP kdefx kwalletclient"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 if env['WINDOWS']:
 	obj.libpaths += " ../win"
 	obj.libs     += " kdewin32"
-
+else:
+	obj.libs     += " kdesu"
 obj.execute()
 
 if env['MAC']:
