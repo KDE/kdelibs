@@ -30,6 +30,7 @@
 #include <qwindowdefs.h>
 #include <dcopobject.h>
 
+#include <kdelibs_export.h>
 
 class DCOPRef;
 
