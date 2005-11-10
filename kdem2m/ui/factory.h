@@ -21,6 +21,7 @@
 #define Kdem2m_Ui_FACTORY_H
 
 #include <QObject>
+#include <kdelibs_export.h>
 
 class KURL;
 
@@ -51,7 +52,7 @@ namespace Ui
  * \since 4.0
  * \internal
  */
-class Factory : public QObject
+class KDEM2M_EXPORT Factory : public QObject
 {
 	Q_OBJECT
 	public:
