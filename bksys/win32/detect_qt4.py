@@ -113,12 +113,10 @@ def detect(env):
 
 	env['CXXFLAGS_QT']         = '-DQT_EDITION=QT_EDITION_DESKTOP -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_DLL'.split()
 	if not env['ARGS'].get('debug', None):
-		env['CXXFLAGS_QT']       = ['-DQT_NO_DEBUG']
+		env['CXXFLAGS_QT']       += ['-DQT_NO_DEBUG']
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
-	env['LIB_QT']              = ['QtGui'+lib_addon]+env['LIB_Z']
-	if not env['WINDOWS']:
-		env['LIB_QT'] += env['LIB_PNG']
+	env['LIB_QT']              = ['QtGui'+lib_addon]
 	env['RPATH_QT']            = [env['QTLIBPATH']]
 	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
 	env['CPPPATH_QT3SUPPORT']  = [ env.join(env['QTINCLUDEPATH'], 'Qt3Support') ]
