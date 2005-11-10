@@ -14,7 +14,7 @@ def generate(env):
 		if env['WINDOWS']:
 			qtdir = os.getenv("QTDIR")
 			if qtdir: 
-				# TODO: check if zlib is really in QTCore lib 
+				# TODO: check if libz is really in QTCore lib 
 				env['CPPPATH_Z'] = [qtdir + "\\src\\3rdparty\\zlib"]
 				env['LIBPATH_Z'] = [qtdir + "\\lib"]
 				env['LIB_Z'] = ['QtCore4'] # TODO: check if debug version is used 
@@ -30,7 +30,7 @@ def generate(env):
 	optionFile = env['CACHEDIR'] + 'libz.cache.py'
 	opts = Options(optionFile)
 	opts.AddOptions(
-		('CACHED_Z', 'Whether libart2 is available'),
+		('CACHED_Z', 'Whether libz is available'),
 		('CXXFLAGS_Z',''),
 		('CCFLAGS_Z',''),
 		('LINKFLAGS_Z',''),
