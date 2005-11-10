@@ -43,8 +43,8 @@ class KDETrayProxy
         static Atom makeSelectionAtom();
         KSelectionWatcher selection;
         KWinModule module;
-        Q3ValueList< Window > pending_windows;
-        Q3ValueList< Window > tray_windows;
+        QList< Window > pending_windows;
+        QList< Window > tray_windows;
         QMap< Window, unsigned long > docked_windows;
     };
 

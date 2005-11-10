@@ -76,7 +76,7 @@ void KDETrayProxy::windowAdded( WId w )
 void KDETrayProxy::newOwner( Window owner )
     {
 //    kdDebug() << "New owner:" << owner << endl;
-    for( Q3ValueList< Window >::ConstIterator it = pending_windows.begin();
+    for( QList< Window >::ConstIterator it = pending_windows.begin();
          it != pending_windows.end();
          ++it )
         dockWindow( *it, owner );
