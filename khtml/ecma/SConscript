@@ -15,7 +15,7 @@ kjs_events.h kjs_html.h kjs_navigator.h kjs_proxy.h
 kjs_range.h kjs_traversal.h kjs_views.h kjs_window.h
 """
 
-includes = '#/kio #/kio/bookmarks #/khtml #/khtml/java #/kwallet/client #/kutils ##/kjs '
+includes = '#/kio #/kio/bookmarks #/khtml #/khtml/java #/kwallet/client #/kutils #/kjs '
 
 obj = env.kdeobj('convenience')
 obj.target = 'libkjs_html'
