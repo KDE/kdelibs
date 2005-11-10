@@ -25,6 +25,7 @@
 #include <QDropEvent>
 #include <QDragMoveEvent>
 #include <QStyleOption>
+#include <QTextDocument>
 
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -285,8 +286,12 @@ void KTabWidget::updateTab( int index )
 {
     QString title = d->m_automaticResizeTabs ? d->m_tabNames[ index ] : QTabWidget::tabText( index );
     setTabToolTip(index,QString());
-    if ( title.length() > (int)d->m_CurrentMaxLength )
-        setTabToolTip(index, title );
+    if ( title.length() > (int)d->m_CurrentMaxLength ) {
+        if ( Qt::mightBeRichText( title ) )
+            setTabToolTip( index, Qt::escape( title ) );
+        else
+            setTabToolTip( index, title );
+    }
 
     title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustified( d->m_minLength, ' ' );
     title.replace( '&', "&&" );
@@ -447,9 +452,8 @@ void KTabWidget::removeTab(int tab) {
 }
 
 
-bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
+bool KTabWidget::isEmptyTabbarSpace( const QPoint &point ) const
 {
-    QPoint point( p );
     QSize size( tabBar()->sizeHint() );
     if ( ( tabPosition()==QTabWidget::North && point.y()< size.height() ) || ( tabPosition()==QTabWidget::South && point.y()>(height()-size.height() ) ) ) {
         QWidget *rightcorner = cornerWidget( Qt::TopRightCorner );
@@ -461,12 +465,9 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
         if ( leftcorner ) {
             if ( point.x()<=leftcorner->width() )
                 return false;
-            point.setX( point.x()-size.height() );
         }
-        if ( tabPosition()==QTabWidget::North )
-            point.setY( point.y()-( height()-size.height() ) );
         for (int i = 0; i < count(); ++i)
-            if (tabBar()->tabRect(i).contains(point))
+            if (tabBar()->tabRect(i).contains(tabBar()->mapFromParent(point)))
                 return false;
         return true;
     }
