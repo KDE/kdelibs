@@ -8,9 +8,12 @@
 	- Sconstruct and Sconscript files 
 		- \ref sconstruct
 		- \ref sconscript
-			- using genobj class
-			- using qt4obj class
-			- using kde4obj class
+			- \ref sconscript_genobj 
+			- \ref sconscript_qt4obj 
+			- \ref sconscript_kde4obj 
+			- \ref sconscript_kdeinitobj 
+			- \ref sconscript_attributes
+			- \ref usefull_sconscript_functions
 	- \ref configuration
 		- \ref config_cache
 		- \ref config_header

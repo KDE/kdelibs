@@ -3,36 +3,21 @@
 BKSYS provides several classes based on the genobj class, which provides support for generating general, 
 qt and KDE related binary objects like programs, shared library with several extensions and static libs. 
 
-- genobj:     build generic c++ or c applications, depending on the sources given to build
-- qt4obj:     build a qt4 object, scanning for moc files and adding the dependencies on .rcc files
-- kde4obj:    build a kde4 object, scanning for moc files and kidl files ...  
-- kdeinitobj: build a kdeinit object, ... 
-\todo complete object short description
+- \ref sconscript_genobj 
+- \ref sconscript_qt4obj 
+- \ref sconscript_kde4obj 
+- \ref sconscript_kdeinitobj 
 
 All classes provides a set of attributes, which controls the behavior of the binary object creation. 
+See \ref sconscript_attributes for more informations. 
+
+Beside the object classes there are several usefull functions available. They are documented in the chapter \ref usefull_sconscript_functions 
+
   
-An overview over the available attributes is shown below and described later in details: 
-\code
-obj = env.qt4obj('shlib',env)
-obj.target   = 'libDCOP'
-obj.vnum     = '6.0.2'
-obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
-obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
-obj.libpaths = 'KDE-ICE'
-obj.libs     = 'kICE'
-obj.includes = '../kio #/kio'
-obj.ccflags  = '-DXYZ=a'
-obj.cxxflags  = '-DXYZ=a'
-obj.linkflags = ''
-obj.instdir   = ''
-obj.perms     = ''
-obj.execute()
-\endcode
+\section sconscript_classes available classes
 
-\section object_types object types
-
-<ul>
-<li>create a generic binary object 
+\subsection sconscript_genobj generic binary object 
+build generic c++ or c applications, depending on the sources given to build
 \code
 obj = env.genobj(<type>,<env>)
 \endcode 
@@ -46,11 +31,12 @@ obj = env.genobj(<type>,<env>)
 
 \param env is a pointer to the global sconbs environment 
 
-<li>create a qt4 object 
+\subsection sconscript_qt4obj qt4 binary object 
+build a qt4 binary object, scanning for moc files and adding the dependencies on .rcc files
+
 \code
 obj = env.qt4obj(<type>,<env>)
 \endcode 
-When this object class is used bksys scans for moc files and adds the dependencies on .rcc files
 
 \param type may be one of 
 - program - application 
@@ -61,7 +47,8 @@ When this object class is used bksys scans for moc files and adds the dependenci
 
 \param env is a pointer to the global sconbs environment 
 
-<li>create a kde4 object 
+\subsection sconscript_kde4obj kde4 binary object 
+... build a kde4 object, scanning for moc files and kidl files 
 \code
 obj = env.kde4obj(<type>,<env>)
 \endcode 
@@ -79,19 +66,38 @@ obj = env.kde4obj(<type>,<env>)
 When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
 Then it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
 
-
-<li>create a kdeinit object \code obj = env.kdeinitobj(<type>,<env>) \endcode 
+\subsection sconscript_kdeinitobj kdeinit binary object 
+This class creates a shared library prefixed with 'kdeinit_' and a wrapper application. 
+\code 
+obj = env.kdeinitobj(<type>,<env>) 
+\endcode 
 \param type may be one of 
 - shlib - shared library 
 
 \param env is a pointer to the global sconbs environment 
 
-This class creates a shared library prefixed with 'kdeinit_' and a wrapper application. 
-</ul>
 
-\section attribute_details Attributes detail description
+\section sconscript_attributes Attributes detail description
 This section describes each attribute in detail. The displayed examples uses the string form; using 
 the list form mentioned above is also possible.
+
+An overview over the available attributes is shown below: 
+\code
+obj = env.qt4obj('shlib',env)
+obj.target   = 'libDCOP'
+obj.vnum     = '6.0.2'
+obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
+obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.libpaths = 'KDE-ICE'
+obj.libs     = 'kICE'
+obj.includes = '../kio #/kio'
+obj.ccflags  = '-DXYZ=a'
+obj.cxxflags  = '-DXYZ=a'
+obj.linkflags = ''
+obj.instdir   = ''
+obj.perms     = ''
+obj.execute()
+\endcode
 
 Attributes could be assigned by either using strings (see line 1,2 in the examples below) 
 or using a list (line 3,4):
@@ -262,27 +268,43 @@ be limited to the related platform.
 
 </ul>
 
+
 \section usefull_sconscript_functions usefull scons/bksys functions
 
-<ul>
-<li>
-set an additional dependency to a target
+
+\subsection sconscript_dependency set an additional dependency to a target
 \code
-env.Depends(<target>,<source>)
+env.Depends(target,source)
 \endcode
+\param target - the filename for which the dependency should be added
+\param source - a list of files, which are added as dependencies
 
-<li>install a target 
+
+\subsection sconscript_createfile  create a file
 \code
-env.bksys_install(<subdir>, <files>, <destfile=None>, <perms=None>):
+env.CreateFile(filename,content)
+\endcode
+\param filename - the filename/path the file should have. The path is based on the current directory ?? 
+\param content - the content of the file
+
+
+\subsection sconscript_install install a target 
+\code
+env.bksys_install(subdir, files, destfile=None, perms=None):
+\endcode 
+\param subdir - in which subdir the file(s) should be installed
+\param files - a single filename or a list of filesname, which should be installed 
+\param destfile - set this parameter, if the name of the installed file should be different from the source name. 
+This only works if you use a single file to install. 
+\param perms - file permission (platform depending)
+
+
+\subsection sconscript_installresouce install a target using a predefined resource type 
+\code
+env.bksys_insttype(resoucetype,subdir,files)
 \endcode 
 
-<li>install a target using a predefined resource type 
-\code
-env.bksys_insttype(<resoucetype>,<subdir>,<files>)
-\endcode 
-
-Resource types depends on available python modules. kde4.py for examples defines 
-
+\param resourcetype - Resource types depends on available python modules. kde4.py for examples defines 
 - KDEBIN inst path of the kde binaries
 - KDEINCLUDE inst path of the kde include files
 - KDELIB inst path of the kde libraries
@@ -300,11 +322,9 @@ Resource types depends on available python modules. kde4.py for examples defines
 - KDESERVTYPES
 - KDEAPPS 
 - KDECONF
+\param subdir - subdir relating to the directory specified by the resourcetype parameter 
+\param files - a single file or a list of files which should be installed
 
 \todo: make available resourcetypes help online readable for including in help and as command line help option
-
-
-</ul>
-
 
 */
