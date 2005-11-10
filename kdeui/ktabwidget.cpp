@@ -281,8 +281,12 @@ void KTabWidget::updateTab( int index )
 {
     QString title = d->m_automaticResizeTabs ? d->m_tabNames[ index ] : QTabWidget::label( index );
     removeTabToolTip( page( index ) );
-    if ( title.length() > d->m_CurrentMaxLength )
-        setTabToolTip( page( index ), QStyleSheet::escape(title) );
+    if ( title.length() > d->m_CurrentMaxLength ) {
+        if ( QStyleSheet::mightBeRichText( title ) )
+            setTabToolTip( page( index ), QStyleSheet::escape(title) );
+        else
+            setTabToolTip( page( index ), title );
+    }
 
     title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustify( d->m_minLength, ' ' );
     title.replace( '&', "&&" );
