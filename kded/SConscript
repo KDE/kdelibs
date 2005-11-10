@@ -2,36 +2,84 @@
 
 Import('env')
 
-obj = env.kdeinitobj(env)
+# TODO: are kdefx kdeui really required ? 
+
+if env['WINDOWS']:
+	obj = env.kdeobj('program',env)
+	obj.ccflags = '-Dkdemain=main'
+else:
+	obj = env.kdeinitobj(env)
 obj.target   = 'kbuildsycoca'
 obj.source   = """
 kbuildsycoca.cpp kbuildservicetypefactory.cpp kbuildservicefactory.cpp 
 kbuildservicegroupfactory.cpp kbuildimageiofactory.cpp kbuildprotocolinfofactory.cpp 
 kctimefactory.cpp vfolder_menu.cpp
 """
-obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
-obj.libs     = [ '../kdecore/libkdecore.la', '../kdefx/libkdefx.la', '../kdeui/libkdeui.la', '../dcop/libDCOP.la' ]
+obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT QTXML KDE4 KIO'
+obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
+obj.libs     = 'kdecore kdefx kdeui DCOP'
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32'
 obj.execute()
 
-obj = env.kdeinitobj(env)
-obj.target   = 'kded'
-obj.source   =  'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
-obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
-obj.libs     = [ '../kdecore/libkdecore.la', '../kdefx/libkdefx.la', '../kdeui/libkdeui.la', '../dcop/libDCOP.la' ]
-obj.execute()
+if env['WINDOWS']:
+	obj = env.kdeobj('shlib',env)
+	obj.target    = 'kded'
+	obj.source    =  'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
+	obj.uselib    = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+	obj.libpaths  = '../kdecore ../kdefx ../kdeui ../dcop'
+	obj.libs      = 'kdecore kdefx kdeui DCOP'
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32'
+	obj.execute()
+
+	obj = env.kdeobj('program',env)
+	obj.target   = 'kded'
+	obj.source   = 'dummy.cpp'
+	obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+	obj.libpaths = '. ../win'
+	obj.libs     = 'kded kdewin32'
+	obj.execute()
+else: 
+	obj = env.kdeobj('shlib',env)
+	obj.target   = 'kded'
+	obj.source   = 'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
+	obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+	obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
+	obj.libs     = 'kdecore kdefx kdeui DCOP'
+	obj.execute()
+
+dummy_cpp = """
+extern "C" int kdemain(int argc, char **argv); 
+int main(int argc,char **argv) 
+{ 
+	return kdemain(argc,argv); 
+}
+"""
+
+env.CreateFile('dummy.cpp', Value(dummy_cpp))
 
 obj=env.kdeobj('program', env)
 obj.target='kdontchangehostname'
 obj.source='khostname.cpp'
 obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'
-obj.libs= [ '../kdecore/libkdecore.la', '../dcop/libDCOP.la' ]
+obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
+obj.libs     = 'kdecore kdefx kdeui DCOP'
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32'
 obj.execute()
 
 obj=env.kdeobj('program', env)
 obj.target='kdemenu'
 obj.source='kde-menu.cpp'
 obj.uselib   = 'QTCORE QT QTGUI QT3SUPPORT KDE4 KIO'
-obj.libs= [ '../kdecore/libkdecore.la', '../kdefx/libkdefx.la', '../kdeui/libkdeui.la', '../dcop/libDCOP.la' ]
+obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
+obj.libs     = 'kdecore kdefx kdeui DCOP'
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32'
 obj.execute()
 
 # TODO: datafiles
