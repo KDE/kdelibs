@@ -1,4 +1,5 @@
 kde_module_LTLIBRARIES = kded_kdetrayproxy.la
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 INCLUDES= -I$(top_srcdir)/kded $(all_includes)
 kded_kdetrayproxy_la_SOURCES = kdetrayproxy.cpp module.cpp module.skel

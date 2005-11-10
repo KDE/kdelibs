@@ -89,8 +89,8 @@ bool KDETrayProxy::x11Event( XEvent* e )
         return false;
     if( e->type == DestroyNotify && tray_windows.contains( e->xdestroywindow.window ))
         {
-        tray_windows.remove( e->xdestroywindow.window );
-        pending_windows.remove( e->xdestroywindow.window );
+        tray_windows.removeAll( e->xdestroywindow.window );
+        pending_windows.removeAll( e->xdestroywindow.window );
         docked_windows.remove( e->xdestroywindow.window );
         }
     if( e->type == ReparentNotify && tray_windows.contains( e->xreparent.window ))
@@ -108,7 +108,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         else
             {
 //            kdDebug() << "Window away:" << e->xreparent.window << ":" << e->xreparent.parent << endl;
-            pending_windows.remove( e->xreparent.window );
+            pending_windows.removeAll( e->xreparent.window );
             }
         }
     if( e->type == UnmapNotify && tray_windows.contains( e->xunmap.window ))
