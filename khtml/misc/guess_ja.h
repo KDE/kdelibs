@@ -37,7 +37,9 @@
  */
 #ifndef GUESS_JA_H
 #define GUESS_JA_H
-
+#ifdef Q_WS_WIN
+#undef UNICODE
+#endif 
 namespace khtml {
     class guess_arc {
     public:
