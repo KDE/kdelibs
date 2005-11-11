@@ -47,7 +47,9 @@
 #include <QList>
 
 #undef QT_NO_TRANSLATION
+#define KDE3_SUPPORT
 #include "kapplication.h"
+#undef KDE3_SUPPORT
 #define QT_NO_TRANSLATION
 #include "kaccel.h"
 #include "kauthorized.h"
@@ -441,16 +443,27 @@ static SmcConn mySmcConnection = 0;
 #endif
 static QTime* smModificationTime = 0;
 
-KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
+KApplication::KApplication( bool x, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
   KInstance( KCmdLineArgs::about ), d (new Private)
 {
 
     read_app_startup_id();
-    if (!GUIenabled)
-       allowStyles = false;
-    useStyles = allowStyles;
+    setApplicationName(instanceName());
+    installSigpipeHandler();
+    parseCommandLine( );
+    init();
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
+}
+
+KApplication::KApplication( bool GUIenabled ) :
+  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+                GUIenabled ),
+  KInstance( KCmdLineArgs::about ), d (new Private)
+{
+
+    read_app_startup_id();
     setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
@@ -459,14 +472,12 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 }
 
 #ifdef Q_WS_X11
-KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
-		            bool allowStyles ) :
+KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap ) :
   QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 visual, colormap ),
   KInstance( KCmdLineArgs::about ), d (new Private)
 {
     read_app_startup_id();
-    useStyles = allowStyles;
     setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
@@ -475,13 +486,12 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 }
 
 KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
-		            bool allowStyles, KInstance * _instance ) :
+		            KInstance * _instance ) :
   QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 visual, colormap ),
   KInstance( _instance ), d (new Private)
 {
     read_app_startup_id();
-    useStyles = allowStyles;
     setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
@@ -490,15 +500,12 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 }
 #endif
 
-KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance ) :
+KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
   KInstance( _instance ), d (new Private)
 {
     read_app_startup_id();
-    if (!GUIenabled)
-       allowStyles = false;
-    useStyles = allowStyles;
     setApplicationName(instanceName());
     installSigpipeHandler();
     parseCommandLine( );
@@ -508,13 +515,10 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
-                           bool allowStyles, bool GUIenabled ) :
+                           bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName), d (new Private)
 {
     read_app_startup_id();
-    if (!GUIenabled)
-       allowStyles = false;
-    useStyles = allowStyles;
     setApplicationName(rAppName);
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
@@ -1310,8 +1314,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
             case KIPC::ToolbarStyleChanged:
                 KGlobal::config()->reparseConfiguration();
-                if (useStyles)
-                    emit toolbarAppearanceChanged(arg);
+                emit toolbarAppearanceChanged(arg);
                 break;
 
             case KIPC::PaletteChanged:
@@ -1423,24 +1426,8 @@ void KApplication::removeKipcEventMask(int id)
     kipcEventMask &= ~(1 << id);
 }
 
-void KApplication::enableStyles()
-{
-    if (!useStyles)
-    {
-        useStyles = true;
-        applyGUIStyle();
-    }
-}
-
-void KApplication::disableStyles()
-{
-    useStyles = false;
-}
-
 void KApplication::applyGUIStyle()
 {
-    if ( !useStyles ) return;
-
     KConfigGroup pConfig (KGlobal::config(), "General");
     QString defaultStyle = "plastique";// = KStyle::defaultStyle(); ### wait for KStyle4
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
@@ -1639,12 +1626,9 @@ void KApplication::kdisplaySetFont()
 
 void KApplication::kdisplaySetStyle()
 {
-    if (useStyles)
-    {
-        applyGUIStyle();
-        emit kdisplayStyleChanged();
-        emit appearanceChanged();
-    }
+    applyGUIStyle();
+    emit kdisplayStyleChanged();
+    emit appearanceChanged();
 }
 
 

@@ -101,20 +101,23 @@ class KDECORE_EXPORT KApplication : public QApplication, public KInstance
   Q_OBJECT
 public:
 
+#ifdef KDE3_SUPPORT
   /**
    * This constructor takes aboutData and command line
    *  arguments from KCmdLineArgs.
    *
-   * @param allowStyles Set to false to disable the loading on plugin based
-   * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with @p allowStyles set to false
-   * it normally runs in the background but under special circumstances
-   * displays widgets.  Call enableStyles() before displaying any widgets.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff. This implies
-   * no styles either.
+   * @param GUIenabled Set to false to disable all GUI stuff.
    */
-  KApplication( bool allowStyles=true, bool GUIenabled=true);
+  KDE_DEPRECATED KApplication( bool x, bool GUIenabled);
+#endif
+
+  /**
+   * This constructor takes aboutData and command line
+   *  arguments from KCmdLineArgs.
+   *
+   * @param GUIenabled Set to false to disable all GUI stuff.
+   */
+  KApplication( bool GUIenabled=true);
 
 #ifdef Q_WS_X11
   /**
@@ -132,16 +135,9 @@ public:
    * @param colormap The colormap that should be used by the application. If
    * this parameter is 0, the default colormap will be used instead.
    *
-   * @param allowStyles Set to false to disable the loading on plugin based
-   * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with @p allowStyles set to false
-   * that normally runs in the background but under special circumstances
-   * displays widgets call enableStyles() before displaying any widgets.
-   *
    * @since KDE 3.3
    */
-  KApplication(Display *display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0,
-               bool allowStyles=true);
+  KApplication(Display *display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0);
 
   /**
    * Constructor. Parses command-line arguments. Use this constructor to use KApplication
@@ -158,17 +154,10 @@ public:
    * associated message files and icon files, and as the default
    * registration name for DCOP. This is a mandatory parameter.
    *
-   * @param allowStyles Set to false to disable the loading on plugin based
-   * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with @p allowStyles set to false
-   * that normally runs in the background but under special circumstances
-   * displays widgets call enableStyles() before displaying any widgets.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff. This implies
-   * no styles either.
+   * @param GUIenabled Set to false to disable all GUI stuff.
    */
   KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
-               bool allowStyles=true, bool GUIenabled=true);
+               bool GUIenabled=true);
 #endif
 
   virtual ~KApplication();
@@ -368,24 +357,6 @@ public:
 #endif
 
   /**
-   * Enables style plugins.
-   *
-   * This is useful only to applications that normally
-   * do not display a GUI and create the KApplication with
-   * allowStyles set to false.
-   */
-  void enableStyles();
-
-  /**
-   * Disables style plugins.
-   *
-   * Current style plugins do not get unloaded.
-   *
-   * This is only useful when used in combination with enableStyles().
-   */
-  void disableStyles();
-
-  /**
    *  Installs widget filter as global X11 event filter.
    *
    * The widget
@@ -527,14 +498,14 @@ protected:
   /**
    * @internal Used by KUniqueApplication
    */
-  KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance );
+  KApplication( bool GUIenabled, KInstance* _instance );
 
 #ifdef Q_WS_X11
   /**
    * @internal Used by KUniqueApplication
    */
   KApplication( Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
-		  bool allowStyles, KInstance* _instance );
+		KInstance* _instance );
 
   /**
    * Used to catch X11 events
@@ -559,7 +530,6 @@ private:
 
   KConfig* pSessionConfig; //instance specific application config object
   bool bSessionManagement;
-  bool useStyles;
   QWidget *smw;
 
   void init();

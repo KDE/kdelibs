@@ -314,8 +314,8 @@ KUniqueApplication::start()
 }
 
 
-KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool configUnique)
-  : KApplication( allowStyles, GUIenabled, initHack( configUnique )),
+KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
+  : KApplication( GUIenabled, initHack( configUnique )),
     DCOPObject(KCmdLineArgs::about->appName()),d(new Private)
 {
   d->processingRequest = false;
@@ -329,8 +329,8 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
 
 #ifdef Q_WS_X11
 KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
-		Qt::HANDLE colormap, bool allowStyles, bool configUnique)
-  : KApplication( display, visual, colormap, allowStyles, initHack( configUnique )),
+		Qt::HANDLE colormap, bool configUnique)
+  : KApplication( display, visual, colormap, initHack( configUnique )),
     DCOPObject(KCmdLineArgs::about->appName()),d(new Private)
 {
   d->processingRequest = false;
