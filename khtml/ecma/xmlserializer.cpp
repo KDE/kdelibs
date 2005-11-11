@@ -52,22 +52,22 @@ bool XMLSerializerConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
+ObjectImp *XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
 {
-  return Object(new XMLSerializer(exec));
+  return new XMLSerializer(exec);
 }
 
 const ClassInfo XMLSerializer::info = { "XMLSerializer", 0, 0, 0 };
 
 XMLSerializer::XMLSerializer(ExecState *exec)
-  : DOMObject(XMLSerializerProto::self(exec))
+  : DOMObject(exec)
 {
 }
 
-Value XMLSerializerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *XMLSerializerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj.inherits(&XMLSerializer::info)) {
-    Object err = Error::create(exec,TypeError);
+  if (!thisObj->inherits(&XMLSerializer::info)) {
+    ObjectImp *err = Error::create(exec,TypeError);
     exec->setException(err);
     return err;
   }
@@ -79,11 +79,11 @@ Value XMLSerializerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
 	return Undefined();
       }
 
-      if (!args[0].toObject(exec).inherits(&DOMDocument::info)) {
+      if (!args[0]->toObject(exec)->inherits(&DOMDocument::info)) {
 	return Undefined();
       }
 
-      DOM::Node docNode = static_cast<KJS::DOMDocument *>(args[0].toObject(exec).imp())->toNode();
+      DOM::Node docNode = static_cast<KJS::DOMDocument *>(args[0]->toObject(exec))->toNode();
       DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
 
       if (!doc) {
@@ -95,12 +95,12 @@ Value XMLSerializerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
       try {
 	  body = doc->toString().string();
       } catch(DOM::DOMException& e) {
-	  Object err = Error::create(exec, GeneralError, "Exception serializing document");
+	  ObjectImp *err = Error::create(exec, GeneralError, "Exception serializing document");
 	  exec->setException(err);
 	  return err;
       }
 
-      return getString(body);
+      return ::getString(body);
     }
   }
 

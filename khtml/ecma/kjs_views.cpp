@@ -43,20 +43,21 @@ DOMAbstractView::~DOMAbstractView()
   ScriptInterpreter::forgetDOMObject(abstractView.handle());
 }
 
-Value DOMAbstractView::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp *DOMAbstractView::tryGet(ExecState *exec, const Identifier &p) const
 {
   if ( p == "document" )
     return getDOMNode(exec,abstractView.document());
   else if ( p == "getComputedStyle" )
-    return lookupOrCreateFunction<DOMAbstractViewFunc>(exec,p,this,DOMAbstractView::GetComputedStyle,2,DontDelete|Function);
+	  abort();
+    //return lookupOrCreateFunction<DOMAbstractViewFunc>(exec,p,this,DOMAbstractView::GetComputedStyle,2,DontDelete|Function);
   else
     return DOMObject::tryGet(exec,p);
 }
 
-Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *DOMAbstractViewFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMAbstractView, thisObj );
-  DOM::AbstractView abstractView = static_cast<DOMAbstractView *>(thisObj.imp())->toAbstractView();
+  DOM::AbstractView abstractView = static_cast<DOMAbstractView *>(thisObj)->toAbstractView();
   switch (id) {
     case DOMAbstractView::GetComputedStyle: {
         DOM::Node arg0 = toNode(args[0]);
@@ -64,23 +65,23 @@ Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List 
           return Undefined(); // throw exception?
         else
           return getDOMCSSStyleDeclaration(exec,abstractView.getComputedStyle(static_cast<DOM::Element>(arg0),
-                                                                              args[1].toString(exec).string()));
+                                                                              args[1]->toString(exec).domString()));
       }
   }
   return Undefined();
 }
 
-Value KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractView av)
+ValueImp *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractView av)
 {
   return cacheDOMObject<DOM::AbstractView, DOMAbstractView>(exec, av);
 }
 
-DOM::AbstractView KJS::toAbstractView (const Value& val)
+DOM::AbstractView KJS::toAbstractView (ValueImp *val)
 {
-  Object obj = Object::dynamicCast(val);
-  if (!obj.isValid() || !obj.inherits(&DOMAbstractView::info))
+  ObjectImp *obj = val->getObject();
+  if (!obj || !obj->inherits(&DOMAbstractView::info))
     return DOM::AbstractView ();
 
-  const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj.imp());
+  const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj);
   return dobj->toAbstractView ();
 }

@@ -56,30 +56,30 @@ bool DOMParserConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object DOMParserConstructorImp::construct(ExecState *exec, const List &)
+ObjectImp *DOMParserConstructorImp::construct(ExecState *exec, const List &)
 {
-  return Object(new DOMParser(exec, doc.get()));
+  return new DOMParser(exec, doc.get());
 }
 
 const ClassInfo DOMParser::info = { "DOMParser", 0, 0 /* &DOMParserTable*/, 0 };
 
 
 DOMParser::DOMParser(ExecState *exec, DOM::DocumentImpl *d)
-  : DOMObject(DOMParserProto::self(exec)), doc(d)
+  : DOMObject(exec), doc(d)
 {
 //   setPrototype(DOMParserProto::self(exec));
 }
 
 
-Value DOMParserProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *DOMParserProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj.inherits(&DOMParser::info)) {
-    Object err = Error::create(exec,TypeError);
+  if (!thisObj->inherits(&DOMParser::info)) {
+    ObjectImp *err = Error::create(exec,TypeError);
     exec->setException(err);
     return err;
   }
 
-  DOMParser *parser = static_cast<DOMParser *>(thisObj.imp());
+  DOMParser *parser = static_cast<DOMParser *>(thisObj);
 
   switch (id) {
   case DOMParser::ParseFromString:
@@ -88,8 +88,8 @@ Value DOMParserProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &
 				return Undefined();
       }
 
-      QString str = args[0].toString(exec).qstring();
-      QString contentType = args[1].toString(exec).qstring().trimmed();
+      QString str = args[0]->toString(exec).qstring();
+      QString contentType = args[1]->toString(exec).qstring().trimmed();
 
       if (contentType == "text/xml" || contentType == "application/xml" || contentType == "application/xhtml+xml") {
         DocumentImpl *docImpl = parser->doc->implementation()->createDocument();
