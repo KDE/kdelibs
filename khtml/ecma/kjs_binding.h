@@ -31,6 +31,8 @@
 #include <kurl.h>
 #include <kjs/lookup.h>
 
+#include <stdlib.h> // for abort
+
 namespace KParts {
   class ReadOnlyPart;
   class LiveConnectExtension;
@@ -49,20 +51,39 @@ namespace KJS {
    */
   class DOMObject : public ObjectImp {
   public:
-    DOMObject() : ObjectImp() {}
+    virtual ValueImp* get(ExecState *exec, const Identifier &propertyName) const;
+    virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const
+      { return ObjectImp::get(exec, propertyName); }
+
+    virtual void put(ExecState *exec, const Identifier &propertyName,
+                     ValueImp *value, int attr = None);
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
+                        ValueImp *value, int attr = None)
+      { ObjectImp::put(exec,propertyName,value,attr); }
+
     virtual UString toString(ExecState *exec) const;
   };
 
   /**
-   * Base class for all functions in this binding.
+   * Base class for all functions in this binding - get() and call() run
+   * tryGet() and tryCall() respectively, and catch exceptions if they
+   * occur.
    */
   class DOMFunction : public ObjectImp {
   public:
-    DOMFunction() : ObjectImp() {}
+    DOMFunction(ExecState* exec) : ObjectImp(
+      static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype())
+      ) {}
+    virtual ValueImp* get(ExecState *exec, const Identifier &propertyName) const;
+    virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const
+      { return ObjectImp::get(exec, propertyName); }
+
     virtual bool implementsCall() const { return true; }
+    virtual ValueImp* call(ExecState *exec, ObjectImp *thisObj, const List &args);
+
+    virtual ValueImp* tryCall(ExecState *exec, ObjectImp *thisObj, const List&args)
+      { return ObjectImp::call(exec, thisObj, args); }
     virtual bool toBoolean(ExecState *) const { return true; }
-    virtual ValueImp *toPrimitive(ExecState *exec, Type) const { return String(toString(exec)); }
-    virtual UString toString(ExecState *) const { return UString("[function]"); }
   };
 
   /**
@@ -73,7 +94,7 @@ namespace KJS {
   class KDE_EXPORT ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter(ObjectImp *global, khtml::ChildFrame* frame );
+    ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
@@ -123,41 +144,61 @@ namespace KJS {
    * Retrieve from cache, or create, a KJS object around a DOM object
    */
   template<class DOMObj, class KJSDOMObj>
-  inline ValueImp *cacheDOMObject(ExecState *exec, DOMObj domObj)
+  inline ValueImp* cacheDOMObject(ExecState *exec, DOMObj domObj)
   {
     DOMObject *ret;
     if (domObj.isNull())
       return Null();
     ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
     if ((ret = interp->getDOMObject(domObj.handle())))
-      return Value(ret);
+      return ret;
     else {
       ret = new KJSDOMObj(exec, domObj);
       interp->putDOMObject(domObj.handle(),ret);
-      return Value(ret);
+      return ret;
     }
   }
 
   /**
    * Convert an object to a Node. Returns a null Node if not possible.
    */
-  DOM::Node toNode(ValueImp *);
+  DOM::Node toNode(ValueImp*);
   /**
    *  Get a String object, or Null() if s is null
    */
-  ValueImp *getString(DOM::DOMString s);
+  ValueImp* getString(DOM::DOMString s);
 
   /**
    * Convery a KJS value into a QVariant
    */
-  QVariant ValueToVariant(ExecState* exec, ValueImp *val);
+  QVariant ValueToVariant(ExecState* exec, ValueImp* val);
+
+  /**
+   * We need a modified version of lookupGet because
+   * we call tryGet instead of get, in DOMObjects.
+   */
+  template <class FuncImp, class ThisImp, class ParentImp>
+  inline ValueImp* DOMObjectLookupGet(ExecState *exec, const Identifier &propertyName,
+                                  const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::tryGet(exec, propertyName);
+
+    if (entry->attr & Function) {
+    abort();
+      //return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
+    }
+    return thisObj->getValueProperty(exec, entry->value);
+  }
 
   /**
    * Simplified version of DOMObjectLookupGet in case there are no
    * functions, only "values".
    */
   template <class ThisImp, class ParentImp>
-  inline ValueImp *DOMObjectLookupGetValue(ExecState *exec, const Identifier &propertyName,
+  inline ValueImp* DOMObjectLookupGetValue(ExecState *exec, const Identifier &propertyName,
                                        const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -206,13 +247,13 @@ namespace KJS {
        put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
     /** You need to implement that one */ \
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \
+    virtual Value tryCall(ExecState *exec, ObjectImp *thisObj, const List &args); \
   private: \
     int id; \
   }; \
   }
 
-  ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
+  ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
 } // namespace
 

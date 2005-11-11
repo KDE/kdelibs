@@ -36,6 +36,50 @@
 
 using namespace KJS;
 
+/* TODO:
+ * The catch all (...) clauses below shouldn't be necessary.
+ * But they helped to view for example www.faz.net in an stable manner.
+ * Those unknown exceptions should be treated as severe bugs and be fixed.
+ *
+ * these may be CSS exceptions - need to check - pmk
+ */
+
+ValueImp* DOMObject::get(ExecState *exec, const Identifier &p) const
+{
+  ValueImp* result;
+  try {
+    result = tryGet(exec,p);
+  }
+  catch (DOM::DOMException e) {
+    // ### translate code into readable string ?
+    // ### oh, and s/QString/i18n or I18N_NOOP (the code in kjs uses I18N_NOOP... but where is it translated ?)
+    //     and where does it appear to the user ?
+    ObjectImp *err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
+    exec->setException( err );
+    result = Undefined();
+  }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMObject::get()" << endl;
+    result = String("Unknown exception");
+  }
+
+  return result;
+}
+
+void DOMObject::put(ExecState *exec, const Identifier &propertyName,
+                    ValueImp *value, int attr)
+{
+  try {
+    tryPut(exec, propertyName, value, attr);
+  }
+  catch (DOM::DOMException e) {
+    ObjectImp *err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
+    exec->setException(err);
+  }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMObject::put()" << endl;
+  }
+}
 
 UString DOMObject::toString(ExecState *) const
 {
