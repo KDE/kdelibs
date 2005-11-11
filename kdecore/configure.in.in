@@ -189,7 +189,7 @@ if test -n "$PKGCONFIG"; then
         AC_DEFINE_UNQUOTED(HAVE_LIBAGG, 1, [Defines if your system has the libagg library])
 
         AGG_LIBS=`$PKGCONFIG libagg --libs 2>/dev/null`
-        AGG_CFLAGS=`$PKGCONFIG libagg --cflags 2>/dev/null`/agg2
+        AGG_CFLAGS=`$PKGCONFIG libagg --cflags 2>/dev/null`
 
         AC_SUBST(AGG_LIBS)
         AC_SUBST(AGG_CFLAGS)

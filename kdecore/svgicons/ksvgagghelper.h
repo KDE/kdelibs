@@ -28,30 +28,30 @@
 #include <Q3PtrList>
 #include <Q3ValueList>
 
-#include <agg_conv_dash.h>
-#include <agg_scanline_u.h>
-#include <agg_scanline_p.h>
-#include <agg_conv_curve.h>
-#include <agg_conv_stroke.h>
-#include <agg_pixfmt_gray.h>
-#include <agg_pixfmt_rgba.h>
-#include <agg_path_storage.h>
-#include <agg_trans_affine.h>
-#include <agg_rounded_rect.h>
-#include <agg_bounding_rect.h>
-#include <agg_renderer_base.h>
-#include <agg_alpha_mask_u8.h>
-#include <agg_span_gradient.h>
-#include <agg_span_converter.h>
-#include <agg_conv_transform.h>
-#include <agg_rendering_buffer.h>
-#include <agg_conv_clip_polygon.h>
-#include <agg_renderer_scanline.h>
-#include <agg_pixfmt_amask_adaptor.h>
-#include <agg_rasterizer_scanline_aa.h>
-#include <agg_span_image_filter_rgba.h>
-#include <agg_span_pattern_filter_rgba.h>
-#include <agg_span_interpolator_linear.h>
+#include <agg2/agg_conv_dash.h>
+#include <agg2/agg_scanline_u.h>
+#include <agg2/agg_scanline_p.h>
+#include <agg2/agg_conv_curve.h>
+#include <agg2/agg_conv_stroke.h>
+#include <agg2/agg_pixfmt_gray.h>
+#include <agg2/agg_pixfmt_rgba.h>
+#include <agg2/agg_path_storage.h>
+#include <agg2/agg_trans_affine.h>
+#include <agg2/agg_rounded_rect.h>
+#include <agg2/agg_bounding_rect.h>
+#include <agg2/agg_renderer_base.h>
+#include <agg2/agg_alpha_mask_u8.h>
+#include <agg2/agg_span_gradient.h>
+#include <agg2/agg_span_converter.h>
+#include <agg2/agg_conv_transform.h>
+#include <agg2/agg_rendering_buffer.h>
+#include <agg2/agg_conv_clip_polygon.h>
+#include <agg2/agg_renderer_scanline.h>
+#include <agg2/agg_pixfmt_amask_adaptor.h>
+#include <agg2/agg_rasterizer_scanline_aa.h>
+#include <agg2/agg_span_image_filter_rgba.h>
+#include <agg2/agg_span_pattern_filter_rgba.h>
+#include <agg2/agg_span_interpolator_linear.h>
 
 // Common definitions
 typedef agg::order_bgra pixfmt_order;
