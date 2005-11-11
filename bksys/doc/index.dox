@@ -17,11 +17,13 @@
 	- \ref configuration
 		- \ref config_cache
 		- \ref config_header
+		- \ref config_options 
 		- \ref config_custom
 			- using SConfigure file 
 	- \ref library_modules
 	
 - Appendics
 	- \ref library_filename_specification
+	- \ref environment_options
 
 */ 
