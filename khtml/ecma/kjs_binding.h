@@ -51,6 +51,7 @@ namespace KJS {
    */
   class DOMObject : public ObjectImp {
   public:
+    DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
     virtual ValueImp* get(ExecState *exec, const Identifier &propertyName) const;
     virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
@@ -247,7 +248,7 @@ namespace KJS {
        put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
     /** You need to implement that one */ \
-    virtual Value tryCall(ExecState *exec, ObjectImp *thisObj, const List &args); \
+    virtual ValueImp* tryCall(ExecState *exec, ObjectImp *thisObj, const List &args); \
   private: \
     int id; \
   }; \

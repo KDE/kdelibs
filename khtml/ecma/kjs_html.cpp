@@ -66,11 +66,11 @@ using namespace KJS;
 
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
 
-ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLDocument, thisObj );
 
-  DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
+  DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj)->toDocument();
 
   switch (id) {
   case HTMLDocument::Clear: // even IE doesn't support that one...
@@ -100,7 +100,7 @@ ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const 
     // or no arguments
     UString str = "";
     for (int i = 0; i < args.size(); i++)
-      str += args[i].toString(exec);
+      str += args[i]->toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
 #ifdef KJS_VERBOSE
@@ -110,7 +110,7 @@ ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const 
     return Undefined();
   }
   case HTMLDocument::GetElementsByName:
-    return getDOMNodeList(exec,doc.getElementsByName(args[0].toString(exec).string()));
+    return getDOMNodeList(exec,doc.getElementsByName(args[0]->toString(exec).string()));
   case HTMLDocument::GetSelection: {
     // NS4 and Mozilla specific. IE uses document.selection.createRange()
     // http://docs.sun.com/source/816-6408-10/document.htm#1195981
@@ -295,7 +295,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
       return getDOMNode(exec,doc.body());
     case Location:
       if (win)
-        return Value(win->location());
+        return win->location();
       else
         return Undefined();
     case Cookie:
@@ -325,8 +325,8 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
       // The script object isn't really simple to implement though
       // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
       kdDebug(6070) << "WARNING: KJS::HTMLDocument document.scripts called - not implemented" << endl;
-      Object obj( new ObjectImp() );
-      obj.put( exec, lengthPropertyName, Number(0) );
+      ObjectImp *obj = new ObjectImp;
+      obj->put( exec, lengthPropertyName, Number(0) );
       return obj;
     }
     case All:
@@ -347,7 +347,8 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
     case GetSelection:
     case CaptureEvents:
     case ReleaseEvents:
-      return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
+      abort(); //FIXME
+      //return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
     case CompatMode:
       return String(static_cast<HTMLDocumentImpl *>(doc.handle())->parseMode()
               == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
@@ -356,7 +357,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
   // Look for overrides
   ValueImp * val = ObjectImp::getDirect(propertyName);
   if (val)
-    return Value(val);
+    return val;
 
   DOM::HTMLBodyElement body = doc.body();
   if (entry) {
@@ -381,7 +382,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
       return String(body.dir());
     case Frames:
       if ( win )
-        return Value(win->frames(exec));
+        return win->frames(exec);
       else
         return Undefined();
     }
@@ -409,7 +410,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
   return Undefined();
 }
 
-void KJS::HTMLDocument::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
+void KJS::HTMLDocument::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
@@ -423,12 +424,12 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const Identifier &propertyName, 
   DOMObjectLookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
 }
 
-void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
+void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   DOM::HTMLBodyElement body = doc.body();
-  DOM::DOMString val = value.toString(exec).string();
+  DOM::DOMString val = value->toString(exec).string();
 
   switch (token) {
   case Title:
@@ -437,7 +438,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Body: {
     DOMNode *node = new DOMNode(exec, KJS::toNode(value));
     // This is required to avoid leaking the node.
-    Value nodeValue(node);
+    //Value nodeValue(node);
     doc.setBody(node->toNode());
     break;
   }
@@ -454,7 +455,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   {
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
     if ( view )
-      Window::retrieveWindow(view->part())->goURL(exec, value.toString(exec).qstring(), false /*don't lock history*/);
+      Window::retrieveWindow(view->part())->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
     break;
   }
   case BgColor:
@@ -1165,20 +1166,20 @@ ValueImp* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyNa
       DOM::HTMLFormElement form = element;
       // Check if we're retrieving an element (by index or by name)
       bool ok;
-      uint u = propertyName.toULong(&ok);
+      uint u = propertyName.qstring().toULong(&ok);
 
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
       KJS::HTMLCollection coll(exec, form.elements());
-      Value namedItems = coll.getNamedItems(exec, propertyName);
-      if (namedItems.type() != UndefinedType)
+      ValueImp *namedItems = coll.getNamedItems(exec, propertyName);
+      if (namedItems->type() != UndefinedType)
         return namedItems;
     }
       break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       bool ok;
-      uint u = propertyName.toULong(&ok);
+      uint u = propertyName.qstring().toULong(&ok);
       if (ok)
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
@@ -1202,7 +1203,8 @@ ValueImp* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyNa
   const HashEntry* entry = Lookup::findEntry(table, propertyName);
   if (entry) {
     if (entry->attr & Function)
-      return lookupOrCreateFunction<KJS::HTMLElementFunction>(exec, propertyName, this, entry->value, entry->params, entry->attr);
+	    abort(); // FIXME
+      //return lookupOrCreateFunction<KJS::HTMLElementFunction>(exec, propertyName, this, entry->value, entry->params, entry->attr);
     return getValueProperty(exec, entry->value);
   }
 
@@ -1298,7 +1300,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
           return Undefined();
         DOMNode* kjsDocNode = new DOMNode(exec, doc);
         // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
-        Value nodeValue(kjsDocNode);
+        //Value nodeValue(kjsDocNode);
         return kjsDocNode->getListener( DOM::EventImpl::LOAD_EVENT );
     }
     default:
@@ -1868,8 +1870,8 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case LayerTop:            return Number(layerElement.top());
     case LayerLeft:           return Number(layerElement.left());
-    case LayerVisibility:     return getString(layerElement.visibility());
-    case LayerBgColor:        return getString(layerElement.bgColor());
+    case LayerVisibility:     return ::getString(layerElement.visibility());
+    case LayerBgColor:        return ::getString(layerElement.bgColor());
     /*case LayerClip:           return getLayerClip(exec, layerElement); */
     case LayerDocument:       return Undefined();
     case LayerLayers:         return getHTMLCollection(exec,layerElement.layers());
@@ -1884,7 +1886,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameContentWindow:   {
         KHTMLView *view = static_cast<DOM::DocumentImpl*>(frameElement.contentDocument().handle())->view();
         if (view && view->part())
-            return Value(Window::retrieveWindow(view->part()));
+            return Window::retrieveWindow(view->part());
         else
             return Undefined();
     }
@@ -1913,7 +1915,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
             
         KHTMLView *view = contentDoc->view();
         if (view && view->part())
-            return Value(Window::retrieveWindow(view->part()));
+            return Window::retrieveWindow(view->part());
         else
             return Undefined();
     }
@@ -1979,7 +1981,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const Identifier &propertyNa
       DOM::HTMLFormElement form = element;
       // Check if we're retrieving an element (by index or by name)
       bool ok;
-      uint u = propertyName.toULong(&ok);
+      uint u = propertyName.qstring().toULong(&ok);
       if (ok && !(form.elements().item(u).isNull()))
         return true;
       DOM::Node testnode = form.elements().namedItem(propertyName.string());
@@ -1989,7 +1991,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const Identifier &propertyNa
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       bool ok;
-      uint u = propertyName.toULong(&ok);
+      uint u = propertyName.qstring().toULong(&ok);
       if (ok && !(select.options().item(u).isNull()))
         return true;
     }
@@ -2080,7 +2082,7 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
   // The document is put on first, fall back to searching it only after the element and form.
-  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element.ownerDocument()).imp()));
+  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element.ownerDocument())));
 
   // The form is next, searched before the document, but after the element itself.
   DOM::HTMLFormElement formElt;
@@ -2090,35 +2092,35 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
   // <table> or <tbody>.
   getForm(&formElt, element);
   if (!formElt.isNull())
-    scope.push(static_cast<ObjectImp *>(getDOMNode(exec, formElt).imp()));
+    scope.push(static_cast<ObjectImp *>(getDOMNode(exec, formElt)));
   else {
     DOM::Node form = element.parentNode();
     while (!form.isNull() && form.elementId() != ID_FORM)
         form = form.parentNode();
 
     if (!form.isNull())
-        scope.push(static_cast<ObjectImp *>(getDOMNode(exec, form).imp()));
+        scope.push(static_cast<ObjectImp *>(getDOMNode(exec, form)));
   }
 
   // The element is on top, searched first.
-  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element).imp()));
+  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element)));
 }
 
 HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
   : DOMFunction(exec), id(i)
 {
-  Value protect(this);
+  //Value protect(this);
   put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
-ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLElement, thisObj );
 
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLElementFunction::tryCall " << endl;
 #endif
-  DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
+  DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj)->toElement();
 
   switch (element.elementId()) {
     case ID_FORM: {
@@ -2197,7 +2199,7 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, co
         return Undefined();
       }
       else if (id == KJS::HTMLElement::SelectRemove) {
-        select.remove(int(args[0].toNumber(exec)));
+        select.remove(int(args[0]->toNumber(exec)));
         return Undefined();
       }
       else if (id == KJS::HTMLElement::SelectBlur) {
@@ -2279,9 +2281,9 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, co
         return Undefined();
       }
       else if (id == KJS::HTMLElement::TableInsertRow)
-        return getDOMNode(exec,table.insertRow(args[0].toInteger(exec)));
+        return getDOMNode(exec,table.insertRow(args[0]->toInteger(exec)));
       else if (id == KJS::HTMLElement::TableDeleteRow) {
-        table.deleteRow(args[0].toInteger(exec));
+        table.deleteRow(args[0]->toInteger(exec));
         return Undefined();
       }
     }
@@ -2291,9 +2293,9 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, co
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
       if (id == KJS::HTMLElement::TableSectionInsertRow)
-        return getDOMNode(exec,tableSection.insertRow(args[0].toInteger(exec)));
+        return getDOMNode(exec,tableSection.insertRow(args[0]->toInteger(exec)));
       else if (id == KJS::HTMLElement::TableSectionDeleteRow) {
-        tableSection.deleteRow(args[0].toInteger(exec));
+        tableSection.deleteRow(args[0]->toInteger(exec));
         return Undefined();
       }
     }
@@ -2301,9 +2303,9 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, co
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if (id == KJS::HTMLElement::TableRowInsertCell)
-        return getDOMNode(exec,tableRow.insertCell(args[0].toInteger(exec)));
+        return getDOMNode(exec,tableRow.insertCell(args[0]->toInteger(exec)));
       else if (id == KJS::HTMLElement::TableRowDeleteCell) {
-        tableRow.deleteCell(args[0].toInteger(exec));
+        tableRow.deleteCell(args[0]->toInteger(exec));
         return Undefined();
       }
       break;
@@ -2328,10 +2330,10 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, co
   return Undefined();
 }
 
-void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
+void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
 #ifdef KJS_VERBOSE
-  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
+  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).string();
 #endif
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -2344,11 +2346,11 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       bool ok;
-      /*uint u =*/ propertyName.toULong(&ok);
+      /*uint u =*/ propertyName.qstring().toULong(&ok);
       if (ok) {
-        Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
-        if ( coll.isValid() )
-          coll.put(exec,propertyName,value);
+        ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), select)->getObject();
+        if ( coll )
+          coll->put(exec,propertyName,value);
         return;
       }
       break;
@@ -2357,7 +2359,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
     case ID_OBJECT:
     case ID_EMBED: {
       KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
-      if (lc && lc->put(0, propertyName.qstring(), value.toString(exec).qstring()))
+      if (lc && lc->put(0, propertyName.qstring(), value->toString(exec).qstring()))
         return;
       break;
     }
@@ -2382,12 +2384,12 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
   DOMObjectLookupPut<KJS::HTMLElement, DOMElement>(exec, propertyName, value, attr, &KJS::HTMLElementTable, this);
 }
 
-void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value& value, int)
+void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *value, int)
 {
-  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
+  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).string();
   DOMNode *kjsNode = new DOMNode(exec, KJS::toNode(value));
   // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
-  Value nodeValue(kjsNode);
+  //Value nodeValue(kjsNode);
   DOM::Node n = kjsNode->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -2414,7 +2416,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
   case ID_LINK: {
     DOM::HTMLLinkElement link = element;
     switch (token) {
-      case LinkDisabled:        { link.setDisabled(value.toBoolean(exec)); return; }
+      case LinkDisabled:        { link.setDisabled(value->toBoolean(exec)); return; }
       case LinkCharset:         { link.setCharset(str); return; }
       case LinkHref:            { link.setHref(str); return; }
       case LinkHrefLang:        { link.setHreflang(str); return; }
@@ -2462,7 +2464,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_STYLE: {
       DOM::HTMLStyleElement style = element;
       switch (token) {
-      case StyleDisabled:        { style.setDisabled(value.toBoolean(exec)); return; }
+      case StyleDisabled:        { style.setDisabled(value->toBoolean(exec)); return; }
       case StyleMedia:           { style.setMedia(str); return; }
       case StyleType:            { style.setType(str); return; }
       }
@@ -2486,9 +2488,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
           if (docimpl)
             docimpl->updateLayout();
           if (token == BodyScrollLeft)
-            sview->setContentsPos(value.toInteger(exec), sview->contentsY());
+            sview->setContentsPos(value->toInteger(exec), sview->contentsY());
           else
-            sview->setContentsPos(sview->contentsX(), value.toInteger(exec));
+            sview->setContentsPos(sview->contentsX(), value->toInteger(exec));
           }
         return;
       }
@@ -2498,7 +2500,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
         {
           DOMNode* kjsDocNode = new DOMNode(exec, doc);
           // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
-          Value nodeValue(kjsDocNode);
+          //Value nodeValue(kjsDocNode);
           kjsDocNode->setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
         }
         return;
@@ -2523,28 +2525,28 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       DOM::HTMLSelectElement select = element;
       switch (token) {
       // read-only: type
-      case SelectSelectedIndex:   { select.setSelectedIndex(value.toInteger(exec)); return; }
+      case SelectSelectedIndex:   { select.setSelectedIndex(value->toInteger(exec)); return; }
       case SelectValue:           { select.setValue(str); return; }
       case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
-                                         Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
-                                         if ( coll.isValid() )
-                                           coll.put(exec,"length",value);
+                                         ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), select)->getObject();
+                                         if ( coll )
+                                           coll->put(exec,"length",value);
                                          return;
                                        }
       // read-only: form
       // read-only: options
-      case SelectDisabled:        { select.setDisabled(value.toBoolean(exec)); return; }
-      case SelectMultiple:        { select.setMultiple(value.toBoolean(exec)); return; }
+      case SelectDisabled:        { select.setDisabled(value->toBoolean(exec)); return; }
+      case SelectMultiple:        { select.setMultiple(value->toBoolean(exec)); return; }
       case SelectName:            { select.setName(str); return; }
-      case SelectSize:            { select.setSize(value.toInteger(exec)); return; }
-      case SelectTabIndex:        { select.setTabIndex(value.toInteger(exec)); return; }
+      case SelectSize:            { select.setSize(value->toInteger(exec)); return; }
+      case SelectTabIndex:        { select.setTabIndex(value->toInteger(exec)); return; }
       }
     }
     break;
     case ID_OPTGROUP: {
       DOM::HTMLOptGroupElement optgroup = element;
       switch (token) {
-      case OptGroupDisabled:        { optgroup.setDisabled(value.toBoolean(exec)); return; }
+      case OptGroupDisabled:        { optgroup.setDisabled(value->toBoolean(exec)); return; }
       case OptGroupLabel:           { optgroup.setLabel(str); return; }
       }
     }
@@ -2553,7 +2555,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       DOM::HTMLOptionElement option = element;
       switch (token) {
       // read-only: form
-      case OptionDefaultSelected: { option.setDefaultSelected(value.toBoolean(exec)); return; }
+      case OptionDefaultSelected: { option.setDefaultSelected(value->toBoolean(exec)); return; }
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
       case OptionText:            { DOM::NodeList nl(option.childNodes());
@@ -2573,9 +2575,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
                                   return;
       }
       // read-only: index
-      case OptionDisabled:        { option.setDisabled(value.toBoolean(exec)); return; }
+      case OptionDisabled:        { option.setDisabled(value->toBoolean(exec)); return; }
       case OptionLabel:           { option.setLabel(str); return; }
-      case OptionSelected:        { option.setSelected(value.toBoolean(exec)); return; }
+      case OptionSelected:        { option.setSelected(value->toBoolean(exec)); return; }
       case OptionValue:           { option.setValue(str); return; }
       }
     }
@@ -2584,20 +2586,20 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       DOM::HTMLInputElement input = element;
       switch (token) {
       case InputDefaultValue:    { input.setDefaultValue(str); return; }
-      case InputDefaultChecked:  { input.setDefaultChecked(value.toBoolean(exec)); return; }
+      case InputDefaultChecked:  { input.setDefaultChecked(value->toBoolean(exec)); return; }
       // read-only: form
       case InputAccept:          { input.setAccept(str); return; }
       case InputAccessKey:       { input.setAccessKey(str); return; }
       case InputAlign:           { input.setAlign(str); return; }
       case InputAlt:             { input.setAlt(str); return; }
-      case InputChecked:         { input.setChecked(value.toBoolean(exec)); return; }
-      case InputDisabled:        { input.setDisabled(value.toBoolean(exec)); return; }
-      case InputMaxLength:       { input.setMaxLength(value.toInteger(exec)); return; }
+      case InputChecked:         { input.setChecked(value->toBoolean(exec)); return; }
+      case InputDisabled:        { input.setDisabled(value->toBoolean(exec)); return; }
+      case InputMaxLength:       { input.setMaxLength(value->toInteger(exec)); return; }
       case InputName:            { input.setName(str); return; }
-      case InputReadOnly:        { input.setReadOnly(value.toBoolean(exec)); return; }
-      case InputSize:            { input.setSize(value.toInteger(exec)); return; }
+      case InputReadOnly:        { input.setReadOnly(value->toBoolean(exec)); return; }
+      case InputSize:            { input.setSize(value->toInteger(exec)); return; }
       case InputSrc:             { input.setSrc(str); return; }
-      case InputTabIndex:        { input.setTabIndex(value.toInteger(exec)); return; }
+      case InputTabIndex:        { input.setTabIndex(value->toInteger(exec)); return; }
       case InputType:            { input.setType(str); return; }
       case InputUseMap:          { input.setUseMap(str); return; }
       case InputValue:           { input.setValue(str); return; }
@@ -2610,12 +2612,12 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case TextAreaDefaultValue:    { textarea.setDefaultValue(str); return; }
       // read-only: form
       case TextAreaAccessKey:       { textarea.setAccessKey(str); return; }
-      case TextAreaCols:            { textarea.setCols(value.toInteger(exec)); return; }
-      case TextAreaDisabled:        { textarea.setDisabled(value.toBoolean(exec)); return; }
+      case TextAreaCols:            { textarea.setCols(value->toInteger(exec)); return; }
+      case TextAreaDisabled:        { textarea.setDisabled(value->toBoolean(exec)); return; }
       case TextAreaName:            { textarea.setName(str); return; }
-      case TextAreaReadOnly:        { textarea.setReadOnly(value.toBoolean(exec)); return; }
-      case TextAreaRows:            { textarea.setRows(value.toInteger(exec)); return; }
-      case TextAreaTabIndex:        { textarea.setTabIndex(value.toInteger(exec)); return; }
+      case TextAreaReadOnly:        { textarea.setReadOnly(value->toBoolean(exec)); return; }
+      case TextAreaRows:            { textarea.setRows(value->toInteger(exec)); return; }
+      case TextAreaTabIndex:        { textarea.setTabIndex(value->toInteger(exec)); return; }
       // read-only: type
       case TextAreaValue:           { textarea.setValue(str); return; }
       }
@@ -2626,9 +2628,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       switch (token) {
       // read-only: form
       case ButtonAccessKey:       { button.setAccessKey(str); return; }
-      case ButtonDisabled:        { button.setDisabled(value.toBoolean(exec)); return; }
+      case ButtonDisabled:        { button.setDisabled(value->toBoolean(exec)); return; }
       case ButtonName:            { button.setName(str); return; }
-      case ButtonTabIndex:        { button.setTabIndex(value.toInteger(exec)); return; }
+      case ButtonTabIndex:        { button.setTabIndex(value->toInteger(exec)); return; }
       // read-only: type
       case ButtonValue:           { button.setValue(str); return; }
       }
@@ -2660,7 +2662,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_UL: {
       DOM::HTMLUListElement uList = element;
       switch (token) {
-      case UListCompact:         { uList.setCompact(value.toBoolean(exec)); return; }
+      case UListCompact:         { uList.setCompact(value->toBoolean(exec)); return; }
       case UListType:            { uList.setType(str); return; }
       }
     }
@@ -2668,8 +2670,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
       switch (token) {
-      case OListCompact:         { oList.setCompact(value.toBoolean(exec)); return; }
-      case OListStart:           { oList.setStart(value.toInteger(exec)); return; }
+      case OListCompact:         { oList.setCompact(value->toBoolean(exec)); return; }
+      case OListStart:           { oList.setStart(value->toInteger(exec)); return; }
       case OListType:            { oList.setType(str); return; }
       }
     }
@@ -2677,21 +2679,21 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_DL: {
       DOM::HTMLDListElement dList = element;
       switch (token) {
-      case DListCompact:         { dList.setCompact(value.toBoolean(exec)); return; }
+      case DListCompact:         { dList.setCompact(value->toBoolean(exec)); return; }
       }
     }
     break;
     case ID_DIR: {
       DOM::HTMLDirectoryElement directory = element;
       switch (token) {
-      case DirectoryCompact:     { directory.setCompact(value.toBoolean(exec)); return; }
+      case DirectoryCompact:     { directory.setCompact(value->toBoolean(exec)); return; }
       }
     }
     break;
     case ID_MENU: {
       DOM::HTMLMenuElement menu = element;
       switch (token) {
-      case MenuCompact:         { menu.setCompact(value.toBoolean(exec)); return; }
+      case MenuCompact:         { menu.setCompact(value->toBoolean(exec)); return; }
       }
     }
     break;
@@ -2699,7 +2701,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       DOM::HTMLLIElement li = element;
       switch (token) {
       case LIType:            { li.setType(str); return; }
-      case LIValue:           { li.setValue(value.toInteger(exec)); return; }
+      case LIValue:           { li.setValue(value->toInteger(exec)); return; }
       }
     }
     break;
@@ -2746,7 +2748,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
       switch (token) {
-      case PreWidth:           { pre.setWidth(value.toInteger(exec)); return; }
+      case PreWidth:           { pre.setWidth(value->toInteger(exec)); return; }
       }
     }
     break;
@@ -2762,7 +2764,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       switch (token) {
       case BaseFontColor:           { baseFont.setColor(str); return; }
       case BaseFontFace:            { baseFont.setFace(str); return; }
-      case BaseFontSize:            { baseFont.setSize(value.toInteger(exec)); return; }
+      case BaseFontSize:            { baseFont.setSize(value->toInteger(exec)); return; }
       }
     }
     break;
@@ -2779,7 +2781,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       DOM::HTMLHRElement hr = element;
       switch (token) {
       case HRAlign:           { hr.setAlign(str); return; }
-      case HRNoShade:         { hr.setNoShade(value.toBoolean(exec)); return; }
+      case HRNoShade:         { hr.setNoShade(value->toBoolean(exec)); return; }
       case HRSize:            { hr.setSize(str); return; }
       case HRWidth:           { hr.setWidth(str); return; }
       }
@@ -2806,7 +2808,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AnchorRel:             { anchor.setRel(str); return; }
       case AnchorRev:             { anchor.setRev(str); return; }
       case AnchorShape:           { anchor.setShape(str); return; }
-      case AnchorTabIndex:        { anchor.setTabIndex(value.toInteger(exec)); return; }
+      case AnchorTabIndex:        { anchor.setTabIndex(value->toInteger(exec)); return; }
       case AnchorTarget:          { anchor.setTarget(str); return; }
       case AnchorType:            { anchor.setType(str); return; }
       }
@@ -2819,14 +2821,14 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ImageAlign:           { image.setAlign(str); return; }
       case ImageAlt:             { image.setAlt(str); return; }
       case ImageBorder:          { image.setBorder(str); return; }
-      case ImageHeight:          { image.setHeight(value.toInteger(exec)); return; }
-      case ImageHspace:          { image.setHspace(value.toInteger(exec)); return; }
-      case ImageIsMap:           { image.setIsMap(value.toBoolean(exec)); return; }
+      case ImageHeight:          { image.setHeight(value->toInteger(exec)); return; }
+      case ImageHspace:          { image.setHspace(value->toInteger(exec)); return; }
+      case ImageIsMap:           { image.setIsMap(value->toBoolean(exec)); return; }
       case ImageLongDesc:        { image.setLongDesc(str); return; }
       case ImageSrc:             { image.setSrc(str); return; }
       case ImageUseMap:          { image.setUseMap(str); return; }
-      case ImageVspace:          { image.setVspace(value.toInteger(exec)); return; }
-      case ImageWidth:           { image.setWidth(value.toInteger(exec)); return; }
+      case ImageVspace:          { image.setVspace(value->toInteger(exec)); return; }
+      case ImageWidth:           { image.setWidth(value->toInteger(exec)); return; }
       }
     }
     break;
@@ -2842,15 +2844,15 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ObjectCodeType:        { object.setCodeType(str); return; }
       // read-only: ObjectContentDocument
       case ObjectData:            { object.setData(str); return; }
-      case ObjectDeclare:         { object.setDeclare(value.toBoolean(exec)); return; }
+      case ObjectDeclare:         { object.setDeclare(value->toBoolean(exec)); return; }
       case ObjectHeight:          { object.setHeight(str); return; }
-      case ObjectHspace:          { object.setHspace(value.toInteger(exec)); return; }
+      case ObjectHspace:          { object.setHspace(value->toInteger(exec)); return; }
       case ObjectName:            { object.setName(str); return; }
       case ObjectStandby:         { object.setStandby(str); return; }
-      case ObjectTabIndex:        { object.setTabIndex(value.toInteger(exec)); return; }
+      case ObjectTabIndex:        { object.setTabIndex(value->toInteger(exec)); return; }
       case ObjectType:            { object.setType(str); return; }
       case ObjectUseMap:          { object.setUseMap(str); return; }
-      case ObjectVspace:          { object.setVspace(value.toInteger(exec)); return; }
+      case ObjectVspace:          { object.setVspace(value->toInteger(exec)); return; }
       case ObjectWidth:           { object.setWidth(str); return; }
       }
     }
@@ -2874,10 +2876,10 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AppletCode:            { applet.setCode(str); return; }
       case AppletCodeBase:        { applet.setCodeBase(str); return; }
       case AppletHeight:          { applet.setHeight(str); return; }
-      case AppletHspace:          { applet.setHspace(value.toInteger(exec)); return; }
+      case AppletHspace:          { applet.setHspace(value->toInteger(exec)); return; }
       case AppletName:            { applet.setName(str); return; }
       case AppletObject:          { applet.setObject(str); return; }
-      case AppletVspace:          { applet.setVspace(value.toInteger(exec)); return; }
+      case AppletVspace:          { applet.setVspace(value->toInteger(exec)); return; }
       case AppletWidth:           { applet.setWidth(str); return; }
       }
     }
@@ -2897,9 +2899,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AreaAlt:             { area.setAlt(str); return; }
       case AreaCoords:          { area.setCoords(str); return; }
       case AreaHref:            { area.setHref(str); return; }
-      case AreaNoHref:          { area.setNoHref(value.toBoolean(exec)); return; }
+      case AreaNoHref:          { area.setNoHref(value->toBoolean(exec)); return; }
       case AreaShape:           { area.setShape(str); return; }
-      case AreaTabIndex:        { area.setTabIndex(value.toInteger(exec)); return; }
+      case AreaTabIndex:        { area.setTabIndex(value->toInteger(exec)); return; }
       case AreaTarget:          { area.setTarget(str); return; }
       }
     }
@@ -2911,7 +2913,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ScriptHtmlFor:         { script.setHtmlFor(str); return; }
       case ScriptEvent:           { script.setEvent(str); return; }
       case ScriptCharset:         { script.setCharset(str); return; }
-      case ScriptDefer:           { script.setDefer(value.toBoolean(exec)); return; }
+      case ScriptDefer:           { script.setDefer(value->toBoolean(exec)); return; }
       case ScriptSrc:             { script.setSrc(str); return; }
       case ScriptType:            { script.setType(str); return; }
       }
@@ -2951,7 +2953,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case TableColAlign:           { tableCol.setAlign(str); return; }
       case TableColCh:              { tableCol.setCh(str); return; }
       case TableColChOff:           { tableCol.setChOff(str); return; }
-      case TableColSpan:            { tableCol.setSpan(value.toInteger(exec)); return; }
+      case TableColSpan:            { tableCol.setSpan(value->toInteger(exec)); return; }
       case TableColVAlign:          { tableCol.setVAlign(str); return; }
       case TableColWidth:           { tableCol.setWidth(str); return; }
       }
@@ -2995,11 +2997,11 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case TableCellBgColor:         { tableCell.setBgColor(str); return; }
       case TableCellCh:              { tableCell.setCh(str); return; }
       case TableCellChOff:           { tableCell.setChOff(str); return; }
-      case TableCellColSpan:         { tableCell.setColSpan(value.toInteger(exec)); return; }
+      case TableCellColSpan:         { tableCell.setColSpan(value->toInteger(exec)); return; }
       case TableCellHeaders:         { tableCell.setHeaders(str); return; }
       case TableCellHeight:          { tableCell.setHeight(str); return; }
-      case TableCellNoWrap:          { tableCell.setNoWrap(value.toBoolean(exec)); return; }
-      case TableCellRowSpan:         { tableCell.setRowSpan(value.toInteger(exec)); return; }
+      case TableCellNoWrap:          { tableCell.setNoWrap(value->toBoolean(exec)); return; }
+      case TableCellRowSpan:         { tableCell.setRowSpan(value->toInteger(exec)); return; }
       case TableCellScope:           { tableCell.setScope(str); return; }
       case TableCellVAlign:          { tableCell.setVAlign(str); return; }
       case TableCellWidth:           { tableCell.setWidth(str); return; }
@@ -3017,8 +3019,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_LAYER: {
       DOM::HTMLLayerElement layerElement = element;
       switch (token) {
-      case LayerTop:                   { layerElement.setTop(value.toInteger(exec)); return; }
-      case LayerLeft:                  { layerElement.setLeft(value.toInteger(exec)); return; }
+      case LayerTop:                   { layerElement.setTop(value->toInteger(exec)); return; }
+      case LayerLeft:                  { layerElement.setLeft(value->toInteger(exec)); return; }
       case LayerVisibility:            { layerElement.setVisibility(str); return; }
       case LayerBgColor:               { layerElement.setBgColor(str); return; }
       // read-only: layers, clip
@@ -3034,7 +3036,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case FrameMarginHeight:    { frameElement.setMarginHeight(str); return; }
       case FrameMarginWidth:     { frameElement.setMarginWidth(str); return; }
       case FrameName:            { frameElement.setName(str); return; }
-      case FrameNoResize:        { frameElement.setNoResize(value.toBoolean(exec)); return; }
+      case FrameNoResize:        { frameElement.setNoResize(value->toBoolean(exec)); return; }
       case FrameScrolling:       { frameElement.setScrolling(str); return; }
       case FrameSrc:             { frameElement.setSrc(str); return; }
       case FrameLocation:        {
@@ -3156,13 +3158,13 @@ ValueImp* KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propert
   }
 
   // Look in the prototype (for functions) before assuming it's an item's name
-  Object proto = Object::dynamicCast(prototype());
-  if (proto.isValid() && proto.hasProperty(exec,propertyName))
-    return proto.get(exec,propertyName);
+  ObjectImp *proto = prototype()->getObject();
+  if (proto && proto->hasProperty(exec,propertyName))
+    return proto->get(exec,propertyName);
 
   // name or index ?
   bool ok;
-  unsigned int u = propertyName.toULong(&ok);
+  unsigned int u = propertyName.qstring().toULong(&ok);
   if (ok) {
     if ( u < collection.length() ) {
       DOM::Node node = collection.item(u);
@@ -3176,22 +3178,22 @@ ValueImp* KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propert
 
 // HTMLCollections are strange objects, they support both get and call,
 // so that document.forms.item(0) and document.forms(0) both work.
-ValueImp* KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLCollection::call(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   // This code duplication is necessary, HTMLCollection isn't a DOMFunction
-  Value val;
+  ValueImp *val;
   try {
     val = tryCall(exec, thisObj, args);
   }
   // pity there's no way to distinguish between these in JS code
   catch (...) {
-    Object err = Error::create(exec, GeneralError, "Exception from HTMLCollection");
+    ObjectImp *err = Error::create(exec, GeneralError, "Exception from HTMLCollection");
     exec->setException(err);
   }
   return val;
 }
 
-ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
+ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, ObjectImp *, const List &args)
 {
   // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
   /*if( thisObj.imp() != this )
@@ -3205,8 +3207,8 @@ ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &ar
   if (args.size() == 1) {
     // support for document.all(<index>) etc.
     bool ok;
-    UString s = args[0].toString(exec);
-    unsigned int u = s.toULong(&ok);
+    UString s = args[0]->toString(exec);
+    unsigned int u = s.qstring().toULong(&ok);
     if (ok) {
       DOM::Element element = collection.item(u);
       return getDOMNode(exec,element);
@@ -3217,8 +3219,8 @@ ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &ar
   else if (args.size() >= 1) // the second arg, if set, is the index of the item we want
   {
     bool ok;
-    UString s = args[0].toString(exec);
-    unsigned int u = args[1].toString(exec).toULong(&ok);
+    UString s = args[0]->toString(exec);
+    unsigned int u = args[1]->toString(exec).toULong(&ok);
     if (ok)
     {
       DOM::DOMString pstr = s.string();
@@ -3261,7 +3263,7 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
-      return Value(new DOMNamedNodesCollection(exec, nodes));
+      return new DOMNamedNodesCollection(exec, nodes);
     }
   }
 #ifdef KJS_VERBOSE
@@ -3270,18 +3272,18 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
   return Undefined();
 }
 
-ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::HTMLCollection, thisObj );
-  DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj.imp())->toCollection();
+  DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj)->toCollection();
 
   switch (id) {
   case KJS::HTMLCollection::Item:
   {
     // support for item(<index>) (DOM)
     bool ok;
-    UString s = args[0].toString(exec);
-    unsigned int u = s.toULong(&ok);
+    UString s = args[0]->toString(exec);
+    unsigned int u = s.qstring().toULong(&ok);
     if (ok) {
       return getDOMNode(exec,coll.item(u));
     }
@@ -3291,7 +3293,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj
   }
   case KJS::HTMLCollection::Tags:
   {
-    DOM::DOMString tagName = args[0].toString(exec).string();
+    DOM::DOMString tagName = args[0]->toString(exec).string();
     DOM::NodeList list;
     // getElementsByTagName exists in Document and in Element, pick up the right one
     if ( coll.base().nodeType() == DOM::Node::DOCUMENT_NODE )
@@ -3313,10 +3315,10 @@ ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj
   }
   case KJS::HTMLCollection::NamedItem:
   {
-    Value val = static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec, Identifier(args[0].toString(exec)));
+    ValueImp *val = static_cast<HTMLCollection *>(thisObj)->getNamedItems(exec, Identifier(args[0]->toString(exec)));
     // Must return null when asking for a named item that isn't in the collection
     // (DOM2 testsuite, HTMLCollection12 test)
-    if ( val.type() == KJS::UndefinedType )
+    if ( val->type() == KJS::UndefinedType )
       return Null();
     else
       return val;
@@ -3334,19 +3336,19 @@ ValueImp* KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p
   return  HTMLCollection::tryGet(exec, p);
 }
 
-void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int)
+void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
 #endif
   if ( propertyName == "selectedIndex" ) {
-    element.setSelectedIndex( value.toInteger( exec ) );
+    element.setSelectedIndex( value->toInteger( exec ) );
     return;
   }
   // resize ?
   else if (propertyName == lengthPropertyName) {
     unsigned newLen;
-    bool converted = value.toUInt32(newLen);
+    bool converted = value->getUInt32(newLen);
 
     if (!converted) {
       return;
@@ -3367,11 +3369,11 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &proper
   }
   // an index ?
   bool ok;
-  unsigned int u = propertyName.toULong(&ok);
+  unsigned int u = propertyName.qstring().toULong(&ok);
   if (!ok)
     return;
 
-  if (value.isA(NullType) || value.isA(UndefinedType)) {
+  if (value->type() == NullType || value->type() == UndefinedType) {
     // null and undefined delete. others, too ?
     element.remove(u);
     return;
@@ -3419,7 +3421,7 @@ bool OptionConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object OptionConstructorImp::construct(ExecState *exec, const List &args)
+ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
 {
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
@@ -3430,15 +3432,15 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
     // #### exec->setException ?
   }
   if (sz > 0)
-    t.setData(args[0].toString(exec).string()); // set the text
+    t.setData(args[0]->toString(exec).string()); // set the text
   if (sz > 1)
-    opt.setValue(args[1].toString(exec).string());
+    opt.setValue(args[1]->toString(exec).string());
   if (sz > 2)
-    opt.setDefaultSelected(args[2].toBoolean(exec));
+    opt.setDefaultSelected(args[2]->toBoolean(exec));
   if (sz > 3)
-    opt.setSelected(args[3].toBoolean(exec));
+    opt.setSelected(args[3]->toBoolean(exec));
 
-  return Object::dynamicCast(getDOMNode(exec,opt));
+  return getDOMNode(exec,opt)->getObject();
 }
 
 ////////////////////// Image Object ////////////////////////
@@ -3455,19 +3457,19 @@ bool ImageConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object ImageConstructorImp::construct(ExecState *exec, const List &list)
+ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
 {
   bool widthSet = false, heightSet = false;
   int width = 0, height = 0;
   if (list.size() > 0) {
     widthSet = true;
-    Value w = list.at(0);
-    width = w.toInt32(exec);
+    ValueImp *w = list.at(0);
+    width = w->toInt32(exec);
   }
   if (list.size() > 1) {
     heightSet = true;
-    Value h = list.at(1);
-    height = h.toInt32(exec);
+    ValueImp *h = list.at(1);
+    height = h->toInt32(exec);
   }
 
   HTMLImageElement image(doc.createElement("image"));
@@ -3478,14 +3480,14 @@ Object ImageConstructorImp::construct(ExecState *exec, const List &list)
   if (heightSet)
     image.setHeight(height);
 
-  return Object::dynamicCast(getDOMNode(exec,image));
+  return getDOMNode(exec,image)->getObject();
 }
 
 ValueImp* KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
 {
-  Value coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
+  ValueImp *coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
   if (hide) {
-    KJS::HTMLCollection *impl = static_cast<KJS::HTMLCollection*>(coll.imp());
+    KJS::HTMLCollection *impl = static_cast<KJS::HTMLCollection*>(coll);
     impl->hide();
   }
   return coll;
@@ -3498,10 +3500,10 @@ ValueImp* KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollectio
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(c.handle())))
-    return Value(ret);
+    return ret;
   else {
     ret = new HTMLSelectCollection(exec, c, e);
     interp->putDOMObject(c.handle(),ret);
-    return Value(ret);
+    return ret;
   }
 }
