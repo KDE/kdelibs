@@ -60,12 +60,10 @@ static KCmdLineOptions options[] =
     { "lang <language>", I18N_NOOP("Specify a particular language"), 0 },
     { "embed <id>", I18N_NOOP("Embeds the module with buttons in window with id <id>"), 0 },
     { "embed-proxy <id>", I18N_NOOP("Embeds the module without buttons in window with id <id>"), 0 },
-    { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon"), 0},
     { "silent", I18N_NOOP("Do not display main window"), 0 },
     KCmdLineLastOption
 };
 
-#warning "fix parse icon argument which is into kcmargument too";
 
 static void listModules(const QString &baseGroup)
 {

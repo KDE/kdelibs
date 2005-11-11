@@ -1204,10 +1204,17 @@ KCmdLineArgs::isSet(const char *_opt) const
    // Look up the default.
    const char *opt_name;
    const char *def;
-   bool dummy = true;
    QByteArray opt = _opt;
-   int result = ::findOption( options, opt, opt_name, def, dummy) & ~4;
-
+   int result = 0;
+   KCmdLineArgsList::Iterator args = argsList->begin();
+   while (args != argsList->end())
+   {
+      bool dummy = true;
+      result = ::findOption((*args)->options, opt, opt_name, def, dummy) & ~4;
+      if (result) break;
+      ++args;
+   }
+  
    if (result == 0)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
