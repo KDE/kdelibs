@@ -30,8 +30,8 @@ namespace KJS {
   class MozillaSidebarExtension : public ObjectImp {
   public:
     MozillaSidebarExtension(ExecState *exec, KHTMLPart *p);
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual ValueImp* get(ExecState *exec, const Identifier &propertyName) const;
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { addPanel };
