@@ -100,6 +100,40 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
             return provider;
     }
 
+    KMimeType::Ptr mimeInfo = KMimeType::mimeType( mimeType );
+    if ( mimeInfo )
+    {
+        // check mime type inheritance
+        QString parentMimeType = mimeInfo->parentMimeType();
+        while ( !parentMimeType.isEmpty() )
+        {
+            provider = m_previewProviders.find( parentMimeType );
+            if ( provider )
+                return provider;
+
+            KMimeType::Ptr parentMimeInfo = KMimeType::mimeType( parentMimeType );
+            if ( !parentMimeInfo ) break;
+
+            parentMimeType = parentMimeInfo->parentMimeType();
+        }
+
+        // check X-KDE-Text property
+        QVariant textProperty = mimeInfo->property( "X-KDE-text" );
+        if ( textProperty.isValid() && textProperty.type() == QVariant::Bool )
+        {
+            if ( textProperty.toBool() )
+            {
+                provider = m_previewProviders.find( "text/plain" );
+                if ( provider )
+                    return provider;
+
+                provider = m_previewProviders.find( "text/*" );
+                if ( provider )
+                    return provider;
+            }
+        }
+    }
+
     return 0L;
 }
 
