@@ -179,7 +179,8 @@ void KFileMetaPropsPlugin::createLayout()
         for (QLinkedList<KFileMetaInfoItem>::Iterator iit= editItems.begin();
                 iit!=editItems.end(); ++iit)
         {
-            (new QLabel((*iit).translatedKey() + ":", groupBox));
+            QLabel* l = new QLabel((*iit).translatedKey() + ":", groupBox);
+            l->setAlignment( Qt::AlignAuto | Qt::AlignTop | Qt::ExpandTabs );
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
             if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
             w = new KFileMetaInfoWidget(*iit, val, groupBox);
@@ -191,7 +192,8 @@ void KFileMetaPropsPlugin::createLayout()
         for (QLinkedList<KFileMetaInfoItem>::Iterator iit= readItems.begin();
                 iit!=readItems.end(); ++iit)
         {
-            (new QLabel((*iit).translatedKey() + ":", groupBox));
+            QLabel* l = new QLabel((*iit).translatedKey() + ":", groupBox);
+            l->setAlignment( Qt::AlignAuto | Qt::AlignTop | Qt::ExpandTabs );
             (new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox));
         }
     }
