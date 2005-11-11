@@ -30,7 +30,7 @@ namespace KJS {
 
   class ObjectImp;
 
-  class Reference {
+  class KJS_EXPORT Reference {
     friend class ReferenceList;
     friend class ReferenceListIterator;
   public:

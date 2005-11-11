@@ -57,6 +57,9 @@ enum Type {
     ObjectType        = 6
 };
 
+// Forward declaration
+class AllocatedValueImp;
+
 /**
  * ValueImp is the base type for all primitives (Undefined, Null, Boolean,
  * String, Number) and objects in ECMAScript.
@@ -65,7 +68,7 @@ enum Type {
  * only (all of which are provided internally by KJS). Instead, inherit from
  * ObjectImp.
  */
-class ValueImp {
+class KJS_EXPORT ValueImp {
     friend class AllocatedValueImp; // so it can derive from this class
     friend class ProtectedValues; // so it can call downcast()
 
@@ -124,7 +127,7 @@ private:
     ValueImp& operator=(const ValueImp&);
 };
 
-class AllocatedValueImp : public ValueImp {
+class KJS_EXPORT AllocatedValueImp : public ValueImp {
     friend class Collector;
     friend class UndefinedImp;
     friend class NullImp;
@@ -189,7 +192,7 @@ AllocatedValueImp *jsString(const char * = ""); // returns empty string if passe
 extern const double NaN;
 extern const double Inf;
 
-class ConstantValues {
+class KJS_EXPORT ConstantValues {
 public:
     static AllocatedValueImp *undefined;
     static AllocatedValueImp *null;

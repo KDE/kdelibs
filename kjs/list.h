@@ -45,7 +45,7 @@ namespace KJS {
      * The list is explicitly shared. Note that while copyTail() returns a
      * copy of the list the referenced objects are still shared.
      */
-    class List {
+    class KJS_EXPORT List {
     public:
         List();
 	List(bool needsMarking);

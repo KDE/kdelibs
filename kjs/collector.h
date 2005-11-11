@@ -24,6 +24,7 @@
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
+#include "global.h"
 #include "value.h"
 
 #define KJS_MEM_LIMIT 500000
@@ -33,7 +34,7 @@ namespace KJS {
   /**
    * @short Garbage collector.
    */
-  class Collector {
+  class KJS_EXPORT Collector {
     // disallow direct construction/destruction
     Collector();
   public:
@@ -52,7 +53,7 @@ namespace KJS {
      * Run the garbage collection. This involves calling the delete operator
      * on each object and freeing the used memory.
      */
-    static bool collect();
+    KJS_EXPORT static bool collect();
     static size_t size();
     static bool outOfMemory() { return memoryFull; }
 
@@ -66,7 +67,7 @@ namespace KJS {
     static size_t numInterpreters();
     static size_t numGCNotAllowedObjects();
     static size_t numReferencedObjects();
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
     static const void *rootObjectClasses(); // actually returns CFSetRef
 #endif
 
@@ -84,6 +85,6 @@ namespace KJS {
     static bool memoryFull;
   };
 
-};
+}
 
 #endif /* _KJSCOLLECTOR_H_ */

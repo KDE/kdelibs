@@ -22,11 +22,16 @@
 #ifndef KJS_SCOPE_CHAIN_H
 #define KJS_SCOPE_CHAIN_H
 
+#include "global.h"
+
 namespace KJS {
 
     class ObjectImp;
-    
-    class ScopeChainNode {
+
+/**
+* A scope chain node.
+*/
+    class KJS_EXPORT ScopeChainNode {
     public:
         ScopeChainNode(ScopeChainNode *n, ObjectImp *o)
             : next(n), object(o), refCount(1) { }
@@ -36,7 +41,7 @@ namespace KJS {
         int refCount;
     };
 
-    class ScopeChainIterator {
+    class KJS_EXPORT ScopeChainIterator {
     public:
         ScopeChainIterator(ScopeChainNode *node) : m_node(node) {}
 
@@ -54,7 +59,10 @@ namespace KJS {
         ScopeChainNode *m_node;
     };
 
-    class ScopeChain {
+/**
+* A scope chain object.
+*/
+    class KJS_EXPORT ScopeChain {
     public:
         ScopeChain() : _node(0) { }
         ~ScopeChain() { deref(); }

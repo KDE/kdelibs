@@ -67,7 +67,7 @@ namespace KJS {
 * Javascript Property Map.
 */
 
-    class PropertyMap {
+    class KJS_EXPORT PropertyMap {
     public:
         PropertyMap();
         ~PropertyMap();

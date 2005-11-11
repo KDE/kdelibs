@@ -28,7 +28,7 @@ namespace KJS {
   class ExecState;
   class ValueImp;
 
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
   inline bool isNaN(double d) { return isnan(d); }
   inline bool isInf(double d) { return isinf(d); }
   inline bool isPosInf(double d) { return isinf(d) && d > 0; }

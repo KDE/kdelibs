@@ -56,7 +56,7 @@ namespace KJS {
    * KJS ContextImp type. When one context variable is assigned to another, it
    * is still referencing the same internal object.
    */
-  class Context {
+  class KJS_EXPORT Context {
   public:
     Context(ContextImp *i) : rep(i) { }
 
@@ -133,7 +133,7 @@ namespace KJS {
    * evaluation, and also provides access to built-in properties such as
    * " Object" and "Number".
    */
-  class Interpreter {
+  class KJS_EXPORT Interpreter {
   public:
     /**
      * Creates a new interpreter. The supplied object will be used as the global
@@ -363,7 +363,7 @@ namespace KJS {
     static void finalCheck();
 #endif
 
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
     static bool shouldPrintExceptions();
     static void setShouldPrintExceptions(bool);
 #endif
@@ -371,7 +371,7 @@ namespace KJS {
     void saveBuiltins (SavedBuiltins &) const;
     void restoreBuiltins (const SavedBuiltins &);
 
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
     /**
      * Determine if the value is a global object (for any interpreter).  This may
      * be difficult to determine for multiple uses of JSC in a process that are
@@ -435,10 +435,10 @@ namespace KJS {
    * obtain a handle the interpreter that is currently executing the script,
    * and also the current execution state context.
    */
-  class ExecState {
+  class KJS_EXPORT ExecState {
     friend class InterpreterImp;
     friend class FunctionImp;
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
     friend class RuntimeMethodImp;
 #endif
 

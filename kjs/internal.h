@@ -33,7 +33,7 @@
 #include "scope_chain.h"
 #include <kxmlcore/SharedPtr.h>
 
-#if __APPLE__
+#ifdef __APPLE__
 #define KJS_MULTIPLE_THREADS 1
 #endif
 
@@ -402,7 +402,7 @@ namespace KJS {
     bool hasInstance(ExecState *exec, ValueImp *value);
 
     virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
+    KJS_EXPORT static const ClassInfo info;
   };
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16

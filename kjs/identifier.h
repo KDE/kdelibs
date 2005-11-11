@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
@@ -26,47 +26,83 @@
 
 namespace KJS {
 
-    class Identifier {
+  /**
+   * Represents an Identifier for a Javascript object.
+   */
+    class KJS_EXPORT Identifier {
         friend class PropertyMap;
     public:
         static void init();
-
+	/** 
+	* Creates an empty identifier
+	*/
         Identifier() { }
+	/**
+	* Creates an identifier with the name of the string 
+	* @code
+	* KJS::Identifier method("someJSMethod");
+	* @endcode
+	*/
         Identifier(const char *s) : _ustring(add(s)) { }
         Identifier(const UChar *s, int length) : _ustring(add(s, length)) { }
         explicit Identifier(const UString &s) : _ustring(add(s.rep)) { }
-        
+
+	/**
+	* returns a UString of the identifier
+	*/
         const UString &ustring() const { return _ustring; }
         DOM::DOMString domString() const;
-        QString qstring() const;
-        
+        /**
+	* returns a QString of the identifier
+	*/
+	QString qstring() const;
+
+	/**
+	* returns a UChar pointer to the string of the identifier with a size defined by @ref size().
+	*/
         const UChar *data() const { return _ustring.data(); }
+	/**
+	* The size of the UChar string returned.
+	*/
         int size() const { return _ustring.size(); }
-        
+
+	/**
+	* Char * of the identifier's string.
+	*/
         const char *ascii() const { return _ustring.ascii(); }
-        
+
         static Identifier from(unsigned y) { return Identifier(UString::from(y)); }
-        
+
+	/**
+	* Returns the identfiers state of being unset.
+	*/
         bool isNull() const { return _ustring.isNull(); }
+	/**
+	* Returns that the identifiers string is set, but is empty.
+	*/
         bool isEmpty() const { return _ustring.isEmpty(); }
-        
+
         uint32_t toUInt32(bool *ok) const { return _ustring.toUInt32(ok); }
         uint32_t toStrictUInt32(bool *ok) const { return _ustring.toStrictUInt32(ok); }
         unsigned toArrayIndex(bool *ok) const { return _ustring.toArrayIndex(ok); }
+
         double toDouble() const { return _ustring.toDouble(); }
-        
+
+	/**
+	* Creates an empty Identifier
+	*/
         static const Identifier &null();
-        
+
         friend bool operator==(const Identifier &, const Identifier &);
         friend bool operator!=(const Identifier &, const Identifier &);
 
         friend bool operator==(const Identifier &, const char *);
-    
+
         static void remove(UString::Rep *);
 
     private:
         UString _ustring;
-        
+
         static bool equal(UString::Rep *, const char *);
         static bool equal(UString::Rep *, const UChar *, int length);
         static bool equal(UString::Rep *, UString::Rep *);
@@ -75,13 +111,13 @@ namespace KJS {
             { return a._ustring.rep == b._ustring.rep; }
         static bool equal(const Identifier &a, const char *b)
             { return equal(a._ustring.rep, b); }
-        
+
         static UString::Rep *add(const char *);
         static UString::Rep *add(const UChar *, int length);
         static UString::Rep *add(UString::Rep *);
-        
+
         static void insert(UString::Rep *);
-        
+
         static void rehash(int newTableSize);
         static void expand();
         static void shrink();
@@ -92,7 +128,7 @@ namespace KJS {
         static int _keyCount;
     };
     
-#if !KJS_IDENTIFIER_HIDE_GLOBALS
+#if !defined(KJS_IDENTIFIER_HIDE_GLOBALS)
     extern const Identifier nullIdentifier;
 
     inline const Identifier &Identifier::null()
@@ -127,10 +163,10 @@ namespace KJS {
         macro(valueOf)
 
     // Define external global variables for all property names above (and one more).
-#if !KJS_IDENTIFIER_HIDE_GLOBALS
-    extern const Identifier specialPrototypePropertyName;
+#if !defined(KJS_IDENTIFIER_HIDE_GLOBALS)
+    KJS_EXPORT extern const Identifier specialPrototypePropertyName;
 
-    #define KJS_IDENTIFIER_DECLARE_PROPERTY_NAME_GLOBAL(name) extern const Identifier name ## PropertyName;
+    #define KJS_IDENTIFIER_DECLARE_PROPERTY_NAME_GLOBAL(name) KJS_EXPORT extern const Identifier name ## PropertyName;
     KJS_IDENTIFIER_EACH_PROPERTY_NAME_GLOBAL(KJS_IDENTIFIER_DECLARE_PROPERTY_NAME_GLOBAL)
     #undef KJS_IDENTIFIER_DECLARE_PROPERTY_NAME_GLOBAL
 #endif

@@ -26,7 +26,9 @@
 
 #include <kxmlcore/FastMalloc.h>
 
-#if APPLE_CHANGES
+#include "global.h"
+
+#ifdef APPLE_CHANGES
 #include <sys/types.h>
 #ifndef KWQ_UNSIGNED_TYPES_DEFINED
 #define KWQ_UNSIGNED_TYPES_DEFINED
@@ -59,7 +61,7 @@ namespace KJS {
    * representation is compatible to XChar2b and QChar. It's therefore
    * possible to exchange data with X and Qt with shallow copies.
    */
-  struct UChar {
+  struct KJS_EXPORT UChar {
     /**
      * Construct a character with uninitialized value.    
      */
@@ -123,7 +125,7 @@ namespace KJS {
    * If that sounds confusing your best bet is to simply forget about the
    * existence of this class and treat is as being identical to UChar.
    */
-  class UCharReference {
+  class KJS_EXPORT UCharReference {
     friend class UString;
     UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
   public:
@@ -169,7 +171,7 @@ namespace KJS {
   /**
    * @short 8 bit char based string class
    */
-  class CString {
+  class KJS_EXPORT CString {
   public:
     CString() : data(0), length(0) { }
     CString(const char *c);
@@ -193,7 +195,7 @@ namespace KJS {
   /**
    * @short Unicode string class
    */
-  class UString {
+  class KJS_EXPORT UString {
     friend bool operator==(const UString&, const UString&);
     friend class UCharReference;
     friend class Identifier;
@@ -203,7 +205,7 @@ namespace KJS {
     /**
      * @internal
      */
-    struct Rep {
+    struct KJS_EXPORT Rep {
 
       static Rep *create(UChar *d, int l);
       static Rep *createCopying(const UChar *d, int l);
@@ -475,42 +477,41 @@ namespace KJS {
     Rep *rep;
   };
 
-  inline bool operator==(const UChar &c1, const UChar &c2) {
+  KJS_EXPORT inline bool operator==(const UChar &c1, const UChar &c2) {
     return (c1.uc == c2.uc);
   }
   bool operator==(const UString& s1, const UString& s2);
-  inline bool operator!=(const UString& s1, const UString& s2) {
+  KJS_EXPORT inline bool operator!=(const UString& s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
   }
-  bool operator<(const UString& s1, const UString& s2);
-  bool operator==(const UString& s1, const char *s2);
-  inline bool operator!=(const UString& s1, const char *s2) {
+  KJS_EXPORT bool operator<(const UString& s1, const UString& s2);
+  KJS_EXPORT bool operator==(const UString& s1, const char *s2); inline bool operator!=(const UString& s1, const char *s2) {
     return !KJS::operator==(s1, s2);
   }
-  inline bool operator==(const char *s1, const UString& s2) {
+  KJS_EXPORT inline bool operator==(const char *s1, const UString& s2) {
     return operator==(s2, s1);
   }
-  inline bool operator!=(const char *s1, const UString& s2) {
+  KJS_EXPORT inline bool operator!=(const char *s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
   }
-  bool operator==(const CString& s1, const CString& s2);
-  inline UString operator+(const UString& s1, const UString& s2) {
+  KJS_EXPORT bool operator==(const CString& s1, const CString& s2);
+  KJS_EXPORT inline UString operator+(const UString& s1, const UString& s2) {
     return UString(s1, s2);
   }
   
-  int compare(const UString &, const UString &);
+  KJS_EXPORT int compare(const UString &, const UString &);
 
   // Given a first byte, gives the length of the UTF-8 sequence it begins.
   // Returns 0 for bytes that are not legal starts of UTF-8 sequences.
   // Only allows sequences of up to 4 bytes, since that works for all Unicode characters (U-00000000 to U-0010FFFF).
-  int UTF8SequenceLength(char);
+  KJS_EXPORT int UTF8SequenceLength(char);
 
   // Takes a null-terminated C-style string with a UTF-8 sequence in it and converts it to a character.
   // Only allows Unicode characters (U-00000000 to U-0010FFFF).
   // Returns -1 if the sequence is not valid (including presence of extra bytes).
-  int decodeUTF8Sequence(const char *);
+  KJS_EXPORT int decodeUTF8Sequence(const char *);
 
-inline UString::UString()
+KJS_EXPORT inline UString::UString()
 {
     attach(&Rep::null);
 }
