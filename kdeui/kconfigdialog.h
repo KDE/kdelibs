@@ -52,8 +52,8 @@ class KConfigDialogManager;
  *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self(), KDialogBase::IconList);
  *   dialog->addPage(new General(0, "General"), i18n("General") );
  *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance") );
- *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(loadSettings()));
- *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
+ *   connect(dialog, SIGNAL(settingsChanged(const QString&)), mainWidget, SLOT(loadSettings()));
+ *   connect(dialog, SIGNAL(settingsChanged(const QString&)), this, SLOT(loadSettings()));
  *   dialog->show();
  * }
  * \endcode
