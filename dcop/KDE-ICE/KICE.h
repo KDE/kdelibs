@@ -11,4 +11,4 @@
 # endif 
 #endif 
 
-#endif  // KICE_H
+#endif
