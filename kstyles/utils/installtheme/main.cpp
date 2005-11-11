@@ -38,7 +38,7 @@ static const char ver[] = "0.9.1";
 int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, "kinstalltheme", I18N_NOOP("KInstalltheme"), desc, ver);
-    KApplication qapp(false, false); //We don't  allow styles.. Kind of ironic, isn't it?
+    KApplication qapp(false);
 
     KGlobal::dirs()->addResourceType("themercs", KGlobal::dirs()->kde_default("data")+QString("kstyle/themes"));
     QStringList themercs = KGlobal::dirs()->findAllResources("themercs","*.themerc");
