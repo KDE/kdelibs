@@ -179,7 +179,43 @@ void PreviewJob::startPreview()
         {
             QString mimeType = it.current()->mimetype();
             plugin = mimeMap.find(mimeType.replace(QRegExp("/.*"), "/*"));
+
+            if (plugin == mimeMap.end())
+            {
+                // check mime type inheritance
+                KMimeType::Ptr mimeInfo = KMimeType::mimeType(it.current()->mimetype());
+                QString parentMimeType = mimeInfo->parentMimeType();
+                while (!parentMimeType.isEmpty())
+                {
+                    plugin = mimeMap.find(parentMimeType);
+                    if (plugin != mimeMap.end()) break;
+
+                    KMimeType::Ptr parentMimeInfo = KMimeType::mimeType(parentMimeType);
+                    if (!parentMimeInfo) break;
+
+                    parentMimeType = parentMimeInfo->parentMimeType();
+                }
+            }
+
+            if (plugin == mimeMap.end())
+            {
+                // check X-KDE-Text property
+                KMimeType::Ptr mimeInfo = KMimeType::mimeType(it.current()->mimetype());
+                QVariant textProperty = mimeInfo->property("X-KDE-text");
+                if (textProperty.isValid() && textProperty.type() == QVariant::Bool)
+                {
+                    if (textProperty.toBool())
+                    {
+                        plugin = mimeMap.find("text/plain");
+                        if (plugin == mimeMap.end())
+                        {
+                            plugin = mimeMap.find( "text/*" );
+                        }
+                    }
+                }
+            }
         }
+
         if (plugin != mimeMap.end())
         {
             item.plugin = *plugin;
