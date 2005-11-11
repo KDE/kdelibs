@@ -3719,10 +3719,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     // to use KFileItem::statusBarText()
     QByteArray path = QFile::encodeName( u.path() );
 
-    struct stat buff;
-    bool ok = !stat( path.data(), &buff );
+    KDE_struct_stat buff;
+    bool ok = !KDE_stat( path.data(), &buff );
 
-    struct stat lbuff;
+    KDE_struct_stat lbuff;
     if (ok) ok = !KDE_lstat( path.data(), &lbuff );
 
     QString text = u.htmlURL();
