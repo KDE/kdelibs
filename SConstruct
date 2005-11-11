@@ -40,7 +40,7 @@ sys.path.append('bksys')
 ## Import the main configuration tool
 from generic import configure
 config = {
-	'modules'  : 'generic lowlevel compiler libxml kde4 libz libpng libjpeg libagg libart2 libidn libpcre openssl fam giflib bzip2 yacc',
+	'modules'  : 'generic lowlevel compiler libxml kde4 libz libpng libjpeg libagg libart2 libidn libpcre openssl fam libgif libbz2 yacc',
 	'builddir' : 'build', # put all object files under 'build/'
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
