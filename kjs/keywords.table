@@ -1,5 +1,5 @@
 # main keywords
-@begin mainTable 44
+@begin mainTable 41
 # types
 null		NULLTOKEN
 true		TRUETOKEN
