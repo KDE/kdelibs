@@ -108,7 +108,7 @@ public:
    *
    * @param GUIenabled Set to false to disable all GUI stuff.
    */
-  KDE_DEPRECATED KApplication( bool x, bool GUIenabled);
+  KApplication( bool x, bool GUIenabled) KDE_DEPRECATED;
 #endif
 
   /**
