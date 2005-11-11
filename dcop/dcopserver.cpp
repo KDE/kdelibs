@@ -1364,8 +1364,10 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
     {
         DCOPConnection* conn = clients.value( iceConn );
         if (conn) {
+#ifndef NDEBUG
 	    //qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
-	    dcopSignals->emitSignal(conn, fun, data, false);
+#endif
+            dcopSignals->emitSignal(conn, fun, data, false);
         }
         replyType = "void";
         return true;
@@ -1490,8 +1492,10 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 	args.setVersion(QDataStream::Qt_3_1);
 	if (!args.atEnd()) {
 	    QByteArray s = readQByteArray(args);
+#ifndef NDEBUG
 	    qDebug("Checking whether app is registered:%s", s.data());
-	    QDataStream reply( &replyData, QIODevice::WriteOnly );
+#endif
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
 	    reply.setVersion(QDataStream::Qt_3_1);
 	    int b = ( findApp( s ) != 0 );
 	    replyType = "bool";
@@ -1529,7 +1533,9 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         DCOPCString slot        = readQByteArray(args);
         qint8 Volatile;
         args >> Volatile;
+#ifndef NDEBUG
         //qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
+#endif
         bool b = dcopSignals->connectSignal(sender, senderObj, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
         QDataStream reply( &replyData, QIODevice::WriteOnly );
@@ -1548,7 +1554,9 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         DCOPCString signal = readQByteArray(args);
         DCOPCString receiverObj = readQByteArray(args);
         DCOPCString slot = readQByteArray(args);
+#ifndef NDEBUG
         //qDebug("DCOPServer: disconnectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
+#endif
         bool b = dcopSignals->disconnectSignal(sender, senderObj, signal, conn, receiverObj, slot);
         replyType = "bool";
         QDataStream reply( &replyData, QIODevice::WriteOnly );
