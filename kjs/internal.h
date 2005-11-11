@@ -37,7 +37,9 @@
 #define KJS_MULTIPLE_THREADS 1
 #endif
 
+#ifndef I18N_NOOP
 #define I18N_NOOP(s) s
+#endif
 
 namespace KJS {
 
