@@ -78,8 +78,8 @@ namespace KJS {
   public:
     History(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual ValueImp *get(ExecState *exec, const Identifier &propertyName) const;
+    ValueImp *getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
@@ -92,7 +92,7 @@ namespace KJS {
   public:
     External(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual ValueImp *get(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { AddFavorite };
@@ -104,7 +104,7 @@ namespace KJS {
   public:
     FrameArray(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual ValueImp *get(ExecState *exec, const Identifier &propertyName) const;
   private:
     QPointer<KHTMLPart> part;
   };
@@ -114,7 +114,7 @@ namespace KJS {
   public:
     KonquerorFunc(ExecState *exec, const Konqueror* k, const char* name)
       : DOMFunction(exec), konqueror(k), m_name(name) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
+    virtual ValueImp *tryCall(ExecState *exec, ObjectImp *thisObj, const List &args);
 
   private:
     const Konqueror* konqueror;
@@ -148,15 +148,16 @@ const ClassInfo Screen::info = { "Screen", 0, &ScreenTable, 0 };
 Screen::Screen(ExecState *exec)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype()) {}
 
-Value Screen::get(ExecState *exec, const Identifier &p) const
+ValueImp *Screen::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Screen::get " << p.qstring() << endl;
 #endif
-  return lookupGetValue<Screen,ObjectImp>(exec,p,&ScreenTable,this);
+  abort();
+  //return lookupGetValue<Screen,ObjectImp>(exec,p,&ScreenTable,this);
 }
 
-Value Screen::getValueProperty(ExecState *exec, int token) const
+ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
   KWinModule info(0, KWinModule::INFO_DESKTOP);
@@ -340,26 +341,26 @@ Window::~Window()
 
 Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
 {
-  Object obj = Object::dynamicCast( retrieve( p ) );
+  ObjectImp *obj = retrieve( p )->getObject();
 #ifndef NDEBUG
   // obj should never be null, except when javascript has been disabled in that part.
   KHTMLPart *part = qobject_cast<KHTMLPart*>(p);
   if ( part && part->jScriptEnabled() )
   {
-    assert( obj.isValid() );
+    assert( obj );
 #ifndef QWS
-    assert( dynamic_cast<KJS::Window*>(obj.imp()) ); // type checking
+    assert( dynamic_cast<KJS::Window*>(obj) ); // type checking
 #endif
   }
 #endif
-  if ( !obj.isValid() ) // JS disabled
+  if ( !obj ) // JS disabled
     return 0;
-  return static_cast<KJS::Window*>(obj.imp());
+  return static_cast<KJS::Window*>(obj);
 }
 
 Window *Window::retrieveActive(ExecState *exec)
 {
-  ValueImp *imp = exec->interpreter()->globalObject().imp();
+  ValueImp *imp = exec->interpreter()->globalObject();
   assert( imp );
 #ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
@@ -367,7 +368,7 @@ Window *Window::retrieveActive(ExecState *exec)
   return static_cast<KJS::Window*>(imp);
 }
 
-Value Window::retrieve(KParts::ReadOnlyPart *p)
+ValueImp *Window::retrieve(KParts::ReadOnlyPart *p)
 {
   assert(p);
   KHTMLPart * part = qobject_cast<KHTMLPart*>(p);
@@ -380,7 +381,7 @@ Value Window::retrieve(KParts::ReadOnlyPart *p)
     proxy = part->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "Window::retrieve part=" << part << " '" << part->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
+    kdDebug(6070) << "Window::retrieve part=" << part << " '" << part->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject() << endl;
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   } else {
@@ -463,7 +464,7 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
     if (static_cast<DOM::DocumentImpl*>(doc.handle())->underDocNamedCache().get(p.qstring()))
       return true;
 
-    return !doc.getElementById(p.string()).isNull();
+    return !doc.getElementById(p.domString()).isNull();
   }
 
   return false;
@@ -474,7 +475,7 @@ UString Window::toString(ExecState *) const
   return "[object Window]";
 }
 
-Value Window::get(ExecState *exec, const Identifier &p) const
+ValueImp *Window::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Window("<<this<<")::get " << p.qstring() << endl;
@@ -490,7 +491,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   ValueImp *val = getDirect(p);
   if (val) {
     //kdDebug(6070) << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
-    return isSafeScript(exec) ? Value(val) : Undefined();
+    return isSafeScript(exec) ? val : Undefined();
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
@@ -504,7 +505,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return Boolean( false );
     case _Location:
         // No isSafeScript test here, we must be able to _set_ location.href (#49819)
-      return Value(location());
+      return location();
     case _Window:
     case Self:
       return retrieve(m_frame->m_part);
@@ -516,7 +517,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     // KHTMLPart next
     switch(entry->value) {
     case Frames:
-      return Value(frames(exec));
+      return frames(exec);
     case Opener:
       if (!part->opener())
         return Null();    // ### a null Window might be better, but == null
@@ -539,7 +540,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Blur:
     case AToB:
     case BToA:
-      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+      abort();
+      //return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     default:
       break;
     }
@@ -591,12 +593,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case EventCtor:
       return getEventConstructor(exec);
     case _History:
-      return Value(history ? history :
-                   (const_cast<Window*>(this)->history = new History(exec,part)));
+      return history ? history :
+                   (const_cast<Window*>(this)->history = new History(exec,part));
 
     case _External:
-      return Value(external ? external :
-                   (const_cast<Window*>(this)->external = new External(exec,part)));
+      return external ? external :
+                   (const_cast<Window*>(this)->external = new External(exec,part));
 
     case Event:
       if (m_evt)
@@ -622,18 +624,18 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Name:
       return String(part->name());
     case SideBar:
-      return Value(new MozillaSidebarExtension(exec, part));
+      return new MozillaSidebarExtension(exec, part);
     case _Navigator:
     case ClientInformation: {
       // Store the navigator in the object so we get the same one each time.
-      Value nav( new Navigator(exec, part) );
+      ValueImp *nav( new Navigator(exec, part) );
       const_cast<Window *>(this)->put(exec, "navigator", nav, DontDelete|ReadOnly|Internal);
       const_cast<Window *>(this)->put(exec, "clientInformation", nav, DontDelete|ReadOnly|Internal);
       return nav;
     }
 #ifdef Q_WS_QWS
     case _Konqueror: {
-      Value k( new Konqueror(part) );
+      ValueImp *k( new Konqueror(part) );
       const_cast<Window *>(this)->put(exec, "konqueror", k, DontDelete|ReadOnly|Internal);
       return k;
     }
@@ -687,18 +689,18 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Scrollbars:
       return Undefined(); // ###
     case _Screen:
-      return Value(screen ? screen :
-                   (const_cast<Window*>(this)->screen = new Screen(exec)));
+      return screen ? screen :
+                   (const_cast<Window*>(this)->screen = new Screen(exec));
     case Image:
-      return Value(new ImageConstructorImp(exec, part->document()));
+      return new ImageConstructorImp(exec, part->document());
     case Option:
-      return Value(new OptionConstructorImp(exec, part->document()));
+      return new OptionConstructorImp(exec, part->document());
     case XMLHttpRequest:
-      return Value(new XMLHttpRequestConstructorImp(exec, part->document()));
+      return new XMLHttpRequestConstructorImp(exec, part->document());
     case XMLSerializer:
-      return Value(new XMLSerializerConstructorImp(exec));
+      return new XMLSerializerConstructorImp(exec);
     case DOMParser:
-      return Value(new DOMParserConstructorImp(exec, part->xmlDocImpl()));
+      return new DOMParserConstructorImp(exec, part->xmlDocImpl());
     case Scroll: // compatibility
     case ScrollBy:
     case ScrollTo:
@@ -715,14 +717,16 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case SetInterval:
     case ClearInterval:
     case Print:
-      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+      abort();
+      //return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     // IE extension
     case Navigate:
       // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
       // if (navigate) to test for IE (unlikely).
       if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
         return Undefined();
-      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+      abort();
+      //return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case Onabort:
       return getListener(exec,DOM::EventImpl::ABORT_EVENT);
     case Onblur:
@@ -775,12 +779,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   // doing the remainder of ObjectImp::get() that is not covered by
   // the getDirect() call above.
   // #### guessed position. move further up or down?
-  Object proto = Object::dynamicCast(prototype());
-  assert(proto.isValid());
+  ObjectImp *proto = prototype()->getObject();
+  assert(proto);
   if (p == specialPrototypePropertyName)
-    return isSafeScript(exec) ? Value(proto) : Undefined();
-  Value val2 = proto.get(exec, p);
-  if (!val2.isA(UndefinedType)) {
+    return isSafeScript(exec) ? proto : Undefined();
+  ValueImp *val2 = proto->get(exec, p);
+  if (!val2->type() == UndefinedType) {
     return isSafeScript(exec) ? val2 : Undefined();
   }
 
@@ -817,7 +821,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         NamedTagLengthDeterminer::TagLength tags[4] = {
           {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
         };
-        NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
+        NamedTagLengthDeterminer(p.domString(), tags, 4)(doc.handle());
         for (int i = 0; i < 4; i++)
           if (tags[i].length > 0) {
             if (tags[i].length == 1) {
@@ -826,12 +830,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
               return getDOMNode(exec, tags[i].last);
             }
             // Get all the items with the same name
-            return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
+            return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.domString())));
         }
       }
     }
 
-    DOM::Element element = doc.getElementById(p.string() );
+    DOM::Element element = doc.getElementById(p.domString() );
     if ( !element.isNull() )
       return getDOMNode(exec, element );
   }
@@ -844,7 +848,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   return Undefined();
 }
 
-void Window::put(ExecState* exec, const Identifier &propertyName, const Value &value, int attr)
+void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
   // we don't want any operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
@@ -870,7 +874,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
 #endif
     switch( entry->value) {
     case _Location:
-      goURL(exec, value.toString(exec).qstring(), false /*don't lock history*/);
+      goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
       return;
     default:
       break;
@@ -881,16 +885,16 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
     case Status: {
       if  (isSafeScript(exec) && part->settings()->windowStatusPolicy(part->url().host())
 		== KHTMLSettings::KJSWindowStatusAllow) {
-      String s = value.toString(exec);
-      part->setJSStatusBarText(s.value().qstring());
+      UString s = value->toString(exec);
+      part->setJSStatusBarText(s.qstring());
       }
       return;
     }
     case DefaultStatus: {
       if (isSafeScript(exec) && part->settings()->windowStatusPolicy(part->url().host())
 		== KHTMLSettings::KJSWindowStatusAllow) {
-      String s = value.toString(exec);
-      part->setJSDefaultStatusBarText(s.value().qstring());
+      UString s = value->toString(exec);
+      part->setJSDefaultStatusBarText(s.qstring());
       }
       return;
     }
@@ -988,7 +992,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Name:
       if (isSafeScript(exec))
-        part->setName( value.toString(exec).qstring().toLocal8Bit().data() );
+        part->setName( value->toString(exec).qstring().toLocal8Bit().data() );
       return;
     default:
       break;
@@ -997,7 +1001,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
   }
   if (m_frame->m_liveconnect &&
       isSafeScript(exec) &&
-      m_frame->m_liveconnect->put(0, propertyName.qstring(), value.toString(exec).qstring()))
+      m_frame->m_liveconnect->put(0, propertyName.qstring(), value->toString(exec).qstring()))
     return;
   if (isSafeScript(exec)) {
     //kdDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring() << endl;
@@ -1107,7 +1111,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
   return false;
 }
 
-void Window::setListener(ExecState *exec, int eventId, Value func)
+void Window::setListener(ExecState *exec, int eventId, ValueImp *func)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
@@ -1119,7 +1123,7 @@ void Window::setListener(ExecState *exec, int eventId, Value func)
   doc->setHTMLWindowEventListener(eventId,getJSEventListener(func,true));
 }
 
-Value Window::getListener(ExecState *exec, int eventId) const
+ValueImp *Window::getListener(ExecState *exec, int eventId) const
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
@@ -1129,41 +1133,39 @@ Value Window::getListener(ExecState *exec, int eventId) const
     return Undefined();
 
   DOM::EventListener *listener = doc->getHTMLWindowEventListener(eventId);
-  if (listener && static_cast<JSEventListener*>(listener)->listenerObjImp())
+  if (listener && static_cast<JSEventListener*>(listener)->listenerObj())
     return static_cast<JSEventListener*>(listener)->listenerObj();
   else
     return Null();
 }
 
 
-JSEventListener *Window::getJSEventListener(const Value& val, bool html)
+JSEventListener *Window::getJSEventListener(ValueImp *val, bool html)
 {
   // This function is so hot that it's worth coding it directly with imps.
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
-  if (!part || val.type() != ObjectType)
+  if (!part || val->type() != ObjectType)
     return 0;
 
   // It's ObjectType, so it must be valid.
-  Object listenerObject = Object::dynamicCast(val);
-  ObjectImp *listenerObjectImp = listenerObject.imp();
+  ObjectImp *listenerObject = val->getObject();
 
   // 'listener' is not a simple ecma function. (Always use sanity checks: Better safe than sorry!)
-  if (!listenerObject.implementsCall() && part && part->jScript() && part->jScript()->interpreter())
+  if (!listenerObject->implementsCall() && part && part->jScript() && part->jScript()->interpreter())
   {
     Interpreter *interpreter = part->jScript()->interpreter();
 
     // 'listener' probably is an EventListener object containing a 'handleEvent' function.
-    Value handleEventValue = listenerObject.get(interpreter->globalExec(), Identifier("handleEvent"));
-    Object handleEventObject = Object::dynamicCast(handleEventValue);
+    ValueImp *handleEventValue = listenerObject->get(interpreter->globalExec(), Identifier("handleEvent"));
+    ObjectImp *handleEventObject = handleEventValue->getObject();
 
-    if(handleEventObject.isValid() && handleEventObject.implementsCall())
+    if(handleEventObject && handleEventObject->implementsCall())
     {
       listenerObject = handleEventObject;
-      listenerObjectImp = handleEventObject.imp();
     }
   }
 
-  JSEventListener *existingListener = jsEventListeners[listenerObjectImp];
+  JSEventListener *existingListener = jsEventListeners[listenerObject];
   if (existingListener) {
      if ( existingListener->isHTMLEventListener() != html )
         // The existingListener will have the wrong type, so onclick= will behave like addEventListener or vice versa.
@@ -1172,12 +1174,12 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   }
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
-  return new JSEventListener(listenerObject, listenerObjectImp, Object(this), html);
+  return new JSEventListener(listenerObject, listenerObject, this, html);
 }
 
 JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& name, DOM::NodeImpl *node)
 {
-  return new JSLazyEventListener(code, name, Object(this), node);
+  return new JSLazyEventListener(code, name, this, node);
 }
 
 void Window::clear( ExecState *exec )
@@ -1311,14 +1313,14 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     emit ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
 }
 
-Value Window::openWindow(ExecState *exec, const List& args)
+ValueImp *Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part)
     return Undefined();
   KHTMLView *widget = part->view();
-  Value v = args[0];
-  QString str = v.toString(exec).qstring();
+  ValueImp *v = args[0];
+  QString str = v->toString(exec).qstring();
 
   // prepare arguments
   KURL url;
@@ -1356,12 +1358,12 @@ Value Window::openWindow(ExecState *exec, const List& args)
       policy = KHTMLSettings::KJSWindowOpenAllow;
   }
 
-  QString frameName = args.size() > 1 ? args[1].toString(exec).qstring() : QString("_blank");
+  QString frameName = args.size() > 1 ? args[1]->toString(exec).qstring() : QString("_blank");
 
   v = args[2];
   QString features;
-  if (!v.isNull() && v.type() != UndefinedType && v.toString(exec).size() > 0) {
-    features = v.toString(exec).qstring();
+  if (v && v->type() != UndefinedType && v->toString(exec).size() > 0) {
+    features = v->toString(exec).qstring();
     // Buggy scripts have ' at beginning and end, cut those
     if (features.startsWith("\'") && features.endsWith("\'"))
       features = features.mid(1, features.length()-2);
@@ -1380,7 +1382,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
   }
 }
 
-Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features)
+ValueImp *Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features)
 {
     KHTMLPart *p = qobject_cast<KHTMLPart *>(m_frame->m_part);
     KHTMLView *widget = p->view();
@@ -1522,10 +1524,10 @@ void Window::showSuppressedWindows()
   }
 }
 
-Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *WindowFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
-  Window *window = static_cast<Window *>(thisObj.imp());
+  Window *window = static_cast<Window *>(thisObj);
   QString str, str2;
 
   KHTMLPart *part = qobject_cast<KHTMLPart*>(window->m_frame->m_part);
@@ -1533,8 +1535,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Undefined();
 
   KHTMLView *widget = part->view();
-  Value v = args[0];
-  UString s = v.toString(exec);
+  ValueImp *v = args[0];
+  UString s = v->toString(exec);
   str = s.qstring();
 
   QString caption;
@@ -1573,13 +1575,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if (args.size() >= 2)
       str2 = KInputDialog::getText(caption,
                                    Q3StyleSheet::convertFromPlainText(str),
-                                   args[1].toString(exec).qstring(), &ok, widget);
+                                   args[1]->toString(exec).qstring(), &ok, widget);
     else
       str2 = KInputDialog::getText(caption,
                                    Q3StyleSheet::convertFromPlainText(str),
                                    QString::null, &ok, widget);
     if ( ok )
-        return String(str2);
+        return String(UString(str2));
     else
         return Null();
 #else
@@ -1605,7 +1607,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // has more than one entry in the history (NS does that too).
       History history(exec,part);
 
-      if ( history.get( exec, "length" ).toInt32(exec) <= 1 )
+      if ( history.get( exec, "length" )->toInt32(exec) <= 1 )
       {
         doClose = true;
       }
@@ -1646,7 +1648,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Undefined();
   }
   case Window::Navigate:
-    window->goURL(exec, args[0].toString(exec).qstring(), false /*don't lock history*/);
+    window->goURL(exec, args[0]->toString(exec).qstring(), false /*don't lock history*/);
     return Undefined();
   case Window::Focus: {
     KHTMLSettings::KJSWindowFocusPolicy policy =
@@ -1691,12 +1693,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case Window::ScrollBy:
     if(args.size() == 2 && widget)
-      widget->scrollBy(args[0].toInt32(exec), args[1].toInt32(exec));
+      widget->scrollBy(args[0]->toInt32(exec), args[1]->toInt32(exec));
     return Undefined();
   case Window::Scroll:
   case Window::ScrollTo:
     if(args.size() == 2 && widget)
-      widget->setContentsPos(args[0].toInt32(exec), args[1].toInt32(exec));
+      widget->setContentsPos(args[0]->toInt32(exec), args[1]->toInt32(exec));
     return Undefined();
   case Window::MoveBy: {
     KHTMLSettings::KJSWindowMovePolicy policy =
@@ -1708,7 +1710,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         QWidget * tl = widget->topLevelWidget();
         QRect sg = KGlobalSettings::desktopGeometry(tl);
 
-        QPoint dest = tl->pos() + QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
+        QPoint dest = tl->pos() + QPoint( args[0]->toInt32(exec), args[1]->toInt32(exec) );
         // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
         if ( dest.x() >= sg.x() && dest.y() >= sg.x() &&
              dest.x()+tl->width() <= sg.width()+sg.x() &&
@@ -1728,7 +1730,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         QWidget * tl = widget->topLevelWidget();
         QRect sg = KGlobalSettings::desktopGeometry(tl);
 
-        QPoint dest( args[0].toInt32(exec)+sg.x(), args[1].toInt32(exec)+sg.y() );
+        QPoint dest( args[0]->toInt32(exec)+sg.x(), args[1]->toInt32(exec)+sg.y() );
         // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
         if ( dest.x() >= sg.x() && dest.y() >= sg.y() &&
              dest.x()+tl->width() <= sg.width()+sg.x() &&
@@ -1747,8 +1749,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       QWidget * tl = widget->topLevelWidget();
       QRect geom = tl->frameGeometry();
       window->resizeTo( tl,
-                        geom.width() + args[0].toInt32(exec),
-                        geom.height() + args[1].toInt32(exec) );
+                        geom.width() + args[0]->toInt32(exec),
+                        geom.height() + args[1]->toInt32(exec) );
     }
     return Undefined();
   }
@@ -1759,7 +1761,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
                && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      window->resizeTo( tl, args[0].toInt32(exec), args[1].toInt32(exec) );
+      window->resizeTo( tl, args[0]->toInt32(exec), args[1]->toInt32(exec) );
     }
     return Undefined();
   }
@@ -1771,23 +1773,23 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       return Undefined();
     if (args.size() > 1) {
       singleShot = (id == Window::SetTimeout);
-      i = args[1].toInt32(exec);
+      i = args[1]->toInt32(exec);
     } else {
       // second parameter is missing. Emulate Mozilla behavior.
       singleShot = true;
       i = 4;
     }
-    if (v.isA(StringType)) {
+    if (v->type() == StringType) {
       int r = (const_cast<Window*>(window))->winq->installTimeout(Identifier(s), i, singleShot );
       return Number(r);
     }
-    else if (v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
-      Object func = Object::dynamicCast(v);
+    else if (v->type() == ObjectType && v->getObject()->implementsCall()) {
+      ObjectImp *func = v->getObject();
       List funcArgs;
       ListIterator it = args.begin();
       int argno = 0;
       while (it != args.end()) {
-	Value arg = it++;
+	ValueImp *arg = it++;
 	if (argno++ >= 2)
 	    funcArgs.append(arg);
       }
@@ -1801,7 +1803,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   }
   case Window::ClearTimeout:
   case Window::ClearInterval:
-    (const_cast<Window*>(window))->winq->clearTimeout(v.toInt32(exec));
+    (const_cast<Window*>(window))->winq->clearTimeout(v->toInt32(exec));
     return Undefined();
   case Window::Print:
     if ( widget ) {
@@ -1817,7 +1819,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->addWindowEventListener(DOM::EventImpl::typeToId(args[0].toString(exec).string()),listener,args[2].toBoolean(exec));
+            docimpl->addWindowEventListener(DOM::EventImpl::typeToId(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
         }
         return Undefined();
     }
@@ -1825,7 +1827,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->removeWindowEventListener(DOM::EventImpl::typeToId(args[0].toString(exec).string()),listener,args[2].toBoolean(exec));
+            docimpl->removeWindowEventListener(DOM::EventImpl::typeToId(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
         }
         return Undefined();
     }
@@ -1837,11 +1839,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 ////////////////////// ScheduledAction ////////////////////////
 
 // KDE 4: Make those parameters const ... &
-ScheduledAction::ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot,
+ScheduledAction::ScheduledAction(ObjectImp *_func, List _args, QTime _nextTime, int _interval, bool _singleShot,
 				  int _timerId)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
-  func = static_cast<ObjectImp*>(_func.imp());
+  func = static_cast<ObjectImp*>(_func);
   args = _args;
   isFunction = true;
   singleShot = _singleShot;
@@ -1885,8 +1887,8 @@ bool ScheduledAction::execute(Window *window)
       {
         KJS::Interpreter *interpreter = part->jScript()->interpreter();
         ExecState *exec = interpreter->globalExec();
-        Q_ASSERT( window == interpreter->globalObject().imp() );
-        Object obj( window );
+        Q_ASSERT( window == interpreter->globalObject() );
+        ObjectImp *obj( window );
         func->call(exec,obj,args); // note that call() creates its own execution state for the func call
         if (exec->hadException())
           exec->clearException();
@@ -1959,10 +1961,10 @@ int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleS
   return id;
 }
 
-int WindowQObject::installTimeout(const Value &func, List args, int t, bool singleShot)
+int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleShot)
 {
-  Object objFunc = Object::dynamicCast( func );
-  if (!objFunc.isValid())
+  ObjectImp *objFunc = func->getObject();
+  if (!objFunc)
     return 0;
   int id = ++lastTimerId;
   if (t < 10) t = 10;
@@ -2089,7 +2091,7 @@ void WindowQObject::timeoutClose()
   parent->closeNow();
 }
 
-Value FrameArray::get(ExecState *exec, const Identifier &p) const
+ValueImp *FrameArray::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
@@ -2103,9 +2105,9 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
     return Number(len);
   else if (p== "location") // non-standard property, but works in NS and IE
   {
-    Object obj = Object::dynamicCast( Window::retrieve( part ) );
-    if ( obj.isValid() )
-      return obj.get( exec, "location" );
+    ObjectImp *obj = Window::retrieve( part )->getObject();
+    if ( obj )
+      return obj->get( exec, "location" );
     return Undefined();
   }
 
@@ -2163,7 +2165,7 @@ KParts::ReadOnlyPart *Location::part() const {
   return m_frame ? static_cast<KParts::ReadOnlyPart *>(m_frame->m_part) : 0L;
 }
 
-Value Location::get(ExecState *exec, const Identifier &p) const
+ValueImp *Location::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Location::get " << p.qstring() << " m_part=" << (void*)m_frame->m_part << endl;
@@ -2176,7 +2178,8 @@ Value Location::get(ExecState *exec, const Identifier &p) const
 
   // properties that work on all Location objects
   if ( entry && entry->value == Replace )
-      return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+  abort();
+      //return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   // XSS check
   const Window* window = Window::retrieveWindow( m_frame->m_part );
@@ -2187,7 +2190,7 @@ Value Location::get(ExecState *exec, const Identifier &p) const
   if (entry)
     switch (entry->value) {
     case Hash:
-      return String( url.ref().isNull() ? QString("") : "#" + url.ref() );
+      return String( UString(url.ref().isNull() ? QString("") : "#" + url.ref()) );
     case Host: {
       UString str = url.host();
       if (url.port())
@@ -2198,36 +2201,38 @@ Value Location::get(ExecState *exec, const Identifier &p) const
       // Bleh.
     }
     case Hostname:
-      return String( url.host() );
+      return String( UString(url.host()) );
     case Href:
       if (!url.hasPath())
-        return String( url.prettyURL()+"/" );
+        return String( UString(url.prettyURL()+"/") );
       else
-        return String( url.prettyURL() );
+        return String( UString(url.prettyURL()) );
     case Pathname:
-      return String( url.path().isEmpty() ? QString("/") : url.path() );
+      return String( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
-      return String( url.port() ? QString::number((int)url.port()) : QLatin1String("") );
+      return String( UString(url.port() ? QString::number((int)url.port()) : QLatin1String("")) );
     case Protocol:
-      return String( url.protocol()+":" );
+      return String( UString(url.protocol()+":") );
     case Search:
-      return String( url.query() );
+      return String( UString(url.query()) );
     case EqualEqual: // [[==]]
       return String(toString(exec));
     case ToString:
-      return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+    abort();
+      //return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     }
   // Look for overrides
   ValueImp * val = ObjectImp::getDirect(p);
   if (val)
-    return Value(val);
+    return val;
   if (entry && (entry->attr & Function))
-    return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+  abort();
+    //return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   return Undefined();
 }
 
-void Location::put(ExecState *exec, const Identifier &p, const Value &v, int attr)
+void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part << endl;
@@ -2249,7 +2254,7 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
     if (entry->value != Href && !window->isSafeScript(exec))
       return;
 
-    QString str = v.toString(exec).qstring();
+    QString str = v->toString(exec).qstring();
     switch (entry->value) {
     case Href: {
       KHTMLPart* p =qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
@@ -2295,7 +2300,7 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
   Window::retrieveWindow(m_frame->m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
-Value Location::toPrimitive(ExecState *exec, Type) const
+ValueImp *Location::toPrimitive(ExecState *exec, Type) const
 {
   if (m_frame) {
     Window* window = Window::retrieveWindow( m_frame->m_part );
@@ -2320,10 +2325,10 @@ UString Location::toString(ExecState *exec) const
   return "";
 }
 
-Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *LocationFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Location, thisObj );
-  Location *location = static_cast<Location *>(thisObj.imp());
+  Location *location = static_cast<Location *>(thisObj);
   KParts::ReadOnlyPart *part = location->part();
 
   if (!part) return Undefined();
@@ -2336,7 +2341,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case Location::Assign:
   case Location::Replace:
-    Window::retrieveWindow(part)->goURL(exec, args[0].toString(exec).qstring(),
+    Window::retrieveWindow(part)->goURL(exec, args[0]->toString(exec).qstring(),
             id == Location::Replace);
     break;
   case Location::Reload: {
@@ -2361,15 +2366,16 @@ const ClassInfo External::info = { "External", 0, 0, 0 };
 */
 IMPLEMENT_PROTOFUNC_DOM(ExternalFunc)
 
-Value External::get(ExecState *exec, const Identifier &p) const
+ValueImp *External::get(ExecState *exec, const Identifier &p) const
 {
-  return lookupGetFunction<ExternalFunc,ObjectImp>(exec,p,&ExternalTable,this);
+  abort();
+  //return lookupGetFunction<ExternalFunc,ObjectImp>(exec,p,&ExternalTable,this);
 }
 
-Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *ExternalFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( External, thisObj );
-  External *external = static_cast<External *>(thisObj.imp());
+  External *external = static_cast<External *>(thisObj);
 
   KHTMLPart *part = external->part;
   if (!part)
@@ -2387,10 +2393,10 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if (args.size() != 1 && args.size() != 2)
       return Undefined();
 
-    QString url = args[0].toString(exec).qstring();
+    QString url = args[0]->toString(exec).qstring();
     QString title;
     if (args.size() == 2)
-      title = args[1].toString(exec).qstring();
+      title = args[1]->toString(exec).qstring();
 
     // AK - don't do anything yet, for the moment i
     // just wanted the base js handling code in cvs
@@ -2443,21 +2449,19 @@ const ClassInfo History::info = { "History", 0, 0, 0 };
 */
 IMPLEMENT_PROTOFUNC_DOM(HistoryFunc)
 
-Value History::get(ExecState *exec, const Identifier &p) const
+ValueImp *History::get(ExecState *exec, const Identifier &p) const
 {
-  return lookupGet<HistoryFunc,History,ObjectImp>(exec,p,&HistoryTable,this);
+  abort();
+  //return lookupGet<HistoryFunc,History,ObjectImp>(exec,p,&HistoryTable,this);
 }
 
-Value History::getValueProperty(ExecState *, int token) const
+ValueImp *History::getValueProperty(ExecState *, int token) const
 {
   // if previous or next is implemented, make sure its not a major
   // privacy leak (see i.e. http://security.greymagic.com/adv/gm005-op/)
   switch (token) {
   case Length:
   {
-    if ( !part )
-      return Number( 0 );
-
     KParts::BrowserExtension *ext = part->browserExtension();
     if ( !ext )
       return Number( 0 );
@@ -2479,15 +2483,15 @@ Value History::getValueProperty(ExecState *, int token) const
   }
 }
 
-Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *HistoryFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( History, thisObj );
-  History *history = static_cast<History *>(thisObj.imp());
+  History *history = static_cast<History *>(thisObj);
 
-  Value v = args[0];
-  Number n;
-  if(v.isValid())
-    n = v.toInteger(exec);
+  ValueImp *v = args[0];
+  double n = 0.0;
+  if(v)
+    n = v->toInteger(exec);
 
   int steps;
   switch (id) {
@@ -2498,7 +2502,7 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     steps = 1;
     break;
   case History::Go:
-    steps = n.intValue();
+    steps = n;
     break;
   default:
     return Undefined();
@@ -2534,7 +2538,7 @@ bool Konqueror::hasProperty(ExecState *exec, const Identifier &p) const
   return true;
 }
 
-Value Konqueror::get(ExecState *exec, const Identifier &p) const
+ValueImp *Konqueror::get(ExecState *exec, const Identifier &p) const
 {
   if ( p == "goHistory" || part->url().protocol() != "http" || part->url().host() != "localhost" )
     return Undefined();
@@ -2558,10 +2562,10 @@ Value Konqueror::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  return Value( new KonquerorFunc(exec, this, p.qstring().latin1() ) );
+  return new KonquerorFunc(exec, this, p.qstring().latin1() );
 }
 
-Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
+ValueImp *KonquerorFunc::tryCall(ExecState *exec, ObjectImp*, const List &args)
 {
   KParts::BrowserExtension *ext = konqueror->part->browserExtension();
 
