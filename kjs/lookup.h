@@ -28,6 +28,27 @@
 #include "object.h"
 #include <stdio.h>
 
+  /**
+   * This template method retrieves or create an object that is unique
+   * (for a given interpreter) The first time this is called (for a given
+   * property name), the Object will be constructed, and set as a property
+   * of the interpreter's global object. Later calls will simply retrieve
+   * that cached object. Note that the object constructor must take 1 argument, exec.
+   */
+  template <class ClassCtor>
+  inline KJS::ObjectImp *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identifier &propertyName)
+  {
+    KJS::ObjectImp *globalObject = static_cast<KJS::ObjectImp *>(exec->lexicalInterpreter()->globalObject());
+    KJS::ValueImp *obj = globalObject->getDirect(propertyName);
+    if (obj) {
+      assert(obj->isObject());
+      return static_cast<KJS::ObjectImp *>(obj);
+    }
+    KJS::ObjectImp *newObject = new ClassCtor(exec);
+    globalObject->put(exec, propertyName, newObject, Internal);
+    return newObject;
+  }
+
 namespace KJS {
 
   /**
@@ -254,26 +275,6 @@ namespace KJS {
       thisObj->putValueProperty(exec, entry->value, value, attr);
   }
   
-  /**
-   * This template method retrieves or create an object that is unique
-   * (for a given interpreter) The first time this is called (for a given
-   * property name), the Object will be constructed, and set as a property
-   * of the interpreter's global object. Later calls will simply retrieve
-   * that cached object. Note that the object constructor must take 1 argument, exec.
-   */
-  template <class ClassCtor>
-  inline ObjectImp *cacheGlobalObject(ExecState *exec, const Identifier &propertyName)
-  {
-    ObjectImp *globalObject = static_cast<ObjectImp *>(exec->lexicalInterpreter()->globalObject());
-    ValueImp *obj = globalObject->getDirect(propertyName);
-    if (obj) {
-      assert(obj->isObject());
-      return static_cast<ObjectImp *>(obj);
-    }
-    ObjectImp *newObject = new ClassCtor(exec);
-    globalObject->put(exec, propertyName, newObject, Internal);
-    return newObject;
-  }
 
   /**
    * Helpers to define prototype objects (each of which simply implements
