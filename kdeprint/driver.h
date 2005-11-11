@@ -26,11 +26,11 @@
 #endif
 
 #include <qstring.h>
-#include <q3ptrlist.h>
-#include <q3dict.h>
 #include <qmap.h>
 #include <qrect.h>
 #include <qsize.h>
+#include <QHash>
+#include <QList>
 
 #include <kdelibs_export.h>
 
@@ -124,8 +124,8 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	DrBase* clone();
 
-	const Q3PtrList<DrGroup>& groups()	{ return m_subgroups; }
-	const Q3PtrList<DrBase>& options()	{ return m_listoptions; }
+	const QList<DrGroup*>& groups()	{ return m_subgroups; }
+	const QList<DrBase*>& options()	{ return m_listoptions; }
 
 	static QString groupForOption( const QString& optname );
 
@@ -134,9 +134,9 @@ protected:
 	void flattenGroup(QMap<QString, DrBase*>&, int&);
 
 protected:
-	Q3PtrList<DrGroup>	m_subgroups;
-	Q3Dict<DrBase>	m_options;
-	Q3PtrList<DrBase>	m_listoptions;	// keep track of order of appearance
+	QList<DrGroup*>         m_subgroups;
+	QHash<QString, DrBase*> m_options;
+	QList<DrBase*>	        m_listoptions;	// keep track of order of appearance
 };
 
 /*********************
@@ -159,7 +159,7 @@ public:
 	DriverItem* createTreeView(Q3ListView *parent);
 	void addConstraint(DrConstraint *c)		{ m_constraints.append(c); }
 	int checkConstraints();
-	DrPageSize* findPageSize(const QString& name)	{ return m_pagesizes.find(name); }
+	DrPageSize* findPageSize(const QString& name)	{ return m_pagesizes.value(name); }
 	void addPageSize(DrPageSize *sz);
 	void removeOptionGlobally(const QString& name);
 	void removeGroupGlobally(DrGroup *grp);
@@ -167,8 +167,8 @@ public:
 	DrMain* cloneDriver();
 
 protected:
-	Q3PtrList<DrConstraint>	m_constraints;
-	Q3Dict<DrPageSize>	m_pagesizes;
+	QList<DrConstraint*>	    m_constraints;
+	QHash<QString, DrPageSize*> m_pagesizes;
 };
 
 /**********************************************************
@@ -283,7 +283,7 @@ public:
 	~DrListOption();
 
 	void addChoice(DrBase *ch)	{ m_choices.append(ch); }
-	Q3PtrList<DrBase>* choices()	{ return &m_choices; }
+	const QList<DrBase*>& choices()	{ return m_choices; }
 	DrBase* currentChoice() const 	{ return m_current; }
 	DrBase* findChoice(const QString& txt);
 	void setChoice(int choicenum);
@@ -297,7 +297,7 @@ public:
 	DrBase* clone();
 
 protected:
-	Q3PtrList<DrBase>	m_choices;
+	QList<DrBase*>	m_choices;
 	DrBase		*m_current;
 };
 

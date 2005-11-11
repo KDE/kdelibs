@@ -395,36 +395,34 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, Q3ListViewItem *parent
 {
 	Q3ListViewItem	*item(0);
 
-	Q3PtrListIterator<DrGroup>	git(grp->groups());
-	for (; git.current(); ++git)
+        foreach (DrGroup* subgroup, grp->groups())
 	{
-		QString	namestr = git.current()->name();
+		QString	namestr = subgroup->name();
 		if (namestr.isEmpty())
 		{
 			namestr = "group_"+KRandom::randomString(4);
 		}
-		git.current()->setName(namestr);
-		item = new Q3ListViewItem(parent, item, git.current()->get("text"), git.current()->name());
+		subgroup->setName(namestr);
+		item = new Q3ListViewItem(parent, item, subgroup->get("text"), subgroup->name());
 		item->setPixmap(0, SmallIcon("folder"));
 		item->setOpen(true);
 		item->setRenameEnabled(0, true);
-		parseGroupItem(git.current(), item);
-		m_opts[namestr] = git.current();
+		parseGroupItem(subgroup, item);
+		m_opts[namestr] = subgroup;
 	}
 
-	Q3PtrListIterator<DrBase>	oit(grp->options());
-	for (; oit.current(); ++oit)
+        foreach (DrBase* option, grp->options())
 	{
-		QString	namestr = oit.current()->name().mid(m_xmlcmd->name().length()+6);
+		QString	namestr = option->name().mid(m_xmlcmd->name().length()+6);
 		if (namestr.isEmpty())
 		{
 			namestr = "option_"+KRandom::randomString(4);
 		}
-		oit.current()->setName(namestr);
-		item = new Q3ListViewItem(parent, item, oit.current()->get("text"), namestr);
+		option->setName(namestr);
+		item = new Q3ListViewItem(parent, item, option->get("text"), namestr);
 		item->setPixmap(0, SmallIcon("document"));
 		item->setRenameEnabled(0, true);
-		m_opts[namestr] = oit.current();
+		m_opts[namestr] = option;
 	}
 }
 
@@ -478,11 +476,10 @@ void KXmlCommandAdvancedDlg::viewItem(Q3ListViewItem *item)
 				case DrBase::Boolean:
 				case DrBase::List:
 					{
-						Q3PtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
 						Q3ListViewItem	*item(0);
-						for (; it.current(); ++it)
+                                                foreach (DrBase* choice, static_cast<DrListOption*>(opt)->choices())
 						{
-							item = new Q3ListViewItem(m_values, item, it.current()->name(), it.current()->get("text"));
+							item = new Q3ListViewItem(m_values, item, choice->name(), choice->get("text"));
 							item->setRenameEnabled(0, true);
 							item->setRenameEnabled(1, true);
 						}

@@ -206,11 +206,10 @@ void OptionListView::setOption(DrBase *opt)
 		blockSS = true;
 		m_list->clear();
 		m_choices.clear();
-		Q3PtrListIterator<DrBase>	it(*(((DrListOption*)opt)->choices()));
-		for (;it.current();++it)
+                foreach (DrBase* choice, static_cast<DrListOption*>(opt)->choices())
 		{
-			m_list->insertItem(it.current()->get("text"));
-			m_choices.append(it.current()->name());
+			m_list->insertItem(choice->get("text"));
+			m_choices.append(choice->name());
 		}
 		blockSS = false;
 		setValue(opt->valueText());
@@ -253,12 +252,12 @@ void OptionBooleanView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::Boolean)
 	{
-		Q3PtrListIterator<DrBase>	it(*(((DrBooleanOption*)opt)->choices()));
+                const QList<DrBase*>& choices = static_cast<DrBooleanOption*>(opt)->choices();
 		m_choices.clear();
-		m_group->find(0)->setText(it.toFirst()->get("text"));
-		m_choices.append(it.toFirst()->name());
-		m_group->find(1)->setText(it.toLast()->get("text"));
-		m_choices.append(it.toLast()->name());
+		m_group->find(0)->setText(choices.first()->get("text"));
+		m_choices.append(choices.first()->name());
+		m_group->find(1)->setText(choices.last()->get("text"));
+		m_choices.append(choices.last()->name());
 		setValue(opt->valueText());
 	}
 }

@@ -51,11 +51,10 @@
 static void initCombo(QComboBox *cb, DrListOption *opt)
 {
 	cb->clear();
-	Q3PtrListIterator<DrBase>	it(*(opt->choices()));
-	for (;it.current();++it)
+        foreach (DrBase* choice, opt->choices())
 	{
-		cb->addItem(it.current()->get("text"));
-		if (it.current() == opt->currentChoice())
+		cb->addItem(choice->get("text"));
+		if (choice == opt->currentChoice())
 			cb->setCurrentItem(cb->count()-1);
 	}
 }
@@ -404,7 +403,7 @@ void KPGeneralPage::initialize()
 		opt = (DrListOption*)driver()->findOption("Duplex");
 		if (opt)
 		{
-			if ( opt->choices()->count() == 2 )
+			if ( opt->choices().count() == 2 )
 			{
 				// probably a On/Off option instead of the standard PS one
 				QAbstractButton *btn = m_duplexbox->find( DUPLEX_SHORT_ID );
@@ -621,17 +620,17 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		DrListOption	*opt;
 		if ((opt=(DrListOption*)driver()->findOption("PageSize")) != NULL)
 		{
-			DrBase	*ch = opt->choices()->at(m_pagesize->currentItem());
+			DrBase	*ch = opt->choices().at(m_pagesize->currentItem());
 			if (incldef || ch->name() != opt->get("default")) opts["PageSize"] = ch->name();
 		}
 		if ((opt=(DrListOption*)driver()->findOption("MediaType")) != NULL)
 		{
-			DrBase	*ch = opt->choices()->at(m_papertype->currentItem());
+			DrBase	*ch = opt->choices().at(m_papertype->currentItem());
 			if (incldef || ch->name() != opt->get("default")) opts["MediaType"] = ch->name();
 		}
 		if ((opt=(DrListOption*)driver()->findOption("InputSlot")) != NULL)
 		{
-			DrBase	*ch = opt->choices()->at(m_inputslot->currentItem());
+			DrBase	*ch = opt->choices().at(m_inputslot->currentItem());
 			if (incldef || ch->name() != opt->get("default")) opts["InputSlot"] = ch->name();
 		}
 

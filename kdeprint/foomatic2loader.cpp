@@ -23,7 +23,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qbuffer.h>
-#include <q3valuelist.h>
+#include <QStringList>
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -209,7 +209,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 {
 	if ( !m_foodata.isEmpty() )
 	{
-		Q3ValueList<DrBase*> optList;
+		QList<DrBase*> optList;
 		DrGroup *grp = NULL;
 
 		QVariant V = m_foodata.find( "VAR" ).data();
@@ -250,9 +250,8 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 			}
 		}
 
-		for ( Q3ValueList<DrBase*>::ConstIterator it=optList.begin(); it!=optList.end(); ++it )
+                foreach (DrBase* opt, optList)
 		{
-			DrBase *opt = ( *it );
 			if ( opt )
 			{
 				switch ( opt->type() )
@@ -272,15 +271,10 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 							DrBase *oldOpt = driver->findOption( opt->name() );
 							if ( oldOpt && oldOpt->type() == DrBase::List )
 							{
-								Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( oldOpt )->choices() ) );
-								QString fixedvals;
-								for ( ; it.current(); ++it )
-								{
-									fixedvals.append( it.current()->name() );
-									if ( !it.atLast() )
-										fixedvals.append( "|" );
-								}
-								opt->set( "fixedvals", fixedvals );
+								QStringList fixedvals;
+                                                                foreach (DrBase* choice, static_cast<DrListOption*>( oldOpt )->choices() )
+									fixedvals.append( choice->name() );
+								opt->set( "fixedvals", fixedvals.join( "|" ) );
 							}
 							driver->removeOptionGlobally( opt->name() );
 							grp->addOption( opt );

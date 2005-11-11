@@ -295,9 +295,8 @@ bool PPDLoader::putStatement( const QString& keyword, const QString& name, const
 				if ( m_option->type() == DrBase::List )
 				{
 					QStringList vals;
-					Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( m_option )->choices() ) );
-					for ( ; it.current(); ++it )
-						vals.append( it.current()->name() );
+                                        foreach ( DrBase* choice, static_cast<DrListOption*>( m_option )->choices() )
+						vals.append( choice->name() );
 					opt->set( "fixedvals", vals.join( "|" ) );
 				}
 				delete m_option;
@@ -408,9 +407,8 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 					if ( old->type() == DrBase::List )
 					{
 						QStringList vals;
-						Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( old )->choices() ) );
-						for ( ; it.current(); ++it )
-							vals.append( it.current()->name() );
+                                                foreach ( DrBase* choice, static_cast<DrListOption*>( old )->choices() )
+							vals.append( choice->name() );
 						o->set( "fixedvals", vals.join( "|" ) );
 					}
 					grp->removeOption( o->name() );
@@ -486,10 +484,10 @@ DrGroup* PPDLoader::findOrCreateGroupForOption( const QString& optname )
 		grpname = "Others";
 
 	DrGroup *grp = 0;
-	for ( Q3PtrListIterator<DrGroup> it( m_groups[ 0 ]->groups() ); it.current(); ++it )
-		if ( it.current()->name() == grpname )
+        foreach ( DrGroup* subgroup, m_groups[ 0 ]->groups() )
+		if ( subgroup->name() == grpname )
 		{
-			grp = it.current();
+			grp = subgroup;
 			break;
 		}
 	if ( !grp )

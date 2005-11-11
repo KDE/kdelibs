@@ -487,13 +487,11 @@ QDomElement KXmlCommand::createGroup(QDomDocument& doc, DrGroup *group)
 	elem.setAttribute("name", group->name());
 	elem.setAttribute("description", group->get("text"));
 
-	Q3PtrListIterator<DrGroup>	git(group->groups());
-	for (; git.current(); ++git)
-		elem.appendChild(createGroup(doc, git.current()));
+        foreach (DrGroup* grp, group->groups())
+		elem.appendChild(createGroup(doc, grp));
 
-	Q3PtrListIterator<DrBase>	oit(group->options());
-	for (; oit.current(); ++oit)
-		elem.appendChild(createElement(doc, oit.current()));
+        foreach (DrBase* option, group->options())
+		elem.appendChild(createElement(doc, option));
 
 	return elem;
 }
@@ -525,12 +523,11 @@ QDomElement KXmlCommand::createElement(QDomDocument& doc, DrBase *opt)
 		case DrBase::List:
 			elem.setAttribute("type", (opt->type() == DrBase::List ? "list" : "bool"));
 			{
-				Q3PtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
-				for (; it.current(); ++it)
+                                foreach (DrBase* choice, static_cast<DrListOption*>(opt)->choices())
 				{
 					QDomElement	chElem = doc.createElement("value");
-					chElem.setAttribute("name", it.current()->name());
-					chElem.setAttribute("description", it.current()->get("text"));
+					chElem.setAttribute("name", choice->name());
+					chElem.setAttribute("description", choice->get("text"));
 					elem.appendChild(chElem);
 				}
 			}

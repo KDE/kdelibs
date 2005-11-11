@@ -207,11 +207,10 @@ void KPQtPage::init()
 	else
 	{
 		DrListOption	*lopt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
-		Q3PtrListIterator<DrBase>	it(*(lopt->choices()));
-		for (; it.current(); ++it)
+                foreach (DrBase* choice, lopt->choices())
 		{
-			m_pagesize->insertItem(it.current()->get("text"));
-			if (it.current() == lopt->currentChoice())
+			m_pagesize->insertItem(choice->get("text"));
+			if (choice == lopt->currentChoice())
 				m_pagesize->setCurrentIndex(m_pagesize->count()-1);
 		}
 	}
@@ -261,7 +260,7 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 			DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
 			DrBase	*ch = opt->findChoice(val);
 			if (ch)
-				m_pagesize->setCurrentIndex(opt->choices()->findRef(ch));
+				m_pagesize->setCurrentIndex(opt->choices().indexOf(ch));
 		}
 	}
 	else if (!opts["kde-pagesize"].isEmpty())
@@ -304,7 +303,7 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
 		if (opt)
 		{
-			DrBase	*ch = opt->choices()->at(m_pagesize->currentIndex());
+			DrBase	*ch = opt->choices().at(m_pagesize->currentIndex());
 			if (ch && (incldef || ch->name() != opt->get("default")))
 			{
 				opts["PageSize"] = ch->name();

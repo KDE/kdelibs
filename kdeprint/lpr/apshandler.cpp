@@ -333,27 +333,25 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain 
 		while (stack.count() > 0)
 		{
 			DrGroup	*grp = stack.pop();
-			Q3PtrListIterator<DrGroup>	git(grp->groups());
-			for (; git.current(); ++git)
-				stack.push(git.current());
-			Q3PtrListIterator<DrBase>	oit(grp->options());
+                        foreach (DrGroup* subgroup, grp->groups())
+				stack.push(subgroup);
 			QString	value;
-			for (; oit.current(); ++oit)
+                        foreach (DrBase* option, grp->options())
 			{
-				value = oit.current()->valueText();
-				switch (oit.current()->type())
+				value = option->valueText();
+				switch (option->type())
 				{
 					case DrBase::Boolean:
 						if (value == "true")
-							t << oit.current()->name() << "='" << value << "'" << endl;
+							t << option->name() << "='" << value << "'" << endl;
 						break;
 					case DrBase::List:
 						if (value != "(empty)")
-							t << oit.current()->name() << "='" << value << "'" << endl;
+							t << option->name() << "='" << value << "'" << endl;
 						break;
 					case DrBase::String:
 						if (!value.isEmpty())
-							t << oit.current()->name() << "='" << value << "'" << endl;
+							t << option->name() << "='" << value << "'" << endl;
 						break;
 					default:
 						break;
