@@ -1422,7 +1422,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == Q3ScrollView::AlwaysOff )
                 _ke->accept();
             else {
-                scrollBy( 0, -clipper()->height() - offs );
+                scrollBy( 0, -clipper()->height() + offs );
                 if(d->scrollSuspended)
                     d->newScrollTimer(this, 0);
             }
