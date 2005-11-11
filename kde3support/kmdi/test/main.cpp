@@ -99,7 +99,6 @@ int main( int argc, char **argv )
 #endif
 
    mainWdg->resize(500,500);
-   a.setMainWidget( restartWidget );
    restartWidget->show();
    mainWdg->show();
 
