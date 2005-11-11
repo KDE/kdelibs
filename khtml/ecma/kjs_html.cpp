@@ -104,13 +104,13 @@ ValueImp* KJS::HTMLDocFunction::tryCall(ExecState *exec, ObjectImp *thisObj, con
     if (id == HTMLDocument::WriteLn)
       str += "\n";
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "document.write: " << str.string().string() << endl;
+    kdDebug(6070) << "document.write: " << str.qstring() << endl;
 #endif
-    doc.write(str.string());
+    doc.write(str.qstring());
     return Undefined();
   }
   case HTMLDocument::GetElementsByName:
-    return getDOMNodeList(exec,doc.getElementsByName(args[0]->toString(exec).string()));
+    return getDOMNodeList(exec,doc.getElementsByName(args[0]->toString(exec).domString()));
   case HTMLDocument::GetSelection: {
     // NS4 and Mozilla specific. IE uses document.selection.createRange()
     // http://docs.sun.com/source/816-6408-10/document.htm#1195981
@@ -181,7 +181,7 @@ const ClassInfo KJS::HTMLDocument::info =
 
 void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
   for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
-    if ( n->nodeType() == Node::ELEMENT_NODE ) {
+    if ( n->nodeType() == DOM::Node::ELEMENT_NODE ) {
       for (int i = 0; i < nrTags; i++)
         if (n->id() == tags[i].id &&
             static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
@@ -254,7 +254,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
       NamedTagLengthDeterminer::TagLength tags[4] = {
           {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
       };
-      NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
+      NamedTagLengthDeterminer(propertyName.domString(), tags, 4)(doc.handle());
       for (int i = 0; i < 4; i++) {
         if (tags[i].length > 0)  {
           if (tags[i].length == 1) {
@@ -264,7 +264,7 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
           }
 
           // Get all the items with the same name
-          return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.string())));
+          return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.domString())));
         }
       }
     }
@@ -393,13 +393,13 @@ ValueImp* KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyN
   // allow shortcuts like 'document.Applet1' instead of document.applets.Applet1
   if (doc.isHTMLDocument()) { // might be XML
     DOM::HTMLCollection coll = doc.applets();
-    DOM::HTMLElement element = coll.namedItem(propertyName.string());
+    DOM::HTMLElement element = coll.namedItem(propertyName.domString());
     if (!element.isNull()) {
       return getDOMNode(exec,element);
     }
 
     DOM::HTMLCollection coll2 = doc.layers();
-    DOM::HTMLElement element2 = coll2.namedItem(propertyName.string());
+    DOM::HTMLElement element2 = coll2.namedItem(propertyName.domString());
     if (!element2.isNull()) {
       return getDOMNode(exec,element2);
     }
@@ -429,7 +429,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *v
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   DOM::HTMLBodyElement body = doc.body();
-  DOM::DOMString val = value->toString(exec).string();
+  DOM::DOMString val = value->toString(exec).domString();
 
   switch (token) {
   case Title:
@@ -1984,7 +1984,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const Identifier &propertyNa
       uint u = propertyName.qstring().toULong(&ok);
       if (ok && !(form.elements().item(u).isNull()))
         return true;
-      DOM::Node testnode = form.elements().namedItem(propertyName.string());
+      DOM::Node testnode = form.elements().namedItem(propertyName.domString());
       if (!testnode.isNull())
         return true;
     }
@@ -2333,7 +2333,7 @@ ValueImp* KJS::HTMLElementFunction::tryCall(ExecState *exec, ObjectImp *thisObj,
 void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
 #ifdef KJS_VERBOSE
-  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).string();
+  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
 #endif
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -2386,7 +2386,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, V
 
 void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *value, int)
 {
-  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).string();
+  DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
   DOMNode *kjsNode = new DOMNode(exec, KJS::toNode(value));
   // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
   //Value nodeValue(kjsNode);
@@ -3220,10 +3220,10 @@ ValueImp* KJS::HTMLCollection::tryCall(ExecState *exec, ObjectImp *, const List 
   {
     bool ok;
     UString s = args[0]->toString(exec);
-    unsigned int u = args[1]->toString(exec).toULong(&ok);
+    unsigned int u = args[1]->toString(exec).qstring().toULong(&ok);
     if (ok)
     {
-      DOM::DOMString pstr = s.string();
+      DOM::DOMString pstr = s.domString();
       DOM::Node node = collection.namedItem(pstr);
       while (!node.isNull()) {
         if (!u)
@@ -3242,7 +3242,7 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
   kdDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii() << endl;
 #endif
 
-  DOM::DOMString pstr = propertyName.string();
+  DOM::DOMString pstr = propertyName.domString();
 
   QList<DOM::NodeImpl*> matches = collection.handle()->namedItems(pstr);
 
@@ -3289,11 +3289,11 @@ ValueImp* KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, ObjectImp *this
     }
     // support for item('<name>') (IE only)
     kdWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead" << endl;
-    return getDOMNode(exec,coll.namedItem(s.string()));
+    return getDOMNode(exec,coll.namedItem(s.domString()));
   }
   case KJS::HTMLCollection::Tags:
   {
-    DOM::DOMString tagName = args[0]->toString(exec).string();
+    DOM::DOMString tagName = args[0]->toString(exec).domString();
     DOM::NodeList list;
     // getElementsByTagName exists in Document and in Element, pick up the right one
     if ( coll.base().nodeType() == DOM::Node::DOCUMENT_NODE )
@@ -3432,9 +3432,9 @@ ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
     // #### exec->setException ?
   }
   if (sz > 0)
-    t.setData(args[0]->toString(exec).string()); // set the text
+    t.setData(args[0]->toString(exec).domString()); // set the text
   if (sz > 1)
-    opt.setValue(args[1]->toString(exec).string());
+    opt.setValue(args[1]->toString(exec).domString());
   if (sz > 2)
     opt.setDefaultSelected(args[2]->toBoolean(exec));
   if (sz > 3)

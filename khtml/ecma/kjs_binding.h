@@ -33,6 +33,17 @@
 
 #include <stdlib.h> // for abort
 
+#define KJS_CHECK_THIS( ClassName, theObj ) \
+	if (!theObj || !theObj->inherits(&ClassName::info)) { \
+		KJS::UString errMsg = "Attempt at calling a function that expects a "; \
+		errMsg += ClassName::info.className; \
+		errMsg += " on a "; \
+		errMsg += thisObj->className(); \
+		KJS::ObjectImp *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+		exec->setException(err); \
+		return err; \
+	}
+
 namespace KParts {
   class ReadOnlyPart;
   class LiveConnectExtension;

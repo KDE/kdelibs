@@ -729,7 +729,7 @@ ValueImp* DOMAttr::getValueProperty(ExecState *exec, int token) const
   case OwnerElement: // DOM2
     return getDOMNode(exec,static_cast<DOM::Attr>(node).ownerElement());
   }
-  return 0; // not reached
+  return Null(); // not reached
 }
 
 void DOMAttr::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr)
@@ -857,7 +857,7 @@ ValueImp* DOMDocument::getValueProperty(ExecState *exec, int token) const
     return Boolean(doc.async());
   default:
     kdDebug(6070) << "WARNING: DOMDocument::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
@@ -1209,7 +1209,7 @@ ValueImp* DOMDocumentType::getValueProperty(ExecState *exec, int token) const
     return getString(type.internalSubset()); // can be null, see domts/level2/core/internalSubset01.html
   default:
     kdDebug(6070) << "WARNING: DOMDocumentType::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
@@ -1319,7 +1319,7 @@ ValueImp* DOMProcessingInstruction::getValueProperty(ExecState *exec, int token)
     return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
   default:
     kdDebug(6070) << "WARNING: DOMProcessingInstruction::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
@@ -1356,7 +1356,7 @@ ValueImp* DOMNotation::getValueProperty(ExecState *, int token) const
     return String(static_cast<DOM::Notation>(node).systemId());
   default:
     kdDebug(6070) << "WARNING: DOMNotation::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
@@ -1387,7 +1387,7 @@ ValueImp* DOMEntity::getValueProperty(ExecState *, int token) const
     return String(static_cast<DOM::Entity>(node).notationName());
   default:
     kdDebug(6070) << "WARNING: DOMEntity::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
@@ -1540,7 +1540,7 @@ ValueImp* NodeConstructor::getValueProperty(ExecState *, int token) const
     return Number((unsigned int)DOM::Node::NOTATION_NODE);
   default:
     kdDebug(6070) << "WARNING: NodeConstructor::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 #endif
 }
@@ -1622,7 +1622,7 @@ ValueImp* DOMExceptionConstructor::getValueProperty(ExecState *, int token) cons
     return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
   default:
     kdDebug(6070) << "WARNING: DOMExceptionConstructor::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return Null();
   }
 #endif
 }
@@ -1708,7 +1708,7 @@ ValueImp* DOMCharacterData::getValueProperty(ExecState *, int token) const
     return Number(data.length());
  default:
    kdDebug(6070) << "WARNING: Unhandled token in DOMCharacterData::getValueProperty : " << token << endl;
-   return Value();
+   return Null();
   }
 }
 
