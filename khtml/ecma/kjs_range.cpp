@@ -143,7 +143,7 @@ ValueImp *DOMRangeProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const 
       result = Undefined();
       break;
     case DOMRange::CompareBoundaryPoints:
-      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0]->toInteger(exec)),toRange(args[1])));
+      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0]->toInt32(exec)),toRange(args[1])));
       break;
     case DOMRange::DeleteContents:
       range.deleteContents();
