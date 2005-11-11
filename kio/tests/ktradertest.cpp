@@ -38,7 +38,7 @@ int main( int argc, char **argv )
 
   KCmdLineArgs::addCmdLineOptions( options );
 
-  KApplication app( false, false ); // no GUI
+  KApplication app( false ); // no GUI
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

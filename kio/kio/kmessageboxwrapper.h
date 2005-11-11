@@ -19,7 +19,7 @@
 #ifndef KMESSAGEBOXWRAPPER_H
 #define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
 
 /**
@@ -35,7 +35,6 @@ public:
                     const QString &caption = QString::null)
     {
 	if (qApp && qApp->type() == QApplication::GuiClient) {
-     	  kapp->enableStyles();
       	  KMessageBox::error( parent, text, caption );
 	} else 
 	  kdWarning() << text << endl;
@@ -46,7 +45,6 @@ public:
                     const QString &caption = QString::null)
     {
       if (qApp && qApp->type() == QApplication::GuiClient) {
-	 kapp->enableStyles();
          KMessageBox::sorry( parent, text, caption );
       } else
 	kdWarning() << text << endl;

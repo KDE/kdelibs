@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KApplication a(false, false);
+    KApplication a(false);
 
     QByteArray recipient = args->getOption("recipient");
     if (recipient.isEmpty())

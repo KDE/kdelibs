@@ -284,7 +284,6 @@ void Job::slotSpeedTimeout()
 void Job::showErrorDialog( QWidget * parent )
 {
   //kdDebug(7007) << "Job::showErrorDialog parent=" << parent << endl;
-  kapp->enableStyles();
   // Show a message box, except for "user canceled" or "no content"
   if ( (m_error != ERR_USER_CANCELED) && (m_error != ERR_NO_CONTENT) ) {
     //old plain error message
@@ -2105,7 +2104,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 
 void ListJob::start(Slave *slave)
 {
-    if (kapp && !KAuthorized::authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    if (!KAuthorized::authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
         m_error = ERR_ACCESS_DENIED;
         m_errorText = m_url.url();
@@ -4208,7 +4207,7 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
-  if (kapp && !KAuthorized::authorizeURLAction("redirect", m_url, url))
+  if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
   {
      kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url << " to " << url << " REJECTED!" << endl;
      return;

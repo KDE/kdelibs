@@ -424,7 +424,7 @@ int main( int argc, char **argv )
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     bool useGUI = args->isSet( "dialog" );
 
-    KApplication app( useGUI, useGUI );
+    KApplication app( useGUI );
 
     Q3PtrList<FileProps> m_props;
     m_props.setAutoDelete( true );

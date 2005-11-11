@@ -33,7 +33,7 @@ int main( int argc, char **argv )
     KCmdLineArgs::init( argc, argv, "kmailservice", I18N_NOOP("KMailService"), I18N_NOOP("Mail service"), "unknown" );
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KApplication a( false, false );
+    KApplication a( false );
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
