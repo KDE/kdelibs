@@ -71,12 +71,12 @@ DOMRange::~DOMRange()
   ScriptInterpreter::forgetDOMObject(range.handle());
 }
 
-Value DOMRange::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp *DOMRange::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMRange,DOMObject>(exec,p,&DOMRangeTable,this);
 }
 
-Value DOMRange::getValueProperty(ExecState *exec, int token) const
+ValueImp *DOMRange::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case StartContainer:
@@ -95,23 +95,23 @@ Value DOMRange::getValueProperty(ExecState *exec, int token) const
   }
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMRange::getValueProperty : " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
-Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *DOMRangeProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMRange, thisObj );
-  DOM::Range range = static_cast<DOMRange *>(thisObj.imp())->toRange();
-  Value result;
+  DOM::Range range = static_cast<DOMRange *>(thisObj)->toRange();
+  ValueImp *result = 0;
 
   switch (id) {
     case DOMRange::SetStart:
-      range.setStart(toNode(args[0]),args[1].toInteger(exec));
+      range.setStart(toNode(args[0]),args[1]->toInteger(exec));
       result = Undefined();
       break;
     case DOMRange::SetEnd:
-      range.setEnd(toNode(args[0]),args[1].toInteger(exec));
+      range.setEnd(toNode(args[0]),args[1]->toInteger(exec));
       result = Undefined();
       break;
     case DOMRange::SetStartBefore:
@@ -131,7 +131,7 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
       result = Undefined();
       break;
     case DOMRange::Collapse:
-      range.collapse(args[0].toBoolean(exec));
+      range.collapse(args[0]->toBoolean(exec));
       result = Undefined();
       break;
     case DOMRange::SelectNode:
@@ -143,7 +143,7 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
       result = Undefined();
       break;
     case DOMRange::CompareBoundaryPoints:
-      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toInteger(exec)),toRange(args[1])));
+      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0]->toInteger(exec)),toRange(args[1])));
       break;
     case DOMRange::DeleteContents:
       range.deleteContents();
@@ -167,15 +167,15 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
       result = getDOMRange(exec,range.cloneRange());
       break;
     case DOMRange::ToString:
-      result = String(range.toString());
+      result = String(UString(range.toString()));
       break;
     case DOMRange::Detach:
       range.detach();
       result = Undefined();
       break;
     case DOMRange::CreateContextualFragment:
-      Value value = args[0];
-      DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
+      ValueImp *value = args[0];
+      DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
       result = getDOMNode(exec, range.createContextualFragment(str));
       break;
   };
@@ -183,7 +183,7 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
   return result;
 }
 
-Value KJS::getDOMRange(ExecState *exec, DOM::Range r)
+ValueImp *KJS::getDOMRange(ExecState *exec, DOM::Range r)
 {
   return cacheDOMObject<DOM::Range, KJS::DOMRange>(exec, r);
 }
@@ -203,28 +203,28 @@ const ClassInfo RangeConstructor::info = { "RangeConstructor", 0, &RangeConstruc
 RangeConstructor::RangeConstructor(ExecState *exec)
   : DOMObject(exec->interpreter()->builtinObjectPrototype()) { }
 
-Value RangeConstructor::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp *RangeConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<RangeConstructor,DOMObject>(exec,p,&RangeConstructorTable,this);
 }
 
-Value RangeConstructor::getValueProperty(ExecState *, int token) const
+ValueImp *RangeConstructor::getValueProperty(ExecState *, int token) const
 {
   return Number(token);
 }
 
-Value KJS::getRangeConstructor(ExecState *exec)
+ValueImp *KJS::getRangeConstructor(ExecState *exec)
 {
   return cacheGlobalObject<RangeConstructor>(exec, "[[range.constructor]]");
 }
 
 
-DOM::Range KJS::toRange(const Value& val)
+DOM::Range KJS::toRange(ValueImp *val)
 {
-  Object obj = Object::dynamicCast(val);
-  if (!obj.isValid() || !obj.inherits(&DOMRange::info))
+  ObjectImp *obj = val->getObject();
+  if (!obj || !obj->inherits(&DOMRange::info))
     return DOM::Range();
 
-  const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());
+  const DOMRange *dobj = static_cast<const DOMRange*>(obj);
   return dobj->toRange();
 }
