@@ -1,0 +1,15 @@
+/** 
+
+\page config_options configuration options
+
+- debug=1 compile debug version 
+- prefix=<path> installation prefix
+- --no-cache do not retrieve files from cache 
+
+
+
+\page environment_options environment options
+
+- NOCOLORS=1 - display compile/link lines 
+
+*/
