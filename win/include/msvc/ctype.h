@@ -25,7 +25,8 @@
 #ifdef __cplusplus
 inline int KDE_isspace(int c) { return ((unsigned)(c + 1) <= 256) && isspace(c); }
 #else
-#define KDE_isspace(__c) (((unsigned)(__c + 1) <= 256) && isspace(__c))
+// can't use isspace() here because it's a macro and will be overwritten below
+#define KDE_isspace(__c) (((unsigned)(__c + 1) <= 256) && _isctype(__c,_SPACE))
 #endif
 
 #define isspace KDE_isspace
