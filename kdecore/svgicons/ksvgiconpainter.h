@@ -21,6 +21,8 @@
 #ifndef KSVGIconPainter_H
 #define KSVGIconPainter_H
 
+#include <kdelibs_export.h>
+
 class QImage;
 class QColor;
 class QMatrix;
@@ -29,7 +31,7 @@ class QDomElement;
 
 class gradient_rendering_properties;
 
-class KSVGIconPainter
+class KDECORE_EXPORT KSVGIconPainter
 {
 public:
     KSVGIconPainter(int width, int height);
