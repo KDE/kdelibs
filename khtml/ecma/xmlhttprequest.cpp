@@ -103,9 +103,9 @@ bool XMLHttpRequestConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
+ObjectImp *XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
 {
-  return Object(new XMLHttpRequest(exec, doc));
+  return new XMLHttpRequest(exec, doc);
 }
 
 const ClassInfo XMLHttpRequest::info = { "XMLHttpRequest", 0, &XMLHttpRequestTable, 0 };
@@ -123,18 +123,18 @@ const ClassInfo XMLHttpRequest::info = { "XMLHttpRequest", 0, &XMLHttpRequestTab
 @end
 */
 
-Value XMLHttpRequest::tryGet(ExecState *exec, const Identifier &propertyName) const
+ValueImp *XMLHttpRequest::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<XMLHttpRequest,DOMObject>(exec, propertyName, &XMLHttpRequestTable, this);
 }
 
-Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
+ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ReadyState:
     return Number(state);
   case ResponseText:
-    return getString(DOM::DOMString(response));
+    return ::getString(DOM::DOMString(response));
   case ResponseXML:
     if (state != Completed) {
       return Undefined();
@@ -142,9 +142,9 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     if (!createdDocument) {
       QString mimeType = "text/xml";
 
-      Value header = getResponseHeader("Content-Type");
-      if (header.type() != UndefinedType) {
-	mimeType = QStringList::split(";", header.toString(exec).qstring())[0].trimmed();
+      ValueImp *header = getResponseHeader("Content-Type");
+      if (header->type() != UndefinedType) {
+	mimeType = QStringList::split(";", header->toString(exec).qstring())[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -174,29 +174,29 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
   case StatusText:
     return getStatusText();
   case Onreadystatechange:
-   if (onReadyStateChangeListener && onReadyStateChangeListener->listenerObjImp()) {
+   if (onReadyStateChangeListener && onReadyStateChangeListener->listenerObj()) {
      return onReadyStateChangeListener->listenerObj();
    } else {
      return Null();
    }
   case Onload:
-   if (onLoadListener && onLoadListener->listenerObjImp()) {
+   if (onLoadListener && onLoadListener->listenerObj()) {
      return onLoadListener->listenerObj();
    } else {
-    return Null();
+     return Null();
    }
   default:
     kdWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return 0;
   }
 }
 
-void XMLHttpRequest::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
+void XMLHttpRequest::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
   DOMObjectLookupPut<XMLHttpRequest,DOMObject>(exec, propertyName, value, attr, &XMLHttpRequestTable, this );
 }
 
-void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
+void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
 {
   switch(token) {
   case Onreadystatechange:
@@ -394,7 +394,7 @@ void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
   requestHeaders[name] = value;
 }
 
-Value XMLHttpRequest::getAllResponseHeaders() const
+ValueImp *XMLHttpRequest::getAllResponseHeaders() const
 {
   if (responseHeaders.isEmpty()) {
     return Undefined();
@@ -409,7 +409,7 @@ Value XMLHttpRequest::getAllResponseHeaders() const
   return String(responseHeaders.mid(endOfLine + 1) + "\n");
 }
 
-Value XMLHttpRequest::getResponseHeader(const QString& name) const
+ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
 {
   if (responseHeaders.isEmpty()) {
     return Undefined();
@@ -439,7 +439,7 @@ Value XMLHttpRequest::getResponseHeader(const QString& name) const
   return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
 
-static Value httpStatus(const QString& response, bool textStatus = false)
+static ValueImp *httpStatus(const QString& response, bool textStatus = false)
 {
   if (response.isEmpty()) {
     return Undefined();
@@ -470,12 +470,12 @@ static Value httpStatus(const QString& response, bool textStatus = false)
   return Number(code);
 }
 
-Value XMLHttpRequest::getStatus() const
+ValueImp *XMLHttpRequest::getStatus() const
 {
   return httpStatus(responseHeaders);
 }
 
-Value XMLHttpRequest::getStatusText() const
+ValueImp *XMLHttpRequest::getStatusText() const
 {
   return httpStatus(responseHeaders, true);
 }
@@ -593,15 +593,13 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   }
 }
 
-Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *XMLHttpRequestProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj.inherits(&XMLHttpRequest::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
+  if (!thisObj->inherits(&XMLHttpRequest::info)) {
+    return throwError(exec, TypeError);
   }
 
-  XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj.imp());
+  XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj);
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -617,30 +615,30 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
     return Undefined();
     }
 
-    return request->getResponseHeader(args[0].toString(exec).qstring());
+    return request->getResponseHeader(args[0]->toString(exec).qstring());
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2 || args.size() > 5) {
         return Undefined();
       }
 
-      QString method = args[0].toString(exec).qstring();
+      QString method = args[0]->toString(exec).qstring();
       KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
         return Undefined();
-      KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());
+      KURL url = KURL(part->document().completeURL(args[1]->toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {
-	async = args[2].toBoolean(exec);
+	async = args[2]->toBoolean(exec);
       }
 
       if (args.size() >= 4) {
-	url.setUser(args[3].toString(exec).qstring());
+	url.setUser(args[3]->toString(exec).qstring());
       }
 
       if (args.size() >= 5) {
-	url.setPass(args[4].toString(exec).qstring());
+	url.setPass(args[4]->toString(exec).qstring());
       }
 
       request->open(method, url, async);
@@ -660,9 +658,9 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       QString body;
 
       if (args.size() >= 1) {
-	Object obj = Object::dynamicCast(args[0]);
-	if (obj.isValid() && obj.inherits(&DOMDocument::info)) {
-	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
+	ObjectImp *obj = args[0]->getObject();
+	if (obj && obj->inherits(&DOMDocument::info)) {
+	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj)->toNode();
 	  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
 
 	  try {
@@ -670,11 +668,11 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 	    // FIXME: also need to set content type, including encoding!
 
 	  } catch(DOM::DOMException& e) {
-	     Object err = Error::create(exec, GeneralError, "Exception serializing document");
+	     ObjectImp *err = Error::create(exec, GeneralError, "Exception serializing document");
 	     exec->setException(err);
 	  }
 	} else {
-	  body = args[0].toString(exec).qstring();
+	  body = args[0]->toString(exec).qstring();
 	}
       }
 
@@ -687,7 +685,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       return Undefined();
     }
 
-    request->setRequestHeader(args[0].toString(exec).qstring(), args[1].toString(exec).qstring());
+    request->setRequestHeader(args[0]->toString(exec).qstring(), args[1]->toString(exec).qstring());
 
     return Undefined();
   }
