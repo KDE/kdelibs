@@ -262,8 +262,8 @@ obj.uselib = "Z FAM VOLMGT"
 
 obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop ../kdefx '
 if env['WINDOWS']:
-	obj.libpaths += ' ../win'
-	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx '
+	obj.libpaths += ' ../libltdl ../win '
+	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx ltdlc '
 	# TODO: (rh) remove when openssl detection under win32 runs 
 	obj.includes += ' c:/openssl/include'
 	if env['CC'] == 'gcc': 
