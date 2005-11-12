@@ -81,6 +81,8 @@ def detect(env):
 	if env['CC'] == 'cl':
 		env.AppendUnique(KDECCFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
 		env.AppendUnique(KDECXXFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
+		env.AppendUnique(KDECCFLAGS = ['-DKDE_FULL_TEMPLATE_EXPORT_INSTANTIATION'])
+		env.AppendUnique(KDECXXFLAGS = ['-DKDE_FULL_TEMPLATE_EXPORT_INSTANTIATION'])
 
 	if env.has_key('BOOTSTRAP_KDE'):
 		bootstrap(env)
