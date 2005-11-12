@@ -20,13 +20,13 @@
 #ifndef HALMANAGER_H
 #define HALMANAGER_H
 
-#include <QObject>
+#include "ifaces/devicemanager.h"
 #include <QVariant>
 #include <QStringList>
 
 class HalManagerPrivate;
 
-class HalManager : public QObject
+class HalManager : public KDEHW::Ifaces::DeviceManager
 {
     Q_OBJECT
 
@@ -34,15 +34,13 @@ public:
     HalManager();
     virtual ~HalManager();
 
-    QStringList allDevices();
-    bool deviceExists( const QString &udi );
-    QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    QStringList findDeviceByCapability( const QString &capability );
+    virtual QStringList allDevices();
+    virtual bool deviceExists( const QString &udi );
 
-signals:
-    void deviceAdded( const QString &udi );
-    void deviceRemoved( const QString &udi );
-    void newCapability( const QString &udi, const QString &capability );
+    virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
+
+    virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
+    virtual QStringList findDeviceByCapability( const QString &capability );
 
 private slots:
     void slotDeviceAdded( const QString &udi );

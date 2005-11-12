@@ -22,7 +22,7 @@
 #include <kdebug.h>
 
 #include "halmanager.h"
-
+#include "haldevice.h"
 
 class HalManagerPrivate
 {
@@ -31,7 +31,7 @@ public:
 };
 
 HalManager::HalManager()
-    : QObject(),  d( new HalManagerPrivate() )
+    : DeviceManager(),  d( new HalManagerPrivate() )
 {
     d->connection = QDBusConnection::addConnection(QDBusConnection::SystemBus);
 
@@ -83,6 +83,11 @@ bool HalManager::deviceExists( const QString &udi )
     }
 
     return reply[0].toBool();
+}
+
+KDEHW::Ifaces::Device * HalManager::createDevice( const QString &udi )
+{
+    return new HalDevice( udi );
 }
 
 QStringList HalManager::findDeviceStringMatch( const QString &key, const QString &value )
@@ -150,6 +155,5 @@ void HalManager::slotNewCapability( const QString &udi, const QString &capabilit
 {
     emit newCapability( udi,  capability );
 }
-
 
 #include "halmanager.moc"

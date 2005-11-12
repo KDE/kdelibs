@@ -19,41 +19,40 @@
 
 #include <kdebug.h>
 
-#include "halmanager.h"
-#include "haldevice.h"
+#include "devicemanager.h"
+#include "device.h"
 
 int main()
 {
-	HalManager manager;
+    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
 
-        QStringList devices = manager.allDevices();
+    KDEHW::DeviceList devices = manager.allDevices();
 
-	kdDebug() << "=======" << endl;
-	kdDebug() << ":" << devices << ":" << endl;
-	kdDebug() << ":" << manager.deviceExists("/org/freedesktop/Hal/devices/computer") << ":" << endl;
-	kdDebug() << "=======" << endl;
+    kdDebug() << "=======" << endl;
+    //kdDebug() << ":" << devices << ":" << endl;
+    kdDebug() << ":" << manager.deviceExists("/org/freedesktop/Hal/devices/computer") << ":" << endl;
+    kdDebug() << "=======" << endl;
 
-        foreach ( QString udi, devices )
+    foreach ( KDEHW::Device dev , devices )
+    {
+        QMap<QString, QVariant> properties = dev.allProperties();
+
+        kdDebug() << "udi = '" << dev.udi() << "'" << endl;
+
+        QMap<QString, QVariant>::ConstIterator it = properties.begin();
+        QMap<QString, QVariant>::ConstIterator end = properties.end();
+
+        for ( ; it!=end; ++it )
         {
-            HalDevice dev( udi );
-            QMap<QString, QVariant> properties = dev.allProperties();
-
-            kdDebug() << "udi = '" << udi << "'" << endl;
-
-            QMap<QString, QVariant>::ConstIterator it = properties.begin();
-            QMap<QString, QVariant>::ConstIterator end = properties.end();
-
-            for ( ; it!=end; ++it )
-            {
-                kdDebug() << "  " << it.key() << " = '" << it.value() << endl;
-            }
+            kdDebug() << "  " << it.key() << " = '" << it.value() << endl;
         }
+    }
 
-	HalDevice dev( "/org/freedesktop/Hal/devices/computer" );
-	kdDebug() << "Computer vendor : " << dev.property( "system.kernel.machine" ) << endl;
-	kdDebug() << "Try locking : " << dev.lock("foo") << endl;
-	kdDebug() << "Try abusing lock : " << dev.lock("foofoo") << endl;
-	kdDebug() << "Try unlocking : " << dev.unlock() << endl;
+    KDEHW::Device dev = manager.findDevice( "/org/freedesktop/Hal/devices/computer" );
+    kdDebug() << "Computer vendor : " << dev.property( "system.kernel.machine" ) << endl;
+    kdDebug() << "Try locking : " << dev.lock("foo") << endl;
+    kdDebug() << "Try abusing lock : " << dev.lock("foofoo") << endl;
+    kdDebug() << "Try unlocking : " << dev.unlock() << endl;
 
-	return 0;
+    return 0;
 }

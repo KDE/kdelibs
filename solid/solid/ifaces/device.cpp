@@ -1,0 +1,98 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+
+*/
+
+#include "device.h"
+
+KDEHW::Ifaces::Device::Device( QObject *parent )
+    : QObject( parent )
+{
+
+}
+
+KDEHW::Ifaces::Device::~Device()
+{
+
+}
+
+bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant &/*value*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QString &/*value*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, int /*value*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, bool /*value*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, double /*value*/ )
+{
+    return false;
+}
+
+QString KDEHW::Ifaces::Device::stringProperty( const QString &key ) const
+{
+    return property( key ).toString();
+}
+
+int KDEHW::Ifaces::Device::intProperty( const QString &key ) const
+{
+    return property( key ).toInt();
+}
+
+bool KDEHW::Ifaces::Device::boolProperty( const QString &key ) const
+{
+    return property( key ).toBool();
+}
+
+double KDEHW::Ifaces::Device::doubleProperty( const QString &key ) const
+{
+    return property( key ).toDouble();
+}
+
+bool KDEHW::Ifaces::Device::removeProperty( const QString &/*key*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::addCapability( const QString &/*capability*/ )
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::lock(const QString &/*reason*/)
+{
+    return false;
+}
+
+bool KDEHW::Ifaces::Device::unlock()
+{
+    return false;
+}
+
+#include "device.moc"

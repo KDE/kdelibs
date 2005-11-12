@@ -36,7 +36,7 @@ public:
 };
 
 HalDevice::HalDevice(const QString &udi)
-    : QObject(), d( new HalDevicePrivate() )
+    : Device(), d( new HalDevicePrivate() )
 {
     d->connection = QDBusConnection::addConnection(QDBusConnection::SystemBus);
     d->udi = udi;
@@ -49,6 +49,11 @@ HalDevice::HalDevice(const QString &udi)
 HalDevice::~HalDevice()
 {
     delete d;
+}
+
+QString HalDevice::udi() const
+{
+    return stringProperty( "info.udi" );
 }
 
 bool HalDevice::setProperty( const QString &key, const QVariant &value )
@@ -81,7 +86,7 @@ bool HalDevice::setProperty( const QString &key, const QString &value )
     return true;
 }
 
-bool HalDevice::setProperty( const QString &key, qint32 value )
+bool HalDevice::setProperty( const QString &key, int value )
 {
     QList<QVariant> params;
     params << key << value;
@@ -156,7 +161,7 @@ QString HalDevice::stringProperty( const QString &key ) const
     return reply[0].toString();
 }
 
-qint32 HalDevice::intProperty( const QString &key ) const
+int HalDevice::intProperty( const QString &key ) const
 {
     QList<QVariant> params;
     params << key;
@@ -320,9 +325,24 @@ bool HalDevice::unlock()
 
 void HalDevice::slotPropertyModified( const QString &key, bool added, bool removed )
 {
-    emit propertyModified( key, added, removed );
+    if ( added )
+    {
+        emit propertyChanged( key, KDEHW::PropertyAdded );
+    }
+    else if ( removed )
+    {
+        emit propertyChanged( key, KDEHW::PropertyRemoved );
+    }
+    else
+    {
+        emit propertyChanged( key, KDEHW::PropertyModified );
+    }
 }
 
+void HalDevice::slotCondition( const QString &condition, const QString &reason )
+{
+    emit conditionRaised( condition, reason );
+}
 
 QDBusMessage HalDevicePrivate::callHalMethod( const QString &methodName,
                                               const QList<QVariant> &parameters ) const

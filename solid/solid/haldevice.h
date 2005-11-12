@@ -20,12 +20,11 @@
 #ifndef HALDEVICE_H
 #define HALDEVICE_H
 
-#include <QObject>
-#include <QVariant>
+#include "ifaces/device.h"
 
 class HalDevicePrivate;
 
-class HalDevice : public QObject
+class HalDevice : public KDEHW::Ifaces::Device
 {
     Q_OBJECT
 
@@ -33,38 +32,34 @@ public:
     HalDevice(const QString &udi);
     virtual ~HalDevice();
 
-    bool setProperty( const QString &key, const QVariant &value );
-    bool setProperty( const QString &key, const QString &value );
-    bool setProperty( const QString &key, qint32 value );
-    bool setProperty( const QString &key, bool value );
-    bool setProperty( const QString &key, double value );
+    virtual QString udi() const;
 
-    QVariant property( const QString &key ) const ;
-    QString stringProperty( const QString &key ) const;
-    qint32 intProperty( const QString &key ) const;
-    bool boolProperty( const QString &key ) const;
-    double doubleProperty( const QString &key ) const;
+    virtual bool setProperty( const QString &key, const QVariant &value );
+    virtual bool setProperty( const QString &key, const QString &value );
+    virtual bool setProperty( const QString &key, int value );
+    virtual bool setProperty( const QString &key, bool value );
+    virtual bool setProperty( const QString &key, double value );
 
-    QMap<QString, QVariant> allProperties() const;
+    virtual QVariant property( const QString &key ) const ;
+    virtual QString stringProperty( const QString &key ) const;
+    virtual int intProperty( const QString &key ) const;
+    virtual bool boolProperty( const QString &key ) const;
+    virtual double doubleProperty( const QString &key ) const;
 
-    bool removeProperty( const QString &key );
-    bool propertyExists( const QString &key ) const;
+    virtual QMap<QString, QVariant> allProperties() const;
 
-    bool addCapability( const QString &capability );
-    bool queryCapability( const QString &capability ) const;
+    virtual bool removeProperty( const QString &key );
+    virtual bool propertyExists( const QString &key ) const;
 
-    bool lock(const QString &reason);
-    bool unlock();
+    virtual bool addCapability( const QString &capability );
+    virtual bool queryCapability( const QString &capability ) const;
 
-signals:
-    void propertyModified( const QString &key, bool added, bool removed );
-    // FIXME How am I supposed to implement this???
-    //void slotCondition( const QString &condition, ... );
+    virtual bool lock(const QString &reason);
+    virtual bool unlock();
 
 private slots:
     void slotPropertyModified( const QString &key, bool added, bool removed );
-    // FIXME How am I supposed to implement this???
-    //void slotCondition( const QString &condition, ... );
+    void slotCondition( const QString &condition, const QString &reason );
 
 private:
     HalDevicePrivate *d;
