@@ -1715,7 +1715,7 @@ QColor KSVGIconPainter::parseColor(const QString &param)
             return QColor(128, 0, 128);
         else if(rgbColor == "red")
             return QColor(255, 0, 0);
-        else if(rgbColor == "rosybrown")
+        if(rgbColor == "rosybrown")
             return QColor(188, 143, 143);
         else if(rgbColor == "royalblue")
             return QColor(65, 105, 225);
