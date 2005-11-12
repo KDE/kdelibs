@@ -683,8 +683,6 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP__KHTML_USER_INPUT:
         break;
-    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
-        break;
     default:
         Q_ASSERT( 0 );
         break;

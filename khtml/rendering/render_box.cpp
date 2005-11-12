@@ -160,7 +160,7 @@ void RenderBox::setStyle(RenderStyle *_style)
             m_layer->insertOnlyThisLayer();
         }
     }
-    else if (m_layer && !isRoot() && !isCanvas()) {
+    else if (m_layer && !isCanvas()) {
         m_layer->removeOnlyThisLayer();
         m_layer = 0;
     }
@@ -620,7 +620,7 @@ void RenderBox::close()
 
 short RenderBox::containingBlockWidth() const
 {
-    if (isRoot() && canvas()->view())
+    if ((isCanvas()||isRoot()) && canvas()->view())
     {
         if (canvas()->pagedMode())
             return canvas()->width();
@@ -987,29 +987,10 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
 {
     int result = -1;
     RenderBlock* cb = containingBlock();
-    // Table cells violate what the CSS spec says to do with heights.  Basically we
-    // don't care if the cell specified a height or not.  We just always make ourselves
-    // be a percentage of the cell's current content height.
-    if (cb->isTableCell()) {
-        // Only use the percentage if the cell has some kind of specified height
-        // WinIE would check every cell in the row. We'll follow Mozilla/Opera here
-        // and only check the containing block chain
-        if (cb->style()->height().isFixed() || cb->style()->height().isPercent() ||
-              cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced) != -1) {
-            result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
-            if (result == 0)
-                return -1;
-
-            // It is necessary to use the border-box to match WinIE's broken
-            // box model.  This is essential for sizing inside
-            // table cells using percentage heights.
-            if (!isTable() && style()->boxSizing() != BORDER_BOX) {
-                result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
-                result = qMax(0, result);
-            }
-        }
+    // In quirk mode, table cells violate what the CSS spec says to do with heights.
+    if (cb->isTableCell() && style()->htmlHacks()) {
+        result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
     }
-
     // Otherwise we only use our percentage height if our containing block had a specified
     // height.
     else if (cb->style()->height().isFixed())
@@ -1034,12 +1015,16 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
                               p->borderTop() + p->borderBottom() +
                               p->paddingTop() + p->paddingBottom());
     }
-    else if (treatAsReplaced && style()->htmlHacks()) {
+    else if (cb->isAnonymousBlock() || treatAsReplaced && style()->htmlHacks()) {
         // IE quirk.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
     }
     if (result != -1) {
         result = height.width(result);
+        if (cb->isTableCell() && !isTable() && style()->boxSizing() != BORDER_BOX) {
+            result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
+            result = qMax(0, result);
+        }                                            
     }
     return result;
 }

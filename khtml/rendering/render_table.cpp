@@ -220,7 +220,7 @@ void RenderTable::calcWidth()
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
     } else {
-        m_width = qMin(short( availableWidth ),m_maxWidth);
+        m_width = qMin(short( availableWidth ), short(m_maxWidth));
     }
 
     // restrict width to what we really have
@@ -1196,6 +1196,8 @@ void RenderTableSection::calcRowHeight()
 	int totalCols = row->size();
 	int totalRows = grid.size();
 	bool pagedMode = canvas()->pagedMode();
+	
+	grid[r].needFlex = false;
 
 	for ( int c = 0; c < totalCols; c++ ) {
 	    cell = cellAt(r, c);
@@ -1207,9 +1209,14 @@ void RenderTableSection::calcRowHeight()
 	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
 		indx = 0;
 
-            if (cell->cellPercentageHeight()) {
-                cell->setCellPercentageHeight(0);
+            if (cell->cellPercentageHeight() != -1) {
+                cell->setCellPercentageHeight(-1);
                 cell->setChildNeedsLayout(true, false);
+                if (cell->hasFlexedAnonymous()) {
+                    for (RenderObject* o = cell->firstChild(); o ; o = o->nextSibling())
+                        if (o->isAnonymousBlock())
+                            o->setChildNeedsLayout(true, false);
+                }
                 if (pagedMode) cell->setNeedsLayout(true);
                 cell->layoutIfNeeded();
             }
@@ -1217,6 +1224,9 @@ void RenderTableSection::calcRowHeight()
             ch = cell->style()->height().width(0);
             if ( cell->height() > ch)
                 ch = cell->height();
+            
+            if (!cell->style()->height().isVariable())
+                grid[r].needFlex = true;
 
 	    pos = rowPos[ indx ] + ch + vspacing;
 
@@ -1380,21 +1390,10 @@ int RenderTableSection::layoutRows( int toAdd )
             // work right.  We'll need to have an efficient way of
             // invalidating all percent height objects in a render subtree.
             // For now, we just handle immediate children. -dwh
-            bool cellChildrenFlex = false;
-            RenderObject* o = cell->firstChild();
-            while (o) {
-                if (!o->isText() && o->style()->height().isPercent()) {
-                    if (o->isWidget()) {
-                        // cancel resizes from transitory relayouts
-                        static_cast<RenderWidget *>(o)->cancelPendingResize();
-                    }
-                    o->setNeedsLayout(true, false);
-                    cell->setChildNeedsLayout(true, false);
-                    cellChildrenFlex = true;
-                }
-                o = o->nextSibling();
-            }
-            if (cellChildrenFlex) {
+
+            bool flexAllChildren = grid[r].needFlex || (!table()->style()->height().isVariable() && rHeight != cell->height());
+            cell->setHasFlexedAnonymous(false);
+            if ( flexAllChildren && flexCellChildren(cell) ) {
                 cell->setCellPercentageHeight(qMax(0,
                                                    rHeight - cell->borderTop() - cell->paddingTop() -
                                                    cell->borderBottom() - cell->paddingBottom()));
@@ -1430,6 +1429,7 @@ int RenderTableSection::layoutRows( int toAdd )
 		default:
 		    break;
 		}
+		te = qMax( 0, te );
 #ifdef DEBUG_LAYOUT
 		//            kdDebug( 6040 ) << "CELL " << cell << " te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
 #endif
@@ -1450,6 +1450,32 @@ int RenderTableSection::layoutRows( int toAdd )
 
     m_height = rowPos[totalRows];
     return m_height;
+}
+
+bool RenderTableSection::flexCellChildren(RenderObject* p) const
+{
+    if (!p) 
+        return false;
+    RenderObject* o = p->firstChild();
+    bool didFlex = false;
+    while (o) {
+        if (!o->isText() && o->style()->height().isPercent()) {
+            if (o->isWidget()) {
+                // cancel resizes from transitory relayouts
+                static_cast<RenderWidget *>(o)->cancelPendingResize();
+            }
+            o->setNeedsLayout(true, false);
+            p->setChildNeedsLayout(true, false);
+            didFlex = true;
+        } else if (o->isAnonymousBlock() && flexCellChildren( o )) {
+            p->setChildNeedsLayout(true, false);
+            if (p->isTableCell())
+                static_cast<RenderTableCell*>(p)->setHasFlexedAnonymous();
+            didFlex = true;
+        }
+        o = o->nextSibling();
+    }
+    return didFlex;
 }
 
 inline static RenderTableRow *firstTableRow(RenderObject *row)
@@ -1952,7 +1978,8 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   setShouldPaintBackgroundOrBorder(true);
   _topExtra = 0;
   _bottomExtra = 0;
-  m_percentageHeight = 0;
+  m_percentageHeight = -1;
+  m_hasFlexedAnonymous = false;
 }
 
 void RenderTableCell::detach()

@@ -402,7 +402,7 @@ void MouseEventImpl::computeLayerPos()
     m_layerX = m_pageX;
     m_layerY = m_pageY;
 
-    DocumentImpl* doc = view()->document();
+    DocumentImpl* doc = view() ? view()->document() : 0;
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
         doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
@@ -450,7 +450,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_pageX   = clientXArg;
     m_pageY   = clientYArg;
     KHTMLView* v;
-    if ( view()->document() && ( v = view()->document()->view() ) ) {
+    if ( view() && view()->document() && ( v = view()->document()->view() ) ) {
         m_pageX += v->contentsX();
         m_pageY += v->contentsY();
     }

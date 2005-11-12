@@ -1,6 +1,105 @@
+2005-11-08  Germain Garand  <germain@ebooksfrance.org>
+
+        sizing of percent objects within table cells
+
+        * rendering/render_box.cpp (calcPercentageHeight): transfer most of the logic for table cells in render_table as 
+        it was partly redundant here. Don't apply the table cell sizing hacks in strict mode - no other engine does that.
+        Don't forget anonymous blocks - those must not stop recursion obviously.
+        Move substraction of the border/padding after calculation (spotted in WC)
+
+        * rendering/render_table.{cpp,h}: 
+        had member booleans to hold whether flexing of cells in a row is
+        needed, and in the affirmative, whether we need to mark our anonymous childs for relayout (hence go one level deeper). 
+        Part of line 1394 comes from WebCore. 
+        Also: don't allow negative offset in vertical alignment when content overflows ; matches MSIE better.
+
+2005-10-28  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/table_layout.cpp (calcEffectiveWidth): do proportional distribution of overflowing minwidth
+        when all cols are percent (#104156)
+
+2005-10-21  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (findNextLineBreak): implement needed quirk for line breaking of 
+        replaced elements within table cells.
+        * rendering/render_block.cpp (calcInlineMinMaxWidth): ditto.
+        Bugs #93745, #72457
+
+2005-10-20  Dawit Alemayehu <adawit@kde.org>
+       * ecma/xmlhttprequest.cpp:
+       -Add support for default HTTP referer header. Fixes bug# 113962.
+       - Sanitize all setRequestHeader calls:
+         - We now use a BANNED_HTTP_HEADERS list to filter out 
+           potentially problematic headers.
+         - We always call open on "get" and "post" requests set 
+           through this function.
+         - We sanitize any attempts to set the "referer" field.
+	 
+2005-10-15  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Handle HTTP response headers case insensitively.
+        Fix for bug 110768.
+
 2005-10-14  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.cpp: show accesskeys for all frames
+
+2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        WebCore merge: correct name on IFrames
+
+        * html/html_baseimpl.cpp: copied FrameElementImpl behavior for initializing name
+
+2005-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        WebCore merge: blur and focus on buttons
+
+        * html/html_formimpl.{cpp.h}: Add form and blur
+        * dom/html_form.{cpp,h}: ditto
+        * ecma/kjs_html.{cpp,h}: ditto
+
+2005-10-08  Germain Garand  <germain@ebooksfrance.org>
+
+        Port soft-hyphen support from WebCore
+
+        * rendering/bidi.cpp (findNextLineBreak): main skipping/breaking logic
+
+        * rendering/render_text.{cpp,h} (calcMinMaxWidth): account for soft hyphen
+
+2005-10-08  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Do not append NULL character to end of posted
+        data. Fix for bug 113393.
+
+2005-10-08  Germain Garand  <germain@ebooksfrance.org>
+
+        Follow Mozilla/Opera in considering the Window object as an implementation of the AbstractView/ViewCSS
+        DOM2 interfaces. Return the Window object when available ; an AbstractView if not.
+
+        * ecma/kjs_dom.cpp (DefaultView): return the view's Window object if available.
+
+        * ecma/kjs_window.{cpp,h} (GetComputedStyle): implement, as in AbstractView.
+
+2005-10-07  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (findNextLineBreak): integrate all positioned inlines in the lineboxes to get a correct static position
+        in initial whitespace. Use some midpoints voodoo to take care of whitespace.
+
+        cf. unsorted/113527.html
+
+2005-10-03  Germain Garand  <germain@ebooksfrance.org>
+
+        let the initial containing block be the Canvas, as mandated by latest
+        draft of CSS 2.1 10.1.1
+
+        * rendering/render_object.cpp (containingBlock, container): don't special case the Root, it's no more
+        an initial containing block.
+
+        * rendering/render_block.{cpp,h} (*AbsolutePosition): separate calculation
+        of positioned objects' contribution to the object's rightmost/lower/leftmost position.
+
+        * rendering/render_box.cpp (setStyle, containingBlockWidth): checking for isCanvas where applicable.
+
+        * rendering/render_canvas.cpp (docWidth, docHeight):
+        take into account absolutely positioned objects from the canvas itself.
 
 2005-09-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
@@ -32,7 +131,7 @@
         * rendering/render_list.cpp: Remove truncation logic from paint
         * rendering/render_text.cpp: ditto
 
-2005-08-18 Luís Pedro Coelho <luis@luispedro.org>
+2005-08-18 Luï¿½ Pedro Coelho <luis@luispedro.org>
         * rendering/render_image.cpp:  Scale images correctly (adjust both height and width)
           when max-width is used.
 

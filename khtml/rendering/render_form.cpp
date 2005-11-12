@@ -245,7 +245,7 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
 
 QString RenderSubmitButton::rawText()
 {
-    QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
+    QString value = element()->valueWithDefault().string();
     value = value.trimmed();
     QString raw;
     for(int i = 0; i < value.length(); i++) {
@@ -304,10 +304,6 @@ void RenderSubmitButton::updateFromElement()
     RenderFormElement::updateFromElement();
 }
 
-QString RenderSubmitButton::defaultLabel() {
-    return i18n("Submit");
-}
-
 short RenderSubmitButton::baselinePosition( bool f ) const
 {
     return RenderFormElement::baselinePosition( f );
@@ -318,18 +314,6 @@ short RenderSubmitButton::baselinePosition( bool f ) const
 RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
     : RenderSubmitButton(element)
 {
-}
-
-QString RenderResetButton::defaultLabel() {
-    return i18n("Reset");
-}
-
-
-// -------------------------------------------------------------------------------
-
-QString RenderPushButton::defaultLabel()
-{
-    return QString::null;
 }
 
 // -------------------------------------------------------------------------------

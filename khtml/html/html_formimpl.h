@@ -206,6 +206,8 @@ public:
     void activate();
     virtual void attach();
     void click();
+    void blur();
+    void focus();
 
 protected:
     DOMString m_value;
@@ -273,6 +275,8 @@ public:
 
     DOMString value() const;
     void setValue(DOMString val);
+
+    DOMString valueWithDefault() const;
 
     void blur();
     void focus();

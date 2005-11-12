@@ -49,7 +49,7 @@ public:
     // overrides
     virtual void calcMinMaxWidth() {}
     virtual short minWidth() const { return 0; }
-    virtual short maxWidth() const { return 0; }
+    virtual int maxWidth() const { return 0; }
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,

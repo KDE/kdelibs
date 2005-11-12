@@ -261,6 +261,8 @@ void RenderFlow::repaint(bool immediate)
 
         // Now invalidate a rectangle.
         int ow = style() ? style()->outlineWidth() : 0;
+        if (m_layer && style()->position() == RELATIVE)
+            relativePositionOffset(left, top);
         RootInlineBox *lastRoot = lastLineBox() && !needsLayout() ? lastLineBox()->root() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2,

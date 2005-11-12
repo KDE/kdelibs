@@ -253,6 +253,7 @@ public:
 	Row *row;
 	int baseLine;
 	Length height;
+	bool needFlex;
     };
 
     RenderTableCell *&cellAt( int row,  int col ) {
@@ -282,15 +283,17 @@ public:
     QVector<RowStruct> grid;
     QVector<int> rowPos;
 
-    signed short cRow : 16;
-    ushort cCol : 15;
-    bool needCellRecalc : 1;
+    signed short cRow;
+    ushort cCol;
+    bool needCellRecalc;
 
     void recalcCells();
 protected:
     void ensureRows( int numRows );
     void clearGrid();
     bool emptyRow(int rowNum);
+    bool flexCellChildren(RenderObject* p) const;
+
 
     friend class TableSectionIterator;
 };
@@ -420,6 +423,10 @@ public:
 	{ return m_percentageHeight; }
     void setCellPercentageHeight(int h)
 	{ m_percentageHeight = h; }
+    bool hasFlexedAnonymous() const 
+        { return m_hasFlexedAnonymous; }      
+    void setHasFlexedAnonymous(bool b=true) 
+        { m_hasFlexedAnonymous = b; }
 
 protected:
     virtual void paintBoxDecorations(PaintInfo& p, int _tx, int _ty);
@@ -431,8 +438,9 @@ protected:
     ushort rSpan;
     ushort cSpan;
     int _topExtra;
-    signed int _bottomExtra : 31;
+    signed int _bottomExtra : 30;
     bool m_widthChanged : 1;
+    bool m_hasFlexedAnonymous : 1;
     int m_percentageHeight;
 };
 

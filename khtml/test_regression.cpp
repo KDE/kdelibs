@@ -639,10 +639,10 @@ int main(int argc, char *argv[])
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
-    a.config()->setGroup( "Notification Messages" );
-    a.config()->writeEntry( "kjscupguard_alarmhandler", true );
-    a.config()->setGroup("HTML Settings");
-    a.config()->writeEntry("ReportJSErrors", false);
+    KGlobal::instance()->config()->setGroup( "Notification Messages" );
+    KGlobal::instance()->config()->writeEntry( "kjscupguard_alarmhandler", true );
+    KGlobal::instance()->config()->setGroup("HTML Settings");
+    KGlobal::instance()->config()->writeEntry("ReportJSErrors", false);
     KConfig cfg( "khtmlrc" );
     cfg.setGroup("HTML Settings");
     cfg.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
@@ -655,6 +655,9 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "MediumFontSize", 10 );
     cfg.writeEntry( "Fonts", QStringList() );
     cfg.writeEntry( "DefaultEncoding", "" );
+    cfg.setGroup("Java/JavaScript Settings");
+    cfg.writeEntry( "WindowOpenPolicy", KHTMLSettings::KJSWindowOpenAllow);
+
     cfg.sync();
 
     QPalette pal = a.palette();

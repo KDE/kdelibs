@@ -567,8 +567,7 @@ RenderBlock *RenderObject::containingBlock() const
     }
     else if(m_style->position() == ABSOLUTE) {
         while (o &&
-               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) &&
-               !o->isRoot() && !o->isCanvas())
+               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas())
             o = o->parent();
     } else {
         while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
@@ -1287,7 +1286,7 @@ void RenderObject::setStyle(RenderStyle *style)
             }
             setNeedsLayoutAndMinMaxRecalc();
         } else if (!isText() && d == RenderStyle::Visible) {
-            if (layer())
+            if (layer() && !isInlineFlow())
                 layer()->repaint();
             else
                 repaint();
@@ -1311,7 +1310,7 @@ void RenderObject::repaintDuringLayout()
 {
     if (canvas()->needsFullRepaint() || isText())
         return;
-    if (layer()) {
+    if (layer() && !isInlineFlow()) {
         layer()->repaint( true );
     } else {
        repaint();
@@ -1474,7 +1473,7 @@ RenderObject *RenderObject::container() const
         // we may not have one if we're part of an uninstalled subtree.  We'll
         // climb as high as we can though.
         o = parent();
-        while (o && o->style()->position() == STATIC && !o->isRoot() && !o->isCanvas())
+        while (o && o->style()->position() == STATIC && !o->isCanvas())
             o = o->parent();
     }
     else
@@ -1893,21 +1892,15 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
         if (currDecs) {
             if (currDecs & UNDERLINE) {
                 decorations &= ~UNDERLINE;
-                underline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                underline = st->color();
             }
             if (currDecs & OVERLINE) {
                 decorations &= ~OVERLINE;
-                overline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                overline = st->color();
             }
             if (currDecs & LINE_THROUGH) {
                 decorations &= ~LINE_THROUGH;
-                linethrough = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+                linethrough = st->color();
             }
         }
         curr = curr->parent();
@@ -1920,17 +1913,11 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
     if (decorations && curr) {
         RenderStyle *st = curr->style();
         if (decorations & UNDERLINE)
-            underline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            underline = st->color();
         if (decorations & OVERLINE)
-            overline = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            overline = st->color();
         if (decorations & LINE_THROUGH)
-            linethrough = st->textDecorationColor().isValid()
-				? st->textDecorationColor()
-				: st->color();
+            linethrough = st->color();
     }
 }
 

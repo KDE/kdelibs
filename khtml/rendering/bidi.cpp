@@ -423,6 +423,19 @@ static void reverseRuns(int start, int end)
         sLastBidiRun = startRun;
 }
 
+static void chopMidpointsAt(RenderObject* obj, uint pos)
+{
+    if (!sNumMidpoints) return;
+    BidiIterator* midpoints = smidpoints->data();
+    for (uint i = 0; i < sNumMidpoints; i++) {
+        const BidiIterator& point = midpoints[i];
+        if (point.obj == obj && point.pos == pos) {
+            sNumMidpoints = i;
+            break;
+        }
+    }
+}
+
 static void checkMidpoints(BidiIterator& lBreak, BidiState &bidi)
 {
     // Check to see if our last midpoint is a start point beyond the line break.  If so,
@@ -438,8 +451,16 @@ static void checkMidpoints(BidiIterator& lBreak, BidiState &bidi)
         if (currpoint == lBreak) {
             // We hit the line break before the start point.  Shave off the start point.
             sNumMidpoints--;
-            if (!endpoint.obj->style()->preserveWS())
+            if (!endpoint.obj->style()->preserveWS()) {
+                if (endpoint.obj->isText()) {
+                    // Don't shave a character off the endpoint if it was from a soft hyphen.
+                    RenderText* textObj = static_cast<RenderText*>(endpoint.obj);
+                    if (endpoint.pos+1 < textObj->length() &&
+                        textObj->text()[endpoint.pos+1].unicode() == SOFT_HYPHEN)
+                        return;
+                }
                 endpoint.pos--;
+            }
         }
     }
 }
@@ -586,10 +607,10 @@ static void embed( QChar::Direction d, BidiState &bidi )
 
 	    bidi.context = new BidiContext(level, runDir, bidi.context, override);
 	    bidi.context->ref();
-	    if ( override )
-		dir = runDir;
+	    dir = runDir;
 	    bidi.status.last = runDir;
 	    bidi.status.lastStrong = runDir;
+	    bidi.status.eor = runDir;
 	}
     }
     adjustEmbedding = b;
@@ -911,7 +932,6 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
         case QChar::DirRLO:
         case QChar::DirLRO:
         case QChar::DirPDF:
-            bidi.eor = bidi.last;
             embed( dirCurrent, bidi );
             break;
 
@@ -1454,6 +1474,8 @@ redo_linebreak:
                 // Now that the runs have been ordered, we create the line boxes.
                 // At the same time we figure out where border/padding/margin should be applied for
                 // inline flow boxes.
+
+#ifdef APPLE_CHANGES    // KDE handles compact blocks differently
                 if (sCompactFirstBidiRun) {
                     // We have a compact line sharing this line.  Link the compact runs
                     // to our runs to create a single line of runs.
@@ -1461,7 +1483,7 @@ redo_linebreak:
                     sFirstBidiRun = sCompactFirstBidiRun;
                     sBidiRunCount += sCompactBidiRunCount;
                 }
-
+#endif
                 if (sBidiRunCount) {
                     InlineFlowBox* lineBox = constructLine(start, end);
                     if (lineBox) {
@@ -1575,6 +1597,31 @@ redo_linebreak:
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
+static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetStaticX = 0, bool *needToSetStaticY = 0 )
+{
+      // If our original display wasn't an inline type, then we can
+      // determine our static x position now.
+      bool nssx, nssy;
+      bool isInlineType = o->style()->isOriginalDisplayInlineType();
+      nssx = o->hasStaticX();
+      if (nssx && !isInlineType && o->isBox()) {
+          static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
+                                  p->borderLeft()+p->paddingLeft() :
+                                  p->borderRight()+p->paddingRight());
+          nssx = false;
+      }
+
+      // If our original display was an INLINE type, then we can
+      // determine our static y position now.
+      nssy = o->hasStaticY();
+      if (nssy && o->isBox()) {
+          static_cast<RenderBox*>(o)->setStaticY(p->height());
+          nssy = !isInlineType;
+      }
+      if (needToSetStaticX) *needToSetStaticX = nssx;
+      if (needToSetStaticY) *needToSetStaticY = nssy;
+}
+
 BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi)
 {
     int width = lineWidth(m_height);
@@ -1584,6 +1631,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
+
+    BidiIterator posStart = start;
+    bool hadPosStart = false;
 
     // eliminate spaces at beginning of line
     // remove leading spaces.  Any inline flows we encounter will be empty and should also
@@ -1609,21 +1659,33 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 width = lineWidth(m_height);
             }
             else if (o->isBox() && o->isPositioned()) {
-                if (o->hasStaticX())
-                    static_cast<RenderBox*>(o)->setStaticX(style()->direction() == LTR ?
-                                  borderLeft()+paddingLeft() :
-                                  borderRight()+paddingRight());
-                if (o->hasStaticY())
-                    static_cast<RenderBox*>(o)->setStaticY(m_height);
+                if (!hadPosStart) {
+                    hadPosStart = true;
+                    posStart = start;
+                    // end
+                    addMidpoint(BidiIterator(0, o, 0));
+                } else {
+                    // start/end
+                    addMidpoint(BidiIterator(0, o, 0));
+                    addMidpoint(BidiIterator(0, o, 0));
+                }
+                setStaticPosition(this, o);
             }
         }
-
         adjustEmbedding = true;
         start.increment(bidi);
         adjustEmbedding = false;
     }
 
+    if (hadPosStart && !start.atEnd())
+        addMidpoint(start);
+
     if ( start.atEnd() ){
+        if (hadPosStart) {
+            start = posStart;
+            posStart.increment(bidi);
+            return posStart;
+        }
         return start;
     }
 
@@ -1688,24 +1750,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 }
             }
             else if (o->isPositioned()) {
-                // If our original display wasn't an inline type, then we can
-                // go ahead and determine our static x position now.
-                bool isInlineType = o->style()->isOriginalDisplayInlineType();
-                bool needToSetStaticX = o->hasStaticX();
-                if (o->hasStaticX() && !isInlineType && o->isBox()) {
-                    static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
-                                  borderLeft()+paddingLeft() :
-                                  borderRight()+paddingRight());
-                    needToSetStaticX = false;
-                }
-
-                // If our original display was an INLINE type, then we can go ahead
-                // and determine our static y position now.
-                bool needToSetStaticY = o->hasStaticY();
-                if (o->hasStaticY() && isInlineType && o->isBox()) {
-                    static_cast<RenderBox*>(o)->setStaticY(m_height);
-                    needToSetStaticY = false;
-                }
+                bool needToSetStaticX;
+                bool needToSetStaticY;
+                setStaticPosition(this, o, &needToSetStaticX, &needToSetStaticY);
 
                 // If we're ignoring spaces, we have to stop and include this object and
                 // then start ignoring spaces again.
@@ -1738,9 +1785,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 lastWS = last->layer()->marquee()->whiteSpace();
 
             // Break on replaced elements if either has normal white-space.
-            // FIXME: This does not match WinIE, Opera, and Mozilla.  They treat replaced elements
-            // like characters in a word, and require spaces between the replaced elements in order
-            // to break.
             if (currWS == NORMAL || lastWS == NORMAL) {
                 w += tmpW;
                 tmpW = 0;
@@ -1793,19 +1837,47 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             bool appliedStartWidth = pos > 0; // If the span originated on a previous line,
                                               // then assume the start width has been applied.
             bool appliedEndWidth = false;
+            bool nextIsSoftBreakable = false;
 
             while(len) {
                 bool previousCharacterIsSpace = currentCharacterIsSpace;
+                bool isSoftBreakable = nextIsSoftBreakable;
+                nextIsSoftBreakable = false;
                 const QChar c = str[pos];
                 currentCharacterIsSpace = c == ' ';
 
                 if (preserveWS || !currentCharacterIsSpace)
                     isLineEmpty = false;
 
+                // Check for soft hyphens.  Go ahead and ignore them.
+                if (c.unicode() == SOFT_HYPHEN && pos > 0) {
+                    nextIsSoftBreakable = true;
+                    if (!ignoringSpaces) {
+                        // Ignore soft hyphens
+                        BidiIterator endMid(0, o, pos-1);
+                        addMidpoint(endMid);
+
+                        // Add the width up to but not including the hyphen.
+                        tmpW += t->width(lastSpace, pos - lastSpace, f);
+
+                        // For whitespace normal only, include the hyphen.  We need to ensure it will fit
+                        // on the line if it shows when we break.
+                        if (o->style()->whiteSpace() == NORMAL)
+                            tmpW += t->width(pos, 1, f);
+
+                        BidiIterator startMid(0, o, pos+1);
+                        addMidpoint(startMid);
+                    }
+
+                    pos++;
+                    len--;
+                    lastSpace = pos; // Cheesy hack to prevent adding in widths of the run twice.
+                    continue;
+                }
 #ifdef APPLE_CHANGES    // KDE applies wordspacing differently
                 bool applyWordSpacing = false;
 #endif
-                if ( (preserveLF && c == '\n') || (autoWrap && isBreakable( str, pos, strlen )) ) {
+                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
                     if (ignoringSpaces) {
                         if (!currentCharacterIsSpace) {
                             // Stop ignoring spaces and begin at this
@@ -1856,8 +1928,12 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         }
                     }
 
-                    if (w + tmpW > width && autoWrap) {
-                        goto end;
+                    if (autoWrap) {
+                        if (w+tmpW > width)
+                            goto end;
+                        else if ( (pos > 1 && str[pos-1].unicode() == SOFT_HYPHEN) )
+                            // Subtract the width of the soft hyphen out since we fit on a line.
+                            tmpW -= t->width(pos-1, 1, f);
                     }
 
                     if( preserveLF && *(str+pos) == '\n' ) {
@@ -2048,6 +2124,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         }
     }
 
+    if (hadPosStart)
+        start = posStart;
+
     // make sure we consume at least one char/object.
     if( lBreak == start )
         lBreak.increment(bidi);
@@ -2085,6 +2164,14 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     if (lBreak.pos > 0) {
         lBreak.pos--;
         lBreak.increment(bidi);
+    }
+
+    if (lBreak.obj && lBreak.pos >= 2 && lBreak.obj->isText()) {
+        // For soft hyphens on line breaks, we have to chop out the midpoints that made us
+        // ignore the hyphen so that it will render at the end of the line.
+        QChar c = static_cast<RenderText*>(lBreak.obj)->text()[lBreak.pos-1];
+        if (c.unicode() == SOFT_HYPHEN)
+            chopMidpointsAt(lBreak.obj, lBreak.pos-2);
     }
 
     return lBreak;

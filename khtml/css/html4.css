@@ -227,27 +227,6 @@ CAPTION {
 	text-align: -khtml-center;
 }
 
-/* don't use "TD[align=...] > *". This sould give problems with
- * constructs as <td align=left><ul><li>...
- * Hope the next ones cover all relevant cases. Lars
- */
-TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; }
-TD[align="middle"] > TABLE { margin-left: auto; margin-right: auto; }
-TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; }
-TD[align="left"] > TABLE { margin-left: 0px; margin-right: auto; }
-TD[align="center"] > DIV { margin-left: auto; margin-right: auto; text-align: center; }
-TD[align="middle"] > DIV { margin-left: auto; margin-right: auto; text-align: center; }
-TD[align="right"] > DIV { margin-left: auto; margin-right: 0px; text-align: right; }
-TD[align="left"] > DIV { margin-left: 0px; margin-right: auto; text-align: left; }
-TD[align="center"] > P { margin-left: auto; margin-right: auto; text-align: center; }
-TD[align="middle"] > P { margin-left: auto; margin-right: auto; text-align: center; }
-TD[align="right"] > P { margin-left: auto; margin-right: 0px; text-align: right; }
-TD[align="left"] > P { margin-left: 0px; margin-right: auto; text-align: left; }
-TD[align="center"] > HR { margin-left: auto; margin-right: auto; }
-TD[align="middle"] > HR { margin-left: auto; margin-right: auto; }
-TD[align="right"] > HR { margin-left: auto; margin-right: 1px; }
-TD[align="left"] > HR { margin-left: 0px; margin-right: auto; }
-
 /*
  * Lists
  */
@@ -370,10 +349,14 @@ INPUT, TEXTAREA {
         text-align: -khtml-auto;
 }
 
+INPUT, TEXTAREA, SELECT, BUTTON {
+        font-weight: normal;
+        margin: 0__qem;
+}
+
 INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
-        margin: 0__qem;
         border: 2px -khtml-native;
 }
 
@@ -408,13 +391,11 @@ SELECT {
         font-family: sans-serif;
         font-size: small;
         color: windowtext;
-        margin: 0__qem;
 }
 
 TEXTAREA {
         color: windowtext;
         font-family: monospace;
-        margin: 0__qem;
         border: 2px -khtml-native;
 }
 

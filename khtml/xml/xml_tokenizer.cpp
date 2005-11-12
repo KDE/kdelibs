@@ -560,7 +560,8 @@ void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
         DOMString scriptSource = m_cachedScript->script();
         m_cachedScript->deref(this);
         m_cachedScript = 0;
-        m_view->part()->executeScript(DOM::Node(), scriptSource.string());
+        if (m_view)
+            m_view->part()->executeScript(DOM::Node(), scriptSource.string());
         executeScripts();
     }
 }

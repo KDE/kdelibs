@@ -460,7 +460,7 @@ void AutoTableLayout::recalcColumn( int effCol )
 	}
     }
 
-    l.maxWidth = qMax(l.maxWidth, l.minWidth);
+    l.maxWidth = qMax(l.maxWidth, int(l.minWidth));
 #ifdef DEBUG_LAYOUT
     qDebug("col %d, final min=%d, max=%d, width=%d(%d)", effCol, l.minWidth, l.maxWidth, l.width.value(),  l.width.type() );
 #endif
@@ -755,6 +755,25 @@ int AutoTableLayout::calcEffectiveWidth()
 		    layoutStruct[pos].effMinWidth = w;
 		}
 
+            } else if ( allColsArePercent ) {
+                int maxw = maxWidth;
+                int minw = minWidth;
+                int cminw = cMinWidth;
+
+                for ( unsigned int pos = col; maxw > 0 && pos < lastCol; pos++ ) {
+                    if ( layoutStruct[pos].effWidth.isPercent() && layoutStruct[pos].effWidth.value()>0 && fixedWidth <= cMinWidth) {
+                        int w = layoutStruct[pos].effMinWidth;
+                        w = qMax( w, cminw*layoutStruct[pos].effWidth.value()/totalPercent );
+                        w = qMin(layoutStruct[pos].effMinWidth+(cMinWidth-minw), w);
+#ifdef DEBUG_LAYOUT
+                        qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w
+#endif
+                        maxw -= layoutStruct[pos].effMaxWidth;
+                        minw -= layoutStruct[pos].effMinWidth;
+                        cMinWidth -= w;
+                        layoutStruct[pos].effMinWidth = w;
+                    }
+                }
 	    } else {
 #ifdef DEBUG_LAYOUT
 		qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", col, lastCol-1, cMinWidth, minWidth );
@@ -810,7 +829,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	    }
 	} else {
 	    for ( unsigned int pos = col; pos < lastCol; pos++ )
-		layoutStruct[pos].maxWidth = qMax(layoutStruct[pos].maxWidth, layoutStruct[pos].minWidth );
+		layoutStruct[pos].maxWidth = qMax(layoutStruct[pos].maxWidth, int(layoutStruct[pos].minWidth) );
 	}
     }
     effWidthDirty = false;

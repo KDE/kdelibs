@@ -194,9 +194,9 @@ public:
 
     Type type() const
     {
-        if (ahem)
+        if (ahem) {
             return QFontEngine::Freetype;
-        else
+        } else
             return QFontEngine::XLFD; 
     }
 
@@ -252,7 +252,7 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
     int advance = pixS;
     int ascent  = dimToInt(eng->ascent());
     int descent = dimToInt(eng->descent());
-
+    
     if (si.flags & QTextItem::RightToLeft)
     {
         x       = x + advance * (si.num_glyphs - 1);
@@ -413,9 +413,7 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 
 }
 
-KDE_EXPORT QFontEngine *
-QFontDatabase::findFont( int script, const QFontPrivate *fp,
-			 const QFontDef &request, int )
+static QFontEngine* loadFont(const QFontDef& request)
 {
     QString xlfd;
     QString family = request.family.toLower();
@@ -446,15 +444,38 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
         XFree( n );
 
     fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
+    return fe;
+}
 
-    //qDebug("fe %s ascent %f descent %f minLeftBearing %f leading %f maxCharWidth %f minRightBearing %f", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
+#if QT_VERSION >= 0x040100 
+/* Note: you may want the other path with earlier Qt4.1 snapshots */
 
-    // fe->setScale( scale );
+KDE_EXPORT
+QFontEngine *QFontDatabase::loadXlfd(int screen, int script, 
+            const QFontDef &request, int force_encoding_id)
+{
+    return loadFont(request);
+}
 
+extern "C" KDE_EXPORT int FcInit() {
+    /* Make sure Qt uses the Xlfd path, which we intercept */
+    return 0;
+}
+
+#else
+
+
+KDE_EXPORT
+QFontEngine *
+QFontDatabase::findFont( int script, const QFontPrivate *fp,
+			 const QFontDef &request, int ) {
+    QFontEngine* fe = loadFont(request);
     QFontCache::Key key( request, script, fp->screen );
     QFontCache::instance->insertEngine( key, fe );
     return fe;
 }
+
+#endif
 
 KDE_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const

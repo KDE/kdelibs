@@ -1071,8 +1071,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::List:
         {
-	    int spacePos = value.find(' ', 0);
-	    if (spacePos == -1) {
+            const QChar* s = value.unicode();
+            int l = value.length();
+            while( l && !s->isSpace() )
+              l--,s++;
+	    if (!l) {
 		// There is no list, just a single item.  We can avoid
 		// allocing QStrings and just treat this as an exact
 		// match check.
@@ -1083,8 +1086,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    }
 
             // The selector's value can't contain a space, or it's totally bogus.
-            spacePos = sel->value.find(' ');
-            if (spacePos != -1)
+            l = sel->value.find(' ');
+            if (l != -1)
                 return false;
 
             QString str = value.string();
@@ -1094,9 +1097,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             for ( ;; ) {
                 pos = str.find(selStr, pos, strictParsing);
                 if ( pos == -1 ) return false;
-                if ( pos == 0 || str[pos-1] == ' ' ) {
+                if ( pos == 0 || str[pos-1].isSpace() ) {
                     int endpos = pos + selStrlen;
-                    if ( endpos >= str.length() || str[endpos] == ' ' )
+                    if ( endpos >= str.length() || str[endpos].isSpace() )
                         break; // We have a match.
                 }
                 ++pos;
@@ -2527,7 +2530,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:
     case CSS_PROP_SCROLLBAR_TRACK_COLOR:
     case CSS_PROP_SCROLLBAR_ARROW_COLOR:
-    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
     {
         QColor col;
         if (isInherit) {
@@ -2585,8 +2587,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setBorderLeftColor(col); break;
         case CSS_PROP_COLOR:
             style->setColor(col); break;
-        case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
-            style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
             style->setOutlineColor(col); break;
 #ifndef APPLE_CHANGES

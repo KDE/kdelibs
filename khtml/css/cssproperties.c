@@ -193,7 +193,7 @@ findProp (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 123,
+      TOTAL_KEYWORDS = 122,
       MIN_WORD_LENGTH = 3,
       MAX_WORD_LENGTH = 32,
       MIN_HASH_VALUE = 3,
@@ -378,8 +378,6 @@ findProp (register const char *str, register unsigned int len)
       {"font-family", CSS_PROP_FONT_FAMILY},
 #line 36 "cssproperties.gperf"
       {"border-left-width", CSS_PROP_BORDER_LEFT_WIDTH},
-#line 136 "cssproperties.gperf"
-      {"-khtml-text-decoration-color", CSS_PROP__KHTML_TEXT_DECORATION_COLOR},
 #line 44 "cssproperties.gperf"
       {"counter-reset", CSS_PROP_COUNTER_RESET},
 #line 100 "cssproperties.gperf"
@@ -471,23 +469,23 @@ findProp (register const char *str, register unsigned int len)
        -1,  -1,  74,  -1,  -1,  75,  -1,  76,  -1,  77,
        78,  -1,  -1,  -1,  79,  -1,  80,  -1,  -1,  -1,
        -1,  81,  -1,  -1,  82,  83,  84,  85,  -1,  -1,
-       -1,  86,  87,  88,  -1,  -1,  -1,  -1,  89,  -1,
-       -1,  90,  -1,  -1,  -1,  -1,  -1,  91,  -1,  -1,
-       -1,  92,  -1,  -1,  -1,  -1,  -1,  93,  -1,  -1,
-       -1,  -1,  94,  -1,  -1,  -1,  -1,  95,  96,  -1,
-       -1,  97,  -1,  -1,  -1,  -1,  98,  99,  -1,  -1,
-      100, 101, 102, 103, 104,  -1,  -1,  -1,  -1,  -1,
-       -1, 105,  -1,  -1,  -1,  -1,  -1,  -1, 106,  -1,
+       -1,  86,  87,  -1,  -1,  -1,  -1,  -1,  88,  -1,
+       -1,  89,  -1,  -1,  -1,  -1,  -1,  90,  -1,  -1,
+       -1,  91,  -1,  -1,  -1,  -1,  -1,  92,  -1,  -1,
+       -1,  -1,  93,  -1,  -1,  -1,  -1,  94,  95,  -1,
+       -1,  96,  -1,  -1,  -1,  -1,  97,  98,  -1,  -1,
+       99, 100, 101, 102, 103,  -1,  -1,  -1,  -1,  -1,
+       -1, 104,  -1,  -1,  -1,  -1,  -1,  -1, 105,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 107,  -1,  -1, 108,  -1,  -1,
-       -1,  -1,  -1,  -1, 109,  -1, 110,  -1,  -1, 111,
-      112,  -1,  -1,  -1,  -1, 113,  -1, 114,  -1,  -1,
-      115,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 116,
-       -1, 117,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 118,  -1,  -1,  -1,  -1,
-       -1, 119,  -1,  -1,  -1,  -1, 120,  -1,  -1,  -1,
-       -1, 121,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1, 122
+       -1,  -1,  -1,  -1, 106,  -1,  -1, 107,  -1,  -1,
+       -1,  -1,  -1,  -1, 108,  -1, 109,  -1,  -1, 110,
+      111,  -1,  -1,  -1,  -1, 112,  -1, 113,  -1,  -1,
+      114,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 115,
+       -1, 116,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 117,  -1,  -1,  -1,  -1,
+       -1, 118,  -1,  -1,  -1,  -1, 119,  -1,  -1,  -1,
+       -1, 120,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1, 121
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -509,7 +507,7 @@ findProp (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 137 "cssproperties.gperf"
+#line 136 "cssproperties.gperf"
 
 static const char * const propertyList[] = {
 "",
@@ -635,7 +633,6 @@ static const char * const propertyList[] = {
 "scrollbar-arrow-color", 
 "-khtml-flow-mode", 
 "-khtml-user-input", 
-"-khtml-text-decoration-color", 
     0
 };
 DOMString getPropertyName(unsigned short id)

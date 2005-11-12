@@ -359,8 +359,9 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
     _tx += m_x;
     _ty += m_y;
-
-    if (shouldPaintBackgroundOrBorder() && paintInfo.phase != PaintActionOutline)
+ 
+    if (shouldPaintBackgroundOrBorder() && 
+          (paintInfo.phase == PaintActionChildBackground || paintInfo.phase == PaintActionChildBackgrounds))
         paintBoxDecorations(paintInfo, _tx, _ty);
 
     if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)

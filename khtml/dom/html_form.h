@@ -146,6 +146,18 @@ public:
      * see value
      */
     void setValue( const DOMString & );
+
+    /**
+     * Removes keyboard focus from this element.
+     *
+     */
+    void blur (  );
+
+    /**
+     * Gives keyboard focus to this element.
+     *
+     */
+    void focus (  );
 };
 
 // --------------------------------------------------------------------------

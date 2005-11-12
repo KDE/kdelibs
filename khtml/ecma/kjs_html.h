@@ -39,9 +39,9 @@ namespace KJS {
   class HTMLDocument : public DOMDocument {
   public:
     HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d);
-    virtual ValueImp *tryGet(ExecState *exec, const Identifier &propertyName) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/);
     virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -56,10 +56,10 @@ namespace KJS {
   class HTMLElement : public DOMElement {
   public:
     HTMLElement(ExecState *exec, const DOM::HTMLElement& e) : DOMElement(exec, e) { }
-    virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const;
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    Value getValueProperty(ExecState *exec, int token) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int);
     virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual UString toString(ExecState *exec) const;
     virtual void pushEventHandlerScope(ExecState *exec, ScopeChain &scope) const;
@@ -99,7 +99,7 @@ namespace KJS {
            TextAreaAccessKey, TextAreaName, TextAreaDefaultValue, TextAreaSelect,
            TextAreaCols, TextAreaDisabled, TextAreaForm, TextAreaType,
            TextAreaTabIndex, TextAreaReadOnly, TextAreaRows, TextAreaValue,
-           TextAreaBlur, TextAreaFocus, ButtonForm, ButtonTabIndex, ButtonName,
+           TextAreaBlur, TextAreaFocus, ButtonBlur, ButtonFocus, ButtonForm, ButtonTabIndex, ButtonName,
            ButtonDisabled, ButtonAccessKey, ButtonType, ButtonValue, LabelHtmlFor,
            LabelForm, LabelAccessKey, FieldSetForm, LegendForm, LegendAccessKey,
            LegendAlign, UListType, UListCompact, OListStart, OListCompact,
@@ -160,7 +160,7 @@ namespace KJS {
   class HTMLElementFunction : public DOMFunction {
   public:
     HTMLElementFunction(ExecState *exec, int i, int len);
-    virtual ValueImp* tryCall(ExecState *exec, ObjectImp* thisObj, const List& args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
   private:
     int id;
   };
@@ -169,14 +169,14 @@ namespace KJS {
   public:
     HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
     ~HTMLCollection();
-    virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const;
-    virtual ValueImp* call(ExecState *exec, ObjectImp* thisObj, const List& args);
-    virtual ValueImp* tryCall(ExecState *exec, ObjectImp* thisObj, const List& args);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List&args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const;
     virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     enum { Item, NamedItem, Tags };
-    ValueImp* getNamedItems(ExecState *exec, const Identifier &propertyName) const;
+    Value getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::HTMLCollection toCollection() const { return collection; }
@@ -190,8 +190,8 @@ namespace KJS {
   public:
     HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
       : HTMLCollection(exec, c), element(e) { }
-    virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
   private:
     DOM::HTMLSelectElement element;
   };
@@ -202,7 +202,7 @@ namespace KJS {
   public:
     OptionConstructorImp(ExecState *exec, const DOM::Document &d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp* construct(ExecState *exec, const List &args);
+    virtual Object construct(ExecState *exec, const List &args);
   private:
     DOM::Document doc;
   };
@@ -213,13 +213,13 @@ namespace KJS {
   public:
     ImageConstructorImp(ExecState *exec, const DOM::Document &d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp* construct(ExecState *exec, const List &args);
+    virtual Object construct(ExecState *exec, const List &args);
   private:
     DOM::Document doc;
   };
 
-  ValueImp* getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
-  ValueImp* getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
+  Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
+  Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 
   /* Helper function object for determining the number
    * of occurrences of xxxx as in document.xxxx or window.xxxx.

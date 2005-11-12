@@ -861,7 +861,16 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #ifdef CACHE_DEBUG
             kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
 #endif
-            p = new QPixmap( _buffer.buffer() );
+            p = new QPixmap;
+            {
+            	QBuffer buffer(_buffer.buffer());
+            	buffer.open(IO_ReadOnly);
+                QImageIO io( &buffer, 0 );
+                io.setGamma(2.2); // hardcoded "reasonable value"
+                bool result = io.read();
+                if (result) p->convertFromImage(io.image(), 0);
+            }
+
             // set size of image.
 #ifdef CACHE_DEBUG
             kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
@@ -876,7 +885,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
             for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
                 it()->notifyFinished( this );
-	    m_status = Cached; //all done
+            m_status = Cached; //all done
         }
 #endif
     //}

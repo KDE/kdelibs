@@ -32,7 +32,6 @@
 #include <kparts/browserextension.h>
 
 #include <assert.h>
-#include <stdlib.h>
 
 using namespace KJS;
 
@@ -44,9 +43,9 @@ using namespace KJS;
  * these may be CSS exceptions - need to check - pmk
  */
 
-ValueImp* DOMObject::get(ExecState *exec, const Identifier &p) const
+Value DOMObject::get(ExecState *exec, const Identifier &p) const
 {
-  ValueImp* result;
+  Value result;
   try {
     result = tryGet(exec,p);
   }
@@ -54,7 +53,7 @@ ValueImp* DOMObject::get(ExecState *exec, const Identifier &p) const
     // ### translate code into readable string ?
     // ### oh, and s/QString/i18n or I18N_NOOP (the code in kjs uses I18N_NOOP... but where is it translated ?)
     //     and where does it appear to the user ?
-    ObjectImp *err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
     exec->setException( err );
     result = Undefined();
   }
@@ -67,13 +66,13 @@ ValueImp* DOMObject::get(ExecState *exec, const Identifier &p) const
 }
 
 void DOMObject::put(ExecState *exec, const Identifier &propertyName,
-                    ValueImp *value, int attr)
+                    const Value &value, int attr)
 {
   try {
     tryPut(exec, propertyName, value, attr);
   }
   catch (DOM::DOMException e) {
-    ObjectImp *err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
     exec->setException(err);
   }
   catch (...) {
@@ -81,15 +80,78 @@ void DOMObject::put(ExecState *exec, const Identifier &propertyName,
   }
 }
 
+void DOMObject::tryPut(ExecState *exec, const Identifier &propertyName,
+                        const Value& value, int attr)
+{
+    static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->customizedDOMObject(this);
+    ObjectImp::put(exec,propertyName,value,attr);
+}
+
 UString DOMObject::toString(ExecState *) const
 {
   return "[object " + className() + "]";
 }
 
+Value DOMFunction::get(ExecState *exec, const Identifier &propertyName) const
+{
+  try {
+    return tryGet(exec, propertyName);
+  }
+  catch (DOM::DOMException e) {
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
+    exec->setException(err);
+    return Undefined();
+  }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMFunction::get()" << endl;
+    return String("Unknown exception");
+  }
+}
+
+Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  try {
+    return tryCall(exec, thisObj, args);
+  }
+  // pity there's no way to distinguish between these in JS code
+  // ### Look into setting prototypes of these & the use of instanceof so the exception
+  // type can be determined. See what other browsers do.
+  catch (DOM::DOMException e) {
+    Object err = Error::create(exec, GeneralError, QString("DOM Exception %1").arg(e.code).toLocal8Bit());
+    err.put(exec, "code", Number(e.code));
+    exec->setException(err);
+    return Undefined();
+  }
+  catch (DOM::RangeException e) {
+    Object err = Error::create(exec, GeneralError, QString("DOM Range Exception %1").arg(e.code).toLocal8Bit());
+    err.put(exec, "code", Number(e.code));
+    exec->setException(err);
+    return Undefined();
+  }
+  catch (DOM::CSSException e) {
+    Object err = Error::create(exec, GeneralError, QString("CSS Exception %1").arg(e.code).toLocal8Bit());
+    err.put(exec, "code", Number(e.code));
+    exec->setException(err);
+    return Undefined();
+  }
+  catch (DOM::EventException e) {
+    Object err = Error::create(exec, GeneralError, QString("DOM Event Exception %1").arg(e.code).toLocal8Bit());
+    err.put(exec, "code", Number(e.code));
+    exec->setException(err);
+    return Undefined();
+  }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMFunction::call()" << endl;
+    Object err = Error::create(exec, GeneralError, "Unknown exception");
+    exec->setException(err);
+    return Undefined();
+  }
+}
+
 typedef Q3PtrList<ScriptInterpreter> InterpreterList;
 static InterpreterList *interpreterList;
 
-ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame )
+ScriptInterpreter::ScriptInterpreter( const Object &global, khtml::ChildFrame* frame )
   : Interpreter( global ), m_frame( frame ), m_domObjects(1021),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
@@ -129,11 +191,11 @@ void ScriptInterpreter::mark()
 {
   Interpreter::mark();
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
+  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_customizedDomObjects.count() << " DOM objects" << endl;
 #endif
-  Q3PtrDictIterator<DOMObject> it( m_domObjects );
+  Q3PtrDictIterator<void> it( m_customizedDomObjects );
   for( ; it.current(); ++it )
-    it.current()->mark();
+    static_cast<DOMObject*>(it.currentKey())->mark();
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {
@@ -197,7 +259,7 @@ UString::UString(const DOM::DOMString &d)
   rep = UString::Rep::create(dat, len);
 }
 
-DOM::DOMString UString::domString() const
+DOM::DOMString UString::string() const
 {
   return DOM::DOMString((QChar*) data(), size());
 }
@@ -212,7 +274,7 @@ QConstString UString::qconststring() const
   return QConstString((QChar*) data(), size());
 }
 
-DOM::DOMString Identifier::domString() const
+DOM::DOMString Identifier::string() const
 {
   return DOM::DOMString((QChar*) data(), size());
 }
@@ -222,17 +284,17 @@ QString Identifier::qstring() const
   return QString((QChar*) data(), size());
 }
 
-DOM::Node KJS::toNode(ValueImp *val)
+DOM::Node KJS::toNode(const Value& val)
 {
-  ObjectImp *obj = val->getObject();
-  if (!obj || !obj->inherits(&DOMNode::info))
+  Object obj = Object::dynamicCast(val);
+  if (!obj.isValid() || !obj.inherits(&DOMNode::info))
     return DOM::Node();
 
-  const DOMNode *dobj = static_cast<const DOMNode*>(obj);
+  const DOMNode *dobj = static_cast<const DOMNode*>(obj.imp());
   return dobj->toNode();
 }
 
-ValueImp *KJS::getString(DOM::DOMString s)
+Value KJS::getString(DOM::DOMString s)
 {
   if (s.isNull())
     return Null();
@@ -240,17 +302,17 @@ ValueImp *KJS::getString(DOM::DOMString s)
     return String(s);
 }
 
-QVariant KJS::ValueToVariant(ExecState* exec, ValueImp *val) {
+QVariant KJS::ValueToVariant(ExecState* exec, const Value &val) {
   QVariant res;
-  switch (val->type()) {
+  switch (val.type()) {
   case BooleanType:
-    res = QVariant(val->toBoolean(exec), 0);
+    res = QVariant(val.toBoolean(exec), 0);
     break;
   case NumberType:
-    res = QVariant(val->toNumber(exec));
+    res = QVariant(val.toNumber(exec));
     break;
   case StringType:
-    res = QVariant(val->toString(exec).qstring());
+    res = QVariant(val.toString(exec).qstring());
     break;
   default:
     // everything else will be 'invalid'
@@ -261,17 +323,17 @@ QVariant KJS::ValueToVariant(ExecState* exec, ValueImp *val) {
 
 class EmbedLiveConnect : public ObjectImp
 {
-  friend ValueImp* KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
+  friend Value KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
   EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id);
 public:
   ~EmbedLiveConnect();
 
-  virtual ValueImp *get(ExecState *, const Identifier & prop) const;
-  virtual void put(ExecState * exec, const Identifier &prop, ValueImp *value, int=None);
-  virtual ValueImp *call(ExecState * exec, ObjectImp*, const List &args);
+  virtual Value get(ExecState *, const Identifier & prop) const;
+  virtual void put(ExecState * exec, const Identifier &prop, const Value & value, int=None);
+  virtual Value call(ExecState * exec, Object &, const List &args);
   virtual bool implementsCall() const;
   virtual bool toBoolean(ExecState *) const;
-  virtual ValueImp *toPrimitive(ExecState *exec, Type) const;
+  virtual Value toPrimitive(ExecState *exec, Type) const;
   virtual UString toString(ExecState *) const;
 
 private:
@@ -282,7 +344,7 @@ private:
   unsigned long objid;
 };
 
-ValueImp *KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
+Value KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
 {
   KParts::LiveConnectExtension::Type t=(KParts::LiveConnectExtension::Type)type;
   switch(t) {
@@ -295,7 +357,7 @@ ValueImp *KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QStri
     }
     case KParts::LiveConnectExtension::TypeObject:
     case KParts::LiveConnectExtension::TypeFunction:
-      return new EmbedLiveConnect(lc, name, t, id);
+      return Value(new EmbedLiveConnect(lc, name, t, id));
     case KParts::LiveConnectExtension::TypeNumber: {
       bool ok;
       int i = value.toInt(&ok);
@@ -324,7 +386,7 @@ EmbedLiveConnect::~EmbedLiveConnect() {
 }
 
 KDE_NO_EXPORT
-ValueImp *EmbedLiveConnect::get(ExecState *, const Identifier & prop) const
+Value EmbedLiveConnect::get(ExecState *, const Identifier & prop) const
 {
   if (m_liveconnect) {
     KParts::LiveConnectExtension::Type rettype;
@@ -337,10 +399,10 @@ ValueImp *EmbedLiveConnect::get(ExecState *, const Identifier & prop) const
 }
 
 KDE_NO_EXPORT
-void EmbedLiveConnect::put(ExecState * exec, const Identifier &prop, ValueImp* value, int)
+void EmbedLiveConnect::put(ExecState * exec, const Identifier &prop, const Value & value, int)
 {
   if (m_liveconnect)
-    m_liveconnect->put(objid, prop.qstring(), value->toString(exec).qstring());
+    m_liveconnect->put(objid, prop.qstring(), value.toString(exec).qstring());
 }
 
 KDE_NO_EXPORT
@@ -349,12 +411,12 @@ bool EmbedLiveConnect::implementsCall() const {
 }
 
 KDE_NO_EXPORT
-ValueImp* EmbedLiveConnect::call(ExecState *exec, ObjectImp*, const List &args)
+Value EmbedLiveConnect::call(ExecState *exec, Object&, const List &args)
 {
   if (m_liveconnect) {
     QStringList qargs;
     for (ListIterator i = args.begin(); i != args.end(); ++i)
-      qargs.append((*i)->toString(exec).qstring());
+      qargs.append((*i).toString(exec).qstring());
     KParts::LiveConnectExtension::Type rtype;
     QString rval;
     unsigned long robjid;
@@ -370,7 +432,7 @@ bool EmbedLiveConnect::toBoolean(ExecState *) const {
 }
 
 KDE_NO_EXPORT
-ValueImp *EmbedLiveConnect::toPrimitive(ExecState *exec, Type) const {
+Value EmbedLiveConnect::toPrimitive(ExecState *exec, Type) const {
   return String(toString(exec));
 }
 

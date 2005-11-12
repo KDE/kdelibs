@@ -1657,19 +1657,26 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
-    if (d->accessKeysEnabled) {
-        if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) d->accessKeysPreActivate=false;
-        if (_ke->key() == Qt::Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && !(QApplication::keyboardModifiers() & Qt::ControlModifier))
-	{
+    if (d->accessKeysEnabled) 
+    {
+        if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) 
+            d->accessKeysPreActivate=false;
+        if (d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && 
+            !(QApplication::keyboardModifiers() & Qt::ControlModifier))
+        {
 	    displayAccessKeys();
 	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
 	    d->accessKeysActivated = true;
 	    d->accessKeysPreActivate = false;
-	}
-	else if (d->accessKeysActivated)
+            _ke->accept();
+            return;
+        }
+	else if (d->accessKeysActivated) 
+        {
             accessKeysTimeout();
-        _ke->accept();
-        return;
+            _ke->accept();
+            return;
+        }
     }
 
     // Send keyup event
@@ -1849,6 +1856,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {
 	    case QEvent::Paint:
+	    case QEvent::UpdateRequest:
 		if (!allowWidgetPaintEvents) {
 		    // eat the event. Like this we can control exactly when the widget
 		    // get's repainted.
@@ -1870,9 +1878,11 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
+                        d->painting = true;
 		        repaintContents(x + pe->rect().x(), y + pe->rect().y(),
 	                                        pe->rect().width(), pe->rect().height(), true);
-                    } else {
+                        d->painting = false;
+                    } else if (!d->painting) {
  		        scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
  				    pe->rect().width(), pe->rect().height(), asap);
                     }

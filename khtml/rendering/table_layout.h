@@ -94,9 +94,9 @@ protected:
 	Length width;
 	Length effWidth;
 	short minWidth;
-	short maxWidth;
+	int maxWidth;
 	short effMinWidth;
-	short effMaxWidth;
+	int effMaxWidth;
 	short calcWidth;
     };
 

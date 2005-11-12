@@ -610,7 +610,7 @@ public:
     virtual int borderRight() const { return style()->borderRightWidth(); }
 
     virtual short minWidth() const { return 0; }
-    virtual short maxWidth() const { return 0; }
+    virtual int maxWidth() const { return 0; }
 
     RenderStyle* style() const { return m_style; }
     RenderStyle* style( bool firstLine ) const {

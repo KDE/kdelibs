@@ -642,7 +642,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
     if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
-        m_height = floatBottom() + toAdd;
+        m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
     calcHeight();
@@ -661,7 +661,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // blocks that have overflowed content.
         // Check for an overhanging float first.
         // FIXME: This needs to look at the last flow, not the last child.
-        if (lastChild() && lastChild()->hasOverhangingFloats()) {
+        if (lastChild() && lastChild()->hasOverhangingFloats() && !lastChild()->style()->hidesOverflow()) {
             KHTMLAssert(lastChild()->isRenderBlock());
             m_height = lastChild()->yPos() + static_cast<RenderBlock*>(lastChild())->floatBottom();
             m_height += borderBottom() + paddingBottom();
@@ -988,11 +988,7 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
         marginInfo.setPosMarginIfLarger(child->maxBottomMargin(true));
         marginInfo.setNegMarginIfLarger(child->maxBottomMargin(false));
 
-#ifdef APPLE_CHANGES
         if (!marginInfo.canCollapseWithTop())
-#else
-        if (!marginInfo.atTopOfBlock())
-#endif
             // We need to make sure that the position of the self-collapsing block
             // is correct, since it could have overflowing content
             // that needs to be positioned correctly (e.g., a block that
@@ -1228,11 +1224,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
 
 void RenderBlock::setCollapsedBottomMargin(const MarginInfo& marginInfo)
 {
-#ifdef APPLE_CHANGES
     if (marginInfo.canCollapseWithBottom() && !marginInfo.canCollapseWithTop()) {
-#else
-    if (marginInfo.canCollapseWithBottom() && !marginInfo.atTopOfBlock()) {
-#endif
         // Update our max pos/neg bottom margins, since we collapsed our bottom margins
         // with our children.
         m_maxBottomPosMargin = qMax((int)m_maxBottomPosMargin, marginInfo.posMargin());
@@ -1731,8 +1723,8 @@ void RenderBlock::insertFloatingObject(RenderObject *o)
         else
             newObj = new FloatingObject(FloatingObject::FloatRight);
 
-        newObj->startY = -1;
-        newObj->endY = -1;
+        newObj->startY = -500000;
+        newObj->endY = -500000;
         newObj->width = o->width() + o->marginLeft() + o->marginRight();
     }
     else {
@@ -1763,12 +1755,12 @@ void RenderBlock::positionNewFloats()
 {
     if(!m_floatingObjects) return;
     FloatingObject *f = m_floatingObjects->getLast();
-    if(!f || f->startY != -1) return;
+    if(!f || f->startY != -500000) return;
     FloatingObject *lastFloat;
     while(1)
     {
         lastFloat = m_floatingObjects->prev();
-        if (!lastFloat || lastFloat->startY != -1) {
+        if (!lastFloat || lastFloat->startY != -500000) {
             m_floatingObjects->next();
             break;
         }
@@ -1850,6 +1842,10 @@ void RenderBlock::positionNewFloats()
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
+
+        if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
+            m_overflowWidth = o->xPos()+o->width();
+                 
         f->startY = y;
         f->endY = f->startY + _height;
 
@@ -2010,28 +2006,37 @@ int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) 
         Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int lp = r->startY + r->node->lowestPosition(false);
+                int lp = r->startY + r->node->marginTop() + r->node->lowestPosition(false);
                 bottom = qMax(bottom, lp);
             }
         }
     }
-
-    // Fixed positioned objects do not scroll and thus should not constitute
-    // part of the lowest position.
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int lp = r->yPos() + r->lowestPosition(false);
-            bottom = qMax(bottom, lp);
-        }
-    }
+    bottom = qMax(bottom, lowestAbsolutePosition());
 
     if (!includeSelf && lastLineBox()) {
         int lp = lastLineBox()->yPos() + lastLineBox()->height();
         bottom = qMax(bottom, lp);
     }
 
+    return bottom;
+}
+
+int RenderBlock::lowestAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+        
+    // Fixed positioned objects do not scroll and thus should not constitute
+    // part of the lowest position.
+    int bottom = 0;
+    RenderObject* r;
+    Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;
+        int lp = r->yPos() + r->lowestPosition(false);
+        bottom = qMax(bottom, lp);
+    }
     return bottom;
 }
 
@@ -2048,20 +2053,12 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int rp = r->left + r->node->rightmostPosition(false);
+                int rp = r->left + r->node->marginLeft() + r->node->rightmostPosition(false);
            	right = qMax(right, rp);
             }
         }
     }
-
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int rp = r->xPos() + r->rightmostPosition(false);
-            right = qMax(right, rp);
-        }
-    }
+    right = qMax(right, rightmostAbsolutePosition());
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox()) {
@@ -2070,6 +2067,22 @@ int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSel
         }
     }
 
+    return right;
+}
+
+int RenderBlock::rightmostAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+    int right = 0;
+    RenderObject* r;
+    Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;
+        int rp = r->xPos() + r->rightmostPosition(false);
+        right = qMax(right, rp);
+    }
     return right;
 }
 
@@ -2086,26 +2099,34 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
         Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int lp = r->left + r->node->leftmostPosition(false);
+                int lp = r->left + r->node->marginLeft() + r->node->leftmostPosition(false);
                 left = qMin(left, lp);
             }
         }
     }
-
-    if (m_positionedObjects && !isCanvas()) {
-        RenderObject* r;
-        Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
-        for ( ; (r = it.current()); ++it ) {
-            int lp = r->xPos() + r->leftmostPosition(false);
-            left = qMin(left, lp);
-        }
-    }
+    left = qMin(left, leftmostAbsolutePosition());
 
     if (!includeSelf && firstLineBox()) {
         for (InlineRunBox* currBox = firstLineBox(); currBox; currBox = currBox->nextLineBox())
             left = qMin(left, (int)currBox->xPos());
     }
 
+    return left;
+}
+
+int RenderBlock::leftmostAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+    int  left = 0;
+    RenderObject* r;
+    Q3PtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;                         
+        int lp = r->xPos() + r->leftmostPosition(false);
+        left = qMin(left, lp);
+    }
     return left;
 }
 
@@ -2196,12 +2217,6 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
 
-    // we have overhanging floats
-    if (!m_floatingObjects) {
-        m_floatingObjects = new Q3PtrList<FloatingObject>;
-        m_floatingObjects->setAutoDelete(true);
-    }
-
     Q3PtrListIterator<FloatingObject> it(*flow->m_floatingObjects);
     FloatingObject *r;
     for ( ; (r = it.current()); ++it ) {
@@ -2218,10 +2233,12 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
 
             FloatingObject* f = 0;
             // don't insert it twice!
-            Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
-            while ( (f = it.current()) ) {
-                if (f->node == r->node) break;
-                ++it;
+            if (m_floatingObjects) {
+                Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
+                while ( (f = it.current()) ) {
+                    if (f->node == r->node) break;
+                    ++it;
+                }
             }
             if ( !f ) {
                 FloatingObject *floatingObj = new FloatingObject(r->type);
@@ -2246,6 +2263,10 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
 
                 floatingObj->width = r->width;
                 floatingObj->node = r->node;
+                if (!m_floatingObjects) {
+                    m_floatingObjects = new Q3PtrList<FloatingObject>;
+                    m_floatingObjects->setAutoDelete(true);
+                 }
                 m_floatingObjects->append(floatingObj);
 #ifdef DEBUG_LAYOUT
                 kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
@@ -2412,12 +2433,12 @@ void RenderBlock::calcMinMaxWidth()
     }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxWidth = qMax(m_maxWidth, short(style()->minWidth().value()));
+        m_maxWidth = qMax(m_maxWidth, int(style()->minWidth().value()));
         m_minWidth = qMax(m_minWidth, short(style()->minWidth().value()));
     }
 
     if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
-        m_maxWidth = qMin(m_maxWidth, short(style()->maxWidth().value()));
+        m_maxWidth = qMin(m_maxWidth, int(style()->maxWidth().value()));
         m_minWidth = qMin(m_minWidth, short(style()->maxWidth().value()));
     }
 
@@ -2555,6 +2576,9 @@ void RenderBlock::calcInlineMinMaxWidth()
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
+    
+    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
+    
     RenderObject* trailingSpaceChild = 0;
 
     bool normal, oldnormal;
@@ -2635,13 +2659,15 @@ void RenderBlock::calcInlineMinMaxWidth()
             }
 
             if (!child->isRenderInline() && !child->isText()) {
+                
+                bool qBreak = isTcQuirk && !child->isFloatingOrPositioned();
                 // Case (2). Inline replaced elements and floats.
                 // Go ahead and terminate the current line as far as
                 // minwidth is concerned.
                 childMin += child->minWidth();
                 childMax += child->maxWidth();
 
-                if (normal || oldnormal) {
+                if (!qBreak && (normal || oldnormal)) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
                 }
@@ -2670,7 +2696,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // Add our width to the max.
                 inlineMax += childMax;
 
-                if (!normal)
+                if (!normal||qBreak)
                     inlineMin += childMin;
                 else {
                     // Now check our line.
@@ -2796,7 +2822,7 @@ void RenderBlock::calcBlockMinMaxWidth()
 
     RenderObject *child = firstChild();
     RenderObject* prevFloat = 0;
-    short int floatWidths = 0;
+    int floatWidths = 0;
     while(child != 0)
     {
         // positioned children don't affect the minmaxwidth
