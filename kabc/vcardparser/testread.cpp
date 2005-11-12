@@ -50,7 +50,7 @@ int main( int argc, char **argv )
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
-  KApplication app( false, false );
+  KApplication app( false );
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
