@@ -364,7 +364,7 @@ public:
     virtual int calculate(int x, int y, int d) const
     {
         if(m_gradient.focus_x() == 0 && m_gradient.focus_y() == 0)
-            return int(sqrt(x * x + y * y));
+            return int(sqrt((double)x * x + y * y));
 
         return int(m_gradient.calculate(x, y, d));
     }
