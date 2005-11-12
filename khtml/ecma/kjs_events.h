@@ -98,6 +98,7 @@ namespace KJS {
   public:
     // Build a DOMEvent
     DOMEvent(ExecState *exec, DOM::Event e);
+    DOMEvent(ObjectImp *proto, DOM::Event e);
     ~DOMEvent();
     virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
     ValueImp* getValueProperty(ExecState *, int token) const;
@@ -140,6 +141,7 @@ namespace KJS {
   public:
     // Build a DOMUIEvent
     DOMUIEvent(ExecState *exec, DOM::UIEvent ue);
+    DOMUIEvent(ObjectImp *proto, DOM::UIEvent ue);
     ~DOMUIEvent();
     virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
     ValueImp* getValueProperty(ExecState *, int token) const;

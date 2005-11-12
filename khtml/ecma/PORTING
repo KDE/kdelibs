@@ -29,4 +29,9 @@ replacement for.
 
 10) isA(x) ->  ->type() == x
 
-11) 
+11) DeclaredFunctionImp::setName is gone - what to do?
+
+12)
+
+
+
