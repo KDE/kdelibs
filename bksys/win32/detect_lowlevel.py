@@ -16,6 +16,7 @@ def detect(lenv, dest):
 #define HAVE_STDIO_H 1
 #define HAVE_STDLIB_H 1
 #define HAVE_SYS_TYPES_H 1
+#define HAVE_STDINT_H 1
 
 /* Distribution Text to append to OS */
 #define KDE_DISTRIBUTION_TEXT "KDE Libraries for MS Windows"
