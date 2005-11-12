@@ -94,7 +94,7 @@ KJSProxyImpl::~KJSProxyImpl()
   if ( m_script ) {
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
     // This allows to delete the global-object properties, like all the protos
-    static_cast<ObjectImp*>(m_script->globalObject().imp())->deleteAllProperties( m_script->globalExec() );
+    static_cast<ObjectImp*>(m_script->globalObject().imp())->clearProperties();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
     while (KJS::Interpreter::collect())
         ;

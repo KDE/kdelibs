@@ -1187,7 +1187,7 @@ void Window::clear( ExecState *exec )
   delete winq;
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
-  deleteAllProperties( exec );
+  clearProperties();
 
   // Break the dependency between the listeners and their object
   Q3PtrDictIterator<JSEventListener> it(jsEventListeners);
