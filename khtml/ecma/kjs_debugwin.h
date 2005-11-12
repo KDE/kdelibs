@@ -39,6 +39,9 @@
 #include <q3scrollview.h>
 
 #include <kjs/debugger.h>
+#include <kjs/completion.h>
+#include <kjs/interpreter.h>
+#include <kjs/value.h>
 
 #include "dom/dom_misc.h"
 
@@ -50,7 +53,6 @@ class KAction;
 namespace KJS {
   class FunctionImp;
   class List;
-  class Interpreter;
   class KJSDebugWin;
 
   class SourceFile : public DOM::DomShared
