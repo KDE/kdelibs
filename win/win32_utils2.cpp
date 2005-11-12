@@ -11,7 +11,7 @@
 #if defined(__MINGW32__)
 # define WIN32_CAST_CHAR (WCHAR*)
 #else
-# define WIN32_CAST_CHAR (LPCSTR)
+# define WIN32_CAST_CHAR (LPCWSTR)
 #endif
 
 
