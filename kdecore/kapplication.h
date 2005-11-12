@@ -100,17 +100,6 @@ class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 
   Q_OBJECT
 public:
-
-#ifdef KDE3_SUPPORT
-  /**
-   * This constructor takes aboutData and command line
-   *  arguments from KCmdLineArgs.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff.
-   */
-  KApplication( bool x, bool GUIenabled) KDE_DEPRECATED;
-#endif
-
   /**
    * This constructor takes aboutData and command line
    *  arguments from KCmdLineArgs.

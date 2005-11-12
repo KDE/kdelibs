@@ -47,9 +47,7 @@
 #include <QList>
 
 #undef QT_NO_TRANSLATION
-#define KDE3_SUPPORT
 #include "kapplication.h"
-#undef KDE3_SUPPORT
 #define QT_NO_TRANSLATION
 #include "kaccel.h"
 #include "kauthorized.h"
@@ -442,20 +440,6 @@ static SmcConn mySmcConnection = 0;
 // Possibly "steal" XFree86's libSM?
 #endif
 static QTime* smModificationTime = 0;
-
-KApplication::KApplication( bool x, bool GUIenabled ) :
-  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
-                GUIenabled ),
-  KInstance( KCmdLineArgs::about ), d (new Private)
-{
-
-    read_app_startup_id();
-    setApplicationName(instanceName());
-    installSigpipeHandler();
-    parseCommandLine( );
-    init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
-}
 
 KApplication::KApplication( bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
