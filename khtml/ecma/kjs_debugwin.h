@@ -187,7 +187,7 @@ namespace KJS {
     bool sourceParsed(ExecState *exec, int sourceId,
 		      const UString &source, int errorLine);
     bool sourceUnused(ExecState * exec, int sourceId);
-    bool exception(ExecState *exec, const Value &value, bool inTryCatch);
+    bool exception(ExecState *exec, ValueImp *value, bool inTryCatch);
     bool atStatement(ExecState *exec);
     bool enterContext(ExecState *exec);
     bool exitContext(ExecState *exec, const Completion &completion);

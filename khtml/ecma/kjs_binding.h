@@ -62,6 +62,7 @@ namespace KJS {
    */
   class DOMObject : public ObjectImp {
   public:
+    DOMObject() : ObjectImp() {}
     DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
     virtual ValueImp* get(ExecState *exec, const Identifier &propertyName) const;
     virtual ValueImp* tryGet(ExecState *exec, const Identifier &propertyName) const

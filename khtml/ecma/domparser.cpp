@@ -65,18 +65,16 @@ const ClassInfo DOMParser::info = { "DOMParser", 0, 0 /* &DOMParserTable*/, 0 };
 
 
 DOMParser::DOMParser(ExecState *exec, DOM::DocumentImpl *d)
-  : DOMObject(exec), doc(d)
+  : doc(d)
 {
-//   setPrototype(DOMParserProto::self(exec));
+   setPrototype(DOMParserProto::self(exec));
 }
 
 
 ValueImp *DOMParserProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   if (!thisObj->inherits(&DOMParser::info)) {
-    ObjectImp *err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
+    return throwError(exec, TypeError);
   }
 
   DOMParser *parser = static_cast<DOMParser *>(thisObj);

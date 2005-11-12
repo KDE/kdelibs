@@ -60,16 +60,14 @@ ObjectImp *XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
 const ClassInfo XMLSerializer::info = { "XMLSerializer", 0, 0, 0 };
 
 XMLSerializer::XMLSerializer(ExecState *exec)
-  : DOMObject(exec)
 {
+  setPrototype(XMLSerializerProto::self(exec));
 }
 
 ValueImp *XMLSerializerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   if (!thisObj->inherits(&XMLSerializer::info)) {
-    ObjectImp *err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
+    return throwError(exec, TypeError);
   }
 
   switch (id) {
