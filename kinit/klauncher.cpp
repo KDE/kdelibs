@@ -164,7 +164,7 @@ IdleSlave::age(time_t now)
 }
 
 KLauncher::KLauncher(int _kdeinitSocket)
-  : KApplication( false, false ), // No Styles, No GUI
+  : KApplication( false ), // No GUI
     DCOPObject("klauncher"),
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {

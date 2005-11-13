@@ -45,7 +45,7 @@ int kdemain(int argc, char **argv)
     KAboutData about("kio_metainfo", "kio_metainfo", "");
     KCmdLineArgs::init(&about);
 
-    KApplication app(false,true);
+    KApplication app;
 
     //KApplication app(argc, argv, "kio_metainfo", false, true);
 

@@ -701,6 +701,9 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
+  KApplication(bool, bool);
+
   class Private;
   Private* const d;
 };
