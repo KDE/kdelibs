@@ -1170,6 +1170,12 @@ class KSpeech : virtual public DCOPObject {
         * Re-start %KTTSD.
         */
         virtual void reinit() = 0;
+
+        /**
+        * Return the KTTSD deamon version number.
+        * @since KDE 3.5
+        */
+        virtual QString version() = 0;
         //@}
 
     k_dcop_signals:
