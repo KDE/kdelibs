@@ -8,6 +8,7 @@ obj.uselib    = 'QT QTCORE QTXML'
 obj.includes = '../../kdecore'
 #obj.libs      = env['LIB_QT']+env['LIB_QTXML']
 #obj.linkflags = env['KDE_RPATH']
+obj.includes    += ' ../../kdecore ' #for kdelibs_export.h
 obj.execute()
 
 """

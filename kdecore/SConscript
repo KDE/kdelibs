@@ -121,8 +121,6 @@ if env['WINDOWS']:
 	obj.includes += ' ../win/3rdparty/zlib '
 	obj.libs     += ' kdewin32 ws2_32 user32 '
 	obj.ccflags += ' -DKIO_EXPORT= '
-	if env['CC'] == 'cl':
-		obj.ccflags += ' -wd4661 '
 
 if env['MAC']:
 	obj.libs += ' resolv z '

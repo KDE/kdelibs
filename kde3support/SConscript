@@ -42,7 +42,7 @@ obj.libs = 'kdecore dcop kdeui kparts kio dcop kdefx kutils '
 if not env['WINDOWS']:
 	obj.libs += ' kdesu'
 obj.libpaths = '../kdecore ../kdeui ../kparts ../kio ../dcop ../kdefx ../kdesu ../kutils '
-obj.cxxflags += ' -DMAKE_KDE3SUPPORT_LIB -DKDE3_SUPPORT' # todo: will be generated automatically
+obj.ccflags += ' -DMAKE_KDE3SUPPORT_LIB -DKDE3_SUPPORT ' # todo: will be generated automatically
 obj.execute()
 
 #env.CreateFile('dummy.cpp', Value(''))

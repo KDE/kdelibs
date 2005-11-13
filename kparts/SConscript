@@ -23,6 +23,7 @@ if env['WINDOWS']:
 	obj.libs     += " kdewin32"
 else:
 	obj.libs     += " kdesu"
+obj.cxxflags += ' -DMAKE_KPARTS_LIB ' # todo: will be generated automatically
 obj.execute()
 
 if env['MAC']:

@@ -85,6 +85,7 @@ obj.source   = ui_files
 obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 obj.libpaths = '../kdecore/ ../kdefx/ ../dcop'
 obj.libs     = 'kdecore kdefx DCOP'
+obj.ccflags += ' -DMAKE_KDEUI_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'

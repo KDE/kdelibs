@@ -38,7 +38,7 @@
  * to be hidden. A hidden symbol is stripped during the linking step,
  * so it can't be used from outside the resulting library, which is similar
  * to static. However, static limits the visibility to the current
- * compilation unit. hidden symbols can still be used in multiple compilation
+ * compilation unit. Hidden symbols can still be used in multiple compilation
  * units.
  *
  * \code
@@ -262,6 +262,12 @@
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
 /** @} */
+
+#ifdef _MSC_VER
+# ifndef KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+#  define KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+# endif
+#endif
 
 #ifdef KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
 # define KDE_DUMMY_COMPARISON_OPERATOR(C) \
