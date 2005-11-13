@@ -24,18 +24,16 @@
 #define pclose _pclose
 
 #if defined(__MINGW32__)
-#define KDE_IMPORT
+# define KDE_IMPORT
 #else 
-#define KDE_IMPORT __declspec(dllimport)
+# define KDE_IMPORT __declspec(dllimport)
 #endif 
 
 #ifndef KDECORE_EXPORT
 # ifdef MAKE_KDECORE_LIB
 #  define KDECORE_EXPORT KDE_EXPORT
 # else
-#  ifndef KDECORE_EXPORT
-#   define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
-#  endif
+#  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
 # endif
 #endif
 
@@ -47,28 +45,28 @@
 # endif
 #endif 
 
-/* some classes, i.e. KDock* already use EXPORT_* macro: define it too */
-#ifdef MAKE_KDEUI_LIB
-# define KDEUI_EXPORT KDE_EXPORT
-# define EXPORT_DOCKCLASS KDE_EXPORT
-#elif defined(KDE_MAKE_LIB)
-# define KDEUI_EXPORT KDE_IMPORT
-# define EXPORT_DOCKCLASS KDE_IMPORT /* for library build export docklass by default */
-#else
-# define KDEUI_EXPORT
-# define EXPORT_DOCKCLASS
+#ifndef KDEUI_EXPORT
+# ifdef MAKE_KDEUI_LIB
+#  define KDEUI_EXPORT KDE_EXPORT
+# else
+#  define KDEUI_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KDEFX_LIB
-# define KDEFX_EXPORT  KDE_EXPORT
-#else
-# define KDEFX_EXPORT KDE_IMPORT
+#ifndef KDEFX_EXPORT
+# ifdef MAKE_KDEFX_LIB
+#  define KDEFX_EXPORT  KDE_EXPORT
+# else
+#  define KDEFX_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KDEPRINT_LIB
-# define KDEPRINT_EXPORT  KDE_EXPORT
-#else
-# define KDEPRINT_EXPORT KDE_IMPORT
+#ifndef KDEPRINT_EXPORT
+# ifdef MAKE_KDEPRINT_LIB
+#  define KDEPRINT_EXPORT  KDE_EXPORT
+# else
+#  define KDEPRINT_EXPORT KDE_IMPORT
+# endif
 #endif
 
 #ifndef KIO_EXPORT
@@ -79,90 +77,116 @@
 # endif
 #endif
 
-#ifdef MAKE_DCOP_LIB
-# define DCOP_EXPORT KDE_EXPORT
-#else
-# define DCOP_EXPORT KDE_IMPORT
+#ifndef DCOP_EXPORT
+# ifdef MAKE_DCOP_LIB
+#  define DCOP_EXPORT KDE_EXPORT
+# else
+#  define DCOP_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KPARTS_LIB
-# define KPARTS_EXPORT KDE_EXPORT
-#else
-# define KPARTS_EXPORT KDE_IMPORT
+#ifndef KPARTS_EXPORT
+# ifdef MAKE_KPARTS_LIB
+#  define KPARTS_EXPORT KDE_EXPORT
+# else
+#  define KPARTS_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KTEXTEDITOR_LIB
-# define KTEXTEDITOR_EXPORT KDE_EXPORT
-#else
-# define KTEXTEDITOR_EXPORT KDE_IMPORT
+#ifndef KTEXTEDITOR_EXPORT
+# ifdef MAKE_KTEXTEDITOR_LIB
+#  define KTEXTEDITOR_EXPORT KDE_EXPORT
+# else
+#  define KTEXTEDITOR_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KABC_LIB
-# define KABC_EXPORT KDE_EXPORT
-#else
-# define KABC_EXPORT KDE_IMPORT
+#ifndef KABC_EXPORT
+# ifdef MAKE_KABC_LIB
+#  define KABC_EXPORT KDE_EXPORT
+# else
+#  define KABC_EXPORT KDE_IMPORT
+# endif
 #endif
 
-
-#ifdef MAKE_KVCARD_LIB
-# define KVCARD_EXPORT KDE_EXPORT
-#else
-# define KVCARD_EXPORT KDE_IMPORT
+#ifndef KVCARD_EXPORT
+# ifdef MAKE_KVCARD_LIB
+#  define KVCARD_EXPORT KDE_EXPORT
+# else
+#  define KVCARD_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KRESOURCES_LIB
-# define KRESOURCES_EXPORT KDE_EXPORT
-#else
-# define KRESOURCES_EXPORT KDE_IMPORT
+#ifndef KRESOURCES_EXPORT
+# ifdef MAKE_KRESOURCES_LIB
+#  define KRESOURCES_EXPORT KDE_EXPORT
+# else
+#  define KRESOURCES_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KDESU_LIB
-# define KDESU_EXPORT KDE_EXPORT
-#else
-# define KDESU_EXPORT KDE_IMPORT
+#ifndef KDESU_EXPORT
+# ifdef MAKE_KDESU_LIB
+#  define KDESU_EXPORT KDE_EXPORT
+# else
+#  define KDESU_EXPORT KDE_IMPORT
+# endif
 #endif
 
-// all KStyle libs
-#ifdef MAKE_KSTYLE_LIB
-# define KSTYLE_EXPORT KDE_EXPORT
-#else
-# define KSTYLE_EXPORT KDE_IMPORT
+#ifndef KSTYLE_EXPORT
+# ifdef MAKE_KSTYLE_LIB
+#  define KSTYLE_EXPORT KDE_EXPORT
+# else
+#  define KSTYLE_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KMDI_LIB
-# define KMDI_EXPORT  KDE_EXPORT
-#else
-# define KMDI_EXPORT KDE_IMPORT
+#ifndef KMDI_EXPORT
+# ifdef MAKE_KMDI_LIB
+#  define KMDI_EXPORT  KDE_EXPORT
+# else
+#  define KMDI_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KUTILS_LIB
-# define KUTILS_EXPORT  KDE_EXPORT
-#else
-# define KUTILS_EXPORT KDE_IMPORT
+#ifndef KUTILS_EXPORT
+# ifdef MAKE_KUTILS_LIB
+#  define KUTILS_EXPORT  KDE_EXPORT
+# else
+#  define KUTILS_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KATEPARTINTERFACES_LIB
-# define KATEPARTINTERFACES_EXPORT  KDE_EXPORT
-#else
-# define KATEPARTINTERFACES_EXPORT KDE_IMPORT
+#ifndef KATEPARTINTERFACES_EXPORT
+# ifdef MAKE_KATEPARTINTERFACES_LIB
+#  define KATEPARTINTERFACES_EXPORT KDE_EXPORT
+# else
+#  define KATEPARTINTERFACES_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KATEPART_LIB
-# define KATEPART_EXPORT  KDE_EXPORT
-#else
-# define KATEPART_EXPORT KDE_IMPORT
+#ifndef KATEPART_EXPORT
+# ifdef MAKE_KATEPART_LIB
+#  define KATEPART_EXPORT  KDE_EXPORT
+# else
+#  define KATEPART_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KDE3SUPPORT_LIB
-#define KDE3SUPPORT_EXPORT KDE_EXPORT
-#else
-#define KDE3SUPPORT_EXPORT KDE_IMPORT
+#ifndef KDE3SUPPORT_EXPORT
+# ifdef MAKE_KDE3SUPPORT_LIB
+#  define KDE3SUPPORT_EXPORT KDE_EXPORT
+# else
+#  define KDE3SUPPORT_EXPORT KDE_IMPORT
+# endif
 #endif
 
-#ifdef MAKE_KHTML_LIB
-# define KHTML_EXPORT KDE_EXPORT
-#else
-# define KHTML_EXPORT KDE_IMPORT
+#ifndef KHTML_EXPORT
+# ifdef MAKE_KHTML_LIB
+#  define KHTML_EXPORT KDE_EXPORT
+# else
+#  define KHTML_EXPORT KDE_IMPORT
+# endif
 #endif
 
 #ifndef KICE_EXPORT
@@ -178,6 +202,14 @@
 #  define KJS_EXPORT KDE_EXPORT
 # else
 #  define KJS_EXPORT KDE_IMPORT
+# endif 
+#endif 
+
+#ifndef KWALLET_EXPORT
+# ifdef MAKE_KWALLET_LIB
+#  define KWALLET_EXPORT KDE_EXPORT
+# else
+#  define KWALLET_EXPORT KDE_IMPORT
 # endif 
 #endif 
 
