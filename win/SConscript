@@ -15,7 +15,7 @@ realpath.c signal.c syslog.c uname.c  win32_utils.c win32_utils2.cpp
 bootstrap.cpp
 """
 
-obj.ccflags += ' -DMAKE_KDEWIN32_LIB '
+obj.ccflags += ' -DMAKE_KDEWIN32_LIB -DUNICODE '
 obj.includes += ' ../kdecore '
 
 if env['CC'] == 'cl':
