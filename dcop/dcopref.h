@@ -45,7 +45,7 @@ class DCOP_EXPORT DCOPReply
 public:
   /**
    * Casts the value to the type @p T. Requires that the
-   * type @p T suppports QDataStream deserialisation
+   * type @p T supports QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    */
@@ -78,7 +78,7 @@ public:
     }
   /**
    * Retrieves the value from the type @p T. Requires that the
-   * type @p T suppports QDataStream deserialisation
+   * type @p T supports QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    * @param t the type will be written here, if successful
