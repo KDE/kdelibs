@@ -62,7 +62,7 @@ public:
     }
   /**
    * Retrieves the value from the type @p T. Requires that the
-   * type @p T suppports QDataStream deserialisation.
+   * type @p T supports QDataStream deserialisation.
    * @param t the type will be written here, if successful
    * @param tname the signature type name
    * @return true if successful, false otherwise
