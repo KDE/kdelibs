@@ -52,7 +52,9 @@
 #include <ksocketdevice.h>
 using namespace KNetwork;
 
+#ifdef __GNUC__
 #warning "kssl.cc contains temporary functions! Clean up"
+#endif
 
 #define sk_dup d->kossl->sk_dup
 

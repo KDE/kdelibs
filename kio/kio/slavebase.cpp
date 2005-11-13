@@ -38,6 +38,7 @@
 #include <time.h>
 
 #include <qfile.h>
+#include <Q3ValueList>
 
 #include <dcopclient.h>
 

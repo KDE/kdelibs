@@ -801,7 +801,9 @@ void KFileIconView::zoomOut()
     setPreviewSize( d->previewIconSize - 30 );
 }
 
+#ifdef __GNUC__
 #warning port KIconView to QListView, then adapt KFileIconView
+#endif
 
 // Qt4 porting: once we use QListWidget, this becomes a reimplementation of
 // virtual QMimeData *mimeData(const QList<QListWidgetItem*> items) const;

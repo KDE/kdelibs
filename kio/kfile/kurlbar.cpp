@@ -428,7 +428,6 @@ void KURLBar::resizeEvent( QResizeEvent *e )
 void KURLBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
-    QColor Qt::gray = pal.color( QPalette::Normal, QColorGroup::Background );
     QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
     QColor foreground = pal.color( QPalette::Normal, QColorGroup::Foreground );
     pal.setColor( QPalette::Normal,   QColorGroup::Base, Qt::gray );

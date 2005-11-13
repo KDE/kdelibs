@@ -284,7 +284,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 
     // peek to see if anything is available
     int bytes = rc;
-    if (bytes > len)
+    if ((ssize_t)bytes > len)
       bytes = len;
 
     rc = d->socket.peek(data, bytes);

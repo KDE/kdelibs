@@ -94,7 +94,9 @@ KImageIOFormat::save( QDataStream& _str)
 void
 KImageIOFormat::callLibFunc( bool /*read*/, QImageIO * /*iio*/)
 {
+#ifdef __GNUC__
 #warning QImageIO does not exist anymore
+#endif
 #if 0
    if (!bLibLoaded)
    {
@@ -236,7 +238,9 @@ void
 KImageIOFactory::readImage( QImageIO * /*iio*/)
 {
    (void) self(); // Make sure we exist
+#ifdef __GNUC__
 #warning QImageIO does not exist
+#endif
 #if 0
    const char *fm = iio->format();
    if (!fm)
@@ -265,7 +269,9 @@ KImageIOFactory::readImage( QImageIO * /*iio*/)
 void
 KImageIOFactory::writeImage( QImageIO * /*iio*/)
 {
+#ifdef __GNUC__
 #warning QImageIO does not exist
+#endif
 #if 0
    (void) self(); // Make sure we exist
    const char *fm = iio->format();
@@ -332,7 +338,9 @@ KImageIOFactory::load()
             writeFunc = writeImage;
          else
             writeFunc = 0;
+#ifdef __GNUC__
 #warning QImageIO does not exist
+#endif
 #if 0
          QImageIO::defineIOHandler( format->mType.ascii(),
                                     format->mHeader.ascii(),

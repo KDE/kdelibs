@@ -261,12 +261,13 @@ obj.iskdelib = 1
 obj.uselib = "Z FAM VOLMGT"
 
 obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop ../kdefx '
+obj.ccflags += ' -DMAKE_KIO_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../libltdl ../win '
 	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx ltdlc '
 	# TODO: (rh) remove when openssl detection under win32 runs 
-	obj.includes += ' c:/openssl/include'
 	if env['CC'] == 'gcc': 
+		obj.includes += ' c:/openssl/include'
 		obj.libpaths += ' c:/openssl/lib/mingw'
 		obj.libs += ' eay32'
 
