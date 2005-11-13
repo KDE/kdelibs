@@ -119,7 +119,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 		// after the wildcard (*).
 		QStringList parts = QStringList::split('.', cn, false);
 
-		while(parts.count() > 2)
+		while (parts.count() > 2)
 			parts.remove(parts.begin());
 
 		if (parts.count() != 2) {
@@ -138,6 +138,13 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 		    QStringList::split('.', d->peerHost, false).count())
 			return true;
 
+		// *.example.com must match example.com also.  Sigh..
+		if (cn.startsWith("*.")) {
+			QString chopped = cn.mid(2);
+			if (chopped == d->peerHost) {
+				return true;
+			}
+		}
 		return false;
 	}
 
