@@ -17,6 +17,8 @@
 */
 
 #undef QT3_SUPPORT
+#undef QT_MOC_COMPAT //win32/msvc uses '-include' option, so this is a temporary fix
+#define QT_MOC_COMPAT
 
 #include "paste.h"
 #include "pastedialog.h"
