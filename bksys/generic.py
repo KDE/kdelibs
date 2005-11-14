@@ -105,6 +105,14 @@ def dist(env, appname, version=None):
                 from detect_generic import distclean
                 distclean(env)
 
+# set build dirs
+def set_build_dir(lenv, dirs, buildto):
+	lenv.SetOption('duplicate', 'soft-copy')
+	#lenv['_BUILDDIR_']=buildto
+	ldirs=lenv.make_list(dirs)
+	for dir in ldirs:
+		lenv.BuildDir(buildto+os.path.sep+dir, dir)
+
 def pprint(env, col, str, label=''):
 	if not env['_USECOLORS_']:
 		print "%s %s" % (str, label)
@@ -582,6 +590,7 @@ def generate(env):
 	SConsEnvironment.getreldir = getreldir
 	SConsEnvironment.add_dump = add_dump
 	SConsEnvironment.get_dump = get_dump
+	SConsEnvironment.set_build_dir = set_build_dir
 
 	# list of the modules which provide a config.h
 	env['_CONFIG_H_']=[]
