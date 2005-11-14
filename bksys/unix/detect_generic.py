@@ -89,6 +89,7 @@ def detect(env):
 
 
 def dist(env, appname, version=''):
+	import os
 	if not version: VERSION=os.popen("cat VERSION").read().rstrip()
 	else: VERSION=version
 	FOLDER  = appname+'-'+VERSION
