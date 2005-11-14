@@ -26,6 +26,10 @@
 #include "kprotocolinfofactory.h"
 #include "kprotocolmanager.h"
 
+#ifdef Q_CC_MSVC
+#include "../../kdecore/kprotocolinfo_kdecore.cpp"
+#endif
+
 // Most of this class is implemented in kdecore/kprotocolinfo_kdecore.cpp
 // This file only contains a few static class-functions that depend on
 // KProtocolManager

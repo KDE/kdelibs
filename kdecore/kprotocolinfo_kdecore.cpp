@@ -268,6 +268,7 @@ bool KProtocolInfo::isSourceProtocol( const QString& _protocol )
   return prot->m_isSourceProtocol;
 }
 
+#ifdef MAKE_KDECORE_LIB //needed for proper linkage (win32)
 bool KProtocolInfo::isFilterProtocol( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -291,6 +292,7 @@ bool KProtocolInfo::isKnownProtocol( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   return prot;
 }
+#endif
 
 bool KProtocolInfo::supportsListing( const QString& _protocol )
 {
