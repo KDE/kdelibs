@@ -63,14 +63,14 @@ def detect(env):
 		p('RED',"%s was not found - make sure Qt4-devel is installed, or set $QTDIR or $PATH" % prog)
 		env.Exit(1)
 	
-	print "Checking for uic               :",
-	env['QT_UIC']  = find_qt_bin(['uic', 'uic-qt4'])
-
 	print "Checking for uic-qt3           :",
-	env['QT_UIC3'] = find_qt_bin(['uic3', 'uic-qt3'])
+	env['QT_UIC3'] = find_qt_bin(['uic-qt3', 'uic3'])
+
+	print "Checking for uic               :",
+	env['QT_UIC']  = find_qt_bin(['uic-qt4', 'uic'])
 
 	print "Checking for moc               :",
-	env['QT_MOC'] = find_qt_bin(['moc', 'moc-qt4'])
+	env['QT_MOC'] = find_qt_bin(['moc-qt4', 'moc'])
 
 	print "Checking for rcc               :",
 	env['QT_RCC'] = find_qt_bin(['rcc'])
@@ -128,6 +128,11 @@ def detect(env):
 	# link against libqt_debug when appropriate
 	if env['BKS_DEBUG']: debug='_debug'
 	else:                debug=''
+
+	if not env.has_key('LIB_Z'):
+		env['LIB_Z']         = ['z']
+		env['LIB_PNG']       = ['png', 'm'] + env['LIB_Z']
+		env['LIB_SM']        = ['SM', 'ICE']
 
         ########## QT
         # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
