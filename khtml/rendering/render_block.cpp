@@ -1845,7 +1845,7 @@ void RenderBlock::positionNewFloats()
 
         if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
             m_overflowWidth = o->xPos()+o->width();
-                 
+
         f->startY = y;
         f->endY = f->startY + _height;
 
@@ -2025,7 +2025,7 @@ int RenderBlock::lowestAbsolutePosition() const
 {
     if (!m_positionedObjects)
         return 0;
-        
+
     // Fixed positioned objects do not scroll and thus should not constitute
     // part of the lowest position.
     int bottom = 0;
@@ -2123,7 +2123,7 @@ int RenderBlock::leftmostAbsolutePosition() const
     QPtrListIterator<RenderObject> it(*m_positionedObjects);
     for ( ; (r = it.current()); ++it ) {
         if (r->style()->position() == FIXED)
-            continue;                         
+            continue;
         int lp = r->xPos() + r->leftmostPosition(false);
         left = kMin(left, lp);
     }
@@ -2332,7 +2332,7 @@ int RenderBlock::getClearDelta(RenderObject *child)
     int result = clearSet ? kMax(0, bottom - child->yPos()) : 0;
     if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
         if ((child->style()->width().isPercent() && child->width() > lineWidth(child->yPos())) ||
-            (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) && 
+            (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) &&
               child->minWidth() <= contentWidth()))
             result = kMax(0, floatBottom() - child->yPos());
     }
@@ -2427,19 +2427,19 @@ void RenderBlock::calcMinMaxWidth()
 
      if (style()->width().isFixed() && style()->width().value() > 0) {
         if (isTableCell())
-            m_maxWidth = KMAX(m_minWidth,short(style()->width().value()));
+            m_maxWidth = kMax(m_minWidth, (short)calcContentWidth(style()->width().value()));
         else
-            m_minWidth = m_maxWidth = short(style()->width().value());
+            m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
     }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxWidth = KMAX(m_maxWidth, int(style()->minWidth().value()));
-        m_minWidth = KMAX(m_minWidth, short(style()->minWidth().value()));
+        m_maxWidth = kMax(m_maxWidth, (int)calcContentWidth(style()->minWidth().value()));
+        m_minWidth = kMax(m_minWidth, (short)calcContentWidth(style()->minWidth().value()));
     }
 
     if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
-        m_maxWidth = KMIN(m_maxWidth, int(style()->maxWidth().value()));
-        m_minWidth = KMIN(m_minWidth, short(style()->maxWidth().value()));
+        m_maxWidth = kMin(m_maxWidth, (int)calcContentWidth(style()->maxWidth().value()));
+        m_minWidth = kMin(m_minWidth, (short)calcContentWidth(style()->maxWidth().value()));
     }
 
     int toAdd = 0;
@@ -2576,9 +2576,9 @@ void RenderBlock::calcInlineMinMaxWidth()
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
-    
+
     bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
-    
+
     RenderObject* trailingSpaceChild = 0;
 
     bool normal, oldnormal;
@@ -2659,7 +2659,7 @@ void RenderBlock::calcInlineMinMaxWidth()
             }
 
             if (!child->isRenderInline() && !child->isText()) {
-                
+
                 bool qBreak = isTcQuirk && !child->isFloatingOrPositioned();
                 // Case (2). Inline replaced elements and floats.
                 // Go ahead and terminate the current line as far as
