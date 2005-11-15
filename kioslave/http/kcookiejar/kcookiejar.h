@@ -63,7 +63,7 @@ protected:
     bool    mCrossDomain;
     bool    mHttpOnly;
     bool    mExplicitPath;
-    Q3ValueList<long> mWindowIds;
+    QList<long> mWindowIds;
 
     QString cookieStr(bool useDOMFormat);
 
@@ -84,7 +84,7 @@ public:
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
     QString value(void) { return mValue; }
-    Q3ValueList<long> &windowIds(void) { return mWindowIds; }
+    QList<long> &windowIds(void) { return mWindowIds; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }

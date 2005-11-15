@@ -295,7 +295,7 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
        {
           if (updateWindowId)
           {
-            for(Q3ValueList<long>::ConstIterator it = cookie->windowIds().begin();
+            for(QList<long>::ConstIterator it = cookie->windowIds().begin();
                 it != cookie->windowIds().end(); ++it)
             {
                long windowId = *it;
@@ -1239,7 +1239,7 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
                continue;
             }
 
-            Q3ValueList<long> &ids = cookie->windowIds();
+            QList<long> &ids = cookie->windowIds();
             if (!ids.remove(windowId) || !ids.isEmpty())
             {
                cookie = cookieList->next();
