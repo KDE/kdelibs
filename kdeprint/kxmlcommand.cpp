@@ -545,7 +545,7 @@ class KXmlCommandManager::KXmlCommandManagerPrivate
 {
 public:
 	QStringList	m_cmdlist;
-	QMap<QString, Q3ValueList<KXmlCommand*> >	m_mimemap;
+	QMap<QString, QList<KXmlCommand*> >	m_mimemap;
 	QMap<QString, KXmlCommand*>	m_cmdmap;
 };
 
@@ -732,8 +732,8 @@ QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QStrin
 
 	if (d->m_mimemap.contains(mimesrc))
 	{
-		const Q3ValueList<KXmlCommand*>	l = d->m_mimemap[mimesrc];
-		for (Q3ValueList<KXmlCommand*>::ConstIterator it=l.begin(); it!=l.end(); ++it)
+		const QList<KXmlCommand*>	l = d->m_mimemap[mimesrc];
+		for (QList<KXmlCommand*>::ConstIterator it=l.begin(); it!=l.end(); ++it)
 		{
 			// check filter availability
 			if (!KdeprintChecker::check((*it)->requirements()))
