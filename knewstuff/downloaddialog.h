@@ -34,7 +34,7 @@ class KListView;
 class QTextBrowser;
 class QFrame;
 class Q3ListViewItem;
-template<typename T> class Q3ValueList;
+template<typename T> class QList;
 
 class KNewStuffGeneric;
 
@@ -180,10 +180,10 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     Entry *m_entry;
     KNewStuffGeneric *m_s;
     int m_curtab;
-    QMap<QWidget*, Q3ValueList<KListView*>* > m_map;
+    QMap<QWidget*, QList<KListView*>* > m_map;
     QMap<QWidget*, Provider*> m_providers;
     QMap<QWidget*, QTextBrowser*> m_rts;
-    QMap<QWidget*, Q3ValueList<QPushButton*>* > m_buttons;
+    QMap<QWidget*, QList<QPushButton*>* > m_buttons;
     QMap<KIO::Job*, Provider*> m_jobs;
     QMap<KIO::Job*, QString> m_data;
     QString m_filter;

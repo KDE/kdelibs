@@ -131,17 +131,17 @@ void DownloadDialog::load(const QString &providerList)
 
 void DownloadDialog::clear()
 {
-  QMap<QWidget*, Q3ValueList<KListView*>* >::Iterator it;
-  QMap<QWidget*, Q3ValueList<KListView*>* >::Iterator end(m_map.end());
+  QMap<QWidget*, QList<KListView*>* >::Iterator it;
+  QMap<QWidget*, QList<KListView*>* >::Iterator end(m_map.end());
   for(it = m_map.begin(); it != end; ++it)
   {
-    Q3ValueList<KListView*> *v = it.data();
+    QList<KListView*> *v = it.data();
     kdDebug() << "clear listviews in " << v << endl;
     if(v)
     {
-      (*(v->at(0)))->clear();
-      (*(v->at(1)))->clear();
-      (*(v->at(2)))->clear();
+      (*(v->at(0))).clear();
+      (*(v->at(1))).clear();
+      (*(v->at(2))).clear();
 
       //delete (*it);
     }
@@ -270,11 +270,11 @@ void DownloadDialog::addProvider(Provider *p)
   QVBoxLayout *box4 = new QVBoxLayout(w_l);
   box4->add(d->m_lvtmp_l);
 
-  Q3ValueList<KListView*> *v = new Q3ValueList<KListView*>;
+  QList<KListView*> *v = new QList<KListView*>;
   *v << d->m_lvtmp_r << d->m_lvtmp_d << d->m_lvtmp_l;
   m_map[frame] = v;
   m_rts[frame] = rt;
-  Q3ValueList<QPushButton*> *vb = new Q3ValueList<QPushButton*>;
+  QList<QPushButton*> *vb = new QList<QPushButton*>;
   *vb << in << de;
   m_buttons[frame] = vb;
   m_providers[frame] = p;
@@ -488,7 +488,7 @@ void DownloadDialog::install(Entry *e)
   if(currentEntryItem() == m_entryitem)
   {
     QPushButton *in;
-    in = *(m_buttons[d->m_page]->at(0));
+    in = (m_buttons[d->m_page]->at(0));
     if(in) in->setEnabled(false);
   }
 }
@@ -552,8 +552,8 @@ void DownloadDialog::slotSelected()
     else enabled = true;
 
     QPushButton *de, *in;
-    in = *(m_buttons[d->m_page]->at(0));
-    de = *(m_buttons[d->m_page]->at(1));
+    in = (m_buttons[d->m_page]->at(0));
+    de = (m_buttons[d->m_page]->at(1));
     if(in) in->setEnabled(enabled);
     if(de) de->setEnabled(true);
   }
@@ -587,9 +587,9 @@ void DownloadDialog::slotPage(QWidget *w)
 
   d->m_page = w;
 
-  lv_r = *(m_map[w]->at(0));
-  lv_d = *(m_map[w]->at(1));
-  lv_l = *(m_map[w]->at(2));
+  lv_r = (m_map[w]->at(0));
+  lv_d = (m_map[w]->at(1));
+  lv_l = (m_map[w]->at(2));
   p = m_providers[w];
   m_rt = m_rts[w];
 
