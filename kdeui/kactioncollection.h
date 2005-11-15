@@ -38,7 +38,7 @@ class KConfigBase;
 class KInstance;
 class KXMLGUIClient;
 
-typedef Q3ValueList<KAction *> KActionPtrList;
+typedef QList<KAction *> KActionPtrList;
 
 /**
  * A managed set of KAction objects.

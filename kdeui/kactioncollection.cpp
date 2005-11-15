@@ -65,7 +65,7 @@ public:
   //int m_iWidgetCurrent;
   //QValueList<QWidget*> m_widgetList;
   //QValueList<KAccel*> m_kaccelList;
-  Q3ValueList<KActionCollection*> m_docList;
+  QList<KActionCollection*> m_docList;
   QWidget *m_widget;
   KAccel *m_kaccel;
   KAccel *m_builderKAccel;
@@ -654,9 +654,9 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
   kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
   KActionCollection ret( *this );
 
-  Q3ValueList<KAction *> actions = c.actions();
-  Q3ValueList<KAction *>::ConstIterator it = actions.begin();
-  Q3ValueList<KAction *>::ConstIterator end = actions.end();
+  QList<KAction *> actions = c.actions();
+  QList<KAction *>::ConstIterator it = actions.begin();
+  QList<KAction *>::ConstIterator end = actions.end();
   for (; it != end; ++it )
     ret.insert( *it );
 

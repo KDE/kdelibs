@@ -126,8 +126,8 @@ private:
 class KKeyChooserPrivate
 {
  public:
-	Q3ValueList<KShortcutList*> rgpLists;
-	Q3ValueList<KShortcutList*> rgpListsAllocated;
+	QList<KShortcutList*> rgpLists;
+	QList<KShortcutList*> rgpListsAllocated;
 
 	KListView *pList;
 	QLabel *lInfo;
@@ -218,8 +218,8 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 // (just checking against kdeglobals isn't enough, the shortcuts
 // might have changed in KKeyChooser and not being saved yet).
 // Also used when reassigning a shortcut from one chooser to another.
-static Q3ValueList< KKeyChooser* >* allChoosers = NULL;
-static KStaticDeleter< Q3ValueList< KKeyChooser* > > allChoosersDeleter;
+static QList< KKeyChooser* >* allChoosers = NULL;
+static KStaticDeleter< QList< KKeyChooser* > > allChoosersDeleter;
 
 KKeyChooser::~KKeyChooser()
 {
@@ -449,7 +449,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //  readStdKeys();
   connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
   if( allChoosers == NULL )
-        allChoosers = allChoosersDeleter.setObject( allChoosers, new Q3ValueList< KKeyChooser* > );
+        allChoosers = allChoosersDeleter.setObject( allChoosers, new QList< KKeyChooser* > );
   allChoosers->append( this );
 }
 
@@ -756,7 +756,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
         bool has_global_chooser = false;
         bool has_standard_chooser = false;
-        for( Q3ValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+        for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
              it != allChoosers->end();
              ++it ) {
             has_global_chooser |= ((*it)->m_type == Global);
@@ -782,7 +782,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
             return true;
 
         // check also other KKeyChooser's
-        for( Q3ValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+        for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
              it != allChoosers->end();
              ++it ) {
             if( (*it) != this && (*it)->isKeyPresentLocally( cut, NULL, bWarnUser ))
@@ -866,7 +866,7 @@ void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* choo
 {
     bool was_in_choosers = false;
     if( allChoosers != NULL ) {
-        for( Q3ValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+        for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
              it != allChoosers->end();
              ++it ) {
             if( (*it) != chooser && (*it)->m_type == Standard ) {
@@ -887,7 +887,7 @@ void KKeyChooser::removeGlobalShortcut( const QString& name, KKeyChooser* choose
 {
     bool was_in_choosers = false;
     if( allChoosers != NULL ) {
-        for( Q3ValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+        for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
              it != allChoosers->end();
              ++it ) {
             if( (*it) != chooser && (*it)->m_type == Global ) {

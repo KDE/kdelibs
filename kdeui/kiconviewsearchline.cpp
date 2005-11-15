@@ -32,7 +32,7 @@
 
 #define DEFAULT_CASESENSITIVE false
 
-typedef Q3ValueList <Q3IconViewItem *> QIconViewItemList;
+typedef QList <Q3IconViewItem *> QIconViewItemList;
 
 class KIconViewSearchLine::KIconViewSearchLinePrivate
 {
