@@ -186,13 +186,13 @@ void IppRequest::addInteger_p(int group, int type, const QString& name, int valu
 	if (!name.isEmpty()) ippAddInteger(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),value);
 }
 
-void IppRequest::addIntegerList_p(int group, int type, const QString& name, const Q3ValueList<int>& values)
+void IppRequest::addIntegerList_p(int group, int type, const QString& name, const QList<int>& values)
 {
 	if (!name.isEmpty())
 	{
 		ipp_attribute_t	*attr = ippAddIntegers(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),(int)(values.count()),NULL);
 		int	i(0);
-		for (Q3ValueList<int>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
+		for (QList<int>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].integer = *it;
 	}
 }
@@ -202,13 +202,13 @@ void IppRequest::addBoolean(int group, const QString& name, bool value)
 	if (!name.isEmpty()) ippAddBoolean(request_,(ipp_tag_t)group,name.latin1(),(char)value);
 }
 
-void IppRequest::addBoolean(int group, const QString& name, const Q3ValueList<bool>& values)
+void IppRequest::addBoolean(int group, const QString& name, const QList<bool>& values)
 {
 	if (!name.isEmpty())
 	{
 		ipp_attribute_t	*attr = ippAddBooleans(request_,(ipp_tag_t)group,name.latin1(),(int)(values.count()),NULL);
 		int	i(0);
-		for (Q3ValueList<bool>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
+		for (QList<bool>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].boolean = (char)(*it);
 	}
 }

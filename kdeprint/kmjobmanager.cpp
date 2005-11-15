@@ -204,9 +204,9 @@ int KMJobManager::actions()
 	return 0;
 }
 
-Q3ValueList<KAction*> KMJobManager::createPluginActions(KActionCollection*)
+QList<KAction*> KMJobManager::createPluginActions(KActionCollection*)
 {
-	return Q3ValueList<KAction*>();
+	return QList<KAction*>();
 }
 
 void KMJobManager::validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&)

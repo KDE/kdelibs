@@ -78,7 +78,7 @@ public:
 	KMThreadJob* threadJob();
 
 	virtual int actions();
-	virtual Q3ValueList<KAction*> createPluginActions(KActionCollection*);
+	virtual QList<KAction*> createPluginActions(KActionCollection*);
 	virtual void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
 	virtual bool doPluginAction(int, const Q3PtrList<KMJob>&);
 

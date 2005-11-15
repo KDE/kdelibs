@@ -35,7 +35,7 @@ public:
 	virtual ~KMCupsJobManager();
 
 	int actions();
-	Q3ValueList<KAction*> createPluginActions(KActionCollection*);
+	QList<KAction*> createPluginActions(KActionCollection*);
 	void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
 	bool doPluginAction(int, const Q3PtrList<KMJob>&);
 

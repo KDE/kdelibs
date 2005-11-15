@@ -278,9 +278,9 @@ bool KMCupsJobManager::jobIppReport(KMJob *j)
 	return result;
 }
 
-Q3ValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
+QList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
 {
-	Q3ValueList<KAction*>	list;
+	QList<KAction*>	list;
 	KAction	*act(0);
 
 	list <<  (act = new PluginAction(0, i18n("&Job IPP Report"), "kdeprint_report", 0, coll, "plugin_ipp"));
