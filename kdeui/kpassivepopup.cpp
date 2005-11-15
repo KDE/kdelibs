@@ -17,13 +17,13 @@
 #include <qpainter.h>
 #include <qtooltip.h>
 #include <qbitmap.h>
-
+#include <Q3PointArray>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
-#include <Q3PointArray>
+#include <QPolygon>
 #include <kvbox.h>
 
 
@@ -40,7 +40,7 @@ class KPassivePopup::Private
 {
 public:
   int popupStyle;
-  Q3PointArray surround;
+  QPolygon surround;
   QPoint                    anchor;
   QPoint                    fixedPosition;
 };
