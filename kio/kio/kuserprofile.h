@@ -117,7 +117,7 @@ private:
 class KIO_EXPORT KServiceTypeProfile
 {
 public:
-  typedef Q3ValueList<KServiceOffer> OfferList;
+  typedef QList<KServiceOffer> OfferList;
 
   ~KServiceTypeProfile();
 

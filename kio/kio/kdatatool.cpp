@@ -159,9 +159,9 @@ KService::Ptr KDataToolInfo::service() const
     return m_service;
 }
 
-Q3ValueList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
+QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
 {
-    Q3ValueList<KDataToolInfo> lst;
+    QList<KDataToolInfo> lst;
 
     QString constr;
 

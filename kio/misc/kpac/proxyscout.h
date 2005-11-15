@@ -69,7 +69,7 @@ namespace KPAC
             DCOPClientTransaction* transaction;
             KURL url;
         };
-        typedef Q3ValueList< QueuedRequest > RequestQueue;
+        typedef QList< QueuedRequest > RequestQueue;
         RequestQueue m_requestQueue;
 
         typedef QMap< QString, time_t > BlackList;

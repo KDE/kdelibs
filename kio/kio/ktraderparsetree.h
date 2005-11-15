@@ -107,7 +107,7 @@ public:
   int i;
   double f;
   bool b;
-  Q3ValueList<QVariant> seq;
+  QList<QVariant> seq;
   QStringList strSeq;
   Type type;
 

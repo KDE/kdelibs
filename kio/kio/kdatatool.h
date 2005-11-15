@@ -171,7 +171,7 @@ public:
      * and also used if the tool wants to read its configuration in the app's config file).
      * @return the list of results
      */
-    static Q3ValueList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
+    static QList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
 
 private:
     KService::Ptr m_service;

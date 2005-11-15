@@ -435,8 +435,8 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
        (c2.type == ParseContext::T_SEQ) &&
        ((*(c2.seq.begin())).type() == QVariant::Int)) {
 
-      Q3ValueList<QVariant>::ConstIterator it = c2.seq.begin();
-      Q3ValueList<QVariant>::ConstIterator end = c2.seq.end();
+      QList<QVariant>::ConstIterator it = c2.seq.begin();
+      QList<QVariant>::ConstIterator end = c2.seq.end();
       _context->b = false;
       for (; it != end; it++)
 	  if ((*it).type() == QVariant::Int &&
@@ -451,8 +451,8 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
        c2.type == ParseContext::T_SEQ &&
        (*(c2.seq.begin())).type() == QVariant::Double) {
 
-      Q3ValueList<QVariant>::ConstIterator it = c2.seq.begin();
-      Q3ValueList<QVariant>::ConstIterator end = c2.seq.end();
+      QList<QVariant>::ConstIterator it = c2.seq.begin();
+      QList<QVariant>::ConstIterator end = c2.seq.end();
       _context->b = false;
       for (; it != end; it++)
 	  if ((*it).type() == QVariant::Double &&

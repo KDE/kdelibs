@@ -147,7 +147,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
 
   if ( !!prefs )
   {
-    Q3ValueList<KTraderSorter> sorter;
+    QList<KTraderSorter> sorter;
     KServiceTypeProfile::OfferList::Iterator it = lst.begin();
     for( ; it != lst.end(); ++it )
     {
@@ -157,7 +157,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     }
     qBubbleSort( sorter );
 
-    Q3ValueList<KTraderSorter>::Iterator it2 = sorter.begin();
+    QList<KTraderSorter>::Iterator it2 = sorter.begin();
     for( ; it2 != sorter.end(); ++it2 )
       ret.prepend( (*it2).service() );
   }

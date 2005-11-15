@@ -121,7 +121,7 @@ public:
 	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2,
 				SMIMESign=3, SMIMEEncrypt=4, Any=5 };
 
-        typedef Q3ValueList<KSSLValidation> KSSLValidationList;
+        typedef QList<KSSLValidation> KSSLValidationList;
 
 	/**
 	 *  Convert this certificate to a string.
