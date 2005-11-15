@@ -39,7 +39,7 @@ class KACLListViewItem;
 class QPushButton;
 class QButtonGroup;
 class KACLListView;
-class Q3WidgetStack;
+class QStackedWidget;
 class QCheckBox;
 class QAbstractButton;
 
@@ -152,7 +152,7 @@ private:
      QButtonGroup *m_buttonGroup;
      QComboBox *m_usersCombo;
      QComboBox *m_groupsCombo;
-     Q3WidgetStack *m_widgetStack;
+     QStackedWidget *m_widgetStack;
      QCheckBox *m_defaultCB;
      QHash<QAbstractButton*, int> m_buttonIds;
 };

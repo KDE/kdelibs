@@ -36,7 +36,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <q3widgetstack.h>
+#include <QStackedWidget>
 #include <q3header.h>
 #include <qpixmapcache.h>
 #include <QMouseEvent>
@@ -420,14 +420,14 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     connect( m_buttonGroup, SIGNAL( buttonClicked( QAbstractButton* ) ),
              this, SLOT( slotSelectionChanged( QAbstractButton * ) ) );
 
-    m_widgetStack = new Q3WidgetStack( page );
+    m_widgetStack = new QStackedWidget( page );
     mainLayout->addWidget( m_widgetStack );
 
     KHBox *usersBox = new KHBox( m_widgetStack );
-    m_widgetStack->addWidget( usersBox, KACLListView::NamedUser );
+    m_widgetStack->insertWidget( KACLListView::NamedUser,usersBox );
 
     KHBox *groupsBox = new KHBox( m_widgetStack );
-    m_widgetStack->addWidget( groupsBox, KACLListView::NamedGroup );
+    m_widgetStack->insertWidget( KACLListView::NamedGroup,groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
     m_usersCombo = new QComboBox( false, usersBox, "users" );
@@ -531,11 +531,11 @@ void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )
             break;
         case KACLListView::NamedUser:
             m_widgetStack->setEnabled( true );
-            m_widgetStack->raiseWidget( KACLListView::NamedUser );
+            m_widgetStack->setCurrentIndex( KACLListView::NamedUser );
             break;
         case KACLListView::NamedGroup:
             m_widgetStack->setEnabled( true );
-            m_widgetStack->raiseWidget( KACLListView::NamedGroup );
+            m_widgetStack->setCurrentIndex( KACLListView::NamedGroup );
             break;
         default:
             break;
