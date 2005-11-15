@@ -3408,7 +3408,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     d->repaintTimerId = 0;
 
     QRegion updateRegion;
-    Q3MemArray<QRect> rects = d->updateRegion.rects();
+    QVector<QRect> rects = d->updateRegion.rects();
 
     d->updateRegion = QRegion();
 
