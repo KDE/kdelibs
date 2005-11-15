@@ -99,10 +99,10 @@ KConfig * Dispatcher::configForInstanceName( const QByteArray & instanceName )
     return 0;
 }
 
-Q3StrList Dispatcher::instanceNames() const
+QList<QByteArray> Dispatcher::instanceNames() const
 {
     kdDebug( 701 ) << k_funcinfo << endl;
-    Q3StrList names;
+    QList<QByteArray> names;
     for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
         if( ( *it ).count > 0 )
             names.append( it.key() );

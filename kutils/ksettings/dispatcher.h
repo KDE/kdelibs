@@ -26,7 +26,6 @@
 #include <kdelibs_export.h>
 
 class Q3Signal;
-class Q3StrList;
 template<class T> class KStaticDeleter;
 class KInstance;
 class KConfig;
@@ -81,7 +80,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
          * @return a list of all the instance names that are currently
          * registered
          */
-        Q3StrList instanceNames() const;
+        QList<QByteArray> instanceNames() const;
 
 //X         /**
 //X          * @return The KInstance object belonging to the instance name you pass
