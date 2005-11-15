@@ -54,7 +54,7 @@ struct CollectionCache: public NodeListImpl::Cache
 {
     static Cache* make() { return new CollectionCache; }
 
-    Q3Dict<Q3ValueList<NodeImpl*> > nameCache;
+    Q3Dict<QList<NodeImpl*> > nameCache;
 
     CollectionCache(): nameCache(127)
     {
@@ -288,7 +288,7 @@ NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
     return 0;
 }
 
-Q3ValueList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
+QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
 {
     QString key = name.string();
 
@@ -296,11 +296,11 @@ Q3ValueList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) c
     //remember stuff about elements we were asked for.
     m_cache->updateNodeListInfo(m_refNode->getDocument());
     CollectionCache* cache = static_cast<CollectionCache*>(m_cache);
-    if (Q3ValueList<NodeImpl*>* info = cache->nameCache.find(key)) {
+    if (QList<NodeImpl*>* info = cache->nameCache.find(key)) {
         return *info;
     }
     else {
-        Q3ValueList<NodeImpl*>* newInfo = new Q3ValueList<NodeImpl*>;
+        QList<NodeImpl*>* newInfo = new QList<NodeImpl*>;
 
         NodeImpl* match = namedItem(name);
         while (match) {
