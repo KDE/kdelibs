@@ -51,7 +51,7 @@ protected:
 
 private:
 	KListBox		*m_view;
-	Q3ValueList<QPushButton*>	m_buttons;
+	QList<QPushButton*>	m_buttons;
 	KMPrinter		*m_printer;
 };
 

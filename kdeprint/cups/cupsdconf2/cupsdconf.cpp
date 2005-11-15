@@ -448,7 +448,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (browsing_) t << "BrowseShortNames " << (useshortnames_ ? "Yes" : "No") << endl;
 		
 		t << endl << "# Unknown" << endl;
-		for (Q3ValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
+		for (QList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
 			t << (*it).first << " " << (*it).second << endl;
 
 		return true;

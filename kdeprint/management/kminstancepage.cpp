@@ -49,7 +49,7 @@ KMInstancePage::KMInstancePage(QWidget *parent)
 	main_->addWidget(m_view);
 	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
 	main_->addLayout(sub_);
-	for (Q3ValueList<QPushButton*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+	for (QList<QPushButton*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
 		if (*it)
 			sub_->addWidget(*it);
 		else
@@ -113,7 +113,7 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		m_view->sort();
 	}
 
-	for (Q3ValueList<QPushButton*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+	for (QList<QPushButton*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
 		if (*it)
 			(*it)->setEnabled(ok);
 

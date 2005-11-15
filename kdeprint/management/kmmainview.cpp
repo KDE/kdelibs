@@ -465,8 +465,8 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		}
 		if (!printer->isSpecial())
 		{
-			Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
-			for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+			QList<KAction*>	pactions = m_actions->actions("plugin");
+			for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 				(*it)->plug(m_pop);
 			if (pactions.count() > 0)
 				m_pop->insertSeparator();
@@ -795,11 +795,11 @@ bool KMMainView::printerInfosShown() const
 void KMMainView::loadPluginActions()
 {
 	KMFactory::self()->manager()->createPluginActions(m_actions);
-	Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
+	QList<KAction*>	pactions = m_actions->actions("plugin");
 	int	index = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
 	QMenu *menu = m_menubar->getButton( 1 )->popup();
-	for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->plug(m_toolbar, index++);
 		( *it )->plug( menu );
@@ -808,8 +808,8 @@ void KMMainView::loadPluginActions()
 
 void KMMainView::removePluginActions()
 {
-	Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
-	for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	QList<KAction*>	pactions = m_actions->actions("plugin");
+	for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->unplugAll();
 		delete (*it);

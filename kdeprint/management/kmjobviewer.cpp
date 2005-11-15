@@ -595,8 +595,8 @@ void KMJobViewer::loadPluginActions()
 		}
 	}
 
-	Q3ValueList<KAction*>	acts = m_manager->createPluginActions(actionCollection());
-	for (Q3ValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
+	QList<KAction*>	acts = m_manager->createPluginActions(actionCollection());
+	for (QList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
 	{
 		// connect the action to this
 		connect((*it), SIGNAL(activated(int)), SLOT(pluginActionActivated(int)));
@@ -612,8 +612,8 @@ void KMJobViewer::loadPluginActions()
 
 void KMJobViewer::removePluginActions()
 {
-	Q3ValueList<KAction*>	acts = actionCollection()->actions("plugin");
-	for (Q3ValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
+	QList<KAction*>	acts = actionCollection()->actions("plugin");
+	for (QList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
 	{
 		(*it)->unplugAll();
 		delete (*it);

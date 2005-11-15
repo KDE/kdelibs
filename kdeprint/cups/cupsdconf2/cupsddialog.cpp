@@ -178,7 +178,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	{
 		// there were some unknown options, warn the user
 		QString	msg;
-		for (Q3ValueList< QPair<QString,QString> >::ConstIterator it=conf_->unknown_.begin(); it!=conf_->unknown_.end(); ++it)
+		for (QList< QPair<QString,QString> >::ConstIterator it=conf_->unknown_.begin(); it!=conf_->unknown_.end(); ++it)
 			msg += ((*it).first + " = " + (*it).second + "<br>");
 		msg.prepend("<p>" + i18n("Some options were not recognized by this configuration tool. "
 		                          "They will be left untouched and you won't be able to change them.") + "</p>");

@@ -25,7 +25,7 @@
 #include <q3ptrlist.h>
 #include <qtextstream.h>
 #include <qpair.h>
-#include <Q3ValueList>
+#include <QList>
 
 #include "cupsdcomment.h"
 
@@ -139,7 +139,7 @@ struct CupsdConf
 	CupsdComment	comments_;
 	
 	// unrecognized options
-	Q3ValueList< QPair<QString,QString> >	unknown_;
+	QList< QPair<QString,QString> >	unknown_;
 };
 
 struct CupsLocation
