@@ -108,7 +108,7 @@ DistributionList::Entry::List DistributionList::entries() const
   return mEntries;
 }
 
-typedef Q3ValueList< QPair<QString, QString> > MissingEntryList;
+typedef QList< QPair<QString, QString> > MissingEntryList;
 
 class DistributionListManager::DistributionListManagerPrivate
 {

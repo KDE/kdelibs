@@ -175,7 +175,7 @@ void LdapClient::slotDone()
   endParseLDIF();
   mActive = false;
 #if 0
-  for ( Q3ValueList<LdapObject>::Iterator it = mObjects.begin(); it != mObjects.end(); ++it ) {
+  for ( QList<LdapObject>::Iterator it = mObjects.begin(); it != mObjects.end(); ++it ) {
     qDebug( (*it).toString().latin1() );
   }
 #endif
@@ -319,7 +319,7 @@ void LdapSearch::startSearch( const QString& txt )
   QString filter = QString( "|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*)" )
       .arg( mSearchText ).arg( mSearchText ).arg( mSearchText ).arg( mSearchText );
 
-  Q3ValueList< LdapClient* >::Iterator it;
+  QList< LdapClient* >::Iterator it;
   for ( it = mClients.begin(); it != mClients.end(); ++it ) {
     (*it)->startQuery( filter );
     ++mActiveClients;
@@ -328,7 +328,7 @@ void LdapSearch::startSearch( const QString& txt )
 
 void LdapSearch::cancelSearch()
 {
-  Q3ValueList< LdapClient* >::Iterator it;
+  QList< LdapClient* >::Iterator it;
   for ( it = mClients.begin(); it != mClients.end(); ++it )
     (*it)->cancelQuery();
 

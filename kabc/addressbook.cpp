@@ -51,14 +51,14 @@ struct AddressBook::AddressBookData
 struct AddressBook::Iterator::IteratorData
 {
   Resource::Iterator mIt;
-  Q3ValueList<Resource*> mResources;
+  QList<Resource*> mResources;
   int mCurrRes;
 };
 
 struct AddressBook::ConstIterator::ConstIteratorData
 {
   Resource::ConstIterator mIt;
-  Q3ValueList<Resource*> mResources;
+  QList<Resource*> mResources;
   int mCurrRes;
 };
 
@@ -307,7 +307,7 @@ AddressBook::AddressBook()
   d->mErrorHandler = 0;
   d->mConfig = 0;
   d->mManager = new KRES::Manager<Resource>( "contact" );
-  d->end.d->mResources = Q3ValueList<Resource*>();
+  d->end.d->mResources = QList<Resource*>();
   d->end.d->mCurrRes = -1;
 }
 
@@ -321,7 +321,7 @@ AddressBook::AddressBook( const QString &config )
     d->mConfig = new KConfig( config );
   d->mManager = new KRES::Manager<Resource>( "contact" );
   d->mManager->readConfig( d->mConfig );
-  d->end.d->mResources = Q3ValueList<Resource*>();
+  d->end.d->mResources = QList<Resource*>();
   d->end.d->mCurrRes = -1;
 }
 
@@ -400,7 +400,7 @@ bool AddressBook::asyncSave( Ticket *ticket )
 
 AddressBook::Iterator AddressBook::begin()
 {
-  Q3ValueList<Resource*> list;
+  QList<Resource*> list;
   KRES::Manager<Resource>::ActiveIterator resIt;
   for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     list.append( *resIt );
@@ -427,7 +427,7 @@ AddressBook::Iterator AddressBook::begin()
 
 AddressBook::ConstIterator AddressBook::begin() const
 {
-  Q3ValueList<Resource*> list;
+  QList<Resource*> list;
   KRES::Manager<Resource>::ActiveIterator resIt;
   for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     list.append( *resIt );

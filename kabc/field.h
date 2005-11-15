@@ -54,7 +54,7 @@ public:
   /**
    * This type is used for a list of fields.
    */
-  typedef Q3ValueList<Field *> List;
+  typedef QList<Field *> List;
 
   /**
    * Represents the category a field belongs to.

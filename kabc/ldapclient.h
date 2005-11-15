@@ -234,7 +234,7 @@ class KABC_EXPORT LdapSearch : public QObject
   private:
     void finish();
     void makeSearchData( QStringList& ret, LdapResultList& resList );
-    Q3ValueList< LdapClient* > mClients;
+    QList< LdapClient* > mClients;
     QString mSearchText;
     QTimer mDataTimer;
     int mActiveClients;
