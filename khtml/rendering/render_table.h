@@ -379,7 +379,7 @@ public:
     CollapsedBorderValue collapsedRightBorder() const;
     CollapsedBorderValue collapsedTopBorder() const;
     CollapsedBorderValue collapsedBottomBorder() const;
-    virtual void collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles);
+    virtual void collectBorders(QList<CollapsedBorderValue>& borderStyles);
 
     virtual void updateFromElement();
 

@@ -634,7 +634,7 @@ public:
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
 
     // Used by collapsed border tables.
-    virtual void collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles);
+    virtual void collectBorders(QList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
     virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }

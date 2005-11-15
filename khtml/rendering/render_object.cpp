@@ -1928,7 +1928,7 @@ int RenderObject::maximalOutlineSize(PaintAction p) const
     return static_cast<RenderCanvas*>(document()->renderer())->maximalOutlineSize();
 }
 
-void RenderObject::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
+void RenderObject::collectBorders(QList<CollapsedBorderValue>& borderStyles)
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);

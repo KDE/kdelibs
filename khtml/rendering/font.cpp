@@ -371,7 +371,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     // all other font properties should be set before this one!!!!
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
     {
-        const Q3ValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const QList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
@@ -380,8 +380,8 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
 
-        Q3ValueList<int>::ConstIterator it = pointSizes.begin();
-        const Q3ValueList<int>::ConstIterator itEnd = pointSizes.end();
+        QList<int>::ConstIterator it = pointSizes.begin();
+        const QList<int>::ConstIterator itEnd = pointSizes.end();
 
         for( ; it != itEnd; ++it )
         {

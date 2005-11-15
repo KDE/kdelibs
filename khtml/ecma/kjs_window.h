@@ -176,7 +176,7 @@ namespace KJS {
       DelayedActionId actionId;
       QVariant param; // just in case
     };
-    Q3ValueList<DelayedAction> m_delayed;
+    QList<DelayedAction> m_delayed;
 
     struct SuppressedWindowInfo {
        SuppressedWindowInfo() {}  // for QValueList
@@ -186,7 +186,7 @@ namespace KJS {
        QString frameName;
        QString features;
      };
-     Q3ValueList<SuppressedWindowInfo> m_suppressedWindowInfo;
+     QList<SuppressedWindowInfo> m_suppressedWindowInfo;
   };
 
   /**

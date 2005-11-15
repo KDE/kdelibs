@@ -176,7 +176,7 @@ public:
     bool contains( const DOM::DOMString &medium ) const;
 
 protected:
-    Q3ValueList<DOM::DOMString> m_lstMedia;
+    QList<DOM::DOMString> m_lstMedia;
 };
 
 

@@ -447,7 +447,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
         // have all the styles sorted, we then do individual passes, painting each style of border
         // from lowest precedence to highest precedence.
         pI.phase = PaintActionCollapsedTableBorders;
-        Q3ValueList<CollapsedBorderValue> borderStyles;
+        QList<CollapsedBorderValue> borderStyles;
         collectBorders(borderStyles);
 #if 0
        QString m;
@@ -455,8 +455,8 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
          m += QString("%1 ").arg((*borderStyles.at(i)).width());
        kdDebug(6040) << m << endl;
 #endif
-        Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-        Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+        QList<CollapsedBorderValue>::Iterator it = borderStyles.begin();
+        QList<CollapsedBorderValue>::Iterator end = borderStyles.end();
         for (; it != end; ++it) {
             m_currentBorder = &*it;
             for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
@@ -2534,13 +2534,13 @@ public:
     int count;
 };
 
-static void addBorderStyle(Q3ValueList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
+static void addBorderStyle(QList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
 {
     if (!borderValue.exists() || borderStyles.contains(borderValue))
         return;
 
-    Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-    Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+    QList<CollapsedBorderValue>::Iterator it = borderStyles.begin();
+    QList<CollapsedBorderValue>::Iterator end = borderStyles.end();
     for (; it != end; ++it) {
         CollapsedBorderValue result = compareBorders(*it, borderValue);
         if (result == *it) {
@@ -2552,7 +2552,7 @@ static void addBorderStyle(Q3ValueList<CollapsedBorderValue>& borderStyles, Coll
     borderStyles.append(borderValue);
 }
 
-void RenderTableCell::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
+void RenderTableCell::collectBorders(QList<CollapsedBorderValue>& borderStyles)
 {
     addBorderStyle(borderStyles, collapsedLeftBorder());
     addBorderStyle(borderStyles, collapsedRightBorder());

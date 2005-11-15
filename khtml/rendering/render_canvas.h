@@ -164,7 +164,7 @@ protected:
     RenderPage* m_page;
 
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
-    Q3ValueList<RenderObject*> m_dirtyChildren;
+    QList<RenderObject*> m_dirtyChildren;
 };
 
 inline RenderCanvas* RenderObject::canvas() const

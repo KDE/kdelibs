@@ -1049,9 +1049,9 @@ void Window::closeNow()
 void Window::afterScriptExecution()
 {
   DOM::DocumentImpl::updateDocumentsRendering();
-  Q3ValueList<DelayedAction> delayedActions = m_delayed;
+  QList<DelayedAction> delayedActions = m_delayed;
   m_delayed.clear();
-  Q3ValueList<DelayedAction>::Iterator it = delayedActions.begin();
+  QList<DelayedAction>::Iterator it = delayedActions.begin();
   for ( ; it != delayedActions.end() ; ++it )
   {
     switch ((*it).actionId) {

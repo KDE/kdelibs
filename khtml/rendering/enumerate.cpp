@@ -171,7 +171,7 @@ QString toHebrew( int number ) {
 
 static inline QString toLatin( int number, int base ) {
     if (number < 1) return QString::number(number);
-    Q3ValueList<QChar> letters;
+    QList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter a
         QChar letter = (QChar) (base + (number % 26));
@@ -198,7 +198,7 @@ QString toUpperLatin( int number ) {
 
 static inline QString toAlphabetic( int number, int base, const QChar alphabet[] ) {
     if (number < 1) return QString::number(number);
-    Q3ValueList<QChar> letters;
+    QList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter 1
         QChar letter = alphabet[number % base];

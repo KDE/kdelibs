@@ -380,9 +380,9 @@ CSSRuleImpl *MediaListImpl::parentRule() const
 
 void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 {
-    const Q3ValueList<DOMString>::Iterator itEnd = m_lstMedia.end();
+    const QList<DOMString>::Iterator itEnd = m_lstMedia.end();
 
-    for ( Q3ValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
+    for ( QList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         if( (*it) == oldMedium ) {
             m_lstMedia.remove( it );
             return;
@@ -393,9 +393,9 @@ void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 DOM::DOMString MediaListImpl::mediaText() const
 {
     DOMString text;
-    const Q3ValueList<DOMString>::ConstIterator itEnd = m_lstMedia.end();
+    const QList<DOMString>::ConstIterator itEnd = m_lstMedia.end();
 
-    for ( Q3ValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
+    for ( QList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         text += *it;
         text += ", ";
     }

@@ -337,7 +337,7 @@ void RenderCanvas::deferredRepaint( RenderObject* o )
 void RenderCanvas::scheduleDeferredRepaints()
 {
     if (!needsFullRepaint()) {
-        Q3ValueList<RenderObject*>::const_iterator it;
+        QList<RenderObject*>::const_iterator it;
         for ( it = m_dirtyChildren.begin(); it != m_dirtyChildren.end(); ++it )
             (*it)->repaint();
     }
