@@ -23,7 +23,7 @@ int main( int argc, char** argv )
     KAboutData about("kidlservertest", "kidlservertest", "version");
     KCmdLineArgs::init(argc, argv, &about);
 
-    KApplication app(false,false);
+    KApplication app(false);
 
     app.dcopClient()->attach();
     app.dcopClient()->registerAs( "kidlservertest", false );

@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     KCmdLineArgs::init( argc,argv,"getalltest",0,0,0,0 );
-    KApplication k( true, false /*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+    KApplication k( false /*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
 //for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
    kdDebug() << "All services" << endl;

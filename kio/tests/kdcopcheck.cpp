@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 {
    putenv("IGNORE_SYCOCA_VERSION=true");
    KCmdLineArgs::init( argc,argv,"whatever",0, 0, 0, 0 );
-   KApplication k( true, false/*noGUI*/ );// KMessageBox needs KApp for makeStdCaption
+   KApplication k( false/*noGUI*/ );// KMessageBox needs KApp for makeStdCaption
 
    k.dcopClient()->setNotifications(true);
 

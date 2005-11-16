@@ -32,7 +32,7 @@ main(int argc, char *argv[])
 
    // MyWidget::addCmdLineOptions();
 
-   KApplication k( false, false /*true, true*/ );
+   KApplication k( false );
 
    // Get application specific arguments
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
