@@ -234,7 +234,11 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
+#ifdef Q_WS_WIN /** @todo TEMP: new implementation (commit #424926) didn't work */
+		((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
+#else
 		((QAccel*)m_pAccel)->connectItem( nID, this, SLOT(slotKeyPressed(int)));
+#endif
 		if( !action.isEnabled() )
 			((QAccel*)m_pAccel)->setItemEnabled( nID, false );
 	}
@@ -327,7 +331,15 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 {
 	kdDebug(125) << "KAccelPrivate::slotMenuActivated( " << iAction << " )" << endl;
 	KAccelAction* pAction = actions().actionPtr( iAction );
-        emitActivatedSignal( pAction );
+#ifdef Q_WS_WIN /** @todo TEMP: new implementation (commit #424926) didn't work */
+	if( pAction ) {
+		connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+		emit menuItemActivated();
+		disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+	}
+#else
+	emitActivatedSignal( pAction );
+#endif
 }
 
 bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
@@ -347,7 +359,16 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 					KAccelAction* pAction = m_mapIDToAction[nID];
 					if( !pAction->isEnabled() )
 						continue;
+#ifdef Q_WS_WIN /** @todo TEMP: new implementation (commit #424926) didn't work */
+					QGuardedPtr<KAccelPrivate> me = this;
+					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+					emit menuItemActivated();
+					if (me) {
+						disconnect( me, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+					}
+#else
 					emitActivatedSignal( pAction );
+#endif
 				} else
 					slotKeyPressed( nID );
 
@@ -360,6 +381,7 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 	return false;
 }
 
+#ifndef Q_WS_WIN /** @todo TEMP: new implementation (commit #424926) didn't work */
 void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
 {
 	if( pAction ) {
@@ -383,7 +405,7 @@ void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
 		}
 	}
 }
-
+#endif
 
 //---------------------------------------------------------------------
 // KAccel
