@@ -9,13 +9,13 @@ using std::endl;
 
 void check( const QString &what, const QStringList &expected, const QStringList &received )
 {
-    cout << "Testing " << what.toLatin1() << ": ";
+    cout << "Testing " << what.latin1() << ": ";
     if ( expected == received ) {
         cout << "ok" << endl;
     } else {
         cout << "ERROR!" << endl;
-        cout << "Expected: " << expected.join( "," ).toLatin1() << endl;
-        cout << "Received: " << received.join( "," ).toLatin1() << endl;
+        cout << "Expected: " << expected.join( "," ).latin1() << endl;
+        cout << "Received: " << received.join( "," ).latin1() << endl;
     }
 }
 
