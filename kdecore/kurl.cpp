@@ -64,9 +64,9 @@ static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
 // 0 encode both @ and /
 // 1 encode @ but not /
 // 2 encode neither @ or /
-static QString encode( const QString& segment, int encoding_offset, int encoding_hint )
+static QString encode( const QString& segment, int encoding_offset, int encoding_hint, bool isRawURI = false )
 {
-  const char *encode_string = "/@<>#\"&%?={}|^~[]\'`\\:+";
+  const char *encode_string = "/@<>#\"&?={}|^~[]\'`\\:+%";
   encode_string += encoding_offset;
 
   QCString local;
@@ -81,7 +81,7 @@ static QString encode( const QString& segment, int encoding_offset, int encoding
           local = textCodec->fromUnicode( segment );
   }
 
-  int old_length = local.length();
+  int old_length = isRawURI ? local.size() - 1 : local.length();
 
   if ( !old_length )
     return segment.isNull() ? QString::null : QString(""); // differentiate null and empty
@@ -204,7 +204,7 @@ static QString lazy_encode( const QString& segment, bool encodeAt=true )
   return result;
 }
 
-static void decode( const QString& segment, QString &decoded, QString &encoded, int encoding_hint=0, bool updateDecoded = true )
+static void decode( const QString& segment, QString &decoded, QString &encoded, int encoding_hint=0, bool updateDecoded = true, bool isRawURI = false )
 {
   decoded = QString::null;
   encoded = segment;
@@ -259,7 +259,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
       {
          // Valid %xx sequence
          character = a * 16 + b; // Replace with value of %dd
-         if (!character && updateDecoded)
+         if (!isRawURI && !character && updateDecoded)
             break; // Stop at %00
 
          new_usegment [ new_length2++ ] = (unsigned char) csegment[i++];
@@ -289,10 +289,17 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   // Encoding specified
   if (updateDecoded)
   {
-     QByteArray array;
-     array.setRawData(new_segment, new_length);
-     decoded = textCodec->toUnicode( array, new_length );
-     array.resetRawData(new_segment, new_length);
+     decoded = textCodec->toUnicode( new_segment );
+     if ( isRawURI ) {
+        int length = qstrlen( new_segment );
+        while ( length < new_length ) {
+            decoded += QChar::null;
+            length += 1;
+            decoded += textCodec->toUnicode( new_segment + length );
+            length += qstrlen( new_segment + length );
+        }
+     }
+
      QCString validate = textCodec->fromUnicode(decoded);
 
      if (strcmp(validate.data(), new_segment) != 0)
@@ -305,11 +312,11 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   delete [] new_usegment;
 }
 
-static QString decode(const QString &segment, int encoding_hint = 0)
+static QString decode(const QString &segment, int encoding_hint = 0, bool isRawURI = false)
 {
   QString result;
   QString tmp;
-  decode(segment, result, tmp, encoding_hint);
+  decode(segment, result, tmp, encoding_hint, true, isRawURI);
   return result;
 }
 
@@ -723,7 +730,7 @@ void KURL::parseRawURI( const QString& _url, int encoding_hint )
     if ( pos == len ) // can't happen, the caller checked this already
 	m_strPath = QString::null;
     else
-	m_strPath = decode( QString( buf + pos, len - pos ), encoding_hint );
+	m_strPath = decode( QString( buf + pos, len - pos ), encoding_hint, true );
 
     m_bIsMalformed = false;
 
@@ -1503,7 +1510,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
   if ( m_iUriMode == URL || m_iUriMode == Mailto )
     u += encodedPathAndQuery( _trailing, false, encoding_hint );
   else
-    u += m_strPath;
+    u += encode( m_strPath, 21, encoding_hint, true );
 
   if ( hasRef() )
   {
