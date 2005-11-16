@@ -38,7 +38,9 @@ class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 	void menuItemActivated(KAccelAction*);
 
  private:
+#ifndef Q_WS_WIN /** @todo TEMP: new implementation (commit #424926) didn't work */
 	void emitActivatedSignal(KAccelAction*);
+#endif
 
  private slots:
 	void slotKeyPressed( int id );
