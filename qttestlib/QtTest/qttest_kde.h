@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) \
     KDEMainFlags mainFlags( flags );                 \
     if ( (mainFlags & AutoDcopRegistration) == 0 ) \
         KApplication::disableAutoDcopRegistration(); \
-    KApplication app( true, (mainFlags & GUI) != 0 ); \
+    KApplication app( (mainFlags & GUI) != 0 ); \
     TestObject tc; \
     return QtTest::exec( &tc, argc, argv ); \
 }
