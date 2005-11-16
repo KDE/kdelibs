@@ -240,19 +240,5 @@ inline KDE_DEPRECATED T kClamp( const T& x, const T& low, const T& high )
 int KDECORE_EXPORT kasciistricmp( const char *str1, const char *str2 );
 
 
-/**
- * \mainpage The KDE Core Functionality Library
- *
- * All KDE programs use this library to provide basic functionality such
- * as the configuration system, IPC, internationalization and locale
- * support, site-independent access to the filesystem and a large number
- * of other (but no less important) things.
- *
- * All KDE applications should link to the kdecore library. Also, using a
- * KApplication derived class instead of QApplication is almost
- * mandatory if you expect your application to behave nicely within the
- * KDE environment.
- */
-
 #endif // _KGLOBAL_H
 
