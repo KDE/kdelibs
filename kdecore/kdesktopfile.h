@@ -225,7 +225,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
 
-  Q_DISABLE_COPY(KDesktopFile);
+  Q_DISABLE_COPY(KDesktopFile)
 
   class Private;
   Private *const d;

@@ -66,7 +66,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
 
-  Q_DISABLE_COPY(KSimpleConfig);
+  Q_DISABLE_COPY(KSimpleConfig)
 
   class Private;
   Private *d;

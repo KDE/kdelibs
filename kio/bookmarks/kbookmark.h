@@ -36,7 +36,7 @@ public:
         OverwriteMetaData, DontOverwriteMetaData
     };
 
-    KDE_DUMMY_COMPARISON_OPERATOR(KBookmark);
+    KDE_DUMMY_COMPARISON_OPERATOR(KBookmark)
     /**
      * KURL::Bookmark is a QList that contains bookmarks with a few
      * convenience methods.
