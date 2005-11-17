@@ -8,12 +8,12 @@
 #include <qpushbutton.h>
 #include <q3popupmenu.h>
 #include <stdlib.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <time.h>
 #include <qcheckbox.h>
 #include <qtoolbutton.h>
 
-class Test : public Q3VBox
+class Test : public KVBox
 {
   Q_OBJECT
 public:

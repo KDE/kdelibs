@@ -19,7 +19,7 @@
 #include <qlayout.h>
 #include <qpixmap.h>
 #include <qlabel.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qtimer.h>
 //Added by qt3to4:
 #include <QVBoxLayout>
@@ -37,7 +37,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   delete testCombo; // not needed anymore
 
   // Qt combobox
-  Q3HBox* hbox = new Q3HBox(this);
+  KHBox* hbox = new KHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   QLabel* lbl = new QLabel("&QCombobox:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -49,7 +49,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // Read-only combobox
-  hbox = new Q3HBox(this);
+  hbox = new KHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Read-Only Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -63,7 +63,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // Read-write combobox
-  hbox = new Q3HBox(this);
+  hbox = new KHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Editable Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -81,7 +81,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // History combobox...
-  hbox = new Q3HBox(this);
+  hbox = new KHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&History Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -98,7 +98,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_hc->setTrapReturnKey(true);
 
   // Read-write combobox that is a replica of code in konqueror...
-  hbox = new Q3HBox(this);
+  hbox = new KHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel( "&Konq's Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -113,7 +113,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // Create an exit button
-  hbox = new Q3HBox (this);
+  hbox = new KHBox (this);
   m_btnExit = new QPushButton( "E&xit", hbox );
   QObject::connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
 

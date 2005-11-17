@@ -16,7 +16,7 @@
 #include "ktabwidgettest.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :Q3VBox( parent, name ), mChange(0), mLeftWidget(0), mRightWidget(0),
+  :KVBox( parent ), mChange(0), mLeftWidget(0), mRightWidget(0),
   mLeftPopup( false ), mRightPopup( false ), mTabbarContextPopup( false ), mContextPopup( false )
 
 {
