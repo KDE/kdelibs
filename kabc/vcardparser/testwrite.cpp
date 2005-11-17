@@ -39,7 +39,7 @@ int main( int argc, char **argv )
 
   KCmdLineArgs::init( argc, argv, &aboutData );
 
-  KApplication app( false, false );
+  KApplication app( false );
   
 
   KABC::Addressee addressee;

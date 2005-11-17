@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
   KCmdLineArgs::init( argc, argv, "kurltest", 0, 0, 0, 0 );
-  KApplication app( false, false );
+  KApplication app( false );
 
   KURL::List lst;
 
