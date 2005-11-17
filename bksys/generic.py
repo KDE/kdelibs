@@ -549,8 +549,9 @@ def generate(env):
 	Tool('default').generate(env)
 	
 	# don't use libtool by default, use dependency file instead
-	env['LIBTOOL']=0
-	env['DEPFILE']=1
+	env['LIBTOOL']=1
+	# TODO: does not work for kdeinit stuff 
+	env['DEPFILE']=0
 
 	if env['PLATFORM'] in ('cygwin', 'mingw', 'win32', 'win64'):
 		env['WINDOWS']=1
