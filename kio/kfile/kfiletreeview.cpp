@@ -253,11 +253,10 @@ Q3DragObject * KFileTreeView::dragObject()
 {
 
    KURL::List urls;
-   const Q3PtrList<Q3ListViewItem> fileList = selectedItems();
-   Q3PtrListIterator<Q3ListViewItem> it( fileList );
-   for ( ; it.current(); ++it )
+   const QList<Q3ListViewItem *> fileList = selectedItems();
+   for (int i = 0; i < fileList.size(); ++i) 
    {
-      urls.append( static_cast<KFileTreeViewItem*>(it.current())->url() );
+      urls.append( static_cast<KFileTreeViewItem*>(fileList.at(i))->url() );
    }
    QPoint hotspot;
    QPixmap pixmap;

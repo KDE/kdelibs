@@ -161,7 +161,7 @@ public:
    *
    * @since 3.4
    */
-  Q3PtrList<Q3ListViewItem> selectedItems(bool includeHiddenItems = true ) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
+  QList<Q3ListViewItem *> selectedItems(bool includeHiddenItems = true ) const;
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
