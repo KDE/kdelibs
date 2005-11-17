@@ -35,7 +35,8 @@
   - install to ???
   - checkout source with svn co svn://anonsvn.kde.org/home/kde/trunk/KDE/kdelibs
 
-- install scons-mini.tar.bz  
+- install scons-mini.tar.bz2  
+  - unpack the contents of kdelibs\bksys\scons-mini.tar.bz2 to kdelibs\
 
 \section mingw-setup Setup
 
