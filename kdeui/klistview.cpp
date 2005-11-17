@@ -1209,11 +1209,6 @@ void KListView::setDropVisualizer(bool b)
   d->dropVisualizer=b;
 }
 
-Q3PtrList<Q3ListViewItem> KListView::selectedItems() const
-{
-  return selectedItems(true);
-}
-
 Q3PtrList<Q3ListViewItem> KListView::selectedItems(bool includeHiddenItems) const
 {
   Q3PtrList<Q3ListViewItem> list;

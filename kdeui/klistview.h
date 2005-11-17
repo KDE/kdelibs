@@ -150,12 +150,6 @@ public:
    */
   bool isExecuteArea( int x );
 
-  /**
-   * @return a list containing the currently selected items.
-   *
-   * @deprecated
-   */
-  Q3PtrList<Q3ListViewItem> selectedItems() const;
 
   /**
    * @return a list containing the currently selected items.
@@ -167,7 +161,7 @@ public:
    *
    * @since 3.4
    */
-  Q3PtrList<Q3ListViewItem> selectedItems(bool includeHiddenItems) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
+  Q3PtrList<Q3ListViewItem> selectedItems(bool includeHiddenItems = true ) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
