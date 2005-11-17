@@ -21,7 +21,11 @@
 		- \ref config_custom
 			- using SConfigure file 
 	- \ref library_modules
-	
+
+- package compiling notes 
+	- kdelibs
+		- \ref how-to-compile-with-mingw	
+		
 - Appendics
 	- \ref library_filename_specification
 	- \ref environment_options
