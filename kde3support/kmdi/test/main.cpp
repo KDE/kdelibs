@@ -47,7 +47,7 @@ int main( int argc, char **argv )
   KAboutData about("KFourChildren", "KFourChildren", "version");
   KCmdLineArgs::init(argc, argv, &about);
 
-  KApplication a(argc,argv);
+  KApplication a( true );
 #else
    QApplication a(argc,argv);
 #endif
