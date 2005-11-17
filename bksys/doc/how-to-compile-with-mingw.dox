@@ -19,7 +19,7 @@
 	- install into c:\\Perl 
 
 -	openssl 
-	- download from http://www.slproweb.com/download/Win32OpenSSL-v0.9.8.exe
+	- download from http://www.slproweb.com/download/Win32OpenSSL-v0.9.8a.exe
 	- install into c:\\OpenSSL 
 
 - agg library 
