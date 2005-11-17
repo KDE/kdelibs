@@ -36,7 +36,7 @@ class QIODevice;
  * Don't use directly, use KFilterDev instead.
  * @internal
  */
-class KFilterBase
+class KDECORE_EXPORT KFilterBase
 {
 public:
     KFilterBase();
