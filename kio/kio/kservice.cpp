@@ -438,7 +438,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
 class KServiceReadProperty : public KConfigBase
 {
 public:
-   KServiceReadProperty(const QString &_key, const Q3CString &_value)
+   KServiceReadProperty(const QString &_key, const QByteArray &_value)
 	: key(_key), value(_value) { }
 
    bool internalHasGroup(const QByteArray &) const { /*qDebug("hasGroup(const QByteArray &)");*/ return false; }
@@ -460,7 +460,7 @@ public:
    { KEntry entry; entry.mValue = value; return entry; }
 protected:
    QString key;
-   Q3CString value;
+   QByteArray value;
 };
 
 QVariant KService::property( const QString& _name) const
