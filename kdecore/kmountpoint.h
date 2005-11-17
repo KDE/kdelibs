@@ -20,7 +20,6 @@
 #ifndef KMOUNTPOINT_H
 #define KMOUNTPOINT_H
 
-#include <q3ptrlist.h>
 #include <qstringlist.h>
 #include <ksharedptr.h>
 
@@ -33,7 +32,6 @@
  */
 class KDECORE_EXPORT KMountPoint : public KShared
 {
-   typedef signed long long int filesize_t;
 public:
   typedef KSharedPtr<KMountPoint> Ptr;
   typedef QList<Ptr> List;
@@ -45,14 +43,14 @@ public:
     * @param infoNeeded Flags that specify which additional information
     * should be fetched.
     */
-   static KMountPoint::List possibleMountPoints(int infoNeeded=0);
+   static List possibleMountPoints(int infoNeeded=0);
 
    /**
     * This function gives a list of all currently used mountpoints. (mtab)
     * @param infoNeeded Flags that specify which additional information
     * should be fetched.
     */
-   static KMountPoint::List currentMountPoints(int infoNeeded=0);
+   static List currentMountPoints(int infoNeeded=0);
 
    /**
     * Where this filesystem gets mounted from.
@@ -111,5 +109,5 @@ private:
    Private * const d;
 };
 
-#endif // _KMOUNTPOINT_H_
+#endif // KMOUNTPOINT_H
 

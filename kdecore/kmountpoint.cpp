@@ -59,9 +59,7 @@
 #include <sys/vfs.h>
 /* AIX does not prototype mntctl anywhere that I can find */
 #ifndef mntctl
-extern "C" {
-int mntctl(int command, int size, void* buffer);
-}
+extern "C" int mntctl(int command, int size, void* buffer);
 #endif
 extern "C" struct vfs_ent *getvfsbytype(int vfsType);
 extern "C" void endvfsent( );
@@ -136,7 +134,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
    STRUCT_MNTENT fe;
    while (GETMNTENT(fstab, fe))
    {
-      KMountPoint *mp = new KMountPoint();
+      KMountPoint *mp = new KMountPoint;
       mp->m_mountedFrom = QFile::decodeName(FSNAME(fe));
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));
@@ -187,7 +185,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
          continue;
 #endif
 
-      KMountPoint *mp = new KMountPoint();
+      KMountPoint *mp = new KMountPoint;
 
       int i = 0;
       mp->m_mountedFrom = item[i++];
@@ -230,7 +228,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
 
     for (int i=0;i<num_fs;i++) 
     {
-      KMountPoint *mp = new KMountPoint();
+      KMountPoint *mp = new KMountPoint;
       mp->m_mountedFrom = QFile::decodeName(mounted[i].f_mntfromname);
       mp->m_mountPoint = QFile::decodeName(mounted[i].f_mntonname);
 
@@ -298,7 +296,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
              */
             struct vfs_ent* ent = getvfsbytype(vm->vmt_gfstype);
 
-            KMountPoint *mp = new KMountPoint();
+            KMountPoint *mp = new KMountPoint;
             mp->m_mountedFrom = QFile::decodeName(mountedfrom);
             mp->m_mountPoint = QFile::decodeName(mountedto);
             mp->m_mountType = QFile::decodeName(ent->vfsent_name);
@@ -337,7 +335,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
    STRUCT_MNTENT fe;
    while (GETMNTENT(mnttab, fe))
    {
-      KMountPoint *mp = new KMountPoint();
+      KMountPoint *mp = new KMountPoint;
       mp->m_mountedFrom = QFile::decodeName(FSNAME(fe));
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));
@@ -373,7 +371,7 @@ QString KMountPoint::devNameFromOptions(const QStringList &options)
    for ( QStringList::ConstIterator it = options.begin(); it != options.end(); ++it)
    {
       if( (*it).startsWith("dev="))
-         return QString(*it).remove("dev=");
+         return (*it).mid(4);
    } 
    return QString("none");
 }
