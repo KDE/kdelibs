@@ -94,6 +94,7 @@ using namespace DOM;
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
+#include <kde_file.h>
 #include "../kutils/kfinddialog.h"
 #include "../kutils/kfind.h"
 
@@ -1154,10 +1155,10 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
   }
@@ -1198,10 +1199,10 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
     }
   }
@@ -1318,7 +1319,7 @@ void KHTMLPart::slotDebugRenderTree()
     d->m_doc->renderer()->printTree();
     // dump out the contents of the rendering & DOM trees
 //    QString dumps;
-//    QTextStream outputStream(dumps,IO_WriteOnly);
+//    QTextStream outputStream(dumps,QIODevice::WriteOnly);
 //    d->m_doc->renderer()->layer()->dump( outputStream );
 //    kdDebug() << "dump output:" << "\n" + dumps;
   }
@@ -1348,7 +1349,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
-    Q3PtrList<KAction> lst;
+    QList<KAction*> lst;
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -1705,7 +1706,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   d->m_bJScriptOverride = true;
   begin();
   QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
-                           .arg(QApplication::reverseLayout() ? "rtl" : "ltr");
+                           .arg(QApplication::isRightToLeft() ? "rtl" : "ltr");
   errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
   errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
   errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
@@ -2960,7 +2961,11 @@ void KHTMLPart::findText()
   // Raise if already opened
   if ( d->m_findDialog )
   {
+#ifdef Q_WS_WIN
+    d->m_findDialog->activateWindow();
+#else
     KWin::activateWindow( d->m_findDialog->winId() );
+#endif
     return;
   }
 
@@ -3712,13 +3717,13 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
     // to use KFileItem::statusBarText()
-    Q3CString path = QFile::encodeName( u.path() );
+    QByteArray path = QFile::encodeName( u.path() );
 
-    struct stat buff;
-    bool ok = !stat( path.data(), &buff );
+    KDE_struct_stat buff;
+    bool ok = !KDE_stat( path.data(), &buff );
 
-    struct stat lbuff;
-    if (ok) ok = !lstat( path.data(), &lbuff );
+    KDE_struct_stat lbuff;
+    if (ok) ok = !KDE_lstat( path.data(), &lbuff );
 
     QString text = u.htmlURL();
     QString text2 = text;
@@ -5387,7 +5392,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KURL::List frameURLs;
   Q3ValueList<QByteArray> frameStateBuffers;
-  Q3ValueList<int> fSizes;
+  QList<int> fSizes;
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
 
@@ -6572,7 +6577,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-        Q3PtrList<KAction> lst;
+        QList<KAction*> lst;
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -6774,7 +6779,7 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
             if (factory()) {
                 factory()->removeClient( part );
             }
-            if (childClients()->containsRef(part)) {
+            if (childClients().contains(part)) {
                 removeChildClient( part );
             }
         }
@@ -6895,11 +6900,9 @@ void KHTMLPart::preloadScript(const QString &url, const QString &script)
     khtml::Cache::preloadScript(url, script);
 }
 
-Q3CString KHTMLPart::dcopObjectId() const
+DCOPCString KHTMLPart::dcopObjectId() const
 {
-  Q3CString id;
-  id.sprintf("html-widget%d", d->m_dcop_counter);
-  return id;
+  return QByteArray( "html-widget" ) + QByteArray::number( d->m_dcop_counter );
 }
 
 long KHTMLPart::cacheId() const
@@ -7278,7 +7281,7 @@ void KHTMLPart::setDebugScript( bool enable )
       d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
-    Q3PtrList<KAction> lst;
+    QList<KAction*> lst;
     lst.append( d->m_paDebugScript );
     plugActionList( "debugScriptList", lst );
   }
