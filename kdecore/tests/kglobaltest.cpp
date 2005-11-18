@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
   KCmdLineArgs::init( argc, argv, "kglobaltest", 0, 0, 0, 0 );
-  KApplication app( false, false );
+  KApplication app( false );
 
   testkasciistricmp();
 

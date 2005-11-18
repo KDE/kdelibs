@@ -10,7 +10,7 @@ int main( int argc, char** argv )
     KAboutData about("KIDLTestClient", "KIDLTestClient", "version");
     KCmdLineArgs::init(argc, argv, &about);
 
-    KApplication app(false,false);
+    KApplication app(false);
 
 
     KApplication::dcopClient()->attach();
