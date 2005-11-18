@@ -261,8 +261,18 @@ void RenderFlow::repaint(bool immediate)
 
         // Now invalidate a rectangle.
         int ow = style() ? style()->outlineWidth() : 0;
-        if (m_layer && style()->position() == RELATIVE)
-            relativePositionOffset(left, top);
+
+        // We need to add in the relative position offsets of any inlines (including us) up to our
+        // containing block.
+        RenderBlock* cb = containingBlock();
+        for (RenderObject* inlineFlow = this; inlineFlow && inlineFlow->isInlineFlow() && inlineFlow != cb;
+             inlineFlow = inlineFlow->parent()) {
+             if (inlineFlow->style() && inlineFlow->style()->position() == RELATIVE && inlineFlow->layer()) {
+                KHTMLAssert(inlineFlow->isBox());
+                static_cast<RenderBox*>(inlineFlow)->relativePositionOffset(left, top);
+             }
+        }
+
         RootInlineBox *lastRoot = lastLineBox() && !needsLayout() ? lastLineBox()->root() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2,
