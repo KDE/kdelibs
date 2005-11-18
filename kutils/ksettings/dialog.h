@@ -96,23 +96,13 @@ class KUTILS_EXPORT Dialog : public QObject
          * Construct a new Preferences Dialog for the application. It uses all
          * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
          *
-         * @param parent       The parent is only used as the parent for the
-         *                     dialog - centering the dialog over the parent
-         *                     widget.
-         */
-        Dialog( QWidget * parent = 0);
-
-        /**
-         * Construct a new Preferences Dialog for the application. It uses all
-         * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
-         *
          * @param content      Select whether you want a static or configurable
          *                     config dialog.
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
          */
-        Dialog( ContentInListView content = Static, QWidget * parent = 0 );
+        Dialog( ContentInListView content, QWidget * parent = 0 );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected

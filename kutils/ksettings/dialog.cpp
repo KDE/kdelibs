@@ -358,15 +358,6 @@ class Dialog::DialogPrivate
 		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
-Dialog::Dialog( QWidget * parent )
-	: QObject( parent )
-	, d( new DialogPrivate( this ) )
-{
-	d->parentwidget = parent;
-	d->staticlistview = true;
-	d->services = instanceServices();
-}
-
 Dialog::Dialog( ContentInListView content,
 		QWidget * parent )
 	: QObject( parent )

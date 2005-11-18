@@ -2,18 +2,29 @@
 #generated from kutils/Makefile.am by am2bksys.py
 Import('env')
 
-env.subdirs('ksettings')
-
 kutils_sources = """
 kcmoduleinfo.cpp kcmoduleloader.cpp kfind.cpp
 kfinddialog.cpp kmultitabbar.cpp 
 kreplace.cpp kreplacedialog.cpp
 """
 
-if not env['WINDOWS']:
-	kutils_sources += """
+kutils_sources += """
 kcmodulecontainer.cpp kcmultidialog.cpp kplugininfo.cpp kpluginselector.cpp kcmoduleproxy.cpp
 kcmoduleproxyIface.skel kcmoduleproxyIfaceImpl.cpp 
+"""
+
+ksettings_sources = """
+ksettings/componentsdialog.cpp
+ksettings/dialog.cpp
+ksettings/dispatcher.cpp
+ksettings/pluginpage.cpp
+"""
+
+ksettings_headers = """
+ksettings/componentsdialog.h
+ksettings/dialog.h
+ksettings/dispatcher.h
+ksettings/pluginpage.h
 """
 
 include_headers = """
@@ -26,15 +37,15 @@ noinst_headers = """
 kcmoduleproxyIface.h kmultitabbar_p.h kpluginselector_p.h
 """
 
-includes = '#/interfaces/kregexpeditor '
+includes = '#/interfaces/kregexpeditor ksettings '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kutils'
 obj.vnum = '3.0.2'
-obj.source = kutils_sources
+obj.source = kutils_sources + ksettings_sources
 obj.includes = includes
-obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ksettings ../kdesu ../kdefx ../kwallet/client '
-obj.libs = 'kdecore kdeui DCOP kio ksettings kdefx kwalletclient '
+obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ../kdesu ../kdefx ../kwallet/client '
+obj.libs = 'kdecore kdeui DCOP kio kdefx kwalletclient '
 if not env['WINDOWS']:
 	obj.libs += ' kdesu'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '

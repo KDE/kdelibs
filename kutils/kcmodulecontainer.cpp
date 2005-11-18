@@ -67,9 +67,9 @@ class KCModuleContainer::KCModuleContainerPrivate
 
 
 
-
+#ifdef __GNUC__
 #warning the old code created an instance (through the constructor) - should this stay?
-
+#endif
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
 	: KCModule( KGlobal::instance(), parent )
