@@ -21,22 +21,19 @@ def generate(env):
 				env['CACHED_Z'] = 1
 				ret = 1
 
+
 		context.Result(ret)
 		return ret
 
 	from SCons.Options import Options
 	import os
-
+	
 	optionFile = env['CACHEDIR'] + 'libz.cache.py'
 	opts = Options(optionFile)
 	opts.AddOptions(
 		('CACHED_Z', 'Whether libz is available'),
 		('CXXFLAGS_Z',''),
-		('CCFLAGS_Z',''),
-		('LINKFLAGS_Z',''),
-		('CPPPATH_Z',''),
-		('LIB_Z',''),
-		('LIBPATH_Z',''),
+		('LINKFLAGS_Z','')
 		)
 	opts.Update(env)
 	opts.Save(optionFile, env)
@@ -44,8 +41,28 @@ def generate(env):
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_Z')):
 		conf = env.Configure(custom_tests =	 { 'Check_libz' : Check_libz} )
 
-		if not conf.Check_libz():
+		if env['WINDOWS'] and not conf.Check_libz():
 			print 'libz not found (mandatory).'
+		else:
+			env['CACHED_Z'] = 0
+			if conf.CheckHeader('zlib.h') and conf.CheckLib('z'):
+				env['CXXFLAGS_Z'] = ['-DHAVE_LIBZ']
+				env['LINKFLAGS_Z'] = ['-lz']
+				env['CACHED_Z'] = 1
 
-		env = conf.Finish()
+			dest=open(env.join(env['_BUILDDIR_'], 'config-z.h'), 'w')
+			dest.write('/* libz configuration created by bksys */\n')
+
+			if env['CACHED_Z']:
+				dest.write('#define HAVE_LIBZ 1\n');
+			else:
+				print 'libz not found (mandatory).'
+
+			dest.close()
+			env['_CONFIG_H_'].append('z')
+
+			env = conf.Finish()
+
+			opts.Save(optionFile, env)
+			
 		opts.Save(optionFile, env)
