@@ -38,7 +38,7 @@ obj.source = kde3support_sources
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
 obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 '
-obj.libs = 'kdecore dcop kdeui kparts kio dcop kdefx kutils '
+obj.libs = 'kdecore DCOP kdeui kparts kio dcop kdefx kutils '
 if not env['WINDOWS']:
 	obj.libs += ' kdesu'
 obj.libpaths = '../kdecore ../kdeui ../kparts ../kio ../dcop ../kdefx ../kdesu ../kutils '
