@@ -175,7 +175,7 @@ void PreviewJob::startPreview()
         PreviewItem item;
         item.item = it.current();
         QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(it.current()->mimetype());
-        if (plugin == mimeMap.end())
+        if (plugin == mimeMap.end() && it.current()->mimetype() != "application/x-desktop")
         {
             QString mimeType = it.current()->mimetype();
             plugin = mimeMap.find(mimeType.replace(QRegExp("/.*"), "/*"));
