@@ -188,8 +188,6 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
 
     mTabControl = new QTabWidget( this );
     mTabControl->setMargin (KDialog::marginHint());
-    connect(mTabControl, SIGNAL(currentChanged(int)),
-            SLOT(slotCurrentChanged(int)));
     topLayout->addWidget( mTabControl, 10 );
   }
   else if( mFace == Swallow )
