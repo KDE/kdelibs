@@ -23,6 +23,8 @@
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
+#include "global.h"
+
 namespace KJS {
 
   class DebuggerImp;
@@ -45,7 +47,7 @@ namespace KJS {
    * anticipated that at some stage the interface will be frozen and made
    * available for general use.
    */
-  class Debugger {
+  class KJS_EXPORT Debugger {
   public:
 
     /**

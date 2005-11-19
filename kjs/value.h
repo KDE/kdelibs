@@ -175,19 +175,19 @@ private:
     bool m_marked;
 };
 
-AllocatedValueImp *jsUndefined();
-AllocatedValueImp *jsNull();
+KJS_EXPORT AllocatedValueImp *jsUndefined();
+KJS_EXPORT AllocatedValueImp *jsNull();
 
-AllocatedValueImp *jsBoolean(bool = false);
+KJS_EXPORT AllocatedValueImp *jsBoolean(bool = false);
 
-ValueImp *jsNumber(double);
-ValueImp *jsNaN();
-ValueImp *jsZero();
-ValueImp *jsOne();
-ValueImp *jsTwo();
+KJS_EXPORT ValueImp *jsNumber(double);
+KJS_EXPORT ValueImp *jsNaN();
+KJS_EXPORT ValueImp *jsZero();
+KJS_EXPORT ValueImp *jsOne();
+KJS_EXPORT ValueImp *jsTwo();
 
-AllocatedValueImp *jsString(const UString &); // returns empty string if passed null string
-AllocatedValueImp *jsString(const char * = ""); // returns empty string if passed 0
+KJS_EXPORT AllocatedValueImp *jsString(const UString &); // returns empty string if passed null string
+KJS_EXPORT AllocatedValueImp *jsString(const char * = ""); // returns empty string if passed 0
 
 extern const double NaN;
 extern const double Inf;
