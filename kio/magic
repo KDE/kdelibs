@@ -565,6 +565,9 @@
 # [GRR:  this *must* go before TIFF]
 0	string		IIN1		image/x-niff
 
+0 	string		II\x2a\x00
+>8	string		CR\x02		image/x-raw
+
 # TIFF and friends
 #					TIFF file, big-endian
 0	string		MM\x00\x2a		image/tiff
@@ -836,6 +839,10 @@
 >>16    beshort         2               application/x-executable
 >>16    beshort         3               application/x-sharedlib
 >>16    beshort         4               application/x-core
+
+# MS Access database (95 or newer, i.e. MS Jet 3.0 or newer)
+4	  string	Standard\ Jet\ DB	application/x-msaccess
+
 #
 # DOS
 0	string		MZ		application/x-msdos-program

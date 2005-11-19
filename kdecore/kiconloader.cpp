@@ -287,7 +287,7 @@ KIconLoader::~KIconLoader()
             break;
             }
         }
-#endif    
+#endif
     /* antlarr: There's no need to delete d->mpThemeRoot as it's already
        deleted when the elements of d->links are deleted */
     d->mpThemeRoot=0;
@@ -353,8 +353,8 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 	}
         KIconThemeNode *n = new KIconThemeNode(theme);
 	d->mThemesInTree.append(*it);
-	addBaseThemes(n, appname);
 	d->links.append(n);
+	addBaseThemes(n, appname);
     }
 }
 
@@ -935,7 +935,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 	    size = d->mpGroups[group].size;
 
         KIcon icon;
-	
+
 	for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
 		themeNode = d->links.next() )
 	{
@@ -943,7 +943,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 	    if (icon.isValid())
 		break;
 	}
-	
+
 	if ( !icon.isValid() )
 	{
 	    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
@@ -954,7 +954,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 		    break;
 	    }
 	}
-	
+
 	file = icon.isValid() ? icon.path : QString::null;
     }
     return file;
@@ -1224,7 +1224,7 @@ KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
 
 KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     int size_P, KIconLoader* loader_P, bool canReturnNull_P )
-    : iconName( iconName_P ), group( group_P ), size( size_P ), 
+    : iconName( iconName_P ), group( group_P ), size( size_P ),
       loader( loader_P ), canReturnNull( canReturnNull_P)
 {
     setAutoDelete( true );
@@ -1273,7 +1273,7 @@ QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::
         return NULL;
 #endif
         }
-#endif    
+#endif
     // QIconSet::Mode to KIcon::State conversion
     static const KIcon::States tbl[] = { KIcon::DefaultState, KIcon::DisabledState, KIcon::ActiveState };
     int state = KIcon::DefaultState;

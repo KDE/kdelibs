@@ -1764,10 +1764,10 @@ Value DOMCharacterDataProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
     case DOMCharacterData::ReplaceData:
       data.replaceData(args[0].toInteger(exec),args[1].toInteger(exec),args[2].toString(exec).string());
       return Undefined();
-      break;
     default:
-      return Undefined();
+      break;
   }
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------
@@ -1801,8 +1801,8 @@ Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
   switch(id) {
     case DOMText::SplitText:
       return getDOMNode(exec,text.splitText(args[0].toInteger(exec)));
-      break;
     default:
-      return Undefined();
+      break;
   }
+  return Undefined();
 }

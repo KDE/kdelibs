@@ -800,6 +800,23 @@ public:
    */
   uint maxItems() const;
 
+//KDE4: remove completeItems() and rename items() to urls(), to get the list of URLs added to
+//      the action.
+  /**
+    * @return the items that can be selected with this action.
+    * The returned items do not contain the pretty name that can be set by addURL,
+    * matching the pre-3.5 behavior.
+    */
+
+  virtual QStringList items() const;
+
+  /**
+    * @return the items that can be selected with this action.
+    * The returned items contain the pretty name that can be set by addURL.
+    * @since 3.5
+    */
+  QStringList completeItems() const;
+
 public slots:
   /**
    *  Sets the maximum of items in the recent files list.
