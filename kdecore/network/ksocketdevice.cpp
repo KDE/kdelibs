@@ -73,6 +73,7 @@ public:
   inline KSocketDevicePrivate()
   {
     input = output = exception = 0L;
+    af = proto = 0;
   }
 };
 
@@ -93,6 +94,7 @@ KSocketDevice::KSocketDevice(int fd, OpenMode mode)
     mode |= Unbuffered;
   KActiveSocketBase::open(mode);
   setSocketDevice(this);
+  d->af = localAddress().family();
 }
 
 KSocketDevice::KSocketDevice(QObject* parent)
