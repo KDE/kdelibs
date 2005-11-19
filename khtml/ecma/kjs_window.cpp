@@ -2468,6 +2468,9 @@ Value History::getValueProperty(ExecState *, int token) const
   switch (token) {
   case Length:
   {
+    if ( !part )
+      return Number( 0 );
+
     KParts::BrowserExtension *ext = part->browserExtension();
     if ( !ext )
       return Number( 0 );

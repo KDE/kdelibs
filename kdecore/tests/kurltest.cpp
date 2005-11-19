@@ -778,6 +778,9 @@ int main(int argc, char *argv[])
 #else
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
 #endif
+  QString raw = "data:text/html,%00%2540%00";
+  check("data URL: encode-decode of %00", KURL(raw).url(), raw );
+
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("url",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel");

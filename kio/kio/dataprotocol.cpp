@@ -186,7 +186,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
   header_info.is_base64 = false;
 
   // decode url and save it
-  QString &raw_url = header_info.url = KURL::decode_string(url.url());
+  QString &raw_url = header_info.url = QString::fromLatin1("data:") + url.path();
   int raw_url_len = (int)raw_url.length();
 
   // jump over scheme part (must be "data:", we don't even check that)

@@ -89,7 +89,7 @@ void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool s
   _save->setChecked(saveChecked);
   _send->setChecked(sendChecked);
   _dont->setChecked(!sendChecked);
-  _certs->setEnabled(saveChecked);
+  _certs->setEnabled(sendChecked);
 
   for (QStringList::ConstIterator i = certs.begin(); i != certs.end(); ++i) {
     if ((*i).isEmpty())

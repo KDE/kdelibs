@@ -213,7 +213,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
   case ProductSub:
     {
       int ix = userAgent.find("Gecko");
-      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.at(ix+5) == '/' &&
+      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.unicode()[ix+5] == QChar('/') &&
           userAgent.find(QRegExp("\\d{8}"), ix+6) == ix+6)
       {
           // We have Gecko/<productSub> in the UA string

@@ -524,8 +524,25 @@ void KMCupsManager::processRequest(IppRequest* req)
 
 DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 {
-	if (!p || p->isClass(true))
+	if (!p) 
 		return NULL;
+
+	if (p->isClass(true)) 
+	{
+		KMPrinter *first_class_member = NULL;
+		/* find the first printer in the class */
+ 		first_class_member = findPrinter(p->members().first());
+	  
+		if (first_class_member == NULL) 
+		{
+			/* we didn't find a printer in the class */
+			return NULL;
+		}
+		else
+		{
+			p = first_class_member;
+		}
+	}
 
 	QString	fname = downloadDriver(p);
 	DrMain	*driver(0);
