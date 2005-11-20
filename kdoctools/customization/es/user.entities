@@ -9,6 +9,7 @@
 <!ENTITY Alt "<keycap>Alt</keycap>">
 <!ENTITY amarok "<application>amaroK</application>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
+<!ENTITY cdrom "<hardware>CD-ROM</hardware>">
 <!ENTITY Ctrl "<keycap>Ctrl</keycap>">
 <!ENTITY digikam "<application>digiKam</application>">
 <!ENTITY dpi    "<acronym>ppp</acronym>">
