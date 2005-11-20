@@ -22,7 +22,8 @@
 #ifndef __sha1__ko__h
 #define __sha1__ko__h
 
-#include <kdemacros.h>
+#include <kdelibs_export.h>
+
 /* @internal
  */
 class KWALLETBACKEND_EXPORT SHA1 {
