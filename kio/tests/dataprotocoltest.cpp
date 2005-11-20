@@ -189,14 +189,14 @@ public:
 
 // == general functionality
 const struct {
-const char * const name;
-const char * const exp_mime_type; // 0 means "text/plain"
+const char * name;
+const char * exp_mime_type; // 0 means "text/plain"
 const struct {
-	const char * const key;
-	const char * const value;
+	const char * key;
+	const char * value;
 } exp_attrs[10];	// ended with a key==0, value==0 pair
-const char * const exp_content;
-const char * const url;
+const char * exp_content;
+const char * url;
 } testcases[] = {
 	// -----------------------------------------------------------------
 	{ "escape resolving", 0, {}, "blah blah", "data:,blah%20blah" },
