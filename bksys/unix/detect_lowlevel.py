@@ -215,9 +215,6 @@ def detect(lenv,dest):
 /* Define if you have GSSAPI libraries */
 #define HAVE_LIBGSSAPI 1
 
-/* Defined if you have libidn in your system */
-#define HAVE_LIBIDN 1
-
 /* Define if you have libjpeg */
 #define HAVE_LIBJPEG 1
 
@@ -235,9 +232,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the <libutil.h> header file. */
 /* #undef HAVE_LIBUTIL_H */
-
-/* Define if you have libz */
-#define HAVE_LIBZ 1
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
