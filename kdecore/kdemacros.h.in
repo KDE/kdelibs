@@ -263,11 +263,43 @@
     RESERVE_VIRTUAL_9
 /** @} */
 
-#ifdef _MSC_VER
-# ifndef KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
-#  define KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
-# endif
-#endif
+/**
+ * @def KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+ *
+ * From Qt's global.h:
+ * Compilers which follow outdated template instantiation rules
+ * require a class to have a comparison operator to exist when
+ * a QList of this type is instantiated. It's not actually
+ * used in the list, though. Hence the dummy implementation.
+ * Just in case other code relies on it we better trigger a warning
+ * mandating a real implementation.
+ *
+ * In KDE we need this for classes which are exported in a shared
+ * lib because some compilers need a full instantiated class then.
+ *
+ * @sa KDE_DUMMY_COMPARISON_OPERATOR
+ * @sa KDE_DUMMY_QHASH_FUNCTION
+ */
+
+/**
+ * @def KDE_DUMMY_COMPARISON_OPERATOR
+ *
+ * The KDE_DUMMY_COMPARISON_OPERATOR defines a simple
+ * compare operator for classes.
+ *
+ * @sa KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+ * @sa KDE_DUMMY_QHASH_FUNCTION
+ */
+
+/**
+ * @def KDE_DUMMY_QHASH_FUNCTION
+ *
+ * The KDE_DUMMY_QHASH_FUNCTION defines a simple
+ * hash-function for classes. 
+ *
+ * @sa KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+ * @sa KDE_DUMMY_COMPARISON_OPERATOR
+ */
 
 #ifdef KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
 # define KDE_DUMMY_COMPARISON_OPERATOR(C) \
