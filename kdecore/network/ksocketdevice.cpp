@@ -69,6 +69,7 @@ public:
   inline KSocketDevicePrivate()
   {
     input = output = exception = 0L;
+    af = 0;
   }
 };
 
@@ -87,6 +88,7 @@ KSocketDevice::KSocketDevice(int fd)
   setState(IO_Open);
   setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
   setSocketDevice(this);
+  d->af = localAddress().family();
 }
 
 KSocketDevice::KSocketDevice(bool, const KSocketBase* parent)
