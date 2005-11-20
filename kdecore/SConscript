@@ -132,7 +132,6 @@ if env.has_key("CACHED_LIBBZ2") and env['CACHED_LIBBZ2']:
 
 if env.has_key("CACHED_AGG") and env['CACHED_AGG']:
 	obj.uselib += ' QTXML AGG Z'
-	obj.cxxflags += ' -DHAVE_LIBAGG '
 	obj.source   += ' svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp'
 obj.execute()
 
