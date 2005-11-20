@@ -924,6 +924,8 @@ class KateDocument : public Kate::Document,
      * document is still reloading a file
      */
     bool m_reloading;
+    bool m_loading; ///< true in openFile() untill the data is read.
+    bool m_encodingSticky; ///< true when requests to set encoding should be ignored.
 
   public slots:
     void slotQueryClose_save(bool *handled, bool* abortClosing);
@@ -934,6 +936,8 @@ class KateDocument : public Kate::Document,
     static bool checkOverwrite( KURL u );
 
     static void setDefaultEncoding (const QString &encoding);
+
+    void setEncodingSticky( bool e ) { m_encodingSticky = e; }
 
   /**
    * Configuration

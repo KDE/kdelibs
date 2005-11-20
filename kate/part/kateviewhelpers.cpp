@@ -1196,8 +1196,10 @@ void KateViewEncodingAction::slotAboutToShow()
 void KateViewEncodingAction::setMode (int mode)
 {
   QStringList modes (KGlobal::charsets()->descriptiveEncodingNames());
-  doc->setEncoding( KGlobal::charsets()->encodingForName( modes[mode] ) );
-  view->reloadFile();
+  doc->config()->setEncoding( KGlobal::charsets()->encodingForName( modes[mode] ) );
+  // now we don't want the encoding changed again unless the user does so using the menu.
+  doc->setEncodingSticky( true );
+  doc->reloadFile();
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

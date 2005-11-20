@@ -134,6 +134,8 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   KateFactory::self()->registerDocument (this);
 
   m_reloading = false;
+  m_loading = false;
+  m_encodingSticky = false;
 
   m_buffer = new KateBuffer (this);
 
@@ -2302,6 +2304,7 @@ bool KateDocument::openFile()
 
 bool KateDocument::openFile(KIO::Job * job)
 {
+  m_loading = true;
   // add new m_file to dirwatch
   activateDirWatch ();
 
@@ -2325,6 +2328,11 @@ bool KateDocument::openFile(KIO::Job * job)
   if (pos != -1)
     setEncoding (serviceType.mid(pos+1));
 
+  // if the encoding is set here - on the command line/from the dialog/from KIO
+  // we prevent file type and document variables from changing it
+  bool encodingSticky = m_encodingSticky;
+  m_encodingSticky = m_config->isSetEncoding();
+
   // Try getting the filetype here, so that variables does not have to be reset.
   int fileTypeFound = KateFactory::self()->fileTypeManager()->fileType (this);
   if ( fileTypeFound > -1 )
@@ -2335,6 +2343,7 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   // yeah, success
   //
+  m_loading = false; // done reading file.
   if (success)
   {
     /*if (highlight() && !m_url.isLocalFile()) {
@@ -2415,6 +2424,8 @@ bool KateDocument::openFile(KIO::Job * job)
       , i18n ("Binary File Opened")
       , "Binary File Opened Warning");
   }
+
+  m_encodingSticky = encodingSticky;
 
   //
   // return the success
@@ -4464,7 +4475,16 @@ KateCodeFoldingTree *KateDocument::foldingTree ()
 
 void KateDocument::setEncoding (const QString &e)
 {
-  m_config->setEncoding(e);
+  if ( m_encodingSticky )
+    return;
+
+  QString ce = m_config->encoding().lower();
+  if ( e.lower() == ce )
+    return;
+
+  m_config->setEncoding( e );
+  if ( ! m_loading )
+    reloadFile();
 }
 
 QString KateDocument::encoding() const
