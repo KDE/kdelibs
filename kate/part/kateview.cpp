@@ -726,17 +726,7 @@ bool KateView::isOverwriteMode() const
 
 void KateView::reloadFile()
 {
-  // save cursor position
-  uint cl = cursorLine();
-  uint cc = cursorColumn();
-
-  // save bookmarks
   m_doc->reloadFile();
-
-  if (m_doc->numLines() >= cl)
-    // Explicitly call internal function because we want this to be registered as a non-external call
-    setCursorPositionInternal( cl, cc, tabWidth(), false );
-
   emit newStatus();
 }
 

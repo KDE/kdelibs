@@ -133,7 +133,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   // scrollbar for columns
   //
   m_columnScroll = new QScrollBar(QScrollBar::Horizontal,m_view);
-  
+
   // hide the column scrollbar in the dynamic word wrap mode
   if (m_view->dynWordWrap())
     m_columnScroll->hide();
@@ -1201,7 +1201,7 @@ void KateViewInternal::home( bool sel )
   }
 
   updateSelection( c, sel );
-  updateCursor( c );
+  updateCursor( c, true );
 }
 
 void KateViewInternal::end( bool sel )
