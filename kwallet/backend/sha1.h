@@ -25,7 +25,7 @@
 #include <kdemacros.h>
 /* @internal
  */
-class KDE_EXPORT SHA1 {
+class KWALLETBACKEND_EXPORT SHA1 {
 	public:
 		SHA1();
 		virtual ~SHA1();
