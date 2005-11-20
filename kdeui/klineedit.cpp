@@ -854,39 +854,41 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
         QMenu *subMenu = new QMenu( popup );
-        connect( subMenu, SIGNAL( activated( int ) ),
-                 this, SLOT( completionMenuActivated( int ) ) );
+        connect( subMenu, SIGNAL( triggered ( QAction* ) ),
+                 this, SLOT( completionMenuActivated( QAction* ) ) );
 
         popup->insertSeparator();
         popup->insertItem( SmallIconSet("completion"), i18n("Text Completion"),
                            subMenu );
 
-        subMenu->insertItem( i18n("None"), NoCompletion );
-        subMenu->insertItem( i18n("Manual"), ShellCompletion );
-        subMenu->insertItem( i18n("Automatic"), AutoCompletion );
-        subMenu->insertItem( i18n("Dropdown List"), PopupCompletion );
-        subMenu->insertItem( i18n("Short Automatic"), ShortAutoCompletion );
-        subMenu->insertItem( i18n("Dropdown List && Automatic"), PopupAutoCompletion );
+        noCompletionAction = subMenu->addAction( i18n("None"));
+        shellCompletionAction = subMenu->addAction( i18n("Manual") );
+        autoCompletionAction = subMenu->addAction( i18n("Automatic") );
+        popupCompletionAction = subMenu->addAction( i18n("Dropdown List") );
+        shortAutoCompletionAction = subMenu->addAction( i18n("Short Automatic") );
+        popupAutoCompletionAction = subMenu->addAction( i18n("Dropdown List && Automatic"));
 
-        subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
+	
+	//subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
 
+	shellCompletionAction->setCheckable(true);
+	noCompletionAction->setCheckable(true);
+	popupCompletionAction->setCheckable(true);
+	autoCompletionAction->setCheckable(true);
+	shortAutoCompletionAction->setCheckable(true);
+	popupAutoCompletionAction->setCheckable(true);
+	
         KGlobalSettings::Completion mode = completionMode();
-        subMenu->setItemChecked( NoCompletion,
-                                 mode == KGlobalSettings::CompletionNone );
-        subMenu->setItemChecked( ShellCompletion,
-                                 mode == KGlobalSettings::CompletionShell );
-        subMenu->setItemChecked( PopupCompletion,
-                                 mode == KGlobalSettings::CompletionPopup );
-        subMenu->setItemChecked( AutoCompletion,
-                                 mode == KGlobalSettings::CompletionAuto );
-        subMenu->setItemChecked( ShortAutoCompletion,
-                                 mode == KGlobalSettings::CompletionMan );
-        subMenu->setItemChecked( PopupAutoCompletion,
-                                 mode == KGlobalSettings::CompletionPopupAuto );
+        noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
+        shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
+        popupCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopup );
+        autoCompletionAction->setChecked(  mode == KGlobalSettings::CompletionAuto );
+        shortAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionMan );
+        popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
         if ( mode != KGlobalSettings::completionMode() )
         {
             subMenu->insertSeparator();
-            subMenu->insertItem( i18n("Default"), Default );
+            defaultAction = subMenu->addAction( i18n("Default") );
         }
     }
 
@@ -899,37 +901,41 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     delete popup;
 }
 
-void KLineEdit::completionMenuActivated( int id )
+void KLineEdit::completionMenuActivated( QAction  *act)
 {
     KGlobalSettings::Completion oldMode = completionMode();
 
-    switch ( id )
+    if( act == noCompletionAction )
     {
-        case Default:
-           setCompletionMode( KGlobalSettings::completionMode() );
-           break;
-        case NoCompletion:
-           setCompletionMode( KGlobalSettings::CompletionNone );
-           break;
-        case AutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionAuto );
-            break;
-        case ShortAutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionMan );
-            break;
-        case ShellCompletion:
-            setCompletionMode( KGlobalSettings::CompletionShell );
-            break;
-        case PopupCompletion:
-            setCompletionMode( KGlobalSettings::CompletionPopup );
-            break;
-        case PopupAutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionPopupAuto );
-            break;
-        default:
-            return;
+	 setCompletionMode( KGlobalSettings::CompletionNone );
     }
-
+    else if( act ==  shellCompletionAction)
+    {
+	    setCompletionMode( KGlobalSettings::CompletionShell );
+    } 
+    else if( act == autoCompletionAction)
+    {
+	    setCompletionMode( KGlobalSettings::CompletionAuto );
+    }
+    else if( act == popupCompletionAction)
+    {
+	    setCompletionMode( KGlobalSettings::CompletionPopup );
+    }
+    else if( act == shortAutoCompletionAction)
+    {
+	    setCompletionMode( KGlobalSettings::CompletionMan );
+    }
+    else if( act == popupAutoCompletionAction)
+    {
+	   	setCompletionMode( KGlobalSettings::CompletionPopupAuto );
+    }
+    else if( act == defaultAction )
+    {
+	   setCompletionMode( KGlobalSettings::completionMode() );
+    }
+    else
+	    return;
+    
     if ( oldMode != completionMode() )
     {
         if ( (oldMode == KGlobalSettings::CompletionPopup ||

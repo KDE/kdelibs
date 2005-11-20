@@ -32,7 +32,7 @@
 
 #include <qlineedit.h>
 #include <kcompletion.h>
-
+class QAction;
 class QMenu;
 class KCompletionBox;
 class KURL;
@@ -529,24 +529,13 @@ protected:
     bool autoSuggest() const;
 
 private slots:
-    void completionMenuActivated( int id );
+    void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick
     void slotRestoreSelectionColors();
     void setTextWorkaround( const QString& text );
 
 private:
 
-    // Constants that represent the ID's of the popup menu.
-    enum MenuID
-    {
-        Default = 42,
-        NoCompletion,
-        AutoCompletion,
-        ShellCompletion,
-        PopupCompletion,
-        ShortAutoCompletion,
-        PopupAutoCompletion
-    };
 
     /**
      * Initializes variables.  Called from the constructors.
@@ -569,6 +558,7 @@ private:
 
     bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
 
+    QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
