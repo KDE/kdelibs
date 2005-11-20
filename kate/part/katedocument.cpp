@@ -4362,7 +4362,19 @@ void KateDocument::reloadFile()
     m_storedVariables.clear();
 
     m_reloading = true;
+
+    QValueList<int> lines, cols;
+    for ( uint i=0; i < m_views.count(); i++ )
+    {
+      lines.append( m_views.at( i )->cursorLine() );
+      cols.append( m_views.at( i )->cursorColumn() );
+    }
+
     KateDocument::openURL( url() );
+
+    for ( uint i=0; i < m_views.count(); i++ )
+      m_views.at( i )->setCursorPositionInternal( lines[ i ], cols[ i ], m_config->tabWidth(), false );
+
     m_reloading = false;
 
     for (uint z=0; z < tmp.size(); z++)
