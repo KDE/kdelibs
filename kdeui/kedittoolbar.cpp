@@ -742,10 +742,13 @@ void KEditToolbarWidget::setupLayout()
   m_activeList->setMinimumWidth(m_inactiveList->minimumWidth());
   active_label->setBuddy(m_activeList);
 
+#warning "kde4: dropped signal doesn't exist now"
+#if 0  
   connect(m_inactiveList, SIGNAL(dropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)),
           this,              SLOT(slotDropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)));
   connect(m_activeList, SIGNAL(dropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)),
           this,            SLOT(slotDropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)));
+#endif
   connect(m_activeList, SIGNAL(itemSelectionChanged()),
           this,         SLOT(slotActiveSelectionChanged()));
   connect(m_activeList, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
