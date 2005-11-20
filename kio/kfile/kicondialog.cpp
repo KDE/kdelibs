@@ -41,7 +41,7 @@
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
 
-#ifdef HAVE_LIBART
+#ifdef HAVE_LIBAGG
 #include <svgicons/ksvgiconengine.h>
 #include <svgicons/ksvgiconpainter.h>
 #endif
@@ -122,7 +122,7 @@ void KIconCanvas::slotLoadFiles()
     // disable updates to not trigger paint events when adding child items
     setUpdatesEnabled( false );
 
-#ifdef HAVE_LIBART
+#ifdef HAVE_LIBAGG
     KSVGIconEngine *svgEngine = new KSVGIconEngine();
 #endif
 
@@ -155,7 +155,7 @@ void KIconCanvas::slotLoadFiles()
 
 	if (ext != "SVG" && ext != "VGZ")
 	    img.load(*it);
-#ifdef HAVE_LIBART
+#ifdef HAVE_LIBAGG
 	else
 	    if (svgEngine->load(60, 60, *it))
 		img = *svgEngine->painter()->image();
@@ -184,7 +184,7 @@ void KIconCanvas::slotLoadFiles()
 	item->setDropEnabled(false);
     }
 
-#ifdef HAVE_LIBART
+#ifdef HAVE_LIBAGG
     delete svgEngine;
 #endif
 
