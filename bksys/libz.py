@@ -33,7 +33,11 @@ def generate(env):
 	opts.AddOptions(
 		('CACHED_Z', 'Whether libz is available'),
 		('CXXFLAGS_Z',''),
-		('LINKFLAGS_Z','')
+		('CCFLAGS_Z',''),
+		('LINKFLAGS_Z',''),
+		('CPPPATH_Z',''),
+		('LIB_Z',''),
+		('LIBPATH_Z','')
 		)
 	opts.Update(env)
 	opts.Save(optionFile, env)
@@ -46,7 +50,6 @@ def generate(env):
 		else:
 			env['CACHED_Z'] = 0
 			if conf.CheckHeader('zlib.h') and conf.CheckLib('z'):
-				env['CXXFLAGS_Z'] = ['-DHAVE_LIBZ']
 				env['LINKFLAGS_Z'] = ['-lz']
 				env['CACHED_Z'] = 1
 
