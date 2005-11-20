@@ -57,9 +57,8 @@ extern "C" {
 }
 #endif
 
-/* these 4 below are static, otherwise build with --disable-shared will fail */
+/* these 3 below are static, otherwise build with --disable-shared will fail */
 static IcePoAuthProc DCOPClientAuthProcs[] = {_kde_IcePoMagicCookie1Proc};
-static IcePaAuthProc DCOPServerAuthProcs[] = {_kde_IcePaMagicCookie1Proc};
 static int DCOPAuthCount = 1;
 static const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
 

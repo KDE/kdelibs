@@ -71,6 +71,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // #define DCOP_DEBUG
 
+static IcePaAuthProc DCOPServerAuthProcs[] = {_kde_IcePaMagicCookie1Proc};
+
 DCOPServer* the_server;
 
 #define _DCOPIceSendBegin(x)	\
