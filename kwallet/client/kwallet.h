@@ -46,7 +46,7 @@ namespace KWallet {
  * @author George Staikos <staikos@kde.org>
  * @short KDE Wallet Class
  */
-class KWALLET_EXPORT Wallet : public QObject, public DCOPObject {
+class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 	K_DCOP
 	Q_OBJECT
 	protected:
