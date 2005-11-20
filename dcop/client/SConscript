@@ -9,9 +9,7 @@ for prog in progs1:
 	obj.source    = prog+'.cpp'
 	obj.libpaths  = '.. '
 	obj.libs      = 'DCOP '
-	#obj.ccflags   = '-DKDECORE_EXPORT= '
 	if env['WINDOWS']:
-		obj.includes = '../../kdecore'
 		obj.libpaths += ' ../../win '
 		obj.libs     += ' kdewin32 ws2_32 '
 		if env['CC'] == 'gcc':
@@ -30,7 +28,6 @@ for prog in progs2:
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'
 	obj.instdir   = env['KDEBIN']
 	if env['WINDOWS'] and env['CC'] == 'gcc':
-		obj.includes = '../../kdecore'
 		obj.ccflags  += '-Dkdemain=main'
 	obj.execute()
 

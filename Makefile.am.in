@@ -38,6 +38,8 @@ AUTOMAKE_OPTIONS = foreign 1.5
 potdir = $(kde_includes)
 pot_DATA = kde.pot
 
+include_HEADERS = kdelibs_export.h
+
 messages:
 	cd kabc/scripts && perl ./makeaddressee
 	find . -type d | grep -v CVS | grep -v '\.svn' | sed -e 's,$$,/,' > dirs

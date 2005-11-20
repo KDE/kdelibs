@@ -78,7 +78,6 @@ env.Command('dcop-path.h', '', act) # no source needed
 obj=env.genobj('program', env)
 obj.target='dcopserver_shutdown'
 obj.source='dcopserver_shutdown.c'
-obj.includes = '../kdecore'
 obj.instdir  = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths = '../win/'
@@ -90,48 +89,3 @@ install_headers = "dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kd
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 
-"""
-SUBDIRS = KDE-ICE . dcopidlng dcopidl2cpp client tests
-KDE_OPTIONS = qtonly
-
-bin_PROGRAMS = dcopserver_shutdown
-check_PROGRAMS = testdcop testdcopc
- # dcop_deadlock_test
-
-lib_LTLIBRARIES  = libDCOP.la 
-libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE) $(LIB_QT) $(LIB_QT3SUPPORT)
-libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
-libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
-libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
-
-include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h
-noinst_HEADERS = version.h dcopglobal.h dcopserver.h testdcop.h dcopsignals.h dcop-path.h
-
-# dcopstub needs to go first for --enable-final to work
-libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp
-
-kdeinit_LTLIBRARIES = dcopserver.la
-dcopserver_la_LDFLAGS = -module -avoid-version $(all_libraries)
-dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
-dcopserver_la_LIBADD  = libDCOP.la
-
-dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
-
-testdcop_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-testdcop_SOURCES = testdcop.cpp
-testdcop_LDADD = libDCOP.la
-
-#dcop_deadlock_test_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-#dcop_deadlock_test_SOURCES = dcop_deadlock_test.cpp
-#dcop_deadlock_test_LDADD = ../kdecore/libkdecore.la
-
-testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-testdcopc_SOURCES = testdcopc.c dcopc.c
-testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
-
-EXTRA_DIST = HOWTO ICE Mainpage.dox
-
-DOXYGEN_REFERENCES = kdecore
-DOXYGEN_EXCLUDE = KDE-ICE
-include ../admin/Doxyfile.am
-"""
