@@ -224,9 +224,6 @@ def detect(lenv,dest):
 /* Define to 1 if you have the `libQtGui_debug' library (-llibQtGui_debug). */
 /* #undef HAVE_LIBLIBQTGUI_DEBUG */
 
-/* Define if you have libpng */
-#define HAVE_LIBPNG 1
-
 /* Define if you have a working libpthread (will enable threaded code) */
 #define HAVE_LIBPTHREAD 1
 

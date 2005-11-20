@@ -26,6 +26,7 @@ def generate(env):
 		return ret
 
 	from SCons.Options import Options
+	from SCons.Tool import Tool
 	import os
 
 	optionFile = env['CACHEDIR'] + 'libpng.cache.py'
@@ -43,10 +44,22 @@ def generate(env):
 	opts.Save(optionFile, env)
 
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_PNG')):
-		conf = env.Configure(custom_tests =	 { 'Check_libpng' : Check_libpng} )
-
-		if not conf.Check_libpng():
+		if env['WINDOWS'] and not conf.Check_libpng():
+			conf = env.Configure(custom_tests =	 { 'Check_libpng' : Check_libpng} )
 			print 'libpng not found (mandatory).'
+			env = conf.Finish()
+		else:
+			env['CACHED_PNG'] = 0
+			pkgs = Tool('pkgconfig', ['./bksys'])
+			pkgs.generate(env)
 
-		env = conf.Finish()
+			have_png = env.pkgConfig_findPackage('PNG', 'libpng', '1.0')
+
+    		dest=open(env.join(env['_BUILDDIR_'], 'config-libpng.h'), 'w')
+    		dest.write('/* libpng configuration created by bksys */\n')
+		if have_png:
+			dest.write('#define HAVE_LIBPNG_H 1\n');
+			env['CACHED_PNG'] = 1
+		dest.close()
+		env['_CONFIG_H_'].append('libpng')
 		opts.Save(optionFile, env)
