@@ -301,12 +301,12 @@ void Identifier::rehash(int newTableSize)
 
 #if !AVOID_STATIC_CONSTRUCTORS
     // Define an Identifier in the normal way.
-    #define DEFINE_GLOBAL(name, string) extern const Identifier name(string);
+    #define DEFINE_GLOBAL(name, string) KJS_EXPORT extern const Identifier name(string);
 #else
     // Define an Identifier-sized array of pointers to avoid static initialization.
     // Use an array of pointers instead of an array of char in case there is some alignment issue.
     #define DEFINE_GLOBAL(name, string) \
-        void * name[(sizeof(Identifier) + sizeof(void *) - 1) / sizeof(void *)];
+        KJS_EXPORT void * name[(sizeof(Identifier) + sizeof(void *) - 1) / sizeof(void *)];
 #endif
 
 const char * const nullCString = 0;

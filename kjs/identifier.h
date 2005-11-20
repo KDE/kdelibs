@@ -129,7 +129,7 @@ namespace KJS {
     };
     
 #if !defined(KJS_IDENTIFIER_HIDE_GLOBALS)
-    extern const Identifier nullIdentifier;
+    KJS_EXPORT extern const Identifier nullIdentifier;
 
     inline const Identifier &Identifier::null()
         { return nullIdentifier; }
