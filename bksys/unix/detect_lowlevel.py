@@ -206,9 +206,6 @@ def detect(lenv,dest):
 /* Define if your locale.h file contains LC_MESSAGES */
 #define HAVE_LC_MESSAGES 1
 
-/* Defines if your system has the libart library */
-#define HAVE_LIBART 1
-
 /* Define if you have the libdl library or equivalent. */
 #define HAVE_LIBDL 1
 
