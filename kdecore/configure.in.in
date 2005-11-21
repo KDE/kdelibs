@@ -169,8 +169,6 @@ AC_CHECK_HEADERS(sys/mount.h)
 
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
-AM_CONFIG_HEADER(kdecore/kdemacros.h)
-
 ###############################################################################
 # BEGIN PKG-CONFIG AND AGG2 CHECK
 ###############################################################################

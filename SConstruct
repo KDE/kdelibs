@@ -52,6 +52,7 @@ config = {
 env=configure(config)
 
 # now the kdemacros (TODO put this into a bootstrap section somehow ?)
+# TODO and install the generated kdemacros.h
 dest = open(env.join('build','kdemacros.h'), 'w')
 dest.write('#include <kdemacros.h.in>\n')
 dest.close()

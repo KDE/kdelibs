@@ -58,7 +58,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
-	kdemacros.h kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
+	kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
 	kfilterbase.h kfilterdev.h
 
 libkdefakes_la_SOURCES = fakes.c

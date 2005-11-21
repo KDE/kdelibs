@@ -21,8 +21,7 @@ AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
 AC_PROG_INSTALL
 
-dnl generate the config header
-AM_CONFIG_HEADER(config.h) dnl at the distribution this done
+AM_CONFIG_HEADER([config.h kdemacros.h])
 
 dnl Checks for programs.
 AC_CHECK_COMPILERS
@@ -390,3 +389,4 @@ AC_CACHE_CHECK(for tm_gmtoff in struct tm, ac_cv_struct_tm_gmtoff,
 if test $ac_cv_struct_tm_gmtoff = yes; then
   AC_DEFINE(HAVE_TM_GMTOFF, 1, [Define if you have a tm_gmtoff member in struct tm])
 fi
+
