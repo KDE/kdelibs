@@ -44,9 +44,11 @@ def generate(env):
 	opts.Save(optionFile, env)
 
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_PNG')):
-		if env['WINDOWS'] and not conf.Check_libpng():
+		if env['WINDOWS']:
 			conf = env.Configure(custom_tests =	 { 'Check_libpng' : Check_libpng} )
-			print 'libpng not found (mandatory).'
+			have_png = conf.Check_libpng()
+			if not have_png:
+				print 'libpng not found (mandatory).'
 			env = conf.Finish()
 		else:
 			env['CACHED_PNG'] = 0
