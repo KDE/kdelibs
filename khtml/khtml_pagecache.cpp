@@ -57,7 +57,7 @@ public:
 private:
   long m_id;
   bool m_complete;
-  Q3ValueList<QByteArray> m_data;
+  QList<QByteArray> m_data;
   KTempFile *m_file;
 };
 
