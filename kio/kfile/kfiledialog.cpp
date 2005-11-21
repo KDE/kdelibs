@@ -2042,7 +2042,8 @@ void KFileDialog::updateFilter ()
 
         KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
         if (mime && mime->name() != KMimeType::defaultMimeType()) {
-            if (filterWidget->filters().findIndex(mime->name()) != -1 )
+            if (filterWidget->currentFilter() != mime->name() &&
+                filterWidget->filters().findIndex(mime->name()) != -1)
                 filterWidget->setCurrentFilter(mime->name());
         }
     }
