@@ -151,7 +151,7 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     setRootIsDecorated( true );
 
     addDesktopGroup( QString::null );
-	cleanupTree();
+    cleanupTree();
 
     connect( this, SIGNAL( currentChanged(QListViewItem*) ),
             SLOT( slotItemHighlighted(QListViewItem*) ) );
@@ -214,7 +214,7 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
       {
          KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
 
-         if (serviceGroup->noDisplay())
+         if (serviceGroup->noDisplay() || serviceGroup->childCount() == 0)
             continue;
 
          icon = serviceGroup->icon();
@@ -288,23 +288,6 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 void KApplicationTree::cleanupTree()
 {
 	QListViewItem *item=firstChild();
-	while(item!=0)
-	{
-		if(item->isExpandable())
-		{
-			item->setOpen(true);
-			if(item->childCount()==0) {
-				QListViewItem *current=item;
-				item=item->itemBelow();
-				delete current;
-				continue;
-			}
-			item=item->itemBelow();
-			continue;
-		}
-		item=item->itemBelow();
-	}
-	item=firstChild();
 	while(item!=0)
 	{
 		if(item->isExpandable())
