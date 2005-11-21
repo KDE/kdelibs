@@ -415,11 +415,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
   url.adjustPath( -1 );
   QString urlStr = url.url();
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
-  //Q_ASSERT( holders );
-  if ( holders )
-  {
-    holders->removeRef( lister );
-  }
+  Q_ASSERT( holders );
+  holders->removeRef( lister );
 
   // remove the dir from lister->d->lstDirs so that it doesn't contain things
   // that itemsInUse doesn't. When emitting the canceled signals lstDirs must
@@ -428,8 +425,9 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
   lister->d->lstDirs.remove( lister->d->lstDirs.find( url ) );
 
   DirItem *item = itemsInUse[urlStr];
+  Q_ASSERT( item );
 
-  if ( holders && holders->isEmpty() )
+  if ( holders->isEmpty() )
   {
     urlsCurrentlyHeld.remove( urlStr ); // this deletes the (empty) holders list
     if ( !urlsCurrentlyListed[urlStr] )
@@ -456,7 +454,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
       if ( notify )
         emit lister->clear( url );
 
-      if ( item && item->complete )
+      if ( item->complete )
       {
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
         itemsCached.insert( urlStr, item ); // TODO: may return false!!
