@@ -8,7 +8,7 @@ if not env['WINDOWS']:
 	obj.source   = "kpasswdserver.cpp kpasswdserver.skel"
 	#obj.iskdelib = 1
 	obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO'
-	obj.libs     = 'kwalletclient kdeui kdecore DCOP kdefx kdeinit_kded '
+	obj.libs     = 'kwalletclient kdeui kdecore DCOP kdefx kded '
 	obj.includes = '../../kwallet/client'
 	obj.libpaths = '../../kwallet/client ../../kdeui ../../kdecore ../../dcop ../../kdefx ../../kded '
 	obj.execute()
