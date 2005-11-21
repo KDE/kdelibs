@@ -150,7 +150,7 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     setRootIsDecorated( true );
 
     addDesktopGroup( QString::null );
-	cleanupTree();
+    cleanupTree();
 
     connect( this, SIGNAL( currentChanged(Q3ListViewItem*) ),
             SLOT( slotItemHighlighted(Q3ListViewItem*) ) );
@@ -213,7 +213,7 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
       {
          const KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
 
-         if (serviceGroup->noDisplay())
+         if (serviceGroup->noDisplay() || serviceGroup->childCount() == 0)
             continue;
 
          icon = serviceGroup->icon();
@@ -287,23 +287,6 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 void KApplicationTree::cleanupTree()
 {
 	Q3ListViewItem *item=firstChild();
-	while(item!=0)
-	{
-		if(item->isExpandable())
-		{
-			item->setOpen(true);
-			if(item->childCount()==0) {
-				Q3ListViewItem *current=item;
-				item=item->itemBelow();
-				delete current;
-				continue;
-			}
-			item=item->itemBelow();
-			continue;
-		}
-		item=item->itemBelow();
-	}
-	item=firstChild();
 	while(item!=0)
 	{
 		if(item->isExpandable())
