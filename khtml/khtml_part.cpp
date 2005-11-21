@@ -6654,13 +6654,46 @@ void KHTMLPart::runAdFilter()
         }
 
     if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
-        for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() ) {
+        for ( NodeImpl *nextNode, *node = d->m_doc; node; node = nextNode ) {
+
+            // We might be deleting 'node' shortly.
+            nextNode = node->traverseNextNode();
+
             if ( node->id() == ID_IMG ||
                  node->id() == ID_IFRAME ||
                  (node->id() == ID_INPUT && !strcasecmp( static_cast<ElementImpl *>(node)->getAttribute(ATTR_TYPE), "image")) )
             {
                 if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
+                {
+                    // We found an IMG, IFRAME or INPUT (of type "image") matching a filter.
+
+                    // Detach the node from the document and rendering trees.
                     node->detach();
+
+                    // Connect its siblings to each other instead.
+                    NodeImpl *next = node->nextSibling();
+                    NodeImpl *prev = node->previousSibling();
+
+                    if( next ) next->setPreviousSibling( prev );
+                    if( prev ) prev->setNextSibling( next );
+
+                    // If it's the first or last child of its parent, we cut it off there too.
+                    NodeImpl *parent = node->parent();
+                    if( parent )
+                    {
+                        if( node == parent->firstChild() )
+                            parent->setFirstChild( next );
+
+                        if( node == parent->lastChild() )
+                            parent->setLastChild( prev );
+                    }
+
+                    node->removedFromDocument();
+
+                    // If nobody needs this node, we can safely delete it.
+                    if( !node->refCount() )
+                        delete node;
+                }
             }
         }
     }
