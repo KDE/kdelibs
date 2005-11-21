@@ -27,7 +27,6 @@ class KConfig;
 #include <qfont.h>
 #include <qmap.h>
 #include <qpair.h>
-#include <Q3ValueList>
 
 #include <kdelibs_export.h>
 
@@ -216,7 +215,7 @@ public:
     // Meta refresh/redirect (http-equiv)
     bool isAutoDelayedActionsEnabled () const;
 
-    Q3ValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
+    QList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
     // Whether to show passive popup when windows are blocked
     // @since 3.5

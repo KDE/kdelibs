@@ -107,7 +107,7 @@ public:
     QStringList defaultFonts;
 
     QVector<QRegExp> adFilters;
-    Q3ValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
+    QList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
 
@@ -1050,7 +1050,7 @@ bool KHTMLSettings::autoSpellCheck() const
     return d->m_autoSpellCheck;
 }
 
-Q3ValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
+QList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
 {
     return d->m_fallbackAccessKeysAssignments;
 }
