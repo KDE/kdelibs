@@ -215,9 +215,6 @@ def detect(lenv,dest):
 /* Define if you have GSSAPI libraries */
 #define HAVE_LIBGSSAPI 1
 
-/* Define if you have libjpeg */
-#define HAVE_LIBJPEG 1
-
 /* Define to 1 if you have the `libQtGui_debug' library (-llibQtGui_debug). */
 /* #undef HAVE_LIBLIBQTGUI_DEBUG */
 
