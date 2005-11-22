@@ -26,7 +26,6 @@
 #include <QRect>
 #include <QColor>
 #include <Q3PtrList>
-#include <Q3ValueList>
 
 #include <agg2/agg_conv_dash.h>
 #include <agg2/agg_scanline_u.h>
@@ -183,7 +182,7 @@ public:
     unsigned int miterLimit;
 
     float dashOffset;
-    Q3ValueList<float> dashArray;
+    QList<float> dashArray;
 
     agg::line_cap_e lineCap;
     agg::line_join_e lineJoin;
@@ -226,8 +225,8 @@ public:
         unsigned int count = (dashLength % 2) == 0 ? dashLength : dashLength * 2;
         for(unsigned int i = 0; i < count; i += 2)
         {
-            m_d.add_dash(*props.dashArray.at(i % dashLength),
-                         *props.dashArray.at((i + 1) % dashLength));
+            m_d.add_dash(props.dashArray.at(i % dashLength),
+                         props.dashArray.at((i + 1) % dashLength));
         }
 
         m_d.dash_start(props.dashOffset);
@@ -319,12 +318,14 @@ public:
 class gradient_polymorphic_wrapper_base
 {
 public:
+	virtual ~gradient_polymorphic_wrapper_base() {}
     virtual int calculate(int x, int y, int) const = 0;
 };
 
 class gradient_linear : public gradient_polymorphic_wrapper_base
 {
 public:
+	virtual ~gradient_linear(){}
     virtual int calculate(int x, int y, int d) const
     {
         return m_gradient.calculate(x, y, d);
@@ -337,7 +338,8 @@ public:
 class gradient_linear_repeat : public gradient_linear
 {
 public:
-    virtual int calculate(int x, int, int d) const
+    virtual ~gradient_linear_repeat(){}
+	virtual int calculate(int x, int, int d) const
     {
         return (x < 0) ? (d - (-x % d)) : (x % d);
     }
@@ -346,6 +348,7 @@ public:
 class gradient_linear_reflect : public gradient_linear
 {
 public:
+	virtual ~gradient_linear_reflect(){}
     virtual int calculate(int x, int, int d) const
     {
         if((abs(x) / d) % 2 == 0)
@@ -375,6 +378,7 @@ public:
 class gradient_radial_repeat : public gradient_radial
 {
 public:
+	virtual ~gradient_radial_repeat() {}
     virtual int calculate(int x, int y, int d) const
     {
         return gradient_radial::calculate(x, y, d) % d;
@@ -384,6 +388,7 @@ public:
 class gradient_radial_reflect : public gradient_radial
 {
 public:
+	virtual ~gradient_radial_reflect(){}
     virtual int calculate(int x, int y, int d) const
     {
         int dist = gradient_radial::calculate(x, y, d);
