@@ -16,7 +16,7 @@ bootstrap.cpp
 """
 
 obj.ccflags += ' -DMAKE_KDEWIN32_LIB -DUNICODE '
-obj.includes += ' ../kdecore '
+obj.includes += ' .. '
 
 if env['CC'] == 'cl':
 	obj.includes += ' include include/msvc '

@@ -22,7 +22,7 @@
 #ifndef _SYS_DIRENT_H
 #define _SYS_DIRENT_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 
 #include <sys/types.h>
 #include <io.h>

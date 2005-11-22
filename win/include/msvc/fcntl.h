@@ -20,7 +20,7 @@
 #ifndef _FCNTL_H
 #define _FCNTL_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 
 #ifdef __cplusplus
 extern "C" {

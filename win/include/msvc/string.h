@@ -20,7 +20,7 @@
 #ifndef KDEWIN_STRING_H
 #define KDEWIN_STRING_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 #include "config.h" /* use build/config.h for strlcpy(), etc. */
 
 #define strncasecmp strnicmp

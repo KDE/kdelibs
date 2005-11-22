@@ -23,7 +23,7 @@
 #ifndef _MMAP_H
 #define _MMAP_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 
 #include <sys/types.h>
 

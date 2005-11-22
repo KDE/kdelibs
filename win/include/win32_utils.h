@@ -20,7 +20,7 @@
 #ifndef KDE_WIN32_UTILS_H
 #define KDE_WIN32_UTILS_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 
 #ifdef  __cplusplus
 #include <QString>

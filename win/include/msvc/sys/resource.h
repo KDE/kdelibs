@@ -20,7 +20,7 @@
 #ifndef _SYS_RESOURCE_H_
 #define _SYS_RESOURCE_H_
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 #include <sys/time.h>
 
 #ifdef __cplusplus

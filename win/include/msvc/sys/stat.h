@@ -20,7 +20,7 @@
 #ifndef _SYS_STAT_H
 #define _SYS_STAT_H
 
-#include <kdecore/kdelibs_export.h>
+#include <kdelibs_export.h>
 
 /* regular header from msvc includes */
 #include <../include/sys/stat.h>
