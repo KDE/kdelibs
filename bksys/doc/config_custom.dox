@@ -9,34 +9,76 @@ sys/param.h, paths.h, limits.h, execinfo.h" etc. and I need the c functions "mma
 setmntent", etc. 
 
 Custom configuration means that developers can customize the configure process on a 
-directory or package related way. 
-This is done by adding specific files named 'SConfigure' into the required directory (like autotool's 
-directory based configure.in.in). \n
+package or directory related way. 
+
+\section package_based_config_checks Package based config checks
+
+Package related cofigurations are provided by specific python modules located in the bksys directory like 
+
+- libz.py 
+- libpng.py 
+- libagg.py 
+- kde4.py 
+
+and others. They are using the \ref scons_config_checks api and are activated by adding the related 
+python module in the 'module' attribute of the SConstruct config array. 
+
+\section scons_config_checks scons provided config checks 
+Scons provides some prefined checks:  
+\code
+conf.CheckHeader('math.h')
+conf.CheckCHeader('math.h')
+conf.CheckCXXHeader('vector.h')
+conf.CheckFunc('strcpy')
+conf.CheckLib('m')
+conf.CheckLibWithHeader('m', 'math.h')
+conf.CheckType('off_t')
+conf.CheckType('off_t', '#include <sys/types.h>\n'):
+\endcode 
+
+Those tests are performed mostly like shown below: 
+\code 
+if not conf.CheckType('off_t', '#include <sys/types.h>\n'):
+  	conf.env.Append(CCFLAGS = '-Doff_t=int')
+\endcode
+This example adds a specific preprocessor macro in case the type wasn't found. You may inspect the provided 
+python modules in the bksys dir for further informations. 
+
+\section directory_based_config_checks Directory based config checks
+
+The directory based config checks works by adding specific files named 'SConfigure' into the required 
+directory (like autotool's directory based configure.in.in). \n
 On the configuring process the settings in this files are collected and stored in the 
-\ref config_cache configuration cache. Then the configuration process performs the requested 
+\ref config_cache. Then the configuration process performs the requested 
 actions, that means searching for headers, c function and additional libraries. The results are 
 stored into the configuration cache too. 
 	
 \section sconfigure_format Format of 'SConfigure' files
 
 SConfigure files are regular python scripts which are executed by the configure process with a 
-previously created PackageConfigure object named 'conf'. The PackageConfigure class provides several attributes, 
-which allows to customize the configuration. 
+previously created PackageConfigure object named 'conf'. 
+The PackageConfigure class provides several attributes, which allows to customize the configuration. 
 
-[question: or better named 'env' or 'config' ? ] 
-<ul>
+\code 
+if not conf.CheckType('off_t', '#include <sys/types.h>\n'):
+  	conf.env.Append(CCFLAGS = '-Doff_t=int')
+\endcode
 
-<li>
-specifiy used config header file
+------
+The provided functions uses the same prototypes as the scons based tests. 
+KDE sources uses the autotools \ref config_header feature, which has to be supported by bksys too. 
+For this purpose some additional functions are available: 
+------
+
+
+\subsection config_set_config_header specifiy used config header file
 example: 
 
 \code
-conf.setConfigHeader("dcop/config-dcop.h")
+conf.setConfigHeader("config-dcop.h")
 \endcode
 
-
-<li>
-specify required c header file(s) \n
+\subsection config_check_header specify required c header file(s)
 example:
 
 \code
@@ -44,109 +86,42 @@ conf.checkHeaders('sys/time.h unistd.h')
 conf.checkHeaders(['sys/time.h', 'unistd.h'])
 \endcode
 
-If the header file wasn't found, the configuration process will be canceled with an error message.
+If the header file wasn't found while configuration, a warning is printed and the configuration process goes on.
 
 the given filenames are automatically mapped to a related define in the config header config-<dirname>.h 
 which is included by the global config.h file. \n 
 If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
 
-<li>
-specify optional c header file(s) \n
-example:
+\subsection config_check_function specify required c function(s)
+example: 
 
 \code
-conf.checkOptionalHeaders('sys/time.h unistd.h')
-conf.checkOptionalHeaders(['sys/time.h', 'unistd.h'])
+conf.checkFunc('setenv gethostname')
+conf.checkFunc(['setenv','gethostname'])
 \endcode
 
 If the header file wasn't found while configuration, a warning is printed and the configuration process goes on.
 
-The given filenames are automatically mapped to a related define in the related config header which is included 
-by the global config.h file. \n 
-If for example the header sys/stat.h is present it will be mapped to HAVE_SYS_STAT_H \n
-
-<li>
-specify required c function(s) 
-example: 
-
-\code
-conf.checkFunctions('setenv gethostname')
-conf.checkFunctions(['setenv','gethostname'])
-\endcode
-
-If the function wasn't found in the configuration process, the configuration process will be canceled with an error message.
-
 The available functions are mapped automatically to a related define in the related config header which is included 
 by the global config.h file. \n
 if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
 
-<li>
-specify optional c function(s) 
-example: 
+
+\subsection config_check_module check a predefined package
+This function calls a predefined config check described in \ref package_based_config_checks
 
 \code
-conf.checkOptionalFunctions('setenv gethostname')
-conf.checkOptionalFunctions(['setenv','gethostname'])
-\endcode
-
-If the function wasn't found while configuration, a warning is printed and the configuration process goes on.
-
-The available functions are mapped automatically to a related define in the related config header which is included 
-by the global config.h file. \n
-if for example the function strlcpy() is present it will be mapped to HAVE_STRLCPY \n
-
-<li>
-add a user selectable option for an optional package, setting the package name, a description, 
-the default case and special options for further processing like error message ... 
-example: 
-
-check build in module, see \ref library_modules for details: 
-
-\code
-conf.checkModule(<key>):
+conf.checkModule('libbz2'):
 conf.checkModule('openssl'):
-conf.checkModule('OPENSSL'):
 \endcode
-\todo: why using uppercase names ? 
-
-
-custom defined module definition 
-		
-\code
-conf.checkModule(<key>,<description>,<default value>,<messages>):
-conf.checkModule('dpms','disable DPMS power saving',no):
-conf.checkModule(key='dpms', description='disable DPMS power saving',default='no',
-                 message = ['notfound','found'], checkHandler=mycheckHandler,)
-\endcode
-\todo: complete ... 
-- key: module key, under which the required lib definition could be retrieved in the SConscripts file using 
-- description: module description, used for message while configuring and help display 
-- default: no/yes - default value
-- message: optional found/not found message, which will be printed on the end of the configure process. \n
-           format: message="notfound" or message = ['notfound','found']
-- checkHandler: function, which do the custom checking \todo: specifiy parameter list 
-			
-The related package could be referenced later in the SConscript file using: 
 
 \code
-if env.conf['tiff']: 
+if env.has_key['CACHED_LIBBZ2']: 
 	obj.source += "xxx"
-	obj.includes += env.conf['tiff'].includes
+	obj.includes  += env.['CXXFLAGS_LIBBZ2']
+	obj.linkflags += env.['LINKFLAGS_LIBBZ2']
 \endcode
 
-<li>platform support for configuring is performed by checking the currently used platform. For this 
-the conf object includes several attributes ?? 
-- platform 
-- CC 
-\todo: finish
-	
-\code
-if conf['WINDOWS']: 
-	conf.CheckModule('jasper','Enable jasper (jpeg2k) support','yes')
-\endcode
-
-
-</ul>
 
 \section Implementation hints 
 
@@ -167,5 +142,3 @@ more than once if both kdecore and kdeui need sys/stat.h. Although, with the cac
 it would be fast, just a bit strange on stdout.
 
 */
-
-
