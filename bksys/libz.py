@@ -17,7 +17,10 @@ def generate(env):
 				# TODO: check if libz is really in QTCore lib 
 				env['CPPPATH_Z'] = [qtdir + "\\src\\3rdparty\\zlib"]
 				env['LIBPATH_Z'] = [qtdir + "\\lib"]
-				env['LIB_Z'] = ['QtCore4'] # TODO: check if debug version is used 
+				if env.has_key('LIB_QTCORE'):
+					env['LIB_Z'] = env['LIB_QTCORE']
+				else:
+					env['LIB_Z'] = ['QtCore4'] # TODO: check if debug version is used 
 				env['CACHED_Z'] = 1
 				ret = 1
 
