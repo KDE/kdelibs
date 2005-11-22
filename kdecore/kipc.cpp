@@ -43,15 +43,15 @@ static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
     int format;
-    unsigned long n, extra, *p = 0, res;
+    unsigned long n, extra, res = 0;
     int status;
+    unsigned char *p = 0;
 
-    res = 0;
     status = XGetWindowProperty(qt_xdisplay(), w, a, 0L, 1L, False, a,
-            &real_type, &format, &n, &extra, (unsigned char **) &p);
+            &real_type, &format, &n, &extra, &p);
     if ((status == Success) && (n == 1) && (format == 32))
-	res = p[0];
-    if (p) XFree((char *) p);
+	res = *(unsigned long*)p;
+    if (p) XFree(p);
     return res;
 }
 #endif
