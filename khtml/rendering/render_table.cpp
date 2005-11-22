@@ -1616,7 +1616,7 @@ RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
-bool RenderTableSection::canClear(RenderObject */*child*/, PageBreakLevel level)
+bool RenderTableSection::canClear(RenderObject * /*child*/, PageBreakLevel level)
 {
     // We cannot clear rows yet.
     return parent()->canClear(this, level);

@@ -31,7 +31,7 @@ bool ScaledImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
 {
     if (tile->pixmap.isNull()) return false;
 
-    for (int line = 0; line < tileHeight(tileY); ++line)
+    for (unsigned int line = 0; line < tileHeight(tileY); ++line)
     {
         if (tile->versions[line] < parent->versions[yScaleTable[line + tileY*Tile::TileSize]])
             return false;
@@ -48,7 +48,7 @@ static void scaleLoop(QImage* dst, unsigned int* xScaleTable,
     T*       dstPix = reinterpret_cast<T*>(dst->scanLine(line));
     
     xScaleTable += tileX * Tile::TileSize;
-    for (unsigned int x = 0; x < dst->width(); ++x)
+    for (int x = 0; x < (int)dst->width(); ++x)
     {
         *dstPix = srcPix[xScaleTable[x]];
         ++dstPix;
@@ -71,7 +71,7 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
     else ImageManager::imageCache()->touchEntry(&imageTile);
 
     //Pull in updates to the image.
-    for (int line = 0; line < tileHeight(tileY); ++line)
+    for (unsigned int line = 0; line < tileHeight(tileY); ++line)
     {
         int origLine = yScaleTable[line + tileY*Tile::TileSize];
         if (imageTile.versions[line] < parent->versions[origLine])

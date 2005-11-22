@@ -67,6 +67,9 @@ using namespace DOM;
 #include <q3paintdevicemetrics.h>
 #include <stdlib.h>
 
+#undef RELATIVE
+#undef ABSOLUTE
+
 #define HANDLE_INHERIT(prop, Prop) \
 if (isInherit) \
 {\
@@ -379,19 +382,20 @@ void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetr
 {
 #ifdef APPLE_CHANGES
     // We don't want to scale the settings by the dpi.
-    const float toPix = 1;
+    const float toPix = 1.0;
 #else
     Q_UNUSED( isFixed );
 
     // ### get rid of float / double
-    float toPix = paintDeviceMetrics->logicalDpiY()/72.;
-    if (toPix  < 96./72.) toPix = 96./72.;
+    float toPix = paintDeviceMetrics->logicalDpiY()/72.0f;
+    if (toPix  < 96.0f/72.0f)
+         toPix = 96.0f/72.0f;
 #endif // ######### fix isFixed code again.
 
     fontSizes.resize( MAXFONTSIZES );
     float scale = 1.0;
-    static const float fontFactors[] =      {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3.};
-    static const float smallFontFactors[] = {3./4., 5./6., 8./9., 1., 6./5., 3./2., 2., 3.};
+    static const float fontFactors[] =      {3.0f/5.0f, 3.0f/4.0f, 8.0f/9.0f, 1.0f, 6.0f/5.0f, 3.0f/2.0f, 2.0f, 3.0f};
+    static const float smallFontFactors[] = {3.0f/4.0f, 5.0f/6.0f, 8.0f/9.0f, 1.0f, 6.0f/5.0f, 3.0f/2.0f, 2.0f, 3.0f};
     float mediumFontSize, minFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
@@ -718,7 +722,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
 
     int firstLen = values ? values->count() : 0;
     int secondLen = addValues ? addValues->count() : 0;
-    int totalLen = firstLen + secondLen;
+    uint totalLen = firstLen + secondLen;
 
     if (inlineProps.size() < totalLen)
 	{
@@ -730,7 +734,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     }
 
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
-    for(int i = 0; i < totalLen; i++)
+    for(int i = 0; i < (int)totalLen; i++)
     {
         if (i == firstLen)
             values = addValues;
@@ -837,7 +841,7 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
     }
     //completeURL( attr.string() );
     bool contains = KHTMLFactory::vLinks()->contains( u );
-    if ( !contains && u.contains('/')==2 )
+    if ( !contains && u.count('/')==2 )
       contains = KHTMLFactory::vLinks()->contains( u+'/' );
     pseudoState = contains ? PseudoVisited : PseudoLink;
 }
@@ -2967,8 +2971,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         int oldSize;
         int size = 0;
 
-	float toPix = paintDeviceMetrics->logicalDpiY()/72.;
-	if (toPix  < 96./72.) toPix = 96./72.;
+        float toPix = paintDeviceMetrics->logicalDpiY()/72.0f;
+        if (toPix  < 96.0f/72.0f)
+            toPix = 96.0f/72.0f;
 
         int minFontSize = int(settings->minFontSize() * toPix);
 

@@ -649,6 +649,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return Number(0);
+#ifdef Q_WS_X11
       KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId());
       return Number(entry->value == OuterHeight ?
                     inf.geometry().height() : inf.geometry().width());
@@ -1674,7 +1675,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 		part->settings()->windowFocusPolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
+#ifdef Q_WS_X11
       KWin::deIconifyWindow( widget->topLevelWidget()->winId() );
+#else
+      //TODO
+#endif
       widget->setActiveWindow();
       emit part->browserExtension()->requestFocus(part);
     }

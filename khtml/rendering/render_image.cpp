@@ -229,7 +229,9 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     //                     oimage->pixmap_size().width()  == intrinsicWidth() &&
     //                     oimage->pixmap_size().height() == intrinsicHeight()
     //                     ? oimage : image;
+#ifdef __GNUC__
 #warning "FIXME: when isComplete added, use this"
+#endif
     CachedImage* i = image;
 
     // paint frame around image as long as it is not completely loaded from web.
@@ -289,7 +291,9 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintInfo.p->setPen( Qt::black ); // used for bitmaps
         //const QPixmap& pix = i->pixmap();
         //### FIXME!!!  FIXME!!! Ultra-slow -- need to store the painter
+#ifdef __GNUC__
         #warning "FIXME: bad performance when scaling"
+#endif
         ImagePainter ip(i->image(), QSize(contentWidth(), contentHeight()));
 
         //Intersect with the painting clip rectangle.

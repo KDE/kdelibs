@@ -541,7 +541,9 @@ QString Decoder::decode(const char *data, int len)
         out = m_decoder->toUnicode(buffer, buffer.length());
         buffer = "";
     } else {
+#ifdef __GNUC__
 #warning "is this still needed?"
+#endif
         if(!is16Bit(m_codec)) // utf16
         {
             // ### hack for a bug in QTextCodec. It cut's the input stream

@@ -85,7 +85,11 @@ private:
   void (*oldAlarmHandler)(int);
   static void alarmHandler(int);
   static bool confirmTerminate();
+#ifdef Q_WS_WIN
+  //TODO
+#else
   itimerval oldtv;
+#endif
 };
 
 #endif

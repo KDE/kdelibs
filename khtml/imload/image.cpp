@@ -359,7 +359,9 @@ void Image::refSize(QSize size)
     }
     else
     {
+#ifdef __GNUC__
 #warning "Security paranoia needed here"
+#endif
         //Compute scaling ratios
         double wRatio = size.width()  / double(width);
         double hRatio = size.height() / double(height);
@@ -389,7 +391,9 @@ void Image::refSize(QSize size)
 
         first->refCount = 1;
         scaled[key]     = first;
+#ifdef __GNUC__
 #warning "FIXME: Clone animation controllers"
+#endif
     }
 }
 

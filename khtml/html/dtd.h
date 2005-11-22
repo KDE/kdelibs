@@ -24,6 +24,8 @@
 
 #include "dom/dom_string.h"
 
+#undef OPTIONAL
+
 namespace DOM
 {
 

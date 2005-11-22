@@ -65,7 +65,7 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
     {
         ImageManager::pixmapCache()->touchEntry(tile);
     
-        for (int line = 0; line < tileHeight(tileY); ++line)
+        for (unsigned int line = 0; line < tileHeight(tileY); ++line)
         {
             if (versions[line] > tile->versions[line])
             {

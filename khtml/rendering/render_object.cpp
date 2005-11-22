@@ -491,7 +491,9 @@ bool RenderObject::hasStaticY() const
 
 void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
 {
+#ifdef __GNUC__
 #warning "FIXME: Check if complete!"
+#endif
     //repaint bg when it finished loading
     if(image && parent() && style() && style()->backgroundImage() == image
        /* && image->valid_rect().size() == image->pixmap_size()*/ ) {

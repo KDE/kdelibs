@@ -103,6 +103,8 @@ void KJavaAppletWidget::setWindow( WId w )
         embedClient( w );
         setFocus();
     }
+#else
+    //TODO
 #endif
 }
 

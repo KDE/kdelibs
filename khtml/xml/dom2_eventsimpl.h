@@ -28,6 +28,8 @@
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
 
+#undef FOCUS_EVENT //for win32
+
 class KHTMLPart;
 class QMouseEvent;
 

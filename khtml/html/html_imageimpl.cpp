@@ -305,7 +305,9 @@ long HTMLImageElementImpl::height() const
 QImage HTMLImageElementImpl::currentImage() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
+#ifdef __GNUC__
 #warning "FIXME"
+#endif
     //if(r)
     //    return r->pixmap().convertToImage();
 
@@ -316,7 +318,9 @@ QPixmap HTMLImageElementImpl::currentPixmap() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
 
+#ifdef __GNUC__
 #warning "FIXME"
+#endif
     //if(r)
     //    return r->pixmap();
 

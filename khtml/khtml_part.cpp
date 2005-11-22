@@ -7230,8 +7230,10 @@ KWallet::Wallet *KHTMLPart::wallet()
   if (p)
     return p->wallet();
 
-#endif // KHTML_NO_WALLET
   return d->m_wallet;
+#else
+  return 0;
+#endif // !KHTML_NO_WALLET
 }
 
 
@@ -7422,3 +7424,6 @@ bool KHTMLPart::inProgress() const
 using namespace KParts;
 #include "khtml_part.moc"
 #include "khtmlpart_p.moc"
+#ifndef KHTML_NO_WALLET
+#include "khtml_wallet_p.moc"
+#endif

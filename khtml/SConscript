@@ -189,6 +189,7 @@ khtmlview.h
 
 noinst_headers = """
 khtmlpart_p.h
+khtml_wallet_p.h
 """
 
 includes = '#/kjs ../kjs #/kimgio java #/dcop misc dom xml html css rendering imload imload/decoders/ #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils '
@@ -235,7 +236,11 @@ obj.execute()
 if env['MAC']:
 	env.Depends('libkhtml.6.0.2.dylib', '../kjs/libkjs.dylib')
 	env.Depends('libkhtml.6.0.2.dylib', '../kparts/libkparts.dylib')
-elif not env['WINDOWS']:
+elif env['WINDOWS']:
+	pass
+#doesn't work	env.Depends('khtml-6.dll', '../kjs/kjs-6.dll')
+#doesn't work	env.Depends('khtml-6.dll', '../kparts/kparts-6.dll')
+else:
 	env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
 	env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
 

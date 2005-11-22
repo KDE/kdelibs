@@ -1535,7 +1535,7 @@ void TextAreaWidget::slotFind()
 
     if ( m_findDlg ) {
 #ifdef Q_WS_WIN
-			m_findDlg->activateWindow();
+      m_findDlg->activateWindow();
 #else
       KWin::activateWindow( m_findDlg->winId() );
 #endif
@@ -1554,7 +1554,7 @@ void TextAreaWidget::slotReplace()
 
     if ( m_repDlg ) {
 #ifdef Q_WS_WIN
-			m_repDlg->activateWindow();
+      m_repDlg->activateWindow();
 #else
       KWin::activateWindow( m_repDlg->winId() );
 #endif

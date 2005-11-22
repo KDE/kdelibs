@@ -60,7 +60,9 @@
 #define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
 #define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
 
+#ifdef __GNUC__
 #warning "Kill this at some point"
+#endif
 
 struct PalInfo
 {

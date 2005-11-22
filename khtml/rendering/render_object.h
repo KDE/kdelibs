@@ -367,7 +367,7 @@ public:
 
     virtual void paintBoxDecorations(PaintInfo&, int /*_tx*/, int /*_ty*/) {}
 
-    virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer */*bgLayer*/,
+    virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer * /*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {}
 
@@ -447,7 +447,7 @@ public:
 
     // Checks if a page-break before child is possible at the given page-break level
     // false means the child should attempt the break self.
-    virtual bool canClear(RenderObject */*child*/, PageBreakLevel level)
+    virtual bool canClear(RenderObject * /*child*/, PageBreakLevel level)
     { if (parent()) return parent()->canClear(this, level); else return false; }
 
     void setAfterPageBreak(bool b = true)  { m_afterPageBreak = b; };

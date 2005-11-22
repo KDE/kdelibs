@@ -470,7 +470,7 @@ static void addMidpoint(const BidiIterator& midpoint)
     if (!smidpoints)
         return;
 
-    if (smidpoints->size() <= sNumMidpoints)
+    if (smidpoints->size() <= (int)sNumMidpoints)
         smidpoints->resize(sNumMidpoints+10);
 
     BidiIterator* midpoints = smidpoints->data();

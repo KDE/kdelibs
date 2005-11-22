@@ -559,7 +559,9 @@ RenderFrame::RenderFrame( DOM::HTMLFrameElementImpl *frame )
 
 void RenderFrame::slotViewCleared()
 {
+#ifdef __GNUC__
 #warning "Adjust this once we're a QAbstractScrollWidget (and in RenderPartObject)!"
+#endif
     if(m_widget->inherits("Q3ScrollView")) {
 #ifdef DEBUG_LAYOUT
         kdDebug(6031) << "frame is a scrollview!" << endl;

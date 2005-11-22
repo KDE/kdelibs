@@ -72,13 +72,13 @@ public:
     HTMLStackElem( int _id,
                    int _level,
                    DOM::NodeImpl *_node,
-		   bool _inline,
+                   bool _inline_,
                    HTMLStackElem * _next )
         :
         id(_id),
         level(_level),
         strayTableContent(false),
-	m_inline(_inline),
+        m_inline(_inline_),
         node(_node),
         next(_next)
         { node->ref(); }

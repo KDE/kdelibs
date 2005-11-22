@@ -1,6 +1,3 @@
-#ifndef khtmlpart_p_h
-#define khtmlpart_p_h
-
 /* This file is part of the KDE project
  *
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
@@ -26,6 +23,9 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef khtmlpart_p_h
+#define khtmlpart_p_h
+
 #include <kcursor.h>
 #include <klibloader.h>
 #include <kxmlguifactory.h>
@@ -33,9 +33,6 @@
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
-#ifndef KHTML_NO_WALLET
-#include <kwallet.h>
-#endif
 
 #include <qdatetime.h>
 #include <qpointer.h>
@@ -70,6 +67,8 @@ namespace KParts
 {
   class StatusBarExtension;
 }
+
+#include "khtml_wallet_p.h"
 
 namespace khtml
 {
@@ -128,56 +127,6 @@ typedef KHTMLFrameList::Iterator FrameIt;
 
 static int khtml_part_dcop_counter = 0;
 
-
-class KHTMLWalletQueue : public QObject
-{
-  Q_OBJECT
-  public:
-    KHTMLWalletQueue(QObject *parent) : QObject(parent) {
-      wallet = 0L;
-    }
-
-    virtual ~KHTMLWalletQueue() {
-      delete wallet;
-      wallet = 0L;
-    }
-
-    KWallet::Wallet *wallet;
-    typedef QPair<DOM::HTMLFormElementImpl*, QPointer<DOM::DocumentImpl> > Caller;
-    typedef Q3ValueList<Caller> CallerList;
-    CallerList callers;
-    Q3ValueList<QPair<QString, QMap<QString, QString> > > savers;
-
-  signals:
-    void walletOpened(KWallet::Wallet*);
-
-  public slots:
-    void walletOpened(bool success) {
-      if (!success) {
-        delete wallet;
-        wallet = 0L;
-      }
-      emit walletOpened(wallet);
-      if (wallet) {
-        if (!wallet->hasFolder(KWallet::Wallet::FormDataFolder())) {
-          wallet->createFolder(KWallet::Wallet::FormDataFolder());
-        }
-        for (CallerList::Iterator i = callers.begin(); i != callers.end(); ++i) {
-          if ((*i).first && (*i).second) {
-            (*i).first->walletOpened(wallet);
-          }
-        }
-        wallet->setFolder(KWallet::Wallet::FormDataFolder());
-        for (Q3ValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
-          wallet->writeMap((*i).first, (*i).second);
-        }
-      }
-      callers.clear();
-      savers.clear();
-      wallet = 0L; // gave it away
-    }
-};
-
 class KHTMLPartPrivate
 {
   KHTMLPartPrivate(const KHTMLPartPrivate & other);
@@ -187,7 +136,9 @@ public:
   {
     m_doc = 0L;
     m_decoder = 0L;
+#ifndef KHTML_NO_WALLET
     m_wallet = 0L;
+#endif
     m_bWalletOpened = false;
     m_runningScripts = 0;
     m_job = 0L;
@@ -282,7 +233,9 @@ public:
     m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
     m_userStyleSheetLastModified = 0;
+#ifndef KHTML_NO_WALLET
     m_wq = 0;
+#endif
   }
   ~KHTMLPartPrivate()
   {
@@ -290,7 +243,9 @@ public:
     delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
+#ifndef KHTML_NO_WALLET
     delete m_wallet;
+#endif
 #ifndef Q_WS_QWS
     //delete m_javaContext;
 #endif
@@ -319,7 +274,9 @@ public:
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
 
+#ifndef KHTML_NO_WALLET
   KWallet::Wallet* m_wallet;
+#endif
   int m_runningScripts;
   bool m_bOpenMiddleClick :1;
   bool m_bBackRightClick :1;
@@ -555,7 +512,9 @@ public:
 
   time_t m_userStyleSheetLastModified;
 
+#ifndef KHTML_NO_WALLET
   KHTMLWalletQueue *m_wq;
+#endif
 };
 
 #endif

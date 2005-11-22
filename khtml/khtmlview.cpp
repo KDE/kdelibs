@@ -1163,14 +1163,18 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
     }
 
-#ifdef Q_WS_X11
     if ( mailtoCursor && isVisible() && hasFocus() ) {
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
+#ifdef Q_WS_X11
             d->cursor_icon_widget = new QWidget( 0, Qt::WX11BypassWM );
             XSetWindowAttributes attr;
             attr.save_under = True;
             XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
+#else
+            d->cursor_icon_widget = new QWidget( NULL, NULL );
+            //TODO
+#endif
             d->cursor_icon_widget->resize( icon_pixmap.width(), icon_pixmap.height());
             if( !icon_pixmap.mask().isNull() )
                 d->cursor_icon_widget->setMask( icon_pixmap.mask());
@@ -1181,13 +1185,18 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
         QPoint c_pos = QCursor::pos();
         d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
+#ifdef Q_WS_X11
         XRaiseWindow( QX11Info::display(), d->cursor_icon_widget->winId());
         QApplication::flushX();
+#elif defined(Q_WS_WIN)
+        SetWindowPos( d->cursor_icon_widget->winId(), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE );
+#else
+        //TODO?
+#endif
         d->cursor_icon_widget->show();
     }
     else if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
-#endif
 
     if (r && r->isWidget()) {
 	_mouse->ignore();
@@ -1871,7 +1880,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView*>(c);
-#ifndef __GNUC__
+#ifdef __GNUC__
     #warning "Q3ScrollView??"
 #endif
 
@@ -2323,10 +2332,14 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             guard = node;
 	}
         // Set focus node on the document
+#ifdef __GNUC__
 #warning "port QFocusEvent::setReason( QFocusEvent::Shortcut ); to qt4"
+#endif
         //QFocusEvent::setReason( QFocusEvent::Shortcut );
         m_part->xmlDocImpl()->setFocusNode(node);
+#ifdef __GNUC__
 #warning "port QFocusEvent::resetReason(); to qt4"
+#endif
         //QFocusEvent::resetReason();
         if( node != NULL && node->hasOneRef()) // deleted, only held by guard
             return true;
@@ -2816,7 +2829,9 @@ void KHTMLView::print(bool quick)
         int page = 1;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+#ifdef __GNUC__
 #warning "This could not be tested when merge was done, suspect"
+#endif
             p->setClipRect(0, 0, pageWidth, headerHeight);
             if (printHeader)
             {
@@ -2837,7 +2852,9 @@ void KHTMLView::print(bool quick)
                 p->scale(scale, scale);
 #endif
 
+#ifdef __GNUC__
 #warning "This could not be tested when merge was done, suspect"
+#endif
             p->setClipRect(0, headerHeight/scale, pageWidth/scale, pageHeight/scale);
             p->translate(0, headerHeight-top);
 
@@ -3415,7 +3432,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if ( rects.size() )
         updateRegion = rects[0];
 
-    for ( unsigned i = 1; i < rects.size(); ++i ) {
+    for ( unsigned int i = 1; i < rects.size(); ++i ) {
         QRect obR = updateRegion.boundingRect();
         QRegion newRegion = updateRegion.unite(rects[i]);
         if (2*newRegion.boundingRect().height() > 3*obR.height() )

@@ -573,6 +573,7 @@ void HTMLFormElementImpl::submit(  )
         if (m_walletMap.isEmpty()) {
             gatherWalletData();
         }
+#ifndef KHTML_NO_WALLET
         if (m_havePassword && !m_haveTextarea && KWallet::Wallet::isEnabled()) {
             const QString key = calculateAutoFillKey(*this);
             const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::FormDataFolder(), key);
@@ -599,7 +600,6 @@ void HTMLFormElementImpl::submit(  )
                 }
             }
 
-#ifndef KHTML_NO_WALLET
             if ( doesnotexist || !w || login_changed ) {
                 // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
                 KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
@@ -633,8 +633,8 @@ void HTMLFormElementImpl::submit(  )
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
             }
-#endif // KHTML_NO_WALLET
         }
+#endif // KHTML_NO_WALLET
 
         const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
         if(m_post) {

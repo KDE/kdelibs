@@ -36,7 +36,9 @@ int main(int argc, char **argv)
       return -1;
     }
 #else
+    #ifdef __GNUC__
     #warning better adjust this :)
+    #endif
     path = "/home/danimo/src/kde/trunk/KDE/kdelibs/";
 #endif
     QString testpath = "file://" + path + "/kdelibs/khtml/test/";

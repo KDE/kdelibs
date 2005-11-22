@@ -428,7 +428,9 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (i->size().width() == 0 || i->size().height() == 0)
         return *Cache::nullPixmap;
 
+#ifdef __GNUC__
 #warning "Needs some additional performance work"
+#endif
 
     static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
     if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
@@ -784,7 +786,9 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
     }
 #endif
 
+#ifdef __GNUC__
 #warning "Use largeimagelib to disable animation"
+#endif
 }
 
 // void CachedImage::deleteMovie()
@@ -826,7 +830,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         // don't attempt incremental loading if we have all the data already
       //  assert(!eof);
 
+#ifdef __GNUC__
 #warning QImage* requires heavy porting
+#endif
 #if 0
         formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
         if ( formatType && strcmp( formatType, "PNG" ) == 0 )

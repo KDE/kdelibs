@@ -32,9 +32,9 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
                   int sx, int sy, int sWidth, int sHeight)
 {
     //Do some basic clipping, discarding invalid requests and adjusting sizes of others
-    if (sy >= height)
+    if (sy >= (int)height)
         return;
-    if (sx >= width)
+    if (sx >= (int)width)
         return;
 
     if (sWidth == -1)
