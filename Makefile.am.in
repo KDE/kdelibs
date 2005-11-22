@@ -38,7 +38,7 @@ AUTOMAKE_OPTIONS = foreign 1.5
 potdir = $(kde_includes)
 pot_DATA = kde.pot
 
-include_HEADERS = kdelibs_export.h
+include_HEADERS = kdelibs_export.h kdemacros.h
 
 messages:
 	cd kabc/scripts && perl ./makeaddressee
