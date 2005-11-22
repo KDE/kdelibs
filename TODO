@@ -291,6 +291,9 @@ that we would like to make for the next binary incompatible release.
   (Albert Astals Cid)
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
   (Coolo)
+  Maybe just make sure we don't emit multiple copies of per-class data (vtable,RTTI), then
+  RTLD_LOCAL should do as well, and it should(?) be simpler this way.
+  (Lubos)
 
 - kMin, kMax, KMIN, KMAX can be replaced by their Qt equivalents (Caleb Tennis)
 
