@@ -614,6 +614,7 @@ def generate(env):
 		p('BOLD','* extraincludes','a list of paths separated by ":"')
 		p('BOLD','* extralibs','a list of paths separated by ":"')
 		p('BOLD','* platform','the platform you want to compile for (use same values like QMAKESPEC)')
+		p('BOLD','* runtests','set to one to compile test applications')
 		p('BOLD','* scons configure debug=full prefix=/usr/local extraincludes=/tmp/include:/usr/local extralibs=/usr/local/lib')
 		p('BOLD','* scons install prefix=/opt/local DESTDIR=/tmp/blah\n')
 		return
@@ -646,6 +647,11 @@ def generate(env):
  		return table
 
 	env['ARGS']=makeHashTable(sys.argv)
+
+	# enable test app compilation 
+	if env['ARGS'].has_key('runtests'):
+		print "compiling of test applications enabled"
+		env['RUNTESTS']=1
 
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
@@ -680,6 +686,7 @@ def generate(env):
 		('GENERIC_ISCONFIGURED', 'is the project configured' ),
 		('COMPILERTOOL', 'compiler to use' ),
 		('PLATFORM', 'platform to compile for' ),
+		('RUNTESTS', 'enable compiling of test applications' ),
 	)
 	opts.Update(env)
 	
