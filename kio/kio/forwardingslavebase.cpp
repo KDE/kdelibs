@@ -383,9 +383,15 @@ void ForwardingSlaveBase::slotSpeed(KIO::Job* /*job*/, unsigned long bytesPerSec
     speed(bytesPerSecond);
 }
 
-void ForwardingSlaveBase::slotRedirection(KIO::Job* /*job*/, const KURL &url)
+void ForwardingSlaveBase::slotRedirection(KIO::Job *job, const KURL &url)
 {
     redirection(url);
+
+    // We've been redirected stop everything.
+    job->kill( true );
+    finished();
+
+    eventLoop.exit();
 }
 
 void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
