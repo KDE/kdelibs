@@ -78,7 +78,6 @@ void KRootProp::setProp( const QString& rProp )
   unsigned long nitems;
   unsigned long bytes_after;
   long offset;
-  char *buf;
 
   // If a property has already been opened write
   // the dictionary back to the root window
@@ -96,13 +95,15 @@ void KRootProp::setProp( const QString& rProp )
   offset = 0; bytes_after = 1;
   while (bytes_after != 0)
   {
-    XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom, offset, 256,
+    unsigned char *buf = 0; 
+    if (XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom, offset, 256,
                         False, XA_STRING, &type, &format, &nitems, &bytes_after,
-                        (unsigned char **)&buf);
-    s += QString::fromUtf8(buf);
-    offset += nitems/4;
-    if (buf)
+                        &buf) == Success && buf) 
+    {
+      s += QString::fromUtf8((const char*)buf);
+      offset += nitems/4;
       XFree(buf);
+    }
   }
 
   // Parse through the property string stripping out key value pairs
