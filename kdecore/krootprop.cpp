@@ -97,7 +97,7 @@ void KRootProp::setProp( const QString& rProp )
   while (bytes_after != 0)
   {
     unsigned char *buf = 0;
-    if (XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom, offset, 256,
+    if (XGetWindowProperty( QX11Info::display(), QX11Info::appRootWindow(), atom, offset, 256,
                             False, XA_STRING, &type, &format, &nitems, &bytes_after,
                             &buf) == Success && buf)
     {
