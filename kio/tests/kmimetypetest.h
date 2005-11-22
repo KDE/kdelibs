@@ -11,6 +11,7 @@ private slots:
     void testIcons();
     void testFindByURL();
     void testFindByPath();
+    void testAllMimeTypes();
 };
 
 

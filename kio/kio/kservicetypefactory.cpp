@@ -214,14 +214,15 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
    KMimeType::List result;
-   KSycocaEntry::List list = allEntries();
-   for( KSycocaEntry::List::Iterator it = list.begin();
+   const KSycocaEntry::List list = allEntries();
+   for( KSycocaEntry::List::ConstIterator it = list.begin();
         it != list.end();
         ++it)
    {
-      KMimeType::Ptr newMimeType = KMimeType::Ptr::staticCast( *it );
-      if (newMimeType)
-         result.append( newMimeType );
+      if ( (*it)->isType( KST_KMimeType ) ) {
+          KMimeType::Ptr newMimeType = KMimeType::Ptr::staticCast( *it );
+          result.append( newMimeType );
+      }
    }
    return result;
 }
@@ -229,14 +230,15 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
 KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
    KServiceType::List result;
-   KSycocaEntry::List list = allEntries();
-   for( KSycocaEntry::List::Iterator it = list.begin();
+   const KSycocaEntry::List list = allEntries();
+   for( KSycocaEntry::List::ConstIterator it = list.begin();
         it != list.end();
         ++it)
    {
-      KServiceType::Ptr newServiceType = KServiceType::Ptr::staticCast( *it );
-      if (newServiceType)
-         result.append( newServiceType );
+      if ( (*it)->isType( KST_KServiceType ) ) {
+          KServiceType::Ptr newServiceType = KServiceType::Ptr::staticCast( *it );
+          result.append( newServiceType );
+      }
    }
    return result;
 }

@@ -181,10 +181,9 @@ public:
 
   /**
    * @internal
-   * Pointer to parent serice type
+   * Pointer to parent service type
    */
-  // gcc 2.95.x doesn't understand KServiceType::Ptr here
-  /* KServiceType:: */ Ptr parentType();
+  Ptr parentType();
   /**
    * @internal  only used by kbuildsycoca
    * Register service that provides this service type

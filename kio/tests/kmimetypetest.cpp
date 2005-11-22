@@ -96,3 +96,53 @@ void KMimeTypeTest::testFindByURL()
     VERIFY( mf );
     COMPARE( mf->name(), QString::fromLatin1("text/html") );
 }
+
+void KMimeTypeTest::testAllMimeTypes()
+{
+    if ( !KSycoca::isAvailable() )
+        SKIP( "ksycoca not available", SkipAll );
+
+    const KMimeType::List lst = KMimeType::allMimeTypes();
+    const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
+    VERIFY( allServiceTypes.count() >= lst.count() ); // all mimetypes are in the allServiceTypes list.
+
+    for ( KMimeType::List::ConstIterator it = lst.begin();
+          it != lst.end(); ++it ) {
+        const KMimeType::Ptr mime = (*it);
+        const QString name = mime->name();
+        //qDebug( "%s", qPrintable( name ) );
+        VERIFY( !name.isEmpty() );
+        VERIFY( mime->isType( KST_KMimeType ) );
+
+        const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
+        VERIFY( lookedupMime ); // not null
+        COMPARE( lookedupMime->name(), name );
+
+        const KServiceType::Ptr lookedupServiceType = KMimeType::serviceType( name );
+        VERIFY( lookedupServiceType ); // not null
+        COMPARE( lookedupServiceType->name(), name );
+
+        // Check that the mimetype is part of the allServiceTypes list (by name)
+        KServiceType::List::ConstIterator stit = allServiceTypes.begin();
+        const KServiceType::List::ConstIterator stend = allServiceTypes.end();
+        bool found = false;
+        for ( ; !found && stit != stend; ++stit ) {
+            found = ( (*stit)->name() == name );
+        }
+    }
+
+    // A bit of checking on the allServiceTypes list itself
+    KServiceType::List::ConstIterator stit = allServiceTypes.begin();
+    const KServiceType::List::ConstIterator stend = allServiceTypes.end();
+    for ( ; stit != stend; ++stit ) {
+        const KServiceType::Ptr servtype = (*stit);
+        const QString name = servtype->name();
+        VERIFY( !name.isEmpty() );
+        // It's a pure servicetype, or a mimetype, or mimetype-derivative.
+        VERIFY( servtype->sycocaType() == KST_KServiceType || servtype->isType( KST_KMimeType ) );
+        if ( servtype->sycocaType() == KST_KServiceType ) {
+            //qDebug( "%s", qPrintable( name ) );
+        }
+    }
+}
+
