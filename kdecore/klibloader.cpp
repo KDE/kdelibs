@@ -526,7 +526,8 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
   }
 
   bool deleted_one = false;
-  while ((wrap = d->loaded_stack.top())) {
+  while (!d->loaded_stack.isEmpty()) {
+    wrap = d->loaded_stack.top();
     /* Let's first see, if we want to try to unload this lib.
        If the env. var KDE_DOUNLOAD is set, we try to unload every lib.
        If not, we look at the lib itself, and unload it only, if it exports
