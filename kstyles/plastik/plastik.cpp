@@ -2399,6 +2399,7 @@ void PlastikStyle::drawControl(ControlElement element,
                 }
                 else
                 {
+		    p->setPen(cg.buttonText());
                     drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - dx - 8, y + 2, dx, h - 4), r ),
                                 cg, flags, opt );
                     w -= dx;
