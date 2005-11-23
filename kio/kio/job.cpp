@@ -583,6 +583,7 @@ void SimpleJob::slotError( int error, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
+    QGuardedPtr<SimpleJob> guard( this );
     if (isInteractive() && isAutoWarningHandlingEnabled())
     {
         static uint msgBoxDisplayed = 0;
@@ -595,7 +596,8 @@ void SimpleJob::slotWarning( const QString & errorText )
         // otherwise just discard it.
     }
 
-    emit warning( this, errorText );
+    if ( !guard.isNull() )
+        emit warning( this, errorText );
 }
 
 void SimpleJob::slotInfoMessage( const QString & msg )
