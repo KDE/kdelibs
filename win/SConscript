@@ -28,7 +28,6 @@ obj.execute()
 install_headers = """
 include/kdelibs_export_win.h
 include/kdelibs_global_win.h
-include/kdemacros.h
 """
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
