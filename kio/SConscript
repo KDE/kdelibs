@@ -289,7 +289,7 @@ elif not env['WINDOWS']:
 	env.Depends('libkio.so.6.0.2', '../kdesu/libkdesu.so')
 	env.Depends('libkio.so.6.0.2', '../kwallet/client/libkwalletclient.so')
 
-servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kcomprfilter.desktop', 'kscan.desktop', 
+servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]
 
 env.bksys_insttype('KDESERVTYPES','', servicetypes)
