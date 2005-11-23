@@ -101,8 +101,10 @@ VirtualRootWindowOfScreen(screen) Screen *screen;
 					&actual_type, &actual_format,
 					&nitems, &bytesafter,
 					&newRoot) == Success
-				    && newRoot) {
-				    root = *((Window *) newRoot);
+				    && newRoot) 
+                                {
+				    Window *tmpRoot = (Window *) newRoot;
+				    root = *tmpRoot;
 				    break;
 				}
 			}
