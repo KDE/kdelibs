@@ -103,8 +103,9 @@ VirtualRootWindowOfScreen(screen) Screen *screen;
 					&newRoot) == Success
 				    && newRoot) 
                                 {
-				    Window *tmpRoot = (Window *) newRoot;
-				    root = *tmpRoot;
+				    void *tmpRoot = (void *) newRoot;
+				    root = *(Window*) tmpRoot;
+            			    XFree( (char*) newRoot );
 				    break;
 				}
 			}
