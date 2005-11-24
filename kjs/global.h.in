@@ -36,11 +36,13 @@
 
 #undef __KDE_HAVE_GCC_VISIBILITY
 
-#ifdef __KDE_HAVE_GCC_VISIBILITY
-#define KJS_EXPORT __attribute__ ((visibility("default")))
-#else
-#define KJS_EXPORT
-#endif
+#ifndef KJS_EXPORT
+# ifdef __KDE_HAVE_GCC_VISIBILITY
+# define KJS_EXPORT __attribute__ ((visibility("default")))
+# else
+# define KJS_EXPORT
+# endif
+#endif 
 
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
