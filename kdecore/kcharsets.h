@@ -38,6 +38,7 @@ class QTextCodec;
  * in languages which use non iso-8859-1 charsets.
  *
  * @author Lars Knoll <knoll@kde.org>
+ * @todo KDE4: make some member functiosn const
  */
 class KDECORE_EXPORT KCharsets
 {
