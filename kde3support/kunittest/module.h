@@ -110,6 +110,6 @@ namespace KUnitTest
             kunittest_registerModuleTester(fullName.local8Bit(), test);                       \
         }                                                                                     \
     } tester##ModuleAutoregisterInstance;
-};
+}
 
 #endif
