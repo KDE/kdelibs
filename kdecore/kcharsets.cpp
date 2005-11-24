@@ -504,14 +504,15 @@ QString KCharsets::encodingForName( const QString &descriptiveName )
 
 QStringList KCharsets::descriptiveEncodingNames()
 {
-  QStringList encodings = availableEncodingNames();
-  QStringList::Iterator it;
-  for( it = encodings.begin(); it != encodings.end(); ++it ) {
-      QString lang = KGlobal::charsets()->languageForEncoding( *it );
-      *it = i18n("Descriptive Encoding Name", "%1 ( %2 )") .arg(lang) .arg(*it);
-  }
-  encodings.sort();
-  return encodings;
+    // As we are sorting, we can directly read the array language_for_encoding
+    QStringList encodings;
+    for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
+        const QString name = QString::fromLatin1( pos->index );
+        const QString description = i18n( language_names[ pos->data ] );
+        encodings.append( i18n("Descriptive Encoding Name", "%1 ( %2 )"). arg ( description ). arg( name ) );
+    }
+    encodings.sort();
+    return encodings;
 }
 
 QTextCodec *KCharsets::codecForName(const QString &n) const
