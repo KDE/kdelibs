@@ -165,7 +165,7 @@ def generate(env):
 		## The platform-dependent checks
 
 		if not env['WINDOWS']:
-			dest.write("\n/* What OS used for compilation */\n#define KDE_COMPILING_OS \"%s %s %s\"\n" 
+			dest.write("\n/* What OS used for compilation */\n#define KDE_COMPILING_OS \"%s %s %s\"\n\n" 
 				% (os.uname()[0], os.uname()[2], os.uname()[4]))
 
 		if sys.platform == 'darwin':
