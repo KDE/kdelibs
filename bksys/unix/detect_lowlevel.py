@@ -3,6 +3,40 @@
 def detect(lenv,dest):
 	import os
 
+	def Check_limits(context):
+		context.Message('Checking for limits.h...')
+		ret = conf.CheckHeader('limits.h')
+		context.Result(ret)
+		return ret
+	
+	def Check_locale_h(context):
+		context.Message('Checking for locale.h...')
+		ret = conf.CheckHeader('locale.h')
+		contact.Result(ret)
+		return ret
+	
+
+	conf = lenv.Configure( custom_tests = {
+		 'Check_limits' : Check_limits ,
+		 'Check_locale_h' : Check_locale_h
+		 } )
+	dest.write('/* Define to 1 if you have the <limits.h> header file. */\n')
+	if conf.Check_limits:
+		print 'Checking for limits.h...yes'
+		dest.write('#define HAVE_LIMITS_H 1\n')
+	else:
+		print 'Checking for limits.h...no'
+		dest.write('#undef HAVE_LIMITS_H\n')
+		
+	dest.write('/* Define to 1 if you have the <locale.h> header file */\n')
+	if conf.Check_locale_h:
+		print 'Checking for locale.h...yes'
+		dest.write('#define HAVE_LOCALE_H 1\n')
+	else:
+		print 'Checking for locale.h...no'
+		dest.write('#undef HAVE_LOCALE_H\n')
+	
+	lenv = conf.Finish()
 
 	#### Don't fix the stuff below by hand, write proper tests in lowlevel.py
 	content="""
@@ -226,12 +260,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the <libutil.h> header file. */
 /* #undef HAVE_LIBUTIL_H */
-
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
-
-/* Define to 1 if you have the <locale.h> header file. */
-#define HAVE_LOCALE_H 1
 
 /* Define if you have LUA > 5.0 */
 /* #undef HAVE_LUA */
