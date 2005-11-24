@@ -38,7 +38,6 @@ class QTextCodec;
  * in languages which use non iso-8859-1 charsets.
  *
  * @author Lars Knoll <knoll@kde.org>
- * @todo KDE4: make some member functiosn const
  */
 class KDECORE_EXPORT KCharsets
 {
@@ -113,27 +112,27 @@ public:
      * Lists all available encodings as names.
      * @return the list of all encodings
      */
-    QStringList availableEncodingNames();
+    QStringList availableEncodingNames() const;
 
     /**
      * Lists the available encoding names together with a more descriptive language.
      * @return the list of descriptive encoding names
      */
-    QStringList descriptiveEncodingNames();
+    QStringList descriptiveEncodingNames() const;
 
     /**
      * Returns the language the encoding is used for.
      * @param encoding the encoding for the language
      * @return the language of the encoding
      */
-    QString languageForEncoding( const QString &encoding );
+    QString languageForEncoding( const QString &encoding ) const;
 
     /**
      * Returns the encoding for a string obtained with descriptiveEncodingNames().
      * @param descriptiveName the descriptive name for the encoding
      * @return the name of the encoding
      */
-    QString encodingForName( const QString &descriptiveName );
+    QString encodingForName( const QString &descriptiveName ) const;
 
 private:
     KCharsetsPrivate *d;

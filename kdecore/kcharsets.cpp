@@ -403,7 +403,7 @@ QString KCharsets::toEntity(const QChar &ch)
     return ent;
 }
 
-QString KCharsets::resolveEntities( const QString &input )
+QString KCharsets::resolveEntities( const QString &input ) 
 {
     QString text = input;
     const QChar *p = text.unicode();
@@ -449,7 +449,7 @@ QString KCharsets::resolveEntities( const QString &input )
     return text;
 }
 
-QStringList KCharsets::availableEncodingNames()
+QStringList KCharsets::availableEncodingNames() const
 {
     QStringList available;
     for ( const char* const* pos = charsets_for_encoding; *pos; ++pos ) {
@@ -459,14 +459,14 @@ QStringList KCharsets::availableEncodingNames()
     return available;
 }
 
-QString KCharsets::languageForEncoding( const QString &encoding )
+QString KCharsets::languageForEncoding( const QString &encoding ) const
 {
     int lang = kcharsets_array_search< LanguageForEncoding, int >
         ( language_for_encoding, encoding.latin1());
     return i18n( language_names[lang] );
 }
 
-QString KCharsets::encodingForName( const QString &descriptiveName )
+QString KCharsets::encodingForName( const QString &descriptiveName ) const
 {
     const int left = descriptiveName.findRev( '(' );
     
@@ -483,7 +483,7 @@ QString KCharsets::encodingForName( const QString &descriptiveName )
     return name.left(right).trimmed();
 }
 
-QStringList KCharsets::descriptiveEncodingNames()
+QStringList KCharsets::descriptiveEncodingNames() const
 {
     // As we are sorting, we can directly read the array language_for_encoding
     QStringList encodings;
