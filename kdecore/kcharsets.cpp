@@ -61,60 +61,54 @@ static const char * const language_names[] = {
         I18N_NOOP( "South-Eastern Europe" )
 };
 
-// this list gives the charsets that can be used to display a file given in a certain encoding.
-// the list should be in order of preference
-// left side is the name returned by the codec used, right side the name of the charset as
-// used in kcharsets.cpp
-// 'unicode' will always be chosen as last resort, so it only needs to be added to the list,
-// if it should get a higher priority
-// every line must end with 0
-
+// This list gives the charsets that can be used to display a file given in a certain encoding.
+// The list should be in order of preference
 static const char* const charsets_for_encoding[] = {
-    "koi8-r",                "koi8-r","cp 1251","koi8-u","iso-8859-5", 0,
-    "koi8-u",                "koi8-u","cp 1251","iso-8859-5","koi8-r", 0,
-    "iso 8859-1",            "iso8859-1","iso8859-15", 0,
-    "iso 8859-2",            "iso8859-2","unicode","iso8859-1", 0,
-    "iso 8859-3",            "iso8859-3","unicode","iso8859-1", 0,
-    "iso 8859-4",            "iso8859-4","unicode","iso8859-13", "iso8859-1", 0,
-    "iso 8859-5",            "iso8859-5","koi8-u","koi8-r", 0,
-    "iso 8859-6",            "unicode","iso8859-6", 0,
-    "iso 8859-7",            "iso8859-7", 0,
-    "iso 8859-8",            "iso8859-8", 0,
-    "iso 8859-8-i",          "iso8859-8", 0,
-    "iso 8859-9",            "iso8859-9","unicode","iso8859-1", 0,
-    "iso 8859-11",           "iso8859-11", 0,
-    "iso 8859-13",           "iso8859-13","unicode","iso8859-4", "iso8859-1", 0,
-    "iso 8859-14",           "iso8859-15", "iso8859-1", 0,
-    "iso 8859-15",           "iso8859-15","unicode","iso8859-1", 0,
-    "iso 8859-16",           "iso8859-2", 0, // ISO-8859-2 is not a replacement
-    "utf8",                  "unicode","iso8859-1", 0,
-    "utf16",                 "unicode","iso8859-1", 0,
-    "iso-10646-ucs-2",       "unicode","iso8859-1", 0,
-    "cp 1250",               "iso8859-2", 0,
-    "cp 1251",               "cp 1251","koi8-u","koi8-r","iso8859-5", 0,
-    "cp 1252",               "iso8859-1", 0,
-    "cp 1253",               "iso8859-7", 0,
-    "cp 1254",               "iso8859-9", 0,
-    "cp 1255",               "iso8859-8", 0,
-    "cp 1256",               "unicode","iso8859-6", 0,
-    "cp 1257",               "iso8859-13", "iso8859-4", 0,
-    "cp 1258",               "iso8859-1", 0, // ISO-8859-1 is not a replacement
-    "ibm850",                "ibm850","unicode","iso8859-1", 0,
-    "ibm852",                "unicode","iso-8859-2", 0,
-    "ibm866",                "ibm866","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
-    "tis620",                "iso8859-11", 0,
-    "eucjp",                 "eucjp","unicode","iso8859-1", 0,
-    "sjis",                  "eucjp","unicode","iso8859-1", 0,
-    "jis7",                  "eucjp","unicode","iso8859-1", 0,
-    "big5",                  "big5","unicode","iso8859-1", 0,
-    "gbk",                   "gb2312.1980-0","gbk-0","unicode","iso8859-1", "gb_2312-80", 0,
-    "gb18030",               "gb18030.2000-1", "gb18030.2000-0", "unicode", "gbk-0", "gb2313.1980-0", "iso8859-1", 0,
-    "gb2312",                "gb2312.1980-0","unicode","iso8859-1", 0,
-    "euckr",                 "euckr","unicode","iso8859-1", 0,
-    "tscii",                 "tscii", 0,
-//    "pt 154",                "pt 154","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
-    "winsami2",              "winsami2", "cp1252", "unicode", 0,
-    "cp 874",                "tis620", 0,
+    "koi8-r",
+    "koi8-u",
+    "iso 8859-1",
+    "iso 8859-2",
+    "iso 8859-3",
+    "iso 8859-4",
+    "iso 8859-5",
+    "iso 8859-6",
+    "iso 8859-7",
+    "iso 8859-8",
+    "iso 8859-8-i",
+    "iso 8859-9",
+    "iso 8859-11",
+    "iso 8859-13",
+    "iso 8859-14",
+    "iso 8859-15",
+    "iso 8859-16",
+    "utf8",
+    "utf16",
+    "iso-10646-ucs-2",
+    "cp 1250",
+    "cp 1251",
+    "cp 1252",
+    "cp 1253",
+    "cp 1254",
+    "cp 1255",
+    "cp 1256",
+    "cp 1257",
+    "cp 1258",
+    "ibm850",
+    "ibm852",
+    "ibm866",
+    "tis620",
+    "eucjp",
+    "sjis",
+    "jis7",
+    "big5",
+    "gbk",
+    "gb18030",
+    "gb2312",
+    "euckr",
+    "tscii",
+//    "pt 154",
+    "winsami2",
+    "cp 874",
     0 }; // extra 0 for end
 
 // 0 other
@@ -477,29 +471,9 @@ QString KCharsets::resolveEntities( const QString &input )
 QStringList KCharsets::availableEncodingNames()
 {
     QStringList available;
-
-    const char* const* pos = charsets_for_encoding;
-    while( *pos != 0 ) {
-        //kdDebug(0) << "key = " << *pos << endl;
-
-
-        // iterate thorugh the list and find the first charset that is available
-        for( const char* const* charsets = pos + 1;
-             *charsets != 0;
-             ++charsets ) {
-            //kdDebug(0) << "checking for " << *charsets << endl;
-#ifdef __GNUC__
-#warning FIXME?
-#endif
-            if( true ) {
-                //kdDebug(0) << *charsets << " available" << endl;
-                available.append( QString::fromLatin1( *pos ));
-                break;
-            }
-        }
-        while( *pos != 0 ) // find end of line
-            ++pos;
-        ++pos; // move to the next line
+    for ( const char* const* pos = charsets_for_encoding; *pos; ++pos ) {
+        //kdDebug(0) << *charsets << " available" << endl;
+        available.append( QString::fromLatin1( *pos ));
     }
     return available;
 }
