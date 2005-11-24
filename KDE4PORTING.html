@@ -240,7 +240,7 @@ and the static methods KURL::List::canDecode() and KURL::List::fromMimeData()
 in the drop/paste side.<br>
 Example: Replace <pre>  KURL::List uriList;
   if ( KURLDrag::canDecode(e) &amp;&amp; KURLDrag::decode( e, uriList ) ) {</pre>
-by <pre>  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
+by <pre>  KURL::List uriList = KURL::List::fromMimeData( e-&gt;mimeData() );
   if ( !uriList.isEmpty() ) {</pre></li>
 </ul>
 
@@ -303,7 +303,7 @@ written through it are in the correct group.</p>
 KConfig *config = KGlobal::config();
 KConfigGroupSaver saver(config, "group name");
 	...
-config->readXXX("entry name");
+config-&gt;readXXX("entry name");
 </pre>
 should be rewritten as:
 <pre>
