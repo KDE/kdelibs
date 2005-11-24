@@ -188,7 +188,6 @@ static struct LanguageForEncoding
     { "ucs2", 15 }, // ### TODO: same as ISO-10646-UCS-2 (so "triples" UTF-16)
     { "iso-10646-ucs-2", 15 }, // ### TODO: doubles UTF-16
     { "winsami2", 16},
-    // ### TODO: Qt has ISO-8859-16 now too
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
