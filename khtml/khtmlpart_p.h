@@ -259,7 +259,6 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
-  KURLLabel* m_statusBarIconLabel;
   KURLLabel* m_statusBarWalletLabel;
   KURLLabel* m_statusBarUALabel;
   KURLLabel* m_statusBarJSErrorLabel;
@@ -349,7 +348,6 @@ public:
   KAction *m_paSaveBackground;
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
-  KAction *m_paSecurity;
   KActionMenu *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
   KHTMLZoomFactorAction *m_paIncZoomFactor;

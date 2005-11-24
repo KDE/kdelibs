@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="14">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="15">
 <Menu name="popupmenu">
  <Action name="copy" group="editactions"/>
  <Action name="selectAll" group="editactions"/>
@@ -33,7 +33,6 @@
  <Action name="stopanimations" />
  <Separator weakSeparator="1" />
  <Action name="viewDocumentSource" />
- <Action name="security" />
  <Action name="setEncoding" />
 </Menu>
 </kpartgui>

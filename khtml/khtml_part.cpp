@@ -242,7 +242,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_extension->setObjectName( "KHTMLBrowserExtension" );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
-  d->m_statusBarIconLabel = 0L;
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
 
@@ -258,13 +257,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( parentPart() )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
-  d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
-  d->m_paSecurity->setWhatsThis( i18n( "Security Settings<p>"
-                                       "Shows the certificate of the displayed page. Only "
-				       "pages that have been transmitted using a secure, encrypted connection have a "
-				       "certificate.<p> "
-				       "Hint: If the image shows a closed lock, the page has been transmitted over a "
-				       "secure connection.") );
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
@@ -1520,41 +1512,6 @@ void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
 void KHTMLPart::setPageSecurity( PageSecurity sec )
 {
   emit d->m_extension->setPageSecurity( sec );
-  if ( sec != NotCrypted && !d->m_statusBarIconLabel && !parentPart() ) {
-    d->m_statusBarIconLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
-    d->m_statusBarIconLabel->setFixedHeight( instance()->iconLoader()->currentSize(KIcon::Small) );
-    d->m_statusBarIconLabel->setSizePolicy(QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
-    d->m_statusBarIconLabel->setUseCursor( false );
-    d->m_statusBarExtension->addStatusBarItem( d->m_statusBarIconLabel, 0, false );
-    connect( d->m_statusBarIconLabel, SIGNAL( leftClickedURL() ), SLOT( slotSecurity() ) );
-  } else if (d->m_statusBarIconLabel) {
-    QToolTip::remove(d->m_statusBarIconLabel);
-  }
-
-  if (d->m_statusBarIconLabel) {
-    if (d->m_ssl_in_use)
-      QToolTip::add(d->m_statusBarIconLabel,
-		    i18n("Session is secured with %1 bit %2.").arg(d->m_ssl_cipher_used_bits).arg(d->m_ssl_cipher));
-    else QToolTip::add(d->m_statusBarIconLabel, i18n("Session is not secured."));
-  }
-
-  QString iconName;
-  switch (sec)  {
-  case Encrypted:
-    iconName = "encrypted";
-    break;
-  default:
-    iconName = "decrypted";
-    if ( d->m_statusBarIconLabel )  {
-      d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarIconLabel );
-      delete d->m_statusBarIconLabel;
-      d->m_statusBarIconLabel = 0L;
-    }
-    break;
-  }
-  d->m_paSecurity->setIcon( iconName );
-  if ( d->m_statusBarIconLabel )
-    d->m_statusBarIconLabel->setPixmap( SmallIcon( iconName, instance() ) );
 }
 
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
@@ -1616,15 +1573,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
-
-    if (d->m_statusBarIconLabel) {
-      QToolTip::remove(d->m_statusBarIconLabel);
-      if (d->m_ssl_in_use) {
-        QToolTip::add(d->m_statusBarIconLabel, i18n("Session is secured with %1 bit %2.").arg(d->m_ssl_cipher_used_bits).arg(d->m_ssl_cipher));
-      } else {
-        QToolTip::add(d->m_statusBarIconLabel, i18n("Session is not secured."));
-      }
-    }
 
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
