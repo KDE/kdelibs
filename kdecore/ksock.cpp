@@ -224,7 +224,7 @@ unsigned long KSocket::ipv4_addr()
       KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
       const sockaddr_in *sin = ksin->addressV4();
       if (sin != NULL)
-	retval = *(unsigned long*)&sin->sin_addr; // I told you this was dumb
+	retval = sin->sin_addr.s_addr;
     }
   delete sa;
   return retval;
@@ -388,14 +388,14 @@ unsigned long KServerSocket::ipv4_addr()
 
   if (sin->sin_family == PF_INET)
     // correct family
-    return ntohl(*(unsigned long*)&sin->sin_addr);
+    return ntohl(sin->sin_addr.s_addr);
 #ifdef PF_INET6
   else if (sin->sin_family == PF_INET6)
     {
       KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
       sin = ksin->addressV4();
       if (sin != NULL)
-	return *(unsigned long*)&sin->sin_addr;
+	return sin->sin_addr.s_addr;
     }
 #endif
   return 0;			// this is dumb, isn't it?
