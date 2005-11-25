@@ -49,7 +49,7 @@ struct AppPresenceCurrent
 	int presence;
 };
 
-class ContactPresenceListCurrent : public Q3ValueList<AppPresenceCurrent>
+class ContactPresenceListCurrent : public QList<AppPresenceCurrent>
 {
 	public:
 		// return value indicates if the supplied parameter was better than any existing presence
