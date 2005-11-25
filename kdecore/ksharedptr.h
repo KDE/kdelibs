@@ -52,7 +52,7 @@ public:
         : ptr(0) { }
     /**
      * Creates a new pointer.
-     * @param t the pointer
+     * @param p the pointer
      */
     KSharedPtr( T* p ) // TODO: Make explicit
         : ptr(p) { if(ptr) ptr->ref.ref(); }

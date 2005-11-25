@@ -530,7 +530,7 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
-     * @param matches the matches to process
+     * @param pMatches the matches to process
      * @see postProcessMatch
      */
     virtual void postProcessMatches( KCompletionMatches * pMatches ) const {Q_UNUSED(pMatches)}
