@@ -171,7 +171,7 @@ KTimezone *KTimezones::detach(const QString &name)
     return 0;
 }
 
-const KTimezone *KTimezones::zone(const QString &name)
+const KTimezone *KTimezones::zone(const QString &name) const
 {
     if (!name.isEmpty())
     {
@@ -340,6 +340,13 @@ QByteArray KTimezone::abbreviation(const QDateTime &utcDateTime) const
     return d->data->abbreviation(utcDateTime);
 }
 
+QList<int> KTimezone::UTCOffsets() const
+{
+    if (!data(true))
+        return QList<int>();
+    return d->data->UTCOffsets();
+}
+
 const KTimezoneData *KTimezone::data(bool create) const
 {
     if (create && !d->data)
@@ -503,6 +510,13 @@ QList<QByteArray> KTimezoneData::abbreviations() const
 QByteArray KTimezoneData::abbreviation(const QDateTime &) const
 {
     return "UTC";
+}
+
+QList<int> KTimezoneData::UTCOffsets() const
+{
+    QList<int> offsets;
+    offsets.append(0);
+    return offsets;
 }
 
 
@@ -1261,4 +1275,9 @@ QByteArray KSystemTimezoneData::abbreviation(const QDateTime &utcDateTime) const
         KSystemTimezoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
     }
     return abbr;
+}
+
+QList<int> KSystemTimezoneData::UTCOffsets() const
+{
+    return QList<int>();
 }

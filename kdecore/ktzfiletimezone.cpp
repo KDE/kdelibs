@@ -156,6 +156,13 @@ bool KTzfileTimezone::transitionTime(const QDateTime &utcDateTime, KTzfileTimezo
 
 /******************************************************************************/
 
+class KTzfileTimezoneDataPrivate
+{
+public:
+    QList<int> utcOffsets;
+};
+
+
 KTzfileTimezoneData::KTzfileTimezoneData()
   : m_nTransitionTimes(0),
     m_nLocalTimeTypes(0),
@@ -166,7 +173,8 @@ KTzfileTimezoneData::KTzfileTimezoneData()
     m_localTimeTypes(0),
     m_leapSecondAdjusts(0),
     m_isStandard(0),
-    m_isUTC(0)
+    m_isUTC(0),
+    d(new KTzfileTimezoneDataPrivate)
 { }
 
 KTzfileTimezoneData::KTzfileTimezoneData(const KTzfileTimezoneData &rhs)
@@ -175,9 +183,11 @@ KTzfileTimezoneData::KTzfileTimezoneData(const KTzfileTimezoneData &rhs)
     m_localTimeTypes(0),
     m_leapSecondAdjusts(0),
     m_isStandard(0),
-    m_isUTC(0)
+    m_isUTC(0),
+    d(new KTzfileTimezoneDataPrivate)
 {
     operator=(rhs);
+    d->utcOffsets = rhs.d->utcOffsets;
 }
 
 KTzfileTimezoneData::~KTzfileTimezoneData()
@@ -187,6 +197,7 @@ KTzfileTimezoneData::~KTzfileTimezoneData()
     delete[] m_leapSecondAdjusts;
     delete[] m_isStandard;
     delete[] m_isUTC;
+    delete d;
 }
 
 KTzfileTimezoneData &KTzfileTimezoneData::operator=(const KTzfileTimezoneData &rhs)
@@ -203,6 +214,7 @@ KTzfileTimezoneData &KTzfileTimezoneData::operator=(const KTzfileTimezoneData &r
     m_nIsStandard        = rhs.m_nIsStandard;
     m_nIsUTC             = rhs.m_nIsUTC;
     m_abbreviations      = rhs.m_abbreviations;
+    d->utcOffsets        = rhs.d->utcOffsets;
     if (m_nTransitionTimes)
     {
         m_transitionTimes = new TransitionTime[m_nTransitionTimes];
@@ -299,6 +311,11 @@ QByteArray KTzfileTimezoneData::abbreviation(const QDateTime &utcDateTime) const
             return abbreviation(ltt->abbrIndex);
     }
     return QByteArray();
+}
+
+QList<int> KTzfileTimezoneData::UTCOffsets() const
+{
+    return d->utcOffsets;
 }
 
 QByteArray KTzfileTimezoneData::abbreviation(int index) const
@@ -429,8 +446,12 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
         str >> is;
         ltt->isdst = (is != 0);
         str >> ltt->abbrIndex;
+        // Add the UTC offset to the complete list of UTC offsets
+        if (data->d->utcOffsets.indexOf(ltt->gmtoff) < 0)
+            data->d->utcOffsets.append(ltt->gmtoff);
         // kdDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
     }
+    qSort(data->d->utcOffsets);
 
     // Read the timezone abbreviations. They are stored as null terminated strings in
     // a character array.

@@ -274,7 +274,7 @@ public:
      * @param name name of time zone
      * @return time zone, or 0 if not found
      */
-    const KTimezone *zone(const QString &name);
+    const KTimezone *zone(const QString &name) const;
 
     typedef QMap<QString, KTimezone*> ZoneMap;
 
@@ -434,6 +434,22 @@ public:
     QByteArray abbreviation(const QDateTime &utcDateTime) const;
 
     /**
+     * Returns the complete list of UTC offsets used by the time zone. This may
+     * include historical ones which are no longer in use or have been
+     * superseded.
+     *
+     * A UTC offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
+     *
+     * If due to the nature of the source data for the time zone, compiling a
+     * complete list would require significant processing, an empty list is
+     * returned instead.
+     *
+     * @return sorted list of UTC offsets, or empty list if not readily available.
+     */
+    QList<int> UTCOffsets() const;
+
+    /**
      * Converts a date/time, which is interpreted as being local time in this
      * time zone, into local time in another time zone.
      *
@@ -469,7 +485,8 @@ public:
 
     /**
      * Returns the current offset of this time zone to UTC or the local
-     * system time zone in seconds.
+     * system time zone. The offset is the number of seconds which you must
+     * add to UTC or the local system time to get local time in this time zone.
      *
      * Take care if you cache the results of this routine; that would
      * break if the result were stored across a daylight savings change.
@@ -484,6 +501,10 @@ public:
      * Returns the offset of this time zone to UTC at the given local date/time.
      * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
      * the offsets at both occurrences of @p dateTime are calculated.
+     *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
+     *
      * The base class implementation always returns 0.
      *
      * @param zoneDateTime the date/time at which the offset is to be calculated. This
@@ -499,6 +520,9 @@ public:
 
     /**
      * Returns the offset of this time zone to UTC at the given UTC date/time.
+     *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
      *
      * The base class implementation always returns 0. Derived classes should always
      * reimplement both this method and offset(). If the derived class needs to work
@@ -517,6 +541,9 @@ public:
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
+     *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
      *
      * Note that time_t has a more limited range than QDateTime, so consider using
      * offsetAtUTC() instead.
@@ -676,7 +703,7 @@ class KDECORE_EXPORT KTimezoneSource
 {
 public:
     KTimezoneSource()  {}
-    virtual ~KTimezoneSource()  {};
+    virtual ~KTimezoneSource()  {}
 
     /**
      * Extracts detail information for one time zone from the source database.
@@ -737,6 +764,17 @@ public:
      * @return time zone abbreviation, or empty string if error
      */
     virtual QByteArray abbreviation(const QDateTime &utcDateTime) const;
+
+    /**
+     * Returns the complete list of UTC offsets for the time zone, if the time
+     * zone's source makes such information readily available. If compiling a
+     * complete list would require significant processing, an empty list is
+     * returned instead.
+     *
+     * @return sorted list of UTC offsets, or empty list if not readily available.
+     *         In this base class, it consists of the single value 0.
+     */
+    virtual QList<int> UTCOffsets() const;
 
 private:
     KTimezoneDataPrivate *d;
@@ -867,6 +905,9 @@ public:
      * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
      * the offsets at both occurrences of @p dateTime are calculated.
      *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
+     *
      * @param zoneDateTime the date/time at which the offset is to be calculated. This
      *                     is interpreted as a local time in this time zone. An error
      *                     occurs if @p zoneDateTime.timeSpec() is not Qt::LocalTime.
@@ -881,6 +922,9 @@ public:
     /**
      * Returns the offset of this time zone to UTC at the given UTC date/time.
      *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
+     *
      * Note that system times are represented using time_t. An error occurs if the date
      * falls outside the range supported by time_t.
      *
@@ -892,6 +936,9 @@ public:
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
+     *
+     * The offset is the number of seconds which you must add to UTC to get
+     * local time in this time zone.
      *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
      *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
@@ -1017,6 +1064,15 @@ public:
      */
     virtual QList<QByteArray> abbreviations() const;
     virtual QByteArray abbreviation(const QDateTime &utcDateTime) const;
+
+    /**
+     * Returns the complete list of UTC offsets for the time zone. For system
+     * time zones, significant processing would be required to obtain such a
+     * list, so instead an empty list is returned.
+     *
+     * @return empty list
+     */
+    virtual QList<int> UTCOffsets() const;
 
 private:
     KSystemTimezoneDataPrivate *d;

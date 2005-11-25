@@ -304,6 +304,13 @@ public:
      */
     QByteArray abbreviation(int index) const;
 
+    /**
+     * Returns the complete list of UTC offsets for the time zone.
+     *
+     * @return the sorted list of UTC offsets
+     */
+    virtual QList<int> UTCOffsets() const;
+
 protected:
     Q_UINT32 m_nTransitionTimes;
     Q_UINT32 m_nLocalTimeTypes;

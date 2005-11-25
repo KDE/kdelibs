@@ -16,6 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <stdio.h>
 #include <QtTest/qttest_kde.h>
 #include <QDateTime>
 #include "ktimezones.h"
@@ -273,6 +274,17 @@ void KTimezonesTest::tzfileOffsetAtZoneTime()
     COMPARE(london->offsetAtZoneTime(bGmt, &offset2), 0);
     COMPARE(offset2, 0);
     delete london;
+}
+
+void KTimezonesTest::tzfileUTCOffsets()
+{
+    KTzfileTimezoneSource tzsource(KSystemTimezones::zoneinfoDir());
+    KTimezone *london = new KTzfileTimezone(&tzsource, "Europe/London");
+    QList<int> offsets = london->UTCOffsets();
+    COMPARE(offsets.count(), 3);
+    COMPARE(offsets[0], 0);    // GMT
+    COMPARE(offsets[1], 3600); // BST
+    COMPARE(offsets[2], 7200); // DST
 }
 
 #if 0

@@ -40,6 +40,7 @@ private slots:
     void convert();
     void tzfile();
     void tzfileOffsetAtZoneTime();
+    void tzfileUTCOffsets();
 };
 
 #endif
