@@ -2449,7 +2449,7 @@ struct AccessKeyData {
 QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
 {
     // build a list of all possible candidate elements that could use an accesskey
-    Q3ValueList< AccessKeyData > data;
+    QList< AccessKeyData > data;
     QMap< NodeImpl*, QString > labels = buildLabels( m_part->xmlDocImpl());
     for( NodeImpl* n = m_part->xmlDocImpl();
          n != NULL;
@@ -2558,9 +2558,9 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 text = getElementText( element, true );
             text = text.trimmed();
             // increase priority of items which have explicitly specified accesskeys in the config
-            Q3ValueList< QPair< QString, QChar > > priorities
+            QList< QPair< QString, QChar > > priorities
                 = m_part->settings()->fallbackAccessKeysAssignments();
-            for( Q3ValueList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
+            for( QList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
                  it != priorities.end();
                  ++it ) {
                 if( text == (*it).first )
@@ -2571,7 +2571,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
         }
     }
 
-    Q3ValueList< QChar > keys;
+    QList< QChar > keys;
     for( char c = 'A'; c <= 'Z'; ++c )
         keys << c;
     for( char c = '0'; c <= '9'; ++c )
@@ -2593,7 +2593,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
     for( int priority = 10;
          priority >= 0;
          --priority ) {
-        for( Q3ValueList< AccessKeyData >::Iterator it = data.begin();
+        for( QList< AccessKeyData >::Iterator it = data.begin();
              it != data.end();
              ) {
             if( (*it).priority != priority ) {
@@ -2605,9 +2605,9 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             QString text = (*it).text;
             QChar key;
             if( key.isNull() && !text.isEmpty()) {
-                Q3ValueList< QPair< QString, QChar > > priorities
+                QList< QPair< QString, QChar > > priorities
                     = m_part->settings()->fallbackAccessKeysAssignments();
-                for( Q3ValueList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
+                for( QList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
                      it != priorities.end();
                      ++it )
                     if( text == (*it).first && keys.contains( (*it).second )) {
@@ -2645,7 +2645,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             it = data.remove( it );
             // assign the same accesskey also to other elements pointing to the same url
             if( !url.isEmpty()) {
-                for( Q3ValueList< AccessKeyData >::Iterator it2 = data.begin();
+                for( QList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
                      ) {
                     if( (*it2).url == url ) {
@@ -3432,7 +3432,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if ( rects.size() )
         updateRegion = rects[0];
 
-    for ( unsigned int i = 1; i < rects.size(); ++i ) {
+    for ( int i = 1; i < rects.size(); ++i ) {
         QRect obR = updateRegion.boundingRect();
         QRegion newRegion = updateRegion.unite(rects[i]);
         if (2*newRegion.boundingRect().height() > 3*obR.height() )
