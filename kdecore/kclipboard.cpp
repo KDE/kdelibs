@@ -22,7 +22,6 @@
 #include "kglobal.h"
 
 #include <qmime.h>
-#include <q3strlist.h>
 
 /*
  * This class provides an automatic synchronization of the X11 Clipboard and Selection
@@ -44,22 +43,15 @@ class KClipboardSynchronizer::MimeSource : public QMimeSource
 {
 public:
     MimeSource( const QMimeSource * src )
-        : QMimeSource(),
-          m_formats( true ) // deep copies!
+        : QMimeSource()
     {
-        m_formats.setAutoDelete( true );
-        m_data.setAutoDelete( true );
-
         if ( src )
         {
-            QByteArray *byteArray;
             const char *format;
             int i = 0;
             while ( (format = src->format( i++ )) )
             {
-                byteArray = new QByteArray();
-                *byteArray = src->encodedData( format );
-                m_data.append( byteArray );
+                m_data.append( src->encodedData( format ) );
                 m_formats.append( format );
             }
         }
@@ -73,21 +65,24 @@ public:
         else
             return 0L;
     }
+    
     virtual bool provides( const char *mimeType ) const {
-        return ( m_formats.find( mimeType ) > -1 );
+        return ( m_formats.contains( mimeType ));
     }
+    
     virtual QByteArray encodedData( const char *format ) const
     {
-        int index = m_formats.find( format );
+        int index = m_formats.indexOf( format );
         if ( index > -1 )
-            return *(m_data.at( index ));
+            return m_data.at( index );
 
         return QByteArray();
     }
 
 private:
-    mutable Q3StrList m_formats;
-    mutable Q3PtrList<QByteArray> m_data;
+    // This might be better as a QHash<QString, QByteArray>
+    mutable QStringList m_formats;
+    mutable QList<QByteArray> m_data;
 };
 
 
