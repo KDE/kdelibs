@@ -55,9 +55,9 @@ class KHTMLWalletQueue : public QObject
 
     KWallet::Wallet *wallet;
     typedef QPair<DOM::HTMLFormElementImpl*, QPointer<DOM::DocumentImpl> > Caller;
-    typedef Q3ValueList<Caller> CallerList;
+    typedef QList<Caller> CallerList;
     CallerList callers;
-    Q3ValueList<QPair<QString, QMap<QString, QString> > > savers;
+    QList<QPair<QString, QMap<QString, QString> > > savers;
 
   signals:
     void walletOpened(KWallet::Wallet*);
@@ -79,7 +79,7 @@ class KHTMLWalletQueue : public QObject
           }
         }
         wallet->setFolder(KWallet::Wallet::FormDataFolder());
-        for (Q3ValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
+        for (QList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
           wallet->writeMap((*i).first, (*i).second);
         }
       }
