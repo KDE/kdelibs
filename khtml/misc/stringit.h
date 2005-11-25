@@ -167,7 +167,7 @@ private:
     QChar m_pushedChar2;
     TokenizerSubstring m_currentString;
     const QChar *m_currentChar;
-    Q3ValueList<TokenizerSubstring> m_substrings;
+    QList<TokenizerSubstring> m_substrings;
     int m_lines;
     bool m_composite;
 
