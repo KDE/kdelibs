@@ -70,7 +70,6 @@ public:
    *                     (rejecting: true; accepting: false)
    * @param fixupEnabled Selects whether to fix strings or not.
    * @param parent Passed to lower level constructor.
-   * @param name Passed to lower level constructor
    *
    **/
   KStringListValidator( const QStringList & list=QStringList(),

@@ -166,7 +166,6 @@ public:
      * Constructs a KLineEdit object with a parent and a name.
      *
      * @param parent The parent object of this widget.
-     * @param name The name of this widget.
      */
     KLineEdit ( QWidget *parent=0 );
 

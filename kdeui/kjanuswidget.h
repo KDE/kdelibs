@@ -131,7 +131,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Constructor where you specify the face.
      *
      * @param parent Parent of the widget.
-     * @param name Widget name.
      * @param face The kind of dialog, Use TreeList, Tabbed, Plain or
      * Swallow.
      */
