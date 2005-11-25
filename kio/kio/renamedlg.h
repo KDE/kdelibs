@@ -123,7 +123,7 @@ private:
    * @param dest the URL of the destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
    *             see RenameDlg_Mode
-   * @param newDest the new destination path, valid if R_RENAME was returned.
+   * @param newDestPath the new destination path, valid if R_RENAME was returned.
    * @param sizeSrc size of source file
    * @param sizeDest size of destination file
    * @param ctimeSrc creation time of source file
