@@ -791,10 +791,10 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (!d->serverAddr) {
         // here, we obtain the list of possible DCOP connections,
         // and attach to them.
-        QString dcopSrv;
+        QByteArray dcopSrv;
         dcopSrv = ::getenv("DCOPSERVER");
         if (dcopSrv.isEmpty()) {
-            QString fName = dcopServerFile();
+            QString fName = QFile::decodeName( dcopServerFile() );
             QFile f(fName);
             if (!f.open(QIODevice::ReadOnly)) {
                 emit attachFailed(QLatin1String( "Could not read network connection list.\n" )+fName);
@@ -804,7 +804,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             QByteArray contents( size+1, '\0' );
             if ( f.read( contents.data(), size ) != size )
             {
-               qDebug("Error reading from %s, didn't read the expected %d bytes", fName.toLatin1().constData(), size);
+               qDebug("Error reading from %s, didn't read the expected %d bytes", fName.toLocal8Bit().constData(), size);
                // Should we abort ?
             }
             contents[size] = '\0';
@@ -812,19 +812,19 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             if ( pos == -1 ) // Shouldn't happen
             {
                 qDebug("Only one line in dcopserver file !: %s", contents.data());
-                dcopSrv = QLatin1String(contents);
+                dcopSrv = contents;
             }
             else
             {
 				if(contents[pos - 1] == '\r')	// check for windows end of line
 					pos--;
-                dcopSrv = QLatin1String(contents.left( pos ));
+                dcopSrv = contents.left( pos );
 //#ifndef NDEBUG
 //                qDebug("dcopserver address: %s", dcopSrv.latin1());
 //#endif
             }
         }
-        d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.toLatin1().constData()) );
+        d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.data()) );
         bClearServerAddr = true;
     }
 
