@@ -1,0 +1,15 @@
+#! /usr/bin/env python
+
+Import('env')
+
+install_headers = "kdelibs_export.h kdemacros.h kdemacros.h.in"
+
+def build_kdemacros_h(target = None, source = None, env = None):
+	dest = open(str(target[0]), 'w')
+	dest.write('#include <kdemacros.h.in>\n')
+	dest.close()
+act=env.Action(build_kdemacros_h, varlist=['PREFIX'])
+env.Command('kdemacros.h', '', act) # no source needed
+
+env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
+

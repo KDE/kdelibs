@@ -51,12 +51,6 @@ config = {
 # and the config.h
 env=configure(config)
 
-# now the kdemacros (TODO put this into a bootstrap section somehow ?)
-# TODO and install the generated kdemacros.h
-dest = open(env.join('build','kdemacros.h'), 'w')
-dest.write('#include <kdemacros.h.in>\n')
-dest.close()
-
 import os
 try:
 	os.mkdir('build'+os.sep+'kjs')
@@ -70,7 +64,13 @@ dest.close()
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################
-subdirs="""
+
+# bootstrap module 
+subdirs_first="""
+.
+"""
+
+subdirs_main = """
 dcop
 libltdl
 kdefx
@@ -83,18 +83,22 @@ qttestlib
 kded
 kparts
 kutils
+kjs
 khtml
 kde3support
 """
 
-if env['WINDOWS']:
-	subdirs = "win\n" + subdirs
-else:
-	subdirs += """
+# currently not on windows 
+subdirs_last = """
 kdesu
 kdeprint
-kjs
 """
+
+if env['WINDOWS']:
+	subdirs = subdirs_first + " win " + subdirs_main # + subdirs_last
+else:
+	subdirs = subdirs_first + subdirs_main + subdirs_last
+
 
 # TODO this will not stay like this ..
 dirs=[] # the dirs to process are appended to this var in the loop below
