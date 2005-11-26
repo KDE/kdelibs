@@ -2,41 +2,91 @@
 
 \section mingw-requirements Requirements
 
+- Unpacking tools like WinZip® (http://www.winzip.de/) or PowerArchiver (http://www.pctipp.ch/downloads/dl/15291.asp)
+or unzip http://gnuwin32.sourceforge.net/packages/unzip.htm
+
 - latest QT Windows release with Mingw compiler package 
 	- download from http://www.trolltech.com/download/qt/windows.html
 	- install Qt into c:\\Qt\\4.0.1
 	- install MingW into c:\\Mingw 
-
-	-	alternative MingW download - http://prdownloads.sourceforge.net/mingw/MinGW-4.1.0.exe?download
+	-	alternative MingW download http://prdownloads.sourceforge.net/mingw/MinGW-4.1.0.exe?download
 
 - Python 2.4  
 	- http://www.python.org/ftp/python/2.4.2/python-2.4.2.msi
 	- install into c:\\Python24
 	
-- perl
-  - perl is required because new dcopidl is a perl script :-(  
+- perl (is required because new dcopidl and other required scripts depends on perl) 
 	- download from http://downloads.activestate.com/ActivePerl/Windows/5.8/ActivePerl-5.8.7.813-MSWin32-x86-148120.zip
 	- install into c:\\Perl 
+
+- sources from svn.kde.org 
+  - download subversion client from http://subversion.tigris.org/files/documents/15/25364/svn-1.2.3-setup.exe
+  - install
+  - checkout source with svn co svn://anonsvn.Kde.org/home/kde/trunk/KDE/kdelibs
+
+- install scons-mini.tar.bz2  
+  - unpack the contents of kdelibs\bksys\scons-mini.tar.bz2 to kdelibs
+
+- giflib 
+	- download from http://gnuwin32.sourceforge.net/downlinks/giflib-bin-zip.php
+	  and http://gnuwin32.sourceforge.net/downlinks/giflib-lib-zip.php
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- bzip2
+	- download from http://gnuwin32.sourceforge.net/downlinks/bzip2-bin-zip.php 
+	and http://gnuwin32.sourceforge.net/downlinks/bzip2-lib-zip.php
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- libpng
+	- download from http://gnuwin32.sourceforge.net/downlinks/libpng-bin-zip.php
+		and http://gnuwin32.sourceforge.net/downlinks/libpng-lib-zip.php
+
+- libjpeg
+	- download from http://gnuwin32.sourceforge.net/downlinks/jpeg-bin-zip.php
+	and http://gnuwin32.sourceforge.net/downlinks/jpeg-lib-zip.php
 
 -	openssl 
 	- download from http://www.slproweb.com/download/Win32OpenSSL-v0.9.8a.exe
 	- install into c:\\OpenSSL 
 
-- agg library 
-	- download from http://antigrain.com/download/index.html
-	- unpack into c:\agg23
-		
-- optional msys 
+- pcre library 
+	- download http://gnuwin32.sourceforge.net/downlinks/pcre-bin-zip.php 
+		and http://gnuwin32.sourceforge.net/downlinks/pcre-lib-zip.php
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- gettext library 
+	- download from http://gnuwin32.sourceforge.net/packages/gettext.htm
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- agg library (instruction not complete)
+	- download release 2.3 from http://www.antigrain.com/agg23.zip
+	- unpack into c:\\agg23 
+	- currently there is a packaging problem, which requires to move the include dir  
+	into a agg2 subdir below c:\\agg23
+	- compile agg23 
+\code
+cd c:\\agg23\\src
+make
+copy libagg.a c:\Mingw\lib
+mkdir c:\Mingw\include\agg2
+xcopy /S ..\include\* c:\Mingw\include\agg2
+
+
+- some not listed packages may be available on http://gnuwin32.sourceforge.net/packages.html
+
+\section optional_components optional Components
+
+- gdb (for debugging purpose) 
+	- download from http://prdownloads.sourceforge.net/mingw/gdb-5.2.1-1.exe?download
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- wget (for downloading additional packages)
+	- download from http://gnuwin32.sourceforge.net/downlinks/wget-bin-zip.php
+	- unpack to c:\\Mingw or where you have installed mingw
+
+- msys 
 	- download from http://prdownloads.sourceforge.net/mingw/MSYS-1.0.10.exe?download
 	- install into c:\\MSYS\\1.0 
-		
-- sources from svn.kde.org 
-  - download subversion client from http://subversion.tigris.org/files/documents/15/25364/svn-1.2.3-setup.exe
-  - install to ???
-  - checkout source with svn co svn://anonsvn.kde.org/home/kde/trunk/KDE/kdelibs
-
-- install scons-mini.tar.bz2  
-  - unpack the contents of kdelibs\bksys\scons-mini.tar.bz2 to kdelibs\
 
 \section mingw-setup Setup
 
@@ -86,7 +136,7 @@ run
 scons install 
 \endcode 
 
-Currently it is installed in c:\Qt\4 
+This will install kdelibs in c:\KDE4.
 
 \section mingw-run run applications 
 run 
@@ -133,5 +183,18 @@ r -l -a *
 
 
 \endcode
+
+\section mingw-tips Tips & Tricks 
+- changing configure attributes without recompiling the whole package. \n
+	If some configuration settings are changed, scons recompute the dependencies 
+	and recompiles the whole package, which could be avoided by using the MSYS \b touch tool. \n
+	Say you have changed a setting in cache\\libpcre.cache.py and saved the original 
+	file into cache\\libpcre.cache.py.bak, the following command will set the 
+	timestamp of libpcre.cache.py to the time of the original file. 
+\code
+ touch -r cache\libpcre.cache.py.bak  cache\libpcre.cache.py
+\endcode 
+
+
 
 */ 
