@@ -29,6 +29,29 @@ kmdi/k3mdichildfrmcaption.cpp
 kmdi/k3mdifocuslist.cpp
 kparts/dockmainwindow3.cpp
 """
+inst_headers = """
+kdecore/k3keysequence.h
+kdecore/k3shortcut.h
+kdecore/k3shortcutmenu.h
+kdecore/k3urldrag.h
+kdeui/k3colordrag.h
+kdeui/k3dockwidget.h
+kdeui/k3popupmenu.h 
+kdeui/k3textedit.h
+kio/k3bookmarkdrag.h
+kmdi/k3mdichildarea.h
+kmdi/k3mdichildfrm.h
+kmdi/k3mdichildfrmcaption.h
+kmdi/k3mdichildview.h
+kmdi/k3mdidefines.h
+kmdi/k3mdiiterator.h
+kmdi/k3mdilistiterator.h
+kmdi/k3mdimainfrm.h
+kmdi/k3mdinulliterator.h
+kmdi/k3mditaskbar.h
+kmdi/k3mditoolviewaccessor.h
+kparts/dockmainwindow3.h
+"""
 
 obj = env.kdeobj('shlib')
 obj.target = 'kde3support'
@@ -49,6 +72,9 @@ obj.execute()
 
 #Do we need this?  For now ;(
 #env.Depends('libkde3support.so.6.0.2', 'kdecore')
+
+env.bksys_insttype( 'KDEINCLUDE', '', inst_headers )
+
 
 """Unhandled Defines 
 SUBDIRS = kdecore kdeui kio kparts kmdi kunittest . tests
