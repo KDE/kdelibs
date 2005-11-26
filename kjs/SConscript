@@ -43,6 +43,10 @@ obj.iskdelib = 1
 obj.includes = 'network'
 if env.has_key("CACHED_PCRE") and env["CACHED_PCRE"]:
 	obj.uselib += ' PCRE'
+if env['WINDOWS']:
+	obj.libpaths += ' ../win'
+	obj.libs     += ' kdewin32'
+
 obj.execute()
 
 env.bksys_insttype( 'KDEINCLUDE', '', inst_headers )
