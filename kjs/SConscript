@@ -34,16 +34,15 @@ env.Command('lexer.lut.h','keywords.lut.h',Move("$TARGET", "$SOURCE"))
 
 obj = env.kdeobj('shlib', env)
 obj.vnum     = '3.0.2'
-obj.target   = 'libkjs'
+obj.target   = 'kjs'
 obj.source   = kjs_files
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 PCRE'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.libs     = 'm'
 obj.cxxflags += ' -DHAVE_CONFIG_H '
 obj.iskdelib = 1
 obj.includes = 'network'
-if env.has_key("LIBPCRE_ISCONFIGURED"): 
-	obj.uselib += 'PCRE'
-	obj.cxxflags += ' -DHAVE_PCREPOSIX '
+if env.has_key("CACHED_PCRE") and env["CACHED_PCRE"]:
+	obj.uselib += ' PCRE'
 obj.execute()
 
 """

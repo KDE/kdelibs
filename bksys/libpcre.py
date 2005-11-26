@@ -38,13 +38,19 @@ def generate(env):
 		env['CACHED_PCRE'] = 0
 
 		if env['WINDOWS']:
-			if conf.CheckLib('pcre'):
+			if conf.CheckLib('pcreposix'):
 				env['CACHED_PCRE'] = 1
-				env['LIB_PCRE'] = ['pcre']
+				env['LIB_PCRE'] = ['pcre','pcreposix']
 		else:
 			conf.Check_libpcre()
 
-		if env['CACHED_PCRE'] == 0:
+		if env['CACHED_PCRE']:
+			dest=open(env.join(env['_BUILDDIR_'], 'config-libpcre.h'), 'w')
+			dest.write('/* libpcre configuration created by bksys */\n')
+			dest.write('#define HAVE_PCREPOSIX 1\n');
+			dest.close()
+			env['_CONFIG_H_'].append('libpcre')
+		else:
 			print 'libpcre not found .'
 
 		env = conf.Finish()
