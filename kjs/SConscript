@@ -45,6 +45,8 @@ if env.has_key("CACHED_PCRE") and env["CACHED_PCRE"]:
 	obj.uselib += ' PCRE'
 obj.execute()
 
+env.bksys_insttype( 'KDEINCLUDE', '', inst_headers )
+
 """
 YACC = bison
 INCLUDES = $(PCRECFLAGS) $(all_includes)
