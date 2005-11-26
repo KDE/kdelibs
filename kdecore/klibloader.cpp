@@ -181,7 +181,7 @@ void* KLibrary::symbol( const char* symname ) const
     void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = "KLibrary: " + QString::fromLatin1( lt_dlerror() );
+        KLibLoader::self()->d->errorMessage = "KLibrary: " + QString::fromLocal8Bit( lt_dlerror() );
         kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -431,7 +431,7 @@ KLibrary* KLibLoader::library( const char *name )
       {
         const char* errmsg = lt_dlerror();
         if(errmsg)
-            d->errorMessage = QString::fromLatin1(errmsg);
+            d->errorMessage = QString::fromLocal8Bit(errmsg);
         else
             d->errorMessage = QString::null;
         return 0;
