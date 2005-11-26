@@ -106,6 +106,83 @@ if not env['WINDOWS']:
 kio/kautomount.cpp 
 """
 
+kio_inst_headers = """
+kio/kservicetype.h
+kio/kmimetype.h
+kio/kmimemagic.h
+kio/kservice.h
+kio/krun.h
+kio/kdirwatch.h
+kio/kautomount.h
+kio/kuserprofile.h
+kio/kar.h
+kio/ktar.h
+kio/kzip.h
+kio/ktrader.h
+kio/kurifilter.h
+kio/kurlcompletion.h
+kio/kshellcompletion.h
+kio/kfileitem.h
+kio/kfileshare.h
+kio/ksambashare.h
+kio/knfsshare.h
+kio/kdirlister.h
+kio/kservicegroup.h
+kio/kimageio.h
+kio/kdirnotify.h
+kio/kdirnotify_stub.h
+kio/kurlpixmapprovider.h
+kio/kprotocolinfo.h
+kio/kprotocolmanager.h
+kio/kemailsettings.h
+kio/kscan.h
+kio/kdatatool.h
+kio/karchive.h
+kio/kfilefilter.h
+kio/kfilemetainfo.h
+kio/renamedlgplugin.h
+kio/kmimetyperesolver.h
+kio/kdcopservicestarter.h
+kio/kremoteencoding.h
+kio/kmimetypechooser.h
+kio/kacl.h
+"""
+
+kio_kio_inst_headers = """
+kio/connection.h
+kio/slaveinterface.h
+kio/slave.h
+kio/slaveconfig.h
+kio/sessiondata.h
+kio/global.h
+kio/passdlg.h
+kio/netaccess.h
+kio/job.h
+kio/scheduler.h
+kio/jobclasses.h
+kio/paste.h
+kio/slavebase.h
+kio/progressbase.h
+kio/defaultprogress.h
+kio/statusbarprogress.h
+kio/tcpslavebase.h
+kio/forwardingslavebase.h
+kio/observer.h
+kio/chmodjob.h
+kio/kmdbase.h
+kio/authinfo.h
+kio/ioslave_defaults.h
+kio/http_slave_defaults.h
+kio/previewjob.h
+kio/thumbcreator.h
+kio/metainfojob.h
+kio/davjob.h
+kio/renamedlg.h
+kio/skipdlg.h
+"""
+# TODO: this is located in build dir 
+# kio\uiserver_stub.h
+
 kssl_sources = """
 kssl/kssl.cc
 kssl/ksslcertificatehome.cc
@@ -132,6 +209,31 @@ kssl/keygenwizard.ui3
 kssl/keygenwizard2.ui3
 kssl/ksmimecrypto.cc
 kssl/ksslcsessioncache.cc
+"""
+kssl_inst_headers = """
+kssl/kssl.h 
+kssl/ksslcertificatehome.h
+kssl/ksslsettings.h 
+kssl/ksslcertificate.h 
+kssl/ksslconnectioninfo.h
+kssl/ksslcertificatefactory.h
+kssl/ksslcertificatecache.h
+kssl/ksslpeerinfo.h 
+kssl/ksslinfodlg.h 
+kssl/ksslcertdlg.h 
+kssl/ksslutils.h 
+kssl/kopenssl.h 
+kssl/ksslall.h	 	
+kssl/ksslpkcs12.h
+kssl/ksslcertchain.h
+kssl/ksslkeygen.h
+kssl/ksslx509v3.h
+kssl/ksslsigners.h
+kssl/ksslpkcs7.h
+kssl/ksslpemcallback.h	
+kssl/ksslsession.h
+kssl/ksslx509map.h
+kssl/ksmimecrypto.h
 """
 
 kfile_sources = """
@@ -261,23 +363,19 @@ obj.iskdelib = 1
 obj.uselib = "Z FAM VOLMGT"
 
 obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop ../kdefx '
-obj.ccflags += ' -DMAKE_KIO_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../libltdl ../win '
 	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx ltdlc '
-	# TODO: (rh) remove when openssl detection under win32 runs 
-	if env['CC'] == 'gcc': 
-		obj.includes += ' c:/openssl/include'
-		obj.libpaths += ' c:/openssl/lib/mingw'
-		obj.libs += ' eay32'
-
 else:
 	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP kdefx z '
 obj.uselib    += ' QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
 
 if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
     obj.uselib += ' LIBART'
-            
+
+if env.has_key("CACHED_OPENSSL") and env['CACHED_OPENSSL']:
+	obj.uselib += ' OPENSSL'
+           
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 obj.execute()
@@ -292,13 +390,23 @@ elif not env['WINDOWS']:
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]
 
+
 env.bksys_insttype('KDESERVTYPES','', servicetypes)
 env.bksys_insttype('KDESERV','', 'data.protocol')
 env.bksys_insttype('KDESERV','kded', 'kpasswdserver.desktop')
 env.bksys_insttype('KDEAPPS','kconf_update', [ 'kioslave.upd', 'proxytype.pl', 'useragent.pl' ])
 env.bksys_insttype('KDEMIME','','magic')
 
+# kssl 
 env.bksys_insttype('KDECONF', '', 'kssl/kssl/ksslcalist')
 env.bksys_insttype('KDEAPPS', 'kssl', 'kssl/kssl/caroot/ca-bundle.crt')
 
+# TODO: how to install files in build dir without this hack
+env.bksys_insttype('KDEINCLUDE','','../'+env['_BUILDDIR_']+'/ksslconfig.h')
+
 env.bksys_insttype('KDESERVTYPES','', 'kfile/kpropsdlgplugin.desktop')
+
+env.bksys_insttype('KDEINCLUDE','',kio_inst_headers + kssl_inst_headers + kfile_inst_headers + bookmarks_inst_headers)
+env.bksys_insttype('KDEINCLUDE','kio',kio_kio_inst_headers)
+
+
