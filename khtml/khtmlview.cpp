@@ -99,6 +99,8 @@
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
+#elif defined(Q_WS_WIN)
+#include <Windows.h>
 #endif
 
 #define PAINT_BUFFER_HEIGHT 128
