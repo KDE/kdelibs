@@ -40,7 +40,7 @@ def generate(env):
 		if env['WINDOWS']:
 			if conf.CheckLib('pcreposix'):
 				env['CACHED_PCRE'] = 1
-				env['LIB_PCRE'] = ['pcre','pcreposix']
+				env['LIB_PCRE'] = ['pcreposix','pcre']
 		else:
 			conf.Check_libpcre()
 
