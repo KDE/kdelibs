@@ -22,6 +22,14 @@
 #include <sys/types.h>
 #include_next <time.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
 KDEWIN32_EXPORT struct tm*  localtime_r(const time_t *t,struct tm *p);
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif 
