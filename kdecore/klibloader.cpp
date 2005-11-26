@@ -199,7 +199,7 @@ void* KLibrary::symbol( const char* symname ) const
     void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QLatin1String( lt_dlerror() );
+        KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QString( lt_dlerror() );
         kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -433,7 +433,7 @@ KLibrary* KLibLoader::library( const char *_name )
         const char* errmsg = lt_dlerror();
         qDebug( "lt_dlopen %s failed: %s", QFile::encodeName(libfile).data(), errmsg );
         if(errmsg)
-            d->errorMessage = QLatin1String(errmsg);
+            d->errorMessage = QString(errmsg);
         else
             d->errorMessage = QString::null;
         return 0;
