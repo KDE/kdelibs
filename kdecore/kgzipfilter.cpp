@@ -16,11 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kgzipfilter.h"
 #include <time.h>
 #include <zlib.h>
 #include <kdebug.h>
 #include <qiodevice.h>
+
+#include "kgzipfilter.h"
 
 /* gzip flag byte */
 #define ASCII_FLAG   0x01 /* bit 0 set: file probably ascii text */
