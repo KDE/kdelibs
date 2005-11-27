@@ -2,12 +2,24 @@
 
 Import('env')
 
+inst_headers = """
+kpixmap.h 
+kpixmapsplitter.h
+kpixmapeffect.h 
+kimageeffect.h 
+kdrawutil.h 
+kstyle.h 
+kcpuinfo.h
+"""
+
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'kdefx'
 obj.source   = 'kpixmap.cpp kpixmapsplitter.cpp kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp kcpuinfo.cpp'
 obj.uselib   = 'QTGUI QTCORE QT QT3SUPPORT XRENDER KDE4'
 obj.execute()
+
+env.bksys_insttype( 'KDEINCLUDE', '', inst_headers )
 
 
 """INCLUDES= $(all_includes)
