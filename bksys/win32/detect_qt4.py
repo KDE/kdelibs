@@ -4,6 +4,107 @@
 
 import os, re, types, sys
 
+# check if qt was build with rtti and exceptions and add correct flgas from mkspec
+def check_qtconfig(env):
+	p=env.pprint
+
+	if env['ARGS'] and env['ARGS'].has_key('platform'):
+		# first check for argument 'platform'
+		platform = env['ARGS']['platform']
+	elif os.environ.has_key('QMAKESPEC'):
+		# the look for QMAKESPEC
+		platform = os.environ['QMAKESPEC']
+	else:
+		return
+	if env['ARGS'] and env['ARGS'].has_key('exceptions'):
+		exceptions = 1
+	else:
+		exceptions = 0
+
+	qtdir		= env['QTDIR']
+	qmakecache	= env.join(qtdir, '.qmake.cache')
+	qmakeconf	= env.join(qtdir, 'mkspecs', platform, 'qmake.conf' )
+
+	debug = 0
+	version_override = 4
+	
+	# read .qmake.cache to 
+	# - check if QMAKESPEC == platform
+	# - check if no-rtti isn't set (we need it for dynamic_cast)
+	# - get some defines
+	# - wheter to use debug or release libs
+
+	kde_debug = env['ARGS'].get('debug', None) != None
+
+	cxxflags = ''
+	file = open( qmakecache )
+	for line in file:
+		line = line.rstrip()
+		val = line.split('=')[0].rstrip('+* ')
+		val = val.rstrip()
+		if val == 'CONFIG':
+			for word in line.split():
+				if word == 'no-rtti':
+					p('RED', 'Qt isn\'t compiled with rtti support' )
+					env.Exit(1)
+				elif word == 'debug':
+					qt_debug = 1
+					if not kde_debug:
+						p('YELLOW', 'Qt is compiled with debug support but you won\'t compile KDE in debug mode.')
+				elif word == 'release' and kde_debug:
+					qt_debug = 0
+		elif val == 'QMAKESPEC':
+			# problem: compiled with qt4/free and msvc/borland we get 'win32-g++' here ...
+			# so only a warning
+			plat = line.split('=')[1]
+			if ( plat != platform ):
+				p('YELLOW', 'Qt is compiled for ' + plat + ' but you want to compile KDE for ' + platform + '!')
+		elif val == 'DEFINES':
+			defines = line.split('*=')[1]
+			for d in defines.split():
+				cxxflags += '-D' + d + ' '
+		elif val == 'QMAKE_QT_VERSION_OVERRIDE':
+			version_override = line.split('=')[1]
+	file.close()
+	
+	file = open( qmakeconf )
+	# fixme - what if an option is defined this way: QMAKE_CXXFLAGS_THREAD	= $$QMAKE_CFLAGS_THREAD
+	for line in file:
+		line = line.rstrip()
+		val = line.split('=')[0].rstrip('+*')
+		val = val.rstrip()
+		cxxflag = ''
+		if kde_debug:
+			if val == 'QMAKE_CFLAGS_WARN_ON':
+				cxxflag =  line.split('=')[1]
+			elif val == 'QMAKE_CFLAGS_DEBUG':
+				cxxflag =  line.split('=')[1]
+		else:
+			if val == 'QMAKE_CFLAGS_WARN_OFF':
+				cxxflag =  line.split('=')[1]
+			elif val == 'QMAKE_CFLAGS_RELEASE':
+				cxxflag =  line.split('=')[1]
+
+		if val == 'DEFINES':
+			defines = line.split('=')[1]
+			for d in defines.split():
+				cxxflags += '-D' + d + ' '
+		elif val == 'QMAKE_CXXFLAGS_RTTI_ON':
+			cxxflag =  line.split('=')[1]
+		elif val == 'QMAKE_CXXFLAGS_EXCEPTIONS_ON':
+			if exceptions == 1:
+				cxxflag =  line.split('=')[1]
+		if ( cxxflag != '' ):
+			cxxflags += cxxflag + ' '
+	file.close()
+
+	if kde_debug:
+		cxxflags += '-DQT_DEBUG '
+	else:
+		cxxflags += '-DQT_NO_DEBUG '
+	env['CXXFLAGS_QT'] = cxxflags
+	return qt_debug,version_override
+
 def detect(env):
 	def getpath(varname):
 		if not env.has_key('ARGS'): return None
@@ -15,8 +116,9 @@ def detect(env):
 	# This values could be taken from QTDIR/.qmake.conf 
 	#  debug -> CONFIG 
 	#  library version extension -> QMAKE_QT_VERSION_OVERRIDE (=4 yet) 
-	if env['BKS_DEBUG']: lib_addon = 'd4'
-	else:                lib_addon = '4'
+#	if env['BKS_DEBUG']: lib_addon = 'd4'
+#	else:                lib_addon = '4'
+# see below
 
 	# TODO (rh) libsuffix and lib_addon may be overlap in some areas, potential for cleanup 
 	libsuffix	= ''
@@ -33,9 +135,13 @@ def detect(env):
 				'c:/Qt/4.0.2/',
 				'c:/Qt/4.0.1/',
 				'c:/Qt/4.0.0/'])
-		if qtdir: p('YELLOW', 'The qtdir was found as '+qtdir)
-		else:     p('YELLOW', 'There is no QTDIR set')
-	else: env['QTDIR'] = qtdir.strip()
+		if qtdir:
+			p('YELLOW', 'The qtdir was found as '+qtdir)
+		else:
+			p('YELLOW', 'There is no QTDIR set')
+			return
+
+	env['QTDIR'] = qtdir.strip()
 
 	# if we have the QTDIR, finding the qtlibs and qtincludes is easy
 	if qtdir:
@@ -108,12 +214,14 @@ def detect(env):
 
 	########## QT
 	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+	debug,version = check_qtconfig(env)
+	if debug:
+		lib_addon = 'd'+version
+	else:
+		lib_addon = version
 
 	# taken from qt4 qmake generated example 
 
-	env['CXXFLAGS_QT']         = '-DQT_EDITION=QT_EDITION_DESKTOP -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_DLL'.split()
-	if not env['ARGS'].get('debug', None):
-		env['CXXFLAGS_QT']       += ['-DQT_NO_DEBUG']
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
 	env['LIB_QT']              = ['QtGui'+lib_addon]
