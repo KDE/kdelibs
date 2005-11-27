@@ -21,14 +21,15 @@ def generate(env):
 
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_AGG')):
 
-		conf = env.Configure()
 		env['CACHED_AGG'] = 0
 
 		if env['WINDOWS']:
+			conf = env.Configure()
 			have_agg = conf.CheckLib('agg')
 			if have_agg:
 				env['LIB_AGG'] = ['agg']
 				env['CACHED_AGG'] = 1
+			env = conf.Finish()
 		else:
 			from SCons.Tool import Tool
 			pkgs = Tool('pkgconfig', ['./bksys'])
@@ -45,7 +46,6 @@ def generate(env):
 		else:
 			env.pprint('RED', 'libagg >= 2.3 not found.')
 
-		env = conf.Finish()
 	
 	opts.Update(env)
 	opts.Save(optionFile, env)
