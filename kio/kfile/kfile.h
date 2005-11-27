@@ -74,24 +74,24 @@ public:
     // sorting specific
 
     // grr, who had the idea to set QDir::Name to 0x0?
-    static bool isSortByName( const QDir::SortSpec& sort ) {
+    static bool isSortByName( const QDir::SortFlags& sort ) {
 	return (sort & QDir::Time) != QDir::Time &&
 	       (sort & QDir::Size) != QDir::Size;
     }
 
-    static bool isSortBySize( const QDir::SortSpec& sort ) {
+    static bool isSortBySize( const QDir::SortFlags& sort ) {
 	return (sort & QDir::Size) == QDir::Size;
     }
 
-    static bool isSortByDate( const QDir::SortSpec& sort ) {
+    static bool isSortByDate( const QDir::SortFlags& sort ) {
 	return (sort & QDir::Time) == QDir::Time;
     }
 
-    static bool isSortDirsFirst( const QDir::SortSpec& sort ) {
+    static bool isSortDirsFirst( const QDir::SortFlags& sort ) {
 	return (sort & QDir::DirsFirst) == QDir::DirsFirst;
     }
 
-    static bool isSortCaseInsensitive( const QDir::SortSpec& sort ) {
+    static bool isSortCaseInsensitive( const QDir::SortFlags& sort ) {
 	return (sort & QDir::IgnoreCase) == QDir::IgnoreCase;
     }
 
