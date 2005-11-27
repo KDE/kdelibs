@@ -13,8 +13,11 @@ def generate(env):
 	opts = Options(optionFile)
 	opts.AddOptions(
 		('CACHED_AGG','Whether libagg is available'),
-		('LIB_AGG',''),
-		# other options are added by the pkgConfig_findPackage() call 
+		('LINKFLAGS_AGG',''),
+		('LIB_AGG','')
+		# other options are added by the pkgConfig_findPackage() call
+		# apparently not, because the above LINKFLAGS_AGG line had to be added
+		# to make things work when attempting to use agg on linux. (mattr)
 		)
 	opts.Update(env)
 	opts.Save(optionFile, env)
@@ -41,6 +44,7 @@ def generate(env):
 			dest=open(env.join(env['_BUILDDIR_'], 'config-libagg.h'), 'w')
 			dest.write('/* libagg configuration created by bksys */\n')
 			dest.write('#define HAVE_LIBAGG 1\n');
+			env['CACHED_AGG'] = 1
 			dest.close()
 			env['_CONFIG_H_'].append('libagg')
 		else:
