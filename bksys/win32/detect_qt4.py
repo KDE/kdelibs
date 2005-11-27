@@ -214,7 +214,7 @@ def detect(env):
 
 	########## QT
 	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
-	debug,version = check_qtconfig(env)
+	debug = check_qtconfig(env)
 	if debug:
 		lib_addon = 'd'+version
 	else:
