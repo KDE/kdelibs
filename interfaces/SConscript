@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('kregexpeditor')
+# kdocument ktexteditor kregexpeditor kmediaplayer kio terminal khexedit kimproxy kspeech')
+
+
+"""Unhandled Defines 
+DOXYGEN_EXCLUDE = kspeech ktexteditor
+DOXYGEN_SET_RECURSIVE = YES
+DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts dcop
+"""
+
