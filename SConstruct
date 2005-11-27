@@ -61,14 +61,26 @@ dest = open(env.join('build','kjs','global.h'), 'w')
 dest.write('#include "global.h.in"\n')
 dest.close()
 
+
+install_headers = "kdelibs_export.h kdemacros.h kdemacros.h.in"
+
+def build_kdemacros_h(target = None, source = None, env = None):
+	dest = open(str(target[0]), 'w')
+	dest.write('#include <kdemacros.h.in>\n')
+	dest.close()
+act=env.Action(build_kdemacros_h, varlist=['PREFIX'])
+env.Command('kdemacros.h', '', act) # no source needed
+
+env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
+
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################
 
 # bootstrap module 
-subdirs_first="""
-.
-"""
+#subdirs_first="""
+#.
+#"""
 
 subdirs_main = """
 dcop
@@ -95,9 +107,9 @@ kdeprint
 """
 
 if env['WINDOWS']:
-	subdirs = subdirs_first + " win " + subdirs_main # + subdirs_last
+	subdirs = " win " + subdirs_main # + subdirs_last
 else:
-	subdirs = subdirs_first + subdirs_main + subdirs_last
+	subdirs = subdirs_main + subdirs_last
 
 
 # TODO this will not stay like this ..
