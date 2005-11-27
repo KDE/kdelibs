@@ -142,10 +142,17 @@ imload/pixmapplane.cpp
 imload/rawimageplane.cpp
 imload/scaledimageplane.cpp
 imload/updater.cpp
+imload/decoders/gifloader.cpp
+imload/decoders/jpegloader.cpp
+imload/decoders/pngloader.cpp
 """
-#imload/decoders/gifloader.cpp
-#imload/decoders/jpegloader.cpp
-#imload/decoders/pngloader.cpp
+
+if not env['BUILDERS'].has_key('Hash'):
+	env['BUILDERS']['Hash']    = Builder(action="perl #/kjs/create_hash_table $SOURCE -i > $TARGET" ,suffix='.cpp',src_suffix='.cpp')
+
+for i in "ecma/kjs_dom.cpp ecma/kjs_html.cpp ecma/kjs_css.cpp ecma/kjs_events.cpp ecma/kjs_navigator.cpp ecma/kjs_mozilla.cpp ecma/kjs_range.cpp ecma/kjs_traversal.cpp ecma/kjs_views.cpp ecma/kjs_window.cpp ecma/domparser.cpp ecma/xmlhttprequest.cpp ecma/xmlserializer.cpp".split():
+	       env.Hash(i)
+
 
 kjs_sources = """
 ecma/domparser.cpp
@@ -192,7 +199,7 @@ khtmlpart_p.h
 khtml_wallet_p.h
 """
 
-includes = '#/kjs ../kjs #/kimgio java #/dcop misc dom xml html css rendering imload imload/decoders/ #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils '
+includes = '#/kjs ../kjs #/kimgio java #/dcop misc dom xml html css rendering ecma imload imload/decoders/ #/libltdl #/kio/kssl #/kio/kssl #/kdeprint #/interfaces #/interfaces/kregexpeditor #/kwallet/client #/kutils #/kio/bookmarks '
 
 dummy_cpp = """#include <kdelibs_export.h>
 extern "C" KDE_EXPORT void* init_libkhtml(); 
@@ -206,11 +213,11 @@ extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefacto
 
 """
 
-fulllibs = 'DCOP kdecore kdeui kjs kio kparts kutils kde3support kwalletclient kdefx '
+fulllibs = 'DCOP kdecore kdeui kjs kio kparts kutils kde3support kwalletclient kdefx kdeprint '
 if not env['WINDOWS']:
 	fulllibs += ' kdesu'
 
-fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ../kutils ../kde3support ../kwallet/client ../kdesu ../kdefx"
+fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ../kutils ../kde3support ../kwallet/client ../kdesu ../kdefx ../kdeprint"
 fulluselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI PNG JPEG'
 if env.has_key("CACHED_GIFLIB") and env['CACHED_GIFLIB']:
 	fulluselib += ' GIFLIB '
@@ -221,7 +228,7 @@ env.CreateFile('imgdummy.cpp', Value(imgdummy_cpp))
 obj = env.kdeobj('shlib')
 obj.target = 'khtml'
 obj.vnum = '6.0.2'
-obj.source = libkhtml_sources+css_sources+dom_sources+imload_sources+misc_sources+render_sources+html_sources+xml_sources
+obj.source = libkhtml_sources+css_sources+dom_sources+imload_sources+misc_sources+render_sources+html_sources+xml_sources+kjs_sources
 obj.includes = includes
 
 #obj.linkflags = '-Wl,--whole-archive build/khtml/imload/decoders/libdecoders.a -Wl,--no-whole-archive'
