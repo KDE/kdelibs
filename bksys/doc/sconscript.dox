@@ -11,7 +11,8 @@ qt and KDE related binary objects like programs, shared library with several ext
 All classes provides a set of attributes, which controls the behavior of the binary object creation. 
 See \ref sconscript_attributes for more informations. 
 
-Beside the object classes there are several usefull functions available. They are documented in the chapter \ref usefull_sconscript_functions 
+Beside the object classes there are several usefull functions available. 
+They are documented in the chapter \ref usefull_sconscript_functions 
 
   
 \section sconscript_classes available classes
@@ -63,8 +64,9 @@ obj = env.kde4obj(<type>,<env>)
 
 \param env is a pointer to the global sconbs environment 
 
-When this object class is used bksys scans related header for moc and kidl definitions and kconfig-compiler files. 
-Then it performs the required actions to convert them into related source/objects files. See \ref special_file_processing for more informations. 
+When this object class is used bksys scans related header for moc and kidl definitions and 
+kconfig-compiler files. Then it performs the required actions to convert them into related 
+source/objects files. See \ref special_file_processing for more informations. 
 
 \subsection sconscript_kdeinitobj kdeinit binary object 
 This class creates a shared library prefixed with 'kdeinit_' and a wrapper application. 
@@ -78,10 +80,7 @@ obj = env.kdeinitobj(<type>,<env>)
 
 
 \section sconscript_attributes Attributes detail description
-This section describes each attribute in detail. The displayed examples uses the string form; using 
-the list form mentioned above is also possible.
-
-An overview over the available attributes is shown below: 
+This section describes each attribute in detail. An overview over the available attributes is shown below: 
 \code
 obj = env.qt4obj('shlib',env)
 obj.target   = 'libDCOP'
@@ -108,7 +107,7 @@ obj.attribute   += ' DCOP'   (2)
 obj.attribute    = ['DCOP']  (3) 
 obj.attribute   += ['DCOP']  (4) 
 \endcode
-\note: If you are adding values as string, please prefix the added value with a space. This avoids 
+\b Note: If you are adding values as string, please prefix the added value with a space. This avoids 
 unwanted concatenation. 
 
 
