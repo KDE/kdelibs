@@ -27,6 +27,11 @@ or unzip http://gnuwin32.sourceforge.net/packages/unzip.htm
 - install scons-mini.tar.bz2  
   - unpack the contents of kdelibs\bksys\scons-mini.tar.bz2 to kdelibs
 
+- zlib 
+	- download from http://gnuwin32.sourceforge.net/downlinks/zlib-bin-zip.php and 
+	http://gnuwin32.sourceforge.net/downlinks/zlib-lib-zip.php
+	- unpack to c:\\Mingw or where you have installed mingw
+
 - giflib 
 	- download from http://gnuwin32.sourceforge.net/downlinks/giflib-bin-zip.php
 	  and http://gnuwin32.sourceforge.net/downlinks/giflib-lib-zip.php
