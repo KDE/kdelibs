@@ -15,7 +15,8 @@ def check_qtconfig(env):
 		# the look for QMAKESPEC
 		platform = os.environ['QMAKESPEC']
 	else:
-		return
+		print 'Using default values for Qt checks as QMAKESPEC is not defined, please define it to the proper value'
+		return '','4'
 	if env['ARGS'] and env['ARGS'].has_key('exceptions'):
 		exceptions = 1
 	else:
