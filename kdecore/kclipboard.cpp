@@ -65,11 +65,11 @@ public:
         else
             return 0L;
     }
-    
+
     virtual bool provides( const char *mimeType ) const {
         return ( m_formats.contains( mimeType ));
     }
-    
+
     virtual QByteArray encodedData( const char *format ) const
     {
         int index = m_formats.indexOf( format );
@@ -80,8 +80,8 @@ public:
     }
 
 private:
-    // This might be better as a QHash<QString, QByteArray>
-    mutable QStringList m_formats;
+    // This might be better as a QHash<QByteArray, QByteArray>
+    mutable QList<QByteArray> m_formats;
     mutable QList<QByteArray> m_data;
 };
 
