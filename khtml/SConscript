@@ -206,11 +206,11 @@ extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefacto
 
 """
 
-fulllibs = 'DCOP kdecore kdeui kjs kio kparts kjs_html kutils kde3support kwalletclient kdefx '
+fulllibs = 'DCOP kdecore kdeui kjs kio kparts kutils kde3support kwalletclient kdefx '
 if not env['WINDOWS']:
 	fulllibs += ' kdesu'
 
-fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ecma ../kdesu ../kdefx "
+fulllibpaths = "../dcop ../kdecore ../kdeui ../kjs ../kio ../kparts ../kutils ../kde3support ../kwallet/client ../kdesu ../kdefx"
 fulluselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KJAVA KPARTS THAI PNG JPEG'
 if env.has_key("CACHED_GIFLIB") and env['CACHED_GIFLIB']:
 	fulluselib += ' GIFLIB '
