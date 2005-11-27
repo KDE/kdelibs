@@ -33,6 +33,11 @@
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #endif
+#ifdef Q_WS_WIN
+#include <windows.h>
+#undef RELATIVE
+#undef ABSOLUTE
+#endif
 
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
