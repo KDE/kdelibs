@@ -60,7 +60,8 @@ obj.libpaths = "../kdecore ../kdeui ../kio ../kded ../dcop ../kdefx ../kdesu"
 # I know what you're thinking... kdeinit_kded? well, there *is* no libkded,
 # just "kded.so" or "kded.dylib" -- it's a loadable module, not an shlib,
 # we can't link against it -- kded needs rearranging but I'm not sure how
-obj.libs = "kdecore kdeui kio DCOP kdefx kdeinit_kded kdesu"
+# there appears to be a libkded now, so does this even apply anymore? (mattr)
+obj.libs = "kdecore kdeui kio DCOP kdefx kded kdesu"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KPARTS Z '
 obj.ccflags = '-DYY_NO_UNISTD_H -DKDE3_SUPPORT'
 if env['WINDOWS']:
@@ -74,7 +75,7 @@ obj.target = 'kded_kdeprintd'
 obj.source = kded_kdeprintd_sources
 obj.includes = includes
 obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kded ../kdefx"
-obj.libs = "kdecore kdeui kio DCOP kdefx kdeinit_kded"
+obj.libs = "kdecore kdeui kio DCOP kdefx kded"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
 if env['WINDOWS']:
 	obj.libpaths += " ../win"
