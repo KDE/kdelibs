@@ -92,4 +92,6 @@ if env['WINDOWS']:
 obj.iskdelib = 1
 obj.execute()
 
+env.Depends('libkdeui.so.6.0.2', '../kdefx/libkdefx.so')
+
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
