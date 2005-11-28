@@ -23,8 +23,8 @@ def generate(env):
 		env['CACHED_LIBBZ2'] = 0
 		if conf.CheckHeader('bzlib.h') and conf.CheckLib('bz2'):
 			env['CXXFLAGS_LIBBZ2'] = ['-DHAVE_LIBBZ2']
-			env['LIB_LIBBZ2'] = ['-lbz2']
-			env['CACHED_LIBBZ2'] = '1'
+			env['LIB_LIBBZ2'] = ['bz2']
+			env['CACHED_LIBBZ2'] = 1
 
 		dest=open(env.join(env['_BUILDDIR_'], 'config-bzip2.h'), 'w')
 		dest.write('/* bzip2 configuration created by bksys */\n')
