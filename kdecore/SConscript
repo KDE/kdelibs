@@ -52,6 +52,7 @@ network/kclientsocketbase.cpp
 network/kstreamsocket.cpp
 network/kbufferedsocket.cpp
 network/ksocketbuffer.cpp
+network/kserversocket.cpp
 """
 
 if not env['WINDOWS']:
@@ -60,7 +61,6 @@ kglobalaccel_x11.cpp
 ktoolinvocation_x11.cpp 
 ksocks.cpp netsupp.cpp netwm.cpp kpty.cpp
 kwin.cpp kwinmodule.cpp 
-network/kserversocket.cpp
 network/kdatagramsocket.cpp
 network/khttpproxysocketdevice.cpp
 network/ksockssocketdevice.cpp
