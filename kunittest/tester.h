@@ -338,6 +338,12 @@ using namespace std;
  */
 #define CHECK( x, y ) check( __FILE__, __LINE__, #x, x, y, false )
 
+/// for source-compat with qttestlib: use COMPARE(x,y) if you plan to port to qttestlib later.
+#define COMPARE CHECK
+
+/// for source-compat with qttestlib: use VERIFY(x) if you plan to port to qttestlib later.
+#define VERIFY( x ) CHECK( x, true )
+
 /*! @def XFAIL(x,y)
  * Use this macro to perform a check you expect to fail. For example
  *
