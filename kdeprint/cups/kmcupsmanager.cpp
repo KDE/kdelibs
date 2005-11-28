@@ -431,6 +431,9 @@ void KMCupsManager::loadServerPrinters()
 	keys.append("printer-is-accepting-jobs");
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
 
+	// filtering by username (hides printers user doesn't have allowance to use)
+	req.addName(IPP_TAG_OPERATION, "requesting-user-name", QString(cupsUser()));
+
 	if (req.doRequest("/printers/"))
 	{
 		processRequest(&req);
