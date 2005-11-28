@@ -246,6 +246,8 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
   if (state != newState) {
     state = newState;
 
+    ref();
+
     if (onReadyStateChangeListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("readystatechange", true, true);
@@ -257,6 +259,8 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       ev.initEvent("load", true, true);
       onLoadListener->handleEvent(ev);
     }
+
+    deref();
   }
 }
 
