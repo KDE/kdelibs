@@ -238,6 +238,8 @@
 <!ENTITY Stephan.Kulow '<personname><firstname>Stephan</firstname><surname>Kulow</surname></personname>'>
 <!ENTITY Stephan.Kulow.mail '<email>coolo@kde.org</email>'>
 
+<!ENTITY Raphael.Langerhorst '<personname><firstname>Raphael</firstname><surname>Langerhorst</surname></personname>'>
+<!ENTITY Raphael.Langerhorst.mail '<email>raphael.langerhorst@kdemail.net</email>'>
 <!ENTITY Brian.C.Ledbetter '<personname><firstname>Brian</firstname><othername>C.</othername><surname>Ledbetter</surname></personname>'>
 <!ENTITY Brian.C.Ledbetter.mail '<email>brian@shadowcom.net</email>'>
 <!ENTITY James.Lindenschmidt '<personname><firstname>James</firstname><surname>Lindenschmidt</surname></personname>'>
