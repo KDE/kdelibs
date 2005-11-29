@@ -83,7 +83,7 @@ fi
 
 KDE_CHECK_HEADERS([netinet/in.h net/if.h],,,[$netincludes])
 KDE_CHECK_HEADERS([sys/filio.h])
-AC_CHECK_FUNCS([usleep poll])
+AC_CHECK_FUNCS([usleep poll madvise])
 
 dnl Check for struct addrinfo
 AC_CHECK_TYPES([struct addrinfo],,,[$netincludes])
