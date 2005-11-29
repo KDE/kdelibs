@@ -99,6 +99,7 @@ kjs
 khtml
 kde3support
 kcert
+kconf_update
 """
 
 # currently not on windows 

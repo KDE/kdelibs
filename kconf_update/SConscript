@@ -1,0 +1,20 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kconf_update_sources = """
+kconf_update.cpp
+"""
+
+includes = '../kded '
+
+obj = env.kdeinitobj(env)
+obj.target   = 'kconf_update'
+obj.source = kconf_update_sources
+obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4 KDECORE KDEUI'
+obj.libpaths = "../kdecore ../kdeui ../dcop ../kdefx"
+obj.libs     = 'kdecore kdeui kdefx DCOP'
+obj.instdir  = env['KDEBIN']
+obj.includes = includes
+obj.execute()
+
