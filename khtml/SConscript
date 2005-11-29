@@ -250,6 +250,7 @@ elif env['WINDOWS']:
 else:
 	env.Depends('libkhtml.so.6.0.2', '../kjs/libkjs.so')
 	env.Depends('libkhtml.so.6.0.2', '../kparts/libkparts.so')
+	env.Depends('khtmlimagepart.so', 'libkhtml.so')
 
 obj = env.kdeobj('module')
 obj.target = 'khtmlpart'
@@ -257,7 +258,7 @@ obj.source = libkhtmlpart_sources
 obj.includes = includes
 obj.libs = 'khtml ' + fulllibs
 obj.uselib = fulluselib
-obj.libpaths = fulllibpaths
+obj.libpaths = '. ' + fulllibpaths
 obj.execute()
 
 obj = env.kdeobj('module')
@@ -266,7 +267,7 @@ obj.source = khtmlimagepart_sources
 obj.includes = includes
 obj.libs = 'khtml ' + fulllibs
 obj.uselib = fulluselib
-obj.libpaths = fulllibpaths
+obj.libpaths = '. ' + fulllibpaths
 obj.execute()
 
 
