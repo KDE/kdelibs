@@ -294,7 +294,6 @@ namespace KUnitTest
         if ( 0 < (numFail - numXFail) ) {
         cout << "    Unexpected failure" << ( ( 1 == numFail )?"":"s") << ":" << endl;
         QStringList list = errorList;
-        qDebug( "errorList size: %d", list.count() );
         for ( QStringList::Iterator itr = list.begin(); itr != list.end(); ++itr ) {
             cout << "\t" << (*itr).latin1() << endl;
         }
