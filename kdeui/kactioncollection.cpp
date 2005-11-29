@@ -300,32 +300,26 @@ const KAccel* KActionCollection::kaccel() const
   return d->m_kaccel;
 }
 
-/*void KActionCollection::findMainWindow( QWidget *w )
+// Return the key to use in d->m_actionDict for the given action.
+// Usually name(), except when unnamed.
+static QByteArray actionDictKey( KAction* action )
 {
-  // Note: topLevelWidget() stops too early, we can't use it.
-  QWidget * tl = w;
-  while ( tl->parentWidget() ) // lookup parent and store
-    tl = tl->parentWidget();
-
-  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
-  if (mw)
-    d->m_mainwindow = mw;
-  else
-    kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
-}*/
+  const QString name = action->objectName();
+  if( name.isEmpty() )
+  {
+     char unnamed_name[100];
+     sprintf(unnamed_name, "unnamed-%p", (void *)action);
+     return QByteArray(unnamed_name);
+  }
+  return name.toUtf8();
+}
 
 void KActionCollection::_insert( KAction* action )
 {
   if (!action)
     return;
 
-  char unnamed_name[100];
-  QByteArray name = action->objectName().toLatin1();
-  if( action->objectName().isEmpty() )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *)action);
-     name = QByteArray(unnamed_name);
-  }
+  QByteArray name = actionDictKey( action );
 
   // look if we already have THIS action under THIS name ;)
   QHash<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name);
@@ -345,7 +339,20 @@ void KActionCollection::_insert( KAction* action )
 
 void KActionCollection::_remove( KAction* action )
 {
-  delete _take( action );
+  if (!action)
+    return;
+
+  QByteArray name = actionDictKey( action );
+
+  KAction *a = d->m_actionDict.take( name );
+  if ( !a || a != action )
+    return;
+
+  emit removed( action );
+
+  // note that we delete the action without its parent collection set to 0.
+  // This triggers kaccel::remove, to remove any shortcut.
+  delete a;
 }
 
 KAction* KActionCollection::_take( KAction* action )
@@ -353,13 +360,7 @@ KAction* KActionCollection::_take( KAction* action )
   if (!action)
     return 0;
 
-  char unnamed_name[100];
-  QByteArray name = action->objectName().toLatin1();
-  if( action->objectName().isEmpty() )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *) action);
-     name = QByteArray(unnamed_name);
-  }
+  QByteArray name = actionDictKey( action );
 
   KAction *a = d->m_actionDict.take( name );
   if ( !a || a != action )
@@ -369,6 +370,7 @@ KAction* KActionCollection::_take( KAction* action )
       a->m_parentCollection = 0;
 
   emit removed( action );
+
   return a;
 }
 
