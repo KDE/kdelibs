@@ -297,29 +297,23 @@ const KAccel* KActionCollection::kaccel() const
   return d->m_kaccel;
 }
 
-/*void KActionCollection::findMainWindow( QWidget *w )
+// Return the key to use in d->m_actionDict for the given action.
+// Usually name(), except when unnamed.
+static const char* actionDictKey( KAction* action, char* buffer )
 {
-  // Note: topLevelWidget() stops too early, we can't use it.
-  QWidget * tl = w;
-  while ( tl->parentWidget() ) // lookup parent and store
-    tl = tl->parentWidget();
-
-  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
-  if (mw)
-    d->m_mainwindow = mw;
-  else
-    kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
-}*/
+  const char* name = action->name();
+  if( !qstrcmp( name, "unnamed" ) )
+  {
+     sprintf(buffer, "unnamed-%p", (void *)action);
+     return buffer;
+  }
+  return name;
+}
 
 void KActionCollection::_insert( KAction* action )
 {
   char unnamed_name[100];
-  const char *name = action->name();
-  if( !qstrcmp( name, "unnamed" ) )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *)action);
-     name = unnamed_name;
-  }
+  const char *name = actionDictKey( action, unnamed_name );
   KAction *a = d->m_actionDict[ name ];
   if ( a == action )
       return;
@@ -331,18 +325,23 @@ void KActionCollection::_insert( KAction* action )
 
 void KActionCollection::_remove( KAction* action )
 {
-  delete _take( action );
+  char unnamed_name[100];
+  const char *name = actionDictKey( action, unnamed_name );
+
+  KAction *a = d->m_actionDict.take( name );
+  if ( !a || a != action )
+      return;
+
+  emit removed( action );
+  // note that we delete the action without its parent collection set to 0.
+  // This triggers kaccel::remove, to remove any shortcut.
+  delete a;
 }
 
 KAction* KActionCollection::_take( KAction* action )
 {
   char unnamed_name[100];
-  const char *name = action->name();
-  if( !qstrcmp( name, "unnamed" ) )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *) action);
-     name = unnamed_name;
-  }
+  const char *name = actionDictKey( action, unnamed_name );
 
   KAction *a = d->m_actionDict.take( name );
   if ( !a || a != action )
@@ -352,6 +351,7 @@ KAction* KActionCollection::_take( KAction* action )
       a->m_parentCollection = 0;
 
   emit removed( action );
+
   return a;
 }
 
