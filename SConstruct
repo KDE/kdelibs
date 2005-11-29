@@ -98,6 +98,7 @@ kutils
 kjs
 khtml
 kde3support
+kcert
 """
 
 # currently not on windows 

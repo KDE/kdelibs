@@ -1,0 +1,25 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kcertpart_sources = """
+kcertpart.cc
+"""
+
+includes = '#/kio/kssl #/kio/kssl SSL_INCLUDES '
+
+obj = env.kdeobj('module')
+obj.target = 'kcertpart'
+obj.source = kcertpart_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.execute()
+
+env.bksys_insttype('KDESERV', '', 'kcertpart.desktop')
+
+env.bksys_insttype('KDEDATA', 'kcertpart', 'kcertpart.rc')
+
+
+"""Unhandled Defines 
+libkcertpart_la_DEPENDENCIES = $(LIB_KPARTS)
+"""
