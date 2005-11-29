@@ -100,6 +100,7 @@ khtml
 kde3support
 kcert
 kconf_update
+kresources
 """
 
 # currently not on windows 
