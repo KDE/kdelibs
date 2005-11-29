@@ -337,8 +337,10 @@ public:
    * Since the KAction destructor removes the action from the collection, you generally
    * don't have to call this.
    * @param action The KAction to remove.
+   *
+   * @deprecated just delete the action instead
    */
-  void remove( KAction* action );
+  void remove( KAction* action ) KDE_DEPRECATED;
 
   /**
    * Removes an action from the collection.
