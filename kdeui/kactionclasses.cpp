@@ -640,7 +640,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KSelectAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( ::qt_cast<QPopupMenu *>( widget) )
   {
     // Create the PopupMenu and store it in m_menu
@@ -1100,7 +1100,7 @@ void KRecentFilesAction::addURL( const KURL& url )
        return;
     QString     file = url.pathOrURL();
     QStringList lst = KSelectAction::items();
-    KURL u = url; //make a copy (increase the reference counter?). 
+    KURL u = url; //make a copy (increase the reference counter?).
                   //Otherwise after d->m_urls.erase( title ) the url will be empty...
 
     // remove file if already in list
@@ -1139,7 +1139,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
-    KURL u = url; //make a copy (increase the reference counter?). 
+    KURL u = url; //make a copy (increase the reference counter?).
                   //Otherwise after d->m_urls.erase( title ) the url will be empty...
     QString     file = url.pathOrURL();
     QStringList lst = KSelectAction::items();
@@ -1209,7 +1209,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     QString     nameKey;
     QString     nameValue;
     QString      title;
-    QString     oldGroup;    
+    QString     oldGroup;
     QStringList lst;
     KURL        url;
 
@@ -1259,7 +1259,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     // write file list
     for( unsigned int i = 1 ; i <= lst.count() ; i++ )
     {
-        kdDebug(129) << "Entry for " << lst[i-1] << d->m_urls[ lst[ i - 1 ] ] << endl;
+        //kdDebug(129) << "Entry for " << lst[i-1] << d->m_urls[ lst[ i - 1 ] ] << endl;
         key = QString( "File%1" ).arg( i );
         value = d->m_urls[ lst[ i - 1 ] ].pathOrURL();
         config->writePathEntry( key, value );
@@ -1804,7 +1804,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KActionMenu::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( ::qt_cast<QPopupMenu *>( widget ) )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
