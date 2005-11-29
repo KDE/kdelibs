@@ -639,7 +639,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 {
   if (!KAuthorized::authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KSelectAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<QMenu*>( widget) )
   {
     // Create the PopupMenu and store it in m_menu
@@ -1745,7 +1745,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 {
   if (!KAuthorized::authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KActionMenu::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<QMenu*>( widget ) )
   {
     QMenu* menu = static_cast<QMenu*>( widget );
