@@ -1,0 +1,40 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+test_filter_sources = """
+test_filter.cpp
+"""
+
+backgroundtest_sources = """
+backgroundtest.cpp
+"""
+
+test_highlighter_sources = """
+test_highlighter.cpp
+"""
+
+test_configdialog_sources = """
+test_configdialog.cpp
+"""
+
+test_sources = """
+test.cpp
+"""
+
+test_dialog_sources = """
+test_dialog.cpp
+"""
+
+
+"""Unhandled Defines 
+AM_CPPFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT -I$(top_srcdir)/kspell2 -I$(top_srcdir)/kspell2/ui $(all_includes)
+test_config_SOURCES = test_config.cpp
+backgroundtest_LDADD = ../ui/libkspell2.la $(LIB_KDECORE)
+test_configdialog_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)
+test_highlighter_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)
+test_filter_LDADD = ../ui/libkspell2.la $(LIB_KDECORE)
+test_dialog_LDADD = ../ui/libkspell2.la $(LIB_KDECORE)
+test_config_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)
+test_LDADD = ../ui/libkspell2.la $(LIB_KDECORE)
+"""

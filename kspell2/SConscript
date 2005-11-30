@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('ui tests plugins kcmspellchecking')
+
+kspell2base_sources = """
+backgroundchecker.cpp backgroundengine.cpp backgroundthread.cpp broker.cpp
+client.cpp defaultdictionary.cpp filter.cpp settings.cpp
+"""
+
+kspell2baseinclude_headers = """
+backgroundchecker.h broker.h defaultdictionary.h dictionary.h
+filter.h settings.h
+"""
+
+obj = env.kdeobj('convenience')
+obj.target = 'kspell2base'
+obj.source = kspell2base_sources
+obj.libpaths = '../kutils '
+obj.libs = 'kutils '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.includes = '#/kspell2 #/kutils '
+obj.execute()
+
+env.bksys_insttype('KDESERVTYPES', '', 'kspellclient.desktop')
+
+includes = '#/kspell2 #/kutils '
+
+
+"""Unhandled Defines 
+AM_CPPFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT -I$(top_srcdir)/kutils $(all_includes)
+kspell2baseincludedir = $(includedir)/kspell2
+"""

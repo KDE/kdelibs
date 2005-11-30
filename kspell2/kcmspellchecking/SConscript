@@ -1,0 +1,25 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kcm_spellchecking_sources = """
+spellchecking.cpp
+"""
+
+obj = env.kdeobj('module')
+obj.target = 'kcm_spellchecking'
+obj.source = kcm_spellchecking_sources
+obj.libpaths = '.. '
+obj.libs = 'kspell2base '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI KDECORE '
+obj.execute()
+
+
+"""Unhandled Defines 
+METASOURCES = spellchecking.moc
+AM_CPPFLAGS = $(all_includes)
+"""
+
+"""Unhandled Targets 
+messages = ###$(XGETTEXT) $(kcm_spellchecking_la_SOURCES) -o $(podir)/kcmspellchecking.pot
+"""

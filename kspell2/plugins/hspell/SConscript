@@ -1,0 +1,23 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kspell_hspell_sources = """
+kspell_hspellclient.cpp kspell_hspelldict.cpp
+"""
+
+obj = env.kdeobj('module')
+obj.target = 'kspell_hspell'
+obj.source = kspell_hspell_sources
+obj.libpaths = '../../ui '
+obj.libs = 'kspell2 -lhspell -lz '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDESERV', '', 'kspell_hspell.desktop')
+
+
+"""Unhandled Defines 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/kspell2 -I$(top_srcdir) $(all_includes)
+"""
