@@ -41,10 +41,10 @@ QPoint mkPoint( const QString &str )
 {
     const char *s = str.latin1();
     char *end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int x = strtol(s, &end, 10);
     s = (const char *)end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int y = strtol(s, &end, 10);
     return QPoint( x, y );
 }
@@ -53,10 +53,10 @@ QSize mkSize( const QString &str )
 {
     const char *s = str.latin1();
     char *end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int w = strtol(s, &end, 10);
     s = (const char *)end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int h = strtol(s, &end, 10);
     return QSize( w, h );
 }
@@ -65,17 +65,17 @@ QRect mkRect( const QString &str )
 {
     const char *s = str.latin1();
     char *end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int p1 = strtol(s, &end, 10);
     s = (const char *)end;
     bool legacy = (*s == 'x');
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int p2 = strtol(s, &end, 10);
     s = (const char *)end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int p3 = strtol(s, &end, 10);
     s = (const char *)end;
-    while(*s && !isdigit(*s)) s++;
+    while(*s && !isdigit(*s) && *s != '-') s++;
     int p4 = strtol(s, &end, 10);
     if (legacy)
     {
