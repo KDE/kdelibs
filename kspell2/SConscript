@@ -14,18 +14,18 @@ backgroundchecker.h broker.h defaultdictionary.h dictionary.h
 filter.h settings.h
 """
 
+includes = '#/kspell2 #/kutils '
 obj = env.kdeobj('convenience')
 obj.target = 'kspell2base'
 obj.source = kspell2base_sources
 obj.libpaths = '../kutils '
-obj.libs = 'kutils '
+obj.libs = 'kutils kdecore kdeui kdefx DCOP '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.includes = '#/kspell2 #/kutils '
+obj.includes = includes
 obj.execute()
 
 env.bksys_insttype('KDESERVTYPES', '', 'kspellclient.desktop')
 
-includes = '#/kspell2 #/kutils '
 
 
 """Unhandled Defines 

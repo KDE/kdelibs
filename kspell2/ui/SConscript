@@ -17,13 +17,16 @@ configdialog.h configwidget.h dialog.h highlighter.h
 
 includes = '#/kspell2 '
 
+
 obj = env.kdeobj('convenience')
 obj.target = 'kspell2_noinst'
 obj.source = kspell2_noinst_sources
 obj.includes = includes
+obj.libs = 'kdecore kdeui kdefx DCOP '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
+env.Depends('libkspell2.so.1.0.0', 'libkspell2_noinst.a')
 
 obj = env.kdeobj('shlib')
 obj.target = 'kspell2'
@@ -31,7 +34,7 @@ obj.vnum = '1.0.0'
 obj.source = kspell2_sources
 obj.includes = includes
 obj.libpaths = '.. '
-obj.libs = 'kspell2_noinst kspell2base '
+obj.libs = 'kdecore kdeui kdefx DCOP libkspell2_noinst.a kspell2base '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
