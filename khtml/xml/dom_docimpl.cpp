@@ -846,6 +846,9 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_OBJECT:
         n = new HTMLObjectElementImpl(docPtr());
         break;
+    case ID_EMBED:
+        n = new HTMLEmbedElementImpl(docPtr());
+        break;
     case ID_PARAM:
         n = new HTMLParamElementImpl(docPtr());
         break;
