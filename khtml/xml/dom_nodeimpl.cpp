@@ -624,6 +624,7 @@ void NodeImpl::dispatchUIEvent(int _id, int detail)
 void NodeImpl::dispatchSubtreeModifiedEvent()
 {
     childrenChanged();
+    getDocument()->incDOMTreeVersion();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
         return;
     int exceptioncode = 0;
