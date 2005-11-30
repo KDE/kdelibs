@@ -25,8 +25,8 @@ for appname in check_PROGRAMS.split():
 	obj.target   = appname
 	obj.source   = appname + '.cpp'
 	obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
-	obj.libpaths = '.. ../../kdeui ../../kdecore ../../kdesu ../../dcop ../../qttestlib #/kio ../../kdefx'
-	obj.libs     = 'kio kdeui kdecore DCOP QtTest kdefx'
+	obj.libpaths = '.. ../../kdeui ../../kdecore ../../kdesu ../../dcop ../../qttestlib #/kio ../../kdefx ../../kwallet/client'
+	obj.libs     = 'kio kdeui kdecore DCOP QtTest kdefx kwalletclient'
 	obj.includes = '. .. ../kssl ../bookmarks ../kfile ../kio ../misc ../../kdecore ../../kdefx ../../qttestlib '
 	if env['WINDOWS']:
 		obj.libs     += ' kdewin32 ws2_32'
