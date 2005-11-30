@@ -24,7 +24,7 @@ class KDirWatchPrivate : public QObject
 public:
 
   enum entryStatus { Normal = 0, NonExistent };
-  enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, FAMMode };
+  enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, INotifyMode, FAMMode };
   enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
 
   struct Client {
@@ -68,6 +68,9 @@ public:
 
 #ifdef HAVE_DNOTIFY
     int dn_fd;
+#endif
+#ifdef HAVE_INOTIFY
+    int wd;
 #endif
   };
 
@@ -129,15 +132,25 @@ public:
   bool useFAM(Entry*);
 #endif
 
+#if defined(HAVE_DNOTIFY) || defined(HAVE_INOTIFY)
+   QSocketNotifier *mSn;
+#endif
+
 #ifdef HAVE_DNOTIFY
   bool supports_dnotify;
   int mPipe[2];
-  QSocketNotifier *mSn;
   QIntDict<Entry> fd_Entry;
 
   static void dnotify_handler(int, siginfo_t *si, void *);
   static void dnotify_sigio_handler(int, siginfo_t *si, void *);
   bool useDNotify(Entry*);
+#endif
+
+#ifdef HAVE_INOTIFY
+  bool supports_inotify;
+  int m_inotify_fd;
+
+  bool useINotify(Entry*);
 #endif
 };
 

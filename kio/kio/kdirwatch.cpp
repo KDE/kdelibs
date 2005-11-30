@@ -19,6 +19,7 @@
 
 
 // CHANGES:
+// Oct 4,  2005 - Inotify support (Dirk Mueller)
 // Februar 2002 - Add file watching and remote mount check for STAT
 // Mar 30, 2001 - Native support for Linux dir change notification.
 // Jan 28, 2000 - Usage of FAM service on IRIX (Josef.Weidendorfer@in.tum.de)
@@ -32,6 +33,7 @@
 
 
 #include <config.h>
+#include <errno.h>
 
 #ifdef HAVE_DNOTIFY
 #include <unistd.h>
@@ -40,6 +42,7 @@
 #include <signal.h>
 #include <errno.h>
 #endif
+
 
 #include <sys/stat.h>
 #include <assert.h>
@@ -57,6 +60,35 @@
 #include <kglobal.h>
 #include <kstaticdeleter.h>
 #include <kde_file.h>
+
+// debug
+#include <sys/ioctl.h>
+
+#ifdef HAVE_INOTIFY
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/syscall.h>
+#include <linux/types.h>
+// Linux kernel headers are documented to not compile
+#define _S390_BITOPS_H
+#include <linux/inotify.h>
+
+static inline int inotify_init (void)
+{
+  return syscall (__NR_inotify_init);
+}
+
+static inline int inotify_add_watch (int fd, const char *name, __u32 mask)
+{
+  return syscall (__NR_inotify_add_watch, fd, name, mask);
+}
+
+static inline int inotify_rm_watch (int fd, __u32 wd)
+{
+  return syscall (__NR_inotify_rm_watch, fd, wd);
+}
+
+#endif
 
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
@@ -93,9 +125,7 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 //  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
 //		<< QString(e ? e->path:"unknown") << endl;
 
-  if(!e || e->dn_fd != si->si_fd) {
-    qDebug("fatal error in KDirWatch");
-  } else
+  if(e && e->dn_fd == si->si_fd)
     e->dirty = true;
 
   char c = 0;
@@ -165,6 +195,10 @@ void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
  *   introduced. By opening a directory, you can request for
  *   UNIX signals to be sent to the process when a directory
  *   is changed.
+ * - INOTIFY: In LINUX 2.6.13, inode change notification was
+ *   introduced. You're now able to watch arbitrary inode's
+ *   for changes, and even get notification when they're
+ *   unmounted.
  */
 
 KDirWatchPrivate::KDirWatchPrivate()
@@ -202,8 +236,46 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 #endif
 
+#ifdef HAVE_INOTIFY
+  supports_inotify = true;
+
+  m_inotify_fd = inotify_init();
+
+  if ( m_inotify_fd <= 0 ) {
+    kdDebug(7001) << "Can't use Inotify, kernel doesn't support it" << endl;
+    supports_inotify = false;
+  }
+
+  if ( supports_inotify ) {
+    int wd = inotify_add_watch ( m_inotify_fd, "/", 0x800 );
+    if (wd > 0) {
+      inotify_rm_watch( m_inotify_fd, wd );
+      available += ", INotify";
+
+      fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
+
+      mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
+      connect( mSn, SIGNAL(activated( int )), this, SLOT( slotActivated() ) );
+    }
+    else {
+      kdDebug(7001) << "kernel too old for inotify" << endl;
+      supports_inotify = false;
+      close(m_inotify_fd);
+      m_inotify_fd = -1;
+    }
+  }
+#endif
+
 #ifdef HAVE_DNOTIFY
-  supports_dnotify = true; // not guilty until proven guilty
+
+  // if we have inotify, disable dnotify.
+#ifdef HAVE_INOTIFY
+  supports_dnotify = !supports_inotify;
+#else
+  // otherwise, not guilty until proven guilty.
+  supports_dnotify = true;
+#endif
+
   struct utsname uts;
   int major, minor, patch;
   if (uname(&uts) < 0)
@@ -267,20 +339,117 @@ KDirWatchPrivate::~KDirWatchPrivate()
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
+#ifdef HAVE_INOTIFY
+  if ( supports_inotify )
+    ::close( m_inotify_fd );
+#endif
 #ifdef HAVE_DNOTIFY
   close(mPipe[0]);
   close(mPipe[1]);
 #endif
 }
 
+#include <stdlib.h>
+
 void KDirWatchPrivate::slotActivated()
 {
 #ifdef HAVE_DNOTIFY
-   char dummy_buf[4096];
-   read(mPipe[0], &dummy_buf, 4096);
+  if ( supports_dnotify )
+  {
+    char dummy_buf[4096];
+    read(mPipe[0], &dummy_buf, 4096);
 
-   if (!rescan_timer.isActive())
-      rescan_timer.start(m_PollInterval, true);
+    if (!rescan_timer.isActive())
+      rescan_timer.start(m_PollInterval, true /* singleshot */);
+
+    return;
+  }
+#endif
+
+#ifdef HAVE_INOTIFY
+  if ( !supports_inotify )
+    return;
+
+  int pending = -1;
+  int offset = 0;
+  char buf[4096];
+  assert( m_inotify_fd > -1 );
+  ioctl( m_inotify_fd, FIONREAD, &pending );
+
+  while ( pending > 0 ) {
+
+    if ( pending > (int)sizeof( buf ) )
+      pending = sizeof( buf );
+
+    pending = read( m_inotify_fd, buf, pending);
+
+    while ( pending > 0 ) {
+      struct inotify_event *event = (struct inotify_event *) &buf[offset];
+      pending -= sizeof( struct inotify_event ) + event->len;
+      offset += sizeof( struct inotify_event ) + event->len;
+
+      QString path;
+      if ( event->len )
+        path = QFile::decodeName( QCString( event->name, event->len ) );
+
+      if ( event->mask & IN_IGNORED )
+        continue;
+
+      if ( path.length() && isNoisyFile( path.latin1() ) )
+        continue;
+
+      kdDebug() << "ev wd: " << event->wd << " mask " << event->mask << " path: " << path << endl;
+
+      // now we're in deep trouble of finding the
+      // associated entries
+      // for now, we suck and iterate
+      for ( EntryMap::Iterator it = m_mapEntries.begin();
+            it != m_mapEntries.end(); ++it ) {
+        Entry* e = &( *it );
+        if ( e->wd == event->wd ) {
+          e->dirty = true;
+
+          if ( 1 || e->isDir) {
+            if( event->mask & IN_DELETE_SELF) {
+              kdDebug() << "-->got deleteself signal for " << e->path << endl;
+              e->m_status = NonExistent;
+              (void) inotify_rm_watch( m_inotify_fd, e->wd );
+              addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+            }
+            if ( event->mask & IN_CREATE ) {
+              kdDebug() << "-->got create subfile signal for " << e->path << endl;
+
+              Entry *sub_entry = e->m_entries.first();
+              for(;sub_entry; sub_entry = e->m_entries.next())
+                if (sub_entry->path == e->path + "/" + path) break;
+
+              if (sub_entry /*&& sub_entry->isDir*/) {
+                removeEntry(0,e->path, sub_entry);
+                KDE_struct_stat stat_buf;
+                QCString tpath = QFile::encodeName(path);
+                KDE_stat(tpath, &stat_buf);
+
+                //sub_entry->isDir = S_ISDIR(stat_buf.st_mode);
+                //sub_entry->m_ctime = stat_buf.st_ctime;
+                //sub_entry->m_status = Normal;
+                //sub_entry->m_nlink = stat_buf.st_nlink;
+
+                if(!useINotify(sub_entry))
+                  useStat(sub_entry);
+                sub_entry->dirty = true;
+              }
+            }
+          }
+
+          if (!rescan_timer.isActive())
+            rescan_timer.start(m_PollInterval, true /* singleshot */);
+
+          break; // there really should be only one matching wd
+        }
+      }
+
+    }
+  }
 #endif
 }
 
@@ -385,7 +554,7 @@ void KDirWatchPrivate::useFreq(Entry* e, int newFreq)
 }
 
 
-#if defined(HAVE_FAM)
+#ifdef HAVE_FAM
 // setup FAM notification, returns false if not possible
 bool KDirWatchPrivate::useFAM(Entry* e)
 {
@@ -517,6 +686,40 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 }
 #endif
 
+#ifdef HAVE_INOTIFY
+// setup INotify notification, returns false if not possible
+bool KDirWatchPrivate::useINotify( Entry* e )
+{
+  e->wd = 0;
+  e->dirty = false;
+  if (!supports_inotify) return false;
+
+  e->m_mode = INotifyMode;
+
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800;
+  if(!e->isDir)
+    mask |= IN_MODIFY|IN_ATTRIB;
+  // if dependant is a file watch, we check for MODIFY & ATTRIB too
+  for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next()) {
+    if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
+  }
+
+  if ( ( e->wd = inotify_add_watch( m_inotify_fd,
+        QFile::encodeName( e->path ), mask) ) > 0 )
+  {
+    kdDebug(7001) << "** inotify watching " << e->path << " " << e->wd << endl;
+    return true;
+  } else
+    kdDebug(7001) << "** inotify failed " << e->path << " " << errno << endl;
+
+  if ( e->m_status == NonExistent ) {
+    addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+    return true;
+  }
+
+  return false;
+}
+#endif
 
 bool KDirWatchPrivate::useStat(Entry* e)
 {
@@ -606,9 +809,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir)
-      qWarning("KDirWatch: %s is a directory. Use addDir!", path.ascii());
+      kdWarning() << "KDirWatch: " << path << " is a directory. Use addDir!" << endl;
     else if (!e->isDir && isDir)
-      qWarning("KDirWatch: %s is a file. Use addFile!", path.ascii());
+      kdWarning() << "KDirWatch: " << path << " is a file. Use addFile!" << endl;
 
     e->m_ctime = stat_buf.st_ctime;
     e->m_status = Normal;
@@ -641,8 +844,12 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   if ( isNoisyFile( tpath ) )
     return;
 
-#if defined(HAVE_FAM)
+#ifdef HAVE_FAM
   if (useFAM(e)) return;
+#endif
+
+#ifdef HAVE_INOTIFY
+  if (useINotify(e)) return;
 #endif
 
 #ifdef HAVE_DNOTIFY
@@ -667,13 +874,15 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   else
     e->removeClient(instance);
 
-  if (e->m_clients.count() || e->m_entries.count())
+  if (e->m_clients.count() || e->m_entries.count()) {
+    kdDebug(7001) << "removeEntry: unwatched " << e->path << " " << _path << endl;
     return;
+  }
 
   if (delayRemove) {
     // removeList is allowed to contain any entry at most once
     if (removeList.findRef(e)==-1)
-    removeList.append(e);
+      removeList.append(e);
     // now e->isValid() is false
     return;
   }
@@ -692,6 +901,20 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
       else
 	removeEntry(0, QFileInfo(e->path).dirPath(true), e);
     }
+  }
+#endif
+
+#ifdef HAVE_INOTIFY
+  kdDebug() << "inotify remove " << ( e->m_mode == INotifyMode ) << " " << ( e->m_status == Normal )  << endl;
+  if (e->m_mode == INotifyMode) {
+    if ( e->m_status == Normal ) {
+      (void) inotify_rm_watch( m_inotify_fd, e->wd );
+      kdDebug(7001) << "Cancelled INotify (fd " <<
+        m_inotify_fd << ", "  << e->wd <<
+        ") for " << e->path << endl;
+    }
+    else
+      removeEntry( 0, QDir::cleanDirPath( e->path+"/.." ), e );
   }
 #endif
 
@@ -787,6 +1010,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
   if (stillWatching == 0) {
     // if nobody is interested, we don't watch
     e->m_ctime = invalid_ctime; // invalid
+    e->m_status = NonExistent;
     //    e->m_status = Normal;
   }
   return true;
@@ -890,8 +1114,9 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   // Shouldn't happen: Ignore "unknown" notification method
   if (e->m_mode == UnknownMode) return NoChange;
 
-#ifdef HAVE_DNOTIFY
-  if (e->m_mode == DNotifyMode) {
+#if defined ( HAVE_DNOTIFY ) || defined( HAVE_INOTIFY )
+  if (e->m_mode == DNotifyMode || e->m_mode == INotifyMode ) {
+    kdDebug(7001) << "scanning " << e->path << " " << e->dirty << " " << e->m_status << " " << e->m_ctime << endl;
     // we know nothing has changed, no need to stat
     if(!e->dirty) return NoChange;
     e->dirty = false;
@@ -910,6 +1135,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
   KDE_struct_stat stat_buf;
   bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
+  kdDebug(7001) << "exists " << e->path << " " << exists << endl;
   if (exists) {
 
     if (e->m_status == NonExistent) {
@@ -927,13 +1153,25 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       return Changed;
     }
 
+#ifdef HAVE_INOTIFY
+    // for inotify we delay the initial stating till the first event in it
+    if ( e->m_status == Normal && e->m_ctime == invalid_ctime )
+    {
+      e->m_ctime = stat_buf.st_ctime;
+      e->m_nlink = stat_buf.st_nlink;
+    }
+#endif
+
     return NoChange;
   }
 
   // dir/file doesn't exist
 
-  if (e->m_ctime == invalid_ctime)
+  if (e->m_ctime == invalid_ctime && e->m_status == NonExistent) {
+    e->m_nlink = 0;
+    e->m_status = NonExistent;
     return NoChange;
+  }
 
   e->m_ctime = invalid_ctime;
   e->m_nlink = 0;
@@ -1040,7 +1278,7 @@ void KDirWatchPrivate::slotRescan()
     // progate dirty flag to dependant entries (e.g. file watches)
     it = m_mapEntries.begin();
     for( ; it != m_mapEntries.end(); ++it )
-      if ( ((*it).m_mode == DNotifyMode) && (*it).dirty )
+      if (((*it).m_mode == INotifyMode || (*it).m_mode == DNotifyMode) && (*it).dirty )
         (*it).propagate_dirty();
   }
 
@@ -1050,6 +1288,7 @@ void KDirWatchPrivate::slotRescan()
     if (!(*it).isValid()) continue;
 
     int ev = scanEntry( &(*it) );
+    kdDebug(7001) << "ev " << ( *it ).path << " " << ev << endl;
 
 #ifdef HAVE_DNOTIFY
     if ((*it).m_mode == DNotifyMode) {
@@ -1132,6 +1371,9 @@ void KDirWatchPrivate::famEventReceived()
       it = m_mapEntries.begin();
       for( ; it != m_mapEntries.end(); ++it )
 	if ((*it).m_mode == FAMMode && (*it).m_clients.count()>0) {
+#ifdef HAVE_INOTIFY
+	  if (useINotify( &(*it) )) continue;
+#endif
 #ifdef HAVE_DNOTIFY
 	  if (useDNotify( &(*it) )) continue;
 #endif
@@ -1228,7 +1470,10 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
             removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
             sub_entry->m_status = Normal;
             if (!useFAM(sub_entry))
-              useStat(sub_entry);
+#ifdef HAVE_INOTIFY
+              if (!useINotify(sub_entry ))
+#endif
+                useStat(sub_entry);
           }
           break;
         }
@@ -1258,6 +1503,7 @@ void KDirWatchPrivate::statistics()
 		    << ((e->m_status==Normal)?"":"Nonexistent ")
 		    << (e->isDir ? "Dir":"File") << ", using "
 		    << ((e->m_mode == FAMMode) ? "FAM" :
+                        (e->m_mode == INotifyMode) ? "INotify" :
 			(e->m_mode == DNotifyMode) ? "DNotify" :
 			(e->m_mode == StatMode) ? "Stat" : "Unknown Method")
 		    << ")" << endl;
@@ -1454,11 +1700,15 @@ KDirWatch::Method KDirWatch::internalMethod()
 {
 #ifdef HAVE_FAM
   if (d->use_fam)
-     return KDirWatch::FAM;
+    return KDirWatch::FAM;
+#endif
+#ifdef HAVE_INOTIFY
+  if (d->supports_inotify)
+    return KDirWatch::INotify;
 #endif
 #ifdef HAVE_DNOTIFY
   if (d->supports_dnotify)
-     return KDirWatch::DNotify;
+    return KDirWatch::DNotify;
 #endif
   return KDirWatch::Stat;
 }
