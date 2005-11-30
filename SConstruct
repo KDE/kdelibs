@@ -98,6 +98,7 @@ kutils
 kjs
 khtml
 kde3support
+kcmshell
 kcert
 kconf_update
 kresources
