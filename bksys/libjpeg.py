@@ -25,7 +25,10 @@ def generate(env):
 			#we need to check for libjpeg6b then normal libjpeg to
 			#be compatible with the current autoconf check
 			env['CACHED_JPEG'] = 0
-			have_jpeg_headers = env.find_file('jpeglib.h',['/usr/include','/usr/local/include'] + env['EXTRAINCLUDES'])
+			jpeg_include_path = ['/usr/include','/usr/local/include']
+			if env['EXTRAINCLUDES']:
+				jpeg_include_path + env['EXTRAINCLUDES']
+			have_jpeg_headers = env.find_file('jpeglib.h', jpeg_include_path)
 			have_jpeg_6b = conf.CheckLib('jpeg6b')
 			have_normal_jpeg = conf.CheckLib('jpeg')
 			context.Message('Checking for libjpeg... ')
