@@ -315,3 +315,12 @@ that we would like to make for the next binary incompatible release.
 
 - Caleb KGuiItem be replaced by QAction?  They seem to encompass the exact same data.
 
+- Qt4 has no QWizard (only Q3Wizard left). Add a new KDE standards-compliant wizard with 
+  a bit more powerful API and features like "Steps list" pane on the left hand of the wizard
+  (user can click any step if developer allowed such action). Example from OO.org:
+  http://www.openoffice.org/dev_docs/features/2.0/images/mail_merge.jpg
+  We could add more consistency (using themes, guidelines) in this area, 
+  as in KDE3 some apps implement wizard's features like left-hand funky pictures 
+  or help text again and again
+  (see http://www.kolab.org/doc/kde-client-manual-0.9cvs20030801-html/c43.html).
+  (Jaroslaw Staniek)
