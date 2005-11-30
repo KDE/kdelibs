@@ -36,7 +36,6 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qframe.h>
-#include <q3buttongroup.h>
 #include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
