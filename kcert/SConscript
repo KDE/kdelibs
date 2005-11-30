@@ -12,6 +12,8 @@ obj = env.kdeobj('module')
 obj.target = 'kcertpart'
 obj.source = kcertpart_sources
 obj.includes = includes
+obj.libs += ' kdeui kparts'
+obj.libpaths += ' ../kdeui ../kparts '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 
