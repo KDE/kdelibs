@@ -132,15 +132,20 @@ class KHTMLWalletQueue : public QObject
   Q_OBJECT
   public:
     KHTMLWalletQueue(QObject *parent) : QObject(parent) {
+#ifndef KHTML_NO_WALLET
       wallet = 0L;
+#endif // KHTML_NO_WALLET
     }
 
     virtual ~KHTMLWalletQueue() {
+#ifndef KHTML_NO_WALLET
       delete wallet;
       wallet = 0L;
+#endif // KHTML_NO_WALLET
     }
-
+#ifndef KHTML_NO_WALLET
     KWallet::Wallet *wallet;
+#endif // KHTML_NO_WALLET
     typedef QPair<DOM::HTMLFormElementImpl*, QGuardedPtr<DOM::DocumentImpl> > Caller;
     typedef QValueList<Caller> CallerList;
     CallerList callers;
@@ -151,6 +156,7 @@ class KHTMLWalletQueue : public QObject
 
   public slots:
     void walletOpened(bool success) {
+#ifndef KHTML_NO_WALLET
       if (!success) {
         delete wallet;
         wallet = 0L;
@@ -173,6 +179,7 @@ class KHTMLWalletQueue : public QObject
       callers.clear();
       savers.clear();
       wallet = 0L; // gave it away
+#endif // KHTML_NO_WALLET
     }
 };
 
