@@ -35,7 +35,7 @@
 #include <qcheckbox.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <q3buttongroup.h>
 #include <q3groupbox.h>
 #include <qlabel.h>
@@ -43,7 +43,6 @@
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qregexp.h>
-#include <q3vbox.h>
 
 //Added by qt3to4:
 #include <Q3CString>
@@ -72,6 +71,7 @@
 #include <kstandarddirs.h>
 #include <kurllabel.h>
 #include <kurlrequester.h>
+#include <kvbox.h>
 
 #include <config.h>
 #ifdef HAVE_SSL
@@ -264,7 +264,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabSSL = new Q3Frame(this);
+  tabSSL = new QFrame(this);
   grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
                                        KDialog::spacingHint() );
   // no need to parse kdeglobals.
@@ -344,7 +344,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
 
 #ifdef HAVE_SSL
-  tabOSSL = new Q3Frame(this);
+  tabOSSL = new QFrame(this);
   QBoxLayout *vbox = new QVBoxLayout(tabOSSL, KDialog::marginHint(), KDialog::spacingHint());
 
   oInfo = new Q3GroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
@@ -363,7 +363,7 @@ QString whatstr;
   //
   //  Settings for the EGD
   //
-  Q3Frame *eFrame = new Q3Frame(tabOSSL);
+  QFrame *eFrame = new QFrame(tabOSSL);
   QVBoxLayout *egrid = new QVBoxLayout(eFrame);
   mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
   connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
@@ -372,7 +372,7 @@ QString whatstr;
   vbox->addWidget(eFrame);
   egrid->addWidget(mUseEGD);
   egrid->addWidget(mUseEFile);
-  Q3Frame *egdframe = new Q3Frame(tabOSSL);
+  QFrame *egdframe = new QFrame(tabOSSL);
   QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
                                                        KDialog::spacingHint());
   mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
@@ -401,7 +401,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // THIRD TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabYourSSLCert = new Q3Frame(this);
+  tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabYourSSLCert, 16, 6, KDialog::marginHint(), KDialog::spacingHint() );
@@ -489,7 +489,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabAuth = new Q3Frame(this);
+  tabAuth = new QFrame(this);
 
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabAuth, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
@@ -560,7 +560,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // FIFTH TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabOtherSSLCert = new Q3Frame(this);
+  tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
   oGrid = grid = new QGridLayout(tabOtherSSLCert, 21, 6, KDialog::marginHint(), KDialog::spacingHint());
@@ -675,7 +675,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // SIXTH TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabSSLCA = new Q3Frame(this);
+  tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabSSLCA, 11, 8, KDialog::marginHint(), KDialog::spacingHint());
@@ -740,7 +740,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // SEVENTH TAB
   ///////////////////////////////////////////////////////////////////////////
-  tabSSLCOpts = new Q3Frame(this);
+  tabSSLCOpts = new QFrame(this);
 
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabSSLCOpts, 9, 4, KDialog::marginHint(), KDialog::spacingHint());
