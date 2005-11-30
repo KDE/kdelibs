@@ -393,10 +393,12 @@ void HTMLScriptElementImpl::notifyFinished(CachedObject* o)
 
     assert(cs == m_cachedScript);
 
-    evaluateScript(cs->url().string(), cs->script());
-
+    QString   URL    = cs->url().string();
+    DOMString script = cs->script();
     cs->deref(this);
     m_cachedScript = 0;
+
+    evaluateScript(URL, script);
 }
 
 void HTMLScriptElementImpl::evaluateScript(const QString &URL, const DOMString &script)
