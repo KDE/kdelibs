@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XML DTD Document
+Comment[af]=XML DTD Dokument
 Comment[bg]=Документ XML DTD
 Comment[br]=Teul DTD XML
 Comment[ca]=Document XML DTD
@@ -18,7 +19,7 @@ Comment[he]=מסמך XML DTD
 Comment[hu]=XML DTD-dokumentum
 Comment[is]=XML DTD skjal
 Comment[it]=Documento XML DTD
-Comment[ka]=XML DTD დოკუმენტი
+Comment[ja]=XML DTD ドキュメント
 Comment[km]=ឯកសារ XML DTD
 Comment[lb]=XML-DTD-Dokument
 Comment[lt]=XML DTD dokumentas
@@ -39,7 +40,6 @@ Comment[sv]=XML DTD-dokument
 Comment[tg]=Ҳуҷҷати XML DTD
 Comment[uk]=Документ DTD XML
 Comment[uz]=XML DTD ҳужжати
-Comment[xx]=xxXML DTD Documentxx
 Comment[zh_CN]=XML DTD 文档
 Icon=html
 Type=MimeType

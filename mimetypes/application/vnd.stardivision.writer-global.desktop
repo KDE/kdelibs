@@ -30,7 +30,6 @@ Comment[hu]=StarOffice Writer-fődokumentum
 Comment[is]=StarOffice Writer yfirskjal
 Comment[it]=Documento master StarOffice Writer
 Comment[ja]=StarOffice Writer マスタードキュメント
-Comment[ka]=StarOffice Writer თარგის დოკუმენტი
 Comment[km]=ឯកសារ​មេ StarOffice Writer
 Comment[ko]=스타오피스 글틀 기본 문서
 Comment[lb]=StarOffice-Writer-Haaptdokument
@@ -60,7 +59,6 @@ Comment[tr]=StarOffice Writer Ana Belgesi
 Comment[tt]=StarOffice Writer'nıñ Master-İstälege
 Comment[uk]=Головний документ StarOffice Writer
 Comment[uz]=StarOffice Writer бош ҳужжати
-Comment[xx]=xxStarOffice Writer Master Documentxx
 Comment[zh_CN]=StarOffice Writer 主文档
 [Property::X-KDE-NativeExtension]
 Type=QString

@@ -27,7 +27,6 @@ Comment[hu]=OASIS-munkafüzet
 Comment[is]=OASIS OpenDocument töflureiknir
 Comment[it]=Foglio di calcolo OASIS OpenDocument
 Comment[ja]=OASIS OpenDocument 表計算
-Comment[ka]=OASIS OpenDocument ცხრილი
 Comment[km]=សៀវភៅបញ្ជី OASIS OpenDocument
 Comment[lb]=OASIS-OpenDocument-Tabellëblat
 Comment[lt]=OASIS OpenDocument elektroninė lentelė
@@ -54,7 +53,6 @@ Comment[tr]=OASIS OpenDocument Hesap Tablosu
 Comment[tt]=OASIS OpenDocument İsäpcäymäse
 Comment[uk]=Електронна таблиця OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument электрон жадвали
-Comment[xx]=xxOASIS OpenDocument SpreadSheetxx
 Comment[zh_CN]=OASIS OpenDocument 电子表格
 [Property::X-KDE-NativeExtension]
 Type=QString

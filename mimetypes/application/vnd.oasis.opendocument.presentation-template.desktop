@@ -27,7 +27,6 @@ Comment[hu]=OASIS-bemutatósablon
 Comment[is]=OASIS OpenDocument kynningarsnið
 Comment[it]=Modello di presentazione OASIS OpenDocument
 Comment[ja]=OASIS OpenDocument プレゼンテーションテンプレート
-Comment[ka]=OASIS OpenDocument პრეზენტაციის თარგი
 Comment[km]=ពុម្ព​ការបង្ហាញ OASIS OpenDocument
 Comment[lb]=OASIS-OpenDocument-Präsentatiounsvirlag
 Comment[lt]=OASIS OpenDocument pateikčių šablonas
@@ -54,7 +53,6 @@ Comment[tr]=OASIS OpenDocument Sunum Şablonu
 Comment[tt]=OASIS OpenDocument Täqbir Ürçetmäse
 Comment[uk]=Шаблон презентації OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument намойиш намунаси
-Comment[xx]=xxOASIS OpenDocument Presentation Templatexx
 Comment[zh_CN]=OASIS OpenDocument 演示文稿模板
 [Property::X-KDE-NativeExtension]
 Type=QString

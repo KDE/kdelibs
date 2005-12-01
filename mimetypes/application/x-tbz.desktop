@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Bzip2-ed Tar Archive
+Comment[af]=Bzip2-ed Tar Argief
 Comment[bg]=Компресиран архив Tar с Bzip2
 Comment[br]=Diell Tar Bzip2et
 Comment[ca]=Arxiu tar i bzip2
@@ -18,7 +19,7 @@ Comment[he]=ארכיון Tar דחוס ע"י Bzip
 Comment[hu]=Bzip2.tar-archívum
 Comment[is]=Bzip2 þjappað tar-safn
 Comment[it]=Archivio Tar compresso con Bzip2
-Comment[ka]=Bzip2 შეკუმშული Tar არქივი
+Comment[ja]=Bzip2 圧縮された Tar アーカイブ
 Comment[km]=ប័ណ្ណសារ Bzip2-ed Tar
 Comment[lb]=Mat Bzip2 kompriméierten Tar-Archiv
 Comment[lt]=Tar archyvas, suglaudintas su bzip2
@@ -39,7 +40,6 @@ Comment[sv]=Bzip2-komprimerat tar-arkiv
 Comment[tg]=Архиви Tar Bzip2-карда шуд
 Comment[uk]=Архів Tar, стиснутий Bzip2
 Comment[uz]=Bzip билан қисилган Tar архиви
-Comment[xx]=xxBzip2-ed Tar Archivexx
 Comment[zh_CN]=Bzip 压缩的 Tar 归档
 MimeType=application/x-tbz
 Icon=tgz

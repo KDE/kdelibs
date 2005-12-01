@@ -31,7 +31,6 @@ Comment[hu]=StarOffice-rajz
 Comment[is]=StarOffice teikning
 Comment[it]=Disegno StarOffice
 Comment[ja]=StarOffice 図形描画
-Comment[ka]=StarOffice ნახატი
 Comment[km]=គំនូរ StarOffice
 Comment[ko]=스타오피스 그림
 Comment[lb]=StarOffice-Zeechnung
@@ -61,7 +60,6 @@ Comment[tr]=StarOffice Çizimi
 Comment[tt]=StarOffice Sızımı
 Comment[uk]=Малюнок StarOffice
 Comment[uz]=StarOffice чизмаси
-Comment[xx]=xxStarOffice Drawingxx
 Comment[zh_CN]=StarOffice 绘图
 [Property::X-KDE-NativeExtension]
 Type=QString

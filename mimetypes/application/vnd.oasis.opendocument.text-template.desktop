@@ -27,7 +27,6 @@ Comment[hu]=OASIS-dokumentumsablon
 Comment[is]=OASIS OpenDocument textasnið
 Comment[it]=Modello di documento di testo OASIS OpenDocument
 Comment[ja]=OASIS OpenDocument テキストテンプレート
-Comment[ka]=OASIS OpenDocument ტექსტის თარგი
 Comment[km]=ពុម្ព​អត្ថបទ OASIS OpenDocument
 Comment[lb]=OASIS-OpenDocument-Textvirlag
 Comment[lt]=OASIS OpenDocument teksto dokumento šablonas
@@ -54,7 +53,6 @@ Comment[tr]=OASIS OpenDocument Metin Şablonu
 Comment[tt]=OASIS OpenDocument Mäten Üzçetmäse
 Comment[uk]=Шаблон текстового документу OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument матн ҳужжати намунаси
-Comment[xx]=xxOASIS OpenDocument Text Templatexx
 Comment[zh_CN]=OASIS OpenDocument 文本文档模板
 [Property::X-KDE-NativeExtension]
 Type=QString

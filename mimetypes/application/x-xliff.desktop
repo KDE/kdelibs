@@ -26,7 +26,6 @@ Comment[hu]=XLIFF fordítási fájl
 Comment[is]=XLIFF þýðingarskrá
 Comment[it]=File di traduzione XLIFF
 Comment[ja]=XLIFF 翻訳ファイル
-Comment[ka]=XLIFF თარგმნის ფაილი
 Comment[km]=ឯកសារ​បកប្រែ XLIFF
 Comment[lb]=XLIFF-Iwwersetzungsdatei
 Comment[lt]=XLIFF vertimo byla
@@ -55,7 +54,6 @@ Comment[tr]=XLIFF Çeviri Dosyası
 Comment[tt]=XLIFF Tärcemä Bireme
 Comment[uk]=Файл перекладу XLIFF
 Comment[uz]=XLIFF таржима қилиш файли
-Comment[xx]=xxXLIFF Translation Filexx
 Comment[zh_CN]=XLIFF 翻译文件
 [Property::X-KDE-NativeExtension]
 Type=QString

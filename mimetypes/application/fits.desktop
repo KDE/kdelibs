@@ -18,7 +18,7 @@ Comment[he]=נתונים של FITS
 Comment[hu]=FITS-adatok
 Comment[is]=FITS gögn
 Comment[it]=Dati FITS
-Comment[ka]=FITS მონაცემები
+Comment[ja]=FITS データ
 Comment[km]=ទិន្នន័យ FITS
 Comment[lb]=FITS-Donnéeën
 Comment[nds]=FITS-Daten
@@ -37,7 +37,6 @@ Comment[sv]=FITS-data
 Comment[tg]=Маълумоти FITS
 Comment[uk]=Дані FITS
 Comment[uz]=FITS маълумот
-Comment[xx]=xxFITS Dataxx
 Comment[zh_CN]=FITs 数据
 Icon=binary
 # Note: application/fits is for any kind of FITS, so also for non-images

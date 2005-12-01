@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=image/fits
 Icon=image
 Comment=FITS Image
+Comment[af]=FITS Beeld
 Comment[bg]=Изображение FITS
 Comment[ca]=Imatge FITS
 Comment[cs]=FITS obrázek
@@ -21,7 +22,7 @@ Comment[he]=תמונת FITS
 Comment[hu]=FITS-kép
 Comment[is]=FITS mynd
 Comment[it]=Immagine FITS
-Comment[ka]=FITS ნახატი
+Comment[ja]=FITS 画像
 Comment[km]=រូបភាព FITS
 Comment[lb]=FITS-Bild
 Comment[lt]=FITS paveiksliukas
@@ -42,7 +43,6 @@ Comment[sv]=FITS-bild
 Comment[tg]=Тасвири FITS
 Comment[uk]=Зображення FITS
 Comment[uz]=FITS-расм
-Comment[xx]=xxFITS Imagexx
 Comment[zh_CN]=FITS 图像
 ### TODO: what file patterns, especially that application/fits has the same
 # RFC 4047 tells that image/fits are also application/fits

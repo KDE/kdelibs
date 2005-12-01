@@ -27,7 +27,6 @@ Comment[hu]=OASIS-képlet
 Comment[is]=OASIS OpenDocument formúla
 Comment[it]=Formula OASIS OpenDocument
 Comment[ja]=OASIS OpenDocument 数式
-Comment[ka]=OASIS OpenDocument ფორმულა
 Comment[km]=រូបមន្ត OASIS OpenDocument
 Comment[lb]=OASIS-OpenDocument-Formel
 Comment[lt]=OASIS OpenDocument rormulė
@@ -54,7 +53,6 @@ Comment[tr]=OASIS OpenDocument Formülü
 Comment[tt]=OASIS OpenDocument Formulı
 Comment[uk]=Формула OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument формула
-Comment[xx]=xxOASIS OpenDocument Formulaxx
 Comment[zh_CN]=OASIS OpenDocument 公式
 [Property::X-KDE-NativeExtension]
 Type=QString

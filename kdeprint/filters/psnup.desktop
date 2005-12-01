@@ -1,7 +1,6 @@
 [KDE Print Filter Entry]
 Name=psnup
 Name[sv]=Psnup
-Name[xx]=xxpsnupxx
 Require=exec:/psnup
 Comment=Multiple Pages per Sheet Filter
 Comment[af]=Veelvuldige Bladsye per blaai Filter
@@ -33,7 +32,6 @@ Comment[id]=Filter Banyak Halaman per Lembar
 Comment[is]=Sía fyrir margar síður á hvert blað
 Comment[it]=Più pagine sullo stesso foglio
 Comment[ja]=シートフィルタ毎に複数ページ
-Comment[ka]=რამდენიმე გვერდის ერთ ფურცელზე ბეჭდვა
 Comment[km]=ទំព័រ​ច្រើន​ក្នុង​មួយ​តម្រង​សន្លឹក
 Comment[ko]=여러 쪽으로 나눠주는 거르개
 Comment[lb]=Filter fir e puer Säiten op ee Blat ze drécken
@@ -72,7 +70,6 @@ Comment[uz]=Битта варақга бир нечта бет чиқариш ф
 Comment[ven]=Masiatari manzhi kha filithara ya bammbiri
 Comment[wa]=Passete pus d' ene pådje par foye
 Comment[xh]=Amaphepha Amaninzi Ngekhasi Lesihluzi ngasinye 
-Comment[xx]=xxMultiple Pages per Sheet Filterxx
 Comment[zh_CN]=每张多页过滤程序
 Comment[zh_TW]=單張多頁過濾器
 Comment[zu]=Amakhasi Amaningana Kumhlaziyi Wepheshana ngamunye

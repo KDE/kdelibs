@@ -27,7 +27,6 @@ Comment[hu]=OASIS-ábrasablon
 Comment[is]=OASIS OpenDocument grafísksnið
 Comment[it]=Modello di disegno OASIS OpenDocument
 Comment[ja]=OASIS OpenDocument 図形描画テンプレート
-Comment[ka]=OASIS OpenDocument დიაგრამის თარგი
 Comment[km]=ពុម្ព​ក្រាហ្វិក OASIS OpenDocument
 Comment[lb]=OASIS-OpenDocument-Grafikvirlag
 Comment[lt]=OASIS OpenDocument grafikos šablonas
@@ -53,7 +52,6 @@ Comment[tg]=Санади Ҳуҷҷати OASIS
 Comment[tr]=OASIS OpenDocument Grafik Şablonu
 Comment[tt]=OASIS OpenDocument Sızımı öçen Ürçetmä
 Comment[uk]=Шаблон графічного зображення OASIS OpenDocument
-Comment[xx]=xxOASIS OpenDocument Graphics Templatexx
 Comment[zh_CN]=OASIS OpenDocument 图形模板
 [Property::X-KDE-NativeExtension]
 Type=QString

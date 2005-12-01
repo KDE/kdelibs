@@ -23,7 +23,6 @@ Comment[hi]=माइम एनकेप्सुलेटेड वेब अ�
 Comment[hu]=MIME-webarchívum
 Comment[is]=Mime innifalinn vef safnskrá
 Comment[it]=Archivio Web incapsulato MIME
-Comment[ka]=MIME ფორმატის შეკუმშული ვებ არქივი
 Comment[km]=ប័ណ្ណសារ​ Mime Encapsulated Web
 Comment[lb]=Mime-gekapselt Webarchiv
 Comment[lt]=Mime įsiūtas žiniatinklio archyvas
@@ -49,7 +48,6 @@ Comment[ta]=மைம் என்காப்சுலேட்டட் வல
 Comment[tg]=Архиви Веб Tar Фушурдашуда
 Comment[tt]=Web beteneñ Mime-Tuplaması
 Comment[uk]=Архів Тенет з інформацією про mine
-Comment[xx]=xxMime Encapsulated Web Archivexx
 Comment[zh_CN]=MIME 封装的 Web 归档
 
 [Property::X-KDE-LocalProtocol]

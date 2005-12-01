@@ -29,7 +29,6 @@ Comment[hu]=StarOfice-diagram
 Comment[is]=StarOffice tafla
 Comment[it]=Diagramma StarOffice
 Comment[ja]=StarOffice チャート
-Comment[ka]=StarOffice დიაგრამა
 Comment[km]=គំនូសតាង StarOffice
 Comment[ko]=스타오피스 도표
 Comment[lb]=StarOffice-Diagramm
@@ -58,7 +57,6 @@ Comment[tg]=Диаграмаи StarOffice
 Comment[tr]=StarOffice Hesap Tablosu
 Comment[tt]=StarOffice Grafiğı
 Comment[uk]=Діаграма StarOffice
-Comment[xx]=xxStarOffice Chartxx
 Comment[zh_CN]=StarOffice 图表
 [Property::X-KDE-NativeExtension]
 Type=QString

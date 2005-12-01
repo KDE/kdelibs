@@ -31,7 +31,6 @@ Comment[hu]=StarOffice Math-dokumentum
 Comment[is]=StarOffice Math skjal
 Comment[it]=Documento matematico StarOffice
 Comment[ja]=StarOffice Math ドキュメント
-Comment[ka]=StarOffice Math ფორმულა
 Comment[km]=ឯកសារ StarOffice Math
 Comment[lb]=Mathematescht StarOffice-Dokument
 Comment[lt]=StarOffice Math dokumentas
@@ -61,7 +60,6 @@ Comment[tr]=StarOffice Math Belgesi
 Comment[tt]=StarOffice Math İstälege
 Comment[uk]=Документ StarOffice Math
 Comment[uz]=StarOffice Math ҳужжати
-Comment[xx]=xxStarOffice Math Documentxx
 Comment[zh_CN]=StarOffice Math 文档
 [Property::X-KDE-NativeExtension]
 Type=QString

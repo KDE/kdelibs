@@ -1,5 +1,6 @@
 [Desktop Entry]
 Comment=HTML Help Document
+Comment[af]=HTML Hulp Dokument
 Comment[bg]=Помощна информация HTML
 Comment[br]=Teul skoazell HTML
 Comment[ca]=Document d'ajuda HTML
@@ -17,7 +18,7 @@ Comment[he]=מסמך עזרת HTML
 Comment[hu]=HTML formátumú dokumentáció
 Comment[is]=HTML hjálparskrá
 Comment[it]=Documento HTML della guida
-Comment[ka]=HTML დახმარების დოკუმენტი
+Comment[ja]=HTML ヘルプドキュメント
 Comment[km]=ឯកសារ​ជំនួយ HTML
 Comment[lb]=HTML-Hëllefsdokument
 Comment[lt]=HTML pagalbos dokumentas
@@ -38,7 +39,6 @@ Comment[sv]=HTML-hjälpdokument
 Comment[tg]=Ҳуҷҷати Ёрмандии HTML
 Comment[uk]=Документ довідки в HTML
 Comment[uz]=HTML ёрдам ҳужжати
-Comment[xx]=xxHTML Help Documentxx
 Comment[zh_CN]=HTML 帮助文档
 Hidden=false
 Icon=help

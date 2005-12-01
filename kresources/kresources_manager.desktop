@@ -25,7 +25,6 @@ Comment[hu]=KResource-kezelőprogram
 Comment[is]=KResource stjóri
 Comment[it]=Gestore KResource
 Comment[ja]=K リソース・マネージャ
-Comment[ka]=KResource-ის მმართველი
 Comment[km]=កម្មវិធី​គ្រប់គ្រង KResource
 Comment[lb]=KResource-Manager
 Comment[lt]=KResouse tvarkyklė
@@ -51,7 +50,6 @@ Comment[tr]=KResource Yöneticisi
 Comment[tt]=KResource İdäräçese
 Comment[uk]=Менеджер KResource
 Comment[uz]=KResource бошқарувчиси
-Comment[xx]=xxKResource Managerxx
 Comment[zh_CN]=KResource 管理器
 
 [PropertyDef::X-KDE-ResourceFamily]
