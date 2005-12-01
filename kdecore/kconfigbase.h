@@ -968,7 +968,7 @@ public:
    * config object or when calling sync().
    *
    *  @param pKey               The key to write.
-   *  @param pValue     The value to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
    *  @param bPersistent        If @p bPersistent is false, the entry's dirty
    *                    flag will not be set and thus the entry will
    *                    not be written to disk at deletion time.
@@ -982,6 +982,7 @@ public:
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+
   /**
    * Write a (key/value) pair.
    *
@@ -989,7 +990,7 @@ public:
    * config object or when calling sync().
    *
    *  @param pKey               The key to write.
-   *  @param pValue     The value to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
    *  @param bPersistent        If @p bPersistent is false, the entry's dirty
    *                    flag will not be set and thus the entry will
    *                    not be written to disk at deletion time.
@@ -1003,6 +1004,56 @@ public:
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *                    If it contains the null character between 0 and size()-1,
+   *                    the string will be truncated at the null character.
+   *
+   *  @param bPersistent        If @p bPersistent is false, the entry's dirty
+   *                    flag will not be set and thus the entry will
+   *                    not be written to disk at deletion time.
+   *  @param bGlobal    If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   *  @param bNLS       If @p bNLS is true, the locale tag is added to the key
+   *                    when writing it back.
+   */
+  void writeEntry( const QString& pKey, const QByteArray& pValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false )
+    { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), bPersistent, bGlobal, bNLS); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *                    If it contains the null character between 0 and size()-1,
+   *                    the string will be truncated at the null character.
+   *
+   *  @param bPersistent        If @p bPersistent is false, the entry's dirty
+   *                    flag will not be set and thus the entry will
+   *                    not be written to disk at deletion time.
+   *  @param bGlobal    If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   *  @param bNLS       If @p bNLS is true, the locale tag is added to the key
+   *                    when writing it back.
+   */
+  void writeEntry( const char *pKey, const QByteArray& pValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false )
+    { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), bPersistent, bGlobal, bNLS); }
 
   /**
    * Write a (key/value) pair.

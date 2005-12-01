@@ -49,6 +49,7 @@ void KConfigTest::writeConfigFile()
   sc.setGroup("AAA");
   sc.writeEntry("stringEntry1", STRINGENTRY1, true, true);
   sc.deleteEntry("stringEntry2", false, true);
+  sc.writeEntry("byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true);
 
   sc.setGroup("Hello");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
@@ -116,6 +117,7 @@ void KConfigTest::testAll()
   COMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
   VERIFY( !sc2.hasKey( "stringEntry2" ) );
   COMPARE( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
+  COMPARE( sc2.readEntry( "byteArrayEntry1" ).toLatin1(), QByteArray( STRINGENTRY1 ) );
 
   VERIFY( !sc2.hasDefault( "stringEntry1" ) );
 
