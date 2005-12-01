@@ -459,13 +459,13 @@ void KDirWatchPrivate::slotActivated()
  */
 void KDirWatchPrivate::Entry::propagate_dirty()
 {
-  Entry* sub_entry;
-  for(sub_entry = m_entries.first(); sub_entry; sub_entry = m_entries.next())
+  for (QPtrListIterator<Entry> sub_entry (m_entries); 
+       sub_entry.current(); ++sub_entry)
   {
-     if (!sub_entry->dirty)
+     if (!sub_entry.current()->dirty)
      {
-        sub_entry->dirty = true;
-        sub_entry->propagate_dirty();
+        sub_entry.current()->dirty = true;
+        sub_entry.current()->propagate_dirty();
      }
   }
 }
