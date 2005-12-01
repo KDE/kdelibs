@@ -1,0 +1,32 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kdocument_sources = """
+kdocument.cpp
+"""
+
+kdocumentinclude_headers = """
+document.h factory.h view.h
+"""
+
+includes = '#/interfaces '
+
+obj = env.kdeobj('shlib')
+#obj.it_is_a_kdelib()
+obj.target = 'kdocument'
+obj.source = kdocument_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.libpaths = '../../kparts'
+obj.libs = 'kparts'
+obj.execute()
+
+env.bksys_insttype('KDEINCLUDE', 'kdocument', kdocumentinclude_headers)
+
+
+"""Unhandled Defines 
+kdocumentincludedir = $(includedir)/kdocument
+DOXYGEN_REFERENCES = kparts
+"""
+
