@@ -41,6 +41,8 @@ QTTEST_KDEMAIN( KConfigTest, NoGUI )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 #define STRINGLISTENTRY QStringList( "Hello," )
+#define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
+#define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 
 void KConfigTest::writeConfigFile()
 {
@@ -49,7 +51,6 @@ void KConfigTest::writeConfigFile()
   sc.setGroup("AAA");
   sc.writeEntry("stringEntry1", STRINGENTRY1, true, true);
   sc.deleteEntry("stringEntry2", false, true);
-  sc.writeEntry("byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true);
 
   sc.setGroup("Hello");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
@@ -69,12 +70,15 @@ void KConfigTest::writeConfigFile()
 
   sc.deleteGroup("deleteMe", true);
 
-  sc.setGroup("Bye");
+  sc.setGroup("OtherTypes");
   sc.writeEntry( "rectEntry", RECTENTRY );
   sc.writeEntry( "pointEntry", POINTENTRY );
   sc.writeEntry( "sizeEntry", SIZEENTRY );
   sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
   sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
+  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true );
+  sc.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
+  sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   sc.sync();
 }
 
@@ -147,11 +151,22 @@ void KConfigTest::testAll()
   }
 #endif
 
-  sc2.setGroup("Bye");
+  sc2.setGroup("OtherTypes");
 
   COMPARE( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
   COMPARE( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
   COMPARE( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
   COMPARE( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
   COMPARE( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
+
+  COMPARE( sc2.readEntry( "byteArrayEntry1" ).toLatin1(), QByteArray( STRINGENTRY1 ) );
+  COMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
+  QList<int> intList = sc2.readIntListEntry( "listOfIntsEntry1" );
+  QList<int> expectedIntList = INTLISTENTRY1;
+  COMPARE( intList, expectedIntList );
+
+  COMPARE( sc2.readEntry( "listOfByteArraysEntry1" ), QString::fromLatin1( ",1\\,2,end" ) );
+  QList<QByteArray> baList = sc2.readByteArrayListEntry( "listOfByteArraysEntry1" );
+  QList<QByteArray> expectedBaList = BYTEARRAYLISTENTRY1;
+  COMPARE( baList, expectedBaList );
 }

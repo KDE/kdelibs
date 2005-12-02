@@ -505,12 +505,12 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
   QStringList list;
   if( !hasKey( pKey ) )
     return list;
-  QString str_list = readEntry( pKey );
+  const QString str_list = readEntry( pKey );
   if( str_list.isEmpty() )
     return list;
   QString value(emptyString);
-  int len = str_list.length();
- // obviously too big, but faster than letting each += resize the string.
+  const int len = str_list.length();
+  // obviously too big, but faster than letting each += resize the string.
   value.reserve( len );
   for( int i = 0; i < len; i++ )
     {
@@ -542,10 +542,54 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
 QStringList KConfigBase::readListEntry( const char* pKey, const QStringList& aDefault,
 		char sep ) const
 {
-	if ( !hasKey( pKey ) )
-		return aDefault;
-	else
-		return readListEntry( pKey, sep );
+  if ( !hasKey( pKey ) )
+    return aDefault;
+  else
+    return readListEntry( pKey, sep );
+}
+
+QList<QByteArray> KConfigBase::readByteArrayListEntry( const QString& pKey, char sep ) const
+{
+  return readByteArrayListEntry(pKey.toUtf8().data(), sep);
+}
+
+QList<QByteArray> KConfigBase::readByteArrayListEntry( const char *pKey, char sep ) const
+{
+  QList<QByteArray> list;
+  if( !hasKey( pKey ) )
+    return list;
+  const QString str_list = readEntry( pKey );
+  if( str_list.isEmpty() )
+    return list;
+  QByteArray value;
+  const int len = str_list.length();
+  // obviously too big, but faster than letting each += resize the string.
+  value.reserve( len );
+  for( int i = 0; i < len; i++ )
+    {
+      if( str_list[i] != sep && str_list[i] != '\\' )
+        {
+          value += str_list[i].toLatin1();
+          continue;
+        }
+      if( str_list[i] == '\\' )
+        {
+          i++;
+          if ( i < len )
+            value += str_list[i].toLatin1();
+          continue;
+        }
+      QByteArray finalvalue( value );
+      finalvalue.squeeze();
+      list.append( finalvalue );
+      value.truncate( 0 );
+    }
+  if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
+  {
+    value.squeeze();
+    list.append( value );
+  }
+  return list;
 }
 
 QList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
@@ -1385,12 +1429,47 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   QString str_list;
   str_list.reserve( 4096 );
   QStringList::ConstIterator it = list.begin();
-  for( ; it != list.end(); ++it )
+  const QStringList::ConstIterator end = list.end();
+  for( ; it != end; ++it )
     {
-      QString value = *it;
-      int i;
-      int strLength(value.length());
-      for( i = 0; i < strLength; i++ )
+      const QString value = *it;
+      const int strLength(value.length());
+      for( int i = 0; i < strLength; i++ )
+        {
+          if( value[i] == sep || value[i] == '\\' )
+            str_list += '\\';
+          str_list += value[i];
+        }
+      str_list += sep;
+    }
+  if( str_list.at(str_list.length() - 1) == sep )
+    str_list.truncate( str_list.length() -1 );
+  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const QString& pKey, const QList<QByteArray> &list,
+                              char sep, bool bPersistent, bool bGlobal, bool bNLS )
+{
+  writeEntry(pKey.toUtf8().data(), list, sep, bPersistent, bGlobal, bNLS);
+}
+
+void KConfigBase::writeEntry( const char *pKey, const QList<QByteArray> &list,
+                              char sep, bool bPersistent, bool bGlobal, bool bNLS )
+{
+  if( list.isEmpty() )
+    {
+      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
+      return;
+    }
+  QByteArray str_list;
+  str_list.reserve( 4096 );
+  QList<QByteArray>::ConstIterator it = list.begin();
+  const QList<QByteArray>::ConstIterator end = list.end();
+  for( ; it != end; ++it )
+    {
+      const QByteArray value = *it;
+      const int strLength(value.length());
+      for( int i = 0; i < strLength; i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';

@@ -291,6 +291,24 @@ public:
   QList<int> readIntListEntry( const char *pKey ) const;
 
   /**
+   * Reads a list of byte arrays.
+   *
+   * @param pKey The key to search for.
+   * @param sep  The list separator (default is ",").
+   * @return The list. Empty if the entry does not exist.
+   */
+  QList<QByteArray> readByteArrayListEntry( const QString& pKey, char sep = ',' ) const;
+
+  /**
+   * Reads a list of byte arrays.
+   *
+   * @param pKey The key to search for.
+   * @param sep  The list separator (default is ",").
+   * @return The list. Empty if the entry does not exist.
+   */
+  QList<QByteArray> readByteArrayListEntry( const char *pKey, char sep = ',' ) const;
+
+  /**
    * Reads a path.
    *
    * Read the value of an entry specified by @p pKey in the current group
@@ -878,6 +896,46 @@ public:
    * @see  writeEntry()
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+
+  /**
+   * writeEntry() overridden to accept a list of byte arrays (8-bit strings).
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const char *pKey, const QList<QByteArray> &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+
+  /**
+   * writeEntry() overridden to accept a list of byte arrays (8-bit strings).
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const QString& pKey, const QList<QByteArray> &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
