@@ -782,9 +782,6 @@ public:
   /**
    * writeEntry() Overridden to accept a property.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write
    * @param rValue The property to write
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
@@ -803,9 +800,6 @@ public:
                     bool bNLS = false );
   /**
    * writeEntry() Overridden to accept a property.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write
    * @param rValue The property to write
@@ -828,9 +822,6 @@ public:
   /**
    * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write
    * @param rValue The list to write
    * @param sep  The list separator (default is ",").
@@ -850,9 +841,6 @@ public:
 		   KDE_DEPRECATED;
   /**
    * writeEntry() overridden to accept a list of strings.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write
    * @param rValue The list to write
@@ -875,9 +863,6 @@ public:
   /**
    * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write
    * @param rValue The list to write
    * @param sep  The list separator (default is ",").
@@ -897,9 +882,6 @@ public:
 
   /**
    * writeEntry() overridden to accept a list of strings.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write
    * @param rValue The list to write
@@ -921,9 +903,6 @@ public:
  /**
    * writeEntry() overridden to accept a list of Integers.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write
    * @param rValue The list to write
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
@@ -941,9 +920,6 @@ public:
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
  /**
    * writeEntry() overridden to accept a list of Integers.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write
    * @param rValue The list to write
@@ -1386,9 +1362,6 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but write a color entry.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write.
    * @param rColor The color value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -1405,9 +1378,6 @@ public:
   /**
    * Writes a (key/value) pair.
    * Same as above, but write a color entry.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write.
    * @param rColor The color value to write.
@@ -1427,9 +1397,6 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a date and time entry.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * @em not returned here!
-   *
    * @param pKey The key to write.
    * @param rDateTime The date and time value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -1446,9 +1413,6 @@ public:
   /**
    * Writes a (key/value) pair.
    * Same as above, but writes a date and time entry.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * @em not returned here!
    *
    * @param pKey The key to write.
    * @param rDateTime The date and time value to write.
@@ -1469,9 +1433,6 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a rectangle.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write.
    * @param rValue The rectangle value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -1488,9 +1449,6 @@ public:
   /**
    * Writes a (key/value) pair.
    * Same as above, but writes a rectangle.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write.
    * @param rValue The rectangle value to write.
@@ -1510,9 +1468,6 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a point.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write.
    * @param rValue The point value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -1529,9 +1484,6 @@ public:
   /**
    * Writes a (key/value) pair.
    * Same as above, but writes a point.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write.
    * @param rValue The point value to write.
@@ -1551,9 +1503,6 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a size.
    *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
-   *
    * @param pKey The key to write.
    * @param rValue The size value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -1570,9 +1519,6 @@ public:
   /**
    * Writes a (key/value) pair.
    * Same as above, but writes a size.
-   *
-   * Note: Unlike the other writeEntry() functions, the old value is
-   * _not_ returned here!
    *
    * @param pKey The key to write.
    * @param rValue The size value to write.
