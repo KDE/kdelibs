@@ -759,6 +759,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
 
                 // Only justify text with white-space: normal.
                 if (r->obj->style()->whiteSpace() == NORMAL) {
+                    KHTMLAssert(availableWidth - totWidth >= 0);
                     spaceAdd = (availableWidth - totWidth)*spaces/numSpaces;
                     static_cast<InlineTextBox*>(r->box)->setSpaceAdd(spaceAdd);
                     totWidth += spaceAdd;
@@ -2006,7 +2007,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         RenderObject* next = Bidinext(start.par, o, bidi);
         bool isNormal = o->style()->autoWrap();
         bool checkForBreak = isNormal;
-        if (w && w + tmpW > width+1 && lBreak.obj && !o->style()->preserveLF())
+        if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF())
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
             if (isNormal || next->style()->autoWrap()) {
@@ -2035,7 +2036,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             }
         }
 
-        if (checkForBreak && (w + tmpW > width+1)) {
+        if (checkForBreak && (w + tmpW > width)) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
             //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
@@ -2063,7 +2064,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             // |width| may have been adjusted because we got shoved down past a float (thus
             // giving us more room), so we need to retest, and only jump to
             // the end label if we still don't fit on the line. -dwh
-            if (w + tmpW > width+1)
+            if (w + tmpW > width)
                 goto end;
         }
 

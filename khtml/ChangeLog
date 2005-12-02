@@ -1,3 +1,7 @@
+2005-12-02  Charles Samuels  <charles@kde.org>
+	rendering/bidi.cpp: don't sometimes take text far past the end
+	of the block's margin on justified text.  bug #106081
+
 2005-11-08  Germain Garand  <germain@ebooksfrance.org>
 
         sizing of percent objects within table cells
