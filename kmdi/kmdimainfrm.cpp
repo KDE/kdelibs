@@ -49,6 +49,7 @@
 #include <kdeversion.h>
 #include <qtabwidget.h>
 #include <klocale.h>
+#include <kstdaccel.h>
 
 #include <kiconloader.h>
 #include <kmdidockcontainer.h>
@@ -216,12 +217,7 @@ KMdiMainFrm::KMdiMainFrm( QWidget* parentWidget, const char* name, KMdi::MdiMode
 
 	m_pPlacingMenu = new QPopupMenu( this, "placing_menu" );
 
-	d->closeWindowAction = new KAction(i18n("&Close"),
-#ifdef Q_WS_WIN
-		CTRL|Key_F4,
-#else
-		0,
-#endif
+	d->closeWindowAction = new KAction(i18n("&Close"), KStdAccel::close(),
 		this, SLOT(closeActiveView()), actionCollection(), "window_close");
 
 	// the MDI view taskbar
