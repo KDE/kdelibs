@@ -938,32 +938,30 @@ void DocLoader::insertCachedObject( CachedObject* o ) const
         m_docObjects.resize(khtml::nextSeed( m_docObjects.size() ) );
 }
 
-bool DocLoader::needReload(const KURL &fullURL)
+bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
 {
     bool reload = false;
     if (m_cachePolicy == KIO::CC_Verify)
     {
-       if (!m_reloadedURLs.contains(fullURL.url()))
+       if (!m_reloadedURLs.contains(fullURL))
        {
-          CachedObject *existing = Cache::cache->find(fullURL.url());
           if (existing && existing->isExpired())
           {
              Cache::removeCacheEntry(existing);
-             m_reloadedURLs.append(fullURL.url());
+             m_reloadedURLs.append(fullURL);
              reload = true;
           }
        }
     }
     else if ((m_cachePolicy == KIO::CC_Reload) || (m_cachePolicy == KIO::CC_Refresh))
     {
-       if (!m_reloadedURLs.contains(fullURL.url()))
+       if (!m_reloadedURLs.contains(fullURL))
        {
-          CachedObject *existing = Cache::cache->find(fullURL.url());
           if (existing)
           {
              Cache::removeCacheEntry(existing);
           }
-          m_reloadedURLs.append(fullURL.url());
+          m_reloadedURLs.append(fullURL);
           reload = true;
        }
     }
@@ -1330,16 +1328,17 @@ CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const c
 {
     KIO::CacheControl cachePolicy = dl ? dl->cachePolicy() : KIO::CC_Verify;
 
-    CachedObject* o = cache->find(kurl.url());
+    QString url = kurl.url();
+    CachedObject* o = cache->find(url);
 
     if ( o && o->type() != CachedType ) {
         removeCacheEntry( o );
         o = 0;
     }
 
-    if ( o && dl->needReload( kurl ) ) {
+    if ( o && dl->needReload( o, url ) ) {
         o = 0;
-        assert( cache->find( kurl.url() ) == 0 );
+        assert( cache->find( url ) == 0 );
     }
 
     if(!o)
@@ -1347,8 +1346,8 @@ CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const c
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedObjectType* cot = new CachedObjectType(dl, kurl.url(), cachePolicy, accept);
-        cache->insert( kurl.url(), cot );
+        CachedObjectType* cot = new CachedObjectType(dl, url, cachePolicy, accept);
+        cache->insert( url, cot );
         if ( cot->allowInLRUList() )
             insertInLRUList( cot );
         o = cot;
