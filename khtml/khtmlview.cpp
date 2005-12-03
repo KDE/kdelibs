@@ -3408,7 +3408,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
-    QRegion updateRegion;
+    QRect updateRegion;
     QMemArray<QRect> rects = d->updateRegion.rects();
 
     d->updateRegion = QRegion();
@@ -3417,11 +3417,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         updateRegion = rects[0];
 
     for ( unsigned i = 1; i < rects.size(); ++i ) {
-        QRect obR = updateRegion.boundingRect();
-        QRegion newRegion = updateRegion.unite(rects[i]);
-        if (2*newRegion.boundingRect().height() > 3*obR.height() )
+        QRect newRegion = updateRegion.unite(rects[i]);
+        if (2*newRegion.height() > 3*updateRegion.height() )
         {
-            repaintContents( obR );
+            repaintContents( updateRegion );
             updateRegion = rects[i];
         }
         else
@@ -3429,7 +3428,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 
     if ( !updateRegion.isNull() )
-        repaintContents( updateRegion.boundingRect() );
+        repaintContents( updateRegion );
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
