@@ -106,6 +106,7 @@
 <!ENTITY AIX	"<trademark class='registered'>AIX</trademark>">
 <!ENTITY akregator        "<application>Akregator</application>">
 <!ENTITY aktion	"<application>aKtion</application>">
+<!ENTITY amarok	"<application>amaroK</application>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark	"<application>Ark</application>">
 <!ENTITY arts	"<application>aRts</application>">
@@ -125,6 +126,7 @@
 <!ENTITY cervisia	"<application>Cervisia</application>">
 <!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
+<!ENTITY digikam	"<application>digiKam</application>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
@@ -230,6 +232,7 @@
 <!ENTITY klatin		"<application>KLatin</application>">
 <!ENTITY klettres	"<application>KLettres</application>">
 <!ENTITY kolorlines	"<application>Kolor Lines</application>">
+<!ENTITY konversation	"<application>Konversation</application>">
 <!ENTITY klipper	"<application>Klipper</application>">
 <!ENTITY kljettool	"<application>KLjettool</application>">
 <!ENTITY klpq	"<application>Klpq</application>">
@@ -325,6 +328,7 @@
 <!ENTITY kugar	"<application>Kugar</application>">
 <!ENTITY kuickshow	"<application>KuickShow</application>">
 <!ENTITY kuser	"<application>KUser</application>">
+<!ENTITY kubuntu	"<trademark>Kubuntu</trademark>">
 <!ENTITY kverbos "<application>KVerbos</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell	"<application>KViewshell</application>">
@@ -375,9 +379,11 @@
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
+<!ENTITY superkaramba	"<application>SuperKaramba</application>">
 <!ENTITY SuSE	'<acronym><trademark class="registered">SuSE</trademark></acronym>'>
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
+<!ENTITY ubuntu	"<trademark>Ubuntu</trademark>">
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
 <!ENTITY URL	"<acronym>URL</acronym>">
 <!ENTITY URI	"<acronym>URI</acronym>">
