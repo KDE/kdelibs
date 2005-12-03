@@ -57,12 +57,12 @@ def detect(env):
 
 	# User-specified include paths
 	if env['ARGS'].has_key('extraincludes'):
-		env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes','').split(':')
+		env['EXTRAINCLUDES'] = env['ARGS'].get('extraincludes','').split(';')
 		env.pprint('CYAN','** extra include paths for the project set to:',env['EXTRAINCLUDES'])
 
 	# User-specified library search paths
 	if env['ARGS'].has_key('extralibs'):
-		env['EXTRALIBS'] = env['ARGS'].get('extralibs','').split(':')
+		env['EXTRALIBS'] = env['ARGS'].get('extralibs','').split(';')
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 
 	if env['CC'] == 'cl':
