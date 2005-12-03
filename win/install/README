@@ -1,0 +1,7 @@
+This directory contain files that most probable will be included 
+in Windows distribution of KDElibs.
+
+
+Files:
+
+kdeglobals : sane defaults going to KDEDIR/share/config
