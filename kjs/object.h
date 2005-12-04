@@ -520,10 +520,10 @@ namespace KJS {
     static const char * const * const errorNames;
   };
 
-ObjectImp *throwError(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString *sourceURL);
-ObjectImp *throwError(ExecState *, ErrorType, const UString &message);
-ObjectImp *throwError(ExecState *, ErrorType, const char *message);
-ObjectImp *throwError(ExecState *, ErrorType);
+KJS_EXPORT ObjectImp *throwError(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString *sourceURL);
+KJS_EXPORT ObjectImp *throwError(ExecState *, ErrorType, const UString &message);
+KJS_EXPORT ObjectImp *throwError(ExecState *, ErrorType, const char *message);
+KJS_EXPORT ObjectImp *throwError(ExecState *, ErrorType);
   
 inline bool AllocatedValueImp::isObject(const ClassInfo *info) const
 {
