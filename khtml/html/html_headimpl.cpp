@@ -298,8 +298,6 @@ void HTMLMetaElementImpl::parseAttribute(AttributeImpl *attr)
 	m_content = attr->value();
 	process();
 	break;
-    case ATTR_NAME:
-      break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }

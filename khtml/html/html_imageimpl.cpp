@@ -175,7 +175,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             getDocument()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
-        break;
+        //fallthrough
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -390,7 +390,10 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_ID:
-        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml) {
+            HTMLElementImpl::parseAttribute(attr);
+            break;
+        }
         // fall through
     case ATTR_NAME:
     {
@@ -402,7 +405,8 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
 	// ### make this work for XML documents, e.g. in case of <html:map...>
         if(getDocument()->isHTMLDocument())
             static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;
-        break;
+
+        //fallthrough
     }
     default:
         HTMLElementImpl::parseAttribute(attr);

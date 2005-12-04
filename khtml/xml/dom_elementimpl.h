@@ -158,6 +158,8 @@ public:
     virtual DOMString nodeName() const;
     virtual NodeImpl::Id id() const = 0;
     virtual bool isElementNode() const { return true; }
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
 
     // convenience methods which ignore exceptions
     void setAttribute (NodeImpl::Id id, const DOMString &value);
@@ -227,6 +229,7 @@ public:
     void setRestyleSelfLate() { m_restyleSelfLate = true; };
     void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
 
+    void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
 protected:
     void createAttributeMap() const;
     void createDecl();

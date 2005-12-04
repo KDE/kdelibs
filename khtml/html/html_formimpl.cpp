@@ -713,16 +713,13 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::RESET_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onreset", this));
         break;
-    case ATTR_ID:
-	break;
     case ATTR_NAME:
-        //### why doesn't this call down?
         if (inDocument() && m_name != attr->value()) {
             getDocument()->underDocNamedCache().remove(m_name.string(),        this);
             getDocument()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
-	break;
+        //Fallthrough intentional
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -821,8 +818,6 @@ void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
     {
-    case ATTR_NAME:
-        break;
     case ATTR_DISABLED:
         setDisabled( attr->val() != 0 );
         break;

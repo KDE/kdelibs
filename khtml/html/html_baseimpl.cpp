@@ -249,12 +249,6 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_SRC:
         setLocation(khtml::parseURL(attr->val()));
         break;
-    case ATTR_ID:
-    case ATTR_NAME:
-        // FIXME: if already attached, doesn't change the frame name
-        // FIXME: frame name conflicts, no unique frame name anymore
-        name = attr->value();
-        break;
     case ATTR_FRAMEBORDER:
     {
         frameBorder = attr->value().toInt();
@@ -291,7 +285,12 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
             getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
         break;
-
+    case ATTR_ID:
+    case ATTR_NAME:
+        // FIXME: if already attached, doesn't change the frame name
+        // FIXME: frame name conflicts, no unique frame name anymore
+        name = attr->value();
+        //fallthrough intentional, let the base handle it
     default:
         HTMLElementImpl::parseAttribute(attr);
     }

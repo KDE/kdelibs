@@ -185,7 +185,7 @@ void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
         if (n->id() == tags[i].id &&
             static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
           tags[i].length++;
-          tags[i].last = n;   // cache this NodeImpl*
+          tags[i].last = static_cast<ElementImpl*>(n); // cache this ElementImpl*
           nrTags = i+1;       // forget about Tags with lower preference
           break;
         }

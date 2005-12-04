@@ -140,7 +140,7 @@ public:
     struct ItemInfo
     {
         int       ref;
-        NodeImpl* nd;
+        ElementImpl* nd;
     };
 
     ElementMappingCache();
@@ -148,17 +148,17 @@ public:
     /**
      Add a pointer as just one of candidates, not neccesserily the proper one
     */
-    void add(const QString& id, NodeImpl* nd);
+    void add(const QString& id, ElementImpl* nd);
 
     /**
      Set the pointer as the definite mapping; it must have already been added
     */
-    void set(const QString& id, NodeImpl* nd);
+    void set(const QString& id, ElementImpl* nd);
 
     /**
      Remove the item; it must have already been added.
     */
-    void remove(const QString& id, NodeImpl* nd);
+    void remove(const QString& id, ElementImpl* nd);
 
     /**
      Returns true if the item exists
@@ -517,14 +517,17 @@ public:
     void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
 
 
-    ElementMappingCache& underDocNamedCache()
-    {
+    ElementMappingCache& underDocNamedCache() {
         return m_underDocNamedCache;
     }
 
     NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
                                                    NodeImpl* base, int type);
     void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
+
+    ElementMappingCache& getElementByIdCache() const {
+        return m_getElementByIdCache;
+    }
 
 signals:
     void finishedParsing();
@@ -625,6 +628,9 @@ protected:
     QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
     QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
+
+    //Cache for getElementById
+    mutable ElementMappingCache m_getElementByIdCache;
 
     khtml::RenderArena* m_renderArena;
 private:

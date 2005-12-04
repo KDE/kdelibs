@@ -228,7 +228,7 @@ namespace KJS {
   class NamedTagLengthDeterminer {
   public:
     struct TagLength {
-      DOM::NodeImpl::Id id; unsigned long length; DOM::NodeImpl *last;
+      DOM::NodeImpl::Id id; unsigned long length; DOM::ElementImpl *last;
     };
     NamedTagLengthDeterminer(const DOM::DOMString& n, TagLength *t, int l)
       : name(n), tags(t), nrTags(l) {}

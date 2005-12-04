@@ -172,10 +172,12 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         // unique id
         setHasID();
         setChanged(); // in case of a CSS selector on id
+        getDocument()->incDOMTreeVersion();
         break;
     case ATTR_CLASS:
     case ATTR_NAME:
         setChanged(); // in case of a CSS selector on class/name
+        getDocument()->incDOMTreeVersion();
         break;
     case ATTR_STYLE:
         setHasStyle();

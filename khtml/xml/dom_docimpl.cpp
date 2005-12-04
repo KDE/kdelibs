@@ -218,10 +218,10 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 // ------------------------------------------------------------------------
 
 
-ElementMappingCache::ElementMappingCache():m_dict(71)
+ElementMappingCache::ElementMappingCache():m_dict(257)
 {}
 
-void ElementMappingCache::add(const QString& id, NodeImpl* nd)
+void ElementMappingCache::add(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -240,7 +240,7 @@ void ElementMappingCache::add(const QString& id, NodeImpl* nd)
     }
 }
 
-void ElementMappingCache::set(const QString& id, NodeImpl* nd)
+void ElementMappingCache::set(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -248,7 +248,7 @@ void ElementMappingCache::set(const QString& id, NodeImpl* nd)
     info->nd = nd;
 }
 
-void ElementMappingCache::remove(const QString& id, NodeImpl* nd)
+void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -605,9 +605,20 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     return attr;
 }
 
-
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
+    QString stringKey = elementId.string();
+
+    ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(stringKey);
+
+    if (!info) 
+        return 0;
+
+    //See if cache has an unambiguous answer.
+    if (info->nd)
+        return info->nd;
+
+    //Now we actually have to walk.
     QPtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
@@ -624,8 +635,10 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
             if(current->isElementNode())
             {
                 ElementImpl *e = static_cast<ElementImpl *>(current);
-                if(e->getAttribute(ATTR_ID) == elementId)
+                if(e->getAttribute(ATTR_ID) == elementId) {
+                    info->nd = e;
                     return e;
+                }
             }
 
             NodeImpl *child = current->firstChild();
@@ -641,7 +654,10 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
         }
     }
 
+    assert(0); //If there is no item with such an ID, we should never get here
+
     //kdDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
+
     return 0;
 }
 

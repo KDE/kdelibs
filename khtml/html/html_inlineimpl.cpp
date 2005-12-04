@@ -176,11 +176,11 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_HREF:
         m_hasAnchor = attr->val() != 0;
+        getDocument()->incDOMTreeVersion();
         break;
     case ATTR_TARGET:
         m_hasTarget = attr->val() != 0;
         break;
-    case ATTR_NAME:
     case ATTR_TITLE:
     case ATTR_REL:
 	break;
