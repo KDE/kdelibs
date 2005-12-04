@@ -53,24 +53,53 @@ namespace ThreadWeaver {
         return g_sm_dep();
     }
 
+    class JobRunHelper : public QObject
+    {
+        Q_OBJECT
+    public:
+        JobRunHelper()
+            : QObject ( 0 )
+        {
+        }
+
+    signals:
+        void started ( Job* );
+        void done ( Job* );
+
+    public:
+
+        void runTheJob ( Thread* th, Job* job )
+        {
+            P_ASSERT ( th == thread() );
+            job->m_mutex->lock();
+            job->m_thread = th;
+            job->m_mutex->unlock();
+
+            emit ( started ( job ) );
+
+            job->run();
+
+            job->m_mutex->lock();
+            job->m_thread = 0;
+            job->setFinished (true);
+            job->m_mutex->unlock();
+            job->resolveDependencies(); // notify dependents
+
+            emit ( done( job ) );
+        }
+    };
+
     void Job::execute(Thread *th)
     {
 	P_ASSERT (sm_dep()->values(this).isEmpty());
+        JobRunHelper helper;
+        connect ( &helper,  SIGNAL ( started ( Job* ) ),
+                  SIGNAL ( started ( Job* ) ) );
+        connect ( &helper,  SIGNAL ( done ( Job* ) ),
+                  SIGNAL ( done ( Job* ) ) );
 
 	debug(3, "Job::execute: executing job in thread %i.\n", th->id());
-        emit ( started ( this ) );
-	m_mutex->lock();
-	m_thread = th;
-	m_mutex->unlock();
-
-        run ();
-
-	m_mutex->lock();
-        m_thread = 0;
-	setFinished (true);
-	m_mutex->unlock();
-        resolveDependencies(); // notify dependents
-        emit ( done( this ) );
+        helper.runTheJob( th, this );
 	debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
     }
 
@@ -124,3 +153,4 @@ namespace ThreadWeaver {
 
 }
 
+#include "Job.moc"

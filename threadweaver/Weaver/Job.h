@@ -26,6 +26,7 @@ namespace ThreadWeaver {
 
     class Thread;
     class WeaverInterface;
+    class JobRunHelper;
 
     /** A Job is a simple abstraction of an action that is to be
         executed in a thread context.
@@ -128,12 +129,18 @@ namespace ThreadWeaver {
 	/** This signal is emitted when the job has been finished. */
 	void done ( Job* );
     protected:
+        friend class JobRunHelper;
+
         /** The method that actually performs the job. It is called from
             execute(). This method is the one to overload it with the
             job's task. */
         virtual void run () = 0;
 	/** Return the thread that executes this job.
-	    Returns zero of the job is not currently executed. */
+	    Returns zero of the job is not currently executed.
+
+	    Do not confuse with QObject::thread() const !
+	    //  @TODO rename to executingThread()
+	    */
 	inline Thread *thread() { return m_thread; }
 	/** Call with status = true to mark this job as done. */
 	inline void setFinished ( bool status ) { m_finished = status; }

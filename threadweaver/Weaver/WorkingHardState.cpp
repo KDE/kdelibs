@@ -43,10 +43,10 @@ namespace ThreadWeaver {
     }
 
     Job* WorkingHardState::applyForWork ( Thread *th,  Job* )
-    {
+    {   // beware: this code is executed in the applying thread!
         debug ( 2, "WorkingHardState::applyForWork: thread %i applies for work "
                 "in %s state.\n", th->id(),
-                m_weaver->state().stateName().toAscii().constData() );
+                qPrintable ( m_weaver->state().stateName() ) );
 
         Job *next = m_weaver->takeFirstAvailableJob();
 

@@ -21,6 +21,7 @@
 
 namespace ThreadWeaver {
 
+    class ThreadRunHelper;
     class WeaverImpl;
     class Job;
 
@@ -78,7 +79,7 @@ namespace ThreadWeaver {
     private:
         WeaverImpl *m_parent;
 
-        Job* m_job;
+        ThreadRunHelper* m_runhelper;
 
 	const unsigned int m_id;
 

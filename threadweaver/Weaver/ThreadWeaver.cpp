@@ -208,6 +208,33 @@ namespace ThreadWeaver {
       activity. Observers can be attached to Weavers and will disconnect
       automatically when they are deleted.</p>
 
+      \section Job Execution
+
+      <p>In general, jobs are executed in the order they are queued, if they
+      have no unresolved dependencies. This behaviour can be used to balance
+      I/O, network and CPU load. The SMIV example shows how this can be done.
+      </p>
+
+      \section Emitting Signals from Jobs
+      <p>To notify the application's GUI of progress or other events, it may
+      be desirable to emit signals from the Job objects that can be connected
+      to the main thread. Since the job will be executed in another thread,
+      such signals are delivered asynchroneously.</p>
+
+      <p>There is a pitfall to this that Job class developers need to be aware
+      of. The Job objects are usually created in the main thread, and
+      Job::thread() will return the GUI thread's id because of that. When
+      signals are emitted, this will fool Qt to consider those to be signals
+      between QObjects owned by the same thread, and deliver them
+      syncroneously. The solution is to not emit the signals directly, but
+      create a helper QObject derived class that has the same signals, create
+      an object of this class when the job is executed, and emit the signals
+      from there. Since this object will be created in the context of the
+      executing thread, the signals will be delivered asyncronously again.</p>
+
+      <p>The Job class in the ThreadWeaver library itself contains such a
+      helper class that can be used as a reference for this approach.</p>
+
       \section Tests Example Code
       <p>Example code is available in the Tests directory. The Construction
       test shows how to use ThreadWeaver in imperative (not event oriented)

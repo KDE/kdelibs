@@ -82,14 +82,16 @@ QString SMIVItem::desc2() const
 void SMIVItem::fileLoaderReady( Job* )
 {
     debug ( 3, "SMIVItem::fileLoaderReady: %s loaded.\n",
-            m_name.toAscii().constData() );
+            qPrintable ( m_name ) );
 }
 
 void SMIVItem::imageLoaderReady( Job* )
 {
     debug ( 3, "SMIVItem::imageLoaderReady: %s processed.\n",
-            m_name.toAscii().constData() );
+            qPrintable ( m_name ) );
     delete m_fileloader; m_fileloader = 0;
+    // this event has to be receive *before* computeThumbReady:
+    P_ASSERT ( m_imageloader != 0 );
     QSize size = m_imageloader->image().size();
     m_desc1 = QString("%1x%2 Pixels")
               .arg( size.width() )
@@ -99,7 +101,7 @@ void SMIVItem::imageLoaderReady( Job* )
 void SMIVItem::computeThumbReady( Job* )
 {
     debug ( 3, "SMIVItem::computeThumbReady: %s scaled.\n",
-            m_name.toAscii().constData() );
+            qPrintable ( m_name ) );
     delete m_imageloader; m_imageloader = 0;
     emit ( thumbReady ( this ) );
 }

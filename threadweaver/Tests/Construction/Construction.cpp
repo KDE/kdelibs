@@ -23,6 +23,7 @@ extern "C" {
 #include <ThreadWeaver.h>
 #include <Thread.h>
 #include <DebuggingAids.h>
+#include <QtDebug>
 
 using namespace ThreadWeaver;
 
@@ -54,7 +55,7 @@ int main ( int argc,  char** argv )
     const int NoOfThreads = 4 ;
     const int NoOfJobs = NoOfThreads * 4  ; // number of jobs for every thread
     const int Multiplier = 250; // [0..9]* Multiplier sleep time for each job
-    ThreadWeaver::setDebugLevel ( true, 3);
+    ThreadWeaver::setDebugLevel ( true, 4);
     QCoreApplication app ( argc,  argv );
     ThreadWeaver::Weaver weaver ( 0, NoOfThreads );
     DummyJob *dummies[ NoOfJobs];
@@ -78,5 +79,8 @@ int main ( int argc,  char** argv )
         delete dummies[count];
     }
 
+    qDebug() << "main() exits here, the Weaver is destructed when it goes out"
+             << " of scope " << endl
+             << "... let's see if that works:" << endl;
     return 0;
 }
