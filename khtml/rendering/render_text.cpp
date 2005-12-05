@@ -32,7 +32,7 @@
 
 #include "rendering/render_text.h"
 #include "rendering/render_canvas.h"
-// #include "rendering/break_lines.h"
+#include "rendering/break_lines.h"
 #include "rendering/render_arena.h"
 #include "xml/dom_nodeimpl.h"
 
