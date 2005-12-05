@@ -24,7 +24,7 @@ libkabc_la_LIBADD = vcardparser/libvcards.la $(LIB_KIO) \
 libkabc_la_COMPILE_FIRST = addressee.h
 
 libkabc_la_SOURCES = \
-  address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
+  address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp \
   distributionlist.cpp distributionlistdialog.cpp distributionlisteditor.cpp \
   errorhandler.cpp field.cpp formatfactory.cpp geo.cpp key.cpp \
   phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
@@ -38,7 +38,7 @@ libkabc_la_SOURCES = \
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
-  agent.h distributionlist.h distributionlistdialog.h distributionlisteditor.h \
+  distributionlist.h distributionlistdialog.h distributionlisteditor.h \
   errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \

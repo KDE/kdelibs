@@ -30,7 +30,6 @@
 #include <kurl.h>
 
 #include "address.h"
-#include "agent.h"
 #include "geo.h"
 #include "key.h"
 #include "phonenumber.h"

@@ -21,7 +21,6 @@
 #include <qdatastream.h>
 #include <qstring.h>
 
-#include "agent.h"
 #include "key.h"
 #include "picture.h"
 #include "secrecy.h"
@@ -131,9 +130,6 @@ QString VCardTool::createVCards( const Addressee::List& list, VCard::Version ver
       if ( hasLabel )
         card.addLine( labelLine );
     }
-
-    // AGENT
-    card.addLine( createAgent( version, (*addrIt).agent() ) );
 
     // BDAY
     card.addLine( VCardLine( "BDAY", createDateTime( (*addrIt).birthday() ) ) );
@@ -397,10 +393,6 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           address.setType( type );
           addr.insertAddress( address );
         }
-
-        // AGENT
-        else if ( identifier == "agent" )
-          addr.setAgent( parseAgent( *lineIt ) );
 
         // BDAY
         else if ( identifier == "bday" )
@@ -782,57 +774,6 @@ VCardLine VCardTool::createSecrecy( const Secrecy &secrecy )
     line.setValue( "PRIVATE" );
   else if ( type == Secrecy::Confidential )
     line.setValue( "CONFIDENTIAL" );
-
-  return line;
-}
-
-Agent VCardTool::parseAgent( const VCardLine &line )
-{
-  Agent agent;
-
-  const QStringList params = line.parameterList();
-  if ( params.findIndex( "value" ) != -1 ) {
-    if ( line.parameter( "value" ).toLower() == "uri" )
-      agent.setUrl( line.value().asString() );
-  } else {
-    QString str = line.value().asString();
-    str.replace( "\\n", "\r\n" );
-    str.replace( "\\N", "\r\n" );
-    str.replace( "\\;", ";" );
-    str.replace( "\\:", ":" );
-    str.replace( "\\,", "," );
-
-    const Addressee::List list = parseVCards( str );
-    if ( list.count() > 0 ) {
-      Addressee *addr = new Addressee;
-      *addr = list[ 0 ];
-      agent.setAddressee( addr );
-    }
-  }
-
-  return agent;
-}
-
-VCardLine VCardTool::createAgent( VCard::Version version, const Agent &agent )
-{
-  VCardLine line( "AGENT" );
-
-  if ( agent.isIntern() ) {
-    if ( agent.addressee() != 0 ) {
-      Addressee::List list;
-      list.append( *agent.addressee() );
-
-      QString str = createVCards( list, version );
-      str.replace( "\r\n", "\\n" );
-      str.replace( ";", "\\;" );
-      str.replace( ":", "\\:" );
-      str.replace( ",", "\\," );
-      line.setValue( str );
-    }
-  } else if ( !agent.url().isEmpty() ) {
-    line.setValue( agent.url() );
-    line.addParameter( "value", "URI" );
-  }
 
   return line;
 }

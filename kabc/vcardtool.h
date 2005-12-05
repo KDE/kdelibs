@@ -28,7 +28,6 @@ class QDateTime;
 
 namespace KABC {
 
-class Agent;
 class Key;
 class Picture;
 class Secrecy;
@@ -73,8 +72,6 @@ class KABC_EXPORT VCardTool
     Secrecy parseSecrecy( const VCardLine &line );
     VCardLine createSecrecy( const Secrecy &secrecy );
 
-    Agent parseAgent( const VCardLine &line );
-    VCardLine createAgent( VCard::Version version, const Agent &agent );
 
     QMap<QString, int> mAddressTypeMap;
     QMap<QString, int> mPhoneTypeMap;
