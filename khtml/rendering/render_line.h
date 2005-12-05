@@ -158,6 +158,8 @@ public:
         m_afterPageBreak = false;
     }
 
+    ~InlineFlowBox();
+
     virtual bool isInlineFlowBox() const { return true; }
 
     InlineBox* firstChild() const  { return m_firstChild; }
