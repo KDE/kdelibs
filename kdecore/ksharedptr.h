@@ -49,54 +49,54 @@ public:
      * Creates a null pointer.
      */
     KSharedPtr()
-        : ptr(0) { }
+        : d(0) { }
     /**
      * Creates a new pointer.
      * @param p the pointer
      */
     KSharedPtr( T* p ) // TODO: Make explicit
-        : ptr(p) { if(ptr) ptr->ref.ref(); }
+        : d(p) { if(d) d->ref.ref(); }
 
     /**
      * Copies a pointer.
-     * @param p the pointer to copy
+     * @param o the pointer to copy
      */
-    KSharedPtr( const KSharedPtr& p )
-        : ptr(p.ptr) { if(ptr) ptr->ref.ref(); }
+    KSharedPtr( const KSharedPtr& o )
+        : d(o.d) { if(d) d->ref.ref(); }
 
     /**
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { if (ptr && !ptr->ref.deref()) delete ptr; }
+    ~KSharedPtr() { if (d && !d->ref.deref()) delete d; }
 
-    inline KSharedPtr<T>& operator= ( const KSharedPtr& p ) { attach(p); return *this; }
+    inline KSharedPtr<T>& operator= ( const KSharedPtr& o ) { attach(o); return *this; }
     inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
-    inline bool operator== ( const KSharedPtr& p ) const { return ( ptr == p.ptr ); }
-    inline bool operator!= ( const KSharedPtr& p ) const { return ( ptr != p.ptr ); }
-    inline bool operator== ( const T* p ) const { return ( ptr == p ); }
-    inline bool operator!= ( const T* p ) const { return ( ptr != p ); }
-    inline operator bool() const { return ( ptr != 0 ); }
+    inline bool operator== ( const KSharedPtr& o ) const { return ( d == o.d ); }
+    inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
+    inline bool operator== ( const T* p ) const { return ( d == p ); }
+    inline bool operator!= ( const T* p ) const { return ( d != p ); }
+    inline operator bool() const { return ( d != 0 ); }
 
     /**
      * @return the pointer
      */
-    inline T* data() { return ptr; }
+    inline T* data() { return d; }
 
     /**
      * @return the pointer
      */
-    inline const T* data() const { return ptr; }
+    inline const T* data() const { return d; }
 
     /**
      * @return a const pointer to the shared object.
      */
-    inline const T* constData() const { return ptr; }
+    inline const T* constData() const { return d; }
 
-    inline const T& operator*() const { Q_ASSERT(ptr); return *ptr; }
-    inline T& operator*() { Q_ASSERT(ptr); return *ptr; }
-    inline const T* operator->() const { Q_ASSERT(ptr); return ptr; }
-    inline T* operator->() { Q_ASSERT(ptr); return ptr; }
+    inline const T& operator*() const { Q_ASSERT(d); return *d; }
+    inline T& operator*() { Q_ASSERT(d); return *d; }
+    inline const T* operator->() const { Q_ASSERT(d); return d; }
+    inline T* operator->() { Q_ASSERT(d); return d; }
 
     /**
      * Attach the given pointer to the KSharedPtr.
@@ -105,10 +105,10 @@ public:
      */
     inline void attach(T *p)
     {
-        if (ptr != p) {
+        if (d != p) {
             T *x = p;
             if (x) x->ref.ref();
-            x = qAtomicSetPtr(&ptr, x);
+            x = qAtomicSetPtr(&d, x);
             if (x && !x->ref.deref())
                 delete x;
         }
@@ -118,20 +118,20 @@ public:
      * Attach the given pointer to the KSharedPtr.
      * @see KSharedPtr<T>::attach(T *p)
      */
-    inline void attach(const KSharedPtr& p) { attach(p.ptr); }
+    inline void attach(const KSharedPtr& o) { attach(o.d); }
 
     /**
      * Returns the number of references.
      * @return the number of references
      */
-    inline int count() const { return ptr ? (int)ptr->ref : 0; } // for debugging purposes
+    inline int count() const { return d ? (int)d->ref : 0; } // for debugging purposes
 
     /**
      * Detach the pointer by attaching a new copy of the pointer.
      * The new copy is created only if the pointer is shared by other pointers
      * and is not null.
      */
-    inline void detach() { if (ptr && ptr->ref>1) attach(new T(*ptr)); }
+    inline void detach() { if (d && d->ref>1) attach(new T(*d)); }
 
     /**
      * @return Whether this is the only shared pointer pointing to
@@ -154,7 +154,7 @@ public:
      */
     template <class U>
     static KSharedPtr<T> staticCast( const KSharedPtr<U>& other ) {
-        return KSharedPtr<T>( static_cast<T *>( other.ptr ) );
+        return KSharedPtr<T>( static_cast<T *>( other.d ) );
     }
     /**
      * Convert KSharedPtr<U> to KSharedPtr<T>, using a dynamic_cast.
@@ -169,11 +169,11 @@ public:
      */
     template <class U>
     static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
-        return KSharedPtr<T>( dynamic_cast<T *>( other.ptr ) );
+        return KSharedPtr<T>( dynamic_cast<T *>( other.d ) );
     }
 
 private:
-    T* ptr;
+    T* d;
 };
 
 #endif // KSHAREDPTR_H
