@@ -34,6 +34,7 @@ class SharedString : public KShared
 {
 public:
     SharedString( const QString& data ) : mStr( data ) {}
+    bool operator == (const SharedString &o) const { return mStr == o.mStr; }
     QString mStr;
 };
 
@@ -44,7 +45,7 @@ void KSharedPtrTest::testWithStrings()
 	SharedString s3 = QString::fromLatin1( "Bar" );
 
 	KSharedPtr<SharedString> u = new SharedString( s );
-	COMPARE( u->mStr, s.mStr );
+	COMPARE( *u, s );
 	VERIFY( u.isUnique() );
 
 	KSharedPtr<SharedString> v;
@@ -53,11 +54,19 @@ void KSharedPtrTest::testWithStrings()
 
 	v = u;
 	VERIFY( !u.isUnique() );
-	COMPARE( v->mStr, s.mStr );
+	COMPARE( *v, s );
 	VERIFY( !v.isUnique() );
 
-#if 0
-	KSharedPtr<SharedString> w = v.copy();
+	KSharedPtr<SharedString> w = v;
+	VERIFY( !u.isUnique() );
+	COMPARE( u.count(), 3 );
+	VERIFY( !v.isUnique() );
+	COMPARE( v.count(), 3 );
+	VERIFY( !w.isUnique() );
+	COMPARE( v.count(), 3 );
+
+	w.detach();
+	VERIFY( !u.isUnique() );
 	COMPARE( *u, s );
 	VERIFY( !u.isUnique() );
 	COMPARE( *v, s );
@@ -65,10 +74,11 @@ void KSharedPtrTest::testWithStrings()
 	COMPARE( *w, s );
 	VERIFY( w.isUnique() );
 
-	v->clear();
-	VERIFY( u->isEmpty() );
-	VERIFY( !u.isUnique() );
-	VERIFY( v->isEmpty() );
+//	v->clear();
+	v = 0;
+	VERIFY( u );
+	VERIFY( u.isUnique() );
+	VERIFY( !v );
 	VERIFY( !v.isUnique() );
 	COMPARE( *w, s );
 	VERIFY( w.isUnique() );
@@ -80,12 +90,11 @@ void KSharedPtrTest::testWithStrings()
 	VERIFY( !v.isUnique() );
 	COMPARE( *w, s );
 	VERIFY( !w.isUnique() );
-#endif
 
 	u->mStr = s2.mStr;
-	COMPARE( u->mStr, s2.mStr );
+	COMPARE( *u, s2 );
 	VERIFY( !u.isUnique() );
-	COMPARE( v->mStr, s2.mStr );
+	COMPARE( *v, s2 );
 	VERIFY( !v.isUnique() );
 //	COMPARE( *w, s2 );
 //	VERIFY( !w.isUnique() );
