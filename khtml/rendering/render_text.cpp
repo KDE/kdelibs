@@ -32,7 +32,7 @@
 
 #include "rendering/render_text.h"
 #include "rendering/render_canvas.h"
-#include "rendering/break_lines.h"
+// #include "rendering/break_lines.h"
 #include "rendering/render_arena.h"
 #include "xml/dom_nodeimpl.h"
 
@@ -211,7 +211,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
 
-        int md = thickness*thickness; // max-dist
+        int md = thickness*thickness; // max-dist^2
 
         // blur map (division cache)
         float *bmap = (float*)alloca(sizeof(float)*(md+1));
