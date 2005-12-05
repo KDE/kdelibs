@@ -124,7 +124,7 @@ public:
      * Returns the number of references.
      * @return the number of references
      */
-    inline int count() const { return ptr->ref; } // for debugging purposes
+    inline int count() const { return ptr ? (int)ptr->ref : 0; } // for debugging purposes
 
     /**
      * Detach the pointer by attaching a new copy of the pointer.
