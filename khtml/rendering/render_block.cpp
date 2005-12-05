@@ -187,7 +187,8 @@ void RenderBlock::updateFirstLetter()
             while ( length < oldText->l &&
                     ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
                 length++;
-            if (!( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
+            if ( length < oldText->l && 
+                    !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
             RenderTextFragment* remainingText =
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
