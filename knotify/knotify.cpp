@@ -97,6 +97,7 @@ class KNotifyManager : public aKode::Player::Manager {
     KNotify *d;
 public:
     KNotifyManager(KNotify* p) : d(p) {};
+    virtual ~KNotifyManager(){}
     void eofEvent() {
         QApplication::postEvent( d, new QCustomEvent( 3001 ) );
     }
