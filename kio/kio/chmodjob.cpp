@@ -194,13 +194,13 @@ void ChmodJob::slotResult( KIO::Job * job )
     switch ( state )
     {
         case STATE_LISTING:
-            subjobs.remove(job);
+            removeSubjob(job);
             m_lstItems.removeFirst();
             kdDebug(7007) << "ChmodJob::slotResult -> processList" << endl;
             processList();
             return;
         case STATE_CHMODING:
-            subjobs.remove(job);
+            removeSubjob(job);
             kdDebug(7007) << "ChmodJob::slotResult -> chmodNextFile" << endl;
             chmodNextFile();
             return;

@@ -30,6 +30,7 @@
 #include <qwindowdefs.h>
 
 #include <dcopobject.h>
+#include <q3ptrlist.h>
 
 namespace KIO {
 
@@ -98,7 +99,7 @@ namespace KIO {
      *    KIO::Scheduler::disconnectSlave(slave);
      * \endcode
      *
-     * Note that you need to explicitly disconnect the slave when the 
+     * Note that you need to explicitly disconnect the slave when the
      * connection goes down, so your error handler should contain:
      * \code
      *    if (error == KIO::ERR_CONNECTION_BROKEN)
@@ -122,7 +123,7 @@ namespace KIO {
         ~Scheduler();
 
         /**
-         * Register @p job with the scheduler. 
+         * Register @p job with the scheduler.
          * The default is to create a new slave for the job if no slave
          * is available. This can be changed by calling scheduleJob.
 	 * @param job the job to register
@@ -169,7 +170,7 @@ namespace KIO {
         { self()->_putSlaveOnHold(job, url); }
 
         /**
-         * Removes any slave that might have been put on hold. If a slave 
+         * Removes any slave that might have been put on hold. If a slave
          * was put on hold it will be killed.
          */
         static void removeSlaveOnHold()
@@ -243,7 +244,7 @@ namespace KIO {
          */
         static void registerWindow(QWidget *wid)
         { self()->_registerWindow(wid); }
-        
+
         /**
          * @internal
          * Unregisters the window registered by registerWindow().
@@ -274,7 +275,7 @@ namespace KIO {
         { return QObject::connect(sender, signal, member); }
 
         /**
-         * When true, the next job will check whether KLauncher has a slave 
+         * When true, the next job will check whether KLauncher has a slave
          * on hold that is suitable for the job.
 	 * @param b true when KLauncher has a job on hold
          */
@@ -330,10 +331,10 @@ namespace KIO {
         void _checkSlaveOnHold(bool b);
         void _publishSlaveOnHold();
         void _registerWindow(QWidget *wid);
-        
+
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
-        
+
 
         QTimer slaveTimer;
         QTimer coSlaveTimer;

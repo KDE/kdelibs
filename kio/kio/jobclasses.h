@@ -23,8 +23,7 @@
 #define __kio_jobclasses_h__
 
 #include <qobject.h>
-#include <q3ptrlist.h>
-#include <qstring.h>
+#include <qlinkedlist.h>
 #include <qstringlist.h>
 #include <qpointer.h>
 
@@ -99,6 +98,13 @@ namespace KIO {
          * @return the progress id for this job, as returned by uiserver
          */
         int progressId() const { return m_progressId; }
+
+        /**
+	 * Sets the progress id for this job.
+	 * SimpleJob calls this with the value it gets from uiserver.
+	 * @internal
+         */
+        void setProgressId( int id ) { m_progressId = id; }
 
         /**
 	 * Returns the error text if there has been an error.
@@ -397,7 +403,8 @@ namespace KIO {
          * Called whenever a subjob finishes.
          * Default implementation checks for errors and propagates
          * to parent job, then calls removeSubjob.
-         * Override if you don't want subjobs errors to be propagated.
+         * Override if you don't want subjobs errors to be propagated,
+         * or if you want this job to keep running after the last subjob finished.
 	 * @param job the subjob
 	 * @see result()
          */
@@ -436,23 +443,26 @@ namespace KIO {
         virtual void addSubjob( Job *job, bool inheritMetaData=true );
 
         /**
-         * Mark a sub job as being done. If it's the last to
-         * wait on the job will emit a result - jobs with
-         * two steps might want to override slotResult
-         * in order to avoid calling this method.
+         * Mark a sub job as being done.
+         *
+         * KDE4 change: this doesn't terminate the parent job anymore, call emitResult to do that.
 	 *
-	 * @param job the subjob to add
-         */
-        virtual void removeSubjob( Job *job );
-        /**
-         * Overloaded version of removeSubjob
-         * @param job the subjob to remove
+	 * @param job the subjob to remove
          * @param mergeMetaData if set, the metadata received by the subjob is
          *                      merged into this job.
-         * @param emitResultIfLast if this was the last subjob, emit result,
-         *                         i.e. terminate this job.
          */
-        void removeSubjob( Job *job, bool mergeMetaData, bool emitResultIfLast ); // KDE4: merge with above, with =true to both
+        void removeSubjob( Job *job, bool mergeMetaData = false );
+
+        /**
+         * @return true if we still have subjobs running
+         * @since 4.0
+         */
+        bool hasSubjobs() const { return !m_subjobs.isEmpty(); }
+
+        /**
+         * @return the full list of sub jobs
+         */
+        QList<Job *> subjobs() const { return m_subjobs; }
 
         /**
          * Utility function for inherited jobs.
@@ -495,18 +505,21 @@ namespace KIO {
                EF_ListJobUnrestricted = (1 << 3) };
         int &extraFlags();
 
-        Q3PtrList<Job> subjobs;
         int m_error;
         QString m_errorText;
         unsigned long m_percent;
-        int m_progressId; // for uiserver
-        QTimer *m_speedTimer;
-        QPointer<QWidget> m_window;
-        MetaData m_outgoingMetaData;
         MetaData m_incomingMetaData;
+        MetaData m_outgoingMetaData;
+
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
+        // Could be a QSet, but well, it's very typical to have only one item in this list.
+        QList<Job *> m_subjobs;
+        int m_progressId; // for uiserver
+        QTimer *m_speedTimer;
+        QPointer<QWidget> m_window;
+
         class JobPrivate;
         JobPrivate *d;
     };
@@ -1122,6 +1135,8 @@ namespace KIO {
 	 */
         MultiGetJob(const KURL& url, bool showProgressInfo);
 
+        virtual ~MultiGetJob();
+
         /**
 	 * @internal
          * Called by the scheduler when a @p slave gets to
@@ -1177,14 +1192,16 @@ namespace KIO {
            long id;
            KURL url;
            MetaData metaData;
+           bool operator==( const GetRequest& req ) const { return req.id == id; }
         };
         bool findCurrentEntry();
-        void flushQueue(Q3PtrList<GetRequest> &queue);
+        void flushQueue(QLinkedList<GetRequest> &queue);
 
-        Q3PtrList<GetRequest> m_waitQueue;
-        Q3PtrList<GetRequest> m_activeQueue;
+        typedef QLinkedList<GetRequest> RequestQueue;
+        RequestQueue m_waitQueue;
+        RequestQueue m_activeQueue;
         bool b_multiGetActive;
-        GetRequest *m_currentEntry;
+        GetRequest m_currentEntry;
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:

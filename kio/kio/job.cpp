@@ -73,7 +73,6 @@ extern "C" {
 #include <dcopclient.h>
 
 using namespace KIO;
-template class Q3PtrList<KIO::Job>;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
@@ -153,7 +152,7 @@ KIO::filesize_t Job::getProcessedSize()
 void Job::addSubjob(Job *job, bool inheritMetaData)
 {
     //kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
-    subjobs.append(job);
+    m_subjobs.append(job);
 
     connect( job, SIGNAL(result(KIO::Job*)),
              SLOT(slotResult(KIO::Job*)) );
@@ -171,20 +170,13 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     job->setWindow( m_window );
 }
 
-void Job::removeSubjob( Job *job )
+void Job::removeSubjob( Job *job, bool mergeMetaData )
 {
-    removeSubjob( job, false, true );
-}
-
-void Job::removeSubjob( Job *job, bool mergeMetaData, bool emitResultIfLast )
-{
-    //kdDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs.count() << endl;
+    //kdDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << m_subjobs.count() << endl;
     // Merge metadata from subjob
     if ( mergeMetaData )
         m_incomingMetaData += job->metaData();
-    subjobs.remove(job);
-    if ( subjobs.isEmpty() && emitResultIfLast )
-        emitResult();
+    m_subjobs.removeAll(job);
 }
 
 void Job::emitPercent( KIO::filesize_t processedSize, KIO::filesize_t totalSize )
@@ -230,10 +222,11 @@ void Job::kill( bool quietly )
 {
   kdDebug(7007) << "Job::kill this=" << this << " " << className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
-  Q3PtrListIterator<Job> it( subjobs );
-  for ( ; it.current() ; ++it )
+  QList<Job *>::const_iterator it = m_subjobs.begin();
+  const QList<Job *>::const_iterator end = m_subjobs.end();
+  for ( ; it != end ; ++it )
      (*it)->kill( true );
-  subjobs.clear();
+  m_subjobs.clear();
 
   if ( ! quietly ) {
     m_error = ERR_USER_CANCELED;
@@ -257,6 +250,8 @@ void Job::slotResult( Job *job )
         m_errorText = job->errorText();
     }
     removeSubjob(job);
+    if ( m_subjobs.isEmpty() )
+        emitResult();
 }
 
 void Job::slotSpeed( KIO::Job*, unsigned long speed )
@@ -503,10 +498,10 @@ void SimpleJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
-    if (m_window)
+    if (window())
     {
        QString id;
-       addMetaData("window-id", id.setNum((ulong)m_window->winId()));
+       addMetaData("window-id", id.setNum((ulong)window()->winId()));
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
@@ -520,9 +515,9 @@ void SimpleJob::start(Slave *slave)
         addMetaData("no-auth-prompt", "true");
     }
 
-    if (!m_outgoingMetaData.isEmpty())
+    if (!outgoingMetaData().isEmpty())
     {
-       KIO_ARGS << m_outgoingMetaData;
+       KIO_ARGS << outgoingMetaData();
        slave->send( CMD_META_DATA, packedArgs );
     }
 
@@ -548,7 +543,7 @@ void SimpleJob::slotFinished( )
     // Return slave to the scheduler
     slaveDone();
 
-    if (subjobs.isEmpty())
+    if (!hasSubjobs())
     {
         if ( !m_error && (m_command == CMD_MKDIR || m_command == CMD_RENAME ) )
         {
@@ -613,9 +608,9 @@ void SimpleJob::slotConnected()
 
 void SimpleJob::slotNeedProgressId()
 {
-    if ( !m_progressId )
-        m_progressId = Observer::self()->newJob( this, false );
-    m_slave->setProgressId( m_progressId );
+    if ( !progressId() )
+        setProgressId( Observer::self()->newJob( this, false ) );
+    m_slave->setProgressId( progressId() );
 }
 
 void SimpleJob::slotTotalSize( KIO::filesize_t size )
@@ -1184,7 +1179,7 @@ void TransferJob::slotResult( KIO::Job *job)
       m_subJob = 0; // No action required
       resume(); // Make sure we get the remaining data.
    }
-   removeSubjob( job, false, false ); // Remove job, but don't kill this job.
+   removeSubjob( job );
 }
 
 TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
@@ -1714,7 +1709,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             if (!KProtocolManager::autoResume() && !m_overwrite)
             {
                 QString newPath;
-                KIO::Job* job = ( !m_progressId && parentJob() ) ? parentJob() : this;
+                KIO::Job* job = ( !progressId() && parentJob() ) ? parentJob() : this;
                 // Ask confirmation about resuming previous transfer
                 res = Observer::self()->open_RenameDlg(
                       job, i18n("File Already Exists"),
@@ -1910,6 +1905,8 @@ void FileCopyJob::slotResult( KIO::Job *job)
       d->m_delJob = 0; // Finished
    }
    removeSubjob(job);
+   if ( !hasSubjobs() )
+       emitResult();
 }
 
 FileCopyJob *KIO::file_copy( const KURL& src, const KURL& dest, int permissions,
@@ -2029,6 +2026,8 @@ void ListJob::slotResult( KIO::Job * job )
     // If we can't list a subdir, the result is still ok
     // This is why we override Job::slotResult() - to skip error checking
     removeSubjob( job );
+    if ( !hasSubjobs() )
+        emitResult();
 }
 
 void ListJob::slotRedirection( const KURL & url )
@@ -2216,8 +2215,8 @@ void CopyJob::slotResultStating( Job *job )
             // this info isn't really reliable (thanks to MS FTP servers).
             // We'll assume a file, and try to download anyway.
             kdDebug(7007) << "Error while stating source. Activating hack" << endl;
-            subjobs.remove( job );
-            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            removeSubjob( job );
+            assert ( !hasSubjobs() ); // We should have only one job at a time ...
             struct CopyInfo info;
             info.permissions = (mode_t) -1;
             info.mtime = (time_t) -1;
@@ -2261,8 +2260,8 @@ void CopyJob::slotResultStating( Job *job )
             m_dest.setPath(sLocalPath);
         }
 
-        subjobs.remove( job );
-        assert ( subjobs.isEmpty() );
+        removeSubjob( job );
+        assert ( !hasSubjobs() );
 
         // After knowing what the dest is, we can start stat'ing the first src.
         statCurrentSrc();
@@ -2299,8 +2298,8 @@ void CopyJob::slotResultStating( Job *job )
     else
         srcurl = ((SimpleJob*)job)->url();
 
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+    removeSubjob( job );
+    assert ( !hasSubjobs() ); // We should have only one job at a time ...
 
     if ( isDir
          // treat symlinks as files (no recursion)
@@ -2352,8 +2351,8 @@ void CopyJob::slotResultStating( Job *job )
 
 void CopyJob::slotReport()
 {
-    // If showProgressInfo was set, m_progressId is > 0.
-    Observer * observer = m_progressId ? Observer::self() : 0L;
+    // If showProgressInfo was set, progressId() is > 0.
+    Observer * observer = progressId() ? Observer::self() : 0L;
     switch (state) {
         case STATE_COPYING_FILES:
             emit processedFiles( this, m_processedFiles );
@@ -2737,8 +2736,8 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                     }
 
                     assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
-                    subjobs.remove( job );
-                    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+                    removeSubjob( job );
+                    assert ( !hasSubjobs() ); // We should have only one job at a time ...
 
                     // We need to stat the existing dir, to get its last-modification time
                     KURL existingDest( (*it).uDest );
@@ -2767,8 +2766,8 @@ void CopyJob::slotResultCreatingDirs( Job * job )
 
     m_processedDirs++;
     //emit processedDirs( this, m_processedDirs );
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+    removeSubjob( job );
+    assert ( !hasSubjobs() ); // We should have only one job at a time ...
     createNextDir();
 }
 
@@ -2788,8 +2787,8 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     const KIO::filesize_t destsize = entry.numberValue( KIO::UDS_SIZE );
     const QString linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
 
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+    removeSubjob( job );
+    assert ( !hasSubjobs() ); // We should have only one job at a time ...
 
     // Always multi and skip (since there are files after that)
     RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
@@ -2933,7 +2932,7 @@ void CopyJob::createNextDir()
     else // we have finished creating dirs
     {
         emit processedDirs( this, m_processedDirs ); // make sure final number appears
-        if (m_progressId) Observer::self()->slotProcessedDirs( this, m_processedDirs );
+        if (progressId()) Observer::self()->slotProcessedDirs( this, m_processedDirs );
 
         state = STATE_COPYING_FILES;
         m_processedFiles++; // Ralf wants it to start at 1, not 0
@@ -2966,8 +2965,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
             if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
                  || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
             {
-                subjobs.remove( job );
-                assert ( subjobs.isEmpty() );
+                removeSubjob( job );
+                assert ( !hasSubjobs() );
                 // We need to stat the existing file, to get its last-modification time
                 KURL existingFile( (*it).uDest );
                 SimpleJob * newJob = KIO::stat( existingFile, false, 2, false );
@@ -2999,8 +2998,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
              && !qobject_cast<KIO::DeleteJob *>( job ) // Deleting source not already done
              )
         {
-            subjobs.remove( job );
-            assert ( subjobs.isEmpty() );
+            removeSubjob( job );
+            assert ( !hasSubjobs() );
             // The only problem with this trick is that the error handling for this del operation
             // is not going to be right... see 'Very special case' above.
             KIO::Job * newjob = KIO::del( (*it).uSource, false /*don't shred*/, false /*no GUI*/ );
@@ -3028,8 +3027,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
 
     //kdDebug(7007) << files.count() << " files remaining" << endl;
 
-    removeSubjob( job, true, false ); // merge metadata
-    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+    removeSubjob( job, true ); // merge metadata
+    assert( !hasSubjobs() ); // We should have only one job at a time ...
     copyNextFile();
 }
 
@@ -3110,8 +3109,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     if (m_reportTimer)
         m_reportTimer->start(REPORT_TIMEOUT,false);
 
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() );
+    removeSubjob( job );
+    assert ( !hasSubjobs() );
     switch ( res ) {
         case R_CANCEL:
             m_error = ERR_USER_CANCELED;
@@ -3399,8 +3398,8 @@ void CopyJob::slotResultDeletingDirs( Job * job )
         // because the user pressed Skip for a given file in it.
         // Let's not display "Could not remove dir ..." for each of those dir !
     }
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() );
+    removeSubjob( job );
+    assert ( !hasSubjobs() );
     deleteNextDir();
 }
 
@@ -3408,8 +3407,8 @@ void CopyJob::slotResultRenaming( Job* job )
 {
     int err = job->error();
     const QString errText = job->errorText();
-    removeSubjob( job, true, false ); // merge metadata
-    assert ( subjobs.isEmpty() );
+    removeSubjob( job, true ); // merge metadata
+    assert ( !hasSubjobs() );
     // Determine dest again
     KURL dest = m_dest;
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
@@ -3592,7 +3591,7 @@ void CopyJob::slotResult( Job *job )
     //kdDebug(7007) << "CopyJob::slotResult() state=" << (int) state << endl;
     // In each case, what we have to do is :
     // 1 - check for errors and treat them
-    // 2 - subjobs.remove(job);
+    // 2 - removeSubjob(job);
     // 3 - decide what to do next
 
     switch ( state ) {
@@ -3613,8 +3612,8 @@ void CopyJob::slotResult( Job *job )
                 return;
             }
 
-            subjobs.remove( job );
-            assert ( subjobs.isEmpty() );
+            removeSubjob( job );
+            assert ( !hasSubjobs() );
 
             statNextSrc();
             break;
@@ -3764,7 +3763,7 @@ void DeleteJob::slotStart()
 //aleXXX
 void DeleteJob::slotReport()
 {
-   if (m_progressId==0)
+   if (progressId()==0)
       return;
 
    Observer * observer = Observer::self();
@@ -3851,7 +3850,7 @@ void DeleteJob::statNextSrc()
         Scheduler::scheduleJob(job);
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL << endl;
         addSubjob(job);
-        //if ( m_progressId ) // Did we get an ID from the observer ?
+        //if ( progressId() ) // Did we get an ID from the observer ?
         //  Observer::self()->slotDeleting( this, *it ); // show asap
     } else
     {
@@ -4009,8 +4008,8 @@ void DeleteJob::slotResult( Job *job )
         const KURL url = static_cast<SimpleJob*>(job)->url();
         const bool isLink = entry.isLink();
 
-        subjobs.remove( job );
-        assert( subjobs.isEmpty() );
+        removeSubjob( job );
+        assert( !hasSubjobs() );
 
         // Is it a file or a dir ?
         if (entry.isDir() && !isLink)
@@ -4058,8 +4057,8 @@ void DeleteJob::slotResult( Job *job )
         {
             // Try deleting nonetheless, it may be empty (and non-listable)
         }
-        subjobs.remove( job );
-        assert( subjobs.isEmpty() );
+        removeSubjob( job );
+        assert( !hasSubjobs() );
         ++m_currentStat;
         statNextSrc();
         break;
@@ -4069,8 +4068,8 @@ void DeleteJob::slotResult( Job *job )
             Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
-        subjobs.remove( job );
-        assert( subjobs.isEmpty() );
+        removeSubjob( job );
+        assert( !hasSubjobs() );
         m_processedFiles++;
 
         deleteNextFile();
@@ -4081,8 +4080,8 @@ void DeleteJob::slotResult( Job *job )
             Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
-        subjobs.remove( job );
-        assert( subjobs.isEmpty() );
+        removeSubjob( job );
+        assert( !hasSubjobs() );
         m_processedDirs++;
         //emit processedDirs( this, m_processedDirs );
         //if (!m_shred)
@@ -4111,46 +4110,51 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
 
 MultiGetJob::MultiGetJob(const KURL& url,
                          bool showProgressInfo)
- : TransferJob(url, 0, QByteArray(), QByteArray(), showProgressInfo)
+ : TransferJob(url, 0, QByteArray(), QByteArray(), showProgressInfo),
+   m_currentEntry( 0, KURL(), MetaData() )
 {
-   m_waitQueue.setAutoDelete(true);
-   m_activeQueue.setAutoDelete(true);
-   m_currentEntry = 0;
+}
+
+MultiGetJob::~MultiGetJob()
+{
 }
 
 void MultiGetJob::get(long id, const KURL &url, const MetaData &metaData)
 {
-   GetRequest *entry = new GetRequest(id, url, metaData);
-   entry->metaData["request-id"] = QString("%1").arg(id);
+   GetRequest entry(id, url, metaData);
+   entry.metaData["request-id"] = QString::number(id);
    m_waitQueue.append(entry);
 }
 
-void MultiGetJob::flushQueue(Q3PtrList<GetRequest> &queue)
+void MultiGetJob::flushQueue(RequestQueue &queue)
 {
-   GetRequest *entry;
    // Use multi-get
    // Scan all jobs in m_waitQueue
-   for(entry = m_waitQueue.first(); entry; )
+   RequestQueue::iterator wqit = m_waitQueue.begin();
+   const RequestQueue::iterator wqend = m_waitQueue.end();
+   while ( wqit != wqend )
    {
-      if ((m_url.protocol() == entry->url.protocol()) &&
-          (m_url.host() == entry->url.host()) &&
-          (m_url.port() == entry->url.port()) &&
-          (m_url.user() == entry->url.user()))
+       const GetRequest& entry = *wqit;
+      if ((m_url.protocol() == entry.url.protocol()) &&
+          (m_url.host() == entry.url.host()) &&
+          (m_url.port() == entry.url.port()) &&
+          (m_url.user() == entry.url.user()))
       {
-         m_waitQueue.take();
-         queue.append(entry);
-         entry = m_waitQueue.current();
+         queue.append( entry );
+         wqit = m_waitQueue.erase( wqit );
       }
       else
       {
-         entry = m_waitQueue.next();
+         ++wqit;
       }
    }
    // Send number of URLs, (URL, metadata)*
    KIO_ARGS << (qint32) queue.count();
-   for(entry = queue.first(); entry; entry = queue.next())
+   RequestQueue::const_iterator qit = queue.begin();
+   const RequestQueue::const_iterator qend = queue.end();
+   for( ; qit != qend; ++qit )
    {
-      stream << entry->url << entry->metaData;
+      stream << (*qit).url << (*qit).metaData;
    }
    m_packedArgs = packedArgs;
    m_command = CMD_MULTI_GET;
@@ -4160,17 +4164,17 @@ void MultiGetJob::flushQueue(Q3PtrList<GetRequest> &queue)
 void MultiGetJob::start(Slave *slave)
 {
    // Add first job from m_waitQueue and add it to m_activeQueue
-   GetRequest *entry = m_waitQueue.take(0);
+   GetRequest entry = m_waitQueue.takeFirst();
    m_activeQueue.append(entry);
 
-   m_url = entry->url;
+   m_url = entry.url;
 
-   if (!entry->url.protocol().startsWith("http"))
+   if (!entry.url.protocol().startsWith("http"))
    {
       // Use normal get
-      KIO_ARGS << entry->url;
+      KIO_ARGS << entry.url;
       m_packedArgs = packedArgs;
-      m_outgoingMetaData = entry->metaData;
+      m_outgoingMetaData = entry.metaData;
       m_command = CMD_GET;
       b_multiGetActive = false;
    }
@@ -4188,21 +4192,25 @@ bool MultiGetJob::findCurrentEntry()
    if (b_multiGetActive)
    {
       long id = m_incomingMetaData["request-id"].toLong();
-      for(GetRequest *entry = m_activeQueue.first(); entry; entry = m_activeQueue.next())
+      RequestQueue::const_iterator qit = m_activeQueue.begin();
+      const RequestQueue::const_iterator qend = m_activeQueue.end();
+      for( ; qit != qend; ++qit )
       {
-         if (entry->id == id)
+         if ((*qit).id == id)
          {
-            m_currentEntry = entry;
+            m_currentEntry = *qit;
             return true;
          }
       }
-      m_currentEntry = 0;
+      m_currentEntry.id = 0;
       return false;
    }
    else
    {
+      if ( m_activeQueue.isEmpty() )
+        return false;
       m_currentEntry = m_activeQueue.first();
-      return (m_currentEntry != 0);
+      return true;
    }
 }
 
@@ -4211,13 +4219,13 @@ void MultiGetJob::slotRedirection( const KURL &url)
   if (!findCurrentEntry()) return; // Error
   if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
   {
-     kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url << " to " << url << " REJECTED!" << endl;
+     kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry.url << " to " << url << " REJECTED!" << endl;
      return;
   }
   m_redirectionURL = url;
-  if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().toLower() == url.host().toLower()))
-      m_redirectionURL.setUser(m_currentEntry->url.user()); // Preserve user
-  get(m_currentEntry->id, m_redirectionURL, m_currentEntry->metaData); // Try again
+  if (m_currentEntry.url.hasUser() && !url.hasUser() && (m_currentEntry.url.host().toLower() == url.host().toLower()))
+      m_redirectionURL.setUser(m_currentEntry.url.user()); // Preserve user
+  get(m_currentEntry.id, m_redirectionURL, m_currentEntry.metaData); // Try again
 }
 
 
@@ -4227,12 +4235,12 @@ void MultiGetJob::slotFinished()
   if (m_redirectionURL.isEmpty())
   {
      // No redirection, tell the world that we are finished.
-     emit result(m_currentEntry->id);
+     emit result(m_currentEntry.id);
   }
   m_redirectionURL = KURL();
   m_error = 0;
   m_incomingMetaData.clear();
-  m_activeQueue.removeRef(m_currentEntry);
+  m_activeQueue.removeAll(m_currentEntry);
   if (m_activeQueue.count() == 0)
   {
      if (m_waitQueue.count() == 0)
@@ -4245,8 +4253,7 @@ void MultiGetJob::slotFinished()
         // return slave to pool
         // fetch new slave for first entry in m_waitQueue and call start
         // again.
-        GetRequest *entry = m_waitQueue.at(0);
-        m_url = entry->url;
+        m_url = m_waitQueue.first().url;
         slaveDone();
         Scheduler::doJob(this);
      }
@@ -4255,26 +4262,24 @@ void MultiGetJob::slotFinished()
 
 void MultiGetJob::slotData( const QByteArray &_data)
 {
-  if(!m_currentEntry) return;// Error, unknown request!
   if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
-     emit data(m_currentEntry->id, _data);
+     emit data(m_currentEntry.id, _data);
 }
 
 void MultiGetJob::slotMimetype( const QString &_mimetype )
 {
   if (b_multiGetActive)
   {
-     Q3PtrList<GetRequest> newQueue;
+     RequestQueue newQueue;
      flushQueue(newQueue);
      if (!newQueue.isEmpty())
      {
-        while(!newQueue.isEmpty())
-           m_activeQueue.append(newQueue.take(0));
+        m_activeQueue += newQueue;
         m_slave->send( m_command, m_packedArgs );
      }
   }
   if (!findCurrentEntry()) return; // Error, unknown request!
-  emit mimetype(m_currentEntry->id, _mimetype);
+  emit mimetype(m_currentEntry.id, _mimetype);
 }
 
 MultiGetJob *KIO::multi_get(long id, const KURL &url, const MetaData &metaData)

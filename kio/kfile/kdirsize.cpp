@@ -130,7 +130,7 @@ void KDirSize::slotResult( KIO::Job * job )
     kdDebug(kfile_area) << " KDirSize::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
     if ( !m_lstItems.isEmpty() )
     {
-        subjobs.remove(job); // Remove job, but don't kill this job.
+        removeSubjob(job);
         processList();
     }
     else

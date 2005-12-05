@@ -58,7 +58,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.</p
 
 <H4>KGlobalSettings</H4>
 <ul>
-<li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO:trash instead</li>
+<li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
 </ul>
 
 <H4>KAccel</H4>
@@ -589,6 +589,14 @@ a listDir result.</li>
     <li>KIO::convertSizeFromKB is now KIO::convertSizeFromKiB since it takes a value in KiB (1 KiB = 1024 B)</li>
 </ul>
 
+<H4>KIO::Job</H4>
+<ul>
+   <li>For Job subclasses: removeSubjob doesn't terminate the parent job anymore, add
+         <code>if ( !hasSubjobs() ) emitResult();</code> to emulate the old behavior that.</li>
+   <li>subjobs is now private. This means you should replace subjobs.remove(job) with removeSubjob(job),
+   and subjobs.isEmpty() with !hasSubjobs()</li>
+</ul>
+
 <H4>KFileMetaInfo</H4>
 <ul>
     <li>KFileMetaInfo::KiloBytes has been renamed KFileMetaInfo::KibiBytes (1 KiB = 1024 B)</li>
@@ -641,7 +649,8 @@ a listDir result.</li>
 
 <h4>KFileOpenWithHandler</h4>
 <ul>
-<li>This class has been removed.</li>
+<li>This class has been removed, it was just a workaround for a dependency problem,
+just remove any instance of it.</li>
 </ul>
 
 <H4>KBookmark classes</H4>

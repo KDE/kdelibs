@@ -116,6 +116,8 @@ PropagateHttpHeader	bool	Whether HTTP headers should be send back (read by http)
 HTTP-Headers		string	The HTTP headers, concatenated, \n delimited (set by http)
                                 Requires PropagateHttpHeader to be set.
 
+CustomHTTPHeader	string	Custom HTTP headers to add to the request (read by http)
+
 PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
                                 policies presented by the HTTP server
 

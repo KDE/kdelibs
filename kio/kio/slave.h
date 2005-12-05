@@ -198,12 +198,6 @@ namespace KIO {
         bool isConnected() { return contacted; }
         void setConnected(bool c) { contacted = c; }
 
-	/** @deprecated This method is obsolete, use the accessor methods
-	  * within KIO::Slave instead. Old code directly accessing connection()
-	  * will not be able to access special protocols.
-	  */
-        KDE_DEPRECATED Connection *connection() { return &slaveconn; }	// TODO(BIC): remove before KDE 4
-
         void ref() { m_refCount++; }
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 

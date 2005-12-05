@@ -79,8 +79,9 @@ void MetaInfoJob::removeItem(const KFileItem* item)
 {
     if (d->currentItem->current() == item)
     {
-        subjobs.first()->kill();
-        subjobs.removeFirst();
+        KIO::Job* job = subjobs().first();
+        job->kill();
+        removeSubjob( job );
         determineNextFile();
     }
 
@@ -113,8 +114,8 @@ void MetaInfoJob::determineNextFile()
 
 void MetaInfoJob::slotResult( KIO::Job *job )
 {
-    subjobs.remove(job);
-    Q_ASSERT(subjobs.isEmpty()); // We should have only one job at a time ...
+    removeSubjob(job);
+    Q_ASSERT(!hasSubjobs()); // We should have only one job at a time ...
 
     determineNextFile();
 }
