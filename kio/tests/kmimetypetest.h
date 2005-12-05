@@ -12,6 +12,8 @@ private slots:
     void testFindByURL();
     void testFindByPath();
     void testAllMimeTypes();
+    void testAllServices();
+    void testAllInitServices();
 };
 
 

@@ -48,6 +48,10 @@ void debug(const char *format, const char *txt)
  fprintf(stderr, "\n");
 }
 
+// ############
+// Some of the tests here (those that don't depend on other modules being installed)
+// should be moved to kmimetypetest, and then kmimetypetest can be renamed ksycocatest.
+//
 int main(int argc, char *argv[])
 {
    KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
@@ -156,22 +160,6 @@ int main(int argc, char *argv[])
    //debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
 
 #if 1
-   KMimeType::List mtl;
-
-   mtl  = KMimeType::allMimeTypes( );
-   assert( mtl.count() );
-   debug(QString("Found %1 mime types.").arg(mtl.count()));
-   for(int i = 0; i < (int)mtl.count(); i++)
-   {
-      debug(QString("Mime type %1: %2.").arg(i).arg(mtl[i]->name()));
-   }
-
-   KService::List sl;
-
-   sl  = KService::allServices( );
-   assert( sl.count() );
-   debug(QString("Found %1 services.").arg(sl.count()));
-
    KServiceGroup::Ptr root = KServiceGroup::root();
    KServiceGroup::List list = root->entries();
    //KServiceGroup::Ptr topGroup = KServiceGroup::childGroup( "kview" );
@@ -227,16 +215,6 @@ int main(int argc, char *argv[])
       }
    }
    }
-
-   debug("--services that require initialisation--");
-   sl = KService::allInitServices();
-   for( KService::List::ConstIterator it = sl.begin();
-       it != sl.end(); it++)
-   {
-      KService::Ptr service = (*it);
-      debug(service->name());
-   }
-   debug("--End of list--");
 
    debug("--protocols--");
    QStringList stringL = KProtocolInfo::protocols();

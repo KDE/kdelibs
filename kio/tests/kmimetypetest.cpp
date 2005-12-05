@@ -103,6 +103,7 @@ void KMimeTypeTest::testAllMimeTypes()
         SKIP( "ksycoca not available", SkipAll );
 
     const KMimeType::List lst = KMimeType::allMimeTypes();
+    VERIFY( !lst.isEmpty() );
     const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
     VERIFY( allServiceTypes.count() >= lst.count() ); // all mimetypes are in the allServiceTypes list.
 
@@ -143,6 +144,66 @@ void KMimeTypeTest::testAllMimeTypes()
         if ( servtype->sycocaType() == KST_KServiceType ) {
             //qDebug( "%s", qPrintable( name ) );
         }
+    }
+}
+
+void KMimeTypeTest::testAllServices()
+{
+    if ( !KSycoca::isAvailable() )
+        SKIP( "ksycoca not available", SkipAll );
+    const KService::List lst = KService::allServices();
+    VERIFY( !lst.isEmpty() );
+
+    for ( KService::List::ConstIterator it = lst.begin();
+          it != lst.end(); ++it ) {
+        const KService::Ptr service = (*it);
+        VERIFY( service->isType( KST_KService ) );
+
+        const QString type = service->type();
+        VERIFY( !type.isEmpty() );
+        VERIFY( type == "Application" || type == "Service" );
+        const QString name = service->name();
+        const QString dep = service->desktopEntryPath();
+        qDebug( "%s %s", qPrintable( name ), qPrintable( dep ) );
+        VERIFY( !name.isEmpty() );
+        VERIFY( !dep.isEmpty() );
+
+        KService::Ptr lookedupService = KService::serviceByDesktopPath( dep );
+        VERIFY( lookedupService ); // not null
+        COMPARE( lookedupService->desktopEntryPath(), dep );
+
+        if ( type == "Application" )
+        {
+            const QString menuId = service->menuId();
+            VERIFY( !menuId.isEmpty() );
+            lookedupService = KService::serviceByMenuId( menuId );
+            VERIFY( lookedupService ); // not null
+            COMPARE( lookedupService->menuId(), menuId );
+        }
+    }
+}
+
+void KMimeTypeTest::testAllInitServices()
+{
+    if ( !KSycoca::isAvailable() )
+        SKIP( "ksycoca not available", SkipAll );
+    const KService::List lst = KService::allInitServices();
+    if ( lst.isEmpty() )
+        SKIP( "no init services available", SkipAll ); // this happens when only kdelibs is installed
+
+    for ( KService::List::ConstIterator it = lst.begin();
+          it != lst.end(); ++it ) {
+        const KService::Ptr service = (*it);
+        VERIFY( service->isType( KST_KService ) );
+
+        const QString name = service->name();
+        const QString dep = service->desktopEntryPath();
+        qDebug( "%s %s (type=%s init=%s)", qPrintable( name ), qPrintable( dep ), qPrintable( service->type() ), qPrintable( service->init() ) );
+        VERIFY( !name.isEmpty() );
+        VERIFY( !dep.isEmpty() );
+
+        const QString init = service->init();
+        VERIFY( !init.isEmpty() ); // kbuildservicefactory.cpp ensures that only services with init not empty are put in the init list
     }
 }
 
