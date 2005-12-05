@@ -29,13 +29,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <q3cstring.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <qdir.h>
-#include <q3tl.h>
 
-#include <ksimpleconfig.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kdebug.h>
@@ -43,17 +40,13 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kconfigbase.h>
 #include <kstandarddirs.h>
 #include <dcopclient.h>
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
-#include "kservicetype.h"
-#include "kuserprofile.h"
-#include "ksycoca.h"
 
-class KService::KServicePrivate
+class KService::Private
 {
 public:
   QStringList categories;
@@ -61,9 +54,8 @@ public:
 };
 
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
- : KSycocaEntry( QString::null)
+ : KSycocaEntry( QString::null), d(new Private)
 {
-  d = new KServicePrivate;
   m_bValid = true;
   m_bDeleted = false;
   m_strType = "Application";
@@ -77,28 +69,25 @@ KService::KService( const QString & _name, const QString &_exec, const QString &
 
 
 KService::KService( const QString & _fullpath )
- : KSycocaEntry( _fullpath)
+ : KSycocaEntry( _fullpath), d(new Private)
 {
   KDesktopFile config( _fullpath );
 
   init(&config);
 }
 
-KService::KService( KDesktopFile *config )
- : KSycocaEntry( config->fileName())
+KService::KService( const KDesktopFile *config )
+ : KSycocaEntry( config->fileName()), d(new Private)
 {
   init(config);
 }
 
 void
-KService::init( KDesktopFile *config )
+KService::init( const KDesktopFile *config )
 {
-  d = new KServicePrivate;
   m_bValid = true;
 
   bool absPath = !QDir::isRelativePath(entryPath());
-
-  config->setDesktopGroup();
 
   QMap<QString, QString> entryMap = config->entryMap(config->group());
 
@@ -183,13 +172,13 @@ KService::init( KDesktopFile *config )
     return;
   }
 
-  QString name = entryPath();
-  int pos = name.lastIndexOf('/');
+  QString _name = entryPath();
+  int pos = _name.lastIndexOf('/');
   if (pos != -1)
-     name = name.mid(pos+1);
-  pos = name.find('.');
+     _name = _name.mid(pos+1);
+  pos = _name.indexOf('.');
   if (pos != -1)
-     name = name.left(pos);
+     _name = _name.left(pos);
 
   m_strExec = config->readPathEntry( "Exec" );
   entryMap.remove("Exec");
@@ -206,8 +195,8 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Comment");
   m_strGenName = config->readEntry( "GenericName" );
   entryMap.remove("GenericName");
-  QString untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
-  entryMap.insert("UntranslatedGenericName", untranslatedGenericName);
+  QString _untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
+  entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
 
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
@@ -238,7 +227,7 @@ KService::init( KDesktopFile *config )
   else
      m_DCOPServiceType = DCOP_None;
 
-  m_strDesktopEntryName = name.toLower();
+  m_strDesktopEntryName = _name.toLower();
 
   m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
   entryMap.remove("AllowDefault");
@@ -248,19 +237,18 @@ KService::init( KDesktopFile *config )
 
   // Store all additional entries in the property map.
   // A QMap<QString,QString> would be easier for this but we can't
-  // brake BC, so we have to store it in m_mapProps.
+  // break BC, so we have to store it in m_mapProps.
 //  qWarning("Path = %s", entryPath().latin1());
   QMap<QString,QString>::ConstIterator it = entryMap.begin();
   for( ; it != entryMap.end();++it)
   {
-//     qWarning("   Key = %s Data = %s", it.key().latin1(), it.data().latin1());
-     m_mapProps.insert( it.key(), QVariant( it.data()));
+//     qWarning("   Key = %s Data = %s", it.key().toLatin1().data(), it->toLatin1().data());
+     m_mapProps.insert( it.key(), QVariant( *it));
   }
 }
 
-KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
+KService::KService( QDataStream& _str, int _offset ) : KSycocaEntry( _str, _offset ), d(new Private)
 {
-  d = new KServicePrivate;
   load( _str );
 }
 
@@ -274,8 +262,8 @@ QPixmap KService::pixmap( KIcon::Group _group, int _force_size, int _state, QStr
   KIconLoader *iconLoader=KGlobal::iconLoader();
   if (!iconLoader->extraDesktopThemesAdded())
   {
-      QPixmap pixmap=iconLoader->loadIcon( m_strIcon, _group, _force_size, _state, _path, true );
-      if (!pixmap.isNull() ) return pixmap;
+      QPixmap _pixmap=iconLoader->loadIcon( m_strIcon, _group, _force_size, _state, _path, true );
+      if (!_pixmap.isNull() ) return _pixmap;
 
       iconLoader->addExtraDesktopThemes();
   }
@@ -358,7 +346,7 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-      (*it).toInt(&isNumber);
+      it->toInt(&isNumber);
       if (isNumber)
          continue;
       //kdDebug(7012) << "    has " << (*it) << endl;
@@ -385,7 +373,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-      (*it).toInt(&isNumber);
+      it->toInt(&isNumber);
       if (isNumber)
          continue;
       //kdDebug(7012) << "    has " << (*it) << endl;
@@ -397,7 +385,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
       ++it;
       if (it != m_lstServiceTypes.end())
       {
-         int i = (*it).toInt(&isNumber);
+         int i = it->toInt(&isNumber);
          if (isNumber)
             initalPreference = i;
       }
@@ -412,7 +400,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
   it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-      (*it).toInt(&isNumber);
+      it->toInt(&isNumber);
       if (isNumber)
          continue;
 
@@ -426,7 +414,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
       ++it;
       if (it != m_lstServiceTypes.end())
       {
-         int i = (*it).toInt(&isNumber);
+         int i = it->toInt(&isNumber);
          if (isNumber)
             initalPreference = i;
       }
@@ -532,7 +520,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   // Then we use a homebuild class based on KConfigBase to convert the QString.
   // For some often used property types we do the conversion ourselves.
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
-  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
+  if ( (it == m_mapProps.end()) || (!it->isValid()))
   {
      //kdDebug(7012) << "Property not found " << _name << endl;
      return QVariant(); // No property set.
@@ -541,11 +529,11 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   switch(t)
   {
     case QVariant::String:
-        return it.data();
+        return *it;
     case QVariant::Bool:
     case QVariant::Int:
         {
-           QString aValue = it.data().toString();
+           QString aValue = it->toString().toLower();
            int val = 0;
            if (aValue == "true" || aValue == "on" || aValue == "yes")
               val = 1;
@@ -558,13 +546,13 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
            }
            if (t == QVariant::Bool)
            {
-               return QVariant((bool)val, 1);
+               return QVariant(bool(val));
            }
            return QVariant(val);
         }
     default:
         // All others
-        KServiceReadProperty ksrp(_name, it.data().toString().toUtf8());
+        KServiceReadProperty ksrp(_name, it->toString().toUtf8());
         return ksrp.readPropertyEntry(_name, t);
   }
 }
@@ -677,27 +665,27 @@ QString KService::username() const {
 
 bool KService::noDisplay() const {
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "NoDisplay" );
-  if ( (it != m_mapProps.end()) && (it.data().isValid()))
+ if ( (it != m_mapProps.end()) && (it->isValid()))
   {
-     QString aValue = it.data().toString().toLower();
+     QString aValue = it->toString().toLower();
      if (aValue == "true" || aValue == "on" || aValue == "yes")
         return true;
   }
 
   it = m_mapProps.find( "OnlyShowIn" );
-  if ( (it != m_mapProps.end()) && (it.data().isValid()))
+  if ( (it != m_mapProps.end()) && (it->isValid()))
   {
-     QString aValue = it.data().toString();
-     QStringList aList = QStringList::split(';', aValue);
+     QString aValue = it->toString();
+     QStringList aList = aValue.split(';');
      if (!aList.contains("KDE"))
         return true;
   }
 
   it = m_mapProps.find( "NotShowIn" );
-  if ( (it != m_mapProps.end()) && (it.data().isValid()))
+  if ( (it != m_mapProps.end()) && (it->isValid()))
   {
-     QString aValue = it.data().toString();
-     QStringList aList = QStringList::split(';', aValue);
+     QString aValue = it->toString();
+     QStringList aList = aValue.split(';');
      if (aList.contains("KDE"))
         return true;
   }
@@ -715,21 +703,18 @@ QString KService::untranslatedGenericName() const {
 
 QString KService::parentApp() const {
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "X-KDE-ParentApp" );
-  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
+  if ( (it == m_mapProps.end()) || (!it->isValid()))
   {
      return QString::null;
   }
 
-  return it.data().toString();
+  return it->toString();
 }
 
 bool KService::allowMultipleFiles() const {
   // Can we pass multiple files on the command line or do we have to start the application for every single file ?
-  if ( m_strExec.find( "%F" ) != -1 || m_strExec.find( "%U" ) != -1 ||
-       m_strExec.find( "%N" ) != -1 || m_strExec.find( "%D" ) != -1 )
-    return true;
-  else
-    return false;
+  return (m_strExec.contains( "%F" ) || m_strExec.contains( "%U" ) ||
+          m_strExec.contains( "%N" ) || m_strExec.contains( "%D" ));
 }
 
 QStringList KService::categories() const
@@ -742,9 +727,9 @@ QString KService::menuId() const
   return d->menuId;
 }
 
-void KService::setMenuId(const QString &menuId)
+void KService::setMenuId(const QString &_menuId)
 {
-  d->menuId = menuId;
+  d->menuId = _menuId;
 }
 
 QString KService::storageId() const
@@ -807,11 +792,9 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
    {
        return ::locateLocal("xdgdata-apps", result);
    }
-   else
-   {
-       QString file = result.mid(4); // Strip "kde-"
-       return ::locateLocal("apps", ".hidden/"+file);
-   }
+
+   QString file = result.mid(4); // Strip "kde-"
+   return ::locateLocal("apps", ".hidden/"+file);
 }
 
 
@@ -837,9 +820,9 @@ void KService::rebuildKSycoca(QWidget *parent)
   }
 }
 
-KServiceProgressDialog::KServiceProgressDialog(QWidget *parent, const char *name,
-                          const QString &caption, const QString &text)
- : KProgressDialog(parent, name, caption, text, true)
+KServiceProgressDialog::KServiceProgressDialog(QWidget *_parent, const char *_name,
+                          const QString &_caption, const QString &text)
+ : KProgressDialog(_parent, _name, _caption, text, true)
 {
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
   progressBar()->setTotalSteps(20);

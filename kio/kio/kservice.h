@@ -17,11 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kservices_h__
-#define __kservices_h__
+#ifndef KSERVICE_H
+#define KSERVICE_H
 
 #include <qstringlist.h>
-#include <qlist.h>
 #include <qmap.h>
 #include <qvariant.h>
 #include <kicontheme.h>
@@ -30,8 +29,6 @@
 
 class QDataStream;
 class KDesktopFile;
-class KService;
-class KBuildSycoca;
 class QWidget;
 
 /**
@@ -75,7 +72,7 @@ public:
    * Construct a service and take all information from a desktop file.
    * @param config the desktop file to read
    */
-  KService( KDesktopFile *config ); // KDE-4.0: make explicit
+  explicit KService( const KDesktopFile *config );
 
   /**
    * @internal
@@ -514,14 +511,13 @@ public:
 
 protected:
 
-  void init(KDesktopFile *config);
+  void init(const KDesktopFile *config);
 
   QStringList &accessServiceTypes() { return m_lstServiceTypes; }
 
 
 private:
-  KService( const KService& ); // forbidden
-  KService& operator=(const KService&);
+  Q_DISABLE_COPY(KService);
 
   QString m_strType;
   QString m_strName;
@@ -545,7 +541,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KServicePrivate;
-  KServicePrivate* d;
+  class Private;
+  Private *const d;
 };
 #endif
