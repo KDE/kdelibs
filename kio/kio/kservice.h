@@ -517,7 +517,7 @@ protected:
 
 
 private:
-  Q_DISABLE_COPY(KService);
+  Q_DISABLE_COPY(KService)
 
   QString m_strType;
   QString m_strName;
