@@ -20,7 +20,7 @@
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
 
-QTTEST_KDEMAIN( KConfigCompiler_Test, NoGUI );
+QTTEST_KDEMAIN( KConfigCompiler_Test, NoGUI )
 
 typedef const char * CompilerTestSet[];
 

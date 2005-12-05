@@ -7,7 +7,7 @@
 class Q3MultiLineEdit;
 namespace KParts {
 class GUIActivateEvent;
-};
+}
 
 class Part1 : public KParts::ReadOnlyPart
 {
