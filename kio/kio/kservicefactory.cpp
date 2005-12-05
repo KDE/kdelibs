@@ -209,7 +209,7 @@ KService::List KServiceFactory::allServices()
    KService::List result;
    const KSycocaEntry::List list = allEntries();
    KSycocaEntry::List::const_iterator it = list.begin();
-   const KSycocaEntry::List::const_iterator end = list.begin();
+   const KSycocaEntry::List::const_iterator end = list.end();
    for( ; it != end; ++it )
    {
       const KSycocaEntry::Ptr entry = *it;
