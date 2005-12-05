@@ -73,8 +73,8 @@ struct KFind::Private
 
     ~Private()
     {
-		qDeleteAll(data);
-		data.clear();
+        qDeleteAll(data);
+        data.clear();
         delete emptyMatch;
         emptyMatch = 0;
     }
