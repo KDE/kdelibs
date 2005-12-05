@@ -22,8 +22,7 @@
 
 #include <qdialog.h>
 #include <q3intdict.h>
-#include <q3valuestack.h>
-
+#include <QStack>
 #include <kdelibs_export.h>
 
 class QStackedWidget;
@@ -82,7 +81,7 @@ protected slots:
 
 private:
 	Q3IntDict<KMWizardPage>	m_pagepool;
-	Q3ValueStack<int>	m_pagestack;
+	QStack<int>	m_pagestack;
 
 	QStackedWidget		*m_stack;
 	QLabel			*m_title;
