@@ -32,9 +32,8 @@
 
 #include <q3ptrlist.h>
 #include <q3ptrstack.h>
-#include <q3valuestack.h>
+#include <QStack>
 #include <qmap.h>
-#include <q3cstring.h>
 #include <qdir.h>
 #include <qfile.h>
 
@@ -614,7 +613,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
 
 
   Q3PtrStack<KArchiveDirectory> dirStack;
-  Q3ValueStack<QString> dirNameStack;
+  QStack<QString> dirNameStack;
 
   dirStack.push( this );     // init stack at current directory
   dirNameStack.push( dest ); // ... with given path

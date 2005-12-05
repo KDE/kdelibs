@@ -21,7 +21,7 @@
 #include <qlayout.h>
 #include <q3popupmenu.h>
 #include <qstringlist.h>
-#include <q3valuestack.h>
+#include <QStack>
 
 #include <kactionclasses.h>
 #include <kapplication.h>
@@ -64,7 +64,7 @@ public:
     KFileTreeBranch *branch;
     QString recentDirClass;
     KURL startURL;
-    Q3ValueStack<KURL> dirsToList;
+    QStack<KURL> dirsToList;
 
     bool comboLocked : 1;
 };
