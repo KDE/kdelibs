@@ -143,13 +143,18 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_relNameDict->find_string( _name );
-   if (!offset) return 0; // Not found
+   if (!offset) {
+      qDebug( "findServiceByDesktopPath: %s not found", qPrintable( _name ) );
+      return 0; // Not found
+   }
 
    KService * newService = createEntry(offset);
-
+   if ( !newService )
+      qDebug( "findServiceByDesktopPath: createEntry failed!" );
    // Check whether the dictionary was right.
    if (newService && (newService->desktopEntryPath() != _name))
    {
+       qDebug( "the dictionary was wrong. desktopEntryPath=%s, name=%s", qPrintable( newService->desktopEntryPath() ), qPrintable( _name ) );
       // No it wasn't...
       delete newService;
       newService = 0; // Not found

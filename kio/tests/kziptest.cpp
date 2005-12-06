@@ -31,7 +31,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   for( ; it != l.end(); ++it )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
-    printf("mode=%07o %s %s size: %d pos: %d %s%s isdir=%d%s", entry->permissions(),
+    printf("mode=%07o %s %s size: %lld pos: %lld %s%s isdir=%d%s", entry->permissions(),
 	entry->user().latin1(), entry->group().latin1(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
@@ -69,7 +69,7 @@ void recursive_transfer(const KArchiveDirectory * dir,
 	    if (e->symlink().isEmpty()) {
 	        zip->writeFile( path+e->name().latin1(),
 			    "holgi", "holgrp",
-			    arr.size() , f->data() );
+			    f->data(), arr.size() );
 	    } else
 	        zip->writeSymLink(path+e->name(), e->symlink(), "leo", "leo",
 				0120777, 1000000000l, 1000000000l, 1000000000l);
@@ -89,7 +89,7 @@ int main( int argc, char** argv )
     printf("\n"
  " Usage :\n"
  " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
- " ./kziptest readwrite newfile.zip                 will create the zip, then close and reopen it.\n"
+ " ./kziptest readwrite $PWD/newfile.zip            will create the zip, then close and reopen it.\n"
  " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
  " ./kziptest print file.zip                        prints contents of all files.\n"
  " ./kziptest print2 file.zip filename              prints contents of one file.\n"
@@ -131,13 +131,13 @@ int main( int argc, char** argv )
     }
 
     zip.setCompression( KZip::NoCompression );
-    zip.writeFile( "typeid", "", "", 19, "application/x-kword" );
+    zip.writeFile( "typeid", "", "", "application/x-kword", 19 );
     zip.setCompression( KZip::DeflateCompression );
-    zip.writeFile( "empty", "weis", "users", 0, "" );
-    zip.writeFile( "test1", "weis", "users", 5, "Hallo" );
-    zip.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
-    zip.writeFile( "mydir/test3", "weis", "users", 13, "Noch so einer" );
-    zip.writeFile( "my/dir/test3", "dfaure", "hackers", 29, "I don't speak German (David)" );
+    zip.writeFile( "empty", "weis", "users", "", 0 );
+    zip.writeFile( "test1", "weis", "users", "Hallo", 5 );
+    zip.writeFile( "test2", "weis", "users", "Hallo Du", 8 );
+    zip.writeFile( "mydir/test3", "weis", "users", "Noch so einer", 13 );
+    zip.writeFile( "my/dir/test3", "dfaure", "hackers", "I don't speak German (David)", 29 );
     zip.writeSymLink( "a_link", "mydir/test3", "leo", "leo", 0120777,
     		1000000000l, 1000000000l, 1000000000l);
 
@@ -145,15 +145,15 @@ int main( int argc, char** argv )
     // Now a medium file : 100 null bytes
     char medium[ SIZE1 ];
     memset( medium, 0, SIZE1 );
-    zip.writeFile( "mediumfile", "user", "group", SIZE1, medium );
+    zip.writeFile( "mediumfile", "user", "group", medium, SIZE1 );
     // Another one, with an absolute path
-    zip.writeFile( "/dir/subdir/mediumfile2", "user", "group", SIZE1, medium );
+    zip.writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 );
 
     // Now a huge file : 20000 null bytes
     int n = 20000;
     char * huge = new char[ n ];
     memset( huge, 0, n );
-    zip.writeFile( "hugefile", "user", "group", n, huge );
+    zip.writeFile( "hugefile", "user", "group", huge, n );
     delete [] huge;
 
     // Now a file from the harddisk
@@ -215,7 +215,7 @@ int main( int argc, char** argv )
       str.fill( 'a', i-10 );
       num.setNum( i );
       num = num.rightJustified( 10, '0' );
-      zip.writeFile( str+num, "testu", "testg", 3, "hum" );
+      zip.writeFile( str+num, "testu", "testg", "hum", 3 );
     }
     // Result of this test : it fails at 482 (instead of 154 previously).
     // Ok, I think we can do with that :)
@@ -314,24 +314,22 @@ int main( int argc, char** argv )
       printf("Could not open %s for read/write\n", argv[2] );
       return 1;
     }
-    const KArchiveEntry* e = zip.directory()->entry( argv[3] );
+//    const KArchiveEntry* e = zip.directory()->entry( argv[3] );
 //    Q_ASSERT( e && e->isFile() );
 //    const KArchiveFile* f = (KArchiveFile*)e;
 
 //    QCString data( "This is some new data that goes into " );
   //  data += argv[3];
     QFile f ( argv[3] );
-    if (!f.open( QIODevice::ReadOnly )) 
+    if (!f.open( QIODevice::ReadOnly ))
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
     }
-    	
+
     QDataStream s( &f );
-    
-    
-//    zip.writeFile( argv[3], "", "", data.size(), data.data() );
-    zip.writeFile( argv[3], "", "", f.size(), f.readAll() );
+
+    zip.writeFile( argv[3], "", "", f.readAll(), f.size() );
     zip.close();
 
     return 0;
@@ -363,70 +361,6 @@ int main( int argc, char** argv )
     zip1.close();
     zip2.close();
 
-/*
-    zip.writeFile( "empty", "weis", "users", 0, "" );
-    zip.writeFile( "test1", "weis", "users", 5, "Hallo" );
-    zip.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
-    zip.writeFile( "mydir/test3", "weis", "users", 13, "Noch so einer" );
-    zip.writeFile( "my/dir/test3", "dfaure", "hackers", 29, "I don't speak German (David)" );
-
-#define SIZE1 100
-    // Now a medium file : 100 null bytes
-    char medium[ SIZE1 ];
-    memset( medium, 0, SIZE1 );
-    zip.writeFile( "mediumfile", "user", "group", SIZE1, medium );
-    // Another one, with an absolute path
-    zip.writeFile( "/dir/subdir/mediumfile2", "user", "group", SIZE1, medium );
-
-    // Now a huge file : 20000 null bytes
-    int n = 20000;
-    char * huge = new char[ n ];
-    memset( huge, 0, n );
-    zip.writeFile( "hugefile", "user", "group", n, huge );
-    delete [] huge;
-
-    zip.close();
-
-    printf("-----------------------\n");
-
-    if ( !zip.open( QIODevice::ReadOnly ) )
-    {
-      printf("Could not open %s for reading\n", argv[2] );
-      return 1;
-    }
-
-    const KArchiveDirectory* dir = zip.directory();
-    recursive_print(dir, "");
-
-    const KArchiveEntry* e = dir->entry( "mydir/test3" );
-    Q_ASSERT( e && e->isFile() );
-    const KArchiveFile* f = (KArchiveFile*)e;
-
-    QByteArray arr( f->data() );
-    printf("SIZE=%i\n",arr.size() );
-    QString str( arr );
-    printf("DATA=%s\n", str.latin1());
-
-    zip.close();
-
-    return 0;
-
-
-
-
-
-    const KArchiveEntry* e = dir1->entry( argv[3] );
-    Q_ASSERT( e && e->isFile() );
-    const KArchiveFile* f = (KArchiveFile*)e;
-
-    QByteArray arr( f->data() );
-//    printf("SIZE=%i\n",arr.size() );
-    QString str( arr );
-//    printf("DATA=%s\n", str.latin1());
-    printf("%s", str.latin1());
-    zip.close();
-
-*/
     return 0;
 
   }

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
    Copyright (C) 2003 Leo Savernik <l.savernik@aon.at>
 
    Moved from ktar.h by Roberto Teixeira <maragato@kde.org>
@@ -27,7 +27,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3dict.h>
+#include <qhash.h>
 
 #include <kdelibs_export.h>
 
@@ -64,17 +64,10 @@ public:
      * Closes the archive.
      * Inherited classes might want to reimplement closeArchive instead.
      *
+     * @return true if close succeded without problems
      * @see open
      */
-    virtual void close();
-
-    /**
-     * Use to check if close had any problem
-     * @return true if close succeded without problems
-     * @since 3.5
-     */
-    // TODO KDE4 merge with above
-    bool closeSucceeded() const;
+    virtual bool close();
 
     /**
      * Checks whether the archive is open.
@@ -87,7 +80,7 @@ public:
      * @return the mode in which the archive was opened (QIODevice::ReadOnly or QIODevice::WriteOnly)
      * @see open()
      */
-    int mode() const { return m_mode; }
+    QIODevice::OpenMode mode() const { return static_cast<QIODevice::OpenMode>(m_mode); }
 
     /**
      * The underlying device.
@@ -131,39 +124,26 @@ public:
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
      *
-     * @param name the name of the directory
-     * @param user the user that owns the directory
-     * @param group the group that owns the directory
+     * This method also allows some file metadata to be set.
+     * However, depending on the archive type not all metadata might be regarded.
      *
-     * @todo TODO(BIC): make this a thin wrapper around
-     * writeDir(name,user,group,perm,atime,mtime,ctime)
-     * or eliminate it
-     */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group ) = 0;
-
-    /**
-     * If an archive is opened for writing then you can add new directories
-     * using this function. KArchive won't write one directory twice.
-     *
-     * This method also allows some file metadata to be
-     * set. However, depending on the archive type not all metadata might be
-     * regarded.
      * @param name the name of the directory
      * @param user the user that owns the directory
      * @param group the group that owns the directory
      * @param perm permissions of the directory
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
-     * @param ctime creation time of the file
+     * @param ctime time of last status change
      * @since 3.2
-     * @todo TODO(BIC): make this virtual. For now use virtual hook
      */
-    bool writeDir( const QString& name, const QString& user, const QString& group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime );
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group,
+                           mode_t perm = 040755, time_t atime = (time_t)-1,
+                           time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
 
     /**
-     * Writes a symbolic link to the archive if the archive must be opened for
-     * writing.
+     * Writes a symbolic link to the archive if supported.
+     * The archive must be opened for writing.
+     *
      * @param name name of symbolic link
      * @param target target of symbolic link
      * @param user the user that owns the directory
@@ -171,28 +151,13 @@ public:
      * @param perm permissions of the directory
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
-     * @param ctime creation time of the file
+     * @param ctime time of last status change
      * @since 3.2
-     * @todo TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
      */
-    bool writeSymLink(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
-
-    /**
-     * If an archive is opened for writing then you can add a new file
-     * using this function. If the file name is for example "mydir/test1" then
-     * the directory "mydir" is automatically appended first if that did not
-     * happen yet.
-     * @param name the name of the file
-     * @param user the user that owns the file
-     * @param group the group that owns the file
-     * @param size the size of the file
-     * @param data the data to write (@p size bytes)
-     * @todo TODO(BIC): make this a thin non-virtual wrapper around
-     *   writeFile(name,user,group,size,perm,atime,mtime,ctime,data)
-     */
-    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+    virtual bool writeSymLink(const QString &name, const QString &target,
+                              const QString &user, const QString &group,
+                              mode_t perm = 040755, time_t atime = (time_t)-1,
+                              time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
 
     /**
      * If an archive is opened for writing then you can add a new file
@@ -206,41 +171,23 @@ public:
      * @param name the name of the file
      * @param user the user that owns the file
      * @param group the group that owns the file
+     * @param data the data to write (@p size bytes)
      * @param size the size of the file
      * @param perm permissions of the file
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
-     * @param ctime creation time of the file
-     * @param data the data to write (@p size bytes)
+     * @param ctime time of last status change
      * @since 3.2
-     * @todo TODO(BIC): make virtual. For now use virtual hook
      */
-    bool writeFile( const QString& name, const QString& user, const QString& group,
-    			uint size, mode_t perm, time_t atime, time_t mtime,
-       			time_t ctime, const char* data );
+    virtual bool writeFile( const QString& name, const QString& user, const QString& group,
+                            const char* data, qint64 size,
+                            mode_t perm = 040755, time_t atime = (time_t)-1,
+                            time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
 
     /**
      * Here's another way of writing a file into an archive:
-     * Call prepareWriting, then call writeData()
-     * as many times as wanted then call doneWriting( totalSize ).
-     * For tar.gz files, you need to know the size before hand, since it is needed in the header.
-     * For zip files, size isn't used.
-     *
-     * @param name the name of the file
-     * @param user the user that owns the file
-     * @param group the group that owns the file
-     * @param size the size of the file
-     *
-     * @todo TODO(BIC): make this a thin non-virtual wrapper around
-     * prepareWriting(name,user,group,size,perm,atime,mtime,ctime)
-     * or eliminate it.
-     */
-    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
-
-    /**
-     * Here's another way of writing a file into an archive:
-     * Call prepareWriting, then call writeData()
-     * as many times as wanted then call doneWriting( totalSize ).
+     * Call prepareWriting(), then call writeData()
+     * as many times as wanted then call finishWriting( totalSize ).
      * For tar.gz files, you need to know the size before hand, it is needed in the header!
      * For zip files, size isn't used.
      *
@@ -254,26 +201,25 @@ public:
      * @param perm permissions of the file
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
-     * @param ctime creation time of the file
+     * @param ctime time of last status change
      * @since 3.2
-     * @todo TODO(BIC): make this virtual. For now use virtual hook.
      */
-    bool prepareWriting( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime );
+    virtual bool prepareWriting( const QString& name, const QString& user,
+                                 const QString& group, qint64 size,
+                                 mode_t perm = 0100644, time_t atime = (time_t)-1,
+                                 time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
 
     /**
      * Write data into the current file - to be called after calling prepareWriting
-     * @todo TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
      */
-    bool writeData( const char* data, uint size );
+    virtual bool writeData( const char* data, qint64 size );
 
     /**
-     * Call doneWriting after writing the data.
+     * Call finishWriting after writing the data.
      * @param size the size of the file
      * @see prepareWriting()
      */
-    virtual bool doneWriting( uint size ) = 0;
+    virtual bool finishWriting( qint64 size );
 
 protected:
     /**
@@ -299,6 +245,73 @@ protected:
     virtual KArchiveDirectory* rootDir();
 
     /**
+     * Write a directory to the archive.
+     * This virtual method must be implemented by subclasses.
+     *
+     * Depending on the archive type not all metadata might be used.
+     *
+     * @param name the name of the directory
+     * @param user the user that owns the directory
+     * @param group the group that owns the directory
+     * @param perm permissions of the directory. Use 040755 if you don't have any other information.
+     * @param atime time the file was last accessed
+     * @param mtime modification time of the file
+     * @param ctime time of last status change
+     * @since 4.0
+     * @see writeDir
+     */
+    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
+                             mode_t perm, time_t atime, time_t mtime, time_t ctime ) = 0;
+
+    /**
+     * Writes a symbolic link to the archive.
+     * This virtual method must be implemented by subclasses.
+     *
+     * @param name name of symbolic link
+     * @param target target of symbolic link
+     * @param user the user that owns the directory
+     * @param group the group that owns the directory
+     * @param perm permissions of the directory
+     * @param atime time the file was last accessed
+     * @param mtime modification time of the file
+     * @param ctime time of last status change
+     * @since 4.0
+     * @see writeSymLink
+     */
+    virtual bool doWriteSymLink(const QString &name, const QString &target,
+                                const QString &user, const QString &group,
+                                mode_t perm, time_t atime, time_t mtime, time_t ctime) = 0;
+
+    /**
+     * This virtual method must be implemented by subclasses.
+     *
+     * Depending on the archive type not all metadata might be used.
+     *
+     * @param name the name of the file
+     * @param user the user that owns the file
+     * @param group the group that owns the file
+     * @param size the size of the file
+     * @param perm permissions of the file. Use 0100644 if you don't have any more specific permissions to set.
+     * @param atime time the file was last accessed
+     * @param mtime modification time of the file
+     * @param ctime time of last status change
+     * @since 4.0
+     * @see prepareWriting
+     */
+    virtual bool doPrepareWriting( const QString& name, const QString& user,
+                                   const QString& group, qint64 size, mode_t perm,
+                                   time_t atime, time_t mtime, time_t ctime ) = 0;
+
+    /**
+     * Called after writing the data.
+     * This virtual method must be implemented by subclasses.
+     *
+     * @param size the size of the file
+     * @see finishWriting()
+     */
+    virtual bool doFinishWriting( qint64 size ) = 0;
+
+    /**
      * Ensures that @p path exists, create otherwise.
      * This handles e.g. tar files missing directory entries, like mico-2.3.0.tar.gz :)
      * @param path the path of the directory
@@ -322,64 +335,6 @@ private:
     char m_mode;
 protected:
     virtual void virtual_hook( int id, void* data );
-    /* @internal for virtual_hook */
-    enum { VIRTUAL_WRITE_DATA = 1, VIRTUAL_WRITE_SYMLINK, VIRTUAL_WRITE_DIR,
-    	VIRTUAL_WRITE_FILE, VIRTUAL_PREPARE_WRITING };
-    bool prepareWriting_impl( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime );
-    struct PrepareWritingParams {
-	const QString *name;
-	const QString *user;
-	const QString *group;
-	uint size;
-	mode_t perm;
-	time_t atime, mtime, ctime;
-	bool retval;
-    };
-    bool writeFile_impl( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime,
-       			const char* data );
-    struct WriteFileParams {
-	const QString *name;
-	const QString *user;
-	const QString *group;
-	uint size;
-	mode_t perm;
-	time_t atime, mtime, ctime;
-	const char *data;
-	bool retval;
-    };
-    bool writeDir_impl(const QString& name, const QString& user,
-    			const QString& group, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime);
-    struct WriteDirParams {
-	const QString *name;
-	const QString *user;
-	const QString *group;
-	mode_t perm;
-	time_t atime, mtime, ctime;
-	bool retval;
-    };
-    bool writeSymLink_impl(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
-    struct WriteSymlinkParams {
-	const QString *name;
-	const QString *target;
-	const QString *user;
-	const QString *group;
-	mode_t perm;
-	time_t atime, mtime, ctime;
-	bool retval;
-    };
-    bool writeData_impl( const char* data, uint size );
-    struct WriteDataParams {
-        const char* data;
-        uint size;
-        bool retval;
-    };
 private:
     class KArchivePrivate;
     KArchivePrivate * d;
@@ -406,8 +361,8 @@ public:
      * @param symlink the symlink, or QString::null
      */
     KArchiveEntry( KArchive* archive, const QString& name, int access, int date,
-               const QString& user, const QString& group,
-               const QString &symlink );
+                   const QString& user, const QString& group,
+                   const QString& symlink );
 
     virtual ~KArchiveEntry() { }
 
@@ -503,26 +458,26 @@ public:
      * @param size the size of the file
      */
     KArchiveFile( KArchive* archive, const QString& name, int access, int date,
-              const QString& user, const QString& group, const QString &symlink,
-              int pos, int size );
+                  const QString& user, const QString& group, const QString &symlink,
+                  qint64 pos, qint64 size );
 
-    virtual ~KArchiveFile() { }
+    virtual ~KArchiveFile();
 
     /**
      * Position of the data in the [uncompressed] archive.
      * @return the position of the file
      */
-    int position() const; // TODO use Q_LONG in KDE-4.0
+    qint64 position() const;
     /**
      * Size of the data.
      * @return the size of the file
      */
-    int size() const; // TODO use Q_LONG in KDE-4.0
+    qint64 size() const;
     /**
      * Set size of data, usually after writing the file.
      * @param s the new size of the file
      */
-    void setSize( int s ) { m_size = s; }
+    void setSize( qint64 s ) { m_size = s; }
 
     /**
      * Returns the data of the file.
@@ -534,12 +489,14 @@ public:
     /**
      * This method returns QIODevice (internal class: KLimitedIODevice)
      * on top of the underlying QIODevice. This is obviously for reading only.
-     * Note that the ownership of the device is being transferred to the caller,
+     *
+     * WARNING: Note that the ownership of the device is being transferred to the caller,
      * who will have to delete it.
+     *
      * The returned device auto-opens (in readonly mode), no need to open it.
      * @return the QIODevice of the file
      */
-    QIODevice *device() const; // TODO make virtual
+    virtual QIODevice *device() const;
 
     /**
      * Checks whether this entry is a file.
@@ -555,8 +512,8 @@ public:
     void copyTo(const QString& dest) const;
 
 private:
-    int m_pos; // TODO use Q_LONG in KDE-4.0
-    int m_size; // TODO use Q_LONG in KDE-4.0
+    qint64 m_pos;
+    qint64 m_size;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
@@ -587,7 +544,7 @@ public:
                    const QString& user, const QString& group,
                    const QString& symlink);
 
-    virtual ~KArchiveDirectory() { }
+    virtual ~KArchiveDirectory();
 
     /**
      * Returns a list of sub-entries.
@@ -599,13 +556,7 @@ public:
      * @param name may be "test1", "mydir/test3", "mydir/mysubdir/test3", etc.
      * @return a pointer to the entry in the directory.
      */
-    KArchiveEntry* entry( QString name );
-    /**
-     * Returns the entry with the given name.
-     * @param name may be "test1", "mydir/test3", "mydir/mysubdir/test3", etc.
-     * @return a pointer to the entry in the directory.
-     */
-    const KArchiveEntry* entry( QString name ) const;
+    const KArchiveEntry* entry( const QString& name ) const;
 
     /**
      * @internal
@@ -629,7 +580,7 @@ public:
      void copyTo(const QString& dest, bool recursive = true) const;
 
 private:
-    Q3Dict<KArchiveEntry> m_entries;
+    QHash<QString, KArchiveEntry *> m_entries;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

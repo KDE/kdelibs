@@ -18,14 +18,6 @@
 #ifndef __kar_h
 #define __kar_h
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <q3dict.h>
-
 #include <karchive.h>
 
 /**
@@ -62,25 +54,35 @@ public:
      * The name of the ar file, as passed to the constructor.
      * @return the filename. Null if you used the QIODevice constructor
      */
-    QString fileName() { return m_filename; }
+    QString fileName() const { return m_filename; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); Q_UNUSED(size); return false; }
+    virtual bool doPrepareWriting( const QString& name, const QString& user, const QString& group, qint64 size,
+                                 mode_t perm, time_t atime, time_t mtime, time_t ctime )
+    {   Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); Q_UNUSED(size);
+        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime );
+        return false;
+    }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool doneWriting( uint size ) { Q_UNUSED(size); return false; }
+    virtual bool doFinishWriting( qint64 size ) { Q_UNUSED(size); return false; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group )  { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); return false; }
+    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
+                             mode_t perm, time_t atime, time_t mtime, time_t ctime ) {
+        Q_UNUSED( name ); Q_UNUSED( user ); Q_UNUSED( group );
+        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime );
+        return false;
+    }
 
 protected:
     /**

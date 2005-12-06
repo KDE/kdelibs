@@ -64,7 +64,7 @@ public:
     }
     virtual void close() {}
 
-    virtual Offset size() const { return m_length; }
+    virtual qint64 size() const { return m_length; }
 
     virtual qint64 readData ( char * data, qint64 maxlen )
     {
@@ -82,8 +82,8 @@ public:
             return c[0];
     }
     virtual void ungetChar( int c ) { m_dev->ungetChar(c); } // ## apply lower limit ?
-    virtual Offset pos() const { return m_dev->pos() - m_start; }
-    virtual bool seek( Offset pos ) {
+    virtual qint64 pos() const { return m_dev->pos() - m_start; }
+    virtual bool seek( qint64 pos ) {
         Q_ASSERT( pos <= m_length );
         pos = QMIN( pos, m_length ); // Apply upper limit
         return m_dev->at( m_start + pos );

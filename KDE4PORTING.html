@@ -631,6 +631,17 @@ a listDir result.</li>
 <li>iconForURL has been deprecated, will possily removed for KDE 4.0 final, use iconNameForURL instead</li>
 </ul>
 
+<H4>KArchive/KTar/KZip/KAr</H4>
+<ul>
+<li>All sizes and file offsets now use qint64 (similar to QIODevice)</li>
+<li>The API has changed for subclasses: writeDir is doWriteDir, prepareWriting is doPrepareWriting etc.</li>
+<li>API changes for users of the class: doneWriting was renamed to finishWriting, and 
+   the order of the arguments for writeFile() is more usual: data comes before size.</li>
+<li>KTarDirectory -&gt; KArchiveDirectory</li>
+<li>KTarFile -&gt; KArchiveFile</li>
+<li>KTarEntry -&gt; KArchiveEntry</li>
+<li>KTarGz -&gt; KTar</li>
+</ul>
 
 <H4>KURLRequester</H4>
 <ul>

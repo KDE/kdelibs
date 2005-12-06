@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
    Copyright (C) 2003 Leo Savernik <l.savernik@aon.at>
 
    Moved from ktar.cpp by Roberto Teixeira <maragato@kde.org>
@@ -45,14 +45,11 @@
 #include "karchive.h"
 #include "klimitediodevice.h"
 
-template class Q3Dict<KArchiveEntry>;
-
 
 class KArchive::KArchivePrivate
 {
 public:
     KArchiveDirectory* rootDir;
-    bool closeSucceeded;
 };
 
 class PosSortedPtrList : public Q3PtrList<KArchiveFile> {
@@ -104,13 +101,14 @@ bool KArchive::open( QIODevice::OpenMode mode )
     return openArchive( mode );
 }
 
-void KArchive::close()
+bool KArchive::close()
 {
     if ( !m_open )
-        return;
+        return false; // already closed (return false or true? arguable...)
+
     // moved by holger to allow kzip to write the zip central dir
     // to the file in closeArchive()
-    d->closeSucceeded = closeArchive();
+    bool closeSucceeded = closeArchive();
 
     if ( m_dev )
         m_dev->close();
@@ -118,11 +116,7 @@ void KArchive::close()
     delete d->rootDir;
     d->rootDir = 0;
     m_open = false;
-}
-
-bool KArchive::closeSucceeded() const
-{
-    return d->closeSucceeded;
+    return closeSucceeded;
 }
 
 const KArchiveDirectory* KArchive::directory() const
@@ -150,11 +144,11 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
     if (fileInfo.isSymLink()) {
         return writeSymLink(destName, fileInfo.readLink(), fileInfo.owner(),
-        		fileInfo.group(), fi.st_mode, fi.st_atime, fi.st_mtime,
-          		fi.st_ctime);
+                            fileInfo.group(), fi.st_mode, fi.st_atime, fi.st_mtime,
+                            fi.st_ctime);
     }/*end if*/
 
-    uint size = fileInfo.size();
+    qint64 size = fileInfo.size();
 
     // the file must be opened before prepareWriting is called, otherwise
     // if the opening fails, no content will follow the already written
@@ -175,9 +169,9 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
     // Read and write data in chunks to minimize memory usage
     QByteArray array(8*1024);
-    int n;
-    uint total = 0;
-    while ( ( n = file.readBlock( array.data(), array.size() ) ) > 0 )
+    qint64 n;
+    qint64 total = 0;
+    while ( ( n = file.read( array.data(), array.size() ) ) > 0 )
     {
         if ( !writeData( array.data(), n ) )
         {
@@ -188,9 +182,9 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
     Q_ASSERT( total == size );
 
-    if ( !doneWriting( size ) )
+    if ( !finishWriting( size ) )
     {
-        kdWarning() << "KArchive::addLocalFile doneWriting failed" << endl;
+        kdWarning() << "KArchive::addLocalFile finishWriting failed" << endl;
         return false;
     }
     return true;
@@ -223,60 +217,10 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     return true;
 }
 
-bool KArchive::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
-{
-    mode_t perm = 0100644;
-    time_t the_time = time(0);
-    return writeFile(name,user,group,size,perm,the_time,the_time,the_time,data);
-}
-
-bool KArchive::prepareWriting( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime ) {
-  PrepareWritingParams params;
-  params.name = &name;
-  params.user = &user;
-  params.group = &group;
-  params.size = size;
-  params.perm = perm;
-  params.atime = atime;
-  params.mtime = mtime;
-  params.ctime = ctime;
-  virtual_hook(VIRTUAL_PREPARE_WRITING,&params);
-  return params.retval;
-}
-
-bool KArchive::prepareWriting_impl(const QString &name, const QString &user,
-    			const QString &group, uint size, mode_t /*perm*/,
-       			time_t /*atime*/, time_t /*mtime*/, time_t /*ctime*/ ) {
-  kdWarning(7040) << "New prepareWriting API not implemented in this class." << endl
-  		<< "Falling back to old API (metadata information will be lost)" << endl;
-  return prepareWriting(name,user,group,size);
-}
-
 bool KArchive::writeFile( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime,
-       			const char* data ) {
-  WriteFileParams params;
-  params.name = &name;
-  params.user = &user;
-  params.group = &group;
-  params.size = size;
-  params.perm = perm;
-  params.atime = atime;
-  params.mtime = mtime;
-  params.ctime = ctime;
-  params.data = data;
-  virtual_hook(VIRTUAL_WRITE_FILE,&params);
-  return params.retval;
-}
-
-bool KArchive::writeFile_impl( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime,
-       			const char* data ) {
-
+                          const QString& group, const char* data, qint64 size,
+                          mode_t perm, time_t atime, time_t mtime, time_t ctime )
+{
     if ( !prepareWriting( name, user, group, size, perm, atime, mtime, ctime ) )
     {
         kdWarning() << "KArchive::writeFile prepareWriting failed" << endl;
@@ -291,76 +235,52 @@ bool KArchive::writeFile_impl( const QString& name, const QString& user,
         return false;
     }
 
-    if ( !doneWriting( size ) )
+    if ( !finishWriting( size ) )
     {
-        kdWarning() << "KArchive::writeFile doneWriting failed" << endl;
+        kdWarning() << "KArchive::writeFile finishWriting failed" << endl;
         return false;
     }
     return true;
 }
 
-bool KArchive::writeDir(const QString& name, const QString& user,
-    			const QString& group, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime) {
-  WriteDirParams params;
-  params.name = &name;
-  params.user = &user;
-  params.group = &group;
-  params.perm = perm;
-  params.atime = atime;
-  params.mtime = mtime;
-  params.ctime = ctime;
-  virtual_hook(VIRTUAL_WRITE_DIR,&params);
-  return params.retval;
+bool KArchive::writeData( const char* data, qint64 size )
+{
+    return device()->write( data, size ) == size;
 }
 
-bool KArchive::writeDir_impl(const QString &name, const QString &user,
-    			const QString &group, mode_t /*perm*/,
-       			time_t /*atime*/, time_t /*mtime*/, time_t /*ctime*/ ) {
-  kdWarning(7040) << "New writeDir API not implemented in this class." << endl
-  		<< "Falling back to old API (metadata information will be lost)" << endl;
-  return writeDir(name,user,group);
+// The writeDir -> doWriteDir pattern allows to avoid propagating the default
+// values into all virtual methods of subclasses, and it allows more extensibility:
+// if a new argument is needed, we can add a writeDir overload which stores the
+// additional argument in the d pointer, and doWriteDir reimplementations can fetch
+// it from there.
+
+bool KArchive::writeDir( const QString& name, const QString& user, const QString& group,
+                         mode_t perm, time_t atime,
+                         time_t mtime, time_t ctime )
+{
+    return doWriteDir( name, user, group, perm, atime, mtime, ctime );
 }
 
 bool KArchive::writeSymLink(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
-  WriteSymlinkParams params;
-  params.name = &name;
-  params.target = &target;
-  params.user = &user;
-  params.group = &group;
-  params.perm = perm;
-  params.atime = atime;
-  params.mtime = mtime;
-  params.ctime = ctime;
-  virtual_hook(VIRTUAL_WRITE_SYMLINK,&params);
-  return params.retval;
-}
-
-bool KArchive::writeSymLink_impl(const QString &/*name*/,const QString &/*target*/,
-    			const QString &/*user*/, const QString &/*group*/,
-    			mode_t /*perm*/, time_t /*atime*/, time_t /*mtime*/,
-    			time_t /*ctime*/) {
-  kdWarning(7040) << "writeSymLink not implemented in this class." << endl
-  		<< "No fallback available." << endl;
-  // FIXME: better return true here for compatibility with KDE < 3.2
-  return false;
-}
-
-bool KArchive::writeData( const char* data, uint size )
+                            const QString &user, const QString &group,
+                            mode_t perm, time_t atime,
+                            time_t mtime, time_t ctime )
 {
-    WriteDataParams params;
-    params.data = data;
-    params.size = size;
-    virtual_hook( VIRTUAL_WRITE_DATA, &params );
-    return params.retval;
+    return doWriteSymLink( name, target, user, group, perm, atime, mtime, ctime );
 }
 
-bool KArchive::writeData_impl( const char* data, uint size )
+
+bool KArchive::prepareWriting( const QString& name, const QString& user,
+                               const QString& group, qint64 size,
+                               mode_t perm, time_t atime,
+                               time_t mtime, time_t ctime )
 {
-    Q_ASSERT( device() );
-    return device()->writeBlock( data, size ) == (Q_LONG)size;
+    return doPrepareWriting( name, user, group, size, perm, atime, mtime, ctime );
+}
+
+bool KArchive::finishWriting( qint64 size )
+{
+    return doFinishWriting( size );
 }
 
 KArchiveDirectory * KArchive::rootDir()
@@ -393,7 +313,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     // See also KArchiveDirectory::entry().
 
     // Already created ? => found
-    KArchiveEntry* ent = rootDir()->entry( path );
+    const KArchiveEntry* ent = rootDir()->entry( path );
     if ( ent )
     {
         if ( ent->isDirectory() )
@@ -468,21 +388,25 @@ QDateTime KArchiveEntry::datetime() const
 ////////////////////////////////////////////////////////////////////////
 
 KArchiveFile::KArchiveFile( KArchive* t, const QString& name, int access, int date,
-                    const QString& user, const QString& group,
-                    const QString & symlink,
-                    int pos, int size )
+                            const QString& user, const QString& group,
+                            const QString & symlink,
+                            qint64 pos, qint64 size )
   : KArchiveEntry( t, name, access, date, user, group, symlink )
 {
   m_pos = pos;
   m_size = size;
 }
 
-int KArchiveFile::position() const
+KArchiveFile::~KArchiveFile()
+{
+}
+
+qint64 KArchiveFile::position() const
 {
   return m_pos;
 }
 
-int KArchiveFile::size() const
+qint64 KArchiveFile::size() const
 {
   return m_size;
 }
@@ -496,17 +420,16 @@ QByteArray KArchiveFile::data() const
   if ( m_size )
   {
     assert( arr.data() );
-    int n = archive()->device()->readBlock( arr.data(), m_size );
+    qint64 n = archive()->device()->read( arr.data(), m_size );
     if ( n != m_size )
       arr.resize( n );
   }
   return arr;
 }
 
-// ** This should be a virtual method, and this code should be in ktar.cpp
-QIODevice *KArchiveFile::device() const
+QIODevice * KArchiveFile::device() const
 {
-    return new KLimitedIODevice( archive()->device(), m_pos, m_size );
+  return new KLimitedIODevice( archive()->device(), m_pos, m_size );
 }
 
 void KArchiveFile::copyTo(const QString& dest) const
@@ -528,24 +451,21 @@ KArchiveDirectory::KArchiveDirectory( KArchive* t, const QString& name, int acce
                               const QString &symlink)
   : KArchiveEntry( t, name, access, date, user, group, symlink )
 {
-  m_entries.setAutoDelete( true );
+}
+
+KArchiveDirectory::~KArchiveDirectory()
+{
+  qDeleteAll(m_entries);
 }
 
 QStringList KArchiveDirectory::entries() const
 {
-  QStringList l;
-
-  Q3DictIterator<KArchiveEntry> it( m_entries );
-  for( ; it.current(); ++it )
-    l.append( it.currentKey() );
-
-  return l;
+  return m_entries.keys();
 }
 
-KArchiveEntry* KArchiveDirectory::entry( QString name )
-  // not "const QString & name" since we want a local copy
-  // (to remove leading slash if any)
+const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
 {
+  QString name = _name;
   int pos = name.find( '/' );
   if ( pos == 0 ) // ouch absolute path (see also KArchive::findOrCreate)
   {
@@ -570,24 +490,19 @@ KArchiveEntry* KArchiveDirectory::entry( QString name )
 
     //kdDebug() << "KArchiveDirectory::entry left=" << left << " right=" << right << endl;
 
-    KArchiveEntry* e = m_entries[ left ];
+    const KArchiveEntry* e = m_entries.value( left );
     if ( !e || !e->isDirectory() )
       return 0;
-    return ((KArchiveDirectory*)e)->entry( right );
+    return static_cast<const KArchiveDirectory*>(e)->entry( right );
   }
 
-  return m_entries[ name ];
-}
-
-const KArchiveEntry* KArchiveDirectory::entry( QString name ) const
-{
-  return ((KArchiveDirectory*)this)->entry( name );
+  return m_entries.value( name );
 }
 
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
   Q_ASSERT( !entry->name().isEmpty() );
-  if( m_entries[ entry->name() ] ) {
+  if( m_entries.value( entry->name() ) ) {
       kdWarning() << "KArchiveDirectory::addEntry: directory " << name()
                   << " has entry " << entry->name() << " already" << endl;
   }
@@ -599,18 +514,12 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   QDir root;
 
   PosSortedPtrList fileList;
-  QMap<int, QString> fileToDir;
+  QMap<qint64, QString> fileToDir;
 
   QStringList::Iterator it;
 
   // placeholders for iterated items
-  KArchiveDirectory* curDir;
-  QString curDirName;
-
   QStringList dirEntries;
-  KArchiveEntry* curEntry;
-  KArchiveFile* curFile;
-
 
   Q3PtrStack<KArchiveDirectory> dirStack;
   QStack<QString> dirNameStack;
@@ -618,29 +527,28 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   dirStack.push( this );     // init stack at current directory
   dirNameStack.push( dest ); // ... with given path
   do {
-    curDir = dirStack.pop();
-    curDirName = dirNameStack.pop();
+    const KArchiveDirectory* curDir = dirStack.pop();
+    const QString curDirName = dirNameStack.pop();
     root.mkdir(curDirName);
 
     dirEntries = curDir->entries();
     for ( it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
-      curEntry = curDir->entry(*it);
+      const KArchiveEntry* curEntry = curDir->entry(*it);
       if ( curEntry->isFile() ) {
-        curFile = dynamic_cast<KArchiveFile*>( curEntry );
+        const KArchiveFile* curFile = dynamic_cast<const KArchiveFile*>( curEntry );
 	if (curFile) {
           fileList.append( curFile );
           fileToDir.insert( curFile->position(), curDirName );
         }
       }
 
-      if ( curEntry->isDirectory() )
-        if ( recursiveCopy ) {
-          KArchiveDirectory *ad = dynamic_cast<KArchiveDirectory*>( curEntry );
-          if (ad) {
-            dirStack.push( ad );
-            dirNameStack.push( curDirName + "/" + curEntry->name() );
-          }
+      if ( curEntry->isDirectory() && recursiveCopy ) {
+        const KArchiveDirectory *ad = dynamic_cast<const KArchiveDirectory*>( curEntry );
+        if (ad) {
+          dirStack.push( ad );
+          dirNameStack.push( curDirName + "/" + curEntry->name() );
         }
+      }
     }
   } while (!dirStack.isEmpty());
 
@@ -648,52 +556,13 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
 
   KArchiveFile* f;
   for ( f = fileList.first(); f; f = fileList.next() ) {
-    int pos = f->position();
+    qint64 pos = f->position();
     f->copyTo( fileToDir[pos] );
   }
 }
 
-void KArchive::virtual_hook( int id, void* data )
-{
-    switch (id) {
-      case VIRTUAL_WRITE_DATA: {
-        WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
-        params->retval = writeData_impl( params->data, params->size );
-        break;
-      }
-      case VIRTUAL_WRITE_SYMLINK: {
-        WriteSymlinkParams *params = reinterpret_cast<WriteSymlinkParams *>(data);
-        params->retval = writeSymLink_impl(*params->name,*params->target,
-        		*params->user,*params->group,params->perm,
-          		params->atime,params->mtime,params->ctime);
-        break;
-      }
-      case VIRTUAL_WRITE_DIR: {
-        WriteDirParams *params = reinterpret_cast<WriteDirParams *>(data);
-        params->retval = writeDir_impl(*params->name,*params->user,
-        		*params->group,params->perm,
-          		params->atime,params->mtime,params->ctime);
-        break;
-      }
-      case VIRTUAL_WRITE_FILE: {
-        WriteFileParams *params = reinterpret_cast<WriteFileParams *>(data);
-        params->retval = writeFile_impl(*params->name,*params->user,
-        		*params->group,params->size,params->perm,
-          		params->atime,params->mtime,params->ctime,
-            		params->data);
-        break;
-      }
-      case VIRTUAL_PREPARE_WRITING: {
-        PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
-        params->retval = prepareWriting_impl(*params->name,*params->user,
-        		*params->group,params->size,params->perm,
-          		params->atime,params->mtime,params->ctime);
-        break;
-      }
-      default:
-        /*BASE::virtual_hook( id, data )*/;
-    }/*end switch*/
-}
+void KArchive::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data )*/; }
 
 void KArchiveEntry::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

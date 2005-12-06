@@ -168,7 +168,7 @@ void KNewStuffSecure::downloadResource()
 bool KNewStuffSecure::createUploadFile(const QString &fileName)
 {
   Q_UNUSED(fileName);
-  return true; 
+  return true;
 }
 
 void KNewStuffSecure::uploadResource(const QString& fileName)
@@ -187,7 +187,7 @@ void KNewStuffSecure::slotFileSigned(int result)
 {
   if (result == 0)
   {
-    KMessageBox::error(parentWidget(), i18n("The signing failed for unknown reason."));    
+    KMessageBox::error(parentWidget(), i18n("The signing failed for unknown reason."));
   } else
   {
     if (result & Security::BAD_PASSPHRASE)
@@ -196,22 +196,22 @@ void KNewStuffSecure::slotFileSigned(int result)
       {
         disconnect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
         removeTempDirectory();
-        return;    
+        return;
       }
-    } 
+    }
     KTar tar(m_signedFileName + ".signed", "application/x-gzip");
     tar.open(QIODevice::WriteOnly);
     QStringList files;
     files << m_signedFileName;
     files << m_tempDir->name() + "/md5sum";
     files << m_tempDir->name() + "/signature";
-  
+
     for (QStringList::Iterator it_f = files.begin(); it_f != files.end(); ++it_f)
     {
       QFile file(*it_f);
       file.open(QIODevice::ReadOnly);
       QByteArray bArray = file.readAll();
-      tar.writeFile(QFileInfo(file).fileName(), "user", "group", bArray.size(), bArray.data());
+      tar.writeFile(QFileInfo(file).fileName(), "user", "group", bArray.data(), bArray.size());
       file.close();
     }
     tar.close();

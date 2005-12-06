@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 David Faure   <faure@kde.org>
+ *  Copyright (C) 2002 - 2005 David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,16 +24,16 @@
 
 #include <assert.h>
 
-void recursive_print( const KTarDirectory * dir, const QString & path )
+void recursive_print( const KArchiveDirectory * dir, const QString & path )
 {
   QStringList l = dir->entries();
   QStringList::Iterator it = l.begin();
   for( ; it != l.end(); ++it )
   {
-    const KTarEntry* entry = dir->entry( (*it) );
+    const KArchiveEntry* entry = dir->entry( (*it) );
     printf("mode=%07o %s %s %s%s isdir=%d\n", entry->permissions(), entry->user().latin1(), entry->group().latin1(), path.latin1(), (*it).latin1(), entry->isDirectory());
     if (entry->isDirectory())
-      recursive_print( (KTarDirectory *)entry, path+(*it)+"/" );
+      recursive_print( (KArchiveDirectory *)entry, path+(*it)+"/" );
   }
 }
 
@@ -53,7 +53,7 @@ int main( int argc, char** argv )
   QString command = argv[1];
   if ( command == "list" )
   {
-    KTarGz tar( argv[2] );
+    KTar tar( argv[2] );
 
     if ( !tar.open( QIODevice::ReadOnly ) )
     {
@@ -61,7 +61,7 @@ int main( int argc, char** argv )
       return 1;
     }
 
-    const KTarDirectory* dir = tar.directory();
+    const KArchiveDirectory* dir = tar.directory();
 
     //printf("calling recursive_print\n");
     recursive_print( dir, "" );
@@ -73,7 +73,7 @@ int main( int argc, char** argv )
   }
   else if (command == "readwrite" )
   {
-    KTarGz tar( argv[2] );
+    KTar tar( argv[2] );
 
     if ( !tar.open( QIODevice::WriteOnly ) )
     {
@@ -81,25 +81,25 @@ int main( int argc, char** argv )
       return 1;
     }
 
-    tar.writeFile( "empty", "weis", "users", 0, "" );
-    tar.writeFile( "test1", "weis", "users", 5, "Hallo" );
-    tar.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
-    tar.writeFile( "mydir/test3", "weis", "users", 13, "Noch so einer" );
-    tar.writeFile( "my/dir/test3", "dfaure", "hackers", 29, "I don't speak German (David)" );
+    tar.writeFile( "empty", "weis", "users", "", 0 );
+    tar.writeFile( "test1", "weis", "users", "Hallo", 5 );
+    tar.writeFile( "test2", "weis", "users", "Hallo Du", 8 );
+    tar.writeFile( "mydir/test3", "weis", "users", "Noch so einer", 13 );
+    tar.writeFile( "my/dir/test3", "dfaure", "hackers", "I don't speak German (David)", 29 );
 
 #define SIZE1 100
     // Now a medium file : 100 null bytes
     char medium[ SIZE1 ];
     memset( medium, 0, SIZE1 );
-    tar.writeFile( "mediumfile", "user", "group", SIZE1, medium );
+    tar.writeFile( "mediumfile", "user", "group", medium, SIZE1 );
     // Another one, with an absolute path
-    tar.writeFile( "/dir/subdir/mediumfile2", "user", "group", SIZE1, medium );
+    tar.writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 );
 
     // Now a huge file : 20000 null bytes
     int n = 20000;
     char * huge = new char[ n ];
     memset( huge, 0, n );
-    tar.writeFile( "hugefile", "user", "group", n, huge );
+    tar.writeFile( "hugefile", "user", "group", huge, n );
     delete [] huge;
 
     tar.close();
@@ -112,12 +112,12 @@ int main( int argc, char** argv )
       return 1;
     }
 
-    const KTarDirectory* dir = tar.directory();
+    const KArchiveDirectory* dir = tar.directory();
     recursive_print(dir, "");
 
-    const KTarEntry* e = dir->entry( "mydir/test3" );
+    const KArchiveEntry* e = dir->entry( "mydir/test3" );
     Q_ASSERT( e && e->isFile() );
-    const KTarFile* f = (KTarFile*)e;
+    const KArchiveFile* f = (KArchiveFile*)e;
 
     QByteArray arr( f->data() );
     printf("SIZE=%i\n",arr.size() );
@@ -130,7 +130,7 @@ int main( int argc, char** argv )
   }
   else if ( command == "maxlength" )
   {
-    KTarGz tar( argv[2] );
+    KTar tar( argv[2] );
 
     if ( !tar.open( QIODevice::WriteOnly ) )
     {
@@ -146,7 +146,7 @@ int main( int argc, char** argv )
       str.fill( 'a', i-10 );
       num.setNum( i );
       num = num.rightJustified( 10, '0' );
-      tar.writeFile( str+num, "testu", "testg", 3, "hum" );
+      tar.writeFile( str+num, "testu", "testg", "hum", 3 );
     }
     // Result of this test : works perfectly now (failed at 482 formerly and
     // before that at 154).
@@ -156,15 +156,15 @@ int main( int argc, char** argv )
   }
   else if ( command == "iodevice" )
   {
-    KTarGz tar( argv[2] );
+    KTar tar( argv[2] );
     if ( !tar.open( QIODevice::ReadOnly ) )
       return 1;
-    const KTarDirectory* dir = tar.directory();
+    const KArchiveDirectory* dir = tar.directory();
     assert(dir);
-    const KTarEntry* entry = dir->entry( "my/dir/test3" );
+    const KArchiveEntry* entry = dir->entry( "my/dir/test3" );
     if ( entry && entry->isFile() )
     {
-        QIODevice *dev = static_cast<const KTarFile *>(entry)->device();
+        QIODevice *dev = static_cast<const KArchiveFile *>(entry)->device();
         QByteArray contents = dev->readAll();
         kdDebug() << "contents=" << contents << endl;
     } else

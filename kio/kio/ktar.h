@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
    Copyright (C) 2003 Leo Savernik <l.savernik@aon.at>
 
    This library is free software; you can redistribute it and/or
@@ -16,25 +16,17 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __ktar_h
-#define __ktar_h
-
-#include <sys/stat.h>
-#include <sys/types.h>
-
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <q3dict.h>
+#ifndef KTAR_H
+#define KTAR_H
 
 #include <karchive.h>
 
 /**
  * A class for reading / writing (optionally compressed) tar archives.
  *
- * KTar allows you to read and write tar archives, including those 
+ * KTar allows you to read and write tar archives, including those
  * that are compressed using gzip or bzip2.
- * 
+ *
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
 class KIO_EXPORT KTar : public KArchive
@@ -73,7 +65,7 @@ public:
      * Null if you used the QIODevice constructor.
      * @return the name of the file, or QString::null if unknown
      */
-    QString fileName() const { return m_filename; } 
+    QString fileName() const { return m_filename; }
 
     /**
      * Special function for setting the "original file name" in the gzip header,
@@ -83,20 +75,19 @@ public:
      */
     void setOrigFileName( const QByteArray & fileName );
 
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool writeSymLink(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group );
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool writeDir( const QString& name, const QString& user, const QString& group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime );
-    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool prepareWriting( const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-       			time_t atime, time_t mtime, time_t ctime );
-    virtual bool doneWriting( uint size );
+    /// Reimplemented from KArchive
+    virtual bool doWriteSymLink(const QString &name, const QString &target,
+                                const QString &user, const QString &group,
+                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
+    /// Reimplemented from KArchive
+    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
+                             mode_t perm, time_t atime, time_t mtime, time_t ctime );
+    /// Reimplemented from KArchive
+    virtual bool doPrepareWriting( const QString& name, const QString& user,
+                                   const QString& group, qint64 size, mode_t perm,
+                                   time_t atime, time_t mtime, time_t ctime );
+    /// Reimplemented from KArchive
+    virtual bool doFinishWriting( qint64 size );
 
 protected:
     /**
@@ -121,8 +112,8 @@ private:
      * (normally, only the name has to be filled in before)
      * @param mode is expected to be 6 chars long, [uname and gname 31].
      */
-    void fillBuffer( char * buffer, const char * mode, int size, time_t mtime,
-    		char typeflag, const char * uname, const char * gname );
+    void fillBuffer( char * buffer, const char * mode, qint64 size, time_t mtime,
+                     char typeflag, const char * uname, const char * gname );
 
     /**
      * @internal
@@ -138,33 +129,16 @@ private:
     void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
 			const char *uname, const char *gname);
 
-    Q_LONG readRawHeader(char *buffer);
-    bool readLonglink(char *buffer,QByteArray &longlink);
-    Q_LONG readHeader(char *buffer,QString &name,QString &symlink);
+    qint64 readRawHeader(char *buffer);
+    bool readLonglink(char *buffer, QByteArray &longlink);
+    qint64 readHeader(char *buffer, QString &name, QString &symlink);
 
     QString m_filename;
 protected:
     virtual void virtual_hook( int id, void* data );
-    bool prepareWriting_impl(const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime);
-    bool writeDir_impl(const QString& name, const QString& user,
-    			const QString& group, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime );
-    bool writeSymLink_impl(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
 private:
     class KTarPrivate;
     KTarPrivate * d;
 };
-
-/**
- * Old, deprecated naming
- */
-#define KTarGz KTar
-#define KTarEntry KArchiveEntry
-#define KTarFile KArchiveFile
-#define KTarDirectory KArchiveDirectory
 
 #endif

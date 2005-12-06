@@ -39,7 +39,7 @@ public:
 };
 
 KAr::KAr( const QString& filename )
-    : KArchive( 0L )
+    : KArchive( 0 )
 {
     //kdDebug(7042) << "KAr(filename) reached." << endl;
     m_filename = filename;
@@ -95,11 +95,12 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         QByteArray ar_header;
         ar_header.resize(61);
         QByteArray name;
-        int date, uid, gid, mode, size;
+        int date, uid, gid, mode;
+        qint64 size;
 
         dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary
 
-        if ( dev->readBlock (ar_header.data(), 60) != 60 ) { // Read ar header
+        if ( dev->read(ar_header.data(), 60) != 60 ) { // Read ar header
             kdWarning(7042) << "Couldn't read header" << endl;
             delete[] ar_longnames;
             //return false;
@@ -125,7 +126,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                 delete[] ar_longnames;
                 ar_longnames = new char[size + 1];
                 ar_longnames[size] = '\0';
-                dev->readBlock (ar_longnames, size);
+                dev->read(ar_longnames, size);
                 skip_entry = true;
                 kdDebug(7042) << "Read in longnames entry" << endl;
             } else if (name.mid(1, 1) == " ") { // Symbol table entry
@@ -136,6 +137,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                 kdDebug(7042) << "Longfilename #" << name.mid(1, 15).toInt() << endl;
                 if (! ar_longnames) {
                     kdWarning(7042) << "Invalid longfilename reference" << endl;
+                    delete[] ar_longnames;
                     return false;
                 }
                 name = &ar_longnames[name.mid(1, 15).toInt()];

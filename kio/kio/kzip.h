@@ -18,14 +18,6 @@
 #ifndef __kzip_h
 #define __kzip_h
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <q3dict.h>
-#include <q3valuelist.h>
 #include <karchive.h>
 
 class KZipFileEntry;
@@ -129,56 +121,28 @@ public:
      */
     Compression compression() const;
 
-    /**
-     * If an archive is opened for writing then you can add a new file
-     * using this function.
-     * This method takes the whole data at once.
-     * @param name can include subdirs e.g. path/to/the/file
-     * @param user the user owning the file
-     * @param group the group owning the file
-     * @param size the size of the file
-     * @param data a pointer to the data
-     * @return true if successful, false otherwise
-     */
-    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data ); // BC: remove reimplementation for KDE-4.0
-
-    /**
-     * Alternative method for writing: call prepareWriting(), then feed the data
-     * in small chunks using writeData(), and call doneWriting() when done.
-     * @param name can include subdirs e.g. path/to/the/file
-     * @param user the user owning the file
-     * @param group the group owning the file
-     * @param size unused argument
-     * @return true if successful, false otherwise
-     */
-    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
-
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool writeSymLink(const QString &name, const QString &target,
-                        const QString &user, const QString &group,
-                        mode_t perm, time_t atime, time_t mtime, time_t ctime);
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool prepareWriting( const QString& name, const QString& user,
-                        const QString& group, uint size, mode_t perm,
-                        time_t atime, time_t mtime, time_t ctime );
-    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
-    bool writeFile( const QString& name, const QString& user, const QString& group,
-                        uint size, mode_t perm, time_t atime, time_t mtime,
-                        time_t ctime, const char* data );
+    /// Reimplemented from KArchive
+    virtual bool doWriteSymLink(const QString &name, const QString &target,
+                                const QString &user, const QString &group,
+                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
+    /// Reimplemented from KArchive
+    virtual bool doPrepareWriting( const QString& name, const QString& user,
+                                 const QString& group, qint64 size, mode_t perm,
+                                 time_t atime, time_t mtime, time_t ctime );
     /**
      * Write data to a file that has been created using prepareWriting().
      * @param data a pointer to the data
      * @param size the size of the chunk
      * @return true if successful, false otherwise
      */
-    bool writeData( const char* data, uint size ); // TODO make virtual
+    virtual bool writeData( const char* data, qint64 size );
 
     /**
      * Write data to a file that has been created using prepareWriting().
      * @param size the size of the file
      * @return true if successful, false otherwise
      */
-    virtual bool doneWriting( uint size );
+    virtual bool doFinishWriting( qint64 size );
 
 protected:
     /**
@@ -194,22 +158,15 @@ protected:
     /**
      * @internal Not needed for zip
      */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group) { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); return true; }
-    // TODO(BIC) uncomment and make virtual for KDE 4.
-//    bool writeDir( const QString& name, const QString& user, const QString& group,
-//                        mode_t perm, time_t atime, time_t mtime, time_t ctime );
+    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
+                             mode_t perm, time_t atime, time_t mtime, time_t ctime ) {
+        Q_UNUSED( name ); Q_UNUSED( user ); Q_UNUSED( group );
+        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime );
+        return true;
+    }
 
 protected:
     virtual void virtual_hook( int id, void* data );
-    /** @internal for virtual_hook */
-    // from KArchive
-    bool writeData_impl( const char* data, uint size );
-    bool prepareWriting_impl(const QString& name, const QString& user,
-                        const QString& group, uint size, mode_t perm,
-                        time_t atime, time_t mtime, time_t ctime);
-    bool writeSymLink_impl(const QString &name, const QString &target,
-                        const QString &user, const QString &group,
-                        mode_t perm, time_t atime, time_t mtime, time_t ctime);
 private:
     void abort();
 
@@ -226,12 +183,10 @@ private:
 class KIO_EXPORT KZipFileEntry : public KArchiveFile
 {
 public:
-    /*KZipFileEntry() : st(-1)
-      {}*/
     KZipFileEntry( KZip* zip, const QString& name, int access, int date,
                    const QString& user, const QString& group, const QString& symlink,
-                   const QString& path, Q_LONG start, Q_LONG uncompressedSize,
-                   int encoding, Q_LONG compressedSize) :
+                   const QString& path, qint64 start, qint64 uncompressedSize,
+                   int encoding, qint64 compressedSize) :
         KArchiveFile( zip, name, access, date, user, group, symlink,
                       start, uncompressedSize ),
         m_crc(0),
@@ -241,14 +196,14 @@ public:
         m_path( path )
     {}
     int encoding() const { return m_encoding; }
-    Q_LONG compressedSize() const { return m_compressedSize; }
+    qint64 compressedSize() const { return m_compressedSize; }
 
     /// Only used when writing
-    void setCompressedSize(Q_LONG compressedSize) { m_compressedSize = compressedSize; }
+    void setCompressedSize(qint64 compressedSize) { m_compressedSize = compressedSize; }
 
     /// Header start: only used when writing
-    void setHeaderStart(Q_LONG headerstart) { m_headerStart = headerstart; }
-    Q_LONG headerStart() const {return m_headerStart; }
+    void setHeaderStart(qint64 headerstart) { m_headerStart = headerstart; }
+    qint64 headerStart() const {return m_headerStart; }
 
     /// CRC: only used when writing
     unsigned long crc32() const { return m_crc; }
@@ -270,15 +225,15 @@ public:
      * who will have to delete it.
      * The returned device auto-opens (in readonly mode), no need to open it.
      */
-    QIODevice* device() const; // WARNING, not virtual!
+    virtual QIODevice* device() const;
 
 private:
     unsigned long m_crc;
-    Q_LONG m_compressedSize;
-    Q_LONG m_headerStart;
+    qint64 m_compressedSize;
+    qint64 m_headerStart;
     int m_encoding;
     QString m_path;
-    // KDE4: d pointer or at least some int for future extensions
+    class KZipFileEntryPrivate* d;
 };
 
 #endif

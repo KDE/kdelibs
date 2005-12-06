@@ -462,9 +462,9 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
 	    time_t mtime = transformFromMsDos( buffer+4 );
 
-	    Q_LONG compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
+	    qint64 compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
 	    			| (uchar)buffer[14] << 16 | (uchar)buffer[15] << 24;
-	    Q_LONG uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
+	    qint64 uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
 	    			| (uchar)buffer[18] << 16 | (uchar)buffer[19] << 24;
 	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
 	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
@@ -492,7 +492,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             // skip rest of extra field in case it is too long
             unsigned int extraFieldEnd = dev->at() + extralen;
 	    pfi->extralen = extralen;
-	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
+	    int handledextralen = qMin(extralen, (int)sizeof buffer);
 
 	    kdDebug(7040) << "handledextralen: " << handledextralen << endl;
 
@@ -578,7 +578,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    }
 		} else {
 
-	            if ( compr_size > (Q_LONG)dev->size() )
+	            if ( compr_size > dev->size() )
 		    {
 		    	// here we cannot trust the compressed size, so scan through the compressed
 			// data to find the next header
@@ -747,11 +747,11 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             if ( isdir )
             {
                 QString path = QDir::cleanPath( name );
-                KArchiveEntry* ent = rootDir()->entry( path );
+                const KArchiveEntry* ent = rootDir()->entry( path );
                 if ( ent && ent->isDirectory() )
                 {
                     //kdDebug(7040) << "Directory already exists, NOT going to add it again" << endl;
-                    entry = 0L;
+                    entry = 0;
                 }
                 else
                 {
@@ -860,7 +860,6 @@ bool KZip::closeArchive()
         return true;
     }
 
-    kdDebug() << k_funcinfo << "device=" << device() << endl;
     //ReadWrite or WriteOnly
     //write all central dir file entries
 
@@ -871,9 +870,9 @@ bool KZip::closeArchive()
     char buffer[ 22 ]; // first used for 12, then for 22 at the end
     uLong crc = crc32(0L, Z_NULL, 0);
 
-    Q_LONG centraldiroffset = device()->at();
+    qint64 centraldiroffset = device()->at();
     //kdDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
-    Q_LONG atbackup = centraldiroffset;
+    qint64 atbackup = centraldiroffset;
     Q3PtrListIterator<KZipFileEntry> it( d->m_fileList );
 
     for ( ; it.current() ; ++it )
@@ -994,7 +993,7 @@ bool KZip::closeArchive()
         if ( !ok )
             return false;
     }
-    Q_LONG centraldirendoffset = device()->at();
+    qint64 centraldirendoffset = device()->at();
     //kdDebug(7040) << "closearchive: centraldirendoffset: " << centraldirendoffset << endl;
     //kdDebug(7040) << "closearchive: device()->at(): " << device()->at() << endl;
 
@@ -1051,43 +1050,9 @@ bool KZip::closeArchive()
     return true;
 }
 
-// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
-bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
-{
-    mode_t mode = 0100644;
-    time_t the_time = time(0);
-    return KArchive::writeFile( name, user, group, size, mode, the_time,
-    			the_time, the_time, data );
-}
-
-// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
-bool KZip::writeFile( const QString& name, const QString& user,
-                        const QString& group, uint size, mode_t perm,
-                        time_t atime, time_t mtime, time_t ctime,
-                        const char* data ) {
-  return KArchive::writeFile(name, user, group, size, perm, atime, mtime,
-  			ctime, data);
-}
-
-// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
-bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
-{
-    mode_t dflt_perm = 0100644;
-    time_t the_time = time(0);
-    return prepareWriting(name,user,group,size,dflt_perm,
-    		the_time,the_time,the_time);
-}
-
-// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
-bool KZip::prepareWriting(const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime) {
-  return KArchive::prepareWriting(name,user,group,size,perm,atime,mtime,ctime);
-}
-
-bool KZip::prepareWriting_impl(const QString &name, const QString &user,
-    			const QString &group, uint /*size*/, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime) {
+bool KZip::doPrepareWriting(const QString &name, const QString &user,
+                               const QString &group, qint64 /*size*/, mode_t perm,
+                               time_t atime, time_t mtime, time_t ctime) {
     //kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
     {
@@ -1102,13 +1067,13 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     }
 
     if ( !device() ) { // aborted
-        //kdWarning(7040) << "prepareWriting_impl: no device" << endl;
+        //kdWarning(7040) << "prepareWriting: no device" << endl;
         return false;
     }
 
     // set right offset in zip.
     if ( !device()->at( d->m_offset ) ) {
-        kdWarning(7040) << "prepareWriting_impl: cannot seek in ZIP file. Disk full?" << endl;
+        kdWarning(7040) << "doPrepareWriting: cannot seek in ZIP file. Disk full?" << endl;
         abort();
         return false;
     }
@@ -1155,7 +1120,7 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
 
     int extra_field_len = 0;
     if ( d->m_extraField == ModificationTime )
-        extra_field_len = 17;	// value also used in doneWriting()
+        extra_field_len = 17;	// value also used in finishWriting()
 
     // write out zip header
     QByteArray encodedName = QFile::encodeName(name);
@@ -1261,7 +1226,7 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     return b;
 }
 
-bool KZip::doneWriting( uint size )
+bool KZip::doFinishWriting( qint64 size )
 {
     if ( d->m_currentFile->encoding() == 8 ) {
         // Finish
@@ -1278,7 +1243,7 @@ bool KZip::doneWriting( uint size )
     d->m_currentFile->setSize(size);
     int extra_field_len = 0;
     if ( d->m_extraField == ModificationTime )
-        extra_field_len = 17;	// value also used in doneWriting()
+        extra_field_len = 17;	// value also used in finishWriting()
 
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
@@ -1298,23 +1263,16 @@ bool KZip::doneWriting( uint size )
     return true;
 }
 
-bool KZip::writeSymLink(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
-  return KArchive::writeSymLink(name,target,user,group,perm,atime,mtime,ctime);
-}
-
-bool KZip::writeSymLink_impl(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
-
+bool KZip::doWriteSymLink(const QString &name, const QString &target,
+                          const QString &user, const QString &group,
+                          mode_t perm, time_t atime, time_t mtime, time_t ctime) {
   // reassure that symlink flag is set, otherwise strange things happen on
   // extraction
   perm |= S_IFLNK;
   Compression c = compression();
   setCompression(NoCompression);	// link targets are never compressed
 
-  if (!prepareWriting(name, user, group, 0, perm, atime, mtime, ctime)) {
+  if (!doPrepareWriting(name, user, group, 0, perm, atime, mtime, ctime)) {
     kdWarning() << "KZip::writeFile prepareWriting failed" << endl;
     setCompression(c);
     return false;
@@ -1327,8 +1285,8 @@ bool KZip::writeSymLink_impl(const QString &name, const QString &target,
     return false;
   }
 
-  if (!doneWriting(symlink_target.length())) {
-    kdWarning() << "KZip::writeFile doneWriting failed" << endl;
+  if (!finishWriting(symlink_target.length())) {
+    kdWarning() << "KZip::writeFile finishWriting failed" << endl;
     setCompression(c);
     return false;
   }
@@ -1339,38 +1297,10 @@ bool KZip::writeSymLink_impl(const QString &name, const QString &target,
 
 void KZip::virtual_hook( int id, void* data )
 {
-    switch (id) {
-      case VIRTUAL_WRITE_DATA: {
-        WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
-        params->retval = writeData_impl( params->data, params->size );
-        break;
-      }
-      case VIRTUAL_WRITE_SYMLINK: {
-        WriteSymlinkParams *params = reinterpret_cast<WriteSymlinkParams *>(data);
-        params->retval = writeSymLink_impl(*params->name,*params->target,
-        		*params->user,*params->group,params->perm,
-          		params->atime,params->mtime,params->ctime);
-        break;
-      }
-      case VIRTUAL_PREPARE_WRITING: {
-        PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
-        params->retval = prepareWriting_impl(*params->name,*params->user,
-        		*params->group,params->size,params->perm,
-          		params->atime,params->mtime,params->ctime);
-        break;
-      }
-      default:
-        KArchive::virtual_hook( id, data );
-    }/*end switch*/
+    KArchive::virtual_hook( id, data );
 }
 
-// made virtual using virtual_hook
-bool KZip::writeData(const char * c, uint i)
-{
-    return KArchive::writeData( c, i );
-}
-
-bool KZip::writeData_impl(const char * c, uint i)
+bool KZip::writeData(const char * data, qint64 size)
 {
     Q_ASSERT( d->m_currentFile );
     Q_ASSERT( d->m_currentDev );
@@ -1381,11 +1311,11 @@ bool KZip::writeData_impl(const char * c, uint i)
 
     // crc to be calculated over uncompressed stuff...
     // and they didn't mention it in their docs...
-    d->m_crc = crc32(d->m_crc, (const Bytef *) c , i);
+    d->m_crc = crc32(d->m_crc, (const Bytef *) data , size);
 
-    Q_LONG written = d->m_currentDev->writeBlock( c, i );
-    //kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
-    bool ok = written == (Q_LONG)i;
+    qint64 written = d->m_currentDev->write( data, size );
+    //kdDebug(7040) << "KZip::writeData wrote " << size << " bytes." << endl;
+    bool ok = written == size;
     if ( !ok )
         abort();
     return ok;
