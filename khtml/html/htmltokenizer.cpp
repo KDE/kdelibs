@@ -446,7 +446,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
     // SGML strict
-    bool strict = parser->doc()->inStrictMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml;
+    bool strict = parser->doc()->inStrictMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml && !script && !style;
     int delimiterCount = 0;
     bool canClose = false;
 
