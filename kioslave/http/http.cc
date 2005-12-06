@@ -2393,7 +2393,9 @@ bool HTTPProtocol::httpOpen()
 
 #ifdef DO_GZIP
     if (m_request.allowCompressedPage)
-      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n";
+      header += "Accept-Encoding: x-gzip, gzip\r\n";
+      // ### FIXME: HTTP deflate support does not work, see KDE bug #117683
+      // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n";
 #endif
 
     if (!m_request.charsets.isEmpty())
