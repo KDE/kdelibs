@@ -4,7 +4,6 @@
 
 #include <qstring.h>
 #include <qcheckbox.h>
-#include <q3vbox.h>
 #include <kvbox.h>
 
 int main(int argc, char** argv)

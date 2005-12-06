@@ -12,8 +12,6 @@
 #include <q3scrollview.h>
 #include <q3filedialog.h>
 #include <q3widgetstack.h>
-#include <q3vbox.h>
-#include <q3url.h>
 #include <qpixmap.h>
 
 class Q3MultiLineEdit;

@@ -29,7 +29,7 @@
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h> 
 #include <kdebug.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 
 #include <assert.h>
 
@@ -38,7 +38,7 @@ class MainWindow : public KMainWindow
 public:
   MainWindow()
   {
-    Q3VBox* main = new Q3VBox(this);
+    KVBox* main = new KVBox(this);
     setCentralWidget(main);
 
     KSqueezedTextLabel* accel = new KSqueezedTextLabel

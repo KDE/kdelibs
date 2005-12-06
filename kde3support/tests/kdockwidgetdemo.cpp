@@ -9,7 +9,6 @@
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <q3hbox.h>
 #include <qlabel.h>
 #include <q3multilineedit.h>
 #include <qevent.h>

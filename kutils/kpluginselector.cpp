@@ -21,7 +21,6 @@
 #include "kpluginselector_p.h"
 
 #include <qtooltip.h>
-#include <q3vbox.h>
 #include <qlabel.h>
 #include <q3strlist.h>
 #include <qfile.h>

@@ -26,7 +26,6 @@
 
 #include "kmpropgeneral.h"
 
-#include <q3vbox.h>
 #include <kiconloader.h>
 #include <kinstance.h>
 

@@ -9,7 +9,6 @@
 #include <qtextstream.h>
 #include <q3multilineedit.h>
 #include <qlineedit.h>
-#include <q3vbox.h>
 
 #include <kiconloader.h>
 #include <kapplication.h>

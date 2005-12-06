@@ -26,8 +26,6 @@
 #define _KMultitabbar_h_
 
 #include <q3scrollview.h>
-#include <q3vbox.h>
-#include <q3hbox.h>
 #include <qlayout.h>
 #include <qstring.h>
 #include <q3ptrlist.h>

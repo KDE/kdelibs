@@ -25,7 +25,6 @@
 #include <kmenubar.h>
 #include <ktoolbar.h>
 #include <q3popupmenu.h>
-#include <q3vbox.h>
 
 static const char*folder[]={
 "16 16 9 1",

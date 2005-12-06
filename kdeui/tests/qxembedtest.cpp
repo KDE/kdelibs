@@ -4,8 +4,8 @@
 #include "qapplication.h"
 #include "qpushbutton.h"
 #include "qlineedit.h"
-#include "q3hbox.h"
-#include "q3vbox.h"
+#include "khbox.h"
+#include "kvbox.h"
 #include "qxembed.h"
 
 #ifdef Q_WS_X11
@@ -30,8 +30,8 @@ main(int argc, char**argv)
   QApplication a(argc,argv);
 
 #ifdef Q_WS_X11
-  QWidget *main = new Q3VBox(NULL,"main",Qt::WDestructiveClose);
-  QWidget *top = new Q3HBox(main);
+  QWidget *main = new KVBox(NULL,"main",Qt::WDestructiveClose);
+  QWidget *top = new KHBox(main);
   QPushButton *quit = new QPushButton("Quit", top);
   QObject::connect( quit, SIGNAL(clicked()), main, SLOT(close()) );
   QLineEdit *edit = new QLineEdit(top);

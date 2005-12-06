@@ -26,10 +26,8 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qtimer.h>
-#include <q3vbox.h>
 
 #include <kaction.h>
 #include <kapplication.h>

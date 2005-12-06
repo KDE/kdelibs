@@ -47,7 +47,6 @@
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <q3stylesheet.h>
-#include <q3vbox.h>
 #include <QX11Info>
 
 #include <assert.h>

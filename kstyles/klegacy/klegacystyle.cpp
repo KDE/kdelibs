@@ -48,7 +48,7 @@
 #include <qpointer.h>
 #include <q3grid.h>
 #include <q3groupbox.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qhbuttongroup.h>
 #include <q3header.h>
 #include <qhgroupbox.h>
@@ -98,7 +98,7 @@
 #include <q3toolbar.h>
 #include <qtoolbutton.h>
 #include <qtooltip.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qvbuttongroup.h>
 #include <qvgroupbox.h>
 #include <qwidget.h>
@@ -684,7 +684,7 @@ static GtkObject *initialize(Q3PtrDict<GtkObject> &dict) {
     dict.insert(QFrame::staticMetaObject(), myGtkFrame);
     dict.insert(Q3Grid::staticMetaObject(), myGtkFrame);
     dict.insert(Q3GroupBox::staticMetaObject(), myGtkBox);
-    dict.insert(Q3HBox::staticMetaObject(), myGtkHBox);
+    dict.insert(KHBox::staticMetaObject(), myGtkHBox);
     dict.insert(Q3HButtonGroup::staticMetaObject(), myGtkHButtonBox);
     dict.insert(QHGroupBox::staticMetaObject(), myGtkHBox);
     dict.insert(Q3Header::staticMetaObject(), myGtkRuler);
@@ -721,7 +721,7 @@ static GtkObject *initialize(Q3PtrDict<GtkObject> &dict) {
     dict.insert(Q3TextView::staticMetaObject(), myGtkText);
     dict.insert(Q3ToolBar::staticMetaObject(), myGtkToolbar);
     dict.insert(QToolButton::staticMetaObject(), myGtkButton);
-    dict.insert(Q3VBox::staticMetaObject(), myGtkVBox);
+    dict.insert(KVBox::staticMetaObject(), myGtkVBox);
     dict.insert(Q3VButtonGroup::staticMetaObject(), myGtkVButtonBox);
     dict.insert(QVGroupBox::staticMetaObject(), myGtkVBox);
     dict.insert(QWidget::staticMetaObject(), myGtkWidget);

@@ -19,7 +19,6 @@
 
 #ifndef KPIXMAPREGIONSELECTORWIDGET_H
 #define KPIXMAPREGIONSELECTORWIDGET_H
-#include <q3vbox.h>
 #include <qpixmap.h>
 #include <qrect.h>
 #include <qlabel.h>

@@ -23,7 +23,6 @@
 
 #include <qfile.h>
 #include <qlayout.h>
-#include <q3vbox.h>
 
 #include <kparts/part.h>
 #include <kaccel.h>

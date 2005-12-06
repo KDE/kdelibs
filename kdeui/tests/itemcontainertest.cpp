@@ -7,8 +7,6 @@
 */
 
 #include <qlayout.h>
-#include <q3vbox.h>
-#include <q3hbox.h>
 #include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
