@@ -33,6 +33,10 @@ private slots:
     void testDirectory();
     void testUtf8();
     void testSimpleMethods();
+    void testParsingTolerance();
+    void testEmptyQueryOrRef();
+    void testURLsWithoutPath();
+    void testPathAndQuery();
     void testSetFileName();
     void testPrettyURL();
     void testIsRelative();

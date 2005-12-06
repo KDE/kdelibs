@@ -309,19 +309,19 @@ KURL::~KURL()
 KURL::KURL( const QString &url )
     // : QUrl( url )  can't do that
 {
-    *this = QUrl::fromEncoded( url.latin1() );
+    setEncodedUrl( url.latin1(), QUrl::TolerantMode );
 }
 
 KURL::KURL( const char * url )
     // : QUrl( QLatin1String(url) )
 {
-    *this = QUrl::fromEncoded( url );
+    setEncodedUrl( url, QUrl::TolerantMode );
 }
 
 KURL::KURL( const QByteArray& url )
     // : QUrl( QLatin1String(url) )
 {
-    *this = QUrl::fromEncoded( url );
+    setEncodedUrl( url, QUrl::TolerantMode );
 }
 
 KURL::KURL( const KURL& _u )
@@ -352,7 +352,7 @@ QDataStream & operator<< (QDataStream & s, const KURL & a)
 QDataStream & operator>> (QDataStream & s, KURL & a)
 {
 #warning TODO: port to QUrl
-#if 0 // ###### TODO (must be wire-compatible for DCOP)
+#if 0
     qint8 malf;
     QString QueryFromWire;
     s >> a.m_strProtocol >> a.m_strUser >> a.m_strPass >> a.m_strHost
@@ -777,19 +777,19 @@ QString KURL::url( int _trailing ) const
 
 QString KURL::prettyURL( int _trailing ) const
 {
-  return url( _trailing );
-  // toString is useless for urls with queries
-#if 0
+  // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
+  // So prettyURL is just url, with the password removed.
+  if ( password().isEmpty() )
+    return url( _trailing );
+
+  QUrl newUrl( *this );
+  newUrl.setPassword( QString::null );
   if ( _trailing == +1 && !path().endsWith( QLatin1Char('/') ) ) {
-      // -1 and 0 are provided by QUrl, but not +1, so that one is a bit tricky.
-      // To avoid reimplementing toString() all over again, I just use another QUrl
-      // Let's hope this is fast, or not called often...
-      QUrl newUrl( *this );
+      // -1 and 0 are provided by QUrl, but not +1.
       newUrl.setPath( path() + QLatin1Char('/') );
-      return newUrl.toString();
+      return QLatin1String( newUrl.toEncoded() );
   }
-  return toString( _trailing == -1 ? StripTrailingSlash : None );
-#endif
+  return QLatin1String( newUrl.toEncoded(  _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
 #if 0
@@ -1222,7 +1222,7 @@ QString KURL::query() const
 
 bool urlcmp( const QString& _url1, const QString& _url2 )
 {
-  return QUrl( _url1 ) == QUrl( _url2 );
+  return QUrl( _url1, QUrl::TolerantMode ) == QUrl( _url2, QUrl::TolerantMode );
 #if 0
   // Both empty ?
   if ( _url1.isEmpty() && _url2.isEmpty() )
@@ -1328,14 +1328,14 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
 // static
 KURL KURL::fromPathOrURL( const QString& text )
 {
-    if ( text.isEmpty() )
-        return KURL();
-
     KURL url;
-    if (!QDir::isRelativePath(text))
-        url.setPath( text );
-    else
-        url = text;
+    if ( !text.isEmpty() )
+    {
+        if (!QDir::isRelativePath(text))
+            url.setPath( text );
+        else
+            url = text;
+    }
 
     return url;
 }
@@ -1407,7 +1407,7 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url)
    {
       bool dummy;
       QString basePath = base_url.directory(false, false);
-      relURL = QUrl::toPercentEncoding( _relativePath(basePath, url.path(), dummy) );
+      relURL = _relativePath(basePath, url.path(), dummy); // was QUrl::toPercentEncoding() but why?
       relURL += url.query();
    }
 

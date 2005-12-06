@@ -36,7 +36,7 @@ class KURLPrivate;
 // and this way hacks like setPath() would be less ugly, and we could avoid
 // half KDE code using setScheme() and the other half using setProtocol(), etc.
 // (DF)
-// TODO: fromPath(), since we using QUrl::fromLocalFile would then make a QUrl->KURL copy.
+// TODO: fromPath(), since if we use QUrl::fromLocalFile, we then have to make a QUrl->KURL copy.
 class KDECORE_EXPORT KURL : public QUrl
 {
 public:
@@ -637,9 +637,10 @@ public:
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
    * @return true if this url is a parent of @p u (or the same URL as @p u)
    *
-   * (this overload of the QUrl method allows to use the implicit KURL constructors)
    */
-  bool isParentOf( const KURL& u ) const { return QUrl::isParentOf( u ); }
+  bool isParentOf( const KURL& u ) const { return QUrl::isParentOf( u ) || equals( u, true ); }
+    // (this overload of the QUrl method allows to use the implicit KURL constructors)
+    // but also the equality test
 
   /**
    * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase

@@ -262,8 +262,13 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   check("KURL::path()", charles.path(), "/home/charles/foo%20moo");
   KURL charles2("file:/home/charles/foo%20moo");
   check("KURL::path()", charles2.path(), "/home/charles/foo moo");
+}
 
+void KURLTest::testEmptyQueryOrRef()
+{
   // Empty queries should be preserved!
+  //QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);
+  //COMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi?");
   KURL waba1 = "http://www.kde.org/cgi/test.cgi?";
   check("http: URL with empty query string", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?");
@@ -275,20 +280,28 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   check("hasRef()", waba1.hasRef()?"true":"false","true");
   check("hasHTMLRef()", waba1.hasHTMLRef()?"true":"false","true");
   check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString::null);
+  //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
+  //COMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi#" );
+}
 
-  // URLs who forgot to encode spaces in the query.
-  waba1 = "http://www.kde.org/cgi/incorrect.cgi?hello=My Value";
-  //VERIFY( waba1.isValid() );
-  check("http: URL with incorrect encoded query", waba1.url(),
-        "http://www.kde.org/cgi/incorrect.cgi?hello=My%20Value");
-
+void KURLTest::testParsingTolerance()
+{
+  // URLs who forgot to encode spaces in the query - the QUrl version first
   QUrl incorrectEncoded = QUrl::fromEncoded( "http://www.kde.org/cgi/qurl.cgi?hello=My Value" );
   VERIFY( incorrectEncoded.isValid() );
   VERIFY( !incorrectEncoded.toEncoded().isEmpty() );
   qDebug( "%s", incorrectEncoded.toEncoded().data() );
+  COMPARE( incorrectEncoded.toEncoded().constData(),
+           "http://www.kde.org/cgi/qurl.cgi?hello=My%20Value" );
+
+  // URLs who forgot to encode spaces in the query.
+  KURL waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
+  //VERIFY( waba1.isValid() );
+  check("http: URL with incorrect encoded query", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
 
   // URL with ':' in query (':' should NOT be encoded!)
-  waba1.setQuery("hello:My Value");
+  waba1 = "http://www.kde.org/cgi/test.cgi?hello:My Value";
   check("http: URL with ':' in query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello:My%20Value");
   check("upURL() removes query", waba1.upURL().url(),
@@ -298,9 +311,12 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value+20");
+}
 
+void KURLTest::testURLsWithoutPath()
+{
   // Urls without path (BR21387)
-  waba1 = "http://meine.db24.de?link=home_c_login_login";
+  KURL waba1 = "http://meine.db24.de?link=home_c_login_login";
   check("http: URL with empty path string", waba1.url(),
         "http://meine.db24.de?link=home_c_login_login");
   check("http: URL with empty path string path", waba1.path(),
@@ -323,13 +339,18 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
         "");
 
   waba1 = "http://a:389#b=c";
+  qDebug( "%s", qPrintable( waba1.url() ) );
   check( "http: URL with port, ref, and empty path; url", waba1.url(), "http://a:389#b=c" );
   check( "http: URL with port, ref, and empty path; host", waba1.host(), "a" );
   check( "http: URL with port, ref, and empty path; port", QString::number( waba1.port() ), "389" );
   check( "http: URL with port, ref, and empty path; path", waba1.path(), "" );
-  check( "http: URL with port, ref, and empty path; ref", waba1.ref(), "b=c" );
+  check( "http: URL with port, ref, and empty path; ref", waba1.ref(), "b%3Dc" ); // was b=c with KDE3, but the docu says encoded, so encoding the = is ok
+  check( "http: URL with port, ref, and empty path; htmlRef", waba1.htmlRef(), "b=c" );
   check( "http: URL with port, ref, and empty path; query", waba1.query(), "" );
+}
 
+void KURLTest::testPathAndQuery()
+{
   KURL tobi1("http://some.host.net/path/to/file#fragmentPrecedes?theQuery");
   check("wrong order of query and hypertext reference #1", tobi1.ref(), "fragmentPrecedes");
   check("wrong order of query and hypertext reference #2", tobi1.query(), "?theQuery");
@@ -348,7 +369,7 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
   check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path");
 
-  url1 = "ftp://user%40host.com@ftp.host.com/var/www/";
+  KURL url1 = "ftp://user%40host.com@ftp.host.com/var/www/";
   check("user()?", url1.user(), "user@host.com" );
   check("host()?", url1.host(), "ftp.host.com" );
   KURL up = url1.upURL();
@@ -363,7 +384,7 @@ void KURLTest::testSetFileName() // and addPath
 {
   kdDebug() << k_funcinfo << endl;
   KURL u2 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
-  qDebug( "* URL is %s\n", qPrintable( u2.url() ) );
+  qDebug( "* URL is %s", qPrintable( u2.url() ) );
 
   u2.setFileName( "myfile.txt" );
   check("KURL::setFileName()", u2.url(), "file:///home/dfaure/myfile.txt");
@@ -390,23 +411,28 @@ void KURLTest::testSetFileName() // and addPath
   u2.addPath( "" );
   check("KURL::addPath(\"subdir\")", u2.url(), "http://www.kde.org/subdir"); // unchanged
 
+  QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
+  COMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
+  COMPARE( qurl2.fileName(), QString::fromLatin1( "Print To File (PDF%2FAcrobat)" ) );
+  COMPARE( qurl2.toEncoded().constData(), "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" );
+
   // even more tricky
-  u2 = "print:/specials/Print%20To%20File%20(PDF%2FAcrobat)";
-  qDebug("* URL is %s\n",u2.url().ascii());
-  check("KURL::path()", u2.path(), "/specials/Print To File (PDF/Acrobat)");
-  check("KURL::fileName()", u2.fileName(), "Print To File (PDF/Acrobat)");
+  u2 = "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)";
+  qDebug("* URL is %s",u2.url().ascii());
+  check("KURL::path()", u2.path(), "/specials/Print To File (PDF%2FAcrobat)");
+  check("KURL::fileName()", u2.fileName(), "Print To File (PDF%2FAcrobat)");
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "print:/specials/");
 
   u2 = "file:/specials/Print";
-  qDebug("* URL is %s\n",u2.url().ascii());
+  qDebug("* URL is %s",u2.url().ascii());
   check("KURL::path()", u2.path(), "/specials/Print");
   check("KURL::fileName()", u2.fileName(), "Print");
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "file:///specials/");
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
-  qDebug("* URL is %s\n",u3);
+  qDebug("* URL is %s",u3);
   check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
 
   KURL::List lst = KURL::split( KURL(u3) );
@@ -430,7 +456,7 @@ void KURLTest::testDirectory()
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
   KURL u2( QByteArray("file:///home/dfaure/") );
-  qDebug("* URL is %s\n",u2.url().ascii());
+  qDebug("* URL is %s",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", u2.directory(true,false), "/home/dfaure");
@@ -458,28 +484,39 @@ void KURLTest::testDirectory()
   u2.cd("/opt/kde/bin/");
   check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:///opt/kde/bin/");
   u2 = "ftp://ftp.kde.org/";
-  qDebug("* URL is %s\n",u2.url().ascii());
+  qDebug("* URL is %s",u2.url().ascii());
   u2.cd("pub");
   check("KURL::cd(\"pub\")", u2.url(), "ftp://ftp.kde.org/pub");
   u2 = u2.upURL();
   check("KURL::upURL()", u2.url(), "ftp://ftp.kde.org/");
 }
 
+// In KDE4, prettyURL does pretty much the same as url(), except for removing passwords from URLs.
+// We don't have a way to decode %20 into ' ' and still avoid decoding everything (e.g. %23 must remain %23)
+// but we don't really need it anymore; it was primarily for paths in konq's locationbar, but it uses pathOrURL() now.
 void KURLTest::testPrettyURL()
 {
   kdDebug() << k_funcinfo << endl;
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
   KURL notPretty2("file:/home/test/directory%20with%20spaces");
-  check("KURL::prettyURL()", notPretty2.prettyURL(), "file:///home/test/directory with spaces");
+  // KDE3: check("KURL::prettyURL()", notPretty2.prettyURL(), "file:///home/test/directory with spaces");
+  check("KURL::prettyURL()", notPretty2.prettyURL(), "file:///home/test/directory%20with%20spaces");
+
   KURL notPretty3("fish://foo/%23README%23");
   check("KURL::prettyURL()", notPretty3.prettyURL(), "fish://foo/%23README%23");
   KURL url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
-  check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
+  // KDE3: check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
+  check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html");
   check("KURL::url()", url15581.url(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html");
-  KURL url15582("http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
-  check("KURL::prettyURL()", url15582.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
-  check("KURL::url()", url15582.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
+
+  KURL url15581bis("http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
+  check("KURL::prettyURL()", url15581bis.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
+  check("KURL::url()", url15581bis.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
+
+  KURL urlWithPass("ftp://user:password@ftp.kde.org/path");
+  COMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
+  COMPARE( urlWithPass.prettyURL(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
 }
 
 void KURLTest::testIsRelative()
@@ -838,7 +875,21 @@ void KURLTest::testComparisons()
   QString ucmp1 = "ftp://ftp.de.kde.org/dir";
   QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
   check("urlcmp(only slash difference)", urlcmp(ucmp1,ucmp2)?"ko":"ok","ok");
+  
+  /* QUrl version of it */
+  QUrl u1( "ftp://ftp.de.kde.org/dir" );
+  QUrl u2( "ftp://ftp.de.kde.org/dir/" );
+  QUrl::FormattingOptions options = QUrl::None;
+  options |= QUrl::StripTrailingSlash;
+  QString str1 = u1.toString(options);
+  QString str2 = u2.toString(options);
+  COMPARE( str1, u1.toString() );
+  COMPARE( str2, u1.toString() );
+  bool same = str1 == str2;
+  VERIFY( same );
+
   check("urlcmp(only slash difference, ignore_trailing)", urlcmp(ucmp1,ucmp2,true,false)?"ok":"ko","ok");
+
   QString ucmp3 = "ftp://ftp.de.kde.org/dir/#";
   check("urlcmp(only hash difference)", urlcmp(ucmp2,ucmp3)?"ko":"ok","ok");
   check("urlcmp(only hash difference, ignore_ref)", urlcmp(ucmp2,ucmp3,false,true)?"ok":"ko","ok");
@@ -851,7 +902,7 @@ void KURLTest::testComparisons()
   check("urlcmp(malformed, not empty)", urlcmp("file",ucmp1,false,true)?"ok":"ko","ko");
 
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
-  qDebug("* URL is %s\n",ftpUrl.url().latin1());
+  qDebug("* URL is %s",ftpUrl.url().latin1());
   check("KURL::path()", ftpUrl.path(), QString::null);
   ftpUrl = "ftp://ftp.de.kde.org/";
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp.de.kde.org/host/subdir/") ? "yes" : "no", "yes");
@@ -1188,13 +1239,21 @@ void KURLTest::testIdn()
 {
   kdDebug() << k_funcinfo << endl;
 
-  KURL amantia( "http://%E1.foo.de" );
-  check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
-  check("amantia.url()", amantia.url(), "http://xn--80a.foo.de");   // Non-ascii is allowed in IDN domain names.
+  QUrl qurltest( QUrl::fromPercentEncoding( "http://\303\244.de" ) ); // ä in utf8
+  VERIFY( qurltest.isValid() );
+
+  QUrl qurl = QUrl::fromEncoded( "http://\303\244.de" ); // ä in utf8
+  VERIFY( qurl.isValid() );
+  COMPARE( qurl.toEncoded().constData(), "http://xn--4ca.de" );
 
   KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
   check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
   check("thiago.url()", thiago.url(), "http://xn--4ca.de");   // Non-ascii is allowed in IDN domain names.
+
+  // A more broken test
+  KURL amantia( "http://%E1.foo.de" );
+  check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
+  check("amantia.url()", amantia.url(), "http://xn--80a.foo.de");   // Non-ascii is allowed in IDN domain names.
 }
 
 void KURLTest::testUriMode()
@@ -1231,6 +1290,10 @@ void KURLTest::testOther()
 
   KURL utf8_2("audiocd:/By%20Name/15%2fGeantra%C3%AE.wav"/*, 106*/);
   check("utf8_2.fileName()", utf8_2.fileName(), QLatin1String("15/Geantraî.wav"));
+
+  QUrl qurl_newline_1 = QUrl::fromEncoded( "http://www.foo.bar/foo/bar\ngnork", QUrl::TolerantMode );
+  VERIFY( qurl_newline_1.isValid() );
+  COMPARE( qurl_newline_1.toEncoded().constData(), "http://www.foo.bar/foo/bar%0Agnork" );
 
   KURL url_newline_1("http://www.foo.bar/foo/bar\ngnork");
   check("url_newline_1.url()", url_newline_1.url(), QLatin1String("http://www.foo.bar/foo/bar%0Agnork"));
