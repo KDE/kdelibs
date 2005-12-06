@@ -25,7 +25,10 @@
 #include "client.h"
 #include <qobject.h>
 
+/* libhspell is a C library and it does not have #ifdef __cplusplus */
+extern "C" {
 #include "hspell.h"
+}
 
 namespace KSpell2 {
     class Dictionary;
