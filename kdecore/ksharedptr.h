@@ -76,6 +76,8 @@ public:
     inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
     inline bool operator== ( const T* p ) const { return ( d == p ); }
     inline bool operator!= ( const T* p ) const { return ( d != p ); }
+    friend inline bool operator== (const T* p, const KSharedPtr& o) { return ( p == o.d ); }
+    friend inline bool operator!= (const T* p, const KSharedPtr& o) { return ( p != o.d ); }
     inline operator bool() const { return ( d != 0 ); }
 
     /**
