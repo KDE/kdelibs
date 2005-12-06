@@ -87,6 +87,9 @@ public:
     virtual int putChar( int );
     virtual int ungetChar( int );
 
+    /// Reimplemented to return true. KFilterDev is a sequential QIODevice.
+    virtual bool isSequential() const { return true; }
+
 public:
 
 
