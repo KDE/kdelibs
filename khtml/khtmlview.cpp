@@ -1885,6 +1885,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 			v = v->parentWidget();
 		    }
 		    viewportToContents( x, y, x, y );
+#ifdef __GNUC__
+    #warning "QEvent::UpdateRequest is no QPaintEvent (leads to invalid read)"
+#endif
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView*>(c);
 #ifdef __GNUC__
