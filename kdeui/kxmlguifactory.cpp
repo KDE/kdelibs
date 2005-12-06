@@ -213,7 +213,7 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
-    kdDebug(129) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
+    kdDebug(1002) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
     if ( client->factory() ) {
@@ -233,7 +233,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( !d->m_clients.contains( client ) )
         d->m_clients.append( client );
     else
-        kdDebug(129) << "XMLGUI client already added " << client << endl;
+        kdDebug(1002) << "XMLGUI client already added " << client << endl;
 
     // Tell the client that plugging in is process and
     //  let it know what builder widget its mainwindow shortcuts
@@ -305,7 +305,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
-    kdDebug(129) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
+    kdDebug(1002) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
 
     // don't try to remove the client's GUI if we didn't build it
     if ( !client || client->factory() != this )
