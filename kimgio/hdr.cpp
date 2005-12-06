@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2005 Christoph Hormann <chris_hormann@gmx.de>
-   Copyright (C) 2005 Ignacio Castaño <castanyo@yahoo.es>
+   Copyright (C) 2005 Ignacio CastaÃ±o <castanyo@yahoo.es>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the Lesser GNU General Public

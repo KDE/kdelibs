@@ -15,7 +15,7 @@
              (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
    based on the KDE3 HighColor Style
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
-             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org>
+             (C) 2001-2002 Fredrik HÃ¶glund  <fredrik@kde.org>
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
              (C) 2000 Dirk Mueller          <mueller@kde.org>

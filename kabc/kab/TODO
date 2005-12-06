@@ -9,21 +9,21 @@ PS: I am still looking for volunteers who try writing the import filters.
 PS1: This TODO list deals with tasks to add to the KDE addressbook
 library. If you want the application to be extended, read kdeutils/kab/TODO.
 --------------------------------------------------------------------------------
-° [done] change mail addresses to an unlimited list with selection before
+Â° [done] change mail addresses to an unlimited list with selection before
          sending an email
-° [done] allow user to add custom fields
-° [partly implemented] a searchable keyword field
-° automatic menus for kmail and ktalk -> a matter of the applications
-° [done for HTML in KDE 1.1] add export methods
-° [done, even more flexible] 
+Â° [done] allow user to add custom fields
+Â° [partly implemented] a searchable keyword field
+Â° automatic menus for kmail and ktalk -> a matter of the applications
+Â° [done for HTML in KDE 1.1] add export methods
+Â° [done, even more flexible] 
   enhance the telephone numbers section, using home/work/..., 
   fixed/mobile, and so on
-° [done] some functions in the main display, like clickable parts 
+Â° [done] some functions in the main display, like clickable parts 
   (email/talk addresses, possibly telephony support?),
-° [done] IMPORTANT: Possibility to use different files and, most important, 
+Â° [done] IMPORTANT: Possibility to use different files and, most important, 
   common addressbooks for different people.
-° add "Nick name" field (after KDE 2.0)
-° improve speed of database indexing
+Â° add "Nick name" field (after KDE 2.0)
+Â° improve speed of database indexing
 --------------------------------------------------------------------------------
                                                      Mirko Boehm, June 2000.
 

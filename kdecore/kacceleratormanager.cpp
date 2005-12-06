@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2002 Matthias Hölzer-Klüpfel <mhk@kde.org>
+    Copyright (C) 2002 Matthias HÃ¶lzer-KlÃ¼pfel <mhk@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -658,7 +658,7 @@ void KAccelString::dump()
  The algorithm has some advantages:
 
    * it favors 'nice' accelerators (first characters in a word, etc.)
-   * it is quite fast, O(N²)
+   * it is quite fast, O(NÂ²)
    * it is easy to understand :-)
 
  The disadvantages:

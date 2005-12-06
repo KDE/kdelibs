@@ -282,7 +282,7 @@ Wed Dec  2 15:59:13 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
 	And the currently selected item is rehighlighted correctly after
 	resizing, now.
 
-1998-10-12  Jochen Küpper  <jochen@uni-duesseldorf.de>
+1998-10-12  Jochen KÃ¼pper  <jochen@uni-duesseldorf.de>
 
 	* kfiledialog.cpp (okPressed): Changed okPressed to store the correct
 	filename before leaving the dialog.

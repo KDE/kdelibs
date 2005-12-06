@@ -666,8 +666,8 @@ public:
    * As lockfiles often remain when a program crashes, this function
    * checks certain conditions that show that a lockfile is not in
    * use anymore, these are:
-   * ° there is no process with the pid in the lockfile,
-   * ° the systems boot-time is after the creation of the lockfile.
+   * Â° there is no process with the pid in the lockfile,
+   * Â° the systems boot-time is after the creation of the lockfile.
    * The problem is that, if there is a process with the pid we have,
    * this does not need to be the process that created the lockfile
    * the method returns only false if it is shure that no such process

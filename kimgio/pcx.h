@@ -74,19 +74,19 @@ class PCXHEADER
     inline bool isCompressed() const { return ( Encoding==1 ); }
 
     Q_UINT8  Manufacturer;    // Constant Flag, 10 = ZSoft .pcx
-    Q_UINT8  Version;         // Version information·
-                              // 0 = Version 2.5 of PC Paintbrush·
-                              // 2 = Version 2.8 w/palette information·
-                              // 3 = Version 2.8 w/o palette information·
+    Q_UINT8  Version;         // Version informationÂ·
+                              // 0 = Version 2.5 of PC PaintbrushÂ·
+                              // 2 = Version 2.8 w/palette informationÂ·
+                              // 3 = Version 2.8 w/o palette informationÂ·
                               // 4 = PC Paintbrush for Windows(Plus for
-                              //     Windows uses Ver 5)·
+                              //     Windows uses Ver 5)Â·
                               // 5 = Version 3.0 and > of PC Paintbrush
                               //     and PC Paintbrush +, includes
                               //     Publisher's Paintbrush . Includes
-                              //     24-bit .PCX files·
+                              //     24-bit .PCX filesÂ·
     Q_UINT8  Encoding;        // 1 = .PCX run length encoding
     Q_UINT8  Bpp;             // Number of bits to represent a pixel
-                              // (per Plane) - 1, 2, 4, or 8·
+                              // (per Plane) - 1, 2, 4, or 8Â·
     Q_UINT16 XMin;
     Q_UINT16 YMin;
     Q_UINT16 XMax;
@@ -98,9 +98,9 @@ class PCXHEADER
     Q_UINT8  NPlanes;         // Number of color planes
     Q_UINT16 BytesPerLine;    // Number of bytes to allocate for a scanline
                               // plane.  MUST be an EVEN number.  Do NOT
-                              // calculate from Xmax-Xmin.·
+                              // calculate from Xmax-Xmin.Â·
     Q_UINT16 PaletteInfo;     // How to interpret palette- 1 = Color/BW,
-                              // 2 = Grayscale ( ignored in PB IV/ IV + )·
+                              // 2 = Grayscale ( ignored in PB IV/ IV + )Â·
     Q_UINT16 HScreenSize;     // Horizontal screen size in pixels. New field
                               // found only in PB IV/IV Plus
     Q_UINT16 VScreenSize;     // Vertical screen size in pixels. New field

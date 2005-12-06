@@ -174,7 +174,7 @@ void KListBox::slotAutoSelect()
     }
   }
   else
-    kdDebug() << "That´s not supposed to happen!!!!" << endl;
+    kdDebug() << "That's not supposed to happen!!!!" << endl;
 }
 
 void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
@@ -183,7 +183,7 @@ void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
     
   m_pAutoSelect->stop();
   
-  //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+  //Don't emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
     emit executed( item );
     emit executed( item, pos );

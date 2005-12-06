@@ -34,8 +34,8 @@ namespace KHE
  * KHE::ClipboardInterface *Clipboard = KHE::clipboardInterface( BytesEditWidget );
  * if( Clipboard )
  * {
- *   // Yes, use BytesEditWidget, not Clipboard, because that's the QObject, indeed hacky...
- *   connect( BytesEditWidget, SIGNAL(copyAvailable(bool)), this, SLOT(offerCopy(bool)) );
+ *   // Yes, use BytesEditWidget, not Clipboard, because that's the QObject, indeed hacky...
+ *   connect( BytesEditWidget, SIGNAL(copyAvailable(bool)), this, SLOT(offerCopy(bool)) );
  * }
  * \endcode 
  *

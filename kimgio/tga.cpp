@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2003 Dominik Seichter <domseichter@web.de>
-   Copyright (C) 2004 Ignacio Castaño <castano@ludicon.com>
+   Copyright (C) 2004 Ignacio CastaÃ±o <castano@ludicon.com>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the Lesser GNU General Public

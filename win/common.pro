@@ -167,7 +167,7 @@ QMAKE_CXXFLAGS += /Ze
 # (warning 4006 will be raised instead of error):
 QMAKE_LFLAGS += /FORCE:MULTIPLE
 
-# Specify that filename is a C++ source file, even if it doesn’t have 
+# Specify that filename is a C++ source file, even if it doesnÂ’t have 
 # a .cpp or .cxx extension, thus .cc files are compiled properly with msvc
 QMAKE_CXXFLAGS += /TP
 

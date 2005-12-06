@@ -248,7 +248,7 @@ void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
 
   m_pAutoSelect->stop();
 
-  //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+  //Don't emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
     setSelected( item, false );
     viewport()->unsetCursor();

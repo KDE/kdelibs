@@ -95,7 +95,7 @@ void TestLDAPClient::testIntevation()
 
   // For some reason a fromUtf8 broke the search for me (no results).
   // But this certainly looks fishy, it might break on non-utf8 systems.
-  QString filter = "&(|(objectclass=person)(objectclass=groupofnames)(mail=*))(|(cn=*Ägypten MDK*)(sn=*Ägypten MDK*))";
+  QString filter = "&(|(objectclass=person)(objectclass=groupofnames)(mail=*))(|(cn=*Ã„gypten MDK*)(sn=*Ã„gypten MDK*))";
 
   connect( mClient, SIGNAL( result( const KABC::LdapObject& ) ),
            this, SLOT( slotLDAPResult( const KABC::LdapObject& ) ) );

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* This file is part of the KDE libraries
-    Copyright (C) 1998 Jörg Habenicht (j.habenicht@europemail.com)
+    Copyright (C) 1998 JÃ¶rg Habenicht (j.habenicht@europemail.com)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -67,7 +67,7 @@
  * so the widget will be painted only once when entering the main event loop.
  *
  * @short A ruler widget.
- * @author Jörg Habenicht
+ * @author JÃ¶rg Habenicht
  */
 class KDEUI_EXPORT KRuler : public QAbstractSlider
 {

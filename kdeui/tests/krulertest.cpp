@@ -15,7 +15,7 @@
 
 /*
 void
-MyCheckBox::mouseReleaseEvent(QMouseEvent *e )
+MyCheckBox::mouseReleaseEvent(QMouseEvent *e )
 {
   QButton::mouseReleaseEvent(e);
   if ();

@@ -8,6 +8,6 @@ Dominik Seichter <domseichter@web.de> -- TGA format read/write support
 Nadeem Hasan <nhasan@kde.org> -- PCX format read/write support
 Melchior Franz <mfranz@kde.org> -- SGI format read/write support, port of XCF qimgio
 Allen Barnett <allen@lignumcomputing.com> -- XCF format read support (qimgio)
-Ignacio Castaño <castano@ludicon.com> -- DDS and PDS format reader.
+Ignacio CastaÃ±o <castano@ludicon.com> -- DDS and PDS format reader.
 Christoph Hormann <chris_hormann@gmx.de> -- HDR format read support.
 Michael Ritzert <kde@ritzert.de> -- JPEG 2000 format read/write support

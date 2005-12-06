@@ -2,7 +2,7 @@
 
 \section mingw-requirements Requirements
 
-- Unpacking tools like WinZip® (http://www.winzip.de/) or PowerArchiver (http://www.pctipp.ch/downloads/dl/15291.asp)
+- Unpacking tools like WinZipÂ® (http://www.winzip.de/) or PowerArchiver (http://www.pctipp.ch/downloads/dl/15291.asp)
 or unzip http://gnuwin32.sourceforge.net/packages/unzip.htm
 
 - latest QT Windows release with Mingw compiler package 

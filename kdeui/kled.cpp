@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1998 Jörg Habenicht (j.habenicht@europemail.com)
+    Copyright (C) 1998 JÃ¶rg Habenicht (j.habenicht@europemail.com)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -288,7 +288,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     paint.drawEllipse( scale, scale, width - scale*2, width - scale*2 );
 
     // Draw the bright light spot of the LED now, using modified "old"
-    // painter routine taken from KDEUI´s KLed widget:
+    // painter routine taken from KDEUI's KLed widget:
 
     // Setting the new width of the pen is essential to avoid "pixelized"
     // shadow like it can be observed with the old LED code
@@ -300,7 +300,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     light_width *= 2;
     light_width /= 3;
 
-    // Calculate the LED´s "light factor":
+    // Calculate the LED's "light factor":
     int light_quote = (130*2/(light_width?light_width:1))+100;
 
     // Now draw the bright spot on the LED:
@@ -384,7 +384,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     paint.drawEllipse( scale, scale, width - scale*2, width - scale*2 );
 
     // Draw the bright light spot of the LED now, using modified "old"
-    // painter routine taken from KDEUI´s KLed widget:
+    // painter routine taken from KDEUI's KLed widget:
 
     // Setting the new width of the pen is essential to avoid "pixelized"
     // shadow like it can be observed with the old LED code
@@ -396,7 +396,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     light_width *= 2;
     light_width /= 3;
 
-    // Calculate the LED´s "light factor":
+    // Calculate the LED's "light factor":
     int light_quote = (130*2/(light_width?light_width:1))+100;
 
     // Now draw the bright spot on the LED:
@@ -425,7 +425,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     paint.setBrush( brush );                        // This avoids filling of the ellipse
 
     // Set the initial color value to colorGroup().light() (bright) and start
-    // drawing the shadow border at 45° (45*16 = 720).
+    // drawing the shadow border at 45Â° (45*16 = 720).
 
     int angle = -720;
     color = colorGroup().light();

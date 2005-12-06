@@ -13,7 +13,7 @@ dotNET Style
 
 KDE3 HighColor Style
 Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
-  (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+  (C) 2001 Fredrik HÃ¶glund   <fredrik@kde.org>
 
 Drawing routines adapted from the KDE2 HCStyle,
 Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>

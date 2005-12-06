@@ -1079,7 +1079,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     }
 
     // delete entries in the filelist with the same filename as the one we want
-    // to save, so that we don´t have duplicate file entries when viewing the zip
+    // to save, so that we don't have duplicate file entries when viewing the zip
     // with konqi...
     // CAUTION: the old file itself is still in the zip and won't be removed !!!
     Q3PtrListIterator<KZipFileEntry> it( d->m_fileList );

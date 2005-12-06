@@ -35,7 +35,7 @@ QTTEST_KDEMAIN( KConfigTest, NoGUI )
 #define STRINGENTRY4 " hello "
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
-#define LOCAL8BITENTRY "Hello äöü"
+#define LOCAL8BITENTRY "Hello Ã¤Ã¶Ã¼"
 #define POINTENTRY QPoint( 4351, 1235 )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )

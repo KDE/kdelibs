@@ -1,5 +1,5 @@
 /* kldapclient.cpp - LDAP access
- *      Copyright (C) 2002 Klar‰lvdalens Datakonsult AB
+ *      Copyright (C) 2002 Klar√§lvdalens Datakonsult AB
  *
  *      Author: Steffen Hansen <hansen@kde.org>
  *

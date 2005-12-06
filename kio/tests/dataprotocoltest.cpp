@@ -45,7 +45,7 @@ public:
 
   void setMetaData(const QString &key, const QString &value) {
 //    meta_data[key] = value;
-//    cout << "ง " << key << " = " << value << endl;
+//    cout << "ยง " << key << " = " << value << endl;
     QString prefix = "Metadata[\""+key+"\"]: ";
     KIO::MetaData::Iterator it = attributes_expected.find(key);
     if (it != attributes_expected.end()) {

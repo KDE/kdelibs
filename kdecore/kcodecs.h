@@ -25,7 +25,7 @@
 
    The encoding and decoding utilities in KCodecs with the exception of
    quoted-printable are based on the java implementation in HTTPClient
-   package by Ronald Tschal‰r Copyright (C) 1996-1999.
+   package by Ronald Tschal√§r Copyright (C) 1996-1999.
 
    The quoted-printable codec as described in RFC 2045, section 6.7. is by
    Rik Hemsley (C) 2001.

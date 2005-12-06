@@ -651,7 +651,7 @@ void KListView::slotAutoSelect()
     }
   }
   else
-    kdDebug() << "KListView::slotAutoSelect: That´s not supposed to happen!!!!" << endl;
+    kdDebug() << "KListView::slotAutoSelect: That's not supposed to happen!!!!" << endl;
 }
 
 void KListView::slotHeaderChanged()
@@ -685,7 +685,7 @@ void KListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
 
             d->autoSelect.stop();
 
-            //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+            //Don't emit executed if in SC mode and Shift or Ctrl are pressed
             if( !( ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
                 viewport()->unsetCursor();
                 emit executed( item );

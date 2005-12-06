@@ -71,7 +71,7 @@ class KDECORE_EXPORT KCrash
 
   /**
    * Installs a function which should try to save the applications data.
-   * It is the crash handler´s responsibility to call this function.
+   * It is the crash handler's responsibility to call this function.
    * Therefore, if no crash handler is set, the default crash handler
    * is installed to ensure the save function is called.
    * @param saveFunction the handler to install
