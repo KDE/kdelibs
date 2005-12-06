@@ -850,3 +850,4 @@ bool MutationEventImpl::isMutationEvent() const
 {
     return true;
 }
+

@@ -36,6 +36,7 @@
 
 class QPainter;
 template <class type> class QPtrList;
+template <class type> class QValueList;
 class KHTMLView;
 class QRect;
 class QMouseEvent;
@@ -68,6 +69,30 @@ private:
 
     DocumentImpl *doc;
 };
+
+struct RegisteredListenerList {
+    RegisteredListenerList() : listeners(0)
+    {}
+
+    ~RegisteredListenerList();
+
+    void addEventListener(int id, EventListener *listener, const bool useCapture);
+    void removeEventListener(int id, EventListener *listener, bool useCapture);
+
+    void setHTMLEventListener(int id, EventListener *listener);
+    EventListener *getHTMLEventListener(int id);
+
+    bool hasEventListener(int id);
+    void clear();
+
+    //### KDE4: should disappear
+    bool stillContainsListener(const RegisteredEventListener& listener);
+
+    QValueList<RegisteredEventListener>* listeners;//The actual listener list - may be 0
+private:
+    bool isHTMLEventListener(EventListener* listener);
+};
+
 
 // this class implements nodes, which can have a parent but no children:
 #define NodeImpl_IdNSMask    0xffff0000
@@ -415,7 +440,7 @@ private: // members
     NodeImpl *m_next;
 protected:
     khtml::RenderObject *m_render;
-    QPtrList<RegisteredEventListener> *m_regdListeners;
+    RegisteredListenerList m_regdListeners;
 
     unsigned short m_tabIndex : 15;
     bool m_hasTabIndex  : 1;

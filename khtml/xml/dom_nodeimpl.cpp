@@ -57,7 +57,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_previous(0),
       m_next(0),
       m_render(0),
-      m_regdListeners( 0 ),
       m_tabIndex( 0 ),
       m_hasId( false ),
       m_hasStyle( false ),
@@ -83,7 +82,6 @@ NodeImpl::~NodeImpl()
 {
     if (m_render)
         detach();
-    delete m_regdListeners;
     if (document)
         document->deref();
     if (m_previous)
@@ -319,88 +317,23 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 	    break;
     }
 
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
-    if (!m_regdListeners) {
-        m_regdListeners = new QPtrList<RegisteredEventListener>;
-	m_regdListeners->setAutoDelete(true);
-    }
-
-    // if this id/listener/useCapture combination is already registered, do nothing.
-    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
-    // the listener order intact.
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
-    for (; it.current(); ++it)
-        if (*(it.current()) == *rl) {
-            delete rl;
-            return;
-        }
-
-    m_regdListeners->append(rl);
+    m_regdListeners.addEventListener(id, listener, useCapture);
 }
 
 void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
 {
-    if (!m_regdListeners) // nothing to remove
-        return;
-
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
-
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
-    for (; it.current(); ++it)
-        if (*(it.current()) == rl) {
-            m_regdListeners->removeRef(it.current());
-            return;
-        }
+    m_regdListeners.removeEventListener(id, listener, useCapture);
 }
 
 void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
-    if (!m_regdListeners) {
-        m_regdListeners = new QPtrList<RegisteredEventListener>;
-        m_regdListeners->setAutoDelete(true);
-    }
-
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
-
-    if (!listener) {
-        for (; it.current(); ++it)
-            if (it.current()->id == id &&
-                it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-                m_regdListeners->removeRef(it.current());
-                break;
-            }
-            return;
-    }
-
-    // if this event already has a registered handler, insert the new one in
-    // place of the old one, to preserve the order.
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
-
-    for (int i = 0; it.current(); ++it, ++i)
-        if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-            // Qt4: don't forget to delete the old one first
-            m_regdListeners->replace(i, rl);
-            return;
-        }
-
-    m_regdListeners->append(rl);
+    m_regdListeners.setHTMLEventListener(id, listener);
 }
 
 EventListener *NodeImpl::getHTMLEventListener(int id)
 {
-    if (!m_regdListeners)
-        return 0;
-
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
-    for (; it.current(); ++it)
-        if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-            return it.current()->listener;
-        }
-    return 0;
+    return m_regdListeners.getHTMLEventListener(id);
 }
-
 
 void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
@@ -649,21 +582,26 @@ bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 {
-    if (!m_regdListeners)
+    if (!m_regdListeners.listeners)
         return;
 
     Event ev = evt;
     // removeEventListener (e.g. called from a JS event listener) might
     // invalidate the item after the current iterator (which "it" is pointing to).
     // So we make a copy of the list.
-    QPtrList<RegisteredEventListener> listeners = *m_regdListeners;
-    for (QPtrListIterator<RegisteredEventListener> it(listeners); it.current();) {
-        RegisteredEventListener* current = it();
-        if (current->id == evt->id() && current->useCapture == useCapture)
-            current->listener->handleEvent(ev);
+    QValueList<RegisteredEventListener> listeners = *m_regdListeners.listeners;
+    QValueList<RegisteredEventListener>::iterator it;
+    for (it = listeners.begin(); it != listeners.end(); ++it) {
+        //Check whether this got removed...KDE4: use Java-style iterators
+        if (!m_regdListeners.stillContainsListener(*it))
+            continue;
+
+        RegisteredEventListener& current = (*it);
+        if (current.id == evt->id() && current.useCapture == useCapture)
+            current.listener->handleEvent(ev);
 
         // ECMA legacy hack
-        if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
+        if (current.useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
             MouseEventImpl* me = static_cast<MouseEventImpl*>(evt);
             if (me->button() == 0) {
                 // To find whether to call onclick or ondblclick, we can't
@@ -671,9 +609,9 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
                 // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
                 // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
                 // dblclicks from the DOM API, we'll need a timer here (well in the doc).
-                if ( ( !me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-                  ( me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
-                    current->listener->handleEvent(ev);
+                if ( ( !me->isDoubleClick() && current.id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+                  ( me->isDoubleClick() && current.id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
+                    current.listener->handleEvent(ev);
             }
         }
     }
@@ -1936,4 +1874,117 @@ NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
     return m_doc->getId(NodeImpl::ElementId,
                         namespaceURI, 0, localName, readonly,
                         false /*don't lookupHTML*/);
+}
+
+// -----------------------------------------------------------------------------
+
+void RegisteredListenerList::addEventListener(int id, EventListener *listener, const bool useCapture)
+{
+    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
+    if (!listeners)
+        listeners = new QValueList<RegisteredEventListener>;
+
+    // if this id/listener/useCapture combination is already registered, do nothing.
+    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
+    // the listener order intact.
+    QValueList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if (*it == rl)
+            return;
+
+    listeners->append(rl);
+}
+
+void RegisteredListenerList::removeEventListener(int id, EventListener *listener, bool useCapture)
+{
+    if (!listeners) // nothing to remove
+        return;
+
+    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
+
+    QValueList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if (*it == rl) {
+            listeners->remove(it);
+            return;
+        }
+}
+
+bool RegisteredListenerList::isHTMLEventListener(EventListener* listener)
+{
+    return (listener->eventListenerType() == "_khtml_HTMLEventListener");
+}
+
+void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listener)
+{
+    if (!listeners)
+        listeners = new QValueList<RegisteredEventListener>;
+
+    QValueList<RegisteredEventListener>::iterator it;
+    if (!listener) {
+        for (it = listeners->begin(); it != listeners->end(); ++it) {
+            if ((*it).id == id && isHTMLEventListener((*it).listener)) {
+                listeners->remove(it);
+                break;
+            }
+        }
+        return;
+    }
+
+    // if this event already has a registered handler, insert the new one in
+    // place of the old one, to preserve the order.
+    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,false);
+
+    int i;
+    for (i = 0, it = listeners->begin(); it != listeners->end(); ++it, ++i)
+        if ((*it).id == id && isHTMLEventListener((*it).listener)) {
+            listeners->insert(it, rl);
+            listeners->remove(it);
+            return;
+        }
+
+    listeners->append(rl);
+}
+
+EventListener *RegisteredListenerList::getHTMLEventListener(int id)
+{
+    if (!listeners)
+        return 0;
+
+    QValueList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if ((*it).id == id && isHTMLEventListener((*it).listener)) {
+            return (*it).listener;
+        }
+    return 0;
+}
+
+bool RegisteredListenerList::hasEventListener(int id)
+{
+    if (!listeners)
+        return false;
+
+    QValueList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if ((*it).id == id)
+            return true;
+
+    return false;
+}
+
+void RegisteredListenerList::clear()
+{
+    delete listeners;
+    listeners = 0;
+}
+
+bool RegisteredListenerList::stillContainsListener(const RegisteredEventListener& listener)
+{
+    if (!listeners)
+        return false;
+    return listeners->find(listener) != listeners->end();
+}
+
+RegisteredListenerList::~RegisteredListenerList() {
+    delete listeners; listeners = 0;
 }

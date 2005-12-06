@@ -596,7 +596,7 @@ protected:
     StyleSheetListImpl* m_styleSheets;
     StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
-    QPtrList<RegisteredEventListener> m_windowEventListeners;
+    RegisteredListenerList m_windowEventListeners;
     QPtrList<NodeImpl> m_maintainsState;
 
     // ### evaluate for placement in RenderStyle

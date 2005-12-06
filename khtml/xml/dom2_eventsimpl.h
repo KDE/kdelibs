@@ -401,22 +401,38 @@ protected:
 
 class RegisteredEventListener {
 public:
+    RegisteredEventListener() : id(EventImpl::EventId(0)), useCapture(false), listener(0) {}
+
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
         : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
 
-    ~RegisteredEventListener() { listener->deref(); listener = 0; }
+    ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
 
-    bool operator==(const RegisteredEventListener &other)
+    bool operator==(const RegisteredEventListener &other) const
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
 
 
     EventImpl::EventId id : 6;
     bool useCapture;
     EventListener *listener;
-private:
-    RegisteredEventListener( const RegisteredEventListener & );
-    RegisteredEventListener & operator=( const RegisteredEventListener & );
+
+    RegisteredEventListener( const RegisteredEventListener &other ) : 
+                id(other.id), useCapture(other.useCapture), listener(other.listener) 
+    { if (listener) listener->ref(); }
+
+    RegisteredEventListener & operator=( const RegisteredEventListener &other ) {
+        id         = other.id;
+        useCapture = other.useCapture;
+        if (other.listener)
+            other.listener->ref();
+        if (listener)
+            listener->deref();
+        listener = other.listener;
+        return *this;
+    }
 };
+
+
 
 } //namespace
 #endif

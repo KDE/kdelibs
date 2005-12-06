@@ -343,7 +343,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inDocument = true;
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
-    m_windowEventListeners.setAutoDelete(true);
     m_counterDict.setAutoDelete(true);
 
     m_inStyleRecalc = false;
@@ -1256,11 +1255,8 @@ void DocumentImpl::open( bool clearEventListeners )
     if ( was_attached )
         attach();
 
-    if (clearEventListeners) {
-        QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-        for (; it.current();)
-            m_windowEventListeners.removeRef(it.current());
-    }
+    if (clearEventListeners)
+        m_windowEventListeners.clear();
 
     m_tokenizer = createTokenizer();
     m_decoderMibEnum = 0;
@@ -2399,100 +2395,52 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    if (!m_windowEventListeners.listeners)
+        return;
+
+    QValueList<RegisteredEventListener>::iterator it;
+
+    //Grab a copy in case of clear
+    QValueList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
     Event ev(evt);
-    for (; it.current(); ++it) {
-        if (it.current()->id == evt->id()) {
+    for (it = listeners.begin(); it != listeners.end(); ++it) {
+        //Check to make sure it didn't get removed. KDE4: use Java-style iterators
+        if (!m_windowEventListeners.stillContainsListener(*it))
+            continue;
+
+        if ((*it).id == evt->id()) {
             // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
             // (this is how we identify events dispatched to the window, like window.onmousedown)
             // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
             evt->setCurrentTarget(0);
-            it.current()->listener->handleEvent(ev);
+            (*it).listener->handleEvent(ev);
 	}
     }
 }
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-
-    if (!listener) {
-        for (; it.current(); ++it)
-            if (it.current()->id == id &&
-                it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-                m_windowEventListeners.removeRef(it.current());
-                break;
-            }
-        return;
-    }
-
-    // if this event already has a registered handler, insert the new one in
-    // place of the old one, to preserve the order.
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
-    for (int i = 0; it.current(); ++it, ++i)
-        if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-            // Qt4: don't forget to delete the old one first
-            m_windowEventListeners.replace(i, rl);
-            return;
-        }
-
-    m_windowEventListeners.append(rl);
+    m_windowEventListeners.setHTMLEventListener(id, listener);
 }
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-	if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-	    return it.current()->listener;
-	}
-    }
-
-    return 0;
+    return m_windowEventListeners.getHTMLEventListener(id);
 }
 
 void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
 {
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
-
-    // if this id/listener/useCapture combination is already registered, do nothing.
-    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
-    // the listener order intact.
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-        if (*(it.current()) == *rl) {
-            delete rl;
-            return;
-        }
-    }
-
-    m_windowEventListeners.append(rl);
+    m_windowEventListeners.addEventListener(id, listener, useCapture);
 }
 
 void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bool useCapture)
 {
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
-
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it)
-        if (*(it.current()) == rl) {
-            m_windowEventListeners.removeRef(it.current());
-            return;
-        }
+    m_windowEventListeners.removeEventListener(id, listener, useCapture);
 }
 
 bool DocumentImpl::hasWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-	if (it.current()->id == id) {
-	    return true;
-	}
-    }
-
-    return false;
+    return m_windowEventListeners.hasEventListener(id);
 }
 
 EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node)
