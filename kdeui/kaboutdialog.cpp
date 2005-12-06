@@ -700,11 +700,11 @@ void KAboutContainerBase::setProduct( const QString &appName,
 
   const QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
     arg(QLatin1String(KDE_VERSION_STRING));
-  const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3").arg('©').arg(year).
+  const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3").arg(QChar(0xA9)).arg(year).
     arg(author) : QLatin1String("");
 
   //if (!year.isEmpty())
-  //  msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
+  //  msg2 = i18n("%1 %2, %3").arg(QChar(0xA9)).arg(year).arg(author);
 
   mVersionLabel->setText( msg1 );
   mAuthorLabel->setText( msg2 );
