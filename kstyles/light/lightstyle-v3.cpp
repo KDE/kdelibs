@@ -27,7 +27,6 @@
 #include "qcheckbox.h"
 #include "qpainter.h"
 #include "qpalette.h"
-#include "q3frame.h"
 #include "qpushbutton.h"
 #include "qdrawutil.h"
 #include "q3progressbar.h"

@@ -19,7 +19,6 @@
 
 #include <qkeysequence.h>
 #include <q3popupmenu.h>
-#include <q3frame.h>
 
 #include <QKeyEvent>
 

@@ -27,7 +27,7 @@
 #include <qtabbar.h>
 #include <q3pointarray.h>
 #include <qscrollbar.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qpushbutton.h>
 #include <qdrawutil.h>
 #include <qpainter.h>
@@ -44,7 +44,7 @@ static const int  _indicatorSize = 13;
 static Q3Button *  _highlightedButton = 0;
 static const int  _scrollBarExtent = 14;
 
-static Q3Frame *   _currentFrame = 0;
+static QFrame *   _currentFrame = 0;
 static int        _savedFrameLineWidth;
 static int        _savedFrameMidLineWidth;
 static ulong      _savedFrameStyle;
@@ -255,9 +255,9 @@ WebStyle::polish(QWidget * w)
 
   else if (w->inherits("QGroupBox") || w->inherits("QFrame"))
   {
-    Q3Frame * f(static_cast<Q3Frame *>(w));
+    QFrame * f(static_cast<QFrame *>(w));
 
-    if (f->frameStyle() != Q3Frame::NoFrame)
+    if (f->frameStyle() != QFrame::NoFrame)
     {
       _currentFrame = f;
 
@@ -265,15 +265,15 @@ WebStyle::polish(QWidget * w)
       _savedFrameMidLineWidth = f->midLineWidth();
       _savedFrameStyle = f->frameStyle();
 
-      if (f->frameShape() == Q3Frame::HLine || f->frameShape() == Q3Frame::VLine)
+      if (f->frameShape() == QFrame::HLine || f->frameShape() == QFrame::VLine)
       {
         f->setMidLineWidth(1);
-        f->setFrameStyle(f->frameShape() | Q3Frame::Plain);
+        f->setFrameStyle(f->frameShape() | QFrame::Plain);
       }
       else
       {
         f->setLineWidth(1);
-        f->setFrameStyle(Q3Frame::Box | Q3Frame::Plain);
+        f->setFrameStyle(QFrame::Box | QFrame::Plain);
       }
     }
   }
@@ -287,7 +287,7 @@ WebStyle::unPolish(QWidget * w)
 
   else if (w == _currentFrame)
   {
-    Q3Frame * f(static_cast<Q3Frame *>(w));
+    QFrame * f(static_cast<QFrame *>(w));
 
     f->setLineWidth(_savedFrameLineWidth);
     f->setMidLineWidth(_savedFrameMidLineWidth);

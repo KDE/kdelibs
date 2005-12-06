@@ -37,7 +37,7 @@
 
 class QPixmap;
 class QPainter;
-class Q3Frame;
+class QFrame;
 class QMenu;
 
 class KMultiTabBarPrivate;
@@ -153,7 +153,7 @@ protected:
 private:
 	class KMultiTabBarInternal *m_internal;
 	QBoxLayout *m_l;
-	Q3Frame *m_btnTabSep;
+	QFrame *m_btnTabSep;
 	Q3PtrList<KMultiTabBarButton> m_buttons;
 	KMultiTabBarPosition m_position;
 	KMultiTabBarPrivate *d;

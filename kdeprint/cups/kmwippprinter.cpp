@@ -49,7 +49,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 	m_list = new KListView(this);
 	m_list->addColumn("");
 	m_list->header()->hide();
-	m_list->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_list->setLineWidth(1);
 
 	QLabel	*l1 = new QLabel(i18n("&Printer URI:"),this);

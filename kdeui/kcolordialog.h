@@ -31,7 +31,6 @@
 #define KColorDialog QColorDialog
 #else //UNIX, WIN32
 #include <kdialogbase.h>
-#include <q3frame.h>
 #include <qpixmap.h>
 #include <q3gridview.h>
 

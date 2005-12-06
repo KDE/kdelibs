@@ -235,7 +235,7 @@ OptionBooleanView::OptionBooleanView(QWidget *parent)
     : OptionBaseView(parent)
 {
 	m_group = new Q3VButtonGroup(this);
-	//m_group->setFrameStyle(Q3Frame::NoFrame);
+	//m_group->setFrameStyle(QFrame::NoFrame);
 
 	QRadioButton	*btn = new QRadioButton(m_group);
 	btn->setCursor(KCursor::handCursor());

@@ -20,7 +20,6 @@
 #include <kdialogbase.h>
 
 class QPushButton;
-class Q3Frame;
 class KListBox;
 class Q3ListBoxItem;
 

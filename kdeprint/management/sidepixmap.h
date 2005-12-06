@@ -20,12 +20,12 @@
 #ifndef SIDEPIXMAP_H
 #define SIDEPIXMAP_H
 
-#include <q3frame.h>
+#include <qframe.h>
 #include <qpixmap.h>
 
 #include <kdelibs_export.h>
 
-class KDEPRINT_EXPORT SidePixmap : public Q3Frame
+class KDEPRINT_EXPORT SidePixmap : public QFrame
 {
 public:
 	SidePixmap(QWidget *parent = 0, const char *name = 0);

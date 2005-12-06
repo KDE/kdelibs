@@ -57,8 +57,8 @@ void K3DockSplitter::activate(QWidget *c0, QWidget *c1)
   setupMinMaxSize();
 
   if (divider) delete divider;
-  divider = new Q3Frame(this, "pannerdivider");
-  divider->setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
+  divider = new QFrame(this, "pannerdivider");
+  divider->setFrameStyle(QFrame::Panel | QFrame::Raised);
   divider->setLineWidth(1);
   divider->raise();
 

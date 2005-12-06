@@ -22,11 +22,10 @@
 #include <qdatastream.h>
 #include <qevent.h>
 #include <qfileinfo.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpoint.h>
-#include <q3scrollview.h>
 #include <qtextstream.h>
 
 #include <qwidget.h>
@@ -214,8 +213,8 @@ KCModule * KCModuleProxy::realModule() const
 			d->rootInfo = new QLabel( that, "rootInfo" );
 			d->topLayout->insertWidget( 0, d->rootInfo );
 
-			d->rootInfo->setFrameShape(Q3Frame::Box);
-			d->rootInfo->setFrameShadow(Q3Frame::Raised);
+			d->rootInfo->setFrameShape(QFrame::Box);
+			d->rootInfo->setFrameShadow(QFrame::Raised);
 
 			const QString msg = d->kcm->rootOnlyMsg();
 			if( msg.isEmpty() )
@@ -319,7 +318,7 @@ void KCModuleProxy::runAsRoot()
 	delete d->embedFrame;
 
 	d->embedFrame = new KVBox( this/*, "embedFrame"*/ );
-	d->embedFrame->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
+	d->embedFrame->setFrameStyle( QFrame::Box | QFrame::Raised );
 
 	QPalette pal( Qt::red );
 	pal.setColor( QColorGroup::Background,

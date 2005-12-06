@@ -50,7 +50,7 @@
 
 #include <qpoint.h>
 #include <q3ptrlist.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qdom.h>
 #include <qtabwidget.h>
 
@@ -99,7 +99,7 @@ namespace K3MDI
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeader : public Q3Frame
+class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeader : public QFrame
 {
   Q_OBJECT
 public:
@@ -148,7 +148,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeaderDrag : public Q3Frame
+class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeaderDrag : public QFrame
 {
   Q_OBJECT
 public:

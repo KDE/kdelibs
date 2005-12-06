@@ -244,7 +244,7 @@ void KMJobViewer::init()
 		//m_view->addColumn(i18n("Printer"));
 		//m_view->setColumnAlignment(6,Qt::AlignRight|Qt::AlignVCenter);
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
-		m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
 		m_view->setSorting(0);
 		m_view->setAllColumnsShowFocus(true);

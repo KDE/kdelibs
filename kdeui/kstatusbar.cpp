@@ -23,7 +23,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 
-#include <q3frame.h>
+#include <qframe.h>
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent) :
@@ -41,7 +41,7 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
   setLineWidth  (0);
-  setFrameStyle (Q3Frame::NoFrame);
+  setFrameStyle (QFrame::NoFrame);
 
   setAlignment( Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine );
 

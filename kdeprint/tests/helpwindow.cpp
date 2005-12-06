@@ -46,7 +46,7 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 
     browser = new Q3TextBrowser( this );
     browser->mimeSourceFactory()->setFilePath( _path );
-    browser->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+    browser->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     connect( browser, SIGNAL( textChanged() ),
 	     this, SLOT( textChanged() ) );
 

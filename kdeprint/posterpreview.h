@@ -20,12 +20,12 @@
 #ifndef POSTERPREVIEW_H
 #define POSTERPREVIEW_H
 
-#include <q3frame.h>
+#include <qframe.h>
 #include <qlist.h>
 
 class KProcess;
 
-class PosterPreview : public Q3Frame
+class PosterPreview : public QFrame
 {
 	Q_OBJECT
 public:

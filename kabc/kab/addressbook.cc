@@ -399,7 +399,7 @@ int AddressBook::Entry::noOfAddresses() const
 }
 
 AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
-  : Q3Frame(parent, name),
+  : QFrame(parent, name),
     config(new QConfigDB(this)),
     data(new QConfigDB(this)),
     entries(new StringKabKeyMap),

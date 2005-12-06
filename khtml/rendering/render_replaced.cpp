@@ -36,7 +36,6 @@
 #include <qlineedit.h>
 #include <kglobalsettings.h>
 #include <qobject.h>
-#include <q3valuevector.h>
 #include <QVector>
 #include <qpaintengine.h>
 
@@ -209,7 +208,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !qobject_cast<Q3Frame*>(m_widget))
+            if ( !strcmp(m_widget->name(), "__khtml") && !qobject_cast<QFrame*>(m_widget))
                 m_widget->setBackgroundMode( Qt::NoBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)

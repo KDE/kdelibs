@@ -37,7 +37,7 @@ class ComponentsDialog::ComponentsDialogPrivate
 {
     public:
         KListView * listview;
-        Q3Frame * infowidget;
+        QFrame * infowidget;
         QLabel * iconwidget;
         QLabel * commentwidget;
         QLabel * descriptionwidget;
@@ -54,7 +54,7 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
     ( new QHBoxLayout( page, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->listview = new KListView( page );
     d->listview->setMinimumSize( 200, 200 );
-    d->infowidget = new Q3Frame( page );
+    d->infowidget = new QFrame( page );
     d->infowidget->setMinimumSize( 200, 200 );
     ( new QVBoxLayout( d->infowidget, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->iconwidget = new QLabel( d->infowidget );

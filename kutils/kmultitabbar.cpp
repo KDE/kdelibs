@@ -878,9 +878,9 @@ KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
 	//	setStyle(KDEV3);
 	//setStyle(KONQSBC);
 	m_l->insertWidget(0,m_internal);
-	m_l->insertWidget(0,m_btnTabSep=new Q3Frame(this));
+	m_l->insertWidget(0,m_btnTabSep=new QFrame(this));
 	m_btnTabSep->setFixedHeight(4);
-	m_btnTabSep->setFrameStyle(Q3Frame::Panel | Q3Frame::Sunken);
+	m_btnTabSep->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	m_btnTabSep->setLineWidth(2);
 	m_btnTabSep->hide();
 

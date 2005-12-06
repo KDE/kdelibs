@@ -32,7 +32,7 @@ DrListView::DrListView( QWidget *parent )
 {
         addColumn(QString::null);
 	header()->hide();
-	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	setSorting(-1);
 }
 

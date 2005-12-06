@@ -26,7 +26,6 @@
 #include <qradiobutton.h>
 #include <qcheckbox.h>
 #include <q3listview.h>
-#include <q3frame.h>
 #include <qlabel.h>
 
 #include <kapplication.h>

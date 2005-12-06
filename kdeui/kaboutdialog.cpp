@@ -926,7 +926,7 @@ void KAboutContainer::addImage( const QString &fileName, Qt::Alignment alignment
  *  stored in objects of this local class. Every single field may be empty.
  *  To add a contributor, create a KAboutContributor object as a child of your
  *  @ref KAboutDialog, set its contents and add it using add addContributor. */
-class KAboutContributor : public Q3Frame
+class KAboutContributor : public QFrame
 {
   // ############################################################################
   Q_OBJECT
@@ -989,7 +989,7 @@ signals:
 
 
 KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
-  : Q3Frame(parent, n),
+  : QFrame(parent, n),
     name(new QLabel(this)),
     email(new KURLLabel(this)),
     url(new KURLLabel(this))
@@ -1000,7 +1000,7 @@ KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
       kdDebug() << "KAboutContributor::KAboutContributor: Out of memory." << endl;
       qApp->quit();
     }
-  setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
+  setFrameStyle(QFrame::Panel | QFrame::Raised);
   // -----
   connect(email, SIGNAL(leftClickedURL(const QString&)),
 	  SLOT(emailClickedSlot(const QString&)));
@@ -1127,7 +1127,7 @@ QSize KAboutContributor::minimumSizeHint(void)
 
 void KAboutContributor::show( void )
 {
-  Q3Frame::show();
+  QFrame::show();
   setMinimumSize( sizeHint() );
 }
 
@@ -1165,7 +1165,7 @@ KAboutContributor::paintEvent(QPaintEvent* e)
   int h=height()-cy-frameWidth();
   int w=width()-WORKTEXT_IDENTATION-2*frameWidth();
   // -----
-  Q3Frame::paintEvent(e);
+  QFrame::paintEvent(e);
   if(work.isEmpty()) return;
   QPainter paint(this); // construct painter only if there is something to draw
   // -----
@@ -1266,7 +1266,7 @@ void KAboutContributor::resizeEvent(QResizeEvent*)
 
 void KAboutContributor::paintEvent( QPaintEvent *e )
 {
-  Q3Frame::paintEvent(e);
+  QFrame::paintEvent(e);
   if(work.isEmpty()) return;
 
   int x = frameWidth() + KDialog::spacingHint();

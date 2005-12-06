@@ -43,7 +43,7 @@ SmbView::SmbView(QWidget *parent)
 {
 	addColumn(i18n("Printer"));
 	addColumn(i18n("Comment"));
-	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	setLineWidth(1);
 	setAllColumnsShowFocus(true);
 	setRootIsDecorated(true);

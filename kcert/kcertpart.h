@@ -30,7 +30,7 @@
 #include <klistview.h>
 
 class KSSLCertBox;
-class Q3Frame;
+class QFrame;
 class QLabel;
 class KCertPartPrivate;
 class KComboBox;
@@ -96,7 +96,7 @@ protected:
 
   KListView *_sideList;
   KListViewItem *_parentCA, *_parentP12;
-  Q3Frame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
+  QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
 
   // for the PKCS12 widget
   QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil, 

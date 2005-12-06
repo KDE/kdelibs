@@ -39,7 +39,7 @@
 #include <qapplication.h>
 #include <qcursor.h>
 #include <qobject.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <q3popupmenu.h>
 #include <qtoolbutton.h>
 #include <qnamespace.h>
@@ -100,7 +100,7 @@ void K3MdiWin32IconButton::mousePressEvent( QMouseEvent* )
 //============ K3MdiChildFrm ============//
 
 K3MdiChildFrm::K3MdiChildFrm( K3MdiChildArea *parent )
-	: Q3Frame( parent, "k3mdi_childfrm" )
+	: QFrame( parent, "k3mdi_childfrm" )
 	, m_pClient( 0L )
 	, m_pManager( 0L )
 	, m_pCaption( 0L )
@@ -157,7 +157,7 @@ K3MdiChildFrm::K3MdiChildFrm( K3MdiChildArea *parent )
 	m_pMaximize->setFocusPolicy( Qt::NoFocus );
 	m_pUndock->setFocusPolicy( Qt::NoFocus );
 
-	setFrameStyle( Q3Frame::WinPanel | Q3Frame::Raised );
+	setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 	setFocusPolicy( Qt::NoFocus );
 
 	setMouseTracking( true );
@@ -1385,7 +1385,7 @@ void K3MdiChildFrm::redecorateButtons()
 
 QRect K3MdiChildFrm::mdiAreaContentsRect() const
 {
-	Q3Frame * p = ( Q3Frame* ) parentWidget();
+	QFrame * p = ( QFrame* ) parentWidget();
 	if ( p )
 	{
 		return p->contentsRect();

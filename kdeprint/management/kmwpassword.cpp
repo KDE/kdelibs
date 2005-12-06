@@ -49,7 +49,7 @@ KMWPassword::KMWPassword(QWidget *parent)
 	QLabel	*loginlabel_ = new QLabel(i18n("&Login:"),this);
 	QLabel	*passwdlabel_ = new QLabel(i18n("&Password:"),this);
 	m_btngroup = new Q3VButtonGroup( this );
-//	m_btngroup->setFrameStyle( Q3Frame::NoFrame );
+//	m_btngroup->setFrameStyle( QFrame::NoFrame );
 	QRadioButton *btn1 = new QRadioButton( i18n( "&Anonymous (no login/password)" ), m_btngroup );
 	QRadioButton *btn2 = new QRadioButton( i18n( "&Guest account (login=\"guest\")" ), m_btngroup );
 	QRadioButton *btn3 = new QRadioButton( i18n( "Nor&mal account" ), m_btngroup );

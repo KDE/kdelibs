@@ -49,9 +49,9 @@
 //============ K3MdiChildArea ============//
 
 K3MdiChildArea::K3MdiChildArea( QWidget *parent )
-		: Q3Frame( parent, "k3mdi_childarea" )
+		: QFrame( parent, "k3mdi_childarea" )
 {
-	setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+	setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	m_captionFont = QFont();
 	QFontMetrics fm( m_captionFont );
 	m_captionFontLineSpacing = fm.lineSpacing();

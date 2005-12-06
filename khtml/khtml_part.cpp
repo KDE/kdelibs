@@ -6779,10 +6779,10 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 //    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged d->m_activeFrame=" << d->m_activeFrame << endl;
     if ( d->m_activeFrame && d->m_activeFrame->widget() && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
-        Q3Frame *frame = static_cast<Q3Frame *>( d->m_activeFrame->widget() );
-        if (frame->frameStyle() != Q3Frame::NoFrame)
+        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
+        if (frame->frameStyle() != QFrame::NoFrame)
         {
-           frame->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Sunken);
+           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken);
            frame->repaint();
         }
     }
@@ -6807,10 +6807,10 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
-        Q3Frame *frame = static_cast<Q3Frame *>( d->m_activeFrame->widget() );
-        if (frame->frameStyle() != Q3Frame::NoFrame)
+        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
+        if (frame->frameStyle() != QFrame::NoFrame)
         {
-           frame->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Plain);
+           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Plain);
            frame->repaint();
         }
         kdDebug(6050) << "new active frame " << d->m_activeFrame << endl;

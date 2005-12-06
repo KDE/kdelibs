@@ -127,7 +127,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	m_view = new KListView(this);
 	  m_view->setWhatsThis(whatsThisFilterchainListView);
 	m_view->addColumn("");
-	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_view->setLineWidth(1);
 	m_view->setSorting(-1);
 	m_view->header()->hide();
@@ -169,7 +169,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	  m_info->setWhatsThis(whatsThisFilterInfoPane);
 	m_info->setVScrollBarMode( Q3ScrollView::Auto );
 	m_info->setHScrollBarMode( Q3ScrollView::Auto );
-	m_info->setFrameStyle( Q3Frame::Panel|Q3Frame::Sunken );
+	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
 	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, KDialog::spacingHint());

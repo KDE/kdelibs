@@ -44,7 +44,7 @@
 #include <qfileinfo.h>
 #include <qfont.h>
 #include <qfontdialog.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qpointer.h>
 #include <q3grid.h>
 #include <q3groupbox.h>
@@ -681,7 +681,7 @@ static GtkObject *initialize(Q3PtrDict<GtkObject> &dict) {
     dict.insert(QDialog::staticMetaObject(), myGtkDialog);
     dict.insert(Q3FileDialog::staticMetaObject(), myGtkFileSelection);
     dict.insert(QFontDialog::staticMetaObject(), myGtkFontSelectionDialog);
-    dict.insert(Q3Frame::staticMetaObject(), myGtkFrame);
+    dict.insert(QFrame::staticMetaObject(), myGtkFrame);
     dict.insert(Q3Grid::staticMetaObject(), myGtkFrame);
     dict.insert(Q3GroupBox::staticMetaObject(), myGtkBox);
     dict.insert(Q3HBox::staticMetaObject(), myGtkHBox);
@@ -1925,7 +1925,7 @@ void KLegacyStyle::polish(QWidget *widget) {
 	key.data.shadow = KLegacy::Out;
 	key.data.state = KLegacy::Normal;
 
-	((QMenuBar *) widget)->setFrameShape(Q3Frame::StyledPanel);
+	((QMenuBar *) widget)->setFrameShape(QFrame::StyledPanel);
 	((QMenuBar *) widget)->setLineWidth(0);
 	widget->setBackgroundMode(Qt::PaletteBackground);
     }

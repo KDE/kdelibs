@@ -6,7 +6,7 @@
 #include <qstring.h>
 #include <qcursor.h>
 //Added by qt3to4:
-#include <Q3Frame>
+#include <QFrame>
 
 #include <stdlib.h>
 
@@ -440,7 +440,7 @@ void testWindow::slotFrame()
      tb1->insertFrame(10, 100);
      tb1->alignItemRight (10); // this is pointless 'cause tb1 is not fullwidth
 
-     Q3Frame *myFrame = tb1->getFrame(10); // get frame pointer
+     QFrame *myFrame = tb1->getFrame(10); // get frame pointer
 
      if (myFrame == 0)
       {

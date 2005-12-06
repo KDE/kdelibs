@@ -113,7 +113,7 @@ KMListView::KMListView(QWidget *parent, const char *name)
 
 	addColumn("");
 	header()->hide();
-	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	setLineWidth(1);
 	setSorting(0);
 

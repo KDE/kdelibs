@@ -42,7 +42,7 @@ KMWLocal::KMWLocal(QWidget *parent)
 	m_block = false;
 
 	m_ports = new KListView(this);
-	m_ports->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	m_ports->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_ports->setLineWidth(1);
 	m_ports->header()->hide();
 	m_ports->addColumn("");

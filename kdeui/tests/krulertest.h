@@ -13,13 +13,13 @@
 
 class KRuler;
 class QWidget;
-class Q3Frame;
+class QFrame;
 class QGridLayout;
 class QCheckBox;
 class Q3GroupBox;
 
 
-class MouseWidget : public Q3Frame
+class MouseWidget : public QFrame
 {
 Q_OBJECT
 public:
@@ -69,14 +69,12 @@ private slots:
   void slotSetRotate(double);
   void slotSetXTrans(double);
   void slotSetYTrans(double);
-  
 
 private:
 
   KRuler *hruler, *vruler;
   QGridLayout *layout;
-  Q3Frame *miniwidget, *bigwidget;
-  Q3Frame *mainframe;
+  QFrame *miniwidget, *bigwidget, *mainframe;
 
   QLabel *mouse_message;
   Q3GroupBox *showMarks, *lineEdit, *vertrot;

@@ -32,7 +32,7 @@
 #include <netwm_def.h>
 #endif
 
-class Q3Frame;
+class QFrame;
 class K3DockContainer;
 
 
@@ -218,7 +218,7 @@ private:
    * The splitter controller which is between child0 and child1.
    * Its size is 4 pixel.
    */
-  Q3Frame* divider;
+  QFrame* divider;
   /**
    * @p xpos and @p savedXPos represent the current divider position.
    * If the orientation is Horizontal @p xpos actually is "ypos". So

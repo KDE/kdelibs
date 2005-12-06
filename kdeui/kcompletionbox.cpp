@@ -56,7 +56,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
     setColumnMode( 1 );
     setLineWidth( 1 );
-    setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
+    setFrameStyle( QFrame::Box | QFrame::Plain );
 
     if ( parent ) {
         setFocusProxy( parent );

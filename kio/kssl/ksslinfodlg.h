@@ -166,7 +166,7 @@ public:
 	void setValues(QString certName, QWidget *mailCatcher=0L);
 
 private:
-	Q3Frame *_frame;
+	QFrame *_frame;
 };
 
 #endif

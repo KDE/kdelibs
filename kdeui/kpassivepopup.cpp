@@ -50,7 +50,7 @@ static const int DEFAULT_POPUP_TIME = 6*1000;
 static const Qt::WindowFlags POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint;
 
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name, Qt::WFlags f )
-    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
@@ -59,7 +59,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, const char *name, Qt::WFlags f )
 }
 
 KPassivePopup::KPassivePopup( WId win, const char *name )
-    : Q3Frame( 0, name ),
+    : QFrame( 0, name ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
@@ -68,7 +68,7 @@ KPassivePopup::KPassivePopup( WId win, const char *name )
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, const char *name, Qt::WFlags f )
-    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
@@ -77,7 +77,7 @@ KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, const char *name,
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, WId win, const char *name, Qt::WFlags f )
-    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
@@ -88,14 +88,14 @@ KPassivePopup::KPassivePopup( int popupStyle, WId win, const char *name, Qt::WFl
 void KPassivePopup::init( int popupStyle )
 {
     setWindowFlags( POPUP_FLAGS );
-    setFrameStyle( Q3Frame::Box| Q3Frame::Plain );
+    setFrameStyle( QFrame::Box| QFrame::Plain );
     setLineWidth( 2 );
 
     d = new Private;
     d->popupStyle = popupStyle;
     if( popupStyle == Boxed )
     {
-        setFrameStyle( Q3Frame::Box| Q3Frame::Plain );
+        setFrameStyle( QFrame::Box| QFrame::Plain );
         setLineWidth( 2 );
     }
     else if( popupStyle == Balloon )
@@ -212,7 +212,7 @@ void KPassivePopup::show()
 	else
 	    move( d->fixedPosition );
     }
-    Q3Frame::show();
+    QFrame::show();
 
     int delay = hideDelay;
     if ( delay < 0 ) {
@@ -358,7 +358,7 @@ void KPassivePopup::paintEvent( QPaintEvent* pe )
         p.begin( this );
         p.drawPolygon( d->surround );
     } else
-        Q3Frame::paintEvent( pe );
+        QFrame::paintEvent( pe );
 }
 
 void KPassivePopup::updateMask()

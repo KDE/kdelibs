@@ -187,7 +187,7 @@ void K3DockMainWindow::slotDockWidgetUndocked()
 
 /*************************************************************************/
 K3DockWidgetAbstractHeaderDrag::K3DockWidgetAbstractHeaderDrag( K3DockWidgetAbstractHeader* parent, K3DockWidget* dock, const char* name )
-:Q3Frame( parent, name )
+:QFrame( parent, name )
 {
   dw = dock;
   installEventFilter( dock->dockManager() );
@@ -212,7 +212,7 @@ void K3DockWidgetHeaderDrag::paintEvent( QPaintEvent* )
 }
 /*************************************************************************/
 K3DockWidgetAbstractHeader::K3DockWidgetAbstractHeader( K3DockWidget* parent, const char* name )
-:Q3Frame( parent, name )
+:QFrame( parent, name )
 {
 }
 /*************************************************************************/

@@ -9,7 +9,7 @@
 #include <q3groupbox.h>
 //Added by qt3to4:
 #include <QMouseEvent>
-#include <Q3Frame>
+#include <QFrame>
 #include <QGridLayout>
 #include <QResizeEvent>
 
@@ -23,7 +23,7 @@ MyCheckBox::mouseReleaseEvent(QMouseEvent *e )
 */
 
 MouseWidget::MouseWidget( QWidget *parent, const char *name, Qt::WFlags f )
-  : Q3Frame(parent, name, f)
+  : QFrame(parent, name, f)
 {
 }
 
@@ -59,14 +59,14 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 KRulerTest::KRulerTest( const char *name )
   : KMainWindow(0, name)
 {
-  mainframe = new Q3Frame(this);
+  mainframe = new QFrame(this);
 
   layout = new QGridLayout(mainframe, 2, 2);
 
-  miniwidget = new Q3Frame(mainframe);
-  miniwidget->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Raised);
+  miniwidget = new QFrame(mainframe);
+  miniwidget->setFrameStyle(QFrame::WinPanel | QFrame::Raised);
   bigwidget = new MouseWidget(mainframe);
-  bigwidget->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+  bigwidget->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
 
   //  QRect bwrect = bigwidget->frameRect();
   //  qDebug("big rect: top%i left%i bottom%i right%i",
@@ -78,7 +78,7 @@ KRulerTest::KRulerTest( const char *name )
   hruler->setOffset( 0 );
 
   vruler = new KRuler(Qt::Vertical, mainframe);
-  vruler->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+  vruler->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   vruler->setOffset( 0 );
   vruler->setRange( 0, 1000 );
 

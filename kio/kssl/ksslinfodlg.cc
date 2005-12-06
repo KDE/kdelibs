@@ -23,7 +23,7 @@
 
 #include <kssl.h>
 
-#include <q3frame.h>
+#include <qframe.h>
 #include <q3scrollview.h>
 #include <qdatetime.h>
 #include <qfile.h>
@@ -381,7 +381,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
     }
 
     if (certName.isEmpty()) {
-        _frame = new Q3Frame(this);
+        _frame = new QFrame(this);
         addChild(_frame);
         viewport()->setBackgroundMode(_frame->backgroundMode());
         _frame->show();
@@ -393,7 +393,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
     KSSLX509Map cert(certName);
     QString tmp;
     viewport()->setBackgroundMode(Qt::PaletteButton);
-    _frame = new Q3Frame(this);
+    _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
     QLabel *label = 0L;

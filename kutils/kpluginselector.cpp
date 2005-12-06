@@ -55,7 +55,7 @@
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
 #include <qsplitter.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include "kplugininfo.h"
 #include <kinstance.h>
 #include <q3ptrdict.h>
@@ -496,7 +496,7 @@ class KPluginSelector::KPluginSelectorPrivate
             {
             }
 
-        Q3Frame * frame;
+        QFrame * frame;
         KTabWidget * tabwidget;
         QStackedWidget * widgetstack;
         QList<KPluginSelectionWidget *> pswidgets;
@@ -511,13 +511,13 @@ KPluginSelector::KPluginSelector( QWidget * parent )
     hbox->setAutoAdd( true );
 
     QSplitter* splitter = new QSplitter( Qt::Horizontal, this );
-    d->frame = new Q3Frame( splitter, "KPluginSelector left frame" );
-    d->frame->setFrameStyle( Q3Frame::NoFrame );
+    d->frame = new QFrame( splitter, "KPluginSelector left frame" );
+    d->frame->setFrameStyle( QFrame::NoFrame );
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
     d->widgetstack = new QStackedWidget( splitter/*, "KPluginSelector Config Pages"*/ );
-    d->widgetstack->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+    d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
 
     QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),

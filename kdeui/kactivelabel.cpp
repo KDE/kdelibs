@@ -42,7 +42,7 @@ KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
    q->setTextFormat(Qt::RichText);
    q->setVScrollBarMode(Q3ScrollView::AlwaysOff);
    q->setHScrollBarMode(Q3ScrollView::AlwaysOff);
-   q->setFrameStyle(Q3Frame::NoFrame);
+   q->setFrameStyle(QFrame::NoFrame);
    q->setFocusPolicy( Qt::TabFocus );
    updatePalette();
 

@@ -2217,7 +2217,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());
 	        lab->setLineWidth(2);
-	        lab->setFrameStyle(Q3Frame::Box | Q3Frame::Plain);
+	        lab->setFrameStyle(QFrame::Box | QFrame::Plain);
 	        lab->setMargin(3);
 	        lab->adjustSize();
 	        addChild(lab,

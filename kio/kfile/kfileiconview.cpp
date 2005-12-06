@@ -254,7 +254,7 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
 	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
 			      "myToolTip",
 			      Qt::WStyle_StaysOnTop | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool | Qt::WX11BypassWM );
-	toolTip->setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
+	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
 	toolTip->setLineWidth( 1 );
 	toolTip->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 	toolTip->move( QCursor::pos() + QPoint( 14, 14 ) );

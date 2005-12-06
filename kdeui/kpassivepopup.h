@@ -11,7 +11,7 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <q3frame.h>
+#include <qframe.h>
 
 #include <kdelibs_export.h>
 #include <kvbox.h>
@@ -65,7 +65,7 @@ class KVBox;
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de
  */
-class KDEUI_EXPORT KPassivePopup : public Q3Frame
+class KDEUI_EXPORT KPassivePopup : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )

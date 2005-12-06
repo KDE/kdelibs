@@ -48,7 +48,6 @@
 
 #include <q3buttongroup.h>
 #include <qcheckbox.h>
-#include <q3frame.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qtimer.h>

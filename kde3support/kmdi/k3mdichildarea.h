@@ -28,7 +28,7 @@
 #ifndef _K3MDI_CHILD_AREA_H_
 #define _K3MDI_CHILD_AREA_H_
 
-#include <q3frame.h>
+#include <qframe.h>
 #include <q3ptrlist.h>
 
 #include "k3mdichildfrm.h"
@@ -49,7 +49,7 @@ class K3MdiChildAreaPrivate;
   * and manages the frame widgets of attached MDI views.
   * All actions and stuff concerning only to childframes are handled here.
   */
-class KDE3SUPPORT_EXPORT K3MdiChildArea : public Q3Frame
+class KDE3SUPPORT_EXPORT K3MdiChildArea : public QFrame
 {
 	friend class K3MdiChildFrmCaption;
 	friend class K3MdiChildFrm;

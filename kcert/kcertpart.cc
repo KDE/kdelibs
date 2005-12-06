@@ -23,7 +23,7 @@
 #include <kparts/genericfactory.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <qlabel.h>
@@ -149,7 +149,7 @@ _silentImport = false;
 d = new KCertPartPrivate;
 d->browserExtension = new KParts::BrowserExtension(this);
 
-_frame = new Q3Frame(parentWidget, widgetName);
+_frame = new QFrame(parentWidget, widgetName);
 setWidget(_frame);
 
 _baseGrid = new QGridLayout(_frame, 15, 9, KDialog::marginHint(),
@@ -176,7 +176,7 @@ connect(_importAll, SIGNAL(clicked()), SLOT(slotImportAll()));
 //------------------------------------------------------------------------
 //   The PKCS widget
 //------------------------------------------------------------------------
-_pkcsFrame = new Q3Frame(_frame);
+_pkcsFrame = new QFrame(_frame);
 
 grid = new QGridLayout(_pkcsFrame, 13, 6, KDialog::marginHint(),
 		KDialog::spacingHint() );
@@ -206,7 +206,7 @@ grid->addWidget(new QLabel("PKCS#12", _pkcsFrame), 7, 4);
 _tabs = new QTabWidget(_pkcsFrame);
 grid->addMultiCellWidget(_tabs, 8, 12, 0, 5);
 
-Q3Frame *tab = new Q3Frame(_pkcsFrame);
+QFrame *tab = new QFrame(_pkcsFrame);
 QGridLayout *tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
@@ -230,7 +230,7 @@ _tabs->addTab(tab, i18n("State"));
 //
 // Make the second tab
 //
-tab = new Q3Frame(_pkcsFrame);
+tab = new QFrame(_pkcsFrame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
@@ -247,7 +247,7 @@ _tabs->addTab(tab, i18n("Signature"));
 //
 // Make the third tab
 //
-tab = new Q3Frame(_pkcsFrame);
+tab = new QFrame(_pkcsFrame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
@@ -267,7 +267,7 @@ _pkcsFrame->hide();
 //   the simple reason that the above has potential to display much
 //   more information, and this one has potential to display different
 //   information.
-_x509Frame = new Q3Frame(_frame);
+_x509Frame = new QFrame(_frame);
 
 grid = new QGridLayout(_x509Frame, 12, 6, KDialog::marginHint(),
 		KDialog::spacingHint() );
@@ -293,7 +293,7 @@ grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
 _tabs = new QTabWidget(_x509Frame);
 grid->addMultiCellWidget(_tabs, 7, 11, 0, 5);
 
-tab = new Q3Frame(_x509Frame);
+tab = new QFrame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
@@ -317,7 +317,7 @@ _tabs->addTab(tab, i18n("State"));
 //
 // Make the second tab
 //
-tab = new Q3Frame(_x509Frame);
+tab = new QFrame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
@@ -334,7 +334,7 @@ _tabs->addTab(tab, i18n("Signature"));
 //
 // Make the third tab
 //
-tab = new Q3Frame(_x509Frame);
+tab = new QFrame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
@@ -353,7 +353,7 @@ _x509Frame->hide();
 //------------------------------------------------------------------------
 //   The blank widget
 //------------------------------------------------------------------------
-_blankFrame = new Q3Frame(_frame);
+_blankFrame = new QFrame(_frame);
 grid = new QGridLayout(_blankFrame, 1, 1, KDialog::marginHint(),
 		KDialog::spacingHint() );
 grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _blankFrame), 0, 0, 0, 0);

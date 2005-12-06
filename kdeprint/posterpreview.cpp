@@ -32,7 +32,7 @@
 #include <stdio.h>
 
 PosterPreview::PosterPreview( QWidget *parent, const char *name )
-	: Q3Frame( parent, name )
+	: QFrame( parent, name )
 {
 	m_postersize = m_mediasize = "A4";
 	m_cutmargin = 5;
@@ -40,7 +40,7 @@ PosterPreview::PosterPreview( QWidget *parent, const char *name )
 }
 
 PosterPreview::PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent, const char *name )
-	: Q3Frame( parent, name )
+	: QFrame( parent, name )
 {
 	m_postersize = postersize;
 	m_mediasize = mediasize;

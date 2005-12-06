@@ -34,7 +34,7 @@
 #include <qlabel.h>
 #include <qdatetime.h>
 #include <qlayout.h>
-#include <Q3Frame>
+#include <QFrame>
 #include <QCustomEvent>
 #include <q3dict.h>
 
@@ -128,7 +128,7 @@ class K3MdiChildFrmPrivate;
   * It's an MDI child frame widget. It contains a view widget and a frame caption. Usually you derive from its view.
   */ 
 //------------------------------------------------------------------------------
-class KDE3SUPPORT_EXPORT K3MdiChildFrm : public Q3Frame
+class KDE3SUPPORT_EXPORT K3MdiChildFrm : public QFrame
 {
 	friend class K3MdiChildArea;
 	friend class K3MdiChildFrmCaption;

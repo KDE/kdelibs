@@ -51,7 +51,7 @@ KMWRlpr::KMWRlpr(QWidget *parent)
 	m_nextpage = KMWizard::Name;
 
 	m_view = new KListView(this);
-	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
+	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_view->setLineWidth(1);
 	m_view->addColumn(QLatin1String(""));
 	m_view->header()->hide();

@@ -170,7 +170,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
           //QWhatsThis::add(m_lockbtn, whatsThis5_PosterPage);           //FIXME ASK_MICHAEL: which pushbutton would that be?
 	m_mediasize = new QLabel( dummy );
           m_mediasize->setWhatsThis(whatsThisPrintsizePosterPage);
-	m_mediasize->setFrameStyle( Q3Frame::Panel|Q3Frame::Sunken );
+	m_mediasize->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	QLabel *posterlab = new QLabel( i18n( "Poste&r size:" ), dummy );
           posterlab->setWhatsThis(whatsThisPostersizePosterPage);
 	QLabel *medialab = new QLabel( i18n( "Media size:" ), dummy );

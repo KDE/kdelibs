@@ -26,7 +26,7 @@ class QStringList;
 class KeyNameMap; 
 
 #include <list>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qsize.h>
@@ -181,7 +181,7 @@ class CategoriesMap : public QMap<int, QString>
  *  displayed as transparent KURLLabels that react when the user clicks on it.
  *  These interactive parts have to be enabled by calling #setInteractiveMode.
  */
-class AddressBook : public Q3Frame
+class AddressBook : public QFrame
 {
   // ############################################################################
   Q_OBJECT

@@ -568,7 +568,7 @@ void RenderFrame::slotViewCleared()
 #endif
         Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
-            view->setFrameStyle(Q3Frame::NoFrame);
+            view->setFrameStyle(QFrame::NoFrame);
 	    view->setVScrollBarMode(element()->scrolling );
 	    view->setHScrollBarMode(element()->scrolling );
         if(view->inherits("KHTMLView")) {
@@ -862,14 +862,14 @@ void RenderPartObject::slotViewCleared()
       kdDebug(6031) << "iframe is a scrollview!" << endl;
 #endif
       Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
-      int frameStyle = Q3Frame::NoFrame;
+      int frameStyle = QFrame::NoFrame;
       Q3ScrollView::ScrollBarMode scroll = Q3ScrollView::Auto;
       int marginw = -1;
       int marginh = -1;
       if ( element()->id() == ID_IFRAME) {
 	  HTMLIFrameElementImpl *frame = static_cast<HTMLIFrameElementImpl *>(element());
 	  if(frame->frameBorder)
-	      frameStyle = Q3Frame::Box;
+	      frameStyle = QFrame::Box;
 	  scroll = frame->scrolling;
 	  marginw = frame->marginWidth;
 	  marginh = frame->marginHeight;
