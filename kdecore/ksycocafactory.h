@@ -39,7 +39,7 @@ class KDECORE_EXPORT KSycocaFactory
 {
 public:
    virtual KSycocaFactoryId factoryId() const = 0;
- 
+
 protected: // virtual class
    /**
     * Create a factory which can be used to lookup from/create a database
@@ -73,7 +73,7 @@ public:
 
    /**
     * Remove an entry
-    * Not very fast, use with care. O(N)
+    * Not very fast (O(N)), and not allowed if there are multiple entries with the same name(), use with care.
     */
    void removeEntry(const KSycocaEntry::Ptr& newEntry);
 
@@ -95,7 +95,7 @@ public:
     *
     * The stream is positioned at the end of the last index.
     *
-    * Don't forget to call the parent first when you override 
+    * Don't forget to call the parent first when you override
     * this function.
     */
    virtual void save(QDataStream &str);
@@ -104,7 +104,7 @@ public:
     * Writes out a header to the stream 'str'.
     * The baseclass positions the stream correctly.
     *
-    * Don't forget to call the parent first when you override 
+    * Don't forget to call the parent first when you override
     * this function.
     */
    virtual void saveHeader(QDataStream &str);

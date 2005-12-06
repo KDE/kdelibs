@@ -69,7 +69,7 @@ KSycocaFactory::~KSycocaFactory()
 void
 KSycocaFactory::saveHeader(QDataStream &str)
 {
-   // Write header 
+   // Write header
    str.device()->seek(mOffset);
    str << (qint32) m_sycocaDictOffset;
    str << (qint32) m_beginEntryOffset;
@@ -133,8 +133,12 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
    if (!m_sycocaDict) return; // Error!
 
+   // Note that we use a QMultiHash since there can be several entries
+   // with the same name (e.g. kfmclient.desktop and konqbrowser.desktop both
+   // have Name=Konqueror).
+
    const QString name = newEntry->name();
-   m_entryDict->insert( name, newEntry );
+   m_entryDict->insertMulti( name, newEntry );
    m_sycocaDict->add( name, newEntry );
 }
 
@@ -147,8 +151,13 @@ KSycocaFactory::removeEntry(const KSycocaEntry::Ptr& newEntry)
    if (!m_sycocaDict) return; // Error!
 
    const QString name = newEntry->name();
+
+   // Don't use this method for things which can have duplicate names (like services!)
+   // It's ok for things that don't, like servicetypes, though.
+   Q_ASSERT( m_entryDict->values( name ).count() <= 1 );
+
    m_entryDict->remove( name );
-   m_sycocaDict->remove( name );
+   m_sycocaDict->remove( name ); // O(N)
 }
 
 KSycocaEntry::List KSycocaFactory::allEntries()
