@@ -314,9 +314,11 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // remove this client from our client list
     d->m_clients.removeAll( client );
 
-    // remove child clients first
-    while (client->childClients().count())
-        removeClient(client->childClients().last());
+    // remove child clients first (create a copy of the list just in case the
+    // original list is modified directly or indirectly in removeClient())
+    const QList<KXMLGUIClient*> childClients(client->childClients());
+    foreach (KXMLGUIClient *child, childClients)
+        removeClient(child);
 
     kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
 
