@@ -212,7 +212,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
 
-        int md = thickness*thickness; // max-dist²
+        int md = thickness*thickness; // max-distÂ²
 
         // blur map (division cache)
         float *bmap = (float*)alloca(sizeof(float)*(md+1));

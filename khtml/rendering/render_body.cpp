@@ -61,7 +61,7 @@ void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 
     if( parent()->style()->hasBackground() ) {
         // the root element already has a non-transparent background of its own
-        // so we must fork our own. (CSS2.1 - 14.2 ง4)
+        // so we must fork our own. (CSS2.1 - 14.2 ยง4)
 	bgColor =  style()->backgroundColor();
 	bgLayer = style()->backgroundLayers();
     }
