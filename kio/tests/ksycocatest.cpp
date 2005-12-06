@@ -16,20 +16,20 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kdebug.h>
-#include <kuserprofile.h>
-#include <ktrader.h>
-#include <kservice.h>
-#include <kmimetype.h>
-#include <assert.h>
-#include <kstandarddirs.h>
-#include <kservicegroup.h>
-#include <kimageio.h>
-#include <kprotocolinfo.h>
-#include <kiconloader.h>
-
 #include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kdebug.h>
+#include <kiconloader.h>
+#include <kimageio.h>
+#include <kmimetype.h>
+#include <kprotocolinfo.h>
+#include <kservice.h>
+#include <kservicegroup.h>
+#include <kstandarddirs.h>
+#include <ktrader.h>
+#include <kuserprofile.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -54,6 +54,8 @@ void debug(const char *format, const char *txt)
 //
 int main(int argc, char *argv[])
 {
+   KApplication::disableAutoDcopRegistration();
+   KCmdLineArgs::init(argc,argv,"ksycocatest", 0, 0, 0, 0);
    KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
    QString instname = "kword";
