@@ -107,14 +107,7 @@ HTTPFilterGZip::HTTPFilterGZip()
   zstr.zalloc = Z_NULL;
   zstr.zfree = Z_NULL;
   zstr.opaque = Z_NULL;
-
-#if ZLIB_VERNUM - 0 >=  0x1210
-  /* zlib ver. >= 1.2.1 supports transparent gzip decompressing */
-  inflateInit2(&zstr, MAX_WBITS+32);
-#else
   inflateInit2(&zstr, -MAX_WBITS);
-#endif
-
   iTrailer = 8;
 #endif
 }
@@ -219,12 +212,6 @@ HTTPFilterGZip::checkHeader()
 	    return 2;
 	}
     }
-
-#if ZLIB_VERNUM - 0 >=  0x1210
-  /* zlib ver. >= 1.2.1 supports transparent gzip decompressing */
-    return 0;
-#else
-
     int method = get_byte(); /* method byte */
     int flags = get_byte(); /* flags byte */
 
@@ -252,7 +239,6 @@ HTTPFilterGZip::checkHeader()
     }
     
     return bEof ? 2 : 0;
-#endif
 #else
     return 0;
 #endif
