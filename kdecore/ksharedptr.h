@@ -76,8 +76,6 @@ public:
     inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
     inline bool operator== ( const T* p ) const { return ( d == p ); }
     inline bool operator!= ( const T* p ) const { return ( d != p ); }
-    friend inline bool operator== (const T* p, const KSharedPtr& o) { return ( p == o.d ); }
-    friend inline bool operator!= (const T* p, const KSharedPtr& o) { return ( p != o.d ); }
     inline operator bool() const { return ( d != 0 ); }
 
     /**
@@ -105,16 +103,7 @@ public:
      * If the previous shared pointer is not owned by any KSharedPtr,
      * it is deleted.
      */
-    inline void attach(T *p)
-    {
-        if (d != p) {
-            T *x = p;
-            if (x) x->ref.ref();
-            x = qAtomicSetPtr(&d, x);
-            if (x && !x->ref.deref())
-                delete x;
-        }
-    }
+    void attach(T *p);
 
     /**
      * Attach the given pointer to the KSharedPtr.
@@ -133,7 +122,7 @@ public:
      * The new copy is created only if the pointer is shared by other pointers
      * and is not null.
      */
-    inline void detach() { if (d && d->ref>1) attach(new T(*d)); }
+    void detach();
 
     /**
      * @return Whether this is the only shared pointer pointing to
@@ -155,8 +144,8 @@ public:
      * </code>
      */
     template <class U>
-    static KSharedPtr<T> staticCast( const KSharedPtr<U>& other ) {
-        return KSharedPtr<T>( static_cast<T *>( other.d ) );
+    static KSharedPtr<T> staticCast( const KSharedPtr<U>& o ) {
+        return KSharedPtr<T>( static_cast<T *>( o.d ) );
     }
     /**
      * Convert KSharedPtr<U> to KSharedPtr<T>, using a dynamic_cast.
@@ -170,12 +159,44 @@ public:
      * Since a dynamic_cast is used, if U derives from T, and tPtr isn't an instance of U, uPtr will be 0.
      */
     template <class U>
-    static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& other ) {
-        return KSharedPtr<T>( dynamic_cast<T *>( other.d ) );
+    static KSharedPtr<T> dynamicCast( const KSharedPtr<U>& o ) {
+        return KSharedPtr<T>( dynamic_cast<T *>( o.d ) );
     }
 
 private:
     T* d;
 };
 
-#endif // KSHAREDPTR_H
+template <class T>
+Q_INLINE_TEMPLATE bool operator== (const T* p, const KSharedPtr<T>& o)
+{
+    return ( p == o.d );
+}
+
+template <class T>
+Q_INLINE_TEMPLATE bool operator!= (const T* p, const KSharedPtr<T>& o)
+{
+    return ( p != o.d );
+}
+
+template <class T>
+Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T *p)
+{
+    if (d != p) {
+        T *x = p;
+        if (x) x->ref.ref();
+        x = qAtomicSetPtr(&d, x);
+        if (x && !x->ref.deref())
+            delete x;
+    }
+}
+
+template <class T>
+Q_INLINE_TEMPLATE void KSharedPtr<T>::detach()
+{
+    if (d && d->ref>1)
+        attach(new T(*d));
+}
+
+#endif
+
