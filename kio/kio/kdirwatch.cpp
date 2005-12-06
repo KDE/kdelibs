@@ -262,8 +262,12 @@ KDirWatchPrivate::KDirWatchPrivate()
 #ifdef HAVE_DNOTIFY
 
   // if we have inotify, disable dnotify.
-  // otherwise, not guilty until proven guilty.
+#ifdef HAVE_INOTIFY
   supports_dnotify = !supports_inotify;
+#else
+  // otherwise, not guilty until proven guilty.
+  supports_dnotify = true;
+#endif
 
   struct utsname uts;
   int major, minor, patch;
