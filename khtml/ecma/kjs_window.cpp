@@ -260,6 +260,8 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   scroll	Window::Scroll		DontDelete|Function 2
   scrollBy	Window::ScrollBy	DontDelete|Function 2
   scrollTo	Window::ScrollTo	DontDelete|Function 2
+  scrollX       Window::ScrollX         DontDelete|ReadOnly
+  scrollY       Window::ScrollY         DontDelete|ReadOnly
   moveBy	Window::MoveBy		DontDelete|Function 2
   moveTo	Window::MoveTo		DontDelete|Function 2
   resizeBy	Window::ResizeBy	DontDelete|Function 2
