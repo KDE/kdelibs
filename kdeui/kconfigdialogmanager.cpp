@@ -28,6 +28,7 @@
 #include <qobject.h>
 #include <q3sqlpropertymap.h>
 #include <qtimer.h>
+#include <QRadioButton>
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
@@ -224,9 +225,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         assert(false);
       }
     }
-    else if (childWidget->inherits("QLabel"))
+    else if (QLabel *label = qobject_cast<QLabel*>(childWidget))
     {
-      QLabel *label = static_cast<QLabel *>(childWidget);
       QWidget *buddy = label->buddy();
       if (!buddy)
         continue;
@@ -244,8 +244,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
       {
-        if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) &&
-            !childWidget->inherits("QGroupBox"))
+        if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
+            !qobject_cast<QGroupBox*>(childWidget))
           kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
       }
     }
