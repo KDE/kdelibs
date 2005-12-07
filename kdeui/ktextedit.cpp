@@ -32,6 +32,7 @@
 #include <kstdaccel.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kdialog.h>
 
 class KTextEdit::KTextEditPrivate
 {
@@ -204,12 +205,12 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
     // ignore Ctrl-Return so that KDialogs can close the dialog
     else if ( e->state() == Qt::ControlModifier &&
               (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) &&
-              topLevelWidget()->inherits( "KDialog" ) )
+              qobject_cast<KDialog*>(topLevelWidget()) )
     {
         e->ignore();
         return;
     }
-    
+
     QTextEdit::keyPressEvent( e );
 }
 
@@ -414,7 +415,7 @@ void KTextEdit::spellCheckerFinished()
 void KTextEdit::slotSpellCheckReady( KSpell *s )
 {
 // this is for Zack...
-// 
+//
 //    s->check( text() ); // TODO: toPlainText()?? (MiB)
 //    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
 }

@@ -1059,7 +1059,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
         lst = kmw->toolBars( (Qt::ToolBarDock)i );
 		foreach ( Q3ToolBar *tb, lst ) {
-            if ( tb->inherits( "KToolBar" ) )
+            if ( qobject_cast<KToolBar*>(tb) )
             	toolbarList.append( (KToolBar*)tb );
 		}
     }
@@ -2157,7 +2157,7 @@ void KToolBar::slotContextAboutToHide()
   Q3PtrListIterator<QWidget> it( widgets );
   QWidget *wdg;
   while ( ( wdg = it.current() ) != 0 ) {
-    if ( wdg->inherits( "QToolButton" ) )
+    if ( qobject_cast<QToolButton*>(wdg) )
       static_cast<QToolButton*>( wdg )->setDown( false );
     ++it;
   }
