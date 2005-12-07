@@ -22,11 +22,13 @@
 #include <kconfig.h>
 
 /**
- * KDE Desktop File Management.
+ * %KDE Desktop File Management.
+ * This class implements %KDE's support for the freedesktop.org
+ * <em>Desktop Entry Spec<em>.
  *
  * @author Pietro Iglio <iglio@kde.org>
  * @see  KConfigBase  KConfig
- * @short KDE Desktop File Management class
+ * @see <a href="http://standards.freedesktop.org/desktop-entry-spec/latest/">Desktop Entry Spec</a>
  */
 class KDECORE_EXPORT KDesktopFile : public KConfig
 {
@@ -58,7 +60,7 @@ public:
    *
    * The check is performed looking at the file extension (the file is not
    * opened).
-   * Currently, valid extensions are ".kdelnk" and ".desktop".
+   * Currently, the only valid extension is ".desktop".
    * @param path the path of the file to check
    * @return true if the file appears to be a desktop file.
    */
@@ -170,8 +172,8 @@ public:
   bool hasMimeTypeType() const; // funny name :)
 
   /**
-   * Checks whether there is an entry "Type=FSDev".
-   * @return true if there is a "Type=FSDev" entry
+   * Checks whether there is an entry "Type=FSDevice".
+   * @return true if there is a "Type=FSDevice" entry
    */
   bool hasDeviceType() const;
 
