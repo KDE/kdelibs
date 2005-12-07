@@ -35,7 +35,7 @@
 
 using namespace KRES;
 
-SelectDialog::SelectDialog( Q3PtrList<Resource> list, QWidget *parent,
+SelectDialog::SelectDialog( QList<Resource *> list, QWidget *parent,
                             const char *name )
   : KDialog( parent, name, true )
 {
@@ -65,7 +65,7 @@ SelectDialog::SelectDialog( Q3PtrList<Resource> list, QWidget *parent,
 
   // setup listbox
   uint counter = 0;
-  for ( uint i = 0; i < list.count(); ++i ) {
+  for ( int i = 0; i < list.count(); ++i ) {
     Resource *resource = list.at( i );
     if ( resource && !resource->readOnly() ) {
       mResourceMap.insert( counter, resource );
@@ -89,7 +89,7 @@ Resource *SelectDialog::resource()
     return 0;
 }
 
-Resource *SelectDialog::getResource( Q3PtrList<Resource> list, QWidget *parent )
+Resource *SelectDialog::getResource( QList<Resource *> list, QWidget *parent )
 {
   if ( list.count() == 0 ) {
     KMessageBox::error( parent, i18n( "There is no resource available!" ) );
@@ -101,16 +101,16 @@ Resource *SelectDialog::getResource( Q3PtrList<Resource> list, QWidget *parent )
   // the following lines will return a writeable resource if only _one_ writeable
   // resource exists
   Resource *found = 0;
-  Resource *it = list.first();
-  while ( it ) {
-    if ( !it->readOnly() ) {
-      if ( found ) {
+
+  for(int i=0; i< list.size(); ++i) {
+    if (!list.at(i)->readOnly()) {
+      if (found) {
         found = 0;
-	break;
-      } else
-        found = it;
+        break;
+      }
     }
-    it = list.next();
+    else
+      found = list.at(i);
   }
 
   if ( found )
