@@ -82,7 +82,7 @@ public:
 
         modified = m_isHorizontal = positioned = false;
 
-        IconSizeDefault = 32;
+        IconSizeDefault = 0;
         IconTextDefault = "IconTextBottom";
 
         NewLineDefault = false;
