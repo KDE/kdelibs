@@ -391,13 +391,12 @@ bool KActionSelector::eventFilter( QObject *o, QEvent *e )
       }
       return true;
     }
-    else if ( o->inherits( "QListBox" ) )
+    else if ( Q3ListBox *lb = qobject_cast<Q3ListBox*>(o) )
     {
       switch ( ((QKeyEvent*)e)->key() )
       {
         case Qt::Key_Return:
         case Qt::Key_Enter:
-        Q3ListBox *lb = (Q3ListBox*)o;
         int index = lb->currentItem();
         if ( index < 0 ) break;
         moveItem( lb->item( index ) );
