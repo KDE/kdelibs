@@ -24,7 +24,7 @@
 #ifndef KRESOURCES_MANAGER_H
 #define KRESOURCES_MANAGER_H
 
-#include <q3dict.h>
+#include <QList>
 #include <qstringlist.h>
 
 #include <kdebug.h>
@@ -217,7 +217,6 @@ class Manager : private ManagerNotifier
       // The managerimpl will use the same Factory object as the manager
       // because of the Factory::self() pattern
       mImpl = new ManagerImpl( this, family );
-      mObservers.setAutoDelete( false );
     }
 
     virtual ~Manager()
@@ -360,7 +359,7 @@ class Manager : private ManagerNotifier
     */
     void removeObserver( ManagerObserver<T> *observer )
     {
-      mObservers.remove( observer );
+      mObservers.removeAll( observer );
     }
 
   private:
@@ -372,10 +371,8 @@ class Manager : private ManagerNotifier
       kdDebug(5650) << "Manager::resourceAdded " << res->resourceName() << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
-        ManagerObserver<T> *observer;
-        for ( observer = mObservers.first(); observer;
-              observer = mObservers.next() )
-          observer->resourceAdded( resource );
+        for(int i = 0; i < mObservers.size(); ++i)
+          mObservers.at(i)->resourceAdded( resource );
       }
     }
 
@@ -388,10 +385,8 @@ class Manager : private ManagerNotifier
                     << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
-        ManagerObserver<T> *observer;
-        for ( observer = mObservers.first(); observer;
-              observer = mObservers.next() )
-          observer->resourceModified( resource );
+        for(int i = 0; i < mObservers.size(); ++i)
+          mObservers.at(i)->resourceAdded( resource );
       }
     }
 
@@ -404,11 +399,9 @@ class Manager : private ManagerNotifier
                     << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
-        ManagerObserver<T> *observer;
-        for ( observer = mObservers.first(); observer;
-              observer = mObservers.next() ) {
+        for(int i = 0; i < mObservers.size(); ++i)
+          mObservers.at(i)->resourceDeleted( resource ); {
           kdDebug(5650) << "Notifying a observer to Manager..." << endl;
-          observer->resourceDeleted( resource );
         }
       }
     }
@@ -416,7 +409,7 @@ class Manager : private ManagerNotifier
   private:
     ManagerImpl *mImpl;
     Factory *mFactory;
-    Q3PtrList<ManagerObserver<T> > mObservers;
+    QList<ManagerObserver<T> *> mObservers;
 };
 
 }
