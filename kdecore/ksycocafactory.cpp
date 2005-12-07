@@ -177,21 +177,17 @@ KSycocaEntry::List KSycocaFactory::allEntries()
       return list;
    }
 
-   qint32 *offsetList = new qint32[entryCount];
+   qint32 offset;
    for(int i = 0; i < entryCount; i++)
    {
-      (*m_str) >> offsetList[i];
-   }
-
-   for(int i = 0; i < entryCount; i++)
-   {
-      KSycocaEntry *newEntry = createEntry(offsetList[i]);
+      (*m_str) >> offset;
+      KSycocaEntry *newEntry = createEntry(offset);
       if (newEntry)
       {
          list.append( KSycocaEntry::Ptr( newEntry ) );
       }
    }
-   delete [] offsetList;
+
    return list;
 }
 
