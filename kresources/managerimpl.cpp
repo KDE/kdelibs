@@ -298,27 +298,20 @@ Resource::List *ManagerImpl::resourceList()
   return &mResources;
 }
 
-Q3PtrList<Resource> ManagerImpl::resources()
+QList<Resource *> ManagerImpl::resources()
 {
-  Q3PtrList<Resource> result;
-
-  Resource::List::ConstIterator it;
-  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
-    result.append( *it );
-  }
-  return result;
+  return QList<Resource *>( mResources );
 }
 
-Q3PtrList<Resource> ManagerImpl::resources( bool active )
+QList<Resource *> ManagerImpl::resources( bool active )
 {
-  Q3PtrList<Resource> result;
+  QList<Resource *> result;
 
-  Resource::List::ConstIterator it;
-  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
-    if ( (*it)->isActive() == active ) {
-      result.append( *it );
+  for(int i = 0; i < mResources.size(); ++i) {
+    if( mResources.at(i)->isActive() == active) {
+      result.append( mResources.at(i) );
     }
-  }
+  }  
   return result;
 }
 

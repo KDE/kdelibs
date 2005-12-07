@@ -63,10 +63,10 @@ class KRESOURCES_EXPORT ManagerImpl : virtual public ManagerIface
 
     Resource::List *resourceList();
 
-    Q3PtrList<Resource> resources();
+    QList<Resource *> resources();
 
     // Get only active or passive resources
-    Q3PtrList<Resource> resources( bool active );
+    QList<Resource *> resources( bool active );
 
     QStringList resourceNames();
 
