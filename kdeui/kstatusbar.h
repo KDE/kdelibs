@@ -22,7 +22,7 @@
 #define KSTATUSBAR_H
 
 #include <qstatusbar.h>
-#include <q3intdict.h>
+#include <QHash>
 #include <qlabel.h>
 #include <kdelibs_export.h>
 
@@ -193,7 +193,7 @@ signals:
   void released( int );
 
 private:
-  Q3IntDict<KStatusBarLabel> items;
+  QHash<int, KStatusBarLabel*> items;
   class KStatusBarPrivate* d;
 };
 
