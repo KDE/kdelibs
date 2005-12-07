@@ -48,7 +48,7 @@
 #include "config.h"
 #ifdef Q_WS_X11
 #include <QX11EmbedWidget>
-#endif 
+#endif
 
 class KHelpMenuPrivate
 {
@@ -153,7 +153,7 @@ KMenu* KHelpMenu::menu()
       mMenu->addAction( qApp->windowIcon(),
         i18n( "&About %1" ).arg(appName), this, SLOT( aboutApplication() ) );
     }
-    
+
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
       mMenu->addAction( SmallIconSet("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
@@ -202,7 +202,7 @@ void KHelpMenu::aboutApplication()
       hbox->setMargin(KDialog::marginHint()*1);
 
       QLabel *label1 = new QLabel(hbox);
-      
+
       int size = IconSize(KIcon::Desktop);
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
@@ -273,11 +273,11 @@ void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
-  while ( w && !w->isTopLevel() && !w->inherits("QX11EmbedWidget")  )
+  while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
 #ifdef Q_WS_X11
 #warning how to enter whats this mode for a QX11EmbedWidget?
-//   if ( w && w->inherits("QX11EmbedWidget") )
+//   if ( w && qobject_cast<QX11EmbedWidget*>(w) )
 //	  (( QX11EmbedWidget*) w )->enterWhatsThisMode();
 #endif
 }
