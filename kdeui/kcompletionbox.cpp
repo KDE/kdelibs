@@ -351,7 +351,7 @@ QRect KCompletionBox::calculateGeometry() const
     // to adjust it. Do that here as well, for consistency
     const QObject* combo;
     if ( d->m_parent && (combo = d->m_parent->parent() ) &&
-        combo->inherits("QComboBox") )
+        qobject_cast<QComboBox*>(combo) )
     {
         const QComboBox* cb = static_cast<const QComboBox*>(combo);
 

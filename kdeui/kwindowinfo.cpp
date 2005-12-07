@@ -101,8 +101,7 @@ void KWindowInfo::display( const QString &text, const QPixmap &pix )
     else
 	icon = pix;
 
-    if ( win->inherits( "KSystemTray" ) ) {
-	KSystemTray *tray = static_cast<KSystemTray *>( win );
+    if ( KSystemTray *tray = qobject_cast<KSystemTray*>(win) ) {
 	tray->setPixmap( icon );
 	tray->setToolTip( text );
 	return;
@@ -120,8 +119,7 @@ void KWindowInfo::save()
     if ( !oldText.isNull() )
 	return;
 
-    if ( win->inherits( "KSystemTray" ) ) {
-	KSystemTray *tray = static_cast<KSystemTray *>( win );
+    if ( KSystemTray *tray = qobject_cast<KSystemTray*>(win) ) {
 	oldIcon = *(tray->pixmap());
 	oldText = tray->toolTip();
 	return;
@@ -146,8 +144,7 @@ void KWindowInfo::save()
 
 void KWindowInfo::restore()
 {
-    if ( win->inherits( "KSystemTray" ) ) {
-	KSystemTray *tray = static_cast<KSystemTray *>( win );
+    if ( KSystemTray *tray = qobject_cast<KSystemTray*>(win) ) {
 	tray->setPixmap( oldIcon );
 	tray->setToolTip( oldText );
 	oldText = QString::null;
