@@ -130,13 +130,9 @@ protected:
    * \code
    * if( factory() )
    * {
-   *   QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
-   *   QPtrListIterator<KParts::Plugin> it( plugins );
-   *   KParts::Plugin * plugin;
-   *   while( ( plugin = it.current() ) != 0 )
-   *   {
-   *     ++it;
-   *     factory()->addClient(  plugin );
+   *   QList<KParts::Plugin *> plugins = KParts::Plugin::pluginObjects( this );
+   *   for(int i = 0; i != plugins.size(); ++i) {
+   *      factory()->addClient( plugins[i] );
    *   }
    * }
    * \endcode
