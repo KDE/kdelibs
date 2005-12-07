@@ -24,7 +24,7 @@
 #ifndef KRESOURCES_FACTORY_H
 #define KRESOURCES_FACTORY_H
 
-#include <q3dict.h>
+#include <QMap>
 #include <qstring.h>
 
 #include <kconfig.h>
@@ -108,7 +108,7 @@ class KRESOURCES_EXPORT Factory
     Factory( const QString& resourceFamily );
 
   private:
-    static Q3Dict<Factory> *mSelves;
+    static QMap<QString, Factory*> *mSelves;
 
     QString mResourceFamily;
     QMap<QString, KService::Ptr> mTypeMap;
