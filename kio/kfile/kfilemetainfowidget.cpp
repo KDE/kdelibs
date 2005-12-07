@@ -194,10 +194,10 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
 
     if (m_validator)
     {
-        if (m_validator->inherits("QIntValidator"))
+        if (QIntValidator* iv = qobject_cast<QIntValidator*>(m_validator))
         {
-            sb->setMinimum(static_cast<QIntValidator*>(m_validator)->bottom());
-            sb->setMaximum(static_cast<QIntValidator*>(m_validator)->top());
+            sb->setMinimum(iv->bottom());
+            sb->setMaximum(iv->top());
         }
         //reparentValidator(sb, m_validator);
         //sb->setValidator(m_validator);
@@ -299,7 +299,7 @@ void KFileMetaInfoWidget::reparentValidator( QWidget *widget,
 
 void KFileMetaInfoWidget::slotChanged(bool value)
 {
-    Q_ASSERT(m_widget->inherits("QComboBox"));
+    Q_ASSERT(qobject_cast<QComboBox*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -307,7 +307,7 @@ void KFileMetaInfoWidget::slotChanged(bool value)
 
 void KFileMetaInfoWidget::slotChanged(int value)
 {
-    Q_ASSERT(m_widget->inherits("QSpinBox"));
+    Q_ASSERT(qobject_cast<QSpinBox*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -315,7 +315,7 @@ void KFileMetaInfoWidget::slotChanged(int value)
 
 void KFileMetaInfoWidget::slotChanged(double value)
 {
-    Q_ASSERT(m_widget->inherits("KDoubleNumInput"));
+    Q_ASSERT(qobject_cast<KDoubleNumInput*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -323,7 +323,7 @@ void KFileMetaInfoWidget::slotChanged(double value)
 
 void KFileMetaInfoWidget::slotComboChanged(const QString &value)
 {
-    Q_ASSERT(m_widget->inherits("KComboBox"));
+    Q_ASSERT(qobject_cast<KComboBox*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -331,7 +331,7 @@ void KFileMetaInfoWidget::slotComboChanged(const QString &value)
 
 void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 {
-    Q_ASSERT(m_widget->inherits("KLineEdit"));
+    Q_ASSERT(qobject_cast<KLineEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -340,7 +340,7 @@ void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 // that may be a little expensive for long texts, but what can we do?
 void KFileMetaInfoWidget::slotMultiLineEditChanged()
 {
-    Q_ASSERT(m_widget->inherits("QTextEdit"));
+    Q_ASSERT(qobject_cast<Q3TextEdit*>(m_widget));
     m_value = QVariant( static_cast<const Q3TextEdit*>( sender() )->text() );
     emit valueChanged(m_value);
     m_dirty = true;
@@ -348,7 +348,7 @@ void KFileMetaInfoWidget::slotMultiLineEditChanged()
 
 void KFileMetaInfoWidget::slotDateChanged(const QDate& value)
 {
-    Q_ASSERT(m_widget->inherits("QDateEdit"));
+    Q_ASSERT(qobject_cast<Q3DateEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -356,7 +356,7 @@ void KFileMetaInfoWidget::slotDateChanged(const QDate& value)
 
 void KFileMetaInfoWidget::slotTimeChanged(const QTime& value)
 {
-    Q_ASSERT(m_widget->inherits("QTimeEdit"));
+    Q_ASSERT(qobject_cast<Q3TimeEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -364,7 +364,7 @@ void KFileMetaInfoWidget::slotTimeChanged(const QTime& value)
 
 void KFileMetaInfoWidget::slotDateTimeChanged(const QDateTime& value)
 {
-    Q_ASSERT(m_widget->inherits("QDateTimeEdit"));
+    Q_ASSERT(qobject_cast<Q3DateTimeEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
