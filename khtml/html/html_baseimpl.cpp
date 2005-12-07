@@ -626,16 +626,16 @@ void HTMLIFrameElementImpl::attach()
         if(w && (name.isEmpty() || w->part()->frameExists( name.string() )))
             name = DOMString(w->part()->requestFrameName());
 
-        static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
+        static_cast<RenderPartObject*>(m_render)->updateWidget();
     }
 }
 
 void HTMLIFrameElementImpl::recalcStyle( StyleChange ch )
 {
     if (needWidgetUpdate) {
-        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
+        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
     }
     HTMLElementImpl::recalcStyle( ch );
 }
