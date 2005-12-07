@@ -31,7 +31,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
-#include <kipc.h> 
+#include <kipc.h>
 
 #include <kcursor.h>
 #include <kpixmap.h>
@@ -324,7 +324,7 @@ void KIconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPo
   //kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
   if( d->doubleClickIgnoreTimer.isActive() )
     return; // Ignore double click
-    
+
   if( (btn == Qt::LeftButton) && item )
     emitExecute( item, pos );
 }
@@ -474,7 +474,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     delete m_wordWrap;
     m_wordWrap = 0L;
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
-    if ( !iconView()->inherits("KIconView") )
+    if ( !qobject_cast<KIconView*>(iconView()) )
     {
         kdWarning() << "KIconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
         return;
@@ -504,7 +504,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         ph = pixmap()->height() + 2;
     }
     itemIconRect.setWidth( pw );
-#if 1 // FIXME 
+#if 1 // FIXME
     // There is a bug in Qt which prevents the item from being placed
     // properly when the pixmapRect is not at the top of the itemRect, so we
     // have to increase the height of the pixmapRect and leave it at the top
@@ -522,18 +522,18 @@ void KIconViewItem::calcRect( const QString& text_ )
     else
         tw = view->maxItemWidth() - ( view->itemTextPos() == Q3IconView::Bottom ? 0 :
                                       itemIconRect.width() );
-    
+
     QFontMetrics *fm = view->itemFontMetrics();
     QString t;
     QRect r;
-    
+
     // When is text_ set ? Doesn't look like it's ever set.
     t = text_.isEmpty() ? text() : text_;
-    
+
     // Max text height
     int nbLines = static_cast<KIconView*>( iconView() )->iconTextHeight();
     int height = nbLines > 0 ? fm->height() * nbLines : 0xFFFFFFFF;
-    
+
     // Should not be higher than pixmap if text is alongside icons
     if ( view->itemTextPos() != Q3IconView::Bottom ) {
         if ( d && !d->m_pixmapSize.isNull() )
@@ -542,7 +542,7 @@ void KIconViewItem::calcRect( const QString& text_ )
             height = qMin( itemIconRect.height(), height );
         height = qMax( height, fm->height() );
     }
-    
+
     // Calculate the word-wrap
     QRect outerRect( 0, 0, tw - 6, height );
     m_wordWrap = KWordWrap::formatText( *fm, outerRect, 0, t );
@@ -559,7 +559,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         {
             w = qMax( itemTextRect.width(), d->m_pixmapSize.width() + 2 );
             h = itemTextRect.height() + d->m_pixmapSize.height() + 2 + 1;
-#if 0 // FIXME 
+#if 0 // FIXME
             // Waiting for the qt bug to be solved, the pixmapRect must
             // stay on the top...
             y = d->m_pixmapSize.height() + 2 - itemIconRect.height();
@@ -583,7 +583,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         if ( d && !d->m_pixmapSize.isNull() )
         {
             h = qMax( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
-#if 0 // FIXME 
+#if 0 // FIXME
             // Waiting for the qt bug to be solved, the pixmapRect must
             // stay on the top...
             y = ( d->m_pixmapSize.height() + 2 - itemIconRect.height() ) / 2;
@@ -632,7 +632,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     if ( !view )
         return;
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
-    if ( !view->inherits("KIconView") )
+    if ( !qobject_cast<KIconView*>(view) )
     {
         kdWarning() << "KIconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
         return;
@@ -674,7 +674,7 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
         if ( !pix || pix->isNull() )
             return;
 
-#if 1 // FIXME 
+#if 1 // FIXME
         // Move the pixmap manually because the pixmapRect is at the
         // top of the itemRect
         // (won't be needed anymore in future versions of qt)
