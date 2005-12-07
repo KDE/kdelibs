@@ -956,12 +956,17 @@ SourceFile *KJSDebugWin::getSourceFile(Interpreter *interpreter, QString url)
 void KJSDebugWin::setSourceFile(Interpreter *interpreter, QString url, SourceFile *sourceFile)
 {
   QString key = QString("%1|%2").arg((long)interpreter).arg(url);
+  sourceFile->ref();
+  if (SourceFile* oldFile = m_sourceFiles[key])
+    oldFile->deref();
   m_sourceFiles[key] = sourceFile;
 }
 
 void KJSDebugWin::removeSourceFile(Interpreter *interpreter, QString url)
 {
   QString key = QString("%1|%2").arg((long)interpreter).arg(url);
+  if (SourceFile* oldFile = m_sourceFiles[key])
+    oldFile->deref();
   m_sourceFiles.remove(key);
 }
 

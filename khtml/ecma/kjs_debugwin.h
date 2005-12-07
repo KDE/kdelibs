@@ -88,6 +88,9 @@ namespace KJS {
     int baseLine;
     int errorLine;
     SourceFile *sourceFile;
+  private:
+    SourceFragment(const SourceFragment& other);
+    SourceFragment& operator = (const SourceFragment& other);
   };
 
   class KJSErrorDialog : public KDialogBase {
