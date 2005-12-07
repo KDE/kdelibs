@@ -219,10 +219,10 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 
     if (m_validator)
     {
-        if (m_validator->inherits("QDoubleValidator"))
+        if (QDoubleValidator* dv = qobject_cast<QDoubleValidator*>(m_validator))
         {
-            dni->setMinValue(static_cast<QDoubleValidator*>(m_validator)->bottom());
-            dni->setMaxValue(static_cast<QDoubleValidator*>(m_validator)->top());
+            dni->setMinValue(dv->bottom());
+            dni->setMaxValue(dv->top());
         }
         reparentValidator(dni, m_validator);
     }
@@ -233,11 +233,9 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 
 QWidget* KFileMetaInfoWidget::makeStringWidget()
 {
-    if (m_validator && m_validator->inherits("KStringListValidator"))
+    if (KStringListValidator* val = qobject_cast<KStringListValidator*>(m_validator))
     {
         KComboBox* b = new KComboBox(true, this);
-        KStringListValidator* val = static_cast<KStringListValidator*>
-                                                    (m_validator);
         b->insertStringList(val->stringList());
         b->setCurrentText(m_item.value().toString());
         connect(b, SIGNAL(activated(const QString &)), this, SLOT(slotComboChanged(const QString &)));
