@@ -48,7 +48,7 @@ KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
 
-  if (parent && parent->inherits( "KToolBar" ))
+  if (parent && qobject_cast<KToolBar*>(parent))
     connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
 
   d->loadingCompleted = false;
@@ -183,7 +183,7 @@ void KAnimWidget::updateIcons()
   if (!d->initDone)
      return;
 
-  if (parent()->inherits( "KToolBar" ))
+  if (qobject_cast<KToolBar*>(parent()))
     d->size = ((KToolBar*)parent())->iconSize();
   if (!d->size)
      d->size = KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
