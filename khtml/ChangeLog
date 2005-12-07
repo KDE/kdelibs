@@ -1,3 +1,8 @@
+2005-12-06  Dirk Mueller  <mueller@kde.org>
+
+	* html/htmltokenizer.cpp: don't treat <!---> specially. 
+        fixes bug 93799.
+
 2005-12-02  Charles Samuels  <charles@kde.org>
 	rendering/bidi.cpp: don't sometimes take text far past the end
 	of the block's margin on justified text.  bug #106081

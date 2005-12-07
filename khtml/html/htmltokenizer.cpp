@@ -339,7 +339,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
                 else if ( title ) { currToken.tid = ID_TITLE + ID_CLOSE_TAG; }
                 else if ( xmp )  { currToken.tid = ID_XMP + ID_CLOSE_TAG; }
                 processToken();
-                style = script = style = textarea = title = xmp = false;
+                script = style = textarea = title = xmp = false;
                 tquote = NoQuote;
                 scriptCodeSize = scriptCodeResync = 0;
             }
@@ -455,8 +455,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
         scriptCode[ scriptCodeSize++ ] = *src;
 
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-        qDebug("comment is now: *%s*",
-               QConstString((QChar*)src.current(), kMin(16U, src.length())).string().latin1());
+        qDebug("comment is now: *%s*", src.toString().left(16).latin1());
 #endif
 
         if (strict)
@@ -746,10 +745,10 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
         checkBuffer();
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         uint l = 0;
-        while(l < src.length() && (*(src.current()+l)).latin1() != '>')
+        while(l < src.length() && (src.toString()[l]).latin1() != '>')
             l++;
         qDebug("src is now: *%s*, tquote: %d",
-               QConstString((QChar*)src.current(), l).string().latin1(), tquote);
+               src.toString().left(l).latin1(), tquote);
 #endif
         switch(tag) {
         case NoTag:
@@ -775,10 +774,6 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         tag = NoTag;
 
                         comment = true;
-                        // push what we parsed so far upon the stack. helps for <!-->
-                        checkScriptBuffer();
-                        scriptCode[0] = scriptCode[1] = '-';
-                        scriptCodeSize = 2;
                         parseComment(src);
                         return; // Finished parsing tag!
                     }
