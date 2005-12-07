@@ -1667,7 +1667,9 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   {
      long saveCacheId = d->m_cacheId;
      QString savePageReferrer = d->m_pageReferrer;
+     QString saveEncoding     = d->m_encoding;
      begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+     d->m_encoding     = saveEncoding;
      d->m_pageReferrer = savePageReferrer;
      d->m_cacheId = saveCacheId;
      d->m_workingURL = KURL();
