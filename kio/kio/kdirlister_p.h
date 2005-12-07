@@ -181,6 +181,8 @@ public:
 
   static KDirListerCache *self();
 
+  static bool exists(); 
+
 private slots:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );

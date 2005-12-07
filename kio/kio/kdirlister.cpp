@@ -824,6 +824,12 @@ KDirListerCache* KDirListerCache::self()
   return s_pSelf;
 }
 
+bool KDirListerCache::exists()
+{
+  return s_pSelf != 0;
+}
+ 
+
 // private slots
 
 // _file can also be a directory being currently held!
@@ -1799,9 +1805,12 @@ KDirLister::~KDirLister()
 {
   kdDebug(7003) << "-KDirLister" << endl;
 
-  // Stop all running jobs
-  stop();
-  s_pCache->forgetDirs( this );
+  if ( KDirListerCache::exists() )
+  {
+    // Stop all running jobs
+    stop();
+    s_pCache->forgetDirs( this );
+  }
 
   delete d;
 }
