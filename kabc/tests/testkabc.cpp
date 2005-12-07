@@ -13,7 +13,6 @@
 #include "stdaddressbook.h"
 #include "timezone.h"
 #include "key.h"
-#include "agent.h"
 #include "vcardconverter.h"
 
 using namespace KABC;
@@ -23,7 +22,7 @@ int main(int argc,char **argv)
     KAboutData aboutData("testkabc",I18N_NOOP("TestKabc"),"0.1");
     KCmdLineArgs::init(argc, argv, &aboutData);
 
-    KApplication app( false, false );
+    KApplication app( false );
     AddressBook *ab = StdAddressBook::self();
 
 #define READ
@@ -31,9 +30,8 @@ int main(int argc,char **argv)
 #ifdef READ
     AddressBook::Iterator it;
     for ( it = ab->begin(); it != ab->end(); ++it ) {
-      QString vcard;
       VCardConverter converter;
-      converter.addresseeToVCard( *it, vcard );
+      QString vcard = converter.createVCard( *it );
       kdDebug() << "card=" << vcard << endl;
     }
 #else
