@@ -1088,7 +1088,10 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
   switch(id) {
     case DOMElement::GetAttribute:
-      return String(element.getAttribute(args[0].toString(exec).string()));
+      /** In theory, we should not return null here, as per DOM. In practice, that 
+       breaks websites
+      */
+      return getString(element.getAttribute(args[0].toString(exec).string()));
     case DOMElement::SetAttribute:
       element.setAttribute(args[0].toString(exec).string(),args[1].toString(exec).string());
       return Undefined();
