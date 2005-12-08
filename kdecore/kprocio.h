@@ -195,7 +195,7 @@ signals:
   void readReady(KProcIO *pio);
 
 protected:
-  Q3PtrList<QByteArray> outbuffer;
+  QList<QByteArray *> outbuffer;
   QByteArray recvbuffer;
   QTextCodec *codec;
   int rbi;

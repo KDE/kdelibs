@@ -38,7 +38,6 @@ KProcIO::KProcIO ( QTextCodec *_codec)
 {
   rbi=0;
   readsignalon=writeready=true;
-  outbuffer.setAutoDelete(true);
 
   if (!codec)
   {
@@ -52,6 +51,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
 
 KProcIO::~KProcIO()
 {
+  qDeleteAll(outbuffer);
   delete d;
 }
 
@@ -74,8 +74,8 @@ KProcIO::resetAll ()
   disconnect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
 
+  qDeleteAll(outbuffer);
   outbuffer.clear();
-
 }
 
 void KProcIO::setComm (Communication comm)
