@@ -31,6 +31,8 @@ def generate(env):
 
 		if env['CACHED_LIBBZ2']:
 			dest.write('#define HAVE_BZIP2_SUPPORT 1\n');
+			if not conf.CheckFunc('bzDecompressInit'):
+				dest.write('#define NEED_BZ2_PREFIX 1\n');
 		else:
 			print 'libbz2 not found.'
 
