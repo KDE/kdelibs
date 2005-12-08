@@ -319,17 +319,24 @@ void KActionCollection::insert( KAction* action )
   if (!action)
     return;
 
-  QByteArray name = actionDictKey( action );
+  const QByteArray name = actionDictKey( action );
 
   // look if we already have THIS action under THIS name ;)
   QHash<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name);
+  const bool foundAction = ( it != d->m_actionDict.end() );
   while (it != d->m_actionDict.end() && it.key() == name)
   {
-    if ( it.value() == action )
+    if ( it.value() == action ) {
+      kdDebug() << "WARNING: collection already has action " << action << " " << name << ", it got inserted twice" << endl;
       return;
+    }
 
     ++it;
   }
+  // Having more than one action with the same name is a problem,
+  // since everything is based on the name: xmlgui, shortcuts, custom properties, etc.
+  if ( foundAction )
+    kdDebug() << "WARNING: collection already has an action named '" << name << "'" << endl;
 
   // really insert action
   d->m_actionDict.insertMulti (name, action);
