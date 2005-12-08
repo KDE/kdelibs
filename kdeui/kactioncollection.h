@@ -300,11 +300,6 @@ private:
   void prepareXMLUnplug();
   void unplugShortcuts( KAccel* kaccel );
 
-  void _clear();
-  void _insert( KAction* );
-  void _remove( KAction* );
-  KAction* _take( KAction* );
-
 private slots:
    void slotMenuItemHighlighted( int id );
    void slotToolBarButtonHighlighted( int id, bool highlight );

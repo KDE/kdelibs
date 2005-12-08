@@ -314,7 +314,7 @@ static QByteArray actionDictKey( KAction* action )
   return name.toUtf8();
 }
 
-void KActionCollection::_insert( KAction* action )
+void KActionCollection::insert( KAction* action )
 {
   if (!action)
     return;
@@ -337,7 +337,7 @@ void KActionCollection::_insert( KAction* action )
   emit inserted( action );
 }
 
-void KActionCollection::_remove( KAction* action )
+void KActionCollection::remove( KAction* action )
 {
   if (!action)
     return;
@@ -355,7 +355,7 @@ void KActionCollection::_remove( KAction* action )
   delete a;
 }
 
-KAction* KActionCollection::_take( KAction* action )
+KAction* KActionCollection::take( KAction* action )
 {
   if (!action)
     return 0;
@@ -374,20 +374,18 @@ KAction* KActionCollection::_take( KAction* action )
   return a;
 }
 
-void KActionCollection::_clear()
+void KActionCollection::clear()
 {
+  // Same as calling remove() on every action, but faster
   QList<KAction*> actions;
-  foreach( KAction* pAction, d->m_actionDict )
-    actions.append( pAction );
+  foreach( KAction* pAction, d->m_actionDict ) {
+    emit removed( pAction );
+    delete pAction;
+  }
 
-  foreach( KAction* pAction, actions )
-    _remove( pAction );
+  d->m_actionDict.clear();
 }
 
-void KActionCollection::insert( KAction* action )   { _insert( action ); }
-void KActionCollection::remove( KAction* action )   { _remove( action ); }
-KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
-void KActionCollection::clear()                     { _clear(); }
 KAccel* KActionCollection::accel()                  { return kaccel(); }
 const KAccel* KActionCollection::accel() const      { return kaccel(); }
 KAccel* KActionCollection::builderKAccel() const    { return d->m_builderKAccel; }
