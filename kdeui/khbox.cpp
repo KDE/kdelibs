@@ -24,14 +24,20 @@
 KHBox::KHBox( QWidget* parentWidget )
     : QFrame( parentWidget )
 {
-    setLayout( new QHBoxLayout( this ) );
+    QHBoxLayout* layout = new QHBoxLayout( this );
+    layout->setSpacing( 0 );
+    layout->setMargin( 0 );
+    setLayout( layout );
 }
 
 
 KHBox::KHBox( bool /*vertical*/, QWidget* parentWidget )
     : QFrame( parentWidget )
 {
-    setLayout( new QVBoxLayout( this ) );
+    QVBoxLayout* layout = new QVBoxLayout( this );
+    layout->setSpacing( 0 );
+    layout->setMargin( 0 );
+    setLayout( layout );
 }
 
 bool KHBox::event( QEvent* ev )
