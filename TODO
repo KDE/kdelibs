@@ -326,4 +326,6 @@ that we would like to make for the next binary incompatible release.
   (Jaroslaw Staniek)
 
 - Can KPushButton be removed?  It doesn't seem to be used anywhere in KDE. (Caleb Tennis)
+  Only if we can get the same support out of Qt for things like KGuiItems, the icons on
+  buttons preference, etc. (Matt Rogers)
 
