@@ -235,17 +235,22 @@ KService::List KServiceFactory::allInitServices()
    qint32 entryCount;
    (*m_str) >> entryCount;
 
-   qint32 offset;
+   // offsetList is needed because createEntry() modifies the stream position
+   qint32 *offsetList = new qint32[entryCount];
    for(int i = 0; i < entryCount; i++)
    {
-      (*m_str) >> offset;
-      KService *newEntry = createEntry(offset);
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KService *newEntry = createEntry(offsetList[i]);
       if (newEntry)
       {
          list.append( KService::Ptr( newEntry ) );
       }
    }
-
+   delete [] offsetList;
    return list;
 }
 

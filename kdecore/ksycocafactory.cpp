@@ -177,17 +177,22 @@ KSycocaEntry::List KSycocaFactory::allEntries()
       return list;
    }
 
-   qint32 offset;
+   // offsetList is needed because createEntry() modifies the stream position
+   qint32 *offsetList = new qint32[entryCount];
    for(int i = 0; i < entryCount; i++)
    {
-      (*m_str) >> offset;
-      KSycocaEntry *newEntry = createEntry(offset);
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KSycocaEntry *newEntry = createEntry(offsetList[i]);
       if (newEntry)
       {
          list.append( KSycocaEntry::Ptr( newEntry ) );
       }
    }
-
+   delete [] offsetList;
    return list;
 }
 
