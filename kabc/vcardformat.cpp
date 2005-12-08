@@ -110,9 +110,7 @@ void VCardFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
 
 bool VCardFormat::checkFormat( QFile *file ) const
 {
-  QByteArray line;
-
-  file->readLine( line.data(), 1024 );
+  QByteArray line = file->readLine();
   line = line.trimmed();
   if ( line == "BEGIN:VCARD" )
     return true;
