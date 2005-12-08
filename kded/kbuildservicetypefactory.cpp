@@ -249,7 +249,7 @@ KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
         return; // Skip
 
      // Replace
-     KSycocaFactory::removeEntry(newEntry);
+     KSycocaFactory::removeEntry(newEntry->name());
    }
    KSycocaFactory::addEntry(newEntry);
 

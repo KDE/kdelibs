@@ -143,21 +143,15 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 }
 
 void
-KSycocaFactory::removeEntry(const KSycocaEntry::Ptr& newEntry)
+KSycocaFactory::removeEntry(const QString& entryName)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
 
    if (!m_sycocaDict) return; // Error!
 
-   const QString name = newEntry->name();
-
-   // Don't use this method for things which can have duplicate names (like services!)
-   // It's ok for things that don't, like servicetypes, though.
-   Q_ASSERT( m_entryDict->values( name ).count() <= 1 );
-
-   m_entryDict->remove( name );
-   m_sycocaDict->remove( name ); // O(N)
+   m_entryDict->remove( entryName );
+   m_sycocaDict->remove( entryName ); // O(N)
 }
 
 KSycocaEntry::List KSycocaFactory::allEntries()

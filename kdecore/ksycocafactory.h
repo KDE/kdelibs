@@ -72,10 +72,10 @@ public:
    virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
    /**
-    * Remove an entry
-    * Not very fast (O(N)), and not allowed if there are multiple entries with the same name(), use with care.
+    * Remove all entries with the given name.
+    * Not very fast (O(N)), use with care.
     */
-   void removeEntry(const KSycocaEntry::Ptr& newEntry);
+   void removeEntry(const QString& entryName);
 
    /**
     * Read an entry from the database
