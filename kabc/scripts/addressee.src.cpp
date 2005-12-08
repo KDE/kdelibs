@@ -64,11 +64,13 @@ struct Addressee::AddresseeData : public KShared
   bool changed  :1;
 };
 
+// #### missing: KStaticDeleter
 Addressee::AddresseeData* Addressee::shared_null = 0;
 
 Addressee::AddresseeData* Addressee::makeSharedNull()
 {
   Addressee::shared_null = new AddresseeData;
+  shared_null->ref.ref(); // make sure it's not deleted
   shared_null->empty = true;
   shared_null->changed = false;
   shared_null->resource = 0;
