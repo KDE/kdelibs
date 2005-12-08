@@ -22,7 +22,7 @@
 #include "ktoolinvocation.h"
 
 #include <qdatastream.h>
-#include <q3ptrstack.h>
+#include <qstack.h>
 
 #include <krandom.h>
 #include <kstandarddirs.h>
@@ -297,7 +297,7 @@ public:
 	}
 
 private:
-	Q3PtrStack<Instance> m_instances;
+	QStack<Instance *> m_instances;
 	Instance *m_defaultInstance;
 };
 
