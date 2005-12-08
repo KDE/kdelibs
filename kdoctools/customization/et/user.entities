@@ -30,8 +30,7 @@
 <!ENTITY ie          "<abbrev>st.</abbrev>">
 <!ENTITY etc         "<abbrev>jne.</abbrev>">
 
-<!-- These should be removed later.
- -->
+<!-- These should be removed later. -->
 <!ENTITY nt     "<abbrev>nt.</abbrev>">         <!-- English: &eg; -->
 <!ENTITY st     "<abbrev>st.</abbrev>">         <!-- English: &ie; -->
 <!ENTITY jne    "<abbrev>jne.</abbrev>">        <!-- English: &etc; -->
@@ -50,6 +49,12 @@
 
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY FAQ    '<acronym>KKK</acronym>'>
-<!ENTITY OS     "operatsioonisüsteem"><!-- <acronym>OS</acronym>-->
-<!ENTITY kaddressbook   "KDE aadressiraamat">
+<!ENTITY OS     "operatsioonisüsteem">		<!-- <acronym>OS</acronym>-->
+<!ENTITY kcontrolcenter	    "KDE juhtimiskeskus">
 
+<!-- Custom entities -->
+
+<!ENTITY juhtimiskeskus	    "<application>&kde; juhtimiskeskus</application>">
+<!ENTITY infokeskus	    "<application>&kde; infokeskus</application>">
+<!ENTITY abikeskus	    "<application>&kde; abikeskus</application>">
+<!ENTITY aadressiraamat	    "<application>&kde; aadressiraamat</application>">
