@@ -2609,7 +2609,9 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                                          QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
                     case SC_ComboBoxListBoxPopup:
                         // TODO: need to add layoutProps to control the popup rect?
-                        return cb->popupRect;
+//                         return cb->popupRect;
+                        // popupRect seems to be empty, so use QStyleOption::rect as Qt's styles do
+                        return r;
                 }
             } //option ok
         } //CC_ComboBox
