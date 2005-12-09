@@ -2128,8 +2128,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         EFloat f;
         switch(primitiveValue->getIdent())
         {
+        case CSS_VAL__KHTML_LEFT:
+            f = FLEFT_ALIGN; break;
         case CSS_VAL_LEFT:
             f = FLEFT; break;
+        case CSS_VAL__KHTML_RIGHT:
+            f = FRIGHT_ALIGN; break;
         case CSS_VAL_RIGHT:
             f = FRIGHT; break;
         case CSS_VAL_NONE:

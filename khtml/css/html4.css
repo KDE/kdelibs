@@ -180,6 +180,14 @@ TABLE[align="center"] {
 	margin-right: auto;
 }
 
+TABLE[align="left"] {
+	float: -khtml-left;
+}
+
+TABLE[align="right"] {
+	float: -khtml-right;
+}
+
 THEAD {
 	display: table-header-group;
         border-color: inherit;

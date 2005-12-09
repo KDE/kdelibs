@@ -384,6 +384,10 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             return new CSSPrimitiveValueImpl("left", CSSPrimitiveValue::CSS_STRING);
         case khtml::FRIGHT:
             return new CSSPrimitiveValueImpl("right", CSSPrimitiveValue::CSS_STRING);
+        case khtml::FLEFT_ALIGN:
+            return new CSSPrimitiveValueImpl("-khtml-left", CSSPrimitiveValue::CSS_STRING);
+        case khtml::FRIGHT_ALIGN:
+            return new CSSPrimitiveValueImpl("-khtml-right", CSSPrimitiveValue::CSS_STRING);
         }
     }
     case CSS_PROP_FONT_FAMILY:
