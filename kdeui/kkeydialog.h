@@ -21,13 +21,10 @@
 #ifndef KKEYDIALOG_H
 #define KKEYDIALOG_H
 
-#include <q3dict.h>
 #include <kdialogbase.h>
 #include <klistview.h>
 
-class Q3ButtonGroup;
 class QCheckBox;
-class Q3GroupBox;
 class QLabel;
 class QLineEdit;
 class QRadioButton;

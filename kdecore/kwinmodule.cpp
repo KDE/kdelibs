@@ -25,7 +25,6 @@
 #include "kwin.h"
 #include <X11/Xatom.h>
 #include "kapplication.h"
-#include <q3tl.h>
 #include <QHash>
 #include <klocale.h>
 #include <dcopclient.h>

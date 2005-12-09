@@ -14,7 +14,6 @@
 #endif
 #include <ktempfile.h>
 #include <qcolor.h>
-#include <q3cstring.h>
 #include <qfile.h>
 #include <qimage.h>
 

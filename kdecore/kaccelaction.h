@@ -21,9 +21,7 @@
 #define _KACCELACTION_H
 
 #include <qmap.h>
-#include <q3ptrvector.h>
 #include <qstring.h>
-#include <q3valuevector.h>
 
 #include <kshortcut.h>
 

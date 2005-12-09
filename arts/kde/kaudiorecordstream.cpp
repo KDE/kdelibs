@@ -34,7 +34,6 @@
 
 #include <qstring.h>
 #include <q3ptrqueue.h>
-#include <q3cstring.h> //QByteArray
 
 #include <assert.h>
 

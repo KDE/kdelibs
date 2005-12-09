@@ -21,9 +21,7 @@
 #define _KACCELBASE_H
 
 #include <qmap.h>
-#include <q3ptrvector.h>
 #include <qstring.h>
-#include <q3valuevector.h>
 #include <q3valuelist.h>
 
 #include "kaccelaction.h"

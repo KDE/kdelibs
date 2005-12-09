@@ -22,7 +22,7 @@
 #define DNSSDSERVICEBROWSER_H
 
 #include <qobject.h>
-#include <q3dict.h>
+
 #include <dnssd/remoteservice.h>
 
 

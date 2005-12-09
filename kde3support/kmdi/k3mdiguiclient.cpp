@@ -20,7 +20,6 @@
 #include "k3mdiguiclient.h"
 #include "k3mdiguiclient.moc"
 
-#include <q3popupmenu.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <ktoolbar.h>

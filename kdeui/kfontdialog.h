@@ -25,14 +25,12 @@
 #define _K_FONT_DIALOG_H_
 
 #include <qlineedit.h>
-#include <q3button.h>
 #include <QCheckBox>
 #include <kdialogbase.h>
 
 class QComboBox;
 class QCheckBox;
 class QFont;
-class Q3GroupBox;
 class QLabel;
 class QStringList;
 class KListBox;

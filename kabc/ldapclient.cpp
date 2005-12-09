@@ -27,7 +27,6 @@
 #include <qlabel.h>
 #include <qpixmap.h>
 #include <qtextstream.h>
-#include <q3url.h>
 
 #include <kapplication.h>
 #include <kconfig.h>

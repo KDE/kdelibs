@@ -25,7 +25,6 @@
 #include <kdeversion.h>
 #include <dcopclient.h>
 #include <dcopref.h>
-#include <q3popupmenu.h>
 #include <qapplication.h>
 
 #include <assert.h>

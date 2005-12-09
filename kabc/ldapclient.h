@@ -26,9 +26,7 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <q3cstring.h>
-#include <q3valuelist.h>
 #include <qstringlist.h>
-#include <q3memarray.h>
 #include <qpointer.h>
 #include <qtimer.h>
 

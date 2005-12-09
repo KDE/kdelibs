@@ -20,7 +20,6 @@
 #ifndef KSETTINGS_DISPATCHER_H
 #define KSETTINGS_DISPATCHER_H
 
-#include <q3cstring.h>
 #include <qobject.h>
 #include <qmap.h>
 #include <kdelibs_export.h>

@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <qevent.h>
 #include <qobject.h>
-#include <q3accel.h>
 #include <qpainter.h>
 #include <qstyle.h>
 #include <qtimer.h>

@@ -22,7 +22,6 @@
 #define KPASSDLG_H
 
 #include <qstring.h>
-#include <q3cstring.h>
 #include <qlineedit.h>
 #include <kdialogbase.h>
 

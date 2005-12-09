@@ -19,7 +19,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <q3popupmenu.h>
 #include <qtextstream.h>
 #include <qtimer.h>
 

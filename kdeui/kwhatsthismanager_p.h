@@ -25,8 +25,6 @@
 
 class QToolButton;
 class QMenu;
-class Q3StyleSheet;
-class Q3TextEdit;
 
 /**
  * This class is used automatically by KMainWindow and KDialog to attach a

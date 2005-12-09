@@ -25,10 +25,8 @@
 
 #include <qapplication.h>
 #include <qobject.h>
-#include <q3ptrlist.h>
 #include <qregexp.h>
 #include <qevent.h>
-#include <q3dragobject.h>
 
 #include <kcompletionbox.h>
 #include <kconfig.h>

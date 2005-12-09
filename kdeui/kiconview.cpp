@@ -22,7 +22,6 @@
 #include <qpainter.h>
 #include <qpixmapcache.h>
 #include <qevent.h>
-#include <q3cleanuphandler.h>
 
 #include "kiconview.h"
 #include "kwordwrap.h"

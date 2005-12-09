@@ -46,7 +46,6 @@
 #include <kshortcutdialog_simple.h>
 #include <kshortcutdialog_advanced.h>
 
-#include <q3buttongroup.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qradiobutton.h>

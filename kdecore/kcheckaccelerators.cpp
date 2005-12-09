@@ -25,7 +25,6 @@
 
 #include "kcheckaccelerators.h"
 #include "kacceleratormanager.h"
-#include <q3popupmenu.h>
 #include <qapplication.h>
 #include <qdialog.h>
 #include <qlayout.h>

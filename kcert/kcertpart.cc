@@ -28,7 +28,6 @@
 #include <kdebug.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3button.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <kmessagebox.h>

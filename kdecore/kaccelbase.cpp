@@ -24,7 +24,6 @@
 
 #include <qnamespace.h>
 #include <qlabel.h>
-#include <q3popupmenu.h>
 
 #include <kconfig.h>
 #include "kckey.h"

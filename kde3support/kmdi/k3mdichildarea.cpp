@@ -36,7 +36,7 @@
 #include <kglobalsettings.h>
 
 #include <math.h>
-#include <q3popupmenu.h>
+
 #include <QMouseEvent>
 #include <QFocusEvent>
 #include <QDesktopWidget>

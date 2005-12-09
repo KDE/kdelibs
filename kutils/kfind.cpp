@@ -28,7 +28,6 @@
 #include <qregexp.h>
 #include <q3stylesheet.h>
 #include <qpointer.h>
-#include <q3ptrvector.h>
 #include <q3dict.h>
 #include <kdebug.h>
 

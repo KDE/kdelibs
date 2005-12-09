@@ -26,8 +26,7 @@
 #include "kmultitabbar.moc"
 #include "kmultitabbar_p.h"
 #include "kmultitabbar_p.moc"
-#include <q3button.h>
-#include <q3popupmenu.h>
+
 #include <qevent.h>
 #include <qlayout.h>
 #include <qpainter.h>

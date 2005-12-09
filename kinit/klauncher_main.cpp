@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <q3cstring.h>
 #include <klocale.h>
 
 #include "klauncher_cmds.h"

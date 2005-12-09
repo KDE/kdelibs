@@ -41,8 +41,6 @@
 #include <qpushbutton.h>
 #include <qdom.h>
 #include <qlabel.h>
-#include <q3valuelist.h>
-#include <q3textbrowser.h>
 #include <qtimer.h> // hack
 #include <QTextBrowser>
 

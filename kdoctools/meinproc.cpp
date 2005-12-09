@@ -26,7 +26,6 @@
 #include <qtextcodec.h>
 #include <qfileinfo.h>
 #include <kprocess.h>
-#include <q3valuevector.h>
 #include <QList>
 
 extern int xmlLoadExtDtdDefaultValue;

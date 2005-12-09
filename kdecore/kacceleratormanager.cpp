@@ -27,11 +27,8 @@
 #include <qlineedit.h>
 #include <qmenubar.h>
 #include <qmenudata.h>
-#include <q3memarray.h>
 #include <qmetaobject.h>
-#include <q3mainwindow.h>
 #include <qobject.h>
-#include <q3popupmenu.h>
 #include <QList>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
