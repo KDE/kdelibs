@@ -90,12 +90,13 @@ static inline unsigned int intensityValue(unsigned int color)
                            0.1140000000000001*qBlue(color))));
 }
 
-static inline void liberateMemory(void **memory)
+template<typename T>
+static inline void liberateMemory(T **memory)
 {
-    assert(memory != (void **)NULL);
-    if(*memory == (void *)NULL) return;
-    free(*memory);
-    *memory=(void *) NULL;
+    assert(memory != NULL);
+    if(*memory == NULL) return;
+    free((char*)*memory);
+    *memory=NULL;
 }
 
 struct double_packet
@@ -3702,7 +3703,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
             *q++ = (*s);
         }
     }
-    /* liberateMemory((void **)histogram); */
+    /* liberateMemory((histogram); */
     return(dest);
 }
 
@@ -3743,9 +3744,9 @@ void KImageEffect::normalize(QImage &image)
 
     if(!histogram || !normalize_map){
         if(histogram)
-            liberateMemory((void **) &histogram);
+            liberateMemory(&histogram);
         if(normalize_map)
-            liberateMemory((void **) &normalize_map);
+            liberateMemory(&normalize_map);
         qWarning("KImageEffect::normalize(): Unable to allocate memory!");
         return;
     }
@@ -3864,7 +3865,7 @@ void KImageEffect::normalize(QImage &image)
                 break;
         }
     }
-    liberateMemory((void **) &histogram);
+    liberateMemory(&histogram);
 
     /*
      Stretch the histogram to create the normalized image mapping.
@@ -3929,7 +3930,7 @@ void KImageEffect::normalize(QImage &image)
             q[x] = qRgba(r, g, b, a);
         }
     }
-    liberateMemory((void **) &normalize_map);
+    liberateMemory(&normalize_map);
 }
 
 void KImageEffect::equalize(QImage &image)
@@ -3949,11 +3950,11 @@ void KImageEffect::equalize(QImage &image)
     equalize_map=(struct short_packet *)malloc(256*sizeof(struct short_packet));
     if(!histogram || !map || !equalize_map){
         if(histogram)
-            liberateMemory((void **) &histogram);
+            liberateMemory(&histogram);
         if(map)
-            liberateMemory((void **) &map);
+            liberateMemory(&map);
         if(equalize_map)
-            liberateMemory((void **) &equalize_map);
+            liberateMemory(&equalize_map);
         qWarning("KImageEffect::equalize(): Unable to allocate memory!");
         return;
     }
@@ -4000,8 +4001,8 @@ void KImageEffect::equalize(QImage &image)
             equalize_map[i].alpha=(unsigned short)
                 ((65535*(map[i].alpha-low.alpha))/(high.alpha-low.alpha));
     }
-    liberateMemory((void **) &histogram);
-    liberateMemory((void **) &map);
+    liberateMemory(&histogram);
+    liberateMemory(&map);
 
     /*
      Stretch the histogram.
@@ -4028,7 +4029,7 @@ void KImageEffect::equalize(QImage &image)
             q[x] = qRgba(r, g, b, a);
         }
     }
-    liberateMemory((void **) &equalize_map);
+    liberateMemory(&equalize_map);
 
 }
 
@@ -4060,7 +4061,7 @@ QImage KImageEffect::edge(QImage &image, double radius)
         kernel[i]=(-1.0);
     kernel[i/2]=width*width-1.0;
     convolveImage(&image, &dest, width, kernel);
-    liberateMemory((void **)&kernel);
+    free(kernel);
     return(dest);
 }
 
@@ -4109,7 +4110,7 @@ QImage KImageEffect::emboss(QImage &image, double radius, double sigma)
         j--;
     }
     convolveImage(&image, &dest, width, kernel);
-    liberateMemory((void **)&kernel);
+    liberateMemory(&kernel);
 
     equalize(dest);
     return(dest);
@@ -4315,14 +4316,14 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
 
         while ((long) (MaxRGB*kernel[0]) > 0){
             if(last_kernel != (double *)NULL){
-                liberateMemory((void **) &last_kernel);
+                liberateMemory(&last_kernel);
             }
             last_kernel=kernel;
             kernel = (double *)NULL;
             width = getBlurKernel(width+2, sigma, &kernel);
         }
         if(last_kernel != (double *) NULL){
-            liberateMemory((void **) &kernel);
+            liberateMemory(&kernel);
             width-=2;
             kernel = last_kernel;
         }
@@ -4330,7 +4331,7 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
 
     if(width < 3){
         qWarning("KImageEffect::blur(): Kernel radius is too small!");
-        liberateMemory((void **) &kernel);
+        liberateMemory(&kernel);
         return(dest);
     }
 
@@ -4355,9 +4356,9 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
             destTable[y][x] = temp[y];
         }
     }
-    liberateMemory((void **) &scanline);
-    liberateMemory((void **) &temp);
-    liberateMemory((void **) &kernel);
+    free(scanline);
+    free(temp);
+    free(kernel);
     return(dest);
 }
 
@@ -4499,7 +4500,7 @@ QImage KImageEffect::sharpen(QImage &image, double radius, double sigma)
     }
     kernel[i/2]=(-2.0)*normalize;
     convolveImage(&image, &dest, width, kernel);
-    liberateMemory((void **) &kernel);
+    free(kernel);
     return(dest);
 }
 
