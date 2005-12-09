@@ -873,6 +873,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      signal(SIGTERM, sighandler);
      signal(SIGHUP, sighandler);
      KDEDApplication k;
+     k.setQuitOnLastWindowClosed(false);
 
      // Not sure why kded is created before KDEDApplication
      // but if it has to be, then it needsto be moved to the main thread
