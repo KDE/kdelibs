@@ -76,8 +76,8 @@ KStyle::KStyle()
     //Set up some default metrics...
     setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
 
-    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin, 10);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin,    5);
+    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin, 5);
+    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin,    3);
     setWidgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical,   2);
     setWidgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize,      8);
@@ -376,8 +376,8 @@ QSize KStyle::expandDim(QSize orig, WidgetType widget, int baseMarginMetric) con
                                   widgetLayoutProp(widget, baseMarginMetric + Right);
                                   
     int height = orig.height() + 2*widgetLayoutProp(widget, baseMarginMetric + MainMargin) +
-                                   widgetLayoutProp(widget, baseMarginMetric + Left) +
-                                   widgetLayoutProp(widget, baseMarginMetric + Right);
+                                   widgetLayoutProp(widget, baseMarginMetric + Top) +
+                                   widgetLayoutProp(widget, baseMarginMetric + Bot);
                                    
     return QSize(width, height);                                   
 }
