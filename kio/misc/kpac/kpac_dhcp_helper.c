@@ -176,7 +176,7 @@ void get_reply(int sock, uint32_t xid)
 		*offs++ != DHCP_MAGIC4)
 		exit(1);
 
-	for ( ; offs < end - 1; offs += *offs++)
+	for ( ; offs < end - 1; offs += *offs+1)
 	{
 		switch (*offs++)
 		{
