@@ -110,7 +110,8 @@ KRFCDate::parseDate(const QString &_date)
      time_t result = 0;
      int offset = 0;
      char *newPosStr;
-     const char *dateString = _date.toLatin1().data();
+     const QByteArray dateArray = _date.toLatin1();
+     const char *dateString = dateArray.data();
      int day = 0;
      char monthStr[4];
      int month = -1;
