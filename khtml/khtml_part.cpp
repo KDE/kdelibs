@@ -251,6 +251,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
+  d->m_bCleared = false;
   d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), CTRL + Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), CTRL+Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
@@ -1874,12 +1875,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     }
   }
 
+  clear();
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  clear();
-  d->m_bCleared = false;
 
   if(url.isValid()) {
       QString urlString = url.url();
