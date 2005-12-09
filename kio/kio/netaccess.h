@@ -112,6 +112,7 @@ public:
      *         get the reason it failed.
      *
      * @see lastErrorString()
+     * @since 3.2
      */
     static bool download(const KURL& src, QString & target, QWidget* window);
 
@@ -150,6 +151,7 @@ public:
      *               prompted for passwords as needed.
      *
      * @return true if successful, false for failure
+     * @since 3.2
      */
     static bool upload(const QString& src, const KURL& target, QWidget* window);
 
