@@ -139,7 +139,10 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
 
     setWidgetLayoutProp(WT_PushButton, PushButton::DefaultIndicatorMargin, 1);
+    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin + Left, 4);
+    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin + Right, 4);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin, 3);
+    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Left, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
