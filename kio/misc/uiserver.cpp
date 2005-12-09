@@ -1383,9 +1383,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     //              in the titles of dialogs which are displayed.
     KAboutData aboutdata("kio_uiserver", I18N_NOOP("KDE"),
                          "0.8", I18N_NOOP("KDE Progress Information UI Server"),
-                         KAboutData::License_GPL, "(C) 2000, David Faure & Matt Koss");
-    // Who's the maintainer ? :)
-    aboutdata.addAuthor("David Faure",I18N_NOOP("Developer"),"faure@kde.org");
+                         KAboutData::License_GPL, "(C) 2000-2005, David Faure & Matt Koss");
+    aboutdata.addAuthor("David Faure",I18N_NOOP("Maintainer"),"faure@kde.org");
     aboutdata.addAuthor("Matej Koss",I18N_NOOP("Developer"),"koss@miesto.sk");
 
     KCmdLineArgs::init( argc, argv, &aboutdata );
@@ -1402,11 +1401,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
     // This app is started automatically, no need for session management
     app.disableSessionManagement();
+    app.setQuitOnLastWindowClosed( false );
     app.dcopClient()->setDaemonMode( true );
 
     uiserver = UIServer::createInstance();
-
-//    app.setMainWidget( uiserver );
 
     return app.exec();
 }
