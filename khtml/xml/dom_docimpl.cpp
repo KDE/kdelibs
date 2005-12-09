@@ -173,14 +173,17 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
-    doc->appendChild(element,exceptioncode);
-    if (exceptioncode) {
-        delete element;
-        delete doc;
-        return 0;
+    // the document must be created empty if all parameters are null 
+    // (or empty for qName/nsURI as a tolerance) - see DOM 3 Core.
+    if (dtype || !qualifiedName.isEmpty() || !namespaceURI.isEmpty()) {
+        ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
+        doc->appendChild(element,exceptioncode);
+        if (exceptioncode) {
+            delete element;
+            delete doc;
+            return 0;
+        }
     }
-
     return doc;
 }
 
