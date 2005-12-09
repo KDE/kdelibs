@@ -273,9 +273,9 @@ void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
+#ifdef Q_WS_X11
   while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
-#ifdef Q_WS_X11
 #warning how to enter whats this mode for a QX11EmbedWidget?
 //   if ( w && qobject_cast<QX11EmbedWidget*>(w) )
 //	  (( QX11EmbedWidget*) w )->enterWhatsThisMode();
