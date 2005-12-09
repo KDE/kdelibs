@@ -1,3 +1,17 @@
+2005-12-09  Germain Garand  <germain@ebooksfrance.org>
+
+        implement quirky HTML alignment ; introduce special float values
+        -khtml-left/-khtml-right to this effect.
+
+        * css/cssparser.cpp: ditto. Fix memory leak from Function struct deletion also.
+        * css/cssstyleselector.cpp: ditto.
+        * css/html4.css: set as default style for table[align="left/right"]
+        * html/html_tableimpl.cpp (parseAttribute): remove setting of float property
+        * rendering/render_block{h,cpp}: quirky HTML alignment never clears, and never cause fafs to clear.
+          Only examine the last floating object on line, so as to match MSIE behaviour.
+        * rendering/render_style.h: extra float enumeration values
+        * css/css_renderstyledeclarationimpl.cpp (getPropertyCSSValue): adjust
+
 2005-12-06  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmltokenizer.cpp: don't treat <!---> specially. 
