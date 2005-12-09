@@ -127,7 +127,19 @@ Kded::~Kded()
   delete m_pTimer;
   delete m_pDirWatch;
 
-  qDeleteAll( m_modules );
+  for (QHash<QByteArray,KDEDModule*>::iterator
+           it(m_modules.begin()), itEnd(m_modules.end());
+       it != itEnd; ++it)
+  {
+      KDEDModule* module(it.value());
+
+      // first disconnect otherwise slotKDEDModuleRemoved() is called
+      // and changes m_modules while we're iterating over it
+      disconnect(module, SIGNAL(moduleDeleted(KDEDModule*)),
+                 this, SLOT(slotKDEDModuleRemoved(KDEDModule*)));
+
+      delete module;
+  }
 }
 
 bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
