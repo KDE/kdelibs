@@ -1980,6 +1980,7 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   _bottomExtra = 0;
   m_percentageHeight = -1;
   m_hasFlexedAnonymous = false;
+  m_widthChanged = false;
 }
 
 void RenderTableCell::detach()
