@@ -256,6 +256,8 @@ class PageNode
 		void sort()
 		{
 			kdDebug( 700 ) << k_funcinfo << name() << endl;
+			if( m_children.isEmpty() )
+				return;
 			List::Iterator begin = m_children.begin();
 			List::Iterator end = m_children.end();
 			bubbleSort( begin, end );
