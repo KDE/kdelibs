@@ -91,7 +91,6 @@ kdecore
 kdeui
 kwallet
 kio
-qttestlib
 kded
 kparts
 kutils
