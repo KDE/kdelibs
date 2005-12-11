@@ -198,7 +198,7 @@ PlastikStyle::PlastikStyle() :
 //     settings.beginGroup("/plastikstyle/Settings");
     _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
     _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
-//     _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
+    _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
@@ -510,7 +510,23 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         case WT_MenuBar:
         {
-            // TODO
+            p->fillRect(r, pal.window());
+
+            if ( _drawToolBarSeparator ) {
+                if ( r.width() > r.height() ) {
+                    p->setPen( getColor(pal, PanelLight) );
+                    p->drawLine( r.left(), r.top(), r.right(), r.top() );
+                    p->setPen( getColor(pal, PanelDark) );
+                    p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
+                }
+                else {
+                    p->setPen( getColor(pal, PanelLight) );
+                    p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
+                    p->setPen( getColor(pal, PanelDark) );
+                    p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
+                }
+            }
+            return;
         }
         break;
 
@@ -1423,7 +1439,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     {
                         const int lineWidth(panel->lineWidth);
                         p->fillRect(r.adjusted(lineWidth, lineWidth, -lineWidth, -lineWidth),
-                                    pal.brush(QPalette::Base));
+                                    pal.base());
 
                         if (lineWidth > 0)
                             drawPrimitive(PE_FrameLineEdit, panel, p, widget);
