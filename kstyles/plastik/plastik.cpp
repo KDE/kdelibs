@@ -1441,7 +1441,15 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case LineEdit::Panel:
                 {
-                    // TODO
+                    if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame*>(opt))
+                    {
+                        const int lineWidth(panel->lineWidth);
+                        p->fillRect(r.adjusted(lineWidth, lineWidth, -lineWidth, -lineWidth),
+                                    pal.brush(QPalette::Base));
+
+                        if (lineWidth > 0)
+                            drawPrimitive(PE_FrameLineEdit, panel, p, widget);
+                    }
                 }
             }
 
