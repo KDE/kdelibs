@@ -934,7 +934,7 @@ public:
      *
      * @return the completion object or NULL if one does not exist.
      */
-    KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : (KCompletion*) m_pCompObj; }
+    KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : static_cast<KCompletion*>(m_pCompObj); }
 
 protected:
     /**
