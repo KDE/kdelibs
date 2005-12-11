@@ -2360,9 +2360,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       switch (token) {
       // read-only: type
       case SelectSelectedIndex:   { select.setSelectedIndex(value->toInteger(exec)); return; }
-      case SelectValue:           { select.setValue(str); return; }
+      case SelectValue:           { select.setValue(str.implementation()); return; }
       case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
-                                         ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), select)->getObject();
+                                         ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
                                          if ( coll )
                                            coll->put(exec,"length",value);
                                          return;
@@ -2382,19 +2382,19 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       case OptionText:            { SharedPtr<DOM::NodeListImpl> nl(option.childNodes());
                                     for (unsigned int i = 0; i < nl->length(); i++) {
                                         if (nl->item(i)->nodeType() == DOM::Node::TEXT_NODE) {
-                                            static_cast<DOM::TextImpl*>(nl->item(i))->setData(str);
+                                            static_cast<DOM::TextImpl*>(nl->item(i))->setData(str, exception);
                                             return;
                                         }
                                   }
                                   // No child text node found, creating one
-                                  DOM::TextImpl* t = option.getDocument()->createTextNode(str);
+                                  DOM::TextImpl* t = option.getDocument()->createTextNode(str.implementation());
                                   int dummyexception;
                                   option.appendChild(t, dummyexception); // #### exec->setException ?
                                   return;
       }
       // read-only: index
       case OptionSelected:        { option.setSelected(value->toBoolean(exec)); return; }
-      case OptionValue:           { option.setValue(str); return; }
+      case OptionValue:           { option.setValue(str.implementation()); return; }
       }
     }
     break;
@@ -2442,8 +2442,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       DOM::HTMLFrameElementImpl& frameElement = static_cast<DOM::HTMLFrameElementImpl&>(element);
       switch (token) {
        // read-only: FrameContentDocument:
+#warning "FIXME: this will never get called"
       case FrameLocation:        {
-                                   static_cast<DOM::HTMLFrameElementImpl *>(frameElement.handle())->setLocation(str);
+                                   frameElement.setLocation(str);
                                    return;
                                  }
       }
@@ -2490,22 +2491,23 @@ bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
 }
 
-/*
+ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
+{
+  return getDOMNode(exec, m_impl->item(index));
+}
 
-collection.length()
+ValueImp *HTMLCollection::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
+{
+  HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
+  return Number(thisObj->m_impl->length());
+}
+    
 
-  if (collection.handle()->getType() == HTMLCollectionImpl::SELECT_OPTIONS) {
-    DOM::HTMLSelectElement parentSelect = collection.base();
-    if ( parentSelect.isNull() )
-      return Undefined();
-    if (propertyName == "selectedIndex") {
-      // NON-STANDARD options.selectedIndex
-      return Number(parentSelect.selectedIndex());
-    } else if ( propertyName == "value" ) {
-      // NON-STANDARD options.value
-      return String(parentSelect.value());
-    }
-  }*/
+ValueImp *HTMLCollection::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+    HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
+    return thisObj->getNamedItems(exec, propertyName);
+}
 
 
 bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
@@ -2518,7 +2520,7 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "  collection length is " << m_impl->length() << endl;
 #endif
-    slot.setCustom(lengthGetter);
+    slot.setCustom(this, lengthGetter);
     return true;
   }
 
@@ -2605,10 +2607,13 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
     }
     else  {
       // multiple items, return a collection
+      QList<SharedPtr<DOM::NodeImpl> > nodes;
+      foreach (DOM::NodeImpl* node, matches)
+        nodes.append(node);
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << matches.count() << " nodes" << endl;
 #endif
-      return new DOMNamedNodesCollection(exec, matches);
+      return new DOMNamedNodesCollection(exec, nodes);
     }
   }
 #ifdef KJS_VERBOSE
@@ -2626,34 +2631,35 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
   case KJS::HTMLCollection::Item:
   {
     // support for item(<index>) (DOM)
+    UString s = args[0]->toString(exec);
     bool ok;
-    unsigned int u = s.qstring().toUInt32(&ok);
+    unsigned int u = s.toUInt32(&ok);
     if (ok) {
       return getDOMNode(exec,coll.item(u));
     }
+    
     // support for item('<name>') (IE only)
-    UString s = args[0]->toString(exec);
     kdWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead" << endl;
     return getDOMNode(exec,coll.namedItem(s.domString()));
   }
   case KJS::HTMLCollection::Tags:
   {
     DOM::DOMString tagName = args[0]->toString(exec).domString();
-    DOM::NodeList list;
+    DOM::NodeListImpl* list;
     // getElementsByTagName exists in Document and in Element, pick up the right one
-    if ( coll.base().nodeType() == DOM::Node::DOCUMENT_NODE )
+    if ( coll.base()->nodeType() == DOM::Node::DOCUMENT_NODE )
     {
-      DOM::Document doc = coll.base();
-      list = doc.getElementsByTagName(tagName);
+      DOM::DocumentImpl* doc = static_cast<DOM::DocumentImpl*>(coll.base());
+      list = doc->getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall document.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::callAsFunction document.tags(" << tagName.string() << ") -> " << list->length() << " items in node list" << endl;
 #endif
     } else
     {
-      DOM::Element e = coll.base();
-      list = e.getElementsByTagName(tagName);
+      DOM::ElementImpl* e = static_cast<DOM::ElementImpl*>(coll.base());
+      list = e->getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list->length() << " items in node list" << endl;
 #endif
     }
     return getDOMNodeList(exec, list);
@@ -2673,21 +2679,39 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
   }
 }
 
-ValueImp* KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
 {
-  if (p == "selectedIndex")
-    return Number(element.selectedIndex());
-
-  return  HTMLCollection::tryGet(exec, p);
+    HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
+    return Number(thisObj->element->selectedIndex());
 }
 
-void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int)
+ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
 {
+    HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
+    return String(thisObj->element->value());
+}
+
+bool KJS::HTMLSelectCollection::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
+{
+  if (p == "selectedIndex") {
+    slot.setCustom(this, selectedIndexGetter);
+    return true;
+  } else if (p == "value") {
+    slot.setCustom(this, selectedValueGetter);
+    return true;
+  }
+
+  return  HTMLCollection::getOwnPropertySlot(exec, p, slot);
+}
+
+void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int)
+{
+  DOMExceptionTranslator exception(exec);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
+  kdDebug(6070) << "KJS::HTMLSelectCollection::put " << propertyName.qstring() << endl;
 #endif
   if ( propertyName == "selectedIndex" ) {
-    element.setSelectedIndex( value->toInteger( exec ) );
+    element->setSelectedIndex( value->toInteger( exec ) );
     return;
   }
   // resize ?
@@ -2699,16 +2723,19 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &proper
       return;
     }
 
-    long diff = element.length() - newLen;
+    long diff = element->length() - newLen;
 
     if (diff < 0) { // add dummy elements
       do {
-        element.add(element.ownerDocument().createElement("OPTION"), DOM::HTMLElement());
+        ElementImpl *option = element->getDocument()->createElement("option", exception);
+        if (exception.triggered()) return;
+        element->add(static_cast<HTMLElementImpl *>(option), 0, exception);
+        if (exception.triggered()) return;
       } while (++diff);
     }
     else // remove elements
       while (diff-- > 0)
-        element.remove(newLen);
+        element->remove(newLen);
 
     return;
   }
@@ -2720,37 +2747,43 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &proper
 
   if (value->type() == NullType || value->type() == UndefinedType) {
     // null and undefined delete. others, too ?
-    element.remove(u);
+    element->remove(u);
     return;
   }
 
   // is v an option element ?
-  DOM::Node node = KJS::toNode(value);
-  if (node.isNull() || node.elementId() != ID_OPTION)
+  DOM::NodeImpl* node = KJS::toNode(value);
+  if (!node || node->id() != ID_OPTION)
     return;
 
-  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
-  if ( option.ownerDocument() != element.ownerDocument() )
-    option = static_cast<DOM::HTMLOptionElement>(element.ownerDocument().importNode(option, true));
-  long diff = long(u) - element.length();
-  DOM::HTMLElement before;
+  DOM::HTMLOptionElementImpl* option = static_cast<DOM::HTMLOptionElementImpl*>(node);
+  if ( option->getDocument() != element->getDocument() )
+    option = static_cast<DOM::HTMLOptionElementImpl*>(element->ownerDocument()->importNode(option, true, exception));
+  if (exception.triggered()) return;
+    
+  long diff = long(u) - element->length();
+  DOM::HTMLElementImpl* before = 0;
   // out of array bounds ? first insert empty dummies
   if (diff > 0) {
     while (diff--) {
-      element.add(element.ownerDocument().createElement("OPTION"), before);
+      element->add(
+        static_cast<DOM::HTMLElementImpl*>(element->getDocument()->createElement("OPTION")),
+        before, exception);
+      if (exception.triggered()) return;
     }
     // replace an existing entry ?
   } else if (diff < 0) {
-    before = element.options().item(u+1);
-    element.remove(u);
+    SharedPtr<DOM::HTMLCollectionImpl> options = element->options();
+    before = static_cast<DOM::HTMLElementImpl*>(options->item(u+1));
+    element->remove(u);
   }
   // finally add the new element
-  element.add(option, before);
+  element->add(option, before, exception);
 }
 
 ////////////////////// Option Object ////////////////////////
 
-OptionConstructorImp::OptionConstructorImp(ExecState *exec, const DOM::Document &d)
+OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
     : ObjectImp(), doc(d)
 {
   // ## isn't there some redundancy between ObjectImp::_proto and the "prototype" property ?
@@ -2768,22 +2801,23 @@ bool OptionConstructorImp::implementsConstruct() const
 
 ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
 {
-  DOM::Element el = doc.createElement("OPTION");
-  DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
+  DOMExceptionTranslator exception(exec);
+  DOM::ElementImpl* el = doc->createElement("OPTION");
+  DOM::HTMLOptionElementImpl* opt = static_cast<DOM::HTMLOptionElementImpl*>(el);
   int sz = args.size();
-  DOM::Text t = doc.createTextNode("");
-  try { opt.appendChild(t); }
-  catch(DOM::DOMException& e) {
-    // #### exec->setException ?
-  }
+  SharedPtr<DOM::TextImpl> t = doc->createTextNode("");
+
+  int dummyexception = 0;// #### exec->setException ?
+  opt->appendChild(t.get(), dummyexception);
+  
   if (sz > 0)
-    t.setData(args[0]->toString(exec).domString()); // set the text
+    t->setData(args[0]->toString(exec).domString(), exception); // set the text
   if (sz > 1)
-    opt.setValue(args[1]->toString(exec).domString());
+    opt->setValue(args[1]->toString(exec).domString().implementation());
   if (sz > 2)
-    opt.setDefaultSelected(args[2]->toBoolean(exec));
+    opt->setDefaultSelected(args[2]->toBoolean(exec));
   if (sz > 3)
-    opt.setSelected(args[3]->toBoolean(exec));
+    opt->setSelected(args[3]->toBoolean(exec));
 
   return getDOMNode(exec,opt)->getObject();
 }
@@ -2792,7 +2826,7 @@ ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
 
 //Like in other browsers, we merely make a new HTMLImageElement
 //not in tree for this.
-ImageConstructorImp::ImageConstructorImp(ExecState *, const DOM::Document &d)
+ImageConstructorImp::ImageConstructorImp(ExecState *, DOM::DocumentImpl* d)
     : ObjectImp(), doc(d)
 {
 }
@@ -2817,18 +2851,18 @@ ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
     height = h->toInt32(exec);
   }
 
-  HTMLImageElement image(doc.createElement("image"));
+  HTMLImageElementImpl* image = doc->createElement("image");
 
   if (widthSet)
-    image.setWidth(width);
+    image->setAttribute(ATTR_WIDTH, QString::number(width));
 
   if (heightSet)
-    image.setHeight(height);
+    image->setAttribute(ATTR_HEIGHT, QString::number(height));
 
   return getDOMNode(exec,image)->getObject();
 }
 
-ValueImp* KJS::getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)
+ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)
 {
   assert(!c || c->getType() != HTMLCollectionImpl::SELECT_OPTIONS);
   ValueImp *coll = cacheDOMObject<DOM::HTMLCollectionImpl, KJS::HTMLCollection>(exec, c);
@@ -2839,7 +2873,7 @@ ValueImp* KJS::getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bo
   return coll;
 }
 
-ValueImp* KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
+ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
 {
   assert(!c || c->getType() == HTMLCollectionImpl::SELECT_OPTIONS);
   DOMObject *ret;

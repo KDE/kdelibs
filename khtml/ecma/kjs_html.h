@@ -219,9 +219,13 @@ namespace KJS {
     static const ClassInfo info;
     DOM::HTMLCollectionImpl* impl() const { return m_impl.get(); }
     virtual void hide() { hidden = true; }
+    ValueImp* indexGetter(ExecState *exec, unsigned index);
   protected:
     SharedPtr<DOM::HTMLCollectionImpl> m_impl;
     bool hidden;
+  private:
+    static ValueImp *lengthGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
   };
 
   class HTMLSelectCollection : public HTMLCollection {
@@ -232,6 +236,8 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
   private:
     SharedPtr<DOM::HTMLSelectElementImpl> element;
+    static ValueImp *selectedIndexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
+    static ValueImp *selectedValueGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
   };
 
   ////////////////////// Option Object ////////////////////////

@@ -864,7 +864,9 @@ void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &befo
         throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
-    static_cast<HTMLSelectElementImpl*>(impl)->add( element, before, exceptioncode );
+    static_cast<HTMLSelectElementImpl*>(impl)->add(
+      static_cast<HTMLElementImpl*>(element.handle()),
+      static_cast<HTMLElementImpl*>(before.handle()), exceptioncode );
     if ( exceptioncode )
         throw DOMException( exceptioncode );
 }

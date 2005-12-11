@@ -85,10 +85,14 @@ public:
     // In case of multiple items named the same way
     virtual NodeImpl *nextNamedItem( const DOMString &name ) const;
 
-    QList<NodeImpl*> namedItems( const DOMString &name ) const;
+    Q3ValueList<NodeImpl*> namedItems( const DOMString &name ) const;
 
     int getType() const {
         return type;
+    }
+
+    NodeImpl* base() {
+      return m_refNode;
     }
 protected:
     // The collection list the following elements

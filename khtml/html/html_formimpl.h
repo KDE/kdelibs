@@ -388,7 +388,7 @@ public:
 
     bool multiple() const { return m_multiple; }
 
-    void add ( const HTMLElement &element, const HTMLElement &before, int& exceptioncode );
+    void add ( HTMLElementImpl* element, HTMLElementImpl* before, int& exceptioncode );
     void remove ( long index );
     void blur();
     void focus();
