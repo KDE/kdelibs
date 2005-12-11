@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include "jobtest.h"
 
@@ -100,13 +100,13 @@ static void createTestSymlink( const QString& path )
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
             kdFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
-        VERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
-        VERIFY( S_ISLNK( buf.st_mode ) );
+        QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+        QVERIFY( S_ISLNK( buf.st_mode ) );
     } else {
-        VERIFY( S_ISLNK( buf.st_mode ) );
+        QVERIFY( S_ISLNK( buf.st_mode ) );
     }
     qDebug( "symlink %s created", qPrintable( path ) );
-    VERIFY( QFileInfo( path ).isSymLink() );
+    QVERIFY( QFileInfo( path ).isSymLink() );
 }
 
 static void createTestDirectory( const QString& path )
@@ -117,7 +117,7 @@ static void createTestDirectory( const QString& path )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
-    VERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
+    QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
 }
 
 void JobTest::enterLoop()
@@ -139,9 +139,9 @@ void JobTest::get()
     connect( job, SIGNAL( result( KIO::Job* ) ),
             this, SLOT( slotGetResult( KIO::Job* ) ) );
     enterLoop();
-    VERIFY( m_result == 0 ); // no error
-    VERIFY( m_data.size() == 11 );
-    VERIFY( QByteArray( m_data ) == "Hello world" );
+    QVERIFY( m_result == 0 ); // no error
+    QVERIFY( m_data.size() == 11 );
+    QVERIFY( QByteArray( m_data ) == "Hello world" );
 }
 
 void JobTest::slotGetResult( KIO::Job* job )
@@ -162,33 +162,33 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
 
     // copy the file with file_copy
     bool ok = KIO::NetAccess::file_copy( u, d );
-    VERIFY( ok );
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( QFile::exists( src ) ); // still there
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) ); // still there
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     ok = KIO::NetAccess::dircopy( u, d, 0 );
-    VERIFY( ok );
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( QFile::exists( src ) ); // still there
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) ); // still there
 }
 
 void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
 {
-    VERIFY( QFileInfo( src ).isDir() );
-    VERIFY( QFileInfo( src + "/testfile" ).isFile() );
+    QVERIFY( QFileInfo( src ).isDir() );
+    QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
     KURL u;
     u.setPath( src );
     KURL d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::dircopy( u, d, 0 );
-    VERIFY( ok );
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( QFileInfo( dest ).isDir() );
-    VERIFY( QFileInfo( dest + "/testfile" ).isFile() );
-    VERIFY( QFile::exists( src ) ); // still there
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFileInfo( dest ).isDir() );
+    QVERIFY( QFileInfo( dest + "/testfile" ).isFile() );
+    QVERIFY( QFile::exists( src ) ); // still there
 }
 
 void JobTest::copyFileToSamePartition()
@@ -229,7 +229,7 @@ void JobTest::copyDirectoryToOtherPartition()
 
 void JobTest::moveLocalFile( const QString& src, const QString& dest )
 {
-    VERIFY( QFile::exists( src ) );
+    QVERIFY( QFile::exists( src ) );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -237,21 +237,21 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
 
     // move the file with file_move
     bool ok = KIO::NetAccess::file_move( u, d );
-    VERIFY( ok );
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( !QFile::exists( src ) ); // not there anymore
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
     ok = KIO::NetAccess::move( d, u, 0 );
-    VERIFY( ok );
-    VERIFY( !QFile::exists( dest ) );
-    VERIFY( QFile::exists( src ) ); // it's back
+    QVERIFY( ok );
+    QVERIFY( !QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) ); // it's back
 }
 
 static void moveLocalSymlink( const QString& src, const QString& dest )
 {
     KDE_struct_stat buf;
-    VERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
+    QVERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -261,37 +261,37 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     bool ok = KIO::NetAccess::move( u, d );
     if ( !ok )
         kdWarning() << KIO::NetAccess::lastError() << endl;
-    VERIFY( ok );
-    VERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
-    VERIFY( !QFile::exists( src ) ); // not there anymore
+    QVERIFY( ok );
+    QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
+    QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
     ok = KIO::NetAccess::move( d, u, 0 );
-    VERIFY( ok );
-    VERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
-    VERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
+    QVERIFY( ok );
+    QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
+    QVERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
 }
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
     kdDebug() << k_funcinfo << src << " " << dest << endl;
-    VERIFY( QFile::exists( src ) );
-    VERIFY( QFileInfo( src ).isDir() );
-    VERIFY( QFileInfo( src + "/testfile" ).isFile() );
-    VERIFY( QFileInfo( src + "/testlink" ).isSymLink() );
+    QVERIFY( QFile::exists( src ) );
+    QVERIFY( QFileInfo( src ).isDir() );
+    QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
+    QVERIFY( QFileInfo( src + "/testlink" ).isSymLink() );
     KURL u;
     u.setPath( src );
     KURL d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::move( u, d, 0 );
-    VERIFY( ok );
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( QFileInfo( dest ).isDir() );
-    VERIFY( QFileInfo( dest + "/testfile" ).isFile() );
-    VERIFY( !QFile::exists( src ) ); // not there anymore
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFileInfo( dest ).isDir() );
+    QVERIFY( QFileInfo( dest + "/testfile" ).isFile() );
+    QVERIFY( !QFile::exists( src ) ); // not there anymore
 
-    VERIFY( QFileInfo( dest + "/testlink" ).isSymLink() );
+    QVERIFY( QFileInfo( dest + "/testlink" ).isSymLink() );
 }
 
 void JobTest::moveFileToSamePartition()
@@ -344,8 +344,8 @@ void JobTest::moveFileNoPermissions()
     kdDebug() << k_funcinfo << endl;
     const QString src = "/etc/passwd";
     const QString dest = homeTmpDir() + "passwd";
-    VERIFY( QFile::exists( src ) );
-    VERIFY( QFileInfo( src ).isFile() );
+    QVERIFY( QFile::exists( src ) );
+    QVERIFY( QFileInfo( src ).isFile() );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -355,15 +355,15 @@ void JobTest::moveFileNoPermissions()
     job->setInteractive( false ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
-    VERIFY( !ok );
-    VERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    QVERIFY( !ok );
+    QVERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
     // OK this is fishy. Just like mv(1), KIO's behavior depends on whether
     // a direct rename(2) was used, or a full copy+del. In the first case
     // there is no destination file created, but in the second case the
     // destination file remains.
     // In fact we assume /home is a separate partition, in this test, so:
-    VERIFY( QFile::exists( dest ) );
-    VERIFY( QFile::exists( src ) );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) );
 }
 
 void JobTest::moveDirectoryNoPermissions()
@@ -376,8 +376,8 @@ void JobTest::moveDirectoryNoPermissions()
 #endif
     QString src = "/etc";
     const QString dest = homeTmpDir() + "mdnp";
-    VERIFY( QFile::exists( src ) );
-    VERIFY( QFileInfo( src ).isDir() );
+    QVERIFY( QFile::exists( src ) );
+    QVERIFY( QFileInfo( src ).isDir() );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -387,11 +387,11 @@ void JobTest::moveDirectoryNoPermissions()
     job->setInteractive( false ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
-    VERIFY( !ok );
+    QVERIFY( !ok );
     qDebug( "%d", KIO::NetAccess::lastError() );
-    VERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
-    VERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
-    VERIFY( QFile::exists( src ) );
+    QVERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    QVERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
+    QVERIFY( QFile::exists( src ) );
 }
 
 void JobTest::listRecursive()
@@ -407,10 +407,10 @@ void JobTest::listRecursive()
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
              SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
-    VERIFY( ok );
+    QVERIFY( ok );
     m_names.sort();
     qDebug( "%s", qPrintable( m_names.join( "," ) ) );
-    COMPARE( m_names.join( "," ).toLatin1(), QByteArray( ".,..,"
+    QCOMPARE( m_names.join( "," ).toLatin1(), QByteArray( ".,..,"
             "dirFromHome,dirFromHome/testfile,dirFromHome/testlink,dirFromHome_copied,"
             "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/dirFromHome/testlink,"
             "dirFromHome_copied/testfile,dirFromHome_copied/testlink,dirFromHome_link,"
@@ -559,7 +559,7 @@ void JobTest::newApiPerformance()
 
         OldUDSEntry entry;
         fillOldUDSEntry( entry, now_time_t, nameStr );
-        COMPARE( entry.count(), 8 );
+        QCOMPARE( entry.count(), 8 );
 
         start = time(0);
 
@@ -588,9 +588,9 @@ void JobTest::newApiPerformance()
 
         qDebug("Old API: app code: %ld", time(0) - start);
 
-        COMPARE( size, 123456ULL );
-        COMPARE( displayName, QString::fromLatin1( "name" ) );
-        VERIFY( url.isEmpty() );
+        QCOMPARE( size, 123456ULL );
+        QCOMPARE( displayName, QString::fromLatin1( "name" ) );
+        QVERIFY( url.isEmpty() );
     }
 
     ///////// TEST CODE FOR FUTURE KIO API
@@ -612,7 +612,7 @@ void JobTest::newApiPerformance()
 
         UDSEntryHV entry;
         fillUDSEntryHV( entry, now, nameStr );
-        COMPARE( entry.count(), 8 );
+        QCOMPARE( entry.count(), 8 );
 
         start = time(0);
 
@@ -647,9 +647,9 @@ void JobTest::newApiPerformance()
 
         qDebug("QHash+QVariant API: app code: %ld", time(0) - start);
 
-        COMPARE( size, 123456ULL );
-        COMPARE( displayName, QString::fromLatin1( "name" ) );
-        VERIFY( url.isEmpty() );
+        QCOMPARE( size, 123456ULL );
+        QCOMPARE( displayName, QString::fromLatin1( "name" ) );
+        QVERIFY( url.isEmpty() );
     }
 
     // ########### THE CHOSEN SOLUTION:
@@ -667,7 +667,7 @@ void JobTest::newApiPerformance()
 
         UDSEntryHS entry;
         fillQHashStructEntry( entry, now_time_t, nameStr );
-        COMPARE( entry.count(), 8 );
+        QCOMPARE( entry.count(), 8 );
 
         start = time(0);
 
@@ -695,9 +695,9 @@ void JobTest::newApiPerformance()
 
         qDebug("QHash+struct API: app code: %ld", time(0) - start);
 
-        COMPARE( size, 123456ULL );
-        COMPARE( displayName, QString::fromLatin1( "name" ) );
-        VERIFY( url.isEmpty() );
+        QCOMPARE( size, 123456ULL );
+        QCOMPARE( displayName, QString::fromLatin1( "name" ) );
+        QVERIFY( url.isEmpty() );
     }
 
     {
@@ -714,7 +714,7 @@ void JobTest::newApiPerformance()
 
         UDSEntryMS entry;
         fillQMapStructEntry( entry, now_time_t, nameStr );
-        COMPARE( entry.count(), 8 );
+        QCOMPARE( entry.count(), 8 );
 
         start = time(0);
 
@@ -742,23 +742,23 @@ void JobTest::newApiPerformance()
 
         qDebug("QMap+struct API: app code: %ld", time(0) - start);
 
-        COMPARE( size, 123456ULL );
-        COMPARE( displayName, QString::fromLatin1( "name" ) );
-        VERIFY( url.isEmpty() );
+        QCOMPARE( size, 123456ULL );
+        QCOMPARE( displayName, QString::fromLatin1( "name" ) );
+        QVERIFY( url.isEmpty() );
     }
 }
 
 void JobTest::calculateRemainingSeconds()
 {
     unsigned int seconds = KIO::calculateRemainingSeconds( 2 * 86400 - 60, 0, 1 );
-    COMPARE( seconds, static_cast<unsigned int>( 2 * 86400 - 60 ) );
+    QCOMPARE( seconds, static_cast<unsigned int>( 2 * 86400 - 60 ) );
     QString text = KIO::convertSeconds( seconds );
-    COMPARE( text, i18n( "1 day 23:59:00" ) );
+    QCOMPARE( text, i18n( "1 day 23:59:00" ) );
 
     seconds = KIO::calculateRemainingSeconds( 520, 20, 10 );
-    COMPARE( seconds, static_cast<unsigned int>( 50 ) );
+    QCOMPARE( seconds, static_cast<unsigned int>( 50 ) );
     text = KIO::convertSeconds( seconds );
-    COMPARE( text, i18n( "00:00:50" ) );
+    QCOMPARE( text, i18n( "00:00:50" ) );
 }
 
 #include "jobtest.moc"

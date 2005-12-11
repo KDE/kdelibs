@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/qttest_kde.h>
+#include <qttest_kde.h>
 #include "klibloadertest.h"
 #include "klibloadertest.moc"
 
@@ -31,8 +31,8 @@ void KLibLoaderTest::testNonWorking()
 {
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( "idontexist", this, 0, QStringList(), &error );
-    COMPARE( obj, (QObject*)0 );
-    COMPARE( error, (int)KLibLoader::ErrNoLibrary );
+    QCOMPARE( obj, (QObject*)0 );
+    QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
@@ -45,7 +45,7 @@ void KLibLoaderTest::testWorking()
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, 0, QStringList(), &error );
     if ( error )
         kdWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
-    VERIFY( obj != 0 );
+    QVERIFY( obj != 0 );
 }
 
 void KLibLoaderTest::testWrongClass()
@@ -54,6 +54,6 @@ void KLibLoaderTest::testWrongClass()
     int error = 0;
 
     KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, 0, QStringList(), &error );
-    COMPARE( obj, (KLibLoaderTest*)0 );
-    COMPARE( error, (int)KLibLoader::ErrNoComponent );
+    QCOMPARE( obj, (KLibLoaderTest*)0 );
+    QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
 }

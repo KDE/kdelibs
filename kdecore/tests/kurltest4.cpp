@@ -18,7 +18,7 @@
 */
 // -*- mode: c++; c-basic-offset: 2 -*-
 
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 #include "kurltest4.h"
 #include "kurltest4.moc"
 
@@ -44,14 +44,14 @@ QTTEST_KDEMAIN( KURLTest, NoGUI )
 // #define instead of static function to preserve line numbers
 #define check( str, val1, val2 ) \
     qDebug( "%s", str );         \
-    COMPARE( val1, val2 );
+    QCOMPARE( val1, val2 );
 #endif
 
 // I need a const char* overload...
 static void check( const char* str, const QString& val1, const QString& val2 )
 {
     qDebug( "%s", str );
-    COMPARE( val1, val2 );
+    QCOMPARE( val1, val2 );
 }
 
 void KURLTest::testEmptyURL()
@@ -60,7 +60,7 @@ void KURLTest::testEmptyURL()
   KURL emptyURL;
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
-  VERIFY( emptyURL.prettyURL().isEmpty() );
+  QVERIFY( emptyURL.prettyURL().isEmpty() );
 
   emptyURL = "";
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
@@ -146,7 +146,7 @@ void KURLTest::testSetRef()
 void KURLTest::testQUrl()
 {
   QUrl url1( "file:///home/dfaure/my#%2f" );
-  COMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
+  QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
 }
 
 void KURLTest::testSimpleMethods() // to test parsing, mostly
@@ -268,7 +268,7 @@ void KURLTest::testEmptyQueryOrRef()
 {
   // Empty queries should be preserved!
   //QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);
-  //COMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi?");
+  //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi?");
   KURL waba1 = "http://www.kde.org/cgi/test.cgi?";
   check("http: URL with empty query string", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?");
@@ -281,22 +281,22 @@ void KURLTest::testEmptyQueryOrRef()
   check("hasHTMLRef()", waba1.hasHTMLRef()?"true":"false","true");
   check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString::null);
   //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
-  //COMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi#" );
+  //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi#" );
 }
 
 void KURLTest::testParsingTolerance()
 {
   // URLs who forgot to encode spaces in the query - the QUrl version first
   QUrl incorrectEncoded = QUrl::fromEncoded( "http://www.kde.org/cgi/qurl.cgi?hello=My Value" );
-  VERIFY( incorrectEncoded.isValid() );
-  VERIFY( !incorrectEncoded.toEncoded().isEmpty() );
+  QVERIFY( incorrectEncoded.isValid() );
+  QVERIFY( !incorrectEncoded.toEncoded().isEmpty() );
   qDebug( "%s", incorrectEncoded.toEncoded().data() );
-  COMPARE( incorrectEncoded.toEncoded().constData(),
+  QCOMPARE( incorrectEncoded.toEncoded().constData(),
            "http://www.kde.org/cgi/qurl.cgi?hello=My%20Value" );
 
   // URLs who forgot to encode spaces in the query.
   KURL waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
-  //VERIFY( waba1.isValid() );
+  //QVERIFY( waba1.isValid() );
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
 
@@ -412,9 +412,9 @@ void KURLTest::testSetFileName() // and addPath
   check("KURL::addPath(\"subdir\")", u2.url(), "http://www.kde.org/subdir"); // unchanged
 
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
-  COMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
-  COMPARE( qurl2.fileName(), QString::fromLatin1( "Print To File (PDF%2FAcrobat)" ) );
-  COMPARE( qurl2.toEncoded().constData(), "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" );
+  QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
+  QCOMPARE( qurl2.fileName(), QString::fromLatin1( "Print To File (PDF%2FAcrobat)" ) );
+  QCOMPARE( qurl2.toEncoded().constData(), "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" );
 
   // even more tricky
   u2 = "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)";
@@ -515,8 +515,8 @@ void KURLTest::testPrettyURL()
   check("KURL::url()", url15581bis.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
 
   KURL urlWithPass("ftp://user:password@ftp.kde.org/path");
-  COMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
-  COMPARE( urlWithPass.prettyURL(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
+  QCOMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
+  QCOMPARE( urlWithPass.prettyURL(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
 }
 
 void KURLTest::testIsRelative()
@@ -854,18 +854,18 @@ void KURLTest::testSetUser()
   assert( str1 == str2 );
 
   KURL emptyUserTest1( "http://www.foobar.com/");
-  VERIFY( emptyUserTest1.user().isEmpty() );
-  VERIFY( !emptyUserTest1.user().isNull() ); // small change compared to KURL-3.5
+  QVERIFY( emptyUserTest1.user().isEmpty() );
+  QVERIFY( !emptyUserTest1.user().isNull() ); // small change compared to KURL-3.5
   KURL emptyUserTest2( "http://www.foobar.com/");
   emptyUserTest2.setUser( "" );
   //assert( emptyUserTest2.user().isNull() );
-  COMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  QCOMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
   emptyUserTest2.setPass( "" );
-  COMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
+  QCOMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
   emptyUserTest2.setUser( "foo" );
-  COMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
+  QCOMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
   emptyUserTest2.setUser( QString::null );
-  COMPARE( emptyUserTest1==emptyUserTest2, true );
+  QCOMPARE( emptyUserTest1==emptyUserTest2, true );
 }
 
 void KURLTest::testComparisons()
@@ -883,10 +883,10 @@ void KURLTest::testComparisons()
   options |= QUrl::StripTrailingSlash;
   QString str1 = u1.toString(options);
   QString str2 = u2.toString(options);
-  COMPARE( str1, u1.toString() );
-  COMPARE( str2, u1.toString() );
+  QCOMPARE( str1, u1.toString() );
+  QCOMPARE( str2, u1.toString() );
   bool same = str1 == str2;
-  VERIFY( same );
+  QVERIFY( same );
 
   check("urlcmp(only slash difference, ignore_trailing)", urlcmp(ucmp1,ucmp2,true,false)?"ok":"ko","ok");
 
@@ -1240,11 +1240,11 @@ void KURLTest::testIdn()
   kdDebug() << k_funcinfo << endl;
 
   QUrl qurltest( QUrl::fromPercentEncoding( "http://\303\244.de" ) ); // ä in utf8
-  VERIFY( qurltest.isValid() );
+  QVERIFY( qurltest.isValid() );
 
   QUrl qurl = QUrl::fromEncoded( "http://\303\244.de" ); // ä in utf8
-  VERIFY( qurl.isValid() );
-  COMPARE( qurl.toEncoded().constData(), "http://xn--4ca.de" );
+  QVERIFY( qurl.isValid() );
+  QCOMPARE( qurl.toEncoded().constData(), "http://xn--4ca.de" );
 
   KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
   check("thiago.isValid()", thiago.isValid() ? "true" : "false", "true");
@@ -1292,8 +1292,8 @@ void KURLTest::testOther()
   check("utf8_2.fileName()", utf8_2.fileName(), QLatin1String("15/Geantraî.wav"));
 
   QUrl qurl_newline_1 = QUrl::fromEncoded( "http://www.foo.bar/foo/bar\ngnork", QUrl::TolerantMode );
-  VERIFY( qurl_newline_1.isValid() );
-  COMPARE( qurl_newline_1.toEncoded().constData(), "http://www.foo.bar/foo/bar%0Agnork" );
+  QVERIFY( qurl_newline_1.isValid() );
+  QCOMPARE( qurl_newline_1.toEncoded().constData(), "http://www.foo.bar/foo/bar%0Agnork" );
 
   KURL url_newline_1("http://www.foo.bar/foo/bar\ngnork");
   check("url_newline_1.url()", url_newline_1.url(), QLatin1String("http://www.foo.bar/foo/bar%0Agnork"));

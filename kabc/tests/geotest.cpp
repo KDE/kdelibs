@@ -1,4 +1,4 @@
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include "geotest.h"
 #include "geo.h"
@@ -9,30 +9,30 @@ void GeoTest::emptyConstructor()
 {
   KABC::Geo geo;
 
-  COMPARE( geo.asString(), QString() );
+  QCOMPARE( geo.asString(), QString() );
 }
 
 void GeoTest::constructor()
 {
   KABC::Geo geo( 1.2, 3.4 );
 
-  VERIFY( (float)geo.latitude() == (float)1.2 );
-  VERIFY( (float)geo.longitude() == (float)3.4 );
+  QVERIFY( (float)geo.latitude() == (float)1.2 );
+  QVERIFY( (float)geo.longitude() == (float)3.4 );
 }
 
 void GeoTest::isValid()
 {
   KABC::Geo geo;
 
-  VERIFY( !geo.isValid() );
+  QVERIFY( !geo.isValid() );
 
   geo.setLatitude( 23 );
 
-  VERIFY( !geo.isValid() );
+  QVERIFY( !geo.isValid() );
 
   geo.setLongitude( 45 );
 
-  VERIFY( geo.isValid() );
+  QVERIFY( geo.isValid() );
 }
 
 void GeoTest::setData()
@@ -42,8 +42,8 @@ void GeoTest::setData()
   geo.setLatitude( 22.5 );
   geo.setLongitude( 45.1 );
 
-  VERIFY( (float)geo.latitude() == (float)22.5 );
-  VERIFY( (float)geo.longitude() == (float)45.1 );
+  QVERIFY( (float)geo.latitude() == (float)22.5 );
+  QVERIFY( (float)geo.longitude() == (float)45.1 );
 }
 
 void GeoTest::equals()
@@ -51,7 +51,7 @@ void GeoTest::equals()
   KABC::Geo geo1( 22.5, 33.7 );
   KABC::Geo geo2( 22.5, 33.7 );
 
-  VERIFY( geo1 == geo2 );
+  QVERIFY( geo1 == geo2 );
 }
 
 void GeoTest::differs()
@@ -59,7 +59,7 @@ void GeoTest::differs()
   KABC::Geo geo1( 22.5, 33.7 );
   KABC::Geo geo2( 22.5, 33.6 );
 
-  VERIFY( geo1 != geo2 );
+  QVERIFY( geo1 != geo2 );
 }
 
 void GeoTest::serialization()
@@ -74,7 +74,7 @@ void GeoTest::serialization()
   QDataStream t( &data, QIODevice::ReadOnly );
   t >> geo2;
 
-  VERIFY( geo1 == geo2 );
+  QVERIFY( geo1 == geo2 );
 }
 
 #include "geotest.moc"

@@ -2,8 +2,8 @@
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
            -I$(srcdir)/../vcardparser/ -I$(srcdir)/../vcard/include \
            -I$(srcdir)/../vcard/include/generated \
-           -I$(srcdir)/../vcardparser $(all_includes) -I$(top_srcdir)/qttestlib
-LDADD = ../libkabc.la $(top_builddir)/qttestlib/libqttestlib.la
+           -I$(srcdir)/../vcardparser $(all_includes)
+LDADD = ../libkabc.la -lQtTest_debug
 
 METASOURCES = AUTO
 

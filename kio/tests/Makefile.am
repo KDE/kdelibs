@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kio/bookmarks -I$(top_srcdir)/qttestlib $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kio/bookmarks $(all_includes)
 LDADD = $(LIB_KIO)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
@@ -82,10 +82,10 @@ kacltest_SOURCES = kacltest.cpp
 #servicesdir = $(kde_servicesdir)
 
 kmimetypetest_SOURCES = kmimetypetest.cpp
-kmimetypetest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+kmimetypetest_LDADD = $(LIB_KIO) -lQtTest_debug
 
 kbookmarktest_SOURCES = kbookmarktest.cpp
-kbookmarktest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+kbookmarktest_LDADD = $(LIB_KIO) -lQtTest_debug
 
 jobtest_SOURCES = jobtest.cpp
-jobtest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+jobtest_LDADD = $(LIB_KIO) -lQtTest_debug

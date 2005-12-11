@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include "kfilterdev.h"
 #include "kfilterbase.h"
@@ -44,36 +44,36 @@ void KFilterTest::initTestCase()
 void KFilterTest::test_block_write( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
-    VERIFY( dev != 0 );
+    QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::WriteOnly );
-    VERIFY( ok );
+    QVERIFY( ok );
 
     int ret = dev->write( testData );
-    COMPARE( ret, testData.size() );
+    QCOMPARE( ret, testData.size() );
 
     dev->close();
     delete dev;
 
-    VERIFY( QFile::exists( fileName ) );
+    QVERIFY( QFile::exists( fileName ) );
 }
 
 void KFilterTest::test_block_write()
 {
     kdDebug() << " -- test_block_write gzip -- " << endl;
     test_block_write(pathgz);
-    VERIFY( QFileInfo( pathgz ).size() == 33 ); // size of test.gz
+    QVERIFY( QFileInfo( pathgz ).size() == 33 ); // size of test.gz
 
     kdDebug() << " -- test_block_write bzip2 -- " << endl;
     test_block_write(pathbz2);
-    VERIFY( QFileInfo( pathbz2 ).size() == 52 ); // size of test.bz2
+    QVERIFY( QFileInfo( pathbz2 ).size() == 52 ); // size of test.bz2
 }
 
 void KFilterTest::test_block_read( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
-    VERIFY( dev != 0 );
+    QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::ReadOnly );
-    VERIFY( ok );
+    QVERIFY( ok );
 
     // This is what KGzipDev::readAll could do, if QIODevice::readAll was virtual....
 
@@ -82,14 +82,14 @@ void KFilterTest::test_block_read( const QString & fileName )
     int n;
     while ( ( n = dev->read( array.data(), array.size() ) ) )
     {
-        VERIFY( n > 0 );
+        QVERIFY( n > 0 );
         read += QByteArray( array, n );
         //kdDebug() << "read returned " << n << endl;
         //kdDebug() << "read='" << read << "'" << endl;
-        COMPARE( (int)dev->at(), (int)read.size() );
+        QCOMPARE( (int)dev->at(), (int)read.size() );
         //kdDebug() << "dev.at = " << dev->at() << endl;
     }
-    COMPARE( read, testData );
+    QCOMPARE( read, testData );
     dev->close();
     delete dev;
 }
@@ -105,9 +105,9 @@ void KFilterTest::test_block_read()
 void KFilterTest::test_getch( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
-    VERIFY( dev != 0 );
+    QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::ReadOnly );
-    VERIFY( ok );
+    QVERIFY( ok );
     QByteArray read;
     int ch;
     while ( ( ch = dev->getch() ) != -1 ) {
@@ -116,7 +116,7 @@ void KFilterTest::test_getch( const QString & fileName )
     }
     dev->close();
     delete dev;
-    COMPARE( read, testData );
+    QCOMPARE( read, testData );
 }
 
 void KFilterTest::test_getch()
@@ -130,16 +130,16 @@ void KFilterTest::test_getch()
 void KFilterTest::test_textstream(  const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
-    VERIFY( dev != 0 );
+    QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::ReadOnly );
-    VERIFY( ok );
+    QVERIFY( ok );
     QTextStream ts( dev );
     QString readStr = ts.read();
     dev->close();
     delete dev;
 
     QByteArray read = readStr.toLatin1();
-    COMPARE( read, testData );
+    QCOMPARE( read, testData );
 }
 
 void KFilterTest::test_textstream()

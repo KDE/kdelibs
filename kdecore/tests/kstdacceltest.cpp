@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/qttest_kde.h>
+#include <qttest_kde.h>
 #include "kstdacceltest.h"
 #include "kstdacceltest.moc"
 
@@ -27,32 +27,32 @@ QTTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
 
 void KStdAccelTest::testShortcutDefault()
 {
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QLatin1String( "End" ) );
+    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
+    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
+    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QLatin1String( "End" ) );
 }
 
 void KStdAccelTest::testName()
 {
-    COMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
-    COMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QLatin1String( "EndOfLine" ) );
+    QCOMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
+    QCOMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QLatin1String( "EndOfLine" ) );
 }
 
 void KStdAccelTest::testLabel()
 {
     // Tests run in English, right?
-    COMPARE( KStdAccel::label( KStdAccel::FindNext ), QLatin1String( "Find Next" ) );
+    QCOMPARE( KStdAccel::label( KStdAccel::FindNext ), QLatin1String( "Find Next" ) );
 }
 
 void KStdAccelTest::testShortcut()
 {
-    COMPARE( KStdAccel::shortcut( KStdAccel::ZoomIn ).toString(), KStdAccel::zoomIn().toString() );
+    QCOMPARE( KStdAccel::shortcut( KStdAccel::ZoomIn ).toString(), KStdAccel::zoomIn().toString() );
 }
 
 void KStdAccelTest::testFindStdAccel()
 {
-    COMPARE( KStdAccel::findStdAccel( QString( "Ctrl+F" ) ), KStdAccel::Find );
-    COMPARE( KStdAccel::findStdAccel( QString( "Ctrl+Shift+Alt+G" ) ), KStdAccel::AccelNone );
+    QCOMPARE( KStdAccel::findStdAccel( QString( "Ctrl+F" ) ), KStdAccel::Find );
+    QCOMPARE( KStdAccel::findStdAccel( QString( "Ctrl+Shift+Alt+G" ) ), KStdAccel::AccelNone );
 }
 
 void KStdAccelTest::testRemoveShortcut()
@@ -61,41 +61,41 @@ void KStdAccelTest::testRemoveShortcut()
     cutShortCut.remove( KKey( Qt::SHIFT + Qt::Key_Delete ) );
     cutShortCut.remove( KKey( Qt::CTRL + Qt::Key_X ) );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
-    VERIFY( cutShortCut.isNull() );
+    QVERIFY( cutShortCut.isNull() );
 }
 
 void KStdAccelTest::testKShortcut()
 {
     KShortcut null;
-    VERIFY( null.isNull() );
-    VERIFY( null.count() == 0 );
+    QVERIFY( null.isNull() );
+    QVERIFY( null.count() == 0 );
 
     KShortcut quit( "CTRL+X,CTRL+C;Z,Z" ); // quit in emacs vs. quit in vi :)
-    COMPARE( (int)quit.count(), 2 );
-    VERIFY( !quit.isNull() );
-    COMPARE( quit.seq(0).toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
-    COMPARE( quit.seq(1).toString(), QString::fromLatin1("Z, Z") );
-    COMPARE( quit.keyCodeQt(), (int)(Qt::CTRL + Qt::Key_X) );
-    VERIFY( quit.compare( null ) > 0 );
-    VERIFY( null < quit );
-    VERIFY( quit != null );
-    VERIFY( !( quit == null ) );
+    QCOMPARE( (int)quit.count(), 2 );
+    QVERIFY( !quit.isNull() );
+    QCOMPARE( quit.seq(0).toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
+    QCOMPARE( quit.seq(1).toString(), QString::fromLatin1("Z, Z") );
+    QCOMPARE( quit.keyCodeQt(), (int)(Qt::CTRL + Qt::Key_X) );
+    QVERIFY( quit.compare( null ) > 0 );
+    QVERIFY( null < quit );
+    QVERIFY( quit != null );
+    QVERIFY( !( quit == null ) );
 
-    VERIFY( quit.contains( KKey( Qt::CTRL+Qt::Key_X ) ) );
-    VERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_Z ) ) );
-    VERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_C ) ) );
+    QVERIFY( quit.contains( KKey( Qt::CTRL+Qt::Key_X ) ) );
+    QVERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_Z ) ) );
+    QVERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_C ) ) );
     KKeySequence seq;
     seq.setKey( 0, Qt::CTRL+Qt::Key_X );
     seq.setKey( 1, Qt::CTRL+Qt::Key_C );
-    VERIFY( quit.contains( seq ) );
-    VERIFY( !null.contains( seq ) );
+    QVERIFY( quit.contains( seq ) );
+    QVERIFY( !null.contains( seq ) );
 
     quit.setSeq( 1, seq );
-    COMPARE( quit.seq(0).toString(), quit.seq(1).toString() );
+    QCOMPARE( quit.seq(0).toString(), quit.seq(1).toString() );
 
     QKeySequence casted = quit; // is this a good idea?
-    COMPARE( QString(casted), seq.toString() );
-    VERIFY( casted == seq.qt() );
+    QCOMPARE( QString(casted), seq.toString() );
+    QVERIFY( casted == seq.qt() );
 
-    VERIFY( KShortcut::null() == null );
+    QVERIFY( KShortcut::null() == null );
 }

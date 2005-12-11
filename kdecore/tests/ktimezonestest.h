@@ -27,7 +27,7 @@ class KTimezonesTest : public QObject
 private slots:
     void ktimezones();
     void utc();
-    void utc_data(QtTestTable&);
+    void utc_data();
     void local();
     void zone();
     void zoneinfoDir();

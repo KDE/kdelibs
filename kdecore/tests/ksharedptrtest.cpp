@@ -26,7 +26,7 @@
 
 #include <QString>
 
-#include <QtTest/qttest_kde.h>
+#include <qttest_kde.h>
 
 QTTEST_KDEMAIN( KSharedPtrTest, NoGUI )
 
@@ -45,69 +45,69 @@ void KSharedPtrTest::testWithStrings()
 	SharedString s3 = QString::fromLatin1( "Bar" );
 
 	KSharedPtr<SharedString> u = new SharedString( s );
-	COMPARE( *u, s );
-	VERIFY( u.isUnique() );
+	QCOMPARE( *u, s );
+	QVERIFY( u.isUnique() );
 
 	KSharedPtr<SharedString> v;
-	VERIFY( u.isUnique() );
-	VERIFY( !v );
+	QVERIFY( u.isUnique() );
+	QVERIFY( !v );
 
 	v = u;
-	VERIFY( !u.isUnique() );
-	COMPARE( *v, s );
-	VERIFY( !v.isUnique() );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *v, s );
+	QVERIFY( !v.isUnique() );
 
 	KSharedPtr<SharedString> w = v;
-	VERIFY( !u.isUnique() );
-	COMPARE( u.count(), 3 );
-	VERIFY( !v.isUnique() );
-	COMPARE( v.count(), 3 );
-	VERIFY( !w.isUnique() );
-	COMPARE( v.count(), 3 );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( u.count(), 3 );
+	QVERIFY( !v.isUnique() );
+	QCOMPARE( v.count(), 3 );
+	QVERIFY( !w.isUnique() );
+	QCOMPARE( v.count(), 3 );
 
 	w.detach();
-	VERIFY( !u.isUnique() );
-	COMPARE( *u, s );
-	VERIFY( !u.isUnique() );
-	COMPARE( *v, s );
-	VERIFY( !v.isUnique() );
-	COMPARE( *w, s );
-	VERIFY( w.isUnique() );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *u, s );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *v, s );
+	QVERIFY( !v.isUnique() );
+	QCOMPARE( *w, s );
+	QVERIFY( w.isUnique() );
 
 //	v->clear();
 	v = 0;
-	VERIFY( u );
-	VERIFY( u.isUnique() );
-	VERIFY( !v );
-	VERIFY( !v.isUnique() );
-	COMPARE( *w, s );
-	VERIFY( w.isUnique() );
+	QVERIFY( u );
+	QVERIFY( u.isUnique() );
+	QVERIFY( !v );
+	QVERIFY( !v.isUnique() );
+	QCOMPARE( *w, s );
+	QVERIFY( w.isUnique() );
 
 	u = v = w;
-	COMPARE( *u, s );
-	VERIFY( !u.isUnique() );
-	COMPARE( *v, s );
-	VERIFY( !v.isUnique() );
-	COMPARE( *w, s );
-	VERIFY( !w.isUnique() );
+	QCOMPARE( *u, s );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *v, s );
+	QVERIFY( !v.isUnique() );
+	QCOMPARE( *w, s );
+	QVERIFY( !w.isUnique() );
 
 	u->mStr = s2.mStr;
-	COMPARE( *u, s2 );
-	VERIFY( !u.isUnique() );
-	COMPARE( *v, s2 );
-	VERIFY( !v.isUnique() );
-//	COMPARE( *w, s2 );
-//	VERIFY( !w.isUnique() );
+	QCOMPARE( *u, s2 );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *v, s2 );
+	QVERIFY( !v.isUnique() );
+//	QCOMPARE( *w, s2 );
+//	QVERIFY( !w.isUnique() );
 
 #if 0
 	w.detach();
 	*w = s3;
-	COMPARE( *u, s2 );
-	VERIFY( !u.isUnique() );
-	COMPARE( *v, s2 );
-	VERIFY( !v.isUnique() );
-	COMPARE( *w, s3 );
-	VERIFY( w.isUnique() );
+	QCOMPARE( *u, s2 );
+	QVERIFY( !u.isUnique() );
+	QCOMPARE( *v, s2 );
+	QVERIFY( !v.isUnique() );
+	QCOMPARE( *w, s3 );
+	QVERIFY( w.isUnique() );
 #endif
 }
 
@@ -124,10 +124,10 @@ void KSharedPtrTest::testDeletion()
 	{
 		Base* obj = new Base;
 		KSharedPtr<Base> ptrBase = obj;
-		COMPARE( ptrBase.data(), obj );
-		COMPARE( dtor_called, 0 ); // no dtor called yet
+		QCOMPARE( ptrBase.data(), obj );
+		QCOMPARE( dtor_called, 0 ); // no dtor called yet
 	}
-	COMPARE( dtor_called, 1 );
+	QCOMPARE( dtor_called, 1 );
 }
 
 class Derived : public Base
@@ -146,15 +146,15 @@ void KSharedPtrTest::testDifferentTypes()
 		// then we call some method that takes a KSharedPtr<Base> as argument
 		// and there we downcast again:
 		KSharedPtr<Derived> ptrDerived = KSharedPtr<Derived>::staticCast( ptrBase );
-		COMPARE( dtor_called, 0 ); // no dtor called yet
-		COMPARE( ptrDerived.data(), obj );
+		QCOMPARE( dtor_called, 0 ); // no dtor called yet
+		QCOMPARE( ptrDerived.data(), obj );
 
 		// now test assignment operator
 		ptrDerived = KSharedPtr<Derived>::dynamicCast( ptrBase );
-		COMPARE( dtor_called, 0 ); // no dtor called yet
-		COMPARE( ptrDerived.data(), obj );
+		QCOMPARE( dtor_called, 0 ); // no dtor called yet
+		QCOMPARE( ptrDerived.data(), obj );
 	}
-	COMPARE( dtor_called, 1 );
+	QCOMPARE( dtor_called, 1 );
 }
 
 #include "ksharedptrtest.moc"

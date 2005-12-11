@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include <qdir.h>
 
@@ -27,40 +27,40 @@
 void KTempDirTest::testBasic()
 {
 	KTempDir dir = KTempDir("test");
-	VERIFY(dir.status() == 0);
-	VERIFY(dir.exists());
-	VERIFY(QDir(dir.name()).exists());
+	QVERIFY(dir.status() == 0);
+	QVERIFY(dir.exists());
+	QVERIFY(QDir(dir.name()).exists());
 
 	dir.unlink();
-	VERIFY(dir.status() == 0);
-	VERIFY(!dir.exists());
-	VERIFY(!QDir(dir.name()).exists());
+	QVERIFY(dir.status() == 0);
+	QVERIFY(!dir.exists());
+	QVERIFY(!QDir(dir.name()).exists());
 }
 
 void KTempDirTest::testAutoDelete()
 {
 	KTempDir *dir = new KTempDir("test");
 	dir->setAutoDelete(true);
-	VERIFY(dir->status() == 0);
-	VERIFY(dir->exists());
+	QVERIFY(dir->status() == 0);
+	QVERIFY(dir->exists());
 
 	QString dName = dir->name();
 	delete dir;
-	VERIFY(!QDir(dName).exists());
+	QVERIFY(!QDir(dName).exists());
 }
 
 void KTempDirTest::testCreateSubDir()
 {
 	KTempDir dir = KTempDir("test");
 	dir.setAutoDelete(true);
-	VERIFY(dir.status() == 0);
-	VERIFY(dir.exists());
+	QVERIFY(dir.status() == 0);
+	QVERIFY(dir.exists());
 
 	QDir *d = dir.qDir();
-	VERIFY(d->exists());
+	QVERIFY(d->exists());
 
-	VERIFY(d->mkdir(QString("123")));
-	VERIFY(d->mkdir(QString("456")));
+	QVERIFY(d->mkdir(QString("123")));
+	QVERIFY(d->mkdir(QString("456")));
 }
 
 QTTEST_KDEMAIN(KTempDirTest, 0)

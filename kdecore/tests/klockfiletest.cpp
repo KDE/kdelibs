@@ -18,11 +18,10 @@
 
 #include "klockfiletest.h"
 #include "klockfiletest.moc"
-#include "QtTest/qttestsystem.h"
 
 #include <unistd.h>
 
-namespace QtTest {
+namespace QTest {
 template<>
 char* toString(const KLockFile::LockResult& result)
 {
@@ -44,42 +43,42 @@ Test_KLockFile::initTestCase()
 void
 Test_KLockFile::testLock()
 {
-	VERIFY(!lockFile->isLocked());
-	COMPARE(lockFile->lock(), KLockFile::LockOK);
-	VERIFY(lockFile->isLocked());
+	QVERIFY(!lockFile->isLocked());
+	QCOMPARE(lockFile->lock(), KLockFile::LockOK);
+	QVERIFY(lockFile->isLocked());
 }
 
 void
 Test_KLockFile::testStale()
 {
-	VERIFY(lockFile->isLocked());
+	QVERIFY(lockFile->isLocked());
 
 	const int secs = 5;
 	KLockFile lf = KLockFile(QLatin1String(lockName));
 	lf.setStaleTime(secs);
-	VERIFY(lf.staleTime() == secs);
+	QVERIFY(lf.staleTime() == secs);
 
-	QtTest::wait(secs*1000);
-	COMPARE(lf.lock(), KLockFile::LockStale);
-	VERIFY(!lf.isLocked());
+	QTest::qWait(secs*1000);
+	QCOMPARE(lf.lock(), KLockFile::LockStale);
+	QVERIFY(!lf.isLocked());
 
 	int pid;
 	QString host, app;
 	if (lf.getLockInfo(pid, host, app)) {
-		COMPARE(pid, ::getpid());
+		QCOMPARE(pid, ::getpid());
 		char hostname[256];
 		if (::gethostname(hostname, sizeof(hostname)) == 0)
-			COMPARE(host, QLatin1String(hostname));
-		COMPARE(app, QLatin1String("lt-klockfiletest")); // libtool name
+			QCOMPARE(host, QLatin1String(hostname));
+		QCOMPARE(app, QLatin1String("lt-klockfiletest")); // libtool name
 	}
 }
 
 void
 Test_KLockFile::testUnlock()
 {
-	VERIFY(lockFile->isLocked());
+	QVERIFY(lockFile->isLocked());
 	lockFile->unlock();
-	VERIFY(!lockFile->isLocked());
+	QVERIFY(!lockFile->isLocked());
 }
 
 QTTEST_KDEMAIN(Test_KLockFile, 0)

@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/qttest_kde.h>
+#include <qttest_kde.h>
 #include "kconfigtest.h"
 #include "kconfigtest.moc"
 #include <qrect.h>
@@ -112,31 +112,31 @@ void KConfigTest::testAll()
   KConfigGroup sc3( &sc2, "AAA");
   bool bImmutable = sc3.entryIsImmutable("stringEntry1");
 
-  VERIFY( !bImmutable );
+  QVERIFY( !bImmutable );
   //qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
   sc2.setGroup("AAA");
-  VERIFY( sc2.hasKey( "stringEntry1" ) );
-  COMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  COMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
-  VERIFY( !sc2.hasKey( "stringEntry2" ) );
-  COMPARE( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
+  QVERIFY( sc2.hasKey( "stringEntry1" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  QCOMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
+  QVERIFY( !sc2.hasKey( "stringEntry2" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
 
-  VERIFY( !sc2.hasDefault( "stringEntry1" ) );
+  QVERIFY( !sc2.hasDefault( "stringEntry1" ) );
 
   sc2.setGroup("Hello");
-  COMPARE( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
-  COMPARE( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
-  COMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  COMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
-  COMPARE( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
-  COMPARE( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
-  VERIFY( !sc2.hasKey( "stringEntry5" ) );
-  COMPARE( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
-  VERIFY( !sc2.hasKey( "stringEntry6" ) );
-  COMPARE( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
-  COMPARE( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
-  COMPARE( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
+  QCOMPARE( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
+  QCOMPARE( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
+  QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  QCOMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
+  QCOMPARE( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
+  QCOMPARE( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
+  QVERIFY( !sc2.hasKey( "stringEntry5" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
+  QVERIFY( !sc2.hasKey( "stringEntry6" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
+  QCOMPARE( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
+  QCOMPARE( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
 
 #if 0
   QString s;
@@ -152,20 +152,20 @@ void KConfigTest::testAll()
 
   sc2.setGroup("OtherTypes");
 
-  COMPARE( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
-  COMPARE( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
-  COMPARE( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
-  COMPARE( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
-  COMPARE( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
+  QCOMPARE( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
+  QCOMPARE( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
+  QCOMPARE( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
+  QCOMPARE( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
+  QCOMPARE( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
 
-  COMPARE( sc2.readEntry( "byteArrayEntry1" ).toLatin1(), QByteArray( STRINGENTRY1 ) );
-  COMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
+  QCOMPARE( sc2.readEntry( "byteArrayEntry1" ).toLatin1(), QByteArray( STRINGENTRY1 ) );
+  QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
   QList<int> intList = sc2.readIntListEntry( "listOfIntsEntry1" );
   QList<int> expectedIntList = INTLISTENTRY1;
-  COMPARE( intList, expectedIntList );
+  QCOMPARE( intList, expectedIntList );
 
-  COMPARE( sc2.readEntry( "listOfByteArraysEntry1" ), QString::fromLatin1( ",1\\,2,end" ) );
+  QCOMPARE( sc2.readEntry( "listOfByteArraysEntry1" ), QString::fromLatin1( ",1\\,2,end" ) );
   QList<QByteArray> baList = sc2.readByteArrayListEntry( "listOfByteArraysEntry1" );
   QList<QByteArray> expectedBaList = BYTEARRAYLISTENTRY1;
-  COMPARE( baList, expectedBaList );
+  QCOMPARE( baList, expectedBaList );
 }

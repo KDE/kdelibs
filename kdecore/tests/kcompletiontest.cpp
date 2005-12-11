@@ -47,8 +47,8 @@ void
 Test_KCompletion::isEmpty()
 {
 	KCompletion completion;
-	VERIFY(completion.isEmpty());
-	VERIFY(completion.items().isEmpty());
+	QVERIFY(completion.isEmpty());
+	QVERIFY(completion.items().isEmpty());
 }
 
 void
@@ -60,30 +60,30 @@ Test_KCompletion::insertionOrder()
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Insertion);
-	VERIFY(completion.order() == KCompletion::Insertion);
+	QVERIFY(completion.order() == KCompletion::Insertion);
 
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == strings.count());
+	QVERIFY(completion.items().count() == strings.count());
 
 	completion.setCompletionMode(KGlobalSettings::CompletionShell);
-	COMPARE(completion.makeCompletion("ca"), QString("carp"));
-	VERIFY(spy1.count() == 1);
-	VERIFY(spy1.takeFirst().at(0).toString() == QString("carp"));
-	VERIFY(spy3.count() == 1); spy3.takeFirst();
+	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QVERIFY(spy1.count() == 1);
+	QVERIFY(spy1.takeFirst().at(0).toString() == QString("carp"));
+	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
 	completion.makeCompletion("ca");
-	COMPARE(spy2.count(), 1);
-	VERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
+	QCOMPARE(spy2.count(), 1);
+	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 	QStringList matches = spy2.takeFirst().at(0).toStringList();
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
-	COMPARE(completion.makeCompletion("ca"), carpet);
-	VERIFY(spy1.count() == 1);
-	VERIFY(spy1.takeFirst().at(0).toString() == carpet);
+	QCOMPARE(completion.makeCompletion("ca"), carpet);
+	QVERIFY(spy1.count() == 1);
+	QVERIFY(spy1.takeFirst().at(0).toString() == carpet);
 }
 
 void
@@ -95,31 +95,31 @@ Test_KCompletion::sortedOrder()
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Sorted);
-	VERIFY(completion.order() == KCompletion::Sorted);
+	QVERIFY(completion.order() == KCompletion::Sorted);
 
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	completion.setCompletionMode(KGlobalSettings::CompletionShell);
-	COMPARE(completion.makeCompletion("ca"), QString("carp"));
-	VERIFY(spy1.count() == 1);
-	COMPARE(spy1.takeFirst().at(0).toString(), QString("carp"));
-	VERIFY(spy3.count() == 1); spy3.takeFirst();
+	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QVERIFY(spy1.count() == 1);
+	QCOMPARE(spy1.takeFirst().at(0).toString(), QString("carp"));
+	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
 	completion.makeCompletion("ca");
-	COMPARE(spy2.count(), 1);
-	VERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
+	QCOMPARE(spy2.count(), 1);
+	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 
 	QStringList matches = spy2.takeFirst().at(0).toStringList();
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
 
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
-	COMPARE(completion.makeCompletion("ca"), carp);
-	VERIFY(spy1.count() == 1);
-	COMPARE(spy1.takeFirst().at(0).toString(), carp);
+	QCOMPARE(completion.makeCompletion("ca"), carp);
+	QVERIFY(spy1.count() == 1);
+	QCOMPARE(spy1.takeFirst().at(0).toString(), carp);
 }
 
 void
@@ -131,34 +131,34 @@ Test_KCompletion::weightedOrder()
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Weighted);
-	VERIFY(completion.order() == KCompletion::Weighted);
+	QVERIFY(completion.order() == KCompletion::Weighted);
 
 	completion.setItems(wstrings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	completion.setCompletionMode(KGlobalSettings::CompletionShell);
-	COMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
 	spy1.takeFirst(); // empty the list
-	VERIFY(spy3.count() == 1); spy3.takeFirst();
+	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
 	completion.makeCompletion("ca");
-	COMPARE(spy2.count(), 1);
-	VERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
+	QCOMPARE(spy2.count(), 1);
+	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 
 	QStringList matches = spy2.takeFirst().at(0).toStringList();
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
-	COMPARE(completion.makeCompletion("ca"), carpet);
+	QCOMPARE(completion.makeCompletion("ca"), carpet);
 
 	matches = completion.substringCompletion("ca");
-	VERIFY(matches.count() == 3);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], coolcat);
-	COMPARE(matches[2], carp);
+	QVERIFY(matches.count() == 3);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], coolcat);
+	QCOMPARE(matches[2], carp);
 }
 
 void
@@ -170,30 +170,30 @@ Test_KCompletion::substringCompletion_Insertion()
 
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.substringCompletion("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], clampet);
-	COMPARE(matches[1], coolcat);
-	COMPARE(matches[2], carpet);
-	COMPARE(matches[3], carp);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], clampet);
+	QCOMPARE(matches[1], coolcat);
+	QCOMPARE(matches[2], carpet);
+	QCOMPARE(matches[3], carp);
 
 	matches = completion.substringCompletion("ca");
-	VERIFY(matches.count() == 3);
-	COMPARE(matches[0], coolcat);
-	COMPARE(matches[1], carpet);
-	COMPARE(matches[2], carp);
+	QVERIFY(matches.count() == 3);
+	QCOMPARE(matches[0], coolcat);
+	QCOMPARE(matches[1], carpet);
+	QCOMPARE(matches[2], carp);
 
 	matches = completion.substringCompletion("car");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	matches = completion.substringCompletion("pet");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], clampet);
-	COMPARE(matches[1], carpet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], clampet);
+	QCOMPARE(matches[1], carpet);
 }
 
 void
@@ -205,30 +205,30 @@ Test_KCompletion::substringCompletion_Sorted()
 
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.substringCompletion("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
-	COMPARE(matches[2], clampet);
-	COMPARE(matches[3], coolcat);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
+	QCOMPARE(matches[2], clampet);
+	QCOMPARE(matches[3], coolcat);
 
 	matches = completion.substringCompletion("ca");
-	VERIFY(matches.count() == 3);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
-	COMPARE(matches[2], coolcat);
+	QVERIFY(matches.count() == 3);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
+	QCOMPARE(matches[2], coolcat);
 
 	matches = completion.substringCompletion("car");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
 
 	matches = completion.substringCompletion("pet");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], clampet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], clampet);
 }
 
 void
@@ -240,30 +240,30 @@ Test_KCompletion::substringCompletion_Weighted()
 
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.substringCompletion("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], clampet);
-	COMPARE(matches[2], coolcat);
-	COMPARE(matches[3], carp);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], clampet);
+	QCOMPARE(matches[2], coolcat);
+	QCOMPARE(matches[3], carp);
 
 	matches = completion.substringCompletion("ca");
-	VERIFY(matches.count() == 3);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], coolcat);
-	COMPARE(matches[2], carp);
+	QVERIFY(matches.count() == 3);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], coolcat);
+	QCOMPARE(matches[2], carp);
 
 	matches = completion.substringCompletion("car");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	matches = completion.substringCompletion("pet");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], clampet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], clampet);
 }
 
 void
@@ -275,22 +275,22 @@ Test_KCompletion::allMatches_Insertion()
 
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.allMatches("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], clampet);
-	COMPARE(matches[1], coolcat);
-	COMPARE(matches[2], carpet);
-	COMPARE(matches[3], carp);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], clampet);
+	QCOMPARE(matches[1], coolcat);
+	QCOMPARE(matches[2], carpet);
+	QCOMPARE(matches[3], carp);
 
 	matches = completion.allMatches("ca");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	matches = completion.allMatches("pet");
-	VERIFY(matches.count() == 0);
+	QVERIFY(matches.count() == 0);
 }
 
 void
@@ -302,22 +302,22 @@ Test_KCompletion::allMatches_Sorted()
 
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.allMatches("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
-	COMPARE(matches[2], clampet);
-	COMPARE(matches[3], coolcat);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
+	QCOMPARE(matches[2], clampet);
+	QCOMPARE(matches[3], coolcat);
 
 	matches = completion.allMatches("ca");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carp);
-	COMPARE(matches[1], carpet);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carp);
+	QCOMPARE(matches[1], carpet);
 
 	matches = completion.allMatches("pet");
-	VERIFY(matches.count() == 0);
+	QVERIFY(matches.count() == 0);
 }
 
 void
@@ -329,22 +329,22 @@ Test_KCompletion::allMatches_Weighted()
 
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
-	VERIFY(completion.items().count() == 4);
+	QVERIFY(completion.items().count() == 4);
 
 	QStringList matches = completion.allMatches("c");
-	VERIFY(matches.count() == 4);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], clampet);
-	COMPARE(matches[2], coolcat);
-	COMPARE(matches[3], carp);
+	QVERIFY(matches.count() == 4);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], clampet);
+	QCOMPARE(matches[2], coolcat);
+	QCOMPARE(matches[3], carp);
 
 	matches = completion.allMatches("ca");
-	VERIFY(matches.count() == 2);
-	COMPARE(matches[0], carpet);
-	COMPARE(matches[1], carp);
+	QVERIFY(matches.count() == 2);
+	QCOMPARE(matches[0], carpet);
+	QCOMPARE(matches[1], carp);
 
 	matches = completion.allMatches("pet");
-	VERIFY(matches.count() == 0);
+	QVERIFY(matches.count() == 0);
 }
 
 void
@@ -357,10 +357,10 @@ Test_KCompletion::cycleMatches_Insertion()
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.makeCompletion("ca");
-	COMPARE(completion.nextMatch(), carpet);
-	COMPARE(completion.nextMatch(), carp);
-	COMPARE(completion.previousMatch(), carpet);
-	COMPARE(completion.previousMatch(), carp);
+	QCOMPARE(completion.nextMatch(), carpet);
+	QCOMPARE(completion.nextMatch(), carp);
+	QCOMPARE(completion.previousMatch(), carpet);
+	QCOMPARE(completion.previousMatch(), carp);
 }
 
 void
@@ -373,10 +373,10 @@ Test_KCompletion::cycleMatches_Sorted()
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.makeCompletion("ca");
-	COMPARE(completion.nextMatch(), carp);
-	COMPARE(completion.nextMatch(), carpet);
-	COMPARE(completion.previousMatch(), carp);
-	COMPARE(completion.previousMatch(), carpet);
+	QCOMPARE(completion.nextMatch(), carp);
+	QCOMPARE(completion.nextMatch(), carpet);
+	QCOMPARE(completion.previousMatch(), carp);
+	QCOMPARE(completion.previousMatch(), carpet);
 }
 
 void
@@ -389,10 +389,10 @@ Test_KCompletion::cycleMatches_Weighted()
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.makeCompletion("ca");
-	COMPARE(completion.nextMatch(), carpet);
-	COMPARE(completion.nextMatch(), carp);
-	COMPARE(completion.previousMatch(), carpet);
-	COMPARE(completion.previousMatch(), carp);
+	QCOMPARE(completion.nextMatch(), carpet);
+	QCOMPARE(completion.nextMatch(), carp);
+	QCOMPARE(completion.previousMatch(), carpet);
+	QCOMPARE(completion.previousMatch(), carp);
 }
 
 QTTEST_KDEMAIN(Test_KCompletion, 0)

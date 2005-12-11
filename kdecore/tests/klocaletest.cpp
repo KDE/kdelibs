@@ -17,7 +17,7 @@
 */
 
 #include "klocaletest.h"
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include "klocale.h"
 #include "kglobal.h"
@@ -39,12 +39,12 @@ KLocaleTest::formatNumbers()
 {
 	KLocale locale(*KGlobal::locale());
 
-	COMPARE(locale.formatNumber(70), QString("70.00"));
-	COMPARE(locale.formatNumber(70, 0), QString("70"));
-	COMPARE(locale.formatNumber(70.2), QString("70.20"));
-	COMPARE(locale.formatNumber(70.24), QString("70.24"));
-	COMPARE(locale.formatNumber(70.245), QString("70.25"));
-	COMPARE(locale.formatNumber(1234567.89123456789,8),
+	QCOMPARE(locale.formatNumber(70), QString("70.00"));
+	QCOMPARE(locale.formatNumber(70, 0), QString("70"));
+	QCOMPARE(locale.formatNumber(70.2), QString("70.20"));
+	QCOMPARE(locale.formatNumber(70.24), QString("70.24"));
+	QCOMPARE(locale.formatNumber(70.245), QString("70.25"));
+	QCOMPARE(locale.formatNumber(1234567.89123456789,8),
 		QString("1,234,567.89123457"));
 }
 
@@ -53,15 +53,15 @@ KLocaleTest::formatNumberStrings()
 {
 	KLocale locale(*KGlobal::locale());
 
-	COMPARE(locale.formatNumber("70"), QString("70.00"));
-	COMPARE(locale.formatNumber("70", true, 2), QString("70.00"));
-	COMPARE(locale.formatNumber("70", true, 0), QString("70"));
-	COMPARE(locale.formatNumber("70.9123", true, 0), QString("71"));
-	COMPARE(locale.formatNumber("-70.2", true, 2), QString("-70.20"));
-	COMPARE(locale.formatNumber("+70.24", true, 2), QString("70.24"));
-	COMPARE(locale.formatNumber("70.245", true, 2), QString("70.25"));
-	COMPARE(locale.formatNumber("99.996", true, 2), QString("100.00"));
-	COMPARE(locale.formatNumber("12345678901234567.89123456789",false,0),
+	QCOMPARE(locale.formatNumber("70"), QString("70.00"));
+	QCOMPARE(locale.formatNumber("70", true, 2), QString("70.00"));
+	QCOMPARE(locale.formatNumber("70", true, 0), QString("70"));
+	QCOMPARE(locale.formatNumber("70.9123", true, 0), QString("71"));
+	QCOMPARE(locale.formatNumber("-70.2", true, 2), QString("-70.20"));
+	QCOMPARE(locale.formatNumber("+70.24", true, 2), QString("70.24"));
+	QCOMPARE(locale.formatNumber("70.245", true, 2), QString("70.25"));
+	QCOMPARE(locale.formatNumber("99.996", true, 2), QString("100.00"));
+	QCOMPARE(locale.formatNumber("12345678901234567.89123456789",false,0),
 		QString("12,345,678,901,234,567.89123456789"));
 }
 
@@ -72,25 +72,25 @@ KLocaleTest::readNumber()
 	bool ok=false;
 
 	locale.readNumber("12,1", &ok);
-	VERIFY(!ok);
-	COMPARE(locale.readNumber("12,100", &ok), 12100.0);
-	VERIFY(ok);
+	QVERIFY(!ok);
+	QCOMPARE(locale.readNumber("12,100", &ok), 12100.0);
+	QVERIFY(ok);
 	locale.readNumber("12,100000,00", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readNumber("12,100000000", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readNumber("12,,100,000", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readNumber("12,1000,000", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readNumber("12,0000000,000", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readNumber("12,0000000", &ok);
-	VERIFY(!ok);
-	COMPARE(locale.readNumber("12,146,131.12", &ok), 12146131.12);
-	VERIFY(ok);
-	COMPARE(locale.readNumber("1.12345678912", &ok), 1.12345678912);
-	VERIFY(ok);
+	QVERIFY(!ok);
+	QCOMPARE(locale.readNumber("12,146,131.12", &ok), 12146131.12);
+	QVERIFY(ok);
+	QCOMPARE(locale.readNumber("1.12345678912", &ok), 1.12345678912);
+	QVERIFY(ok);
 }
 
 void
@@ -102,12 +102,12 @@ KLocaleTest::formatDate()
 	QDate date;
 
 	date.setYMD(2002, 5, 3);
-	COMPARE(locale.formatDate(date), date.toString(full));
-	COMPARE(locale.formatDate(date, true), date.toString(small));
+	QCOMPARE(locale.formatDate(date), date.toString(full));
+	QCOMPARE(locale.formatDate(date, true), date.toString(small));
 
 	date = QDate::currentDate();
-	COMPARE(locale.formatDate(date), date.toString(full));
-	COMPARE(locale.formatDate(date, true), date.toString(small));
+	QCOMPARE(locale.formatDate(date), date.toString(full));
+	QCOMPARE(locale.formatDate(date, true), date.toString(small));
 }
 
 void
@@ -120,23 +120,23 @@ KLocaleTest::readDate()
 	QDate date;
 
 	date.setYMD( 2002, 5, 3 );
-	COMPARE(locale.readDate(date.toString(small)), date);
-	COMPARE(locale.readDate(date.toString(full)), date);
+	QCOMPARE(locale.readDate(date.toString(small)), date);
+	QCOMPARE(locale.readDate(date.toString(full)), date);
 	locale.readDate(date.toString(small), KLocale::NormalFormat, &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readDate(date.toString(full), KLocale::ShortFormat, &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 
 	date = QDate::currentDate();
-	COMPARE(locale.readDate(date.toString(small)), date);
-	COMPARE(locale.readDate(date.toString(full)), date);
+	QCOMPARE(locale.readDate(date.toString(small)), date);
+	QCOMPARE(locale.readDate(date.toString(full)), date);
 	locale.readDate(date.toString(small), KLocale::NormalFormat, &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 	locale.readDate(date.toString(full), KLocale::ShortFormat, &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 
 	locale.readDate("2005-02-31", &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 }
 
 void
@@ -146,12 +146,12 @@ KLocaleTest::formatTime()
 	QTime time(0,22,33);
 
 	locale.setTimeFormat("%H:%M %p");
-	COMPARE(locale.formatTime(time, true, false), QString("00:22 am"));
-	COMPARE(locale.formatTime(time, true, true), QString("00:22"));
+	QCOMPARE(locale.formatTime(time, true, false), QString("00:22 am"));
+	QCOMPARE(locale.formatTime(time, true, true), QString("00:22"));
 
 	locale.setTimeFormat("%H:%M:%S %p");
-	COMPARE(locale.formatTime(time, true, false), QString("00:22:33 am"));
-	COMPARE(locale.formatTime(time, true, true), QString("00:22:33"));
+	QCOMPARE(locale.formatTime(time, true, false), QString("00:22:33 am"));
+	QCOMPARE(locale.formatTime(time, true, true), QString("00:22:33"));
 }
 
 void
@@ -160,17 +160,17 @@ KLocaleTest::readTime()
 	KLocale locale(*KGlobal::locale());
 	bool ok = false;
 
-	COMPARE(locale.readTime("11:22:33", &ok), QTime(11,22,33));
-	VERIFY(ok);
+	QCOMPARE(locale.readTime("11:22:33", &ok), QTime(11,22,33));
+	QVERIFY(ok);
 
-	COMPARE(locale.readTime("11:22", &ok), QTime(11,22,0));
-	VERIFY(ok);
+	QCOMPARE(locale.readTime("11:22", &ok), QTime(11,22,0));
+	QVERIFY(ok);
 
 	locale.readTime("11:22:33", KLocale::WithoutSeconds, &ok);
-	VERIFY(!ok);
+	QVERIFY(!ok);
 
 	locale.readTime("11:22", KLocale::WithoutSeconds, &ok);
-	VERIFY(ok);
+	QVERIFY(ok);
 }
 
 void
@@ -180,18 +180,18 @@ KLocaleTest::bug95511()
 	bool ok=false;
 
 	locale.setCurrencySymbol("$$");
-	COMPARE(locale.readMoney("1,234,567,890.12$$", &ok), 1234567890.12);
-	VERIFY(ok);
-	COMPARE(locale.readMoney("-1,234,567,890.12$$", &ok), -1234567890.12);
-	VERIFY(ok);
+	QCOMPARE(locale.readMoney("1,234,567,890.12$$", &ok), 1234567890.12);
+	QVERIFY(ok);
+	QCOMPARE(locale.readMoney("-1,234,567,890.12$$", &ok), -1234567890.12);
+	QVERIFY(ok);
 
 	locale.setCurrencySymbol("dollars");
-	COMPARE(locale.readMoney("12,345,678,901,234,567 dollars", &ok),
+	QCOMPARE(locale.readMoney("12,345,678,901,234,567 dollars", &ok),
 		12345678901234567.00);
-	VERIFY(ok);
-	COMPARE(locale.readMoney("-12,345,678,901.00 dollars", &ok),
+	QVERIFY(ok);
+	QCOMPARE(locale.readMoney("-12,345,678,901.00 dollars", &ok),
 		-12345678901.00);
-	VERIFY(ok);
+	QVERIFY(ok);
 }
 
 QTTEST_KDEMAIN(KLocaleTest, NoGUI)

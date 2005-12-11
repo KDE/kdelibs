@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "QtTest/qttest_kde.h"
+#include "qttest_kde.h"
 
 #include "ktempfiletest.h"
 #include "ktempfile.h"
@@ -41,7 +41,7 @@ void KTempFileTest::testBasic()
     f4.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f4.name()));
     bool exists = QFile::exists( f4.name() );
-    VERIFY( exists );
+    QVERIFY( exists );
 }
 
 void KTempFileTest::testFixedExtension()
@@ -50,7 +50,7 @@ void KTempFileTest::testFixedExtension()
     KTempFile f2(QString::null, ".ps");
     f2.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f2.name()));
-    COMPARE( f2.name().right(3), QLatin1String(".ps") );
+    QCOMPARE( f2.name().right(3), QLatin1String(".ps") );
 }
 
 void KTempFileTest::testHomeDir()
@@ -60,8 +60,8 @@ void KTempFileTest::testHomeDir()
     KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
     f3.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f3.name()));
-    COMPARE( f3.name().left( home.length() ), home );
-    COMPARE( f3.name().right(6), QLatin1String( ".myEXT" ) );
+    QCOMPARE( f3.name().left( home.length() ), home );
+    QCOMPARE( f3.name().right(6), QLatin1String( ".myEXT" ) );
 }
 
 //QString name = locateLocal("socket", "test");

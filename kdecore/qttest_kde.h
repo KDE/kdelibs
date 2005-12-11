@@ -1,7 +1,7 @@
 #ifndef QTTEST_KDE_H
 #define QTTEST_KDE_H
 
-#include "qttest.h"
+#include <QtTest/QtTest>
 #include <stdlib.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) \
         KApplication::disableAutoDcopRegistration(); \
     KApplication app( (mainFlags & GUI) != 0 ); \
     TestObject tc; \
-    return QtTest::exec( &tc, argc, argv ); \
+    return QTest::qExec( &tc, argc, argv ); \
 }
 
 #endif /* QTTEST_KDE_H */
