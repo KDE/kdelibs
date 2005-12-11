@@ -23,6 +23,7 @@
 #include "kjs_binding.h"
 #include "kjs_dom.h"
 
+#include "dom/css_stylesheet.h"
 #include "dom/dom_exception.h"
 #include "dom/dom2_range.h"
 #include "xml/dom2_eventsimpl.h"
@@ -34,9 +35,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-using namespace KJS;
+namespace KJS {
 
-String DOMObject::toString(ExecState *) const
+UString DOMObject::toString(ExecState *) const
 {
   return "[object " + className() + "]";
 }
@@ -177,7 +178,7 @@ QString Identifier::qstring() const
   return QString((QChar*) data(), size());
 }
 
-DOM::NodeImpl* KJS::toNode(ValueImp *val)
+DOM::NodeImpl* toNode(ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMNode::info))
@@ -187,7 +188,7 @@ DOM::NodeImpl* KJS::toNode(ValueImp *val)
   return dobj->impl();
 }
 
-ValueImp *KJS::getStringOrNull(DOM::DOMString s)
+ValueImp* getStringOrNull(DOM::DOMString s)
 {
   if (s.isNull())
     return Null();
@@ -195,7 +196,7 @@ ValueImp *KJS::getStringOrNull(DOM::DOMString s)
     return String(s);
 }
 
-QVariant KJS::ValueToVariant(ExecState* exec, ValueImp *val) {
+QVariant ValueToVariant(ExecState* exec, ValueImp *val) {
   QVariant res;
   switch (val->type()) {
   case BooleanType:
@@ -223,15 +224,15 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   const char *type = "DOM";
   int code = DOMExceptionCode;
 
-  if (code >= RangeException::_EXCEPTION_OFFSET && code <= RangeException::_EXCEPTION_MAX) {
+  if (code >= DOM::RangeException::_EXCEPTION_OFFSET && code <= DOM::RangeException::_EXCEPTION_MAX) {
     type = "DOM Range";
-    code -= RangeException::_EXCEPTION_OFFSET;
-  } else if (code >= CSSException::_EXCEPTION_OFFSET && code <= CSSException::_EXCEPTION_MAX) {
+    code -= DOM::RangeException::_EXCEPTION_OFFSET;
+  } else if (code >= DOM::CSSException::_EXCEPTION_OFFSET && code <= DOM::CSSException::_EXCEPTION_MAX) {
     type = "CSS";
-    code -= CSSException::_EXCEPTION_OFFSET;
-  } else if (code >= EventException::_EXCEPTION_OFFSET && code <= EventException::_EXCEPTION_MAX) {
+    code -= DOM::CSSException::_EXCEPTION_OFFSET;
+  } else if (code >= DOM::EventException::_EXCEPTION_OFFSET && code <= DOM::EventException::_EXCEPTION_MAX) {
     type = "DOM Events";
-    code -= EventException::_EXCEPTION_OFFSET;
+    code -= DOM::EventException::_EXCEPTION_OFFSET;
   }
   char buffer[100]; // needs to fit 20 characters, plus an integer in ASCII, plus a null character
   snprintf(buffer, 99, "%s exception %d", type, code);
@@ -266,7 +267,7 @@ private:
   unsigned long objid;
 };
 
-ValueImp *KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
+ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
 {
   KParts::LiveConnectExtension::Type t=(KParts::LiveConnectExtension::Type)type;
   switch(t) {
@@ -307,8 +308,9 @@ EmbedLiveConnect::~EmbedLiveConnect() {
     m_liveconnect->unregister(objid);
 }
 
+#warning "LiveConnect stuff is broken"
 KDE_NO_EXPORT
-bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot);
+bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot)
 {
   if (m_liveconnect) {
     KParts::LiveConnectExtension::Type rettype;
@@ -335,7 +337,7 @@ bool EmbedLiveConnect::implementsCall() const {
 }
 
 KDE_NO_EXPORT
-ValueImp* EmbedLiveConnect::call(ExecState *exec, ObjectImp*, const List &args)
+ValueImp* EmbedLiveConnect::callAsFunction(ExecState *exec, ObjectImp*, const List &args)
 {
   if (m_liveconnect) {
     QStringList qargs;
@@ -366,4 +368,6 @@ UString EmbedLiveConnect::toString(ExecState *) const {
   const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
   str.sprintf("[object %s ref=%d]", type, (int) objid);
   return UString(str);
+}
+
 }

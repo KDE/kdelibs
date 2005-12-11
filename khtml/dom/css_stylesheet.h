@@ -21,7 +21,7 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 2 Specification (Candidate Recommendation)
  * http://www.w3.org/TR/2000/CR-DOM-Level-2-20000510/
- * Copyright © 2000 W3C® (MIT, INRIA, Keio), All Rights Reserved.
+ * Copyright  2000 W3C (MIT, INRIA, Keio), All Rights Reserved.
  *
  */
 #ifndef _CSS_css_stylesheet_h_
@@ -190,7 +190,8 @@ public:
     {
         SYNTAX_ERR                     = 0,
         INVALID_MODIFICATION_ERR       = 1,
-        _EXCEPTION_OFFSET              = 1000
+        _EXCEPTION_OFFSET              = 1000,
+        _EXCEPTION_MAX                 = 1999
     };
 };
 
