@@ -71,10 +71,10 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 		obj.vnum     = '6.0.2'
 		obj.target   = appname
 		obj.source   = appname + '.cpp'
-		obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-		obj.libpaths = '.. ../../kdecore ../../dcop ../../qttestlib '
-		obj.libs     = 'kdeui kdecore DCOP QtTest'
-		obj.includes += '.. ../../kdecore ../../kdefx ../../qttestlib'
+		obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4'
+		obj.libpaths = '.. ../../kdecore ../../dcop'
+		obj.libs     = 'kdeui kdefx kdecore DCOP'
+		obj.includes += '.. ../../kdecore ../../kdefx'
 		if env['WINDOWS']:
 			obj.libs     += ' kdewin32 ws2_32'
 	
