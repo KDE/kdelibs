@@ -197,14 +197,12 @@ void HTMLAnchorElement::setType( const DOMString &value )
 
 void HTMLAnchorElement::blur(  )
 {
-    if(impl && impl->getDocument()->focusNode()==impl)
-        impl->getDocument()->setFocusNode(0);
+    if (impl) ((HTMLAnchorElementImpl*)impl)->blur();
 }
 
 void HTMLAnchorElement::focus(  )
 {
-    if(impl)
-        impl->getDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
+    if (impl) ((HTMLAnchorElementImpl*)impl)->focus();
 }
 
 // --------------------------------------------------------------------------

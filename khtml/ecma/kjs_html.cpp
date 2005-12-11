@@ -1554,6 +1554,29 @@ QString KJS::HTMLElement::getURLArg(unsigned id) const
   return !rel.isNull() ? impl()->getDocument()->completeURL(rel.string()) : QString();
 }
 
+DOM::HTMLElementImpl *toHTMLElement(ValueImp *val) {
+  DOM::ElementImpl* e = toElement(val);
+  if (e && e->isHTMLElement())
+    return static_cast<HTMLElementImpl*>(e);
+  return 0;
+}
+
+DOM::HTMLTableCaptionElementImpl *toHTMLTableCaptionElement(ValueImp *val)
+{
+    DOM::ElementImpl *e = toElement(val);
+    if (e && e->id() == ID_CAPTION)
+        return static_cast<HTMLTableCaptionElementImpl *>(e);
+    return 0;
+}
+
+HTMLTableSectionElementImpl *toHTMLTableSectionElement(ValueImp *val)
+{
+    DOM::ElementImpl *e = toElement(val);
+    if (e && (e->id() == ID_THEAD || e->id() == ID_TBODY || e->id() == ID_TFOOT))
+        return static_cast<HTMLTableSectionElementImpl *>(e);
+    return 0;
+}
+
 ValueImp* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
 {
   const BoundPropInfo* prop = boundPropInfo()->value(token);
@@ -2069,7 +2092,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
     case ID_SELECT: {
       DOM::HTMLSelectElementImpl& select = static_cast<DOM::HTMLSelectElementImpl&>(element);
       if (id == KJS::HTMLElement::SelectAdd) {
-        select.add(KJS::toNode(args[0]),KJS::toNode(args[1]));
+        select.add(toHTMLElement(args[0]),toHTMLElement(args[1]),exception);
         return Undefined();
       }
       else if (id == KJS::HTMLElement::SelectRemove) {
@@ -2432,9 +2455,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
     case ID_TABLE: {
       DOM::HTMLTableElementImpl& table = static_cast<DOM::HTMLTableElementImpl&>(element);
       switch (token) {
-      case TableCaption:         { table.setCaption(n); return; } // type HTMLTableCaptionElement
-      case TableTHead:           { table.setTHead(n); return; } // type HTMLTableSectionElement
-      case TableTFoot:           { table.setTFoot(n); return; } // type HTMLTableSectionElement
+      case TableCaption:         { table.setCaption(toHTMLTableCaptionElement(value)); return; } // type HTMLTableCaptionElement
+      case TableTHead:           { table.setTHead(toHTMLTableSectionElement(value)); return; } // type HTMLTableSectionElement
+      case TableTFoot:           { table.setTFoot(toHTMLTableSectionElement(value)); return; } // type HTMLTableSectionElement
       }
     }
     break;
@@ -2851,7 +2874,7 @@ ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
     height = h->toInt32(exec);
   }
 
-  HTMLImageElementImpl* image = doc->createElement("image");
+  HTMLImageElementImpl* image = static_cast<HTMLImageElementImpl*>(doc->createElement("image"));
 
   if (widthSet)
     image->setAttribute(ATTR_WIDTH, QString::number(width));

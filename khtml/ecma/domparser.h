@@ -36,7 +36,7 @@ namespace KJS {
     virtual bool implementsConstruct() const;
     virtual ObjectImp *construct(ExecState *exec, const List &args);
 private:
-    khtml::SharedPtr<DOM::DocumentImpl> doc;
+    SharedPtr<DOM::DocumentImpl> doc;
   };
 
   class DOMParser : public DOMObject {

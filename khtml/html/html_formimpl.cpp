@@ -106,8 +106,19 @@ NodeImpl::Id HTMLFormElementImpl::id() const
 
 HTMLCollectionImpl* HTMLFormElementImpl::elements()
 {
-  return new HTMLFormCollectionImpl(this);
+    return new HTMLFormCollectionImpl(this);
 }
+
+DOMString HTMLFormElementImpl::target() const
+{
+  return getAttribute(ATTR_TARGET);
+}
+
+DOMString HTMLFormElementImpl::action() const
+{
+  return getAttribute(ATTR_ACTION);
+}
+
 
 long HTMLFormElementImpl::length() const
 {
@@ -2444,6 +2455,11 @@ void HTMLOptionElementImpl::setSelected(bool _selected)
     HTMLSelectElementImpl* const select = getSelect();
     if (select)
         select->notifyOptionSelected(this,_selected);
+}
+
+void HTMLOptionElementImpl::setDefaultSelected( bool _defaultSelected )
+{
+    setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
 }
 
 HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const

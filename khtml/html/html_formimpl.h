@@ -80,6 +80,8 @@ public:
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
 
+    DOMString target() const;
+    DOMString action() const;
     HTMLCollectionImpl* elements();
 
     bool autoComplete() const { return m_autocomplete; }
@@ -495,6 +497,7 @@ public:
 
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);
+    void setDefaultSelected( bool _defaultSelected );
 
     HTMLSelectElementImpl *getSelect() const;
 

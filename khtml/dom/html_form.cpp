@@ -232,7 +232,7 @@ void HTMLFormElement::setAcceptCharset( const DOMString &value )
 DOMString HTMLFormElement::action() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACTION);
+    return static_cast<HTMLFormElementImpl*>(impl)->action();
 }
 
 void HTMLFormElement::setAction( const DOMString &value )
@@ -265,7 +265,7 @@ void HTMLFormElement::setMethod( const DOMString &value )
 DOMString HTMLFormElement::target() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_TARGET);
+    return static_cast<HTMLFormElementImpl*>(impl)->target();
 }
 
 void HTMLFormElement::setTarget( const DOMString &value )
@@ -1098,7 +1098,7 @@ bool HTMLOptionElement::defaultSelected() const
 
 void HTMLOptionElement::setDefaultSelected( bool _defaultSelected )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
+    if(impl) static_cast<HTMLOptionElementImpl*>(impl)->setDefaultSelected(_defaultSelected);
 }
 
 DOMString HTMLOptionElement::text() const
