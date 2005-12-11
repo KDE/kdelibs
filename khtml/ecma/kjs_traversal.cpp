@@ -232,15 +232,15 @@ ValueImp *DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
   DOM::TreeWalkerImpl& tw = *impl();
   switch (token) {
   case Root:
-    return getDOMNode(exec,tw.root());
+    return getDOMNode(exec,tw.getRoot());
   case WhatToShow:
-    return Number(tw.whatToShow());
+    return Number(tw.getWhatToShow());
   case Filter:
-    return getDOMNodeFilter(exec,tw.filter());
+    return getDOMNodeFilter(exec,tw.getFilter());
   case ExpandEntityReferences:
-    return Boolean(tw.expandEntityReferences());
+    return Boolean(tw.getExpandEntityReferences());
   case CurrentNode:
-    return getDOMNode(exec,tw.currentNode());
+    return getDOMNode(exec,tw.getCurrentNode());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMTreeWalker::getValueProperty : " << token << endl;
     return 0;
@@ -251,7 +251,7 @@ void DOMTreeWalker::put(ExecState *exec, const Identifier &propertyName,
                            ValueImp *value, int attr)
 {
   if (propertyName == "currentNode") {
-    treeWalker.setCurrentNode(toNode(value));
+    m_impl->setCurrentNode(toNode(value));
   }
   else
     ObjectImp::put(exec, propertyName, value, attr);
@@ -280,12 +280,12 @@ ValueImp* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
   return Undefined();
 }
 
-ValueImp *KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl tw)
+ValueImp *getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
 {
   return cacheDOMObject<DOM::TreeWalkerImpl, DOMTreeWalker>(exec, tw);
 }
 
-DOM::NodeFilterImpl* KJS::toNodeFilter(ValueImp *val)
+DOM::NodeFilterImpl* toNodeFilter(ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMNodeFilter::info))
