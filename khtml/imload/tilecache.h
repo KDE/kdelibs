@@ -32,8 +32,9 @@
 namespace khtmlImLoad {
 
 
-struct TileCacheNode
+class TileCacheNode
 {
+public:
     //Interface to the cache LRU chains
     TileCacheNode* cacheNext;
     TileCacheNode* cachePrev;

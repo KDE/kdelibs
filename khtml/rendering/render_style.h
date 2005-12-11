@@ -753,7 +753,7 @@ class RenderStyle : public Shared<RenderStyle>
 {
     friend class CSSStyleSelector;
 public:
-    KDE_EXPORT static void cleanup();
+    KHTML_EXPORT static void cleanup();
 
     // static pseudo styles. Dynamic ones are produced on the fly.
     enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION };

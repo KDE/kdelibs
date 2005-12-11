@@ -72,7 +72,7 @@ namespace KParts
 
 namespace khtml
 {
-  class KDE_EXPORT ChildFrame : public QObject
+  class KHTML_EXPORT ChildFrame : public QObject
   {
       Q_OBJECT
   public:

@@ -32,7 +32,7 @@
 namespace khtmlImLoad {
 
 class TileCache;
-struct TileCacheNode;
+class TileCacheNode;
 
 /**
  We hold pointers tiles in the cache. The interface is simple: when they get

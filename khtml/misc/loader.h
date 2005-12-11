@@ -455,7 +455,7 @@ namespace khtml
 	 * init the cache in case it's not already. This needs to get called once
 	 * before using it.
 	 */
-	KDE_EXPORT static void init();
+	KHTML_EXPORT static void init();
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
@@ -479,14 +479,14 @@ namespace khtml
 	static void setSize( int bytes );
 	static int size() { return maxSize; };
 	static void statistics();
-	KDE_EXPORT static void flush(bool force=false);
+	KHTML_EXPORT static void flush(bool force=false);
 
 	/**
 	 * clears the cache
 	 * Warning: call this only at the end of your program, to clean
 	 * up memory (useful for finding memory holes)
 	 */
-	KDE_EXPORT static void clear();
+	KHTML_EXPORT static void clear();
 
 	static Loader *loader() { return m_loader; }
 

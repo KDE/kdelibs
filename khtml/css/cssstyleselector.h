@@ -124,7 +124,7 @@ namespace khtml
 	~CSSStyleSelector();
 
 	void addSheet( DOM::CSSStyleSheetImpl *sheet );
-        KDE_EXPORT static void clear();
+        KHTML_EXPORT static void clear();
         static void reparseConfiguration();
 
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);

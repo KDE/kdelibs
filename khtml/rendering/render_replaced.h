@@ -111,7 +111,7 @@ public:
 #endif
 
     // for ECMA to flush all pending resizes
-    KDE_EXPORT static void flushWidgetResizes();
+    KHTML_EXPORT static void flushWidgetResizes();
 
 public slots:
     void slotWidgetDestructed();
