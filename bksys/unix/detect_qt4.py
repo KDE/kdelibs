@@ -172,7 +172,7 @@ def detect(env):
         env['LIB_QTSQL']           = ['QtSql'+debug]
 	env['RPATH_QTSQL']         = env['RPATH_QT']
 
-	env['CPPPATH_QTXML']       = [ env.join(env['QTINCLUDEPATH'], 'QtXml') ]
+	env['CPPPATH_QTXML']       = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
         env['LIB_QTXML']           = ['QtXml'+debug]
 	env['RPATH_QTXML']         = env['RPATH_QT']
 
