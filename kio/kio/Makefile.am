@@ -20,11 +20,11 @@ AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 
 INCLUDES=  -I$(top_srcdir) -I$(srcdir)/.. -I$(top_srcdir)/kdecore/network -I$(srcdir)/../kssl -I../kssl -I$(srcdir)/../../interfaces  $(all_includes) $(SSL_INCLUDES)
 
-noinst_LTLIBRARIES = libkiocore.la libksycoca.la
+noinst_LTLIBRARIES = libkiocore.la
 
 # convenience lib - no LDFLAGS or LIBADD !
 
-libksycoca_la_SOURCES = \
+libkiocore_la_SOURCES = \
 	kdirwatch.cpp \
 	kfileshare.cpp ksambashare.cpp knfsshare.cpp \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
@@ -40,25 +40,8 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
-	dataslave.cpp dataprotocol.cpp kacl.cpp
-
-include_HEADERS = \
-	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-	krun.h kdirwatch.h kautomount.h kuserprofile.h \
-	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
-	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
-	kdirlister.h kservicegroup.h \
-	kimageio.h kdirnotify.h kdirnotify_stub.h \
-	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
-	kemailsettings.h kscan.h kdatatool.h \
-	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
-	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h \
-	kmimetypechooser.h kacl.h
-
-#libkiocore_la_LDFLAGS = $(all_libraries)
-#libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
-
-libkiocore_la_SOURCES = authinfo.cpp \
+	dataslave.cpp dataprotocol.cpp kacl.cpp \
+        authinfo.cpp \
 	kprotocolmanager.cpp \
 	slave.cpp slaveinterface.cpp observer.stub \
 	sessiondata.cpp	scheduler.cpp \
@@ -77,6 +60,19 @@ libkiocore_la_SOURCES = authinfo.cpp \
 	kprotocolinfo.cpp \
 	renamedlg.cpp skipdlg.cpp kremoteencoding.cpp \
 	kmimetypechooser.cpp
+
+include_HEADERS = \
+	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
+	krun.h kdirwatch.h kautomount.h kuserprofile.h \
+	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
+	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
+	kdirlister.h kservicegroup.h \
+	kimageio.h kdirnotify.h kdirnotify_stub.h \
+	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
+	kemailsettings.h kscan.h kdatatool.h \
+	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
+	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h \
+	kmimetypechooser.h kacl.h
 
 uiserver_DIR = $(top_srcdir)/kio/misc
 

@@ -22,10 +22,11 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <q3ptrlist.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 
 #include <kservice.h>
+
+class KServiceTypeProfileList;
 
 /**
  * This class holds the user-specific preferences of a service
@@ -188,12 +189,6 @@ public:
   static OfferList offers( const QString& servicetype, const QString& genericServiceType = QString::null );
 
   /**
-   * Returns a list of all KServiceTypeProfiles.
-   * @return a list of all KServiceTypeProfiles
-   */
-  static const Q3PtrList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
-
-  /**
    * Clear all cached information
    */
   static void clear();
@@ -264,7 +259,8 @@ private:
   QString m_strGenericServiceType;
 
   static void initStatic();
-  static Q3PtrList<KServiceTypeProfile>* s_lstProfiles;
+
+  static KServiceTypeProfileList* s_lstProfiles;
   static bool s_configurationMode;
 private:
   class KServiceTypeProfilePrivate* d;

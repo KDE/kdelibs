@@ -576,7 +576,7 @@ protected:
    * @param name the name to filter
    * @param filters a list of regular expressions for filtering
    */
-  virtual bool doNameFilter( const QString& name, const Q3PtrList<QRegExp>& filters ) const;
+  virtual bool doNameFilter( const QString& name, const QList<QRegExp>& filters ) const;
 
   /**
    * Called by the public matchesMimeFilter() to do the

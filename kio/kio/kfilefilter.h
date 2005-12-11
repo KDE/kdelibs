@@ -21,7 +21,6 @@
 #ifndef KFILEFILTER_H
 #define KFILEFILTER_H
 
-#include <q3ptrlist.h>
 #include <qstringlist.h>
 
 #include <sys/types.h>
@@ -155,7 +154,7 @@ public:
     virtual bool passesFilter( const KFileItem *item ) const;
 
 protected:
-    Q3PtrList<QRegExp>   m_nameFilters;
+    QList<QRegExp>   m_nameFilters;
 
 private:
     QStringList         m_mimeFilters;

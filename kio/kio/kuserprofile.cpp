@@ -27,18 +27,21 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-#include <q3tl.h>
+#include <QtAlgorithms>
 
-template class Q3PtrList<KServiceTypeProfile>;
-typedef Q3PtrList<KServiceTypeProfile> KServiceTypeProfileList;
+// servicetype -> profile
+class KServiceTypeProfileList : public QMultiMap<QString, KServiceTypeProfile *>
+{
+public:
+    // qDeleteAll-like behavior, but this is KStaticDeleted so we have nowhere to put the qDeleteAll call.
+    ~KServiceTypeProfileList() {
+        KServiceTypeProfileList::const_iterator it = begin();
+        for ( ; it != end() ; ++it )
+            delete *it;
+    }
+};
 
-/*********************************************
- *
- * KServiceTypeProfile
- *
- *********************************************/
-
-KServiceTypeProfileList* KServiceTypeProfile::s_lstProfiles = 0L;
+KServiceTypeProfileList* KServiceTypeProfile::s_lstProfiles = 0;
 static KStaticDeleter< KServiceTypeProfileList > profileDeleter;
 bool KServiceTypeProfile::s_configurationMode = false;
 
@@ -51,7 +54,6 @@ void KServiceTypeProfile::initStatic()
   (void) KServiceTypeFactory::self();
 
   profileDeleter.setObject(s_lstProfiles, new KServiceTypeProfileList);
-  s_lstProfiles->setAutoDelete( true );
 
   KConfig config( "profilerc", true, false);
 
@@ -84,7 +86,7 @@ void KServiceTypeProfile::initStatic()
 
         if ( !p ) {
           p = new KServiceTypeProfile( type, type2 );
-          s_lstProfiles->append( p );
+          s_lstProfiles->insert( type, p );
         }
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
@@ -113,14 +115,13 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     if ( _genericServiceType.isEmpty() )
     {
         initStatic();
-        // We want all profiles for servicetype, if we have profiles.
-        // ## Slow loop, if profilerc is big. We should use a map instead?
-        Q3PtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
-        for( ; it.current(); ++it )
-            if ( it.current()->m_strServiceType == _servicetype )
-            {
-                offers += it.current()->offers();
-            }
+        // We want all profiles for _servicetype, if we have profiles.
+        // This uses a standard multimap-lookup
+        KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( _servicetype );
+        while (it != s_lstProfiles->end() && it.key() == _servicetype) {
+            offers += it.value()->offers();
+            ++it;
+        }
         //kdDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
     }
     else
@@ -173,7 +174,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     }
 
     if (!offers.isEmpty())
-        qBubbleSort( offers );
+        qStableSort( offers );
 
 #if 0
     // debug code, comment if you wish but don't remove.
@@ -243,11 +244,13 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
 
   const QString &_genservicetype  = ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
-  Q3PtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
-  for( ; it.current(); ++it )
-    if (( it.current()->m_strServiceType == _servicetype ) &&
-        ( it.current()->m_strGenericServiceType == _genservicetype))
-      return it.current();
+  // This uses a standard multimap-lookup to find the entry where
+  // both servicetype and generic servicetype match.
+  KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( _servicetype );
+  while (it != s_lstProfiles->end() && it.key() == _servicetype) {
+      if ( it.value()->m_strGenericServiceType == _genservicetype )
+          return it.value();
+  }
 
   return 0;
 }
@@ -290,7 +293,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
       kdDebug(7014) << "Doesn't have " << m_strGenericServiceType << endl;*/
   }
 
-  qBubbleSort( offers );
+  qStableSort( offers );
 
   //kdDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
   return offers;

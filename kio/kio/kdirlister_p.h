@@ -63,9 +63,6 @@ public:
     changes = NONE;
 
     window = 0;
-
-    lstFilters.setAutoDelete( true );
-    oldFilters.setAutoDelete( true );
   }
 
   /**
@@ -108,7 +105,7 @@ public:
   QWidget *window; // Main window ths lister is associated with
 
   QString nameFilter;
-  Q3PtrList<QRegExp> lstFilters, oldFilters;
+  QList<QRegExp> lstFilters, oldFilters;
   QStringList mimeFilter, oldMimeFilter;
   QStringList mimeExcludeFilter, oldMimeExcludeFilter;
 };

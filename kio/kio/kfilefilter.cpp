@@ -30,7 +30,6 @@ KSimpleFileFilter::KSimpleFileFilter()
       m_filterSpecials( true ),
       m_modeFilter( 0 )
 {
-    m_nameFilters.setAutoDelete( true );
 }
 
 KSimpleFileFilter::~KSimpleFileFilter()
@@ -64,7 +63,7 @@ void KSimpleFileFilter::setNameFilters( const QString& nameFilters,
 
     QStringList::ConstIterator it = list.begin();
     for ( ; it != list.end(); ++it )
-        m_nameFilters.append(new QRegExp(*it, caseSensitive, true ));
+        m_nameFilters.append(QRegExp(*it, caseSensitive, true));
 }
 
 void KSimpleFileFilter::setMimeFilters( const QStringList& mimeFilters )
@@ -112,9 +111,10 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
     if ( !m_nameFilters.isEmpty() ) {
         bool ok = false;
 
-        Q3PtrListIterator<QRegExp> it( m_nameFilters );
-        for ( ; it.current(); ++it ) {
-            if ( it.current()->exactMatch( name ) ) { // match!
+        QList<QRegExp>::const_iterator it = m_nameFilters.begin();
+        const QList<QRegExp>::const_iterator end = m_nameFilters.end();
+        for ( ; it != end; ++it ) {
+            if ( (*it).exactMatch( name ) ) { // match!
                 ok = true;
                 break;
             }

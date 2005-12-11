@@ -97,7 +97,7 @@ void Observer::jobFinished( int progressId )
 
 void Observer::killJob( int progressId )
 {
-    KIO::Job * job = m_dctJobs[ progressId ];
+    KIO::Job * job = m_dctJobs.value( progressId );
     if (!job)
     {
         kdWarning() << "Can't find job to kill ! There is no job with progressId=" << progressId << " in this process" << endl;
@@ -108,7 +108,7 @@ void Observer::killJob( int progressId )
 
 MetaData Observer::metadata( int progressId )
 {
-    KIO::Job * job = m_dctJobs[ progressId ];
+    KIO::Job * job = m_dctJobs.value( progressId );
     assert(job);
     return job->metaData();
 }

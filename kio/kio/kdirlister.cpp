@@ -2027,18 +2027,16 @@ void KDirLister::setNameFilter( const QString& nameFilter )
   if ( !(d->changes & NAME_FILTER) )
   {
     d->oldFilters = d->lstFilters;
-    d->lstFilters.setAutoDelete( false );
   }
 
   d->lstFilters.clear();
-  d->lstFilters.setAutoDelete( true );
 
   d->nameFilter = nameFilter;
 
   // Split on white space
   QStringList list = QStringList::split( ' ', nameFilter );
   for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
-    d->lstFilters.append( new QRegExp(*it, false, true ) );
+    d->lstFilters.append( QRegExp(*it, false, true ) );
 
   d->changes |= NAME_FILTER;
 }
@@ -2127,10 +2125,10 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
   return matchesMimeFilter( item->mimetype() );
 }
 
-bool KDirLister::doNameFilter( const QString& name, const Q3PtrList<QRegExp>& filters ) const
+bool KDirLister::doNameFilter( const QString& name, const QList<QRegExp>& filters ) const
 {
-  for ( Q3PtrListIterator<QRegExp> it( filters ); it.current(); ++it )
-    if ( it.current()->exactMatch( name ) )
+  for ( QList<QRegExp>::const_iterator it = filters.begin(); it != filters.end(); ++it )
+    if ( (*it).exactMatch( name ) )
       return true;
 
   return false;
