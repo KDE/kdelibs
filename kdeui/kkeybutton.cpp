@@ -164,9 +164,11 @@ void KKeyButton::paintEvent( QPaintEvent* )
   if( width() > 14 && height() > 10 )
     painter.drawRect( 7, 5, width() - 14, height() - 10 );
 
-  style()->drawItemText( &painter, rect(), Qt::AlignCenter, palette(), isEnabled(), text() );
-
   painter.setPen( colorGroup().text() );
+
+  style()->drawItemText( &painter, rect(), Qt::AlignCenter | Qt::TextShowMnemonic,
+                         palette(), isEnabled(), text() );
+
   painter.setBrush( Qt::NoBrush );
   if( hasFocus() || m_bEditing )
   {
