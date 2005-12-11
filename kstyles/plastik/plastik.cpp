@@ -1657,7 +1657,7 @@ void PlastikStyle::polish(QWidget* widget)
     KStyle::polish(widget);
 }
 
-void PlastikStyle::unPolish(QWidget* widget)
+void PlastikStyle::unpolish(QWidget* widget)
 {
 //     if( !strcmp(widget->name(), "__khtml") ) { // is it a khtml widget...?
 //         khtmlWidgets.remove(widget);
@@ -1695,7 +1695,7 @@ void PlastikStyle::unPolish(QWidget* widget)
         widget->setAttribute(Qt::WA_Hover, false);
     }
 
-//     KStyle::unPolish(widget);
+    KStyle::unpolish(widget);
 }
 // 
 // void PlastikStyle::khtmlWidgetDestroyed(QObject* obj)

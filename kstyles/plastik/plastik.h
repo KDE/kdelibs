@@ -75,8 +75,8 @@ public:
     
 // 
 //     void polish(QApplication* app );
-    void polish(QWidget* widget );
-    void unPolish(QWidget* widget );
+    virtual void polish(QWidget* widget);
+    virtual void unpolish(QWidget* widget);
 // 
 //     void drawKStylePrimitive(KStylePrimitive kpe,
 //                              QPainter* p,
