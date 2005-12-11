@@ -75,8 +75,8 @@ public:
     
 // 
 //     void polish(QApplication* app );
-//     void polish(QWidget* widget );
-//     void unPolish(QWidget* widget );
+    void polish(QWidget* widget );
+    void unPolish(QWidget* widget );
 // 
 //     void drawKStylePrimitive(KStylePrimitive kpe,
 //                              QPainter* p,
@@ -268,7 +268,6 @@ protected:
 //     
 //     bool eventFilter(QObject *, QEvent *);
 // 
-//     QWidget* hoverWidget;
 // protected slots:
 //     void khtmlWidgetDestroyed(QObject* w);
 // 

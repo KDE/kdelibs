@@ -44,15 +44,15 @@
 #include <qpainter.h>
 // #include <qtabbar.h>
 // #include <q3progressbar.h>
-// #include <qcheckbox.h>
-// #include <qcombobox.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
 // #include <q3cleanuphandler.h>
 // #include <q3header.h>
 // #include <qlineedit.h>
 // #include <q3listbox.h>
 // #include <qscrollbar.h>
 // #include <qstyleplugin.h>
-// #include <qpushbutton.h>
+#include <qpushbutton.h>
 // #include <qtabwidget.h>
 // #include <qtimer.h>
 // #include <qtoolbutton.h>
@@ -62,10 +62,11 @@
 // #include <qdrawutil.h>
 // #include <qapplication.h>
 // #include <qvariant.h>
-// #include <qradiobutton.h>
+#include <qradiobutton.h>
 // #include <qregion.h>
 // #include <qslider.h>
 #include <qsettings.h>
+#include <qsplitter.h>
 // #include <kpixmap.h>
 #include <QStyleOption>
 
@@ -184,7 +185,6 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 4);
     setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
 
-//     hoverWidget = 0;
 //     hoverTab = 0;
 // 
 //     horizontalDots = 0;
@@ -271,6 +271,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
     bool enabled = flags & State_Enabled;
 
+    const bool mouseOver(enabled && (flags & State_MouseOver));
+
     switch (widgetType)
     {
         case WT_PushButton:
@@ -290,8 +292,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //                 g2.setColor(QColorGroup::Background, cg.background().dark(120) );
 //                     }
 
-                    renderButton(p, r, pal, sunken/*,
-                                 bool mouseOver,
+                    renderButton(p, r, pal, sunken,
+                                 mouseOver/*,
                                  bool horizontal,
                                  bool enabled,
                             bool khtmlMode*/);
@@ -319,8 +321,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 int w = r.width();
                 int h = r.height();
 
-                // TODO: mouseOver highlight
-                bool mouseOver = false;
                 QColor color = (mouseOver)?pal.background().color().light(100+_contrast):pal.background().color();
                 p->fillRect(r, color);
                 if (w > h) {
@@ -347,9 +347,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         case WT_CheckBox:
         {
-            // TODO: mouseOver highlight
-            bool mouseOver = false;
-
             switch (primitive)
             {
                 case CheckBox::CheckOn:
@@ -365,9 +362,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         case WT_RadioButton:
         {
-            // TODO: mouseOver highlight
-            bool mouseOver = false;
-
             switch (primitive)
             {
                 case RadioButton::RadioOn:
@@ -527,9 +521,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 case Generic::Bevel:
                 {
-                    // TODO: mouseOver highlight
-                    bool mouseOver = false;
-
                     bool active  = flags & State_Selected;
                     bool focused = flags & State_HasFocus;
                     bool down = flags & State_Sunken;
@@ -610,25 +601,25 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case MenuItem::CheckOn:
                 {
-                    renderCheckBox(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, CheckBox::CheckOn);
+                    renderCheckBox(p, r, pal, true /*TODO enabled*/, mouseOver, CheckBox::CheckOn);
                     return;
                 }
 
                 case MenuItem::CheckOff:
                 {
-                    renderCheckBox(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, CheckBox::CheckOff);
+                    renderCheckBox(p, r, pal, true /*TODO enabled*/, mouseOver, CheckBox::CheckOff);
                     return;
                 }
 
                 case MenuItem::RadioOn:
                 {
-                    renderRadioButton(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, RadioButton::RadioOn);
+                    renderRadioButton(p, r, pal, true /*TODO enabled*/, mouseOver, RadioButton::RadioOn);
                     return;
                 }
 
                 case MenuItem::RadioOff:
                 {
-                    renderRadioButton(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, RadioButton::RadioOff);
+                    renderRadioButton(p, r, pal, true /*TODO enabled*/, mouseOver, RadioButton::RadioOff);
                     return;
                 }
 
@@ -832,7 +823,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     // TODO: tab painting needs a lot of work in order to handle east and west tabs.
                     // TODO: handle triangular...
                     // TODO: either overlap tabs 1 pixel, or adapt painting.
-                    renderTab(p, r, pal, false /* TODO mouseOver*/, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
+                    renderTab(p, r, pal, mouseOver, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
 
                     return;
 
@@ -1112,7 +1103,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     } else {
                         surfaceFlags |= Round_UpperRight;
                     }
-                    if (false /*TODO (widget == hoverWidget) || (sflags & Style_MouseOver)*/) {
+                    if (mouseOver) {
                         surfaceFlags |= Is_Highlight;
                         surfaceFlags |= Highlight_Top|Highlight_Left|Highlight_Right;
                     }
@@ -1134,7 +1125,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     } else {
                         surfaceFlags |= Round_BottomRight;
                     }
-                    if (false /*TODO (widget == hoverWidget) || (sflags & Style_MouseOver)*/) {
+                    if (mouseOver) {
                         surfaceFlags |= Is_Highlight;
                         surfaceFlags |= Highlight_Bottom|Highlight_Left|Highlight_Right;
                     }
@@ -1225,7 +1216,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                             surfaceFlags |= Round_UpperLeft|Round_BottomLeft;
                         }
 
-                        if (false/*TODO (widget == hoverWidget) || (flags & Style_MouseOver)*/) {
+                        if (mouseOver) {
                             surfaceFlags |= Is_Highlight;
                             surfaceFlags |= Highlight_Top|Highlight_Bottom;
                         }
@@ -1281,7 +1272,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                         surfaceFlags |= Round_UpperRight|Round_BottomRight;
                     }
 
-                    if (false /*TODO (widget == hoverWidget) || (flags & Style_MouseOver)*/) {
+                    if (mouseOver) {
                         surfaceFlags |= Is_Highlight;
                         if(editable) surfaceFlags |= Highlight_Left|Highlight_Right;
                         surfaceFlags |= Highlight_Top|Highlight_Bottom;
@@ -1306,9 +1297,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 {
                     if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(opt)) {
                         bool isFirst = (primitive==Header::SectionHor)&&(header->position == QStyleOptionHeader::Beginning);
-
-                        // TODO: mouseOver highlight...
-                        bool mouseOver = false;
 
                         uint contourFlags = Draw_Right|Draw_Top|Draw_Bottom;
                         if (isFirst)
@@ -1629,8 +1617,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //         kornMode = true;
 // }
 // 
-// void PlastikStyle::polish(QWidget* widget)
-// {
+void PlastikStyle::polish(QWidget* widget)
+{
 //     if( !strcmp(widget->name(), "__khtml") ) { // is it a khtml widget...?
 //         khtmlWidgets[widget] = true;
 //         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(khtmlWidgetDestroyed(QObject*)));
@@ -1665,11 +1653,22 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //             animationTimer->start( 50, false );
 //     }
 // 
-//     KStyle::polish(widget);
-// }
-// 
-// void PlastikStyle::unPolish(QWidget* widget)
-// {
+    if (qobject_cast<QPushButton*>(widget)
+        || qobject_cast<QComboBox*>(widget)
+        || qobject_cast<QAbstractSpinBox*>(widget)
+        || qobject_cast<QCheckBox*>(widget)
+        || qobject_cast<QRadioButton*>(widget)
+        || qobject_cast<QSplitterHandle*>(widget)
+        || qobject_cast<QTabBar*>(widget)
+        ) {
+        widget->setAttribute(Qt::WA_Hover);
+    }
+
+    KStyle::polish(widget);
+}
+
+void PlastikStyle::unPolish(QWidget* widget)
+{
 //     if( !strcmp(widget->name(), "__khtml") ) { // is it a khtml widget...?
 //         khtmlWidgets.remove(widget);
 //     }
@@ -1696,9 +1695,18 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //     {
 //         progAnimWidgets.remove(widget);
 //     }
-// 
+
+    if (qobject_cast<QPushButton*>(widget)
+        || qobject_cast<QComboBox*>(widget)
+        || qobject_cast<QAbstractSpinBox*>(widget)
+        || qobject_cast<QCheckBox*>(widget)
+        || qobject_cast<QSplitterHandle*>(widget)
+        || qobject_cast<QRadioButton*>(widget)) {
+        widget->setAttribute(Qt::WA_Hover, false);
+    }
+
 //     KStyle::unPolish(widget);
-// }
+}
 // 
 // void PlastikStyle::khtmlWidgetDestroyed(QObject* obj)
 // {
@@ -3048,25 +3056,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //         return false;
 //     }
 //     
-//     //Hover highlight... use qt_cast to check if the widget inheits one of the classes.
-//     if ( qobject_cast<QPushButton>(obj) || qobject_cast<QComboBox>(obj) ||
-//             qobject_cast<Q3SpinWidget>(obj) || qobject_cast<QCheckBox>(obj) ||
-//             qobject_cast<QRadioButton>(obj) || qobject_cast<QToolButton>(obj) || obj->inherits("QSplitterHandle") )
-//     {
-//         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
-//         {
-//             QWidget* button = static_cast<QWidget*>(obj);
-//             hoverWidget = button;
-//             button->repaint(false);
-//         }
-//         else if ((ev->type() == QEvent::Leave) && (obj == hoverWidget) )
-//         {
-//             QWidget* button = static_cast<QWidget*>(obj);
-//             hoverWidget = 0;
-//             button->repaint(false);
-//         }
-//         return false;
-//     }
 //     if ( qobject_cast<QTabBar>(obj) ) {
 //         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
 //         {
