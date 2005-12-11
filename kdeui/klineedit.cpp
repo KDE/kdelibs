@@ -92,7 +92,7 @@ public:
 
     int squeezedEnd;
     int squeezedStart;
-    Qt::BackgroundMode bgMode;
+    QPalette::ColorRole bgRole;
     QString squeezedText;
     KCompletionBox *completionBox;
 };
@@ -123,7 +123,7 @@ void KLineEdit::init()
 {
     d = new KLineEditPrivate;
     possibleTripleClick = false;
-    d->bgMode = backgroundMode ();
+    d->bgRole = backgroundRole();
 
     // Enable the context menu by default.
     KLineEdit::setContextMenuEnabled( true );
@@ -268,8 +268,8 @@ void KLineEdit::setReadOnly(bool readOnly)
 
     if (readOnly)
     {
-        d->bgMode = backgroundMode ();
-        setBackgroundMode (Qt::PaletteBackground);
+        d->bgRole = backgroundRole();
+        setBackgroundRole(QPalette::Window);
         if (d->enableSqueezedText && d->squeezedText.isEmpty())
         {
             d->squeezedText = text();
@@ -283,7 +283,7 @@ void KLineEdit::setReadOnly(bool readOnly)
            setText(d->squeezedText);
            d->squeezedText = QString::null;
         }
-        setBackgroundMode (d->bgMode);
+        setBackgroundRole(d->bgRole);
     }
 }
 
