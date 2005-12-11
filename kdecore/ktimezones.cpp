@@ -32,6 +32,7 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QTextStream>
+#include <QSet>
 
 #include <kcodecs.h>
 #include <kprocess.h>
@@ -97,10 +98,9 @@ public:
     ~KTimezonesPrivate()
     {
         // Autodelete behavior.
-        KTimezone *utcZone = utc();
         for (KTimezones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
         {
-            if (it.data() != utcZone)    // can't delete KTimezone returned by utc()
+            if (nonconstZones.contains(const_cast<KTimezone*>(it.data())))   // only delete zones actually owned
                 delete it.data();
         }
         delete zones;
@@ -108,6 +108,7 @@ public:
     static KTimezone *utc();
 
     KTimezones::ZoneMap *zones;
+    QSet<KTimezone*> nonconstZones;   // member zones owned by KTimezones
 };
 
 KTimezone *KTimezonesPrivate::utc()
@@ -137,10 +138,19 @@ bool KTimezones::add(KTimezone *zone)
     if (d->zones->find(zone->name()) != d->zones->end())
         return false;    // name already exists
     d->zones->insert(zone->name(), zone);
+    d->nonconstZones.insert(zone);
     return true;
 }
 
-KTimezone *KTimezones::detach(KTimezone *zone)
+bool KTimezones::addConst(const KTimezone *zone)
+{
+    if (d->zones->find(zone->name()) != d->zones->end())
+        return false;    // name already exists
+    d->zones->insert(zone->name(), zone);
+    return true;
+}
+
+const KTimezone *KTimezones::detach(const KTimezone *zone)
 {
     if (zone)
     {
@@ -149,6 +159,7 @@ KTimezone *KTimezones::detach(KTimezone *zone)
             if (it.data() == zone)
             {
                 d->zones->remove(it);
+                d->nonconstZones.remove(const_cast<KTimezone*>(zone));
                 return (zone == utc()) ? 0 : zone;
             }
         }
@@ -156,15 +167,16 @@ KTimezone *KTimezones::detach(KTimezone *zone)
     return 0;
 }
 
-KTimezone *KTimezones::detach(const QString &name)
+const KTimezone *KTimezones::detach(const QString &name)
 {
     if (!name.isEmpty())
     {
         ZoneMap::Iterator it = d->zones->find(name);
         if (it != d->zones->end())
         {
-            KTimezone *zone = it.data();
+            const KTimezone *zone = it.data();
             d->zones->remove(it);
+            d->nonconstZones.remove(const_cast<KTimezone*>(zone));
             return (zone == utc()) ? 0 : zone;
         }
     }
@@ -182,7 +194,7 @@ const KTimezone *KTimezones::zone(const QString &name) const
     return 0;    // error
 }
 
-KTimezone *KTimezones::utc()
+const KTimezone *KTimezones::utc()
 {
     return KTimezonesPrivate::utc();
 }
@@ -769,7 +781,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
             const ZoneMap zmap = zones();
             for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
             {
-                KTimezone *zone = zit.data();
+                const KTimezone *zone = zit.data();
                 QString zonename = zone->name();
                 if (!m_md5Sums.contains(zonename))
                 {
@@ -877,7 +889,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
         const ZoneMap zmap = zones();
         for (ZoneMap::ConstIterator it = zmap.begin(), end = zmap.end();  it != end;  ++it)
         {
-            KSystemTimezone *zone = static_cast<KSystemTimezone*>(it.data());
+            const KSystemTimezone *zone = static_cast<const KSystemTimezone*>(it.data());
             int candidateOffset = QABS(zone->currentOffset(Qt::LocalTime));
             if (candidateOffset < bestOffset
             &&  zone->parse())

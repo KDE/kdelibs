@@ -276,7 +276,7 @@ public:
      */
     const KTimezone *zone(const QString &name) const;
 
-    typedef QMap<QString, KTimezone*> ZoneMap;
+    typedef QMap<QString, const KTimezone*> ZoneMap;
 
     /**
      * Returns all the time zones defined in this collection.
@@ -297,13 +297,25 @@ public:
     bool add(KTimezone *zone);
 
     /**
+     * Adds a time zone to the collection.
+     * KTimezones does not take ownership of the KTimezone instance.
+     * The time zone's name must be unique within the collection.
+     *
+     * @param zone time zone to add
+     * @return @c true if successful, @c false if zone's name duplicates one already in the collection
+     */
+    bool addConst(const KTimezone *zone);
+
+    /**
      * Removes a time zone from the collection.
-     * The caller assumes responsibility for deleting the removed KTimezone.
+     * The caller assumes responsibility for deleting the removed KTimezone. If
+     * the removed KTimezone was created by the caller, the constness of the return
+     * value may safely be cast away.
      *
      * @param zone time zone to remove
      * @return the time zone which was removed, or 0 if not found or not a deletable object
      */
-    KTimezone *detach(KTimezone *zone);
+    const KTimezone *detach(const KTimezone *zone);
 
     /**
      * Removes a time zone from the collection.
@@ -312,7 +324,7 @@ public:
      * @param name name of time zone to remove
      * @return the time zone which was removed, or 0 if not found or not a deletable object
      */
-    KTimezone *detach(const QString &name);
+    const KTimezone *detach(const QString &name);
 
     /**
      * Returns a standard UTC time zone, with name "UTC".
@@ -325,7 +337,7 @@ public:
      *
      * @return UTC time zone
      */
-    static KTimezone *utc();
+    static const KTimezone *utc();
 
 private:
     KTimezones(const KTimezones &);              // prohibit copying
