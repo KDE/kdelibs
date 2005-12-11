@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir)/qttestlib $(all_includes) -DQT_NO_CAST_ASCII -DSRCDIR=\"$(srcdir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes) -DQT_NO_CAST_ASCII -DSRCDIR=\"$(srcdir)\"
 
 METASOURCES = AUTO
 
@@ -49,7 +49,7 @@ test_dpointer_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
 
 kconfigcompiler_test_SOURCES = kconfigcompiler_test.cpp
-kconfigcompiler_test_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kconfigcompiler_test_LDADD = $(LIB_KDECORE) -lQtTest_debug
 kconfigcompiler_test_LDFLAGS = $(all_libraries)
 
 TESTS = kconfigcompiler_test

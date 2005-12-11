@@ -16,7 +16,7 @@
 #include <qfile.h>
 #include <qstring.h>
 #include <kdebug.h>
-#include <QtTest/qttest_kde.h>
+#include <qttest_kde.h>
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
 
@@ -78,13 +78,13 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 		QString contentRef = fileRef.readAll();
 
 		if (!fail)
-			COMPARE( content, contentRef );
+			QCOMPARE( content, contentRef );
 		else
-                    FAIL( "not implemented" ); // missing in qttestlib?
-                // wrong? EXPECT_FAIL( "", content, contentRef );
+                    QFAIL( "not implemented" ); // missing in qttestlib?
+                // wrong? QEXPECT_FAIL( "", content, contentRef );
 	}
 	else
 	{
-		SKIP("Can't open file for comparison", SkipSingle);
+		QSKIP("Can't open file for comparison", SkipSingle);
 	}
 }
