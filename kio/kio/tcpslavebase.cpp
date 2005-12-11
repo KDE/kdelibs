@@ -48,7 +48,6 @@
 
 #include <klocale.h>
 #include <dcopclient.h>
-#include <q3cstring.h>
 #include <qdatastream.h>
 
 #include <kapplication.h>
@@ -332,7 +331,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     d->userAborted = false;
 
     //  - leaving SSL - warn before we even connect
-    if (metaData("main_frame_request") == "TRUE" && 
+    if (metaData("main_frame_request") == "TRUE" &&
         metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
         !m_bIsSSL) {
@@ -384,7 +383,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
             if (d->status == KNetwork::KSocketBase::LookupFailure)
                 error( ERR_UNKNOWN_HOST, host);
             else if ( d->status != KNetwork::KSocketBase::NoError)
-                error( ERR_COULD_NOT_CONNECT, host + QLatin1String(": ") + 
+                error( ERR_COULD_NOT_CONNECT, host + QLatin1String(": ") +
 		       d->socket.errorString());
         }
         return false;
@@ -677,7 +676,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         else
            showprompt = true;
         if (showprompt) {
-           if (!openPassDlg(ai, first ? QString::null : 
+           if (!openPassDlg(ai, first ? QString::null :
                    i18n("Unable to open the certificate. Try a new password?")))
               break;
         }
@@ -785,7 +784,7 @@ int TCPSlaveBase::verifyCertificate()
     if (!d->realHost.isEmpty()) {
        setMetaData("ssl_proxied", "true");
     }
-    
+
     QString errorStr;
     for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
         it != ksvl.end(); ++it)
@@ -1213,7 +1212,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         if (s) {
             d->kssl->setSession(s);
             delete s;
-	}    
+	}
     }
     certificatePrompt();
 

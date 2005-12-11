@@ -30,7 +30,6 @@
 #include <qwindowdefs.h>
 
 #include <dcopobject.h>
-#include <q3ptrlist.h>
 
 namespace KIO {
 
@@ -114,7 +113,7 @@ namespace KIO {
         Q_OBJECT
 
     public:
-        typedef Q3PtrList<SimpleJob> JobList;
+        typedef QList<SimpleJob *> JobList;
 
         // InfoDict needs Info, so we can't declare it private
         class ProtocolInfo;

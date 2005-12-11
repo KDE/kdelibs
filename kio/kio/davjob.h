@@ -24,7 +24,6 @@
 #include <kurl.h>
 
 #include <qobject.h>
-#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpointer.h>
@@ -119,7 +118,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
+   KIO_EXPORT DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true );
 
 }
 
