@@ -34,6 +34,7 @@ namespace DOM {
 
 class DOMString;
 class HTMLFormElementImpl;
+class HTMLCollectionImpl;
 
 class HTMLImageElementImpl
     : public HTMLElementImpl, public khtml::CachedObjectClient
@@ -53,6 +54,9 @@ public:
 
     long width() const;
     long height() const;
+
+    long x() const;
+    long y() const;
 
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     /** Return the image for this element.
@@ -136,6 +140,8 @@ public:
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        khtml::RenderObject::NodeInfo& info);
+
+    HTMLCollectionImpl* areas();
 private:
 
     QString name;

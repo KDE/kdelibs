@@ -45,11 +45,6 @@
 using KIO::NetAccess;
 #endif
 
-#define BANNED_HTTP_HEADERS "authorization,proxy-authorization,"\
-                            "content-length,host,connect,copy,move,"\
-                            "delete,head,trace,put,propfind,proppatch,"\
-                            "mkcol,lock,unlock,options,via"
-
 using namespace KJS;
 using khtml::Decoder;
 
@@ -65,11 +60,13 @@ using khtml::Decoder;
   setRequestHeader	XMLHttpRequest::SetRequestHeader	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("XMLHttpRequest",XMLHttpRequestProto)
-IMPLEMENT_PROTOFUNC_DOM(XMLHttpRequestProtoFunc)
-IMPLEMENT_PROTOTYPE(XMLHttpRequestProto,XMLHttpRequestProtoFunc)
 
 namespace KJS {
+
+DEFINE_PROTOTYPE("XMLHttpRequest",XMLHttpRequestProto)
+IMPLEMENT_PROTOFUNC(XMLHttpRequestProtoFunc)
+IMPLEMENT_PROTOTYPE(XMLHttpRequestProto,XMLHttpRequestProtoFunc)
+
 
 XMLHttpRequestQObject::XMLHttpRequestQObject(XMLHttpRequest *_jsObject)
 {
@@ -98,7 +95,7 @@ void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KURL& url)
   jsObject->slotRedirection( job, url );
 }
 
-XMLHttpRequestConstructorImp::XMLHttpRequestConstructorImp(ExecState *, const DOM::Document &d)
+XMLHttpRequestConstructorImp::XMLHttpRequestConstructorImp(ExecState *, DOM::DocumentImpl* d)
     : ObjectImp(), doc(d)
 {
 }
@@ -108,9 +105,9 @@ bool XMLHttpRequestConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
+ObjectImp *XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
 {
-  return Object(new XMLHttpRequest(exec, doc));
+  return new XMLHttpRequest(exec, doc.get());
 }
 
 const ClassInfo XMLHttpRequest::info = { "XMLHttpRequest", 0, &XMLHttpRequestTable, 0 };
@@ -128,18 +125,18 @@ const ClassInfo XMLHttpRequest::info = { "XMLHttpRequest", 0, &XMLHttpRequestTab
 @end
 */
 
-Value XMLHttpRequest::tryGet(ExecState *exec, const Identifier &propertyName) const
+bool XMLHttpRequest::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<XMLHttpRequest,DOMObject>(exec, propertyName, &XMLHttpRequestTable, this);
+  return getStaticValueSlot<XMLHttpRequest, DOMObject>(exec, &XMLHttpRequestTable, this, propertyName, slot);
 }
 
-Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
+ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ReadyState:
     return Number(state);
   case ResponseText:
-    return getString(DOM::DOMString(response));
+    return ::getStringOrNull(DOM::DOMString(response));
   case ResponseXML:
     if (state != Completed) {
       return Undefined();
@@ -147,20 +144,18 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     if (!createdDocument) {
       QString mimeType = "text/xml";
 
-      Value header = getResponseHeader("Content-Type");
-      if (header.type() != UndefinedType) {
-	mimeType = QStringList::split(";", header.toString(exec).qstring())[0].trimmed();
+      ValueImp *header = getResponseHeader("Content-Type");
+      if (header->type() != UndefinedType) {
+	mimeType = QStringList::split(";", header->toString(exec).qstring())[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
-	responseXML = DOM::Document(doc->implementation()->createDocument());
+	responseXML = doc->implementation()->createDocument();
 
-	DOM::DocumentImpl *docImpl = static_cast<DOM::DocumentImpl *>(responseXML.handle());
-
-	docImpl->open();
-	docImpl->write(response);
-	docImpl->finishParsing();
-	docImpl->close();
+	responseXML->open();
+	responseXML->write(response);
+	responseXML->finishParsing();
+	responseXML->close();
 
 	typeIsXML = true;
       } else {
@@ -173,35 +168,35 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
       return Undefined();
     }
 
-    return getDOMNode(exec,responseXML);
+    return getDOMNode(exec,responseXML.get());
   case Status:
     return getStatus();
   case StatusText:
     return getStatusText();
   case Onreadystatechange:
-   if (onReadyStateChangeListener && onReadyStateChangeListener->listenerObjImp()) {
+   if (onReadyStateChangeListener && onReadyStateChangeListener->listenerObj()) {
      return onReadyStateChangeListener->listenerObj();
    } else {
      return Null();
    }
   case Onload:
-   if (onLoadListener && onLoadListener->listenerObjImp()) {
+   if (onLoadListener && onLoadListener->listenerObj()) {
      return onLoadListener->listenerObj();
    } else {
-    return Null();
+     return Null();
    }
   default:
     kdWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token << endl;
-    return Value();
+    return 0;
   }
 }
 
-void XMLHttpRequest::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
+void XMLHttpRequest::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
-  DOMObjectLookupPut<XMLHttpRequest,DOMObject>(exec, propertyName, value, attr, &XMLHttpRequestTable, this );
+  lookupPut<XMLHttpRequest,DOMObject>(exec, propertyName, value, attr, &XMLHttpRequestTable, this );
 }
 
-void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
+void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
 {
   switch(token) {
   case Onreadystatechange:
@@ -217,10 +212,9 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& v
   }
 }
 
-XMLHttpRequest::XMLHttpRequest(ExecState *exec, const DOM::Document &d)
-  : DOMObject(XMLHttpRequestProto::self(exec)),
-    qObject(new XMLHttpRequestQObject(this)),
-    doc(static_cast<DOM::DocumentImpl*>(d.handle())),
+XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
+  : qObject(new XMLHttpRequestQObject(this)),
+    doc(d),
     async(true),
     contentType(QString::null),
     job(0),
@@ -231,6 +225,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, const DOM::Document &d)
     createdDocument(false),
     aborted(false)
 {
+  setPrototype(XMLHttpRequestProto::self(exec));
 }
 
 XMLHttpRequest::~XMLHttpRequest()
@@ -246,8 +241,6 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
   if (state != newState) {
     state = newState;
 
-    ref();
-
     if (onReadyStateChangeListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("readystatechange", true, true);
@@ -259,17 +252,11 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       ev.initEvent("load", true, true);
       onLoadListener->handleEvent(ev);
     }
-
-    deref();
   }
 }
 
 bool XMLHttpRequest::urlMatchesDocumentDomain(const KURL& _url) const
 {
-  // No need to do work if _url is not valid...
-  if (!_url.isValid())
-    return false;
-
   KURL documentURL(doc->URL());
 
   // a local file can load anything
@@ -297,7 +284,7 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
   responseHeaders = QString();
   response = QString();
   createdDocument = false;
-  responseXML = DOM::Document();
+  responseXML = 0;
 
   changeState(Uninitialized);
 
@@ -310,7 +297,7 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
   }
 
 
-  method = _method.lower();
+  method = _method;
   url = _url;
   async = _async;
 
@@ -320,58 +307,31 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-
-  if (method == "post") {
-    QString protocol = url.protocol().toLower();
-
-    // Abondon the request when the protocol is other than "http",
-    // instead of blindly changing it to a "get" request.
-    if (!protocol.startsWith("http") && !protocol.startsWith("webdav"))
-    {
-      abort();
-      return;
-    }
-
-    // FIXME: determine post encoding correctly by looking in headers
-    // for charset.
-    QByteArray buf;
-    buf.duplicate(_body.utf8().data(), _body.length());
-
-    job = KIO::http_post( url, buf, false );
-    if(contentType.isNull())
-      job->addMetaData( "content-type", "Content-type: text/plain" );
-    else
-      job->addMetaData( "content-type", contentType );
+  if (method.toLower() == "post" && (url.protocol().toLower() == "http" || url.protocol().toLower() == "https") ) {
+      // FIXME: determine post encoding correctly by looking in headers for charset
+      job = KIO::http_post( url, QByteArray(_body.toUtf8()), false );
+      if(contentType.isNull())
+	job->addMetaData( "content-type", "Content-type: text/plain" );
+      else
+	job->addMetaData( "content-type", contentType );
   }
-  else {
-    job = KIO::get( url, false, false );
+  else
+  {
+     job = KIO::get( url, false, false );
   }
-
   if (!requestHeaders.isEmpty()) {
     QString rh;
     QMap<QString, QString>::ConstIterator begin = requestHeaders.begin();
     QMap<QString, QString>::ConstIterator end = requestHeaders.end();
     for (QMap<QString, QString>::ConstIterator i = begin; i != end; ++i) {
-      if (i != begin)
-        rh += "\r\n";
+      if (i != begin) {
+	rh += "\r\n";
+      }
       rh += i.key() + ": " + i.data();
     }
-
     job->addMetaData("customHTTPHeader", rh);
   }
-
-  job->addMetaData("PropagateHttpHeader", "true");
-
-  // Set the default referrer if one is not already supplied
-  // through setRequestHeader. NOTE: the user can still disable
-  // this feature at the protocol level (kio_http).
-  if (requestHeaders.find("Referer") == requestHeaders.end()) {
-    KURL documentURL(doc->URL());
-    documentURL.setPass(QString::null);
-    documentURL.setUser(QString::null);
-    job->addMetaData("referrer", documentURL.url());
-    // kdDebug() << "Adding referrer: " << documentURL << endl;
-  }
+  job->addMetaData( "PropagateHttpHeader", "true" );
 
   if (!async) {
     QByteArray data;
@@ -421,46 +381,20 @@ void XMLHttpRequest::abort()
   aborted = true;
 }
 
-void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
+void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
 {
-  QString name = _name.lower().stripWhiteSpace();
-
   // Content-type needs to be set seperately from the other headers
-  if(name == "content-type") {
+  if(name.toLower() == "content-type") {
     contentType = "Content-type: " + value;
     return;
   }
-
-  // Sanitize the referrer header to protect against spoofing...
-  if(name == "referer") {
-    KURL referrerURL(value);
-    if (urlMatchesDocumentDomain(referrerURL))
-      requestHeaders[name] = referrerURL.url();
-    return;
+  if(name.toLower() == "content-length") {
+    return; // Denied - we set it ourselves.
   }
-
-  // Sanitize the request headers below and handle them as if they are
-  // calls to open. Otherwise, we will end up ignoring them all together!
-  // TODO: Do something about "put" which kio_http sort of supports and
-  // the webDAV headers such as PROPFIND etc...
-  if (name == "get"  || name == "post") {
-    KURL reqURL (doc->URL(), value.stripWhiteSpace());
-    open(name, reqURL, async);
-    return;
-  }
-
-  // Reject all banned headers. See BANNED_HTTP_HEADERS above.
-  // kdDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
-  QStringList bannedHeaders = QStringList::split(',',
-                                  QString::fromLatin1(BANNED_HTTP_HEADERS));
-
-  if (bannedHeaders.contains(name))
-    return;   // Denied
-
-  requestHeaders[name] = value.stripWhiteSpace();
+  requestHeaders[name] = value;
 }
 
-Value XMLHttpRequest::getAllResponseHeaders() const
+ValueImp *XMLHttpRequest::getAllResponseHeaders() const
 {
   if (responseHeaders.isEmpty()) {
     return Undefined();
@@ -475,7 +409,7 @@ Value XMLHttpRequest::getAllResponseHeaders() const
   return String(responseHeaders.mid(endOfLine + 1) + "\n");
 }
 
-Value XMLHttpRequest::getResponseHeader(const QString& name) const
+ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
 {
   if (responseHeaders.isEmpty()) {
     return Undefined();
@@ -505,7 +439,7 @@ Value XMLHttpRequest::getResponseHeader(const QString& name) const
   return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
 
-static Value httpStatus(const QString& response, bool textStatus = false)
+static ValueImp *httpStatus(const QString& response, bool textStatus = false)
 {
   if (response.isEmpty()) {
     return Undefined();
@@ -536,12 +470,12 @@ static Value httpStatus(const QString& response, bool textStatus = false)
   return Number(code);
 }
 
-Value XMLHttpRequest::getStatus() const
+ValueImp *XMLHttpRequest::getStatus() const
 {
   return httpStatus(responseHeaders);
 }
 
-Value XMLHttpRequest::getStatusText() const
+ValueImp *XMLHttpRequest::getStatusText() const
 {
   return httpStatus(responseHeaders, true);
 }
@@ -613,6 +547,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
       int codeEnd = responseHeaders.find("\n", codeStart+3);
       if (codeEnd != -1)
         responseHeaders.replace(codeStart, (codeEnd-codeStart), "200 OK");
+      // qDebug("Response Header: %s", responseHeaders.latin1());
     }
 
     changeState(Loaded);
@@ -624,16 +559,17 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 
   if ( decoder == NULL ) {
-    int pos = responseHeaders.indexOf(QLatin1String("content-type:"), 0, Qt::CaseInsensitive);
-
-    if ( pos > -1 ) {
-      pos += 13;
-      int index = responseHeaders.find('\n', pos);
-      QString type = responseHeaders.mid(pos, (index-pos));
-      index = type.find (';');
-      if (index > -1)
-        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
-    }
+     int pos = responseHeaders.find("Content-Type:");
+     if ( pos > -1 )
+     {
+        int index = responseHeaders.find('\n', pos+13);
+        QString type = responseHeaders.mid(pos+13, index);
+        // qDebug("XMLHttpRequest::slotData: 'content-type = %s'", type.latin1());
+        index = type.find (';');
+        if (index > -1)
+          encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).trimmed();
+        // qDebug("XMLHttpRequest::slotData: 'encoding = %s'", encoding.latin1());
+     }
 
     decoder = new Decoder;
     if (!encoding.isNull())
@@ -657,15 +593,13 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   }
 }
 
-Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj.inherits(&XMLHttpRequest::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
+  if (!thisObj->inherits(&XMLHttpRequest::info)) {
+    return throwError(exec, TypeError);
   }
 
-  XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj.imp());
+  XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj);
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -681,30 +615,30 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
     return Undefined();
     }
 
-    return request->getResponseHeader(args[0].toString(exec).qstring());
+    return request->getResponseHeader(args[0]->toString(exec).qstring());
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2 || args.size() > 5) {
         return Undefined();
       }
 
-      QString method = args[0].toString(exec).qstring();
+      QString method = args[0]->toString(exec).qstring();
       KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
         return Undefined();
-      KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());
+      KURL url = KURL(part->document().completeURL(args[1]->toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {
-	async = args[2].toBoolean(exec);
+	async = args[2]->toBoolean(exec);
       }
 
       if (args.size() >= 4) {
-	url.setUser(args[3].toString(exec).qstring());
+	url.setUser(args[3]->toString(exec).qstring());
       }
 
       if (args.size() >= 5) {
-	url.setPass(args[4].toString(exec).qstring());
+	url.setPass(args[4]->toString(exec).qstring());
       }
 
       request->open(method, url, async);
@@ -713,7 +647,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
     }
   case XMLHttpRequest::Send:
     {
-      if (args.size() != 1) {
+      if (args.size() > 1) {
         return Undefined();
       }
 
@@ -722,21 +656,23 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString body;
-      Object obj = Object::dynamicCast(args[0]);
-      if (obj.isValid() && obj.inherits(&DOMDocument::info)) {
-        DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
-        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
-        
-        try {
-          body = doc->toString().string();
-          // FIXME: also need to set content type, including encoding!
 
-        } catch(DOM::DOMException& e) {
-          Object err = Error::create(exec, GeneralError, "Exception serializing document");
-          exec->setException(err);
-        }
-      } else {
-        body = args[0].toString(exec).qstring();
+      if (args.size() >= 1) {
+	ObjectImp *obj = args[0]->getObject();
+	if (obj && obj->inherits(&DOMDocument::info)) {
+	  DOM::DocumentImpl *doc = static_cast<KJS::DOMDocument *>(obj)->impl();
+
+	  try {
+	    body = doc->toString().string();
+	    // FIXME: also need to set content type, including encoding!
+
+	  } catch(DOM::DOMException& e) {
+	     ObjectImp *err = Error::create(exec, GeneralError, "Exception serializing document");
+	     exec->setException(err);
+	  }
+	} else {
+	  body = args[0]->toString(exec).qstring();
+	}
       }
 
       request->send(body);
@@ -748,7 +684,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       return Undefined();
     }
 
-    request->setRequestHeader(args[0].toString(exec).qstring(), args[1].toString(exec).qstring());
+    request->setRequestHeader(args[0]->toString(exec).qstring(), args[1]->toString(exec).qstring());
 
     return Undefined();
   }

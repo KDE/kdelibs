@@ -31,6 +31,19 @@
 #include <kurl.h>
 #include <kjs/lookup.h>
 
+#include <stdlib.h> // for abort
+
+#define KJS_CHECK_THIS( ClassName, theObj ) \
+	if (!theObj || !theObj->inherits(&ClassName::info)) { \
+		KJS::UString errMsg = "Attempt at calling a function that expects a "; \
+		errMsg += ClassName::info.className; \
+		errMsg += " on a "; \
+		errMsg += thisObj->className(); \
+		KJS::ObjectImp *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+		exec->setException(err); \
+		return err; \
+	}
+
 namespace KParts {
   class ReadOnlyPart;
   class LiveConnectExtension;
@@ -43,45 +56,33 @@ namespace khtml {
 namespace KJS {
 
   /**
-   * Base class for all objects in this binding - get() and put() run
-   * tryGet() and tryPut() respectively, and catch exceptions if they
-   * occur.
+   * Base class for all objects in this binding. Doesn't manage exceptions any more
    */
   class DOMObject : public ObjectImp {
+  protected:
+    DOMObject() : ObjectImp() {}
+    DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
   public:
-    DOMObject(const Object &proto) : ObjectImp(proto) {}
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
-      { return ObjectImp::get(exec, propertyName); }
-
-    virtual void put(ExecState *exec, const Identifier &propertyName,
-                     const Value &value, int attr = None);
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
-                        const Value& value, int attr = None);
-
     virtual UString toString(ExecState *exec) const;
   };
 
   /**
-   * Base class for all functions in this binding - get() and call() run
-   * tryGet() and tryCall() respectively, and catch exceptions if they
-   * occur.
+   * Base class for all functions in this binding
    */
-  class DOMFunction : public InternalFunctionImp {
+  class DOMFunction : public ObjectImp {
+  protected:
+    DOMFunction() : ObjectImp() {}
   public:
-    DOMFunction(ExecState* exec) : InternalFunctionImp(
-      static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-      ) {}
-    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
-      { return ObjectImp::get(exec, propertyName); }
+//     DOMFunction(ExecState* exec) : ObjectImp(
+//       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype())
+//       ) {}
 
     virtual bool implementsCall() const { return true; }
-    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
-
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
-      { return ObjectImp::call(exec, thisObj, args); }
     virtual bool toBoolean(ExecState *) const { return true; }
+//From JSC,examine:
+//	virtual ValueImp *toPrimitive(ExecState *exec, Type) const { return String(toString(exec)); }
+//  virtual UString toString(ExecState *) const { return UString("[function]"); }
+#warning "toString -- [[native code]] thing?"
   };
 
   /**
@@ -89,10 +90,10 @@ namespace KJS {
    * that the interpreter runs for.
    * The interpreter also stores the DOM object - >KJS::DOMObject cache.
    */
-  class KHTML_EXPORT ScriptInterpreter : public Interpreter
+  class KDE_EXPORT ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter( const Object &global, khtml::ChildFrame* frame );
+    ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
@@ -101,20 +102,10 @@ namespace KJS {
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
       m_domObjects.insert( objectHandle, obj );
     }
-    void customizedDOMObject( DOMObject* obj ) {
-      m_customizedDomObjects.replace( obj, this );
-    }
     bool deleteDOMObject( void* objectHandle ) {
-      DOMObject* obj = m_domObjects.take( objectHandle );
-      if (obj) {
-        m_customizedDomObjects.remove( obj );
-        return true;
-      }
-      else
-        return false;
+      return m_domObjects.remove( objectHandle );
     }
     void clear() {
-      m_customizedDomObjects.clear();
       m_domObjects.clear();
     }
     /**
@@ -144,125 +135,174 @@ namespace KJS {
   private:
     khtml::ChildFrame* m_frame;
     Q3PtrDict<DOMObject> m_domObjects;
-    Q3PtrDict<void> m_customizedDomObjects; //Objects which had custom properties set,
-                                            //and should not be GC'd. key is DOMObject*
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;
   };
+
+  /**
+   A little helper for setting stuff up given an entry
+  */
+  template<class FuncImp, class ThisImp>
+  inline void getSlotFromEntry(const HashEntry* entry, ThisImp* thisObj, PropertySlot& slot)
+  {
+    if (entry->attr & Function)
+      slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
+    else 
+      slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
+  }
+
+
+  /**
+    Like getStaticPropertySlot but doesn't check the parent. Handy when there
+    are both functions and values
+   */
+  template <class FuncImp, class ThisImp>
+  inline bool getStaticOwnPropertySlot(const HashTable* table,
+                                    ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return false;
+
+    if (entry->attr & Function)
+      slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
+    else 
+      slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
+
+    return true;
+  }
+
+  /**
+    Handler for local table-looked up things.
+  */
+  template<class ThisImp>
+  inline bool getStaticOwnValueSlot(const HashTable* table,
+        ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+    if (!entry)
+      return false;
+
+    assert(!(entry->attr & Function));
+    slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
+    return true;
+  }
+
+  /* Helper for the below*/
+  template<class JSTypeImp>
+  ValueImp *indexGetterAdapter(ExecState* exec, const Identifier& , const PropertySlot& slot)
+  {
+    JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
+    return thisObj->indexGetter(exec, slot.index());
+  }
+
+  /**
+   Handler for index properties. Will call "length" method on the listObj
+   to determine whether it's in range, and arrange to have indexGetter called
+  */
+  template<class ThisImp, class BaseObj>
+  inline bool getIndexSlot(ThisImp* thisObj, const BaseObj& listObj,
+      const Identifier& propertyName, PropertySlot& slot)
+  {
+    bool ok;
+    unsigned u = propertyName.toUInt32(&ok);
+    if (ok && u < listObj.length()) {
+      slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   Version that takes an external bound
+  */
+  template<class ThisImp>
+  inline bool getIndexSlot(ThisImp* thisObj, unsigned lengthLimit,
+      const Identifier& propertyName, PropertySlot& slot)
+  {
+    bool ok;
+    unsigned u = propertyName.toUInt32(&ok);
+    if (ok && u < lengthLimit) {
+      slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
+      return true;
+    }
+    return false;
+  }
+
+
+  /**
+   Version w/o the bounds check
+  */
+  template<class ThisImp>
+  inline bool getIndexSlot(ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
+  {
+    bool ok;
+    unsigned u = propertyName.toUInt32(&ok);
+    if (ok) {
+      slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
+      return true;
+    }
+    return false;
+  }
+
+
   /**
    * Retrieve from cache, or create, a KJS object around a DOM object
    */
   template<class DOMObj, class KJSDOMObj>
-  inline Value cacheDOMObject(ExecState *exec, DOMObj domObj)
+  inline ValueImp* cacheDOMObject(ExecState *exec, DOMObj* domObj)
   {
     DOMObject *ret;
-    if (domObj.isNull())
+    if (!domObj)
       return Null();
     ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-    if ((ret = interp->getDOMObject(domObj.handle())))
-      return Value(ret);
+    if ((ret = interp->getDOMObject(domObj)))
+      return ret;
     else {
       ret = new KJSDOMObj(exec, domObj);
-      interp->putDOMObject(domObj.handle(),ret);
-      return Value(ret);
+      interp->putDOMObject(domObj,ret);
+      return ret;
     }
   }
 
   /**
-   * Convert an object to a Node. Returns a null Node if not possible.
+   * Convert an object to a Node. Returns 0 if not possible.
    */
-  DOM::Node toNode(const Value&);
+  DOM::NodeImpl* toNode(ValueImp*);
   /**
    *  Get a String object, or Null() if s is null
    */
-  Value getString(DOM::DOMString s);
+  ValueImp* getStringOrNull(DOM::DOMString s);
 
   /**
-   * Convery a KJS value into a QVariant
+   * Convert a KJS value into a QVariant
    */
-  QVariant ValueToVariant(ExecState* exec, const Value& val);
+  QVariant ValueToVariant(ExecState* exec, ValueImp* val);
 
-  /**
-   * We need a modified version of lookupGet because
-   * we call tryGet instead of get, in DOMObjects.
-   */
-  template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupGet(ExecState *exec, const Identifier &propertyName,
-                                  const HashTable* table, const ThisImp* thisObj)
-  {
-    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  // Convert a DOM implementation exception code into a JavaScript exception in the execution state.
+  void setDOMException(ExecState *exec, int DOMExceptionCode);
 
-    if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::tryGet(exec, propertyName);
+  // Helper class to call setDOMException on exit without adding lots of separate calls to that function.
+  class DOMExceptionTranslator {
+  public:
+    explicit DOMExceptionTranslator(ExecState *exec) : m_exec(exec), m_code(0) { }
+    ~DOMExceptionTranslator() { setDOMException(m_exec, m_code); }
+    operator int &() { return m_code; }
+    operator int *() { return &m_code; }
 
-    if (entry->attr & Function) {
-      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
+    bool triggered() {
+      return m_code;
     }
-    return thisObj->getValueProperty(exec, entry->value);
-  }
+  private:
+    ExecState *m_exec;
+    int m_code;
+  };
 
-  /**
-   * Simplified version of DOMObjectLookupGet in case there are no
-   * functions, only "values".
-   */
-  template <class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupGetValue(ExecState *exec, const Identifier &propertyName,
-                                       const HashTable* table, const ThisImp* thisObj)
-  {
-    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
-    if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::tryGet(exec, propertyName);
 
-    if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
-    return thisObj->getValueProperty(exec, entry->value);
-  }
-
-  /**
-   * We need a modified version of lookupPut because
-   * we call tryPut instead of put, in DOMObjects.
-   */
-  template <class ThisImp, class ParentImp>
-  inline void DOMObjectLookupPut(ExecState *exec, const Identifier &propertyName,
-                                 const Value& value, int attr,
-                                 const HashTable* table, ThisImp* thisObj)
-  {
-    const HashEntry* entry = Lookup::findEntry(table, propertyName);
-
-    if (!entry) // not found: forward to parent
-      thisObj->ParentImp::tryPut(exec, propertyName, value, attr);
-    else if (entry->attr & Function) // function: put as override property
-      thisObj->ObjectImp::put(exec, propertyName, value, attr);
-    else if (entry->attr & ReadOnly) // readonly! Can't put!
-#ifdef KJS_VERBOSE
-      fprintf(stderr,"WARNING: Attempt to change value of readonly property '%s'\n",propertyName.ascii());
-#else
-    ; // do nothing
-#endif
-    else
-      thisObj->putValueProperty(exec, entry->value, value, attr);
-  }
-
-  // Modified version of IMPLEMENT_PROTOFUNC, to use DOMFunction and tryCall
-#define IMPLEMENT_PROTOFUNC_DOM(ClassFunc) \
-  namespace KJS { \
-  class ClassFunc : public DOMFunction { \
-  public: \
-    ClassFunc(ExecState *exec, int i, int len) \
-       : DOMFunction( exec ), id(i) { \
-       Value protect(this); \
-       put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
-    } \
-    /** You need to implement that one */ \
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \
-  private: \
-    int id; \
-  }; \
-  }
-
-  Value getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
 } // namespace
 

@@ -22,10 +22,10 @@
 #ifndef _KJS_DOM_H_
 #define _KJS_DOM_H_
 
-#include "dom/dom_node.h"
-#include "dom/dom_doc.h"
-#include "dom/dom_element.h"
-#include "dom/dom_xml.h"
+#include "xml/dom_nodeimpl.h"
+#include "xml/dom_docimpl.h"
+#include "xml/dom_elementimpl.h"
+#include "xml/dom_xmlimpl.h"
 
 #include "ecma/kjs_binding.h"
 
@@ -34,24 +34,21 @@ namespace KJS {
   class DOMNode : public DOMObject {
   public:
     // Build a DOMNode
-    DOMNode(ExecState *exec, const DOM::Node& n);
-    // Constructor for inherited classes
-    DOMNode(const Object& proto, const DOM::Node& n);
+    DOMNode(ExecState *exec, DOM::NodeImpl* n);
     ~DOMNode();
     virtual bool toBoolean(ExecState *) const;
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
 
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
-    virtual DOM::Node toNode() const { return node; }
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
-    virtual Value toPrimitive(ExecState *exec, Type preferred = UndefinedType) const;
+    virtual ValueImp* toPrimitive(ExecState *exec, Type preferred = UndefinedType) const;
     virtual UString toString(ExecState *exec) const;
-    void setListener(ExecState *exec, int eventId, const Value& func) const;
-    Value getListener(int eventId) const;
+    void setListener(ExecState *exec, int eventId, ValueImp* func) const;
+    ValueImp* getListener(int eventId) const;
     virtual void pushEventHandlerScope(ExecState *exec, ScopeChain &scope) const;
 
     enum { NodeName, NodeValue, NodeType, ParentNode, ParentElement,
@@ -68,40 +65,49 @@ namespace KJS {
            ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
 	   ScrollWidth, ScrollHeight, SourceIndex };
 
+    //### toNode? virtual
+    DOM::NodeImpl* impl() const { return m_impl.get(); }
   protected:
-    DOM::Node node;
+    SharedPtr<DOM::NodeImpl> m_impl;
   };
 
   class DOMNodeList : public DOMObject {
   public:
-    DOMNodeList(ExecState *, const DOM::NodeList& l);
+    DOMNodeList(ExecState *, DOM::NodeListImpl* l);
     ~DOMNodeList();
-    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    virtual Value call(ExecState *exec, Object &thisObj, const List&args);
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
+
+    ValueImp* indexGetter(ExecState *exec, unsigned index);
+    
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
-    DOM::NodeList nodeList() const { return list; }
-    enum { Item, NamedItem };
+    
+    enum { Length, Item, NamedItem };
+
+    DOM::NodeListImpl* impl() const { return m_impl.get(); }
+
+    DOM::NodeImpl* getByName(const Identifier& name);
   private:
-    DOM::NodeList list;
+    SharedPtr<DOM::NodeListImpl> m_impl;
+
+    static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot&);
   };
 
   class DOMDocument : public DOMNode {
   public:
     // Build a DOMDocument
-    DOMDocument(ExecState *exec, const DOM::Document& d);
-    // Constructor for inherited classes
-    DOMDocument(const Object& proto, const DOM::Document& d);
-    virtual ~DOMDocument();
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
+    DOMDocument(ExecState *exec, DOM::DocumentImpl* d);
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { DocType, Implementation, DocumentElement,
@@ -113,15 +119,17 @@ namespace KJS {
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
            CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
+    DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
 
   class DOMAttr : public DOMNode {
   public:
-    DOMAttr(ExecState *exec, const DOM::Attr& a) : DOMNode(exec, a) { }
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
-    Value getValueProperty(ExecState *exec, int token) const;
-    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
+    DOMAttr(ExecState *exec, DOM::AttrImpl* a) : DOMNode(exec, a) { }
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Name, Specified, ValueProperty, OwnerElement };
@@ -130,10 +138,10 @@ namespace KJS {
   class DOMElement : public DOMNode {
   public:
     // Build a DOMElement
-    DOMElement(ExecState *exec, const DOM::Element& e);
-    // Constructor for inherited classes
-    DOMElement(const Object& proto, const DOM::Element& e);
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    DOMElement(ExecState *exec, DOM::ElementImpl* e);
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
+
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -142,29 +150,35 @@ namespace KJS {
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
+  private:
+    static ValueImp *attributeGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
   };
+
+  DOM::ElementImpl *toElement(ValueImp *); // returns 0 if passed-in value is not a DOMElement object
 
   class DOMDOMImplementation : public DOMObject {
   public:
     // Build a DOMDOMImplementation
-    DOMDOMImplementation(ExecState *, const DOM::DOMImplementation& i);
+    DOMDOMImplementation(ExecState *, DOM::DOMImplementationImpl* i);
     ~DOMDOMImplementation();
     // no put - all functions
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet, CreateHTMLDocument };
-    DOM::DOMImplementation toImplementation() const { return implementation; }
+    
+    DOM::DOMImplementationImpl* impl() const { return m_impl.get(); }
   private:
-    DOM::DOMImplementation implementation;
+    SharedPtr<DOM::DOMImplementationImpl> m_impl;
   };
 
   class DOMDocumentType : public DOMNode {
   public:
     // Build a DOMDocumentType
-    DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt);
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    DOMDocumentType(ExecState *exec, DOM::DocumentTypeImpl* dt);
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -173,27 +187,34 @@ namespace KJS {
 
   class DOMNamedNodeMap : public DOMObject {
   public:
-    DOMNamedNodeMap(ExecState *, const DOM::NamedNodeMap& m);
+    DOMNamedNodeMap(ExecState *, DOM::NamedNodeMapImpl* m);
     ~DOMNamedNodeMap();
-    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item, Length,
            GetNamedItemNS, SetNamedItemNS, RemoveNamedItemNS };
-    DOM::NamedNodeMap toMap() const { return map; }
+           
+    DOM::NamedNodeMapImpl* impl() const { return m_impl.get(); }
+
+    ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
-    DOM::NamedNodeMap map;
+    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot);
+    SharedPtr<DOM::NamedNodeMapImpl> m_impl;
   };
 
   class DOMProcessingInstruction : public DOMNode {
   public:
-    DOMProcessingInstruction(ExecState *exec, const DOM::ProcessingInstruction& pi) : DOMNode(exec, pi) { }
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    DOMProcessingInstruction(ExecState *exec, DOM::ProcessingInstructionImpl* pi) : DOMNode(exec, pi) { }
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Target, Data, Sheet };
@@ -201,9 +222,10 @@ namespace KJS {
 
   class DOMNotation : public DOMNode {
   public:
-    DOMNotation(ExecState *exec, const DOM::Notation& n) : DOMNode(exec, n) { }
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    DOMNotation(ExecState *exec, DOM::NotationImpl* n) : DOMNode(exec, n) { }
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -212,9 +234,9 @@ namespace KJS {
 
   class DOMEntity : public DOMNode {
   public:
-    DOMEntity(ExecState *exec, const DOM::Entity& e) : DOMNode(exec, e) { }
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    DOMEntity(ExecState *exec, DOM::EntityImpl* e) : DOMNode(exec, e) { }
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -225,8 +247,8 @@ namespace KJS {
   class NodeConstructor : public DOMObject {
   public:
     NodeConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -236,59 +258,58 @@ namespace KJS {
   class DOMExceptionConstructor : public DOMObject {
   public:
     DOMExceptionConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  bool checkNodeSecurity(ExecState *exec, const DOM::Node& n);
-  KHTML_EXPORT Value getDOMNode(ExecState *exec, const DOM::Node& n);
-  Value getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m);
-  Value getDOMNodeList(ExecState *exec, const DOM::NodeList& l);
-  Value getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i);
-  Object getNodeConstructor(ExecState *exec);
-  Object getDOMExceptionConstructor(ExecState *exec);
+  bool checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n);
+  KDE_EXPORT ValueImp* getDOMNode(ExecState *exec, DOM::NodeImpl* n);
+  ValueImp* getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m);
+  ValueImp* getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l);
+  ValueImp* getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i);
+  ObjectImp *getNodeConstructor(ExecState *exec);
+  ObjectImp *getDOMExceptionConstructor(ExecState *exec);
 
   // Internal class, used for the collection return by e.g. document.forms.myinput
   // when multiple nodes have the same name.
   class DOMNamedNodesCollection : public DOMObject {
   public:
-    DOMNamedNodesCollection(ExecState *exec, const QList<DOM::Node>& nodes );
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    DOMNamedNodesCollection(ExecState *exec, const QList<SharedPtr<DOM::NodeImpl> >& nodes );
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    const QList<DOM::Node>& nodes() const { return m_nodes; }
+    const QList<SharedPtr<DOM::NodeImpl> > nodes() const { return m_nodes; }
     enum { Length };
+
+    ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
-    QList<DOM::Node> m_nodes;
+    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot);
+    QList<SharedPtr<DOM::NodeImpl> > m_nodes;
   };
 
   class DOMCharacterData : public DOMNode {
   public:
     // Build a DOMCharacterData
-    DOMCharacterData(ExecState *exec, const DOM::CharacterData& d);
-    // Constructor for inherited classes
-    DOMCharacterData(const Object& proto, const DOM::CharacterData& d);
-    virtual Value tryGet(ExecState *exec,const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d);
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp* getValueProperty(ExecState *, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    DOM::CharacterData toData() const { return static_cast<DOM::CharacterData>(node); }
+    DOM::CharacterDataImpl* impl() const { return static_cast<DOM::CharacterDataImpl*>(m_impl.get()); }
     enum { Data, Length,
            SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
   };
 
   class DOMText : public DOMCharacterData {
   public:
-    DOMText(ExecState *exec, const DOM::Text& t);
-    virtual Value tryGet(ExecState *exec,const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *, int token) const;
+    DOMText(ExecState *exec, DOM::TextImpl* t);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    DOM::Text toText() const { return static_cast<DOM::Text>(node); }
+    DOM::TextImpl* impl() const { return static_cast<DOM::TextImpl*>(m_impl.get()); }
     enum { SplitText };
   };
 

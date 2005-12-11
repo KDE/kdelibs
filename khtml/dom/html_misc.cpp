@@ -111,6 +111,11 @@ HTMLCollection::HTMLCollection()
 {
 }
 
+HTMLCollection::HTMLCollection(HTMLCollectionImpl* _impl): impl(_impl)
+{
+  if (impl) impl->ref();
+}
+
 HTMLCollection::HTMLCollection(const HTMLCollection &other)
 {
     impl = other.impl;

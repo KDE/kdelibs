@@ -57,6 +57,17 @@ public:
 
     virtual Id id() const;
 
+    DOMString aLink() const;
+    void setALink( const DOMString &value );
+    DOMString bgColor() const;
+    void setBgColor( const DOMString &value );
+    DOMString link() const;
+    void setLink( const DOMString &value );
+    DOMString text() const;
+    void setText( const DOMString &value );
+    DOMString vLink() const;
+    void setVLink( const DOMString &value );
+    
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 

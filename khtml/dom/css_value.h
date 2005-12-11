@@ -21,7 +21,7 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 2 Specification (Style)
  * http://www.w3.org/TR/DOM-Level-2-Style/
- * Copyright © 2000 W3C® (MIT, INRIA, Keio), All Rights Reserved.
+ * Copyright  2000 W3C (MIT, INRIA, Keio), All Rights Reserved.
  *
  */
 #ifndef _CSS_css_value_h_
@@ -118,7 +118,6 @@ public:
      *
      */
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) const;
-    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to retrieve the object representation of the value of a
@@ -140,7 +139,6 @@ public:
      *
      */
     CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) const;
-    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to remove a CSS property if it has been explicitly set
@@ -177,7 +175,6 @@ public:
      *
      */
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) const;
-    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
 
     /**
      * Used to set a property value and priority within this

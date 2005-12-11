@@ -305,22 +305,40 @@ long HTMLImageElementImpl::height() const
 QImage HTMLImageElementImpl::currentImage() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
-#ifdef __GNUC__
 #warning "FIXME"
-#endif
     //if(r)
     //    return r->pixmap().convertToImage();
 
     return QImage();
 }
 
+long HTMLImageElementImpl::x() const
+{
+    if (renderer()) {
+        int x = 0;
+        int y = 0;
+        renderer()->absolutePosition(x,y);
+        return x;
+    }
+    return 0;
+}
+
+long HTMLImageElementImpl::y() const
+{
+    if (renderer()) {
+        int x = 0;
+        int y = 0;
+        renderer()->absolutePosition(x,y);
+        return y;
+    }
+    return 0;
+}
+
 QPixmap HTMLImageElementImpl::currentPixmap() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
 
-#ifdef __GNUC__
 #warning "FIXME"
-#endif
     //if(r)
     //    return r->pixmap();
 
@@ -412,6 +430,11 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+HTMLCollectionImpl* HTMLMapElementImpl::areas()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::MAP_AREAS);
 }
 
 // -------------------------------------------------------------------------

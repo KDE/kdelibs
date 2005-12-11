@@ -271,7 +271,7 @@ void HTMLImageElement::setHspace( long value )
 bool HTMLImageElement::isMap() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_ISMAP).isNull();
 }
 
 void HTMLImageElement::setIsMap( bool _isMap )
@@ -344,23 +344,13 @@ void HTMLImageElement::setWidth( long value )
 
 long HTMLImageElement::x() const
 {
-    if (impl && impl->renderer()) {
-        int x = 0;
-        int y = 0;
-        impl->renderer()->absolutePosition(x,y);
-        return x;
-    }
+    if (impl) return static_cast<const HTMLImageElementImpl*>(impl)->x();
     return 0;
 }
 
 long HTMLImageElement::y() const
 {
-    if (impl && impl->renderer()) {
-        int x = 0;
-        int y = 0;
-        impl->renderer()->absolutePosition(x,y);
-        return y;
-    }
+    if (impl) return static_cast<const HTMLImageElementImpl*>(impl)->y();
     return 0;
 }
 
@@ -397,7 +387,7 @@ HTMLMapElement::~HTMLMapElement()
 HTMLCollection HTMLMapElement::areas() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::MAP_AREAS);
+    return HTMLCollection(((HTMLMapElementImpl*)impl)->areas());
 }
 
 DOMString HTMLMapElement::name() const

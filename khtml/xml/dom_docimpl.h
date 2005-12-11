@@ -102,7 +102,7 @@ public:
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                  const DocumentType &doctype, int &exceptioncode );
+                                  DocumentTypeImpl* dtype, int &exceptioncode );
 
     DOMImplementationImpl* getInterface(const DOMString& feature) const;
 
@@ -206,6 +206,7 @@ public:
     virtual AttrImpl *createAttributeNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName,
                                            int* pExceptioncode = 0 );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
+
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
     DOMString title() const { return m_title; }

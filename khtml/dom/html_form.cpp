@@ -99,18 +99,6 @@ void HTMLButtonElement::setName( const DOMString &value )
     if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
-void HTMLButtonElement::focus(  )
-{
-    if(impl)
-        static_cast<HTMLButtonElementImpl*>(impl)->focus();
-}
-
-void HTMLButtonElement::blur(  )
-{
-    if(impl)
-        static_cast<HTMLButtonElementImpl*>(impl)->blur();
-}
-
 long HTMLButtonElement::tabIndex() const
 {
     if(!impl) return 0;
@@ -806,7 +794,7 @@ HTMLFormElement HTMLSelectElement::form() const
 HTMLCollection HTMLSelectElement::options() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::SELECT_OPTIONS);
+    return HTMLCollection(((HTMLSelectElementImpl*)impl)->options()); 
 }
 
 bool HTMLSelectElement::disabled() const

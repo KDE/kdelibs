@@ -22,15 +22,16 @@
 #define _KJS_RANGE_H_
 
 #include "ecma/kjs_dom.h"
-#include "dom/dom2_range.h"
+#include "xml/dom_docimpl.h"
+#include "xml/dom2_rangeimpl.h"
 
 namespace KJS {
 
   class DOMRange : public DOMObject {
   public:
-    DOMRange(ExecState *exec, DOM::Range r);
+    DOMRange(ExecState *exec, DOM::RangeImpl* r);
     ~DOMRange();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -42,29 +43,29 @@ namespace KJS {
            CompareBoundaryPoints, DeleteContents, ExtractContents,
            CloneContents, InsertNode, SurroundContents, CloneRange, ToString,
            Detach, CreateContextualFragment };
-    DOM::Range toRange() const { return range; }
+    DOM::RangeImpl *impl() const { return m_impl.get(); }
   protected:
-    DOM::Range range;
+    SharedPtr<DOM::RangeImpl> m_impl;
   };
 
   // Constructor object Range
   class RangeConstructor : public DOMObject {
   public:
     RangeConstructor(ExecState *);
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getDOMRange(ExecState *exec, DOM::Range r);
+  ValueImp* getDOMRange(ExecState *exec, DOM::RangeImpl* r);
   ValueImp* getRangeConstructor(ExecState *exec);
 
   /**
-   * Convert an object to a Range. Returns a null Node if not possible.
+   * Convert an object to a RangeImpl. Returns 0 if not possible
    */
-  DOM::Range toRange(ValueImp*);
+  DOM::RangeImpl* toRange(ValueImp*);
 
 } // namespace
 

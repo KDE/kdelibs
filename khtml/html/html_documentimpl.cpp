@@ -108,7 +108,7 @@ DOMString HTMLDocumentImpl::lastModified() const
 
 DOMString HTMLDocumentImpl::cookie() const
 {
-    WId windowId = 0;
+    long windowId = 0;
     KHTMLView *v = view ();
 
     if ( v && v->topLevelWidget() )
@@ -136,7 +136,7 @@ DOMString HTMLDocumentImpl::cookie() const
 
 void HTMLDocumentImpl::setCookie( const DOMString & value )
 {
-    WId windowId = 0;
+    long windowId = 0;
     KHTMLView *v = view ();
 
     if ( v && v->topLevelWidget() )
@@ -527,6 +527,46 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     if ( pMode != oldPMode && styleSelector() )
         recalcStyleSelector();
 
+}
+
+NodeListImpl* HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
+{
+    return new NameNodeListImpl(this, elementName);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::images()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_IMAGES);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::applets()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_APPLETS);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::links()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_LINKS);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::forms()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_FORMS);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::layers()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_LAYERS);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::anchors()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_ANCHORS);
+}
+
+HTMLCollectionImpl* HTMLDocumentImpl::all()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_ALL);
 }
 
 

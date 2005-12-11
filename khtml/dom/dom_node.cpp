@@ -246,13 +246,9 @@ NamedNodeMap Node::attributes() const
 
 Document Node::ownerDocument() const
 {
-    // braindead DOM spec says that ownerDocument
-    // should return null if called on the document node
-    // we don't do that in the *impl tree to avoid excessive if()'s
-    // so we simply hack it here in one central place.
-    if (!impl || impl->getDocument() == impl) return Document(false);
-
-    return impl->getDocument();
+    if (!impl || !impl->ownerDocument())
+        return Document(false);
+    return impl->ownerDocument();
 }
 
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
@@ -301,9 +297,7 @@ Node Node::appendChild( const Node &newChild )
 bool Node::hasAttributes()
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    if (!impl->isElementNode()) return false;
-    ElementImpl* e = static_cast<ElementImpl*>(impl);
-    return e->attributes(true) && e->attributes(true)->length();
+    return impl->hasAttributes();
 }
 
 bool Node::hasChildNodes(  )
@@ -325,12 +319,9 @@ void Node::normalize (  )
 }
 
 bool Node::isSupported( const DOMString &feature,
-                        const DOMString & /*version*/ ) const
+                        const DOMString &version ) const
 {
-    DOMString upFeature = feature.upper();
-    return (upFeature == "HTML" ||
-            upFeature == "XML" ||
-            upFeature == "CORE");
+    return NodeImpl::isSupported(feature, version);
 }
 
 DOMString Node::namespaceURI(  ) const

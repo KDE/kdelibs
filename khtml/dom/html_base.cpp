@@ -58,12 +58,12 @@ HTMLBodyElement::~HTMLBodyElement()
 
 DOMString HTMLBodyElement::aLink() const
 {
-    return impl ? ((ElementImpl *)impl)->getAttribute(ATTR_ALINK) : DOMString();
+    return impl ? ((HTMLBodyElementImpl*)impl)->aLink() : DOMString();
 }
 
 void HTMLBodyElement::setALink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALINK, value);
+    if(impl) ((HTMLBodyElementImpl *)impl)->setALink(value);
 }
 
 DOMString HTMLBodyElement::background() const
@@ -78,46 +78,42 @@ void HTMLBodyElement::setBackground( const DOMString &value )
 
 DOMString HTMLBodyElement::bgColor() const
 {
-    if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
+    return impl ? ((HTMLBodyElementImpl*)impl)->bgColor() : DOMString();
 }
 
 void HTMLBodyElement::setBgColor( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BGCOLOR, value);
+    if(impl) ((HTMLBodyElementImpl *)impl)->setBgColor(value);
 }
 
 DOMString HTMLBodyElement::link() const
 {
-    if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_LINK);
+    return impl ? ((HTMLBodyElementImpl*)impl)->link() : DOMString();
 }
 
 void HTMLBodyElement::setLink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LINK, value);
+    if(impl) ((HTMLBodyElementImpl *)impl)->setLink(value);
 }
 
 DOMString HTMLBodyElement::text() const
 {
-    if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_TEXT);
+    return impl ? ((HTMLBodyElementImpl*)impl)->text() : DOMString();
 }
 
 void HTMLBodyElement::setText( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TEXT, value);
+    if(impl) ((HTMLBodyElementImpl *)impl)->setText(value);
 }
 
 DOMString HTMLBodyElement::vLink() const
 {
-    if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VLINK);
+    return impl ? ((HTMLBodyElementImpl*)impl)->vLink() : DOMString();
 }
 
 void HTMLBodyElement::setVLink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VLINK, value);
+    if(impl) ((HTMLBodyElementImpl *)impl)->setVLink(value);
 }
 
 // --------------------------------------------------------------------------

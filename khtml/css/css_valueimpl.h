@@ -64,6 +64,9 @@ public:
     // needed for conversion of html attributes
     virtual void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);
 
+    void setProperty(const DOMString &propertyName, const DOMString &value, const DOMString &priority);
+    DOMString removeProperty(const DOMString &propertyName);
+
     // add a whole, unparsed property
     virtual void setProperty ( const DOMString &propertyString);
     virtual DOM::DOMString item ( unsigned long index ) const;
@@ -73,6 +76,10 @@ public:
 
     virtual bool isStyleDeclaration() const { return true; }
     virtual bool parseString( const DOMString &string, bool = false );
+
+    CSSValueImpl *getPropertyCSSValue(const DOMString &propertyName) const;
+    DOMString getPropertyValue(const DOMString &propertyName) const ;
+    DOMString getPropertyPriority(const DOMString &propertyName) const;
 
     virtual CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
     virtual DOMString getPropertyValue( int propertyID ) const;

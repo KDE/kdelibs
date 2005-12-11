@@ -130,8 +130,10 @@ DOM::DOMString getPropertyName(unsigned short id) KDE_NO_EXPORT;
 #define CSS_PROP_SCROLLBAR_ARROW_COLOR 120
 #define CSS_PROP__KHTML_FLOW_MODE 121
 #define CSS_PROP__KHTML_USER_INPUT 122
+#define CSS_PROP__KHTML_TEXT_DECORATION_COLOR 123
 
 #define CSS_PROP_MAX CSS_PROP_Z_INDEX
-#define CSS_PROP_TOTAL 123
+#define CSS_PROP_TOTAL 124
+const size_t maxCSSPropertyNameLength = 28;
 #endif
 

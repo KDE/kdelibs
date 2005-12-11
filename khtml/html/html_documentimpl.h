@@ -54,6 +54,15 @@ public:
     DOMString lastModified() const;
     DOMString cookie() const;
     void setCookie( const DOMString &);
+    NodeListImpl* getElementsByName( const DOMString &elementName );
+
+    HTMLCollectionImpl* images();
+    HTMLCollectionImpl* applets();
+    HTMLCollectionImpl* links();
+    HTMLCollectionImpl* forms();
+    HTMLCollectionImpl* layers();
+    HTMLCollectionImpl* anchors();
+    HTMLCollectionImpl* all();
 
     HTMLElementImpl *body();
     void setBody(HTMLElementImpl *_body, int& exceptioncode);

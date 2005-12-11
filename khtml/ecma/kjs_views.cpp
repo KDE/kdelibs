@@ -20,7 +20,6 @@
 
 #include "ecma/kjs_views.h"
 #include "ecma/kjs_css.h"
-#include "ecma/kjs_window.h"
 #include "kjs_views.lut.h"
 
 using namespace KJS;
@@ -28,64 +27,70 @@ using namespace KJS;
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMAbstractView::info = { "AbstractView", 0, &DOMAbstractViewTable, 0 };
+
 /*
 @begin DOMAbstractViewTable 2
   document		DOMAbstractView::Document		DontDelete|ReadOnly
+@end
+@begin DOMAbstractViewProtoTable 1
   getComputedStyle	DOMAbstractView::GetComputedStyle	DontDelete|Function 2
 @end
 */
-IMPLEMENT_PROTOFUNC_DOM(DOMAbstractViewFunc)
 
-DOMAbstractView::DOMAbstractView(ExecState *exec, DOM::AbstractView av)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype()), abstractView(av) {}
+DEFINE_PROTOTYPE("DOMAbstractView",DOMAbstractViewProto)
+IMPLEMENT_PROTOFUNC(DOMAbstractViewProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMAbstractViewProto,DOMAbstractViewProtoFunc)
+
+DOMAbstractView::DOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)
+  : m_impl(av)
+{
+  setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
+}
 
 DOMAbstractView::~DOMAbstractView()
 {
-  ScriptInterpreter::forgetDOMObject(abstractView.handle());
+  ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-Value DOMAbstractView::tryGet(ExecState *exec, const Identifier &p) const
+ValueImp *DOMAbstractView::getValueProperty(ExecState *exec, int token)
 {
-  if ( p == "document" )
-    return getDOMNode(exec,abstractView.document());
-  else if ( p == "getComputedStyle" )
-    return lookupOrCreateFunction<DOMAbstractViewFunc>(exec,p,this,DOMAbstractView::GetComputedStyle,2,DontDelete|Function);
-  else
-    return DOMObject::tryGet(exec,p);
+    assert(token == Document);
+    return getDOMNode(exec, impl()->document());
 }
 
-Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+bool DOMAbstractView::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+    return getStaticValueSlot<DOMAbstractView, DOMObject>(exec, &DOMAbstractViewTable, this, propertyName, slot);
+}
+
+
+ValueImp *DOMAbstractViewProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMAbstractView, thisObj );
-  DOM::AbstractView abstractView = static_cast<DOMAbstractView *>(thisObj.imp())->toAbstractView();
+  DOM::AbstractViewImpl &abstractView = *static_cast<DOMAbstractView *>(thisObj)->impl();
   switch (id) {
     case DOMAbstractView::GetComputedStyle: {
-        DOM::Node arg0 = toNode(args[0]);
-        if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
+        DOM::ElementImpl *arg0 = toElement(args[0]);
+        if (!arg0)
           return Undefined(); // throw exception?
         else
-          return getDOMCSSStyleDeclaration(exec,abstractView.getComputedStyle(static_cast<DOM::Element>(arg0),
-                                                                              args[1].toString(exec).string()));
+          return getDOMCSSStyleDeclaration(exec, abstractView.getComputedStyle(arg0, args[1]->toString(exec).domString().implementation()));
       }
   }
   return Undefined();
 }
 
-Value KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractView av)
+ValueImp *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)
 {
-  return cacheDOMObject<DOM::AbstractView, DOMAbstractView>(exec, av);
+  return cacheDOMObject<DOM::AbstractViewImpl, DOMAbstractView>(exec, av);
 }
 
-DOM::AbstractView KJS::toAbstractView (const Value& val)
+DOM::AbstractViewImpl *KJS::toAbstractView (ValueImp *val)
 {
-  Object obj = Object::dynamicCast(val);
-  if (!obj.isValid() || !obj.inherits(&DOMAbstractView::info))
-    return DOM::AbstractView ();
+  ObjectImp *obj = val->getObject();
+  if (!obj || !obj->inherits(&DOMAbstractView::info))
+    return 0;
 
-  // the Window object is considered for all practical purposes as a descendant of AbstractView
-  if (obj.inherits(&Window::info))
-     return static_cast<const Window *>(obj.imp())->toAbstractView(); 
-
-  const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj.imp());
-  return dobj->toAbstractView ();
+  const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj);
+  return dobj->impl();
 }

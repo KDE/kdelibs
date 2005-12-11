@@ -104,6 +104,11 @@ NodeImpl::Id HTMLFormElementImpl::id() const
     return ID_FORM;
 }
 
+HTMLCollectionImpl* HTMLFormElementImpl::elements()
+{
+  return new HTMLFormCollectionImpl(this);
+}
+
 long HTMLFormElementImpl::length() const
 {
     int len = 0;
@@ -472,7 +477,7 @@ void HTMLFormElementImpl::submitFromKeyboard()
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* const current = static_cast<HTMLButtonElementImpl *>(it.current());
             if (current->buttonType() == HTMLButtonElementImpl::SUBMIT && !current->disabled()) {
-                current->click();
+                current->activate();
                 return;
             }
         } else if (it.current()->id() == ID_INPUT) {
@@ -481,7 +486,7 @@ void HTMLFormElementImpl::submitFromKeyboard()
             case HTMLInputElementImpl::SUBMIT:
             case HTMLInputElementImpl::IMAGE:
 		if(!current->disabled()) {
-			current->click();
+			current->activate();
 			return;
 		}
 		break;
@@ -573,7 +578,6 @@ void HTMLFormElementImpl::submit(  )
         if (m_walletMap.isEmpty()) {
             gatherWalletData();
         }
-#ifndef KHTML_NO_WALLET
         if (m_havePassword && !m_haveTextarea && KWallet::Wallet::isEnabled()) {
             const QString key = calculateAutoFillKey(*this);
             const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::FormDataFolder(), key);
@@ -600,6 +604,7 @@ void HTMLFormElementImpl::submit(  )
                 }
             }
 
+#ifndef KHTML_NO_WALLET
             if ( doesnotexist || !w || login_changed ) {
                 // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
                 KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
@@ -633,8 +638,8 @@ void HTMLFormElementImpl::submit(  )
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
             }
-        }
 #endif // KHTML_NO_WALLET
+        }
 
         const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
         if(m_post) {
@@ -929,7 +934,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 bool HTMLGenericFormElementImpl::isFocusable() const
 {
-    return (!disabled() && m_render && m_render->isWidget() &&
+    return (m_render && m_render->isWidget() &&
         static_cast<RenderWidget*>(m_render)->widget() &&
         static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= Qt::TabFocus) ||
 		/* INPUT TYPE="image" supports focus too */
@@ -1054,17 +1059,6 @@ NodeImpl::Id HTMLButtonElementImpl::id() const
 DOMString HTMLButtonElementImpl::type() const
 {
     return getAttribute(ATTR_TYPE);
-}
-
-void HTMLButtonElementImpl::blur()
-{
-    if(getDocument()->focusNode() == this)
-        getDocument()->setFocusNode(0);
-}
-
-void HTMLButtonElementImpl::focus()
-{
-    getDocument()->setFocusNode(this);
 }
 
 void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
@@ -1545,7 +1539,9 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
             if (m_activeSubmit)
             {
-                QString enc_str = valueWithDefault().string();
+                QString enc_str = value().string();
+                if (enc_str.isEmpty())
+                    enc_str = static_cast<RenderSubmitButton*>(m_render)->defaultLabel();
                 if(!enc_str.isEmpty())
                 {
                     encoding += fixUpfromUnicode(codec, enc_str);
@@ -1737,7 +1733,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
 void HTMLInputElementImpl::activate()
 {
-    if (!m_form)
+    if (!m_form || !m_render)
         return;
 
     m_clicked = true;
@@ -1897,6 +1893,11 @@ DOMString HTMLSelectElementImpl::type() const
     return (m_multiple ? "select-multiple" : "select-one");
 }
 
+HTMLCollectionImpl* HTMLSelectElementImpl::options()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::SELECT_OPTIONS);
+}
+
 long HTMLSelectElementImpl::selectedIndex() const
 {
     // return the number of the first option selected
@@ -1979,45 +1980,6 @@ void HTMLSelectElementImpl::focus()
     getDocument()->setFocusNode(this);
 }
 
-DOMString HTMLInputElementImpl::valueWithDefault() const
-{
-    DOMString v = value();
-    if (v.isEmpty()) {
-        switch (m_type) {
-            case RESET:
-#ifdef APPLE_CHANGES
-                v = resetButtonDefaultLabel();
-#else
-                v = i18n("Reset");
-#endif
-                break;
-
-            case SUBMIT:
-#ifdef APPLE_CHANGES
-                v = submitButtonDefaultLabel();
-#else
-                v = i18n("Submit");
-#endif
-                break;
-
-            case BUTTON:
-            case CHECKBOX:
-            case FILE:
-            case HIDDEN:
-            case IMAGE:
-            case ISINDEX:
-            case PASSWORD:
-            case RADIO:
-        #ifdef APPLE_CHANGES
-            case RANGE:
-            case SEARCH:
-        #endif
-            case TEXT:
-                break;
-        }
-    }
-    return v;
-}
 
 DOMString HTMLSelectElementImpl::value( ) const
 {

@@ -45,7 +45,7 @@ namespace khtml
     class RenderRadioButton;
     class RenderFileButton;
 
-    typedef QList<QByteArray> encodingList;
+    typedef Q3ValueList<QByteArray> encodingList;
 }
 
 namespace KWallet {
@@ -58,6 +58,7 @@ class HTMLFormElement;
 class DOMString;
 class HTMLGenericFormElementImpl;
 class HTMLOptionElementImpl;
+class HTMLCollectionImpl;
 
 // -------------------------------------------------------------------------
 
@@ -78,6 +79,8 @@ public:
 
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
+
+    HTMLCollectionImpl* elements();
 
     bool autoComplete() const { return m_autocomplete; }
     void doAutoFill();
@@ -136,7 +139,7 @@ public:
     HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLGenericFormElementImpl();
 
-    HTMLFormElementImpl *form() { return m_form; }
+    HTMLFormElementImpl *form() const { return m_form; }
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
@@ -206,8 +209,6 @@ public:
     void activate();
     virtual void attach();
     void click();
-    void blur();
-    void focus();
 
 protected:
     DOMString m_value;
@@ -275,8 +276,6 @@ public:
 
     DOMString value() const;
     void setValue(DOMString val);
-
-    DOMString valueWithDefault() const;
 
     void blur();
     void focus();
@@ -373,6 +372,8 @@ public:
     virtual Id id() const;
 
     DOMString type() const;
+
+    HTMLCollectionImpl* options();
 
     long selectedIndex() const;
     void setSelectedIndex( long index );

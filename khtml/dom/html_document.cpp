@@ -143,43 +143,43 @@ void HTMLDocument::setBody(const HTMLElement &_body)
 HTMLCollection HTMLDocument::images() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_IMAGES);
+    return ((HTMLDocumentImpl*)impl)->images();
 }
 
 HTMLCollection HTMLDocument::applets() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_APPLETS);
+    return ((HTMLDocumentImpl*)impl)->applets();
 }
 
 HTMLCollection HTMLDocument::links() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_LINKS);
+    return ((HTMLDocumentImpl*)impl)->links();
 }
 
 HTMLCollection HTMLDocument::forms() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_FORMS);
+    return ((HTMLDocumentImpl*)impl)->forms();
 }
 
 HTMLCollection HTMLDocument::layers() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_LAYERS);
+    return ((HTMLDocumentImpl*)impl)->layers();
 }
 
 HTMLCollection HTMLDocument::anchors() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_ANCHORS);
+    return ((HTMLDocumentImpl*)impl)->anchors();
 }
 
 HTMLCollection HTMLDocument::all() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::DOC_ALL);
+    return ((HTMLDocumentImpl*)impl)->all();
 }
 
 DOMString HTMLDocument::cookie() const
@@ -222,6 +222,6 @@ void HTMLDocument::writeln( const DOMString &text )
 NodeList HTMLDocument::getElementsByName( const DOMString &elementName )
 {
     if(!impl) return 0;
-    return new NameNodeListImpl(impl, elementName);
+    return ((HTMLDocumentImpl *)impl)->getElementsByName(elementName);
 }
 

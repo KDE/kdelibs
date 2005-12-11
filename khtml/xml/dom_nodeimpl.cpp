@@ -1010,6 +1010,46 @@ long NodeImpl::maxOffset() const
 //  return renderer() ? renderer()->maxOffset() : 1;
 }
 
+NodeListImpl* NodeImpl::getElementsByTagName( const DOMString &tagName )
+{
+    NodeImpl::Id id;
+    if ( tagName == "*" )
+        id = 0;
+    else
+        id = getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
+    return new TagNodeListImpl( this, id );
+}
+
+NodeListImpl* NodeImpl::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    return new TagNodeListImpl( this, namespaceURI, localName );
+}
+
+
+bool NodeImpl::hasAttributes() const
+{
+    return false;
+}
+
+bool NodeImpl::isSupported(const DOMString &feature, const DOMString &version)
+{
+    return DOMImplementationImpl::instance()->hasFeature(feature, version);
+}
+
+DocumentImpl* NodeImpl::ownerDocument() const
+{
+    // braindead DOM spec says that ownerDocument
+    // should return null if called on the document node
+    // we thus have our nicer getDocument, and hack it here
+    // for DOMy clients in one central place
+    DocumentImpl* doc = getDocument();
+    if (doc == this)
+        return 0;
+    else
+        return doc;
+}
+
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::~NodeBaseImpl()
@@ -1630,10 +1670,10 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
     m_cache->updateNodeListInfo(m_refNode->getDocument());
 
     NodeImpl* n;
-    bool usedCache = false;
+    bool      usedCache = false;
     if (m_cache->current.node) {
         //Compute distance from the requested index to the cache node
-        unsigned long cacheDist = QABS(long(index) - long(m_cache->position));
+        long cacheDist = QABS(long(index) - long(m_cache->position));
 
         if (cacheDist < index) { //Closer to the cached position
             usedCache = true;

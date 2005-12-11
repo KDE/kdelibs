@@ -37,7 +37,7 @@ using namespace KJS;
 @end
 */
 DEFINE_PROTOTYPE("XMLSerializer",XMLSerializerProto)
-IMPLEMENT_PROTOFUNC_DOM(XMLSerializerProtoFunc)
+IMPLEMENT_PROTOFUNC(XMLSerializerProtoFunc)
 IMPLEMENT_PROTOTYPE(XMLSerializerProto,XMLSerializerProtoFunc)
 
 namespace KJS {
@@ -64,11 +64,9 @@ XMLSerializer::XMLSerializer(ExecState *exec)
   setPrototype(XMLSerializerProto::self(exec));
 }
 
-ValueImp *XMLSerializerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj->inherits(&XMLSerializer::info)) {
-    return throwError(exec, TypeError);
-  }
+  KJS_CHECK_THIS( XMLSerializer, thisObj );
 
   switch (id) {
   case XMLSerializer::SerializeToString:
@@ -81,8 +79,8 @@ ValueImp *XMLSerializerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, c
 	return Undefined();
       }
 
-      DOM::Node docNode = static_cast<KJS::DOMDocument *>(args[0]->toObject(exec))->toNode();
-      DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
+      DOM::NodeImpl* docNode = static_cast<KJS::DOMDocument *>(args[0]->toObject(exec))->impl();
+      DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
 
       if (!doc) {
 	return Undefined();
@@ -98,7 +96,7 @@ ValueImp *XMLSerializerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, c
 	  return err;
       }
 
-      return ::getString(body);
+      return ::getStringOrNull(body);
     }
   }
 

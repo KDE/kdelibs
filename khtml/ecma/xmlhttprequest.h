@@ -42,20 +42,21 @@ namespace KJS {
 
   class XMLHttpRequestConstructorImp : public ObjectImp {
   public:
-    XMLHttpRequestConstructorImp(ExecState *exec, const DOM::Document &d);
+    XMLHttpRequestConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
     virtual bool implementsConstruct() const;
     virtual ObjectImp *construct(ExecState *exec, const List &args);
   private:
-    DOM::Document doc;
+    SharedPtr<DOM::DocumentImpl> doc;
   };
 
   class XMLHttpRequest : public DOMObject {
   public:
-    XMLHttpRequest(ExecState *, const DOM::Document &d);
+    XMLHttpRequest(ExecState *, DOM::DocumentImpl* d);
     ~XMLHttpRequest();
-    virtual ValueImp *tryGet(ExecState *exec, const Identifier &propertyName) const;
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
+
+    bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    ValueImp *getValueProperty(ExecState *exec, int token) const;;
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
     void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -113,7 +114,7 @@ namespace KJS {
     QString response;
     mutable bool createdDocument;
     mutable bool typeIsXML;
-    mutable DOM::Document responseXML;
+    mutable SharedPtr<DOM::DocumentImpl> responseXML;
 
     bool aborted;
   };

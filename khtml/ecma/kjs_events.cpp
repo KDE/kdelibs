@@ -74,10 +74,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     ExecState *exec = interpreter->globalExec();
 
     List args;
-    args.append(getDOMEvent(exec,evt));
+    args.append(getDOMEvent(exec,evt.handle()));
 
     // Set "this" to the event's current target
-    ObjectImp *thisObj = getDOMNode(exec,evt.currentTarget())->getObject();
+    ObjectImp *thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
     if ( !thisObj ) {
       // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
       // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
@@ -86,7 +86,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     Window *window = static_cast<Window*>(win);
     // Set the event we're handling in the Window object
-    window->setCurrentEvent( &evt );
+    window->setCurrentEvent( evt.handle() );
     // ... and in the interpreter
     interpreter->setCurrentEvent( &evt );
 
@@ -249,13 +249,13 @@ const ClassInfo EventConstructor::info = { "EventConstructor", 0, &EventConstruc
 */
 
 EventConstructor::EventConstructor(ExecState *exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
 }
 
-ValueImp *EventConstructor::tryGet(ExecState *exec, const Identifier &p) const
+bool EventConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<EventConstructor, DOMObject>(exec,p,&EventConstructorTable,this);
+  return getStaticValueSlot<EventConstructor, DOMObject>(exec,&EventConstructorTable,this,propertyName,slot);
 }
 
 ValueImp *EventConstructor::getValueProperty(ExecState *, int token) const
@@ -292,34 +292,37 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMEvent", DOMEventProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMEventProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMEventProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMEventProto, DOMEventProtoFunc)
 
-DOMEvent::DOMEvent(ExecState *exec, DOM::Event e)
-  : event(e) {
+DOMEvent::DOMEvent(ExecState *exec, DOM::EventImpl* e)
+  : m_impl(e) {
   setPrototype(DOMEventProto::self(exec));
 }
 
-DOMEvent::DOMEvent(ObjectImp *proto, DOM::Event e)
-  : event(e) {
+DOMEvent::DOMEvent(ObjectImp *proto, DOM::EventImpl* e):
+  m_impl(e) {
   setPrototype(proto);
 }
 
 DOMEvent::~DOMEvent()
 {
-  ScriptInterpreter::forgetDOMObject(event.handle());
+  ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMEvent::tryGet(ExecState *exec, const Identifier &p) const
+
+bool DOMEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::DOMEvent::tryGet " << p.qstring() << endl;
+  kdDebug() << "KJS::DOMEvent::getOwnPropertySlot " << p.qstring() << endl;
 #endif
-  return DOMObjectLookupGetValue<DOMEvent,DOMObject>(exec, p, &DOMEventTable, this );
+
+  return getStaticValueSlot<DOMEvent, DOMObject>(exec,&DOMEventTable,this,propertyName,slot);
 }
 
 ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
 {
+  DOM::EventImpl& event = *impl();
   switch (token) {
   case Type:
     return String(event.type());
@@ -337,9 +340,9 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   case TimeStamp:
     return Number((long unsigned int)event.timeStamp()); // ### long long ?
   case ReturnValue: // MSIE extension
-    return Boolean(event.handle()->defaultPrevented());
+    return Boolean(event.defaultPrevented());
   case CancelBubble: // MSIE extension
-    return Boolean(event.handle()->propagationStopped());
+    return Boolean(event.propagationStopped());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return 0;
@@ -348,17 +351,17 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
 
 ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::Type hint) const
 {
-  if (event.handle()->id() == EventImpl::ERROR_EVENT && !event.handle()->message().isNull()) {
-    return String(event.handle()->message());
+  if (m_impl->id() == EventImpl::ERROR_EVENT && !m_impl->message().isNull()) {
+    return String(m_impl->message());
   }
   else
     return DOMObject::defaultValue(exec,hint);
 }
 
-void DOMEvent::tryPut(ExecState *exec, const Identifier &propertyName,
+void DOMEvent::put(ExecState *exec, const Identifier &propertyName,
                       ValueImp *value, int attr)
 {
-  DOMObjectLookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
+  lookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
                                           &DOMEventTable, this);
 }
 
@@ -368,26 +371,26 @@ void DOMEvent::putValueProperty(ExecState *exec, int token, ValueImp *value, int
   case ReturnValue: // MSIE equivalent for "preventDefault" (but with a way to reset it)
     // returnValue=false means "default action of the event on the source object is canceled",
     // which means preventDefault(true). Hence the '!'.
-    event.handle()->preventDefault(!value->toBoolean(exec));
+    m_impl->preventDefault(!value->toBoolean(exec));
     break;
   case CancelBubble: // MSIE equivalent for "stopPropagation" (but with a way to reset it)
-    event.handle()->stopPropagation(value->toBoolean(exec));
+    m_impl->stopPropagation(value->toBoolean(exec));
     break;
   default:
     break;
   }
 }
 
-ValueImp *DOMEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMEvent, thisObj );
-  DOM::Event event = static_cast<DOMEvent *>( thisObj )->toEvent();
+  DOM::EventImpl& event = *static_cast<DOMEvent *>( thisObj )->impl();
   switch (id) {
     case DOMEvent::StopPropagation:
-      event.stopPropagation();
+      event.stopPropagation(true);
       return Undefined();
     case DOMEvent::PreventDefault:
-      event.preventDefault();
+      event.preventDefault(true);
       return Undefined();
     case DOMEvent::InitEvent:
       event.initEvent(args[0]->toString(exec).domString(),args[1]->toBoolean(exec),args[2]->toBoolean(exec));
@@ -396,24 +399,23 @@ ValueImp *DOMEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const 
   return Undefined();
 }
 
-ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::Event e)
+ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
 {
-  DOM::EventImpl *ei = e.handle();
   if (!ei)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   DOMObject *ret = interp->getDOMObject(ei);
   if (!ret) {
     if (ei->isTextEvent())
-      ret = new DOMTextEvent(exec, e);
+      ret = new DOMTextEvent(exec, static_cast<DOM::TextEventImpl*>(ei));
     else if (ei->isMouseEvent())
-      ret = new DOMMouseEvent(exec, e);
+      ret = new DOMMouseEvent(exec, static_cast<DOM::MouseEventImpl*>(ei));
     else if (ei->isUIEvent())
-      ret = new DOMUIEvent(exec, e);
+      ret = new DOMUIEvent(exec, static_cast<DOM::UIEventImpl*>(ei));
     else if (ei->isMutationEvent())
-      ret = new DOMMutationEvent(exec, e);
+      ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEventImpl*>(ei));
     else
-      ret = new DOMEvent(exec, e);
+      ret = new DOMEvent(exec, ei);
 
     interp->putDOMObject(ei, ret);
   }
@@ -421,14 +423,14 @@ ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::Event e)
   return ret;
 }
 
-DOM::Event KJS::toEvent(ValueImp *val)
+DOM::EventImpl* KJS::toEvent(ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMEvent::info))
-    return DOM::Event();
+    return 0;
 
   const DOMEvent *dobj = static_cast<const DOMEvent*>(obj);
-  return dobj->toEvent();
+  return dobj->impl();
 }
 
 // -------------------------------------------------------------------------
@@ -441,13 +443,13 @@ const ClassInfo EventExceptionConstructor::info = { "EventExceptionConstructor",
 @end
 */
 EventExceptionConstructor::EventExceptionConstructor(ExecState *exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
 }
 
-ValueImp *EventExceptionConstructor::tryGet(ExecState *exec, const Identifier &p) const
+bool EventExceptionConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<EventExceptionConstructor, DOMObject>(exec,p,&EventExceptionConstructorTable,this);
+  return getStaticValueSlot<EventExceptionConstructor, DOMObject>(exec,&EventExceptionConstructorTable,this,propertyName,slot);
 }
 
 ValueImp *EventExceptionConstructor::getValueProperty(ExecState *, int token) const
@@ -481,66 +483,67 @@ const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTabl
 @end
 */
 DEFINE_PROTOTYPE("DOMUIEvent",DOMUIEventProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMUIEventProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMUIEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
 
-DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEvent ue) :
+DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue) :
   DOMEvent(DOMUIEventProto::self(exec), ue) {}
 
-DOMUIEvent::DOMUIEvent(ObjectImp *proto, DOM::UIEvent ue) :
+DOMUIEvent::DOMUIEvent(ObjectImp *proto, DOM::UIEventImpl* ue) :
   DOMEvent(proto, ue) {}
 
 DOMUIEvent::~DOMUIEvent()
 {
 }
 
-ValueImp *DOMUIEvent::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMUIEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<DOMUIEvent,DOMEvent>(exec,p,&DOMUIEventTable,this);
+  return getStaticValueSlot<DOMUIEvent, DOMEvent>(exec,&DOMUIEventTable,this,propertyName,slot);
 }
 
 ValueImp *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
 {
+  DOM::UIEventImpl& event = *impl();
   switch (token) {
   case View:
-    return getDOMAbstractView(exec,static_cast<DOM::UIEvent>(event).view());
+    return getDOMAbstractView(exec,event.view());
   case Detail:
-    return Number(static_cast<DOM::UIEvent>(event).detail());
+    return Number(event.detail());
   case KeyCode:
     // IE-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).keyCode());
+    return Number(event.keyCode());
   case CharCode:
     // IE-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).charCode());
+    return Number(event.charCode());
   case LayerX:
     // NS-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).layerX());
+    return Number(event.layerX());
   case LayerY:
     // NS-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).layerY());
+    return Number(event.layerY());
   case PageX:
     // NS-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).pageX());
+    return Number(event.pageX());
   case PageY:
     // NS-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).pageY());
+    return Number(event.pageY());
   case Which:
     // NS-compatibility
-    return Number(static_cast<DOM::UIEvent>(event).which());
+    return Number(event.which());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
     return Undefined();
   }
 }
 
-ValueImp *DOMUIEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMUIEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMUIEvent, thisObj );
-  DOM::UIEvent uiEvent = static_cast<DOMUIEvent *>(thisObj)->toUIEvent();
+  DOM::UIEventImpl& uiEvent = *static_cast<DOMUIEvent *>(thisObj)->impl();
   switch (id) {
     case DOMUIEvent::InitUIEvent: {
-      DOM::AbstractView v = toAbstractView(args[3]);
-      static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0]->toString(exec).domString(),
+      DOM::AbstractViewImpl* v = toAbstractView(args[3]);
+      uiEvent.initUIEvent(args[0]->toString(exec).domString(),
                                                      args[1]->toBoolean(exec),
                                                      args[2]->toBoolean(exec),
                                                      v,
@@ -579,45 +582,47 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 @end
 */
 DEFINE_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMMouseEventProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMMouseEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
 
-DOMMouseEvent::DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) :
+DOMMouseEvent::DOMMouseEvent(ExecState *exec, DOM::MouseEventImpl* me) :
   DOMUIEvent(DOMMouseEventProto::self(exec), me) {}
 
 DOMMouseEvent::~DOMMouseEvent()
 {
 }
 
-ValueImp *DOMMouseEvent::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMMouseEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMMouseEvent::tryGet " << p.qstring() << endl;
+  kdDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << p.qstring() << endl;
 #endif
-  return DOMObjectLookupGetValue<DOMMouseEvent,DOMUIEvent>(exec,p,&DOMMouseEventTable,this);
+
+  return getStaticValueSlot<DOMMouseEvent, DOMUIEvent>(exec,&DOMMouseEventTable,this,propertyName,slot);
 }
 
 ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 {
+  DOM::MouseEventImpl& event = *impl();
   switch (token) {
   case ScreenX:
-    return Number(static_cast<DOM::MouseEvent>(event).screenX());
+    return Number(event.screenX());
   case ScreenY:
-    return Number(static_cast<DOM::MouseEvent>(event).screenY());
+    return Number(event.screenY());
   case ClientX:
   case X:
-    return Number(static_cast<DOM::MouseEvent>(event).clientX());
+    return Number(event.clientX());
   case ClientY:
   case Y:
-    return Number(static_cast<DOM::MouseEvent>(event).clientY());
+    return Number(event.clientY());
   case OffsetX:
   case OffsetY: // MSIE extension
   {
     DOM::Node node = event.target();
     node.handle()->getDocument()->updateRendering();
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    int x = static_cast<DOM::MouseEvent>(event).clientX();
-    int y = static_cast<DOM::MouseEvent>(event).clientY();
+    int x = event.clientX();
+    int y = event.clientY();
     if ( rend ) {
       int xPos, yPos;
       if ( rend->absolutePosition( xPos, yPos ) ) {
@@ -635,47 +640,47 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     return Number( token == OffsetX ? x : y );
   }
   case CtrlKey:
-    return Boolean(static_cast<DOM::MouseEvent>(event).ctrlKey());
+    return Boolean(event.ctrlKey());
   case ShiftKey:
-    return Boolean(static_cast<DOM::MouseEvent>(event).shiftKey());
+    return Boolean(event.shiftKey());
   case AltKey:
-    return Boolean(static_cast<DOM::MouseEvent>(event).altKey());
+    return Boolean(event.altKey());
   case MetaKey:
-    return Boolean(static_cast<DOM::MouseEvent>(event).metaKey());
+    return Boolean(event.metaKey());
   case Button:
   {
     if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat ) {
-        return Number(static_cast<DOM::MouseEvent>(event).button());
+        return Number(event.button());
     }
     // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
     // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
-    int domButton = static_cast<DOM::MouseEvent>(event).button();
+    int domButton = event.button();
     int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
     return Number( (unsigned int)button );
   }
   case ToElement:
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
-    if (event.handle()->id() == DOM::EventImpl::MOUSEOUT_EVENT)
-      return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
-    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).target());
+    if (event.id() == DOM::EventImpl::MOUSEOUT_EVENT)
+      return getDOMNode(exec,event.relatedTarget());
+    return getDOMNode(exec,event.target());
   case FromElement:
     // MSIE extension - "object from which activation
     // or the mouse pointer is exiting during the event" (huh?)
-    if (event.handle()->id() == DOM::EventImpl::MOUSEOUT_EVENT)
-      return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).target());
+    if (event.id() == DOM::EventImpl::MOUSEOUT_EVENT)
+      return getDOMNode(exec,event.target());
     /* fall through */
   case RelatedTarget:
-    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
+    return getDOMNode(exec,event.relatedTarget());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
     return 0;
   }
 }
 
-ValueImp *DOMMouseEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMMouseEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMMouseEvent, thisObj );
-  DOM::MouseEvent mouseEvent = static_cast<DOMMouseEvent *>(thisObj)->toMouseEvent();
+  DOM::MouseEventImpl& mouseEvent = *static_cast<DOMMouseEvent *>(thisObj)->impl();
   switch (id) {
     case DOMMouseEvent::InitMouseEvent:
       mouseEvent.initMouseEvent(args[0]->toString(exec).domString(), // typeArg
@@ -721,28 +726,30 @@ const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMUIEvent::info, &DOMTextE
 @end
 */
 DEFINE_PROTOTYPE("DOMTextEvent",DOMTextEventProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMTextEventProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMTextEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto)
 
-DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEvent ke) :
+DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke) :
   DOMUIEvent(DOMTextEventProto::self(exec), ke) {}
 
 DOMTextEvent::~DOMTextEvent()
 {
 }
 
-ValueImp *DOMTextEvent::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMTextEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMTextEvent::tryGet " << p.qstring() << endl;
+  kdDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << p.qstring() << endl;
 #endif
-  return DOMObjectLookupGetValue<DOMTextEvent,DOMUIEvent>(exec,p,&DOMTextEventTable,this);
+
+  return getStaticValueSlot<DOMTextEvent, DOMUIEvent>(exec,&DOMTextEventTable,this,propertyName,slot);
 }
+
 
 ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
 {
   // ### KDE 4: use const reference
-  DOM::TextEvent tevent = static_cast<DOM::TextEvent>(event);
+  DOM::TextEventImpl& tevent = *impl();
   switch (token) {
   case Key:
     return Number(tevent.keyVal());
@@ -769,10 +776,10 @@ ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
   }
 }
 
-ValueImp *DOMTextEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMTextEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMTextEvent, thisObj );
-  DOM::TextEvent keyEvent = static_cast<DOMTextEvent *>(thisObj)->toTextEvent();
+  DOM::TextEventImpl& keyEvent = *static_cast<DOMTextEvent *>(thisObj)->impl();
   switch (id) {
     case DOMTextEvent::InitTextEvent:
       keyEvent.initTextEvent(args[0]->toString(exec).domString(), // typeArg
@@ -802,13 +809,13 @@ const ClassInfo MutationEventConstructor::info = { "MutationEventConstructor", 0
 @end
 */
 MutationEventConstructor::MutationEventConstructor(ExecState* exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
 }
 
-ValueImp *MutationEventConstructor::tryGet(ExecState *exec, const Identifier &p) const
+bool MutationEventConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<MutationEventConstructor,DOMObject>(exec,p,&MutationEventConstructorTable,this);
+  return getStaticValueSlot<MutationEventConstructor, DOMObject>(exec,&MutationEventConstructorTable,this,propertyName,slot);
 }
 
 ValueImp *MutationEventConstructor::getValueProperty(ExecState *, int token) const
@@ -838,44 +845,47 @@ const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DO
 @end
 */
 DEFINE_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMMutationEventProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMMutationEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
 
-DOMMutationEvent::DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) :
+DOMMutationEvent::DOMMutationEvent(ExecState *exec, DOM::MutationEventImpl* me) :
   DOMEvent(DOMMutationEventProto::self(exec), me) {}
 
 DOMMutationEvent::~DOMMutationEvent()
 {
 }
 
-ValueImp *DOMMutationEvent::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMMutationEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<DOMMutationEvent,DOMEvent>(exec,p,&DOMMutationEventTable,this);
+  return getStaticValueSlot<DOMMutationEvent, DOMObject>(exec,&DOMMutationEventTable,this,propertyName,slot);
 }
 
 ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
 {
+  DOM::MutationEventImpl& event = *impl();
   switch (token) {
-  case RelatedNode:
-    return getDOMNode(exec,static_cast<DOM::MutationEvent>(event).relatedNode());
+  case RelatedNode: {
+    DOM::Node relatedNode = event.relatedNode();
+    return getDOMNode(exec,relatedNode.handle());
+  }
   case PrevValue:
-    return String(static_cast<DOM::MutationEvent>(event).prevValue());
+    return String(event.prevValue());
   case NewValue:
-    return String(static_cast<DOM::MutationEvent>(event).newValue());
+    return String(event.newValue());
   case AttrName:
-    return String(static_cast<DOM::MutationEvent>(event).attrName());
+    return String(event.attrName());
   case AttrChange:
-    return Number((unsigned int)static_cast<DOM::MutationEvent>(event).attrChange());
+    return Number((unsigned int)event.attrChange());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token << endl;
     return 0;
   }
 }
 
-ValueImp *DOMMutationEventProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMMutationEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMMutationEvent, thisObj );
-  DOM::MutationEvent mutationEvent = static_cast<DOMMutationEvent *>(thisObj)->toMutationEvent();
+  DOM::MutationEventImpl& mutationEvent = *static_cast<DOMMutationEvent *>(thisObj)->impl();
   switch (id) {
     case DOMMutationEvent::InitMutationEvent:
       mutationEvent.initMutationEvent(args[0]->toString(exec).domString(), // typeArg,

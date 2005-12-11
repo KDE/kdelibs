@@ -98,7 +98,8 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
-    DocumentImpl *r = impl->createDocument(namespaceURI, qualifiedName, doctype, exceptioncode );
+    DocumentImpl *r = impl->createDocument(namespaceURI, qualifiedName,
+            (DocumentTypeImpl*)doctype.handle(), exceptioncode );
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return r;
@@ -317,18 +318,13 @@ Element Document::getElementById( const DOMString &elementId ) const
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
     if (!impl) return 0;
-    NodeImpl::Id id;
-    if ( tagName == "*" )
-        id = 0;
-    else
-        id = impl->getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
-    return new TagNodeListImpl( impl, id );
+    return impl->getElementsByTagName( tagName );
 }
 
 NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
 {
     if (!impl) return 0;
-    return new TagNodeListImpl( impl, namespaceURI, localName );
+    return impl->getElementsByTagNameNS( namespaceURI, localName );
 }
 
 Node Document::importNode( const Node & importedNode, bool deep )

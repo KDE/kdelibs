@@ -40,11 +40,12 @@ using DOM::DocumentImpl;
 
 using namespace KJS;
 
+namespace KJS {
+
 DEFINE_PROTOTYPE("DOMParser",DOMParserProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMParserProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMParserProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMParserProto,DOMParserProtoFunc)
 
-namespace KJS {
 
 DOMParserConstructorImp::DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d)
     : doc(d)
@@ -71,11 +72,9 @@ DOMParser::DOMParser(ExecState *exec, DOM::DocumentImpl *d)
 }
 
 
-ValueImp *DOMParserProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMParserProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
-  if (!thisObj->inherits(&DOMParser::info)) {
-    return throwError(exec, TypeError);
-  }
+  KJS_CHECK_THIS( DOMParser, thisObj );
 
   DOMParser *parser = static_cast<DOMParser *>(thisObj);
 

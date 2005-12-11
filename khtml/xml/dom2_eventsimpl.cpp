@@ -312,17 +312,19 @@ UIEventImpl::~UIEventImpl()
 void UIEventImpl::initUIEvent(const DOMString &typeArg,
 			      bool canBubbleArg,
 			      bool cancelableArg,
-			      const AbstractView &viewArg,
+			      AbstractViewImpl* viewArg,
 			      long detailArg)
 {
     EventImpl::initEvent(typeArg,canBubbleArg,cancelableArg);
 
-    if (m_view)
-	m_view->deref();
+    if (viewArg)
+      viewArg->ref();
 
-    m_view = viewArg.handle();
     if (m_view)
-	m_view->ref();
+      m_view->deref();
+
+    m_view = viewArg;
+    
     m_detail = detailArg;
 }
 
@@ -402,7 +404,7 @@ void MouseEventImpl::computeLayerPos()
     m_layerX = m_pageX;
     m_layerY = m_pageY;
 
-    DocumentImpl* doc = view() ? view()->document() : 0;
+    DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
         doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
@@ -425,7 +427,7 @@ void MouseEventImpl::computeLayerPos()
 void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
                                     bool canBubbleArg,
                                     bool cancelableArg,
-                                    const AbstractView &viewArg,
+                                    AbstractViewImpl* viewArg,
                                     long detailArg,
                                     long screenXArg,
                                     long screenYArg,
@@ -450,7 +452,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_pageX   = clientXArg;
     m_pageY   = clientYArg;
     KHTMLView* v;
-    if ( view() && view()->document() && ( v = view()->document()->view() ) ) {
+    if ( view()->document() && ( v = view()->document()->view() ) ) {
         m_pageX += v->contentsX();
         m_pageY += v->contentsY();
     }
@@ -701,7 +703,7 @@ bool TextEventImpl::checkModifier(unsigned long modifierArg)
 void TextEventImpl::initTextEvent(const DOMString &typeArg,
 				bool canBubbleArg,
 				bool cancelableArg,
-				const AbstractView &viewArg,
+				AbstractViewImpl* viewArg,
 				long detailArg,
 				const DOMString &outputStringArg,
 				unsigned long keyValArg,

@@ -38,18 +38,20 @@ const ClassInfo MozillaSidebarExtension::info = { "sidebar", 0, &MozillaSidebarE
 @end
 */
 }
-IMPLEMENT_PROTOFUNC_DOM(MozillaSidebarExtensionFunc)
+IMPLEMENT_PROTOFUNC(MozillaSidebarExtensionFunc)
 
 MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), m_part(p) { }
+  : m_part(p) {
+  setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
+}
 
-ValueImp *MozillaSidebarExtension::get(ExecState *exec, const Identifier &propertyName) const
+bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
 #endif
-  abort();
-  //return lookupGet<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>(exec,propertyName,&MozillaSidebarExtensionTable,this);
+  return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
+            (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
 }
 
 ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
@@ -62,7 +64,7 @@ ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) 
   }
 }
 
-ValueImp *MozillaSidebarExtensionFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MozillaSidebarExtension, thisObj );
   MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj);

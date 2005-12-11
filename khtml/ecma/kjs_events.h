@@ -24,6 +24,7 @@
 
 #include "ecma/kjs_dom.h"
 #include "dom/dom2_events.h"
+#include "xml/dom2_eventsimpl.h"
 #include "dom/dom_misc.h"
 
 namespace KJS {
@@ -85,7 +86,7 @@ namespace KJS {
   class EventConstructor : public DOMObject {
   public:
     EventConstructor(ExecState *);
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -97,12 +98,13 @@ namespace KJS {
   class DOMEvent : public DOMObject {
   public:
     // Build a DOMEvent
-    DOMEvent(ExecState *exec, DOM::Event e);
-    DOMEvent(ObjectImp *proto, DOM::Event e);
+    DOMEvent(ExecState *exec, DOM::EventImpl* e);
+    DOMEvent(ObjectImp *proto, DOM::EventImpl* e);
     ~DOMEvent();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
+    virtual void put(ExecState *exec, const Identifier &propertyName,
 			ValueImp* value, int attr = None);
     virtual ValueImp* defaultValue(ExecState *exec, KJS::Type hint) const;
     void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
@@ -112,23 +114,23 @@ namespace KJS {
            Cancelable, TimeStamp, StopPropagation, PreventDefault, InitEvent,
 	   // MS IE equivalents
 	   SrcElement, ReturnValue, CancelBubble };
-    DOM::Event toEvent() const { return event; }
+    DOM::EventImpl* impl() const { return m_impl.get(); }
   protected:
-    DOM::Event event;
+    SharedPtr<DOM::EventImpl> m_impl;
   };
 
-  ValueImp* getDOMEvent(ExecState *exec, DOM::Event e);
+  ValueImp* getDOMEvent(ExecState *exec, DOM::EventImpl* e);
 
   /**
    * Convert an object to an Event. Returns a null Event if not possible.
    */
-  DOM::Event toEvent(ValueImp*);
+  DOM::EventImpl* toEvent(ValueImp*);
 
   // Constructor object EventException
   class EventExceptionConstructor : public DOMObject {
   public:
     EventExceptionConstructor(ExecState *);
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -140,23 +142,23 @@ namespace KJS {
   class DOMUIEvent : public DOMEvent {
   public:
     // Build a DOMUIEvent
-    DOMUIEvent(ExecState *exec, DOM::UIEvent ue);
-    DOMUIEvent(ObjectImp *proto, DOM::UIEvent ue);
+    DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue);
+    DOMUIEvent(ObjectImp *proto, DOM::UIEventImpl* ue);
     ~DOMUIEvent();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { View, Detail, KeyCode, CharCode, LayerX, LayerY, PageX, PageY, Which, InitUIEvent };
-    DOM::UIEvent toUIEvent() const { return static_cast<DOM::UIEvent>(event); }
+    DOM::UIEventImpl* impl() const { return static_cast<DOM::UIEventImpl*>(m_impl.get()); }
   };
 
   class DOMMouseEvent : public DOMUIEvent {
   public:
-    DOMMouseEvent(ExecState *exec, DOM::MouseEvent me);
+    DOMMouseEvent(ExecState *exec, DOM::MouseEventImpl* me);
     ~DOMMouseEvent();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -166,28 +168,28 @@ namespace KJS {
            MetaKey, Button, RelatedTarget, FromElement, ToElement,
            InitMouseEvent
     };
-    DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
+    DOM::MouseEventImpl* impl() const { return static_cast<DOM::MouseEventImpl*>(m_impl.get()); }
   };
 
   class DOMTextEvent : public DOMUIEvent {
   public:
-    DOMTextEvent(ExecState *exec, DOM::TextEvent ke);
+    DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke);
     ~DOMTextEvent();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Key, VirtKey, OutputString, InitTextEvent, InputGenerated, NumPad,
            CtrlKey, ShiftKey, AltKey, MetaKey };
-    DOM::TextEvent toTextEvent() const { return static_cast<DOM::TextEvent>(event); }
+    DOM::TextEventImpl* impl() const { return static_cast<DOM::TextEventImpl*>(m_impl.get()); }
   };
 
   // Constructor object MutationEvent
   class MutationEventConstructor : public DOMObject {
   public:
     MutationEventConstructor(ExecState *);
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -198,16 +200,16 @@ namespace KJS {
 
   class DOMMutationEvent : public DOMEvent {
   public:
-    DOMMutationEvent(ExecState *exec, DOM::MutationEvent me);
+    DOMMutationEvent(ExecState *exec, DOM::MutationEventImpl* me);
     ~DOMMutationEvent();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { AttrChange, RelatedNode, AttrName, PrevValue, NewValue,
            InitMutationEvent };
-    DOM::MutationEvent toMutationEvent() const { return static_cast<DOM::MutationEvent>(event); }
+    DOM::MutationEventImpl* impl() const { return static_cast<DOM::MutationEventImpl*>(m_impl.get()); }
   };
 
 } // namespace
