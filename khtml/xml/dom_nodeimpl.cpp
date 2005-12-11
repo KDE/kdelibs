@@ -1905,6 +1905,52 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 {
 }
 
+NodeImpl* NamedNodeMapImpl::getNamedItem( const DOMString &name )
+{
+    NodeImpl::Id nid = mapId(0, name.implementation(), true);
+    if (!nid) return 0;
+    return getNamedItem(nid, false, name.implementation());
+}
+
+Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
+{
+    if (!arg.handle()) {
+      exceptioncode = DOMException::NOT_FOUND_ERR;
+      return 0;
+    }
+    
+    Node r = setNamedItem(arg.handle(), false,
+                       arg.handle()->nodeName().implementation(), exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::removeNamedItem( const DOMString &name, int& exceptioncode )
+{
+    Node r = removeNamedItem(mapId(0, name.implementation(), false),
+                                   false, name.implementation(), exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), true );
+    return getNamedItem(nid, true);
+}
+
+Node NamedNodeMapImpl::setNamedItemNS( const Node &arg, int& exceptioncode )
+{
+    Node r = setNamedItem(arg.handle(), true, 0, exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode )
+{
+    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), false );
+    Node r = removeNamedItem(nid, true, 0, exceptioncode);
+    return r;
+}
+
+
 // ----------------------------------------------------------------------------
 
 GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)

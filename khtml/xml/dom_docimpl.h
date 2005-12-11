@@ -281,7 +281,7 @@ public:
     RangeImpl *createRange();
 
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                    NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
+                                    NodeFilterImpl* filter, bool entityReferenceExpansion, int &exceptioncode);
 
     TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
                             bool entityReferenceExpansion, int &exceptioncode);

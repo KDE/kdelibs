@@ -27,7 +27,7 @@
 using namespace DOM;
 
 NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,
-				   NodeFilter _filter, bool _entityReferenceExpansion)
+				   NodeFilterImpl* _filter, bool _entityReferenceExpansion)
 {
     m_root = _root;
     m_whatToShow = _whatToShow;
@@ -60,9 +60,9 @@ unsigned long NodeIteratorImpl::whatToShow()
     return m_whatToShow;
 }
 
-NodeFilter NodeIteratorImpl::filter()
+NodeFilterImpl* NodeIteratorImpl::filter()
 {
-    return m_filter;
+    return m_filter.get();
 }
 
 bool NodeIteratorImpl::expandEntityReferences()
@@ -255,7 +255,7 @@ short NodeIteratorImpl::isAccepted(NodeImpl *n)
   if( ( ( 1 << ( n->nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
         if(!m_filter.isNull())
-            return m_filter.acceptNode(n);
+            return m_filter->acceptNode(n);
         else
 	    return NodeFilter::FILTER_ACCEPT;
     }
@@ -522,7 +522,7 @@ NodeImpl *TreeWalkerImpl::getFirstChild(NodeImpl *n)
 {
     short _result;
 
-    if( !n || !n->firstChild() )
+    if( !n || n->firstChild() )
         return 0;
     n = n->firstChild();
 
@@ -551,7 +551,7 @@ NodeImpl *TreeWalkerImpl::getLastChild(NodeImpl *n)
 {
     short _result;
 
-    if( !n || !n->lastChild() )
+    if( !n || n->lastChild() )
         return 0;
     n = n->lastChild();
     _result = isAccepted( n );

@@ -359,7 +359,7 @@ NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
 
     int exceptioncode = 0;
     NodeIteratorImpl *r = static_cast<DocumentImpl*>(impl)->createNodeIterator(root.handle(),
-			  whatToShow,filter,entityReferenceExpansion,exceptioncode);
+			  whatToShow,filter.handle(),entityReferenceExpansion,exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;

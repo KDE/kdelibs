@@ -231,6 +231,14 @@ namespace KJS {
     return false;
   }
 
+  template<class ThisImp>
+  inline bool getIndexSlot(ThisImp* thisObj, int lengthLimit,
+      const Identifier& propertyName, PropertySlot& slot)
+  {
+    return getIndexSlot(thisObj, (unsigned)lengthLimit, propertyName, slot);
+  }
+
+
 
   /**
    Version w/o the bounds check

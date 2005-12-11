@@ -30,6 +30,7 @@
 #include "misc/shared.h"
 #include "dom/dom2_traversal.h"
 
+
 namespace DOM {
 
 class NodeImpl;
@@ -38,13 +39,13 @@ class DocumentImpl;
 class NodeIteratorImpl : public khtml::Shared<NodeIteratorImpl>
 {
 public:
-    NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow, NodeFilter _filter, bool _entityReferenceExpansion);
+    NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow, NodeFilterImpl* _filter, bool _entityReferenceExpansion);
     ~NodeIteratorImpl();
 
 
     NodeImpl *root();
     unsigned long whatToShow();
-    NodeFilter filter();
+    NodeFilterImpl* filter();
     bool expandEntityReferences();
 
     NodeImpl *nextNode(int &exceptioncode);
@@ -65,7 +66,7 @@ public:
 protected:
     NodeImpl *m_root;
     long m_whatToShow;
-    NodeFilter m_filter;
+    SharedPtr<NodeFilterImpl> m_filter;
     bool m_expandEntityReferences;
 
     bool m_inFront;

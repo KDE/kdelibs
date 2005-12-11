@@ -977,7 +977,7 @@ RangeImpl *DocumentImpl::createRange()
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                                   NodeFilter &filter, bool entityReferenceExpansion,
+                                                   NodeFilterImpl* filter, bool entityReferenceExpansion,
                                                    int &exceptioncode)
 {
     if (!root) {

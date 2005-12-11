@@ -47,25 +47,25 @@ const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, &DOMNodeIteratorTab
 @end
 */
 DEFINE_PROTOTYPE("DOMNodeIterator",DOMNodeIteratorProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMNodeIteratorProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMNodeIteratorProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNodeIteratorProto,DOMNodeIteratorProtoFunc)
 
-DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
-  : DOMObject(DOMNodeIteratorProto::self(exec)), nodeIterator(ni) {}
+DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni)
+  : DOMObject(DOMNodeIteratorProto::self(exec)), m_impl(ni) {}
 
 DOMNodeIterator::~DOMNodeIterator()
 {
-  ScriptInterpreter::forgetDOMObject(nodeIterator.handle());
+  ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMNodeIterator::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMNodeIterator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<DOMNodeIterator,DOMObject>(exec,p,&DOMNodeIteratorTable,this);
+  return getStaticValueSlot<DOMNodeIterator,DOMObject>(exec, &DOMNodeIteratorTable, this, propertyName, slot);
 }
 
 ValueImp *DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
 {
-  DOM::NodeIterator ni(nodeIterator);
+  DOM::NodeIteratorImpl& ni = *impl();
   switch (token) {
   case Root:
     return getDOMNode(exec,ni.root());
@@ -81,25 +81,26 @@ ValueImp *DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp* DOMNodeIteratorProtoFunc::tryCall(ExecState *exec, ObjectImp* thisObj, const List &)
+ValueImp* DOMNodeIteratorProtoFunc::callAsFunction(ExecState *exec, ObjectImp* thisObj, const List &)
 {
   KJS_CHECK_THIS( KJS::DOMNodeIterator, thisObj );
-  DOM::NodeIterator nodeIterator = static_cast<DOMNodeIterator *>(thisObj)->toNodeIterator();
+  DOMExceptionTranslator exception(exec);
+  DOM::NodeIteratorImpl& nodeIterator = *static_cast<DOMNodeIterator *>(thisObj)->impl();
   switch (id) {
   case DOMNodeIterator::PreviousNode:
-    return getDOMNode(exec,nodeIterator.previousNode());
+    return getDOMNode(exec,nodeIterator.previousNode(exception));
   case DOMNodeIterator::NextNode:
-    return getDOMNode(exec,nodeIterator.nextNode());
+    return getDOMNode(exec,nodeIterator.nextNode(exception));
   case DOMNodeIterator::Detach:
-    nodeIterator.detach();
+    nodeIterator.detach(exception);
     return Undefined();
   }
   return Undefined();
 }
 
-ValueImp *KJS::getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
+ValueImp *KJS::getDOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni)
 {
-  return cacheDOMObject<DOM::NodeIterator, DOMNodeIterator>(exec, ni);
+  return cacheDOMObject<DOM::NodeIteratorImpl, DOMNodeIterator>(exec, ni);
 }
 
 
@@ -128,13 +129,13 @@ const ClassInfo NodeFilterConstructor::info = { "NodeFilterConstructor", 0, &Nod
 */
 
 NodeFilterConstructor::NodeFilterConstructor(ExecState* exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
 }
 
-ValueImp *NodeFilterConstructor::tryGet(ExecState *exec, const Identifier &p) const
+bool NodeFilterConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<NodeFilterConstructor,DOMObject>(exec,p,&NodeFilterConstructorTable,this);
+  return getStaticValueSlot<NodeFilterConstructor,DOMObject>(exec, &NodeFilterConstructorTable, this, propertyName, slot);
 }
 
 ValueImp *NodeFilterConstructor::getValueProperty(ExecState *, int token) const
@@ -157,23 +158,23 @@ const ClassInfo DOMNodeFilter::info = { "NodeFilter", 0, 0, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMNodeFilter",DOMNodeFilterProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMNodeFilterProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMNodeFilterProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNodeFilterProto,DOMNodeFilterProtoFunc)
 
-DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
-  : nodeFilter(nf) {
+DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
+  : m_impl(nf) {
   setPrototype(DOMNodeFilterProto::self(exec));
 }
 
 DOMNodeFilter::~DOMNodeFilter()
 {
-  ScriptInterpreter::forgetDOMObject(nodeFilter.handle());
+  ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMNodeFilterProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &args)
+ValueImp *DOMNodeFilterProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNodeFilter, thisObj );
-  DOM::NodeFilter nodeFilter = static_cast<DOMNodeFilter *>(thisObj)->toNodeFilter();
+  DOM::NodeFilterImpl& nodeFilter = *static_cast<DOMNodeFilter *>(thisObj)->impl();
   switch (id) {
     case DOMNodeFilter::AcceptNode:
       return Number(nodeFilter.acceptNode(toNode(args[0])));
@@ -181,9 +182,9 @@ ValueImp *DOMNodeFilterProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, c
   return Undefined();
 }
 
-ValueImp *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
+ValueImp *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
 {
-  return cacheDOMObject<DOM::NodeFilter, DOMNodeFilter>(exec, nf);
+  return cacheDOMObject<DOM::NodeFilterImpl, DOMNodeFilter>(exec, nf);
 }
 
 // -------------------------------------------------------------------------
@@ -208,27 +209,27 @@ const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, &DOMTreeWalkerTable, 0 
 @end
 */
 DEFINE_PROTOTYPE("DOMTreeWalker",DOMTreeWalkerProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMTreeWalkerProtoFunc)
+IMPLEMENT_PROTOFUNC(DOMTreeWalkerProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMTreeWalkerProto,DOMTreeWalkerProtoFunc)
 
-DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
-  : treeWalker(tw) {
+DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
+  : m_impl(tw) {
   setPrototype(DOMTreeWalkerProto::self(exec));
 }
 
 DOMTreeWalker::~DOMTreeWalker()
 {
-  ScriptInterpreter::forgetDOMObject(treeWalker.handle());
+  ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMTreeWalker::tryGet(ExecState *exec, const Identifier &p) const
+bool DOMTreeWalker::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return DOMObjectLookupGetValue<DOMTreeWalker,DOMObject>(exec,p,&DOMTreeWalkerTable,this);
+  return getStaticValueSlot<DOMTreeWalker,DOMObject>(exec, &DOMTreeWalkerTable, this, propertyName, slot);
 }
 
 ValueImp *DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
 {
-  DOM::TreeWalker tw(treeWalker);
+  DOM::TreeWalkerImpl& tw = *impl();
   switch (token) {
   case Root:
     return getDOMNode(exec,tw.root());
@@ -246,7 +247,7 @@ ValueImp *DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void DOMTreeWalker::tryPut(ExecState *exec, const Identifier &propertyName,
+void DOMTreeWalker::put(ExecState *exec, const Identifier &propertyName,
                            ValueImp *value, int attr)
 {
   if (propertyName == "currentNode") {
@@ -256,10 +257,10 @@ void DOMTreeWalker::tryPut(ExecState *exec, const Identifier &propertyName,
     ObjectImp::put(exec, propertyName, value, attr);
 }
 
-ValueImp* DOMTreeWalkerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, const List &)
+ValueImp* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &)
 {
   KJS_CHECK_THIS( KJS::DOMTreeWalker, thisObj );
-  DOM::TreeWalker treeWalker = static_cast<DOMTreeWalker *>(thisObj)->toTreeWalker();
+  DOM::TreeWalkerImpl& treeWalker = *static_cast<DOMTreeWalker *>(thisObj)->impl();
   switch (id) {
     case DOMTreeWalker::ParentNode:
       return getDOMNode(exec,treeWalker.parentNode());
@@ -279,19 +280,19 @@ ValueImp* DOMTreeWalkerProtoFunc::tryCall(ExecState *exec, ObjectImp *thisObj, c
   return Undefined();
 }
 
-ValueImp *KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
+ValueImp *KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl tw)
 {
-  return cacheDOMObject<DOM::TreeWalker, DOMTreeWalker>(exec, tw);
+  return cacheDOMObject<DOM::TreeWalkerImpl, DOMTreeWalker>(exec, tw);
 }
 
-DOM::NodeFilter KJS::toNodeFilter(ValueImp *val)
+DOM::NodeFilterImpl* KJS::toNodeFilter(ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMNodeFilter::info))
-    return DOM::NodeFilter();
+    return 0;
 
   const DOMNodeFilter *dobj = static_cast<const DOMNodeFilter*>(obj);
-  return dobj->toNodeFilter();
+  return dobj->impl();
 }
 
 // -------------------------------------------------------------------------
@@ -317,7 +318,7 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
     ObjectImp *acceptNodeFunc = filter->get(exec, "acceptNode")->getObject();
     if (acceptNodeFunc && acceptNodeFunc->implementsCall()) {
       List args;
-      args.append(getDOMNode(exec,n));
+      args.append(getDOMNode(exec,n.handle()));
       ValueImp *result = acceptNodeFunc->call(exec,filter,args);
       if (exec->hadException())
 	exec->clearException();

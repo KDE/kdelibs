@@ -951,7 +951,7 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
         return getDOMNodeIterator(exec,
           doc.createNodeIterator(
             toNode(args[0]),(long unsigned int)(args[1]->toNumber(exec)),
-            filter,args[3]->toBoolean(exec), exception));
+            filter.handle(),args[3]->toBoolean(exec), exception));
       }// else?
     }
   case DOMDocument::CreateTreeWalker:
@@ -1293,7 +1293,7 @@ ValueImp* DOMNamedNodeMap::indexGetter(ExecState *exec, unsigned index)
 
 ValueImp *DOMNamedNodeMap::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
 {
-  DOMNodeList *thisObj = static_cast<DOMNodeList *>(slot.slotBase());
+  DOMNamedNodeMap *thisObj = static_cast<DOMNamedNodeMap *>(slot.slotBase());
   return Number(thisObj->m_impl->length());
 }
 
@@ -1313,23 +1313,34 @@ bool DOMNamedNodeMap::getOwnPropertySlot(ExecState *exec, const Identifier& prop
 ValueImp* DOMNamedNodeMapProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNamedNodeMap, thisObj );
+  DOMExceptionTranslator exception(exec);
   DOM::NamedNodeMapImpl& map = *static_cast<DOMNamedNodeMap *>(thisObj)->impl();
 
   switch(id) {
     case DOMNamedNodeMap::GetNamedItem:
       return getDOMNode(exec, map.getNamedItem(args[0]->toString(exec).domString()));
-    case DOMNamedNodeMap::SetNamedItem:
-      return getDOMNode(exec, map.setNamedItem(toNode(args[0])));
-    case DOMNamedNodeMap::RemoveNamedItem:
-      return getDOMNode(exec, map.removeNamedItem(args[0]->toString(exec).domString()));
+    case DOMNamedNodeMap::SetNamedItem: {
+      DOM::Node old = map.setNamedItem(toNode(args[0]),exception);
+      return getDOMNode(exec, old.handle());
+    }
+    case DOMNamedNodeMap::RemoveNamedItem: {
+      DOM::Node old = map.removeNamedItem(args[0]->toString(exec).domString(),exception);
+      return getDOMNode(exec, old.handle());
+    }
     case DOMNamedNodeMap::Item:
       return getDOMNode(exec, map.item(args[0]->toInt32(exec)));
-    case DOMNamedNodeMap::GetNamedItemNS: // DOM2
-      return getDOMNode(exec, map.getNamedItemNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
-    case DOMNamedNodeMap::SetNamedItemNS: // DOM2
-      return getDOMNode(exec, map.setNamedItemNS(toNode(args[0])));
-    case DOMNamedNodeMap::RemoveNamedItemNS: // DOM2
-      return getDOMNode(exec, map.removeNamedItemNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
+    case DOMNamedNodeMap::GetNamedItemNS: {// DOM2
+      DOM::Node old = map.getNamedItemNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString());
+      return getDOMNode(exec, old.handle());
+    }
+    case DOMNamedNodeMap::SetNamedItemNS: {// DOM2
+      DOM::Node old = map.setNamedItemNS(toNode(args[0]),exception);
+      return getDOMNode(exec, old.handle());
+    }
+    case DOMNamedNodeMap::RemoveNamedItemNS: { // DOM2
+      DOM::Node old = map.removeNamedItemNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception);
+      return getDOMNode(exec, old.handle());
+    }
     default:
       break;
   }
@@ -1443,7 +1454,8 @@ ValueImp* DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-bool KJS::checkNodeSecurity(ExecState *exec, DOM::NodeImpl* n)
+namespace KJS {
+bool checkNodeSecurity(ExecState *exec, DOM::NodeImpl* n)
 {
   // Check to see if the currently executing interpreter is allowed to access the specified node
   if (!n)
@@ -1453,6 +1465,8 @@ bool KJS::checkNodeSecurity(ExecState *exec, DOM::NodeImpl* n)
   if ( !win || !win->isSafeScript(exec) )
     return false;
   return true;
+}
+
 }
 
 ValueImp* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
@@ -1723,7 +1737,7 @@ bool DOMNamedNodesCollection::getOwnPropertySlot(ExecState *exec, const Identifi
   }
 
   //May be it's an index?
-  if (getIndexSlot(this, m_nodes, propertyName, slot))
+  if (getIndexSlot(this, m_nodes.size(), propertyName, slot))
     return true;
   
   return DOMObject::getOwnPropertySlot(exec,propertyName,slot);

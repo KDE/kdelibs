@@ -664,6 +664,14 @@ public:
     virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
     virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
 
+    //The DOM-style wrappers
+    NodeImpl* getNamedItem( const DOMString &name );
+    Node setNamedItem( const Node &arg, int& exceptioncode );
+    Node removeNamedItem( const DOMString &name, int& exceptioncode );
+    Node getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName );
+    Node setNamedItemNS( const Node &arg, int& exceptioncode );
+    Node removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
+
     virtual NodeImpl *item ( unsigned long index ) const = 0;
     virtual unsigned long length(  ) const = 0;
 

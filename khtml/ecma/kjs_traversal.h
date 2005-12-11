@@ -21,6 +21,7 @@
 #ifndef _KJS_TRAVERSAL_H_
 #define _KJS_TRAVERSAL_H_
 
+#include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
 #include "dom/dom2_traversal.h"
 
@@ -28,25 +29,25 @@ namespace KJS {
 
   class DOMNodeIterator : public DOMObject {
   public:
-    DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni);
+    DOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni);
     ~DOMNodeIterator();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Filter, Root, WhatToShow, ExpandEntityReferences,
            NextNode, PreviousNode, Detach };
-    DOM::NodeIterator toNodeIterator() const { return nodeIterator; }
+    DOM::NodeIteratorImpl* impl() const { return m_impl.get(); }
   protected:
-    DOM::NodeIterator nodeIterator;
+    SharedPtr<DOM::NodeIteratorImpl> m_impl;
   };
 
   // Constructor object NodeFilter
   class NodeFilterConstructor : public DOMObject {
   public:
     NodeFilterConstructor(ExecState *);
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -55,44 +56,44 @@ namespace KJS {
 
   class DOMNodeFilter : public DOMObject {
   public:
-    DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf);
+    DOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf);
     ~DOMNodeFilter();
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    virtual DOM::NodeFilter toNodeFilter() const { return nodeFilter; }
+    virtual DOM::NodeFilterImpl* impl() const { return m_impl.get(); }
     enum { AcceptNode };
   protected:
-    DOM::NodeFilter nodeFilter;
+    SharedPtr<DOM::NodeFilterImpl> m_impl;
   };
 
   class DOMTreeWalker : public DOMObject {
   public:
-    DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw);
+    DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw);
     ~DOMTreeWalker();
-    virtual ValueImp* tryGet(ExecState *exec,const Identifier &p) const;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
+    virtual void put(ExecState *exec, const Identifier &propertyName,
                         ValueImp* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Root, WhatToShow, Filter, ExpandEntityReferences, CurrentNode,
            ParentNode, FirstChild, LastChild, PreviousSibling, NextSibling,
            PreviousNode, NextNode };
-    DOM::TreeWalker toTreeWalker() const { return treeWalker; }
+    DOM::TreeWalkerImpl* impl() const { return m_impl.get(); }
   protected:
-    DOM::TreeWalker treeWalker;
+    SharedPtr<DOM::TreeWalkerImpl> m_impl;
   };
 
-  ValueImp* getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni);
+  ValueImp* getDOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni);
   ValueImp* getNodeFilterConstructor(ExecState *exec);
-  ValueImp* getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf);
-  ValueImp* getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw);
+  ValueImp* getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf);
+  ValueImp* getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw);
 
   /**
    * Convert an object to a NodeFilter. Returns a null Node if not possible.
    */
-  DOM::NodeFilter toNodeFilter(ValueImp*);
+  DOM::NodeFilterImpl* toNodeFilter(ValueImp*);
 
   class JSNodeFilter : public DOM::CustomNodeFilter {
   public:
