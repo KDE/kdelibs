@@ -267,10 +267,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                        const QWidget* widget,
                                        KStyle::Option* kOpt) const
 {
-    bool reverseLayout = opt->direction == Qt::RightToLeft;
+    const bool reverseLayout = opt->direction == Qt::RightToLeft;
 
-    bool enabled = flags & State_Enabled;
-
+    const bool enabled = flags & State_Enabled;
     const bool mouseOver(enabled && (flags & State_MouseOver));
 
     switch (widgetType)
@@ -601,25 +600,25 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case MenuItem::CheckOn:
                 {
-                    renderCheckBox(p, r, pal, true /*TODO enabled*/, mouseOver, CheckBox::CheckOn);
+                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckBox::CheckOn);
                     return;
                 }
 
                 case MenuItem::CheckOff:
                 {
-                    renderCheckBox(p, r, pal, true /*TODO enabled*/, mouseOver, CheckBox::CheckOff);
+                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckBox::CheckOff);
                     return;
                 }
 
                 case MenuItem::RadioOn:
                 {
-                    renderRadioButton(p, r, pal, true /*TODO enabled*/, mouseOver, RadioButton::RadioOn);
+                    renderRadioButton(p, r, pal, enabled, mouseOver, RadioButton::RadioOn);
                     return;
                 }
 
                 case MenuItem::RadioOff:
                 {
-                    renderRadioButton(p, r, pal, true /*TODO enabled*/, mouseOver, RadioButton::RadioOff);
+                    renderRadioButton(p, r, pal, enabled, mouseOver, RadioButton::RadioOff);
                     return;
                 }
 
@@ -1376,18 +1375,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 case Generic::Frame:
                 {
-                    bool isReadOnly = false;
-                    bool isEnabled = flags & State_Enabled;
-                    bool hasFocus = flags & State_HasFocus;
-
-// TODO: fixme...
-//                     // panel is highlighted by default if it has focus, but if we have access to the
-//                     // widget itself we can try to avoid highlighting in case it's readOnly or disabled.
-//                     if (p->device() && dynamic_cast<QLineEdit*>(p->device()))
-//                     {
-//                         QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(p->device());
-//                         isReadOnly = lineEdit->isReadOnly();
-//                     }
+                    const bool isReadOnly = flags & State_ReadOnly;
+                    const bool isEnabled = flags & State_Enabled;
+                    const bool hasFocus = flags & State_HasFocus;
 
                     uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
