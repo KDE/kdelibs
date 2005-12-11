@@ -175,6 +175,10 @@ def detect(env):
 	env['CPPPATH_QTXML']       = [ env.join(env['QTINCLUDEPATH'], 'QtXml') ]
         env['LIB_QTXML']           = ['QtXml'+debug]
 	env['RPATH_QTXML']         = env['RPATH_QT']
+
+	env['CPPPATH_QTEST']       = [ env.join(env['QTINCLUDEPATH'], 'QtXml') ]
+        env['LIB_QTEST']           = ['QtTest'+debug]
+	env['RPATH_QTEST']         = env['RPATH_QT']
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
 

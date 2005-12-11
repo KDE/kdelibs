@@ -100,6 +100,12 @@ def generate(env):
 		('FRAMEWORK_QTSQL', ''),
 		('FRAMEWORKPATH_QTSQL', ''),
 
+		('CPPPATH_QTEST', ''),
+		('LIB_QTEST', ''),
+		('RPATH_QTEST', ''),
+		('FRAMEWORK_QTEST', ''),
+		('FRAMEWORKPATH_QTEST', ''),
+
 		('CPPPATH_QTXML', ''),
 		('LIB_QTXML', ''),
 		('RPATH_QTXML', ''),
