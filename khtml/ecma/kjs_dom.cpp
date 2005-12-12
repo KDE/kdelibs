@@ -522,6 +522,10 @@ ValueImp* DOMNodeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
     }
     case DOMNode::DispatchEvent: {
       SharedPtr<DOM::EventImpl> evt = toEvent(args[0]);
+      if (!evt) {
+        setDOMException(exec, DOMException::NOT_FOUND_ERR);
+        return Undefined();
+      }
       node.dispatchEvent(evt.get(), exception);
       return Boolean(!evt->defaultPrevented());
     }
@@ -1043,7 +1047,10 @@ const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable
 @end
 */
 DOMElement::DOMElement(ExecState *exec, DOM::ElementImpl* e)
-  : DOMNode(exec, e) { }
+  : DOMNode(exec, e) 
+{
+    setPrototype(DOMElementProto::self(exec));
+}
 
 ValueImp* DOMElement::getValueProperty(ExecState *exec, int token) const
 {
