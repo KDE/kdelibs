@@ -46,6 +46,11 @@
 #include <QWindowsStyle>
 #include <QStyleOptionSlider>
 
+#include <dom/dom_node.h>
+#include <dom/dom_element.h>
+#include <dom/dom_text.h>
+#include <dom/dom_xml.h>
+
 //We don't use the default fonts, though, but traditional testregression ones
 #undef HTML_DEFAULT_VIEW_FONT
 #undef HTML_DEFAULT_VIEW_FIXED_FONT
@@ -63,6 +68,8 @@
 #ifdef __GNUC__
 #warning "Kill this at some point"
 #endif
+
+
 
 struct PalInfo
 {
@@ -145,8 +152,6 @@ public:
                 //Fun. in Qt4, the brush offset seems to be sensitive to window position??
                 painter->setBrushOrigin(0,1);
             }
-            break;
-        default: //shaddup
             break;
         }
 
@@ -356,15 +361,15 @@ bool RegTestFunction::implementsCall() const
     return true;
 }
 
-Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+ValueImp* RegTestFunction::callAsFunction(ExecState *exec, ObjectImp* /*thisObj*/, const List &args)
 {
-    Value result = Undefined();
+    ValueImp* result = Undefined();
     if ( m_regTest->ignore_errors )
         return result;
 
     switch (id) {
 	case Print: {
-	    UString str = args[0].toString(exec);
+	    UString str = args[0]->toString(exec);
             if ( str.qstring().toLower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
             QString res = str.qstring().replace('\007', "");
@@ -372,9 +377,9 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 	    break;
 	}
 	case ReportResult: {
-            bool passed = args[0].toBoolean(exec);
-            QString description = args[1].toString(exec).qstring();
-            if (args[1].isA(UndefinedType) || args[1].isA(NullType))
+            bool passed = args[0]->toBoolean(exec);
+            QString description = args[1]->toString(exec).qstring();
+            if (args[1]->type() == UndefinedType || args[1]->type() == NullType)
                 description = QString::null;
             m_regTest->reportResult(passed,description);
             if ( !passed )
@@ -388,7 +393,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
                 docimpl->updateRendering();
                 docimpl->view()->layout();
             }
-            QString filename = args[0].toString(exec).qstring();
+            QString filename = args[0]->toString(exec).qstring();
             filename = RegressionTest::curr->m_currentCategory+"/"+filename;
             int failures = RegressionTest::NoFailure;
             if ( m_regTest->m_genOutput ) {
@@ -433,14 +438,30 @@ KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
     putDirect("processEvents", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0), DontEnum);
 }
 
-Value KHTMLPartObject::get(ExecState *exec, const Identifier &propertyName) const
+KJS::ValueImp *KHTMLPartObject::winGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot& slot)
 {
-    if (propertyName == "document")
-        return getDOMNode(exec,m_part->document());
-    else if (propertyName == "window")
-        return Object(KJS::Window::retrieveWindow(m_part));
-    else
-        return ObjectImp::get(exec,propertyName);
+    KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
+    return KJS::Window::retrieveWindow(thisObj->m_part);
+}
+
+KJS::ValueImp *KHTMLPartObject::docGetter(KJS::ExecState *exec, const KJS::Identifier&, const KJS::PropertySlot& slot)
+{
+    KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
+    return getDOMNode(exec, thisObj->m_part->document().handle());
+}
+
+
+bool KHTMLPartObject::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot)
+{
+    if (propertyName == "document") {
+        slot.setCustom(this, docGetter);
+        return true;
+    }
+    else if (propertyName == "window") {
+        slot.setCustom(this, winGetter);
+        return true;
+    }
+    return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 KHTMLPartFunction::KHTMLPartFunction(ExecState */*exec*/, KHTMLPart *_part, int _id, int length)
@@ -455,18 +476,18 @@ bool KHTMLPartFunction::implementsCall() const
     return true;
 }
 
-Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj*/, const List &args)
 {
-    Value result = Undefined();
+    ValueImp* result = Undefined();
 
     switch (id) {
         case OpenPage: {
-	    if (args[0].type() == NullType || args[0].type() == NullType) {
+	    if (args[0]->type() == NullType || args[0]->type() == NullType) {
 		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
 		return Undefined();
 	    }
 
-            QString filename = args[0].toString(exec).qstring();
+            QString filename = args[0]->toString(exec).qstring();
             QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absoluteFilePath();
             KURL url;
             url.setProtocol("file");
@@ -478,17 +499,17 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             break;
         }
 	case OpenPageAsUrl: {
-	    if (args[0].type() == NullType || args[0].type() == UndefinedType) {
+	    if (args[0]->type() == NullType || args[0]->type() == UndefinedType) {
 		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
 		return Undefined();
 	    }
-	    if (args[1].type() == NullType || args[1].type() == UndefinedType) {
+	    if (args[1]->type() == NullType || args[1]->type() == UndefinedType) {
 		exec->setException(Error::create(exec, GeneralError,"No url specified"));
 		return Undefined();
 	    }
 
-            QString filename = args[0].toString(exec).qstring();
-            QString url = args[1].toString(exec).qstring();
+            QString filename = args[0]->toString(exec).qstring();
+            QString url = args[1]->toString(exec).qstring();
             QFile file(RegressionTest::curr->m_currentBase+"/"+filename);
 	    if (!file.open(QIODevice::ReadOnly)) {
 		exec->setException(Error::create(exec, GeneralError,
@@ -515,12 +536,12 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    break;
 	}
 	case Begin: {
-            QString url = args[0].toString(exec).qstring();
+            QString url = args[0]->toString(exec).qstring();
             m_part->begin(KURL( url ));
             break;
         }
         case Write: {
-            QString str = args[0].toString(exec).qstring();
+            QString str = args[0]->toString(exec).qstring();
             m_part->write(str);
             break;
         }
@@ -530,7 +551,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             break;
         }
 	case ExecuteScript: {
-	    QString code = args[0].toString(exec).qstring();
+	    QString code = args[0]->toString(exec).qstring();
 	    Completion comp;
 	    KJSProxy *proxy = m_part->jScript();
 	    proxy->evaluate("",0,code,0,&comp);
@@ -956,7 +977,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 
 void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* part, uint indent )
 {
-    Node node = part->document();
+    DOM::Node node = part->document();
     while (!node.isNull()) {
 	// process
 
@@ -965,7 +986,7 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 	outputStream << node.nodeName().string();
 
 	switch (node.nodeType()) {
-	    case Node::ELEMENT_NODE: {
+	    case DOM::Node::ELEMENT_NODE: {
 		// Sort strings to ensure consistent output
 		QStringList attrNames;
 		NamedNodeMap attrs = node.attributes();
@@ -990,34 +1011,34 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 		}
 		break;
 	    }
-	    case Node::ATTRIBUTE_NODE:
+	    case DOM::Node::ATTRIBUTE_NODE:
 		// Should not be present in tree
 		assert(false);
 		break;
-            case Node::TEXT_NODE:
+            case DOM::Node::TEXT_NODE:
 		outputStream << " \"" << Text(node).data().string() << "\"";
 		break;
-            case Node::CDATA_SECTION_NODE:
+            case DOM::Node::CDATA_SECTION_NODE:
 		outputStream << " \"" << CDATASection(node).data().string() << "\"";
 		break;
-            case Node::ENTITY_REFERENCE_NODE:
+            case DOM::Node::ENTITY_REFERENCE_NODE:
 		break;
-            case Node::ENTITY_NODE:
+            case DOM::Node::ENTITY_NODE:
 		break;
-            case Node::PROCESSING_INSTRUCTION_NODE:
+            case DOM::Node::PROCESSING_INSTRUCTION_NODE:
 		break;
-            case Node::COMMENT_NODE:
+            case DOM::Node::COMMENT_NODE:
 		outputStream << " \"" << Comment(node).data().string() << "\"";
 		break;
-            case Node::DOCUMENT_NODE:
+            case DOM::Node::DOCUMENT_NODE:
 		break;
-            case Node::DOCUMENT_TYPE_NODE:
+            case DOM::Node::DOCUMENT_TYPE_NODE:
 		break;
-            case Node::DOCUMENT_FRAGMENT_NODE:
+            case DOM::Node::DOCUMENT_FRAGMENT_NODE:
 		// Should not be present in tree
 		assert(false);
 		break;
-            case Node::NOTATION_NODE:
+            case DOM::Node::NOTATION_NODE:
 		break;
             default:
 		assert(false);
@@ -1417,15 +1438,15 @@ void RegressionTest::testStaticFile(const QString & filename)
         KJS::ExecState *exec = m_part->jScriptInterpreter()->globalExec();
         if ( comp.complType() == ReturnValue || comp.complType() == Normal )
         {
-            if (comp.value().isValid() && comp.value().isA(ObjectType) &&
-               (Object::dynamicCast(comp.value()).className() == "Array" ) )
+            if (comp.value() && comp.value()->type() == ObjectType &&
+               comp.value()->toObject(exec)->className() == "Array" )
             {
-                Object argArrayObj = Object::dynamicCast(comp.value());
-                unsigned int length = argArrayObj.
-                                      get(exec,lengthPropertyName).
+                ObjectImp* argArrayObj = comp.value()->toObject(exec);
+                unsigned int length = argArrayObj->
+                                      get(exec,lengthPropertyName)->
                                       toUInt32(exec);
                 if ( length == 1 )
-                    functionname = argArrayObj.get(exec, 0).toString(exec).qstring();
+                    functionname = argArrayObj->get(exec, 0)->toString(exec).qstring();
             }
         }
         if ( functionname.isNull() ) {
@@ -1437,12 +1458,12 @@ void RegressionTest::testStaticFile(const QString & filename)
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
         QString description = "DOMTS";
         if ( comp2.complType() == Throw ) {
-            KJS::Value val = comp2.value();
-            KJS::Object obj = Object::dynamicCast(val);
-            if ( obj.isValid() && obj.hasProperty( exec, "jsUnitMessage" ) )
-                description = obj.get( exec, "jsUnitMessage" ).toString( exec ).qstring();
+            KJS::ValueImp*  val = comp2.value();
+            KJS::ObjectImp* obj = val->toObject(exec);
+            if ( obj && obj->hasProperty( exec, "jsUnitMessage" ) )
+                description = obj->get( exec, "jsUnitMessage" )->toString( exec ).qstring();
             else
-                description = comp2.value().toString( exec ).qstring();
+                description = comp2.value()->toString( exec ).qstring();
         }
         reportResult( success,  description );
 
@@ -1514,7 +1535,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     if ( report_result && !ignore_errors) {
         bool expected_failure = filename.endsWith( "-n.js" );
         if (c.complType() == Throw) {
-            QString errmsg = c.value().toString(interp.globalExec()).qstring();
+            QString errmsg = c.value()->toString(interp.globalExec()).qstring();
             if ( !expected_failure ) {
                 printf( "ERROR: %s (%s)\n",filename.latin1(), errmsg.latin1());
                 m_errors++;
@@ -1543,16 +1564,16 @@ void RegressionTest::testJSFile(const QString & filename )
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
-    Object global(new GlobalImp());
+    ProtectedPtr<ObjectImp> global(new GlobalImp());
     khtml::ChildFrame frame;
     frame.m_part = m_part;
     ScriptInterpreter interp(global,&frame);
     ExecState *exec = interp.globalExec();
 
-    global.put(exec, "part", Object(new KHTMLPartObject(exec,m_part)));
-    global.put(exec, "regtest", Object(new RegTestObject(exec,this)));
-    global.put(exec, "debug", Object(new RegTestFunction(exec,this,RegTestFunction::Print,1) ) );
-    global.put(exec, "print", Object(new RegTestFunction(exec,this,RegTestFunction::Print,1) ) );
+    global->put(exec, "part", new KHTMLPartObject(exec,m_part));
+    global->put(exec, "regtest", new RegTestObject(exec,this));
+    global->put(exec, "debug", new RegTestFunction(exec,this,RegTestFunction::Print,1) );
+    global->put(exec, "print", new RegTestFunction(exec,this,RegTestFunction::Print,1) );
 
     QStringList dirs = QStringList::split( '/', filename );
     // NOTE: the basename is of little interest here, but the last basedir change
