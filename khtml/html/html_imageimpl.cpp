@@ -314,6 +314,28 @@ QImage HTMLImageElementImpl::currentImage() const
     return QImage();
 }
 
+long HTMLImageElementImpl::x() const
+{
+    if (renderer()) {
+        int x = 0;
+        int y = 0;
+        renderer()->absolutePosition(x,y);
+        return x;
+    }
+    return 0;
+}
+
+long HTMLImageElementImpl::y() const
+{
+    if (renderer()) {
+        int x = 0;
+        int y = 0;
+        renderer()->absolutePosition(x,y);
+        return y;
+    }
+    return 0;
+}
+
 QPixmap HTMLImageElementImpl::currentPixmap() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
@@ -416,6 +438,11 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+HTMLCollectionImpl* HTMLMapElementImpl::areas()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::MAP_AREAS);
 }
 
 // -------------------------------------------------------------------------

@@ -45,7 +45,7 @@ namespace khtml
     class RenderRadioButton;
     class RenderFileButton;
 
-    typedef Q3ValueList<QByteArray> encodingList;
+    typedef QList<QByteArray> encodingList;
 }
 
 namespace KWallet {
@@ -211,6 +211,8 @@ public:
     void activate();
     virtual void attach();
     void click();
+    void blur();
+    void focus();
 
 protected:
     DOMString m_value;
@@ -278,6 +280,8 @@ public:
 
     DOMString value() const;
     void setValue(DOMString val);
+
+    DOMString valueWithDefault() const;
 
     void blur();
     void focus();

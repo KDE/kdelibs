@@ -20,6 +20,7 @@
 
 #include "ecma/kjs_views.h"
 #include "ecma/kjs_css.h"
+#include "ecma/kjs_window.h"
 #include "kjs_views.lut.h"
 
 using namespace KJS;
@@ -88,9 +89,15 @@ ValueImp *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)
 DOM::AbstractViewImpl *KJS::toAbstractView (ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
-  if (!obj || !obj->inherits(&DOMAbstractView::info))
+  if (!obj)
     return 0;
+   
+  // the Window object is considered for all practical purposes as a descendant of AbstractView
+  if (obj->inherits(&Window::info))
+     return static_cast<const Window *>(obj)->toAbstractView(); 
 
-  const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj);
-  return dobj->impl();
+  if (obj->inherits(&DOMAbstractView::info))
+    return static_cast<const DOMAbstractView *>(obj)->impl();
+
+  return 0;
 }

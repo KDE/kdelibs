@@ -406,6 +406,56 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
     return 0;
 }
 
+DOMString HTMLBodyElementImpl::aLink() const
+{
+    return getAttribute(ATTR_ALINK);
+}
+
+void HTMLBodyElementImpl::setALink( const DOMString &value )
+{
+    setAttribute(ATTR_ALINK, value);
+}
+
+DOMString HTMLBodyElementImpl::bgColor() const
+{
+    return getAttribute(ATTR_BGCOLOR);
+}
+
+void HTMLBodyElementImpl::setBgColor( const DOMString &value )
+{
+    setAttribute(ATTR_BGCOLOR, value);
+}
+
+DOMString HTMLBodyElementImpl::link() const
+{
+    return getAttribute(ATTR_LINK);
+}
+
+void HTMLBodyElementImpl::setLink( const DOMString &value )
+{
+    setAttribute(ATTR_LINK, value);
+}
+
+DOMString HTMLBodyElementImpl::text() const
+{
+    return getAttribute(ATTR_TEXT);
+}
+
+void HTMLBodyElementImpl::setText( const DOMString &value )
+{
+    setAttribute(ATTR_TEXT, value);
+}
+
+DOMString HTMLBodyElementImpl::vLink() const
+{
+    return getAttribute(ATTR_VLINK);
+}
+
+void HTMLBodyElementImpl::setVLink( const DOMString &value )
+{
+    setAttribute(ATTR_VLINK, value);
+}
+
 // -------------------------------------------------------------------------
 
 HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)

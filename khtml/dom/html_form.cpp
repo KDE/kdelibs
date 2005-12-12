@@ -99,6 +99,18 @@ void HTMLButtonElement::setName( const DOMString &value )
     if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
+void HTMLButtonElement::focus(  )
+{
+    if(impl)
+        static_cast<HTMLButtonElementImpl*>(impl)->focus();
+}
+
+void HTMLButtonElement::blur(  )
+{
+    if(impl)
+        static_cast<HTMLButtonElementImpl*>(impl)->blur();
+}
+
 long HTMLButtonElement::tabIndex() const
 {
     if(!impl) return 0;

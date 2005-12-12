@@ -31,6 +31,7 @@
 #include <qdatetime.h>
 
 #include "kjs_binding.h"
+#include "kjs_views.h"
 
 class QTimer;
 class KHTMLView;
@@ -75,7 +76,7 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  class KDE_EXPORT Window : public ObjectImp {
+  class KHTML_EXPORT Window : public ObjectImp {
     friend QPointer<KHTMLPart> getInstance();
     friend class KJS::Location;
     friend class KJS::WindowFunc;
@@ -106,6 +107,7 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
+    virtual DOM::AbstractViewImpl* toAbstractView() const;
     void scheduleClose();
     void closeNow();
     void delayedGoHistory(int steps);
@@ -138,7 +140,7 @@ namespace KJS {
            InnerWidth, Length, _Location, Navigate, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
-           ScreenTop, ScreenLeft, AToB, BToA, FrameElement,
+           ScreenTop, ScreenLeft, AToB, BToA, FrameElement, GetComputedStyle,
            ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
            XMLHttpRequest, XMLSerializer, DOMParser,
@@ -184,7 +186,7 @@ namespace KJS {
       DelayedActionId actionId;
       QVariant param; // just in case
     };
-    Q3ValueList<DelayedAction> m_delayed;
+    QList<DelayedAction> m_delayed;
 
     struct SuppressedWindowInfo {
        SuppressedWindowInfo() {}  // for QValueList
@@ -194,7 +196,7 @@ namespace KJS {
        QString frameName;
        QString features;
      };
-     Q3ValueList<SuppressedWindowInfo> m_suppressedWindowInfo;
+     QList<SuppressedWindowInfo> m_suppressedWindowInfo;
   };
 
   /**
@@ -222,7 +224,7 @@ namespace KJS {
     int timerId;
   };
 
-  class KDE_EXPORT WindowQObject : public QObject {
+  class KHTML_EXPORT WindowQObject : public QObject {
     Q_OBJECT
   public:
     WindowQObject(Window *w);

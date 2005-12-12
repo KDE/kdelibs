@@ -164,6 +164,18 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 }
 
 
+void HTMLAnchorElementImpl::blur(  )
+{
+    if(getDocument()->focusNode()==this)
+        getDocument()->setFocusNode(0);
+}
+
+void HTMLAnchorElementImpl::focus(  )
+{
+    getDocument()->setFocusNode(this);
+}
+
+
 void HTMLAnchorElementImpl::click()
 {
     QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);

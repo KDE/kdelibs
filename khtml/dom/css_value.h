@@ -21,7 +21,7 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 2 Specification (Style)
  * http://www.w3.org/TR/DOM-Level-2-Style/
- * Copyright  2000 W3C (MIT, INRIA, Keio), All Rights Reserved.
+ * Copyright © 2000 W3C® (MIT, INRIA, Keio), All Rights Reserved.
  *
  */
 #ifndef _CSS_css_value_h_

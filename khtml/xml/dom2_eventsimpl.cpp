@@ -312,17 +312,19 @@ UIEventImpl::~UIEventImpl()
 void UIEventImpl::initUIEvent(const DOMString &typeArg,
 			      bool canBubbleArg,
 			      bool cancelableArg,
-			      const AbstractView &viewArg,
+			      AbstractViewImpl* viewArg,
 			      long detailArg)
 {
     EventImpl::initEvent(typeArg,canBubbleArg,cancelableArg);
 
-    if (m_view)
-	m_view->deref();
+    if (viewArg)
+      viewArg->ref();
 
-    m_view = viewArg.handle();
     if (m_view)
-	m_view->ref();
+      m_view->deref();
+
+    m_view = viewArg;
+    
     m_detail = detailArg;
 }
 
@@ -425,7 +427,7 @@ void MouseEventImpl::computeLayerPos()
 void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
                                     bool canBubbleArg,
                                     bool cancelableArg,
-                                    const AbstractView &viewArg,
+                                    AbstractViewImpl* viewArg,
                                     long detailArg,
                                     long screenXArg,
                                     long screenYArg,
@@ -701,7 +703,7 @@ bool TextEventImpl::checkModifier(unsigned long modifierArg)
 void TextEventImpl::initTextEvent(const DOMString &typeArg,
 				bool canBubbleArg,
 				bool cancelableArg,
-				const AbstractView &viewArg,
+				AbstractViewImpl* viewArg,
 				long detailArg,
 				const DOMString &outputStringArg,
 				unsigned long keyValArg,

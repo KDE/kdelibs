@@ -375,18 +375,26 @@ KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
 
 void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
 {
+#ifdef Q_WS_WIN
+  //TODO
+#else
   oldAlarmHandler = signal(SIGVTALRM, alarmHandler);
   itimerval tv = {
       { i_ms / 1000, (i_ms % 1000) * 1000 },
       { ms / 1000, (ms % 1000) * 1000 }
   };
   setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
+#endif
 }
 
 void KJSCPUGuard::stop()
 {
+#ifdef Q_WS_WIN
+  //TODO
+#else
   setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
   signal(SIGVTALRM, oldAlarmHandler);
+#endif
 }
 
 bool KJSCPUGuard::confirmTerminate() {

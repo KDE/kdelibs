@@ -152,7 +152,7 @@ DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*fe
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                                     const DocumentType &doctype, int &exceptioncode )
+                                                     DocumentTypeImpl* dtype, int &exceptioncode )
 {
     exceptioncode = 0;
 
@@ -160,7 +160,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
                             true /*nameCanBeEmpty, see #61650*/, &exceptioncode) )
         return 0;
 
-    DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
     if (dtype && (dtype->getDocument() || dtype->implementation() != this)) {
@@ -209,6 +208,18 @@ DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
     return new HTMLDocumentImpl(this, v);
+}
+
+HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
+{
+    HTMLDocumentImpl* r = createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
+
+    r->open();
+
+    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
+             QLatin1String("</TITLE></HEAD>"));
+
+    return r;
 }
 
 DOMImplementationImpl *DOMImplementationImpl::instance()
@@ -999,7 +1010,7 @@ RangeImpl *DocumentImpl::createRange()
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                                   NodeFilter &filter, bool entityReferenceExpansion,
+                                                   NodeFilterImpl* filter, bool entityReferenceExpansion,
                                                    int &exceptioncode)
 {
     if (!root) {

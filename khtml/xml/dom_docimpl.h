@@ -102,7 +102,7 @@ public:
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                  const DocumentType &doctype, int &exceptioncode );
+                                  DocumentTypeImpl* dtype, int &exceptioncode );
 
     DOMImplementationImpl* getInterface(const DOMString& feature) const;
 
@@ -207,6 +207,7 @@ public:
                                            int* pExceptioncode = 0 );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
+
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
     DOMString title() const { return m_title; }
     void setTitle(const DOMString& _title);
@@ -280,7 +281,7 @@ public:
     RangeImpl *createRange();
 
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                    NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
+                                    NodeFilterImpl* filter, bool entityReferenceExpansion, int &exceptioncode);
 
     TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
                             bool entityReferenceExpansion, int &exceptioncode);

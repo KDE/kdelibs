@@ -29,6 +29,7 @@
 #include "dom/html_document.h"
 #include "dom/dom2_range.h"
 
+#include <kdatastream.h> // for DCOPCString
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kdemacros.h>
@@ -224,7 +225,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
-  Q_PROPERTY( Q3CString dcopObjectId READ dcopObjectId )
+  Q_PROPERTY( DCOPCString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
 
 public:
@@ -1202,7 +1203,7 @@ public slots:
    */
   void stopAnimations();
 
-  Q3CString dcopObjectId() const;
+  DCOPCString dcopObjectId() const;
 
   /**
    * Execute the specified snippet of JavaScript code.

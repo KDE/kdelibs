@@ -163,10 +163,19 @@ public:
     void initUIEvent(const DOMString &typeArg,
 		     bool canBubbleArg,
 		     bool cancelableArg,
-		     const AbstractView &viewArg,
+		     AbstractViewImpl* viewArg,
 		     long detailArg);
     virtual bool isUIEvent() const;
 
+    //Compat stuff
+    virtual int keyCode() const  { return 0; }
+    virtual int charCode() const { return 0; }
+
+    virtual long pageX() const { return 0; }
+    virtual long pageY() const { return 0; }
+    virtual long layerX() const { return 0; }
+    virtual long layerY() const { return 0; }
+    virtual int which() const { return 0; }
 protected:
     AbstractViewImpl *m_view;
     long m_detail;
@@ -205,6 +214,7 @@ public:
     long layerY() const { return m_layerY; } // non-DOM extension
     long pageX() const { return m_pageX; } // non-DOM extension
     long pageY() const { return m_pageY; } // non-DOM extension
+    virtual int which() const { return button() + 1; } // non-DOM extension
     bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
@@ -218,7 +228,7 @@ public:
     void initMouseEvent(const DOMString &typeArg,
 			bool canBubbleArg,
 			bool cancelableArg,
-			const AbstractView &viewArg,
+			AbstractViewImpl* viewArg,
 			long detailArg,
 			long screenXArg,
 			long screenYArg,
@@ -329,7 +339,7 @@ public:
   void initTextEvent(const DOMString &typeArg,
                     bool canBubbleArg,
                     bool cancelableArg,
-                    const AbstractView &viewArg,
+                    AbstractViewImpl* viewArg,
                     long detailArg,
                     const DOMString &outputStringArg,
                     unsigned long keyValArg,
@@ -346,8 +356,9 @@ public:
     unsigned long    virtKeyVal() const { return m_virtKeyVal; }
     bool             numPad() const { return m_numPad; }
     DOMString        outputString() const { return m_outputString; }
-    int keyCode() const;
-    int charCode() const;
+    virtual int keyCode() const;
+    virtual int charCode() const;
+    virtual int which() const { return keyCode(); } // non-DOM extension
 
     QKeyEvent *qKeyEvent() const { return m_keyEvent; }
 

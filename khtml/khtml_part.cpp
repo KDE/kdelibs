@@ -1148,10 +1148,10 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+  if (comp.complType() == KJS::Throw && !comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
   }
@@ -1192,10 +1192,10 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+  if (comp.complType() == KJS::Throw && !comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
     }
   }
@@ -1342,7 +1342,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
-    QList<KAction*> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -6528,7 +6528,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-        QList<KAction*> lst;
+        Q3PtrList<KAction> lst;
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -6763,7 +6763,7 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
             if (factory()) {
                 factory()->removeClient( part );
             }
-            if (childClients().contains(part)) {
+            if (childClients()->containsRef(part)) {
                 removeChildClient( part );
             }
         }
@@ -7267,7 +7267,7 @@ void KHTMLPart::setDebugScript( bool enable )
       d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
-    QList<KAction*> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paDebugScript );
     plugActionList( "debugScriptList", lst );
   }
