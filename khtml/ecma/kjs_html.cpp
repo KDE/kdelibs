@@ -275,6 +275,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   if ( view && view->part() ) {
     if (view->part()->findFrame( propertyName.qstring() )) {
       slot.setCustom(this, frameNameGetter);
+      return true;
     }
   }
 

@@ -612,23 +612,25 @@ ValueImp *Window::namedItemGetter(ExecState *exec, const Identifier& p, const Pr
   DOM::DocumentImpl* doc = part->xmlDocImpl();
   
   DOM::ElementMappingCache::ItemInfo* info = doc->underDocNamedCache().get(p.qstring());
-  if (info->nd)
-    return getDOMNode(exec, info->nd);
-  else {
-    //No cached mapping, do it by hand
-    NamedTagLengthDeterminer::TagLength tags[4] = {
-      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-    };
-    NamedTagLengthDeterminer(p.domString(), tags, 4)(doc);
-    for (int i = 0; i < 4; i++) {
-      if (tags[i].length > 0) {
-        if (tags[i].length == 1) {
-          //Have a single answer -> cache
-          info->nd = tags[i].last;
-          return getDOMNode(exec, tags[i].last);
+  if (info) {
+    if (info->nd)
+      return getDOMNode(exec, info->nd);
+    else {
+      //No cached mapping, do it by hand
+      NamedTagLengthDeterminer::TagLength tags[4] = {
+        {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
+      };
+      NamedTagLengthDeterminer(p.domString(), tags, 4)(doc);
+      for (int i = 0; i < 4; i++) {
+        if (tags[i].length > 0) {
+          if (tags[i].length == 1) {
+            //Have a single answer -> cache
+            info->nd = tags[i].last;
+            return getDOMNode(exec, tags[i].last);
+          }
+          // Get all the items with the same name
+          return getDOMNodeList(exec, new DOM::NamedTagNodeListImpl(doc, tags[i].id, p.domString()));
         }
-        // Get all the items with the same name
-        return getDOMNodeList(exec, new DOM::NamedTagNodeListImpl(doc, tags[i].id, p.domString()));
       }
     }
   }
@@ -2256,11 +2258,14 @@ bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, Property
 
     // XSS check
     const Window* window = Window::retrieveWindow( m_frame->m_part );
-    if ( !window || !window->isSafeScript(exec) )
-      return Undefined();
+    if ( !window || !window->isSafeScript(exec) ) {
+      slot.setUndefined(this);
+      return true;
+    }
   
     // XSS check passed - can now dispatch normally.
     getSlotFromEntry<LocationFunc, Location>(entry, this, slot);
+    return true;
   }
 
   return ObjectImp::getOwnPropertySlot(exec, p, slot);
