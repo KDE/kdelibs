@@ -39,9 +39,6 @@
 #include <q3scrollview.h>
 
 #include <kjs/debugger.h>
-#include <kjs/completion.h>
-#include <kjs/interpreter.h>
-#include <kjs/value.h>
 
 #include "dom/dom_misc.h"
 
@@ -53,6 +50,7 @@ class KAction;
 namespace KJS {
   class FunctionImp;
   class List;
+  class Interpreter;
   class KJSDebugWin;
 
   class SourceFile : public DOM::DomShared
@@ -91,6 +89,9 @@ namespace KJS {
     int baseLine;
     int errorLine;
     SourceFile *sourceFile;
+  private:
+    SourceFragment(const SourceFragment& other);
+    SourceFragment& operator = (const SourceFragment& other);
   };
 
   class KJSErrorDialog : public KDialogBase {
@@ -189,7 +190,7 @@ namespace KJS {
     bool sourceParsed(ExecState *exec, int sourceId,
 		      const UString &source, int errorLine);
     bool sourceUnused(ExecState * exec, int sourceId);
-    bool exception(ExecState *exec, ValueImp *value, bool inTryCatch);
+    bool exception(ExecState *exec, const Value &value, bool inTryCatch);
     bool atStatement(ExecState *exec);
     bool enterContext(ExecState *exec);
     bool exitContext(ExecState *exec, const Completion &completion);

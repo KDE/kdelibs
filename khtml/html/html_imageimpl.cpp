@@ -175,7 +175,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             getDocument()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
-        break;
+        //fallthrough
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -305,40 +305,22 @@ long HTMLImageElementImpl::height() const
 QImage HTMLImageElementImpl::currentImage() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
+#ifdef __GNUC__
 #warning "FIXME"
+#endif
     //if(r)
     //    return r->pixmap().convertToImage();
 
     return QImage();
 }
 
-long HTMLImageElementImpl::x() const
-{
-    if (renderer()) {
-        int x = 0;
-        int y = 0;
-        renderer()->absolutePosition(x,y);
-        return x;
-    }
-    return 0;
-}
-
-long HTMLImageElementImpl::y() const
-{
-    if (renderer()) {
-        int x = 0;
-        int y = 0;
-        renderer()->absolutePosition(x,y);
-        return y;
-    }
-    return 0;
-}
-
 QPixmap HTMLImageElementImpl::currentPixmap() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
 
+#ifdef __GNUC__
 #warning "FIXME"
+#endif
     //if(r)
     //    return r->pixmap();
 
@@ -413,7 +395,10 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_ID:
-        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml) {
+            HTMLElementImpl::parseAttribute(attr);
+            break;
+        }
         // fall through
     case ATTR_NAME:
     {
@@ -425,16 +410,12 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
 	// ### make this work for XML documents, e.g. in case of <html:map...>
         if(getDocument()->isHTMLDocument())
             static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;
-        break;
+
+        //fallthrough
     }
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
-}
-
-HTMLCollectionImpl* HTMLMapElementImpl::areas()
-{
-    return new HTMLCollectionImpl(this, HTMLCollectionImpl::MAP_AREAS);
 }
 
 // -------------------------------------------------------------------------

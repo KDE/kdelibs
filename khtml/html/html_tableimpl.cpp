@@ -490,10 +490,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 
     }
     case ATTR_ALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_FLOAT, attr->value().lower());
-        else
-            removeCSSProperty(CSS_PROP_FLOAT);
+        setChanged();
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())

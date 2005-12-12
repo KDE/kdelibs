@@ -45,8 +45,6 @@ CSSStyleDeclarationImpl *AbstractViewImpl::getComputedStyle(ElementImpl* elt, DO
         return 0;
 
     CSSStyleDeclarationImpl* style = new RenderStyleDeclarationImpl( elt );
-    style->setParent( elt->getDocument()->elementSheet() );
-
     return style;
 }
 

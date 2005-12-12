@@ -63,8 +63,10 @@ ValueList::~ValueList()
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "       value: (unit=" << values[i].unit <<")"<< endl;
 #endif
-        if ( values[i].unit == Value::Function )
+        if ( values[i].unit == Value::Function ) {
+            delete values[i].function->args;
             delete values[i].function;
+        }
     }
     free( values );
 }
@@ -570,9 +572,9 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             valid_primitive = true;
         break;
 
-    case CSS_PROP_FLOAT:                // left | right | none | inherit + center for buggy CSS
-        if ( id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT ||
-             id == CSS_VAL_NONE || id == CSS_VAL_CENTER)
+    case CSS_PROP_FLOAT:                // left | right | none | khtml_left | khtml_right | inherit + center for buggy CSS
+        if ( id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL__KHTML_LEFT ||
+             id == CSS_VAL__KHTML_RIGHT ||id == CSS_VAL_NONE || id == CSS_VAL_CENTER)
             valid_primitive = true;
         break;
 

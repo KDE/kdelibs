@@ -5,7 +5,7 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
- *                     2003 Apple Computer, Inc.
+ *                     2003-2004 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -3063,6 +3063,10 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 				   int detail,QMouseEvent *_mouse, bool setUnder,
 				   int mouseEventType)
 {
+    // if the target node is a text node, dispatch on the parent node - rdar://4196646 (and #76948)
+    if (targetNode && targetNode->isTextNode())
+        targetNode = targetNode->parentNode();
+
     if (d->underMouse)
 	d->underMouse->deref();
     d->underMouse = targetNode;
@@ -3115,6 +3119,9 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	    NodeImpl::MouseEvent mev( _mouse->stateAfter(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
 	    m_part->xmlDocImpl()->prepareMouseEvent( true, d->prevMouseX, d->prevMouseY, &mev );
 	    oldUnder = mev.innerNode.handle();
+
+            if (oldUnder && oldUnder->isTextNode())
+                oldUnder = oldUnder->parentNode();
 	}
 // 	qDebug("oldunder=%p (%s), target=%p (%s) x/y=%d/%d", oldUnder, oldUnder ? oldUnder->renderer()->renderName() : 0, targetNode,  targetNode ? targetNode->renderer()->renderName() : 0, _mouse->x(), _mouse->y());
 	if (oldUnder != targetNode) {
@@ -3434,7 +3441,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
-    QRegion updateRegion;
+    QRect updateRegion;
     QVector<QRect> rects = d->updateRegion.rects();
 
     d->updateRegion = QRegion();
@@ -3443,11 +3450,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         updateRegion = rects[0];
 
     for ( int i = 1; i < rects.size(); ++i ) {
-        QRect obR = updateRegion.boundingRect();
-        QRegion newRegion = updateRegion.unite(rects[i]);
-        if (2*newRegion.boundingRect().height() > 3*obR.height() )
+        QRect newRegion = updateRegion.unite(rects[i]);
+        if (2*newRegion.height() > 3*updateRegion.height() )
         {
-            repaintContents( obR );
+            repaintContents( updateRegion );
             updateRegion = rects[i];
         }
         else
@@ -3455,7 +3461,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 
     if ( !updateRegion.isNull() )
-        repaintContents( updateRegion.boundingRect() );
+        repaintContents( updateRegion );
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;

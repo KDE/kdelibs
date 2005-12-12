@@ -995,9 +995,12 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
     // height.
     else if (cb->style()->height().isFixed())
         result = cb->calcContentHeight(cb->style()->height().value());
-    else if (cb->style()->height().isPercent())
+    else if (cb->style()->height().isPercent()) {
         // We need to recur and compute the percentage height for our containing block.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
+        if (result != -1)
+            result = cb->calcContentHeight(result);
+    }
     else if (cb->isCanvas()) {
         if (!canvas()->pagedMode())
             result = static_cast<RenderCanvas*>(cb)->viewportHeight();
@@ -1024,7 +1027,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         if (cb->isTableCell() && !isTable() && style()->boxSizing() != BORDER_BOX) {
             result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
             result = qMax(0, result);
-        }                                            
+        }
     }
     return result;
 }
@@ -1112,13 +1115,13 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
 
 int RenderBox::availableHeight() const
 {
-    return calcContentHeight(availableHeightUsing(style()->height()));
+    return availableHeightUsing(style()->height());
 }
 
 int RenderBox::availableHeightUsing(const Length& h) const
 {
     if (h.isFixed())
-        return h.value();
+        return calcContentHeight(h.value());
 
     if (isCanvas())
         if (static_cast<const RenderCanvas*>(this)->pagedMode())
@@ -1136,7 +1139,7 @@ int RenderBox::availableHeightUsing(const Length& h) const
     }
 
     if (h.isPercent())
-       return h.width(containingBlock()->availableHeight());
+       return calcContentHeight(h.width(containingBlock()->availableHeight()));
 
     return containingBlock()->availableHeight();
 }

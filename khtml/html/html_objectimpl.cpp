@@ -211,7 +211,6 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_CODE:
     case ATTR_OBJECT:
     case ATTR_ALT:
-    case ATTR_ID:
         break;
     case ATTR_ALIGN:
 	addHTMLAlignment( attr->value() );
@@ -233,7 +232,7 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
             getDocument()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
-        break;
+        //fallthrough
     default:
         HTMLObjectBaseElementImpl::parseAttribute(attr);
     }
@@ -437,15 +436,17 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch( attr->id() )
     {
+    case ATTR_VALUE:
+        m_value = attr->value().string();
+        break;
     case ATTR_ID:
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
         m_name = attr->value().string();
-        break;
-    case ATTR_VALUE:
-        m_value = attr->value().string();
-        break;
+        // fall through
+    default:
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 

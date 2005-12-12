@@ -187,7 +187,8 @@ void RenderBlock::updateFirstLetter()
             while ( length < oldText->l &&
                     ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
                 length++;
-            if (!( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
+            if ( length < oldText->l && 
+                    !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
             RenderTextFragment* remainingText =
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
@@ -1718,7 +1719,7 @@ void RenderBlock::insertFloatingObject(RenderObject *o)
         // floating object
         o->layoutIfNeeded();
 
-        if(o->style()->floating() == FLEFT)
+        if(o->style()->floating() & FLEFT)
             newObj = new FloatingObject(FloatingObject::FloatLeft);
         else
             newObj = new FloatingObject(FloatingObject::FloatRight);
@@ -1812,15 +1813,19 @@ void RenderBlock::positionNewFloats()
         if ( o->style()->clear() & CRIGHT )
             y = qMax( rightBottom(), y );
 
-        if (o->style()->floating() == FLEFT)
+        bool canClearLine;
+        if (o->style()->floating() & FLEFT)
         {
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
-            int fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
-            while (rightRelOffset(y,ro, false, &heightRemainingRight)-fx < fwidth)
+            int fx = leftRelOffset(y,lo, false, &heightRemainingLeft, &canClearLine);
+            if (canClearLine)
             {
-                y += qMin( heightRemainingLeft, heightRemainingRight );
-                fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
+                while (rightRelOffset(y,ro, false, &heightRemainingRight)-fx < fwidth)
+                {
+                    y += qMin( heightRemainingLeft, heightRemainingRight );
+                    fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
+                }
             }
             if (fx<0) fx=0;
             f->left = fx;
@@ -1831,11 +1836,14 @@ void RenderBlock::positionNewFloats()
         {
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
-            int fx = rightRelOffset(y,ro, false, &heightRemainingRight);
-            while (fx - leftRelOffset(y,lo, false, &heightRemainingLeft) < fwidth)
+            int fx = rightRelOffset(y,ro, false, &heightRemainingRight, &canClearLine);
+            if (canClearLine)
             {
-                y += qMin(heightRemainingLeft, heightRemainingRight);
-                fx = rightRelOffset(y,ro, false, &heightRemainingRight);
+                while (fx - leftRelOffset(y,lo, false, &heightRemainingLeft) < fwidth)
+                {
+                    y += qMin(heightRemainingLeft, heightRemainingRight);
+                    fx = rightRelOffset(y,ro, false, &heightRemainingRight);
+                }
             }
             if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
@@ -1845,7 +1853,7 @@ void RenderBlock::positionNewFloats()
 
         if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
             m_overflowWidth = o->xPos()+o->width();
-                 
+
         f->startY = y;
         f->endY = f->startY + _height;
 
@@ -1889,9 +1897,11 @@ RenderBlock::leftOffset() const
 }
 
 int
-RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining ) const
+RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining, bool *canClearLine ) const
 {
     int left = fixedOffset;
+    if (canClearLine) *canClearLine = true;
+    
     if (m_floatingObjects) {
         if ( heightRemaining ) *heightRemaining = 1;
         FloatingObject* r;
@@ -1904,6 +1914,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
                 r->left + r->width > left) {
                 left = r->left + r->width;
                 if ( heightRemaining ) *heightRemaining = r->endY - y;
+                if ( canClearLine ) *canClearLine = (r->node->style()->floating() != FLEFT_ALIGN);
             }
         }
     }
@@ -1929,9 +1940,10 @@ RenderBlock::rightOffset() const
 }
 
 int
-RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining ) const
+RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining, bool *canClearLine ) const
 {
     int right = fixedOffset;
+    if (canClearLine) *canClearLine = true;
 
     if (m_floatingObjects) {
         if (heightRemaining) *heightRemaining = 1;
@@ -1945,6 +1957,7 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *h
                 r->left < right) {
                 right = r->left;
                 if ( heightRemaining ) *heightRemaining = r->endY - y;
+                if ( canClearLine ) *canClearLine = (r->node->style()->floating() != FRIGHT_ALIGN);
             }
         }
     }
@@ -1961,10 +1974,17 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *h
 }
 
 unsigned short
-RenderBlock::lineWidth(int y) const
+RenderBlock::lineWidth(int y, bool *canClearLine) const
 {
     //kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
-    int result = rightOffset(y) - leftOffset(y);
+    int result;
+    if (canClearLine) {
+        bool rightCanClearLine;
+        bool leftCanClearLine;
+        result = rightOffset(y, &rightCanClearLine) - leftOffset(y, &leftCanClearLine);
+        *canClearLine = rightCanClearLine && leftCanClearLine;
+    } else
+        result = rightOffset(y) - leftOffset(y);
     return (result < 0) ? 0 : result;
 }
 
@@ -2331,9 +2351,11 @@ int RenderBlock::getClearDelta(RenderObject *child)
     // to fit) and not all (we should be using nearestFloatBottom and looping).
     int result = clearSet ? qMax(0, bottom - child->yPos()) : 0;
     if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
-        if ((child->style()->width().isPercent() && child->width() > lineWidth(child->yPos())) ||
-            (child->style()->width().isFixed() && child->minWidth() > lineWidth(child->yPos()) && 
-              child->minWidth() <= contentWidth()))
+        bool canClearLine;
+        int lw = lineWidth(child->yPos(), &canClearLine);
+        if (((child->style()->width().isPercent() && child->width() > lw) ||
+            (child->style()->width().isFixed() && child->minWidth() > lw)) &&
+              child->minWidth() <= contentWidth() && canClearLine)
             result = qMax(0, floatBottom() - child->yPos());
     }
     return result;
@@ -2427,19 +2449,20 @@ void RenderBlock::calcMinMaxWidth()
 
      if (style()->width().isFixed() && style()->width().value() > 0) {
         if (isTableCell())
-            m_maxWidth = qMax(m_minWidth,short(style()->width().value()));
+
+            m_maxWidth = qMax(m_minWidth, (short)calcContentWidth(style()->width().value()));
         else
-            m_minWidth = m_maxWidth = short(style()->width().value());
+            m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
     }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxWidth = qMax(m_maxWidth, int(style()->minWidth().value()));
-        m_minWidth = qMax(m_minWidth, short(style()->minWidth().value()));
+        m_maxWidth = qMax(m_maxWidth, (int)calcContentWidth(style()->minWidth().value()));
+        m_minWidth = qMax(m_minWidth, (short)calcContentWidth(style()->minWidth().value()));
     }
 
     if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
-        m_maxWidth = qMin(m_maxWidth, int(style()->maxWidth().value()));
-        m_minWidth = qMin(m_minWidth, short(style()->maxWidth().value()));
+        m_maxWidth = qMin(m_maxWidth, (int)calcContentWidth(style()->maxWidth().value()));
+        m_minWidth = qMin(m_minWidth, (short)calcContentWidth(style()->maxWidth().value()));
     }
 
     int toAdd = 0;
@@ -2576,9 +2599,9 @@ void RenderBlock::calcInlineMinMaxWidth()
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
-    
+
     bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
-    
+
     RenderObject* trailingSpaceChild = 0;
 
     bool normal, oldnormal;
@@ -2659,7 +2682,7 @@ void RenderBlock::calcInlineMinMaxWidth()
             }
 
             if (!child->isRenderInline() && !child->isText()) {
-                
+
                 bool qBreak = isTcQuirk && !child->isFloatingOrPositioned();
                 // Case (2). Inline replaced elements and floats.
                 // Go ahead and terminate the current line as far as
@@ -2676,8 +2699,8 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // go ahead and terminate maxwidth as well.
                 if (child->isFloating()) {
                     if (prevFloat &&
-                        ((prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
-                         (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
+                        (((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
+                         ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
                         m_maxWidth = qMax(inlineMax, (int)m_maxWidth);
                         inlineMax = 0;
                     }
@@ -2832,8 +2855,8 @@ void RenderBlock::calcBlockMinMaxWidth()
         }
 
         if (prevFloat && (!child->isFloating() ||
-                          (prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
-                          (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
+                          ((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
+                          ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
             m_maxWidth = qMax(floatWidths, m_maxWidth);
             floatWidths = 0;
         }

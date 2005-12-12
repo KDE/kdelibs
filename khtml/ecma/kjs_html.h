@@ -22,10 +22,10 @@
 #ifndef _KJS_HTML_H_
 #define _KJS_HTML_H_
 
-#include "html/html_documentimpl.h"
-#include "html/html_baseimpl.h"
-#include "html/html_miscimpl.h"
-#include "html/html_formimpl.h"
+#include "dom/html_document.h"
+#include "dom/html_base.h"
+#include "dom/html_misc.h"
+#include "dom/html_form.h"
 #include "misc/loader_client.h"
 
 #include "ecma/kjs_binding.h"
@@ -38,12 +38,11 @@ namespace KJS {
 
   class HTMLDocument : public DOMDocument {
   public:
-    HTMLDocument(ExecState *exec, DOM::HTMLDocumentImpl* d);
-    ValueImp* getValueProperty(ExecState *exec, int token);
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/);
-    
+    HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/);
+    virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
@@ -51,19 +50,17 @@ namespace KJS {
            Write, WriteLn, GetElementsByName, GetSelection, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
            Height, Width, Dir, Frames, CompatMode };
-    DOM::HTMLDocumentImpl* impl() const { return static_cast<DOM::HTMLDocumentImpl*>( m_impl.get() ); }
-  private:
-    static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *frameNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
   };
 
   class HTMLElement : public DOMElement {
   public:
-    HTMLElement(ExecState *exec, DOM::HTMLElementImpl* e) : DOMElement(exec, e) { }
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
+    HTMLElement(ExecState *exec, const DOM::HTMLElement& e) : DOMElement(exec, e) { }
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    Value getValueProperty(ExecState *exec, int token) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int);
+    virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual UString toString(ExecState *exec) const;
     virtual void pushEventHandlerScope(ExecState *exec, ScopeChain &scope) const;
     virtual const ClassInfo* classInfo() const;
@@ -102,7 +99,7 @@ namespace KJS {
            TextAreaAccessKey, TextAreaName, TextAreaDefaultValue, TextAreaSelect,
            TextAreaCols, TextAreaDisabled, TextAreaForm, TextAreaType,
            TextAreaTabIndex, TextAreaReadOnly, TextAreaRows, TextAreaValue,
-           TextAreaBlur, TextAreaFocus, ButtonForm, ButtonTabIndex, ButtonName,
+           TextAreaBlur, TextAreaFocus, ButtonBlur, ButtonFocus, ButtonForm, ButtonTabIndex, ButtonName,
            ButtonDisabled, ButtonAccessKey, ButtonType, ButtonValue, LabelHtmlFor,
            LabelForm, LabelAccessKey, FieldSetForm, LegendForm, LegendAccessKey,
            LegendAlign, UListType, UListCompact, OListStart, OListCompact,
@@ -156,113 +153,73 @@ namespace KJS {
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument, ElementChildren, ElementAll };
 
-    DOM::HTMLElementImpl* impl() const { return static_cast<DOM::HTMLElementImpl*>(m_impl.get()); }
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
-  private:
-    static ValueImp *formNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-  
-    QString getURLArg(unsigned id) const;
-  
-    /* Many of properties in the DOM bindings can be implemented by merely returning
-      an attribute as the right type, and setting it in similar manner; or perhaps
-      returning a collection of appropriate type*/
-    enum BoundPropType {
-      T_String, //String, to be return by String()
-      T_StrOrNl, //String, to be return by getStringOrNull()
-      T_Bool,   //Boolean, return true if property is not null
-      T_Int,
-      T_URL,
-      T_TabIdx, //Magic tab-index handling
-      T_Res,    //Reserved, ignore sets, return empty string
-      T_Coll    //Collection, type is in attrID
-    };
-      
-    struct BoundPropInfo {
-      unsigned elId;  //Applicable element type
-      int      token; //Token
-      BoundPropType type;
-      unsigned attrId; //Attribute to get
-    };
-
-    ValueImp* handleBoundRead (ExecState* exec, int token) const;
-    bool      handleBoundWrite(ExecState* exec, int token, ValueImp* value);
-
-    static const BoundPropInfo bpTable[];
-
-    static QHash<int, const BoundPropInfo*>* s_boundPropInfo;
-    static QHash<int, const BoundPropInfo*>* boundPropInfo();
+    DOM::HTMLElement toElement() const { return static_cast<DOM::HTMLElement>(node); }
   };
 
 
   class HTMLElementFunction : public DOMFunction {
   public:
     HTMLElementFunction(ExecState *exec, int i, int len);
-    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List& args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
   private:
     int id;
   };
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c);
+    HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
     ~HTMLCollection();
-    ValueImp* getValueProperty(ExecState *exec, int token);
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-
-    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List& args);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List&args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const;
+    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     enum { Item, NamedItem, Tags };
-    ValueImp* getNamedItems(ExecState *exec, const Identifier &propertyName) const;
+    Value getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    DOM::HTMLCollectionImpl* impl() const { return m_impl.get(); }
+    DOM::HTMLCollection toCollection() const { return collection; }
     virtual void hide() { hidden = true; }
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
   protected:
-    SharedPtr<DOM::HTMLCollectionImpl> m_impl;
+    DOM::HTMLCollection collection;
     bool hidden;
-  private:
-    static ValueImp *lengthGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
   };
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
+    HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
       : HTMLCollection(exec, c), element(e) { }
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
   private:
-    SharedPtr<DOM::HTMLSelectElementImpl> element;
-    static ValueImp *selectedIndexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
-    static ValueImp *selectedValueGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
+    DOM::HTMLSelectElement element;
   };
 
   ////////////////////// Option Object ////////////////////////
 
   class OptionConstructorImp : public ObjectImp {
   public:
-    OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
+    OptionConstructorImp(ExecState *exec, const DOM::Document &d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp* construct(ExecState *exec, const List &args);
+    virtual Object construct(ExecState *exec, const List &args);
   private:
-    SharedPtr<DOM::DocumentImpl> doc;
+    DOM::Document doc;
   };
 
   ////////////////////// Image Object ////////////////////////
 
   class ImageConstructorImp : public ObjectImp {
   public:
-    ImageConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
+    ImageConstructorImp(ExecState *exec, const DOM::Document &d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp* construct(ExecState *exec, const List &args);
+    virtual Object construct(ExecState *exec, const List &args);
   private:
-    SharedPtr<DOM::DocumentImpl> doc;
+    DOM::Document doc;
   };
 
-  ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide=false);
-  ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
+  Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
+  Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 
   /* Helper function object for determining the number
    * of occurrences of xxxx as in document.xxxx or window.xxxx.
@@ -271,7 +228,7 @@ namespace KJS {
   class NamedTagLengthDeterminer {
   public:
     struct TagLength {
-      DOM::NodeImpl::Id id; unsigned long length; DOM::NodeImpl *last;
+      DOM::NodeImpl::Id id; unsigned long length; DOM::ElementImpl *last;
     };
     NamedTagLengthDeterminer(const DOM::DOMString& n, TagLength *t, int l)
       : name(n), tags(t), nrTags(l) {}

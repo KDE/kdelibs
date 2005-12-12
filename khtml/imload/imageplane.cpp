@@ -95,6 +95,8 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
                                tile->pixmap.width(),
                                tile->pixmap.height());
 
+            //Note: we're copying the entire tile-size here,
+            //and not just the dirty portion. 
             QImage portion = image.copy(imagePortion);
             tile->pixmap.fill(Qt::transparent);
             QPainter p(&tile->pixmap);

@@ -166,6 +166,9 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     if (m_value == v.implementation())
 	return;
 
+    if (m_element && m_attrId == ATTR_ID)
+        m_element->updateId(m_value, v.implementation());
+
     m_value->deref();
     m_value = v.implementation();
     m_value->ref();
@@ -250,9 +253,14 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
     if (m_attrId) {
 	if (m_data.value == value)
 	    return;
+
+	if (element && m_attrId == ATTR_ID)
+	   element->updateId(m_data.value, value);
+
 	m_data.value->deref();
 	m_data.value = value;
 	m_data.value->ref();
+
 	if (element)
 	    element->parseAttribute(this);
     }
@@ -381,6 +389,15 @@ void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 {
+    // If setting the whole map changes the id attribute, we need to
+    // call updateId.
+    DOMStringImpl *oldId = namedAttrMap ? namedAttrMap->getValue(ATTR_ID) : 0;
+    DOMStringImpl *newId = list ? list->getValue(ATTR_ID) : 0;
+
+    if (oldId || newId) {
+       updateId(oldId, newId);
+    }
+
     if (namedAttrMap) {
 	namedAttrMap->detachFromElement();
         namedAttrMap->deref();
@@ -423,147 +440,6 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
     if (deep)
         cloneChildNodes(clone);
 }
-
-bool ElementImpl::hasAttributes() const
-{
-    return namedAttrMap && namedAttrMap->length() > 0;
-}
-
-bool ElementImpl::hasAttribute( const DOMString& name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return false;
-    if (!namedAttrMap) return false;
-    return namedAttrMap->getValue(id, false, name.implementation()) != 0;
-}
-
-bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
-                              const DOMString &localName )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
-						 0/*prefix*/, localName.implementation(), true, true);
-    if (!id) return false;
-    if (!namedAttrMap) return false;
-    return namedAttrMap->getValue(id, true) != 0;
-}
-
-DOMString ElementImpl::getAttribute( const DOMString &name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,name.implementation(),true,true);
-    if (!id) return DOMString();
-
-    return getAttribute(id, false, name);
-}
-
-void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), false /* allocate */,
-                                                 true, &exceptioncode);
-
-    setAttribute(id, value, name, exceptioncode);
-}
-
-void ElementImpl::removeAttribute( const DOMString &name, int& exceptioncode )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return; 
-
-    attributes(false)->removeNamedItem(id, false, name.implementation(), exceptioncode);
-}
-
-AttrImpl* ElementImpl::getAttributeNode( const DOMString &name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return 0;
-    if (!namedAttrMap) return 0;
-
-    return static_cast<AttrImpl*>(attributes()->getNamedItem(id, false, name.implementation()));
-}
-
-Attr ElementImpl::setAttributeNode( AttrImpl* newAttr, int& exceptioncode )
-{
-    if (!newAttr) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return 0;
-    }
-    Attr r = attributes(false)->setNamedItem(newAttr, false,
-                         newAttr->nodeName().implementation(), exceptioncode);
-    if ( !exceptioncode )
-      newAttr->setOwnerElement( this );
-    return r;
-}
-
-Attr ElementImpl::removeAttributeNode( AttrImpl* oldAttr, int& exceptioncode )
-{
-  if (!oldAttr || oldAttr->ownerElement() != this) {
-    exceptioncode = DOMException::NOT_FOUND_ERR;
-    return 0;
-  }
-
-  if (isReadOnly()) {
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-  }
-
-  if (!namedAttrMap) {
-    exceptioncode = DOMException::NOT_FOUND_ERR;
-    return 0;
-  }
-
-  return attributes(false)->removeAttr(oldAttr);
-}
-
-
-DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI,
-                                       const DOMString &localName,
-                                       int& exceptioncode)
-{
-    if (!localName.implementation()) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return DOMString();
-    }
-    
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), true, true);
-    return getAttribute(id, true);
-}
-
-void ElementImpl::removeAttributeNS( const DOMString &namespaceURI,
-                                 const DOMString &localName,
-                                 int& exceptioncode)
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), false, true);
-    attributes(false)->removeNamedItem(id, true, 0, exceptioncode);
-}
-
-AttrImpl* ElementImpl::getAttributeNodeNS( const DOMString &namespaceURI,
-                                  const DOMString &localName,
-                                  int& exceptioncode )
-{
-    if (!localName.implementation()) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return 0;
-    }
-    
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(),
-						0/*prefix*/, localName.implementation(), true, true);
-    if (!attributes(true)) return 0;
-
-    return static_cast<AttrImpl*>(attributes()->getNamedItem(id, true));
-}
-
-Attr ElementImpl::setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode )
-{
-    if (!newAttr) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
-    }
-    // WRONG_DOCUMENT_ERR and INUSE_ATTRIBUTE_ERR are already tested & thrown by setNamedItem
-    Attr r = attributes(false)->setNamedItem(newAttr, true, 0, exceptioncode);
-    if ( !exceptioncode )
-        newAttr->setOwnerElement( this );
-    return r;
-}
-
 
 DOMString ElementImpl::nodeName() const
 {
@@ -642,6 +518,9 @@ void ElementImpl::close()
 {
     NodeImpl::close();
 
+    if (!getDocument()->renderer())
+        return; // the document is about to be destroyed
+    
     if (m_restyleChildrenLate) {
         NodeImpl *e = firstChild();
         while(e) {
@@ -795,6 +674,41 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
    //int exceptioncode = 0;
    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
    //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
+}
+
+void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
+{
+    if (!inDocument())
+        return;
+
+    DocumentImpl* doc = getDocument();
+    if (oldId && oldId->l)
+        doc->getElementByIdCache().remove(DOMString(oldId).string(), this);
+
+    if (newId && newId->l)
+        doc->getElementByIdCache().add(DOMString(newId).string(), this);
+}
+
+void ElementImpl::insertedIntoDocument()
+{
+    // need to do superclass processing first so inDocument() is true
+    // by the time we reach updateId
+    NodeBaseImpl::insertedIntoDocument();
+
+    if (hasID()) {
+        DOMString id = getAttribute(ATTR_ID);
+        updateId(0, id.implementation());
+    }
+}
+
+void ElementImpl::removedFromDocument()
+{
+    if (hasID()) {
+        DOMString id = getAttribute(ATTR_ID);
+        updateId(id.implementation(), 0);
+    }
+
+    NodeBaseImpl::removedFromDocument();
 }
 
 DOMString ElementImpl::openTagStartToString(bool expandurls) const
@@ -1025,6 +939,8 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStrin
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
 	    id = m_attrs[i].id();
+	    if (id == ATTR_ID)
+	       m_element->updateId(m_attrs[i].val(), 0);
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
 	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
@@ -1089,6 +1005,9 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
 	    // Attribute exists; replace it
+	    if (id == ATTR_ID)
+	       m_element->updateId(m_attrs[i].val(), attr->val());
+	    
 	    Node replaced = m_attrs[i].createAttr(m_element,m_element->docPtr());
 	    m_attrs[i].free();
 	    m_attrs[i].m_attrId = 0; /* "has implementation" flag */
@@ -1108,6 +1027,8 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     m_attrs[m_attrCount-1].m_data.attr = attr;
     m_attrs[m_attrCount-1].m_data.attr->ref();
     attr->setElement(m_element);
+    if (id == ATTR_ID)
+        m_element->updateId(0, attr->val());
     m_element->parseAttribute(&m_attrs[m_attrCount-1]);
     // ### dispatch mutation events
 
@@ -1212,8 +1133,11 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
         m_attrs[m_attrCount-1].m_data.attr->setHTMLCompat( !hasNS &&
                                                  m_element->getDocument()->htmlMode() != DocumentImpl::XHtml );
     }
-    if (m_element)
+    if (m_element) {
+	if (id == ATTR_ID)
+	    m_element->updateId(0, value);
 	m_element->parseAttribute(&m_attrs[m_attrCount-1]);
+    }
     // ### dispatch mutation events
 }
 
@@ -1222,6 +1146,8 @@ Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
     for (unsigned long i = 0; i < m_attrCount; i++) {
 	if (m_attrs[i].attr() == attr) {
 	    NodeImpl::Id id = m_attrs[i].id();
+	    if (id == ATTR_ID)
+	        m_element->updateId(attr->val(), 0);
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
 	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
@@ -1250,8 +1176,11 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 {
     assert(m_element);
     unsigned long i;
-    for (i = 0; i < m_attrCount; i++)
+    for (i = 0; i < m_attrCount; i++) {
+        if (m_attrs[i].id() == ATTR_ID)
+            m_element->updateId(m_attrs[i].val(), 0);
 	m_attrs[i].free();
+    }
     m_attrCount = other->m_attrCount;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
     for (i = 0; i < m_attrCount; i++) {
@@ -1265,6 +1194,8 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	    m_attrs[i].m_data.attr->ref();
 	    m_attrs[i].m_data.attr->setElement(m_element);
 	}
+	if (m_attrs[i].id() == ATTR_ID)
+	   m_element->updateId(0, m_attrs[i].val());
 	m_element->parseAttribute(&m_attrs[i]);
     }
 }

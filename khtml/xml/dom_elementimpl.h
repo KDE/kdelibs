@@ -142,23 +142,6 @@ public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
 
-    //Higher-level DOM stuff
-    virtual bool hasAttributes() const;
-    bool hasAttribute( const DOMString& name );
-    bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName );
-    DOMString getAttribute( const DOMString &name );
-    void setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode );
-    void removeAttribute( const DOMString &name, int& exceptioncode );
-    AttrImpl* getAttributeNode( const DOMString &name );
-    Attr setAttributeNode( AttrImpl* newAttr, int& exceptioncode );
-    Attr removeAttributeNode( AttrImpl* oldAttr, int& exceptioncode );
-    
-    DOMString getAttributeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
-    void removeAttributeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
-    AttrImpl* getAttributeNodeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
-    Attr setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode );
-
-    //Lower-level implementation primitives
     DOMString getAttribute( NodeImpl::Id id, bool nsAware = 0, const DOMString& qName = DOMString() ) const;
     void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
                        int &exceptioncode );
@@ -175,6 +158,8 @@ public:
     virtual DOMString nodeName() const;
     virtual NodeImpl::Id id() const = 0;
     virtual bool isElementNode() const { return true; }
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
 
     // convenience methods which ignore exceptions
     void setAttribute (NodeImpl::Id id, const DOMString &value);
@@ -244,6 +229,7 @@ public:
     void setRestyleSelfLate() { m_restyleSelfLate = true; };
     void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
 
+    void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
 protected:
     void createAttributeMap() const;
     void createDecl();

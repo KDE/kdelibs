@@ -102,7 +102,7 @@ public:
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                  DocumentTypeImpl* dtype, int &exceptioncode );
+                                  const DocumentType &doctype, int &exceptioncode );
 
     DOMImplementationImpl* getInterface(const DOMString& feature) const;
 
@@ -141,7 +141,7 @@ public:
     struct ItemInfo
     {
         int       ref;
-        NodeImpl* nd;
+        ElementImpl* nd;
     };
 
     ElementMappingCache();
@@ -149,17 +149,17 @@ public:
     /**
      Add a pointer as just one of candidates, not neccesserily the proper one
     */
-    void add(const QString& id, NodeImpl* nd);
+    void add(const QString& id, ElementImpl* nd);
 
     /**
      Set the pointer as the definite mapping; it must have already been added
     */
-    void set(const QString& id, NodeImpl* nd);
+    void set(const QString& id, ElementImpl* nd);
 
     /**
      Remove the item; it must have already been added.
     */
-    void remove(const QString& id, NodeImpl* nd);
+    void remove(const QString& id, ElementImpl* nd);
 
     /**
      Returns true if the item exists
@@ -206,7 +206,6 @@ public:
     virtual AttrImpl *createAttributeNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName,
                                            int* pExceptioncode = 0 );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
-
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
     DOMString title() const { return m_title; }
@@ -281,7 +280,7 @@ public:
     RangeImpl *createRange();
 
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                    NodeFilterImpl* filter, bool entityReferenceExpansion, int &exceptioncode);
+                                    NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
 
     TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
                             bool entityReferenceExpansion, int &exceptioncode);
@@ -519,14 +518,17 @@ public:
     void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
 
 
-    ElementMappingCache& underDocNamedCache()
-    {
+    ElementMappingCache& underDocNamedCache() {
         return m_underDocNamedCache;
     }
 
     NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
                                                    NodeImpl* base, int type);
     void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
+
+    ElementMappingCache& getElementByIdCache() const {
+        return m_getElementByIdCache;
+    }
 
 signals:
     void finishedParsing();
@@ -595,7 +597,7 @@ protected:
     StyleSheetListImpl* m_styleSheets;
     StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
-    Q3PtrList<RegisteredEventListener> m_windowEventListeners;
+    RegisteredListenerList m_windowEventListeners;
     Q3PtrList<NodeImpl> m_maintainsState;
 
     // ### evaluate for placement in RenderStyle
@@ -627,6 +629,9 @@ protected:
     Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
     Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
+
+    //Cache for getElementById
+    mutable ElementMappingCache m_getElementByIdCache;
 
     khtml::RenderArena* m_renderArena;
 private:

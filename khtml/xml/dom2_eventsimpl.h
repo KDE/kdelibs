@@ -28,6 +28,8 @@
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
 
+#undef FOCUS_EVENT //for win32
+
 class KHTMLPart;
 class QMouseEvent;
 
@@ -161,19 +163,10 @@ public:
     void initUIEvent(const DOMString &typeArg,
 		     bool canBubbleArg,
 		     bool cancelableArg,
-		     AbstractViewImpl* viewArg,
+		     const AbstractView &viewArg,
 		     long detailArg);
     virtual bool isUIEvent() const;
 
-    //Compat stuff
-    virtual int keyCode() const  { return 0; }
-    virtual int charCode() const { return 0; }
-
-    virtual long pageX() const { return 0; }
-    virtual long pageY() const { return 0; }
-    virtual long layerX() const { return 0; }
-    virtual long layerY() const { return 0; }
-    virtual int which() const { return 0; }
 protected:
     AbstractViewImpl *m_view;
     long m_detail;
@@ -212,7 +205,6 @@ public:
     long layerY() const { return m_layerY; } // non-DOM extension
     long pageX() const { return m_pageX; } // non-DOM extension
     long pageY() const { return m_pageY; } // non-DOM extension
-    virtual int which() const { return button() + 1; } // non-DOM extension
     bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
@@ -226,7 +218,7 @@ public:
     void initMouseEvent(const DOMString &typeArg,
 			bool canBubbleArg,
 			bool cancelableArg,
-			AbstractViewImpl* viewArg,
+			const AbstractView &viewArg,
 			long detailArg,
 			long screenXArg,
 			long screenYArg,
@@ -337,7 +329,7 @@ public:
   void initTextEvent(const DOMString &typeArg,
                     bool canBubbleArg,
                     bool cancelableArg,
-                    AbstractViewImpl* viewArg,
+                    const AbstractView &viewArg,
                     long detailArg,
                     const DOMString &outputStringArg,
                     unsigned long keyValArg,
@@ -354,9 +346,8 @@ public:
     unsigned long    virtKeyVal() const { return m_virtKeyVal; }
     bool             numPad() const { return m_numPad; }
     DOMString        outputString() const { return m_outputString; }
-    virtual int keyCode() const;
-    virtual int charCode() const;
-    virtual int which() const { return keyCode(); } // non-DOM extension
+    int keyCode() const;
+    int charCode() const;
 
     QKeyEvent *qKeyEvent() const { return m_keyEvent; }
 
@@ -412,10 +403,12 @@ protected:
 
 class RegisteredEventListener {
 public:
+    RegisteredEventListener() : id(EventImpl::EventId(0)), useCapture(false), listener(0) {}
+
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
         : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
 
-    ~RegisteredEventListener() { listener->deref(); listener = 0; }
+    ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
 
     bool operator==(const RegisteredEventListener &other) const
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
@@ -424,10 +417,24 @@ public:
     EventImpl::EventId id : 6;
     bool useCapture;
     EventListener *listener;
-private:
-    RegisteredEventListener( const RegisteredEventListener & );
-    RegisteredEventListener & operator=( const RegisteredEventListener & );
+
+    RegisteredEventListener( const RegisteredEventListener &other ) : 
+                id(other.id), useCapture(other.useCapture), listener(other.listener) 
+    { if (listener) listener->ref(); }
+
+    RegisteredEventListener & operator=( const RegisteredEventListener &other ) {
+        id         = other.id;
+        useCapture = other.useCapture;
+        if (other.listener)
+            other.listener->ref();
+        if (listener)
+            listener->deref();
+        listener = other.listener;
+        return *this;
+    }
 };
+
+
 
 } //namespace
 #endif

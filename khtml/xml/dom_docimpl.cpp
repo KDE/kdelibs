@@ -152,7 +152,7 @@ DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*fe
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                                     DocumentTypeImpl* dtype, int &exceptioncode )
+                                                     const DocumentType &doctype, int &exceptioncode )
 {
     exceptioncode = 0;
 
@@ -160,6 +160,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
                             true /*nameCanBeEmpty, see #61650*/, &exceptioncode) )
         return 0;
 
+    DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
     if (dtype && (dtype->getDocument() || dtype->implementation() != this)) {
@@ -175,14 +176,17 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
-    doc->appendChild(element,exceptioncode);
-    if (exceptioncode) {
-        delete element;
-        delete doc;
-        return 0;
+    // the document must be created empty if all parameters are null 
+    // (or empty for qName/nsURI as a tolerance) - see DOM 3 Core.
+    if (dtype || !qualifiedName.isEmpty() || !namespaceURI.isEmpty()) {
+        ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
+        doc->appendChild(element,exceptioncode);
+        if (exceptioncode) {
+            delete element;
+            delete doc;
+            return 0;
+        }
     }
-
     return doc;
 }
 
@@ -207,18 +211,6 @@ HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
     return new HTMLDocumentImpl(this, v);
 }
 
-HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
-{
-    HTMLDocumentImpl* r = createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
-
-    r->open();
-
-    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
-             QLatin1String("</TITLE></HEAD>"));
-
-    return r;
-}
-
 DOMImplementationImpl *DOMImplementationImpl::instance()
 {
     if (!m_instance) {
@@ -231,10 +223,10 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-ElementMappingCache::ElementMappingCache():m_dict(71)
+ElementMappingCache::ElementMappingCache():m_dict(257)
 {}
 
-void ElementMappingCache::add(const QString& id, NodeImpl* nd)
+void ElementMappingCache::add(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -253,7 +245,7 @@ void ElementMappingCache::add(const QString& id, NodeImpl* nd)
     }
 }
 
-void ElementMappingCache::set(const QString& id, NodeImpl* nd)
+void ElementMappingCache::set(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -261,7 +253,7 @@ void ElementMappingCache::set(const QString& id, NodeImpl* nd)
     info->nd = nd;
 }
 
-void ElementMappingCache::remove(const QString& id, NodeImpl* nd)
+void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -356,7 +348,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inDocument = true;
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
-    m_windowEventListeners.setAutoDelete(true);
     m_counterDict.setAutoDelete(true);
 
     m_inStyleRecalc = false;
@@ -618,9 +609,20 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     return attr;
 }
 
-
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
+    QString stringKey = elementId.string();
+
+    ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(stringKey);
+
+    if (!info) 
+        return 0;
+
+    //See if cache has an unambiguous answer.
+    if (info->nd)
+        return info->nd;
+
+    //Now we actually have to walk.
     Q3PtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
@@ -637,8 +639,10 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
             if(current->isElementNode())
             {
                 ElementImpl *e = static_cast<ElementImpl *>(current);
-                if(e->getAttribute(ATTR_ID) == elementId)
+                if(e->getAttribute(ATTR_ID) == elementId) {
+                    info->nd = e;
                     return e;
+                }
             }
 
             NodeImpl *child = current->firstChild();
@@ -654,7 +658,10 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
         }
     }
 
+    assert(0); //If there is no item with such an ID, we should never get here
+
     //kdDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
+
     return 0;
 }
 
@@ -858,6 +865,9 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_OBJECT:
         n = new HTMLObjectElementImpl(docPtr());
         break;
+    case ID_EMBED:
+        n = new HTMLEmbedElementImpl(docPtr());
+        break;
     case ID_PARAM:
         n = new HTMLParamElementImpl(docPtr());
         break;
@@ -989,7 +999,7 @@ RangeImpl *DocumentImpl::createRange()
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                                   NodeFilterImpl* filter, bool entityReferenceExpansion,
+                                                   NodeFilter &filter, bool entityReferenceExpansion,
                                                    int &exceptioncode)
 {
     if (!root) {
@@ -1249,11 +1259,8 @@ void DocumentImpl::open( bool clearEventListeners )
     if ( was_attached )
         attach();
 
-    if (clearEventListeners) {
-        Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-        for (; it.current();)
-            m_windowEventListeners.removeRef(it.current());
-    }
+    if (clearEventListeners)
+        m_windowEventListeners.clear();
 
     m_tokenizer = createTokenizer();
     m_decoderMibEnum = 0;
@@ -2392,100 +2399,52 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    if (!m_windowEventListeners.listeners)
+        return;
+
+    Q3ValueList<RegisteredEventListener>::iterator it;
+
+    //Grab a copy in case of clear
+    Q3ValueList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
     Event ev(evt);
-    for (; it.current(); ++it) {
-        if (it.current()->id == evt->id()) {
+    for (it = listeners.begin(); it != listeners.end(); ++it) {
+        //Check to make sure it didn't get removed. KDE4: use Java-style iterators
+        if (!m_windowEventListeners.stillContainsListener(*it))
+            continue;
+
+        if ((*it).id == evt->id()) {
             // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
             // (this is how we identify events dispatched to the window, like window.onmousedown)
             // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
             evt->setCurrentTarget(0);
-            it.current()->listener->handleEvent(ev);
+            (*it).listener->handleEvent(ev);
 	}
     }
 }
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-
-    if (!listener) {
-        for (; it.current(); ++it)
-            if (it.current()->id == id &&
-                it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-                m_windowEventListeners.removeRef(it.current());
-                break;
-            }
-        return;
-    }
-
-    // if this event already has a registered handler, insert the new one in
-    // place of the old one, to preserve the order.
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
-    for (int i = 0; it.current(); ++it, ++i)
-        if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-            // Qt4: don't forget to delete the old one first
-            m_windowEventListeners.replace(i, rl);
-            return;
-        }
-
-    m_windowEventListeners.append(rl);
+    m_windowEventListeners.setHTMLEventListener(id, listener);
 }
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 {
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-	if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-	    return it.current()->listener;
-	}
-    }
-
-    return 0;
+    return m_windowEventListeners.getHTMLEventListener(id);
 }
 
 void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
 {
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
-
-    // if this id/listener/useCapture combination is already registered, do nothing.
-    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
-    // the listener order intact.
-    for (; it.current(); ++it) {
-        if (*(it.current()) == *rl) {
-            delete rl;
-            return;
-        }
-    }
-
-    m_windowEventListeners.append(rl);
+    m_windowEventListeners.addEventListener(id, listener, useCapture);
 }
 
 void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bool useCapture)
 {
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
-
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it)
-        if (*(it.current()) == rl) {
-            m_windowEventListeners.removeRef(it.current());
-            return;
-        }
+    m_windowEventListeners.removeEventListener(id, listener, useCapture);
 }
 
 bool DocumentImpl::hasWindowEventListener(int id)
 {
-    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-	if (it.current()->id == id) {
-	    return true;
-	}
-    }
-
-    return false;
+    return m_windowEventListeners.hasEventListener(id);
 }
 
 EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node)

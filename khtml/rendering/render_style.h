@@ -189,7 +189,7 @@ enum EPosition {
 };
 
 enum EFloat {
-    FNONE = 0, FLEFT, FRIGHT
+    FNONE = 0, FLEFT = 0x01, FRIGHT = 0x02, FLEFT_ALIGN = 0x05, FRIGHT_ALIGN = 0x06
 };
 
 
@@ -815,7 +815,7 @@ protected:
                 EVerticalAlign _vertical_align : 4;
                 EClear _clear : 2;
                 EPosition _position : 2;
-                EFloat _floating : 2;
+                EFloat _floating : 3;
                 ETableLayout _table_layout : 1;
                 bool _flowAroundFloats :1;
 
@@ -828,7 +828,7 @@ protected:
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 23;
+                unsigned int unused : 22;
             } f;
             quint64 _niflags;
         };

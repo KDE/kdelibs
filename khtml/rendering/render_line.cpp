@@ -47,6 +47,8 @@ static bool inInlineBoxDetach;
 
 void InlineBox::detach(RenderArena* renderArena)
 {
+    if (m_parent)
+        m_parent->removeFromLine(this);
 #ifndef NDEBUG
     inInlineBoxDetach = true;
 #endif
@@ -80,6 +82,13 @@ RootInlineBox* InlineBox::root()
     return static_cast<RootInlineBox*>(this);
 }
 
+InlineFlowBox::~InlineFlowBox()
+{
+    /* If we're destroyed, set the children free, and break their links */
+    while (m_firstChild)
+        removeFromLine(m_firstChild);
+}
+
 void InlineFlowBox::removeFromLine(InlineBox *child)
 {
     if (child == m_firstChild) {
@@ -94,6 +103,8 @@ void InlineFlowBox::removeFromLine(InlineBox *child)
     if (child->prevOnLine()) {
         child->prevOnLine()->m_next = child->nextOnLine();
     }
+
+    child->setParent(0);
 }
 
 int InlineFlowBox::marginLeft() const

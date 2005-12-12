@@ -369,7 +369,7 @@ namespace khtml
         void removeCachedObject( CachedObject* o) const { m_docObjects.remove( o ); }
 
     private:
-        bool needReload(const KURL &fullUrl);
+        bool needReload(CachedObject *existing, const QString &fullUrl);
 
         friend class Cache;
         friend class DOM::DocumentImpl;

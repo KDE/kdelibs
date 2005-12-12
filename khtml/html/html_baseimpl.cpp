@@ -249,12 +249,6 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_SRC:
         setLocation(khtml::parseURL(attr->val()));
         break;
-    case ATTR_ID:
-    case ATTR_NAME:
-        // FIXME: if already attached, doesn't change the frame name
-        // FIXME: frame name conflicts, no unique frame name anymore
-        name = attr->value();
-        break;
     case ATTR_FRAMEBORDER:
     {
         frameBorder = attr->value().toInt();
@@ -291,7 +285,12 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
             getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
         break;
-
+    case ATTR_ID:
+    case ATTR_NAME:
+        // FIXME: if already attached, doesn't change the frame name
+        // FIXME: frame name conflicts, no unique frame name anymore
+        name = attr->value();
+        //fallthrough intentional, let the base handle it
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -302,8 +301,6 @@ void HTMLFrameElementImpl::attach()
     assert(!attached());
     assert(parentNode());
 
-    // we should first look up via id, then via name.
-    // this shortterm hack fixes the ugly case. ### rewrite needed for next release
     name = getAttribute(ATTR_NAME);
     if (name.isNull())
         name = getAttribute(ATTR_ID);
@@ -407,56 +404,6 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
         return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
 
     return 0;
-}
-
-DOMString HTMLBodyElementImpl::aLink() const
-{
-    return getAttribute(ATTR_ALINK);
-}
-
-void HTMLBodyElementImpl::setALink( const DOMString &value )
-{
-    setAttribute(ATTR_ALINK, value);
-}
-
-DOMString HTMLBodyElementImpl::bgColor() const
-{
-    return getAttribute(ATTR_BGCOLOR);
-}
-
-void HTMLBodyElementImpl::setBgColor( const DOMString &value )
-{
-    setAttribute(ATTR_BGCOLOR, value);
-}
-
-DOMString HTMLBodyElementImpl::link() const
-{
-    return getAttribute(ATTR_LINK);
-}
-
-void HTMLBodyElementImpl::setLink( const DOMString &value )
-{
-    setAttribute(ATTR_LINK, value);
-}
-
-DOMString HTMLBodyElementImpl::text() const
-{
-    return getAttribute(ATTR_TEXT);
-}
-
-void HTMLBodyElementImpl::setText( const DOMString &value )
-{
-    setAttribute(ATTR_TEXT, value);
-}
-
-DOMString HTMLBodyElementImpl::vLink() const
-{
-    return getAttribute(ATTR_VLINK);
-}
-
-void HTMLBodyElementImpl::setVLink( const DOMString &value )
-{
-    setAttribute(ATTR_VLINK, value);
 }
 
 // -------------------------------------------------------------------------
@@ -657,6 +604,10 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
+    name = getAttribute(ATTR_NAME);
+    if (name.isNull())
+        name = getAttribute(ATTR_ID);
+
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
     if (getDocument()->isURLAllowed(url.string()) &&
@@ -675,16 +626,16 @@ void HTMLIFrameElementImpl::attach()
         if(w && (name.isEmpty() || w->part()->frameExists( name.string() )))
             name = DOMString(w->part()->requestFrameName());
 
-        static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
+        static_cast<RenderPartObject*>(m_render)->updateWidget();
     }
 }
 
 void HTMLIFrameElementImpl::recalcStyle( StyleChange ch )
 {
     if (needWidgetUpdate) {
-        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
+        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
     }
     HTMLElementImpl::recalcStyle( ch );
 }

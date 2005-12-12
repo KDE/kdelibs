@@ -146,30 +146,21 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::AltModifier;
 	      if ( k->checkModifier(Qt::ControlModifier) )
                 state |= Qt::ControlModifier;
-	      click();
 	    }
 
 	    // ### also check if focused node is editable if not in designmode,
 	    // and prevent link loading then (LS)
-	    if (getDocument()->view() && !getDocument()->designMode())
+	    if (getDocument()->view() && !getDocument()->designMode()) {
+	      if (k) 
+		click();
+	      else
 		getDocument()->view()->part()->
 		    urlSelected( url, button, state, utarget );
+	    }
         }
         evt->setDefaultHandled();
     }
     HTMLElementImpl::defaultEventHandler(evt);
-}
-
-
-void HTMLAnchorElementImpl::blur(  )
-{
-    if(getDocument()->focusNode()==this)
-        getDocument()->setFocusNode(0);
-}
-
-void HTMLAnchorElementImpl::focus(  )
-{
-    getDocument()->setFocusNode(this);
 }
 
 
@@ -185,11 +176,11 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_HREF:
         m_hasAnchor = attr->val() != 0;
+        getDocument()->incDOMTreeVersion();
         break;
     case ATTR_TARGET:
         m_hasTarget = attr->val() != 0;
         break;
-    case ATTR_NAME:
     case ATTR_TITLE:
     case ATTR_REL:
 	break;
@@ -290,8 +281,6 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_COLOR:
         addHTMLColor(CSS_PROP_COLOR, attr->value());
-        // HTML4 compatibility hack
-        addHTMLColor(CSS_PROP__KHTML_TEXT_DECORATION_COLOR, attr->value());
         break;
     case ATTR_FACE:
         addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());

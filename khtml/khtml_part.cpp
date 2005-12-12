@@ -249,6 +249,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
+  d->m_bCleared = false;
   d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), Qt::CTRL + Qt::Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), Qt::CTRL+Qt::Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
@@ -1609,7 +1610,9 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   {
      long saveCacheId = d->m_cacheId;
      QString savePageReferrer = d->m_pageReferrer;
+     QString saveEncoding     = d->m_encoding;
      begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+     d->m_encoding     = saveEncoding;
      d->m_pageReferrer = savePageReferrer;
      d->m_cacheId = saveCacheId;
      d->m_workingURL = KURL();
