@@ -689,6 +689,7 @@ void DownloadDialog::slotSelected()
     desc += QString("<br><i>%1</i>").arg(e->summary(lang));
     desc += QString("<br>(%1)").arg(e->license());
 
+    m_rt->clear();
     m_rt->setText(desc);
 
     if(installStatus(e) == 1) enabled = false;
