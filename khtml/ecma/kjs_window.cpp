@@ -569,6 +569,8 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
       return true;
     }
   }
+
+  return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)

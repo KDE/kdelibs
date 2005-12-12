@@ -484,7 +484,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *v
      frameset(!!) so we have to be a bit careful here. I am not sure this is
      100% right, but it should match previous behavior - M.O. */
   DOM::HTMLElementImpl* bodyCand = doc.body();
-  if (bodyCand->id() != ID_BODY)
+  if (!bodyCand || bodyCand->id() != ID_BODY)
     return; //Just ignore.
     
   DOM::HTMLBodyElementImpl& body = *static_cast<DOM::HTMLBodyElementImpl*>(bodyCand);
