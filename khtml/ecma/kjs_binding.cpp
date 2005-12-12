@@ -235,7 +235,7 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
     code -= DOM::EventException::_EXCEPTION_OFFSET;
   }
   char buffer[100]; // needs to fit 20 characters, plus an integer in ASCII, plus a null character
-  snprintf(buffer, 99, "%s exception %d", type, code);
+  snprintf(buffer, 99, "%s Exception %d", type, code);
 
   ObjectImp *errorObject = throwError(exec, GeneralError, buffer);
   errorObject->put(exec, "code", Number(code));

@@ -1791,7 +1791,10 @@ IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
- : DOMNode(exec, d) {}
+ : DOMNode(exec, d)
+ {
+    setPrototype(DOMCharacterDataProto::self(exec));
+ }
 
 bool DOMCharacterData::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
@@ -1867,7 +1870,10 @@ IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
 
 DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
-  : DOMCharacterData(exec, t) { }
+  : DOMCharacterData(exec, t)
+{
+  setPrototype(DOMTextProto::self(exec));
+}
 
 
 
