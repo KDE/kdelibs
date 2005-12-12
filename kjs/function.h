@@ -35,7 +35,7 @@ namespace KJS {
   /**
    * @short Implementation class for internal Functions.
    */
-  class FunctionImp : public InternalFunctionImp {
+  class KJS_EXPORT FunctionImp : public InternalFunctionImp {
     friend class ActivationImp;
   public:
     FunctionImp(ExecState *exec, const Identifier &n = Identifier::null());
@@ -71,7 +71,7 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
   };
 
-  class DeclaredFunctionImp : public FunctionImp {
+  class KJS_EXPORT DeclaredFunctionImp : public FunctionImp {
   public:
     DeclaredFunctionImp(ExecState *exec, const Identifier &n,
 			FunctionBodyNode *b, const ScopeChain &sc);

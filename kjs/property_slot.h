@@ -33,7 +33,7 @@ class ExecState;
 class ObjectImp;
 
 #define VALUE_SLOT_MARKER ((GetValueFunc)1)
-class PropertySlot
+class KJS_EXPORT PropertySlot
 {
 public:
     typedef ValueImp *(*GetValueFunc)(ExecState *, const Identifier&, const PropertySlot&);

@@ -28,7 +28,7 @@ libkjs_la_SOURCES =  ustring.cpp date_object.cpp collector.cpp nodes.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \
 		     regexp_object.cpp error_object.cpp function.cpp \
 		     debugger.cpp value.cpp list.cpp object.cpp \
-		     interpreter.cpp property_map.cpp nodes2string.cpp \
+		     interpreter.cpp property_map.cpp property_slot.cpp nodes2string.cpp \
 		     identifier.cpp reference.cpp reference_list.cpp \
 		     scope_chain.cpp dtoa.cpp protected_values.cpp fpconst.cpp
 
