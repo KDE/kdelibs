@@ -1128,8 +1128,8 @@ void KRecentFilesAction::addURL( const KURL& url )
     }
 
     // add file to list
-    QString title = url.fileName() + " [" + file + "]";
-    d->m_shortNames.insert( title, url.fileName() );
+    QString title = u.fileName() + " [" + file + "]";
+    d->m_shortNames.insert( title, u.fileName() );
     d->m_urls.insert( title, u );
     lst.prepend( title );
     setItems( lst );
