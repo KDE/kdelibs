@@ -295,7 +295,9 @@ public:
     delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
+#ifndef KHTML_NO_WALLET
     delete m_wallet;
+#endif
 #ifndef Q_WS_QWS
     //delete m_javaContext;
 #endif
