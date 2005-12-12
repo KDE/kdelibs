@@ -693,7 +693,7 @@ ValueImp *DOMCSSRuleList::indexGetter(ExecState* exec, unsigned index)
 
 bool DOMCSSRuleList::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  if (getStaticOwnPropertySlot<DOMCSSRuleListFunc, DOMCSSRuleList>(&DOMCSSRuleListTable, this, propertyName, slot));
+  if (getStaticOwnPropertySlot<DOMCSSRuleListFunc, DOMCSSRuleList>(&DOMCSSRuleListTable, this, propertyName, slot))
     return true;
 
   //Check whether it's an index
