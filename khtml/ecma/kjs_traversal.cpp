@@ -280,12 +280,12 @@ ValueImp* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
   return Undefined();
 }
 
-ValueImp *getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
+ValueImp *KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
 {
   return cacheDOMObject<DOM::TreeWalkerImpl, DOMTreeWalker>(exec, tw);
 }
 
-DOM::NodeFilterImpl* toNodeFilter(ValueImp *val)
+DOM::NodeFilterImpl* KJS::toNodeFilter(ValueImp *val)
 {
   ObjectImp *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMNodeFilter::info))

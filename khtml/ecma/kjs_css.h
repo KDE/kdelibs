@@ -268,7 +268,6 @@ namespace KJS {
   class DOMRGBColor : public DOMObject {
   public:
     DOMRGBColor(ExecState* exec, QRgb color);
-    ~DOMRGBColor();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     ValueImp *getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only

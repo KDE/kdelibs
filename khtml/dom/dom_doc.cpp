@@ -108,15 +108,7 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
 HTMLDocument DOMImplementation::createHTMLDocument( const DOMString& title )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-
-    HTMLDocumentImpl* r = impl->createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
-
-    r->open();
-
-    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
-             QLatin1String("</TITLE></HEAD>"));
-
-    return r;
+    return static_cast<DOMImplementationImpl*>(impl)->createHTMLDocument(title);
 }
 
 DOMImplementation DOMImplementation::getInterface(const DOMString &feature) const

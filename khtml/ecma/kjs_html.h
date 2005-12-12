@@ -212,7 +212,6 @@ namespace KJS {
     virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List& args);
     virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const;
-    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     enum { Item, NamedItem, Tags };
     ValueImp* getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }

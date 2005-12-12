@@ -1136,6 +1136,14 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
   }
 }
 
+DOM::ElementImpl *KJS::toElement(ValueImp *v)
+{
+  DOM::NodeImpl* node = toNode(v);
+  if (node && node->isElementNode())
+    return static_cast<DOM::ElementImpl*>(node);
+  return 0;
+}
+
 // -------------------------------------------------------------------------
 
 /* Source for DOMDOMImplementationProtoTable.
@@ -1454,8 +1462,7 @@ ValueImp* DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-namespace KJS {
-bool checkNodeSecurity(ExecState *exec, DOM::NodeImpl* n)
+bool KJS::checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n)
 {
   // Check to see if the currently executing interpreter is allowed to access the specified node
   if (!n)
@@ -1465,8 +1472,6 @@ bool checkNodeSecurity(ExecState *exec, DOM::NodeImpl* n)
   if ( !win || !win->isSafeScript(exec) )
     return false;
   return true;
-}
-
 }
 
 ValueImp* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)

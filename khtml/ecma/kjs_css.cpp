@@ -1293,10 +1293,10 @@ ValueImp *DOMRGBColor::getValueProperty(ExecState *exec, int token) const
   return new DOMCSSPrimitiveValue(exec, new CSSPrimitiveValueImpl(color, CSSPrimitiveValue::CSS_NUMBER));
 }
 
-ValueImp *getDOMRGBColor(ExecState *exec, const DOM::RGBColor& c)
+ValueImp *getDOMRGBColor(ExecState *exec, unsigned color)
 {
   // ### implement equals for RGBColor since they're not refcounted objects
-  return new DOMRGBColor(exec, c.color());
+  return new DOMRGBColor(exec, color);
 }
 
 // -------------------------------------------------------------------------

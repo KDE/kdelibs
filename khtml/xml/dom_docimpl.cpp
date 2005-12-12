@@ -207,6 +207,18 @@ HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
     return new HTMLDocumentImpl(this, v);
 }
 
+HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
+{
+    HTMLDocumentImpl* r = createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
+
+    r->open();
+
+    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
+             QLatin1String("</TITLE></HEAD>"));
+
+    return r;
+}
+
 DOMImplementationImpl *DOMImplementationImpl::instance()
 {
     if (!m_instance) {
