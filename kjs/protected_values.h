@@ -23,11 +23,13 @@
 #ifndef KJS_PROTECTED_VALUES_H
 #define KJS_PROTECTED_VALUES_H
 
+#include "global.h"
+
 namespace KJS {
     class ValueImp;
     class AllocatedValueImp;
 
-    class ProtectedValues {
+    class KJS_EXPORT ProtectedValues {
     public:
 	static void increaseProtectCount(ValueImp *key);
 	static void decreaseProtectCount(ValueImp *key);
