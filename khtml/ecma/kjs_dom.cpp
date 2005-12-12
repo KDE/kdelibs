@@ -812,7 +812,10 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
 */
 
 DOMDocument::DOMDocument(ExecState *exec, DOM::DocumentImpl* d)
-  : DOMNode(exec, d) { }
+  : DOMNode(exec, d)
+{
+  setPrototype(DOMDocumentProto::self(exec));
+}
 
 bool DOMDocument::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
