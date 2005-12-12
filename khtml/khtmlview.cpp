@@ -543,8 +543,10 @@ void KHTMLView::clear()
     if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
 #endif
 
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
     if( d->typeAheadActivated )
         findTimeout();
+#endif
     if (d->accessKeysEnabled && d->accessKeysActivated)
         accessKeysTimeout();
     viewport()->unsetCursor();
