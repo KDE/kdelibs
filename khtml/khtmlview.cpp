@@ -93,8 +93,10 @@
 
 //#define DEBUG_PIXEL
 
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
+#endif
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -547,8 +549,10 @@ void KHTMLView::clear()
     if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
 #endif
 
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
     if( d->typeAheadActivated )
         findTimeout();
+#endif
     if (d->accessKeysEnabled && d->accessKeysActivated)
         accessKeysTimeout();
     viewport()->unsetCursor();
@@ -1180,6 +1184,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 
     if ( mailtoCursor && isVisible() && hasFocus() ) {
+#ifdef Q_WS_X11
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
             d->cursor_icon_widget = new QWidget( NULL, NULL, WX11BypassWM );
@@ -1199,6 +1204,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         XRaiseWindow( qt_xdisplay(), d->cursor_icon_widget->winId());
         QApplication::flushX();
         d->cursor_icon_widget->show();
+#endif
     }
     else if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
