@@ -216,6 +216,16 @@ public:
   static QString noProxyFor();
 
   /**
+   * Same as above except the environment variable name
+   * is returned instead of the variable value when
+   * @ref proxyType is @p EnvVarProxy.
+   *
+   * @see noProxyFor
+   * @since 3.5.x
+   */
+  static QString noProxyForRaw();
+
+  /**
    * Returns the proxy server address for a given protocol.
    *
    * NOTE: This function does not take the @ref useReverseProxy()
