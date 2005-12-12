@@ -33,6 +33,7 @@
 
 #include <q3dict.h>
 #include <dcopclient.h>
+#include <q3ptrdict.h>
 
 
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
@@ -247,7 +248,7 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         // Search all slaves to see if job is in the queue of a coSlave
         foreach( slave, *slaveList )
         {
-           JobList *list = coSlaves.find(slave);
+           JobList *list = coSlaves.value(slave);
            if (list && list->removeAll(job))
               break; // Job was found and removed.
                      // Fall through to kill the slave as well!
@@ -571,7 +572,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     protInfo->activeSlaves.removeAll(slave);
     if (slave->isAlive())
     {
-       JobList *list = coSlaves.find(slave);
+       JobList *list = coSlaves.value(slave);
        if (list)
        {
           assert(slave->isConnected());
@@ -607,7 +608,7 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
        urlOnHold = KURL();
     }
     idleSlaves->removeAll(slave);
-    JobList *list = coSlaves.find(slave);
+    JobList *list = coSlaves.value(slave);
     if (list)
     {
        // coSlave dies, kill jobs waiting in queue
@@ -708,7 +709,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
     connect(slave, SIGNAL(error(int, const QString &)),
                 SLOT(slotSlaveError(int, const QString &)));
 
-    coSlaves.insert(slave, new QList<SimpleJob *>());
+    coSlaves.insert(slave, new JobList);
 //    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
     return slave;
 }
@@ -721,7 +722,7 @@ Scheduler::slotScheduleCoSlave()
     for( ; it != coIdleSlaves->end(); )
     {
         Slave* slave = *it;
-        JobList *list = coSlaves.find(slave);
+        JobList *list = coSlaves.value(slave);
         assert(list);
         if (list && !list->isEmpty())
         {
@@ -793,7 +794,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
         return false;
     }
 
-    JobList *list = coSlaves.find(slave);
+    JobList *list = coSlaves.value(slave);
     assert(list);
     if (!list)
     {
@@ -813,7 +814,10 @@ bool
 Scheduler::_disconnectSlave(KIO::Slave *slave)
 {
 //    kdDebug(7006) << "_disconnectSlave( " << slave << ")" << endl;
-    JobList *list = coSlaves.take(slave);
+    CoSlaveMap::iterator coSlaveIt = coSlaves.find( slave );
+    assert( coSlaveIt != coSlaves.end() );
+    JobList *list = *coSlaveIt;
+    coSlaves.erase( coSlaveIt );
     assert(list);
     if (!list)
        return false;

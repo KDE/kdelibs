@@ -25,7 +25,6 @@
 #include "kio/job.h"
 #include "kio/jobclasses.h"
 #include <qtimer.h>
-#include <q3ptrdict.h>
 #include <qmap.h>
 #include <qwindowdefs.h>
 
@@ -349,7 +348,8 @@ namespace KIO {
         KURL urlOnHold;
         JobList newJobs;
 
-        Q3PtrDict<JobList> coSlaves;
+        typedef QMap<Slave*, JobList *> CoSlaveMap;
+        CoSlaveMap coSlaves;
         ExtraJobData *extraJobData;
         SlaveConfig *slaveConfig;
         SessionData *sessionData;
