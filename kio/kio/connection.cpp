@@ -54,7 +54,6 @@ Connection::Connection()
     receiver = 0;
     member = 0;
     m_suspended = false;
-    tasks.setAutoDelete(true);
 }
 
 Connection::~Connection()
@@ -84,7 +83,7 @@ void Connection::close()
     socket = 0;
 
     // KSocket has already closed the file descriptor, but we need to
-    // close the file-stream as well otherwise we leak memory. 
+    // close the file-stream as well otherwise we leak memory.
     // As a result we close the file descriptor twice, but that should
     // be harmless
     // KDE4: fix this
@@ -92,16 +91,16 @@ void Connection::close()
        fclose(f_out);
     f_out = 0;
     fd_in = -1;
-    tasks.clear();
+    m_tasks.clear();
 }
 
 void Connection::send(int cmd, const QByteArray& data)
 {
-    if (!inited() || tasks.count() > 0) {
-	Task *task = new Task();
-	task->cmd = cmd;
-	task->data = data;
-	tasks.append(task);
+    if (!inited() || !m_tasks.isEmpty()) {
+	Task task;
+	task.cmd = cmd;
+	task.data = data;
+	m_tasks.enqueue(task);
     } else {
 	sendnow( cmd, data );
     }
@@ -112,12 +111,10 @@ void Connection::dequeue()
     if (!inited())
 	return;
 
-    while (tasks.count())
+    while (!m_tasks.isEmpty())
     {
-       tasks.first();
-       Task *task = tasks.take();
-       sendnow( task->cmd, task->data );
-       delete task;
+       const Task task = m_tasks.dequeue();
+       sendnow( task.cmd, task.data );
     }
 }
 

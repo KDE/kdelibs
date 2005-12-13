@@ -22,7 +22,7 @@
 #define __kmimetyperesolver_h
 
 #include <q3scrollview.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qtimer.h>
 #include <kdebug.h>
 #include <QEvent>
@@ -151,7 +151,7 @@ public:
      * clear it, insert new items into it, remove items, etc.
      * @return the list of items to process
      */
-    Q3PtrList<IconItem> m_lstPendingMimeIconItems;
+    QList<IconItem *> m_lstPendingMimeIconItems;
 
     /**
      * "Connected" to the viewportAdjusted signal of the scrollview
@@ -233,7 +233,6 @@ inline IconItem * KMimeTypeResolver<IconItem, Parent>::findVisibleIcon()
 {
     // Find an icon that's visible and whose mimetype we don't know.
 
-    Q3PtrListIterator<IconItem> it(m_lstPendingMimeIconItems);
     if ( m_lstPendingMimeIconItems.count()<20) // for few items, it's faster to not bother
         return m_lstPendingMimeIconItems.first();
 
@@ -247,9 +246,12 @@ inline IconItem * KMimeTypeResolver<IconItem, Parent>::findVisibleIcon()
                 )
             );
 
-    for (; it.current(); ++it)
-        if (visibleContentsRect.intersects(it.current()->rect()))
-            return it.current();
+    typename QList<IconItem *>::const_iterator it = m_lstPendingMimeIconItems.begin(),
+                                              end = m_lstPendingMimeIconItems.end();
+    for ( ; it != end ; ++it ) {
+        if (visibleContentsRect.intersects((*it)->rect()))
+            return *it;
+    }
 
     return 0L;
 }

@@ -27,7 +27,7 @@
 #include <sys/types.h>
 
 #include <stdio.h>
-#include <q3ptrlist.h>
+#include <QQueue>
 #include <qobject.h>
 
 namespace KNetwork { class KStreamSocket; }
@@ -74,7 +74,7 @@ namespace KIO {
 	void connect(QObject *receiver = 0, const char *member = 0);
         /// Closes the connection.
 	void close();
-	
+
         /**
 	 * Returns the input file descriptor.
 	 * @return the input file descriptor
@@ -92,15 +92,15 @@ namespace KIO {
 	 * @see init()
 	 */
 	bool inited() const { return (fd_in != -1) && (f_out != 0); }
-	
-        /** 
+
+        /**
 	 * Sends/queues the given command to be sent.
 	 * @param cmd the command to set
 	 * @param arr the bytes to send
 	 */
 	void send(int cmd, const QByteArray &arr = QByteArray());
 
-        /** 
+        /**
 	 * Sends the given command immediately.
 	 * @param _cmd the command to set
 	 * @param data the bytes to send
@@ -136,10 +136,10 @@ namespace KIO {
 
     protected slots:
         void dequeue();
-	
+
     protected:
-	
-	
+
+
     private:
 	int fd_in;
 	FILE *f_out;
@@ -147,7 +147,7 @@ namespace KIO {
 	QSocketNotifier *notifier;
 	QObject *receiver;
 	const char *member;
-	Q3PtrList<Task> tasks;
+	QQueue<Task> m_tasks;
         bool m_suspended;
     private:
 	class ConnectionPrivate* d;
