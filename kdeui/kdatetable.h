@@ -326,12 +326,12 @@ protected:
     /**
      * calculate the position of the cell in the matrix for the given date. The result is the 0-based index.
      */
-    int posFromDate( const QDate &date ); // KDE4: make this virtual, so subclasses can reimplement this and use a different default for the start of the matrix
+    virtual int posFromDate( const QDate &date ); 
     /**
      * calculate the date that is displayed at a given cell in the matrix. pos is the
      * 0-based index in the matrix. Inverse function to posForDate().
      */
-    QDate dateFromPos( int pos ); // KDE4: make this virtual
+    virtual QDate dateFromPos( int pos ); 
 
     /**
      * Paint a cell.
