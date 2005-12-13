@@ -88,6 +88,14 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
   return syscall (__NR_inotify_rm_watch, fd, wd);
 }
 
+#ifndef  IN_ONLYDIR
+#define  IN_ONLYDIR             0x01000000 
+#endif
+
+#ifndef IN_DONT_FOLLOW
+#define IN_DONT_FOLLOW 0x02000000
+#endif
+
 #endif
 
 #include "kdirwatch.h"
@@ -696,9 +704,9 @@ bool KDirWatchPrivate::useINotify( Entry* e )
 
   e->m_mode = INotifyMode;
 
-  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800;
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800|IN_DONT_FOLLOW;
   if(!e->isDir)
-    mask |= IN_MODIFY|IN_ATTRIB;
+    mask |= IN_MODIFY|IN_ATTRIB|IN_ONLYDIR;
   // if dependant is a file watch, we check for MODIFY & ATTRIB too
   for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next()) {
     if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
