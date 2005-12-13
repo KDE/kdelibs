@@ -228,3 +228,11 @@
 #  define KDNSSD_EXPORT KDE_IMPORT
 # endif
 #endif
+
+#ifndef KDED_EXPORT
+# ifdef MAKE_KDED_LIB
+#  define KDED_EXPORT KDE_EXPORT
+# else
+#  define KDED_EXPORT KDE_IMPORT
+# endif
+#endif
