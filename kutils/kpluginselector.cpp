@@ -22,16 +22,12 @@
 
 #include <qtooltip.h>
 #include <qlabel.h>
-#include <q3strlist.h>
 #include <qfile.h>
 #include <qstring.h>
 #include <qlayout.h>
-#include <q3ptrlist.h>
-#include <q3widgetstack.h>
 #include <qcursor.h>
 #include <qapplication.h>
 #include <qobject.h>
-#include <q3cstring.h>
 #include <QEvent>
 #include <QHelpEvent>
 
@@ -45,7 +41,6 @@
 #include <kstandarddirs.h>
 #include <ktabctl.h>
 #include <kcmoduleinfo.h>
-#include <q3valuelist.h>
 #include <kservice.h>
 #include <ktrader.h>
 #include <ktabwidget.h>
@@ -57,11 +52,11 @@
 #include <qframe.h>
 #include "kplugininfo.h"
 #include <kinstance.h>
-#include <q3ptrdict.h>
 #include <qstringlist.h>
 #include <QList>
 #include "kcmoduleproxy.h"
 #include <QStackedWidget>
+
 /*
     QCheckListViewItem that holds a pointer to the KPluginInfo object.
     Used in the tooltip code to access additional fields
@@ -94,7 +89,6 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
         , currentchecked( false )
         , changed( 0 )
     {
-        moduleParentComponents.setAutoDelete( true );
     }
 
     ~KPluginSelectionWidgetPrivate()
@@ -109,12 +103,11 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     KPluginSelector * kps;
     KConfigGroup * config;
 
-    Q3Dict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
     QMap<KPluginInfo*, bool> plugincheckedchanged;
     QString catname;
     QList<KCModuleProxy*> modulelist;
-    Q3PtrDict<QStringList> moduleParentComponents;
+    QMap<KCModuleProxy *, QStringList> moduleParentComponents;
 
     KPluginInfo * currentplugininfo;
     bool visible;
@@ -238,9 +231,8 @@ QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
     }
     // add the KCM to the list so that we can call load/save/defaults on it
     d->modulelist.append( module );
-    QStringList * parentComponents = new QStringList(
-            moduleinfo.service()->property(
-                "X-KDE-ParentComponents" ).toStringList() );
+    QStringList parentComponents = moduleinfo.service()->property(
+        "X-KDE-ParentComponents" ).toStringList();
     d->moduleParentComponents.insert( module, parentComponents );
     connect( module, SIGNAL( changed( bool ) ), SLOT( clientChanged( bool ) ) );
     return module;
@@ -445,11 +437,11 @@ void KPluginSelectionWidget::save()
         if( ( *it )->changed() )
         {
             ( *it )->save();
-            QStringList * names = d->moduleParentComponents[ *it ];
-            if( names->size() == 0 )
-                names->append( QString::null );
-            for( QStringList::ConstIterator nameit = names->begin();
-                    nameit != names->end(); ++nameit )
+            QStringList names = d->moduleParentComponents.value( *it );
+            if( names.isEmpty() )
+                names.append( QString::null );
+            for( QStringList::ConstIterator nameit = names.begin();
+                    nameit != names.end(); ++nameit )
                 if( updatedModules.find( *nameit ) == updatedModules.end() )
                     updatedModules.append( *nameit );
         }
