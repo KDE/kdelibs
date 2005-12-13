@@ -1096,56 +1096,19 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 
 void KRecentFilesAction::addURL( const KURL& url )
 {
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
-       return;
-    QString     file = url.pathOrURL();
-    QStringList lst = KSelectAction::items();
-    KURL u = url; //make a copy (increase the reference counter?).
-                  //Otherwise after d->m_urls.erase( title ) the url will be empty...
-
-    // remove file if already in list
-    QStringList::Iterator end = lst.end();
-    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
-    {
-      QString title = (*it);
-      if ( title.endsWith( file + "]" ) )
-      {
-        lst.remove( it );
-        d->m_urls.erase( title );
-        d->m_shortNames.erase( title );
-        break;
-      }
-    }
-
-    // remove last item if already maxitems in list
-    if( lst.count() == d->m_maxItems )
-    {
-        // remove last item
-        QString lastItem = lst.last();
-        d->m_shortNames.erase( lastItem );
-        d->m_urls.erase( lastItem );
-        lst.remove( lastItem );
-    }
-
-    // add file to list
-    QString title = u.fileName() + " [" + file + "]";
-    d->m_shortNames.insert( title, u.fileName() );
-    d->m_urls.insert( title, u );
-    lst.prepend( title );
-    setItems( lst );
+    addURL( url, url.fileName() );
 }
 
 void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
-    KURL u = url; //make a copy (increase the reference counter?).
-                  //Otherwise after d->m_urls.erase( title ) the url will be empty...
-    QString     file = url.pathOrURL();
+    const KURL u = url; // make a copy since d->m_urls.erase( title ) could destroy the KURL that "url" references
+    const QString file = url.pathOrURL();
     QStringList lst = KSelectAction::items();
 
     // remove file if already in list
-    QStringList::Iterator end = lst.end();
+    const QStringList::Iterator end = lst.end();
     for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
     {
       QString title = (*it);
@@ -1161,14 +1124,14 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     if( lst.count() == d->m_maxItems )
     {
         // remove last item
-        QString lastItem = lst.last();
+        const QString lastItem = lst.last();
         d->m_shortNames.erase( lastItem );
         d->m_urls.erase( lastItem );
         lst.remove( lastItem );
     }
 
     // add file to list
-    QString title = name + " [" + file + "]";
+    const QString title = name + " [" + file + "]";
     d->m_shortNames.insert( title, name );
     d->m_urls.insert( title, u );
     lst.prepend( title );
