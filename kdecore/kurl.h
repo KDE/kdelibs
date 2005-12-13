@@ -640,12 +640,6 @@ public:
   void addPath( const QString& txt );
 
   /**
-   * call the function below with encoding_hint = 0
-   * (will be merged for KDE4)
-   */
-  QString queryItem( const QString& item ) const;
-
-  /**
    * Returns the value of a certain query item.
    *
    * @param item Item whose value we want
@@ -654,7 +648,7 @@ public:
    * @return the value of the given query item name or QString::null if the
    * specified item does not exist.
    */
-  QString queryItem( const QString& item, int encoding_hint ) const;
+  QString queryItem( const QString& item, int encoding_hint = 0 ) const;
 
   /**
    * Options for queryItems. Currently, only one option is

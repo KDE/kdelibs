@@ -2311,11 +2311,6 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
   return result;
 }
 
-QString KURL::queryItem( const QString& _item ) const
-{
-  return queryItem( _item, 0 );
-}
-
 QString KURL::queryItem( const QString& _item, int encoding_hint ) const
 {
   QString item = _item + '=';
