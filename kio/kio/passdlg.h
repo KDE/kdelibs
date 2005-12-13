@@ -111,13 +111,6 @@ public:
     void setUserReadOnly( bool readOnly );
 
     /**
-     * @deprecated. Use setUserReadOnly(bool).
-     */
-    KDE_DEPRECATED void setEnableUserField( bool enable, bool=false ) {
-	setUserReadOnly( !enable );
-    };
-
-    /**
      * Presets the password.
      * @param password the password to set
      * @since 3.1
