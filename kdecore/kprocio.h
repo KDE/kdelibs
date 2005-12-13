@@ -20,7 +20,6 @@
 
 #include <qstring.h>
 #include <kprocess.h>
-#include <q3strlist.h>
 #include "kdelibs_export.h"
 
 class KProcIOPrivate;

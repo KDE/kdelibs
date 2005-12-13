@@ -18,7 +18,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3valuelist.h>
 #include <qmap.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>

@@ -26,11 +26,12 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <dcopclient.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qstring.h>
 #include <qtextcodec.h>
-#include <dcopclient.h>
+#include <qset.h>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -155,7 +156,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 
 void KCrashBookmarkImporterImpl::parse()
 {
-    Q3Dict<bool> signatureMap;
+    QSet<QString> signatureSet;
     QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
     for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it )
@@ -165,14 +166,14 @@ void KCrashBookmarkImporterImpl::parse()
         QString signature;
         for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
             signature += "|"+vit.data();
-        if (signatureMap[signature])
+        if (signatureSet.contains(signature))
         {
             // Duplicate... throw away and skip
             QFile::remove(*it);
             continue;
         }
 
-        signatureMap.insert(signature, (bool *) true); // hack
+        signatureSet.insert(signature);
 
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )

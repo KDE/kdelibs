@@ -26,13 +26,15 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
-#include <q3popupmenu.h>
-#include <qregexp.h>
-#include <qwidget.h>
-#include <qmetaobject.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
+
+#include <qregexp.h>
+#include <qwidget.h>
+#include <qmetaobject.h>
+#include <qlinkedlist.h>
+#include <qmenu.h>
 
 #ifdef Q_WS_X11
 #include <kxerrorhandler.h>
@@ -67,8 +69,8 @@ static void calculateGrabMasks()
 	g_keyModMaskXOnOrOff =
 			KKeyServer::modXLock() |
 			KKeyServer::modXNumLock() |
-			KKeyServer::modXScrollLock() | 
-			KKeyServer::modXModeSwitch(); 
+			KKeyServer::modXScrollLock() |
+			KKeyServer::modXModeSwitch();
 	//kdDebug() << "g_keyModMaskXAccel = " << g_keyModMaskXAccel
 	//	<< "g_keyModMaskXOnOrOff = " << g_keyModMaskXOnOrOff << endl;
 }

@@ -22,7 +22,6 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <q3valuelist.h>
 
 #include "kaccelaction.h"
 #include "kkeyserver.h"

@@ -22,7 +22,7 @@
 #include <q3accel.h>
 #include <qevent.h>
 #include <qpointer.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qregexp.h>
 #include <qstring.h>
 #include <qtimer.h>

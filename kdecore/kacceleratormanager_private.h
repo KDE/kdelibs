@@ -24,7 +24,6 @@
 
 #include <qstring.h>
 
-#include <q3valuelist.h>
 #include <qobject.h>
 
 class QStackedWidget;

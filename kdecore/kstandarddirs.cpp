@@ -38,8 +38,6 @@
 #include <grp.h>
 
 #include <qregexp.h>
-#include <q3asciidict.h>
-#include <q3dict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qsettings.h>
@@ -56,7 +54,7 @@
 #include "kstaticdeleter.h"
 #include <kde_file.h>
 
-template class Q3Dict<QStringList>;
+template class QMap<QByteArray, QStringList>;
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -70,7 +68,7 @@ public:
    bool restrictionsActive;
    bool dataRestrictionActive;
    bool checkRestrictions;
-   Q3AsciiDict<bool> restrictions;
+   QMap<QByteArray, bool> restrictions;
    QStringList xdgdata_prefixes;
    QStringList xdgconf_prefixes;
 };
@@ -105,13 +103,9 @@ static const char* const types[] = {"html", "icon", "apps", "sound",
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs( ) : addedCustoms(false)
+KStandardDirs::KStandardDirs() : addedCustoms(false)
 {
     d = new KStandardDirsPrivate;
-    dircache.setAutoDelete(true);
-    relatives.setAutoDelete(true);
-    absolutes.setAutoDelete(true);
-    savelocations.setAutoDelete(true);
     addKDEDefaults();
 }
 
@@ -125,7 +119,7 @@ bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPat
    if (!d || !d->restrictionsActive)
       return false;
 
-   if (d->restrictions[type])
+   if (d->restrictions.value(type, false))
       return true;
 
    if (strcmp(type, "data")==0)
@@ -149,7 +143,7 @@ void KStandardDirs::applyDataRestrictions(const QString &relPath) const
    else
       key = "data_"+relPath;
 
-   if (d && d->restrictions[key.latin1()])
+   if (d && d->restrictions.value(key.toLatin1(), false))
       d->dataRestrictionActive = true;
 }
 
@@ -264,19 +258,15 @@ bool KStandardDirs::addResourceType( const char *type,
     if (relativename.isEmpty())
        return false;
 
-    QStringList *rels = relatives.find(type);
-    if (!rels) {
-	rels = new QStringList();
-	relatives.insert(type, rels);
-    }
+    QStringList& rels = relatives[type]; // find or insert
     QString copy = relativename;
     if (copy.at(copy.length() - 1) != '/')
 	copy += '/';
-    if (!rels->contains(copy)) {
+    if (!rels.contains(copy)) {
         if (priority)
-	    rels->prepend(copy);
+	    rels.prepend(copy);
 	else
-	    rels->append(copy);
+	    rels.append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -294,20 +284,17 @@ bool KStandardDirs::addResourceDir( const char *type,
 				    const QString& absdir,
 				    bool priority)
 {
-    QStringList *paths = absolutes.find(type);
-    if (!paths) {
-	paths = new QStringList();
-	absolutes.insert(type, paths);
-    }
+    // find or insert entry in the map
+    QStringList &paths = absolutes[type];
     QString copy = absdir;
     if (copy.at(copy.length() - 1) != '/')
       copy += '/';
 
-    if (!paths->contains(copy)) {
+    if (!paths.contains(copy)) {
         if (priority)
-            paths->prepend(copy);
+            paths.prepend(copy);
         else
-	    paths->append(copy);
+	    paths.append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -491,7 +478,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     while( ( ep = readdir( dp ) ) != 0L )
     {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
+      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).toLatin1() == '~')
 	continue;
 
       if (!recursive && !regexp.exactMatch(fn))
@@ -751,7 +738,7 @@ void KStandardDirs::createSpecialResource(const char *type)
    if (relink)
    {
       if (!makeDir(dir, 0700))
-         fprintf(stderr, "failed to create \"%s\"", dir.latin1());
+         fprintf(stderr, "failed to create \"%s\"", qPrintable(dir));
       else
          result = readlink(QFile::encodeName(dir).data(), link, 1023);
    }
@@ -781,9 +768,16 @@ void KStandardDirs::createSpecialResource(const char *type)
 
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
-    QStringList *candidates = dircache.find(type);
+    QMap<QByteArray, QStringList>::const_iterator dirCacheIt = dircache.find(type);
 
-    if (!candidates) { // filling cache
+    QStringList candidates;
+
+    if (dirCacheIt != dircache.end())
+    {
+        candidates = *dirCacheIt;
+    }
+    else // filling cache
+    {
         if (strcmp(type, "socket") == 0)
            const_cast<KStandardDirs *>(this)->createSpecialResource(type);
         else if (strcmp(type, "tmp") == 0)
@@ -793,23 +787,21 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         QDir testdir;
 
-        candidates = new QStringList();
-        QStringList *dirs;
-
         bool restrictionActive = false;
         if (d && d->restrictionsActive)
         {
            if (d->dataRestrictionActive)
               restrictionActive = true;
-           else if (d->restrictions["all"])
+           else if (d->restrictions.value("all", false))
               restrictionActive = true;
-           else if (d->restrictions[type])
+           else if (d->restrictions.value(type, false))
               restrictionActive = true;
            d->dataRestrictionActive = false; // Reset
         }
 
-        dirs = relatives.find(type);
-        if (dirs)
+        QStringList dirs;
+        dirs = relatives.value(type);
+        if (!dirs.isEmpty())
         {
             bool local = true;
             const QStringList *prefixList = 0;
@@ -824,29 +816,29 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                  pit != prefixList->end();
                  ++pit)
             {
-                for (QStringList::ConstIterator it = dirs->begin();
-                     it != dirs->end(); ++it) {
+                for (QStringList::ConstIterator it = dirs.begin();
+                     it != dirs.end(); ++it) {
                     QString path = realPath(*pit + *it);
                     testdir.setPath(path);
                     if (local && restrictionActive)
                        continue;
-                    if ((local || testdir.exists()) && !candidates->contains(path))
-                        candidates->append(path);
+                    if ((local || testdir.exists()) && !candidates.contains(path))
+                        candidates.append(path);
                 }
                 local = false;
             }
         }
-        dirs = absolutes.find(type);
-        if (dirs)
-            for (QStringList::ConstIterator it = dirs->begin();
-                 it != dirs->end(); ++it)
+        dirs = absolutes.value(type);
+        if (!dirs.isEmpty())
+            for (QStringList::ConstIterator it = dirs.begin();
+                 it != dirs.end(); ++it)
             {
                 testdir.setPath(*it);
                 if (testdir.exists())
                 {
                     QString filename = realPath(*it);
-                    if (!candidates->contains(filename))
-                        candidates->append(filename);
+                    if (!candidates.contains(filename))
+                        candidates.append(filename);
                 }
             }
         dircache.insert(type, candidates);
@@ -854,16 +846,15 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
 #if 0
     kdDebug() << "found dirs for resource " << type << ":" << endl;
-    for (QStringList::ConstIterator pit = candidates->begin();
-	 pit != candidates->end();
+    for (QStringList::ConstIterator pit = candidates.begin();
+	 pit != candidates.end();
 	 pit++)
     {
-	fprintf(stderr, "%s\n", (*pit).latin1());
+	fprintf(stderr, "%s\n", qPrintable(*pit));
     }
 #endif
 
-
-  return *candidates;
+  return candidates;
 }
 
 QStringList KStandardDirs::systemPaths( const QString& pstr )
@@ -1075,38 +1066,38 @@ QString KStandardDirs::saveLocation(const char *type,
 {
     checkConfig();
 
-    QString *pPath = savelocations.find(type);
-    if (!pPath)
+    QString path = savelocations.value(type);
+    if (path.isEmpty())
     {
-       QStringList *dirs = relatives.find(type);
-       if (!dirs && (
+       QStringList dirs = relatives.value(type);
+       if (dirs.isEmpty() && (
                      (strcmp(type, "socket") == 0) ||
                      (strcmp(type, "tmp") == 0) ||
                      (strcmp(type, "cache") == 0) ))
        {
           (void) resourceDirs(type); // Generate socket|tmp|cache resource.
-          dirs = relatives.find(type); // Search again.
+          dirs = relatives.value(type); // Search again.
        }
-       if (dirs)
+       if (!dirs.isEmpty())
        {
           // Check for existence of typed directory + suffix
           if (strncmp(type, "xdgdata-", 8) == 0)
-             pPath = new QString(realPath(localxdgdatadir() + dirs->last()));
+             path = realPath(localxdgdatadir() + dirs.last());
           else if (strncmp(type, "xdgconf-", 8) == 0)
-             pPath = new QString(realPath(localxdgconfdir() + dirs->last()));
+             path = realPath(localxdgconfdir() + dirs.last());
           else
-             pPath = new QString(realPath(localkdedir() + dirs->last()));
+             path = realPath(localkdedir() + dirs.last());
        }
        else {
-          dirs = absolutes.find(type);
-          if (!dirs)
+          dirs = absolutes.value(type);
+          if (dirs.isEmpty())
              qFatal("KStandardDirs: The resource type %s is not registered", type);
-          pPath = new QString(realPath(dirs->last()));
+          path = realPath(dirs.last());
        }
 
-       savelocations.insert(type, pPath);
+       savelocations.insert(type, path);
     }
-    QString fullPath = *pPath + (pPath->endsWith("/") ? "" : "/") + suffix;
+    QString fullPath = path + (path.endsWith("/") ? "" : "/") + suffix;
 
     KDE_struct_stat st;
     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
@@ -1609,7 +1600,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
                     QString resType = key.mid(4, key.length());
                     for (; sIt != dirs.end(); ++sIt)
                     {
-                        addResourceDir(resType.latin1(), *sIt, priority);
+                        addResourceDir(resType.toLatin1(), *sIt, priority);
                     }
                 }
             }
@@ -1634,8 +1625,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
             if (!config->readBoolEntry(key, true))
             {
                 d->restrictionsActive = true;
-                d->restrictions.insert(key.latin1(), &d->restrictionsActive); // Anything will do
-                dircache.remove(key.latin1());
+                d->restrictions.insert(key.toLatin1(), true);
+                dircache.remove(key.toLatin1());
             }
         }
     }

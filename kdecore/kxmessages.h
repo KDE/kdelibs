@@ -26,7 +26,6 @@ DEALINGS IN THE SOFTWARE.
 #define KXMESSAGES_H
 
 #include <qwidget.h>
-#include <q3cstring.h>
 #include <qmap.h>
 #include <kdelibs_export.h>
 #ifdef Q_WS_X11
@@ -52,7 +51,7 @@ class KDECORE_EXPORT KXMessages
 	/**
 	 * Creates an instance which will receive X messages.
 	 *
-	 * @param accept_broadcast if non-NULL, all broadcast messages with 
+	 * @param accept_broadcast if non-NULL, all broadcast messages with
 	 *                         this message type will be received.
 	 * @param parent the parent of this widget
          * @param obsolete always set to false (needed for backwards compatibility
@@ -69,7 +68,7 @@ class KDECORE_EXPORT KXMessages
 	/**
 	 * Sends the given message with the given message type only to given
          * window.
-         * 
+         *
          * @param w X11 handle for the destination window
 	 * @param msg_type the type of the message
 	 * @param message the message itself
@@ -102,8 +101,8 @@ class KDECORE_EXPORT KXMessages
 	/**
 	 * Sends the given message with the given message type only to given
          * window.
-         * 
-	 * @param disp X11 connection which will be used instead of 
+         *
+	 * @param disp X11 connection which will be used instead of
 	 *             qt_x11display()
          * @param w X11 handle for the destination window
 	 * @param msg_type the type of the message
@@ -124,7 +123,7 @@ class KDECORE_EXPORT KXMessages
 	/**
 	 * Broadcasts the given message with the given message type.
 	 *
-	 * @param disp X11 connection which will be used instead of 
+	 * @param disp X11 connection which will be used instead of
 	 *             qt_x11display()
 	 * @param msg_type the type of the message
 	 * @param message the message itself
