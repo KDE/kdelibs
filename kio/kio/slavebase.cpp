@@ -367,14 +367,6 @@ bool SlaveBase::hasMetaData(const QString &key) const
    return false;
 }
 
-// ### remove the next two methods for KDE4 (they miss the const)
-QString SlaveBase::metaData(const QString &key) {
-   return const_cast<const SlaveBase*>(this)->metaData( key );
-}
-bool SlaveBase::hasMetaData(const QString &key) {
-   return const_cast<const SlaveBase*>(this)->hasMetaData( key );
-}
-
 KConfigBase *SlaveBase::config()
 {
    return d->config;

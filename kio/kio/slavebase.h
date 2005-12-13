@@ -292,18 +292,6 @@ public:
      */
     QString metaData(const QString &key) const;
 
-    /**
-     * @obsolete kept for binary compatibility
-     * Queries for the existence of a certain config/meta-data entry
-     * send by the application to the slave.
-     */
-    bool hasMetaData(const QString &key);
-
-    /**
-     * @obsolete kept for binary compatibility
-     * Queries for config/meta-data send by the application to the slave.
-     */
-    QString metaData(const QString &key);
 
     /**
      * Returns a configuration object to query config/meta-data information

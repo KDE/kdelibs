@@ -46,12 +46,6 @@ void KSimpleFileFilter::setFilterSpecials( bool filter )
     m_filterSpecials = filter;
 }
 
-void KSimpleFileFilter::setNameFilters( const QString& nameFilters )
-{
-    // KDE 3.0 defaults
-    setNameFilters( nameFilters, false, ' ' );
-}
-
 void KSimpleFileFilter::setNameFilters( const QString& nameFilters,
                                         bool caseSensitive, 
                                         const QChar& separator )

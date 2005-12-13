@@ -93,7 +93,6 @@ public:
      */
     bool filterSpecials() const { return m_filterSpecials; }
 
-    // ### KDE4 make virtual and bool caseSensitive = false
     /**
      * Sets a list of regular expressions to filter by name.
      * The file will only pass if its name matches one of the regular
@@ -105,17 +104,8 @@ public:
      * @param separator the separator in the @p nameFilter
      * @since 3.1
      */
-    void setNameFilters( const QString& nameFilters, bool caseSensitive,
+    virtual void setNameFilters( const QString& nameFilters, bool caseSensitive = false ,
                          const QChar& separator = ' ' );
-    /**
-     * Sets a list of regular expressions to filter by name.
-     * The file will only pass if its name matches one of the regular
-     * expressions.
-     * @param nameFilters a list of regular expressions, separated by
-     *                    space (' ')
-     */
-    virtual void setNameFilters( const QString& nameFilters );
-
     /**
      * Sets a list of mime filters. A file can only pass if its
      * mime type is contained in this list.

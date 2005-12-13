@@ -616,14 +616,14 @@ namespace KIO {
          * @internal
          * Called on a slave's warning.
          */
-        void slotWarning( const QString & ); // KDE4: make virtual
+        virtual void slotWarning( const QString & ); 
 
         /**
          * Called on a slave's info message.
 	 * @param s the info message
 	 * @see infoMessage()
          */
-        void slotInfoMessage( const QString &s ); // KDE4: make virtual
+        virtual void slotInfoMessage( const QString &s );
 
         /**
          * Called on a slave's connected signal.
