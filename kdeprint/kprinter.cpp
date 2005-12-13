@@ -273,7 +273,9 @@ KPrinter::ApplicationType KPrinter::applicationType()
 	return (ApplicationType)KMFactory::self()->settings()->application;
 }
 
+#ifdef __GNUC__
 #warning Kprinter and its use of QPainter needs to be ported
+#endif
 QPaintEngine * KPrinter::paintEngine () const { 
 	return 0;
 }
@@ -321,7 +323,9 @@ void KPrinter::translateQtOptions()
 		 * when specified by the user ( who usually specifies margins
 		 * in metric units ).
 		 */
+#ifdef __GNUC__
 		#warning KDE4 porting: find out how to specify margins in QT4
+#endif
 		/*int res = resolution();
 		d->m_printer->setMargins(
 				( int )( ( option("kde-margin-top").toFloat() * res + 71 ) / 72 ),
@@ -331,7 +335,9 @@ void KPrinter::translateQtOptions()
 	}
 	else if ( d->m_pagesize != NULL )
 	{
+#ifdef __GNUC__
 		#warning KDE4 porting: find out how to specify margins in QT4
+#endif
 		/*int res = resolution();
 		DrPageSize *ps = d->m_pagesize;
 		int top = ( int )( ps->topMargin() * res + 71 ) / 72;
@@ -951,7 +957,9 @@ void KPrinter::setMargins(QSize m)
 
 void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
 {
+#ifdef __GNUC__
 	#warning KDE4 porting: find out how to specify margins in QT4
+#endif
 	/*d->m_printer->setMargins( top, left, bottom, right );
 	setOption( "kde-margin-top", QString::number( top ), true );
 	setOption( "kde-margin-left", QString::number( left ), true );
