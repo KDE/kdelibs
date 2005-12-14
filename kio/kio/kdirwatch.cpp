@@ -421,7 +421,7 @@ void KDirWatchPrivate::slotActivated()
             if( event->mask & IN_DELETE_SELF) {
               kdDebug() << "-->got deleteself signal for " << e->path << endl;
               e->m_status = NonExistent;
-              (void) inotify_rm_watch( m_inotify_fd, e->wd );
+              //(void) inotify_rm_watch( m_inotify_fd, e->wd );
               addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
             }
             if ( event->mask & IN_CREATE ) {
@@ -1143,7 +1143,6 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
   KDE_struct_stat stat_buf;
   bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
-  kdDebug(7001) << "exists " << e->path << " " << exists << endl;
   if (exists) {
 
     if (e->m_status == NonExistent) {
@@ -1296,7 +1295,6 @@ void KDirWatchPrivate::slotRescan()
     if (!(*it).isValid()) continue;
 
     int ev = scanEntry( &(*it) );
-    kdDebug(7001) << "ev " << ( *it ).path << " " << ev << endl;
 
 #ifdef HAVE_DNOTIFY
     if ((*it).m_mode == DNotifyMode) {
