@@ -74,9 +74,8 @@ Comment[zh_TW]=電子商業卡片
 Comment[zu]= Ikhadi Lebhizinisi Likagesi
 Icon=vcard
 Type=MimeType
-MimeType=text/x-vcard
-# This mimetype is just for compatibility with KDE-3.x; the real name is text/directory
-X-KDE-IsAlso=text/directory
+MimeType=text/directory
+Patterns=*.vct;*.vcf;*.VCT;*.VCF
 
 [Property::X-KDE-text]
 Type=bool
