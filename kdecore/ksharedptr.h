@@ -66,14 +66,6 @@ public:
         : d(o.d) { if(d) d->ref.ref(); }
 
     /**
-     * Copies a pointer using a dynamic_cast.
-     * @param o the pointer to copy
-     */
-    template <class U>
-    inline explicit KSharedPtr(const KSharedPtr<U> &o)
-        : d(dynamic_cast<T *>(o.d)) { if(d) d->ref.ref(); }
-
-    /**
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
