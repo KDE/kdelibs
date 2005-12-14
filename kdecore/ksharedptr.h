@@ -48,27 +48,36 @@ public:
     /**
      * Creates a null pointer.
      */
-    KSharedPtr()
+    inline KSharedPtr()
         : d(0) { }
+
     /**
      * Creates a new pointer.
      * @param p the pointer
      */
-    KSharedPtr( T* p ) // TODO: Make explicit
+    inline KSharedPtr( T* p ) // TODO: Make explicit
         : d(p) { if(d) d->ref.ref(); }
 
     /**
      * Copies a pointer.
      * @param o the pointer to copy
      */
-    KSharedPtr( const KSharedPtr& o )
+    inline KSharedPtr( const KSharedPtr& o )
         : d(o.d) { if(d) d->ref.ref(); }
+
+    /**
+     * Copies a pointer using a dynamic_cast.
+     * @param o the pointer to copy
+     */
+    template <class U>
+    inline explicit KSharedPtr(const KSharedPtr<U> &o)
+        : d(dynamic_cast<T *>(o.d)) { if(d) d->ref.ref(); }
 
     /**
      * Unreferences the object that this pointer points to. If it was
      * the last reference, the object will be deleted.
      */
-    ~KSharedPtr() { if (d && !d->ref.deref()) delete d; }
+    inline ~KSharedPtr() { if (d && !d->ref.deref()) delete d; }
 
     inline KSharedPtr<T>& operator= ( const KSharedPtr& o ) { attach(o); return *this; }
     inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
@@ -76,6 +85,12 @@ public:
     inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
     inline bool operator== ( const T* p ) const { return ( d == p ); }
     inline bool operator!= ( const T* p ) const { return ( d != p ); }
+
+    /**
+     * Test if the shared pointer is NOT null.
+     * @return true if the shared pointer is NOT null, false otherwise.
+     * @see isNull
+     */
     inline operator bool() const { return ( d != 0 ); }
 
     /**
@@ -123,6 +138,13 @@ public:
      * and is not null.
      */
     void detach();
+
+    /**
+     * Test if the shared pointer is null.
+     * @return true if the pointer is null, false otherwise.
+     * @see opertor (bool)
+     */
+    inline bool isNull() const { return (d == 0); }
 
     /**
      * @return Whether this is the only shared pointer pointing to
