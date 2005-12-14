@@ -266,12 +266,15 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
 
 void KURLTest::testEmptyQueryOrRef()
 {
+  KURL noQuery( "http://www.kde.org");
+  QCOMPARE( noQuery.query(), QString( "" ) ); // no query at all
+
   // Empty queries should be preserved!
   //QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);
   //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi?");
   KURL waba1 = "http://www.kde.org/cgi/test.cgi?";
-  check("http: URL with empty query string", waba1.url(),
-        "http://www.kde.org/cgi/test.cgi?");
+  QCOMPARE( waba1.url(), QString( "http://www.kde.org/cgi/test.cgi?" ) );
+  QCOMPARE( waba1.query(), QString( "?" ) ); // empty query
 
   // Empty references should be preserved
   waba1 = "http://www.kde.org/cgi/test.cgi#";
@@ -316,37 +319,32 @@ void KURLTest::testParsingTolerance()
 void KURLTest::testURLsWithoutPath()
 {
   // Urls without path (BR21387)
-  KURL waba1 = "http://meine.db24.de?link=home_c_login_login";
-  check("http: URL with empty path string", waba1.url(),
-        "http://meine.db24.de?link=home_c_login_login");
-  check("http: URL with empty path string path", waba1.path(),
-        "");
-  check("http: URL with empty path string query", waba1.query(),
-        "?link=home_c_login_login");
+  KURL waba1 = "http://meine.db24.de?link=home_c_login_login"; // has query
+  QCOMPARE( waba1.url(), QString("http://meine.db24.de?link=home_c_login_login") );
+  QCOMPARE( waba1.path(), QString("") );
+  QCOMPARE( waba1.query(), QString("?link=home_c_login_login") );
 
-  waba1 = "http://a:389?b=c";
-  check( "http: URL with port, query, and empty path; url", waba1.url(), "http://a:389?b=c" );
-  check( "http: URL with port, query, and empty path; host", waba1.host(), "a" );
-  check( "http: URL with port, query, and empty path; port", QString::number( waba1.port() ), "389" );
-  check( "http: URL with port, query, and empty path; path", waba1.path(), "" );
-  check( "http: URL with port, query, and empty path; query", waba1.query(), "?b=c" );
+  waba1 = "http://a:389?b=c"; // has port and query
+  QCOMPARE( waba1.url(), QString( "http://a:389?b=c" ) );
+  QCOMPARE( waba1.host(), QString( "a" ) );
+  QCOMPARE( waba1.port(), 389 );
+  QCOMPARE( waba1.path(), QString( "" ) );
+  QCOMPARE( waba1.query(), QString( "?b=c" ) );
 
   // Urls without path (BR21387)
-  waba1 = "http://meine.db24.de#link=home_c_login_login";
-  check("http: URL with empty path string", waba1.url(),
-        "http://meine.db24.de#link=home_c_login_login");
-  check("http: URL with empty path string path", waba1.path(),
-        "");
+  waba1 = "http://meine.db24.de#link=home_c_login_login"; // has fragment
+  QCOMPARE( waba1.url(), QString("http://meine.db24.de#link=home_c_login_login") );
+  QCOMPARE( waba1.path(), QString(""));
 
-  waba1 = "http://a:389#b=c";
+  waba1 = "http://a:389#b=c"; // has port and fragment
   qDebug( "%s", qPrintable( waba1.url() ) );
-  check( "http: URL with port, ref, and empty path; url", waba1.url(), "http://a:389#b=c" );
-  check( "http: URL with port, ref, and empty path; host", waba1.host(), "a" );
-  check( "http: URL with port, ref, and empty path; port", QString::number( waba1.port() ), "389" );
-  check( "http: URL with port, ref, and empty path; path", waba1.path(), "" );
-  check( "http: URL with port, ref, and empty path; ref", waba1.ref(), "b%3Dc" ); // was b=c with KDE3, but the docu says encoded, so encoding the = is ok
-  check( "http: URL with port, ref, and empty path; htmlRef", waba1.htmlRef(), "b=c" );
-  check( "http: URL with port, ref, and empty path; query", waba1.query(), "" );
+  QCOMPARE( waba1.url(), QString( "http://a:389#b=c" ) );
+  QCOMPARE( waba1.host(), QString( "a" ) );
+  QCOMPARE( waba1.port(), 389 );
+  QCOMPARE( waba1.path(), QString( "" ) );
+  QCOMPARE( waba1.ref(), QString( "b%3Dc" ) ); // was b=c with KDE3, but the docu says encoded, so encoding the = is ok
+  QCOMPARE( waba1.htmlRef(), QString( "b=c" ) );
+  QCOMPARE( waba1.query(), QString( "" ) );
 }
 
 void KURLTest::testPathAndQuery()
@@ -1123,35 +1121,29 @@ void KURLTest::testUtf8()
   {
   QUrl utest;
   utest.setScheme( "file" );
-  utest.setPath( "/root" );
+  utest.setPath( QLatin1String( "/home/dfaure/Matériel" ) );
   printf( "utest.toString()=%s\n", utest.toString().toLatin1().constData() );
   printf( "utest.path()=%s\n", utest.path().toLatin1().constData() );
   printf( "utest.toEncoded()=%s\n", utest.toEncoded().data() );
   }
 
-  QUrl utest;
-  utest.setScheme( "file" );
-  utest.setPath( QLatin1String( "/home/dfaure/Matériel" ) );
-  printf( "utest.toString()=%s\n", utest.toString().toLatin1().constData() );
-  printf( "utest.path()=%s\n", utest.path().toLatin1().constData() );
-  printf( "utest.toEncoded()=%s\n", utest.toEncoded().data() );
-
   // UTF8 tests
   KURL uloc;
-  uloc.setPath( QString::fromUtf8( "file:/home/dfaure/Matériel" ).latin1() );
-  uloc.setPath("/home/dfaure/konqtests/Matériel");
-  check("url",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel");
-  check("pretty",uloc.prettyURL(),"file:///home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
-  check("pretty + strip",uloc.pathOrURL(),"/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
-  check("UTF8",uloc.url(),"file:///home/dfaure/konqtests/Mat%C3%A9riel");
-  uloc = KURL("file:///home/dfaure/konqtests/Mat%C3%A9riel");
-  check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
+  uloc.setPath( QString::fromLatin1( "/home/dfaure/Matériel" ) ); // TODO convert this file to utf8 and use fromUtf8 here; but check below for russian
+  QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 would say %E9 here; but from now on URLs are always utf8 encoded.
+  QCOMPARE( uloc.path(), QString( "/home/dfaure/Matériel") );
+  QCOMPARE( uloc.prettyURL(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 wouldn't escape the letters here...
+  QCOMPARE( uloc.pathOrURL(), QString( "/home/dfaure/Matériel") );             // ... but that's why pathOrURL is nicer.
+  QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") );
+  uloc = KURL("file:///home/dfaure/Mat%C3%A9riel");
+  QCOMPARE( uloc.path(), QString("/home/dfaure/Matériel") );
+  QCOMPARE( uloc.url(), QString("file:///home/dfaure/Mat%C3%A9riel") );
 
   KURL umlaut1("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
-  check("umlaut1.url()", umlaut1.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+  QCOMPARE(umlaut1.url(), QString("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"));
 
   KURL umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"); // was ,106
-  check("umlaut2.url()", umlaut2.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+  QCOMPARE(umlaut2.url(), QString("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"));
 }
 
 void KURLTest::testOtherEncodings()
