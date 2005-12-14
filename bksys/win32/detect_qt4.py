@@ -218,8 +218,10 @@ def detect(env):
 	debug,version = check_qtconfig(env)
 	if debug:
 		lib_addon = 'd'+version
+		dbg_addon = '_debug'
 	else:
 		lib_addon = version
+		dbg_addon = ''
 
 	# taken from qt4 qmake generated example 
 
@@ -264,7 +266,7 @@ def detect(env):
 	env['RPATH_QTXML']         = env['RPATH_QT']
 	
 	env['CPPPATH_QTEST']       = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
-	env['LIB_QTEST']           = ['QtTest'+debug]
+	env['LIB_QTEST']           = ['QtTest'+dbg_addon]
 	env['RPATH_QTEST']         = env['RPATH_QT']
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
