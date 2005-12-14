@@ -2926,6 +2926,7 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindAheadText()
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
   KParts::ReadOnlyPart *part = currentFrame();
   if (!part)
     return;
@@ -2935,10 +2936,12 @@ void KHTMLPart::slotFindAheadText()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( false );
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
 void KHTMLPart::slotFindAheadLink()
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
   KParts::ReadOnlyPart *part = currentFrame();
   if (!part)
     return;
@@ -2948,6 +2951,7 @@ void KHTMLPart::slotFindAheadLink()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
 void KHTMLPart::enableFindAheadActions( bool enable )
