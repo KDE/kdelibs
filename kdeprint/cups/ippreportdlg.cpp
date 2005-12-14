@@ -28,7 +28,6 @@
 #include <ktextedit.h>
 #include <q3simplerichtext.h>
 #include <qpainter.h>
-#include <q3paintdevicemetrics.h>
 
 IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
 : KDialogBase(parent, name, true, i18n("IPP Report"), Close|User1, Close, false, KGuiItem(i18n("&Print"), "fileprint"))
@@ -49,13 +48,12 @@ void IppReportDlg::slotUser1()
 	if (printer.setup(this))
 	{
 		QPainter	painter(&printer);
-		Q3PaintDeviceMetrics	metrics(&printer);
 
 		// report is printed using QSimpleRichText
 		Q3SimpleRichText	rich(m_edit->text(), font());
-		rich.setWidth(&painter, metrics.width());
-		int	margin = (int)(1.5 / 2.54 * metrics.logicalDpiY());	// 1.5 cm
-		QRect	r(margin, margin, metrics.width()-2*margin, metrics.height()-2*margin);
+		rich.setWidth(&painter, printer.width());
+		int	margin = (int)(1.5 / 2.54 * printer.logicalDpiY());	// 1.5 cm
+		QRect	r(margin, margin, printer.width()-2*margin, printer.height()-2*margin);
 		int	hh = rich.height(), page(1);
 		while (1)
 		{

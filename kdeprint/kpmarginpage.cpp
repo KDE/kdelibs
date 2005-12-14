@@ -28,7 +28,6 @@
 #include <q3groupbox.h>
 #include <qlayout.h>
 #include <qprinter.h>
-#include <q3paintdevicemetrics.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -64,9 +63,8 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 	QPrinter	prt(QPrinter::PrinterResolution);
 	prt.setFullPage(true);
 	prt.setPageSize((QPrinter::PageSize)(ps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
-	Q3PaintDeviceMetrics	metrics(&prt);
-	float	w = metrics.width();
-	float	h = metrics.height();
+	float	w = prt.width();
+	float	h = prt.height();
 	unsigned int	it, il, ib, ir;
 	prt.margins( &it, &il, &ib, &ir );
 	float	mt = it;

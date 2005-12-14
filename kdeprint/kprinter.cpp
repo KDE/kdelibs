@@ -28,7 +28,6 @@
 #include "kmmanager.h"
 #include "driver.h"
 
-#include <q3paintdevicemetrics.h>
 #include <qfile.h>
 #include <q3tl.h>
 #include <qdir.h>
