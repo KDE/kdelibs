@@ -238,7 +238,7 @@ public slots:
    * @param offset the position to resume from in bytes
    */
   virtual void slotCanResume( KIO::Job* job, KIO::filesize_t offset) {
-    Q_UNUSED(job);Q_UNUSED(from);}
+    Q_UNUSED(job);Q_UNUSED(offset);}
 
 signals:
   /**
