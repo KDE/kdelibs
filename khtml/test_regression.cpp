@@ -1529,6 +1529,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
             QString errmsg = c.value()->toString(interp.globalExec()).qstring();
             if ( !expected_failure ) {
                 printf( "ERROR: %s (%s)\n",filename.latin1(), errmsg.latin1());
+                doFailureReport( m_currentCategory + "/" + m_currentTest, JSFailure );
                 m_errors++;
             } else {
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
