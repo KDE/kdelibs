@@ -47,18 +47,16 @@ QString rc;
 QByteArray qba;
 SSL_SESSION *session = static_cast<SSL_SESSION*>(_session);
 unsigned int slen = KOpenSSLProxy::self()->i2d_SSL_SESSION(session, 0L);
-// These should technically be unsigned char * but it doesn't matter
-// for our purposes
-char *csess = new char[slen];
-char *p = csess;
+unsigned char *csess = new unsigned char[slen];
+unsigned char *p = csess;
 
-	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, (unsigned char **)&p)) {
+	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, &p)) {
 		delete[] csess;
 		return QString::null;
 	}
 
 	// encode it into a QString
-	qba.duplicate(csess, slen);
+	qba.duplicate((const char*)csess, slen);
 	delete[] csess;
 	rc = KCodecs::base64Encode(qba);
 #endif

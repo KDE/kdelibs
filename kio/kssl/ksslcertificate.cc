@@ -958,15 +958,13 @@ QByteArray KSSLCertificate::toDer() {
 QByteArray qba;
 #ifdef KSSL_HAVE_SSL
 unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
-// These should technically be unsigned char * but it doesn't matter
-// for our purposes
-char *cert = new char[certlen];
-char *p = cert;
+unsigned char *cert = new unsigned char[certlen];
+unsigned char *p = cert;
 	// FIXME: return code!
-	d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
+	d->kossl->i2d_X509(getCert(), &p);
 
 	// encode it into a QString
-	qba.duplicate(cert, certlen);
+	qba.duplicate((const char*)cert, certlen);
 	delete[] cert;
 #endif
 return qba;
