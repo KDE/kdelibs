@@ -1754,6 +1754,13 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     }
   }
   break;
+  case ID_LEGEND: {
+    DOM::HTMLLegendElementImpl& legend = static_cast<DOM::HTMLLegendElementImpl&>(element);
+    switch (token) {
+    case LegendForm:            return getDOMNode(exec,legend.form()); // type HTMLFormElement
+    }
+  }
+  break;
   case ID_A: {
     DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
     QString href = getURLArg(ATTR_HREF);
