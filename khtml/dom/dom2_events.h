@@ -277,9 +277,7 @@ public:
      *
      */
     enum EventExceptionCode {
-        UNSPECIFIED_EVENT_TYPE_ERR     = 0,
-        _EXCEPTION_OFFSET              = 3000,
-        _EXCEPTION_MAX                 = 3999
+        UNSPECIFIED_EVENT_TYPE_ERR     = 0
     };
 
     unsigned short code;
@@ -729,7 +727,7 @@ public:
      *
      * No Exceptions
      */
-    bool checkModifier(unsigned long modifierArg); // ### KDE 4: const!
+    bool checkModifier(unsigned long modifierArg) const ; 
 
 protected:
     TextEvent(TextEventImpl *impl);
