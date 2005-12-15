@@ -141,14 +141,14 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     int dummy, format;
     unsigned long nitems, ldummy;
-    Drawable *pixmap_id;
+    unsigned char *pixmap_id = 0;
     Atom type;
 
     XGetWindowProperty(qt_xdisplay(), winId(), ev->property, 0, 1, false,
 	    d->pixmap, &type, &format, &nitems, &ldummy,
-	    (unsigned char **) &pixmap_id);
+	    &pixmap_id);
 
-    if (nitems != 1)
+    if (nitems != 1 || !pixmap_id)
     {
 	kdWarning(270) << k_funcinfo << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
@@ -157,13 +157,16 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     Window root;
     unsigned int width, height, udummy;
-    XGetGeometry(qt_xdisplay(), *pixmap_id, &root, &dummy, &dummy, &width,
+    void *drawable_id = (void *) pixmap_id;
+    Drawable pixmap = *(Drawable*) drawable_id;
+
+    XGetGeometry(qt_xdisplay(), pixmap, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
     if (d->rect.isEmpty())
     {
 	QPixmap::resize(width, height);
-	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	XCopyArea(qt_xdisplay(), pixmap, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
@@ -201,13 +204,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     QPixmap::resize( tw+origin.x(), th+origin.y() );
 
-    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(qt_xdisplay(), pixmap, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
-    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(qt_xdisplay(), pixmap, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(qt_xdisplay(), pixmap, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(qt_xdisplay(), pixmap, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     XFree(pixmap_id);
