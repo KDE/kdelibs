@@ -374,14 +374,14 @@ void KToolBarButton::setDisabledIcon( const QString& icon )
 void KToolBarButton::setPopup(QMenu *p, bool)
 {
   QToolButton::setPopup(p);
-  QToolButton::setPopupDelay(-1);
+  QToolButton::setPopupMode(QToolButton::InstantPopup);
 }
 
 
 void KToolBarButton::setDelayedPopup (QMenu *p, bool)
 {
   QToolButton::setPopup(p);
-  QToolButton::setPopupDelay(QApplication::startDragTime());
+  QToolButton::setPopupMode(QToolButton::DelayedPopup);
 }
 
 void KToolBarButton::leaveEvent(QEvent *)
