@@ -523,7 +523,7 @@ kdbgstream& kdbgstream::operator<<( const QSize& s ) {
 }
 static QString s_rectString(const QRect& r)
 {
-    QString str = QString::fromAscii("%1,%2 - %3x%4]");
+    QString str = QString::fromAscii("[%1,%2 - %3x%4]");
     return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
 }
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
