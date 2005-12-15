@@ -864,7 +864,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       iconButton->setIconType( KIcon::Desktop, KIcon::FileSystem );
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
-    connect( iconButton, SIGNAL( iconChanged(QString) ),
+    connect( iconButton, SIGNAL( iconChanged(const QString&) ),
              this, SLOT( slotIconChanged() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
@@ -2890,7 +2890,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
            this, SIGNAL( changed() ) );
   connect( readonly, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( unmounted, SIGNAL( iconChanged( QString ) ),
+  connect( unmounted, SIGNAL( iconChanged( const QString& ) ),
            this, SIGNAL( changed() ) );
 
   connect( device, SIGNAL( textChanged( const QString & ) ),
