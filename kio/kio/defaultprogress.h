@@ -48,7 +48,7 @@ public:
   /**
    * Creates a new default progress dialog.
    * @param parent the parent of the dialog (or 0 for top-level)
-   * @param the name of the dialog, can be 0
+   * @param name the name of the dialog, can be 0
    * @since 3.1
    */
   DefaultProgress( QWidget* parent, const char* name = 0 );
@@ -62,16 +62,16 @@ public:
                                     unsigned long totalFiles );
 
 public slots:
-  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t size );
-  virtual void slotTotalFiles( KIO::Job*, unsigned long files );
-  virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
+  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size );
+  virtual void slotTotalFiles( KIO::Job* job, unsigned long files );
+  virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs );
 
-  virtual void slotProcessedSize( KIO::Job*, KIO::filesize_t bytes );
-  virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
-  virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
+  virtual void slotProcessedSize( KIO::Job* job, KIO::filesize_t bytes );
+  virtual void slotProcessedFiles( KIO::Job* job, unsigned long files );
+  virtual void slotProcessedDirs( KIO::Job* job, unsigned long dirs );
 
-  virtual void slotSpeed( KIO::Job*, unsigned long speed );
-  virtual void slotPercent( KIO::Job*, unsigned long percent );
+  virtual void slotSpeed( KIO::Job* job, unsigned long speed );
+  virtual void slotPercent( KIO::Job* job, unsigned long percent );
   /**
    * Called to set an information message.
    * @param job the KIO::Job
@@ -79,38 +79,38 @@ public slots:
    */
   virtual void slotInfoMessage( KIO::Job *job, const QString & msg );
 
-  virtual void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
-  virtual void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );
-  virtual void slotDeleting( KIO::Job*, const KURL& url );
+  virtual void slotCopying( KIO::Job* job, const KURL& src, const KURL& dest );
+  virtual void slotMoving( KIO::Job* job, const KURL& src, const KURL& dest );
+  virtual void slotDeleting( KIO::Job* job, const KURL& url );
   /**
    * Called when the job is transferring.
    * @param job the KIO::Job
    * @param url the url to transfer
    * @since 3.1
    */
-  void slotTransferring( KIO::Job*, const KURL& url );
-  virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
+  void slotTransferring( KIO::Job* job, const KURL& url );
+  virtual void slotCreatingDir( KIO::Job* job, const KURL& dir );
   /**
    * Called when the job is requesting a stat.
    * @param job the KIO::Job
    * @param dir the dir to stat
    * @since 3.1
    */
-  virtual void slotStating( KIO::Job*, const KURL& dir );
+  virtual void slotStating( KIO::Job* job, const KURL& dir );
   /**
    * Called when the job is mounting.
    * @param job the KIO::Job
    * @param dev the device to mount
    * @param point the mount point
    */
-  virtual void slotMounting( KIO::Job*, const QString & dev, const QString & point );
+  virtual void slotMounting( KIO::Job* job, const QString & dev, const QString & point );
   /**
    * Called when the job is unmounting.
    * @param job the KIO::Job
    * @param point the mount point
    */
-  virtual void slotUnmounting( KIO::Job*, const QString & point );
-  virtual void slotCanResume( KIO::Job*, KIO::filesize_t );
+  virtual void slotUnmounting( KIO::Job* job, const QString & point );
+  virtual void slotCanResume( KIO::Job* job, KIO::filesize_t offset);
 
   /**
    * Called when the job is cleaned.

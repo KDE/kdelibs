@@ -190,8 +190,8 @@ public slots:
   void slotPercent( KIO::Job*, unsigned long percent );
   void slotInfoMessage( KIO::Job*, const QString & msg );
 
-  void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
-  void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
+  void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
+  void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );
   void slotDeleting( KIO::Job*, const KURL& url );
   /// @since 3.1
   void slotTransferring( KIO::Job*, const KURL& url );

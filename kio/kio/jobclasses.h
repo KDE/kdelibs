@@ -1599,15 +1599,15 @@ namespace KIO {
         /**
          * The job is copying a file or directory.
 	 * @param job the job that emitted this signal
-	 * @param from the URl of the file or directory that is currently
+	 * @param src the URL of the file or directory that is currently
 	 *             being copied
-	 * @param to the destination of the current operation
+	 * @param dest the destination of the current operation
          */
-        void copying( KIO::Job *job, const KURL& from, const KURL& to );
+        void copying( KIO::Job *job, const KURL& src, const KURL& dest );
         /**
          * The job is creating a symbolic link.
 	 * @param job the job that emitted this signal
-	 * @param target the URl of the file or directory that is currently
+	 * @param target the URL of the file or directory that is currently
 	 *             being linked
 	 * @param to the destination of the current operation
          */
@@ -1615,7 +1615,7 @@ namespace KIO {
         /**
          * The job is moving a file or directory.
 	 * @param job the job that emitted this signal
-	 * @param from the URl of the file or directory that is currently
+	 * @param from the URL of the file or directory that is currently
 	 *             being moved
 	 * @param to the destination of the current operation
          */

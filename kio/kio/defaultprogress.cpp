@@ -329,31 +329,31 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
 }
 
 
-void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
+void DefaultProgress::slotCopying( KIO::Job*, const KURL& src, const KURL& dest )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Copy File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Copy;
-  sourceEdit->setText(from.prettyURL());
+  sourceEdit->setText(src.prettyURL());
   setDestVisible( true );
-  checkDestination( to );
-  destEdit->setText(to.prettyURL());
+  checkDestination( dest );
+  destEdit->setText(dest.prettyURL());
 }
 
 
-void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
+void DefaultProgress::slotMoving( KIO::Job*, const KURL& src, const KURL& dest )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Move File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Move;
-  sourceEdit->setText(from.prettyURL());
+  sourceEdit->setText(src.prettyURL());
   setDestVisible( true );
-  checkDestination( to );
-  destEdit->setText(to.prettyURL());
+  checkDestination( dest );
+  destEdit->setText(dest.prettyURL());
 }
 
 
@@ -411,10 +411,10 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
   setDestVisible( false );
 }
 
-void DefaultProgress::slotCanResume( KIO::Job*, KIO::filesize_t resume )
+void DefaultProgress::slotCanResume( KIO::Job*, KIO::filesize_t offset )
 {
-  if ( resume ) {
-    resumeLabel->setText( i18n("Resuming from %1").arg(KIO::number(resume)) );
+  if ( offset ) {
+    resumeLabel->setText( i18n("Resuming from %1").arg(KIO::number(offset)) );
   } else {
     resumeLabel->setText( i18n("Not resumable") );
   }

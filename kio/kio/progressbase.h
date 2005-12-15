@@ -233,11 +233,11 @@ public slots:
     Q_UNUSED(job);Q_UNUSED(dir);}
 
   /**
-   * Called when the job is resuming..
+   * Called when the job is resuming.
    * @param job the KIO::Job
-   * @param from the position to resume from in bytes
+   * @param offset the position to resume from in bytes
    */
-  virtual void slotCanResume( KIO::Job* job, KIO::filesize_t from) {
+  virtual void slotCanResume( KIO::Job* job, KIO::filesize_t offset) {
     Q_UNUSED(job);Q_UNUSED(from);}
 
 signals:

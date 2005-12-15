@@ -141,8 +141,8 @@ namespace KIO {
 	/**
 	 * Creates a new slave.
 	 *
-	 * @param _error is the error code on failure and undefined else.
-	 * @param _error_text is the error text on failure and undefined else.
+	 * @param error is the error code on failure and undefined else.
+	 * @param error_text is the error text on failure and undefined else.
 	 *
 	 * @return 0 on failure, or a pointer to a slave otherwise.
 	 */
@@ -170,7 +170,7 @@ namespace KIO {
 	/**
 	 * Sends the given command to the kioslave.
 	 * @param cmd command id
-	 * @param data byte array containing data
+	 * @param arr byte array containing data
 	 * @since 3.2
 	 */
         void send(int cmd, const QByteArray &arr = QByteArray());// TODO(BIC): make virtual
