@@ -1144,27 +1144,6 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
-// This code is deprecated, slaves go to Observer::openPassDlg now,
-// but this is kept for compat (DCOP calls to kio_uiserver).
-QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
-{
-    kdDebug(7024) << "UIServer::openPassDlg: User= " << info.username
-                  << ", Msg= " << info.prompt << endl;
-    KIO::AuthInfo inf(info);
-    int result = KIO::PasswordDialog::getNameAndPassword( inf.username, inf.password,
-                                                          &inf.keepPassword, inf.prompt,
-                                                          inf.readOnly, inf.caption,
-                                                          inf.comment, inf.commentLabel );
-    QByteArray data;
-    QDataStream stream( &data, QIODevice::WriteOnly );
-    if ( result == QDialog::Accepted )
-        inf.setModified( true );
-    else
-        inf.setModified( false );
-    stream << inf;
-    return data;
-}
-
 int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
     return Observer::messageBox( progressId, type, text, caption, buttonYes, buttonNo );

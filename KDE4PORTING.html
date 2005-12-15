@@ -611,6 +611,12 @@ a listDir result.</li>
 <ul>
 		<li>void setEnableUserField( bool enable, bool=false ) removed use :setUserReadOnly( !enable )</li>
 </ul>
+
+<H4>UIServer</H4>
+<ul>
+		<li>QByteArray openPassDlg( const KIO::AuthInfo &gt;info ); removed. Use KIO::PasswordDialog::getNameAndPassword</li>
+</ul>
+
 <H4>RenameDlg</H4>
 <ul>
 <li>void b0Pressed() renamed to void cancelPressed()</li>

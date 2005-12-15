@@ -268,12 +268,6 @@ k_dcop:
   ASYNC canResume( int id, unsigned long offset );
   ASYNC canResume64( int id, KIO::filesize_t offset );
 
-  /**
-   * @deprecated (it blocks other apps).
-   * Use KIO::PasswordDialog::getNameAndPassword instead.
-   * To be removed in KDE 4.0.
-   */
-  QByteArray openPassDlg( const KIO::AuthInfo &info );
 
   /**
    * Popup a message box.
