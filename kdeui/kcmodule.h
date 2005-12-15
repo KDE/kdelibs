@@ -157,16 +157,6 @@ public:
    */
   virtual void defaults();
 
-  /**
-   * Set the configuration to system default values.
-   *
-   * This method is called when the user clicks the "System-Default"
-   * button. It should set the display to the system default values.
-   *
-   * @note The default behavior is to call defaults().
-   */
-  virtual void sysdefaults() { defaults(); };
-  // KDE 4 deprecate
 
   /**
    * Return a quick-help text.

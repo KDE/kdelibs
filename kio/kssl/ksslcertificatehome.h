@@ -38,35 +38,35 @@ public:
 	 *  These methods might dynamically allocate an object for you.  Be sure
 	 *  to delete them when you are done.
 	 */
-	static KSSLPKCS12* getCertificateByHost(QString host, QString password, KSSLAuthAction* aa);
-	static KSSLPKCS12* getCertificateByName(QString name, QString password);
-	static KSSLPKCS12* getCertificateByName(QString name);
-	static QString getDefaultCertificateName(QString host, KSSLAuthAction *aa = NULL);
+	static KSSLPKCS12* getCertificateByHost(const QString &host, const QString &password, KSSLAuthAction* aa);
+	static KSSLPKCS12* getCertificateByName(const QString &name, const QString &password);
+	static KSSLPKCS12* getCertificateByName(const QString &name);
+	static QString getDefaultCertificateName(const QString &host, KSSLAuthAction *aa = NULL);
 	static QString getDefaultCertificateName(KSSLAuthAction *aa = NULL);
-	static KSSLPKCS12* getDefaultCertificate(QString password, KSSLAuthAction *aa = NULL);
+	static KSSLPKCS12* getDefaultCertificate(const QString &password, KSSLAuthAction *aa = NULL);
 	static KSSLPKCS12* getDefaultCertificate(KSSLAuthAction *aa = NULL);
-	static bool hasCertificateByName(QString name);
+	static bool hasCertificateByName(const QString &name);
 
 
 	/*
 	 *   These set the default certificate for hosts without a policy.
 	 */
-	static void setDefaultCertificate(QString name, bool send = true, bool prompt = false);
+	static void setDefaultCertificate(const QString &name, bool send = true, bool prompt = false);
 	static void setDefaultCertificate(KSSLPKCS12 *cert, bool send = true, bool prompt = false);
 
 
 	/*
 	 *   These set the default certificate for a host.
 	 */
-	static void setDefaultCertificate(QString name, QString host, bool send = true, bool prompt = false);
-	static void setDefaultCertificate(KSSLPKCS12 *cert, QString host, bool send = true, bool prompt = false);
+	static void setDefaultCertificate(const QString &name, const QString &host, bool send = true, bool prompt = false);
+	static void setDefaultCertificate(KSSLPKCS12 *cert, const QString &host, bool send = true, bool prompt = false);
 
 	/*
 	 *   These add a certificate to the repository.
 	 *   Returns: true on success, false error
 	 */
-	static bool addCertificate(QString filename, QString password, bool storePass = false);
-	static bool addCertificate(KSSLPKCS12 *cert, QString passToStore = QString::null);
+	static bool addCertificate(const QString &filename, const QString &password, bool storePass = false);
+	static bool addCertificate(KSSLPKCS12 *cert, const QString &passToStore = QString::null);
 
 	/*
 	 *   These deletes a certificate from the repository.

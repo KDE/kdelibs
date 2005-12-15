@@ -1057,7 +1057,6 @@ KTempFile ktf;
 return text;
 }
 
-// KDE 4: Make it const QString &
 bool KSSLCertificate::setCert(const QString& cert) {
 #ifdef KSSL_HAVE_SSL
         QByteArray qba, qbb = cert.toLocal8Bit();

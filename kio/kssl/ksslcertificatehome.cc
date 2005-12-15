@@ -40,8 +40,7 @@ return list;
 }
 
 
-// KDE 4: make it const QString &
-void KSSLCertificateHome::setDefaultCertificate(QString name, QString host, bool send, bool prompt) {
+void KSSLCertificateHome::setDefaultCertificate(const QString & name, const QString &host, bool send, bool prompt) {
 KSimpleConfig cfg("ksslauthmap", false);
 
    cfg.setGroup(KResolver::domainToAscii(host));
@@ -52,15 +51,13 @@ KSimpleConfig cfg("ksslauthmap", false);
 }
 
 
-// KDE 4: make it const QString &
-void KSSLCertificateHome::setDefaultCertificate(KSSLPKCS12 *cert, QString host, bool send, bool prompt) {
+void KSSLCertificateHome::setDefaultCertificate(KSSLPKCS12 *cert, const QString &host, bool send, bool prompt) {
    if (cert)
       KSSLCertificateHome::setDefaultCertificate(cert->name(), host, send, prompt);
 }
 
 
-// KDE 4: make it const QString &
-bool KSSLCertificateHome::addCertificate(QString filename, QString password, bool storePass) {
+bool KSSLCertificateHome::addCertificate(const QString &filename, const QString &password, bool storePass) {
 KSSLPKCS12 *pkcs = KSSLPKCS12::loadCertFile(filename, password);
 
   if (!pkcs) return false;
@@ -72,8 +69,7 @@ return true;
 }
 
 
-// KDE 4: make it const QString &
-bool KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, QString passToStore) {
+bool KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, const QString &passToStore) {
    if (!cert) return false;
 
 KSimpleConfig cfg("ksslcertificates", false);
@@ -113,8 +109,7 @@ KSimpleConfig cfg("ksslcertificates", false);
 return ok;
 }
 
-// KDE 4: make it const QString &
-KSSLPKCS12* KSSLCertificateHome::getCertificateByName(QString name, QString password) {
+KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name, const QString &password) {
 KSimpleConfig cfg("ksslcertificates", false);
   if (!cfg.hasGroup(name)) return NULL;
 
@@ -124,8 +119,7 @@ KSimpleConfig cfg("ksslcertificates", false);
 }
 
 
-// KDE 4: make it const QString &
-KSSLPKCS12* KSSLCertificateHome::getCertificateByName(QString name) {
+KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name) {
 KSimpleConfig cfg("ksslcertificates", false);
   if (!cfg.hasGroup(name)) return NULL;
 
@@ -135,21 +129,18 @@ KSimpleConfig cfg("ksslcertificates", false);
 }
 
 
-// KDE 4: make it const QString &
-bool KSSLCertificateHome::hasCertificateByName(QString name) {
+bool KSSLCertificateHome::hasCertificateByName(const QString &name) {
 KSimpleConfig cfg("ksslcertificates", false);
   if (!cfg.hasGroup(name)) return false;
   return true;
 }
 
-// KDE 4: make it const QString &
-KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString password, KSSLAuthAction *aa) {
+KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(const QString &host, const QString &password, KSSLAuthAction *aa) {
    return KSSLCertificateHome::getCertificateByName(KSSLCertificateHome::getDefaultCertificateName(host, aa), password);
 }
 
 
-// KDE 4: make it const QString &
-QString KSSLCertificateHome::getDefaultCertificateName(QString host, KSSLAuthAction *aa) {
+QString KSSLCertificateHome::getDefaultCertificateName(const QString &host, KSSLAuthAction *aa) {
 KSimpleConfig cfg("ksslauthmap", false);
 
    if (!cfg.hasGroup(KResolver::domainToAscii(host))) {
@@ -191,8 +182,7 @@ return cfg.readEntry("DefaultCert", "");
 }
 
 
-// KDE 4: make it const QString &
-KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(QString password, KSSLAuthAction *aa) {
+KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(const QString &password, KSSLAuthAction *aa) {
 QString name = KSSLCertificateHome::getDefaultCertificateName(aa);
 KSimpleConfig cfg("ksslcertificates", false);
 
@@ -216,8 +206,7 @@ KSimpleConfig cfg("ksslcertificates", false);
 }
 
 
-// KDE 4: make it const QString &
-void KSSLCertificateHome::setDefaultCertificate(QString name, bool send, bool prompt) {
+void KSSLCertificateHome::setDefaultCertificate(const QString &name, bool send, bool prompt) {
 KSimpleConfig cfg("ksslauthmap", false);
 
    cfg.setGroup("<default>");

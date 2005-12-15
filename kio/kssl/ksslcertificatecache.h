@@ -55,19 +55,19 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
   //            the exact FQDN of the site presenting it)
   //           If you're just doing an OpenSSL connection, I believe it
   //           tests this for you, but don't take my word for it.
-  KSSLCertificatePolicy getPolicyByCN(QString& cn);
+  KSSLCertificatePolicy getPolicyByCN(const QString& cn);
 
   KSSLCertificatePolicy getPolicyByCertificate(KSSLCertificate& cert);
 
-  bool seenCN(QString& cn);
+  bool seenCN(const QString& cn);
   bool seenCertificate(KSSLCertificate& cert);
 
-  bool removeByCN(QString& cn);
+  bool removeByCN(const QString& cn);
   bool removeByCertificate(KSSLCertificate& cert);
 
   bool isPermanent(KSSLCertificate& cert);
 
-  bool modifyByCN(QString& cn,
+  bool modifyByCN(const QString& cn,
                   KSSLCertificateCache::KSSLCertificatePolicy policy,
                   bool permanent,
                   QDateTime& expires);
@@ -78,8 +78,8 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
                            QDateTime& expires);
 
   QStringList getHostList(KSSLCertificate& cert);
-  bool addHost(KSSLCertificate& cert, QString& host);
-  bool removeHost(KSSLCertificate& cert, QString& host);
+  bool addHost(KSSLCertificate& cert, const QString& host);
+  bool removeHost(KSSLCertificate& cert, const QString& host);
 
   // SMIME
   QStringList getKDEKeyByEmail(const QString &email);

@@ -605,8 +605,7 @@ public:
    *
    * @since 3.2
    */
-  // TODO: Make virtual for KDE 4
-  bool queryClose();
+  virtual bool queryClose();
 
   /**
    * Called when closing the current url (e.g. document), for instance
@@ -631,8 +630,7 @@ public:
    *
    * @since 3.2
    */
-  // TODO: Make virtual for KDE 4
-  bool closeURL( bool promptToSave );
+  virtual bool closeURL( bool promptToSave );
 
   /**
    * Save the file to a new location.

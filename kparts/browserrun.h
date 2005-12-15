@@ -105,10 +105,8 @@ namespace KParts {
 
         // static so that it can be called from other classes
         static void simpleSave( const KURL & url, const QString & suggestedFilename,
-                                QWidget* window );
+                                QWidget* window =0 );
 
-        /** BIC: Combine with the above function for KDE 4.0. */
-        static void simpleSave( const KURL & url, const QString & suggestedFilename );
 
         static bool allowExecution( const QString &serviceType, const KURL &url );
 

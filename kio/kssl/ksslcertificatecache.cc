@@ -89,8 +89,7 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
 }
 
 
-// KDE 4: Make it const QString &
-KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
+KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(const QString& cn) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -128,8 +127,7 @@ return KSSLCertificateCache::Ambiguous;
 }
 
 
-// KDE 4: Make it const QString &
-bool KSSLCertificateCache::seenCN(QString& cn) {
+bool KSSLCertificateCache::seenCN(const QString& cn) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -189,8 +187,7 @@ return false;
 }
 
 
-// KDE 4: Make it const QString &
-bool KSSLCertificateCache::removeByCN(QString& cn) {
+bool KSSLCertificateCache::removeByCN(const QString& cn) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -230,8 +227,7 @@ return false;
 }
 
 
-// KDE 4: Make it const QString &
-bool KSSLCertificateCache::modifyByCN(QString& cn,
+bool KSSLCertificateCache::modifyByCN(const QString& cn,
                   KSSLCertificateCache::KSSLCertificatePolicy policy,
                   bool permanent,
                   QDateTime& expires) {
@@ -296,8 +292,7 @@ return QStringList();
 }
 
 
-// KDE 4: Make it const QString &
-bool KSSLCertificateCache::addHost(KSSLCertificate& cert, QString& host) {
+bool KSSLCertificateCache::addHost(KSSLCertificate& cert, const QString& host) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -317,8 +312,7 @@ return false;
 }
 
 
-// KDE 4: Make it const QString &
-bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, QString& host) {
+bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, const QString& host) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);

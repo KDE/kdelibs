@@ -357,12 +357,6 @@ void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
     simpleSave( url, suggestedFilename, m_window );
 }
 
-// static
-void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename )
-{
-    simpleSave (url, suggestedFilename, 0);
-}
-
 void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename,
                              QWidget* window )
 {
