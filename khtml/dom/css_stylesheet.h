@@ -190,8 +190,7 @@ public:
     {
         SYNTAX_ERR                     = 0,
         INVALID_MODIFICATION_ERR       = 1,
-        _EXCEPTION_OFFSET              = 1000,
-        _EXCEPTION_MAX                 = 1999
+        _EXCEPTION_OFFSET              = 1000
     };
 };
 
@@ -478,8 +477,7 @@ public:
 
     ~DocumentStyle();
 
-    // KDE 4:: make const
-    StyleSheetList styleSheets();
+    StyleSheetList styleSheets() const ;
 
     DOMString preferredStylesheetSet() const;
     DOMString selectedStylesheetSet() const;

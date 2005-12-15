@@ -118,6 +118,7 @@ public:
      *
      */
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) const;
+    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to retrieve the object representation of the value of a
@@ -139,6 +140,7 @@ public:
      *
      */
     CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) const;
+    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to remove a CSS property if it has been explicitly set
@@ -175,6 +177,7 @@ public:
      *
      */
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) const;
+    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
 
     /**
      * Used to set a property value and priority within this
@@ -476,8 +479,7 @@ public:
      * specified unit.
      *
      */
-    // ### KDE 4: make this const!
-    float getFloatValue ( unsigned short unitType );
+    float getFloatValue ( unsigned short unitType ) const;
 
     /**
      * A method to set the string value with a specified unit. If the

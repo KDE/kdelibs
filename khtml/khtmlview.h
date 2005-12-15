@@ -150,14 +150,9 @@ public:
 
     /**
      * Prints the HTML document.
-     */
-    void print();
-
-    /**
-     * Prints the HTML document.
      * @param quick if true, fully automated printing, without print dialog
      */
-    void print( bool quick ); // KDE 4.0: merge with above
+    void print( bool quick = false ); 
 
     /**
      * ensure the display is up to date

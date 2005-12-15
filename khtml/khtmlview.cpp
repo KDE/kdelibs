@@ -2703,11 +2703,6 @@ bool KHTMLView::needsFullRepaint() const
     return d->needsFullRepaint;
 }
 
-void KHTMLView::print()
-{
-    print( false );
-}
-
 void KHTMLView::print(bool quick)
 {
     if(!m_part->xmlDocImpl()) return;

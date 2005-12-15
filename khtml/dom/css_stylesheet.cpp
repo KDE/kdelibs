@@ -436,7 +436,7 @@ DocumentStyle::~DocumentStyle()
     if(doc) doc->deref();
 }
 
-StyleSheetList DocumentStyle::styleSheets()
+StyleSheetList DocumentStyle::styleSheets() const
 {
     return doc->styleSheets();
 }

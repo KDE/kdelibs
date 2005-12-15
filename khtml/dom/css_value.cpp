@@ -72,34 +72,64 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
     impl->setCssText(value);
 }
 
+DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyValue( propertyName );
+}
+
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName ) const
 {
     if(!impl) return DOMString();
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue(propertyName);
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if (!id) return DOMString();
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue(id);
 }
 
-CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const 
+CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyCSSValue( propertyName );
+}
+
+CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const
 {
     if(!impl) return 0;
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue(propertyName);
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if (!id) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue(id);
 }
 
-DOMString CSSStyleDeclaration::removeProperty( const DOMString &propertyName )
+DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
 {
-    if(!impl) return DOMString();
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty(propertyName);
+    int id = getPropertyID(property.string().ascii(), property.length());
+    if(!impl || !id) return DOMString();
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( id );
+}
+
+DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyPriority( propertyName );
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName ) const
 {
-    if(!impl) return DOMString();
-    return impl->getPropertyPriority(propertyName);
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if(!impl || !id) return DOMString();
+    if (impl->getPropertyPriority(id))
+        return DOMString("important");
+    return DOMString();
 }
 
 void CSSStyleDeclaration::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
 {
     if(!impl) return;
-    static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( propName, value, priority );
+    int id = getPropertyID(propName.string().toLower().ascii(), propName.length());
+    if (!id) return;
+    bool important = false;
+    QString str = priority.string();
+    if (str.find("important", 0, false) != -1)
+        important = true;
+
+    static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( id, value, important );
 }
 
 unsigned long CSSStyleDeclaration::length() const
@@ -335,7 +365,7 @@ void CSSPrimitiveValue::setFloatValue( unsigned short unitType, float floatValue
 	throw DOMException( exceptioncode );
 }
 
-float CSSPrimitiveValue::getFloatValue( unsigned short unitType )
+float CSSPrimitiveValue::getFloatValue( unsigned short unitType ) const
 {
     if(!impl) return 0;
     // ### add unit conversion
