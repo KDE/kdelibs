@@ -1391,7 +1391,7 @@ namespace KIO {
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
         ListJob(const KURL& url, bool showProgressInfo,
-                bool recursive = false, QString prefix = QString::null,
+                bool recursive = false, const QString &prefix = QString::null,
                 bool includeHidden = true);
 
         /**

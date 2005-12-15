@@ -429,7 +429,7 @@ public slots:
      * Sets @p items into the completion-box if completionMode() is
      * CompletionPopup. The popup will be shown immediately.
      */
-    void setCompletedItems( const QStringList& items );
+    void setCompletedItems( const QStringList& items, bool autosubject = true );
 
     /**
      * Selects the first item that matches @p item. If there is no such item,

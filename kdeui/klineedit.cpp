@@ -1161,11 +1161,6 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     return false;
 }
 
-void KLineEdit::setCompletedItems( const QStringList& items )
-{
-    setCompletedItems( items, true );
-}
-
 void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 {
     QString txt;

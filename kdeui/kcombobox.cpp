@@ -219,10 +219,10 @@ void KComboBox::changeURL( const QPixmap& pixmap, const KURL& url, int index )
     QComboBox::changeItem( pixmap, url.prettyURL(), index );
 }
 
-void KComboBox::setCompletedItems( const QStringList& items )
+void KComboBox::setCompletedItems( const QStringList& items, bool autosubject )
 {
     if ( d->klineEdit )
-        d->klineEdit->setCompletedItems( items );
+        d->klineEdit->setCompletedItems( items, autosubject );
 }
 
 KCompletionBox * KComboBox::completionBox( bool create )

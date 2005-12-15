@@ -921,7 +921,7 @@ public:
      * all inheriting classes.
      * @param items the list of completed items
      */
-    virtual void setCompletedItems( const QStringList& items ) = 0;
+    virtual void setCompletedItems( const QStringList& items, bool autoSuggest =true ) = 0;
 
     /**
      * Returns a pointer to the completion object.
