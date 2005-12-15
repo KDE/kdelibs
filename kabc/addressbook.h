@@ -550,7 +550,6 @@ class KABC_EXPORT AddressBook : public QObject
     KRES::Manager<Resource> *resourceManager();
 
   private:
-    Q3PtrList<Resource> mDummy; // Remove in KDE 4
     struct AddressBookData;
     AddressBookData *d;
 };
