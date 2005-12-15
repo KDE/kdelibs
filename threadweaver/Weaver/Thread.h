@@ -16,6 +16,9 @@
    $Id: Thread.h 32 2005-08-17 08:38:01Z mirko $
 */
 
+#ifndef THREADWEAVER_THREAD_H
+#define THREADWEAVER_THREAD_H
+
 #include <QThread>
 #include <QMutex>
 
@@ -90,3 +93,6 @@ namespace ThreadWeaver {
     };
 
 }
+
+#endif
+
