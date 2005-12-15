@@ -622,7 +622,7 @@ private:
 private:
   virtual void addNewItem( const KFileItem *item );
   virtual void addNewItems( const KFileItemList& items );
-  /*virtual*/ void aboutToRefreshItem( const KFileItem *item );  // TODO: KDE 4.0 make virtual
+  virtual void aboutToRefreshItem( const KFileItem *item );
   virtual void addRefreshItem( const KFileItem *item );
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );

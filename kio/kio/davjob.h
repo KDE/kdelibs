@@ -94,7 +94,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropFind( const KURL& url, const QDomDocument& properties, QString depth, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropFind( const KURL& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo=true );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets

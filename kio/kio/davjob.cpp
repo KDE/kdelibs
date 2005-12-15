@@ -113,8 +113,7 @@ void DavJob::slotFinished()
 
 /* Convenience methods */
 
-// KDE 4: Make it const QString &
-DavJob* KIO::davPropFind( const KURL& url, const QDomDocument& properties, QString depth, bool showProgressInfo )
+DavJob* KIO::davPropFind( const KURL& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
 {
   DavJob *job = new DavJob( url, (int) KIO::DAV_PROPFIND, properties.toString(), showProgressInfo );
   job->addMetaData( "davDepth", depth );

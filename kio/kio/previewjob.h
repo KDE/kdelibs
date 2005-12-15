@@ -109,7 +109,7 @@ namespace KIO {
     protected:
         void getOrCreateThumbnail();
         bool statResultThumbnail();
-        void createThumbnail( QString );
+        void createThumbnail( const QString& );
 
     protected slots:
         virtual void slotResult( KIO::Job *job );
