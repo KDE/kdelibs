@@ -2953,7 +2953,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     case ID_CAPTION: {
       DOM::HTMLTableCaptionElement tableCaption = element;
       switch (token) {
-      case TableAlign:           { tableCaption.setAlign(str); return; }
+      case TableCaptionAlign:           { tableCaption.setAlign(str); return; }
       }
     }
     break;
