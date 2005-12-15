@@ -1314,8 +1314,8 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_STYLE, StyleType,   T_String, ATTR_TYPE},
   {ID_BODY,  BodyALink,   T_String, ATTR_ALINK},
   {ID_BODY,  BodyBackground, T_String, ATTR_BACKGROUND},
-  {ID_BODY,  BodyLink,    T_String, ATTR_BGCOLOR},
-  {ID_BODY,  BodyBgColor,    T_String, ATTR_LINK},
+  {ID_BODY,  BodyBgColor,    T_String, ATTR_BGCOLOR},
+  {ID_BODY,  BodyLink,    T_String, ATTR_LINK},
   {ID_BODY,  BodyText,       T_String, ATTR_TEXT},//### odd?
   {ID_BODY,  BodyVLink,      T_String, ATTR_VLINK},
   {ID_FORM,  FormName,       T_String, ATTR_NAME}, // NOT getString (IE gives empty string)
