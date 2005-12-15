@@ -857,7 +857,7 @@ DOMMutationEvent::~DOMMutationEvent()
 
 bool DOMMutationEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return getStaticValueSlot<DOMMutationEvent, DOMObject>(exec,&DOMMutationEventTable,this,propertyName,slot);
+  return getStaticValueSlot<DOMMutationEvent, DOMEvent>(exec,&DOMMutationEventTable,this,propertyName,slot);
 }
 
 ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
