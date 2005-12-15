@@ -1184,6 +1184,8 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy || proxy->paused())
     return QVariant();
+  (void)proxy->interpreter();//Make sure stuff is initialized
+
   ++(d->m_runningScripts);
   KJS::Completion comp;
   const QVariant ret = proxy->evaluate( QString::null, 1, script, n, &comp );
