@@ -167,7 +167,7 @@ public:
         {
         case CC_ComboBox:
             if (subControl == SC_ComboBoxEditField)
-                return rect.translated(2,-1);
+                return rect.translated(3,0);
             else
                 return rect;
         default:
@@ -181,6 +181,8 @@ public:
 
         switch (type)
         {
+        case CT_PushButton:
+            return QSize(size.width(), size.height() - 1); 
         case CT_LineEdit:
             return QSize(size.width() + 2, size.height() + 2);
         case CT_ComboBox:
@@ -201,17 +203,6 @@ public:
         return QWindowsStyle::pixelMetric(metric, option, widget);
     }
 
-    virtual QRect subElementRect(SubElement element, const QStyleOption* option, const QWidget* widget) const
-    {
-        QRect rect = QWindowsStyle::subElementRect(element, option, widget);
-        if (element == SE_PushButtonContents)
-        {
-            const QStyleOptionButton* butOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
-            if (butOpt->icon.isNull())
-                return rect.translated(0, -1);
-        }
-        return rect;
-    }
 };
 
 #include <kaction.h>
