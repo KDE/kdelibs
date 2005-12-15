@@ -554,6 +554,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   
   if (rop) {
     slot.setCustom(this, framePartGetter);
+    return true;
   }
 
   // allow window[1] or parent[1] etc. (#56983)
