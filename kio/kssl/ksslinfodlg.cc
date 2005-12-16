@@ -374,7 +374,7 @@ KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, Qt::WFlags f)
 }
 
 
-void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
+void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     if (_frame) {
         removeChild(_frame);
         delete _frame;

@@ -163,7 +163,7 @@ public:
 	 *  @param certName the name ("subject") of the certificate
 	 *  @param mailCatcher the widget which catches the url open events
 	 */
-	void setValues(QString certName, QWidget *mailCatcher=0L);
+	void setValues(const QString &certName, QWidget *mailCatcher=0L);
 
 private:
 	QFrame *_frame;

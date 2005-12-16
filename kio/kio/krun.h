@@ -228,7 +228,7 @@ public:
    * @return PID of running command, 0 if it could not be started, 0 - (PID
    * of running command) if command was unsafe for map notification.
    */
-  static pid_t runCommand( QString cmd );
+  static pid_t runCommand( const QString &cmd );
 
   /**
    * Same as the other runCommand(), but it also takes the name of the

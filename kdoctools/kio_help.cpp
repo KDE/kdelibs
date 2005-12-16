@@ -44,7 +44,7 @@
 
 using namespace KIO;
 
-QString HelpProtocol::langLookup(QString fname)
+QString HelpProtocol::langLookup(const QString &fname)
 {
     QStringList search;
 

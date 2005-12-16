@@ -737,7 +737,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   return run(*service, _urls);
 }
 
-pid_t KRun::runCommand( QString cmd )
+pid_t KRun::runCommand( const QString &cmd )
 {
   return KRun::runCommand( cmd, QString::null, QString::null );
 }
