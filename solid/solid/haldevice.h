@@ -35,16 +35,7 @@ public:
     virtual QString udi() const;
 
     virtual bool setProperty( const QString &key, const QVariant &value );
-    virtual bool setProperty( const QString &key, const QString &value );
-    virtual bool setProperty( const QString &key, int value );
-    virtual bool setProperty( const QString &key, bool value );
-    virtual bool setProperty( const QString &key, double value );
-
-    virtual QVariant property( const QString &key ) const ;
-    virtual QString stringProperty( const QString &key ) const;
-    virtual int intProperty( const QString &key ) const;
-    virtual bool boolProperty( const QString &key ) const;
-    virtual double doubleProperty( const QString &key ) const;
+    virtual QVariant property( const QString &key ) const;
 
     virtual QMap<QString, QVariant> allProperties() const;
 

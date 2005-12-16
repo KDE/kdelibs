@@ -53,7 +53,7 @@ HalDevice::~HalDevice()
 
 QString HalDevice::udi() const
 {
-    return stringProperty( "info.udi" );
+    return property( "info.udi" ).toString();
 }
 
 bool HalDevice::setProperty( const QString &key, const QVariant &value )
@@ -61,66 +61,6 @@ bool HalDevice::setProperty( const QString &key, const QVariant &value )
     QList<QVariant> params;
     params << key << value;
     QDBusMessage reply = d->callHalMethod( "SetProperty", params );
-
-    if ( reply.type() == QDBusMessage::ErrorMessage )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::setProperty( const QString &key, const QString &value )
-{
-    QList<QVariant> params;
-    params << key << value;
-    QDBusMessage reply = d->callHalMethod( "SetPropertyString", params );
-
-    if ( reply.type() == QDBusMessage::ErrorMessage )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::setProperty( const QString &key, int value )
-{
-    QList<QVariant> params;
-    params << key << value;
-    QDBusMessage reply = d->callHalMethod( "SetPropertyInteger", params );
-
-    if ( reply.type() == QDBusMessage::ErrorMessage )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::setProperty( const QString &key, bool value )
-{
-    QList<QVariant> params;
-    params << key << value;
-    QDBusMessage reply = d->callHalMethod( "SetPropertyBoolean", params );
-
-    if ( reply.type() == QDBusMessage::ErrorMessage )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::setProperty( const QString &key, double value )
-{
-    QList<QVariant> params;
-    params << key << value;
-    QDBusMessage reply = d->callHalMethod( "SetPropertyDouble", params );
 
     if ( reply.type() == QDBusMessage::ErrorMessage )
     {
@@ -144,66 +84,6 @@ QVariant HalDevice::property( const QString &key ) const
     }
 
     return reply[0];
-}
-
-QString HalDevice::stringProperty( const QString &key ) const
-{
-    QList<QVariant> params;
-    params << key;
-    QDBusMessage reply = d->callHalMethod( "GetProperty", params );
-
-    if ( reply.size() != 1 || !reply[0].canConvert( QVariant::String ) )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return reply[0].toString();
-}
-
-int HalDevice::intProperty( const QString &key ) const
-{
-    QList<QVariant> params;
-    params << key;
-    QDBusMessage reply = d->callHalMethod( "GetProperty", params );
-
-    if ( reply.size() != 1 || !reply[0].canConvert( QVariant::Int ) )
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return reply[0].toInt();
-}
-
-bool HalDevice::boolProperty( const QString &key ) const
-{
-    QList<QVariant> params;
-    params << key;
-    QDBusMessage reply = d->callHalMethod( "GetProperty", params );
-
-    if ( reply.size() != 1 || !reply[0].canConvert( QVariant::Bool ))
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return reply[0].toBool();
-}
-
-double HalDevice::doubleProperty( const QString &key ) const
-{
-    QList<QVariant> params;
-    params << key;
-    QDBusMessage reply = d->callHalMethod( "GetProperty", params );
-
-    if ( reply.size() != 1 || !reply[0].canConvert( QVariant::Double ))
-    {
-        kdDebug() << "Looks like the HAL protocol changed" << endl;
-        return false;
-    }
-
-    return reply[0].toDouble();
 }
 
 QMap<QString, QVariant> HalDevice::allProperties() const

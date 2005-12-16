@@ -35,46 +35,6 @@ bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant 
     return false;
 }
 
-bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QString &/*value*/ )
-{
-    return false;
-}
-
-bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, int /*value*/ )
-{
-    return false;
-}
-
-bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, bool /*value*/ )
-{
-    return false;
-}
-
-bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, double /*value*/ )
-{
-    return false;
-}
-
-QString KDEHW::Ifaces::Device::stringProperty( const QString &key ) const
-{
-    return property( key ).toString();
-}
-
-int KDEHW::Ifaces::Device::intProperty( const QString &key ) const
-{
-    return property( key ).toInt();
-}
-
-bool KDEHW::Ifaces::Device::boolProperty( const QString &key ) const
-{
-    return property( key ).toBool();
-}
-
-double KDEHW::Ifaces::Device::doubleProperty( const QString &key ) const
-{
-    return property( key ).toDouble();
-}
-
 bool KDEHW::Ifaces::Device::removeProperty( const QString &/*key*/ )
 {
     return false;

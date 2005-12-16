@@ -30,13 +30,13 @@ namespace KDEHW
     };
 }
 
-KDEHW::Device::Device( QObject *parent )
-    : Ifaces::Device( parent ), d( new Private() )
+KDEHW::Device::Device()
+    : QObject(), d( new Private() )
 {
 }
 
 KDEHW::Device::Device( const Device &device )
-    : Ifaces::Device( device.parent() ), d( new Private() )
+    : QObject(), d( new Private() )
 {
     *d = *(device.d );
 
@@ -52,7 +52,7 @@ KDEHW::Device::Device( const Device &device )
 }
 
 KDEHW::Device::Device( Ifaces::Device *data )
-    : Ifaces::Device(), d( new Private() )
+    : QObject(), d( new Private() )
 {
     d->data = data;
 
@@ -99,7 +99,7 @@ KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
     return *this;
 }
 
-bool KDEHW::Device::isValid()
+bool KDEHW::Device::isValid() const
 {
     return d->data!=0;
 }
@@ -113,6 +113,18 @@ QString KDEHW::Device::udi() const
     else
     {
         return QString();
+    }
+}
+
+bool KDEHW::Device::setProperty( const QString &key, const QVariant &value )
+{
+    if ( d->data!=0 )
+    {
+        return d->data->setProperty( key, value );
+    }
+    else
+    {
+        return false;
     }
 }
 
