@@ -48,67 +48,67 @@ public:
 	 *  Determine if this certificate can be used by a certificate authority
 	 *  @return true if it can be used by a certificate authority
 	 */
-	bool certTypeCA();
+	bool certTypeCA() const;
 
 	/**
 	 *  Determine if this certificate can be used by an SSL signer
 	 *  @return true if it can be used by an SSL signer
 	 */
-	bool certTypeSSLCA();
+	bool certTypeSSLCA() const;
 
 	/**
 	 *  Determine if this certificate can be used by an S/MIME signer
 	 *  @return true if it can be used by an S/MIME signer
 	 */
-	bool certTypeEmailCA();
+	bool certTypeEmailCA() const;
 
 	/**
 	 *  Determine if this certificate can be used by a code certificate signer
 	 *  @return true if it can be used by a code certificate signer
 	 */
-	bool certTypeCodeCA();
+	bool certTypeCodeCA() const;
 
 	/**
 	 *  Determine if this certificate can be used by an SSL client
 	 *  @return true if it can be used by an SSL client
 	 */
-	bool certTypeSSLClient();
+	bool certTypeSSLClient() const;
 
 	/**
 	 *  Determine if this certificate can be used by an SSL server
 	 *  @return true if it can be used by an SSL server
 	 */
-	bool certTypeSSLServer();
+	bool certTypeSSLServer() const;
 
 	/**
 	 *  Determine if this certificate can be used by a Netscape SSL server
 	 *  @return true if it can be used by a Netscape SSL server
 	 */
-	bool certTypeNSSSLServer();
+	bool certTypeNSSSLServer() const;
 
 	/**
 	 *  Determine if this certificate can be used for S/MIME
 	 *  @return true if it can be used for S/MIME
 	 */
-	bool certTypeSMIME();
+	bool certTypeSMIME() const;
 
 	/**
 	 *  Determine if this certificate can be used for S/MIME encryption
 	 *  @return true if it can be used for S/MIME encryption
 	 */
-	bool certTypeSMIMEEncrypt();
+	bool certTypeSMIMEEncrypt() const;
 
 	/**
 	 *  Determine if this certificate can be used for S/MIME signing
 	 *  @return true if it can be used for S/MIME signing
 	 */
-	bool certTypeSMIMESign();
+	bool certTypeSMIMESign() const;
 
 	/**
 	 *  Determine if this certificate can be used for revocation signing
 	 *  @return true if it can be used for revocation signing
 	 */
-	bool certTypeCRLSign();
+	bool certTypeCRLSign() const;
 
 private:
 	class KSSLX509V3Private;
