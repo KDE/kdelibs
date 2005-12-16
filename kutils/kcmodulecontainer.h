@@ -20,7 +20,6 @@
 #ifndef KCMODULECONTAINER_H
 #define KCMODULECONTAINER_H
 
-#include <q3valuelist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 

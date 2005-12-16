@@ -364,8 +364,7 @@ public:
      * All options are disabled by default.
      * @since 3.2
      */
-    // KDE 4: Make virtual
-    void setDropOptions(int options);
+    virtual void setDropOptions(int options);
     
     /**
      * Returns the DND options in effect.

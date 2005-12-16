@@ -51,8 +51,8 @@ signals:
     void endFolder();
 
 protected:
-    void parseIEBookmarks_dir( QString dirname, QString name = QString::null );
-    void parseIEBookmarks_url_file( QString filename, QString name );
+    void parseIEBookmarks_dir( const QString &dirname, const QString &name = QString::null );
+    void parseIEBookmarks_url_file( const QString &filename, const QString &name );
 
     QString m_fileName;
 };

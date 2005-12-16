@@ -32,8 +32,7 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_ie.h"
 
-/* antlarr: KDE 4: Make them const QString & */
-void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString name ) {
+void KIEBookmarkImporter::parseIEBookmarks_url_file( const QString &filename, const QString &name ) {
     static const int g_lineLimit = 16*1024;
 
     QFile f(filename);
@@ -59,8 +58,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
     }
 }
 
-/* antlarr: KDE 4: Make them const QString & */
-void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldername )
+void KIEBookmarkImporter::parseIEBookmarks_dir( const QString &dirname, const QString &foldername )
 {
 
    QDir dir(dirname);

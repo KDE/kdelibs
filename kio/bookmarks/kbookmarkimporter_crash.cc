@@ -40,11 +40,6 @@
 
 typedef QMap<QString, QString> ViewMap;
 
-// KDE 4.0: remove this BC keeping stub
-void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
-{
-    ;
-}
 
 ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del )
 {
@@ -87,11 +82,6 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
         f.remove();
 
     return views;
-}
-
-QStringList KCrashBookmarkImporter::getCrashLogs()
-{
-    return KCrashBookmarkImporterImpl::getCrashLogs();
 }
 
 QStringList KCrashBookmarkImporterImpl::getCrashLogs()

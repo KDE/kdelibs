@@ -40,7 +40,7 @@ public:
 	virtual bool isValid(QString&);
 	virtual void initPrinter(KMPrinter*);
 	virtual void updatePrinter(KMPrinter*);
-	bool needsInitOnBack() 		{ return m_needsinitonback; }
+	bool needsInitOnBack() const		{ return m_needsinitonback; }
 
 protected:
 	QString	m_title;

@@ -244,9 +244,8 @@ KSpellConfig::sChangeClient( int i )
   emit configChanged();
 }
 
-// KDE 4: Make it const QString & fname (only fname)
 bool
-KSpellConfig::interpret( QString &fname, QString &lname,
+KSpellConfig::interpret( const QString &fname, QString &lname,
                          QString &hname )
 
 {

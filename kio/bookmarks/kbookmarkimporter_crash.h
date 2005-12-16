@@ -41,7 +41,6 @@ public:
     ~KCrashBookmarkImporter() {}
     void parseCrashBookmarks( bool del = true );
     static QString crashBookmarksDir( );
-    static QStringList getCrashLogs(); // EMPTY!
 signals:
     void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
@@ -49,7 +48,6 @@ signals:
     void endFolder();
 protected:
     QString m_fileName;
-    void parseCrashLog( QString filename, bool del ); // EMPTY!
 };
 
 /**

@@ -151,10 +151,7 @@ signals:
     QMap<QString, QString> mAttributes;
 
     KURL mLDAPUrl;
-    int mGetCounter; //KDE 4: remove
-    bool mErrorOccured; //KDE 4: remove
     QString mErrorMsg;
-    QMap<KIO::Job*, QByteArray> mJobMap; //KDE 4: remove
 
     KIO::Job *loadFromCache();
     void createCache();

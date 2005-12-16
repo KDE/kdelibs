@@ -220,7 +220,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
      *
      * @return true if <pre>lname.data()==$LANG</pre>
      */
-    bool interpret( QString &fname, QString &lname, QString &hname );
+    bool interpret( const QString &fname, QString &lname, QString &hname );
 
 
   public slots:
