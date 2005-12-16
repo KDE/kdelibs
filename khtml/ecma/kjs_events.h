@@ -51,7 +51,7 @@ namespace KJS {
     bool isHTMLEventListener() const { return html; }
 
   protected:
-    mutable ObjectImp* listener;
+    mutable ProtectedPtr<ObjectImp> listener;
     // Storing a different ObjectImp ptr is needed to support addEventListener(.. [Object] ..) calls
     // In the real-life case (where a 'function' is passed to addEventListener) we can directly call
     // the 'listener' object and can cache the 'listener.imp()'. If the event listener should be removed
@@ -64,7 +64,7 @@ namespace KJS {
     // the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
     mutable ObjectImp *compareListenerImp;
     bool html;
-    ObjectImp* win;
+    mutable ProtectedPtr<ObjectImp> win;
   };
 
   class JSLazyEventListener : public JSEventListener {

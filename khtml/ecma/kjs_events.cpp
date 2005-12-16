@@ -44,14 +44,14 @@ JSEventListener::JSEventListener(ObjectImp *_listener, ObjectImp *_compareListen
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
   if (compareListenerImp) {
-    static_cast<Window*>(win)->jsEventListeners.insert(compareListenerImp, this);
+    static_cast<Window*>(win.get())->jsEventListeners.insert(compareListenerImp, this);
   }
 }
 
 JSEventListener::~JSEventListener()
 {
   if (compareListenerImp) {
-    static_cast<Window*>(win)->jsEventListeners.remove(compareListenerImp);
+    static_cast<Window*>(win.get())->jsEventListeners.remove(compareListenerImp);
   }
   //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
@@ -62,7 +62,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (KJSDebugWin::debugWindow() && KJSDebugWin::debugWindow()->inSession())
     return;
 #endif
-  KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win)->part());
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.get())->part());
   KJSProxy *proxy = 0L;
   if (part)
     proxy = part->jScript();
@@ -84,7 +84,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
       thisObj = win;
     }
 
-    Window *window = static_cast<Window*>(win);
+    Window *window = static_cast<Window*>(win.get());
     // Set the event we're handling in the Window object
     window->setCurrentEvent( evt.handle() );
     // ... and in the interpreter
@@ -138,7 +138,7 @@ JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_n
 JSLazyEventListener::~JSLazyEventListener()
 {
   if (listener) {
-    static_cast<Window*>(win)->jsEventListeners.remove(listener);
+    static_cast<Window*>(win.get())->jsEventListeners.remove(listener);
   }
 }
 
@@ -160,7 +160,7 @@ ObjectImp *JSLazyEventListener::listenerObj() const
 void JSLazyEventListener::parseCode() const
 {
   if (!parsed) {
-    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win)->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.get())->part());
     KJSProxy *proxy = 0L;
     if (part)
       proxy = part->jScript();
@@ -187,8 +187,9 @@ void JSLazyEventListener::parseCode() const
       } else if (!listener->inherits(&DeclaredFunctionImp::info)) {
         listener = 0;// Error creating function
       } else {
-        DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener);
-	abort();
+        DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.get());
+#warning "Find properporting for this!"	
+	//abort();
 	// what happened to this?
         //declFunc->setName(Identifier(UString(name)));
 
@@ -212,7 +213,7 @@ void JSLazyEventListener::parseCode() const
     code = QString();
 
     if (listener) {
-      static_cast<Window*>(win)->jsEventListeners.insert(listener,
+      static_cast<Window*>(win.get())->jsEventListeners.insert(listener,
                                               (KJS::JSEventListener *)(this));
     }
 
