@@ -25,7 +25,6 @@
 
 #include <kdelibs_export.h>
 
-// ### KDE4: fix constness of methods
 /**
  * KDE X509v3 Flag Class
  *

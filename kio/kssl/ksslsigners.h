@@ -72,7 +72,7 @@ public:
 	 *  @param code allow it to sign for code signing
 	 *  @return true on success
 	 */
-	bool addCA(QString cert, bool ssl, bool email, bool code); 
+	bool addCA(const QString &cert, bool ssl, bool email, bool code); 
 
 	/**
 	 *  Regenerate the signer-root file from the user's settings.
@@ -92,7 +92,7 @@ public:
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for SSL
 	 */
-	bool useForSSL(QString subject);
+	bool useForSSL( const QString &subject);
 
 	/**
 	 *  Determine if a certificate can be used for S/MIME certificate signing
@@ -106,7 +106,7 @@ public:
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for S/MIME
 	 */
-	bool useForEmail(QString subject);
+	bool useForEmail(const QString &subject);
 
 	/**
 	 *  Determine if a certificate can be used for code certificate signing
@@ -120,7 +120,7 @@ public:
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for code
 	 */
-	bool useForCode(QString subject);
+	bool useForCode(const QString &subject);
 
 	/**
 	 *  Remove a certificate signer from the database
@@ -134,7 +134,7 @@ public:
 	 *  @param subject the subject of the certificate to remove
 	 *  @return true on success
 	 */
-	bool remove(QString subject);
+	bool remove(const QString &subject);
 
 	/**
 	 *  List the signers in the database.
@@ -149,7 +149,7 @@ public:
 	 *  @param subject the subject of the certificate desired
 	 *  @return the base64 encoded certificate
 	 */
-	QString getCert(QString subject);
+	QString getCert(const QString &subject);
 
 	/**
 	 *  Set the use of a particular entry in the certificate signer database.
@@ -159,7 +159,7 @@ public:
 	 *  @param code allow this for code certificate signing
 	 *  @return true on success
 	 */
-	bool setUse(QString subject, bool ssl, bool email, bool code);
+	bool setUse(const QString &subject, bool ssl, bool email, bool code);
 
 private:
 	class KSSLSignersPrivate;
