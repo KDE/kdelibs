@@ -27,7 +27,6 @@ def check_qtconfig(env):
 	qmakeconf	= env.join(qtdir, 'mkspecs', platform, 'qmake.conf' )
 
 	debug = 0
-	version_override = 4
 	
 	# read .qmake.cache to 
 	# - check if QMAKESPEC == platform
@@ -64,8 +63,6 @@ def check_qtconfig(env):
 			defines = line.split('*=')[1]
 			for d in defines.split():
 				cxxflags += '-D' + d + ' '
-		elif val == 'QMAKE_QT_VERSION_OVERRIDE':
-			version_override = line.split('=')[1]
 	file.close()
 	
 	file = open( qmakeconf )
@@ -104,22 +101,16 @@ def check_qtconfig(env):
 	else:
 		cxxflags += '-DQT_NO_DEBUG '
 	env['CXXFLAGS_QT'] = cxxflags
-	return qt_debug,version_override
+	return qt_debug
 
 def detect(env):
+	import re
+
 	def getpath(varname):
 		if not env.has_key('ARGS'): return None
 		v=env['ARGS'].get(varname, None)
 		if v : v=os.path.abspath(v)
 		return v
-
-	# set qt relating library name suffix, depends on version and debug/release mode 
-	# This values could be taken from QTDIR/.qmake.conf 
-	#  debug -> CONFIG 
-	#  library version extension -> QMAKE_QT_VERSION_OVERRIDE (=4 yet) 
-#	if env['BKS_DEBUG']: lib_addon = 'd4'
-#	else:                lib_addon = '4'
-# see below
 
 	# TODO (rh) libsuffix and lib_addon may be overlap in some areas, potential for cleanup 
 	libsuffix	= ''
@@ -179,12 +170,20 @@ def detect(env):
 	# TODO is this really needed now ?
 	print "Checking for uic3 version      :",
 	version = os.popen(env['QT_UIC'] + " -version 2>&1").read().strip()
-	if version.find(" 3.") != -1:
-		version = version.replace('Qt user interface compiler','')
-		version = version.replace('User Interface Compiler for Qt', '')
-		p('RED', version + " (too old)")
+	ver_str = re.match( '.*([0-9]\.[0-9]\.[0-9].*)\.', version ).group(1)
+	ver_major = int(ver_str[0:1])
+	ver_minor = int(ver_str[2:3])
+	ver_patch = int(ver_str[4:5])
+	ver_add   = ver_str[6:]
+	print str(ver_major)+'.'+str(ver_minor)+'.'+str(ver_patch)+'-'+ver_add
+	if ver_major != 4:
+		p('RED', ver_str + " (too old)")
 		env.Exit(1)
 	p('GREEN', "fine - %s" % version)
+	
+	if ( ver_major == 4 and ver_minor < 1 ):
+		p('RED', "At least Qt version 4.1.0rc1 is needed! You've only "+ ver_str )
+		env.Exit(1)
 
 	#if os.environ.has_key('PKG_CONFIG_PATH'):
 	#	os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + ':' + qtlibs
@@ -215,15 +214,14 @@ def detect(env):
 
 	########## QT
 	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
-	debug,version = check_qtconfig(env)
+
+	debug = check_qtconfig(env)
 	if debug:
-		lib_addon = 'd'+version
+		lib_addon = 'd'+str(ver_major)
 		dbg_addon = '_debug'
 	else:
-		lib_addon = version
+		lib_addon = str(ver_major)
 		dbg_addon = ''
-
-	# taken from qt4 qmake generated example 
 
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
