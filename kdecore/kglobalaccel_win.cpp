@@ -26,6 +26,7 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
+#include <qlinkedlist.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>
@@ -332,4 +333,4 @@ void KGlobalAccelPrivate::slotActivated( int iAction )
 
 #include "kglobalaccel_win.moc"
 
-#endif // !Q_WS_WIN
+#endif // Q_WS_WIN
