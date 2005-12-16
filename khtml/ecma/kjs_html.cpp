@@ -4,7 +4,7 @@
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
  *  Copyright (C) 2004 Apple Computer, Inc.
- *  Copyright (C) 2005 Maksim Orlovich (maksim@kde.org)s
+ *  Copyright (C) 2005 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -298,8 +298,24 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
     getSlotFromEntry<HTMLDocFunction, HTMLDocument>(entry, this, slot);
     return true;
   }
+
+  if (DOMDocument::getOwnPropertySlot(exec, propertyName, slot))
+    return true;
+
+  //At this stage, we check the "applets" collection for all the applet/embed/object by ID or Name
+  DOM::HTMLCollectionImpl objectLike(impl(), DOM::HTMLCollectionImpl::DOC_APPLETS);
+  if (objectLike.namedItem(propertyName.domString())) {
+    slot.setCustom(this, objectNameGetter);
+    return true;
+  }
+
+  DOM::HTMLCollectionImpl layerLike(impl(), DOM::HTMLCollectionImpl::DOC_LAYERS);
+  if (layerLike.namedItem(propertyName.domString())) {
+    slot.setCustom(this, layerNameGetter);
+    return true;
+  }
   
-  return DOMDocument::getOwnPropertySlot(exec, propertyName, slot);
+  return false;
 }
 
 ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
@@ -341,6 +357,20 @@ ValueImp *HTMLDocument::frameNameGetter(ExecState *exec, const Identifier& name,
   KHTMLView *view      = thisObj->impl()->view();
   // Check for frames/iframes with name==propertyName
   return Window::retrieve(view->part()->findFrame( name.qstring() ));
+}
+
+ValueImp *HTMLDocument::objectNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+{
+  HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
+  DOM::HTMLCollectionImpl objectLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_APPLETS);
+  return getDOMNode(exec, objectLike.namedItem(name.domString()));
+}
+
+ValueImp *HTMLDocument::layerNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+{
+  HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
+  DOM::HTMLCollectionImpl layerLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_LAYERS);
+  return getDOMNode(exec, layerLike.namedItem(name.domString()));
 }
 
 ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
@@ -2462,6 +2492,15 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       }
     }
     break;
+    case ID_IMG: {
+        DOM::HTMLImageElementImpl& image = static_cast<DOM::HTMLImageElementImpl&>(element);
+        switch (token) {
+        case ImageHeight:          { image.setHeight(value->toInteger(exec)); return; }
+        case ImageWidth:           { image.setWidth (value->toInteger(exec)); return; }
+        }
+    }
+    break;
+
 //    case ID_FIELDSET: {
 //      DOM::HTMLFieldSetElementImpl& fieldSet = static_cast<DOM::HTMLFieldSetElementImpl&>(element);
 //      // read-only: form

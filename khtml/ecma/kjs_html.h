@@ -55,6 +55,8 @@ namespace KJS {
   private:
     static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
     static ValueImp *frameNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *objectNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *layerNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
   };
 
   class HTMLElement : public DOMElement {

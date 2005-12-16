@@ -302,6 +302,16 @@ long HTMLImageElementImpl::height() const
                       getAttribute(ATTR_HEIGHT).toInt();
 }
 
+void HTMLImageElementImpl::setWidth(long width)
+{
+    setAttribute(ATTR_WIDTH, QString::number(width));
+}
+
+void HTMLImageElementImpl::setHeight(long height)
+{
+    setAttribute(ATTR_HEIGHT, QString::number(height));
+}
+
 QImage HTMLImageElementImpl::currentImage() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());

@@ -54,6 +54,8 @@ public:
 
     long width() const;
     long height() const;
+    void setWidth(long width);
+    void setHeight(long height);
 
     long x() const;
     long y() const;

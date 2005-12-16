@@ -253,7 +253,7 @@ long HTMLImageElement::height() const
 
 void HTMLImageElement::setHeight( long value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, QString::number(value));
+    if(impl) ((HTMLImageElementImpl *)impl)->setHeight(value);
 }
 
 long HTMLImageElement::hspace() const
@@ -339,7 +339,7 @@ long HTMLImageElement::width() const
 
 void HTMLImageElement::setWidth( long value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, QString::number(value));
+    if(impl) ((HTMLImageElementImpl *)impl)->setWidth(value);
 }
 
 long HTMLImageElement::x() const
