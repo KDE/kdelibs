@@ -684,6 +684,7 @@ def generate(env):
 					resultsfile.write("]]></Stdout>\n<Stderr><![CDATA[");
 					resultsfile.write(process.childerr.read())
 					resultsfile.write("]]></Stderr></ExecutionError>\n");
+			resultsfile.write("</UnitTest>\n");
 			resultsfile.close()
 
 		env['BUILDERS']['RunUnitTest'] = env.Builder(action = runUnitTest)
