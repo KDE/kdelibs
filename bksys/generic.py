@@ -698,6 +698,7 @@ def generate(env):
 
 		env.Alias("unittests.xml", None)
 		env.AlwaysBuild("unittests.xml");
+		env['RUNTESTS']=1
 
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
