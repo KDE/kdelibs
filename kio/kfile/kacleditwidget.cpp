@@ -979,17 +979,18 @@ void KACLListView::slotRemoveEntry()
          * either no name user or group entry, which means the mask can be 
          * removed, or don't remove it, but reset it. That is allowed. */
         if ( item->type == Mask ) {
-            if ( !item->isDefault && !needsMask ) {
+            bool itemWasDefault = item->isDefault;
+            if ( !itemWasDefault && !needsMask ) {
                 m_hasMask= false;
                 m_mask = 0;
                 delete item;
-            } else if ( item->isDefault && !needsDefaultMask ) {
+            } else if ( itemWasDefault && !needsDefaultMask ) {
                 delete item;
             } else {
                 item->value = 0;
                 item->repaint();
             }
-            if ( !item->isDefault )
+            if ( !itemWasDefault )
                 calculateEffectiveRights();
         } else {
             // for the base permissions, disable them, which is what libacl does
