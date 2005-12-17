@@ -4,54 +4,57 @@ Import('env')
 
 if env.has_key('RUNTESTS') and env['RUNTESTS']:
 	
+	QTestLibTest = 1
+	StandaloneTest = 2
+
 	check_PROGRAMS = {
-		'kconfigtestgui' : 'kconfigtestgui.cpp',
-		'kdebugtest' : 'kdebugtest.cpp',
-		'klocaletest' : 'klocaletest.cpp',
-		#'klocaletest2' : 'klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp',
-		#'kcatalog' : 'kcatalog.cpp libintl.cpp',
-		'ksimpleconfigtest' : 'ksimpleconfigtest.cpp',
-		'kurltest' : 'kurltest.cpp',
-		'kstddirstest' : 'kstddirstest.cpp',
-		'kprocesstest' : 'kprocesstest.cpp',
-		'kuniqueapptest' : 'kuniqueapptest.cpp',
-		'kapptest' : 'kapptest.cpp',
-		'krandomsequencetest' : 'krandomsequencetest.cpp',
-		'kcmdlineargstest' : 'kcmdlineargstest.cpp',
-		'dcopkonqtest' : 'dcopkonqtest.cpp',
-		'kmemtest' : 'kmemtest.cpp',
-		#'kidlservertest' : 'KIDLTest.cpp KIDLTest.skel',
+		'kconfigtestgui'         : ['kconfigtestgui.cpp', StandaloneTest],
+		'kdebugtest'             : ['kdebugtest.cpp', StandaloneTest],
+		'klocaletest'            : ['klocaletest.cpp', StandaloneTest],
+		#'klocaletest2'          : ['klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp', StandaloneTest],
+		#'kcatalog'              : ['kcatalog.cpp libintl.cpp', StandaloneTest],
+		'ksimpleconfigtest'      : ['ksimpleconfigtest.cpp', StandaloneTest],
+		'kurltest'               : ['kurltest.cpp', QTestLibTest],
+		'kstddirstest'           : ['kstddirstest.cpp', StandaloneTest],
+		'kprocesstest'           : ['kprocesstest.cpp', StandaloneTest],
+		'kuniqueapptest'         : ['kuniqueapptest.cpp', StandaloneTest],
+		'kapptest'               : ['kapptest.cpp', StandaloneTest],
+		'krandomsequencetest'    : ['krandomsequencetest.cpp', StandaloneTest],
+		'kcmdlineargstest'       : ['kcmdlineargstest.cpp', StandaloneTest],
+		'dcopkonqtest'           : ['dcopkonqtest.cpp', StandaloneTest],
+		'kmemtest'               : ['kmemtest.cpp', StandaloneTest],
+		#'kidlservertest'        : ['KIDLTest.cpp KIDLTest.skel', StandaloneTest],
 		# TODO: stub processing does not work 
-		#'kidlclienttest' : 'KIDLTestClient.cpp KIDLTest.stub',
+		#'kidlclienttest'        : ['KIDLTestClient.cpp KIDLTest.stub', StandaloneTest],
 		#'$(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
-		'kipctest' : 'kipctest.cpp',
-		'cplusplustest' : 'cplusplustest.cpp',
-		'kiconloadertest' : 'kiconloadertest.cpp',
-		'kmdcodectest' : 'kmdcodectest.cpp',
-		'knotifytest' : 'knotifytest.cpp',
-		'ksortablevaluelisttest' : 'ksortablevaluelisttest.cpp',
-		'testqtargs' : 'testqtargs.cpp',
-		'kprociotest' : 'kprociotest.cpp',
-		'kcharsetstest' : 'kcharsetstest.cpp',
-		'kmacroexpandertest' : 'kmacroexpandertest.cpp',
-		'kshelltest' : 'kshelltest.cpp',
+		'kipctest'               : ['kipctest.cpp', StandaloneTest],
+		'cplusplustest'          : ['cplusplustest.cpp', StandaloneTest],
+		'kiconloadertest'        : ['kiconloadertest.cpp', StandaloneTest],
+		'kmdcodectest'           : ['kmdcodectest.cpp', StandaloneTest],
+		'knotifytest'            : ['knotifytest.cpp', StandaloneTest],
+		'ksortablevaluelisttest' : ['ksortablevaluelisttest.cpp', StandaloneTest],
+		'testqtargs'             : ['testqtargs.cpp', StandaloneTest],
+		'kprociotest'            : ['kprociotest.cpp', StandaloneTest],
+		'kcharsetstest'          : ['kcharsetstest.cpp', StandaloneTest],
+		'kmacroexpandertest'     : ['kmacroexpandertest.cpp', StandaloneTest],
+		'kshelltest'             : ['kshelltest.cpp', StandaloneTest],
 		# TODO x related 
-		#'kxerrorhandlertest' : 'kxerrorhandlertest.cpp',
-		'startserviceby' : 'startserviceby.cpp',
-		'kglobaltest' : 'kglobaltest.cpp',
-		#'ktimezonestest' : 'ktimezonestest.cpp',
-		'ktempfiletest' : 'ktempfiletest.cpp',
-		'kurlmimetest' : 'kurlmimetest.cpp',
-		'kconfigtest' : 'kconfigtest.cpp',
-		'krfcdatetest' : 'krfcdatetest.cpp',
-		'kstdacceltest' : 'kstdacceltest.cpp',
-		'kstringhandlertest' : 'kstringhandlertest.cpp',
-		'kurltest4' : 'kurltest4.cpp kurl4.cpp',
-		#'kcalendartest' : 'kcalendartest.cpp',
-		'klibloadertest' : 'klibloadertest.cpp',
-		'kcompletiontest' : 'kcompletiontest.cpp',
-		'klockfiletest' : 'klockfiletest.cpp',
-		'ktempdirtest' : 'ktempdirtest.cpp'
+		#'kxerrorhandlertest'    : ['kxerrorhandlertest.cpp', StandaloneTest],
+		'startserviceby'         : ['startserviceby.cpp', StandaloneTest],
+		'kglobaltest'            : ['kglobaltest.cpp', StandaloneTest],
+		#'ktimezonestest'        : ['ktimezonestest.cpp', StandaloneTest],
+		'ktempfiletest'          : ['ktempfiletest.cpp', StandaloneTest],
+		'kurlmimetest'           : ['kurlmimetest.cpp', StandaloneTest],
+		'kconfigtest'            : ['kconfigtest.cpp', StandaloneTest],
+		'krfcdatetest'           : ['krfcdatetest.cpp', StandaloneTest],
+		'kstdacceltest'          : ['kstdacceltest.cpp', StandaloneTest],
+		'kstringhandlertest'     : ['kstringhandlertest.cpp', StandaloneTest],
+		'kurltest4'              : ['kurltest4.cpp kurl4.cpp', QTestLibTest],
+		#'kcalendartest'         : ['kcalendartest.cpp', StandaloneTest],
+		'klibloadertest'         : ['klibloadertest.cpp]', StandaloneTest],
+		'kcompletiontest'        : ['kcompletiontest.cpp', StandaloneTest],
+		'klockfiletest'          : ['klockfiletest.cpp', StandaloneTest],
+		'ktempdirtest'           : ['ktempdirtest.cpp', StandaloneTest]
 	}
 	
 	for appname in check_PROGRAMS.keys():
@@ -62,12 +65,15 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 		obj = env.kdeobj('program', env)
 		obj.vnum     = '6.0.2'
 		obj.target   = appname
-		obj.source   = check_PROGRAMS[appname]
+		obj.source   = check_PROGRAMS[appname][0]
 		obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4'
 		obj.libpaths = '.. ../../dcop'
 		obj.libs     = 'kdecore DCOP'
 		if env['WINDOWS']:
 			obj.libs     += ' kdewin32 ws2_32'
+
+		if check_PROGRAMS[appname][1] == QTestLibTest:
+			obj.isUnitTest = 1
 	
 		obj.execute()
 
