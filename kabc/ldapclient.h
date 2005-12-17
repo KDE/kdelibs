@@ -23,12 +23,12 @@
 #define KABC_LDAPCLIENT_H
 
 
-#include <qobject.h>
-#include <qstring.h>
-#include <q3cstring.h>
-#include <qstringlist.h>
-#include <qpointer.h>
-#include <qtimer.h>
+#include <QObject>
+#include <QString>
+#include <QByteArray>
+#include <QStringList>
+#include <QPointer>
+#include <QTimer>
 
 #include <kio/job.h>
 
@@ -175,9 +175,9 @@ class KABC_EXPORT LdapClient : public QObject
     bool mActive;
 
     LdapObject mCurrentObject;
-    Q3CString mBuf;
-    Q3CString mLastAttrName;
-    Q3CString mLastAttrValue;
+    QByteArray mBuf;
+    QByteArray mLastAttrName;
+    QByteArray mLastAttrValue;
     bool mIsBase64;
 
   private:
