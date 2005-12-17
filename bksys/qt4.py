@@ -193,7 +193,7 @@ def generate(env):
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	## MOC processing
-	moc_comp   = '$QT_MOC $QT_MOCINCFLAGS -o $TARGET $SOURCE'
+	moc_comp   = '$QT_MOC --ignore-option-clashes $QT_MOCINCFLAGS -o $TARGET $SOURCE'
 	moc_string = "%screating%s $TARGET" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
 	if not env['_USECOLORS_']: moc_string=""
 	moc_action = env.Action(moc_comp, moc_string)
