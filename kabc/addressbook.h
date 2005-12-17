@@ -21,8 +21,8 @@
 #ifndef KABC_ADDRESSBOOK_H
 #define KABC_ADDRESSBOOK_H
 
-#include <qobject.h>
-#include <q3ptrlist.h>
+#include <QObject>
+#include <QList>
 
 #include <kresources/manager.h>
 
@@ -451,7 +451,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns a list of all resources.
      */
-    Q3PtrList<Resource> resources() const;
+    QList<Resource*> resources() const;
 
     /**
       Sets the @p ErrorHandler, that is used by error() to
