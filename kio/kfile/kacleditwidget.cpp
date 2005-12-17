@@ -37,7 +37,6 @@
 #include <qlayout.h>
 #include <qwidgetstack.h>
 #include <qheader.h>
-#include <qpixmapcache.h>
 
 #include <klocale.h>
 #include <kfileitem.h>
@@ -56,16 +55,17 @@ extern "C" {
 
 #include "images.h"
 
-static const struct {
+static struct {
     const char* label;
-    const char* pixmap;
+    const char* pixmapName;
+    QPixmap* pixmap;
 } s_itemAttributes[] = {
-    { I18N_NOOP( "Owner" ), "user-grey" },
-    { I18N_NOOP( "Owning Group" ), "group-grey" },
-    { I18N_NOOP( "Others" ), "others-grey" },
-    { I18N_NOOP( "Mask" ), "mask" },
-    { I18N_NOOP( "Named User" ), "user" },
-    { I18N_NOOP( "Named Group" ), "group" },
+    { I18N_NOOP( "Owner" ), "user-grey", 0 },
+    { I18N_NOOP( "Owning Group" ), "group-grey", 0 },
+    { I18N_NOOP( "Others" ), "others-grey", 0 },
+    { I18N_NOOP( "Mask" ), "mask", 0 },
+    { I18N_NOOP( "Named User" ), "user", 0 },
+    { I18N_NOOP( "Named Group" ), "group", 0 },
 };
 
 KACLEditWidget::KACLEditWidget( QWidget *parent, const char *name )
@@ -214,23 +214,23 @@ void KACLListViewItem::updatePermPixmaps()
     unsigned int partialPerms = value;
 
     if ( value & ACL_READ )
-        setPixmap( 2, *QPixmapCache::find("yes") );
+        setPixmap( 2, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_READ )
-        setPixmap( 2, *QPixmapCache::find("yespartial") );
+        setPixmap( 2, m_pACLListView->getYesPartialPixmap() );
     else
         setPixmap( 2, QPixmap() );
 
     if ( value & ACL_WRITE )
-        setPixmap( 3, *QPixmapCache::find("yes") );
+        setPixmap( 3, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_WRITE )
-        setPixmap( 3, *QPixmapCache::find("yespartial") );
+        setPixmap( 3, m_pACLListView->getYesPartialPixmap() );
     else
         setPixmap( 3, QPixmap() );
 
     if ( value & ACL_EXECUTE )
-        setPixmap( 4, *QPixmapCache::find("yes") );
+        setPixmap( 4, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_EXECUTE )
-        setPixmap( 4, *QPixmapCache::find("yespartial") );
+        setPixmap( 4, m_pACLListView->getYesPartialPixmap() );
     else
         setPixmap( 4, QPixmap() );
 }
@@ -262,10 +262,8 @@ void KACLListViewItem::repaint()
           idx = KACLListView::OWNER_IDX;
             break;
     }
-    QPixmap *pic = QPixmapCache::find( s_itemAttributes[idx].pixmap );
-    assert( pic );
-    setPixmap( 0, *pic );
     setText( 0, s_itemAttributes[idx].label );
+    setPixmap( 0, *s_itemAttributes[idx].pixmap );
     if ( isDefault )
         setText( 0, text( 0 ) + i18n( " (Default)" ) );
     setText( 1, qualifier );
@@ -538,14 +536,11 @@ KACLListView::KACLListView( QWidget* parent, const char* name )
     header()->setClickEnabled( false );
 
     // Load the avatars
-    if ( !QPixmapCache::find( s_itemAttributes[OWNER_IDX].pixmap ) ) {
-        for ( int i=0; i < LAST_IDX; i++ ) {
-            QPixmapCache::insert( s_itemAttributes[i].pixmap,
-                    qembed_findImage( s_itemAttributes[i].pixmap ) );
-        }
-        QPixmapCache::insert( "yes", qembed_findImage( "yes" ) );
-        QPixmapCache::insert( "yespartial", qembed_findImage( "yespartial" ) );
+    for ( int i=0; i < LAST_IDX; ++i ) {
+        s_itemAttributes[i].pixmap = new QPixmap( qembed_findImage( s_itemAttributes[i].pixmapName ) );
     }
+    m_yesPixmap = new QPixmap( qembed_findImage( "yes" ) );
+    m_yesPartialPixmap = new QPixmap( qembed_findImage( "yespartial" ) );
 
     setSelectionMode( QListView::Extended );
 
@@ -570,7 +565,11 @@ KACLListView::KACLListView( QWidget* parent, const char* name )
 
 KACLListView::~KACLListView()
 {
-
+    for ( int i=0; i < LAST_IDX; ++i ) {
+       delete s_itemAttributes[i].pixmap;
+    }
+    delete m_yesPixmap;
+    delete m_yesPartialPixmap;
 }
 
 QStringList KACLListView::allowedUsers( bool defaults, KACLListViewItem *allowedItem )
