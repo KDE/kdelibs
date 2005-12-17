@@ -75,4 +75,4 @@ Comment[zu]=Uhlobo lwamagama Lawonke wonke
 Icon=gf
 Type=MimeType
 MimeType=application/x-tex-gf
-Patterns=*.*gf;*.*GF;
+Patterns=*.gf;*.GF;

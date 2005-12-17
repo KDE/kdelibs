@@ -75,4 +75,4 @@ Comment[zu]=Uhlobo lwamafayela Olupakishiwe
 Icon=pk
 Type=MimeType
 MimeType=application/x-tex-pk
-Patterns=*pk;*PK;
+Patterns=*.pk;*.PK;
