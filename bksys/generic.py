@@ -407,6 +407,14 @@ class genobj:
 		if len(self.p_local_staticlibs)>0:
 			if ret: self.env.Depends( ret, self.p_local_staticlibs )
 
+		try:
+			if self.isUnitTest == 1:
+				self.env.Alias("unittests.xml", self.env.RunUnitTest(target=self.target + '-unittest', source=self.target))
+		except AttributeError:
+			pass
+		else:
+			pass
+
 		self.executed=1
 
 ## install files given named resources, for example KDEBIN to install stuff with kde binaries
@@ -652,6 +660,43 @@ def generate(env):
 	if env['ARGS'].has_key('runtests'):
 		print "compiling of test applications enabled"
 		env['RUNTESTS']=1
+		
+	if 'unittests.xml' in sys.argv:
+		def runUnitTest(source, target, env):
+			import popen2
+			import os
+			print "running %s " % source[0].path
+			process = popen2.Popen3(source[0].path + ' -xml', 1)
+			process.tochild.close()
+			status = process.wait()
+			resultsfile = file("unittests.xml", "a+")
+			resultsfile.write("<UnitTest name=\"%s\">\n" % source[0].path);
+			if os.WIFSIGNALED(status):
+				resultsfile.write("<ExecutionError><Signal>%s</Signal></ExecutionError>" % os.WTERMSIG(status))
+			else:
+				output = process.fromchild.readlines()
+				if len(output) > 0 and output[0].startswith("<?xml"):
+					output = output[1:]
+					resultsfile.writelines(output)
+				else:
+					resultsfile.write("<ExecutionError><Stdout><![CDATA[");
+					resultsfile.writelines(output)
+					resultsfile.write("]]></Stdout>\n<Stderr><![CDATA[");
+					resultsfile.write(process.childerr.read())
+					resultsfile.write("]]></Stderr></ExecutionError>\n");
+			resultsfile.close()
+
+		env['BUILDERS']['RunUnitTest'] = env.Builder(action = runUnitTest)
+		
+		try:
+			os.remove("unittests.xml")
+		except:
+			pass
+		else:
+			pass
+
+		env.Alias("unittests.xml", None)
+		env.AlwaysBuild("unittests.xml");
 
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
