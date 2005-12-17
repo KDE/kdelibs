@@ -19,11 +19,17 @@
 
 #include "devicemanager.h"
 
+#include <QFile>
+
+#include <ktrader.h>
+#include <kservice.h>
+#include <klibloader.h>
+
+#include <kdebug.h>
+
 #include "device.h"
 #include "ifaces/devicemanager.h"
 #include "ifaces/device.h"
-
-#include "halmanager.h"
 
 
 namespace KDEHW
@@ -61,8 +67,26 @@ KDEHW::DeviceManager &KDEHW::DeviceManager::self()
 KDEHW::DeviceManager::DeviceManager()
     : QObject(), d( new Private() )
 {
-    // TODO: Of course we want loadable components here...
-    d->registerBackend( new HalManager() );
+    // TODO: Of course we don't want HAL hardcoded here...
+    //d->registerBackend( new HalManager() );
+
+    KTrader::OfferList offers = KTrader::self()->query( "KdeHwDeviceManager", "(Type == 'Service') and (Name == 'HAL')" );
+    KService::Ptr ptr = offers.first();
+
+    KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+    if ( factory )
+    {
+        Ifaces::DeviceManager *backend = (Ifaces::DeviceManager*)factory->create( 0, "Device Manager", "KDEHW::Ifaces::DeviceManager" );
+        if( backend )
+        {
+            d->registerBackend( backend );
+        }
+        else
+        {
+            kdDebug() << "no HAL backend found" << endl;
+        }
+    }
+
 }
 
 KDEHW::DeviceManager::~DeviceManager()

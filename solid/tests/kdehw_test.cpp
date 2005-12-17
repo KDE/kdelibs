@@ -17,6 +17,7 @@
 
 */
 
+#include <kinstance.h>
 #include <kdebug.h>
 
 #include "devicemanager.h"
@@ -24,6 +25,8 @@
 
 int main()
 {
+    KInstance instance( "kdehw_test" );
+
     KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
 
     KDEHW::DeviceList devices = manager.allDevices();

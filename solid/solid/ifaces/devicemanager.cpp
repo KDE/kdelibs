@@ -20,8 +20,8 @@
 #include "devicemanager.h"
 
 
-KDEHW::Ifaces::DeviceManager::DeviceManager()
-    : QObject()
+KDEHW::Ifaces::DeviceManager::DeviceManager( QObject *parent )
+    : QObject(parent)
 {
 
 }

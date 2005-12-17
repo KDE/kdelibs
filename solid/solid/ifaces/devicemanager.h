@@ -22,6 +22,8 @@
 #define KDEHW_IFACES_DEVICEMANAGER_H
 
 #include <QObject>
+#include <QString>
+#include <QStringList>
 
 namespace KDEHW
 {
@@ -45,7 +47,7 @@ namespace Ifaces
         /**
          * Constructs a DeviceManager
          */
-        DeviceManager();
+        DeviceManager( QObject *parent = 0 );
         /**
          * Destructs a DeviceManager object
          */
