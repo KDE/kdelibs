@@ -10,7 +10,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 	check_PROGRAMS = {
 		'kconfigtestgui'         : ['kconfigtestgui.cpp', StandaloneTest],
 		'kdebugtest'             : ['kdebugtest.cpp', StandaloneTest],
-		'klocaletest'            : ['klocaletest.cpp', StandaloneTest],
+		'klocaletest'            : ['klocaletest.cpp', QTestLibTest],
 		#'klocaletest2'          : ['klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp', StandaloneTest],
 		#'kcatalog'              : ['kcatalog.cpp libintl.cpp', StandaloneTest],
 		'ksimpleconfigtest'      : ['ksimpleconfigtest.cpp', StandaloneTest],
@@ -36,29 +36,29 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 		'testqtargs'             : ['testqtargs.cpp', StandaloneTest],
 		'kprociotest'            : ['kprociotest.cpp', StandaloneTest],
 		'kcharsetstest'          : ['kcharsetstest.cpp', StandaloneTest],
-		'kmacroexpandertest'     : ['kmacroexpandertest.cpp', StandaloneTest],
-		'kshelltest'             : ['kshelltest.cpp', StandaloneTest],
+		'kmacroexpandertest'     : ['kmacroexpandertest.cpp', QTestLibTest],
+		'kshelltest'             : ['kshelltest.cpp', QTestLibTest],
 		# TODO x related 
 		#'kxerrorhandlertest'    : ['kxerrorhandlertest.cpp', StandaloneTest],
 		'startserviceby'         : ['startserviceby.cpp', StandaloneTest],
 		'kglobaltest'            : ['kglobaltest.cpp', StandaloneTest],
-		#'ktimezonestest'        : ['ktimezonestest.cpp', StandaloneTest],
-		'ktempfiletest'          : ['ktempfiletest.cpp', StandaloneTest],
-		'kurlmimetest'           : ['kurlmimetest.cpp', StandaloneTest],
-		'kconfigtest'            : ['kconfigtest.cpp', StandaloneTest],
-		'krfcdatetest'           : ['krfcdatetest.cpp', StandaloneTest],
-		'kstdacceltest'          : ['kstdacceltest.cpp', StandaloneTest],
-		'kstringhandlertest'     : ['kstringhandlertest.cpp', StandaloneTest],
+		#'ktimezonestest'        : ['ktimezonestest.cpp', QTestLibTest],
+		'ktempfiletest'          : ['ktempfiletest.cpp', QTestLibTest],
+		'kurlmimetest'           : ['kurlmimetest.cpp', QTestLibTest],
+		'kconfigtest'            : ['kconfigtest.cpp', QTestLibTest],
+		'krfcdatetest'           : ['krfcdatetest.cpp', QTestLibTest],
+		'kstdacceltest'          : ['kstdacceltest.cpp', QTestLibTest],
+		'kstringhandlertest'     : ['kstringhandlertest.cpp', QTestLibTest],
 		'kurltest4'              : ['kurltest4.cpp kurl4.cpp', QTestLibTest],
-		#'kcalendartest'         : ['kcalendartest.cpp', StandaloneTest],
-		'klibloadertest'         : ['klibloadertest.cpp]', StandaloneTest],
-		'kcompletiontest'        : ['kcompletiontest.cpp', StandaloneTest],
-		'klockfiletest'          : ['klockfiletest.cpp', StandaloneTest],
-		'ktempdirtest'           : ['ktempdirtest.cpp', StandaloneTest]
+		#'kcalendartest'         : ['kcalendartest.cpp', QTestLibTest],
+		'klibloadertest'         : ['klibloadertest.cpp', QTestLibTest],
+		'kcompletiontest'        : ['kcompletiontest.cpp', QTestLibTest],
+		'klockfiletest'          : ['klockfiletest.cpp', QTestLibTest],
+		'ktempdirtest'           : ['ktempdirtest.cpp', QTestLibTest]
 	}
 	
 	for appname in check_PROGRAMS.keys():
-		print appname 
+#		print appname 
 	
 		if appname[:1] == '#':
 			continue
