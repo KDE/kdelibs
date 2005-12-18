@@ -21,6 +21,7 @@
 #ifndef KABC_DISTRIBUTIONLIST_H
 #define KABC_DISTRIBUTIONLIST_H
 
+#include <QList>
 #include <kdirwatch.h>
 
 #include "addressbook.h"
@@ -168,7 +169,7 @@ class KABC_EXPORT DistributionListManager
     class DistributionListManagerPrivate;
     DistributionListManagerPrivate *d;
 
-    Q3PtrList<DistributionList> mLists;
+    QList<DistributionList*> mLists;
 };
 
 /**

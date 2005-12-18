@@ -121,11 +121,14 @@ DistributionListManager::DistributionListManager( AddressBook *ab )
   : d( new DistributionListManagerPrivate )
 {
   d->mAddressBook = ab;
-  mLists.setAutoDelete( true );
 }
 
 DistributionListManager::~DistributionListManager()
 {
+  QMutableListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    delete it.next();
+  }
   mLists.clear();
 
   delete d;
@@ -134,8 +137,9 @@ DistributionListManager::~DistributionListManager()
 
 DistributionList *DistributionListManager::list( const QString &name )
 {
-  DistributionList *list;
-  for( list = mLists.first(); list; list = mLists.next() ) {
+  QListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    DistributionList *list = it.next();
     if ( list->name() == name ) return list;
   }
 
@@ -147,8 +151,9 @@ void DistributionListManager::insert( DistributionList *l )
   if ( !l )
     return;
 
-  DistributionList *list;
-  for( list = mLists.first(); list; list = mLists.next() ) {
+  QMutableListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    DistributionList *list = it.next();
     if ( list->name() == l->name() ) {
       mLists.remove( list );
       break;
@@ -162,11 +167,12 @@ void DistributionListManager::remove( DistributionList *l )
   if ( !l )
     return;
 
-  DistributionList *list;
-  for( list = mLists.first(); list; list = mLists.next() ) {
+  QMutableListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    DistributionList *list = it.next();
     if ( list->name() == l->name() ) {
       mLists.remove( list );
-      return;
+      break;
     }
   }
 }
@@ -175,8 +181,9 @@ QStringList DistributionListManager::listNames()
 {
   QStringList names;
 
-  DistributionList *list;
-  for( list = mLists.first(); list; list = mLists.next() ) {
+  QListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    DistributionList *list = it.next();
     names.append( list->name() );
   }
 
@@ -191,6 +198,10 @@ bool DistributionListManager::load()
   cfg.setGroup( "DistributionLists" );
 
   // clear old lists
+  QMutableListIterator<DistributionList*> mit( mLists );
+  while ( mit.hasNext() ) {
+    delete mit.next();
+  }
   mLists.clear();
   d->mMissingEntries.clear();
 
@@ -238,8 +249,9 @@ bool DistributionListManager::save()
   cfg.deleteGroup( "DistributionLists" );
   cfg.setGroup( "DistributionLists" );
 
-  DistributionList *list;
-  for( list = mLists.first(); list; list = mLists.next() ) {
+  QListIterator<DistributionList*> it( mLists );
+  while ( it.hasNext() ) {
+    DistributionList *list = it.next();
     kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
 
     QStringList value;
