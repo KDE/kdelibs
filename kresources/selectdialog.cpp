@@ -26,8 +26,9 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include <q3groupbox.h>
-#include <qlayout.h>
+#include <QGroupBox>
+#include <QLayout>
+#include <QListWidget>
 
 #include "resource.h"
 
@@ -45,10 +46,13 @@ SelectDialog::SelectDialog( QList<Resource *> list, QWidget *parent,
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
 
-  Q3GroupBox *groupBox = new Q3GroupBox( 2, Qt::Horizontal,  this );
+  QGroupBox *groupBox = new QGroupBox( this );
+  QGridLayout *grid = new QGridLayout;
+  groupBox->setLayout( grid );
   groupBox->setTitle( i18n( "Resources" ) );
 
-  mResourceId = new KListBox( groupBox );
+  mResourceId = new QListWidget( groupBox );
+  grid->addWidget( mResourceId, 0, 0 );
 
   mainLayout->addWidget( groupBox );
 
@@ -69,22 +73,20 @@ SelectDialog::SelectDialog( QList<Resource *> list, QWidget *parent,
     Resource *resource = list.at( i );
     if ( resource && !resource->readOnly() ) {
       mResourceMap.insert( counter, resource );
-      mResourceId->insertItem( resource->resourceName() );
+      mResourceId->addItem( resource->resourceName() );
       counter++;
     }
   }
 
-  mResourceId->setCurrentItem( 0 );
-  connect( mResourceId, SIGNAL(returnPressed(Q3ListBoxItem*)),
+  mResourceId->setCurrentRow( 0 );
+  connect( mResourceId, SIGNAL( itemActived(QListWidgetItem*)),
            SLOT(accept()) );
-  connect( mResourceId, SIGNAL( executed( Q3ListBoxItem* ) ),
-           SLOT( accept() ) );
 }
 
 Resource *SelectDialog::resource()
 {
-  if ( mResourceId->currentItem() != -1 )
-    return mResourceMap[ mResourceId->currentItem() ];
+  if ( mResourceId->currentRow() != -1 )
+    return mResourceMap[ mResourceId->currentRow() ];
   else
     return 0;
 }

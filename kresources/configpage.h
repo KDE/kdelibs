@@ -31,10 +31,10 @@
 #include "manager.h"
 
 class KComboBox;
-class KListView;
 
-class Q3ListViewItem;
 class QPushButton;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 namespace KRES {
 
@@ -80,7 +80,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     ConfigViewItem *findItem( Resource *resource );
 
   protected slots:
-    void slotItemClicked( Q3ListViewItem * );
+    void slotItemClicked( QTreeWidgetItem * );
 
   signals:
     void changed( bool );
@@ -97,13 +97,13 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     QList<KSharedPtr<ResourcePageInfo> > mInfoMap;
 
     KComboBox* mFamilyCombo;
-    KListView* mListView;
+    QTreeWidget* mListView;
     QPushButton* mAddButton;
     QPushButton* mRemoveButton;
     QPushButton* mEditButton;
     QPushButton* mStandardButton;
 
-    Q3ListViewItem* mLastItem;
+    QTreeWidgetItem* mLastItem;
 };
 
 }

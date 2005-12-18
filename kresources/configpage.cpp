@@ -21,9 +21,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <q3groupbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -33,7 +35,6 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
-#include <klistview.h>
 #include <kbuttonbox.h>
 #include <ktrader.h>
 #include <kinputdialog.h>
@@ -59,16 +60,15 @@ ResourcePageInfo::~ResourcePageInfo() {
 }
 
 
-class ConfigViewItem : public Q3CheckListItem
+class ConfigViewItem : public QTreeWidgetItem
 {
   public:
-    ConfigViewItem( Q3ListView *parent, Resource* resource ) :
-      Q3CheckListItem( parent, resource->resourceName(), CheckBox ),
+    ConfigViewItem( QTreeWidget *parent, Resource* resource ) :
+      QTreeWidgetItem( parent ),
       mResource( resource ),
       mIsStandard( false )
     {
-      setText( 1, mResource->type() );
-      setOn( mResource->isActive() );
+      updateItem();
     }
 
     void setStandard( bool value )
@@ -84,10 +84,15 @@ class ConfigViewItem : public Q3CheckListItem
 
     void updateItem()
     {
-      setOn( mResource->isActive() );
+      setCheckState( 0, mResource->isActive() ? Qt::Checked : Qt::Unchecked );
       setText( 0, mResource->resourceName() );
       setText( 1, mResource->type() );
       setText( 2, mIsStandard ? i18n( "Yes" ) : QString::null );
+    }
+
+    bool isOn()
+    {
+      return checkState( 0 ) == Qt::Checked;
     }
 
   private:
@@ -105,24 +110,24 @@ ConfigPage::ConfigPage( QWidget *parent )
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
 
-  Q3GroupBox *groupBox = new Q3GroupBox( i18n( "Resources" ), this );
-  groupBox->setColumnLayout(0, Qt::Vertical );
-  groupBox->layout()->setSpacing( 6 );
-  groupBox->layout()->setMargin( 11 );
-  QGridLayout *groupBoxLayout = new QGridLayout( groupBox->layout(), 2, 2 );
+  QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
+  QGridLayout *groupBoxLayout = new QGridLayout( 2, 2 );
+  groupBox->setLayout( groupBoxLayout );
+  groupBoxLayout->setSpacing( 6 );
+  groupBoxLayout->setMargin( 11 );
 
   mFamilyCombo = new KComboBox( false, groupBox );
   groupBoxLayout->addMultiCellWidget( mFamilyCombo, 0, 0, 0, 1 );
 
-  mListView = new KListView( groupBox );
-  mListView->setAllColumnsShowFocus( true );
-  mListView->setFullWidth( true );
-  mListView->addColumn( i18n( "Name" ) );
-  mListView->addColumn( i18n( "Type" ) );
-  mListView->addColumn( i18n( "Standard" ) );
+  mListView = new QTreeWidget( groupBox );
+  mListView->setColumnCount( 3 );
+  QStringList headerLabels;
+  headerLabels << i18n( "Name" ) << i18n( "Type" ) << i18n( "Standard" );
+  mListView->setHeaderItem( new QTreeWidgetItem( headerLabels ) );
 
   groupBoxLayout->addWidget( mListView, 1, 0 );
-  connect(  mListView, SIGNAL( doubleClicked( Q3ListViewItem *, const QPoint &, int ) ), this, SLOT( slotEdit() ) );
+  connect(  mListView, SIGNAL( itemDoubleClicked( QTreeWidgetItem *, int ) ), 
+            this, SLOT( slotEdit() ) );
   KButtonBox *buttonBox = new KButtonBox( groupBox, Qt::Vertical );
   mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
   mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
@@ -139,10 +144,10 @@ ConfigPage::ConfigPage( QWidget *parent )
 
   connect( mFamilyCombo, SIGNAL( activated( int ) ),
            SLOT( slotFamilyChanged( int ) ) );
-  connect( mListView, SIGNAL( selectionChanged() ),
+  connect( mListView, SIGNAL( itemSelectionChanged() ),
            SLOT( slotSelectionChanged() ) );
-  connect( mListView, SIGNAL( clicked( Q3ListViewItem * ) ),
-           SLOT( slotItemClicked( Q3ListViewItem * ) ) );
+  connect( mListView, SIGNAL( itemClicked( QTreeWidgetItem *, int ) ),
+           SLOT( slotItemClicked( QTreeWidgetItem * ) ) );
 
   mLastItem = 0;
 
@@ -275,7 +280,7 @@ void ConfigPage::slotFamilyChanged( int pos )
       item->setStandard( true );
   }
 
-  if ( mListView->childCount() == 0 ) {
+  if ( mListView->topLevelItemCount() == 0 ) {
     defaults();
     emit changed( true );
     mCurrentManager->writeConfig( mCurrentConfig );
@@ -326,13 +331,10 @@ void ConfigPage::slotAdd()
     // as standard resource
     if ( !resource->readOnly() ) {
       bool onlyReadOnly = true;
-      Q3ListViewItem *it = mListView->firstChild();
-      while ( it != 0 ) {
-        ConfigViewItem *confIt = static_cast<ConfigViewItem*>( it );
+     for ( int i = 0; i < mListView->topLevelItemCount(); ++i ) {
+        ConfigViewItem *confIt = static_cast<ConfigViewItem*>( mListView->topLevelItem( i ) );
         if ( !confIt->readOnly() && confIt != item )
           onlyReadOnly = false;
-
-        it = it->itemBelow();
       }
 
       if ( onlyReadOnly )
@@ -351,7 +353,7 @@ void ConfigPage::slotRemove()
   if ( !mCurrentManager )
     return;
 
-  Q3ListViewItem *item = mListView->currentItem();
+  QTreeWidgetItem *item = mListView->currentItem();
   ConfigViewItem *confItem = static_cast<ConfigViewItem*>( item );
 
   if ( !confItem )
@@ -367,7 +369,7 @@ void ConfigPage::slotRemove()
   if ( item == mLastItem )
     mLastItem = 0;
 
-  mListView->takeItem( item );
+  mListView->takeTopLevelItem( mListView->indexOfTopLevelItem( item ) );
   delete item;
 
   emit changed( true );
@@ -378,7 +380,7 @@ void ConfigPage::slotEdit()
   if ( !mCurrentManager )
     return;
 
-  Q3ListViewItem *item = mListView->currentItem();
+  QTreeWidgetItem *item = mListView->currentItem();
   ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
   if ( !configItem )
     return;
@@ -420,12 +422,10 @@ void ConfigPage::slotStandard()
     return;
   }
 
-  Q3ListViewItem *it = mListView->firstChild();
-  while ( it != 0 ) {
-    ConfigViewItem *configItem = static_cast<ConfigViewItem*>( it );
+  for ( int i = 0; i < mListView->topLevelItemCount(); ++i ) {
+    ConfigViewItem *configItem = static_cast<ConfigViewItem*>( mListView->topLevelItem( i ) );
     if ( configItem->standard() )
       configItem->setStandard( false );
-    it = it->itemBelow();
   }
 
   item->setStandard( true );
@@ -450,7 +450,7 @@ void ConfigPage::resourceAdded( Resource *resource )
 
   ConfigViewItem *item = new ConfigViewItem( mListView, resource );
 
-  item->setOn( resource->isActive() );
+  item->setCheckState( 0, resource->isActive()? Qt::Checked : Qt::Unchecked );
 
   mLastItem = item;
 
@@ -482,22 +482,21 @@ void ConfigPage::resourceDeleted( Resource *resource )
 
 ConfigViewItem *ConfigPage::findItem( Resource *resource )
 {
-  Q3ListViewItem *i;
-  for( i = mListView->firstChild(); i; i = i->nextSibling() ) {
-    ConfigViewItem *item = static_cast<ConfigViewItem *>( i );
+  for ( int i = 0; i < mListView->topLevelItemCount(); ++i ) {
+    ConfigViewItem *item = static_cast<ConfigViewItem *>( mListView->topLevelItem( i ) );
     if ( item->resource() == resource ) return item;
   }
   return 0;
 }
 
-void ConfigPage::slotItemClicked( Q3ListViewItem *item )
+void ConfigPage::slotItemClicked( QTreeWidgetItem *item )
 {
   ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
   if ( !configItem ) return;
 
   if ( configItem->standard() && !configItem->isOn() ) {
     KMessageBox::sorry( this, i18n( "You cannot deactivate the standard resource. Choose another standard resource first." ) );
-    configItem->setOn( true );
+    configItem->setCheckState( 0, Qt::Checked );
     return;
   }
 
@@ -509,10 +508,8 @@ void ConfigPage::slotItemClicked( Q3ListViewItem *item )
 void ConfigPage::saveResourceSettings()
 {
   if ( mCurrentManager ) {
-    Q3ListViewItem *item = mListView->firstChild();
-    while ( item ) {
-      ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
-
+    for ( int i = 0; i < mListView->topLevelItemCount(); ++i ) {
+      ConfigViewItem *configItem = static_cast<ConfigViewItem *>( mListView->topLevelItem( i ) );
       // check if standard resource
       if ( configItem->standard() && !configItem->readOnly() &&
            configItem->isOn() )
@@ -520,8 +517,6 @@ void ConfigPage::saveResourceSettings()
 
       // check if active or passive resource
       configItem->resource()->setActive( configItem->isOn() );
-
-      item = item->nextSibling();
     }
     mCurrentManager->writeConfig( mCurrentConfig );
 

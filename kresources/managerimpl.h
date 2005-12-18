@@ -24,8 +24,6 @@
 #define KRESOURCES_MANAGERIMPL_H
 
 #include <qstring.h>
-#include <q3ptrlist.h>
-#include <q3dict.h>
 
 #include "manageriface.h"
 #include <kresources/resource.h>

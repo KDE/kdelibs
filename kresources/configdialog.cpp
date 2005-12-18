@@ -25,10 +25,10 @@
 #include <klineedit.h>
 #include <kmessagebox.h>
 
-#include <q3groupbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qcheckbox.h>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QCheckBox>
 
 #include "factory.h"
 #include "configdialog.h"
@@ -46,23 +46,31 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   QVBoxLayout *mainLayout = new QVBoxLayout( main, 0, spacingHint() );
 
-  Q3GroupBox *generalGroupBox = new Q3GroupBox( 2, Qt::Horizontal, main );
-  generalGroupBox->layout()->setSpacing( spacingHint() );
+  QGroupBox *generalGroupBox = new QGroupBox( main );
+  QGridLayout *gbLayout = new QGridLayout;
+  gbLayout->setSpacing( spacingHint() );
+  generalGroupBox->setLayout( gbLayout );
+  
   generalGroupBox->setTitle( i18n( "General Settings" ) );
 
-  new QLabel( i18n( "Name:" ), generalGroupBox );
+  gbLayout->addWidget( new QLabel( i18n( "Name:" ), generalGroupBox ), 0, 0 );
 
-  mName = new KLineEdit( generalGroupBox );
+  mName = new KLineEdit();
+  gbLayout->addWidget( mName, 0, 1 );
 
   mReadOnly = new QCheckBox( i18n( "Read-only" ), generalGroupBox );
+  gbLayout->addWidget( mReadOnly, 1, 0 );
 
   mName->setText( mResource->resourceName() );
   mReadOnly->setChecked( mResource->readOnly() );
 
   mainLayout->addWidget( generalGroupBox );
 
-  Q3GroupBox *resourceGroupBox = new Q3GroupBox( 2, Qt::Horizontal,  main );
-  resourceGroupBox->layout()->setSpacing( spacingHint() );
+  QGroupBox *resourceGroupBox = new QGroupBox( main );
+  QGridLayout *resourceLayout = new QGridLayout;
+  resourceLayout->setSpacing( spacingHint() );
+  resourceGroupBox->setLayout( resourceLayout );
+
   resourceGroupBox->setTitle( i18n( "%1 Resource Settings" )
                               .arg( factory->typeName( resource->type() ) ) );
   mainLayout->addWidget( resourceGroupBox );
@@ -71,6 +79,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   mConfigWidget = factory->configWidget( resource->type(), resourceGroupBox );
   if ( mConfigWidget ) {
+    resourceLayout->addWidget( mConfigWidget );
     mConfigWidget->setInEditMode( false );
     mConfigWidget->loadSettings( mResource );
     mConfigWidget->show();
