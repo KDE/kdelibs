@@ -18,10 +18,9 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
-#include <qcolor.h>
-#include <qrect.h>
-#include <qwidget.h>
-#include <qlist.h>
+#include <QFrame>
+#include <QList>
+
 #include "kplotaxis.h"
 
 #define BIGTICKSIZE 10
@@ -45,7 +44,7 @@ class KPlotObject;
  * @version 1.1
  */
 
-class KDE_EXPORT KPlotWidget : public QWidget {
+class KDE_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
 public:
 	/**

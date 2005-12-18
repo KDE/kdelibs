@@ -28,7 +28,7 @@
 #include "kplotobject.h"
 
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent )
- : QWidget( parent, Qt::WNoAutoErase ),
+ : QFrame( parent ),
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
