@@ -17,11 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef MAKE_KDECORE_LIB //needed for proper linkage (win32)
-#undef KIO_EXPORT
-#define KIO_EXPORT KDE_EXPORT
-#endif
-
 #include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 #include "kprotocolmanager.h"
@@ -33,12 +28,8 @@
 // Most of this class is implemented in kdecore/kprotocolinfo_kdecore.cpp
 // This file only contains a few static class-functions that depend on
 // KProtocolManager
-
 KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KURL &url)
 {
-#ifdef MAKE_KDECORE_LIB
-   return 0;
-#else
    QString protocol = url.protocol();
 
    if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
@@ -48,7 +39,6 @@ KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KURL &url)
    }
 
    return KProtocolInfoFactory::self()->findProtocol(protocol);
-#endif
 }
 
 
