@@ -1082,9 +1082,13 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   if (DOMNode::getOwnPropertySlot(exec, propertyName, slot))
     return true;
 
+  //Check the prototype -before- the attribute thing
+  ValueImp *proto = prototype();
+  if (proto->isObject() && static_cast<ObjectImp *>(proto)->hasProperty(exec, propertyName))
+    return false;
+
   // Give access to attributes
   ElementImpl &element = *static_cast<ElementImpl *>(impl());
-
   if (element.hasAttribute(propertyName.domString())) {
     slot.setCustom(this, attributeGetter);
     return true;
