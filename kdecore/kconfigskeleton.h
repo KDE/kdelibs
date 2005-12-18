@@ -440,13 +440,13 @@ public:
 
 
   /**
-   * Class for handling an integer preferences item.
+   * Class for handling a 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < int >
+  class KDECORE_EXPORT ItemInt32:public KConfigSkeletonGenericItem < qint32 >
   {
   public:
-    ItemInt(const QString & group, const QString & key, int &reference,
-            int defaultValue = 0);
+    ItemInt32(const QString & group, const QString & key, qint32 &reference,
+            qint32 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -454,18 +454,21 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(int);
-    void setMaxValue(int);
+    void setMinValue(qint32);
+    void setMaxValue(qint32);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    int mMin;
-    int mMax;
+    qint32 mMin;
+    qint32 mMax;
   };
+  // next two should be removed before KDE4
+  typedef ItemInt32 ItemInt KDE_DEPRECATED;
+  typedef ItemInt32 ItemLong KDE_DEPRECATED;
 
   /**
-   * Class for handling an 64-bit integer preferences item.
+   * Class for handling a 64-bit integer preferences item.
    */
   class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < qint64 >
   {
@@ -493,7 +496,7 @@ public:
   /**
    * Class for handling enums.
    */
-  class KDECORE_EXPORT ItemEnum:public ItemInt
+  class KDECORE_EXPORT ItemEnum:public ItemInt32
   {
   public:
     struct Choice
@@ -503,8 +506,8 @@ public:
       QString whatsThis;
     };
 
-    ItemEnum(const QString & group, const QString & key, int &reference,
-             const QList<Choice> &choices, int defaultValue = 0);
+    ItemEnum(const QString & group, const QString & key, qint32 &reference,
+             const QList<Choice> &choices, qint32 defaultValue = 0);
 
     QList<Choice> choices() const;
 
@@ -517,13 +520,13 @@ public:
 
 
   /**
-   * Class for handling an unsingend integer preferences item.
+   * Class for handling an unsingend 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < unsigned int >
+  class KDECORE_EXPORT ItemUInt32:public KConfigSkeletonGenericItem < quint32 >
   {
   public:
-    ItemUInt(const QString & group, const QString & key,
-             unsigned int &reference, unsigned int defaultValue = 0);
+    ItemUInt32(const QString & group, const QString & key,
+             quint32 &reference, quint32 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -531,67 +534,18 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(unsigned int);
-    void setMaxValue(unsigned int);
+    void setMinValue(quint32);
+    void setMaxValue(quint32);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    unsigned int mMin;
-    unsigned int mMax;
+    quint32 mMin;
+    quint32 mMax;
   };
-
-
-  /**
-   * Class for hanlding a long integer preferences item.
-   */
-  class KDECORE_EXPORT ItemLong:public KConfigSkeletonGenericItem < long >
-  {
-  public:
-    ItemLong(const QString & group, const QString & key, long &reference,
-             long defaultValue = 0);
-
-    void readConfig(KConfig * config);
-    void setProperty(const QVariant & p);
-    QVariant property() const;
-    QVariant minValue() const;
-    QVariant maxValue() const;
-
-    void setMinValue(long);
-    void setMaxValue(long);
-    
-  private:  
-    bool mHasMin : 1;
-    bool mHasMax : 1;
-    long mMin;
-    long mMax;
-  };
-
-
-  /**
-   * Class for handling an unsigned long integer preferences item.
-   */
-  class KDECORE_EXPORT ItemULong:public KConfigSkeletonGenericItem < unsigned long >
-  {
-  public:
-    ItemULong(const QString & group, const QString & key,
-              unsigned long &reference, unsigned long defaultValue = 0);
-
-    void readConfig(KConfig * config);
-    void setProperty(const QVariant & p);
-    QVariant property() const;
-    QVariant minValue() const;
-    QVariant maxValue() const;
-
-    void setMinValue(unsigned long);
-    void setMaxValue(unsigned long);
-    
-  private:  
-    bool mHasMin : 1;
-    bool mHasMax : 1;
-    unsigned long mMin;
-    unsigned long mMax;
-  };
+  // next two should be removed before KDE4
+  typedef ItemUInt32 ItemUInt KDE_DEPRECATED;
+  typedef ItemUInt32 ItemULong KDE_DEPRECATED;
 
   /**
    * Class for handling unsigned 64-bit integer preferences item.
@@ -926,7 +880,7 @@ public:
                         const QString & key = QString::null);
 
   /**
-   * Register an item of type int.
+   * Register an item of type qint32.
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -936,26 +890,17 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemInt *addItemInt(const QString & name, int &reference, int defaultValue = 0,
+  ItemInt32 *addItemInt32(const QString & name, qint32 &reference, qint32 defaultValue = 0,
                       const QString & key = QString::null);
 
-  /**
-   * Register an item of type unsigned int.
-   * 
-   * @param name Name used to indentify this setting. Names must be unique.
-   * @param reference Pointer to the variable, which is set by readConfig()
-   * calls and read by writeConfig() calls.
-   * @param defaultValue Default value, which is used when the config file
-   * does not yet contain the key of this item.
-   * @param key Key used in config file. If key is null, name is used as key.
-   * @return The created item
-   */
-  ItemUInt *addItemUInt(const QString & name, unsigned int &reference,
-                        unsigned int defaultValue = 0,
-                        const QString & key = QString::null);
+  // next two should be removed before KDE4
+  ItemInt32 *addItemInt(const QString & name, qint32 &reference, qint32 defaultValue = 0,
+                      const QString & key = QString::null) KDE_DEPRECATED;
+  ItemInt32 *addItemLong(const QString & name, qint32 &reference, qint32 defaultValue = 0,
+                      const QString & key = QString::null) KDE_DEPRECATED;
 
   /**
-   * Register an item of type long.
+   * Register an item of type quint32.
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -965,24 +910,17 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemLong *addItemLong(const QString & name, long &reference,
-                        long defaultValue = 0,
+  ItemUInt32 *addItemUInt32(const QString & name, quint32 &reference,
+                        quint32 defaultValue = 0,
                         const QString & key = QString::null);
 
-  /**
-   * Register an item of type unsigned long.
-   * 
-   * @param name Name used to indentify this setting. Names must be unique.
-   * @param reference Pointer to the variable, which is set by readConfig()
-   * calls and read by writeConfig() calls.
-   * @param defaultValue Default value, which is used when the config file
-   * does not yet contain the key of this item.
-   * @param key Key used in config file. If key is null, name is used as key.
-   * @return The created item
-   */
-  ItemULong *addItemULong(const QString & name, unsigned long &reference,
-                          unsigned long defaultValue = 0,
-                          const QString & key = QString::null);
+  // next two should be removed before KDE4
+  ItemUInt32 *addItemUInt(const QString & name, quint32 &reference,
+                        quint32 defaultValue = 0,
+                        const QString & key = QString::null) KDE_DEPRECATED;
+  ItemUInt32 *addItemULong(const QString & name, quint32 &reference,
+                        quint32 defaultValue = 0,
+                        const QString & key = QString::null) KDE_DEPRECATED;
 
   /**
    * Register an item of type qint64.
@@ -1136,7 +1074,7 @@ public:
                                     const QString & key = QString::null);
 
   /**
-   * Register an item of type QValueList<int>.
+   * Register an item of type QList<int>.
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
