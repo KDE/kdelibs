@@ -218,10 +218,10 @@ def detect(env):
 	debug = check_qtconfig(env)
 	if debug:
 		lib_addon = 'd'+str(ver_major)
-		dbg_addon = '_debug'
+		test_addon = '_debug'+str(ver_major)	# inconsistent naming sheme
 	else:
 		lib_addon = str(ver_major)
-		dbg_addon = ''
+		test_addon = str(ver_major)
 
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
@@ -264,7 +264,7 @@ def detect(env):
 	env['RPATH_QTXML']         = env['RPATH_QT']
 	
 	env['CPPPATH_QTEST']       = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
-	env['LIB_QTEST']           = ['QtTest'+dbg_addon]
+	env['LIB_QTEST']           = ['QtTest'+test_addon]
 	env['RPATH_QTEST']         = env['RPATH_QT']
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
