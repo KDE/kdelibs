@@ -265,26 +265,6 @@ namespace KJS {
 
   ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide=false);
   ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
-
-  /* Helper function object for determining the number
-   * of occurrences of xxxx as in document.xxxx or window.xxxx.
-   * The order of the TagLength array is the order of preference.
-   */
-  class NamedTagLengthDeterminer {
-  public:
-    struct TagLength {
-      DOM::NodeImpl::Id id; unsigned long length; DOM::ElementImpl *last;
-    };
-    NamedTagLengthDeterminer(const DOM::DOMString& n, TagLength *t, int l)
-      : name(n), tags(t), nrTags(l) {}
-    void operator () (DOM::NodeImpl *start);
-  private:
-    const DOM::DOMString& name;
-    TagLength *tags;
-    int nrTags;
-  };
-
-
 } // namespace
 
 #endif

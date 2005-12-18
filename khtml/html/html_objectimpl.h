@@ -57,9 +57,14 @@ public:
     bool needWidgetUpdate;
     bool m_renderAlternative;
 
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+    virtual void addId(const QString& id);
+    virtual void removeId(const QString& id);
 protected slots:
     void slotRenderAlternative();
-
+protected:
+    DOMString     m_name;
 };
 
 // -------------------------------------------------------------------------
@@ -75,11 +80,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *token);
     virtual void attach();
-    virtual void insertedIntoDocument();
-    virtual void removedFromDocument();
-
 protected:
-    DOMString     m_name;
     khtml::VAlign valign;
 };
 

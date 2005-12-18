@@ -72,6 +72,9 @@ public:
 
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
+    virtual void addId(const QString& id);
+    virtual void removeId(const QString& id);
+
 
     long length() const;
 

@@ -247,6 +247,10 @@ public:
     void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
 
     void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
+    //Called when mapping from id to this node in document should be removed
+    virtual void removeId(const QString& id);
+    //Called when mapping from id to this node in document should be added
+    virtual void addId   (const QString& id);
 protected:
     void createAttributeMap() const;
     void createDecl();

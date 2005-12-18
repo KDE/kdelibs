@@ -182,52 +182,9 @@ const ClassInfo KJS::HTMLDocument::info =
 @end
 */
 
-void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
-  for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
-    if ( n->nodeType() == DOM::Node::ELEMENT_NODE ) {
-      for (int i = 0; i < nrTags; i++)
-        if (n->id() == tags[i].id &&
-            static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
-          tags[i].length++;
-          tags[i].last = static_cast<ElementImpl*>(n); // cache this ElementImpl*
-          nrTags = i+1;       // forget about Tags with lower preference
-          break;
-        }
-      (*this)(n);
-    }
-}
-
 KJS::HTMLDocument::HTMLDocument(ExecState *exec, DOM::HTMLDocumentImpl* d)
   /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
   : DOMDocument(exec, d) { }
-
-#if 0
-bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
-{
-#ifdef KJS_VERBOSE
-  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
-#endif
-  DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
-  DOM::DocumentImpl* docImpl = static_cast<DOM::DocumentImpl*>(doc.handle());
-  KHTMLView *view = docImpl->view();
-  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
-  if ( !win || !win->isSafeScript(exec) )
-    return false;
-
-
-  if ( docImpl->underDocNamedCache().contains( p.qstring() ) )
-    return true;
-
-  if ( view && view->part() )
-  {
-    KHTMLPart *kp = view->part()->findFrame( p.qstring() );
-    if (kp)
-      return true;
-  }
-
-  return DOMDocument::hasProperty(exec, p);
-}
-#endif
 
 /* Should this property be checked after overrides? */
 static bool isLateProperty(unsigned token)
@@ -264,16 +221,35 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
     return true;
   }
 
+  QString         propertyQString   = propertyName.qstring();
+
   //See whether to return named items under document.
-  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
+  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyQString);
   if (info) {
-    slot.setCustom(this, nameGetter);
-    return true;
+    //May be a false positive, but we can try to avoid doing it the hard way in 
+    //simpler cases. The trickiness here is that the cache is kept under both 
+    //name and id, but we sometimes ignore id for IE compat
+    DOM::DOMString  propertyDOMString = propertyName.domString();
+    
+    bool matched = false;
+    if (info->nd && DOM::HTMLMappedNameCollectionImpl::matchesName(info->nd,
+                              HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString)) {
+        matched = true;
+    } else {
+        //Can't tell it just like that, so better go through collection and count stuff. This is the slow path...
+        DOM::HTMLMappedNameCollectionImpl coll(impl(), HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString);
+        matched = coll.firstItem() != 0;
+    }
+
+    if (matched) {
+        slot.setCustom(this, nameGetter);
+        return true;
+    }
   }
 
   // Check for frames/iframes with name==propertyName
   if ( view && view->part() ) {
-    if (view->part()->findFrame( propertyName.qstring() )) {
+    if (view->part()->findFrame( propertyQString )) {
       slot.setCustom(this, frameNameGetter);
       return true;
     }
@@ -299,23 +275,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
     return true;
   }
 
-  if (DOMDocument::getOwnPropertySlot(exec, propertyName, slot))
-    return true;
-
-  //At this stage, we check the "applets" collection for all the applet/embed/object by ID or Name
-  DOM::HTMLCollectionImpl objectLike(impl(), DOM::HTMLCollectionImpl::DOC_APPLETS);
-  if (objectLike.namedItem(propertyName.domString())) {
-    slot.setCustom(this, objectNameGetter);
-    return true;
-  }
-
-  DOM::HTMLCollectionImpl layerLike(impl(), DOM::HTMLCollectionImpl::DOC_LAYERS);
-  if (layerLike.namedItem(propertyName.domString())) {
-    slot.setCustom(this, layerNameGetter);
-    return true;
-  }
-  
-  return false;
+  return DOMDocument::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
@@ -328,23 +288,17 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyNa
   if (info->nd)
     return getDOMNode(exec, info->nd);
   else {
-    //No cached mapping, do it by hand
-    NamedTagLengthDeterminer::TagLength tags[4] = {
-        {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-    };
-    NamedTagLengthDeterminer(propertyName.domString(), tags, 4)(docImpl);
-    for (int i = 0; i < 4; i++) {
-      if (tags[i].length > 0)  {
-        if (tags[i].length == 1) {
-          //Have a single answer -> cache
-          info->nd = tags[i].last;
-          return getDOMNode(exec, tags[i].last);
-        }
+    //No cached mapping, do it the hard way..
+    DOM::HTMLMappedNameCollectionImpl* coll = new DOM::HTMLMappedNameCollectionImpl(docImpl,
+                                        HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyName.domString());
 
-        // Get all the items with the same name
-        return getDOMNodeList(exec, new DOM::NamedTagNodeListImpl(docImpl, tags[i].id, propertyName.domString()));
-      }
+    if (coll->length() == 1) {
+        info->nd = static_cast<DOM::ElementImpl*>(coll->firstItem());
+        delete coll;
+        return getDOMNode(exec, info->nd);
     }
+
+    return getHTMLCollection(exec, coll);
   }
 
   assert(0);

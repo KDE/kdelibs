@@ -344,6 +344,20 @@ void HTMLLayerElementImpl::insertedIntoDocument()
     HTMLDivElementImpl::insertedIntoDocument();
 }
 
+void HTMLLayerElementImpl::removeId(const QString& id)
+{
+    getDocument()->underDocNamedCache().remove(id, this);
+    HTMLDivElementImpl::removeId(id);
+}
+
+void HTMLLayerElementImpl::addId   (const QString& id)
+{
+    getDocument()->underDocNamedCache().add(id, this);
+    HTMLDivElementImpl::addId(id);
+}
+
+
+
 NodeImpl *HTMLLayerElementImpl::addChild(NodeImpl *child)
 {
     NodeImpl *retval = HTMLDivElementImpl::addChild(child);

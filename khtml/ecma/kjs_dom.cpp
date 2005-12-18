@@ -1209,10 +1209,11 @@ ValueImp* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, ObjectI
     if (part) {
       //### this should probably be pushed to the impl
       DOM::NodeImpl* supposedDocType = toNode(args[2]);
-      if (supposedDocType->nodeType() != DOM::Node::DOCUMENT_TYPE_NODE) {
+      if (supposedDocType && supposedDocType->nodeType() != DOM::Node::DOCUMENT_TYPE_NODE) {
         setDOMException(exec, DOMException::NOT_FOUND_ERR);
         return Null();
       }
+        
       DOM::DocumentTypeImpl* docType = static_cast<DOM::DocumentTypeImpl*>(supposedDocType);
 
       DOM::DocumentImpl* doc = implementation.createDocument(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),docType,exception);

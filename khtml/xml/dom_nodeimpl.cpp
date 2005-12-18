@@ -1821,19 +1821,6 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) co
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
-NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name )
-    : TagNodeListImpl( n, tagId ), nodeName( name )
-{
-}
-
-bool NamedTagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& doRecurse ) const
-{
-    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
-    return TagNodeListImpl::nodeMatches( testNode, doRecurse )
-        && static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
-}
-
-
 // ---------------------------------------------------------------------------
 
 NamedNodeMapImpl::NamedNodeMapImpl()

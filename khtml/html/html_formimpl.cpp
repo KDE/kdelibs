@@ -752,6 +752,19 @@ void HTMLFormElementImpl::insertedIntoDocument()
     HTMLElementImpl::insertedIntoDocument();
 }
 
+void HTMLFormElementImpl::removeId(const QString& id)
+{
+    getDocument()->underDocNamedCache().remove(id, this);
+    HTMLElementImpl::removeId(id);
+}
+
+void HTMLFormElementImpl::addId   (const QString& id)
+{
+    getDocument()->underDocNamedCache().add(id, this);
+    HTMLElementImpl::addId(id);
+}
+
+
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
     for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {

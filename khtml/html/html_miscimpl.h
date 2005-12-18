@@ -70,6 +70,8 @@ public:
         DOC_ALL,        // "all" elements (IE)
         NODE_CHILDREN,   // first-level children (IE)
         FORM_ELEMENTS,   // input elements in a form
+        WINDOW_NAMED_ITEMS,
+        DOCUMENT_NAMED_ITEMS,
         LAST_TYPE
     };
 
@@ -129,6 +131,20 @@ private:
     mutable bool foundInput;
 };
 
+/*
+ Special collection for items of given name/id under document. or window.; but using 
+ iteration interface
+*/
+class HTMLMappedNameCollectionImpl : public HTMLCollectionImpl
+{
+public:
+    HTMLMappedNameCollectionImpl(NodeImpl* _base, int type, const DOMString& name);
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
+
+    static bool matchesName( ElementImpl* el, int type, const DOMString& name);
+private:
+    DOMString name;
+};
 
 } //namespace
 
