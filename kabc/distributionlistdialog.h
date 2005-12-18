@@ -25,9 +25,9 @@
 
 #include <kdialogbase.h>
 
-class Q3ListView;
+class QTreeWidget;
 class QComboBox;
-class Q3ButtonGroup;
+class QButtonGroup;
 
 namespace KABC {
 
@@ -92,7 +92,7 @@ class KABC_EXPORT EmailSelector : public KDialogBase
         QWidget *parent );
 
   private:
-    Q3ButtonGroup *mButtonGroup;
+    QButtonGroup *mButtonGroup;
 };
 
 /**
@@ -123,8 +123,8 @@ class KABC_EXPORT DistributionListEditorWidget : public QWidget
   private:
     QComboBox *mNameCombo;  
     QLabel *mListLabel;
-    Q3ListView *mEntryView;
-    Q3ListView *mAddresseeView;
+    QTreeWidget *mEntryView;
+    QTreeWidget *mAddresseeView;
 
     AddressBook *mAddressBook;
     DistributionListManager *mManager;

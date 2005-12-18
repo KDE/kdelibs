@@ -21,20 +21,22 @@
 #ifndef KABC_ADDRESSEEDIALOG_H
 #define KABC_ADDRESSEEDIALOG_H
 
-#include <q3dict.h>
+#include <QHash>
+#include <QString>
+#include <QTreeWidgetItem>
 
 #include <kdialogbase.h>
 #include <klineedit.h>
-#include <klistview.h>
 
 #include "addressbook.h"
+
 
 namespace KABC {
 
 /**
   @short Special ListViewItem, that is used by the AddresseeDialog.
 */
-class KABC_EXPORT AddresseeItem : public Q3ListViewItem
+class KABC_EXPORT AddresseeItem : public QTreeWidgetItem
 {
   public:
 
@@ -51,7 +53,7 @@ class KABC_EXPORT AddresseeItem : public Q3ListViewItem
       @param parent    The parent listview.
       @param addressee The associated addressee.
     */
-    AddresseeItem( Q3ListView *parent, const Addressee &addressee );
+    AddresseeItem( QTreeWidget *parent, const Addressee &addressee );
 
     /**
       Returns the addressee.
@@ -130,8 +132,8 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
 
   private slots:
     void selectItem( const QString & );
-    void updateEdit( Q3ListViewItem *item );
-    void addSelected( Q3ListViewItem *item );
+    void updateEdit();
+    void addSelected( QTreeWidgetItem *item );
     void removeSelected();
 
   protected slots:
@@ -139,19 +141,19 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
 
   private:
     void loadAddressBook();
-    void addCompletionItem( const QString &str, Q3ListViewItem *item );
+    void addCompletionItem( const QString &str, QTreeWidgetItem *item );
 
     bool mMultiple;
 
-    KListView *mAddresseeList;
+    QTreeWidget *mAddresseeList;
     KLineEdit *mAddresseeEdit;
 
-    KListView *mSelectedList;
+    QTreeWidget *mSelectedList;
 
     AddressBook *mAddressBook;
 
-    Q3Dict<Q3ListViewItem> mItemDict;
-    Q3Dict<Q3ListViewItem> mSelectedDict;
+    QHash<QString, QTreeWidgetItem*> mItemDict;
+    QHash<QString, QTreeWidgetItem*> mSelectedDict;
 
     class AddresseeDialogPrivate;
     AddresseeDialogPrivate *d;

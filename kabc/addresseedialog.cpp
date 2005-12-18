@@ -18,10 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <q3groupbox.h>
-#include <qregexp.h>
+#include <QLayout>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QRegExp>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -33,8 +33,8 @@
 
 using namespace KABC;
 
-AddresseeItem::AddresseeItem( Q3ListView *parent, const Addressee &addressee ) :
-  Q3ListViewItem( parent ),
+AddresseeItem::AddresseeItem( QTreeWidget *parent, const Addressee &addressee ) :
+  QTreeWidgetItem( parent ),
   mAddressee( addressee )
 {
   setText( Name, addressee.realName() );
@@ -66,16 +66,16 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   QBoxLayout *listLayout = new QVBoxLayout;
   topLayout->addLayout( listLayout );
 
-  mAddresseeList = new KListView( topWidget );
-  mAddresseeList->addColumn( i18n("Name") );
-  mAddresseeList->addColumn( i18n("Email") );
-  mAddresseeList->setAllColumnsShowFocus( true );
-  mAddresseeList->setFullWidth( true );
+  mAddresseeList = new QTreeWidget( topWidget );
+  mAddresseeList->setColumnCount( 2 );
+  QStringList headerTitles;
+  headerTitles << i18n("Name") << i18n("Email");
+  mAddresseeList->setHeaderItem( new QTreeWidgetItem( headerTitles ) );
   listLayout->addWidget( mAddresseeList );
-  connect( mAddresseeList, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
+  connect( mAddresseeList, SIGNAL( itemDoubleClicked( QTreeWidgetItem *, int ) ),
            SLOT( slotOk() ) );
-  connect( mAddresseeList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
-           SLOT( updateEdit( Q3ListViewItem * ) ) );
+  connect( mAddresseeList, SIGNAL( itemSelectionChanged() ),
+           SLOT( updateEdit() ) );
 
   mAddresseeEdit = new KLineEdit( topWidget );
   mAddresseeEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
@@ -92,23 +92,27 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     topLayout->addLayout( selectedLayout );
     topLayout->setSpacing( spacingHint() );
 
-    Q3GroupBox *selectedGroup = new Q3GroupBox( 1, Qt::Horizontal, i18n("Selected"),
-                                              topWidget );
+    QGroupBox *selectedGroup = new QGroupBox( i18n("Selected"), topWidget );
+    QHBoxLayout *groupLayout = new QHBoxLayout;
+    selectedGroup->setLayout( groupLayout );
     selectedLayout->addWidget( selectedGroup );
 
-    mSelectedList = new KListView( selectedGroup );
-    mSelectedList->addColumn( i18n("Name") );
-    mSelectedList->addColumn( i18n("Email") );
-    mSelectedList->setAllColumnsShowFocus( true );
-    mSelectedList->setFullWidth( true );
-    connect( mSelectedList, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
+    mSelectedList = new QTreeWidget( selectedGroup );
+    groupLayout->addWidget( mSelectedList );
+    mSelectedList->setColumnCount( 2 );
+    QStringList headerTitles;
+    headerTitles << i18n("Name") << i18n("Email");
+    mSelectedList->setHeaderItem( new QTreeWidgetItem( headerTitles ) );
+
+    connect( mSelectedList, SIGNAL( itemDoubleClicked( QTreeWidgetItem *, int ) ),
              SLOT( removeSelected() ) );
 
     QPushButton *unselectButton = new QPushButton( i18n("Unselect"), selectedGroup );
+    selectedLayout->addWidget( unselectButton );
     connect ( unselectButton, SIGNAL( clicked() ), SLOT( removeSelected() ) );
 
-    connect( mAddresseeList, SIGNAL( clicked( Q3ListViewItem * ) ),
-             SLOT( addSelected( Q3ListViewItem * ) ) );
+    connect( mAddresseeList, SIGNAL( itemClicked( QTreeWidgetItem *, int ) ),
+             SLOT( addSelected( QTreeWidgetItem * ) ) );
 
     setInitialSize( QSize( 650, 350 ) );
   }
@@ -140,7 +144,7 @@ void AddresseeDialog::loadAddressBook()
   }
 }
 
-void AddresseeDialog::addCompletionItem( const QString &str, Q3ListViewItem *item )
+void AddresseeDialog::addCompletionItem( const QString &str, QTreeWidgetItem *item )
 {
   if ( str.isEmpty() ) return;
 
@@ -152,29 +156,32 @@ void AddresseeDialog::selectItem( const QString &str )
 {
   if ( str.isEmpty() ) return;
 
-  Q3ListViewItem *item = mItemDict.find( str );
+  QTreeWidgetItem *item = mItemDict.value( str, 0 );
   if ( item ) {
     mAddresseeList->blockSignals( true );
-    mAddresseeList->setSelected( item, true );
-    mAddresseeList->ensureItemVisible( item );
+    mAddresseeList->setItemSelected( item, true );
+    mAddresseeList->scrollToItem( item );
     mAddresseeList->blockSignals( false );
   }
 }
 
-void AddresseeDialog::updateEdit( Q3ListViewItem *item )
+void AddresseeDialog::updateEdit()
 {
+  QList<QTreeWidgetItem*> selected = mAddresseeList->selectedItems();
+  if ( selected.count() == 0 ) return;
+  QTreeWidgetItem *item = selected.at( 0 );
   mAddresseeEdit->setText( item->text( 0 ) );
   mAddresseeEdit->setSelection( 0, item->text( 0 ).length() );
 }
 
-void AddresseeDialog::addSelected( Q3ListViewItem *item )
+void AddresseeDialog::addSelected( QTreeWidgetItem *item )
 {
   AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
   if ( !addrItem ) return;
 
   Addressee a = addrItem->addressee();
 
-  Q3ListViewItem *selectedItem = mSelectedDict.find( a.uid() );
+  QTreeWidgetItem *selectedItem = mSelectedDict.value( a.uid(), 0 );
   if ( !selectedItem ) {
     selectedItem = new AddresseeItem( mSelectedList, a );
     mSelectedDict.insert( a.uid(), selectedItem );
@@ -183,8 +190,9 @@ void AddresseeDialog::addSelected( Q3ListViewItem *item )
 
 void AddresseeDialog::removeSelected()
 {
-  Q3ListViewItem *item = mSelectedList->selectedItem();
-  AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
+  QList<QTreeWidgetItem*> selected = mAddresseeList->selectedItems();
+  if ( selected.count() == 0 ) return;
+  AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( selected.at( 0 ) );
   if ( !addrItem ) return;
 
   mSelectedDict.remove( addrItem->addressee().uid() );
@@ -196,9 +204,12 @@ Addressee AddresseeDialog::addressee()
   AddresseeItem *aItem = 0;
 
   if ( mMultiple )
-    aItem = dynamic_cast<AddresseeItem *>( mSelectedList->firstChild() );
-  else
-    aItem = dynamic_cast<AddresseeItem *>( mAddresseeList->selectedItem() );
+    aItem = dynamic_cast<AddresseeItem *>( mSelectedList->topLevelItem( 0 ) );
+  else {
+    QList<QTreeWidgetItem*> selected = mAddresseeList->selectedItems();
+    if ( selected.count() != 0 )
+      aItem = dynamic_cast<AddresseeItem *>( selected.at( 0 ) );
+  }
 
   if (aItem) return aItem->addressee();
   return Addressee();
@@ -210,17 +221,19 @@ Addressee::List AddresseeDialog::addressees()
   AddresseeItem *aItem = 0;
 
   if ( mMultiple ) {
-    Q3ListViewItem *item = mSelectedList->firstChild();
-    while( item ) {
-      aItem = dynamic_cast<AddresseeItem *>( item );
-      if ( aItem ) al.append( aItem->addressee() );
-      item = item->nextSibling();
+    for ( int i = 0; i < mSelectedList->topLevelItemCount(); i++ ) {
+      aItem = dynamic_cast<AddresseeItem *>( mSelectedList->topLevelItem( i ) );
+      if ( aItem )
+        al.append( aItem->addressee() );
     }
   }
   else
   {
-    aItem = dynamic_cast<AddresseeItem *>( mAddresseeList->selectedItem() );
-    if (aItem) al.append( aItem->addressee() );
+    QList<QTreeWidgetItem*> selected = mAddresseeList->selectedItems();
+    if ( selected.count() != 0 )
+      aItem = dynamic_cast<AddresseeItem *>( selected.at( 0 ) );
+    if (aItem)
+      al.append( aItem->addressee() );
   }
 
   return al;

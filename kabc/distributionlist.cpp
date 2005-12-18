@@ -125,10 +125,7 @@ DistributionListManager::DistributionListManager( AddressBook *ab )
 
 DistributionListManager::~DistributionListManager()
 {
-  QMutableListIterator<DistributionList*> it( mLists );
-  while ( it.hasNext() ) {
-    delete it.next();
-  }
+  qDeleteAll( mLists );
   mLists.clear();
 
   delete d;
@@ -198,10 +195,7 @@ bool DistributionListManager::load()
   cfg.setGroup( "DistributionLists" );
 
   // clear old lists
-  QMutableListIterator<DistributionList*> mit( mLists );
-  while ( mit.hasNext() ) {
-    delete mit.next();
-  }
+  qDeleteAll( mLists );
   mLists.clear();
   d->mMissingEntries.clear();
 
