@@ -414,38 +414,22 @@ bool KLocale::setLanguage(const QString & _language)
 
 bool KLocale::setLanguage(const QStringList & languages)
 {
-  QStringList list( languages );
   // This list might contain
   // 1) some empty strings that we have to eliminate
   // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order
-  //    to preserve the order of precenence of the user => iterate backwards
+  //    to preserve the order of precenence of the user
   // 3) languages into which the application is not translated. For those languages we should not even load kdelibs.mo or kio.po.
   //    these langugage have to be dropped. Otherwise we get strange side effects, e.g. with Hebrew:
   //    the right/left switch for languages that write from
   //    right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have kdelibs.mo
   //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
   //    That was considered to be a bug by the Hebrew translators.
-  for( QStringList::Iterator it = --list.end();
-    it != list.begin(); --it )
-  {
-    // kdDebug(173) << "checking " << (*it) << endl;
-    bool bIsTranslated = isApplicationTranslatedInto( *it );
-    if ( list.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
-      // kdDebug(173) << "removing " << (*it) << endl;
-      it = list.erase( it );
-    }
-  }
-  // now this has left the first element of the list unchecked.
-  // The question why this is the case is left as an exercise for the reader...
-  // Besides the list might have been empty all the way, so check that too.
-  if ( list.begin() != list.end() ) {
-     QStringList::Iterator it = list.begin(); // now pointing to the first element
-     // kdDebug(173) << "checking " << (*it) << endl;
-     if( (*it).isEmpty() || !(isApplicationTranslatedInto( *it )) ) {
-        // kdDebug(173) << "removing " << (*it) << endl;
-     	list.erase( it ); // that's what the iterator was for...
-     }
-  }
+  QStringList list;
+  foreach ( QString language, languages )
+    if (    !language.isEmpty()
+         && !list.contains( language )
+         && isApplicationTranslatedInto( language ) )
+      list.append( language );
 
   if ( list.isEmpty() ) {
 	// user picked no language, so we assume he/she speaks English.
