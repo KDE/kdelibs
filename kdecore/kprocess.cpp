@@ -615,7 +615,7 @@ void KProcess::resume()
 bool KProcess::closeStdin()
 {
   if (communication & Stdin) {
-    communication = (Communication) (communication & ~Stdin);
+    communication = communication & ~Stdin;
     delete innot;
     innot = 0;
     if (!(d->usePty & Stdin))
@@ -629,7 +629,7 @@ bool KProcess::closeStdin()
 bool KProcess::closeStdout()
 {
   if (communication & Stdout) {
-    communication = (Communication) (communication & ~Stdout);
+    communication = communication & ~Stdout;
     delete outnot;
     outnot = 0;
     if (!(d->usePty & Stdout))
@@ -643,7 +643,7 @@ bool KProcess::closeStdout()
 bool KProcess::closeStderr()
 {
   if (communication & Stderr) {
-    communication = (Communication) (communication & ~Stderr);
+    communication = communication & ~Stderr;
     delete errnot;
     errnot = 0;
     if (!(d->usePty & Stderr))
@@ -852,7 +852,7 @@ int KProcess::setupCommunication(Communication comm)
 
   communication = comm;
 
-  comm = (Communication) (comm & ~d->usePty);
+  comm = comm & ~d->usePty;
   if (comm & Stdin) {
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, in))
       goto fail0;

@@ -126,23 +126,26 @@ class KDECORE_EXPORT KProcess : public QObject
 public:
 
   /**
-   * Modes in which the communication channel can be opened.
+   * Modes in which the communication channels can be opened.
    *
    * If communication for more than one channel is required,
-   * the values have to be or'ed together, for example to get
+   * the values should be or'ed together, for example to get
    * communication with stdout as well as with stdin, you would
    * specify @p Stdin | @p Stdout
    *
-   * If @p NoRead is specified in conjunction with @p Stdout,
-   * no data is actually read from @p Stdout but only
-   * the signal receivedStdout(int fd, int &len) is emitted.
    */
-  enum Communication {
-       NoCommunication = 0,
-       Stdin = 1, Stdout = 2, Stderr = 4,
-       AllOutput = 6, All = 7,
-       NoRead
+  enum CommunicationFlag {
+       NoCommunication = 0, /**< No communication with the process. */
+       Stdin = 1, /**< Connect to write to the process with writeStdin(). */
+       Stdout = 2, /**< Connect to read from the process' output. */
+       Stderr = 4, /**< Connect to read from the process' stderr. */
+       AllOutput = 6, /**< Connects to all output channels. */
+       All = 7, /**< Connects to all channels. */
+       NoRead /**< If specified with Stdout, no data is actually read from stdout,
+               * only the signal receivedStdout(int fd, int &len) is emitted. */
   };
+
+  Q_DECLARE_FLAGS(Communication, CommunicationFlag);
 
   /**
    * Run-modes for a child process.
@@ -241,7 +244,7 @@ public:
    *  @li The executable was not found.
    *
    *  @param runmode The Run-mode for the process.
-   *  @param comm  Specifies which communication links should be
+   *  @param comm  Specifies which communication channels should be
    *  established to the child process (stdin/stdout/stderr). By default,
    *  no communication takes place and the respective communication
    *  signals will never get emitted.
@@ -250,7 +253,7 @@ public:
    *  (see above for error conditions)
    **/
   virtual bool start(RunMode  runmode = NotifyOnExit,
-  	Communication comm = NoCommunication);
+                     Communication comm = NoCommunication);
 
   /**
    * Stop the process (by sending it a signal).
@@ -844,6 +847,8 @@ protected:
 private:
   KProcessPrivate *d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KProcess::Communication)
 
 class KShellProcessPrivate;
 
