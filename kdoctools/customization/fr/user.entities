@@ -125,7 +125,10 @@
 <!ENTITY relecteurPatrickMichelon   '<othercredit role="reviewer"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurJulienMorot   '<othercredit role="translator"><firstname>Julien</firstname><surname>Morot</surname><affiliation><address><email>julien@momonux.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurJulienMorot   '<othercredit role="reviewer"><firstname>Julien</firstname><surname>Morot</surname><affiliation><address><email>ulien@momonux.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY relecteurJulienMorot   '<othercredit role="reviewer"><firstname>Julien</firstname><surname>Morot</surname><affiliation><address><email>julien@momonux.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurBaptisteMathus   '<othercredit role="translator"><firstname>Baptiste</firstname><surname>Mathus</surname><affiliation><address><email>bmathus@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurBaptisteMathus   '<othercredit role="reviewer"><firstname>Baptiste</firstname><surname>Mathus</surname><affiliation><address><email>bmathus@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurPierre-EmmanuelMuller   '<othercredit role="translator"><firstname>Pierre-Emmanuel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPierre-EmmanuelMuller   '<othercredit role="reviewer"><firstname>Pierre-Emmanel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -214,6 +217,7 @@
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>annemarie.mahfouf@free.fr</email>'>
 <!ENTITY PatrickMichelon  'Patrick Michelon <email>patrick.michelon@free.fr</email>'>
 <!ENTITY JulienMorot  'Julien Morot <email>julien@momonux.org</email>'>
+<!ENTITY BaptisteMathus  'Baptiste Mathus <email>bmathus@free.fr</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
 <!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
 <!ENTITY PatricePawlak 'Patrice Pawlak <email>patrice.pawlak@free.fr</email>'>
