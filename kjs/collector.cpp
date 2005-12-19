@@ -309,7 +309,7 @@ void Collector::markCurrentThreadConservatively()
     static void*     stackBase = 0;
     static pthread_t stackThread;
     pthread_t curThread = pthread_self();
-    if (1 || stackBase == 0 || curThread != stackThread) {
+    if (stackBase == 0 || curThread != stackThread) {
         pthread_attr_t sattr;
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
         pthread_getattr_np(curThread, &sattr);
