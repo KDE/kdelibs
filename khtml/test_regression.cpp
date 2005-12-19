@@ -1106,7 +1106,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     // are blocking reads possible with KProcess?
     char pwd[PATH_MAX];
-    getcwd( pwd, PATH_MAX );
+    (void) getcwd( pwd, PATH_MAX );
     chdir( QFile::encodeName( m_baseDir ) );
 
     if ( failures & RenderFailure ) {

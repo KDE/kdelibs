@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     if ( args->isSet( "check" ) ) {
         char pwd_buffer[250];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
-        getcwd( pwd_buffer, 250 );
+        (void) getcwd( pwd_buffer, 250 );
         chdir( QFile::encodeName( file.dirPath( true ) ) );
 
         QString catalogs;

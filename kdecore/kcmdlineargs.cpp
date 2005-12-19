@@ -183,7 +183,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    about = _about;
    parsed = false;
    mCwd = mCwdd.setObject(mCwd, new char [PATH_MAX+1], true);
-   getcwd(mCwd, PATH_MAX);
+   (void) getcwd(mCwd, PATH_MAX);
 #ifdef Q_WS_WIN
    win32_slashify(mCwd, PATH_MAX);
 #endif
