@@ -36,7 +36,11 @@ KDualColorButton::KDualColorButton(QWidget *parent, const char *name, QWidget* d
   : QWidget(parent, name),
     d (new KDualColorPrivate)
 {
-    d->dialogParent = dialogParent;
+    if (!dialogParent && parent) {
+	d->dialogParent = parent;
+    } else {
+	d->dialogParent = dialogParent;
+    }
 
     arrowBitmap = new QBitmap(dcolorarrow_width, dcolorarrow_height,
                               (const unsigned char *)dcolorarrow_bits, true);

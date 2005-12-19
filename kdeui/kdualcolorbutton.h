@@ -61,6 +61,8 @@ public:
      * Constructs a new KDualColorButton using the default black and white
      * colors.
      *
+     * As of KDE 3.5, sets the dialog parent to the same as "parent" if that
+     * argument is non-null.
      */
     KDualColorButton(QWidget *parent=0, const char *name=0, QWidget* dialogParent=0);
 
