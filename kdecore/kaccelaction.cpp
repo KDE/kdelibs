@@ -231,8 +231,8 @@ void KAccelActions::initPrivate( KAccelBase* pKAccelBase )
 
 void KAccelActions::clear()
 {
-	while(!m_actions.empty())
-		delete m_actions.takeFirst();
+	qDeleteAll( m_actions );
+	m_actions.clear();
 }
 
 bool KAccelActions::init( const KAccelActions& actions )
@@ -241,10 +241,7 @@ bool KAccelActions::init( const KAccelActions& actions )
 
 	for( int i = 0; i < actions.count() ; i++ ) {
 		const KAccelAction *pAction = actions.actionPtr(i);
-		if( pAction )
-			m_actions[i] = new KAccelAction( *pAction );
-		else
-			m_actions[i] = 0;
+		insertPtr( pAction ? new KAccelAction( *pAction ) : 0 );
 	}
 
 	return true;
