@@ -84,14 +84,14 @@ public:
         return false;
     }
 
-    virtual bool doWriteSymLink(const QString &name, const QString &target,
-					                                const QString &user, const QString &group, mode_t perm, time_t atime, time_t mtime, time_t ctime) 
-	{ 
-			Q_UNUSED( name ); Q_UNUSED( user ); Q_UNUSED( group );                          Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime);
-			return false; 
-	}
-	
-	
+    virtual bool doWriteSymLink( const QString &name, const QString &target,
+                                 const QString &user, const QString &group, mode_t perm, time_t atime, time_t mtime, time_t ctime )
+    {
+        Q_UNUSED( name ); Q_UNUSED( user ); Q_UNUSED( group );
+        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime);
+        return false;
+    }
+
 protected:
     /**
      * Opens the archive for reading.
