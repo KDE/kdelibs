@@ -152,6 +152,10 @@ KNotify::KNotify( bool useKDEMM )
     d->globalConfig = new KConfig("knotify.eventsrc", true, false);
     d->externalPlayerProc = 0;
 
+#if defined(HAVE_AKODE)
+    d->manager = 0;
+#endif
+
     d->useKDEMM = useKDEMM;
     d->inStartup = true;
 
