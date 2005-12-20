@@ -638,16 +638,23 @@
 # mail.news:  file(1) magic for mail and news
 #
 # There are tests to ascmagic.c to cope with mail and news.
+
 0	string		Relay-Version: 	message/rfc822
 0	string		#!\ rnews	message/rfc822
 0	string		N#!\ rnews	message/rfc822
 0	string		Forward\ to 	message/rfc822
 0	string		Pipe\ to 	message/rfc822
 0	string		Return-Path:	message/rfc822
-0	string		Path:		message/news
-0	string		Xref:		message/news
-0	string		From:		message/rfc822
-0	string		Article 	message/news
+0       string          Return-Path:    message/rfc822
+0       string          Path:           message/news
+0       string          Xref:           message/news
+0       string          From:           message/rfc822
+0       string          From\x20        application/mbox
+0       string          Article         message/news
+#0       string          BABYL           message/x-gnu-rmail
+0       string          Received:       message/rfc822
+
+
 
 # TNEF files...
 0	lelong		0x223E9F78	application/ms-tnef
@@ -864,15 +871,6 @@
 
 0	short		0xcafe
 >2	short		0xbabe		application/x-java
-
-# news and mail
-0       string          Return-Path:    message/rfc822
-0       string          Path:           message/news
-0       string          Xref:           message/news
-0       string          From:           message/rfc822
-0       string          Article         message/news
-#0       string          BABYL           message/x-gnu-rmail
-0       string          Received:       message/rfc822
 
 # vcard / vcalendar
 0	string		BEGIN:VCALENDAR	text/x-vcalendar
