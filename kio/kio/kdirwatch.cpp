@@ -91,6 +91,8 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 
 #endif
 
+#include <sys/utsname.h>
+
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
 #include "global.h" //  KIO::probably_slow_mounted
@@ -100,8 +102,6 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 static KDirWatchPrivate* dwp_self = 0;
 
 #ifdef HAVE_DNOTIFY
-
-#include <sys/utsname.h>
 
 static int dnotify_signal = 0;
 
@@ -205,8 +205,9 @@ void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
  */
 
 KDirWatchPrivate::KDirWatchPrivate()
+  : rescan_timer(0, "KDirWatchPrivate::rescan_timer")
 {
-  timer = new QTimer(this);
+  timer = new QTimer(this, "KDirWatchPrivate::timer");
   connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
   freq = 3600000; // 1 hour as upper bound
   statEntries = 0;
@@ -247,6 +248,19 @@ KDirWatchPrivate::KDirWatchPrivate()
   if ( m_inotify_fd <= 0 ) {
     kdDebug(7001) << "Can't use Inotify, kernel doesn't support it" << endl;
     supports_inotify = false;
+  }
+
+  {
+    struct utsname uts;
+    int major, minor, patch;
+    if (uname(&uts) < 0)
+      supports_inotify = false; // *shrug*
+    else if (sscanf(uts.release, "%d.%d.%d", &major, &minor, &patch) != 3)
+      supports_inotify = false; // *shrug*
+    else if( major * 1000000 + minor * 1000 + patch < 2006014 ) { // <2.6.14
+      kdDebug(7001) << "Can't use INotify, Linux kernel too old" << endl;
+      supports_inotify = false;
+    }
   }
 
   if ( supports_inotify ) {
