@@ -201,11 +201,11 @@ void KNumInput::setSteps(int minor, int major)
 // ----------------------------------------------------------------------------
 
 KIntSpinBox::KIntSpinBox(QWidget *parent)
-    : QSpinBox(parent)
+    : QSpinBox(parent),
+      val_base(10)
 {
     setRange(0,99);
     setSingleStep(1);
-    val_base = 10;
     lineEdit()->setAlignment(Qt::AlignRight);
     setValue(0);
 }
@@ -215,11 +215,11 @@ KIntSpinBox::~KIntSpinBox()
 }
 
 KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base)
-    : QSpinBox(parent)
+    : QSpinBox(parent),
+      val_base(base)
 {
     setRange(lower,upper);
     setSingleStep(step);
-    val_base = base;
     lineEdit()->setAlignment(Qt::AlignRight);
     setValue(value);
 }
