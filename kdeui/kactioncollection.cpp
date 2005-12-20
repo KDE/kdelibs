@@ -35,7 +35,7 @@
 #include <kaccelbase.h>
 #include <kdebug.h>
 
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qvariant.h>
 #include <QHash>
 

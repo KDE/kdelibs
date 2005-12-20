@@ -29,7 +29,7 @@
 
 #include <qapplication.h>
 #include <qtimer.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qlabel.h>
 #include <q3header.h>
 //Added by qt3to4:

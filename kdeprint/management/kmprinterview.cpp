@@ -25,7 +25,6 @@
 #include "kmmanager.h"
 
 #include <qlayout.h>
-#include <q3popupmenu.h>
 #include <kaction.h>
 #include <klocale.h>
 

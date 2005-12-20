@@ -35,13 +35,11 @@
 #include "kiconselectaction.h"
 #include "messagewindow.h"
 
-#include <q3dockarea.h>
 #include <kmenubar.h>
 #include <qtimer.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3popupmenu.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>

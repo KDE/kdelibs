@@ -19,7 +19,7 @@
  *
  */
 #include <qwidget.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include "kcmenumngr.h"
 #include "kglobal.h"
 #include "kconfig.h"

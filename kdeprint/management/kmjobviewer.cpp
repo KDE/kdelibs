@@ -32,7 +32,6 @@
 
 #include <klistview.h>
 #include <kstatusbar.h>
-#include <q3popupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kmenu.h>

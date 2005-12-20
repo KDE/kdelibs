@@ -37,7 +37,7 @@
 #include "dom/html_image.h"
 #include <qclipboard.h>
 #include <qfileinfo.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qmetaobject.h>
 
 #include <kdebug.h>
@@ -964,7 +964,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     m_direction = direction;
     m_part = part;
 
-    m_popup = new Q3PopupMenu;
+    m_popup = new QMenu;
     // xgettext: no-c-format
     m_popup->insertItem( i18n( "Default Font Size (100%)" ) );
 

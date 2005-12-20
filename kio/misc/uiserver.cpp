@@ -20,10 +20,12 @@
 // -*- mode: c++; c-basic-offset: 4 -*-
 
 #include <qtimer.h>
-
 #include <qregexp.h>
 #include <q3header.h>
 #include <qevent.h>
+#include <qcheckbox.h>
+#include <qlabel.h>
+#include <qlayout.h>
 
 #include <ksqueezedtextlabel.h>
 #include <kconfig.h>
@@ -43,12 +45,6 @@
 #include <ksystemtray.h>
 #include <kmenu.h>
 #include <kaction.h>
-
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <q3popupmenu.h>
-#include <q3header.h>
 
 #include "observer_stub.h"
 #include "observer.h" // for static methods only

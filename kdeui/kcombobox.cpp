@@ -21,8 +21,7 @@
 */
 
 #include <qclipboard.h>
-#include <q3listbox.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qapplication.h>
 #include <qevent.h>
 #include <QAbstractItemView>

@@ -40,7 +40,7 @@
 #include <qmimedata.h>
 #include <q3grid.h>
 #include <qpainter.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qstyle.h>
 
 

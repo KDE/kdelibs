@@ -19,7 +19,7 @@
 
 #include <qdir.h>
 #include <qlayout.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qstringlist.h>
 #include <QStack>
 

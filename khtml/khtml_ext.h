@@ -167,7 +167,7 @@ protected slots:
 private:
     void init(KHTMLPart *part, bool direction);
 private:
-    Q3PopupMenu *m_popup;
+    QMenu *m_popup;
     bool m_direction;
     KHTMLPart *m_part;
 };
