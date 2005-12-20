@@ -35,7 +35,8 @@ def check_qtconfig(env):
 	# - wheter to use debug or release libs
 
 	kde_debug = env['ARGS'].get('debug', None) != None
-
+	qt_debug = 0
+	
 	cxxflags = ''
 	file = open( qmakecache )
 	for line in file:
