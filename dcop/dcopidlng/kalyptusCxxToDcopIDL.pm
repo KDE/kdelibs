@@ -139,6 +139,9 @@ sub generateMethod($$)
 
     my $returnType = $m->{ReturnType};
     $returnType = undef if ($returnType eq 'void');
+    # For compat with KDE3, we call QCString the type holding a DCOPCString;
+    # this matches the dcopTypeName(DCOPCString) being equal to "QCString"
+    $returnType = 'QCString' if ($returnType eq 'DCOPCString');
 
     # Don't use $className here, it's never the fully qualified (A::B) name for a ctor.
     my $isConstructor = ($name eq $classNode->{astNodeName} );
