@@ -112,8 +112,7 @@ void KLanguageButton::init()
 {
   m_current=QString();
   m_ids = new QStringList;
-  m_popup = 0;
-  m_oldPopup = 0;
+  m_popup = new QMenu( this );
   d = new KLanguageButtonPrivate;
 
   d->staticText = false;
@@ -234,9 +233,7 @@ void KLanguageButton::clear()
 {
   m_ids->clear();
 
-  delete m_oldPopup;
-  m_oldPopup = m_popup;
-  m_popup = new QMenu( this );
+  m_popup->clear();
 
   d->button->setPopup( m_popup );
 

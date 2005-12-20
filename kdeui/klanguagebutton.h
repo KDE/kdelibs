@@ -171,7 +171,7 @@ private:
 
   // work space for the new class
   QStringList *m_ids;
-  QMenu *m_popup, *m_oldPopup;
+  QMenu *m_popup;
   QString m_current;
 
   KLanguageButtonPrivate * d;
