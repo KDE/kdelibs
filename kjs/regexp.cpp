@@ -202,26 +202,30 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 
   // map rmatch array to ovector used in PCRE case
   nrSubPatterns = 0;
-  for(uint j = 1; j < maxMatch && rmatch[j].rm_so >= 0 ; j++)
-      nrSubPatterns++;
-  int ovecsize = (nrSubPatterns+1)*3; // see above
+  for (uint j = 0; j < maxMatch && rmatch[j].rm_so >= 0 ; j++) {
+    nrSubPatterns++;
+    // if the nonEmpty flag is set, return a failed match if any of the
+    // subMatches happens to be an empty string.
+    if (m_notEmpty && rmatch[j].rm_so == rmatch[j].rm_eo) 
+      return UString::null;
+  }
+  // Allow an ovector slot to return the (failed) match result.
+  if (nrSubPatterns == 0) nrSubPatterns = 1;
+  
+  int ovecsize = (nrSubPatterns)*3; // see above
   *ovector = new int[ovecsize];
-  for (uint j = 0; j < nrSubPatterns + 1; j++) {
-    if (j>maxMatch)
-      break;
-    (*ovector)[2*j] = rmatch[j].rm_so + i;
-    (*ovector)[2*j+1] = rmatch[j].rm_eo + i;
+  for (uint j = 0; j < nrSubPatterns; j++) {
+      (*ovector)[2*j] = rmatch[j].rm_so + i;
+      (*ovector)[2*j+1] = rmatch[j].rm_eo + i;
   }
 #endif
 
   *pos = (*ovector)[0];
-#ifdef HAVE_PCREPOSIX  // TODO check this stuff in non-pcre mode
   if ( *pos == (*ovector)[1] && (flgs & Global) )
   {
     // empty match, next try will be with m_notEmpty=true
     m_notEmpty=true;
   }
-#endif
   return s.substr((*ovector)[0], (*ovector)[1] - (*ovector)[0]);
 }
 
