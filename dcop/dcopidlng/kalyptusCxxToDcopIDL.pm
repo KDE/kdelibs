@@ -40,7 +40,10 @@ use vars qw/$libname $rootnode $outputdir $opt $debug %canonicalType/;
   'unsigned short' => 'unsigned short int',
   'unsigned long' => 'unsigned long int',
   'long' => 'long int',
-  'short' => 'short int'
+  'short' => 'short int',
+  # For compat with KDE3, we call QCString the type holding a DCOPCString;
+  # this matches the dcopTypeName(DCOPCString) being equal to "QCString"
+  'DCOPCString' => 'QCString'
 );
 
 BEGIN
@@ -139,9 +142,6 @@ sub generateMethod($$)
 
     my $returnType = $m->{ReturnType};
     $returnType = undef if ($returnType eq 'void');
-    # For compat with KDE3, we call QCString the type holding a DCOPCString;
-    # this matches the dcopTypeName(DCOPCString) being equal to "QCString"
-    $returnType = 'QCString' if ($returnType eq 'DCOPCString');
 
     # Don't use $className here, it's never the fully qualified (A::B) name for a ctor.
     my $isConstructor = ($name eq $classNode->{astNodeName} );

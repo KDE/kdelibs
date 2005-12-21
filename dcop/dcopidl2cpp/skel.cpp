@@ -277,7 +277,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		QStringList::Iterator ittypes = argtypes.begin();
 		QStringList::Iterator args_count;
 		for( args_count = args.begin(); args_count != args.end(); ++args_count ){
-		    str << '\t'<< *ittypes << " " << *args_count << ";" <<  endl;
+                    QString argType = *ittypes;
+                    if ( argType == QLatin1String( "QCString" ) )
+                        argType = QLatin1String( "DCOPCString" );
+		    str << '\t'<< argType << " " << *args_count << ";" <<  endl;
 		    ++ittypes;
 		}
 		str << "\tQDataStream arg( data );" << endl;
