@@ -390,7 +390,7 @@ void KMimeType::init( KDesktopFile * config )
 
   QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) ) {
-    QString inherits = config->readEntry( XKDEIsAlso );
+    QString inherits = config->readEntry( XKDEIsAlso, QString() );
     if ( inherits != name() )
         m_mapProps.insert( XKDEIsAlso, inherits );
     else
@@ -399,7 +399,7 @@ void KMimeType::init( KDesktopFile * config )
 
   QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
   if ( config->hasKey( XKDEPatternsAccuracy ) )
-    m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy ) );
+    m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy, QString() ) );
 
 }
 

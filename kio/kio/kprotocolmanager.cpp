@@ -230,7 +230,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
 
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( scheme + "Proxy" );
+  return cfg->readEntry( scheme + "Proxy", QString() );
 }
 
 QString KProtocolManager::proxyForURL( const KURL &url )
