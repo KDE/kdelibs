@@ -22,6 +22,9 @@
             <property name="name">
                 <cstring>m_langCombo</cstring>
             </property>
+            <property name="whatsThis" stdset="0">
+                <string>This is the default language that the spell checker will use. The drop down box will list all of the dictionaries of your existing languages.</string>
+            </property>
         </widget>
         <widget class="QGroupBox" row="1" column="0" rowspan="1" colspan="2">
             <property name="name">
@@ -41,6 +44,9 @@
                     <property name="text">
                         <string>Enable &amp;background spellchecking</string>
                     </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If checked, the "spell as you type" mode is active and all misspelled words are immediately highlighted.</string>
+                    </property>
                 </widget>
                 <widget class="QCheckBox" row="1" column="0">
                     <property name="name">
@@ -49,6 +55,9 @@
                     <property name="text">
                         <string>Skip all &amp;uppercase words</string>
                     </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If checked, words that consist of only uppercase letters are not spell checked. This is useful if you have a lot of acronyms, such as KDE for example.</string>
+                    </property>
                 </widget>
                 <widget class="QCheckBox" row="2" column="0">
                     <property name="name">
@@ -56,6 +65,9 @@
                     </property>
                     <property name="text">
                         <string>S&amp;kip run-together words</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If checked, concatenated words made of existing words are not spell checked. This is useful in some languages.</string>
                     </property>
                 </widget>
             </grid>
@@ -81,9 +93,14 @@
             <property name="buttons">
                 <set>Remove|Add</set>
             </property>
+            <property name="whatsThis" stdset="0">
+                <string>To add a word you want to ignore, type it in the top edit field and click Add. To remove a word, highlight it in the list and click Remove.</string>
+            </property>
         </widget>
     </grid>
 </widget>
+<customwidgets>
+</customwidgets>
 <includes>
     <include location="global" impldecl="in implementation">keditlistbox.h</include>
     <include location="global" impldecl="in implementation">kcombobox.h</include>
