@@ -262,6 +262,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
        || (fun == "exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)"))
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       replyType = "void";
       DCOPCString name;
       DCOPCStringList arg_list;
@@ -291,6 +292,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
        (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)"))
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       bool bNoWait = false;
       QString serviceName;
       QStringList urls;
@@ -347,6 +349,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
       {
          replyType = "serviceResult";
          QDataStream stream2(&replyData, QIODevice::WriteOnly);
+         stream2.setVersion(QDataStream::Qt_3_1);
          stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       }
       return true;
@@ -354,6 +357,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
    else if (fun == "requestSlave(QString,QString,QString)")
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       QString protocol;
       QString host;
       QString app_socket;
@@ -362,24 +366,28 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
       QString error;
       pid_t pid = requestSlave(protocol, host, app_socket, error);
       QDataStream stream2(&replyData, QIODevice::WriteOnly);
+      stream2.setVersion(QDataStream::Qt_3_1);
       stream2 << pid << error;
       return true;
    }
    else if (fun == "requestHoldSlave(KURL,QString)")
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       KURL url;
       QString app_socket;
       stream >> url >> app_socket;
       replyType = "pid_t";
       pid_t pid = requestHoldSlave(url, app_socket);
       QDataStream stream2(&replyData, QIODevice::WriteOnly);
+      stream2.setVersion(QDataStream::Qt_3_1);
       stream2 << pid;
       return true;
    }
    else if (fun == "waitForSlave(pid_t)")
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       pid_t pid;
       stream >> pid;
       waitForSlave(pid);
@@ -390,6 +398,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
    else if (fun == "setLaunchEnv(QCString,QCString)")
    {
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       DCOPCString name;
       DCOPCString value;
       stream >> name >> value;
@@ -430,6 +439,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
    {
       kdDebug() << "KLauncher::process ---> autoStart(int)" << endl;
       QDataStream stream(data);
+      stream.setVersion(QDataStream::Qt_3_1);
       int phase;
       stream >> phase;
       autoStart(phase);
@@ -770,6 +780,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       DCOPCString replyType;
       replyType = "serviceResult";
       QDataStream stream2(&replyData, QIODevice::WriteOnly);
+      stream2.setVersion(QDataStream::Qt_3_1);
       stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);
