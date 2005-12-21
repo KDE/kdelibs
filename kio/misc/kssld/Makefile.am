@@ -13,7 +13,7 @@
 
 #    You should have received a copy of the GNU Library General Public License
 #    along with this library; see the file COPYING.LIB.  If not, write to
-#    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+#    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(SSL_INCLUDES) -I$(top_srcdir)/kio/kssl -I$(top_builddir)/kio/kssl $(all_includes)
