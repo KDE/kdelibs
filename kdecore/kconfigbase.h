@@ -24,7 +24,6 @@
 #define KCONFIGBASE_H
 
 #include <qvariant.h>
-
 #include <kdelibs_export.h>
 
 template <typename KT, typename KV> class QMap;
@@ -141,7 +140,7 @@ public:
    * @return The value for this key. Can be QString::null if aDefault is null.
    */
    QString readEntry(const QString& pKey,
-                     const QString& aDefault = QString::null ) const;
+                     const QString& aDefault ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -151,38 +150,17 @@ public:
    * @return The value for this key. Can be QString::null if aDefault is null.
    */
    QString readEntry(const char *pKey,
-                     const QString& aDefault = QString::null ) const;
+                     const QString& aDefault ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
-   * The value is treated as if it is of the given type.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
-   * @deprecated
    *
    * @param pKey The key to search for.
-   * @return An invalid QVariant if the key was not found or if the
-   * read value cannot be converted to the given QVariant::Type.
+   * @param aDefault A default value returned if the key was not found.
+   * @return The value for this key. Can be QString::null if aDefault is null.
    */
-  QVariant readPropertyEntry( const QString& pKey, QVariant::Type ) const;
-
-  /**
-   * Reads the value of an entry specified by @p pKey in the current group.
-   * The value is treated as if it is of the given type.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
-   *
-   * @deprecated
-   *
-   * @param pKey The key to search for.
-   * @return An invalid QVariant if the key was not found or if the
-   * read value cannot be converted to the given QVariant::Type.
-   */
-  QVariant readPropertyEntry( const char *pKey, QVariant::Type ) const;
+   QString readEntry(const char *pKey,
+                     const char *aDefault = 0 ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -190,7 +168,7 @@ public:
    *
    * Note that only the following QVariant types are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
+   * Double, LongLong, ULongLong, DateTime and Date.
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found or
@@ -198,8 +176,7 @@ public:
    * @return The value for the key or the default value if the key was not
    *         found.
    */
-  QVariant readPropertyEntry( const QString& pKey,
-                              const QVariant &aDefault) const;
+  QVariant readEntry( const QString& pKey, const QVariant &aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -207,7 +184,7 @@ public:
    *
    * Note that only the following QVariant types are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
+   * Double, LongLong, ULongLong, DateTime and Date.
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found or
@@ -215,14 +192,17 @@ public:
    * @return The value for the key or the default value if the key was not
    *         found.
    */
-  QVariant readPropertyEntry( const char *pKey,
-                              const QVariant &aDefault) const;
+  QVariant readEntry( const char *pKey, const QVariant &aDefault) const;
+
+  // these two are here temporarily for porting, remove before KDE4
+  QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const KDE_DEPRECATED;
+  QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const KDE_DEPRECATED;
 
 #ifdef KDE3_SUPPORT
   /**
    * Reads a list of strings.
    *
-   * @deprecated Use the version that returns QStringList
+   * @deprecated Use readListEntry(const QString&, char) const instead.
    *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
@@ -234,7 +214,7 @@ public:
   /**
    * Reads a list of strings.
    *
-   * @deprecated Use the version that returns QStringList
+   * @deprecated Use readListEntry(const char*, char) const instead.
    *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
@@ -373,8 +353,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
+  int readNumEntry( const QString& pKey, int nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a numerical value.
@@ -386,8 +367,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  int readNumEntry( const char *pKey, int nDefault = 0 ) const;
+  int readNumEntry( const char *pKey, int nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads an unsigned numerical value.
@@ -399,8 +381,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  unsigned int readUnsignedNumEntry( const QString& pKey, unsigned int nDefault = 0 ) const;
+  unsigned int readUnsignedNumEntry( const QString& pKey, unsigned int nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads an unsigned numerical value.
@@ -412,8 +395,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const;
+  unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const KDE_DEPRECATED;
 
 
   /**
@@ -426,8 +410,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
+  long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a numerical value.
@@ -439,8 +424,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  long readLongNumEntry( const char *pKey, long nDefault = 0 ) const;
+  long readLongNumEntry( const char *pKey, long nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Read an unsigned numerical value.
@@ -452,8 +438,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  unsigned long readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault = 0 ) const;
+  unsigned long readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Read an unsigned numerical value.
@@ -465,8 +452,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const;
+  unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a 64-bit numerical value.
@@ -478,8 +466,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  qint64 readNum64Entry( const QString& pKey, qint64 nDefault = 0 ) const;
+  qint64 readNum64Entry( const QString& pKey, qint64 nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a 64-bit numerical value.
@@ -491,8 +480,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  qint64 readNum64Entry( const char *pKey, qint64 nDefault = 0 ) const;
+  qint64 readNum64Entry( const char *pKey, qint64 nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -504,8 +494,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  quint64 readUnsignedNum64Entry( const QString& pKey, quint64 nDefault = 0 ) const;
+  quint64 readUnsignedNum64Entry( const QString& pKey, quint64 nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -517,8 +508,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  quint64 readUnsignedNum64Entry( const char *pKey, quint64 nDefault = 0 ) const;
+  quint64 readUnsignedNum64Entry( const char *pKey, quint64 nDefault = 0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a floating point value.
@@ -530,8 +522,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
+  double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a floating point value.
@@ -543,8 +536,9 @@ public:
    * @param nDefault A default value returned if the key was not found or if
    * the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
+  double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const KDE_DEPRECATED;
 
   /**
    * Reads a QFont value.
@@ -556,8 +550,9 @@ public:
    * @param pDefault A default value (null QFont by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const;
+  QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QFont value.
@@ -569,8 +564,9 @@ public:
    * @param pDefault A default value (null QFont by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const;
+  QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a boolean entry.
@@ -582,8 +578,9 @@ public:
    * @param pKey The key to search for
    * @param bDefault A default value returned if the key was not found.
    * @return The value for this key.
+   * @deprecated
    */
-  bool readBoolEntry( const QString& pKey, bool bDefault = false ) const;
+  bool readBoolEntry( const QString& pKey, bool bDefault = false ) const KDE_DEPRECATED;
 
   /**
    * Reads a boolean entry.
@@ -595,8 +592,9 @@ public:
    * @param pKey The key to search for
    * @param bDefault A default value returned if the key was not found.
    * @return The value for this key.
+   * @deprecated
    */
-  bool readBoolEntry( const char *pKey, bool bDefault = false ) const;
+  bool readBoolEntry( const char *pKey, bool bDefault = false ) const KDE_DEPRECATED;
 
   /**
    * Reads a QRect entry.
@@ -608,8 +606,9 @@ public:
    * @param pDefault A default value (null QRect by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
+  QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QRect entry.
@@ -621,8 +620,9 @@ public:
    * @param pDefault A default value (null QRect by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const;
+  QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QPoint entry.
@@ -634,8 +634,9 @@ public:
    * @param pDefault A default value (null QPoint by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const;
+  QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QPoint entry.
@@ -647,8 +648,9 @@ public:
    * @param pDefault A default value (null QPoint by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const;
+  QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QSize entry.
@@ -660,8 +662,9 @@ public:
    * @param pDefault A default value (null QSize by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
+  QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QSize entry.
@@ -673,8 +676,9 @@ public:
    * @param pDefault A default value (null QSize by default) returned if the
    * key was not found or if the read value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const;
+  QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const KDE_DEPRECATED;
 
 
   /**
@@ -687,8 +691,9 @@ public:
    * @param pDefault A default value (null QColor by default) returned if the
    * key was not found or if the value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const;
+  QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QColor entry.
@@ -700,8 +705,9 @@ public:
    * @param pDefault A default value (null QColor by default) returned if the
    * key was not found or if the value cannot be interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
+  QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QDateTime entry.
@@ -714,8 +720,9 @@ public:
    * returned if the key was not found or if the read value cannot be
    * interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const;
+  QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads a QDateTime entry.
@@ -728,8 +735,9 @@ public:
    * returned if the key was not found or if the read value cannot be
    * interpreted.
    * @return The value for this key.
+   * @deprecated
    */
-  QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const;
+  QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const KDE_DEPRECATED;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -1088,509 +1096,6 @@ public:
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), bPersistent, bGlobal, bNLS); }
-
-  /**
-   * Write a (key/value) pair.
-   * Same as above, but writes a numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *                    application specific config file, but to the
-   *                    global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *                    when writing it back.
-   */
-  void writeEntry( const QString& pKey, int nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Write a (key/value) pair.
-   * Same as above, but writes a numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *                    application specific config file, but to the
-   *                    global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *                    when writing it back.
-   */
-  void writeEntry( const char *pKey, int nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *                    application specific config file, but to the
-   *                    global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *                    when writing it back.
-   */
-  void writeEntry( const QString& pKey, unsigned int nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *                    application specific config file, but to the
-   *                    global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *                    when writing it back.
-   */
-  void writeEntry( const char *pKey, unsigned int nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a long numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, long nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a long numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, long nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned long numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, unsigned long nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned long numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, unsigned long nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a 64-bit numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, qint64 nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a long numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, qint64 nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned 64-bit numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, quint64 nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes an unsigned 64-bit numerical value.
-   *
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, quint64 nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a floating-point value.
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param format      @p format determines the format to which the value
-   *  is converted. Default is 'g'.
-   * @param precision   @p precision sets the precision with which the
-   *  value is converted. Default is 6 as in QString.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, double nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      char format = 'g', int precision = 6,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a floating-point value.
-   * @param pKey The key to write.
-   * @param nValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param format      @p format determines the format to which the value
-   *  is converted. Default is 'g'.
-   * @param precision   @p precision sets the precision with which the
-   *  value is converted. Default is 6 as in QString.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, double nValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      char format = 'g', int precision = 6,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a boolean value.
-   *
-   * @param pKey The key to write.
-   * @param bValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, bool bValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a boolean value.
-   *
-   * @param pKey The key to write.
-   * @param bValue The value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, bool bValue,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a font value.
-   *
-   * @param pKey The key to write.
-   * @param rFont The font value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QFont& rFont,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a font value.
-   *
-   * @param pKey The key to write.
-   * @param rFont The font value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QFont& rFont,
-                      bool bPersistent = true, bool bGlobal = false,
-                      bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a color entry.
-   *
-   * @param pKey The key to write.
-   * @param rColor The color value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QColor& rColor,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but write a color entry.
-   *
-   * @param pKey The key to write.
-   * @param rColor The color value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QColor& rColor,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a date and time entry.
-   *
-   * @param pKey The key to write.
-   * @param rDateTime The date and time value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QDateTime& rDateTime,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a date and time entry.
-   *
-   * @param pKey The key to write.
-   * @param rDateTime The date and time value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QDateTime& rDateTime,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a rectangle.
-   *
-   * @param pKey The key to write.
-   * @param rValue The rectangle value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QRect& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a rectangle.
-   *
-   * @param pKey The key to write.
-   * @param rValue The rectangle value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QRect& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a point.
-   *
-   * @param pKey The key to write.
-   * @param rValue The point value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QPoint& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a point.
-   *
-   * @param pKey The key to write.
-   * @param rValue The point value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QPoint& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a size.
-   *
-   * @param pKey The key to write.
-   * @param rValue The size value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const QString& pKey, const QSize& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
-  /**
-   * Writes a (key/value) pair.
-   * Same as above, but writes a size.
-   *
-   * @param pKey The key to write.
-   * @param rValue The size value to write.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
-   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global KDE config file.
-   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
-   *  when writing it back.
-   */
-  void writeEntry( const char *pKey, const QSize& rValue,
-                   bool bPersistent = true, bool bGlobal = false,
-                   bool bNLS = false );
 
   /**
    * Writes a file path.

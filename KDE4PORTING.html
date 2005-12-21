@@ -118,6 +118,29 @@ by QX11Info::display()</li>
 <li><b>TODO:</b> Rename header to match classname.</li>
 </ul>
 
+<H4>KConfigBase</H4>
+<ul>
+<li>all read*Entry methods deprecated, use readEntry(key, const QVariant&amp;); The use of QVariant
+allows some ambiguous conversions, so it might be necessary to use <em>QVariant::Type</em> or a
+<em>cast</em> to dis-ambiguate the type wanted, i.e.
+ <ul>
+ <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>0</b>)); // sometimes ambiguous
+ <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>int(0)</b>));</li>
+ <li>long var = qvariant_cast&lt;int&gt;(readEntry(key, <b>QVariant::Int</b>)); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
+ </ul>
+</li>
+<li>readEntry(const QString&amp;, const QString&amp;) no longer has a default argument, add QString() as
+second argument.
+</li>
+<li>all writeEntry* methods removed, mostly not noticeable, but some types don't automatically convert
+to QVariant. You need to cast to a type that is directly convertible to QVariant. i.e.
+<pre>
+time_t timeVal;
+writeEntry("someKey", timeVal); // ambiguous conversion
+writeEntry("someKey", int(timeVal)); // ok
+</pre>
+</li>
+</ul>
 <H4>KLibFactory</H4>
 
 <H4>KMacroExpander</H4>

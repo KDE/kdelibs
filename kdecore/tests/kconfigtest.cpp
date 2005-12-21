@@ -20,7 +20,6 @@
 #include <qttest_kde.h>
 #include "kconfigtest.h"
 #include "kconfigtest.moc"
-#include <qrect.h>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -40,9 +39,11 @@ QTTEST_KDEMAIN( KConfigTest, NoGUI )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
-#define STRINGLISTENTRY QStringList( "Hello," )
+#define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
+#define COLORENTRY QColor("steelblue")
+#define FONTENTRY QFont("Times", 16, QFont::Normal)
 
 void KConfigTest::writeConfigFile()
 {
@@ -56,7 +57,7 @@ void KConfigTest::writeConfigFile()
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
   sc.writeEntry( "boolEntry2", BOOLENTRY2 );
 
-  sc.writeEntry( "Test", QString::fromLocal8Bit( LOCAL8BITENTRY ) );
+  sc.writeEntry( "Test", QByteArray( LOCAL8BITENTRY ) );
   sc.writeEntry( "Test2", "");
   sc.writeEntry( "stringEntry1", STRINGENTRY1 );
   sc.writeEntry( "stringEntry2", STRINGENTRY2 );
@@ -79,6 +80,8 @@ void KConfigTest::writeConfigFile()
   sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true );
   sc.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
+  sc.writeEntry( "colorEntry", COLORENTRY );
+  sc.writeEntry( "fontEntry", FONTENTRY );
   sc.sync();
 }
 
@@ -120,23 +123,23 @@ void KConfigTest::testAll()
   QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
   QCOMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
   QVERIFY( !sc2.hasKey( "stringEntry2" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry2", QString("bla") ), QString( "bla" ) );
 
   QVERIFY( !sc2.hasDefault( "stringEntry1" ) );
 
   sc2.setGroup("Hello");
   QCOMPARE( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
-  QCOMPARE( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
+  QCOMPARE( sc2.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
   QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
   QCOMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
   QCOMPARE( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
   QCOMPARE( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
   QVERIFY( !sc2.hasKey( "stringEntry5" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
+  QCOMPARE( sc2.readEntry( "stringEntry5", QString("test") ), QString( "test" ) );
   QVERIFY( !sc2.hasKey( "stringEntry6" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
-  QCOMPARE( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
-  QCOMPARE( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
+  QCOMPARE( sc2.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
+  QCOMPARE( sc2.readEntry( "boolEntry1", BOOLENTRY1 ).toBool(), BOOLENTRY1 );
+  QCOMPARE( sc2.readEntry( "boolEntry2", QVariant::Bool ).toBool(), BOOLENTRY2 );
 
 #if 0
   QString s;
@@ -152,17 +155,24 @@ void KConfigTest::testAll()
 
   sc2.setGroup("OtherTypes");
 
-  QCOMPARE( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
-  QCOMPARE( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
-  QCOMPARE( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
-  QCOMPARE( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
-  QCOMPARE( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
+  QCOMPARE( sc2.readEntry( "pointEntry", QPoint() ).toPoint(), POINTENTRY );
+  QCOMPARE( sc2.readEntry( "sizeEntry", SIZEENTRY ).toSize(), SIZEENTRY);
+  QCOMPARE( sc2.readEntry( "rectEntry", QVariant::Rect ).toRect(), RECTENTRY );
+  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDateTime() ).toString(),
+            DATETIMEENTRY.toString(Qt::ISODate) );
+  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(),
+            DATETIMEENTRY.date().toString(Qt::ISODate) );
+  QCOMPARE( sc2.readEntry( "stringListEntry", QStringList()).toStringList().join( "," ),
+            STRINGLISTENTRY.join( "," ) );
+  QCOMPARE( sc2.readEntry( "colorEntry", QColor(Qt::black) ).toString(),
+            QVariant(COLORENTRY).toString() );
+  QCOMPARE( qvariant_cast<QColor>(sc2.readEntry( "colorEntry" )), COLORENTRY );
+  QCOMPARE( sc2.readEntry( "fontEntry", /*QFont()*/QVariant::Font ).toString(), QVariant(FONTENTRY).toString() );
 
-  QCOMPARE( sc2.readEntry( "byteArrayEntry1" ).toLatin1(), QByteArray( STRINGENTRY1 ) );
+  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QVariant::ByteArray ).toByteArray(), QByteArray( STRINGENTRY1 ) );
   QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
-  QList<int> intList = sc2.readIntListEntry( "listOfIntsEntry1" );
   QList<int> expectedIntList = INTLISTENTRY1;
-  QCOMPARE( intList, expectedIntList );
+  QCOMPARE( sc2.readIntListEntry( "listOfIntsEntry1" ), expectedIntList );
 
   QCOMPARE( sc2.readEntry( "listOfByteArraysEntry1" ), QString::fromLatin1( ",1\\,2,end" ) );
   QList<QByteArray> baList = sc2.readByteArrayListEntry( "listOfByteArraysEntry1" );

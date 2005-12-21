@@ -208,6 +208,11 @@ QString KConfigBase::readEntry( const QString& pKey,
    return KConfigBase::readEntry(pKey.toUtf8().data(), aDefault);
 }
 
+QString KConfigBase::readEntry( const char *pKey, const char *aDefault ) const
+{
+   return readEntry(pKey, QString::fromLatin1(aDefault));
+}
+
 QString KConfigBase::readEntry( const char *pKey,
                                 const QString& aDefault ) const
 {
@@ -335,28 +340,23 @@ QByteArray KConfigBase::readEntryUtf8( const char *pKey) const
 }
 
 QVariant KConfigBase::readPropertyEntry( const QString& pKey,
-                                          QVariant::Type type ) const
+                                         const QVariant& aDefault ) const
 {
-  return readPropertyEntry(pKey.toUtf8().data(), type);
+    return readPropertyEntry(pKey.toUtf8().data(), aDefault);
 }
 
-QVariant KConfigBase::readPropertyEntry( const char *pKey,
-                                          QVariant::Type type ) const
+QVariant KConfigBase::readPropertyEntry( const char* pKey,
+                                         const QVariant& aDefault ) const
 {
-  if ( !hasKey( pKey ) )
-    return QVariant();
-  else
-    return readPropertyEntry(pKey, QVariant(type));
+    return readEntry(pKey, aDefault);
 }
-
-QVariant KConfigBase::readPropertyEntry( const QString& pKey,
+QVariant KConfigBase::readEntry( const QString& pKey,
                                          const QVariant &aDefault ) const
 {
-  return readPropertyEntry(pKey.toUtf8().data(), aDefault);
+  return readEntry(pKey.toUtf8().data(), aDefault);
 }
 
-QVariant KConfigBase::readPropertyEntry( const char *pKey,
-                                         const QVariant &aDefault ) const
+QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) const
 {
   if ( !hasKey( pKey ) ) return aDefault;
 
@@ -367,76 +367,92 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Invalid:
           return QVariant();
       case QVariant::String:
-          return QVariant( readEntry( pKey, aDefault.toString() ) );
+          return readEntry( pKey, aDefault.toString() );
       case QVariant::StringList:
-          return QVariant( readListEntry( pKey ) );
+          return readListEntry( pKey );
       case QVariant::List: {
-          QStringList strList = readListEntry( pKey );
-          QStringList::ConstIterator it = strList.begin();
-          QStringList::ConstIterator end = strList.end();
           QList<QVariant> list;
 
-          for (; it != end; ++it ) {
-              tmp = *it;
-              list.append( tmp );
-          }
-          return QVariant( list );
+          foreach ( QString str, readListEntry( pKey ) )
+              list.append( str );
+          return list;
       }
-      case QVariant::Font: {
-	  QFont tmpf = qvariant_cast<QFont>( tmp );
-          return QVariant( readFontEntry( pKey, &tmpf ) );
-	}
-      case QVariant::Point: {
-          QPoint tmpp = tmp.toPoint();
-          return QVariant( readPointEntry( pKey, &tmpp ) );
-	}
-      case QVariant::Rect: {
-          QRect tmpr = tmp.toRect();
-          return QVariant( readRectEntry( pKey, &tmpr ) );
-	}
-      case QVariant::Size: {
-          QSize tmps = tmp.toSize();
-          return QVariant( readSizeEntry( pKey, &tmps ) );
-	}
-      case QVariant::Color: {
-	  QColor tmpc = qvariant_cast<QColor>( tmp );
-          return QVariant( readColorEntry( pKey, &tmpc ) );
-	}
-      case QVariant::Int:
-          return QVariant( readNumEntry( pKey, aDefault.toInt() ) );
-      case QVariant::UInt:
-          return QVariant( readUnsignedNumEntry( pKey, aDefault.toUInt() ) );
-      case QVariant::LongLong:
-          return QVariant( readNum64Entry( pKey, aDefault.toLongLong() ) );
-      case QVariant::ULongLong:
-          return QVariant( readUnsignedNum64Entry( pKey, aDefault.toULongLong() ) );
+      case QVariant::ByteArray:
+            return readEntryUtf8(pKey);
+      case QVariant::Font:
+      case QVariant::Color:
+//      case QVariant::KeySequence:
       case QVariant::Bool:
-          return QVariant( readBoolEntry( pKey, aDefault.toBool() ), 0 );
       case QVariant::Double:
-          return QVariant( readDoubleNumEntry( pKey, aDefault.toDouble() ) );
-      case QVariant::DateTime: {
-          QDateTime tmpdt = tmp.toDateTime();
-          return QVariant( readDateTimeEntry( pKey, &tmpdt ) );
-	}
-      case QVariant::Date: {
-          QDateTime tmpdt = tmp.toDateTime();
-          return QVariant(readDateTimeEntry( pKey, &tmpdt ).date());
-	}
+      case QVariant::Int:
+      case QVariant::UInt:
+            tmp = QString::fromUtf8(readEntryUtf8(pKey));
+            if ( !tmp.convert(aDefault.type()) )
+                tmp = aDefault;
+            return tmp;
+      case QVariant::Point: {
+          QList<int> list = readIntListEntry( pKey );
 
-      case QVariant::Pixmap:
-      case QVariant::Image:
-      case QVariant::Brush:
-      case QVariant::Palette:
-      case QVariant::Map:
-      case QVariant::Icon:
-      case QVariant::Region:
-      case QVariant::Bitmap:
-      case QVariant::Cursor:
-      case QVariant::SizePolicy:
-      case QVariant::Time:
-      case QVariant::BitArray:
-      case QVariant::KeySequence:
-      case QVariant::Pen:
+          if ( list.count() == 2 )
+              tmp = QPoint(list.at( 0 ), list.at( 1 ));
+          return tmp;
+      }
+      case QVariant::Rect: {
+          QList<int> list = readIntListEntry( pKey );
+
+          if ( list.count() == 4)
+              tmp = QRect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+          return tmp;
+      }
+      case QVariant::Size: {
+          QList<int> list = readIntListEntry( pKey );
+
+          if ( list.count() == 2 )
+              tmp = QSize(list.at( 0 ), list.at( 1 ));
+          return tmp;
+      }
+      case QVariant::LongLong: {
+          QByteArray aValue = readEntryUtf8(pKey);
+
+          if ( !aValue.isEmpty() ) {
+              bool ok;
+              qint64 rc = aValue.toLongLong( &ok );
+              if ( ok )
+                  tmp = rc;
+          }
+          return tmp;
+      }
+      case QVariant::ULongLong: {
+          QByteArray aValue = readEntryUtf8(pKey);
+
+          if( !aValue.isEmpty() ) {
+              bool ok;
+              quint64 rc = aValue.toULongLong( &ok );
+              if ( ok )
+                  tmp = rc;
+          }
+          return tmp;
+      }
+      case QVariant::DateTime: {
+          QList<int> list = readIntListEntry( pKey );
+          if ( list.count() == 6 ) {
+              QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+              QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
+              return QDateTime( date, time );
+          }
+          if ( !aDefault.toDateTime().isValid() )
+              tmp = QDateTime::currentDateTime();
+          return tmp;
+      }
+      case QVariant::Date: {
+          QList<int> list = readIntListEntry( pKey );
+          if ( list.count() == 6 )
+              return QDate( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+          if ( !aDefault.toDate().isValid() )
+              tmp = QDate::currentDate();
+          return tmp;
+      }
+
       default:
           break;
   }
@@ -1294,56 +1310,79 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
       return;
     case QVariant::List: {
-        QList<QVariant> list = prop.toList();
-        QList<QVariant>::ConstIterator it = list.begin();
-        QList<QVariant>::ConstIterator end = list.end();
         QStringList strList;
-
-        for (; it != end; ++it )
-            strList.append( (*it).toString() );
+        foreach ( QVariant aValue, prop.toList() )
+            strList.append( aValue.toString() );
 
         writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
 
         return;
     }
-    case QVariant::Font:
-      writeEntry( pKey, QFont(prop.toString()), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Point:
-      writeEntry( pKey, prop.toPoint(), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Rect:
-      writeEntry( pKey, prop.toRect(), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Size:
-      writeEntry( pKey, prop.toSize(), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Color:
-      writeEntry( pKey, QColor(prop.toString()), bPersistent, bGlobal, bNLS );
-      return;
+    case QVariant::Point: {
+        QList<int> list;
+        QPoint rPoint = prop.toPoint();
+        list.insert( 0, rPoint.x() );
+        list.insert( 1, rPoint.y() );
+
+        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        return;
+    }
+    case QVariant::Rect:{
+        QList<int> list;
+        QRect rRect = prop.toRect();
+        list.insert( 0, rRect.left() );
+        list.insert( 1, rRect.top() );
+        list.insert( 2, rRect.width() );
+        list.insert( 3, rRect.height() );
+
+        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        return;
+    }
+    case QVariant::Size:{
+        QList<int> list;
+        QSize rSize = prop.toSize();
+        list.insert( 0, rSize.width() );
+        list.insert( 1, rSize.height() );
+
+        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        return;
+    }
     case QVariant::Int:
-      writeEntry( pKey, prop.toInt(), bPersistent, bGlobal, bNLS );
-      return;
     case QVariant::UInt:
-      writeEntry( pKey, prop.toUInt(), bPersistent, bGlobal, bNLS );
-      return;
+    case QVariant::Double:
+    case QVariant::Bool:
+    case QVariant::Color:
+//    case QVariant::KeySequence:
+    case QVariant::Font:
+	kdDebug() << "write " << "Type: " << prop.typeName() << " Value: " << prop.toString() << endl;
+        writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
+        return;
     case QVariant::LongLong:
-      writeEntry( pKey, prop.toLongLong(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QString::number(prop.toLongLong()), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::ULongLong:
-      writeEntry( pKey, prop.toULongLong(), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Bool:
-      writeEntry( pKey, prop.toBool(), bPersistent, bGlobal, bNLS );
-      return;
-    case QVariant::Double:
-      writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, 'g', 6, bNLS );
-      return;
-    case QVariant::DateTime:
-      writeEntry( pKey, prop.toDateTime(), bPersistent, bGlobal, bNLS);
+      writeEntry( pKey, QString::number(prop.toULongLong()), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::Date:
-      writeEntry( pKey, QDateTime(prop.toDate()), bPersistent, bGlobal, bNLS);
+    case QVariant::DateTime: {
+        QList<int> list;
+        QDateTime rDateTime = prop.toDateTime();
+
+        QTime time = rDateTime.time();
+        QDate date = rDateTime.date();
+
+        list.insert( 0, date.year() );
+        list.insert( 1, date.month() );
+        list.insert( 2, date.day() );
+
+        list.insert( 3, time.hour() );
+        list.insert( 4, time.minute() );
+        list.insert( 5, time.second() );
+
+        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        return;
+    }
+      writeEntry( pKey, prop.toDateTime(), bPersistent, bGlobal, bNLS);
       return;
 
     case QVariant::Pixmap:
@@ -1359,7 +1398,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Time:
     case QVariant::ByteArray:
     case QVariant::BitArray:
-    case QVariant::KeySequence:
     case QVariant::Pen:
     default:
         break;
@@ -1496,259 +1534,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QList<int> &list,
     for (QList<int>::ConstIterator it = list.begin(); it != end; it++)
         strlist << QString::number(*it);
     writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, unsigned int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, unsigned long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, qint64 nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, qint64 nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, quint64 nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, quint64 nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, double nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 char format, int precision,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue, format, precision),
-                     bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const char *pKey, double nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 char format, int precision,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue, format, precision),
-                     bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, bool bValue,
-                                 bool bPersistent,
-                                 bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), bValue, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, bool bValue,
-                                 bool bPersistent,
-                                 bool bGlobal,
-                                 bool bNLS )
-{
-  QString aValue;
-
-  if( bValue )
-    aValue = "true";
-  else
-    aValue = "false";
-
-  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), rFont, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, rFont.toString(), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), rRect, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QRect& rRect,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  QStringList list;
-  list.insert( 0, QString::number( rRect.left() ) );
-  list.insert( 1, QString::number( rRect.top() ) );
-  list.insert( 2, QString::number( rRect.width() ) );
-  list.insert( 3, QString::number( rRect.height() ) );
-
-  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), rPoint, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QPoint& rPoint,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  QStringList list;
-  list.insert( 0, QString::number( rPoint.x() ) );
-  list.insert( 1, QString::number( rPoint.y() ) );
-
-  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), rSize, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QSize& rSize,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  QStringList list;
-  list.insert( 0, QString::number( rSize.width() ) );
-  list.insert( 1, QString::number( rSize.height() ) );
-
-  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
-                              bool bPersistent,
-                              bool bGlobal,
-                              bool bNLS  )
-{
-  writeEntry( pKey.toUtf8().data(), rColor, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QColor& rColor,
-                              bool bPersistent,
-                              bool bGlobal,
-                              bool bNLS  )
-{
-  QString aValue;
-  if (rColor.isValid())
-      aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
-  else
-      aValue = "invalid";
-
-  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, const QDateTime& rDateTime,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), rDateTime, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QDateTime& rDateTime,
-                              bool bPersistent, bool bGlobal,
-                              bool bNLS )
-{
-  QStringList list;
-
-  QTime time = rDateTime.time();
-  QDate date = rDateTime.date();
-
-  list.insert( 0, QString::number( date.year() ) );
-  list.insert( 1, QString::number( date.month() ) );
-  list.insert( 2, QString::number( date.day() ) );
-
-  list.insert( 3, QString::number( time.hour() ) );
-  list.insert( 4, QString::number( time.minute() ) );
-  list.insert( 5, QString::number( time.second() ) );
-
-  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
 
 void KConfigBase::parseConfigFiles()
