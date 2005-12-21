@@ -21,7 +21,7 @@
 #define POSTERPREVIEW_H
 
 #include <qframe.h>
-#include <qlist.h>
+#include <QList>
 
 class KProcess;
 

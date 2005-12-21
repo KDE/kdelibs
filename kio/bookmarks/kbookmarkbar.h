@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qpointer.h>
-#include <qlist.h>
+#include <QList>
 #include <kbookmark.h>
 #include <kaction.h>
 

@@ -26,7 +26,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qimage.h>
-#include <qlist.h>
+#include <QList>
 
 class KAboutPerson::Private
 {

@@ -28,7 +28,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
-#include <qlist.h>
+#include <QList>
 #include <qtimer.h>
 
 #include <dcopclient.h>

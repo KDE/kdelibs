@@ -22,7 +22,7 @@
 #define KIO_AUTHINFO_H
 
 #include <qmap.h>
-#include <qlist.h>
+#include <QList>
 #include <qstringlist.h>
 #include <kurl.h>
 

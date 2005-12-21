@@ -38,7 +38,7 @@
 #include <qscrollbar.h>
 #include <qstringlist.h>
 #include <qfontdatabase.h>
-#include <qlist.h>
+#include <QList>
 #include <qgroupbox.h>
 #include <kcharsets.h>
 #include <kconfig.h>

@@ -12,7 +12,7 @@
 #define __Stub_h_Included__
 
 #include <qbytearray.h>
-#include <qlist.h>
+#include <QList>
 
 #include "process.h"
 #include "kcookie.h"

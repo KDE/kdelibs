@@ -23,7 +23,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtimer.h>
-#include <qstack.h>
+#include <QStack>
 
 #include "kapplication.h"
 #include "kstandarddirs.h"

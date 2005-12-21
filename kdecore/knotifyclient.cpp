@@ -22,7 +22,7 @@
 #include "ktoolinvocation.h"
 
 #include <qdatastream.h>
-#include <qstack.h>
+#include <QStack>
 
 #include <krandom.h>
 #include <kstandarddirs.h>

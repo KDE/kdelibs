@@ -19,7 +19,7 @@
 #ifndef KSYCOCADICT_H
 #define KSYCOCADICT_H
 
-#include <qlist.h>
+#include <QList>
 
 #include <kdelibs_export.h>
 

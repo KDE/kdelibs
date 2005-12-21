@@ -21,7 +21,7 @@
 #define kurl_h
 
 #include <qstring.h>
-#include <qlist.h>
+#include <QList>
 #include "kdelibs_export.h"
 #include <qmap.h>
 

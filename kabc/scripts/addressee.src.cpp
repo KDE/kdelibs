@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
-#include <qlist.h>
+#include <QList>
 
 #include "addresseehelper.h"
 #include "field.h"

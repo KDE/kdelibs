@@ -24,7 +24,7 @@
 #include <qstring.h>
 #include <qhash.h>
 #include <qmap.h>
-#include <qlist.h>
+#include <QList>
 
 #include <sys/stat.h> // S_ISDIR
 

@@ -25,7 +25,7 @@
 #undef KDE3_SUPPORT
 
 #include <qglobal.h>
-#include <qlist.h>
+#include <QList>
 #include <qset.h>
 #include <qwindowdefs.h>
 #include "kglobal.h"

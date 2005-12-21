@@ -22,7 +22,7 @@
 #define __kmimetyperesolver_h
 
 #include <q3scrollview.h>
-#include <qlist.h>
+#include <QList>
 #include <qtimer.h>
 #include <kdebug.h>
 #include <QEvent>

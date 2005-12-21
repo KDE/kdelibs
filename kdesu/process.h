@@ -16,7 +16,7 @@
 #include <qbytearray.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <QList>
 
 #include <kdelibs_export.h>
 

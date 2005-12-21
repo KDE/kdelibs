@@ -23,7 +23,7 @@
 #include "kmacroexpander.h"
 #include "kdebug.h"
 
-#include <qstack.h>
+#include <QStack>
 #include <qregexp.h>
 #include <qhash.h>
 #include <qstring.h>
