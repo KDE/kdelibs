@@ -208,7 +208,7 @@
 <!ENTITY Rob.Kaper '<personname><firstname>Rob</firstname><surname>Kaper</surname></personname>'>
 <!ENTITY Rob.Kaper.mail '<email>cap@capsi.com</email>'>
 <!ENTITY Jason.Katz-Brown '<personname><firstname>Jason</firstname><surname>Katz-Brown</surname></personname>'>
-<!ENTITY Jason.Katz-Brown.mail '<email>jason@katzbrown.com</email>'>
+<!ENTITY Jason.Katz-Brown.mail '<email>jasonkb@mit.edu</email>'>
 <!ENTITY Ulrich.Kuettler '<personname><firstname>Ulrich</firstname><surname>Küttler</surname></personname>'>
 <!ENTITY Stefan.Kebekus '<personname><firstname>Stefan</firstname><surname>Kebekus</surname></personname>'>
 <!ENTITY Stefan.Kebekus.mail '<email>kebekus@kde.org</email>'>
