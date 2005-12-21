@@ -328,12 +328,12 @@ void DownloadDialog::slotResult(KIO::Job *job)
 int DownloadDialog::installStatus(Entry *entry)
 {
   QDate date;
-  QString datestring;
   int installed;
 
   KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
-  datestring = cg.readEntry(entry->name());
-  if(datestring.isNull()) installed = 0;
+  QString datestring = cg.readEntry(entry->name(), QString());
+  if(datestring.isEmpty())
+    installed = 0;
   else
   {
     date = QDate::fromString(datestring, Qt::ISODate);
