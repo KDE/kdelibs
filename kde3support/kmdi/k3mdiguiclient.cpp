@@ -250,12 +250,11 @@ void K3MDIGUIClient::addToolView( K3MdiToolViewAccessor* mtva )
 	QString aname = QString( "k3mdi_toolview_" ) + mtva->wrappedWidget() ->name();
 
 	// try to read the action shortcut
-	KShortcut sc;
 	KConfig *cfg = kapp->config();
 	QString _grp = cfg->group();
 	cfg->setGroup( "Shortcuts" );
 	// 	if ( cfg->hasKey( aname ) )
-	sc = KShortcut( cfg->readEntry( aname ) );
+	KShortcut sc( cfg->readEntry( aname, QString() ) );
 	cfg->setGroup( _grp );
 	KAction *a = new ToggleToolViewAction( i18n( "Show %1" ).arg( mtva->wrappedWidget() ->caption() ),
 	                                       /*QString::null*/sc, dynamic_cast<K3DockWidget*>( mtva->wrapperWidget() ),

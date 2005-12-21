@@ -688,19 +688,19 @@ void K3MdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 	QString raise;
 	while ( true )
 	{
-		QString dwn = cfg->readEntry( QString( "widget%1" ).arg( i ) );
+		QString dwn = cfg->readEntry( QString( "widget%1" ).arg( i ), QString() );
 		if ( dwn.isEmpty() )
 			break;
 		kdDebug( 760 ) << k_funcinfo << "configuring dockwidget :" << dwn << endl;
 		K3DockWidget *dw = ( ( K3DockWidget* ) parent() ) ->dockManager() ->getDockWidgetFromName( dwn );
 		if ( dw )
 		{
-			QString s = cfg->readEntry( QString( "widget%1-tabCaption" ).arg( i ) );
+			QString s = cfg->readEntry( QString( "widget%1-tabCaption" ).arg( i ), QString() );
 			if ( !s.isEmpty() )
 			{
 				dw->setTabPageLabel( s );
 			}
-			s = cfg->readEntry( QString( "widget%1-tabTooltip" ).arg( i ) );
+			s = cfg->readEntry( QString( "widget%1-tabTooltip" ).arg( i ), QString() );
 			if ( !s.isEmpty() )
 			{
 				dw->setToolTipString( s );
