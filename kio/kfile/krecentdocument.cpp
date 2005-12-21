@@ -108,7 +108,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
         // see if it points to the same file and application
         KSimpleConfig tmp(ddesktop);
         tmp.setDesktopGroup();
-        if(tmp.readEntry(QLatin1String("X-KDE-LastOpenedWith"))
+        if(tmp.readEntry("X-KDE-LastOpenedWith")
 	   == desktopEntryName)
 	{
             utime(QFile::encodeName(ddesktop), NULL);

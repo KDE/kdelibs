@@ -1496,7 +1496,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // read in the IconText property
             if ( config->hasKey( attrIconText ) ) {
-                iconText = config->readEntry(attrIconText);
+                iconText = config->readEntry(attrIconText, QString());
                 applyIconText = true;
                 //kdDebug(220) << name() << " read icontext=" << d->IconTextDefault << ", that will be the default" << endl;
             }

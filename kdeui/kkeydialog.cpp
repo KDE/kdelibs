@@ -682,7 +682,7 @@ void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfi
 	for( ; it.current(); ++it ) {
 		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
 		if( pItem ) {
-			QString sEntry = cg.readEntry( pItem->actionName() );
+			QString sEntry = cg.readEntry( pItem->actionName(), QString() );
 			if( !sEntry.isNull() || bClearUnset ) {
 				if( sEntry == "none" )
 					sEntry = QString::null;

@@ -387,7 +387,7 @@ const QString KMainWindow::classNameOfToplevel( int number )
     if ( !config->hasKey( QLatin1String("ClassName") ) )
         return QString::null;
     else
-        return config->readEntry( QLatin1String("ClassName") );
+        return config->readEntry( "ClassName" );
 }
 
 void KMainWindow::show()
@@ -824,7 +824,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
     // restore the object name (window role)
     if ( config->hasKey(QLatin1String("ObjectName" )) )
-        setObjectName( config->readEntry(QLatin1String("ObjectName")).toLatin1()); // latin1 is right here
+        setObjectName( config->readEntry("ObjectName").toLatin1()); // latin1 is right here
 
     applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
 

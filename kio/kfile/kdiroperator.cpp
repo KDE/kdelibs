@@ -1437,8 +1437,8 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     defaultView = 0;
     int sorting = 0;
 
-    QString viewStyle = kc->readEntry( QLatin1String("View Style"),
-                                       QLatin1String("Simple") );
+    QString viewStyle = kc->readEntry( "View Style",
+                                       "Simple" );
     if ( viewStyle == QLatin1String("Detail") )
         defaultView |= KFile::Detail;
     else

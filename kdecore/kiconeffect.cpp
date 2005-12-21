@@ -102,7 +102,7 @@ void KIconEffect::init()
 	KConfigGroup cg(config, *it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
 	{
-	    QString tmp = cg.readEntry(*it2 + "Effect");
+	    QString tmp = cg.readEntry(*it2 + "Effect", QString());
 	    if (tmp == _togray)
 		effect = ToGray;
 	    else if (tmp == _colorize)

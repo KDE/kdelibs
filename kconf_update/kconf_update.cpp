@@ -384,8 +384,8 @@ bool KonfUpdate::updateFile(const QString &filename)
    struct stat buff;
    stat( QFile::encodeName(filename), &buff);
    config->setGroup(currentFilename);
-   config->writeEntry("ctime", buff.st_ctime);
-   config->writeEntry("mtime", buff.st_mtime);
+   config->writeEntry("ctime", int(buff.st_ctime));
+   config->writeEntry("mtime", int(buff.st_mtime));
    config->sync();
    return true;
 }
@@ -599,7 +599,7 @@ void KonfUpdate::gotKey(const QString &_key)
    oldConfig1->setGroup(oldGroup);
    if (!oldConfig1->hasKey(oldKey))
       return;
-   QString value = oldConfig1->readEntry(oldKey);
+   QString value = oldConfig1->readEntry(oldKey, QString());
    newConfig->setGroup(newGroup);
    if (!m_bOverwrite && newConfig->hasKey(newKey))
    {
@@ -712,7 +712,7 @@ void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &grp1,
    for(QMap<QString, QString>::Iterator it = list.begin();
        it != list.end(); ++it)
    {
-      cfg2->writeEntry(it.key(), cfg1->readEntry(it.key()));
+      cfg2->writeEntry(it.key(), cfg1->readEntry(it.key(), QString()));
    }
 }
 

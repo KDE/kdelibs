@@ -469,7 +469,7 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 		const KAccelAction& action = *m_actions.at(i);
 
 		QString s;
-		bool bConfigHasAction = !cg.readEntry( action.m_sName ).isEmpty();
+		bool bConfigHasAction = !cg.readEntry( action.m_sName, QString() ).isEmpty();
 		bool bSameAsDefault = true;
 		bool bWriteAction = false;
 

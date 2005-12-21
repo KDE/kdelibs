@@ -3911,7 +3911,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   // For compatibility with KDE 1.x
   selectedTypes += config.readListEntry( "MimeType", ';' );
 
-  QString nameStr = config.readEntry( QString::fromLatin1("Name") );
+  QString nameStr = config.readEntry( "Name" );
   if ( nameStr.isEmpty() || d->m_kdesktopMode ) {
     // We'll use the file name if no name is specified
     // because we _need_ a Name for a valid file.

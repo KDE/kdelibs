@@ -582,9 +582,9 @@ void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
         return; // nothing we could do.
 
     insertItem( url,
-                config->readEntry( QString("Description_") + number ),
+                config->readEntry( QString("Description_") + number, QString() ),
                 applicationLocal,
-                config->readEntry( QString("Icon_") + number ),
+                config->readEntry( QString("Icon_") + number, QString() ),
                 static_cast<KIcon::Group>(
                     config->readNumEntry( QString("IconGroup_") + number )) );
 }

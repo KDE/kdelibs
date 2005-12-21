@@ -258,7 +258,7 @@ LdapSearch::LdapSearch()
     for ( int j = 0; j < numHosts; j++ ) {
       LdapClient* ldapClient = new LdapClient( this );
 
-      QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ), "" ).trimmed();
+      QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ) ).trimmed();
       if ( !host.isEmpty() )
         ldapClient->setHost( host );
 
@@ -266,7 +266,7 @@ LdapSearch::LdapSearch()
       if ( !port.isEmpty() )
         ldapClient->setPort( port );
 
-      QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ), "" ).trimmed();
+      QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ) ).trimmed();
       if ( !base.isEmpty() )
         ldapClient->setBase( base );
 

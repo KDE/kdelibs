@@ -89,7 +89,7 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 	uint nSize = count();
 	for( uint i = 0; i < nSize; i++ ) {
 		if( isConfigurable(i) ) {
-			QString sEntry = cg.readEntry( name(i) );
+			QString sEntry = cg.readEntry( name(i), QString() );
 			if( !sEntry.isEmpty() ) {
 				if( sEntry == "none" )
 					setShortcut( i, KShortcut() );
@@ -124,7 +124,7 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 	for( uint i = 0; i < nSize; i++ ) {
 		if( isConfigurable(i) ) {
 			const QString& sName = name(i);
-			bool bConfigHasAction = !cg.readEntry( sName ).isEmpty();
+			bool bConfigHasAction = !cg.readEntry( sName, QString() ).isEmpty();
 			bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
 			// If we're using a global config or this setting
 			//  differs from the default, then we want to write.

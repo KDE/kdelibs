@@ -1000,8 +1000,7 @@ Application::Application( const QString &path )
     config = new KConfig(config_file, false, false);
     kc = new KConfig(path, true, false, "data");
     kc->setGroup( QLatin1String("!Global!") );
-    m_icon = kc->readEntry(QLatin1String("IconName"),
-                           QLatin1String("misc"));
+    m_icon = kc->readEntry("IconName", "misc");
     m_description = kc->readEntry( QLatin1String("Comment"),
                                    i18n("No description available") );
 
@@ -1066,8 +1065,8 @@ void Application::reloadEvents( bool revertToDefaults )
 
     QString global = QLatin1String("!Global!");
     QString default_group = QLatin1String("<default>");
-    QString name = QLatin1String("Name");
-    QString comment = QLatin1String("Comment");
+//    QString name = QLatin1String("Name");
+//    QString comment = QLatin1String("Comment");
 
     QStringList conflist = kc->groupList();
     QStringList::ConstIterator it = conflist.begin();
@@ -1077,8 +1076,8 @@ void Application::reloadEvents( bool revertToDefaults )
             kc->setGroup( *it );
 
             e = new Event( this );
-            e->name = kc->readEntry( name );
-            e->description = kc->readEntry( comment );
+            e->name = kc->readEntry( "Name" );
+            e->description = kc->readEntry( "Comment" );
             e->dontShow = kc->readNumEntry("nopresentation", 0 );
             e->configGroup = *it;
 

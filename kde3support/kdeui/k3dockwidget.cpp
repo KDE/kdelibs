@@ -425,7 +425,7 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 #ifndef NO_KDE2
 void K3DockWidgetHeader::saveConfig( KConfig* c )
 {
-  c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), stayButton->isOn() );
+  c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isOn()) );
 }
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )
@@ -2576,14 +2576,14 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         if ( !obj->parent() ){
           c->writeEntry( cname+":parent", "___null___");
           c->writeEntry( cname+":geometry", QRect(obj->frameGeometry().topLeft(), obj->size()) );
-          c->writeEntry( cname+":visible", obj->isVisible());
+          c->writeEntry( cname+":visible", QVariant(obj->isVisible()) );
         } else {
           c->writeEntry( cname+":parent", "yes");
         }
         c->writeEntry( cname+":first_name", obj->firstName );
         c->writeEntry( cname+":last_name", obj->lastName );
-        c->writeEntry( cname+":orientation", (int)obj->splitterOrientation );
-        c->writeEntry( cname+":sepPos", ((K3DockSplitter*)obj->widget)->separatorPosInPercent() );
+        c->writeEntry( cname+":orientation", QVariant(obj->splitterOrientation) );
+        c->writeEntry( cname+":sepPos", QVariant(((K3DockSplitter*)obj->widget)->separatorPosInPercent()) );
 
         nameList.append( obj->name() );
         findList.append( obj->name() );
@@ -2608,9 +2608,9 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         if ( !obj->parent() ){
           c->writeEntry( cname+":parent", "___null___");
           c->writeEntry( cname+":geometry", QRect(obj->frameGeometry().topLeft(), obj->size()) );
-          c->writeEntry( cname+":visible", obj->isVisible());
+          c->writeEntry( cname+":visible", QVariant(obj->isVisible()) );
           c->writeEntry( cname+":dockBackTo", obj->formerBrotherDockWidget ? obj->formerBrotherDockWidget->name() : "");
-          c->writeEntry( cname+":dockBackToPos", obj->formerDockPos);
+          c->writeEntry( cname+":dockBackToPos", QVariant(obj->formerDockPos) );
         } else {
           c->writeEntry( cname+":parent", "yes");
         }
@@ -2618,7 +2618,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         for ( int i = 0; i < ((K3DockTabGroup*)obj->widget)->count(); ++i )
           list.append( ((K3DockTabGroup*)obj->widget)->page( i )->name() );
         c->writeEntry( cname+":tabNames", list );
-        c->writeEntry( cname+":curTab", ((K3DockTabGroup*)obj->widget)->currentPageIndex() );
+        c->writeEntry( cname+":curTab", QVariant(((K3DockTabGroup*)obj->widget)->currentPageIndex()) );
 
         nameList.append( obj->name() );
         findList.append( obj->name() ); // not really need !!!
@@ -2632,9 +2632,9 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         if ( !obj->parent() ){
           c->writeEntry( cname+":type", "NULL_DOCK");
           c->writeEntry( cname+":geometry", QRect(obj->frameGeometry().topLeft(), obj->size()) );
-          c->writeEntry( cname+":visible", obj->isVisible());
+          c->writeEntry( cname+":visible", QVariant(obj->isVisible()) );
           c->writeEntry( cname+":dockBackTo", obj->formerBrotherDockWidget ? obj->formerBrotherDockWidget->name() : "");
-          c->writeEntry( cname+":dockBackToPos", obj->formerDockPos);
+          c->writeEntry( cname+":dockBackToPos", QVariant(obj->formerDockPos) );
         } else {
           c->writeEntry( cname+":type", "DOCK");
         }
@@ -2649,7 +2649,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
   c->writeEntry( "NameList", nameList );
 
   c->writeEntry( "Main:Geometry", QRect(main->frameGeometry().topLeft(), main->size()) );
-  c->writeEntry( "Main:visible", main->isVisible()); // curently nou use
+  c->writeEntry( "Main:visible", QVariant(main->isVisible()) ); // curently nou use
 
   if ( main->inherits("K3DockMainWindow") ){
     K3DockMainWindow* dmain = (K3DockMainWindow*)main;
@@ -2699,18 +2699,18 @@ void K3DockManager::readConfig( KConfig* c, QString group )
   foreach( QString oname, nameList )
   {
     c->setGroup( group );
-    QString type = c->readEntry( oname + ":type" );
+    QString type = c->readEntry( oname + ":type", QString() );
     obj = 0L;
 
-    if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
+    if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent", QString() ) == "___null___" ){
       QRect r = c->readRectEntry( oname + ":geometry" );
       obj = getDockWidgetFromName( oname );
       obj->applyToWidget( 0L );
       obj->setGeometry(r);
 
       c->setGroup( group );
-      obj->setTabPageLabel(c->readEntry( oname + ":tabCaption" ));
-      obj->setToolTipString(c->readEntry( oname + ":tabToolTip" ));
+      obj->setTabPageLabel(c->readEntry( oname + ":tabCaption", QString() ));
+      obj->setToolTipString(c->readEntry( oname + ":tabToolTip", QString() ));
       if ( c->readBoolEntry( oname + ":visible" ) ){
         obj->QWidget::show();
       }
@@ -2718,8 +2718,8 @@ void K3DockManager::readConfig( KConfig* c, QString group )
 
     if ( type == "DOCK"  ){
       obj = getDockWidgetFromName( oname );
-      obj->setTabPageLabel(c->readEntry( oname + ":tabCaption" ));
-      obj->setToolTipString(c->readEntry( oname + ":tabToolTip" ));
+      obj->setTabPageLabel(c->readEntry( oname + ":tabCaption", QString() ));
+      obj->setToolTipString(c->readEntry( oname + ":tabToolTip", QString() ));
     }
 
     if (obj && obj->d->isContainer) {
@@ -2735,12 +2735,12 @@ void K3DockManager::readConfig( KConfig* c, QString group )
   foreach( QString oname, nameList )
   {
     c->setGroup( group );
-    QString type = c->readEntry( oname + ":type" );
+    QString type = c->readEntry( oname + ":type", QString() );
     obj = 0L;
 
     if ( type == "GROUP" ){
-      K3DockWidget* first = getDockWidgetFromName( c->readEntry( oname + ":first_name" ) );
-      K3DockWidget* last  = getDockWidgetFromName( c->readEntry( oname + ":last_name"  ) );
+      K3DockWidget* first = getDockWidgetFromName( c->readEntry( oname + ":first_name", QString() ) );
+      K3DockWidget* last  = getDockWidgetFromName( c->readEntry( oname + ":last_name",  QString() ) );
       int sepPos = c->readNumEntry( oname + ":sepPos" );
 
       Qt::Orientation p = (Qt::Orientation)c->readNumEntry( oname + ":orientation" );
@@ -2786,13 +2786,13 @@ void K3DockManager::readConfig( KConfig* c, QString group )
   foreach( QString oname, nameList )
   {
     c->setGroup( group );
-    QString type = c->readEntry( oname + ":type" );
+    QString type = c->readEntry( oname + ":type", QString() );
     obj = 0L;
 
-    if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
+    if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent", QString() ) == "___null___" ){
       obj = getDockWidgetFromName( oname );
       c->setGroup( group );
-      QString name = c->readEntry( oname + ":dockBackTo" );
+      QString name = c->readEntry( oname + ":dockBackTo", QString() );
       if (!name.isEmpty()) {
           obj->setFormerBrotherDockWidget(getDockWidgetFromName( name ));
       }

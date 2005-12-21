@@ -356,13 +356,13 @@ void KBugReport::slotSetFrom()
                                   QString::fromLatin1("Default") );
 
   emailConf.setGroup( profile );
-  QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
+  QString fromaddr = emailConf.readEntry( "EmailAddress" );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
      p = getpwuid(getuid());
      fromaddr = QString::fromLatin1(p->pw_name);
   } else {
-     QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
+     QString name = emailConf.readEntry( "FullName" );
      if (!name.isEmpty())
         fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
   }
