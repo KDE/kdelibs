@@ -55,7 +55,6 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   d->mNewStuff = newStuff;
   mProviderLoader = new ProviderLoader( mParentWidget );
 
-  mNewStuffList.setAutoDelete( true );
 }
 
 Engine::Engine( KNewStuff *newStuff, const QString &type,
@@ -69,11 +68,12 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   d->mNewStuff = newStuff;
   d->mIgnoreInstallResult = false;
   mProviderLoader = new ProviderLoader( mParentWidget );
-  mNewStuffList.setAutoDelete( true );
 }
 
 Engine::~Engine()
 {
+  qDeleteAll(mNewStuffList);
+  mNewStuffList.clear();
   delete d;
   delete mProviderLoader;
 

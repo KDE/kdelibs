@@ -176,7 +176,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     QTextBrowser *m_rt;
     QFrame *m_frame;
     Q3ListViewItem *m_entryitem;
-    Q3PtrList<Entry> m_entries;
+    QList<Entry*> m_entries;
     Entry *m_entry;
     KNewStuffGeneric *m_s;
     int m_curtab;

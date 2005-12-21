@@ -568,7 +568,7 @@ Entry *DownloadDialog::getEntry()
 
   m_entryname = m_entryitem->text(0);
 
-  for(Entry *e = m_entries.first(); e; e = m_entries.next())
+  Q_FOREACH( Entry *e , m_entries )
     if(e->name() == entryName)
       return e;
 

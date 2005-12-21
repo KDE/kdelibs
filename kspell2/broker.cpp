@@ -49,7 +49,7 @@ public:
     Settings *settings;
 
     // <language, Clients with that language >
-    QMap<QString, Q3PtrList<Client> > languageClients;
+    QMap<QString, QList<Client*> > languageClients;
     QStringList clients;
     DefaultDictionary *defaultDictionary;
 };
@@ -126,18 +126,19 @@ Dictionary* Broker::dictionary( const QString& language, const QString& clientNa
         ddefault = true;
     }
 
-    Q3PtrList<Client> lClients = d->languageClients[ plang ];
+    QList<Client*> lClients = d->languageClients[ plang ];
 
     if ( lClients.isEmpty() ) {
         kdError()<<"No language dictionaries for the language : "<< plang <<endl;
         return 0;
     }
 
-    Q3PtrListIterator<Client> itr( lClients );
-    while ( itr.current() ) {
+    QListIterator<Client*> itr( lClients );
+    while ( itr.hasNext() ) {
+			Client* item = itr.next();
         if ( !pclient.isEmpty() ) {
-            if ( pclient == itr.current()->name() ) {
-                Dictionary *dict = itr.current()->dictionary( plang );
+            if ( pclient == item->name() ) {
+                Dictionary *dict = item->dictionary( plang );
                 if ( dict ) //remove the if if the assert proves ok
                     dict->m_default = ddefault;
                 return dict;
@@ -145,13 +146,12 @@ Dictionary* Broker::dictionary( const QString& language, const QString& clientNa
         } else {
             //the first one is the one with the highest
             //reliability
-            Dictionary *dict = itr.current()->dictionary( plang );
+            Dictionary *dict = item->dictionary( plang );
             Q_ASSERT( dict );
             if ( dict ) //remove the if if the assert proves ok
                 dict->m_default = ddefault;
             return dict;
         }
-        ++itr;
     }
 
     return 0;

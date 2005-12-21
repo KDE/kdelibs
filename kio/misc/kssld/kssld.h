@@ -137,7 +137,7 @@ private:
 
   // for the cache portion:
   KSimpleConfig *cfg;
-  Q3PtrList<KSSLCNode> certList;
+  QList<KSSLCNode*> certList;
 
   // Our pointer to OpenSSL
   KOpenSSLProxy *kossl;

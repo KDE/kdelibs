@@ -163,7 +163,7 @@ class KDE_EXPORT Engine : public QObject
     QMap<KIO::Job *,QString> mNewStuffJobData;
     QMap<KIO::Job *,Provider *> mProviderJobs;
 
-    Q3PtrList<Entry> mNewStuffList;
+    QList<Entry*> mNewStuffList;
 
     DownloadDialog *mDownloadDialog;
     UploadDialog *mUploadDialog;
