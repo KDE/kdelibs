@@ -258,7 +258,7 @@ LdapSearch::LdapSearch()
     for ( int j = 0; j < numHosts; j++ ) {
       LdapClient* ldapClient = new LdapClient( this );
 
-      QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ) ).trimmed();
+      QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ), QString() ).trimmed();
       if ( !host.isEmpty() )
         ldapClient->setHost( host );
 
@@ -266,15 +266,15 @@ LdapSearch::LdapSearch()
       if ( !port.isEmpty() )
         ldapClient->setPort( port );
 
-      QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ) ).trimmed();
+      QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ), QString() ).trimmed();
       if ( !base.isEmpty() )
         ldapClient->setBase( base );
 
-      QString bindDN = config.readEntry( QString( "SelectedBind%1" ).arg( j ) ).trimmed();
+      QString bindDN = config.readEntry( QString( "SelectedBind%1" ).arg( j ), QString() ).trimmed();
       if ( !bindDN.isEmpty() )
         ldapClient->setBindDN( bindDN );
 
-      QString pwdBindDN = config.readEntry( QString( "SelectedPwdBind%1" ).arg( j ) );
+      QString pwdBindDN = config.readEntry( QString( "SelectedPwdBind%1" ).arg( j ), QString() );
       if ( !pwdBindDN.isEmpty() )
         ldapClient->setPwdBindDN( pwdBindDN );
 
