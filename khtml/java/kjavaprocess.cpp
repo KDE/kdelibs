@@ -41,7 +41,7 @@ private:
     QString mainClass;
     QString extraArgs;
     QString classArgs;
-    Q3PtrList<QByteArray> BufferList;
+    QList<QByteArray*> BufferList;
     QMap<QString, QString> systemProps;
     bool processKilled;
 };
@@ -49,7 +49,6 @@ private:
 KJavaProcess::KJavaProcess() : KProcess()
 {
     d = new KJavaProcessPrivate;
-    d->BufferList.setAutoDelete( true );
     d->processKilled = false;
 
     javaProcess = this; //new KProcess();
@@ -72,7 +71,8 @@ KJavaProcess::~KJavaProcess()
         kdDebug(6100) << "stopping java process" << endl;
         stopJava();
     }
-
+	qDeleteAll(d->BufferList);
+	d->BufferList.clear();
     //delete javaProcess;
     delete d;
 }
