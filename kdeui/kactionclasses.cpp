@@ -1103,7 +1103,6 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
-    const KURL u = url; // make a copy since d->m_urls.erase( title ) could destroy the KURL that "url" references
     const QString file = url.pathOrURL();
     QStringList lst = KSelectAction::items();
 
@@ -1133,7 +1132,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     // add file to list
     const QString title = name + " [" + file + "]";
     d->m_shortNames.insert( title, name );
-    d->m_urls.insert( title, u );
+    d->m_urls.insert( title, url );
     lst.prepend( title );
     setItems( lst );
 }
@@ -1236,13 +1235,13 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 
 void KRecentFilesAction::itemSelected( const QString& text )
 {
-    emit urlSelected( d->m_urls[ text ] );
+    emit urlSelected( KURL(d->m_urls[ text ]) ); //return a copy of the URL since the slot where it is connected might call addURL or removeURL where the d->m_urls.erase( title ) could destroy the d->m_urls[ text ] and the emitted URL will be invalid in the rest of the slot
 }
 
 void KRecentFilesAction::menuItemActivated( int id )
 {
     QString text = d->m_popup->text(id);
-    emit urlSelected( d->m_urls[ text ] );
+    emit urlSelected( KURL(d->m_urls[ text ]) );//return a copy of the URL since the slot where it is connected might call addURL or removeURL where the d->m_urls.erase( title ) could destroy the d->m_urls[ text ] and the emitted URL will be invalid in the rest of the slot
 }
 
 void KRecentFilesAction::menuAboutToShow()
