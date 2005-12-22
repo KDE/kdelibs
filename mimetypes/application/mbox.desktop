@@ -4,6 +4,17 @@ Type=MimeType
 MimeType=application/mbox
 Patterns=
 Comment=MBOX Mail Folder
+Comment[da]=MBOX mappe til e-mail
+Comment[el]=Φάκελος αλληλογραφίας MBOX
+Comment[et]=MBOX e-posti kaust
+Comment[fr]=Dossier de boîte aux lettres MBox
+Comment[is]=MBOX póstmappa
+Comment[lb]=MBOX Mail-Dossier
+Comment[nds]=Mbox-Nettpostorner
+Comment[pt]=Pasta de Correio MBOX
+Comment[pt_BR]=Pasta de Correio MBOX
+Comment[sv]=Mbox-brevkorg
+Comment[zh_CN]=MBOX 邮件文件夹
 
 [Property::X-KDE-text]
 Type=bool

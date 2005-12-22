@@ -4825,7 +4825,7 @@ Name[it]=Latino
 Name[ja]=ラテン語
 Name[km]=ឡាតាំង
 Name[ko]=라틴어
-Name[lb]=Latéin
+Name[lb]=Latäin
 Name[lt]=Lotynų
 Name[mk]=Латински
 Name[mn]=Латин
@@ -8240,6 +8240,17 @@ Name[zh_TW]=塞爾維亞語
 Name[zu]=Isi-Serbian
 [sr@Latn]
 Name=Serbian Latin
+Name[da]=Serbisk latin
+Name[el]=Σερβικά (Λατινικά)
+Name[et]=Serbia (ladina)
+Name[fr]=Serbe Latin
+Name[is]=Serbnesk latína
+Name[lb]=Latäinescht Serbesch
+Name[nds]=Serbsch latiensch
+Name[pt]=Sérvio Latino
+Name[pt_BR]=Sérvio Latino
+Name[sv]=Latinsk serbiska
+Name[zh_CN]=塞尔维亚语(拉丁)
 [ss]
 Name=Swati
 Name[ar]=السواتي
