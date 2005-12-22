@@ -7076,6 +7076,8 @@ Name[xx]=xxRomanianxx
 Name[zh_CN]=罗马尼亚语
 Name[zh_TW]=羅馬尼亞語
 Name[zu]=Isi-Romania
+[rom]
+Name=Romany
 [ru]
 Name=Russian
 Name[af]=Russies
@@ -9682,6 +9684,8 @@ Name[tr]=Basitleştirilmiş Çince
 Name[uk]=Китайська (спрощена)
 Name[xx]=xxChinese Simplifiedxx
 Name[zh_CN]=简体中文
+[zh_HK]
+Name=Chinese, Hong Kong
 [zh_TW]
 Name=Chinese Traditional
 Name[af]=Sjinese tradisioneel
