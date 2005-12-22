@@ -141,9 +141,9 @@ namespace KNotify
     class Application;
     class Event;
     class ListViewItem;
-    typedef Q3PtrList<Event> EventList;
-    typedef Q3PtrListIterator<Application> ApplicationListIterator;
-    typedef Q3PtrListIterator<Event> EventListIterator;
+    typedef QList<Event*> EventList;
+    typedef QListIterator<Application*> ApplicationListIterator;
+    typedef QListIterator<Event*> EventListIterator;
 
     /**
      * @internal
@@ -173,7 +173,7 @@ namespace KNotify
     };
 
 
-    class KIO_EXPORT ApplicationList : public Q3PtrList<Application>
+    class KIO_EXPORT ApplicationList : public QList<Application*>
     {
         virtual int compareItems ( Q3PtrCollection::Item item1,
                                    Q3PtrCollection::Item item2 )

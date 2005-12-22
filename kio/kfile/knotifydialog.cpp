@@ -188,7 +188,6 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 {
     d = new Private;
 
-    m_allApps.setAutoDelete( true );
 
     if ( !handleAllApps )
     {
@@ -296,6 +295,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
 KNotifyWidget::~KNotifyWidget()
 {
+	qDeleteAll(m_allApps);
+	m_allApps.clear();
     delete d;
 }
 
@@ -510,7 +511,7 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
 
 void KNotifyWidget::addVisibleApp( Application *app )
 {
-    if ( !app || (m_visibleApps.findRef( app ) != -1) )
+    if ( !app || (m_visibleApps.indexOf( app ) != -1) )
         return;
 
     m_visibleApps.append( app );
@@ -529,9 +530,9 @@ void KNotifyWidget::addToView( const EventList& events )
 
     EventListIterator it( events );
 
-    for ( ; it.current(); ++it )
+	while(it.hasNext())
     {
-        Event *event = it.current();
+        Event *event = it.next();
         item = new ListViewItem( m_listview, event );
 
         if ( (event->presentation & KNotifyClient::Execute) &&
@@ -791,10 +792,11 @@ void KNotifyWidget::reload( bool revertToDefaults )
 {
     m_listview->clear();
     ApplicationListIterator it( m_visibleApps );
-    for ( ; it.current(); ++it )
+	while(it.hasNext())
     {
-        it.current()->reloadEvents( revertToDefaults );
-        addToView( it.current()->eventList() );
+		Application *item = it.next();
+        item->reloadEvents( revertToDefaults );
+        addToView( item->eventList() );
     }
 
     m_listview->sort();
@@ -806,10 +808,9 @@ void KNotifyWidget::save()
     kdDebug() << "save\n";
 
     ApplicationListIterator it( m_allApps );
-    while ( it.current() )
+	while(it.hasNext())
     {
-        (*it)->save();
-        ++it;
+        it.next()->save();
     }
 
     if ( kapp )
@@ -955,16 +956,16 @@ void KNotifyWidget::enableAll( int what, bool enable )
     bool affectAll = m_affectAllApps->isChecked(); // multi-apps mode
 
     ApplicationListIterator appIt( affectAll ? m_allApps : m_visibleApps );
-    for ( ; appIt.current(); ++appIt )
+	while(appIt.hasNext())
     {
-        const EventList& events = appIt.current()->eventList();
+        const EventList& events = appIt.next()->eventList();
         EventListIterator it( events );
-        for ( ; it.current(); ++it )
+		while( it.hasNext())
         {
             if ( enable )
-                it.current()->presentation |= what;
+                it.next()->presentation |= what;
             else
-                it.current()->presentation &= ~what;
+                it.next()->presentation &= ~what;
         }
     }
 
@@ -1015,6 +1016,7 @@ Application::~Application()
 {
     delete config;
     delete kc;
+	qDeleteAll(*m_events);
     delete m_events;
 }
 
@@ -1023,7 +1025,6 @@ const EventList&  Application::eventList()
 {
     if ( !m_events ) {
         m_events = new EventList;
-        m_events->setAutoDelete( true );
         reloadEvents();
     }
 
@@ -1038,14 +1039,14 @@ void Application::save()
 
     EventListIterator it( *m_events );
     Event *e;
-    while ( (e = it.current()) ) {
+	while( it.hasNext()) {
+		e = it.next();
         config->setGroup( e->configGroup );
         config->writeEntry( "presentation", e->presentation );
         config->writePathEntry( "soundfile", e->soundfile );
         config->writePathEntry( "logfile", e->logfile );
         config->writePathEntry( "commandline", e->commandline );
 
-        ++it;
     }
     config->sync();
 }
@@ -1058,7 +1059,6 @@ void Application::reloadEvents( bool revertToDefaults )
     else
     {
         m_events = new EventList;
-        m_events->setAutoDelete( true );
     }
 
     Event *e = 0L;

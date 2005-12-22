@@ -97,7 +97,7 @@
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
 
-template class Q3PtrList<KIO::StatJob>;
+template class QList<KIO::StatJob*>;
 
 namespace {
     static void silenceQToolBar(QtMsgType, const char *)
@@ -136,7 +136,7 @@ struct KFileDialogPrivate
     bool autoSelectExtChecked; // whether or not the _user_ has checked the above box
     QString extension; // current extension for this filter
 
-    Q3PtrList<KIO::StatJob> statJobs;
+    QList<KIO::StatJob*> statJobs;
 
     KURL::List urlList; //the list of selected urls
 
@@ -554,7 +554,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     kdDebug(kfile_area) << "slotStatResult" << endl;
     KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );
 
-    if ( !d->statJobs.removeRef( sJob ) ) {
+    if ( !d->statJobs.removeAll( sJob ) ) {
         return;
     }
 
