@@ -11,6 +11,7 @@ static QString writeType( QTextStream& str, const QDomElement& r )
     str << r.attribute("qleft") << " ";
   QString t = r.firstChild().toText().data();
   t = t.replace( ">>", "> >" );
+  t = t.replace( "QCString", "DCOPCString" ); // works for QCStringList too :)
   str << t;
   if ( r.hasAttribute( "qright" ) )
     str << r.attribute("qright") << " ";
