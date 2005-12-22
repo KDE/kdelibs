@@ -30,7 +30,6 @@
 KMPages::KMPages(QWidget *parent, const char *name)
 : QTabWidget(parent,name)
 {
-	m_pages.setAutoDelete(false);
 	initialize();
 }
 
@@ -40,9 +39,9 @@ KMPages::~KMPages()
 
 void KMPages::setPrinter(KMPrinter *p)
 {
-	Q3PtrListIterator<KMPrinterPage>	it(m_pages);
-	for (int i=0;it.current();++it,i++)
-		it.current()->setPrinter(p);
+	QListIterator<KMPrinterPage*>	it(m_pages);
+	while(it.hasNext())
+			it.next()->setPrinter(p);
 }
 
 void KMPages::initialize()

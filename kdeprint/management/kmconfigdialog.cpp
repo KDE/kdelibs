@@ -39,7 +39,6 @@
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 : KDialogBase(IconList,i18n("KDE Print Configuration"),Ok|Cancel,Ok,parent,name,true,true)
 {
-	m_pages.setAutoDelete(false);
 	addConfigPage(new KMConfigGeneral(this));
 	addConfigPage(new KMConfigPreview(this));
 	addConfigPage(new KMConfigFonts(this));
@@ -50,9 +49,9 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 
 	// initialize pages
 	KConfig	*conf = KMFactory::self()->printConfig();
-	Q3PtrListIterator<KMConfigPage>	it(m_pages);
-	for (;it.current();++it)
-		it.current()->loadConfig(conf);
+	QListIterator<KMConfigPage*>	it(m_pages);
+	while(it.hasNext())
+		it.next()->loadConfig(conf);
 
 	// resize dialog
 	resize(450,400);
@@ -80,9 +79,9 @@ void KMConfigDialog::slotOk()
 {
 	// save configuration
 	KConfig	*conf = KMFactory::self()->printConfig();
-	Q3PtrListIterator<KMConfigPage>	it(m_pages);
-	for (;it.current();++it)
-		it.current()->saveConfig(conf);
+	QListIterator<KMConfigPage*>	it(m_pages);
+	while(it.hasNext())
+		it.next()->saveConfig(conf);
 	KMFactory::self()->saveConfig();
 
 	// close the dialog

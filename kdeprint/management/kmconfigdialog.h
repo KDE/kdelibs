@@ -37,7 +37,7 @@ protected slots:
 	void slotOk();
 
 private:
-	Q3PtrList<KMConfigPage>	m_pages;
+	QList<KMConfigPage*>	m_pages;
 };
 
 #endif

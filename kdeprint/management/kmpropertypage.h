@@ -47,7 +47,7 @@ protected:
 	void reload();
 
 private:
-	Q3PtrList<KMPropWidget>	m_widgets;
+	QList<KMPropWidget*>	m_widgets;
 };
 
 #endif

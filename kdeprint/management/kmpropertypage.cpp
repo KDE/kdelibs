@@ -32,8 +32,6 @@
 KMPropertyPage::KMPropertyPage(QWidget *parent)
     : CJanusWidget(parent)
 {
-	m_widgets.setAutoDelete(false);
-
 	initialize();
 }
 
@@ -43,9 +41,9 @@ KMPropertyPage::~KMPropertyPage()
 
 void KMPropertyPage::setPrinter(KMPrinter *p)
 {
-	Q3PtrListIterator<KMPropWidget>	it(m_widgets);
-	for (;it.current();++it)
-		it.current()->setPrinterBase(p);
+	QListIterator<KMPropWidget*>	it(m_widgets);
+	while(it.hasNext())
+		it.next()->setPrinterBase(p);
 }
 
 void KMPropertyPage::addPropPage(KMPropWidget *w)

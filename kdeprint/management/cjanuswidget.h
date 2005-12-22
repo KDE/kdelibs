@@ -54,7 +54,7 @@ private:
 	Q3ListBoxItem* findPrevItem(CPage*);
 
 private:
-	Q3PtrList<CPage>		m_pages;
+	QList<CPage*>		m_pages;
 	CListBox		*m_iconlist;
 	QLabel			*m_header;
 	QStackedWidget		*m_stack;

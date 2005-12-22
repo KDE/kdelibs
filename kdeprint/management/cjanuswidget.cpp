@@ -129,7 +129,6 @@ void CJanusWidget::CListBox::computeWidth()
 CJanusWidget::CJanusWidget(QWidget *parent)
     : QWidget(parent)
 {
-	m_pages.setAutoDelete(true);
 
 	m_stack = new QStackedWidget(this);
 	m_header = new QLabel(this);
@@ -161,6 +160,8 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 
 CJanusWidget::~CJanusWidget()
 {
+	qDeleteAll(m_pages);
+	m_pages.clear();
 }
 
 void CJanusWidget::addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix)
@@ -225,41 +226,52 @@ void CJanusWidget::slotSelected(Q3ListBoxItem *item)
 
 CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 {
-	Q3PtrListIterator<CPage>	it(m_pages);
-	for (;it.current();++it)
-		if (it.current()->m_widget == w)
-			return it.current();
+	QListIterator<CPage*>	it(m_pages);
+	while(it.hasNext())
+	{
+		CPage *item = it.next();
+		if (item->m_widget == w)
+			return item;
+	}
 	return 0;
 }
 
 CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
 {
-	Q3PtrListIterator<CPage>	it(m_pages);
-	for (;it.current();++it)
-		if (it.current()->m_item == i)
-			return it.current();
+	QListIterator<CPage*>	it(m_pages);
+	while(it.hasNext())
+	{
+		CPage *item = it.next();
+		if (item->m_item == i)
+			return item;
+	}
 	return 0;
 }
 
 Q3ListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 {
-	if (m_pages.findRef(p) == -1)
-		m_pages.last();
+	QListIterator<CPage*>   it(m_pages);
+	if (m_pages.indexOf(p) == -1)
+		it.toBack();
 	else
-		m_pages.prev();
-	for (;m_pages.current();m_pages.prev())
-		if (m_pages.current()->m_item)
-			return m_pages.current()->m_item;
+		it.previous();
+	while(it.hasPrevious())
+	{
+		CPage *item = it.previous();
+		if (item->m_item)
+			return item->m_item;
+	}
 	return 0;
 }
 
 void CJanusWidget::clearPages()
 {
-	Q3PtrListIterator<CPage>	it(m_pages);
-	for (;it.current(); ++it)
+	QListIterator<CPage*>	it(m_pages);
+	while(it.hasNext())
 	{
-		delete it.current()->m_widget;
-		delete it.current()->m_item;
+		CPage *item = it.next();
+		delete item->m_widget;
+		delete item->m_item;
 	}
 	m_pages.clear();
 }

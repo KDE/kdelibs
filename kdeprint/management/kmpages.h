@@ -38,7 +38,7 @@ protected:
 	void initialize();
 
 private:
-	Q3PtrList<KMPrinterPage>	m_pages;
+	QList<KMPrinterPage*>	m_pages;
 };
 
 #endif
