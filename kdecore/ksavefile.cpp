@@ -103,6 +103,8 @@ KSaveFile::~KSaveFile()
 {
    if (mTempFile->isOpen())
       close(); // Close if we were still open
+
+   delete d;
 }
 
 QString
