@@ -253,6 +253,14 @@ if test "$want_sendfile" = "yes" -a "$have_sendfile" = "yes"; then
   AC_DEFINE(HAVE_SENDFILE,1,[Define if you want sendfile() support])
 fi
 
+GIF_LIBRARY=''
+KDE_CHECK_LIB(gif, DGifOpen, [GIF_LIBRARY='-lgif'])
+if test -z "$GIF_LIBRARY"; then
+    KDE_CHECK_LIB(ungif, DGifOpen, [GIF_LIBRARY='-lungif'],
+        [AC_MSG_ERROR(No GIF library found.)])
+fi
+AC_SUBST(GIF_LIBRARY)
+
 AC_MSG_CHECKING(if MIT-SHM support is wanted)
 AC_ARG_ENABLE(mitshm,
 AC_HELP_STRING([--enable-mitshm],[use MIT-SHM for pixmap loading/saving]),
