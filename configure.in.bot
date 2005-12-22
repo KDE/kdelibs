@@ -110,6 +110,14 @@ if test "$ac_use_cups" != "yes"; then
   all_tests=bad
 fi
 
+if test "$HAVE_LUA" != "yes"; then
+  echo ""
+  echo "You're missing the Lua programming language, version 5.0 or greater."
+  echo "Please install or upgrade Lua from http://www.lua.org or you will"
+  echo "be missing some kate extensinons."
+  echo ""
+fi
+
 if test "$EXRSTATUS" = "no"; then
   echo ""
   echo "No OpenEXR Libraries were found"
