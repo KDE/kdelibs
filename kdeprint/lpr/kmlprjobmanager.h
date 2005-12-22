@@ -35,7 +35,7 @@ public:
 protected:
 	bool listJobs(const QString&, JobType, int = 0);
 	LpcHelper* lpcHelper();
-	bool sendCommandSystemJob(const Q3PtrList<KMJob>&, int, const QString& = QString::null);
+	bool sendCommandSystemJob(const QList<KMJob*>&, int, const QString& = QString::null);
 
 private:
 	LpqHelper	*m_lpqhelper;

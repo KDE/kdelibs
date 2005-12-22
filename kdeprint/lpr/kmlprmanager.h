@@ -72,7 +72,7 @@ protected:
 
 private:
 	Q3Dict<LprHandler>	m_handlers;
-	Q3PtrList<LprHandler>    m_handlerlist;
+	QList<LprHandler*>    m_handlerlist;
 	Q3Dict<PrintcapEntry>	m_entries;
 	QDateTime		m_updtime;
 	LpcHelper		*m_lpchelper;

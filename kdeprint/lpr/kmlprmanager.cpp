@@ -46,7 +46,6 @@ KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList 
 : KMManager(parent)
 {
 	m_handlers.setAutoDelete(true);
-	m_handlerlist.setAutoDelete(false);
 	m_entries.setAutoDelete(true);
 
 	m_lpchelper = new LpcHelper(this);
@@ -78,9 +77,9 @@ void KMLprManager::listPrinters()
 		// cleanup previous entries
 		m_entries.clear();
 		// notify handlers
-		Q3PtrListIterator<LprHandler>	hit(m_handlerlist);
-		for (; hit.current(); ++hit)
-			hit.current()->reset();
+		QListIterator<LprHandler*>	hit(m_handlerlist);
+		while(hit.hasNext())
+			hit.next()->reset();
 
 		// try to open the printcap file and parse it
 		PrintcapReader	reader;
@@ -91,16 +90,19 @@ void KMLprManager::listPrinters()
 			reader.setPrintcapFile(&f);
 			while ((entry = reader.nextEntry()) != NULL)
 			{
-				Q3PtrListIterator<LprHandler>	it(m_handlerlist);
-				for (; it.current(); ++it)
-					if (it.current()->validate(entry))
+				QListIterator<LprHandler*>	it(m_handlerlist);
+				while(it.hasNext())
+				{
+					LprHandler* item = it.next();
+					if (item->validate(entry))
 					{
-						KMPrinter	*prt = it.current()->createPrinter(entry);
+						KMPrinter	*prt = item->createPrinter(entry);
 						checkPrinterState(prt);
-						prt->setOption("kde-lpr-handler", it.current()->name());
+						prt->setOption("kde-lpr-handler", item->name());
 						addPrinter(prt);
 						break;
 					}
+				}
 				m_entries.insert(entry->name, entry);
 			}
 		}
@@ -427,11 +429,11 @@ QString KMLprManager::driverDbCreationProgram()
 
 QString KMLprManager::driverDirectory()
 {
-	Q3PtrListIterator<LprHandler>	it(m_handlerlist);
+	QListIterator<LprHandler*>	it(m_handlerlist);
 	QString	dbDirs;
-	for (; it.current(); ++it)
+	while(it.hasNext())
 	{
-		QString	dir = it.current()->driverDirectory();
+		QString	dir = it.next()->driverDirectory();
 		if (!dir.isEmpty())
 			dbDirs.append(dir).append(":");
 	}

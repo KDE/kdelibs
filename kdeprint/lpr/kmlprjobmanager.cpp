@@ -36,12 +36,11 @@ KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStrin
 
 bool KMLprJobManager::listJobs(const QString& prname, JobType, int limit)
 {
-	Q3PtrList<KMJob>	jobList;
-	jobList.setAutoDelete(false);
+	QList<KMJob*>	jobList;
 	m_lpqhelper->listJobs(jobList, prname, limit);
-	Q3PtrListIterator<KMJob>	it(jobList);
-	for (; it.current(); ++it)
-		addJob(it.current());
+	QListIterator<KMJob*>	it(jobList);
+	while(it.hasNext())
+		addJob(it.next());
 	return false;
 }
 
@@ -59,25 +58,26 @@ int KMLprJobManager::actions()
 		return (KMJob::Remove | KMJob::Hold | KMJob::Resume);
 }
 
-bool KMLprJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg)
+bool KMLprJobManager::sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg)
 {
 	QString	msg;
-	Q3PtrListIterator<KMJob>	it(jobs);
+	QListIterator<KMJob*>	it(jobs);
 	bool	status(true);
 	LpcHelper	*helper = lpcHelper();
 
-	for (; it.current() && status; ++it)
+	while(it.hasNext() && status )
 	{
+		KMJob *item = it.next();
 		switch (action)
 		{
 			case KMJob::Remove:
-				status = helper->removeJob(it.current(), msg);
+				status = helper->removeJob(item, msg);
 				break;
 			case KMJob::Hold:
-				status = helper->changeJobState(it.current(), KMJob::Held, msg);
+				status = helper->changeJobState(item, KMJob::Held, msg);
 				break;
 			case KMJob::Resume:
-				status = helper->changeJobState(it.current(), KMJob::Queued, msg);
+				status = helper->changeJobState(item, KMJob::Queued, msg);
 				break;
 			default:
 				status = false;
