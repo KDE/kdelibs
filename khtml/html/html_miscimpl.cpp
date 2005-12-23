@@ -409,3 +409,46 @@ NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
 
     return 0;
 }
+
+// -------------------------------------------------------------------------
+HTMLMappedNameCollectionImpl::HTMLMappedNameCollectionImpl(NodeImpl* _base, int _type, const DOMString& _name): 
+    HTMLCollectionImpl(_base, NodeListImpl::UNCACHEABLE), name(_name) 
+{
+    type = _type; //We pass uncacheable to collection, but need our own type internally.
+}
+
+bool HTMLMappedNameCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
+{
+    if ( current->nodeType() != Node::ELEMENT_NODE )
+    {
+        deep = false;
+        return false;
+    }
+
+    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
+    
+    return matchesName(e, type, name);
+}
+
+bool HTMLMappedNameCollectionImpl::matchesName( ElementImpl* el, int type, const DOMString& name )
+{
+    switch (el->id())
+    {
+    case ID_IMG:
+    case ID_FORM:
+        //Under document. these require non-empty name to see the element
+        if (type == DOCUMENT_NAMED_ITEMS && el->getAttribute(ATTR_NAME).isNull())
+            return false;
+        //Otherwise, fallthrough
+    case ID_OBJECT:
+    case ID_EMBED:
+    case ID_APPLET:
+    case ID_LAYER:
+        if (el->getAttribute(ATTR_NAME) == name || el->getAttribute(ATTR_ID) == name)
+            return true;
+        else
+            return false;
+    default:
+        return false;
+    }
+}

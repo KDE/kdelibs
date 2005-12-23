@@ -178,21 +178,6 @@ const ClassInfo KJS::HTMLDocument::info =
 @end
 */
 
-void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
-  for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
-    if ( n->nodeType() == Node::ELEMENT_NODE ) {
-      for (int i = 0; i < nrTags; i++)
-        if (n->id() == tags[i].id &&
-            static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
-          tags[i].length++;
-          tags[i].last = static_cast<ElementImpl*>(n); // cache this ElementImpl*
-          nrTags = i+1;       // forget about Tags with lower preference
-          break;
-        }
-      (*this)(n);
-    }
-}
-
 KJS::HTMLDocument::HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d)
   /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
   : DOMDocument(exec, d) { }
@@ -237,34 +222,26 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   if ( !win || !win->isSafeScript(exec) )
     return Undefined();
 
-  // Check for images with name==propertyName, return item or list if found
-  // We don't use the images collection because it looks for id=p and name=p, we only want name=p
-  // Check for forms with name==propertyName, return item or list if found
-  // Note that document.myform should only look at forms
-  // Check for applets with name==propertyName, return item or list if found
-
-  //But first, go through the cache
+  //Check for images, forms, objects, etc.
   ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
   if (info) {
-    if (info->nd)
-      return getDOMNode(exec, info->nd);
-    else {
-      //No cached mapping, do it by hand
-      NamedTagLengthDeterminer::TagLength tags[4] = {
-          {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-      };
-      NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
-      for (int i = 0; i < 4; i++) {
-        if (tags[i].length > 0)  {
-          if (tags[i].length == 1) {
-            //Have a single answer -> cache
-            info->nd = tags[i].last;
-            return getDOMNode(exec, tags[i].last);
-          }
+    //May be a false positive, but we can try to avoid doing it the hard way in
+    //simpler cases. The trickiness here is that the cache is kept under both
+    //name and id, but we sometimes ignore id for IE compat
+    DOM::DOMString  propertyDOMString = propertyName.string();
 
-          // Get all the items with the same name
-          return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.string())));
-        }
+    if (info->nd && DOM::HTMLMappedNameCollectionImpl::matchesName(info->nd,
+                              HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString)) {
+      return getDOMNode(exec, info->nd);
+    } else {
+      //Can't tell it just like that, so better go through collection and count stuff. This is the slow path...
+      DOM::HTMLMappedNameCollection coll(docImpl, HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString);
+      
+      if (coll.length() == 1) {
+        DOM::Node node = coll.firstItem();
+        return getDOMNode(exec, node);
+      } else if (coll.length() > 1) {
+        return getHTMLCollection(exec, coll);
       }
     }
   }
@@ -385,27 +362,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
         return Undefined();
     }
   }
-  if (DOMDocument::hasProperty(exec, propertyName))
-    return DOMDocument::tryGet(exec, propertyName);
-
-  // allow shortcuts like 'document.Applet1' instead of document.applets.Applet1
-  if (doc.isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = doc.applets();
-    DOM::HTMLElement element = coll.namedItem(propertyName.string());
-    if (!element.isNull()) {
-      return getDOMNode(exec,element);
-    }
-
-    DOM::HTMLCollection coll2 = doc.layers();
-    DOM::HTMLElement element2 = coll2.namedItem(propertyName.string());
-    if (!element2.isNull()) {
-      return getDOMNode(exec,element2);
-    }
-  }
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found" << endl;
-#endif
-  return Undefined();
+  return DOMDocument::tryGet(exec, propertyName);
 }
 
 void KJS::HTMLDocument::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)

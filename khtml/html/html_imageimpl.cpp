@@ -256,6 +256,19 @@ void HTMLImageElementImpl::insertedIntoDocument()
     HTMLElementImpl::insertedIntoDocument();
 }
 
+void HTMLImageElementImpl::removeId(const QString& id)
+{
+    getDocument()->underDocNamedCache().remove(id, this);
+    HTMLElementImpl::removeId(id);
+}
+
+void HTMLImageElementImpl::addId   (const QString& id)
+{
+    getDocument()->underDocNamedCache().add(id, this);
+    HTMLElementImpl::addId(id);
+}
+
+
 long HTMLImageElementImpl::width() const
 {
     if (!m_render) {

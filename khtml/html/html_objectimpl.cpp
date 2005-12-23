@@ -87,9 +87,40 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
             else
                 removeCSSProperty(CSS_PROP_HEIGHT);
             break;
+        case ATTR_NAME:
+            if (inDocument() && m_name != attr->value()) {
+                getDocument()->underDocNamedCache().remove(m_name.string(),        this);
+                getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+            }
+            m_name = attr->value();
+            //fallthrough
         default:
             HTMLElementImpl::parseAttribute( attr );
     }
+}
+
+void HTMLObjectBaseElementImpl::removedFromDocument()
+{
+    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    HTMLElementImpl::removedFromDocument();
+}
+
+void HTMLObjectBaseElementImpl::insertedIntoDocument()
+{
+    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    HTMLElementImpl::insertedIntoDocument();
+}
+
+void HTMLObjectBaseElementImpl::removeId(const QString& id)
+{
+    getDocument()->underDocNamedCache().remove(id, this);
+    HTMLElementImpl::removeId(id);
+}
+
+void HTMLObjectBaseElementImpl::addId   (const QString& id)
+{
+    getDocument()->underDocNamedCache().add(id, this);
+    HTMLElementImpl::addId(id);
 }
 
 void HTMLObjectBaseElementImpl::recalcStyle( StyleChange ch )
@@ -226,13 +257,6 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_VALIGN:
         addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
         break;
-    case ATTR_NAME:
-        if (inDocument() && m_name != attr->value()) {
-            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
-            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
-        }
-        m_name = attr->value();
-        //fallthrough
     default:
         HTMLObjectBaseElementImpl::parseAttribute(attr);
     }
@@ -256,19 +280,6 @@ void HTMLAppletElementImpl::attach()
 
     HTMLObjectBaseElementImpl::attach();
 }
-
-void HTMLAppletElementImpl::removedFromDocument()
-{
-    getDocument()->underDocNamedCache().remove(m_name.string(), this);
-    HTMLObjectBaseElementImpl::removedFromDocument();
-}
-
-void HTMLAppletElementImpl::insertedIntoDocument()
-{
-    getDocument()->underDocNamedCache().add(m_name.string(), this);
-    HTMLObjectBaseElementImpl::insertedIntoDocument();
-}
-
 
 // -------------------------------------------------------------------------
 

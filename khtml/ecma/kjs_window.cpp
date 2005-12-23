@@ -806,37 +806,29 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  // allow shortcuts like 'Image1' instead of document.images.Image1
-  if (isSafeScript(exec) &&
-      part->document().isHTMLDocument()) { // might be XML
-    // This is only for images, forms, layers and applets, see KJS::HTMLDocument::tryGet
-    DOM::HTMLDocument doc = part->htmlDocument();
-
-    DOM::ElementMappingCache::ItemInfo* info =
-        static_cast<DOM::DocumentImpl*>(doc.handle())->underDocNamedCache().get(p.qstring());
+  //Check for images, forms, objects, etc.
+  if (isSafeScript(exec) && part->document().isHTMLDocument()) { // might be XML
+    DOM::DocumentImpl* docImpl = part->xmlDocImpl();
+    DOM::ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(p.qstring());
     if (info) {
-      if (info->nd)
+      //May be a false positive, but we can try to avoid doing it the hard way in
+      //simpler cases. The trickiness here is that the cache is kept under both
+      //name and id, but we sometimes ignore id for IE compat
+      DOM::DOMString  propertyDOMString = p.string();
+      if (info->nd && DOM::HTMLMappedNameCollectionImpl::matchesName(info->nd,
+                    DOM::HTMLCollectionImpl::WINDOW_NAMED_ITEMS, propertyDOMString)) {
         return getDOMNode(exec, info->nd);
-      else {
-        //No cached mapping, do it by hand
-        NamedTagLengthDeterminer::TagLength tags[4] = {
-          {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-        };
-        NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
-        for (int i = 0; i < 4; i++)
-          if (tags[i].length > 0) {
-            if (tags[i].length == 1) {
-              //Have a single answer -> cache
-              info->nd = tags[i].last;
-              return getDOMNode(exec, tags[i].last);
-            }
-            // Get all the items with the same name
-            return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
-        }
+      } else {
+        //Can't tell it just like that, so better go through collection and count stuff. This is the slow path...
+        DOM::HTMLMappedNameCollection coll(docImpl, DOM::HTMLCollectionImpl::WINDOW_NAMED_ITEMS, propertyDOMString);
+  
+        if (coll.length() == 1)
+          return getDOMNode(exec, coll.firstItem());
+        else if (coll.length() > 1)
+          return getHTMLCollection(exec, coll);
       }
     }
-
-    DOM::Element element = doc.getElementById(p.string() );
+    DOM::Element element = part->document().getElementById(p.string());
     if ( !element.isNull() )
       return getDOMNode(exec, element );
   }

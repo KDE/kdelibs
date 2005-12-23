@@ -205,3 +205,10 @@ HTMLFormCollection::HTMLFormCollection(NodeImpl *base)
     impl->ref();
 }
 
+
+// -----------------------------------------------------------------------------
+HTMLMappedNameCollection::HTMLMappedNameCollection(NodeImpl *base, int type, const DOMString &name )
+{
+    impl = new HTMLMappedNameCollectionImpl(base, type, name);
+    impl->ref();
+}

@@ -21,7 +21,7 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 1 Specification (Recommendation)
  * http://www.w3.org/TR/REC-DOM-Level-1/
- * Copyright © World Wide Web Consortium , (Massachusetts Institute of
+ * Copyright  World Wide Web Consortium , (Massachusetts Institute of
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
@@ -206,6 +206,15 @@ class KHTML_EXPORT HTMLFormCollection : public HTMLCollection
     friend class HTMLFormElement;
 protected:
     HTMLFormCollection(NodeImpl *base);
+};
+
+/**
+  @internal. Not part of the public API
+*/
+class HTMLMappedNameCollection : public HTMLCollection
+{
+public:
+    HTMLMappedNameCollection(NodeImpl *base, int type, const DOMString &name );
 };
 
 } //namespace

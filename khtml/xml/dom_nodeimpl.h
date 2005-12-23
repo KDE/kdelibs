@@ -653,19 +653,6 @@ protected:
     DOMString nodeName;
 };
 
-/**
- * NodeList which lists all Nodes in a document with a given tag name
- * _and_ a given value for the name attribute (combination of TagNodeListImpl and NameNodeListImpl)
- */
-class NamedTagNodeListImpl : public TagNodeListImpl
-{
-public:
-    NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name );
-protected:
-    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
-    DOMString nodeName;
-};
-
 // Generic NamedNodeMap interface
 // Other classes implement this for more specific situations e.g. attributes
 // of an element

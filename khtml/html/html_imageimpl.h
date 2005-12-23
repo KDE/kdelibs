@@ -50,6 +50,9 @@ public:
     virtual void attach();
     virtual void removedFromDocument();
     virtual void insertedIntoDocument();
+    virtual void addId(const QString& id);
+    virtual void removeId(const QString& id);
+
 
     long width() const;
     long height() const;

@@ -683,10 +683,20 @@ void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
 
     DocumentImpl* doc = getDocument();
     if (oldId && oldId->l)
-        doc->getElementByIdCache().remove(DOMString(oldId).string(), this);
+        removeId(DOMString(oldId).string());
 
     if (newId && newId->l)
-        doc->getElementByIdCache().add(DOMString(newId).string(), this);
+        addId(DOMString(newId).string());
+}
+
+void ElementImpl::removeId(const QString& id)
+{
+  getDocument()->getElementByIdCache().remove(id, this);
+}
+
+void ElementImpl::addId(const QString& id)
+{
+  getDocument()->getElementByIdCache().add(id, this);
 }
 
 void ElementImpl::insertedIntoDocument()
