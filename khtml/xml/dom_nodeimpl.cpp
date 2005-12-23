@@ -1175,6 +1175,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 
 void NodeBaseImpl::removeChildren()
 {
+    bool inDoc = inDocument();
     NodeImpl *n, *next;
     for( n = _first, _first = 0; n; n = next )
     {
@@ -1184,11 +1185,13 @@ void NodeBaseImpl::removeChildren()
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
-        if( !n->refCount() )
-            delete n;
-        else
+
+        if ( inDoc )
             for ( NodeImpl* c = n; c; c = c->traverseNextNode( n ) )
                 c->removedFromDocument();
+
+        if( !n->refCount() )
+            delete n;
     }
     _last = 0;
 }
@@ -1324,7 +1327,8 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
         _first = _last = newChild;
     }
 
-    newChild->insertedIntoDocument();
+    if (inDocument())
+        newChild->insertedIntoDocument();
     childrenChanged();
 
     if(newChild->nodeType() == Node::ELEMENT_NODE)
