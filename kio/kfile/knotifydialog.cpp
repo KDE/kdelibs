@@ -1085,11 +1085,11 @@ void Application::reloadEvents( bool revertToDefaults )
             e->description = kc->readEntry( comment );
             e->dontShow = kc->readNumEntry("nopresentation", 0 );
             e->configGroup = *it;
-
-            if ( e->name.isEmpty() || e->description.isEmpty() )
+            if ( e->name.isEmpty() && e->description.isEmpty() )
                 delete e;
-
             else { // load the event
+                if( !e->name.isEmpty() && e->description.isEmpty() )
+                        e->description = e->name;
                 // default to passive popups over plain messageboxes
                 int default_rep = kc->readNumEntry("default_presentation",
                                                    0 | KNotifyClient::PassivePopup);
