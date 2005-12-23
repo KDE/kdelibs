@@ -44,7 +44,6 @@
 #include <qregexp.h>
 
 //Added by qt3to4:
-#include <Q3CString>
 #include <QGridLayout>
 #include <QBoxLayout>
 #include <QVBoxLayout>
@@ -1446,7 +1445,7 @@ void KCryptoConfig::slotYourImport() {
 
 #ifdef HAVE_SSL
 KSSLPKCS12 *cert = NULL;
-Q3CString pass;
+QByteArray pass;
 
 TryImportPassAgain:
    int rc = KPasswordDialog::getPassword(this,pass, i18n("Certificate password"));
@@ -1507,7 +1506,7 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      Q3CString oldpass;
+      QByteArray oldpass;
       do {
          int i = KPasswordDialog::getPassword(this,oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return;
@@ -1539,7 +1538,7 @@ QString iss;
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      Q3CString oldpass;
+      QByteArray oldpass;
       do {
          int i = KPasswordDialog::getPassword(this,oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return;
@@ -1587,7 +1586,7 @@ QString iss;
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      Q3CString oldpass;
+      QByteArray oldpass;
       do {
          int i = KPasswordDialog::getPassword(this,oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return;
@@ -1678,7 +1677,7 @@ QString iss;
 
 void KCryptoConfig::slotYourPass() {
 YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
-Q3CString oldpass = "";
+QByteArray oldpass = "";
    if (!x) return;
 
    KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
@@ -1703,7 +1702,7 @@ Q3CString oldpass = "";
 
       int i = kpd->exec();
       if (i == KPasswordDialog::Accepted) {
-         Q3CString pass = kpd->password();
+         QByteArray pass = kpd->password();
          pkcs->changePassword(QString(oldpass), QString(pass));
          x->setPKCS(pkcs->toString());
          x->setPassCache(pass);
