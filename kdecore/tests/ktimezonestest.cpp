@@ -44,7 +44,7 @@ void KTimezonesTest::ktimezones()
     QVERIFY((tz == zone1));
     tz = timezones.zone("Zone99");
     QVERIFY(!tz);
-    zone1 = timezones.detach(zone1);
+    zone1 = const_cast<KTimezone*>(timezones.detach(zone1));
     QVERIFY((bool)zone1);
     QCOMPARE(timezones.zones().count(), 1);
     QVERIFY(!timezones.detach(zone1));
@@ -60,30 +60,15 @@ void KTimezonesTest::ktimezones()
 // KTimezones: UTC
 ///////////////////
 
-Q_DECLARE_METATYPE(QDateTime)
-
-void KTimezonesTest::utc_data()
-{
-    QTest::addColumn<QDateTime>("test");
-//    QTest::addColumn<qint>("result");
-//    QTest::newRow("localtime") << QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime) << 0;
-//    QTest::newRow("winter")    << QDateTime(QDate(2005,1,1), QTime(), Qt::UTC) << 0;
-//    QTest::newRow("summer")    << QDateTime(QDate(2005,7,1), QTime(), Qt::UTC) << 0;
-}
-
 void KTimezonesTest::utc()
 {
-    KTimezone* utc = KTimezones::utc();
+    const KTimezone* utc = KTimezones::utc();
     QVERIFY((bool)utc);
     if (utc)
       QCOMPARE(utc->name(), QString("UTC"));
     QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime)), 0);
     QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 0);
     QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 0);
-
-//    QFETCH(QDateTime, test);
-//    QFETCH(int, result);
-//    QCOMPARE(utc->offsetAtUTC(test), result);
 }
 
 /////////////////////////
@@ -92,10 +77,20 @@ void KTimezonesTest::utc()
 
 void KTimezonesTest::local()
 {
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":Europe/Paris", 1);
+    ::tzset();
+
     const KTimezone *local = KSystemTimezones::local();
     QVERIFY((bool)local);
-    QString msg = QString("Please manually verify that the local time zone is \"%1\"").arg(local->name());
-    QWARN(msg.toLatin1().data());
+    QCOMPARE(local->name(), QString::fromLatin1("Europe/Paris"));
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
 }
 
 void KTimezonesTest::zone()
@@ -122,11 +117,12 @@ void KTimezonesTest::zoneinfoDir()
 void KTimezonesTest::currentOffset()
 {
     // Find the current offset of a time zone
+    time_t now = time(0);
+    tm *tnow = localtime(&now);
+    int offset = tnow->tm_gmtoff;
     const KTimezone *local = KSystemTimezones::local();
     QVERIFY((bool)local);
-    int offset = local->currentOffset(Qt::UTC);
-    QString msg = QString("Please manually verify that the current local time zone offset is %1h%2m%3s").arg(offset/3600).arg((offset/60)%60, 2, 10, QChar('0')).arg(offset%3600, 2, 10, QChar('0'));
-    QWARN(msg.toLatin1().data());
+    QCOMPARE(local->currentOffset(Qt::UTC), offset);
 }
 
 void KTimezonesTest::offsetAtUTC()
