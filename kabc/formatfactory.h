@@ -21,8 +21,8 @@
 #ifndef KABC_FORMATFACTORY_H
 #define KABC_FORMATFACTORY_H
 
-#include <q3dict.h>
-#include <qstring.h>
+#include <QHash>
+#include <QString>
 
 #include <kconfig.h>
 #include <klibloader.h>
@@ -33,6 +33,7 @@ namespace KABC {
 
 struct FormatInfo
 {
+  bool isNull() const { return library.isEmpty(); }
   QString library;
   QString nameLabel;
   QString descriptionLabel;
@@ -84,7 +85,7 @@ class KABC_EXPORT FormatFactory
     /**
      * Returns the info structure for a special type.
      */
-    FormatInfo *info( const QString &type );
+    FormatInfo info( const QString &type );
 
   protected:
     FormatFactory();
@@ -94,7 +95,7 @@ class KABC_EXPORT FormatFactory
 
     static FormatFactory *mSelf;
 
-    Q3Dict<FormatInfo> mFormatList;
+    QHash<QString, FormatInfo> mFormatList;
 };
 
 }

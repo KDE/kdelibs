@@ -61,10 +61,10 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent )
   QStringList formats = factory->formats();
   QStringList::Iterator it;
   for ( it = formats.begin(); it != formats.end(); ++it ) {
-    FormatInfo *info = factory->info( *it );
-    if ( info ) {
+    FormatInfo info = factory->info( *it );
+    if ( !info.isNull() ) {
       mFormatTypes << (*it);
-      mFormatBox->insertItem( info->nameLabel );
+      mFormatBox->insertItem( info.nameLabel );
     }
   }
 

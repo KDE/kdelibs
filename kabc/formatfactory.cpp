@@ -47,13 +47,11 @@ FormatFactory *FormatFactory::self()
 
 FormatFactory::FormatFactory()
 {
-  mFormatList.setAutoDelete( true );
-
   // dummy entry for default format
-  FormatInfo *info = new FormatInfo;
-  info->library = "<NoLibrary>";
-  info->nameLabel = i18n( "vCard" );
-  info->descriptionLabel = i18n( "vCard Format" );
+  FormatInfo info;
+  info.library = "<NoLibrary>";
+  info.nameLabel = i18n( "vCard" );
+  info.descriptionLabel = i18n( "vCard Format" );
   mFormatList.insert( "vcard", info );
 
   const QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/formats/*.desktop", true, true );
@@ -64,15 +62,13 @@ FormatFactory::FormatFactory()
     if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )
 	    continue;
 
-    info = new FormatInfo;
-
     config.setGroup( "Plugin" );
     QString type = config.readEntry( "Type" );
-    info->library = config.readEntry( "X-KDE-Library" );
+    info.library = config.readEntry( "X-KDE-Library" );
 
     config.setGroup( "Misc" );
-    info->nameLabel = config.readEntry( "Name" );
-    info->descriptionLabel = config.readEntry( "Comment", i18n( "No description available." ) );
+    info.nameLabel = config.readEntry( "Name" );
+    info.descriptionLabel = config.readEntry( "Comment", i18n( "No description available." ) );
 
     mFormatList.insert( type, info );
   }
@@ -90,18 +86,19 @@ QStringList FormatFactory::formats()
   // make sure 'vcard' is the first entry
   retval << "vcard";
 
-  Q3DictIterator<FormatInfo> it( mFormatList );
-  for ( ; it.current(); ++it )
-    if ( it.currentKey() != "vcard" )
-      retval << it.currentKey();
-
+  QHashIterator<QString, FormatInfo> it( mFormatList );
+  while ( it.hasNext() ) {
+    it.next();
+    if ( it.key() != "vcard" )
+      retval << it.key();
+  }
   return retval;
 }
 
-FormatInfo *FormatFactory::info( const QString &type )
+FormatInfo FormatFactory::info( const QString &type )
 {
-  if ( type.isEmpty() )
-    return 0;
+  if ( type.isEmpty() || !mFormatList.contains( type ) )
+    return FormatInfo();
   else
     return mFormatList[ type ];
 }
@@ -121,10 +118,10 @@ Format *FormatFactory::format( const QString& type )
     return format;
   }
 
-  FormatInfo *fi = mFormatList[ type ];
-  if (!fi)
-	  return 0;
-  QString libName = fi->library;
+  if ( !mFormatList.contains( type ) )
+    return 0;
+  FormatInfo fi = mFormatList[ type ];
+  QString libName = fi.library;
 
   KLibrary *library = openLibrary( libName );
   if ( !library )
@@ -135,8 +132,8 @@ Format *FormatFactory::format( const QString& type )
   if ( format_func ) {
     format = ((Format* (*)())format_func)();
     format->setType( type );
-    format->setNameLabel( fi->nameLabel );
-    format->setDescriptionLabel( fi->descriptionLabel );
+    format->setNameLabel( fi.nameLabel );
+    format->setDescriptionLabel( fi.descriptionLabel );
   } else {
     kdDebug( 5700 ) << "'" << libName << "' is not a format plugin." << endl;
     return 0;
