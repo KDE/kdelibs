@@ -728,7 +728,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
         "Each new bookmark will be added to the bottom, independently from "
         "where it is placed in the document."));
   QWhatsThis::add(m_showIndentLines, i18n(
-        "If this is enabled, the editor will display vertical line to help "
+        "If this is enabled, the editor will display vertical lines to help "
         "identifying indent lines.") );
 
   reload();
