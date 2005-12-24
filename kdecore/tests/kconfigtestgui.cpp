@@ -166,7 +166,7 @@ void KConfigTestView::groupEditReturnPressed()
 
 void KConfigTestView::keyEditReturnPressed()
 {
-  QString aValue = pConfig->readEntry( pKeyEdit->text() );
+  QString aValue = pConfig->readEntry( pKeyEdit->text(), QString() );
   // just checking aValue.isNull() would be easier here, but this is
   // to demonstrate the HasKey()-method. Besides, it is better data
   // encapsulation because we do not make any assumption about coding
