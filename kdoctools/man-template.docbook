@@ -11,8 +11,8 @@
 <surname><!-- --Your last name-- --></surname>
 </personname>
 <affiliation><address><email><!-- --Your email address-- --></email></address></affiliation></author>
-<date><!-- --Date when this manpage was written, in the format
-'Month Daynumber, 4-Digit-Year'-- --></date>
+<date><!-- --Date when this manpage was written, in the ISO 8601 format
+'yyyy-mm-dd'-- --></date>
 <productname>K Desktop Environment</productname>
 </refentryinfo>
 
