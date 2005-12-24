@@ -4,6 +4,22 @@
 ]>
 
 <refentry>
+
+<refentryinfo>
+
+<author>
+<firstname>Darian</firstname>
+<surname>Lanx</surname>
+<affiliation>
+<address><email>content@openprojects.net</email></address>
+</affiliation>
+</author>
+
+<date>2001-04-25</date>
+<releaseinfo>0.01.01</releaseinfo>
+
+</refentryinfo>
+
 <refmeta>
 <refentrytitle>KBuildSycoca</refentrytitle>
 <manvolnum>8</manvolnum>
