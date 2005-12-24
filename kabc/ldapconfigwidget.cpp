@@ -25,8 +25,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <Q3HButtonGroup>
-#include <Q3ButtonGroup>
+#include <QGroupBox>
 #include <qradiobutton.h>
 
 #include <kmessagebox.h>
@@ -207,13 +206,18 @@ void LdapConfigWidget::initWidget()
   }
 
   if ( mFlags & W_SECBOX ) {
-    Q3HButtonGroup *btgroup = new Q3HButtonGroup( i18n( "Security" ), this );
+    QGroupBox *btgroup = new QGroupBox( i18n( "Security" ), this );
+    QHBoxLayout *hbox = new QHBoxLayout;
+    btgroup->setLayout( hbox );
     mSecNO = new QRadioButton( i18n( "No" ), btgroup);
     mSecNO->setObjectName( "kcfg_ldapnosec" );
+    hbox->addWidget( mSecNO );
     mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup);
     mSecTLS->setObjectName( "kcfg_ldaptls" );
+    hbox->addWidget( mSecTLS );
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup);
     mSecSSL->setObjectName("kcfg_ldapssl" );
+    hbox->addWidget( mSecSSL );
     mainLayout->addMultiCellWidget( btgroup, row, row, 0, 3 );
 
     connect( mSecNO, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
@@ -226,27 +230,39 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_AUTHBOX ) {
 
-    Q3ButtonGroup *authbox =
-      new Q3ButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
+    QGroupBox *authbox =
+      new QGroupBox( i18n( "Authentication" ), this );
+    QVBoxLayout *vbox = new QVBoxLayout;
+    authbox->setLayout( vbox );
+    QHBoxLayout *hbox = new QHBoxLayout;
+    vbox->addLayout( hbox );
 
     mAnonymous = new QRadioButton( i18n( "Anonymous" ), authbox);
     mAnonymous->setObjectName("kcfg_ldapanon" );
+    hbox->addWidget( mAnonymous );
     mSimple = new QRadioButton( i18n( "Simple" ), authbox);
     mSimple->setObjectName( "kcfg_ldapsimple" );
+    hbox->addWidget( mSimple );
     mSASL = new QRadioButton( i18n( "SASL" ), authbox);
     mSASL->setObjectName("kcfg_ldapsasl" );
+    hbox->addWidget( mSASL );
 
+    hbox = new QHBoxLayout;
+    vbox->addLayout( hbox );
     label = new QLabel( i18n( "SASL mechanism:" ), authbox );
+    hbox->addWidget( label );
     mMech = new KComboBox( false, authbox);
     mMech->setObjectName("kcfg_ldapsaslmech");
     mMech->setEditable( true );
     mMech->insertItem( "DIGEST-MD5" );
     mMech->insertItem( "GSSAPI" );
     mMech->insertItem( "PLAIN" );
+    hbox->addWidget( mMech );
 
     //without host query doesn't make sense
     if ( mHost ) {
       mQueryMech = new QPushButton( i18n( "Query Server" ), authbox );
+      hbox->addWidget( mQueryMech );
       connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     }
 
