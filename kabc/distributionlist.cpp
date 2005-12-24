@@ -212,7 +212,7 @@ bool DistributionListManager::load()
     QStringList::ConstIterator entryIt = value.constBegin();
     while( entryIt != value.constEnd() ) {
       QString id = *entryIt++;
-      QString email = *entryIt;
+      QString email = entryIt != value.constEnd() ? *entryIt : QString();
 
       kdDebug(5700) << "----- Entry " << id << endl;
 
@@ -223,7 +223,7 @@ bool DistributionListManager::load()
         missingEntries.append( qMakePair( id, email ) );
       }
 
-      if ( entryIt == value.end() )
+      if ( entryIt == value.constEnd() )
         break;
       ++entryIt;
     }
