@@ -4,7 +4,6 @@ Import('env')
 
 kdocument_sources = """
 kdocument.cpp
-sconsdummy.cpp
 """
 
 for i in "document.h view.h".split():
