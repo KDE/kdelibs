@@ -37,19 +37,19 @@
 /* This is a horrible awful hack.. to once again fix the sliding
 navigation problem.  */
 
-body { background-color: Qt::white;
+body { background-color: white;
        width: 596px;	
-       color: Qt::black;
+       color: black;
        align: center;}
 
 /* Nice link colors for the main text, and bottom navigation */
 
 :link { color: rgb(170,0,0);
-        background-color: Qt::white; /* should be inherit */ }
+        background-color: white; /* should be inherit */ }
 :visited { color: rgb(170,0,85);
-           background-color: Qt::white; /* should be inherit */ }
+           background-color: white; /* should be inherit */ }
 :active { color: rgb(170,0,0);
-          background-color: Qt::white; /* should be inherit */ }
+          background-color: white; /* should be inherit */ }
 
 /* Link colors for the top navigation */
 
