@@ -7,7 +7,8 @@ clean_up() {
 
 clean_up
 
-dcopserver --nofork &
+echo '* starting dcopserver'
+../dcopserver --nofork &
 dcopserver_pid=$!
 
 echo '* Running batch mode'

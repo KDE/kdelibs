@@ -24,7 +24,7 @@ Six files get generated:
                              local               external           shell
                        +-------------------+-----------------+-----------------+
                        |                   |                 |                 |
-   stdout              |   batch.stdout    |   dcop.stdout   |  shell.stdoud   |
+   stdout              |   batch.stdout    |   dcop.stdout   |  shell.stdout   |
                        |                   |                 |                 |
                        +-------------------+-----------------+-----------------+
                        |                   |                 |                 |
