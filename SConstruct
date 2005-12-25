@@ -100,6 +100,8 @@ kde3support
 kcert
 kconf_update
 kresources
+interfaces
+kate
 """
 
 # currently not on windows 
