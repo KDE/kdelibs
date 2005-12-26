@@ -54,7 +54,6 @@
 #include "kstaticdeleter.h"
 #include <kde_file.h>
 
-template class QMap<QByteArray, QStringList>;
 
 class KStandardDirs::KStandardDirsPrivate
 {
