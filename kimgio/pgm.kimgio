@@ -67,6 +67,7 @@ Name[uk]=Чорно-біле зображення у портативному ф
 Name[uz]=PGM-расм
 Name[wa]=Imådje PGM
 Name[zh_CN]=便携灰度图像
+Name[zh_HK]=PGM 圖檔
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

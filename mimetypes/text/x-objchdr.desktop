@@ -50,6 +50,7 @@ Comment[tr]=Objective-C Başlık Dosyası
 Comment[tt]=Objective-C Başlıqınıñ Bireme
 Comment[uk]=Файл заголовків Objective-C
 Comment[zh_CN]=Objective-C 头文件
+Comment[zh_HK]=Objective-C 標頭檔
 Icon=source_h
 Type=MimeType
 MimeType=text/x-objchdr

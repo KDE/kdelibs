@@ -47,6 +47,7 @@ Comment[tt]=OpenOffice.org Biremlege
 Comment[uk]=База даних OpenOffice.org
 Comment[uz]=OpenOffice.org маълумот база
 Comment[zh_CN]=OpenOffice.org 数据库
+Comment[zh_HK]=OpenOffice.org 資料庫
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.odb;*.ODB;

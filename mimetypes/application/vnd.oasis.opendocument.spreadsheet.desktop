@@ -54,6 +54,7 @@ Comment[tt]=OASIS OpenDocument İsäpcäymäse
 Comment[uk]=Електронна таблиця OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument электрон жадвали
 Comment[zh_CN]=OASIS OpenDocument 电子表格
+Comment[zh_HK]=OASIS OpenDocument 試算表
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.ods

@@ -65,6 +65,7 @@ Comment[uk]=Каталог повідомлень GNU Gettext
 Comment[uz]=GNU Gettext хабарлар каталоги
 Comment[wa]=Catalogue di messaedjes po GNU gettext
 Comment[zh_CN]=GNU Gettext 消息编目
+Comment[zh_HK]=GNU Gettext 訊息型錄
 Comment[zh_TW]=GNU Gettext 訊息型錄
 Icon=gettext
 Type=MimeType

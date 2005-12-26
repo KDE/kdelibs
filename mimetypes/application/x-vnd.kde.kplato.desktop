@@ -57,6 +57,7 @@ Comment[tt]=KPlato Sölge İdärä İstälege
 Comment[uk]=Документ керування проектом KPlato
 Comment[uz]=KPlato ҳужжати
 Comment[zh_CN]=KPlato 项目管理文档
+Comment[zh_HK]=KPlato 計畫管理文件
 Type=MimeType
 Patterns=*.kplato;*.kplatot;
 X-KDE-AutoEmbed=false

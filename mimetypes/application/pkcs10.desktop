@@ -71,6 +71,7 @@ Comment[ven]=Khumbelo ya sethifikheithi tsha PKCS#12
 Comment[wa]=Dimande d' acertinaedje S/MIME
 Comment[xh]=S/MIME Isicelo Soqinisekiso
 Comment[zh_CN]=S/MIME 认证请求
+Comment[zh_HK]=S/MIME 認證請求
 Comment[zh_TW]=S/MIME 認證請求
 Comment[zu]=Isitifiketi Sesicelo se-S/MIME
 [Property::X-KDE-NativeExtension]

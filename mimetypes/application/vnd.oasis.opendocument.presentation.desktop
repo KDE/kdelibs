@@ -54,6 +54,7 @@ Comment[tt]=OASIS OpenDocument Täqbire
 Comment[uk]=Презентація OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument намойиш
 Comment[zh_CN]=OASIS OpenDocument 演示文稿
+Comment[zh_HK]=OASIS OpenDocument 簡報
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.odp

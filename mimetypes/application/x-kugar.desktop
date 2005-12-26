@@ -74,6 +74,7 @@ Comment[ven]=Data ya faela ya Kugar
 Comment[vi]=File dữ liệu Kugar 
 Comment[xh]=Ifayile ye Data ye Kugar
 Comment[zh_CN]=Kugar 数据文件
+Comment[zh_HK]=Kugar 資料檔案
 Comment[zh_TW]=Kugar 資料檔案
 Comment[zu]=Ifayela Ledata ye-Kugar
 Patterns=*.kdf;*.kud;

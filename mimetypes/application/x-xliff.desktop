@@ -55,6 +55,7 @@ Comment[tt]=XLIFF Tärcemä Bireme
 Comment[uk]=Файл перекладу XLIFF
 Comment[uz]=XLIFF таржима қилиш файли
 Comment[zh_CN]=XLIFF 翻译文件
+Comment[zh_HK]=XLIFF 翻譯檔
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.xlf

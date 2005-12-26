@@ -69,6 +69,7 @@ Name[uk]=Зображення BMP
 Name[uz]=BMP-расм
 Name[wa]=Imådje BMP
 Name[zh_CN]=BMP 图像
+Name[zh_HK]=點陣圖
 Read=true
 Write=true
 Suffices=bmp,BMP
