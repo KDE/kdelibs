@@ -729,7 +729,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
         "where it is placed in the document."));
   QWhatsThis::add(m_showIndentLines, i18n(
         "If this is enabled, the editor will display vertical lines to help "
-        "identifying indent lines.") );
+        "identify indent lines.") );
 
   reload();
 
