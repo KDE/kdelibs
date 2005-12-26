@@ -30,7 +30,7 @@
 #include <sys/acl.h>
 #include <acl/libacl.h>
 #endif
-#include <q3intdict.h>
+#include <QHash>
 
 #include <kdebug.h>
 
@@ -46,16 +46,12 @@ static void printACL( acl_t acl, const QString &comment );
 
 class KACL::KACLPrivate {
 public:
-    KACLPrivate() : m_acl( 0 ) { init(); }
+    KACLPrivate() : m_acl( 0 ) {}
 #ifdef USE_POSIX_ACL
     KACLPrivate( acl_t acl )
-        : m_acl( acl ) { init(); }
+        : m_acl( acl ) {}
     ~KACLPrivate() { if ( m_acl ) acl_free( m_acl ); }
 #endif
-    void init() {
-        m_usercache.setAutoDelete( true );
-        m_groupcache.setAutoDelete( true );
-    }
     // helpers
 #ifdef USE_POSIX_ACL
     bool setMaskPermissions( unsigned short v );
@@ -68,8 +64,8 @@ public:
 #else
     int m_acl;
 #endif
-    mutable Q3IntDict<QString> m_usercache;
-    mutable Q3IntDict<QString> m_groupcache;
+    mutable QHash<uid_t, QString> m_usercache;
+    mutable QHash<gid_t, QString> m_groupcache;
 };
 
 KACL::KACL( const QString &aclString )
@@ -607,37 +603,29 @@ QString KACL::asString() const
 #ifdef USE_POSIX_ACL
 QString KACL::KACLPrivate::getUserName( uid_t uid ) const
 {
-    QString *temp;
-    temp = m_usercache.find( uid );
-    if ( !temp ) {
+    if ( !m_usercache.contains( uid ) ) {
         struct passwd *user = getpwuid( uid );
         if ( user ) {
-            m_usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
-            return QString::fromLatin1( user->pw_name );
+            m_usercache.insert( uid, QString::fromLatin1(user->pw_name) );
         }
         else
             return QString::number( uid );
     }
-    else
-        return *temp;
+    return m_usercache[uid];
 }
 
 
 QString KACL::KACLPrivate::getGroupName( gid_t gid ) const
 {
-    QString *temp;
-    temp = m_groupcache.find( gid );
-    if ( !temp ) {
+    if ( !m_groupcache.contains( gid ) ) {
         struct group *grp = getgrgid( gid );
         if ( grp ) {
-            m_groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
-            return QString::fromLatin1( grp->gr_name );
+            m_groupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
         }
         else
             return QString::number( gid );
     }
-    else
-        return *temp;
+    return m_groupcache[gid];
 }
 #endif
 
