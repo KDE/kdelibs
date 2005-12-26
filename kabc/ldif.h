@@ -21,8 +21,8 @@
 #ifndef _K_LDIF_H_
 #define _K_LDIF_H_
 
-#include <qstring.h>
-#include <q3cstring.h>
+#include <QString>
+#include <QByteArray>
 
 #include <kdelibs_export.h>
 
@@ -54,26 +54,20 @@ namespace KABC {
      * @param linelen Maximum length of the lines in the result.
      * @param url If true, encode value as url ( use :< ).
      */
-    static Q3CString assembleLine( const QString &fieldname, 
+    static QByteArray assembleLine( const QString &fieldname, 
       const QByteArray &value, uint linelen=0, bool url=false );
-    /**
-     * This is the same as the above function, the only difference that 
-     * this accepts QCString as the value.
-     */
-    static Q3CString assembleLine( const QString &fieldname, 
-      const Q3CString &value, uint linelen=0, bool url=false );
     /**
      * This is the same as the above function, the only difference that 
      * this accepts QString as the value.
      */
-    static Q3CString assembleLine( const QString &fieldname, 
+    static QByteArray assembleLine( const QString &fieldname, 
       const QString &value, uint linelen=0, bool url=false );
       
     /**
      * Splits one line from an LDIF file to attribute and value components.
      * @returns true if value is an URL, false otherwise
      */
-    static bool splitLine( const Q3CString &line, QString &fieldname, QByteArray &value );
+    static bool splitLine( const QByteArray &line, QString &fieldname, QByteArray &value );
     /**
      * Splits a control specification (without the "control:" directive)
      * @param line is the control directive
@@ -81,7 +75,7 @@ namespace KABC {
      * @param critical will contain the criticality of control
      * @param value is the control value
      */
-    static bool splitControl( const Q3CString &line, QString &oid, bool &critical,
+    static bool splitControl( const QByteArray &line, QString &oid, bool &critical,
       QByteArray &value );
     /**
      * Starts the parsing of a new LDIF
@@ -171,7 +165,7 @@ namespace KABC {
     bool mIsNewLine, mIsComment,mCritical;
     ParseVal mLastParseVal;
     uint mPos,mLineNo;  
-    Q3CString line;
+    QByteArray line;
         
     class LDIFPrivate;
     LDIFPrivate *d;

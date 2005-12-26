@@ -69,7 +69,7 @@ static void ldif_out( QTextStream &t, QString formatStr, QString value )
   if ( value.isEmpty() )
     return;
 
-  Q3CString txt = LDIF::assembleLine( formatStr, value, 72 );
+  QByteArray txt = LDIF::assembleLine( formatStr, value, 72 );
 
   // write the string
   t << QString::fromUtf8(txt) << "\n";
@@ -548,7 +548,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   }
 
   // generate the new string and split it to 72 chars/line
-  Q3CString txt = (formatStr.arg(value)).toUtf8();
+  QByteArray txt = (formatStr.arg(value)).toUtf8();
 
   if (allowEncode) {
     len = txt.length();

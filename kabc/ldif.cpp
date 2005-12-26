@@ -34,16 +34,16 @@ LDIF::~LDIF()
 {
 }
 
-Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
+QByteArray LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   uint linelen, bool url )
 {
   bool safe = false;
   bool isDn;
-  Q3CString result;
+  QByteArray result;
   int i;
 
   if ( url ) {
-    result = fieldname.toUtf8() + ":< " + Q3CString( value.data(), value.size()+1 );
+    result = fieldname.toUtf8() + ":< " + value;
   } else {
     isDn = fieldname.toLower() == "dn";
     //SAFE-INIT-CHAR
@@ -66,7 +66,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
     if ( value.size() == 0 ) safe = true;
 
     if( safe ) {
-      result = fieldname.toUtf8() + ": " + Q3CString( value.data(), value.size()+1 );
+      result = fieldname.toUtf8() + ": " + value;
     } else {
       result = fieldname.toUtf8() + ":: " + KCodecs::base64Encode( value, false );
     }
@@ -82,28 +82,13 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   return result;
 }
 
-Q3CString LDIF::assembleLine( const QString &fieldname, const Q3CString &value,
-  uint linelen, bool url )
-{
-  Q3CString ret;
-  QByteArray tmp;
-  uint valuelen = value.length();
-  const char *data = value.data();
-
-  tmp.setRawData( data, valuelen );
-  ret = assembleLine( fieldname, tmp, linelen, url );
-  tmp.resetRawData( data, valuelen );
-  return ret;
-
-}
-
-Q3CString LDIF::assembleLine( const QString &fieldname, const QString &value,
+QByteArray LDIF::assembleLine( const QString &fieldname, const QString &value,
   uint linelen, bool url )
 {
   return assembleLine( fieldname, value.toUtf8(), linelen, url );
 }
 
-bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &value )
+bool LDIF::splitLine( const QByteArray &line, QString &fieldname, QByteArray &value )
 {
   int position;
   QByteArray tmp;
@@ -116,8 +101,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
   if ( position == -1 ) {
     // strange: we did not find a fieldname
     fieldname = "";
-    Q3CString str;
-    str = line.trimmed();
+    QByteArray str = line.trimmed();
     linelen = str.length();
     data = str.data();
     tmp.setRawData( data, linelen );
@@ -171,7 +155,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
   return false;
 }
 
-bool LDIF::splitControl( const Q3CString &line, QString &oid, bool &critical, 
+bool LDIF::splitControl( const QByteArray &line, QString &oid, bool &critical, 
   QByteArray &value )
 {
   QString tmp;
@@ -233,7 +217,7 @@ LDIF::ParseVal LDIF::processLine()
           else retval = Err;
         }
       } else if ( attrLower == "control" ) {
-        mUrl = splitControl( Q3CString( mVal, mVal.size() + 1 ), mOid, mCritical, mVal );
+        mUrl = splitControl( mVal, mOid, mCritical, mVal );
         retval = Control;
       } else if ( !mAttr.isEmpty() && mVal.size() > 0 ) {
         mEntryType = Entry_Add;
