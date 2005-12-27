@@ -121,13 +121,15 @@ by QX11Info::display()</li>
 <H4>KConfigBase</H4>
 <ul>
 <li>all read*Entry methods deprecated, use readEntry(key, const QVariant&amp;); The use of QVariant
-allows some ambiguous conversions, so it might be necessary to use <em>QVariant::Type</em> or a
-<em>cast</em> to dis-ambiguate the type wanted, i.e.
+allows some ambiguous conversions, so it might be necessary to use <em>QVariant::Type</em> or 
+<em>explicit</em> construction to dis-ambiguate the type wanted, i.e.
  <ul>
- <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>0</b>)); // sometimes ambiguous
- <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>int(0)</b>));</li>
+ <li>bool var = qvariant_cast&lt;bool&gt;(readEntry(key, <b>false</b>)); // ambiguous</li>
+ <li>bool var = qvariant_cast&lt;bool&gt;(readEntry(key, <b>QVariant(false)</b>)); // not ambiguous</li>
+ <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>0</b>)); // ambiguous</li>
  <li>long var = qvariant_cast&lt;int&gt;(readEntry(key, <b>QVariant::Int</b>)); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
  </ul>
+This appears to be only applicable to <b>false</b> and <b>0</b> any other value seems to choose the correct function. (not sure if this is just a g++ problem?)
 </li>
 <li>readEntry(const QString&amp;, const QString&amp;) no longer has a default argument, add QString() as
 second argument.
