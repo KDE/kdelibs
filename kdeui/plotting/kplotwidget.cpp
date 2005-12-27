@@ -19,8 +19,10 @@
 #include <kdebug.h>
 #include <qevent.h>
 #include <qpainter.h>
+#include <qpalette.h>
 #include <qpixmap.h>
 #include <qpolygon.h>
+#include <QtAlgorithms>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
@@ -33,11 +35,11 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
 {
-	setBackgroundMode( Qt::NoBackground );
+	setAttribute( Qt::WA_NoBackground, true );
 
 	//set DataRect
 	setLimits( x1, x2, y1, y2 );
-	setDefaultPadding();
+	setDefaultPaddings();
 
 	//Set PixRect (starts at (0,0) because we will translate by leftPadding(), topPadding() )
 	PixRect = QRect( 0, 0, width() - leftPadding() - rightPadding(),
@@ -46,14 +48,15 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
 	buffer = new QPixmap();
 
 	//default colors:
-	setBGColor( Qt::black );
-	setFGColor( Qt::white );
+	setBackgroundColor( Qt::black );
+	setForegroundColor( Qt::white );
 	setGridColor( Qt::gray );
 }
 
 KPlotWidget::~KPlotWidget()
 {
 	delete (buffer);
+	qDeleteAll( ObjectList );
 	ObjectList.clear();
 }
 
@@ -134,26 +137,52 @@ void KPlotWidget::updateTickmarks() {
 	} //end for iaxis
 }
 
+void KPlotWidget::clearObjectList() {
+	qDeleteAll( ObjectList );
+	ObjectList.clear();
+	update();
+}
+
+KPlotObject *KPlotWidget::object( int i ) {
+	if ( i < 0 || i >= ObjectList.size() ) {
+		kdWarning() << "KPlotWidget::object(): index " << i << " out of range!" << endl;
+		return 0;
+	}
+	return ObjectList.at(i);
+}
+
+void KPlotWidget::setBackgroundColor( const QColor &bg ) {
+	cBackground = bg;
+	QPalette palette;
+	palette.setColor( backgroundRole(), bg );
+	setPalette( palette );
+}
+
 void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
 	int newWidth = width() - leftPadding() - rightPadding();
 	int newHeight = height() - topPadding() - bottomPadding();
 	PixRect = QRect( 0, 0, newWidth, newHeight );
 
-	buffer->resize( width(), height() );
+	QPixmap *tmp = new QPixmap( size() );
+	delete buffer;
+	buffer = tmp;
+	tmp = 0;
 }
 
 void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
 	QPainter p;
 
 	p.begin( buffer );
-	p.fillRect( 0, 0, width(), height(), bgColor() );
+	p.fillRect( 0, 0, width(), height(), backgroundColor() );
 	p.translate( leftPadding(), topPadding() );
 
 	drawObjects( &p );
 	drawBox( &p );
 
 	p.end();
-	bitBlt( this, 0, 0, buffer );
+	p.begin( this );
+	p.drawPixmap( 0, 0, *buffer );
+	p.end();
 }
 
 void KPlotWidget::drawObjects( QPainter *p ) {
@@ -210,9 +239,8 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 					QPolygon a( po->count() );
 
-					unsigned int i=0;
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-						a.setPoint( i++, mapToPoint( **dpit ) );
+						a << mapToPoint( **dpit );
 
 					p->drawPolygon( a );
 					break;
@@ -230,8 +258,8 @@ double KPlotWidget::dmod( double a, double b ) { return ( b * ( ( a / b ) - int(
 
 void KPlotWidget::drawBox( QPainter *p ) {
 	//First, fill in padding region with bgColor() to mask out-of-bounds plot data
-	p->setPen( bgColor() );
-	p->setBrush( bgColor() );
+	p->setPen( backgroundColor() );
+	p->setBrush( backgroundColor() );
 
 	//left padding ( don't forget: we have translated by XPADDING, YPADDING )
 	p->drawRect( -leftPadding(), -topPadding(), leftPadding(), height() );
@@ -264,7 +292,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		}
 	}
 
-	p->setPen( fgColor() );
+	p->setPen( foregroundColor() );
 	p->setBrush( Qt::NoBrush );
 
 	if (BottomAxis.isVisible() || LeftAxis.isVisible())  p->drawRect( PixRect ); //box outline

@@ -1,5 +1,6 @@
 INCLUDES= $(all_includes)
 SUBDIRS = . 
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 lib_LTLIBRARIES = libkdeeduplot.la
 

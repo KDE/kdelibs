@@ -34,10 +34,14 @@ class KPlotObject;
 /**
  * @class KPlotWidget
  *
- * @short Genric data plotting widget.
+ * @short Generic data plotting widget.
  *
  * Widget for drawing plots. Includes adjustable axes (KPlotAxis) with
  * tickmarks and labels and a list of KPlotObjects to be drawn.
+ *
+ * @note KPlotWidget will take care of the objects added to it, so when
+ * clearing the objects list (eg with clearObjectList()) any previous reference
+ * to a KPlotObject already added to a KPlotWidget will be invalid
  *
  * @author Jason Harris
  *
@@ -114,60 +118,60 @@ public:
 	virtual void addObject( KPlotObject *o ) { ObjectList.append( o ); }
 
 	/**
-	 * Remove all items from the list of KPlotObjects
+	 * Remove and delete all items from the list of KPlotObjects
 	 */
-	virtual void clearObjectList() { ObjectList.clear(); update(); }
+	void clearObjectList();
 
 	/**
 	 * Replace an item in the KPlotObject list.
 	 * @param i the index of th item to be replaced
 	 * @param o pointer to the replacement KPlotObject
 	 */
-	virtual void replaceObject( int i, KPlotObject *o ) { ObjectList.replace( i, o ); }
+	void replaceObject( int i, KPlotObject *o ) { ObjectList.replace( i, o ); }
 
 	/**
 	 * @return the number of KPlotObjects in the list
 	 */
-	virtual int objectCount() const { return ObjectList.count(); }
+	int objectCount() const { return ObjectList.count(); }
 
 	/**
 	 * @return a pointer to a specific KPlotObject in the list
 	 * @param i the index of the desired KPlotObject
 	 */
-	virtual KPlotObject *object( int i ) { return ObjectList.at(i); }
+	KPlotObject *object( int i );
 
 	/**
 	 * @return the background color
 	 */
-	virtual QColor bgColor() const { return cBackground; }
+	QColor backgroundColor() const { return cBackground; }
 
 	/**
 	 * @return the foreground color
 	 */
-	virtual QColor fgColor() const { return cForeground; }
+	QColor foregroundColor() const { return cForeground; }
 
 	/**
 	 * @return the grid color
 	 */
-	virtual QColor gridColor() const { return cGrid; }
+	QColor gridColor() const { return cGrid; }
 
 	/**
 	 * Set the background color
 	 * @param bg the new background color
 	 */
-	virtual void setBGColor( const QColor &bg ) { cBackground = bg; setBackgroundColor( bg ); }
+	void setBackgroundColor( const QColor &bg );
 
 	/**
 	 * Set the foreground color
 	 * @param fg the new foreground color
 	 */
-	virtual void setFGColor( const QColor &fg ) { cForeground = fg; }
+	void setForegroundColor( const QColor &fg ) { cForeground = fg; }
 
 	/**
 	 * Set the grid color
 	 * @param gc the new grid color
 	 */
-	virtual void setGridColor( const QColor &gc ) { cGrid = gc; }
+	void setGridColor( const QColor &gc ) { cGrid = gc; }
 
 	/**
 	 * Toggle whether plot axes are drawn.
@@ -257,7 +261,7 @@ public:
 	/**
 	 * Revert all four padding values to be automatically determined.
 	 */
-	virtual void setDefaultPadding() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
+	void setDefaultPaddings() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
 	QPoint mapToPoint( const QPointF& p ) {
 		int px = PixRect.left() + int( PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width() );
@@ -316,9 +320,13 @@ protected:
 	//The number of major and minor tickmarks to be plotted in X and Y
 	int nmajX, nminX, nmajY, nminY;
 
-	//Limits of the plot area in pixel units
+	/**
+	 * Limits of the plot area in pixel units
+	 */
 	QRect PixRect;
-	//Limits of the plot area in data units
+	/**
+	 * Limits of the plot area in data units
+	 */
 	QRectF DataRect;
 	/**
 	 * List of KPlotObjects

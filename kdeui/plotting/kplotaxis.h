@@ -45,61 +45,61 @@ public:
 	/**
 	 * Destructor.
 	 */
-	virtual ~KPlotAxis() {}
+	~KPlotAxis() {}
 
 	/**
 	 * Returns whether the axis is visible or not.
 	 */
-	virtual bool isVisible() const { return m_visible; }
+	bool isVisible() const { return m_visible; }
 
 	/**
 	 * Sets the "visible" property of the axis.
 	 */
-	virtual void setVisible(bool visible) { m_visible = visible; }
+	void setVisible(bool visible) { m_visible = visible; }
 
 	/**
 	 * Shows the axis (axis will be shown at next update of plot widget).
 	 */
-	virtual void show() { m_visible = true; }
+	void show() { m_visible = true; }
 
 	/**
 	 * Hides the axis (axis will be hidden at next update of plot widget).
 	 */
-	virtual void hide() { m_visible = false; }
+	void hide() { m_visible = false; }
 
 	/**
 	 * Sets the axis label.
 	 * Set the label to an empty string to omit the axis label.
 	 * @param label a string describing the data plotted on the axis.
 	 */
-	virtual void setLabel( const QString& label ) { m_label = label; }
+	void setLabel( const QString& label ) { m_label = label; }
 
 	/**
 	 * Returns the axis label.
 	 */
-	virtual QString label() const { return m_label; }
+	QString label() const { return m_label; }
 
 	/**
 	 * Set the number format for the tick labels, see QString::arg() for
 	 * description of arguments.
          */
-	virtual void setLabelFormat(int fieldWidth, char fmt = 'g', int prec=-1) {
+	void setLabelFormat(int fieldWidth, char fmt = 'g', int prec=-1) {
 		m_labelFieldWidth = fieldWidth; m_labelFmt = fmt; m_labelPrec = prec; }
 
 	/**
 	 * Returns the field width of the tick labels.
 	 */
-	virtual int labelFieldWidth() const { return m_labelFieldWidth; }
+	int labelFieldWidth() const { return m_labelFieldWidth; }
 
 	/**
 	 * Returns the number format of the tick labels.
 	 */
-	virtual char labelFmt() const { return m_labelFmt; }
+	char labelFmt() const { return m_labelFmt; }
 
 	/**
 	 * short Returns the number precision of the tick labels.
 	 */
-	virtual int labelPrec() const { return m_labelPrec; }
+	int labelPrec() const { return m_labelPrec; }
 
 private:
 	bool		m_visible;			///< Property "visible" defines if Axis is drawn or not.
