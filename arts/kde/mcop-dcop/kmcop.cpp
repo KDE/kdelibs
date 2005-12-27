@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include <dcopclient.h>
 
-#include <q3valuelist.h>
+
 #include <q3cstring.h>
 
 #include <kartsdispatcher.h>

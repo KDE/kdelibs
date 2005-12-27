@@ -21,7 +21,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <q3valuelist.h>
+
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qtextstream.h>

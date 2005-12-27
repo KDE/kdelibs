@@ -36,7 +36,7 @@
 //
 
 #include <q3cstring.h>
-#include <q3valuelist.h>
+
 
 class QString;
 class QStringList;

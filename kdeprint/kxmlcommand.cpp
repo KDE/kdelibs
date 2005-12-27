@@ -29,7 +29,7 @@
 #include <qinputdialog.h>
 #include <qmap.h>
 #include <QTextStream>
-#include <q3valuelist.h>
+
 
 
 #include <kstandarddirs.h>

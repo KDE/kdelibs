@@ -35,7 +35,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
-#include <q3valuelist.h>
+
 
 KCombiView::KCombiView( QWidget *parent, const char *name)
   : QSplitter( parent, name),

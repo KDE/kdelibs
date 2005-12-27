@@ -25,7 +25,7 @@
 #include <kcharsets.h>
 #include <klibloader.h>
 #include <q3cstring.h>
-#include <q3valuevector.h>
+
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;

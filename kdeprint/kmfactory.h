@@ -22,7 +22,7 @@
 #define KMFACTORY_H
 
 #include <qstring.h>
-#include <q3valuelist.h>
+
 #include <qstringlist.h>
 #include <q3ptrlist.h>
 #include <qobject.h>

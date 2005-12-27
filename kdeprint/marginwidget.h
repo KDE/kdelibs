@@ -21,7 +21,7 @@
 #define MARGINWIDGET_H
 
 #include <qwidget.h>
-#include <q3valuevector.h>
+
 
 #include <kdelibs_export.h>
 

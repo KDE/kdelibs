@@ -22,7 +22,7 @@
 
 #include <kdialogbase.h>
 
-#include <q3valuelist.h>
+
 #include <QList>
 
 class QString;

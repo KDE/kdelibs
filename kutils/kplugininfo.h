@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qstringlist.h>
-#include <q3valuelist.h>
+
 #include <kservice.h>
 #include <QList>
 

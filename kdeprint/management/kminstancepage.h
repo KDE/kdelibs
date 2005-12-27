@@ -21,7 +21,7 @@
 #define KMINSTANCEPAGE_H
 
 #include "kmprinterpage.h"
-#include <q3valuelist.h>
+
 #include <qwidget.h>
 
 class KListBox;

@@ -31,7 +31,7 @@
 #include <qkeysequence.h>
 #include <qobject.h>
 #include <q3cstring.h>
-#include <q3valuelist.h>
+
 #include <qpointer.h>
 #include <kguiitem.h>
 #include <kshortcut.h>

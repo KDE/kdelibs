@@ -21,7 +21,7 @@
 #define KICONVIEWSEARCHLINE_H
 
 #include <klineedit.h>
-#include <q3valuelist.h>
+
 
 class Q3IconView;
 class Q3IconViewItem;

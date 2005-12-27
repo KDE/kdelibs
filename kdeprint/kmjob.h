@@ -26,7 +26,7 @@
 #endif
 
 #include <qstring.h>
-#include <q3valuevector.h>
+#include <QVector>
 #include <kdeprint/kmobject.h>
 #include <kdelibs_export.h>
 

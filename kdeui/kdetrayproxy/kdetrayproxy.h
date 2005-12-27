@@ -20,7 +20,7 @@
 #ifndef _KDE_TRAY_PROXY_H_
 #define _KDE_TRAY_PROXY_H_
 
-#include <q3valuelist.h>
+
 #include <kmanagerselection.h>
 #include <kwinmodule.h>
 #include <qwidget.h>

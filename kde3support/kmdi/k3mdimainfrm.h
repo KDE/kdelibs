@@ -40,7 +40,7 @@
 #include <qapplication.h>
 #include <qdom.h>
 #include <qpointer.h>
-
+#include <q3valuelist.h>
 #include "k3mditaskbar.h"
 #include "k3mdichildarea.h"
 #include "k3mdichildview.h"

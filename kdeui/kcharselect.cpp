@@ -39,7 +39,7 @@
 #include <qstyle.h>
 #include <qtooltip.h>
 #include <qvalidator.h>
-#include <q3valuelist.h>
+
 #include <qapplication.h>
 
 #include <kdebug.h>

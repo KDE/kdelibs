@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <q3valuelist.h>
+
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qfile.h>

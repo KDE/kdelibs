@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <qdatetime.h>
 #include <qregexp.h>
-#include <q3valuelist.h>
+
 #include <cups/cups.h>
 
 #ifdef HAVE_CONFIG_H

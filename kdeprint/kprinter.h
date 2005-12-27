@@ -26,7 +26,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3valuelist.h>
+
 #include <kdemacros.h>
 #include <kdelibs_export.h>
 

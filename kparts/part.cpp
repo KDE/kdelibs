@@ -48,7 +48,7 @@
 #include <assert.h>
 #include <kdebug.h>
 
-template class Q3PtrList<KXMLGUIClient>;
+template class QList<KXMLGUIClient*>;
 
 using namespace KParts;
 

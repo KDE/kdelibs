@@ -25,7 +25,7 @@
 #include <QContextMenuEvent>
 //Added by qt3to4:
 #include <QList>
-#include <q3valuelist.h>
+
 #include <kvbox.h>
 
 class KListView;

@@ -27,7 +27,7 @@
 #include <qobject.h>
 #include <q3ptrlist.h>
 #include <q3dict.h>
-#include <q3valuelist.h>
+
 
 #include <kdelibs_export.h>
 

@@ -35,7 +35,7 @@
 
 #include "kspell.h"
 
-#include <q3valuelist.h>
+
 #include <qapplication.h>
 #include <qtextcodec.h>
 #include <qtimer.h>

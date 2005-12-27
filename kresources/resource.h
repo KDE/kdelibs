@@ -23,7 +23,7 @@
 #define KRESOURCES_RESOURCE_H
 
 #include <qmutex.h>
-#include <q3valuelist.h>
+
 #include <qwidget.h>
 
 #include <klibloader.h>

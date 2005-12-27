@@ -22,7 +22,7 @@
 
 #include <dcopobject.h>
 
-#include <q3valuelist.h>
+
 #include <q3cstring.h>
 
 typedef Q3ValueList<Q3CString> QCStringList;

@@ -22,7 +22,7 @@
 #include <qstringlist.h>
 #include <qtabwidget.h>
 #include <qtooltip.h>
-#include <q3valuelist.h>
+
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>

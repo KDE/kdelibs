@@ -66,12 +66,12 @@ struct FileInfo {
    int age;
 };
 
-template class Q3PtrList<FileInfo>;
+template class QList<FileInfo*>;
 
-class FileInfoList : public Q3PtrList<FileInfo>
+class FileInfoList : public QList<FileInfo*>
 {
 public:
-   FileInfoList() : Q3PtrList<FileInfo>() { }
+   FileInfoList() : QList<FileInfo*>() { }
    int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
       { return ((FileInfo *)item1)->age - ((FileInfo *)item2)->age; }
 };
@@ -240,13 +240,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       }
    }
 
-   cachedEntries.sort();
+   qSort(cachedEntries.begin(), cachedEntries.end());
 
    int maxCachedSize = m_maxCacheSize / 2;
 
-   for(FileInfo *fileInfo = cachedEntries.first();
-       fileInfo;
-       fileInfo = cachedEntries.next())
+   Q_FOREACH( FileInfo *fileInfo , cachedEntries )
    {
       if (fileInfo->size > maxCachedSize)
       {
@@ -258,9 +256,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    int totalSize = 0;
 
-   for(FileInfo *fileInfo = cachedEntries.first();
-       fileInfo;
-       fileInfo = cachedEntries.next())
+   Q_FOREACH( FileInfo *fileInfo , cachedEntries )
    {
       if ((totalSize + fileInfo->size) > m_maxCacheSize)
       {

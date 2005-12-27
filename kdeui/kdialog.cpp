@@ -29,7 +29,7 @@
 #include <qobject.h>
 #include <qpointer.h>
 #include <qlineedit.h>
-#include <q3valuelist.h>
+
 #include <qtimer.h>
 #include <qcursor.h>
 #include <QKeyEvent>

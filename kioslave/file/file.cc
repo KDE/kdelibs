@@ -60,7 +60,7 @@
 #include <string.h>
 #endif
 
-#include <q3valuelist.h>
+
 #include <qregexp.h>
 
 #include <kdebug.h>
