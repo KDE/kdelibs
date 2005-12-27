@@ -91,7 +91,7 @@ static void listModules(const QString &baseGroup)
   }
 }
 
-static KService::Ptr locateModule(const Q3CString& module)
+static KService::Ptr locateModule(const QByteArray& module)
 {
     QString path = QFile::decodeName(module);
 
@@ -147,14 +147,14 @@ KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption
 {
 }
 
-void KCMShellMultiDialog::activate( Q3CString asn_id )
+void KCMShellMultiDialog::activate( QByteArray asn_id )
 {
     kdDebug(780) << k_funcinfo << endl;
 
     KStartupInfo::setNewStartupId( this, asn_id );
 }
 
-void KCMShell::setDCOPName(const Q3CString &dcopName, bool rootMode )
+void KCMShell::setDCOPName(const DCOPCString &dcopName, bool rootMode )
 {
     m_dcopName = "kcmshell_";
     if( rootMode )
@@ -169,12 +169,12 @@ void KCMShell::waitForExit()
 {
     kdDebug(780) << k_funcinfo << endl;
 
-    connect(dcopClient(), SIGNAL(applicationRemoved(const Q3CString&)),
-            SLOT( appExit(const Q3CString&) ));
+    connect(dcopClient(), SIGNAL(applicationRemoved(const QByteArray&)),
+            SLOT( appExit(const QByteArray&) ));
     exec();
 }
 
-void KCMShell::appExit(const DCOPCString &appId)
+void KCMShell::appExit(const QByteArray &appId)
 {
     kdDebug(780) << k_funcinfo << endl;
 
@@ -246,7 +246,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         return -1;
     }
 
-    Q3CString dcopName;
+    DCOPCString dcopName;
     KService::List modules;
     for (int i = 0; i < args->count(); i++)
     {

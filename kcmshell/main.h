@@ -24,7 +24,6 @@
 
 #include <dcopobject.h>
 
-#include <Q3CString>
 
 #include <kapplication.h>
 #include <kcmultidialog.h>
@@ -45,7 +44,7 @@ public:
      * @param dcopName name to set the DCOP name to
      * @param rootMode true if the kcmshell is embedding
      */
-    void setDCOPName(const Q3CString &dcopName, bool rootMode );
+    void setDCOPName(const DCOPCString &dcopName, bool rootMode );
 
     /**
      * Waits until the last instance of kcmshell with the same
@@ -62,7 +61,7 @@ private slots:
 
     /**
      */
-    void appExit( const DCOPCString &appId );
+    void appExit( const QByteArray &appId );
 
 private:
 
@@ -97,7 +96,7 @@ k_dcop:
 
     /**
      */
-    virtual void activate( Q3CString asn_id );
+    virtual void activate( QByteArray asn_id );
 
 };
 
