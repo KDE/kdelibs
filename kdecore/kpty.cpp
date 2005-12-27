@@ -164,6 +164,7 @@ public:
 struct KPtyPrivate {
    KPtyPrivate() :
      xonXoff(false),
+     logged(false),
      masterFd(-1), slaveFd(-1)
    {
      memset(&winSize, 0, sizeof(winSize));
@@ -173,6 +174,7 @@ struct KPtyPrivate {
 
    bool xonXoff : 1;
    bool utf8    : 1;
+   bool logged  : 1;
    int masterFd;
    int slaveFd;
    struct winsize winSize;
@@ -352,6 +354,7 @@ void KPty::close()
 {
    if (d->masterFd < 0)
       return;
+   logout();
    // don't bother resetting unix98 pty, it will go away after closing master anyway.
    if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
       if (!geteuid()) {
@@ -397,6 +400,9 @@ void KPty::setCTty()
 
 void KPty::login(const char *user, const char *remotehost)
 {
+    if (d->logged)
+        return; // print a warning?
+    d->logged = true;
 #ifdef HAVE_UTEMPTER
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
@@ -440,6 +446,9 @@ void KPty::login(const char *user, const char *remotehost)
 
 void KPty::logout()
 {
+    if (!d->logged)
+        return;
+    d->logged = false;
 #ifdef HAVE_UTEMPTER
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
