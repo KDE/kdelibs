@@ -47,10 +47,10 @@ QString KWhatsThisUndefined::text (const QPoint &)
 {
     if (!m_widget)
         return "";
-    QString txt = i18n ("<b>Not Defined</b><br>There is no \"What's This\""
-            " help assigned to this widget. If you want to help us and "
+    QString txt = i18n ("<b>Not Defined</b><br>There is no \"What's This?\""
+            " help assigned to this widget. If you want to help us to "
             " describe the widget, you are welcome to <a href=\"submit"
-            "-whatsthis\">send us \"What's This\" help</a> for it.");
+            "-whatsthis\">send us your own \"What's This?\" help</a> for it.");
     QString parent;
     if (m_widget -> parentWidget ())
         parent = QWhatsThis::textFor (m_widget -> parentWidget ());
