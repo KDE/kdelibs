@@ -55,6 +55,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include "fixx11h.h"
 #endif
 
 QString* KGlobalSettings::s_desktopPath = 0;
@@ -82,13 +83,13 @@ KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
 int KGlobalSettings::dndEventDelay()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readNumEntry("StartDragDist", QApplication::startDragDistance());
+    return g.readEntry("StartDragDist", QApplication::startDragDistance()).toInt();
 }
 
 bool KGlobalSettings::singleClick()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry("SingleClick", KDE_DEFAULT_SINGLECLICK);
+    return g.readEntry("SingleClick", QVariant(KDE_DEFAULT_SINGLECLICK) ).toBool();
 }
 
 KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
@@ -96,31 +97,31 @@ KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
     int tearoff;
     bool effectsenabled;
     KConfigGroup g( KGlobal::config(), "KDE" );
-    effectsenabled = g.readBoolEntry( "EffectsEnabled", false);
-    tearoff = g.readNumEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
+    effectsenabled = g.readEntry( "EffectsEnabled", QVariant::Bool).toBool();
+    tearoff = g.readEntry("InsertTearOffHandle", QVariant(KDE_DEFAULT_INSERTTEAROFFHANDLES)).toInt();
     return effectsenabled ? (TearOffHandle) tearoff : Disable;
 }
 
 bool KGlobalSettings::changeCursorOverIcon()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry("ChangeCursor", KDE_DEFAULT_CHANGECURSOR);
+    return g.readEntry("ChangeCursor", QVariant(KDE_DEFAULT_CHANGECURSOR)).toBool();
 }
 
 bool KGlobalSettings::visualActivate()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry("VisualActivate", KDE_DEFAULT_VISUAL_ACTIVATE);
+    return g.readEntry("VisualActivate", QVariant(KDE_DEFAULT_VISUAL_ACTIVATE)).toBool();
 }
 
 unsigned int KGlobalSettings::visualActivateSpeed()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
     return
-        g.readNumEntry(
+        g.readEntry(
             "VisualActivateSpeed",
-            KDE_DEFAULT_VISUAL_ACTIVATE_SPEED
-        );
+            QVariant(KDE_DEFAULT_VISUAL_ACTIVATE_SPEED)
+        ).toInt();
 }
 
 
@@ -128,14 +129,14 @@ unsigned int KGlobalSettings::visualActivateSpeed()
 int KGlobalSettings::autoSelectDelay()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readNumEntry("AutoSelectDelay", KDE_DEFAULT_AUTOSELECTDELAY);
+    return g.readEntry("AutoSelectDelay", QVariant(KDE_DEFAULT_AUTOSELECTDELAY)).toInt();
 }
 
 KGlobalSettings::Completion KGlobalSettings::completionMode()
 {
     int completion;
     KConfigGroup g( KGlobal::config(), "General" );
-    completion = g.readNumEntry("completionMode", -1);
+    completion = g.readEntry("completionMode", -1).toInt();
     if ((completion < (int) CompletionNone) ||
         (completion > (int) CompletionPopupAuto))
       {
@@ -147,7 +148,7 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
 bool KGlobalSettings::showContextMenusOnPress ()
 {
     KConfigGroup g(KGlobal::config(), "ContextMenus");
-    return g.readBoolEntry("ShowOnPress", true);
+    return g.readEntry("ShowOnPress", true).toBool();
 }
 
 int KGlobalSettings::contextMenuKey ()
@@ -161,7 +162,7 @@ QColor KGlobalSettings::toolBarHighlightColor()
 {
     initColors();
     KConfigGroup g( KGlobal::config(), "Toolbar style" );
-    return g.readColorEntry("HighlightColor", _kde34Blue);
+    return qvariant_cast<QColor>(g.readEntry("HighlightColor", *_kde34Blue));
 }
 
 QColor KGlobalSettings::inactiveTitleColor()
@@ -172,7 +173,7 @@ QColor KGlobalSettings::inactiveTitleColor()
     if (!_inactiveBackground)
         _inactiveBackground = new QColor(157, 170, 186);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "inactiveBackground", _inactiveBackground );
+    return qvariant_cast<QColor>(g.readEntry( "inactiveBackground", *_inactiveBackground ));
 #endif
 }
 
@@ -184,7 +185,7 @@ QColor KGlobalSettings::inactiveTextColor()
     if (!_inactiveForeground)
        _inactiveForeground = new QColor(221,221,221);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "inactiveForeground", _inactiveForeground );
+    return qvariant_cast<QColor>(g.readEntry( "inactiveForeground", *_inactiveForeground ));
 #endif
 }
 
@@ -197,7 +198,7 @@ QColor KGlobalSettings::activeTitleColor()
     if (!_activeBackground)
       _activeBackground = new QColor(65,142,220);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "activeBackground", _activeBackground);
+    return qvariant_cast<QColor>(g.readEntry( "activeBackground", *_activeBackground));
 #endif
 }
 
@@ -207,15 +208,14 @@ QColor KGlobalSettings::activeTextColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    QColor white(Qt::white);
-    return g.readColorEntry( "activeForeground", &white );
+    return qvariant_cast<QColor>(g.readEntry( "activeForeground", Qt::white ));
 #endif
 }
 
 int KGlobalSettings::contrast()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readNumEntry( "contrast", 7 );
+    return g.readEntry( "contrast", 7 ).toInt();
 }
 
 QColor KGlobalSettings::buttonBackground()
@@ -223,14 +223,13 @@ QColor KGlobalSettings::buttonBackground()
     if (!_buttonBackground)
       _buttonBackground = new QColor(221,223,228);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "buttonBackground", _buttonBackground );
+    return qvariant_cast<QColor>(g.readEntry( "buttonBackground", *_buttonBackground ));
 }
 
 QColor KGlobalSettings::buttonTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    QColor black(Qt::black);
-    return g.readColorEntry( "buttonForeground", &black );
+    return qvariant_cast<QColor>(g.readEntry( "buttonForeground", Qt::black ));
 }
 
 // IMPORTANT:
@@ -239,8 +238,7 @@ QColor KGlobalSettings::buttonTextColor()
 QColor KGlobalSettings::baseColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    QColor white(Qt::white);
-    return g.readColorEntry( "windowBackground", &white );
+    return qvariant_cast<QColor>(g.readEntry( "windowBackground", Qt::white ));
 }
 
 // IMPORTANT:
@@ -249,8 +247,7 @@ QColor KGlobalSettings::baseColor()
 QColor KGlobalSettings::textColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    QColor black(Qt::black);
-    return g.readColorEntry( "windowForeground", &black );
+    return qvariant_cast<QColor>(g.readEntry( "windowForeground", Qt::black ));
 }
 
 // IMPORTANT:
@@ -259,8 +256,7 @@ QColor KGlobalSettings::textColor()
 QColor KGlobalSettings::highlightedTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    QColor white(Qt::white);
-    return g.readColorEntry( "selectForeground", &white );
+    return qvariant_cast<QColor>(g.readEntry( "selectForeground", Qt::white ));
 }
 
 // IMPORTANT:
@@ -272,7 +268,7 @@ QColor KGlobalSettings::highlightColor()
     if (!_selectBackground)
         _selectBackground = new QColor(103,141,178);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "selectBackground", _selectBackground );
+    return qvariant_cast<QColor>(g.readEntry( "selectBackground", *_selectBackground ));
 }
 
 QColor KGlobalSettings::alternateBackgroundColor()
@@ -280,7 +276,7 @@ QColor KGlobalSettings::alternateBackgroundColor()
     initColors();
     KConfigGroup g( KGlobal::config(), "General" );
     *alternateColor = calculateAlternateBackgroundColor( baseColor() );
-    return g.readColorEntry( "alternateBackground", alternateColor );
+    return qvariant_cast<QColor>(g.readEntry( "alternateBackground", *alternateColor ));
 }
 
 QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
@@ -303,7 +299,7 @@ QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
 bool KGlobalSettings::shadeSortColumn()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readBoolEntry( "shadeSortColumn", KDE_DEFAULT_SHADE_SORT_COLUMN );
+    return g.readEntry( "shadeSortColumn", KDE_DEFAULT_SHADE_SORT_COLUMN ).toBool();
 }
 
 QColor KGlobalSettings::linkColor()
@@ -312,7 +308,7 @@ QColor KGlobalSettings::linkColor()
     if (!_linkColor)
         _linkColor = new QColor(0,0,238);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "linkColor", _linkColor );
+    return qvariant_cast<QColor>(g.readEntry( "linkColor", *_linkColor ));
 }
 
 QColor KGlobalSettings::visitedLinkColor()
@@ -320,7 +316,7 @@ QColor KGlobalSettings::visitedLinkColor()
     if (!_visitedLinkColor)
         _visitedLinkColor = new QColor(82,24,139);
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "visitedLinkColor", _visitedLinkColor );
+    return qvariant_cast<QColor>(g.readEntry( "visitedLinkColor", *_visitedLinkColor ));
 }
 
 QFont KGlobalSettings::generalFont()
@@ -334,7 +330,7 @@ QFont KGlobalSettings::generalFont()
     _generalFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
-    *_generalFont = g.readFontEntry("font", _generalFont);
+    *_generalFont = qvariant_cast<QFont>(g.readEntry("font", *_generalFont));
 
     return *_generalFont;
 }
@@ -350,7 +346,7 @@ QFont KGlobalSettings::fixedFont()
     _fixedFont->setStyleHint(QFont::TypeWriter);
 
     KConfigGroup g( KGlobal::config(), "General" );
-    *_fixedFont = g.readFontEntry("fixed", _fixedFont);
+    *_fixedFont = qvariant_cast<QFont>(g.readEntry("fixed", *_fixedFont));
 
     return *_fixedFont;
 }
@@ -366,7 +362,7 @@ QFont KGlobalSettings::toolBarFont()
     _toolBarFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
-    *_toolBarFont = g.readFontEntry("toolBarFont", _toolBarFont);
+    *_toolBarFont = qvariant_cast<QFont>(g.readEntry("toolBarFont", *_toolBarFont));
 
     return *_toolBarFont;
 }
@@ -382,7 +378,7 @@ QFont KGlobalSettings::menuFont()
     _menuFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
-    *_menuFont = g.readFontEntry("menuFont", _menuFont);
+    *_menuFont = qvariant_cast<QFont>(g.readEntry("menuFont", *_menuFont));
 
     return *_menuFont;
 }
@@ -398,7 +394,7 @@ QFont KGlobalSettings::windowTitleFont()
     _windowTitleFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "WM" );
-    *_windowTitleFont = g.readFontEntry("activeFont", _windowTitleFont); // inconsistency
+    *_windowTitleFont = qvariant_cast<QFont>(g.readEntry("activeFont", *_windowTitleFont)); // inconsistency
 
     return *_windowTitleFont;
 }
@@ -414,7 +410,7 @@ QFont KGlobalSettings::taskbarFont()
     _taskbarFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
-    *_taskbarFont = g.readFontEntry("taskbarFont", _taskbarFont);
+    *_taskbarFont = qvariant_cast<QFont>(g.readEntry("taskbarFont", *_taskbarFont));
 
     return *_taskbarFont;
 }
@@ -633,7 +629,7 @@ bool KGlobalSettings::isMultiHead()
 bool KGlobalSettings::wheelMouseZooms()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
+    return g.readEntry( "WheelMouseZooms", QVariant(KDE_DEFAULT_WHEEL_ZOOM) ).toBool();
 }
 
 QRect KGlobalSettings::splashScreenDesktopGeometry()
@@ -642,8 +638,8 @@ QRect KGlobalSettings::splashScreenDesktopGeometry()
 
     if (dw->isVirtualDesktop()) {
         KConfigGroup group(KGlobal::config(), "Windows");
-        int scr = group.readNumEntry("Unmanaged", -3);
-        if (group.readBoolEntry("XineramaEnabled", true) && scr != -2) {
+        int scr = group.readEntry("Unmanaged", -3).toInt();
+        if (group.readEntry("XineramaEnabled", true).toBool() && scr != -2) {
             if (scr == -3)
                 scr = dw->screenNumber(QCursor::pos());
             return dw->screenGeometry(scr);
@@ -661,8 +657,8 @@ QRect KGlobalSettings::desktopGeometry(const QPoint& point)
 
     if (dw->isVirtualDesktop()) {
         KConfigGroup group(KGlobal::config(), "Windows");
-        if (group.readBoolEntry("XineramaEnabled", true) &&
-            group.readBoolEntry("XineramaPlacementEnabled", true)) {
+        if (group.readEntry("XineramaEnabled", true).toBool() &&
+            group.readEntry("XineramaPlacementEnabled", true).toBool()) {
             return dw->screenGeometry(dw->screenNumber(point));
         } else {
             return dw->geometry();
@@ -678,8 +674,8 @@ QRect KGlobalSettings::desktopGeometry(QWidget* w)
 
     if (dw->isVirtualDesktop()) {
         KConfigGroup group(KGlobal::config(), "Windows");
-        if (group.readBoolEntry("XineramaEnabled", true) &&
-            group.readBoolEntry("XineramaPlacementEnabled", true)) {
+        if (group.readEntry("XineramaEnabled", true).toBool() &&
+            group.readEntry("XineramaPlacementEnabled", true).toBool()) {
             if (w)
                 return dw->screenGeometry(dw->screenNumber(w));
             else return dw->screenGeometry(-1);
@@ -694,8 +690,8 @@ QRect KGlobalSettings::desktopGeometry(QWidget* w)
 bool KGlobalSettings::showIconsOnPushButtons()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry("ShowIconsOnPushButtons",
-        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
+    return g.readEntry("ShowIconsOnPushButtons",
+                       QVariant(KDE_DEFAULT_ICON_ON_PUSHBUTTON)).toBool();
 }
 
 bool KGlobalSettings::showFilePreview(const KURL &url)
@@ -703,19 +699,17 @@ bool KGlobalSettings::showFilePreview(const KURL &url)
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
     QString protocol = url.protocol();
     bool defaultSetting = KProtocolInfo::showFilePreview( protocol );
-    return g.readBoolEntry(protocol, defaultSetting );
+    return g.readEntry(protocol, defaultSetting ).toBool();
 }
 
 bool KGlobalSettings::opaqueResize()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readBoolEntry("OpaqueResize",
-        KDE_DEFAULT_OPAQUE_RESIZE);
+    return g.readEntry("OpaqueResize", KDE_DEFAULT_OPAQUE_RESIZE).toBool();
 }
 
 int KGlobalSettings::buttonLayout()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readNumEntry("ButtonLayout",
-        KDE_DEFAULT_BUTTON_LAYOUT);
+    return g.readEntry("ButtonLayout", KDE_DEFAULT_BUTTON_LAYOUT).toInt();
 }

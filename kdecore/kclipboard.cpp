@@ -107,9 +107,9 @@ KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
     s_self = this;
 
     KConfigGroup config( KGlobal::config(), "General" );
-    s_sync = config.readBoolEntry( "SynchronizeClipboardAndSelection", s_sync);
-    s_reverse_sync = config.readBoolEntry( "ClipboardSetSelection",
-                                                s_reverse_sync );
+    s_sync = config.readEntry( "SynchronizeClipboardAndSelection", s_sync).toBool();
+    s_reverse_sync = config.readEntry( "ClipboardSetSelection",
+                                       s_reverse_sync ).toBool();
 
     setupSignals();
 }

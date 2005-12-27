@@ -1621,7 +1621,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
             it2 != entries.end(); it2++)
         {
             QString key = it2.key();
-            if (!config->readBoolEntry(key, true))
+            if (!config->readEntry(key, true).toBool())
             {
                 d->restrictionsActive = true;
                 d->restrictions.insert(key.toLatin1(), true);

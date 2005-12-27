@@ -56,19 +56,19 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   m_name = config.readEntry( "protocol" );
   m_exec = config.readPathEntry( "exec" );
-  m_isSourceProtocol = config.readBoolEntry( "source", true );
-  m_isHelperProtocol = config.readBoolEntry( "helper", false );
-  m_supportsReading = config.readBoolEntry( "reading", false );
-  m_supportsWriting = config.readBoolEntry( "writing", false );
-  m_supportsMakeDir = config.readBoolEntry( "makedir", false );
-  m_supportsDeleting = config.readBoolEntry( "deleting", false );
-  m_supportsLinking = config.readBoolEntry( "linking", false );
-  m_supportsMoving = config.readBoolEntry( "moving", false );
-  m_canCopyFromFile = config.readBoolEntry( "copyFromFile", false );
-  m_canCopyToFile = config.readBoolEntry( "copyToFile", false );
-  d->canRenameFromFile = config.readBoolEntry( "renameFromFile", false );
-  d->canRenameToFile = config.readBoolEntry( "renameToFile", false );
-  d->canDeleteRecursive = config.readBoolEntry( "deleteRecursive", false );
+  m_isSourceProtocol = config.readEntry( "source", true ).toBool();
+  m_isHelperProtocol = config.readEntry( "helper", QVariant::Bool ).toBool();
+  m_supportsReading = config.readEntry( "reading", QVariant::Bool ).toBool();
+  m_supportsWriting = config.readEntry( "writing", QVariant::Bool ).toBool();
+  m_supportsMakeDir = config.readEntry( "makedir", QVariant::Bool ).toBool();
+  m_supportsDeleting = config.readEntry( "deleting", QVariant::Bool ).toBool();
+  m_supportsLinking = config.readEntry( "linking", QVariant::Bool ).toBool();
+  m_supportsMoving = config.readEntry( "moving", QVariant::Bool ).toBool();
+  m_canCopyFromFile = config.readEntry( "copyFromFile", QVariant::Bool ).toBool();
+  m_canCopyToFile = config.readEntry( "copyToFile", QVariant::Bool ).toBool();
+  d->canRenameFromFile = config.readEntry( "renameFromFile", QVariant::Bool ).toBool();
+  d->canRenameToFile = config.readEntry( "renameToFile", QVariant::Bool ).toBool();
+  d->canDeleteRecursive = config.readEntry( "deleteRecursive", QVariant::Bool ).toBool();
   d->fileNameUsedForCopying = config.readEntry( "fileNameUsedForCopying", "FromURL" ) == "Name";
 
   m_listing = config.readListEntry( "listing" );
@@ -77,10 +77,10 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_listing.clear();
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
-  m_determineMimetypeFromExtension = config.readBoolEntry( "determineMimetypeFromExtension", true );
+  m_determineMimetypeFromExtension = config.readEntry( "determineMimetypeFromExtension", true ).toBool();
   m_icon = config.readEntry( "Icon", "unknown" );
   m_config = config.readEntry( "config", m_name );
-  m_maxSlaves = config.readNumEntry( "maxInstances", 1);
+  m_maxSlaves = config.readEntry( "maxInstances", 1).toInt();
 
   QString tmp = config.readEntry( "input" );
   if ( tmp == "filesystem" )
@@ -113,7 +113,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
       d->extraFields.append( ExtraField( *it, static_cast<ExtraField::Type>(type) ) );
   }
 
-  d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
+  d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == ":local" ).toBool();
 
   tmp = config.readEntry( "URIMode", QString::null ).toLower();
   if (tmp == "rawuri")

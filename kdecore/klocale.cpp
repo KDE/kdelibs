@@ -301,16 +301,16 @@ void KLocale::initFormat()
 
   // Numeric
 #define readConfigEntry(key, default, save) \
-  save = entry.readEntry(key, QString::fromLatin1(default)); \
+  save = entry.readEntry(key, default); \
   save = cg.readEntry(key, save);
 
 #define readConfigNumEntry(key, default, save, type) \
-  save = (type)entry.readNumEntry(key, default); \
-  save = (type)cg.readNumEntry(key, save);
+  save = (type)entry.readEntry(key, QVariant(default)).toInt(); \
+  save = (type)cg.readEntry(key, save).toInt();
 
 #define readConfigBoolEntry(key, default, save) \
-  save = entry.readBoolEntry(key, default); \
-  save = cg.readBoolEntry(key, save);
+  save = entry.readEntry(key, QVariant(default)).toBool(); \
+  save = cg.readEntry(key, save).toBool();
 
   readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
@@ -332,9 +332,9 @@ void KLocale::initFormat()
 		      m_positivePrefixCurrencySymbol);
   readConfigBoolEntry("NegativePrefixCurrencySymbol", true,
 		      m_negativePrefixCurrencySymbol);
-  readConfigNumEntry("PositiveMonetarySignPosition", (int)BeforeQuantityMoney,
+  readConfigNumEntry("PositiveMonetarySignPosition", BeforeQuantityMoney,
 		     m_positiveMonetarySignPosition, SignPosition);
-  readConfigNumEntry("NegativeMonetarySignPosition", (int)ParensAround,
+  readConfigNumEntry("NegativeMonetarySignPosition", ParensAround,
 		     m_negativeMonetarySignPosition, SignPosition);
 
   // Date and time
@@ -344,9 +344,9 @@ void KLocale::initFormat()
   readConfigNumEntry("WeekStartDay", 1, d->weekStartDay, int);
 
   // other
-  readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize,
-		     /*int*/QPrinter::PageSize);
-  readConfigNumEntry("MeasureSystem", (int)Metric, d->measureSystem,
+  readConfigNumEntry("PageSize", QPrinter::A4, d->pageSize,
+		     QPrinter::PageSize);
+  readConfigNumEntry("MeasureSystem", Metric, d->measureSystem,
 		     MeasureSystem);
   readConfigEntry("CalendarSystem", "gregorian", d->calendarType);
   delete d->calendar;
@@ -359,9 +359,9 @@ void KLocale::initFormat()
                              .arg(m_language)), true);
   lang.setGroup("KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
-  save = entry.readBoolEntry(key, default); \
-  save = lang.readBoolEntry(key, save); \
-  save = cg.readBoolEntry(key, save);
+  save = entry.readEntry(key, QVariant(default)).toBool(); \
+  save = lang.readEntry(key, save).toBool(); \
+  save = cg.readEntry(key, save).toBool();
 
   read3ConfigBoolEntry("NounDeclension", false, d->nounDeclension);
   read3ConfigBoolEntry("DateMonthNamePossessive", false,

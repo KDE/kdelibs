@@ -237,10 +237,10 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	    break;
 
 	KConfigGroup cg(config, QLatin1String(groups[i]) + "Icons");
-	d->mpGroups[i].size = cg.readNumEntry("Size", 0);
-	d->mpGroups[i].dblPixels = cg.readBoolEntry("DoublePixels", false);
+	d->mpGroups[i].size = cg.readEntry("Size", QVariant::Int).toInt();
+	d->mpGroups[i].dblPixels = cg.readEntry("DoublePixels", QVariant::Bool).toBool();
 	if (QPixmap::defaultDepth()>8)
-	    d->mpGroups[i].alphaBlending = cg.readBoolEntry("AlphaBlending", true);
+	    d->mpGroups[i].alphaBlending = cg.readEntry("AlphaBlending", true).toBool();
 	else
 	    d->mpGroups[i].alphaBlending = false;
 

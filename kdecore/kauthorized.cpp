@@ -229,7 +229,7 @@ bool KAuthorized::authorize(const QString &genericAction)
       return true;
 
    KConfigGroup cg( KGlobal::config(), "KDE Action Restrictions" );
-   return cg.readBoolEntry(genericAction, true);
+   return cg.readEntry(genericAction, true).toBool();
 }
 
 bool KAuthorized::authorizeKAction(const char *action)
@@ -249,7 +249,7 @@ bool KAuthorized::authorizeControlModule(const QString &menuId)
    if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
    KConfigGroup cg( KGlobal::config(), "KDE Control Module Restrictions" );
-   return cg.readBoolEntry(menuId, true);
+   return cg.readEntry(menuId, true).toBool();
 }
 
 QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
@@ -259,7 +259,7 @@ QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
    for(QStringList::ConstIterator it = menuIds.begin();
        it != menuIds.end(); ++it)
    {
-      if (cg.readBoolEntry(*it, true))
+      if (cg.readEntry(*it, true).toBool())
          result.append(*it);
    }
    return result;
@@ -305,7 +305,7 @@ static void initUrlActionRestrictions()
 	URLActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
 
   KConfigGroup cg( KGlobal::config(), "KDE URL Restrictions" );
-  int count = cg.readNumEntry("rule_count");
+  int count = cg.readEntry("rule_count", QVariant::Int).toInt();
   QString keyFormat = QString("rule_%1");
   for(int i = 1; i <= count; i++)
   {

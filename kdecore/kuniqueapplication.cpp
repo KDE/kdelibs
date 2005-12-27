@@ -355,7 +355,7 @@ KInstance* KUniqueApplication::initHack( bool configUnique )
   if (configUnique)
   {
     KConfigGroup cg( inst->config(), "KDE" );
-    s_multipleInstances = cg.readBoolEntry("MultipleInstances", false);
+    s_multipleInstances = cg.readEntry("MultipleInstances", QVariant::Bool).toBool();
   }
   if( !start())
          // Already running

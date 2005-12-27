@@ -1496,16 +1496,16 @@ QPalette KApplication::createApplicationPalette( KConfigBase *config, int contra
     QColor kde34Link( 0, 0, 238 );
     QColor kde34VisitedLink( 82, 24, 139 );
 
-    QColor background = config->readColorEntry( "background", &kde34Background );
-    QColor foreground = config->readColorEntry( "foreground", new QColor( Qt::black ) );
-    QColor button = config->readColorEntry( "buttonBackground", &kde34Button );
-    QColor buttonText = config->readColorEntry( "buttonForeground", new QColor( Qt::black ) );
-    QColor highlight = config->readColorEntry( "selectBackground", &kde34Blue );
-    QColor highlightedText = config->readColorEntry( "selectForeground", new QColor( Qt::white ) );
-    QColor base = config->readColorEntry( "windowBackground", new QColor( Qt::white ) );
-    QColor baseText = config->readColorEntry( "windowForeground", new QColor( Qt::black ) );
-    QColor link = config->readColorEntry( "linkColor", &kde34Link );
-    QColor visitedLink = config->readColorEntry( "visitedLinkColor", &kde34VisitedLink );
+    QColor background = qvariant_cast<QColor>(config->readEntry( "background", kde34Background ));
+    QColor foreground = qvariant_cast<QColor>(config->readEntry( "foreground", Qt::black ));
+    QColor button = qvariant_cast<QColor>(config->readEntry( "buttonBackground", kde34Button ));
+    QColor buttonText = qvariant_cast<QColor>(config->readEntry( "buttonForeground", Qt::black ));
+    QColor highlight = qvariant_cast<QColor>(config->readEntry( "selectBackground", kde34Blue ));
+    QColor highlightedText = qvariant_cast<QColor>(config->readEntry( "selectForeground", Qt::white ));
+    QColor base = qvariant_cast<QColor>(config->readEntry( "windowBackground", Qt::white ));
+    QColor baseText = qvariant_cast<QColor>(config->readEntry( "windowForeground", Qt::black ));
+    QColor link = qvariant_cast<QColor>(config->readEntry( "linkColor", kde34Link ));
+    QColor visitedLink = qvariant_cast<QColor>(config->readEntry( "visitedLinkColor", kde34VisitedLink ));
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -1620,30 +1620,30 @@ void KApplication::propagateSettings(SettingsCategory arg)
 {
     KConfigGroup cg( KGlobal::config(), "KDE" );
 
-    int num = cg.readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
+    int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime()).toInt();
     if ((num != 0) && (num < 200))
         num = 200;
     if (num > 2000)
         num = 2000;
     QApplication::setCursorFlashTime(num);
-    num = cg.readNumEntry("DoubleClickInterval", QApplication::doubleClickInterval());
+    num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval()).toInt();
     QApplication::setDoubleClickInterval(num);
-    num = cg.readNumEntry("StartDragTime", QApplication::startDragTime());
+    num = cg.readEntry("StartDragTime", QApplication::startDragTime()).toInt();
     QApplication::setStartDragTime(num);
-    num = cg.readNumEntry("StartDragDist", QApplication::startDragDistance());
+    num = cg.readEntry("StartDragDist", QApplication::startDragDistance()).toInt();
     QApplication::setStartDragDistance(num);
-    num = cg.readNumEntry("WheelScrollLines", QApplication::wheelScrollLines());
+    num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()).toInt();
     QApplication::setWheelScrollLines(num);
 
-    bool b = cg.readBoolEntry("EffectAnimateMenu", false);
+    bool b = cg.readEntry("EffectAnimateMenu", QVariant::Bool).toBool();
     QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
-    b = cg.readBoolEntry("EffectFadeMenu", false);
+    b = cg.readEntry("EffectFadeMenu", QVariant::Bool).toBool();
     QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = cg.readBoolEntry("EffectAnimateCombo", false);
+    b = cg.readEntry("EffectAnimateCombo", QVariant::Bool).toBool();
     QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
-    b = cg.readBoolEntry("EffectAnimateTooltip", false);
+    b = cg.readEntry("EffectAnimateTooltip", QVariant::Bool).toBool();
     QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
-    b = cg.readBoolEntry("EffectFadeTooltip", false);
+    b = cg.readEntry("EffectFadeTooltip", QVariant::Bool).toBool();
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
     //b = !cg.readBoolEntry("EffectNoTooltip", false);
     //QToolTip::setGloballyEnabled( b ); ###
