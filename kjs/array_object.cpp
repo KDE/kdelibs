@@ -414,7 +414,7 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 @begin arrayTable 17
   toString       ArrayProtoFuncImp::ToString       DontEnum|Function 0
   toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|Function 0
-  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 0
+  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 1
   join           ArrayProtoFuncImp::Join           DontEnum|Function 1
   pop            ArrayProtoFuncImp::Pop            DontEnum|Function 0
   push           ArrayProtoFuncImp::Push           DontEnum|Function 1
