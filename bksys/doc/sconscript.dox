@@ -11,8 +11,8 @@ qt and KDE related binary objects like programs, shared library with several ext
 All classes provides a set of attributes, which controls the behavior of the binary object creation. 
 See \ref sconscript_attributes for more informations. 
 
-Beside the object classes there are several usefull functions available. 
-They are documented in the chapter \ref usefull_sconscript_functions 
+Beside the object classes there are several useful functions available. 
+They are documented in the chapter \ref useful_sconscript_functions 
 
   
 \section sconscript_classes available classes
@@ -268,7 +268,7 @@ be limited to the related platform.
 </ul>
 
 
-\section usefull_sconscript_functions usefull scons/bksys functions
+\section useful_sconscript_functions useful scons/bksys functions
 
 
 \subsection sconscript_dependency set an additional dependency to a target

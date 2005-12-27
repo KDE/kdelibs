@@ -13,7 +13,7 @@
 			- \ref sconscript_kde4obj 
 			- \ref sconscript_kdeinitobj 
 			- \ref sconscript_attributes
-			- \ref usefull_sconscript_functions
+			- \ref useful_sconscript_functions
 	- \ref configuration
 		- \ref config_cache
 		- \ref config_header

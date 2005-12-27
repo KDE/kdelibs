@@ -15,7 +15,7 @@ BKSYS requires an installed python interpreter. Hints for several operation syst
 
 The additional required steps of bksys installation depends on which scons package you are using. 
 You can use the official scons release 0.96.91 from http://www.scons.org or the scons-mini release distributed with bksys. 
-The scons-mini release is a reduced 0.96.1 release and may be usefull for distribution because it is much smaller than the offical version.
+The scons-mini release is a reduced 0.96.1 release and may be useful for distribution because it is much smaller than the offical version.
 
 For installing the scons-mini release see: 
 
