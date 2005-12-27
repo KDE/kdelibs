@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Kurt Granroth <granroth@kde.org>
    Copyright (C) 2000 Peter Putzer <putzer@kde.org>
+   Copyright (C) 2005 Jaroslaw Staniek <js@iidea.pl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -39,6 +40,10 @@ class QPixmap;
  * KURLLabel also provides signals for several events, including
  * the mouse leaving and entering the text area and all forms of
  * mouse clicking.
+ *
+ * By default KURLLabel accepts focus. When focused, standard 
+ * focus rectangle is displayed as in HTML widget. 
+ * Pressing Enter key accepts the focused label.
  *
  * A typical usage would be something like so:
  *

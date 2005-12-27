@@ -95,12 +95,14 @@ KAboutContributor::KAboutContributor( QWidget *_parent, const char *wname,
   KURLLabel *kurl = static_cast<KURLLabel *>(mText[1]);
   kurl->setFloat(true);
   kurl->setUnderline(true);
+  kurl->setMargin(0);
   connect(kurl, SIGNAL(leftClickedURL(const QString &)),
 	  SLOT(emailClickedSlot(const QString &)));
 
   kurl = static_cast<KURLLabel *>(mText[2]);
   kurl->setFloat(true);
   kurl->setUnderline(true);
+  kurl->setMargin(0);
   connect(kurl, SIGNAL(leftClickedURL(const QString &)),
 	  SLOT(urlClickedSlot(const QString &)));
 

@@ -235,6 +235,9 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         // we possibly reserved an accel, but we won't set it as it looks silly
         if ( dynamic_cast<QGroupBox*>( it->m_widget ) )
              continue;
+        // links look weird with ampersands
+        if ( dynamic_cast<QLabel*>( it->m_widget ) && it->m_widget->inherits("KURLLabel") )
+             continue;
 
         kdDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
 
