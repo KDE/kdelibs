@@ -31,7 +31,7 @@ namespace KJS {
   class ReferenceListNode;
   class ReferenceListHeadNode;
 
-  class ReferenceListIterator {
+  class KJS_EXPORT ReferenceListIterator {
     friend class ReferenceList;
   
   public:
@@ -45,7 +45,7 @@ namespace KJS {
     ReferenceListNode *node;
   };
   
-  class ReferenceList {
+  class KJS_EXPORT ReferenceList {
   public:
     ReferenceList();
     ReferenceList(const ReferenceList &list);
