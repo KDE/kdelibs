@@ -28,6 +28,7 @@
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <qtimer.h>
+#include <qprogressbar.h>
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -39,7 +40,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
-#include <kprogress.h>
 #include <kstdaction.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
@@ -124,7 +124,8 @@ KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
     connect(&myCompletion, SIGNAL(match(const QString&)),
             SLOT(slotCompletionMatch(const QString&)));
 
-    progress = new KProgress(this, "progress");
+    progress = new QProgressBar(this);
+    progress->setObjectName("progress");
     progress->adjustSize();
     progress->move(2, height() - progress->height() -2);
 
@@ -1565,7 +1566,7 @@ bool KDirOperator::onlyDoubleClickSelectsFiles() const
 
 void KDirOperator::slotStarted()
 {
-    progress->setProgress( 0 );
+    progress->setValue( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );
 }
@@ -1579,7 +1580,7 @@ void KDirOperator::slotShowProgress()
 
 void KDirOperator::slotProgress( int percent )
 {
-    progress->setProgress( percent );
+    progress->setValue( percent );
     // we have to redraw this as fast as possible
     if ( progress->isVisible() )
 	QApplication::flushX();
@@ -1607,7 +1608,7 @@ void KDirOperator::slotCanceled()
         m_fileView->listingCompleted();
 }
 
-KProgress * KDirOperator::progressBar() const
+QProgressBar * KDirOperator::progressBar() const
 {
     return progress;
 }

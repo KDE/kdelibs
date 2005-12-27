@@ -15,14 +15,14 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #ifndef __defaultprogress_h__
 #define __defaultprogress_h__
 
 #include <qlabel.h>
+#include <qprogressbar.h>
 
 #include <kio/global.h>
-
-#include <kprogress.h>
 
 #include "progressbase.h"
 
@@ -134,7 +134,7 @@ protected:
   QLabel* sizeLabel;
   QLabel* resumeLabel;
 
-  KProgress* m_pProgressBar;
+  QProgressBar* m_pProgressBar;
 
   KIO::filesize_t m_iTotalSize;
   unsigned long m_iTotalFiles;

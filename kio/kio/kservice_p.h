@@ -20,16 +20,15 @@
 #define __kservices_p_h__
 
 #include <qtimer.h>
+#include <qprogressdialog.h>
 
-#include <kprogress.h>
-
-class KServiceProgressDialog : public KProgressDialog
+class KServiceProgressDialog : public QProgressDialog
 {
    Q_OBJECT
 public:
    KServiceProgressDialog(QWidget *parent, const char *name, 
                           const QString &caption, const QString &text);
-public slots:   
+public slots:
    void slotProgress();
    void slotFinished();
 

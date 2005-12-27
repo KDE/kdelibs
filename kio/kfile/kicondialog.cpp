@@ -22,7 +22,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <kprogress.h>
 #include <kiconview.h>
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
@@ -40,6 +39,7 @@
 #include <qradiobutton.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
+#include <qprogressbar.h>
 
 #ifdef HAVE_LIBAGG
 #include <svgicons/ksvgiconengine.h>
@@ -316,7 +316,7 @@ void KIconDialog::init()
     top->addWidget(mpCanvas);
     d->searchLine->setIconView(mpCanvas);
 
-    mpProgress = new KProgress(main);
+    mpProgress = new QProgressBar(main);
     top->addWidget(mpProgress);
     connect(mpCanvas, SIGNAL(startLoading(int)), SLOT(slotStartLoading(int)));
     connect(mpCanvas, SIGNAL(progress(int)), SLOT(slotProgress(int)));
@@ -573,15 +573,15 @@ void KIconDialog::slotStartLoading(int steps)
 	mpProgress->hide();
     else
     {
-        mpProgress->setTotalSteps(steps);
-        mpProgress->setProgress(0);
+        mpProgress->setRange(0, steps);
+        mpProgress->setValue(0);
         mpProgress->show();
     }
 }
 
 void KIconDialog::slotProgress(int p)
 {
-    mpProgress->setProgress(p);
+    mpProgress->setValue(p);
     // commented out the following since setProgress already paints ther
     // progress bar. ->repaint() only makes it flicker
     //mpProgress->repaint();

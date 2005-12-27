@@ -33,13 +33,13 @@
 
 class QMenu;
 class QTimer;
+class QProgressBar;
 
 class KAction;
 class KDirLister;
 class KToggleAction;
 class KActionSeparator;
 class KActionMenu;
-class KProgress;
 namespace KIO {
   class CopyJob;
   class DeleteJob;
@@ -262,7 +262,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @returns the progress widget, that is shown during directory listing.
      * You can for example reparent() it to put it into a statusbar.
      */
-    KProgress * progressBar() const;
+    QProgressBar * progressBar() const;
 
     /**
      * Sets the listing/selection mode for the views, an OR'ed combination of
@@ -862,7 +862,7 @@ private:
     int defaultView;
 
     KFile::Mode myMode;
-    KProgress *progress;
+    QProgressBar *progress;
 
     const QWidget *myPreview;    // temporary pointer for the preview widget
 

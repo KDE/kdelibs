@@ -23,6 +23,7 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qprogressbar.h>
 
 #include <klocale.h>
 #include <klistbox.h>
@@ -30,7 +31,6 @@
 #include <klistview.h>
 #include <klineedit.h>
 #include <kpushbutton.h>
-#include <kprogress.h>
 #include <kbuttonbox.h>
 #include <kdebug.h>
 

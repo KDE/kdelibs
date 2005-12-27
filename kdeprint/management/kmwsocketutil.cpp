@@ -22,7 +22,7 @@
 
 #include "kmwsocketutil.h"
 
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -159,13 +159,13 @@ bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostna
 		return false;
 }
 
-bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
+bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 {
 	printerlist_.setAutoDelete(true);
 	printerlist_.clear();
 	int	n(256);
 	if (bar)
-		bar->setTotalSteps(n);
+		bar->setRange(0, n);
 	for (int i=0; i<n; i++)
 	{
 		QString	IPstr = root_ + "." + QString::number(i);
@@ -180,7 +180,7 @@ bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
 		}
 		if (bar)
 		{
-			bar->setProgress(i);
+			bar->setValue(i);
 			qApp->flushX();
 		}
 	}

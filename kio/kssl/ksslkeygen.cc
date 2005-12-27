@@ -28,13 +28,13 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kopenssl.h>
-#include <kprogress.h>
 #include <kstandarddirs.h>
 #include <ktempfile.h>
 #include <kwallet.h>
 
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <qprogressdialog.h>
 
 #include <assert.h>
 
@@ -94,13 +94,16 @@ void KSSLKeyGen::slotGenerate() {
 		return;
 	}
 
-	KProgressDialog *kpd = new KProgressDialog(this, "progress dialog", i18n("KDE"), i18n("Please wait while the encryption keys are generated..."));
-	kpd->progressBar()->setProgress(0);
+	QProgressDialog *kpd = new QProgressDialog(this);
+	kpd->setObjectName("progress dialog");
+	kpd->setWindowTitle(i18n("KDE"));
+	kpd->setLabelText(i18n("Please wait while the encryption keys are generated..."));
+	kpd->setValue(0);
 	kpd->show();
 	// FIXME - progress dialog won't show this way
 
 	int rc = generateCSR("This CSR" /*FIXME */, page2->_password1->text(), bits, 0x10001 /* This is the traditional exponent used */);
-	kpd->progressBar()->setProgress(100);
+	kpd->setValue(100);
 
 #ifndef Q_OS_WIN //TODO: reenable for WIN32
 	if (rc == 0 && KWallet::Wallet::isEnabled()) {

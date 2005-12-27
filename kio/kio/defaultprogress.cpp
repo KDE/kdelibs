@@ -117,7 +117,7 @@ void DefaultProgress::init()
   destEdit->setEnableSqueezedText(true);
   grid->addWidget(destEdit, 1, 2);
 
-  m_pProgressBar = new KProgress(this);
+  m_pProgressBar = new QProgressBar(this);
   topLayout->addWidget( m_pProgressBar );
 
   // processed info

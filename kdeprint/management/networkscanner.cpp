@@ -21,14 +21,15 @@
 
 #include "networkscanner.h"
 
-#include <q3progressbar.h>
-#include <kpushbutton.h>
+#include <qprogressbar.h>
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qregexp.h>
+
+#include <kpushbutton.h>
 #include <klocale.h>
 #include <kresolver.h>
 #include <kreverseresolver.h>
@@ -50,7 +51,7 @@ public:
 	bool scanning;
 	Q3PtrList<NetworkScanner::SocketInfo> printers;
 
-	Q3ProgressBar *bar;
+	QProgressBar *bar;
 	KPushButton *scan, *settings;
 	QLabel *subnetlab;
 	QTimer *timer;
@@ -99,7 +100,8 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	: QWidget( parent )
 {
 	d = new NetworkScannerPrivate( port );
-	d->bar = new Q3ProgressBar( 256, this );
+	d->bar = new QProgressBar( this );
+	d->bar->setRange( 0, 256 );
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
@@ -197,7 +199,7 @@ void NetworkScanner::next()
 		finish();
 	else
 	{
-		d->bar->setProgress( d->currentaddress );
+		d->bar->setValue( d->currentaddress );
 		QTimer::singleShot( 0, this, SLOT( slotNext() ) );
 	}
 }

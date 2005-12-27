@@ -22,11 +22,11 @@
 #include <QStackedWidget>
 #include <qpushbutton.h>
 #include <qlabel.h>
+#include <qprogressbar.h>
 
 #include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kprogress.h>
 
 #include "jobclasses.h"
 #include "statusbarprogress.h"
@@ -54,9 +54,9 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   box->addWidget( stack );
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
-  m_pProgressBar = new KProgress( this );
-  m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
-  m_pProgressBar->setLineWidth( 1 );
+  m_pProgressBar = new QProgressBar( this );
+//   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
+//   m_pProgressBar->setLineWidth( 1 );
   m_pProgressBar->setBackgroundMode( Qt::PaletteBackground );
   m_pProgressBar->installEventFilter( this );
   m_pProgressBar->setMinimumWidth( w );

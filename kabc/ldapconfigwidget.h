@@ -34,9 +34,9 @@ class QSpinBox;
 class QPushButton;
 class QCheckBox;
 class QRadioButton;
+class QProgressDialog;
 class KComboBox;
 class KLineEdit;
-class KProgressDialog;
 
 namespace KABC {
 
@@ -282,7 +282,7 @@ namespace KABC {
 
       QString mErrorMsg;
       bool mCancelled;
-      KProgressDialog *mProg;
+      QProgressDialog *mProg;
 
       QGridLayout *mainLayout;
       class LDAPConfigWidgetPrivate;

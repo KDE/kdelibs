@@ -25,7 +25,7 @@ class QStackedWidget;
 class QBoxLayout;
 class QPushButton;
 class QLabel;
-class KProgress;
+class QProgressBar;
 
 namespace KIO {
 
@@ -85,7 +85,7 @@ public slots:
   virtual void slotSpeed( KIO::Job* job, unsigned long speed );
 
 protected:
-  KProgress* m_pProgressBar;
+  QProgressBar* m_pProgressBar;
   QLabel* m_pLabel;
   QPushButton* m_pButton;
 

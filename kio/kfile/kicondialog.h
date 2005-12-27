@@ -26,7 +26,7 @@ class QComboBox;
 class QTimer;
 class QKeyEvent;
 class QRadioButton;
-class KProgress;
+class QProgressBar;
 class KIconLoader;
 
 /**
@@ -230,7 +230,7 @@ private:
     QComboBox *mpCombo;
     QPushButton *mpBrowseBut;
     QRadioButton *mpRb1, *mpRb2;
-    KProgress *mpProgress;
+    QProgressBar *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
 

@@ -31,7 +31,7 @@ struct SocketInfo
 	int	Port;
 };
 
-class Q3ProgressBar;
+class QProgressBar;
 class QLineEdit;
 class QComboBox;
 class KMWSocketUtil;
@@ -62,7 +62,7 @@ public:
 	bool checkPrinter(const QString& host, int port, QString* hostname = 0);
 
 	const Q3PtrList<SocketInfo>* printerList() { return &printerlist_; }
-	bool scanNetwork(Q3ProgressBar *bar = 0);
+	bool scanNetwork(QProgressBar *bar = 0);
 	void configureScan(QWidget *parent = 0);
 	void setDefaultPort(int p) { port_ = p; }
 

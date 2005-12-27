@@ -32,6 +32,7 @@
 #include <qstring.h>
 #include <qfile.h>
 #include <qdir.h>
+#include <qprogressdialog.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -822,10 +823,14 @@ void KService::rebuildKSycoca(QWidget *parent)
 
 KServiceProgressDialog::KServiceProgressDialog(QWidget *_parent, const char *_name,
                           const QString &_caption, const QString &text)
- : KProgressDialog(_parent, _name, _caption, text, true)
+ : QProgressDialog(_parent)
 {
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
-  progressBar()->setTotalSteps(20);
+  setObjectName(_name);
+  setWindowTitle(_caption);
+  setModal(true);
+  setLabelText(text);
+  setRange(0, 20);
   m_timeStep = 700;
   m_timer.start(m_timeStep);
   setAutoClose(false);
@@ -834,24 +839,24 @@ KServiceProgressDialog::KServiceProgressDialog(QWidget *_parent, const char *_na
 void
 KServiceProgressDialog::slotProgress()
 {
-  int p = progressBar()->progress();
+  int p = value();
   if (p == 18)
   {
-     progressBar()->reset();
-     progressBar()->setProgress(1);
+     reset();
+     setValue(1);
      m_timeStep = m_timeStep * 2;
      m_timer.start(m_timeStep);
   }
   else
   {
-     progressBar()->setProgress(p+1);
+     setValue(p+1);
   }
 }
 
 void
 KServiceProgressDialog::slotFinished()
 {
-  progressBar()->setProgress(20);
+  setValue(20);
   m_timer.stop();
   QTimer::singleShot(1000, this, SLOT(close()));
 }

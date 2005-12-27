@@ -25,7 +25,7 @@
 #include <kprocess.h>
 #include <kdialog.h>
 
-class Q3ProgressBar;
+class QProgressBar;
 class SidePixmap;
 class QPushButton;
 class QLabel;
@@ -60,11 +60,11 @@ protected:
 private:
 	KProcess	m_proc;
 	QStringList	m_buffer;
-	int			m_state;
+	int		m_state;
 	QStringList	m_actions;
-	int			m_actionindex;
+	int		m_actionindex;
 	bool		m_status;
-	Q3ProgressBar	*m_bar;
+	QProgressBar	*m_bar;
 	QString		m_dest;
 	SidePixmap	*m_side;
 	QPushButton	*m_doit, *m_cancel;

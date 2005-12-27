@@ -67,7 +67,7 @@ extern "C" {
 #include <qcombobox.h>
 #include <q3groupbox.h>
 #include <qstyle.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <QVector>
 
 #ifdef USE_POSIX_ACL
@@ -2748,7 +2748,7 @@ public:
   QStringList mountpointlist;
   QLabel *m_freeSpaceText;
   QLabel *m_freeSpaceLabel;
-  Q3ProgressBar *m_freeSpaceBar;
+  QProgressBar *m_freeSpaceBar;
 };
 
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2822,7 +2822,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_freeSpaceLabel = new QLabel( d->m_frame );
   layout->addWidget( d->m_freeSpaceLabel, 4, 1 );
 
-  d->m_freeSpaceBar = new Q3ProgressBar( d->m_frame, "freeSpaceBar" );
+  d->m_freeSpaceBar = new QProgressBar( d->m_frame );
+  d->m_freeSpaceBar->setObjectName( "freeSpaceBar" );
   layout->addMultiCellWidget(d->m_freeSpaceBar, 5, 5, 0, 1);
 
   // we show it in the slot when we know the values
@@ -2963,7 +2964,8 @@ void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
       .arg(KIO::convertSizeFromKiB(kBSize))
       .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 
-  d->m_freeSpaceBar->setProgress(percUsed, 100);
+  d->m_freeSpaceBar->setRange(0, 100);
+  d->m_freeSpaceBar->setValue(percUsed);
   d->m_freeSpaceBar->show();
 }
 

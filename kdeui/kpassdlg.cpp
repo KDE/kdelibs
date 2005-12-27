@@ -29,6 +29,7 @@
 #include <qnamespace.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
+#include <qprogressbar.h>
 
 #include <q3ptrdict.h>
 #include <qapplication.h>
@@ -41,7 +42,6 @@
 #include <kaboutdialog.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
-#include <kprogress.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -97,7 +97,7 @@ class KPasswordDialog::KPasswordDialogPrivate
 	int minimumPasswordLength;
 	int maximumPasswordLength;
 	int passwordStrengthWarningLevel;
-	KProgress* m_strengthBar;
+	QProgressBar* m_strengthBar;
 	int reasonablePasswordLength;
 };
 
@@ -401,8 +401,10 @@ void KPasswordDialog::init()
         QLabel* const passStrengthLabel = new QLabel(strengthBox);
         passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         passStrengthLabel->setText(i18n("Password strength meter:"));
-        d->m_strengthBar = new KProgress(100, strengthBox, "PasswordStrengthMeter");
-        d->m_strengthBar->setPercentageVisible(false);
+        d->m_strengthBar = new QProgressBar(strengthBox);
+        d->m_strengthBar->setObjectName("PasswordStrengthMeter");
+        d->m_strengthBar->setRange(0, 100);
+        d->m_strengthBar->setTextVisible(false);
 
         const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
                                                 "of the password you have entered.  To improve the strength of "
@@ -493,7 +495,7 @@ void KPasswordDialog::slotOk()
 	    erase();
 	    return;
 	}
-	if (d->m_strengthBar && d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) {
+	if (d->m_strengthBar && d->m_strengthBar->value() < d->passwordStrengthWarningLevel) {
 	    int retVal = KMessageBox::warningContinueCancel(this,
 		i18n(   "The password you have entered has a low strength. "
 			"To improve the strength of "
@@ -627,7 +629,7 @@ void KPasswordDialog::enableOkBtn()
       if ( pwstrength > 100 ) {
 	      pwstrength = 100;
       }
-      d->m_strengthBar->setProgress(pwstrength);
+      d->m_strengthBar->setValue(pwstrength);
 
    }
 }

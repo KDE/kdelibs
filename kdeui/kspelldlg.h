@@ -26,9 +26,9 @@ class QStringList;
 class QLabel;
 class Q3ListViewItem;
 class QPushButton;
+class QProgressBar;
 class KListBox;
 class KLineEdit;
-class KProgress;
 
 //Possible result codes
 enum KS_RESULT {
@@ -50,7 +50,7 @@ class KDEUI_EXPORT KSpellDlg : public KDialogBase
   class KSpellDlgPrivate;
   KSpellDlgPrivate *d;
   KLineEdit *editbox;
-  KProgress *progbar;
+  QProgressBar *progbar;
   KListBox *listbox;
   QStringList *sugg;
   QPushButton *qpbrep, *qpbrepa;

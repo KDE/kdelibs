@@ -22,7 +22,7 @@
 #include "sidepixmap.h"
 
 #include <qtimer.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -55,7 +55,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
-	m_bar = new Q3ProgressBar(this);
+	m_bar = new QProgressBar(this);
 	m_text = new KActiveLabel(this);
 	QLabel	*m_title = new QLabel(i18n("Export Printer Driver to Windows Clients"), this);
 	setCaption(m_title->text());
@@ -253,7 +253,7 @@ void CupsAddSmb::doNextAction()
 	if (m_proc.isRunning())
 	{
 		QByteArray	s = m_actions[m_actionindex++].toLatin1();
-		m_bar->setProgress(m_bar->progress()+1);
+		m_bar->setValue(m_bar->value()+1);
 		kdDebug(500) << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
 		{
@@ -397,8 +397,8 @@ bool CupsAddSmb::doExport()
 		return false;
 	}
 
-	m_bar->setTotalSteps(18);
-	m_bar->setProgress(0);
+	m_bar->setRange(0, 18);
+	m_bar->setValue(0);
 	//m_text->setText(i18n("<p>Preparing to upload driver to host <b>%1</b>").arg(m_servered->text()));
 	m_textinfo->setText(i18n("Preparing to upload driver to host %1").arg(m_servered->text()));
 	m_cancel->setEnabled(false);

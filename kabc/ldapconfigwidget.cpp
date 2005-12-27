@@ -27,6 +27,7 @@
 #include <qspinbox.h>
 #include <QGroupBox>
 #include <qradiobutton.h>
+#include <qprogressdialog.h>
 
 #include <kmessagebox.h>
 #include <kacceleratormanager.h>
@@ -34,7 +35,6 @@
 #include <klocale.h>
 #include <klineedit.h>
 #include <kcombobox.h>
-#include <kprogress.h>
 
 #include <kdebug.h>
 
@@ -289,7 +289,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
   do {
     ret = mLdif.nextItem();
     if ( ret == LDIF::Item && mLdif.attr().toLower() == mAttr ) {
-      mProg->progressBar()->advance( 1 );
+      mProg->setValue( mProg->value() + 1 );
       mQResult.push_back( QString::fromUtf8( mLdif.val(), mLdif.val().size() ) );
     }
   } while ( ret != LDIF::MoreData );
@@ -333,11 +333,14 @@ void LdapConfigWidget::sendQuery()
     this, SLOT( loadResult( KIO::Job* ) ) );
 
   if ( mProg == NULL )
-    mProg = new KProgressDialog( this, 0, i18n("LDAP Query"), _url.prettyURL(), true );
-  else
-    mProg->setLabel( _url.prettyURL() );
-  mProg->progressBar()->setValue( 0 );
-  mProg->progressBar()->setTotalSteps( 1 );
+  {
+    mProg = new QProgressDialog( this );
+    mProg->setWindowTitle( i18n("LDAP Query") );
+    mProg->setModal( true );
+  }
+  mProg->setLabelText( _url.prettyURL() );
+  mProg->setRange( 0, 1 );
+  mProg->setValue( 0 );
   mProg->exec();
   if ( mCancelled ) {
     kdDebug(5700) << "query cancelled!" << endl;
