@@ -1,0 +1,22 @@
+[Global]
+IconName=knotifytest
+Comment=Test for Knotify
+
+[Context/group]
+Name=Group
+Comment=The group
+Icon=folder
+
+[Event/online]
+Name=Online
+Comment=The contact is now connected
+Contexts=group
+Action=Popup
+
+
+[Event/message]
+Name=Message received
+Comment=A Message has been received
+Contexts=group
+Action=Popup
+
