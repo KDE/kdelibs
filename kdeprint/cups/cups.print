@@ -52,7 +52,6 @@ Comment[ven]=CUPS (Maitele au phirintha a UNIX zwao)
 Comment[wa]=CUPS (Comon Sistinme d' Imprimaedje po UNIX)
 Comment[xh]=CUPS (Indlela Elula Yoshicilelo lwe UNIX)
 Comment[zh_CN]=CUPS (通用 Unix 打印系统)
-Comment[zh_HK]=CUPS (通用 Unix 列印系統)
 Comment[zh_TW]=CUPS (通用 Unix 列印系統)
 Comment[zu]=CUPS (Isistimu Yokushicilela ye-Unix Eyejwayelekile)
 DetectUris=service:/ipp,config:/cups/cupsd.conf

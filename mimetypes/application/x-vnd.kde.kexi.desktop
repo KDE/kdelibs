@@ -70,7 +70,6 @@ Comment[uk]=Файл проекту Kexi
 Comment[uz]=Kexi лойиҳа файли
 Comment[wa]=Fitchî di prodjet Kexi
 Comment[zh_CN]=Kexi 项目文件
-Comment[zh_HK]=Kexi 計畫檔案
 Comment[zh_TW]=Kexi 專案檔案
 [Property::X-KDE-NativeExtension]
 Type=QString

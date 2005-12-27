@@ -71,7 +71,6 @@ Comment[ven]=LPR/Maitele au phirintha a LPRng
 Comment[wa]=Sistinme d' imprimaedje LPR/LPRng
 Comment[xh]=LPR/LPRng Indlela Yokushicilela
 Comment[zh_CN]=LPR/LPRng 打印系统
-Comment[zh_HK]=LPR/LPRng 列印系統
 Comment[zh_TW]=LPR/LPRng 列印系統
 Comment[zu]=Isistimu Yokushicilela ye-LPR/LRng
 DetectUris=service:/printer

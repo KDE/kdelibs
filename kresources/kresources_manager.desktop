@@ -51,7 +51,6 @@ Comment[tt]=KResource İdäräçese
 Comment[uk]=Менеджер KResource
 Comment[uz]=KResource бошқарувчиси
 Comment[zh_CN]=KResource 管理器
-Comment[zh_HK]=KResource 管理員
 
 [PropertyDef::X-KDE-ResourceFamily]
 Type=QString

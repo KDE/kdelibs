@@ -69,7 +69,6 @@ Name[ven]=Tshitaela tsha webu
 Name[vi]=Kiểu Web 
 Name[xh]=Uhlobo lwe Web
 Name[zh_CN]=网络风格
-Name[zh_HK]=網站風格
 Name[zh_TW]=網站風格
 Name[zu]=Uhlobo lwe-web
 Comment=Web widget style
@@ -141,7 +140,6 @@ Comment[ven]=Tshitaela tsha webe ya Widget
 Comment[vi]=Kiểu Wed widget 
 Comment[xh]=Uhlobo lwe widget ye Web
 Comment[zh_CN]=网络部件风格
-Comment[zh_HK]=Web 元件風格
 Comment[zh_TW]=Web 元件風格
 Comment[zu]=Uhlobo lwe-widget ye-web
 [KDE]

@@ -73,7 +73,6 @@ Comment[vi]=LPR (Hệ thống chuẩn BSD)
 Comment[wa]=LPR (Sistinme d' imprimaedje BSD standård)
 Comment[xh]=LPR (Indlela esezantsi yoshicilelo lwe BSD)
 Comment[zh_CN]=LPR (标准 BSD 打印系统)
-Comment[zh_HK]=LPR (標準 BSD 列印系統)
 Comment[zh_TW]=LPR (標準 BSD 列印系統)
 Comment[zu]=LPR (Isistimu yokushicelela evamile ye-BSD)
 DetectUris=service:/printer,config:/printcap

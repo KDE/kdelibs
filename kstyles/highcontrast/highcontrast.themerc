@@ -44,7 +44,6 @@ Name[tr]=Yüksek Kontrast
 Name[tt]=KiskenTösle
 Name[uk]=Висока контрастність
 Name[zh_CN]=高对比度
-Name[zh_HK]=高反差
 ConfigPage=kstyle_highcontrast_config
 Comment=A style that works well with high contrast color schemes
 Comment[af]=´n Styl wat goed werk met hoë kontras kleur skemas
@@ -92,6 +91,5 @@ Comment[tr]=Yüksek kontrast renk şemalarına uygun bir stil
 Comment[tt]=Bu tışlaw bik kisken tösle köyläwlärgä yaxşı kileşä
 Comment[uk]=Стиль, який підходить до схем кольорів з високою контрастністю
 Comment[zh_CN]=在高对比度配色方案中适用的样式
-Comment[zh_HK]=適用於高反差色彩的佈景
 [KDE]
 WidgetStyle=HighContrast

@@ -55,7 +55,6 @@ Comment[tt]=Ämerlek (eşçän buluı bar)
 Comment[uk]=Скрипт, який, можливо, можна виконати
 Comment[uz]=Эҳтимол ишга тушириб бўладиган скрипт
 Comment[zh_CN]=脚本(可能可执行)
-Comment[zh_HK]=Script (可能是可執行檔)
 Icon=exec
 Type=MimeType
 MimeType=application/x-executable-script

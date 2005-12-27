@@ -52,7 +52,6 @@ Comment[tt]=ABC Köy Bireme
 Comment[uk]=Файл музики ABC
 Comment[uz]=ABC аудио-файл
 Comment[zh_CN]=ABC 音乐文件
-Comment[zh_HK]=ABC 音樂原始檔
 Icon=sound
 Type=MimeType
 MimeType=text/vnd.abc

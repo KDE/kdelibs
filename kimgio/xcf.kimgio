@@ -55,7 +55,6 @@ Name[tt]=GIMP Sürät
 Name[uk]=Зображення GIMP
 Name[uz]=GIMP-расм
 Name[zh_CN]=GIMP 图像
-Name[zh_HK]=GIMP 圖檔
 Read=true
 Write=false
 Suffices=xcf,XCF

@@ -9,6 +9,7 @@ Comment[el]=Φάκελος αλληλογραφίας MBOX
 Comment[es]=Carpeta de correo MBOX
 Comment[et]=MBOX e-posti kaust
 Comment[fr]=Dossier de boîte aux lettres MBox
+Comment[hu]=MBOX levélmappa
 Comment[is]=MBOX póstmappa
 Comment[it]=Cartella di posta MBOX
 Comment[lb]=MBOX Mail-Dossier
@@ -17,6 +18,7 @@ Comment[nl]=MBOX-postvakmap
 Comment[pt]=Pasta de Correio MBOX
 Comment[pt_BR]=Pasta de Correio MBOX
 Comment[sv]=Mbox-brevkorg
+Comment[uk]=Поштова тека MBOX
 Comment[zh_CN]=MBOX 邮件文件夹
 
 [Property::X-KDE-text]

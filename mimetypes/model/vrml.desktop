@@ -67,7 +67,6 @@ Comment[uk]=Модель VRML (тривимірні моделі)
 Comment[uz]=VRML модели
 Comment[wa]=Modele VRML
 Comment[zh_CN]=VRML 模块
-Comment[zh_HK]=VRML 模型
 Comment[zh_TW]=VRML 模型
 Patterns=*.wrl;*.wrl.gz
 

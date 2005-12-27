@@ -42,7 +42,6 @@ Comment[tg]=Архиви Tar Bzip2-карда шуд
 Comment[uk]=Архів Tar, стиснутий Bzip2
 Comment[uz]=Bzip билан қисилган Tar архиви
 Comment[zh_CN]=Bzip 压缩的 Tar 归档
-Comment[zh_HK]=Bzip2 壓縮的 Tar 保存檔
 MimeType=application/x-tbz
 Icon=tgz
 Type=MimeType
