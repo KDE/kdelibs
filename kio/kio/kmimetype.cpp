@@ -1064,7 +1064,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
           s.m_strIcon = cfg.readEntry( "Icon" );
           s.m_strExec = exec;
           s.m_type = ST_USER_DEFINED;
-          s.m_display = !cfg.readBoolEntry( "NoDisplay" );
+          s.m_display = !cfg.readEntry( "NoDisplay" , QVariant(false)).toBool();
           result.append( s );
         }
       }

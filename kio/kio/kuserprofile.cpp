@@ -89,7 +89,7 @@ void KServiceTypeProfile::initStatic()
           s_lstProfiles->insert( type, p );
         }
 
-        bool allow = config.readBoolEntry( "AllowAsDefault" );
+        bool allow = config.readEntry( "AllowAsDefault",QVariant(false) ).toBool();
         //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }

@@ -82,11 +82,11 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     mHost = config->readEntry( "LdapHost" );
     mPort = config->readNumEntry( "LdapPort", 389 );
     mFilter = config->readEntry( "LdapFilter" );
-    mAnonymous = config->readBoolEntry( "LdapAnonymous" );
-    d->mTLS = config->readBoolEntry( "LdapTLS" );
-    d->mSSL = config->readBoolEntry( "LdapSSL" );
-    d->mSubTree = config->readBoolEntry( "LdapSubTree" );
-    d->mSASL = config->readBoolEntry( "LdapSASL" );
+    mAnonymous = config->readEntry( "LdapAnonymous" , QVariant(false)).toBool();
+    d->mTLS = config->readEntry( "LdapTLS" , QVariant(false)).toBool();
+    d->mSSL = config->readEntry( "LdapSSL" , QVariant(false)).toBool();
+    d->mSubTree = config->readEntry( "LdapSubTree" , QVariant(false)).toBool();
+    d->mSASL = config->readEntry( "LdapSASL" , QVariant(false)).toBool();
     d->mMech = config->readEntry( "LdapMech" );
     d->mRealm = config->readEntry( "LdapRealm" );
     d->mBindDN = config->readEntry( "LdapBindDN" );

@@ -1124,7 +1124,7 @@ KBookmarkMenu::DynMenuInfo KBookmarkMenu::showDynamicBookmarks( const QString &i
     // have new version config
     if (config.hasGroup("DynamicMenu-" + id)) {
       config.setGroup("DynamicMenu-" + id);
-      info.show = config.readBoolEntry("Show");
+      info.show = config.readEntry("Show", QVariant(false)).toBool();
       info.location = config.readPathEntry("Location");
       info.type = config.readEntry("Type");
       info.name = config.readEntry("Name");

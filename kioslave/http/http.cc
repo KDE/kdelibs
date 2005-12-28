@@ -266,10 +266,10 @@ void HTTPProtocol::resetSessionSettings()
   kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
                 << m_bPersistentProxyConnection << endl;
 
-  m_request.bUseCookiejar = config()->readBoolEntry("Cookies");
+  m_request.bUseCookiejar = config()->readEntry("Cookies", QVariant(false)).toBool();
   m_request.bUseCache = config()->readEntry("UseCache", QVariant(true)).toBool();
   m_request.bErrorPage = config()->readEntry("errorPage", QVariant(true)).toBool();
-  m_request.bNoAuth = config()->readBoolEntry("no-auth");
+  m_request.bNoAuth = config()->readEntry("no-auth", QVariant(false)).toBool();
   m_strCacheDir = config()->readPathEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");

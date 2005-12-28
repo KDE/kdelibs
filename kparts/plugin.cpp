@@ -241,7 +241,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         bool pluginEnabled = enableNewPluginsByDefault;
         if ( cfgGroup.hasKey( name + "Enabled" ) )
         {
-            pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled" );
+            pluginEnabled = cfgGroup.readEntry( name + "Enabled" , QVariant(false)).toBool();
         }
         else
         { // no user-setting, load plugin default setting

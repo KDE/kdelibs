@@ -3073,9 +3073,9 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
   m_origCommandStr = commandStr;
   QString pathStr = config.readPathEntry( "Path" );
-  m_terminalBool = config.readBoolEntry( "Terminal" );
+  m_terminalBool = config.readEntry( "Terminal" , QVariant(false)).toBool();
   m_terminalOptionStr = config.readEntry( "TerminalOptions" );
-  m_suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
+  m_suidBool = config.readEntry( "X-KDE-SubstituteUID" , QVariant(false)).toBool();
   m_suidUserStr = config.readEntry( "X-KDE-Username" );
   if( config.hasKey( "StartupNotify" ))
     m_startupBool = config.readEntry("StartupNotify", QVariant(true )).toBool();
@@ -3650,9 +3650,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   execStr = config.readPathEntry( "Exec" );
   swallowExecStr = config.readPathEntry( "SwallowExec" );
   swallowTitleStr = config.readEntry( "SwallowTitle" );
-  termBool = config.readBoolEntry( "Terminal" );
+  termBool = config.readEntry( "Terminal" , QVariant(false)).toBool();
   termOptionsStr = config.readEntry( "TerminalOptions" );
-  suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
+  suidBool = config.readEntry( "X-KDE-SubstituteUID" , QVariant(false)).toBool();
   suidUserStr = config.readEntry( "X-KDE-Username" );
 
   if ( !swallowExecStr.isNull() )

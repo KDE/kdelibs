@@ -1009,7 +1009,7 @@ int main( int argc, char **argv )
   bool singleton = codegenConfig.readEntry("Singleton", QVariant(false)).toBool();
   bool staticAccessors = singleton;
   //bool useDPointer = codegenConfig.readEntry("DPointer", QVariant(false)).toBool();
-  bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
+  bool customAddons = codegenConfig.readEntry("CustomAdditions", QVariant(false)).toBool();
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
   QStringList mutators = codegenConfig.readListEntry("Mutators");

@@ -86,7 +86,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		}
 
 		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readNumEntry("Policy");
-		bool permanent = cfg->readBoolEntry("Permanent");
+		bool permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
 		QDateTime expires = cfg->readDateTimeEntry("Expires");
 		QStringList hosts = cfg->readListEntry("Hosts");
 		QStringList chain = cfg->readListEntry("Chain");
@@ -256,7 +256,7 @@ QStringList groups = cfg->groupList();
 		KSSLCNode *n = new KSSLCNode;
 		n->cert = newCert;
 		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readNumEntry("Policy");
-		n->permanent = cfg->readBoolEntry("Permanent");
+		n->permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
 		n->expires = cfg->readDateTimeEntry("Expires");
 		n->hosts = cfg->readListEntry("Hosts");
 		newCert->chain().setCertChain(cfg->readListEntry("Chain"));

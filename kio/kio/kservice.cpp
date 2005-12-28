@@ -186,7 +186,7 @@ KService::init( const KDesktopFile *config )
 
   m_strIcon = config->readEntry( "Icon" );
   entryMap.remove("Icon");
-  m_bTerminal = (config->readBoolEntry( "Terminal" )); // should be a property IMHO
+  m_bTerminal = (config->readEntry( "Terminal" ), QVariant(false)).toBool(); // should be a property IMHO
   entryMap.remove("Terminal");
   m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
   entryMap.remove("TerminalOptions");

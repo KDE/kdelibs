@@ -1509,7 +1509,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         _config->reparseConfiguration();
 
     _config->setGroup("Cookie Dialog");
-    m_showCookieDetails = _config->readBoolEntry( "ShowCookieDetails" );
+    m_showCookieDetails = _config->readEntry( "ShowCookieDetails" , QVariant(false)).toBool();
     m_preferredPolicy = _config->readNumEntry( "PreferredPolicy", 0 );
 
     _config->setGroup("Cookie Policy");
