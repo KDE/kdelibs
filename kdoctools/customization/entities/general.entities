@@ -119,6 +119,7 @@
 <!ENTITY artswrapper	"<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY atlantik	"<application>Atlantik</application>">
+<!ENTITY blinken	"<application>blinKen</application>">
 <!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
@@ -158,6 +159,7 @@
 <!ENTITY kalarmd	"<application>KAlarmd</application>">
 <!ENTITY kalzium	"<application>Kalzium</application>">
 <!ENTITY kamera	"<application>Kamera</application>">
+<!ENTITY kanagram	"<application>Kanagram</application>">
 <!ENTITY kandy	"<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY kaphorism	"<application>KAphorism</application>">
@@ -211,6 +213,7 @@
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY khangman	"<application>KHangMan</application>">
 <!ENTITY kgeo	"<application>KGeo</application>">
+<!ENTITY kgeography	"<application>KGeography</application>">
 <!ENTITY kget	"<application>KGet</application>">
 <!ENTITY kghostview	"<application>KGhostView</application>">
 <!ENTITY kgoldrunner    "<application>KGoldrunner</application>">
