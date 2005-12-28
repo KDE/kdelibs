@@ -15,3 +15,4 @@ determineMimetypeFromExtension=false
 Icon=www
 maxInstances=3
 DocPath=kioslave/webdav.html
+Class=:internet

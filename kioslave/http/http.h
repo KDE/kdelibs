@@ -74,7 +74,7 @@ public:
       port = 0;
       doProxy = false;
     }
-    
+
     QString hostname;
     QString encoded_hostname;
     short unsigned int port;
@@ -91,7 +91,7 @@ public:
       overwrite = false;
       depth = 0;
     }
-    
+
     QString desturl;
     bool overwrite;
     int depth;
@@ -100,7 +100,7 @@ public:
   /** The request for the current connection **/
   struct HTTPRequest
   {
-    HTTPRequest () 
+    HTTPRequest ()
     {
       port = 0;
       method = KIO::HTTP_UNKNOWN;
@@ -118,9 +118,9 @@ public:
       bErrorPage = false;
       bUseCookiejar = false;
       expireDate = 0;
-      creationDate = 0;      
+      creationDate = 0;
     }
-    
+
     QString hostname;
     QString encoded_hostname;
     short unsigned int port;
@@ -143,8 +143,8 @@ public:
     QString id;
     DAVRequest davData;
 
-    bool bNoAuth; // Do not authenticate 
-    
+    bool bNoAuth; // Do not authenticate
+
     // Cache related
     QString cef; // Cache Entry File belonging to this URL.
     bool bUseCache; // Whether the cache is active
@@ -190,7 +190,7 @@ public:
   virtual void slave_status();
 
   virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode, bool _overwrite,
+  virtual void put( const KURL& url, int _mode, bool overwrite,
                     bool _resume );
 
 //----------------- Re-implemented methods for WebDAV -----------
@@ -293,7 +293,7 @@ protected:
   void httpCheckConnection();  // Check whether to keep connection.
 
   void forwardHttpResponseHeader();
-  
+
   bool readHeader();
 
   bool sendBody();
@@ -400,7 +400,7 @@ protected:
    * Resets settings related to parsing a response.
    */
   void resetResponseSettings();
-  
+
   /**
    * Resets any per connection settings.  These are different from
    * per-session settings in that they must be invalidates every time
@@ -503,7 +503,7 @@ protected:
   QStringList m_qContentEncodings;
   QString m_sContentMD5;
   QString m_strMimeType;
-  
+
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
@@ -529,7 +529,7 @@ protected:
 //--- Proxy related members
   bool m_bUseProxy;
   bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
-  bool m_bIsTunneled; // Whether we have an active SSL tunnel 
+  bool m_bIsTunneled; // Whether we have an active SSL tunnel
   bool m_bProxyAuthValid;
   int m_iProxyPort;
   KURL m_proxyURL;

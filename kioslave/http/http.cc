@@ -1245,13 +1245,49 @@ void HTTPProtocol::get( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::put( const KURL &url, int, bool, bool)
+void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyURL()
                 << endl;
 
   if ( !checkRequestURL( url ) )
     return;
+
+  // Webdav hosts are capable of observing overwrite == false
+  if (!overwrite && m_protocol.left(6) == "webdav") {
+    UDSEntry entry;
+    UDSAtom atom;
+
+    // check to make sure this host supports WebDAV
+    if ( !davHostOk() )
+      return;
+
+    QCString request;
+    request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+    "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
+      "<D:creationdate/>"
+      "<D:getcontentlength/>"
+      "<D:displayname/>"
+      "<D:resourcetype/>"
+      "</D:prop></D:propfind>";
+
+    davSetRequest( request );
+
+    // WebDAV Stat or List...
+    m_request.method = DAV_PROPFIND;
+    m_request.query = QString::null;
+    m_request.cache = CC_Reload;
+    m_request.doProxy = m_bUseProxy;
+    m_request.davData.depth = 0;
+
+    if (!retrieveHeader(false))
+      return;
+
+    if (m_responseCode == 207) {
+      error(ERR_FILE_ALREADY_EXIST, QString::null);
+      return;
+    }
+  }
 
   m_request.method = HTTP_PUT;
   m_request.path = url.path();

@@ -15,3 +15,4 @@ determineMimetypeFromExtension=false
 Icon=www
 config=webdav
 DocPath=kioslave/webdavs.html
+Class=:internet
