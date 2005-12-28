@@ -72,7 +72,7 @@ KSSLPKCS12::~KSSLPKCS12() {
 }
 
 
-KSSLPKCS12* KSSLPKCS12::fromString(QString base64, QString password) {
+KSSLPKCS12* KSSLPKCS12::fromString(const QString &base64, const QString &password) {
 #ifdef KSSL_HAVE_SSL
 KTempFile ktf;
 
@@ -90,7 +90,7 @@ return NULL;
 
 
 
-KSSLPKCS12* KSSLPKCS12::loadCertFile(QString filename, QString password) {
+KSSLPKCS12* KSSLPKCS12::loadCertFile(const QString &filename, const QString &password) {
 #ifdef KSSL_HAVE_SSL
 QFile qf(filename);
 PKCS12 *newpkcs = NULL;
@@ -141,7 +141,7 @@ return false;
 }
 
 
-bool KSSLPKCS12::parse(QString pass) {
+bool KSSLPKCS12::parse(const QString &pass) {
 #ifdef KSSL_HAVE_SSL
 X509 *x = NULL;
 
@@ -214,7 +214,7 @@ return base64;
 
 
 
-bool KSSLPKCS12::toFile(QString filename) {
+bool KSSLPKCS12::toFile(const QString &filename) {
 #ifdef KSSL_HAVE_SSL
 QFile out(filename);
 
@@ -276,7 +276,7 @@ return (validate(p) == KSSLCertificate::Ok);
 }
 
 
-QString KSSLPKCS12::name() {
+QString KSSLPKCS12::name() const {
    return _cert->getSubject();
 }
 

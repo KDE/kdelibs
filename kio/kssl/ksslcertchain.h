@@ -26,7 +26,6 @@
 #include <kdemacros.h>
 
 class QString;
-class Q3CString;
 class KSSL;
 class KSSLCertChainPrivate;
 class QStringList;

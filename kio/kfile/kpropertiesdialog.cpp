@@ -2036,7 +2036,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   // FIXME make it work with partial entries
   if ( properties->items().count() == 1 ) {
-    Q3CString pathCString = QFile::encodeName( properties->item()->url().path() );
+    QByteArray pathCString = QFile::encodeName( properties->item()->url().path() );
     fileSystemSupportsACLs =
       getxattr( pathCString.data(), "system.posix_acl_access", NULL, 0 ) >= 0 || errno == ENODATA;
   }

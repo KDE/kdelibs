@@ -290,7 +290,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             break;
         case KIO::SlaveBase::SSLMessageBox:
         {
-            Q3CString observerAppId = caption.toUtf8(); // hack, see slaveinterface.cpp
+            DCOPCString observerAppId = caption.toUtf8(); // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
             Observer_stub observer( observerAppId, "KIO::Observer" );
@@ -344,7 +344,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     return result;
 #if 0
     QByteArray data, replyData;
-    Q3CString replyType;
+    DCOPCString replyType;
     QDataStream arg( data, QIODevice::WriteOnly );
     arg << progressId;
     arg << type;

@@ -82,7 +82,7 @@ public:
 
 FileInfo *readEntry( const QString &filename)
 {
-   Q3CString CEF = QFile::encodeName(filename);
+   QByteArray CEF = QFile::encodeName(filename);
    FILE *fs = fopen( CEF.data(), "r");
    if (!fs)
       return 0;
@@ -202,7 +202,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    if (!deleteAll)
    {
       DCOPClient *dcop = new DCOPClient();
-      Q3CString name = dcop->registerAs(appName, false);
+      DCOPCString name = dcop->registerAs(appName, false);
       if (!name.isEmpty() && (name != appName))
       {
          fprintf(stderr, "%s: Already running! (%s)\n", appName, name.data());
@@ -248,7 +248,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if (fileInfo->size > maxCachedSize)
       {
-         Q3CString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
 //         kdDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
@@ -260,7 +260,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if ((totalSize + fileInfo->size) > m_maxCacheSize)
       {
-         Q3CString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
 //         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
       }

@@ -47,22 +47,22 @@ struct SessionData::AuthData
 public:
   AuthData() {}
 
-  AuthData(const Q3CString& k, const Q3CString& g, bool p) {
+  AuthData(const QByteArray& k, const QByteArray& g, bool p) {
     key = k;
     group = g;
     persist = p;
   }
 
-  bool isKeyMatch( const Q3CString& val ) const {
+  bool isKeyMatch( const QByteArray& val ) const {
     return (val==key);
   }
 
-  bool isGroupMatch( const Q3CString& val ) const {
+  bool isGroupMatch( const QByteArray& val ) const {
     return (val==group);
   }
 
-  Q3CString key;
-  Q3CString group;
+  QByteArray key;
+  QByteArray group;
   bool persist;
 };
 
@@ -74,7 +74,7 @@ public:
   ~AuthDataList();
 
   void addData( SessionData::AuthData* );
-  void removeData( const Q3CString& );
+  void removeData( const QByteArray& );
 
   bool pingCacheDaemon();
   void registerAuthData( SessionData::AuthData* );
@@ -116,7 +116,7 @@ void SessionData::AuthDataList::addData( SessionData::AuthData* d )
   append( d );
 }
 
-void SessionData::AuthDataList::removeData( const Q3CString& gkey )
+void SessionData::AuthDataList::removeData( const QByteArray& gkey )
 {
   Q3PtrListIterator<SessionData::AuthData> it( *this );
   for( ; it.current(); ++it )
@@ -154,11 +154,11 @@ void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
 
 #ifdef Q_OS_UNIX
   bool ok;
-  Q3CString ref_key = d->key + "-refcount";
+  QByteArray ref_key = d->key + "-refcount";
   int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
   if( ok )
   {
-    Q3CString val;
+    QByteArray val;
     val.setNum( count+1 );
     m_kdesuClient->setVar( ref_key, val, 0, d->group );
   }
@@ -174,7 +174,7 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
 
   bool ok;
   int count;
-  Q3CString ref_key = d->key + "-refcount";
+  QByteArray ref_key = d->key + "-refcount";
 
 #ifdef Q_OS_UNIX
   count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
@@ -182,7 +182,7 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
   {
     if ( count > 1 )
     {
-        Q3CString val;
+        QByteArray val;
         val.setNum(count-1);
         m_kdesuClient->setVar( ref_key, val, 0, d->group );
     }

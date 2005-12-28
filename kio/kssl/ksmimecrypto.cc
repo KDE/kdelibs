@@ -303,7 +303,7 @@ KSMIMECrypto::~KSMIMECrypto() {
 }
 
 
-KSMIMECrypto::rc KSMIMECrypto::signMessage(const Q3CString &clearText,
+KSMIMECrypto::rc KSMIMECrypto::signMessage(const QByteArray &clearText,
 					   QByteArray &cipherText,
 					   const KSSLPKCS12 &privKey,
 					   const Q3PtrList<KSSLCertificate> &certs,
@@ -330,7 +330,7 @@ KSMIMECrypto::rc KSMIMECrypto::signMessage(const Q3CString &clearText,
 }
 
 
-KSMIMECrypto::rc KSMIMECrypto::checkDetachedSignature(const Q3CString &clearText,
+KSMIMECrypto::rc KSMIMECrypto::checkDetachedSignature(const QByteArray &clearText,
 						      const QByteArray &signature,
 						      Q3PtrList<KSSLCertificate> &foundCerts) {
 #ifdef KSSL_HAVE_SSL
@@ -351,7 +351,7 @@ KSMIMECrypto::rc KSMIMECrypto::checkDetachedSignature(const Q3CString &clearText
 
 
 KSMIMECrypto::rc KSMIMECrypto::checkOpaqueSignature(const QByteArray &signedText,
-						    Q3CString &clearText,
+						    QByteArray &clearText,
 						    Q3PtrList<KSSLCertificate> &foundCerts) {
 #ifdef KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
@@ -374,7 +374,7 @@ KSMIMECrypto::rc KSMIMECrypto::checkOpaqueSignature(const QByteArray &signedText
 }
 
 
-KSMIMECrypto::rc KSMIMECrypto::encryptMessage(const Q3CString &clearText,
+KSMIMECrypto::rc KSMIMECrypto::encryptMessage(const QByteArray &clearText,
 					      QByteArray &cipherText,
 					      algo algorithm,
 					      const Q3PtrList<KSSLCertificate> &recip) {
@@ -400,7 +400,7 @@ KSMIMECrypto::rc KSMIMECrypto::encryptMessage(const Q3CString &clearText,
 
 
 KSMIMECrypto::rc KSMIMECrypto::decryptMessage(const QByteArray &cipherText,
-					      Q3CString &clearText,
+					      QByteArray &clearText,
 					      const KSSLPKCS12 &privKey) {
 #ifdef KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;

@@ -71,27 +71,27 @@ public:
 	 *  certificate instead of passing the object itself.
 	 *  @return the name of the certificate
 	 */
-	QString name();
+	QString name() const;
 
 	/**
 	 *  Create a KSSLPKCS7 object from a Base64 in a QString.
 	 *  @param base64 the base64 representation of the certificate
 	 *  @return a PKCS#7 object, or NULL on failure
 	 */
-	static KSSLPKCS7* fromString(QString base64);
+	static KSSLPKCS7* fromString(const QString &base64);
 
 	/**
 	 *  Create a KSSLPKCS7 object by reading a PKCS#7 file.
 	 *  @param filename the filename to read the certificate from
 	 *  @return a PKCS#7 object, or NULL on failure
 	 */
-	static KSSLPKCS7* loadCertFile(QString filename);
+	static KSSLPKCS7* loadCertFile(const QString &filename);
 
 	/**
 	 *  Convert to a Base64 string.
 	 *  @return the PKCS#7 object in base64 form
 	 */
-	QString toString();
+	QString toString() const;
 
 	/**
 	 *  Raw set the PKCS7 object.
@@ -119,13 +119,13 @@ public:
 	 *  @param filename the filename to write
 	 *  @return true on success
 	 */
-	bool toFile(QString filename);
+	bool toFile(const QString &filename);
 
 	/**
 	 *  Check the chain to make sure it's valid.
 	 *  @return the result of the validation procedure
 	 */
-	KSSLCertificate::KSSLValidation validate();
+	KSSLCertificate::KSSLValidation validate() const;
 
 	/**
 	 *  Check the chain to make sure it's valid.
@@ -138,7 +138,7 @@ public:
 	/**
 	 *  Return true if the chain is valid.
 	 */
-	bool isValid();
+	bool isValid() const;
 
 protected:
 	KSSLPKCS7();

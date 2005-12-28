@@ -60,7 +60,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @param detached create detached or opaque signature
      * @return 0 on success
      */
-    rc signMessage(const Q3CString &clearText,
+    rc signMessage(const QByteArray &clearText,
 		   QByteArray &cipherText,
 		   const KSSLPKCS12 &privKey,
 		   const Q3PtrList<KSSLCertificate> &certs,
@@ -75,7 +75,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @param foundCerts certificates found in this message
      * @return 0 on success
      */
-    rc checkDetachedSignature(const Q3CString &clearText,
+    rc checkDetachedSignature(const QByteArray &clearText,
 			      const QByteArray &signature,
 			      Q3PtrList<KSSLCertificate> &foundCerts);
 
@@ -89,7 +89,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @return 0 on success
      */
     rc checkOpaqueSignature(const QByteArray &signedText,
-			    Q3CString &clearText,
+			    QByteArray &clearText,
 			    Q3PtrList<KSSLCertificate> &foundCerts);
     
     /**
@@ -104,7 +104,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @recip recipient certificates
      * @return 0 on success
      */
-    rc encryptMessage(const Q3CString &clearText,
+    rc encryptMessage(const QByteArray &clearText,
 		      QByteArray &cipherText,
 		      algo algorithm,
 		      const Q3PtrList<KSSLCertificate> &recip);
@@ -117,7 +117,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @return 0 on success
      */
     rc decryptMessage(const QByteArray &cipherText,
-		      Q3CString &clearText,
+		      QByteArray &clearText,
 		      const KSSLPKCS12 &privKey);
 
  private:

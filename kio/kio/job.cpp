@@ -3422,10 +3422,10 @@ void CopyJob::slotResultRenaming( Job* job )
              ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
         {
             kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
-            Q3CString _src( QFile::encodeName(m_currentSrcURL.path()) );
-            Q3CString _dest( QFile::encodeName(dest.path()) );
+            QByteArray _src( QFile::encodeName(m_currentSrcURL.path()) );
+            QByteArray _dest( QFile::encodeName(dest.path()) );
             KTempFile tmpFile( m_currentSrcURL.directory(false) );
-            Q3CString _tmp( QFile::encodeName(tmpFile.name()) );
+            QByteArray _tmp( QFile::encodeName(tmpFile.name()) );
             kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
             tmpFile.unlink();
             if ( ::rename( _src, _tmp ) == 0 )
@@ -4329,7 +4329,7 @@ QString CacheInfo::cachedFileName()
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   Q3CString u = m_url.url().latin1();
+   QString u = m_url.url().latin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;

@@ -60,7 +60,7 @@ KSSLPKCS7::~KSSLPKCS7() {
 }
 
 
-KSSLPKCS7* KSSLPKCS7::fromString(QString base64) {
+KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
 #ifdef KSSL_HAVE_SSL
 KTempFile ktf;
 
@@ -78,7 +78,7 @@ return NULL;
 
 
 
-KSSLPKCS7* KSSLPKCS7::loadCertFile(QString filename) {
+KSSLPKCS7* KSSLPKCS7::loadCertFile(const QString &filename) {
 #ifdef KSSL_HAVE_SSL
 QFile qf(filename);
 PKCS7 *newpkcs = NULL;
@@ -122,7 +122,7 @@ KSSLCertChain *KSSLPKCS7::getChain() {
 }
 
 
-QString KSSLPKCS7::toString() {
+QString KSSLPKCS7::toString() const {
 QString base64;
 #ifdef KSSL_HAVE_SSL
 unsigned char *p;
@@ -143,7 +143,7 @@ return base64;
 
 
 
-bool KSSLPKCS7::toFile(QString filename) {
+bool KSSLPKCS7::toFile(const QString &filename) {
 #ifdef KSSL_HAVE_SSL
 QFile out(filename);
 
@@ -166,7 +166,7 @@ return false;
 }
 
 
-KSSLCertificate::KSSLValidation KSSLPKCS7::validate() {
+KSSLCertificate::KSSLValidation KSSLPKCS7::validate() const {
 #ifdef KSSL_HAVE_SSL
 KSSLCertificate::KSSLValidation xx = _cert->validate();
 return xx;
@@ -183,12 +183,12 @@ KSSLCertificate::KSSLValidation KSSLPKCS7::revalidate() {
 }
 
 
-bool KSSLPKCS7::isValid() {
+bool KSSLPKCS7::isValid() const {
 return (validate() == KSSLCertificate::Ok);
 }
 
 
-QString KSSLPKCS7::name() {
+QString KSSLPKCS7::name() const {
    if (_cert)
       return _cert->getSubject();
    return QString();
