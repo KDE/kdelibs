@@ -420,7 +420,7 @@ void KDirWatchPrivate::slotActivated()
       if ( path.length() && isNoisyFile( path.latin1() ) )
         continue;
 
-      kdDebug() << "ev wd: " << event->wd << " mask " << event->mask << " path: " << path << endl;
+      kdDebug(7001) << "ev wd: " << event->wd << " mask " << event->mask << " path: " << path << endl;
 
       // now we're in deep trouble of finding the
       // associated entries
@@ -433,13 +433,13 @@ void KDirWatchPrivate::slotActivated()
 
           if ( 1 || e->isDir) {
             if( event->mask & IN_DELETE_SELF) {
-              kdDebug() << "-->got deleteself signal for " << e->path << endl;
+              kdDebug(7001) << "-->got deleteself signal for " << e->path << endl;
               e->m_status = NonExistent;
               //(void) inotify_rm_watch( m_inotify_fd, e->wd );
               addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
             }
             if ( event->mask & IN_CREATE ) {
-              kdDebug() << "-->got create subfile signal for " << e->path << endl;
+              kdDebug(7001) << "-->got create subfile signal for " << e->path << endl;
 
               Entry *sub_entry = e->m_entries.first();
               for(;sub_entry; sub_entry = e->m_entries.next())
@@ -927,7 +927,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 #endif
 
 #ifdef HAVE_INOTIFY
-  kdDebug() << "inotify remove " << ( e->m_mode == INotifyMode ) << " " << ( e->m_status == Normal )  << endl;
+  kdDebug(7001) << "inotify remove " << ( e->m_mode == INotifyMode ) << " " << ( e->m_status == Normal )  << endl;
   if (e->m_mode == INotifyMode) {
     if ( e->m_status == Normal ) {
       (void) inotify_rm_watch( m_inotify_fd, e->wd );
