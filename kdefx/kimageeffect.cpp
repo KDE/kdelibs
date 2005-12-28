@@ -2783,7 +2783,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
     }
     else if(depth == 1) {
         int r = src.bitOrder() == QImage::LittleEndian;
-        memcpy(dest.colorTable(), src.colorTable(), src.numColors()*sizeof(QRgb));
+        memcpy(dest.colorTable().data(), src.colorTable().data(), src.numColors()*sizeof(QRgb));
         for(int y=0; y < h; ++y){
             unsigned char *destData = dest.scanLine(y);
             unsigned char *srcData = src.scanLine(y_offset[y]);
@@ -2798,7 +2798,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         }
     }
     else{ // PseudoClass source image
-        memcpy(dest.colorTable(), src.colorTable(), src.numColors()*sizeof(QRgb));
+        memcpy(dest.colorTable().data(), src.colorTable().data(), src.numColors()*sizeof(QRgb));
         for(int y=0; y < h; ++y){
             unsigned char *destData = dest.scanLine(y);
             unsigned char *srcData = src.scanLine(y_offset[y]);
