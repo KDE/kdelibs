@@ -7334,12 +7334,14 @@ Name[zu]=Isi-Romania
 [rom]
 Name=Romany
 Name[el]=Ρουμανία
+Name[es]=Rumaní
 Name[et]=Mustlaskeel
 Name[hu]=Lovári cigány
 Name[nds]=Roomsch
 Name[pt]=Romeno
 Name[pt_BR]=Romeno
 Name[uk]=Циганська
+Name[zh_CN]=吉普赛语
 [ru]
 Name=Russian
 Name[af]=Russies
@@ -10059,12 +10061,14 @@ Name[zh_CN]=简体中文
 [zh_HK]
 Name=Chinese (Hong Kong)
 Name[el]=Κινέζικα (Χονγκ Κονγκ)
+Name[es]=Chino (Hong Kong)
 Name[et]=Hiina (Hong Kong)
 Name[hu]=Kínai (hongkongi)
 Name[nds]=Chineessch (Hong Kong)
 Name[pt]=Chinês (Hong Kong)
 Name[pt_BR]=Chinês (Hong Kong)
 Name[uk]=Китайська (Гонконг)
+Name[zh_CN]=繁体中文(香港)
 [zh_TW]
 Name=Chinese Traditional
 Name[af]=Sjinese tradisioneel
