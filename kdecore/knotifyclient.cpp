@@ -317,7 +317,7 @@ KNotifyClient::Instance::Instance(KInstance *instance)
     instances()->push(this);
 
     KConfigGroup cg( instance->config(), "General" );
-    d->useSystemBell = cg.readBoolEntry( "UseSystemBell", false );
+    d->useSystemBell = cg.readEntry("UseSystemBell", QVariant(false )).toBool();
 }
 
 KNotifyClient::Instance::~Instance()

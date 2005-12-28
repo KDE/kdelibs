@@ -285,7 +285,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
                               "org.kde.kjas.server.KJASSecurityManager" );
     }
 
-    d->useKIO = config.readBoolEntry( "UseKio", false);
+    d->useKIO = config.readEntry("UseKio", QVariant(false)).toBool();
     if( d->useKIO )
     {
         p->setSystemProperty( "kjas.useKio", QString::null );

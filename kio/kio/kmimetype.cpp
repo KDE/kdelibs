@@ -537,7 +537,7 @@ QString KMimeType::favIconForURL( const KURL& url )
     if ( check ) {
         check = false;
         KConfigGroup cg( KGlobal::config(), "HTML Settings" );
-        useFavIcons = cg.readBoolEntry( "EnableFavicon", true );
+        useFavIcons = cg.readEntry("EnableFavicon", QVariant(true )).toBool();
     }
 
     if ( url.isLocalFile() || !url.protocol().startsWith("http")
@@ -846,7 +846,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
   }
   else
   {
-    bool ro = cfg.readBoolEntry( "ReadOnly", false );
+    bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
     QString fstype = cfg.readEntry( "FSType" );
     if ( fstype == "Default" ) // KDE-1 thing
       fstype = QString::null;
@@ -1131,7 +1131,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
         return;
       }
 
-      bool ro = cfg.readBoolEntry( "ReadOnly", false );
+      bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
       QString fstype = cfg.readEntry( "FSType" );
       if ( fstype == "Default" ) // KDE-1 thing
           fstype = QString::null;

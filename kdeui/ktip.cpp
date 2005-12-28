@@ -341,7 +341,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
 {
     KConfigGroup configGroup(KGlobal::config(), "TipOfDay");
 
-    const bool runOnStart = configGroup.readBoolEntry("RunOnStart", true);
+    const bool runOnStart = configGroup.readEntry("RunOnStart", QVariant(true)).toBool();
 
     if (!force)
     {

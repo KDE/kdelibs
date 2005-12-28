@@ -89,7 +89,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QLatin1String("RecentDocuments"));
-    bool useRecent = config->readBoolEntry(QLatin1String("UseRecent"), true);
+    bool useRecent = config->readEntry(QLatin1String("UseRecent"), QVariant(true)).toBool();
     int maxEntries = config->readNumEntry(QLatin1String("MaxEntries"), 10);
 
     config->setGroup(oldGrp);

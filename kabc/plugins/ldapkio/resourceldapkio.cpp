@@ -95,7 +95,7 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     d->mSizeLimit = config->readNumEntry( "LdapSizeLimit", 0 );
     d->mRDNPrefix = config->readNumEntry( "LdapRDNPrefix", 0 );
     d->mCachePolicy = config->readNumEntry( "LdapCachePolicy", 0 );
-    d->mAutoCache = config->readBoolEntry( "LdapAutoCache", true );
+    d->mAutoCache = config->readEntry("LdapAutoCache", QVariant(true )).toBool();
   } else {
     mPort = 389;
     mAnonymous = true;

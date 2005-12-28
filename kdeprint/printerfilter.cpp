@@ -46,7 +46,7 @@ void PrinterFilter::update()
 	// so this option is retrieve from the application config file
 	conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
-	m_enabled = conf->readBoolEntry("FilterEnabled", false);
+	m_enabled = conf->readEntry("FilterEnabled", QVariant(false)).toBool();
 }
 
 void PrinterFilter::setEnabled(bool on)

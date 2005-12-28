@@ -1663,7 +1663,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     toggleBookmarks( kc->readBoolEntry(ShowBookmarks, false) );
 
     // does the user want Automatically Select Extension?
-    d->autoSelectExtChecked = kc->readBoolEntry (AutoSelectExtChecked, DefaultAutoSelectExtChecked);
+    d->autoSelectExtChecked = kc->readEntry (AutoSelectExtChecked, QVariant(DefaultAutoSelectExtChecked)).toBool();
     updateAutoSelectExtension ();
 
     int w1 = minimumSize().width();

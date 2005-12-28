@@ -2856,7 +2856,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   config.setDesktopGroup();
   QString deviceStr = config.readEntry( "Dev" );
   QString mountPointStr = config.readEntry( "MountPoint" );
-  bool ro = config.readBoolEntry( "ReadOnly", false );
+  bool ro = config.readEntry("ReadOnly", QVariant(false )).toBool();
   QString unmountedStr = config.readEntry( "UnmountIcon" );
 
   fileSystem->setText( i18n(config.readEntry("FSType").toLocal8Bit()) );
@@ -3078,9 +3078,9 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   m_suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
   m_suidUserStr = config.readEntry( "X-KDE-Username" );
   if( config.hasKey( "StartupNotify" ))
-    m_startupBool = config.readBoolEntry( "StartupNotify", true );
+    m_startupBool = config.readEntry("StartupNotify", QVariant(true )).toBool();
   else
-    m_startupBool = config.readBoolEntry( "X-KDE-StartupNotify", true );
+    m_startupBool = config.readEntry("X-KDE-StartupNotify", QVariant(true )).toBool();
   m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").toLower();
 
   QStringList mimeTypes = config.readListEntry( "MimeType", ';' );

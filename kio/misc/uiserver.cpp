@@ -533,10 +533,10 @@ void ListProgress::readSettings() {
      if (m_lpcc[i].width==0) m_lpcc[i].width=defaultColumnWidth[i];
 
      tmps="Enabled"+QString::number(i);
-     m_lpcc[i].enabled=config.readBoolEntry(tmps,true);
+     m_lpcc[i].enabled=config.readEntry(tmps, QVariant(true)).toBool();
   }
-  m_showHeader=config.readBoolEntry("ShowListHeader",true);
-  m_fixedColumnWidths=config.readBoolEntry("FixedColumnWidths",false);
+  m_showHeader=config.readEntry("ShowListHeader", QVariant(true)).toBool();
+  m_fixedColumnWidths=config.readEntry("FixedColumnWidths", QVariant(false)).toBool();
 
   m_lpcc[TB_RESUME].enabled=false;
 }
@@ -1292,13 +1292,13 @@ int UIServer::open_SkipDlg( int id,
 void UIServer::readSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
-  m_showStatusBar=config.readBoolEntry("ShowStatusBar",false);
-  m_showToolBar=config.readBoolEntry("ShowToolBar",true);
-  m_keepListOpen=config.readBoolEntry("KeepListOpen",false);
+  m_showStatusBar=config.readEntry("ShowStatusBar", QVariant(false)).toBool();
+  m_showToolBar=config.readEntry("ShowToolBar", QVariant(true)).toBool();
+  m_keepListOpen=config.readEntry("KeepListOpen", QVariant(false)).toBool();
   m_initWidth=config.readNumEntry("InitialWidth",460);
   m_initHeight=config.readNumEntry("InitialHeight",150);
-  m_bShowList = config.readBoolEntry( "ShowList", false );
-  m_showSystemTray=config.readBoolEntry("ShowSystemTray", false);
+  m_bShowList = config.readEntry("ShowList", QVariant(false )).toBool();
+  m_showSystemTray=config.readEntry("ShowSystemTray", QVariant(false)).toBool();
 }
 
 void UIServer::writeSettings() {

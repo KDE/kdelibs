@@ -374,7 +374,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
       return false;       // error emitted by ftpLogin
   }
 
-  m_bTextMode = config()->readBoolEntry("textmode", false);
+  m_bTextMode = config()->readEntry("textmode", QVariant(false)).toBool();
   connected();
   return true;
 }
@@ -495,7 +495,7 @@ bool Ftp::ftpLogin()
       info.keepPassword = true; // Prompt the user for persistence as well.
       info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
-      bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+      bool disablePassDlg = config()->readEntry( "DisablePassDlg", QVariant(false )).toBool();
       if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
       {
         error( ERR_USER_CANCELED, m_host );
@@ -1936,7 +1936,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KURL& dest_url,
   if (m_user.isEmpty () || m_user == FTP_LOGIN)
     bMarkPartial = false;
   else
-    bMarkPartial = config()->readBoolEntry("MarkPartial", true);
+    bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
 
   QString dest_orig = dest_url.path();
   QString dest_part( dest_orig );
@@ -2289,7 +2289,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
   QByteArray sPart = QFile::encodeName(sCopyFile + ".part");
   bool bResume = false;
   bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
-  bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
+  bool bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
   if(bMarkPartial && bPartExists && buff.st_size > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
     if(S_ISDIR(buff.st_mode))

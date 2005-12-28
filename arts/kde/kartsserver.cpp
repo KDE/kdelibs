@@ -64,8 +64,8 @@ Arts::SoundServerV2 KArtsServer::server(void)
 
 	config.setGroup("Arts");
 
-	bool rt = config.readBoolEntry("StartRealtime", false);
-	bool x11Comm = config.readBoolEntry("X11GlobalComm", false);
+	bool rt = config.readEntry("StartRealtime", QVariant(false)).toBool();
+	bool x11Comm = config.readEntry("X11GlobalComm", QVariant(false)).toBool();
 
 	// put the value of x11Comm into .mcoprc
 	KSimpleConfig X11CommConfig(QDir::homePath()+"/.mcoprc");

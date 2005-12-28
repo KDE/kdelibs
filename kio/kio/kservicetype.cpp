@@ -68,7 +68,7 @@ KServiceType::init( KDesktopFile *config)
   }
 
   m_strComment = config->readComment();
-  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_bDeleted = config->readEntry("Hidden", QVariant(false )).toBool();
   m_strIcon = config->readIcon();
 
   // We store this as property to preserve BC, we can't change that

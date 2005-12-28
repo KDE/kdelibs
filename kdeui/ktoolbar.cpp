@@ -1470,8 +1470,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         KConfigGroup cg(gconfig, grpToolbar);
 
         // first, get the generic settings
-        highlight   = cg.readBoolEntry(attrHighlight, true);
-        transparent = cg.readBoolEntry(attrTrans, true);
+        highlight   = cg.readEntry(attrHighlight, QVariant(true)).toBool();
+        transparent = cg.readEntry(attrTrans, QVariant(true)).toBool();
 
         // we read in the IconText property *only* if we intend on actually
         // honoring it
@@ -1491,8 +1491,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             config->setGroup(configGroup);
 
             // first, get the generic settings
-            highlight   = config->readBoolEntry(attrHighlight, highlight);
-            transparent = config->readBoolEntry(attrTrans, transparent);
+            highlight   = config->readEntry(attrHighlight, QVariant(highlight)).toBool();
+            transparent = config->readEntry(attrTrans, QVariant(transparent)).toBool();
 
             // read in the IconText property
             if ( config->hasKey( attrIconText ) ) {
@@ -1593,8 +1593,8 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         QString position = cg.readEntry(attrPosition, d->PositionDefault);
         int index = cg.readNumEntry(attrIndex, -1);
         int offset = cg.readNumEntry(attrOffset, d->OffsetDefault);
-        bool newLine = cg.readBoolEntry(attrNewLine, d->NewLineDefault);
-        bool hidden = cg.readBoolEntry(attrHidden, d->HiddenDefault);
+        bool newLine = cg.readEntry(attrNewLine, QVariant(d->NewLineDefault)).toBool();
+        bool hidden = cg.readEntry(attrHidden, QVariant(d->HiddenDefault)).toBool();
 
         Qt::ToolBarDock pos(Qt::DockTop);
         if ( position == "Top" )

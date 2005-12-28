@@ -147,7 +147,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         hbox = new KHBox( main );
         d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
         d->keepCheckBox->setFixedSize( d->keepCheckBox->sizeHint() );
-        d->keep = cg.readBoolEntry("Keep", false );
+        d->keep = cg.readEntry("Keep", QVariant(false )).toBool();
         d->keepCheckBox->setChecked( d->keep );
         connect(d->keepCheckBox, SIGNAL(toggled( bool )), SLOT(slotKeep( bool )));
         d->layout->addWidget( hbox, 8, 2 );

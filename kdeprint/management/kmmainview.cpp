@@ -148,13 +148,13 @@ void KMMainView::restoreSettings()
 	conf->setGroup("General");
 	setViewType((KMPrinterView::ViewType)conf->readNumEntry("ViewType",KMPrinterView::Icons));
 	setOrientation(conf->readNumEntry("Orientation", Qt::Vertical));
-	bool 	view = conf->readBoolEntry("ViewToolBar",false);
+	bool 	view = conf->readEntry("ViewToolBar", QVariant(false)).toBool();
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
-	view = conf->readBoolEntry( "ViewMenuBar", true );
+	view = conf->readEntry("ViewMenuBar", QVariant(true )).toBool();
 	slotToggleMenuBar( view );
 	static_cast<KToggleAction*>( m_actions->action( "view_menubar" ) )->setChecked( view );
-	view = conf->readBoolEntry("ViewPrinterInfos",true);
+	view = conf->readEntry("ViewPrinterInfos", QVariant(true)).toBool();
 	slotShowPrinterInfos(view);
 	((KToggleAction*)m_actions->action("view_printerinfos"))->setChecked(view);
 }

@@ -262,13 +262,13 @@ void HTTPProtocol::resetSessionSettings()
                                             " Realm: " << m_strProxyRealm << endl;
   }
 
-  m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", false);
+  m_bPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", QVariant(false)).toBool();
   kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
                 << m_bPersistentProxyConnection << endl;
 
   m_request.bUseCookiejar = config()->readBoolEntry("Cookies");
-  m_request.bUseCache = config()->readBoolEntry("UseCache", true);
-  m_request.bErrorPage = config()->readBoolEntry("errorPage", true);
+  m_request.bUseCache = config()->readEntry("UseCache", QVariant(true)).toBool();
+  m_request.bErrorPage = config()->readEntry("errorPage", QVariant(true)).toBool();
   m_request.bNoAuth = config()->readBoolEntry("no-auth");
   m_strCacheDir = config()->readPathEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
@@ -326,8 +326,8 @@ void HTTPProtocol::resetSessionSettings()
   else
      m_request.offset = 0;
 
-  m_request.disablePassDlg = config()->readBoolEntry("DisablePassDlg", false);
-  m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
+  m_request.disablePassDlg = config()->readEntry("DisablePassDlg", QVariant(false)).toBool();
+  m_request.allowCompressedPage = config()->readEntry("AllowCompressedPage", QVariant(true)).toBool();
   m_request.id = metaData("request-id");
 
   // Store user agent for this host.

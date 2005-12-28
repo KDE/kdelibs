@@ -41,7 +41,7 @@ KContextMenuManager::KContextMenuManager( QObject* parent )
     config->setGroup( QLatin1String("Shortcuts") ) ;
     menuKey = KShortcut( config->readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
     config->setGroup( QLatin1String("ContextMenus") ) ;
-    showOnPress = config->readBoolEntry(QLatin1String("ShowOnPress"), true );
+    showOnPress = config->readEntry(QLatin1String("ShowOnPress"), QVariant(true )).toBool();
     config->setGroup( oldgroup );
 }
 

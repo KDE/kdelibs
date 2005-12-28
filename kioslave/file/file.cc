@@ -372,7 +372,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     KDE_struct_stat buff_orig;
     bool bOrigExists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
     bool bPartExists = false;
-    bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
+    bool bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
 
     if (bMarkPartial)
     {

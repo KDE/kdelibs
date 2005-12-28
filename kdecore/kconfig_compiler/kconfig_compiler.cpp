@@ -1006,9 +1006,9 @@ int main( int argc, char **argv )
   QString inherits = codegenConfig.readEntry("Inherits");
   QString visibility = codegenConfig.readEntry("Visibility");
   if (!visibility.isEmpty()) visibility+=" ";
-  bool singleton = codegenConfig.readBoolEntry("Singleton", false);
+  bool singleton = codegenConfig.readEntry("Singleton", QVariant(false)).toBool();
   bool staticAccessors = singleton;
-  //bool useDPointer = codegenConfig.readBoolEntry("DPointer", false);
+  //bool useDPointer = codegenConfig.readEntry("DPointer", QVariant(false)).toBool();
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
@@ -1016,10 +1016,10 @@ int main( int argc, char **argv )
   bool allMutators = false;
   if ((mutators.count() == 1) && (mutators[0].toLower() == "true"))
      allMutators = true;
-  itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
-  bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
+  itemAccessors = codegenConfig.readEntry("ItemAccessors", QVariant(false )).toBool();
+  bool setUserTexts = codegenConfig.readEntry("SetUserTexts", QVariant(false )).toBool();
 
-  globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
+  globalEnums = codegenConfig.readEntry("GlobalEnums", QVariant(false )).toBool();
 
   dpointer = (memberVariables == "dpointer");
 

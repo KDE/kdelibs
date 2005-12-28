@@ -172,7 +172,7 @@ void Kded::initModules()
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readBoolEntry("autoload", autoload);
+         autoload = config->readEntry("autoload", QVariant(autoload)).toBool();
          if (autoload && kde_running)
             loadModule(service, false);
 
@@ -846,7 +846,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (args->isSet("check"))
      {
         config->setGroup("General");
-        checkStamps = config->readBoolEntry("CheckFileStamps", true);
+        checkStamps = config->readEntry("CheckFileStamps", QVariant(true)).toBool();
         runBuildSycoca();
         runKonfUpdate();
         exit(0);
@@ -862,11 +862,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      config->setGroup("General");
      int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
-     bool bCheckSycoca = config->readBoolEntry("CheckSycoca", true);
-     bool bCheckUpdates = config->readBoolEntry("CheckUpdates", true);
-     bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
-     checkStamps = config->readBoolEntry("CheckFileStamps", true);
-     delayedCheck = config->readBoolEntry("DelayedCheck", false);
+     bool bCheckSycoca = config->readEntry("CheckSycoca", QVariant(true)).toBool();
+     bool bCheckUpdates = config->readEntry("CheckUpdates", QVariant(true)).toBool();
+     bool bCheckHostname = config->readEntry("CheckHostname", QVariant(true)).toBool();
+     checkStamps = config->readEntry("CheckFileStamps", QVariant(true)).toBool();
+     delayedCheck = config->readEntry("DelayedCheck", QVariant(false)).toBool();
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 

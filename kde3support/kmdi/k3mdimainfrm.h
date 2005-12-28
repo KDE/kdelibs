@@ -171,7 +171,7 @@ public:
  *    }
  *
  *    // restore a possible maximized Childframe mode
- *    bool maxChildFrmMode = config->readBoolEntry( "mainmodule session", "maximized childframes", true);
+ *    bool maxChildFrmMode = config->readEntry("mainmodule session", "maximized childframes", QVariant(true)).toBool();
  *    mainframe->setEnableMaximizedChildFrmMode(maxChildFrmMode);
  * \endcode
  * The maximized-Childframe mode means that currently all views are maximized in Childframe mode's application desktop.

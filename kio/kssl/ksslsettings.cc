@@ -171,19 +171,19 @@ void KSSLSettings::load() {
 	m_cfg->reparseConfiguration();
 
 	m_cfg->setGroup("Warnings");
-	m_bWarnOnEnter = m_cfg->readBoolEntry("OnEnter", false);
-	m_bWarnOnLeave = m_cfg->readBoolEntry("OnLeave", true);
-	m_bWarnOnUnencrypted = m_cfg->readBoolEntry("OnUnencrypted", true);
-	m_bWarnOnMixed = m_cfg->readBoolEntry("OnMixed", true);
+	m_bWarnOnEnter = m_cfg->readEntry("OnEnter", QVariant(false)).toBool();
+	m_bWarnOnLeave = m_cfg->readEntry("OnLeave", QVariant(true)).toBool();
+	m_bWarnOnUnencrypted = m_cfg->readEntry("OnUnencrypted", QVariant(true)).toBool();
+	m_bWarnOnMixed = m_cfg->readEntry("OnMixed", QVariant(true)).toBool();
 
 	m_cfg->setGroup("Validation");
-	m_bWarnSelfSigned = m_cfg->readBoolEntry("WarnSelfSigned", true);
-	m_bWarnExpired = m_cfg->readBoolEntry("WarnExpired", true);
-	m_bWarnRevoked = m_cfg->readBoolEntry("WarnRevoked", true);
+	m_bWarnSelfSigned = m_cfg->readEntry("WarnSelfSigned", QVariant(true)).toBool();
+	m_bWarnExpired = m_cfg->readEntry("WarnExpired", QVariant(true)).toBool();
+	m_bWarnRevoked = m_cfg->readEntry("WarnRevoked", QVariant(true)).toBool();
 
 	m_cfg->setGroup("EGD");
-	d->m_bUseEGD = m_cfg->readBoolEntry("UseEGD", false);
-	d->m_bUseEFile = m_cfg->readBoolEntry("UseEFile", false);
+	d->m_bUseEGD = m_cfg->readEntry("UseEGD", QVariant(false)).toBool();
+	d->m_bUseEFile = m_cfg->readEntry("UseEFile", QVariant(false)).toBool();
 	d->m_EGDPath = m_cfg->readPathEntry("EGDPath");
 
 	m_cfg->setGroup("Auth");

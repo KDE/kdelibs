@@ -87,7 +87,7 @@ void AddresseeHelper::initSettings()
   addToSet( config.readListEntry( "Prefixes" ),   mTitles );
   addToSet( config.readListEntry( "Inclusions" ), mPrefixes );
   addToSet( config.readListEntry( "Suffixes" ),   mSuffixes );
-  mTradeAsFamilyName = config.readBoolEntry( "TradeAsFamilyName", true );
+  mTradeAsFamilyName = config.readEntry("TradeAsFamilyName", QVariant(true )).toBool();
 }
 
 bool AddresseeHelper::containsTitle( const QString& title ) const

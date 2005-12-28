@@ -1514,9 +1514,9 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
 
     _config->setGroup("Cookie Policy");
     QStringList domainSettings = _config->readListEntry("CookieDomainAdvice");
-    m_rejectCrossDomainCookies = _config->readBoolEntry( "RejectCrossDomainCookies", true );
-    m_autoAcceptSessionCookies = _config->readBoolEntry( "AcceptSessionCookies", true );
-    m_ignoreCookieExpirationDate = _config->readBoolEntry( "IgnoreExpirationDate", false );
+    m_rejectCrossDomainCookies = _config->readEntry("RejectCrossDomainCookies", QVariant(true )).toBool();
+    m_autoAcceptSessionCookies = _config->readEntry("AcceptSessionCookies", QVariant(true )).toBool();
+    m_ignoreCookieExpirationDate = _config->readEntry("IgnoreExpirationDate", QVariant(false )).toBool();
     QString value = _config->readEntry("CookieGlobalAdvice", L1("Ask"));
     m_globalAdvice = strToAdvice(value);
 

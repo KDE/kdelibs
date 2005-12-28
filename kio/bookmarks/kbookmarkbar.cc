@@ -219,7 +219,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
             // this flag doesn't have any UI yet
             KGlobal::config()->setGroup( "Settings" );
-            bool addEntriesBookmarkBar = KGlobal::config()->readBoolEntry("AddEntriesBookmarkBar",true);
+            bool addEntriesBookmarkBar = KGlobal::config()->readEntry("AddEntriesBookmarkBar", QVariant(true)).toBool();
 
             KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->popupMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,

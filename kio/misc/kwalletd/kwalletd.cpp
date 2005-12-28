@@ -1237,13 +1237,13 @@ void KWalletD::emitWalletListDirty() {
 void KWalletD::reconfigure() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
-	_firstUse = cfg.readBoolEntry("First Use", true);
-	_enabled = cfg.readBoolEntry("Enabled", true);
-	_launchManager = cfg.readBoolEntry("Launch Manager", true);
-	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
+	_firstUse = cfg.readEntry("First Use", QVariant(true)).toBool();
+	_enabled = cfg.readEntry("Enabled", QVariant(true)).toBool();
+	_launchManager = cfg.readEntry("Launch Manager", QVariant(true)).toBool();
+	_leaveOpen = cfg.readEntry("Leave Open", QVariant(false)).toBool();
 	bool idleSave = _closeIdle;
-	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
-	_openPrompt = cfg.readBoolEntry("Prompt on Open", true);
+	_closeIdle = cfg.readEntry("Close When Idle", QVariant(false)).toBool();
+	_openPrompt = cfg.readEntry("Prompt on Open", QVariant(true)).toBool();
 	int timeSave = _idleTime;
 	// in minutes!
 	_idleTime = cfg.readNumEntry("Idle Timeout", 10) * 60 * 1000;

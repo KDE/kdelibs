@@ -95,7 +95,7 @@ KService::init( const KDesktopFile *config )
   entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
   entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
 
-  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_bDeleted = config->readEntry("Hidden", QVariant(false )).toBool();
   entryMap.remove("Hidden");
   if (m_bDeleted)
   {
@@ -230,7 +230,7 @@ KService::init( const KDesktopFile *config )
 
   m_strDesktopEntryName = _name.toLower();
 
-  m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
+  m_bAllowAsDefault = config->readEntry("AllowDefault", QVariant(true )).toBool();
   entryMap.remove("AllowDefault");
 
   m_initialPreference = config->readNumEntry( "InitialPreference", 1 );
