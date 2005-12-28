@@ -191,7 +191,7 @@ public:
   virtual void slave_status();
 
   virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode, bool _overwrite,
+  virtual void put( const KURL& url, int _mode, bool overwrite,
                     bool _resume );
 
 //----------------- Re-implemented methods for WebDAV -----------
