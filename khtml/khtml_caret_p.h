@@ -23,7 +23,6 @@
 
 #include "rendering/render_table.h"
 
-#include <q3valuevector.h>
 
 #define DEBUG_CARETMODE 0
 

@@ -24,7 +24,6 @@
 #define _CSS_cssstyleselector_h_
 
 #include <q3ptrlist.h>
-#include <q3valuevector.h>
 #include <Q3MemArray>
 
 #include "rendering/render_style.h"

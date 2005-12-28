@@ -30,7 +30,6 @@
 #include "rendering/render_block.h"
 #include "xml/dom_docimpl.h"
 
-#include <q3valuevector.h>
 
 using namespace khtml;
 

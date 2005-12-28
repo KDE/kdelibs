@@ -27,7 +27,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qregexp.h>
-#include <q3valuevector.h>
 #include <kmessagebox.h>
 
 /**
