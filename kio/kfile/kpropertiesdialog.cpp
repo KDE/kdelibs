@@ -2660,7 +2660,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
     mimeEdit->setText( m_sMimeStr );
   cbAutoEmbed->setTristate();
   if ( config.hasKey( "X-KDE-AutoEmbed" ) )
-      cbAutoEmbed->setChecked( config.readBoolEntry( "X-KDE-AutoEmbed" ) );
+      cbAutoEmbed->setChecked( config.readEntry( "X-KDE-AutoEmbed" , QVariant(false)).toBool() );
   else
       cbAutoEmbed->setNoChange();
 

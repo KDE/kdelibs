@@ -279,7 +279,7 @@ void HTTPProtocol::resetSessionSettings()
                 << metaData ("ssl_was_in_use") << endl;
 
   m_request.referrer = QString::null;
-  if ( config()->readBoolEntry("SendReferrer", true) &&
+  if ( config()->readEntry("SendReferrer", QVariant(true)).toBool() &&
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
   {
@@ -304,7 +304,7 @@ void HTTPProtocol::resetSessionSettings()
      }
   }
 
-  if ( config()->readBoolEntry("SendLanguageSettings", true) )
+  if ( config()->readEntry("SendLanguageSettings", QVariant(true)).toBool() )
   {
       m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
 
@@ -331,7 +331,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.id = metaData("request-id");
 
   // Store user agent for this host.
-  if ( config()->readBoolEntry("SendUserAgent", true) )
+  if ( config()->readEntry("SendUserAgent", QVariant(true)).toBool() )
      m_request.userAgent = metaData("UserAgent");
   else
      m_request.userAgent = QString::null;
@@ -2559,7 +2559,7 @@ bool HTTPProtocol::httpOpen()
 void HTTPProtocol::forwardHttpResponseHeader()
 {
   // Send the response header if it was requested
-  if ( config()->readBoolEntry("PropagateHttpHeader", false) )
+  if ( config()->readEntry("PropagateHttpHeader", QVariant(false)).toBool() )
   {
     setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
     sendMetaData();

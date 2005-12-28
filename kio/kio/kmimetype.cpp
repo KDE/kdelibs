@@ -382,11 +382,11 @@ void KMimeType::init( KDesktopFile * config )
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
   if ( config->hasKey( XKDEAutoEmbed ) )
-    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ), 0 ) );
+    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readEntry( XKDEAutoEmbed , QVariant(false)).toBool(), 0 ) );
 
   QString XKDEText = QLatin1String("X-KDE-text");
   if ( config->hasKey( XKDEText ) )
-    m_mapProps.insert( XKDEText, config->readBoolEntry( XKDEText ) );
+    m_mapProps.insert( XKDEText, config->readEntry( XKDEText , QVariant(false)).toBool() );
 
   QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) ) {
@@ -735,7 +735,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
               // So instead kio_trash leaves an entry in its config file for us.
               KSimpleConfig trashConfig( "trashrc", true );
               trashConfig.setGroup( "Status" );
-              if ( trashConfig.readBoolEntry( "Empty", true ) ) {
+              if ( trashConfig.readEntry( "Empty", QVariant(true )).toBool() ) {
                   return emptyIcon;
               }
           }

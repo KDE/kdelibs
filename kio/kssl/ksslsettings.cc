@@ -129,7 +129,7 @@ QString KSSLSettings::getCipherList() {
 		tcipher.sprintf("cipher_%s", sc->name);
 		int bits = d->kossl->SSL_CIPHER_get_bits(sc, 0L);
 
-		if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
+		if (m_cfg->readEntry(tcipher, QVariant(bits >= 56)).toBool()) {
 			CipherNode *xx = new CipherNode(sc->name,bits);
 			if (!cipherSort.contains(xx)) {
 				cipherSort.prepend(xx);

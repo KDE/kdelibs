@@ -1248,7 +1248,7 @@ void KWalletD::reconfigure() {
 	// in minutes!
 	_idleTime = cfg.readNumEntry("Idle Timeout", 10) * 60 * 1000;
 
-	if (cfg.readBoolEntry("Close on Screensaver", false)) {
+	if (cfg.readEntry("Close on Screensaver", QVariant(false)).toBool()) {
 		connectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()", false);
 	} else {
 		disconnectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()");

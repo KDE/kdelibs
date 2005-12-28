@@ -1655,10 +1655,10 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
         locationEdit->setCompletionMode( cm );
 
     // show or don't show the speedbar
-    toggleSpeedbar( kc->readBoolEntry(ShowSpeedbar, true) );
+    toggleSpeedbar( kc->readEntry(ShowSpeedbar, QVariant(true)).toBool() );
 
     // show or don't show the bookmarks
-    toggleBookmarks( kc->readBoolEntry(ShowBookmarks, false) );
+    toggleBookmarks( kc->readEntry(ShowBookmarks, QVariant(false)).toBool() );
 
     // does the user want Automatically Select Extension?
     d->autoSelectExtChecked = kc->readEntry (AutoSelectExtChecked, QVariant(DefaultAutoSelectExtChecked)).toBool();

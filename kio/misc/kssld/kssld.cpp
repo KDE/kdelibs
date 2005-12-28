@@ -72,7 +72,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		cfg->setGroup(*i);
 
 		// remove it if it has expired
-		if (!cfg->readBoolEntry("Permanent") && cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
+		if (!cfg->readEntry("Permanent", QVariant(false)).toBool() && cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
 		}
@@ -236,7 +236,7 @@ QStringList groups = cfg->groupList();
 		cfg->setGroup(*i);
 
 		// remove it if it has expired
-		if (!cfg->readBoolEntry("Permanent") &&
+		if (!cfg->readEntry("Permanent", QVariant(false)).toBool() &&
 			cfg->readDateTimeEntry("Expires") <
 				QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
@@ -642,7 +642,7 @@ QStringList x = cfg.groupList();
 
 		cfg.setGroup(*i);
 
-		if (!cfg.readBoolEntry("site", false)) continue;
+		if (!cfg.readEntry("site", QVariant(false)).toBool()) continue;
 
 		QString cert = cfg.readEntry("x509", "");
 		if (cert.length() <= 0) continue;
@@ -773,7 +773,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readBoolEntry("site", false);
+return cfg.readEntry("site", QVariant(false)).toBool();
 }
 
 
@@ -785,7 +785,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readBoolEntry("email", false);
+return cfg.readEntry("email", QVariant(false)).toBool();
 }
 
 
@@ -797,7 +797,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readBoolEntry("code", false);
+return cfg.readEntry("code", QVariant(false)).toBool();
 }
 
 

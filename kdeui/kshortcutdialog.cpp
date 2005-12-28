@@ -120,7 +120,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 	setShortcut( shortcut );
 	resize( 0, 0 );
 
-	s_showMore = KConfigGroup(KGlobal::config(), "General").readBoolEntry("ShowAlternativeShortcutConfig", s_showMore);
+	s_showMore = KConfigGroup(KGlobal::config(), "General").readEntry("ShowAlternativeShortcutConfig", QVariant(s_showMore)).toBool();
 	updateDetails();
 
 	#ifdef Q_WS_X11

@@ -440,7 +440,7 @@ bool Ftp::ftpLogin()
   QString user = m_user;
   QString pass = m_pass;
 
-  if ( config()->readBoolEntry("EnableAutoLogin") )
+  if ( config()->readEntry("EnableAutoLogin", QVariant(false)).toBool() )
   {
     QString au = config()->readEntry("autoLoginUser");
     if ( !au.isEmpty() )
@@ -575,7 +575,7 @@ bool Ftp::ftpLogin()
   else
     kdWarning(7102) << "syst failed" << endl;
 
-  if ( config()->readBoolEntry ("EnableAutoLoginMacro") )
+  if ( config()->readEntry ("EnableAutoLoginMacro", QVariant(false)).toBool() )
     ftpAutoLoginMacro ();
 
   // Get the current working directory
@@ -852,7 +852,7 @@ int Ftp::ftpOpenDataConnection()
   int  iErrCodePASV = 0;  // Remember error code from PASV
 
   // First try passive (EPSV & PASV) modes
-  if( !config()->readBoolEntry("DisablePassiveMode", false) )
+  if( !config()->readEntry("DisablePassiveMode", QVariant(false)).toBool() )
   {
     iErrCode = ftpOpenPASVDataConnection();
     if(iErrCode == 0)
@@ -860,7 +860,7 @@ int Ftp::ftpOpenDataConnection()
     iErrCodePASV = iErrCode;
     ftpCloseDataConnection();
 
-    if( !config()->readBoolEntry("DisableEPSV", false) )
+    if( !config()->readEntry("DisableEPSV", QVariant(false)).toBool() )
     {
       iErrCode = ftpOpenEPSVDataConnection();
       if(iErrCode == 0)

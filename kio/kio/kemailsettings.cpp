@@ -53,7 +53,7 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 			break;
 		}
 		case ClientTerminal: {
-			return ((p->m_pConfig->readBoolEntry("TerminalClient")) ? QString("true") : QString("false") );
+			return ((p->m_pConfig->readEntry("TerminalClient", QVariant(false)).toBool()) ? QString("true") : QString("false") );
 			break;
 		}
 		case RealName: {
@@ -93,7 +93,7 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 			break;
 		}
 		case OutServerTLS: {
-			return ((p->m_pConfig->readBoolEntry("OutgoingServerTLS")) ? QString("true") : QString("false") );
+			return ((p->m_pConfig->readEntry("OutgoingServerTLS", QVariant(false)).toBool()) ? QString("true") : QString("false") );
 			break;
 		}
 		case InServer: {
@@ -117,7 +117,7 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 			break;
 		}
 		case InServerTLS: {
-			return ((p->m_pConfig->readBoolEntry("IncomingServerTLS")) ? QString("true") : QString("false") );
+			return ((p->m_pConfig->readEntry("IncomingServerTLS", QVariant(false)).toBool()) ? QString("true") : QString("false") );
 			break;
 		}
 	};

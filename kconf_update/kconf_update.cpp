@@ -145,7 +145,7 @@ KonfUpdate::KonfUpdate()
    }
    else
    {
-      if (config->readBoolEntry("autoUpdateDisabled", false))
+      if (config->readEntry("autoUpdateDisabled", QVariant(false)).toBool())
          return;
       updateFiles = findUpdateFiles(true);
       updateAll = true;
@@ -160,7 +160,7 @@ KonfUpdate::KonfUpdate()
    }
 
    config->setGroup(QString::null);
-   if (updateAll && !config->readBoolEntry("updateInfoAdded", false))
+   if (updateAll && !config->readEntry("updateInfoAdded", QVariant(false)).toBool())
    {
        config->writeEntry("updateInfoAdded", true);
        updateFiles = findUpdateFiles(false);

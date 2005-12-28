@@ -1048,7 +1048,7 @@ void KApplication::dcopFailure(const QString &msg)
   {
 #ifdef Q_WS_WIN
      KGlobal::config()->setGroup("General");
-     if (KGlobal::config()->readBoolEntry("ignoreDCOPFailures", false))
+     if (KGlobal::config()->readEntry("ignoreDCOPFailures", QVariant(false)).toBool())
          return;
 #endif
      QString msgStr(i18n("There was an error setting up inter-process "
@@ -1580,7 +1580,7 @@ void KApplication::kdisplaySetPalette()
     {
         KConfigGroup cg( KGlobal::config(), "General" );
         bool do_not_set_palette = false;
-        if(cg.readBoolEntry("nopaletteChange", &do_not_set_palette))
+        if(cg.readEntry("nopaletteChange", QVariant(&do_not_set_palette)).toBool())
             return;
     }
 #endif

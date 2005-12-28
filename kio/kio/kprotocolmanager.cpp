@@ -153,7 +153,7 @@ bool KProtocolManager::useReverseProxy()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readBoolEntry("ReversedException", false);
+  return cfg->readEntry("ReversedException", QVariant(false)).toBool();
 }
 
 KProtocolManager::ProxyType KProtocolManager::proxyType()
@@ -175,7 +175,7 @@ KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
 bool KProtocolManager::useCache()
 {
   KConfig *cfg = http_config();
-  return cfg->readBoolEntry( "UseCache", true );
+  return cfg->readEntry( "UseCache", QVariant(true )).toBool();
 }
 
 KIO::CacheControl KProtocolManager::cacheControl()
@@ -491,7 +491,7 @@ bool KProtocolManager::markPartial()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "MarkPartial", true );
+  return cfg->readEntry( "MarkPartial", QVariant(true )).toBool();
 }
 
 int KProtocolManager::minimumKeepSize()
@@ -506,21 +506,21 @@ bool KProtocolManager::autoResume()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "AutoResume", false );
+  return cfg->readEntry( "AutoResume", QVariant(false )).toBool();
 }
 
 bool KProtocolManager::persistentConnections()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "PersistentConnections", true );
+  return cfg->readEntry( "PersistentConnections", QVariant(true )).toBool();
 }
 
 bool KProtocolManager::persistentProxyConnection()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "PersistentProxyConnection", false );
+  return cfg->readEntry( "PersistentProxyConnection", QVariant(false )).toBool();
 }
 
 QString KProtocolManager::proxyConfigScript()

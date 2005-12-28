@@ -4679,7 +4679,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
           QString grpNotifMsgs = QLatin1String("Notification Messages");
           KConfigGroup cg( KGlobal::config(), grpNotifMsgs );
 
-          if (!cg.readBoolEntry("WarnOnUnencryptedForm", true)) {
+          if (!cg.readEntry("WarnOnUnencryptedForm", QVariant(true)).toBool()) {
             cg.deleteEntry("WarnOnUnencryptedForm");
             cg.sync();
             kss.setWarnOnUnencrypted(false);
