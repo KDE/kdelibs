@@ -197,21 +197,21 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
   // The setting for Java
   QString key = javaPrefix + QLatin1String("EnableJava");
   if ( (global && reset) || config->hasKey( key ) )
-    pd_settings.m_bEnableJava = config->readBoolEntry( key, false );
+    pd_settings.m_bEnableJava = qvariant_cast<bool>(config->readEntry( key, QVariant(false) ));
   else if ( !global )
     pd_settings.m_bEnableJava = d->global.m_bEnableJava;
 
   // The setting for Plugins
   key = pluginsPrefix + QLatin1String("EnablePlugins");
   if ( (global && reset) || config->hasKey( key ) )
-    pd_settings.m_bEnablePlugins = config->readBoolEntry( key, true );
+    pd_settings.m_bEnablePlugins = qvariant_cast<bool>(config->readEntry( key, QVariant(true) ));
   else if ( !global )
     pd_settings.m_bEnablePlugins = d->global.m_bEnablePlugins;
 
   // The setting for JavaScript
   key = jsPrefix + QLatin1String("EnableJavaScript");
   if ( (global && reset) || config->hasKey( key ) )
-    pd_settings.m_bEnableJavaScript = config->readBoolEntry( key, true );
+    pd_settings.m_bEnableJavaScript = qvariant_cast<bool>(config->readEntry( key, QVariant(true) ));
   else if ( !global )
     pd_settings.m_bEnableJavaScript = d->global.m_bEnableJavaScript;
 
@@ -219,7 +219,7 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
   key = jsPrefix + QLatin1String("WindowOpenPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowOpenPolicy = (KJSWindowOpenPolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowOpenSmart );
+    		qvariant_cast<uint>(config->readEntry( key, KJSWindowOpenSmart ));
   else if ( !global )
     pd_settings.m_windowOpenPolicy = d->global.m_windowOpenPolicy;
 
@@ -306,22 +306,22 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "MainView Settings" );
 
     if ( reset || config->hasKey( "OpenMiddleClick" ) )
-        d->m_bOpenMiddleClick = config->readBoolEntry( "OpenMiddleClick", true );
+        d->m_bOpenMiddleClick = qvariant_cast<bool>(config->readEntry( "OpenMiddleClick", QVariant(true) ));
 
     if ( reset || config->hasKey( "BackRightClick" ) )
-        d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
+        d->m_bBackRightClick = qvariant_cast<bool>(config->readEntry( "BackRightClick", QVariant(false) ));
   }
 
   if (reset || config->hasGroup("Access Keys")) {
       config->setGroup( "Access Keys" );
-      d->m_accessKeysEnabled = config->readBoolEntry( "Enabled", true );
+      d->m_accessKeysEnabled = qvariant_cast<bool>(config->readEntry( "Enabled", QVariant(true) ));
   }
 
   if (reset || config->hasGroup("Filter Settings"))
   {
       config->setGroup( "Filter Settings" );
-      d->m_adFilterEnabled = config->readBoolEntry("Enabled", false);
-      d->m_hideAdsEnabled = config->readBoolEntry("Shrink", false);
+      d->m_adFilterEnabled = qvariant_cast<bool>(config->readEntry("Enabled", QVariant(false)));
+      d->m_hideAdsEnabled = qvariant_cast<bool>(config->readEntry("Shrink", QVariant(false)));
 
       d->adFilters.clear();
 
@@ -389,33 +389,33 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         d->m_encoding = config->readEntry( "DefaultEncoding", "" );
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
-        d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
+        d->enforceCharset = qvariant_cast<bool>(config->readEntry( "EnforceDefaultCharset", QVariant(false) ));
 
     // Behavior
     if ( reset || config->hasKey( "ChangeCursor" ) )
-        d->m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+        d->m_bChangeCursor = qvariant_cast<bool>(config->readEntry( "ChangeCursor", QVariant(KDE_DEFAULT_CHANGECURSOR) ));
 
     if ( reset || config->hasKey("UnderlineLinks") )
-        d->m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+        d->m_underlineLink = qvariant_cast<bool>(config->readEntry( "UnderlineLinks", QVariant(true) ));
 
     if ( reset || config->hasKey( "HoverLinks" ) )
     {
-        if ( ( d->m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
+        if ( ( d->m_hoverLink = qvariant_cast<bool>(config->readEntry( "HoverLinks", QVariant(false) ) ) ))
             d->m_underlineLink = false;
     }
 
     if ( reset || config->hasKey( "AllowTabulation" ) )
-        d->m_allowTabulation = config->readBoolEntry( "AllowTabulation", false );
+        d->m_allowTabulation = qvariant_cast<bool>(config->readEntry( "AllowTabulation", QVariant(false) ));
 
     if ( reset || config->hasKey( "AutoSpellCheck" ) )
-        d->m_autoSpellCheck = config->readBoolEntry( "AutoSpellCheck", true );
+        d->m_autoSpellCheck = qvariant_cast<bool>(config->readEntry( "AutoSpellCheck", QVariant(true) ));
 
     // Other
     if ( reset || config->hasKey( "AutoLoadImages" ) )
-      d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+      d->m_bAutoLoadImages = qvariant_cast<bool>(config->readEntry( "AutoLoadImages", QVariant(true) ));
 
     if ( reset || config->hasKey( "UnfinishedImageFrame" ) )
-      d->m_bUnfinishedImageFrame = config->readBoolEntry( "UnfinishedImageFrame", true );
+      d->m_bUnfinishedImageFrame = qvariant_cast<bool>(config->readEntry( "UnfinishedImageFrame", QVariant(true) ));
 
     if ( reset || config->hasKey( "ShowAnimations" ) )
     {
@@ -428,15 +428,15 @@ void KHTMLSettings::init( KConfig * config, bool reset )
          d->m_showAnimations = KAnimationEnabled;
     }
 
-    if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
+    if ( qvariant_cast<bool>(config->readEntry( "UserStyleSheetEnabled", QVariant(false)) ) == true ) {
         if ( reset || config->hasKey( "UserStyleSheet" ) )
             d->m_userSheet = config->readEntry( "UserStyleSheet", "" );
     }
 
-    d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
+    d->m_formCompletionEnabled = qvariant_cast<bool>(config->readEntry("FormCompletion", QVariant(true)));
     d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
-    d->m_autoDelayedActionsEnabled = config->readBoolEntry ("AutoDelayedActions", true);
-    d->m_jsErrorsEnabled = config->readBoolEntry("ReportJSErrors", true);
+    d->m_autoDelayedActionsEnabled = qvariant_cast<bool>(config->readEntry ("AutoDelayedActions", QVariant(true)));
+    d->m_jsErrorsEnabled = qvariant_cast<bool>(config->readEntry("ReportJSErrors", QVariant(true)));
     QStringList accesskeys = config->readListEntry("FallbackAccessKeysAssignments");
     d->m_fallbackAccessKeysAssignments.clear();
     for( QStringList::ConstIterator it = accesskeys.begin(); it != accesskeys.end(); ++it )
@@ -447,7 +447,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   // Colors
 
   if ( reset || config->hasKey( "FollowSystemColors" ) )
-      d->m_follow_system_colors = config->readBoolEntry( "FollowSystemColors", false );
+      d->m_follow_system_colors = qvariant_cast<bool>(config->readEntry( "FollowSystemColors", QVariant(false)) );
 
   if ( reset || config->hasGroup( "General" ) )
   {
@@ -480,15 +480,15 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // The global setting for JavaScript debugging
     // This is currently always enabled by default
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
-      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
+      d->m_bEnableJavaScriptDebug = qvariant_cast<bool>(config->readEntry( "EnableJavaScriptDebug", QVariant(false) ));
 
     // The global setting for JavaScript error reporting
     if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )
-      d->m_bEnableJavaScriptErrorReporting = config->readBoolEntry( "ReportJavaScriptErrors", false );
+      d->m_bEnableJavaScriptErrorReporting = qvariant_cast<bool>(config->readEntry( "ReportJavaScriptErrors", QVariant(false )));
 
     // The global setting for popup block passive popup
     if ( reset || config->hasKey( "PopupBlockerPassivePopup" ) )
-      d->m_jsPopupBlockerPassivePopup = config->readBoolEntry("PopupBlockerPassivePopup", true);
+      d->m_jsPopupBlockerPassivePopup = qvariant_cast<bool>(config->readEntry("PopupBlockerPassivePopup", QVariant(true)));
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
