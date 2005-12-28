@@ -7,6 +7,8 @@
 #ifndef _KDIRWATCH_P_H
 #define _KDIRWATCH_P_H
 
+#include <q3intdict.h>
+
 #ifdef HAVE_FAM
 #include <limits.h>
 #include <fam.h>
