@@ -23,7 +23,7 @@
 #ifndef HTML_LAYOUT_H
 #define HTML_LAYOUT_H
 
-#include <Q3MemArray>
+#include <QVector>
 /*
  * this namespace contains definitions for various types needed for
  * layouting.

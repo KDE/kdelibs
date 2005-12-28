@@ -25,7 +25,7 @@
 
 
 #include <misc/khtmllayout.h>
-
+#include <QVector>
 namespace khtml {
 
 class RenderTable;
