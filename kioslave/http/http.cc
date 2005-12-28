@@ -1255,9 +1255,6 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
 
   // Webdav hosts are capable of observing overwrite == false
   if (!overwrite && m_protocol.left(6) == "webdav") {
-    UDSEntry entry;
-    UDSAtom atom;
-
     // check to make sure this host supports WebDAV
     if ( !davHostOk() )
       return;
@@ -1280,13 +1277,14 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
     m_request.doProxy = m_bUseProxy;
     m_request.davData.depth = 0;
 
-    if (!retrieveHeader(false))
-      return;
+    retrieveContent(true);
 
     if (m_responseCode == 207) {
       error(ERR_FILE_ALREADY_EXIST, QString::null);
       return;
     }
+
+    m_bError = false;
   }
 
   m_request.method = HTTP_PUT;
