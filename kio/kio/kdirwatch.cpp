@@ -393,13 +393,9 @@ void KDirWatchPrivate::slotActivated()
     while ( pending > 0 ) {
       struct inotify_event ev;
       memcpy( &ev, &buf[offset], sizeof( struct inotify_event ) );
-      qDebug( "---> wd: %d", ev.wd );
-      qDebug( "---> mask: %x", ev.mask );
 
       QByteArray path( ev.len );
       memcpy( path.data(), &buf[offset+sizeof( struct inotify_event )], ev.len );
-
-      qDebug( "---> path: %s", path.data() );
 
       // now we're in deep trouble of finding the
       // associated entries
@@ -677,8 +673,6 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   e->dirty = true;
   scanEntry( e );
 
-  qDebug( "** inotify watching %s", e->path.latin1() );
-
   if ( e->m_status == NonExistent ) {
     addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
     return true;
@@ -690,8 +684,6 @@ bool KDirWatchPrivate::useINotify( Entry* e )
       IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_UNMOUNT
            ) ) > 0 )
     return true;
-
-  qDebug( "... FAILED!" );
 
   return false;
 }
