@@ -23,13 +23,14 @@
 #define _KJS_BINDING_H_
 
 #include <kjs/interpreter.h>
-#include <kjs/function_object.h> /// for FunctionPrototypeImp
+#include <kxmlcore/HashMap.h>
 
 #include <dom/dom_node.h>
 #include <qvariant.h>
-#include <q3ptrdict.h>
+#include <qhash.h>
 #include <kurl.h>
 #include <kjs/lookup.h>
+#include <kjs/function.h>
 
 #include <stdlib.h> // for abort
 
@@ -69,20 +70,12 @@ namespace KJS {
   /**
    * Base class for all functions in this binding
    */
-  class DOMFunction : public ObjectImp {
+  class DOMFunction : public InternalFunctionImp {
   protected:
-    DOMFunction() : ObjectImp() {}
+    DOMFunction() : InternalFunctionImp() {}
   public:
-//     DOMFunction(ExecState* exec) : ObjectImp(
-//       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype())
-//       ) {}
-
     virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const { return true; }
-//From JSC,examine:
-//	virtual ValueImp *toPrimitive(ExecState *exec, Type) const { return String(toString(exec)); }
-//  virtual UString toString(ExecState *) const { return UString("[function]"); }
-#warning "toString -- [[native code]] thing?"
   };
 
   /**
@@ -97,13 +90,13 @@ namespace KJS {
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
-      return m_domObjects[objectHandle];
+      return m_domObjects.get( objectHandle );
     }
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
-      m_domObjects.insert( objectHandle, obj );
+      m_domObjects.set( objectHandle, obj );
     }
-    bool deleteDOMObject( void* objectHandle ) {
-      return m_domObjects.remove( objectHandle );
+    void deleteDOMObject( void* objectHandle ) {
+      m_domObjects.remove( objectHandle );
     }
     void clear() {
       m_domObjects.clear();
@@ -134,7 +127,7 @@ namespace KJS {
 
   private:
     khtml::ChildFrame* m_frame;
-    Q3PtrDict<DOMObject> m_domObjects;
+    HashMap<void*, DOMObject*> m_domObjects;
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;

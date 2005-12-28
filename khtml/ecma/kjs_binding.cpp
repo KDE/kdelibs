@@ -31,6 +31,7 @@
 
 #include <kdebug.h>
 #include <kparts/browserextension.h>
+#include <QList>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -42,11 +43,11 @@ UString DOMObject::toString(ExecState *) const
   return "[object " + className() + "]";
 }
 
-typedef Q3PtrList<ScriptInterpreter> InterpreterList;
+typedef QList<ScriptInterpreter*> InterpreterList;
 static InterpreterList *interpreterList;
 
 ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame )
-  : Interpreter( global ), m_frame( frame ), m_domObjects(1021),
+  : Interpreter( global ), m_frame( frame ), 
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
@@ -74,11 +75,8 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 {
   if( !interpreterList ) return;
 
-  Q3PtrListIterator<ScriptInterpreter> it( *interpreterList );
-  while ( it.current() ) {
-    (*it)->deleteDOMObject( objectHandle );
-    ++it;
-  }
+  for (int i = 0; i < interpreterList->size(); ++i)
+    interpreterList->at(i)->deleteDOMObject( objectHandle );
 }
 
 void ScriptInterpreter::mark()
@@ -87,9 +85,13 @@ void ScriptInterpreter::mark()
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
 #endif
-  Q3PtrDictIterator<DOMObject> it( m_domObjects );
-  for( ; it.current(); ++it )
-    it.current()->mark();
+  HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
+  while (it != m_domObjects.end()) {
+    DOMObject* obj = it->second;
+    if (obj->hasPropertyMapProps())
+        obj->mark();
+    ++it;
+  }
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {
@@ -132,7 +134,7 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
 UString::UString(const QString &d)
 {
   unsigned int len = d.length();
-  UChar *dat = new UChar[len];
+  UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
   memcpy(dat, d.unicode(), len * sizeof(UChar));
   rep = UString::Rep::create(dat, len);
 }
@@ -148,7 +150,7 @@ UString::UString(const DOM::DOMString &d)
   }
 
   unsigned int len = d.length();
-  UChar *dat = new UChar[len];
+  UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
   memcpy(dat, d.unicode(), len * sizeof(UChar));
   rep = UString::Rep::create(dat, len);
 }

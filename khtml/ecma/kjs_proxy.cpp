@@ -403,7 +403,7 @@ bool KJSCPUGuard::confirmTerminate() {
 }
 
 void KJSCPUGuard::alarmHandler(int) {
-    abort();
+    //abort();
     // hmm what happened to this stuff?
     //ExecState::requestTerminate();
     //ExecState::confirmTerminate = KJSCPUGuard::confirmTerminate;

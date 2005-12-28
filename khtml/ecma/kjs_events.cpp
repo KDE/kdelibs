@@ -188,10 +188,8 @@ void JSLazyEventListener::parseCode() const
         listener = 0;// Error creating function
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.get());
-#warning "Find properporting for this!"	
-	//abort();
 	// what happened to this?
-        //declFunc->setName(Identifier(UString(name)));
+        declFunc->setFunctionName(Identifier(UString(name)));
 
         if (originalNode)
         {

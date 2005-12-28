@@ -1084,8 +1084,8 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
 
   //Check the prototype -before- the attribute thing
   ValueImp *proto = prototype();
-  if (proto->isObject() && static_cast<ObjectImp *>(proto)->hasProperty(exec, propertyName))
-    return false;
+  if (proto->isObject() && static_cast<ObjectImp *>(proto)->getOwnPropertySlot(exec, propertyName, slot))
+    return true;
 
   // Give access to attributes
   ElementImpl &element = *static_cast<ElementImpl *>(impl());
