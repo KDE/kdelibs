@@ -42,7 +42,7 @@ using namespace KJS;
 
 // ECMA 15.9.4
 
-const ClassInfo RegExpPrototypeImp::info = {"RegExpPrototype", 0, 0, 0};
+const ClassInfo RegExpPrototypeImp::info = {"RegExp", 0, 0, 0};
 
 RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
@@ -54,17 +54,17 @@ RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
   // The constructor will be added later in RegExpObject's constructor (?)
 
   static const Identifier execPropertyName("exec");
-  putDirect(execPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0), DontEnum);
+  putDirect(execPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,0,execPropertyName), DontEnum);
   static const Identifier testPropertyName("test");
-  putDirect(testPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0), DontEnum);
-  putDirect(toStringPropertyName, new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(testPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,0,testPropertyName), DontEnum);
+  putDirect(toStringPropertyName, new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString,0,toStringPropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
 
 RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState *exec,
-                                       FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+                                       FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
@@ -162,7 +162,7 @@ RegExpImp::~RegExpImp()
 
 // ------------------------------ RegExpObjectImp ------------------------------
 
-const ClassInfo RegExpObjectImp::info = {"RegExp", &InternalFunctionImp::info, &RegExpTable, 0};
+const ClassInfo RegExpObjectImp::info = {"Function", &InternalFunctionImp::info, &RegExpTable, 0};
 
 /* Source for regexp_object.lut.h
 @begin RegExpTable 20
@@ -399,7 +399,6 @@ ObjectImp *RegExpObjectImp::construct(ExecState *exec, const List &args)
   bool global = (flags.find("g") >= 0);
   bool ignoreCase = (flags.find("i") >= 0);
   bool multiline = (flags.find("m") >= 0);
-  // TODO: throw a syntax error on invalid flags
 
   dat->putDirect("global", jsBoolean(global), DontDelete | ReadOnly | DontEnum);
   dat->putDirect("ignoreCase", jsBoolean(ignoreCase), DontDelete | ReadOnly | DontEnum);
@@ -415,7 +414,12 @@ ObjectImp *RegExpObjectImp::construct(ExecState *exec, const List &args)
       reflags |= RegExp::IgnoreCase;
   if (multiline)
       reflags |= RegExp::Multiline;
-  dat->setRegExp(new RegExp(p, reflags));
+  RegExp* re = new RegExp(p, reflags);
+  if (!re->isValid()) {
+    delete re;
+    return throwError(exec, SyntaxError, "Invalid regular expression");
+  }
+  dat->setRegExp(re);
 
   return dat;
 }
@@ -429,7 +433,6 @@ bool RegExpObjectImp::implementsCall() const
 ValueImp *RegExpObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/,
 			    const List &args)
 {
-  // TODO: handle RegExp argument case (15.10.3.1)
-
+  // The RegExp argument case is handled by construct()
   return construct(exec, args);
 }

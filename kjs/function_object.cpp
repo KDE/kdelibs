@@ -41,11 +41,11 @@ using namespace KJS;
 FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
 {
   putDirect(lengthPropertyName,   jsZero(),                                                       DontDelete|ReadOnly|DontEnum);
-  putDirect(toStringPropertyName, new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(toStringPropertyName, new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0, toStringPropertyName), DontEnum);
   static const Identifier applyPropertyName("apply");
-  putDirect(applyPropertyName,    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2), DontEnum);
+  putDirect(applyPropertyName,    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2, applyPropertyName), DontEnum);
   static const Identifier callPropertyName("call");
-  putDirect(callPropertyName,     new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1), DontEnum);
+  putDirect(callPropertyName,     new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1, callPropertyName), DontEnum);
 }
 
 FunctionPrototypeImp::~FunctionPrototypeImp()
@@ -66,8 +66,8 @@ ValueImp *FunctionPrototypeImp::callAsFunction(ExecState */*exec*/, ObjectImp */
 // ------------------------------ FunctionProtoFuncImp -------------------------
 
 FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState *exec,
-                                         FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+                                         FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
@@ -83,26 +83,25 @@ ValueImp *FunctionProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisO
   ValueImp *result = NULL;
 
   switch (id) {
-  case ToString: {
-    // ### also make this work for internal functions
+  case ToString:
     if (!thisObj || !thisObj->inherits(&InternalFunctionImp::info)) {
 #ifndef NDEBUG
       fprintf(stderr,"attempted toString() call on null or non-function object\n");
 #endif
       return throwError(exec, TypeError);
     }
+
     if (thisObj->inherits(&DeclaredFunctionImp::info)) {
-       DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
-                                 (thisObj);
-       return String("function " + fi->name().ustring() + "(" +
+       DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>(thisObj);
+       return String("function " + fi->functionName().ustring() + "(" +
          fi->parameterString() + ") " + fi->body->toString());
-    } else if (thisObj->inherits(&FunctionImp::info) &&
-        !static_cast<FunctionImp*>(thisObj)->name().isNull()) {
-      result = String("function " + static_cast<FunctionImp*>(thisObj)->name().ustring() + "()");
+    } else if (thisObj->inherits(&InternalFunctionImp::info) &&
+        !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
+      result = String("\nfunction " + static_cast<InternalFunctionImp*>(thisObj)->functionName().ustring() + "() {\n"
+                      "    [native code]\n}\n");
     }
     else {
-      result = String("(Internal Function)");
-    }
+      result = String("[function]");
     }
     break;
   case Apply: {

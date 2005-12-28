@@ -599,19 +599,19 @@ void InterpreterImp::unlock()
   global->put(&globExec, "undefined",  Undefined(), DontEnum|DontDelete);
 
   // built-in functions
-  global->put(&globExec, "eval",       new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Eval, 1), DontEnum);
-  global->put(&globExec, "parseInt",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseInt, 2), DontEnum);
-  global->put(&globExec, "parseFloat", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseFloat, 1), DontEnum);
-  global->put(&globExec, "isNaN",      new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsNaN, 1), DontEnum);
-  global->put(&globExec, "isFinite",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsFinite, 1), DontEnum);
-  global->put(&globExec, "escape",     new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Escape, 1), DontEnum);
-  global->put(&globExec, "unescape",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::UnEscape, 1), DontEnum);
-  global->put(&globExec, "decodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURI, 1), DontEnum);
-  global->put(&globExec, "decodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURIComponent, 1), DontEnum);
-  global->put(&globExec, "encodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURI, 1), DontEnum);
-  global->put(&globExec, "encodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURIComponent, 1), DontEnum);
+  global->put(&globExec, "eval",       new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Eval, 1, "eval"), DontEnum);
+  global->put(&globExec, "parseInt",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseInt, 2, "parseInt"), DontEnum);
+  global->put(&globExec, "parseFloat", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::ParseFloat, 1, "parseFloat"), DontEnum);
+  global->put(&globExec, "isNaN",      new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsNaN, 1, "isNaN"), DontEnum);
+  global->put(&globExec, "isFinite",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::IsFinite, 1, "isFinite"), DontEnum);
+  global->put(&globExec, "escape",     new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::Escape, 1, "escape"), DontEnum);
+  global->put(&globExec, "unescape",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::UnEscape, 1, "unescape"), DontEnum);
+  global->put(&globExec, "decodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURI, 1, "decodeURI"), DontEnum);
+  global->put(&globExec, "decodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::DecodeURIComponent, 1, "decodeURIComponent"), DontEnum);
+  global->put(&globExec, "encodeURI",  new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURI, 1, "encodeURI"), DontEnum);
+  global->put(&globExec, "encodeURIComponent", new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::EncodeURIComponent, 1, "encodeURIComponent"), DontEnum);
 #ifndef NDEBUG
-  global->put(&globExec, "kjsprint",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::KJSPrint, 1), DontEnum);
+  global->put(&globExec, "kjsprint",   new GlobalFuncImp(&globExec, funcProto, GlobalFuncImp::KJSPrint, 1, "kjsprint"), DontEnum);
 #endif
 
   // built-in objects
@@ -831,6 +831,11 @@ InternalFunctionImp::InternalFunctionImp()
 
 InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
   : ObjectImp(funcProto)
+{
+}
+
+InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto, const Identifier& _ident)
+  : ObjectImp(funcProto), ident(_ident)
 {
 }
 

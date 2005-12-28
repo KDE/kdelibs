@@ -38,19 +38,25 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
                                        FunctionPrototypeImp *funcProto)
   : ObjectImp() // [[Prototype]] is Null()
 {
-    putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString,            0), DontEnum);
-    putDirect(toLocaleStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString,0), DontEnum);
-    putDirect(valueOfPropertyName,  new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,             0), DontEnum);
-    putDirect("hasOwnProperty", new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::HasOwnProperty,          1), DontEnum);
+    putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0, toStringPropertyName), DontEnum);
+    putDirect(toLocaleStringPropertyName, new ObjectProtoFuncImp(
+            exec,funcProto,ObjectProtoFuncImp::ToLocaleString,0,toLocaleStringPropertyName), DontEnum);
+    putDirect(valueOfPropertyName,  new ObjectProtoFuncImp(
+            exec,funcProto,ObjectProtoFuncImp::ValueOf,0,valueOfPropertyName), DontEnum);
+    putDirect("hasOwnProperty", new ObjectProtoFuncImp(
+            exec, funcProto, ObjectProtoFuncImp::HasOwnProperty,1,"hasOwnProperty"), DontEnum);
+    putDirect("propertyIsEnumerable", new ObjectProtoFuncImp(
+            exec, funcProto, ObjectProtoFuncImp::PropertyIsEnumerable, 1, "propertyIsEnumerable"), DontEnum);
+    putDirect("isPrototypeOf", new ObjectProtoFuncImp(
+            exec, funcProto, ObjectProtoFuncImp::IsPrototypeOf, 1, "isPrototypeOf"), DontEnum);
 }
-
 
 // ------------------------------ ObjectProtoFuncImp --------------------------------
 
 ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState *exec,
                                        FunctionPrototypeImp *funcProto,
-                                       int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+                                       int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
@@ -72,6 +78,25 @@ ValueImp *ObjectProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
             PropertySlot slot;
             return jsBoolean(thisObj->getOwnPropertySlot(exec, Identifier(args[0]->toString(exec)), slot));
         }
+        case IsPrototypeOf: {
+            if (!args[0]->isObject())
+                return jsBoolean(false);
+         
+            ValueImp *v = static_cast<ObjectImp *>(args[0])->prototype();
+
+            while (true) {
+                if (!v->isObject())
+                    return jsBoolean(false);
+                
+                if (thisObj == static_cast<ObjectImp *>(v))
+                    return jsBoolean(true);
+                
+                v = static_cast<ObjectImp *>(v)->prototype();
+            }
+        }
+        case PropertyIsEnumerable:
+            return jsBoolean(thisObj->propertyIsEnumerable(exec, Identifier(args[0]->toString(exec))));
+
         case ToLocaleString:
             return jsString(thisObj->toString(exec));
         case ToString:

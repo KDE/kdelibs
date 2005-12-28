@@ -157,7 +157,8 @@ namespace KJS {
         return cachedVal;
 
       const HashEntry *entry = slot.staticEntry();
-      ValueImp *val = new FuncImp(exec, entry->value, entry->params);
+      FuncImp *val = new FuncImp(exec, entry->value, entry->params);
+      val->setFunctionName(propertyName);
       thisObj->putDirect(propertyName, val, entry->attr);
       return val;
   }
@@ -298,7 +299,7 @@ namespace KJS {
   public: \
     static ObjectImp *self(ExecState *exec) \
     { \
-      return cacheGlobalObject<ClassProto>(exec, "[[" ClassName ".prototype]]"); \
+      return cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
   protected: \
     ClassProto( ExecState *exec ) \
@@ -307,17 +308,24 @@ namespace KJS {
   public: \
     virtual const ClassInfo *classInfo() const { return &info; } \
     static const ClassInfo info; \
+    static Identifier* s_name; \
+    static Identifier* name() { \
+      if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
+      return s_name; \
+    } \
     bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&); \
   }; \
   const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 };
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
+    Identifier* ClassProto::s_name = 0; \
     bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
       return getStaticFunctionSlot<ClassFunc,ObjectImp>(exec, &ClassProto##Table, this, propertyName, slot); \
     }
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
+    Identifier* ClassProto::s_name = 0; \
     bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
       if (getStaticFunctionSlot<ClassFunc,ObjectImp>(exec, &ClassProto##Table, this, propertyName, slot)) \

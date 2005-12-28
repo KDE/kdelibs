@@ -394,15 +394,20 @@ namespace KJS {
 
 
 
-  class InternalFunctionImp : public ObjectImp {
+  class KJS_EXPORT InternalFunctionImp : public ObjectImp {
   public:
     InternalFunctionImp();
     InternalFunctionImp(FunctionPrototypeImp *funcProto);
+    InternalFunctionImp(FunctionPrototypeImp *funcProto, const Identifier& _ident);
     bool implementsHasInstance() const;
     bool hasInstance(ExecState *exec, ValueImp *value);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     KJS_EXPORT static const ClassInfo info;
+    Identifier functionName() const { return ident; }
+    void setFunctionName(const Identifier& _ident) { ident = _ident; }
+  protected:
+    Identifier ident;
   };
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16

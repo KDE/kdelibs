@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2000,2003 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -57,20 +57,26 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  putDirect(toStringPropertyName,       new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1), DontEnum);
-  putDirect(toLocaleStringPropertyName, new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0), DontEnum);
-  putDirect(valueOfPropertyName,        new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,        0), DontEnum);
-  putDirect(toFixedPropertyName,        new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToFixed,        1), DontEnum);
-  putDirect(toExponentialPropertyName,  new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToExponential,  1), DontEnum);
-  putDirect(toPrecisionPropertyName,    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToPrecision,    1), DontEnum);
+  putDirect(toStringPropertyName,       new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ToString,1,toStringPropertyName), DontEnum);
+  putDirect(toLocaleStringPropertyName, new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ToLocaleString,0,toLocaleStringPropertyName), DontEnum);
+  putDirect(valueOfPropertyName,        new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ValueOf,0,valueOfPropertyName), DontEnum);
+  putDirect(toFixedPropertyName,        new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ToFixed,1,toFixedPropertyName), DontEnum);
+  putDirect(toExponentialPropertyName,  new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ToExponential,1,toExponentialPropertyName), DontEnum);
+  putDirect(toPrecisionPropertyName,    new NumberProtoFuncImp(
+            exec,funcProto,NumberProtoFuncImp::ToPrecision,1,toPrecisionPropertyName), DontEnum);
 }
 
 
 // ------------------------------ NumberProtoFuncImp ---------------------------
 
 NumberProtoFuncImp::NumberProtoFuncImp(ExecState *exec,
-                                       FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+                                       FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
@@ -140,14 +146,46 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       dradix = args[0]->toInteger(exec);
     if (dradix >= 2 && dradix <= 36 && dradix != 10) { // false for NaN
       int radix = static_cast<int>(dradix);
-      unsigned i = v->toUInt32(exec);
-      char s[33];
-      char *p = s + sizeof(s);
-      *--p = '\0';
+      const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+      // INT_MAX results in 1024 characters left of the dot with radix 2
+      // give the same space on the right side. safety checks are in place
+      // unless someone finds a precise rule.
+      char s[2048 + 3];
+      double x = v->toNumber(exec);
+      if (isNaN(x) || isInf(x))
+        return String(UString::from(x));
+
+      // apply algorithm on absolute value. add sign later.
+      bool neg = false;
+      if (x < 0.0) {
+        neg = true;
+        x = -x;
+      }
+      // convert integer portion
+      double f = floor(x);
+      double d = f;
+      char *dot = s + sizeof(s) / 2;
+      char *p = dot;
+      *p = '\0';
       do {
-        *--p = "0123456789abcdefghijklmnopqrstuvwxyz"[i % radix];
-        i /= radix;
-      } while (i);
+        *--p = digits[int(fmod(d, double(radix)))];
+        d /= radix;
+      } while ((d <= -1.0 || d >= 1.0) && p > s);
+      // any decimal fraction ?
+      d = x - f;
+      const double eps = 0.001; // TODO: guessed. base on radix ?
+      if (d < -eps || d > eps) {
+        *dot++ = '.';
+        do {
+          d *= radix;
+          *dot++ = digits[int(d)];
+          d -= int(d);
+        } while ((d < -eps || d > eps) && dot - s < int(sizeof(s)) - 1);
+        *dot = '\0';
+      }
+      // add sign if negative
+      if (neg)
+        *--p = '-';
       return String(p);
     } else
       return String(v->toString(exec));
@@ -160,6 +198,8 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
   {
       ValueImp *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
+      if (fractionDigits->isUndefined())
+            df = 0;
       if (!(df >= 0 && df <= 20)) // true for NaN
           return throwError(exec, RangeError, "toFixed() digits argument must be between 0 and 20");
       int f = (int)df;
@@ -205,7 +245,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       
       ValueImp *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
-      if (!(df >= 0 && df <= 20)) // true for NaN
+      if (!fractionDigits->isUndefined() && !(df >= 0 && df <= 20)) // true for NaN
           return throwError(exec, RangeError, "toExponential() argument must between 0 and 20");
       int f = (int)df;
       
@@ -355,7 +395,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
 
 // ------------------------------ NumberObjectImp ------------------------------
 
-const ClassInfo NumberObjectImp::info = {"Number", &InternalFunctionImp::info, &numberTable, 0};
+const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info, &numberTable, 0};
 
 /* Source for number_object.lut.h
 @begin numberTable 5

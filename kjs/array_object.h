@@ -22,6 +22,7 @@
 #ifndef _ARRAY_OBJECT_H_
 #define _ARRAY_OBJECT_H_
 
+#include "array_instance.h"
 #include "internal.h"
 #include "function_object.h"
 
@@ -49,6 +50,8 @@ namespace KJS {
   private:
     int id;
   };
+
+  const unsigned MAX_ARRAY_INDEX = 0xFFFFFFFEu;
 
   class ArrayObjectImp : public InternalFunctionImp {
   public:

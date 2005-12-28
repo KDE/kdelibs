@@ -25,7 +25,6 @@
 #define _KJS_FUNCTION_H_
 
 #include "internal.h"
-#include "array_instance.h"
 
 namespace KJS {
 
@@ -55,13 +54,10 @@ namespace KJS {
     virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
-    Identifier name() const { return ident; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-  protected:
     Parameter *param;
-    Identifier ident;
 
   private:
     static ValueImp *argumentsGetter(ExecState *, const Identifier &, const PropertySlot&);
@@ -97,7 +93,7 @@ namespace KJS {
     Identifier& operator[](int index);
     Identifier& operator[](const Identifier &indexIdentifier);
     bool isMapped(const Identifier &index) const;
-    void IndexToNameMap::unMap(const Identifier &index);
+    void unMap(const Identifier &index);
     
   private:
     IndexToNameMap(); // prevent construction w/o parameters
@@ -146,7 +142,7 @@ namespace KJS {
 
   class GlobalFuncImp : public InternalFunctionImp {
   public:
-    GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len);
+    GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name);
     virtual bool implementsCall() const;
     virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
     virtual CodeType codeType() const;

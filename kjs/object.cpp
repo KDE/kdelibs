@@ -374,6 +374,32 @@ bool ObjectImp::hasInstance(ExecState */*exec*/, ValueImp */*value*/)
   return false;
 }
 
+bool ObjectImp::propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const
+{
+  int attributes;
+
+  if (!getPropertyAttributes(propertyName, attributes))
+    return false;
+  else
+    return !(attributes & DontEnum);
+}
+
+bool ObjectImp::getPropertyAttributes(const Identifier& propertyName, int& attributes) const
+{
+  if (_prop.get(propertyName, attributes))
+    return true;
+    
+  // Look in the static hashtable of properties
+  const HashEntry* e = findPropertyHashEntry(propertyName);
+  if (e) {
+    attributes = e->attr;
+    return true;
+  }
+    
+  return false;
+}
+
+
 ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
 {
   ReferenceList list;

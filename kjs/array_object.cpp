@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -104,6 +105,9 @@ bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& pro
 
 bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, unsigned index, PropertySlot& slot)
 {
+  if (index > MAX_ARRAY_INDEX)
+    return getOwnPropertySlot(exec, Identifier::from(index), slot);
+
   if (index >= length)
     return false;
   if (index < storageLength) {
@@ -121,7 +125,12 @@ bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, unsigned index, Prope
 void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
   if (propertyName == lengthPropertyName) {
-    setLength(value->toUInt32(exec), exec);
+    unsigned int newLen = value->toUInt32(exec);
+    if (value->toNumber(exec) != double(newLen)) {
+      throwError(exec, RangeError, "Invalid array length.");
+      return;
+    }
+    setLength(newLen, exec);
     return;
   }
   
@@ -137,6 +146,13 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, Valu
 
 void ArrayInstanceImp::put(ExecState *exec, unsigned index, ValueImp *value, int attr)
 {
+  //0xFFFF FFFF is a bit weird --- it should be treated as a non-array index, even when
+  //it's a string 
+  if (index > MAX_ARRAY_INDEX) {
+    put(exec, Identifier::from(index), value, attr);
+    return;
+  }
+
   if (index < sparseArrayCutoff && index >= storageLength) {
     resizeStorage(index + 1);
   }
@@ -160,7 +176,7 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
     return false;
   
   bool ok;
-  uint32_t index = propertyName.toUInt32(&ok);
+  uint32_t index = propertyName.toArrayIndex(&ok);
   if (ok) {
     if (index >= length)
       return true;
@@ -175,6 +191,9 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
 
 bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
 {
+  if (index > MAX_ARRAY_INDEX)
+    return deleteProperty(exec, Identifier::from(index));
+
   if (index >= length)
     return true;
   if (index < storageLength) {
@@ -192,6 +211,7 @@ ReferenceList ArrayInstanceImp::propList(ExecState *exec, bool recursive)
   // avoid fetching this every time through the loop
   ValueImp *undefined = jsUndefined();
 
+  //### FIXME: should avoid duplicates with prototype
   for (unsigned i = 0; i < storageLength; ++i) {
     ValueImp *imp = storage[i];
     if (imp && imp != undefined) {
@@ -449,7 +469,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     UString separator = ",";
     UString str = "";
 
-    if (!args[0]->isUndefined())
+    if (id == Join && !args[0]->isUndefined())
       separator = args[0]->toString(exec);
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)

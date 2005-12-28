@@ -46,6 +46,7 @@ namespace KJS {
     ~RegExp();
 
     int flags() const { return _flags; }
+    bool isValid() const { return _valid; }
 
     UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
     unsigned subPatterns() const { return _numSubPatterns; }
@@ -57,6 +58,7 @@ namespace KJS {
     regex_t _regex;
 #endif
     int _flags;
+    bool _valid;
     unsigned _numSubPatterns;
 
     RegExp(const RegExp &);

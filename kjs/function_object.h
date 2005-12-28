@@ -52,7 +52,7 @@ namespace KJS {
   class FunctionProtoFuncImp : public InternalFunctionImp {
   public:
     FunctionProtoFuncImp(ExecState *exec,
-                        FunctionPrototypeImp *funcProto, int i, int len);
+                        FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name);
 
     virtual bool implementsCall() const;
     virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);

@@ -58,8 +58,8 @@ const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 
 
 FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
   : InternalFunctionImp(
-      static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
-      ), param(0L), ident(n)
+      static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), n
+      ), param(0L)
 {
 }
 
@@ -544,8 +544,8 @@ void ActivationImp::createArgumentsObject(ExecState *exec) const
 // ------------------------------ GlobalFunc -----------------------------------
 
 
-GlobalFuncImp::GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+GlobalFuncImp::GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }

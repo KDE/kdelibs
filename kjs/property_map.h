@@ -87,6 +87,7 @@ namespace KJS {
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);
 
+        bool isEmpty() const;
     private:
         static bool keysMatch(const UString::Rep *, const UString::Rep *);
         void expand();

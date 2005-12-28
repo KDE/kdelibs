@@ -53,8 +53,8 @@ BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
 {
   // The constructor will be added later by InterpreterImp::InterpreterImp()
 
-  putDirect(toStringPropertyName, new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0), DontEnum);
-  putDirect(valueOfPropertyName,  new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0),  DontEnum);
+  putDirect(toStringPropertyName, new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0,toStringPropertyName), DontEnum);
+  putDirect(valueOfPropertyName,  new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0,valueOfPropertyName),  DontEnum);
   setInternalValue(Boolean(false));
 }
 
@@ -62,8 +62,8 @@ BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
 // ------------------------------ BooleanProtoFuncImp --------------------------
 
 BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState *exec,
-                                         FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+                                         FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }

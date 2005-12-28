@@ -153,6 +153,14 @@ void PropertyMap::clear()
     _table->sentinelCount = 0;
 }
 
+bool PropertyMap::isEmpty() const
+{
+    if (!_table)
+        return !_singleEntry.key;
+    else
+        return !_table->keyCount;
+}
+
 ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
 {
     assert(!name.isNull());

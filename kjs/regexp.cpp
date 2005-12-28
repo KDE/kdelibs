@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001,2004 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -15,29 +15,29 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
+#include "config.h"
+#include "lexer.h"
 #include "regexp.h"
 
-#include "lexer.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-using namespace KJS;
+namespace KJS {
 
-RegExp::RegExp(const UString &p, int f)
-  : pat(p), flgs(f), m_notEmpty(false), valid(true)
+RegExp::RegExp(const UString &p, int flags)
+  : _flags(flags), _valid(true), _numSubPatterns(0)
 {
-  nrSubPatterns = 0; // determined in match() with POSIX regex.
-
   // JS regexps can contain Unicode escape sequences (\uxxxx) which
   // are rather uncommon elsewhere. As our regexp libs don't understand
   // them we do the unescaping ourselves internally.
   UString intern;
-  if (p.find('\\') >= 0) {
+  if (p.find("\\u") >= 0) {
     bool escape = false;
     for (int i = 0; i < p.size(); ++i) {
       UChar c = p[i];
@@ -71,32 +71,37 @@ RegExp::RegExp(const UString &p, int f)
   }
 
 #ifdef HAVE_PCREPOSIX
-  int pcreflags = 0;
-  const char *perrormsg;
+
+  int options = PCRE_UTF8;
+  // Note: the Global flag is already handled by RegExpProtoFunc::execute.
+  // FIXME: That last comment is dubious. Not all RegExps get run through RegExpProtoFunc::execute.
+  if (flags & IgnoreCase)
+    options |= PCRE_CASELESS;
+  if (flags & Multiline)
+    options |= PCRE_MULTILINE;
+
+  const char *errorMessage;
   int errorOffset;
-
-  if (flgs & IgnoreCase)
-    pcreflags |= PCRE_CASELESS;
-
-  if (flgs & Multiline)
-    pcreflags |= PCRE_MULTILINE;
-
-  pcregex = pcre_compile(intern.ascii(), pcreflags,
-			 &perrormsg, &errorOffset, NULL);
-  if (!pcregex) {
-#ifndef NDEBUG
-    fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", perrormsg);
+  UString nullTerminated(intern);
+  char null(0);
+  nullTerminated.append(null);
+#ifdef APPLE_CHANGES
+  _regex = pcre_compile(reinterpret_cast<const uint16_t *>(nullTerminated.data()), options, &errorMessage, &errorOffset, NULL);
+#else
+  _regex = pcre_compile(nullTerminated.ascii(), options, &errorMessage, &errorOffset, NULL);
 #endif
-    valid = false;
+  if (!_regex) {
+#ifndef NDEBUG
+    fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", errorMessage);
+#endif
+    _valid = false;
     return;
   }
 
 #ifdef PCRE_INFO_CAPTURECOUNT
-  // Get number of subpatterns that will be returned
-  int rc = pcre_fullinfo( pcregex, NULL, PCRE_INFO_CAPTURECOUNT, &nrSubPatterns);
-  if (rc != 0)
+  // Get number of subpatterns that will be returned.
+  pcre_fullinfo(_regex, NULL, PCRE_INFO_CAPTURECOUNT, &_numSubPatterns);
 #endif
-    nrSubPatterns = 0; // fallback. We always need the first pair of offsets.
 
 #else /* HAVE_PCREPOSIX */
 
@@ -114,14 +119,14 @@ RegExp::RegExp(const UString &p, int f)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  int errorCode = regcomp(&preg, intern.ascii(), regflags);
+  int errorCode = regcomp(&_regex, intern.ascii(), regflags);
   if (errorCode != 0) {
 #ifndef NDEBUG
     char errorMessage[80];
-    regerror(errorCode, &preg, errorMessage, sizeof errorMessage);
+    regerror(errorCode, &_regex, errorMessage, sizeof errorMessage);
     fprintf(stderr, "KJS: regcomp failed with '%s'", errorMessage);
 #endif
-    valid = false;
+    _valid = false;
   }
 #endif
 }
@@ -129,11 +134,10 @@ RegExp::RegExp(const UString &p, int f)
 RegExp::~RegExp()
 {
 #ifdef HAVE_PCREPOSIX
-  if (pcregex)
-    pcre_free(pcregex);
+  pcre_free(_regex);
 #else
   /* TODO: is this really okay after an error ? */
-  regfree(&preg);
+  regfree(&_regex);
 #endif
 }
 
@@ -141,57 +145,64 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 {
   if (i < 0)
     i = 0;
-  if (ovector)
-    *ovector = 0L;
   int dummyPos;
   if (!pos)
     pos = &dummyPos;
   *pos = -1;
+  if (ovector)
+    *ovector = 0;
+
   if (i > s.size() || s.isNull())
-    return UString::null;
+    return UString::null();
 
 #ifdef HAVE_PCREPOSIX
-  CString buffer(s.cstring());
-  int bufferSize = buffer.size();
-  int ovecsize = (nrSubPatterns+1)*3; // see pcre docu
-  if (ovector) *ovector = new int[ovecsize];
-  if (!pcregex)
-    return UString::null;
 
-  if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i,
-                m_notEmpty ? (PCRE_NOTEMPTY | PCRE_ANCHORED) : 0, // see man pcretest
-                ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
-  {
-    // Failed to match.
-    if ((flgs & Global) && m_notEmpty && ovector)
-    {
-      // We set m_notEmpty ourselves, to look for a non-empty match
-      // (see man pcretest or pcretest.c for details).
-      // So we don't stop here, we want to try again at i+1.
-#ifdef KJS_VERBOSE
-      fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
-#endif
-      m_notEmpty = 0;
-      if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i+1, 0,
-                    ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
-        return UString::null;
-    }
-    else // done
-      return UString::null;
+  if (!_regex)
+    return UString::null();
+
+  // Set up the offset vector for the result.
+  // First 2/3 used for result, the last third used by PCRE.
+  int *offsetVector;
+  int offsetVectorSize;
+  int fixedSizeOffsetVector[3];
+  if (!ovector) {
+    offsetVectorSize = 3;
+    offsetVector = fixedSizeOffsetVector;
+  } else {
+    offsetVectorSize = (_numSubPatterns + 1) * 3;
+    offsetVector = new int [offsetVectorSize];
   }
 
-  // Got a match, proceed with it.
-
-  if (!ovector)
-    return UString::null; // don't rely on the return value if you pass ovector==0
+#ifdef APPLE_CHANGES
+  const int numMatches = pcre_exec(_regex, NULL, reinterpret_cast<const uint16_t *>(s.data()), s.size(), i, 0, offsetVector, offsetVectorSize);
 #else
-  const uint maxMatch = 10;
+  const int numMatches = pcre_exec(_regex, NULL, s.ascii(), s.size(), i, 0, offsetVector, offsetVectorSize);
+#endif
+
+  if (numMatches < 0) {
+#ifndef NDEBUG
+    if (numMatches != PCRE_ERROR_NOMATCH)
+      fprintf(stderr, "KJS: pcre_exec() failed with result %d\n", numMatches);
+#endif
+    if (offsetVector != fixedSizeOffsetVector)
+      delete [] offsetVector;
+    return UString::null();
+  }
+
+  *pos = offsetVector[0];
+  if (ovector)
+    *ovector = offsetVector;
+  return s.substr(offsetVector[0], offsetVector[1] - offsetVector[0]);
+
+#else
+
+  const unsigned maxMatch = 10;
   regmatch_t rmatch[maxMatch];
 
   char *str = strdup(s.ascii()); // TODO: why ???
-  if (regexec(&preg, str + i, maxMatch, rmatch, 0)) {
+  if (regexec(&_regex, str + i, maxMatch, rmatch, 0)) {
     free(str);
-    return UString::null;
+    return UString::null();
   }
   free(str);
 
@@ -201,55 +212,22 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   }
 
   // map rmatch array to ovector used in PCRE case
-  nrSubPatterns = 0;
-  for (uint j = 0; j < maxMatch && rmatch[j].rm_so >= 0 ; j++) {
-    nrSubPatterns++;
-    // if the nonEmpty flag is set, return a failed match if any of the
-    // subMatches happens to be an empty string.
-    if (m_notEmpty && rmatch[j].rm_so == rmatch[j].rm_eo) 
-      return UString::null;
-  }
-  // Allow an ovector slot to return the (failed) match result.
-  if (nrSubPatterns == 0) nrSubPatterns = 1;
-  
-  int ovecsize = (nrSubPatterns)*3; // see above
+  _numSubPatterns = 0;
+  for(unsigned j = 1; j < maxMatch && rmatch[j].rm_so >= 0 ; j++)
+      _numSubPatterns++;
+  int ovecsize = (_numSubPatterns+1)*3; // see above
   *ovector = new int[ovecsize];
-  for (uint j = 0; j < nrSubPatterns; j++) {
-      (*ovector)[2*j] = rmatch[j].rm_so + i;
-      (*ovector)[2*j+1] = rmatch[j].rm_eo + i;
+  for (unsigned j = 0; j < _numSubPatterns + 1; j++) {
+    if (j>maxMatch)
+      break;
+    (*ovector)[2*j] = rmatch[j].rm_so + i;
+    (*ovector)[2*j+1] = rmatch[j].rm_eo + i;
   }
-#endif
 
   *pos = (*ovector)[0];
-  if ( *pos == (*ovector)[1] && (flgs & Global) )
-  {
-    // empty match, next try will be with m_notEmpty=true
-    m_notEmpty=true;
-  }
   return s.substr((*ovector)[0], (*ovector)[1] - (*ovector)[0]);
-}
 
-#if 0 // unused
-bool RegExp::test(const UString &s, int)
-{
-#ifdef HAVE_PCREPOSIX
-  int ovector[300];
-  CString buffer(s.cstring());
-
-  if (s.isNull() ||
-      pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size(), 0,
-		0, ovector, 300) == PCRE_ERROR_NOMATCH)
-    return false;
-  else
-    return true;
-
-#else
-
-  char *str = strdup(s.ascii());
-  int r = regexec(&preg, str, 0, 0, 0);
-  free(str);
-
-  return r == 0;
 #endif
 }
-#endif
+
+} // namespace KJS
