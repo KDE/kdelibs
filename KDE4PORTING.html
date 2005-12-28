@@ -124,10 +124,10 @@ by QX11Info::display()</li>
 allows some ambiguous conversions, so it might be necessary to use <em>QVariant::Type</em> or 
 <em>explicit</em> construction to dis-ambiguate the type wanted, i.e.
  <ul>
- <li>bool var = qvariant_cast&lt;bool&gt;(readEntry(key, <b>false</b>)); // ambiguous</li>
- <li>bool var = qvariant_cast&lt;bool&gt;(readEntry(key, <b>QVariant(false)</b>)); // not ambiguous</li>
- <li>int var = qvariant_cast&lt;int&gt;(readEntry(key, <b>0</b>)); // ambiguous</li>
- <li>long var = qvariant_cast&lt;int&gt;(readEntry(key, <b>QVariant::Int</b>)); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
+		 <li>bool var = readEntry(key, <b>false</b>).toBool(); // ambiguous</li>
+		 <li>bool var = readEntry(key, <b>QVariant(false)</b>).toBool()); // not ambiguous</li>
+		 <li>int var = readEntry(key, <b>0</b>).toInt(); // ambiguous</li>
+		 <li>long var = readEntry(key, <b>QVariant::Int</b>).toInt(); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
  </ul>
 This appears to be only applicable to <b>false</b> and <b>0</b> any other value seems to choose the correct function. (not sure if this is just a g++ problem?)
 </li>
