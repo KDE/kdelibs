@@ -48,16 +48,16 @@ public:
   /**
    * Get the key as a QCString
    */
-  Q3CString getKey() const;
+  QByteArray getKey() const;
   /**
    * Set this key
    */
-  void setKey(const Q3CString&);
+  void setKey(const QByteArray&);
 protected:
   /**
    * The key of the in this database
    */
-  Q3CString key;
+  QByteArray key;
 
   /** Class for private data. */
   class KabKeyPrivate;

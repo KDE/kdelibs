@@ -130,14 +130,14 @@ KabKey::operator == (const KabKey& key) const
 }
 
 void
-KabKey::setKey(const Q3CString& text)
+KabKey::setKey(const QByteArray& text)
 {
   // ###########################################################################
   key=text;
   // ###########################################################################
 }
 
-Q3CString
+QByteArray
 KabKey::getKey() const
 {
   // ###########################################################################
@@ -943,7 +943,7 @@ AddressBook::getEntry(const KabKey& key, Section*& section)
 	    "AddressBook::getEntry: no such entry.\n";
       return NoSuchEntry;
     } else {
-      if(data->get((Q3CString)ENTRY_SECTION+'/'+key.getKey(), section))
+      if(data->get((QByteArray)ENTRY_SECTION+'/'+key.getKey(), section))
 	{
 	    kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		"AddressBook::getEntry: done." << endl;
@@ -1249,7 +1249,7 @@ AddressBook::nextAvailEntryKey()
   Section::StringSectionMap::iterator pos;
   Section *section=entrySection();
   KabKey key;
-  Q3CString dummy;
+  QByteArray dummy;
   bool good=true;
   // -----
   if(section!=0)
@@ -1335,7 +1335,7 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
   Entry::Address addressDummy;
   int count;
   // ----- create the aggregats:
-  const Q3CString StringKeys[]= {
+  const QByteArray StringKeys[]= {
     "title",
     "rank",
     "fn",
@@ -1364,7 +1364,7 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
     &temp.user4
   };
   const int StringKeySize=sizeof(StringKeys)/sizeof(StringKeys[0]);
-  const Q3CString StringListKeys[]= {
+  const QByteArray StringListKeys[]= {
     "talk",
     "emails",
     "keywords",
@@ -1444,7 +1444,7 @@ AddressBook::ErrorCode
 AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
 {
   // ###########################################################################
-  const Q3CString Keys[]= {
+  const QByteArray Keys[]= {
     "headline",
     "position",
     "org",
@@ -1490,7 +1490,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
   list<Entry::Address>::const_iterator addPos;
   Section *addresses=0;
   Section *address=0;
-  Q3CString key; // used for creating address subsection keys
+  QByteArray key; // used for creating address subsection keys
   int count=0; // counts the addresses
   KeyValueMap *keys;
   // ----- prepare the section object:
@@ -1975,7 +1975,7 @@ Section* AddressBook::categoriesSection()
 	{
 	  QStringList values; 
 	  values.append(Predefines[count]);
-	  keys->insert(Q3CString().setNum(count), values);
+	  keys->insert(QByteArray().setNum(count), values);
 	}
       section->add(KAB_CATEGORY_KEY, categories);
       keys=section->getKeys(); 
