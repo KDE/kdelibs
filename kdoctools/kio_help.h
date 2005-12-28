@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 
-#include <q3intdict.h>
 #include <qstring.h>
 
 

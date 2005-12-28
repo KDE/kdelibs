@@ -20,7 +20,6 @@
 
 
 #include <q3ptrlist.h>
-#include <q3cstring.h>
 #include <qstring.h>
 #include <kdebug.h>
 

@@ -23,7 +23,6 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 

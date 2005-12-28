@@ -20,7 +20,6 @@
 
 #include <qapplication.h>
 #include <qpair.h>
-#include <q3valuelist.h>
 
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>

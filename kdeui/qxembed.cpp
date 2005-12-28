@@ -49,7 +49,6 @@
 #define protected public
 
 #include <qapplication.h>
-#include <q3ptrlist.h>
 #include <q3ptrdict.h>
 #include <qpointer.h>
 #include <q3whatsthis.h>

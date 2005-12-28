@@ -21,7 +21,6 @@
 #define KFILEFILTERCOMBO_H
 
 #include <qstringlist.h>
-#include <q3ptrdict.h>
 
 #include <kcombobox.h>
 #include <kmimetype.h>

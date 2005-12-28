@@ -28,13 +28,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <q3ptrcollection.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qtextcodec.h>
 #include <qtimer.h>

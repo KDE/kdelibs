@@ -21,8 +21,6 @@
 #ifndef __KSMIMECRYPTO_H
 #define __KSMIMECRYPTO_H
 
-
-#include <q3cstring.h>
 #include <q3ptrlist.h>
 #include "ksslpkcs12.h"
 #include "ksslcertificate.h"

@@ -25,8 +25,6 @@
 #endif
 
 #include <kparts/part.h>
-#include <q3ptrlist.h>
-#include <q3listview.h>
 #include <klistview.h>
 
 class KSSLCertBox;

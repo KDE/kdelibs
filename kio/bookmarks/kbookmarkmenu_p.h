@@ -24,8 +24,6 @@
 
 #include <sys/types.h>
 
-#include <q3ptrlist.h>
-#include <q3ptrstack.h>
 #include <qobject.h>
 #include <q3listview.h>
 

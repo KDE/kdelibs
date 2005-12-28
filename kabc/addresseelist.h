@@ -22,8 +22,6 @@
 #ifndef KABC_ADDRESSEELIST_H
 #define KABC_ADDRESSEELIST_H
 
-#include <q3valuelist.h>
-
 #include "addressee.h"
 
 namespace KABC {

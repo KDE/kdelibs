@@ -22,7 +22,6 @@
 
 #include <qdom.h>
 #include <qobject.h>
-#include <q3ptrlist.h>
 #include <qstring.h>
 
 #include <kurl.h>

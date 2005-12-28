@@ -20,12 +20,10 @@
 #include <qimage.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
-#include <q3pointarray.h>
-#include <kimageeffect.h>
-#include "kselect.h"
 #include <QPaintEvent>
 
-
+#include <kimageeffect.h>
+#include "kselect.h"
 
 //-----------------------------------------------------------------------------
 /*

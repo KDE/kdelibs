@@ -24,7 +24,6 @@
 #include <klibloader.h>
 #include <kcharsets.h>
 #include <klibloader.h>
-#include <q3cstring.h>
 
 
 #if !defined( SIMPLE_XSLT )

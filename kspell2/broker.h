@@ -29,8 +29,6 @@
 #include <qstring.h>
 
 class KSharedConfig;
-template <typename T>
-class Q3PtrDict;
 
 namespace KSpell2
 {

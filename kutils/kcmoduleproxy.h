@@ -23,7 +23,6 @@
 
 #include <qwidget.h>
 #include <qstringlist.h>
-#include <q3cstring.h>
 
 #include <dcopclient.h>
 #include <kservice.h>

@@ -16,8 +16,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <q3cstring.h>
 #include <qdatastream.h>
+#include <qmessagebox.h>
 
 #include <dcopclient.h>
 
@@ -26,9 +26,6 @@
 #include <kdebug.h>
 
 #include "kcmoduleproxyIfaceImpl.h"
-
-
-#include <qmessagebox.h>
 
 KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QByteArray& name,
 		KCModuleProxy* const client )

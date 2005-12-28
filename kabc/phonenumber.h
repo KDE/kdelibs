@@ -21,7 +21,6 @@
 #ifndef KABC_PHONENUMBER_H
 #define KABC_PHONENUMBER_H
 
-#include <q3valuelist.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>

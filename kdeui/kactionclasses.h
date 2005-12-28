@@ -26,18 +26,16 @@
 #ifndef kactionclasses_h
 #define kactionclasses_h
 
-#include <kaction.h>
-
 #include <qkeysequence.h>
 #include <qobject.h>
-#include <q3cstring.h>
-
 #include <qpointer.h>
+
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
 #include <ktoolbar.h>
+#include <kaction.h>
 
 class QMenuBar;
 class QMenu;

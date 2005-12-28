@@ -21,8 +21,6 @@
 #ifndef KABC_KEY_H
 #define KABC_KEY_H
 
-#include <q3valuelist.h>
-
 #include <kdelibs_export.h>
 
 namespace KABC {

@@ -22,7 +22,6 @@
 #define KABC_FIELD_H
 
 #include <qstring.h>
-#include <q3valuelist.h>
 
 #include "addressee.h"
 

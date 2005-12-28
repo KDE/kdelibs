@@ -25,9 +25,6 @@
 #ifdef USE_POSIX_ACL
 
 #include <qpainter.h>
-#include <q3ptrlist.h>
-#include <kvbox.h>
-#include <khbox.h>
 #include <qpushbutton.h>
 #include <QButtonGroup>
 #include <QGroupBox>
@@ -45,6 +42,8 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kdialogbase.h>
+#include <kvbox.h>
+#include <khbox.h>
 
 #ifdef HAVE_ACL_LIBACL_H
 # include <acl/libacl.h>

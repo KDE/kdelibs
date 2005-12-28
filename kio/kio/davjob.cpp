@@ -21,7 +21,6 @@
 #include <kurl.h>
 
 #include <qobject.h>
-#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpointer.h>

@@ -59,7 +59,6 @@ extern "C" {
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-#include <q3strlist.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 #include <qpainter.h>

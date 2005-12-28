@@ -38,7 +38,6 @@
 #include <qpointer.h>
 #include <qmap.h>
 #include <qtimer.h>
-#include <q3valuelist.h>
 
 class KHTMLWalletQueue : public QObject
 {

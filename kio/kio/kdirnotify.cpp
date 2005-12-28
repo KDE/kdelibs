@@ -19,8 +19,6 @@
 
 #include "kdirnotify.h"
 
-#include <q3cstring.h>
-
 // Needed since DCOP enforces object id uniqueness.
 int KDirNotify::s_serial = 0;
 

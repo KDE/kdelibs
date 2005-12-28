@@ -29,7 +29,6 @@
 #include "driver.h"
 
 #include <qfile.h>
-#include <q3tl.h>
 #include <qdir.h>
 #include <qpointer.h>
 #include <ktoolinvocation.h>

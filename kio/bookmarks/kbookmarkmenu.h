@@ -24,10 +24,7 @@
 
 #include <sys/types.h>
 
-#include <q3ptrlist.h>
-#include <q3ptrstack.h>
 #include <qobject.h>
-#include <q3listview.h>
 #include <QStack>
 
 #include <kdialogbase.h>
@@ -40,7 +37,6 @@
 class QString;
 class QMenu;
 class QPushButton;
-class Q3ListView;
 class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;

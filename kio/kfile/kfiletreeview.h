@@ -24,7 +24,6 @@
 #include <qmap.h>
 #include <qpoint.h>
 #include <qpixmap.h>
-#include <q3strlist.h>
 #include <qtooltip.h>
 
 #include <klistview.h>

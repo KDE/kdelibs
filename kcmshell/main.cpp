@@ -21,8 +21,7 @@
 
 #include <iostream>
 
-#include <q3cstring.h>
-#include <qfile.h> 
+#include <qfile.h>
 #include <QIcon>
 #include <dcopclient.h>
 #include <QX11EmbedWidget>

@@ -18,12 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <q3listview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
-#include <q3buttongroup.h>
+#include <qbuttongroup.h>
 #include <qradiobutton.h>
+#include <QGroupBox>
 
 #include <kinputdialog.h>
 #include <klocale.h>
