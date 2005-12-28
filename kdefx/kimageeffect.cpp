@@ -2749,88 +2749,58 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
     if(w == src.width() && h == src.height())
         return(src);
 
-    double *x_offset, *y_offset;
-    int j, k, y;
-    register int x;
-    QImage dest(w, h, src.depth());
-
-    x_offset = (double *)malloc(w*sizeof(double));
-    y_offset = (double *)malloc(h*sizeof(double));
+    int depth = src.depth();
+    QImage dest(w, h, depth, depth <= 8 ? src.numColors() : 0,
+    depth == 1 ? QImage::LittleEndian : QImage::IgnoreEndian);
+    int *x_offset = (int *)malloc(w*sizeof(int));
+    int *y_offset = (int *)malloc(h*sizeof(int));
     if(!x_offset || !y_offset){
-        qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
+#ifndef NDEBUG
+        qWarning("KImageEffect::sample(): Unable to allocate pixel buffer");
+#endif
         free(x_offset);
         free(y_offset);
         return(src);
     }
 
     // init pixel offsets
-    for(x=0; x < w; ++x)
-        x_offset[x] = x*src.width()/((double)w);
-    for(y=0; y < h; ++y)
-        y_offset[y] = y*src.height()/((double)h);
+    for(int x=0; x < w; ++x)
+        x_offset[x] = (int)(x*src.width()/((double)w));
+    for(int y=0; y < h; ++y)
+        y_offset[y] = (int)(y*src.height()/((double)h));
 
-    // sample each row
-    if(src.depth() > 8){ // DirectClass source image
-        unsigned int *srcData, *destData;
-        unsigned int *pixels;
-        pixels = (unsigned int *)malloc(src.width()*sizeof(unsigned int));
-        if(!pixels){
-            qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
-            free(pixels);
-            free(x_offset);
-            free(y_offset);
-            return(src);
+    if(depth > 8){ // DirectClass source image
+        for(int y=0; y < h; ++y){
+            unsigned int *destData = (unsigned int *)dest.scanLine(y);
+            unsigned int *srcData = (unsigned int *)src.scanLine(y_offset[y]);
+            for(int x=0; x < w; ++x)
+                destData[x] = srcData[x_offset[x]];
         }
-        j = (-1);
-        for(y=0; y < h; ++y){
-            destData = (unsigned int *)dest.scanLine(y);
-            if(j != y_offset[y]){
-                // read a scan line
-                j = (int)(y_offset[y]);
-                srcData = (unsigned int *)src.scanLine(j);
-                (void)memcpy(pixels, srcData, src.width()*sizeof(unsigned int));
-            }
-            // sample each column
-            for(x=0; x < w; ++x){
-                k = (int)(x_offset[x]);
-                destData[x] = pixels[k];
-            }
-        }
-        free(pixels);
     }
-    else{ // PsudeoClass source image
-        unsigned char *srcData, *destData;
-        unsigned char *pixels;
-        pixels = (unsigned char *)malloc(src.width()*sizeof(unsigned char));
-        if(!pixels){
-            qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
-            free(pixels);
-            free(x_offset);
-            free(y_offset);
-            return(src);
-        }
-        // copy colortable
-        dest.setNumColors(src.numColors());
-        (void)memcpy(dest.colorTable(), src.colorTable(),
-                     src.numColors()*sizeof(unsigned int));
-
-        // sample image
-        j = (-1);
-        for(y=0; y < h; ++y){
-            destData = (unsigned char *)dest.scanLine(y);
-            if(j != y_offset[y]){
-                // read a scan line
-                j = (int)(y_offset[y]);
-                srcData = (unsigned char *)src.scanLine(j);
-                (void)memcpy(pixels, srcData, src.width()*sizeof(unsigned char));
-            }
-            // sample each column
-            for(x=0; x < w; ++x){
-                k = (int)(x_offset[x]);
-                destData[x] = pixels[k];
+    else if(depth == 1) {
+        int r = src.bitOrder() == QImage::LittleEndian;
+        memcpy(dest.colorTable(), src.colorTable(), src.numColors()*sizeof(QRgb));
+        for(int y=0; y < h; ++y){
+            unsigned char *destData = dest.scanLine(y);
+            unsigned char *srcData = src.scanLine(y_offset[y]);
+            for(int x=0; x < w; ++x){
+                int k = x_offset[x];
+                int l = r ? (k & 7) : (7 - (k&7));
+                if(srcData[k >> 3] & (1 << l))
+                    destData[x >> 3] |= 1 << (x & 7);
+                else
+                    destData[x >> 3] &= ~(1 << (x & 7));
             }
         }
-        free(pixels);
+    }
+    else{ // PseudoClass source image
+        memcpy(dest.colorTable(), src.colorTable(), src.numColors()*sizeof(QRgb));
+        for(int y=0; y < h; ++y){
+            unsigned char *destData = dest.scanLine(y);
+            unsigned char *srcData = src.scanLine(y_offset[y]);
+            for(int x=0; x < w; ++x)
+                destData[x] = srcData[x_offset[x]];
+        }
     }
     free(x_offset);
     free(y_offset);
