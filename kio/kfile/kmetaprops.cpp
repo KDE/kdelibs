@@ -31,11 +31,11 @@
 #include <qlabel.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
-#include <q3stylesheet.h>
 #include <q3groupbox.h>
 #include <QResizeEvent>
 #include <qlinkedlist.h>
 #include <Q3ScrollView>
+#include <QTextDocument>
 
 #undef Bool
 
@@ -152,7 +152,7 @@ void KFileMetaPropsPlugin::createLayout()
             continue;
 
         Q3GroupBox *groupBox = new Q3GroupBox(2, Qt::Horizontal,
-            Q3StyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()),
+            Qt::escape(mtinfo->groupInfo(*git)->translatedName()),
             d->m_frame);
 
         toplayout->addWidget(groupBox);

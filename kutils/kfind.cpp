@@ -21,15 +21,17 @@
 
 #include "kfind.h"
 #include "kfinddialog.h"
+
 #include <kapplication.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kdebug.h>
+
 #include <qlabel.h>
 #include <qregexp.h>
-#include <q3stylesheet.h>
 #include <qpointer.h>
 #include <q3dict.h>
-#include <kdebug.h>
+#include <QTextDocument>
 
 //#define DEBUG_FIND
 
@@ -625,7 +627,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(Q3StyleSheet::escape(m_pattern));
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(Qt::escape(m_pattern));
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -645,7 +647,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( numMatches() )
             message = i18n( "1 match found.", "%n matches found.", numMatches() );
         else
-            message = i18n("No matches found for '<b>%1</b>'.").arg(Q3StyleSheet::escape(m_pattern));
+            message = i18n("No matches found for '<b>%1</b>'.").arg(Qt::escape(m_pattern));
     }
     else
     {

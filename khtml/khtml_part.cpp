@@ -110,6 +110,7 @@ using namespace DOM;
 #include <qfile.h>
 #include <qtooltip.h>
 #include <qmetaobject.h>
+#include <QTextDocument>
 
 #include "khtmlpart_p.h"
 #include "kpassivepopup.h"
@@ -3645,7 +3646,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
-    setStatusBarText( Q3StyleSheet::escape( jscode ), BarHoverText );
+    setStatusBarText( Qt::escape( jscode ), BarHoverText );
     return;
   }
 
@@ -3760,7 +3761,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QLatin1String("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg = Q3StyleSheet::escape(mailtoMsg);
+      mailtoMsg = Qt::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;

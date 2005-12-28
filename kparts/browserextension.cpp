@@ -26,7 +26,7 @@
 #include <qmap.h>
 #include <qmetaobject.h>
 #include <qregexp.h>
-#include <q3stylesheet.h>
+#include <QTextDocument>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -494,7 +494,7 @@ void BrowserExtension::pasteRequest()
               url.length() < 250 )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
-		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( Q3StyleSheet::escape(url) ),
+		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( Qt::escape(url) ),
 		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "find"),
 		    KStdGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
           slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );

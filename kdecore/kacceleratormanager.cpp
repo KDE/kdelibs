@@ -37,6 +37,7 @@
 #include <q3textview.h>
 #include <qwidget.h>
 #include <QStackedWidget>
+#include <QTextDocument>
 
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
@@ -82,12 +83,12 @@ public:
         if (t1 != t2)
         {
             if (as.accel() == -1)  {
-                removed_string  += "<tr><td>" + Q3StyleSheet::escape(t1) + "</td></tr>";
+                removed_string  += "<tr><td>" + Qt::escape(t1) + "</td></tr>";
             } else if (as.originalAccel() == -1) {
-                added_string += "<tr><td>" + Q3StyleSheet::escape(t2) + "</td></tr>";
+                added_string += "<tr><td>" + Qt::escape(t2) + "</td></tr>";
             } else {
-                changed_string += "<tr><td>" + Q3StyleSheet::escape(t1) + "</td>";
-                changed_string += "<td>" + Q3StyleSheet::escape(t2) + "</td></tr>";
+                changed_string += "<tr><td>" + Qt::escape(t1) + "</td>";
+                changed_string += "<td>" + Qt::escape(t2) + "</td></tr>";
             }
             return true;
         }

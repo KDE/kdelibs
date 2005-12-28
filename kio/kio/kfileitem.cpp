@@ -33,7 +33,7 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qmap.h>
-#include <q3stylesheet.h>
+#include <QTextDocument>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -695,7 +695,7 @@ QString KFileItem::getToolTipText(int maxcount)
   tip += start + i18n("Name:") + mid + text() + end;
   tip += start + i18n("Type:") + mid;
 
-  QString type = Q3StyleSheet::escape(mimeComment());
+  QString type = Qt::escape(mimeComment());
   if ( m_bLink ) {
    tip += i18n("Link to %1 (%2)").arg(linkDest(), type) + end;
   } else
@@ -738,9 +738,9 @@ QString KFileItem::getToolTipText(int maxcount)
         {
           count++;
           tip += start +
-                   Q3StyleSheet::escape( item.translatedKey() ) + ":" +
+                   Qt::escape( item.translatedKey() ) + ":" +
                  mid +
-                   Q3StyleSheet::escape( s ) +
+                   Qt::escape( s ) +
                  end;
         }
 
