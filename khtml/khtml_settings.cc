@@ -226,28 +226,28 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
   key = jsPrefix + QLatin1String("WindowMovePolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowMovePolicy = (KJSWindowMovePolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowMoveAllow );
+    		config->readEntry( key, QVariant(KJSWindowMoveAllow )).toUInt();
   else if ( !global )
     pd_settings.m_windowMovePolicy = d->global.m_windowMovePolicy;
 
   key = jsPrefix + QLatin1String("WindowResizePolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowResizePolicy = (KJSWindowResizePolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowResizeAllow );
+    		config->readEntry( key, QVariant(KJSWindowResizeAllow )).toUInt();
   else if ( !global )
     pd_settings.m_windowResizePolicy = d->global.m_windowResizePolicy;
 
   key = jsPrefix + QLatin1String("WindowStatusPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowStatusPolicy = (KJSWindowStatusPolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowStatusAllow );
+    		config->readEntry( key, QVariant(KJSWindowStatusAllow )).toUInt();
   else if ( !global )
     pd_settings.m_windowStatusPolicy = d->global.m_windowStatusPolicy;
 
   key = jsPrefix + QLatin1String("WindowFocusPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowFocusPolicy = (KJSWindowFocusPolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowFocusAllow );
+    		config->readEntry( key, QVariant(KJSWindowFocusAllow )).toUInt();
   else if ( !global )
     pd_settings.m_windowFocusPolicy = d->global.m_windowFocusPolicy;
 
