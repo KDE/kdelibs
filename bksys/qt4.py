@@ -13,13 +13,12 @@ def exists(env):
 def generate(env):
 	"""Set up the qt environment and builders - the moc part can be difficult to understand """
 	if env['HELP']:
-                p=env.pprint
-                p('BOLD','*** QT4 options ***')
-                p('BOLD','--------------------')
+		p=env.pprint
+		p('BOLD','*** QT4 options ***')
+		p('BOLD','--------------------')
 		p('BOLD','* qtincludes ','qt includes path (/usr/include/qt on debian, ..)')
 		p('BOLD','* qtlibs     ','qt libraries path, for linking the program')
-
-                p('BOLD','* scons configure qtincludes=/usr/include/qt qtlibs=/usr/qt4/lib\n')
+		p('BOLD','* scons configure qtincludes=/usr/include/qt qtlibs=/usr/qt4/lib\n')
 		return
 
 	import SCons.Defaults
@@ -319,7 +318,7 @@ def generate(env):
 		return src
 
 
-	""" In the future, these functions will contain the code that will dump the
+	""" In the future, these functions will contain the code that will dump	the
 	configuration for re-use from an IDE """
 	import glob
 
