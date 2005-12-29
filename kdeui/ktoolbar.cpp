@@ -1407,7 +1407,7 @@ bool KToolBar::highlightSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup cg(KGlobal::config(), grpToolbar);
-    return cg.readBoolEntry(QLatin1String("Highlighting"),true);
+    return cg.readEntry(QLatin1String("Highlighting"), QVariant(true)).toBool();
 }
 
 //static
@@ -1415,7 +1415,7 @@ bool KToolBar::transparentSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup cg(KGlobal::config(), grpToolbar);
-    return cg.readBoolEntry(QLatin1String("TransparentMoving"),true);
+    return cg.readEntry(QLatin1String("TransparentMoving"), QVariant(true)).toBool();
 }
 
 //static
@@ -1481,7 +1481,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             d->IconTextDefault = "IconTextBottom";
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = cg.readNumEntry(attrIconSize, d->IconSizeDefault);
+        d->IconSizeDefault = cg.readEntry(attrIconSize, QVariant(d->IconSizeDefault)).toInt();
 
         iconSize = d->IconSizeDefault;
         iconText = d->IconTextDefault;
@@ -1503,7 +1503,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // now get the size
             if ( config->hasKey( attrIconSize ) ) {
-                iconSize = config->readNumEntry(attrIconSize);
+                iconSize = config->readEntry(attrIconSize, QVariant(0)).toInt();
                 applyIconSize = true;
             }
         }
@@ -1591,8 +1591,8 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
         QString position = cg.readEntry(attrPosition, d->PositionDefault);
-        int index = cg.readNumEntry(attrIndex, -1);
-        int offset = cg.readNumEntry(attrOffset, d->OffsetDefault);
+        int index = cg.readEntry(attrIndex, QVariant(-1)).toInt();
+        int offset = cg.readEntry(attrOffset, QVariant(d->OffsetDefault)).toInt();
         bool newLine = cg.readEntry(attrNewLine, QVariant(d->NewLineDefault)).toBool();
         bool hidden = cg.readEntry(attrHidden, QVariant(d->HiddenDefault)).toBool();
 

@@ -1083,7 +1083,7 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
 	QSize sz = size();
-	resize( group.readSizeEntry( "Dialog Size", &sz ) );
+	resize( group.readEntry( "Dialog Size", &sz ).toSize() );
 }
 
 KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
@@ -1095,7 +1095,7 @@ KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char*
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
 	QSize sz = size();
-	resize( group.readSizeEntry( "Dialog Size", &sz ) );
+	resize( group.readEntry( "Dialog Size", &sz ).toSize() );
 }
 
 KKeyDialog::~KKeyDialog()
