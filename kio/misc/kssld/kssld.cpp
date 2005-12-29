@@ -85,7 +85,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 			continue;
 		}
 
-		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readNumEntry("Policy");
+		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", QVariant(0)).toInt();
 		bool permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
 		QDateTime expires = cfg->readDateTimeEntry("Expires");
 		QStringList hosts = cfg->readListEntry("Hosts");
@@ -114,7 +114,7 @@ KSSLD::KSSLD(const QByteArray &name) : KDEDModule(name)
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
 	cfg->setGroup("General");
-	if (2 != cfg->readNumEntry("policies version", 0)) {
+	if (2 != cfg->readEntry("policies version", QVariant(0)).toInt()) {
 		::updatePoliciesConfig(cfg);
 	}
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
@@ -255,7 +255,7 @@ QStringList groups = cfg->groupList();
 
 		KSSLCNode *n = new KSSLCNode;
 		n->cert = newCert;
-		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readNumEntry("Policy");
+		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", QVariant(0)).toInt();
 		n->permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
 		n->expires = cfg->readDateTimeEntry("Expires");
 		n->hosts = cfg->readListEntry("Hosts");

@@ -48,8 +48,8 @@ public:
     KTabWidgetPrivate() {
         m_automaticResizeTabs = false;
         KConfigGroup cg(KGlobal::config(), "General");
-        m_maxLength = cg.readNumEntry("MaximumTabLength", 30);
-        m_minLength = cg.readNumEntry("MinimumTabLength", 3);
+        m_maxLength = cg.readEntry("MaximumTabLength", QVariant(30)).toInt();
+        m_minLength = cg.readEntry("MinimumTabLength", QVariant(3)).toInt();
         m_CurrentMaxLength = m_minLength;
     }
 };

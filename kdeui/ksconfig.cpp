@@ -181,12 +181,12 @@ KSpellConfig::readGlobalSettings()
 {
   KConfigGroup cg( kc,"KSpell" );
 
-  setNoRootAffix   ( cg.readNumEntry("KSpell_NoRootAffix", 0) );
-  setRunTogether   ( cg.readNumEntry("KSpell_RunTogether", 0) );
+  setNoRootAffix   ( cg.readEntry("KSpell_NoRootAffix", QVariant(0)).toInt() );
+  setRunTogether   ( cg.readEntry("KSpell_RunTogether", QVariant(0)).toInt() );
   setDictionary    ( cg.readEntry("KSpell_Dictionary") );
-  setDictFromList  ( cg.readNumEntry("KSpell_DictFromList", false) );
-  setEncoding ( cg.readNumEntry ("KSpell_Encoding", KS_E_ASCII) );
-  setClient ( cg.readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL) );
+  setDictFromList  ( cg.readEntry("KSpell_DictFromList", QVariant(false)).toInt() );
+  setEncoding ( cg.readEntry ("KSpell_Encoding", QVariant(KS_E_ASCII)).toInt() );
+  setClient ( cg.readEntry ("KSpell_Client", QVariant(KS_CLIENT_ISPELL)).toInt() );
 
   return true;
 }

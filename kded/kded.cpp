@@ -861,7 +861,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
      config->setGroup("General");
-     int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
+     int HostnamePollInterval = config->readEntry("HostnamePollInterval", QVariant(5000)).toInt();
      bool bCheckSycoca = config->readEntry("CheckSycoca", QVariant(true)).toBool();
      bool bCheckUpdates = config->readEntry("CheckUpdates", QVariant(true)).toBool();
      bool bCheckHostname = config->readEntry("CheckHostname", QVariant(true)).toBool();

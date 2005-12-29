@@ -80,7 +80,7 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     mPassword = KStringHandler::obscure( config->readEntry( "LdapPassword" ) );
     mDn = config->readEntry( "LdapDn" );
     mHost = config->readEntry( "LdapHost" );
-    mPort = config->readNumEntry( "LdapPort", 389 );
+    mPort = config->readEntry( "LdapPort", QVariant(389 )).toInt();
     mFilter = config->readEntry( "LdapFilter" );
     mAnonymous = config->readEntry( "LdapAnonymous" , QVariant(false)).toBool();
     d->mTLS = config->readEntry( "LdapTLS" , QVariant(false)).toBool();
@@ -90,11 +90,11 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     d->mMech = config->readEntry( "LdapMech" );
     d->mRealm = config->readEntry( "LdapRealm" );
     d->mBindDN = config->readEntry( "LdapBindDN" );
-    d->mVer = config->readNumEntry( "LdapVer", 3 );
-    d->mTimeLimit = config->readNumEntry( "LdapTimeLimit", 0 );
-    d->mSizeLimit = config->readNumEntry( "LdapSizeLimit", 0 );
-    d->mRDNPrefix = config->readNumEntry( "LdapRDNPrefix", 0 );
-    d->mCachePolicy = config->readNumEntry( "LdapCachePolicy", 0 );
+    d->mVer = config->readEntry( "LdapVer", QVariant(3 )).toInt();
+    d->mTimeLimit = config->readEntry( "LdapTimeLimit", QVariant(0 )).toInt();
+    d->mSizeLimit = config->readEntry( "LdapSizeLimit", QVariant(0 )).toInt();
+    d->mRDNPrefix = config->readEntry( "LdapRDNPrefix", QVariant(0 )).toInt();
+    d->mCachePolicy = config->readEntry( "LdapCachePolicy", QVariant(0 )).toInt();
     d->mAutoCache = config->readEntry("LdapAutoCache", QVariant(true )).toBool();
   } else {
     mPort = 389;

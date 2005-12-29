@@ -146,8 +146,8 @@ void KMMainView::restoreSettings()
 {
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
-	setViewType((KMPrinterView::ViewType)conf->readNumEntry("ViewType",KMPrinterView::Icons));
-	setOrientation(conf->readNumEntry("Orientation", Qt::Vertical));
+	setViewType((KMPrinterView::ViewType)conf->readEntry("ViewType", QVariant(KMPrinterView::Icons)).toInt());
+	setOrientation(conf->readEntry("Orientation", QVariant(Qt::Vertical)).toInt());
 	bool 	view = conf->readEntry("ViewToolBar", QVariant(false)).toBool();
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);

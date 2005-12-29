@@ -1246,7 +1246,7 @@ void KWalletD::reconfigure() {
 	_openPrompt = cfg.readEntry("Prompt on Open", QVariant(true)).toBool();
 	int timeSave = _idleTime;
 	// in minutes!
-	_idleTime = cfg.readNumEntry("Idle Timeout", 10) * 60 * 1000;
+	_idleTime = cfg.readEntry("Idle Timeout", QVariant(10)).toInt() * 60 * 1000;
 
 	if (cfg.readEntry("Close on Screensaver", QVariant(false)).toBool()) {
 		connectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()", false);

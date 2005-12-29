@@ -114,7 +114,7 @@ int KProtocolManager::readTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int val = cfg->readNumEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
+  int val = cfg->readEntry( "ReadTimeout", QVariant(DEFAULT_READ_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -122,7 +122,7 @@ int KProtocolManager::connectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int val = cfg->readNumEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
+  int val = cfg->readEntry( "ConnectTimeout", QVariant(DEFAULT_CONNECT_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -130,7 +130,7 @@ int KProtocolManager::proxyConnectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int val = cfg->readNumEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
+  int val = cfg->readEntry( "ProxyConnectTimeout", QVariant(DEFAULT_PROXY_CONNECT_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -138,7 +138,7 @@ int KProtocolManager::responseTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int val = cfg->readNumEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
+  int val = cfg->readEntry( "ResponseTimeout", QVariant(DEFAULT_RESPONSE_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -160,14 +160,14 @@ KProtocolManager::ProxyType KProtocolManager::proxyType()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyType>(cfg->readNumEntry( "ProxyType" ));
+  return static_cast<ProxyType>(cfg->readEntry( "ProxyType" , QVariant(0)).toInt());
 }
 
 KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyAuthMode>(cfg->readNumEntry( "AuthMode" ));
+  return static_cast<ProxyAuthMode>(cfg->readEntry( "AuthMode" , QVariant(0)).toInt());
 }
 
 /*========================== CACHING =====================================*/
@@ -196,13 +196,13 @@ QString KProtocolManager::cacheDir()
 int KProtocolManager::maxCacheAge()
 {
   KConfig *cfg = http_config();
-  return cfg->readNumEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
+  return cfg->readEntry( "MaxCacheAge", QVariant(DEFAULT_MAX_CACHE_AGE )).toInt(); // 14 days
 }
 
 int KProtocolManager::maxCacheSize()
 {
   KConfig *cfg = http_config();
-  return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
+  return cfg->readEntry( "MaxCacheSize", QVariant(DEFAULT_MAX_CACHE_SIZE )).toInt(); // 5 MB
 }
 
 QString KProtocolManager::noProxyFor()

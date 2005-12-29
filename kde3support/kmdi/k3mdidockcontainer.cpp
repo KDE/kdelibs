@@ -682,7 +682,7 @@ void K3MdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 	else
 		deactivateOverlapMode();
 
-	m_separatorPos = cfg->readNumEntry( "separatorPosition", 18000 );
+	m_separatorPos = cfg->readEntry( "separatorPosition", QVariant(18000 )).toInt();
 
 	int i = 0;
 	QString raise;
@@ -707,7 +707,7 @@ void K3MdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 			}
 			dw->manualDock( ( K3DockWidget* ) parent(), K3DockWidget::DockCenter );
 		}
-		if ( cfg->readBoolEntry( dwn, false ) )
+		if ( cfg->readEntry( dwn, QVariant(false )).toBool() )
 			raise = dwn;
 		i++;
 

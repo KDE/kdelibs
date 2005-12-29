@@ -226,7 +226,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	kdDebug(500) << "kdeprint: status message: " << msg << endl;
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
-	if (!conf->readBoolEntry("ShowStatusMsg", true))
+	if (!conf->readEntry("ShowStatusMsg", QVariant(true)).toBool())
 		return;
 
 	QString	message(msg);

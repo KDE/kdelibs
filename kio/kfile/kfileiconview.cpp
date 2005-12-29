@@ -192,7 +192,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroup cg( kc, gr );
     QString small = QLatin1String("SmallColumns");
-    d->previewIconSize = cg.readNumEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
+    d->previewIconSize = cg.readEntry( "Preview Size", QVariant(DEFAULT_PREVIEW_SIZE )).toInt();
     d->previews->setChecked( cg.readEntry( "ShowPreviews", QVariant(DEFAULT_SHOW_PREVIEWS )).toBool() );
 
     if ( cg.readEntry("ViewMode", DEFAULT_VIEW_MODE ) == small ) {

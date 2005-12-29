@@ -88,7 +88,7 @@ void KMTimer::startTimer(int t)
 	{
 		KConfig	*conf = KMFactory::self()->printConfig();
 		conf->setGroup("General");
-		t = conf->readNumEntry("TimerDelay", 5) * 1000;
+		t = conf->readEntry("TimerDelay", QVariant(5)).toInt() * 1000;
 	}
 	start(t, true);
 }

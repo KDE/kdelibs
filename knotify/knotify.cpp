@@ -209,7 +209,7 @@ void KNotify::loadConfig() {
 #endif
 
     // load default volume
-    d->volume = kc->readNumEntry( "Volume", 100 );
+    d->volume = kc->readEntry( "Volume", QVariant(100 )).toInt();
 }
 
 
@@ -283,9 +283,9 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get event presentation
         if ( present==-1 )
-            present = configFile->readNumEntry( "presentation", -1 );
+            present = configFile->readEntry( "presentation", QVariant(-1 )).toInt();
         if ( present==-1 )
-            present = eventsFile->readNumEntry( "default_presentation", 0 );
+            present = eventsFile->readEntry( "default_presentation", QVariant(0 )).toInt();
 
         // get sound file name
         if( present & KNotifyClient::Sound ) {
@@ -307,7 +307,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get default event level
         if( present & KNotifyClient::Messagebox )
-            level = eventsFile->readNumEntry( "level", 0 );
+            level = eventsFile->readEntry( "level", QVariant(0 )).toInt();
 
         // get command line
         if (present & KNotifyClient::Execute ) {

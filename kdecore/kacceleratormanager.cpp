@@ -329,7 +329,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       else {
           if ( label->textFormat() == Qt::RichText ||
                ( label->textFormat() == Qt::AutoText &&
-                 Q3StyleSheet::mightBeRichText( label->text() ) ) )
+                 Qt::mightBeRichText( label->text() ) ) )
               label = 0;
       }
   }

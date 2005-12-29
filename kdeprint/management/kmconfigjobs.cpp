@@ -51,7 +51,7 @@ KMConfigJobs::KMConfigJobs(QWidget *parent)
 void KMConfigJobs::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Jobs");
-	m_limit->setValue(conf->readNumEntry("Limit", 0));
+	m_limit->setValue(conf->readEntry("Limit", QVariant(0)).toInt());
 }
 
 void KMConfigJobs::saveConfig(KConfig *conf)

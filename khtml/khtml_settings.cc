@@ -378,10 +378,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     if ( reset || config->hasKey( "MinimumFontSize" ) )
-        d->m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
+        d->m_minFontSize = config->readEntry( "MinimumFontSize", QVariant(HTML_DEFAULT_MIN_FONT_SIZE )).toInt();
 
     if ( reset || config->hasKey( "MediumFontSize" ) )
-        d->m_fontSize = config->readNumEntry( "MediumFontSize", 12 );
+        d->m_fontSize = config->readEntry( "MediumFontSize", QVariant(12 )).toInt();
 
     d->fonts = config->readListEntry( "Fonts" );
 
@@ -434,7 +434,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     d->m_formCompletionEnabled = config->readEntry("FormCompletion", QVariant(true)).toBool();
-    d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
+    d->m_maxFormCompletionItems = config->readEntry("MaxFormCompletionItems", QVariant(10)).toInt();
     d->m_autoDelayedActionsEnabled = config->readEntry ("AutoDelayedActions", QVariant(true)).toBool();
     d->m_jsErrorsEnabled = config->readEntry("ReportJSErrors", QVariant(true)).toBool();
     QStringList accesskeys = config->readListEntry("FallbackAccessKeysAssignments");
@@ -770,7 +770,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
 
     if (rx.isValid())
     {
-        int last=config.readNumEntry("Count",0);
+        int last=config.readEntry("Count", QVariant(0)).toInt();
         QString key = "Filter-" + QString::number(last);
         config.writeEntry(key, url);
         config.writeEntry("Count",last+1);

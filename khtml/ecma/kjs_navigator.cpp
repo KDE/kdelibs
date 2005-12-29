@@ -304,7 +304,7 @@ PluginBase::PluginBase(ExecState *exec)
             }
             // read configuration
             KConfig kc( locate ("data", pluginsinfo.toString()) );
-            unsigned num = (unsigned int) kc.readNumEntry("number");
+            unsigned num = (unsigned int) kc.readEntry("number", QVariant(0)).toInt();
             for ( unsigned n = 0; n < num; n++ ) {
                 kc.setGroup( QString::number(n) );
                 PluginInfo *plugin = new PluginInfo;

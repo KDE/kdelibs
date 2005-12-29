@@ -78,7 +78,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   KDesktopFile desktopFile(file, true, resource);
 
-  if ( desktopFile.readBoolEntry( "Hidden", false ) == true )
+  if ( desktopFile.readEntry( "Hidden", QVariant(false )).toBool() == true )
       return 0;
 
   // TODO check Type field first

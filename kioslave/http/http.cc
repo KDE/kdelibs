@@ -271,7 +271,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.bErrorPage = config()->readEntry("errorPage", QVariant(true)).toBool();
   m_request.bNoAuth = config()->readEntry("no-auth", QVariant(false)).toBool();
   m_strCacheDir = config()->readPathEntry("CacheDir");
-  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
+  m_maxCacheAge = config()->readEntry("MaxCacheAge", QVariant(DEFAULT_MAX_CACHE_AGE)).toInt();
   m_request.window = config()->readEntry("window-id");
 
   kdDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window << endl;
@@ -3715,7 +3715,7 @@ try_again:
 		kdDebug(7113) << "(" << m_pid << ") Error creating cache entry for " << m_request.url.url()<<"!\n";
 	    }
         m_request.expireDate = expireDate;
-        m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
+        m_maxCacheSize = config()->readEntry("MaxCacheSize", QVariant(DEFAULT_MAX_CACHE_SIZE)).toInt() / 2;
      }
   }
 

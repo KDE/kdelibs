@@ -77,7 +77,7 @@ void KServiceTypeProfile::initStatic()
       QString type2 = config.readEntry( "GenericServiceType" );
       if (type2.isEmpty()) // compat code
           type2 = (pService->type() == "Application") ? "Application" : "KParts/ReadOnlyPart";
-      int pref = config.readNumEntry( "Preference" );
+      int pref = config.readEntry( "Preference" , QVariant(0)).toInt();
 
       if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
       {

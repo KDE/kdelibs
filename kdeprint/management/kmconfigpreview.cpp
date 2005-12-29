@@ -62,7 +62,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 void KMConfigPreview::loadConfig(KConfig *conf)
 {
 	conf->setGroup("General");
-	m_useext->setChecked(conf->readBoolEntry("ExternalPreview", false));
+	m_useext->setChecked(conf->readEntry("ExternalPreview", QVariant(false)).toBool());
 	m_program->setURL(conf->readPathEntry("PreviewCommand", "gv"));
 }
 

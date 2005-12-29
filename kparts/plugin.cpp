@@ -255,11 +255,11 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 //kdDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
                 KSimpleConfig desktop( desktopfile, true );
                 desktop.setDesktopGroup();
-                pluginEnabled = desktop.readBoolEntry(
-                    "X-KDE-PluginInfo-EnabledByDefault", enableNewPluginsByDefault );
+                pluginEnabled = desktop.readEntry(
+                    "X-KDE-PluginInfo-EnabledByDefault", QVariant(enableNewPluginsByDefault) ).toBool();
                 if ( interfaceVersionRequired != 0 )
                 {
-                    const int version = desktop.readNumEntry( "X-KDE-InterfaceVersion", 1 );
+                    const int version = desktop.readEntry( "X-KDE-InterfaceVersion", QVariant(1) ).toInt();
                     if ( version != interfaceVersionRequired )
                     {
                         kdDebug(1000) << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired << endl;

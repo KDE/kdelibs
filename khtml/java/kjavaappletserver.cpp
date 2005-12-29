@@ -198,7 +198,7 @@ void KJavaAppletServer::freeJavaServer()
         config.setGroup( "Java/JavaScript Settings" );
         if( config.readEntry( "ShutdownAppletServer", QVariant(true )).toBool()  )
         {
-            const int value = config.readNumEntry( "AppletServerTimeout", 60 );
+            const int value = config.readEntry( "AppletServerTimeout", QVariant(60 )).toInt();
             QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
         }
     }

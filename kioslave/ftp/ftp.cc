@@ -2066,7 +2066,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KURL& dest_url,
     {
       // Remove if smaller than minimum size
       if ( ftpSize( dest, 'I' ) &&
-           ( processed_size < (unsigned long) config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
+           ( processed_size < (unsigned long) config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt() ) )
       {
         QByteArray cmd = "DELE ";
         cmd += remoteEncoding()->encode(dest);
@@ -2367,7 +2367,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
     }
     else if(KDE_stat( sPart.data(), &buff ) == 0)
     { // should a very small ".part" be deleted?
-      int size = config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+      int size = config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt();
       if (buff.st_size <  size)
         remove(sPart.data());
     }

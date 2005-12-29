@@ -503,7 +503,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
           KDE_struct_stat buff;
           if (bMarkPartial && KDE_stat( _dest.data(), &buff ) == 0)
           {
-            int size = config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+            int size = config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt();
             if (buff.st_size <  size)
               remove(_dest.data());
           }

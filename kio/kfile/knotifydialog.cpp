@@ -1078,7 +1078,7 @@ void Application::reloadEvents( bool revertToDefaults )
             e = new Event( this );
             e->name = kc->readEntry( "Name" );
             e->description = kc->readEntry( "Comment" );
-            e->dontShow = kc->readNumEntry("nopresentation", 0 );
+            e->dontShow = kc->readEntry("nopresentation", QVariant(0 )).toInt();
             e->configGroup = *it;
 
             if ( e->name.isEmpty() || e->description.isEmpty() )

@@ -529,7 +529,7 @@ void ListProgress::readSettings() {
   config.setGroup( "ProgressList" );
   for ( int i = 0; i < TB_MAX; i++ ) {
      QString tmps="Col"+QString::number(i);
-     m_lpcc[i].width=config.readNumEntry( tmps, 0);
+     m_lpcc[i].width=config.readEntry( tmps, QVariant(0)).toInt();
      if (m_lpcc[i].width==0) m_lpcc[i].width=defaultColumnWidth[i];
 
      tmps="Enabled"+QString::number(i);
@@ -1295,8 +1295,8 @@ void UIServer::readSettings() {
   m_showStatusBar=config.readEntry("ShowStatusBar", QVariant(false)).toBool();
   m_showToolBar=config.readEntry("ShowToolBar", QVariant(true)).toBool();
   m_keepListOpen=config.readEntry("KeepListOpen", QVariant(false)).toBool();
-  m_initWidth=config.readNumEntry("InitialWidth",460);
-  m_initHeight=config.readNumEntry("InitialHeight",150);
+  m_initWidth=config.readEntry("InitialWidth", QVariant(460)).toInt();
+  m_initHeight=config.readEntry("InitialHeight", QVariant(150)).toInt();
   m_bShowList = config.readEntry("ShowList", QVariant(false )).toBool();
   m_showSystemTray=config.readEntry("ShowSystemTray", QVariant(false)).toBool();
 }

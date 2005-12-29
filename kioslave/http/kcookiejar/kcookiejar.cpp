@@ -1510,7 +1510,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
 
     _config->setGroup("Cookie Dialog");
     m_showCookieDetails = _config->readEntry( "ShowCookieDetails" , QVariant(false)).toBool();
-    m_preferredPolicy = _config->readNumEntry( "PreferredPolicy", 0 );
+    m_preferredPolicy = _config->readEntry( "PreferredPolicy", QVariant(0 )).toInt();
 
     _config->setGroup("Cookie Policy");
     QStringList domainSettings = _config->readListEntry("CookieDomainAdvice");

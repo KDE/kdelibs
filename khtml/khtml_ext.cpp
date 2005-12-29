@@ -429,7 +429,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
       const QString defaultEngine = config.readEntry("DefaultSearchEngine", "google");
-      const char keywordDelimiter = config.readNumEntry("KeywordDelimiter", ':');
+      const char keywordDelimiter = config.readEntry("KeywordDelimiter", QVariant(':')).toInt();
 
       // search text
       QString selectedText = khtml->selectedText();

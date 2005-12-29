@@ -213,8 +213,8 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_ref = 0;
 
   KConfigGroup config(KGlobal::config(), QLatin1String("DirWatch"));
-  m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
-  m_PollInterval = config.readNumEntry("PollInterval", 500);
+  m_nfsPollInterval = config.readEntry("NFSPollInterval", QVariant(5000)).toInt();
+  m_PollInterval = config.readEntry("PollInterval", QVariant(500)).toInt();
 
   QString available("Stat");
 

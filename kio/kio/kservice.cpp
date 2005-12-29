@@ -233,7 +233,7 @@ KService::init( const KDesktopFile *config )
   m_bAllowAsDefault = config->readEntry("AllowDefault", QVariant(true )).toBool();
   entryMap.remove("AllowDefault");
 
-  m_initialPreference = config->readNumEntry( "InitialPreference", 1 );
+  m_initialPreference = config->readEntry( "InitialPreference", QVariant(1 )).toInt();
   entryMap.remove("InitialPreference");
 
   // Store all additional entries in the property map.

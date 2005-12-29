@@ -290,9 +290,9 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     d->completeRehighlightRequired = false;
 
     KConfigGroup cg( KGlobal::config(), "KSpell" );
-    d->disablePercentage = cg.readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
+    d->disablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", QVariant(42 )).toInt();
     d->disablePercentage = qMin( d->disablePercentage, 101 );
-    d->disableWordCount = cg.readNumEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
+    d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -533,17 +533,17 @@ QString KDictSpellingHighlighter::spellKey()
     KGlobal::config()->reparseConfiguration();
     KConfigGroup cg( KGlobal::config(), "KSpell" );
     QString key;
-    key += QString::number( cg.readNumEntry( "KSpell_NoRootAffix", 0 ));
+    key += QString::number( cg.readEntry( "KSpell_NoRootAffix", QVariant(0 )).toInt());
     key += '/';
-    key += QString::number( cg.readNumEntry( "KSpell_RunTogether", 0 ));
+    key += QString::number( cg.readEntry( "KSpell_RunTogether", QVariant(0 )).toInt());
     key += '/';
     key += cg.readEntry( "KSpell_Dictionary", "" );
     key += '/';
-    key += QString::number( cg.readNumEntry( "KSpell_DictFromList", false ));
+    key += QString::number( cg.readEntry( "KSpell_DictFromList", QVariant(false )).toInt());
     key += '/';
-    key += QString::number( cg.readNumEntry( "KSpell_Encoding", KS_E_ASCII ));
+    key += QString::number( cg.readEntry( "KSpell_Encoding", QVariant(KS_E_ASCII )).toInt());
     key += '/';
-    key += QString::number( cg.readNumEntry( "KSpell_Client", KS_CLIENT_ISPELL ));
+    key += QString::number( cg.readEntry( "KSpell_Client", QVariant(KS_CLIENT_ISPELL )).toInt());
     return key;
 }
 

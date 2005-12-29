@@ -90,7 +90,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
 
     m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
     KConfigGroup config( KGlobal::config(), ConfigGroup );
-    m_autoPlay->setChecked( config.readBoolEntry( "Autoplay sounds", true ) );
+    m_autoPlay->setChecked( config.readEntry( "Autoplay sounds", QVariant(true )).toBool() );
     connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 }
 

@@ -338,7 +338,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     else
       language = khtml::Decoder::SemiautomaticDetection;
 
-    int _id = config->readNumEntry( "AutomaticDetectionLanguage", language );
+    int _id = config->readEntry( "AutomaticDetectionLanguage", QVariant(language )).toInt();
     d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
 

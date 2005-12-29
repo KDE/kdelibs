@@ -123,7 +123,7 @@ void
 KCustomMenuEditor::load(KConfigBase *cfg)
 {
    cfg->setGroup(QString::null);
-   int count = cfg->readNumEntry("NrOfItems");
+   int count = cfg->readEntry("NrOfItems", QVariant(0)).toInt();
    Q3ListViewItem *last = 0;
    for(int i = 0; i < count; i++)
    {
