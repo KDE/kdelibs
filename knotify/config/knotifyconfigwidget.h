@@ -27,7 +27,9 @@ class KNotifyConfigElement;
 /**
  * Configure the notification for a given application / context
  * 
- * you must call setApplication before showing it
+ * You probably will want to use the static function configure
+ * 
+ * If you create the widget yourself, you must call setApplication before showing it
  * 
  * @author Olivier Goffart <ogoffart @ kde.org>
  */
@@ -36,6 +38,14 @@ class KDE_EXPORT KNotifyConfigWidget : public KVBox
 public:
 	KNotifyConfigWidget( QWidget *parent);
 	~KNotifyConfigWidget();
+	
+	/**
+	 * Show a dialog with the widget.
+	 * @param parent the parent widget of the dialog
+	 * @param appname the application name,  if null, it is autodetected
+	 * @return the widget itself    the topLevelWidget of it is probably a KDialog
+	 */
+	static KNotifyConfigWidget *configure(QWidget *parent = 0l, const QString &appname=QString::null);
 	
 	/**
 	 * Change the application and the context
@@ -48,10 +58,19 @@ public:
 						 const QString & context_name = QString::null,
 						 const QString & context_value = QString::null);
 	
+public slots:
 	/**
 	 * save to the config file
 	 */
 	void save();
+	
+signals:
+	/**
+	 * Indicate that the state of the modules contents has changed. 
+	 * This signal is emitted whenever the state of the configuration changes. 
+	 * @see KCModule::changed
+	 */
+	void changed(bool state);
 
 private:
 	struct Private;

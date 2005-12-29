@@ -64,14 +64,7 @@ void KNotifyTestWindow::slotMessageRead( )
 
 void KNotifyTestWindow::slotConfigureG( )
 {
-	KDialogBase dialog(this);
-	KNotifyConfigWidget *w=new KNotifyConfigWidget(&dialog);
-	w->setApplication();
-	dialog.setMainWidget(w);
-	if(dialog.exec())
-	{
-		w->save();
-	}
+	KNotifyConfigWidget::configure(this);
 }
 
 void KNotifyTestWindow::slotConfigureC( )

@@ -22,6 +22,7 @@
 #include "knotifyconfigelement.h"
 
 #include <kapplication.h>
+#include <kdialogbase.h>
 
 struct KNotifyConfigWidget::Private
 {
@@ -58,6 +59,7 @@ void KNotifyConfigWidget::setApplication (const QString & app, const QString & c
 
 void KNotifyConfigWidget::slotEventSelected( KNotifyConfigElement * e )
 {
+	emit changed( true ); //TODO
 	if(d->currentElement)
 		d->actionsconfig->save( d->currentElement );
 	d->currentElement=e;
@@ -79,6 +81,22 @@ void KNotifyConfigWidget::save( )
 	d->currentElement=0l;
 
 	d->eventList->save();
+	emit changed(false);
+}
+
+KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QString & appname )
+{
+	KDialogBase *dialog=new KDialogBase(parent);
+	KNotifyConfigWidget *w=new KNotifyConfigWidget(dialog);
+	dialog->setMainWidget(w);
+	
+	connect(dialog,SIGNAL(applyClicked()),w,SLOT(save()));
+	connect(dialog,SIGNAL(okClicked()),w,SLOT(save()));
+	connect(w,SIGNAL(changed(bool)) , dialog , SLOT(enableButtonApply(bool)));
+
+	w->setApplication(appname);
+	dialog->show();
+	return w;
 }
 
 
