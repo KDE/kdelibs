@@ -102,7 +102,7 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 		KConfig *conf = KMFactory::self()->printConfig();
 		QSize defSize( 550, 250 );
 		conf->setGroup( "Jobs" );
-		resize( conf->readSizeEntry( "Size", &defSize ) );
+		resize( conf->readEntry( "Size", QVariant(&defSize )).toSize() );
 	}
 }
 
