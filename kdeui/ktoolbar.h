@@ -1071,7 +1071,7 @@ private:
     typedef QMap<int, QWidget* > Id2WidgetMap;
     Id2WidgetMap id2widget;
     KMenu *context;
-    Q3PtrList<QWidget> widgets;
+    QList<QWidget*> widgets;
     QTimer *layoutTimer;
     QPointer<QWidget> stretchableWidget, rightAligned;
 protected:

@@ -24,7 +24,7 @@
 #define KCMODULE_H
 
 #include <qwidget.h>
-#include <q3ptrlist.h>
+#include <QList>
 
 #include <kdelibs_export.h>
 
@@ -226,7 +226,7 @@ public:
    * @return a list of @ref KConfigDialogManager's in use, if any.
    * @since 3.4
    */
-  const Q3PtrList<KConfigDialogManager>& configs() const;
+  const QList<KConfigDialogManager*>& configs() const;
 
 protected:
   /**

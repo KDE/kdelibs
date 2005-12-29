@@ -691,7 +691,7 @@ void KToolBar::removeItem(int id)
     QWidget * w = (*it);
     id2widget.remove( id );
     widget2id.remove( w );
-    widgets.removeRef( w );
+    widgets.removeAll( w );
     delete w;
 }
 
@@ -707,7 +707,7 @@ void KToolBar::removeItemDelayed(int id)
     QWidget * w = (*it);
     id2widget.remove( id );
     widget2id.remove( w );
-    widgets.removeRef( w );
+    widgets.removeAll( w );
 
     w->blockSignals(true);
     d->idleButtons.append(w);
@@ -734,7 +734,7 @@ void KToolBar::showItem (int id)
 int KToolBar::itemIndex (int id)
 {
     QWidget *w = getWidget(id);
-    return w ? widgets.findRef(w) : -1;
+    return w ? widgets.indexOf(w) : -1;
 }
 
 int KToolBar::idAt (int index)
@@ -1151,7 +1151,7 @@ void KToolBar::rebuildLayout()
     while ( it.current() )
         it.deleteCurrent();
 
-    for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
+	Q_FOREACH( QWidget *w , widgets ) {
         if ( w == rightAligned )
             continue;
         KToolBarSeparator *ktbs = dynamic_cast<KToolBarSeparator *>(w);
@@ -1272,7 +1272,7 @@ QSize KToolBar::sizeHint() const
     {
      case KToolBar::Top:
      case KToolBar::Bottom:
-       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
+       Q_FOREACH( QWidget *w , ncThis->widgets ) 
        {
           QSize sh = w->sizeHint();
           if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
@@ -1294,7 +1294,7 @@ QSize KToolBar::sizeHint() const
 
      case KToolBar::Left:
      case KToolBar::Right:
-       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
+	   Q_FOREACH( QWidget *w , ncThis->widgets )
        {
           QSize sh = w->sizeHint();
           if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
@@ -2154,12 +2154,13 @@ void KToolBar::slotContextAboutToHide()
   if ( configureAction )
     configureAction->unplug(context);
 
-  Q3PtrListIterator<QWidget> it( widgets );
+  QListIterator<QWidget*> it( widgets );
   QWidget *wdg;
-  while ( ( wdg = it.current() ) != 0 ) {
-    if ( qobject_cast<QToolButton*>(wdg) )
-      static_cast<QToolButton*>( wdg )->setDown( false );
-    ++it;
+  while( it.hasNext())
+  {
+	wdg = it.next();
+	if ( qobject_cast<QToolButton*>(wdg) )
+		static_cast<QToolButton*>( wdg )->setDown( false );
   }
 }
 
@@ -2170,7 +2171,7 @@ void KToolBar::widgetDestroyed()
 
 void KToolBar::removeWidgetInternal( QWidget * w )
 {
-    widgets.removeRef( w );
+    widgets.removeAll( w );
     QMap< QWidget*, int >::Iterator it = widget2id.find( w );
     if ( it == widget2id.end() )
         return;

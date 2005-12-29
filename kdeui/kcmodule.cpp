@@ -51,7 +51,7 @@ public:
     QString _rootOnlyMsg;
     bool _useRootOnlyMsg;
     bool _hasOwnInstance;
-    Q3PtrList<KConfigDialogManager> managers;
+    QList<KConfigDialogManager*> managers;
     QString _quickHelp;
 
     // this member is used to record the state on non-automatically
@@ -72,7 +72,6 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
         d->_instance = new KInstance("kcmunnamed");
     KGlobal::setActiveInstance(this->instance());
 
-    d->managers.setAutoDelete( true );
 
 }
     
@@ -105,6 +104,8 @@ KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* wid
 
 KCModule::~KCModule()
 {
+    qDeleteAll(d->managers);
+    d->managers.clear();
     if (d->_hasOwnInstance)
        delete d->_instance;
     delete d->_about;
@@ -114,14 +115,14 @@ KCModule::~KCModule()
 void KCModule::load()
 {
     KConfigDialogManager* manager;
-    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+    Q_FOREACH( manager , d->managers )
         manager->updateWidgets();
 }
 
 void KCModule::save()
 {
     KConfigDialogManager* manager;
-    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+    Q_FOREACH( manager , d->managers )
         manager->updateSettings();
     emit( changed( false ));
 }
@@ -129,7 +130,7 @@ void KCModule::save()
 void KCModule::defaults()
 {
     KConfigDialogManager* manager;
-    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+    Q_FOREACH( manager , d->managers )
         manager->updateWidgetsDefault();
 }
 
@@ -141,7 +142,7 @@ void KCModule::widgetChanged()
 bool KCModule::managedWidgetChangeState() const
 {
     KConfigDialogManager* manager;
-    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+    Q_FOREACH( manager , d->managers )
     {
         if ( manager->hasChanged() )
             return true;
@@ -209,7 +210,7 @@ QString KCModule::quickHelp() const
 }
 
 
-const Q3PtrList<KConfigDialogManager>& KCModule::configs() const
+const QList<KConfigDialogManager*>& KCModule::configs() const
 {
     return d->managers;
 }
