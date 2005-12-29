@@ -102,6 +102,7 @@ kconf_update
 kresources
 interfaces
 kate
+dnssd
 """
 
 # currently not on windows 
