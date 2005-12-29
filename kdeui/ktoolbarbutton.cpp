@@ -437,7 +437,7 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
         if ((mev->pos() - d->m_mousePressPos).manhattanLength()
               > KGlobalSettings::dndEventDelay())
         {
-          openPopup();
+          showMenu();
           return true;
         }
       }
