@@ -66,7 +66,7 @@ public:
 
       // make sure they are not larger than 16x16
       if (normal.width() > 16 || normal.height() > 16) {
-          QImage tmp = normal.convertToImage();
+          QImage tmp = normal.toImage();
           tmp = tmp.smoothScale(16, 16);
           normal.convertFromImage(tmp);
       }

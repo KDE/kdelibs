@@ -676,7 +676,7 @@ void KApplication::init()
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
               KIcon::NoGroup, KIcon::SizeLarge, KIcon::DefaultState, 0L, false );
       if (!pixmap.isNull()) {
-          QImage i = pixmap.convertToImage().convertDepth(32).smoothScale(40, 40);
+          QImage i = pixmap.toImage().convertDepth(32).smoothScale(40, 40);
           for(int y = 0; y < i.height(); y++) {
               uchar *l = i.scanLine(y);
               for(int x = 0; x < i.width(); x+=4)

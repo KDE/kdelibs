@@ -174,7 +174,7 @@ static QPixmap appIcon(const QString &iconName)
     // make sure they are not larger than 20x20
     if (normal.width() > 20 || normal.height() > 20)
     {
-       QImage tmp = normal.convertToImage();
+       QImage tmp = normal.toImage();
        tmp = tmp.smoothScale(20, 20);
        normal.convertFromImage(tmp);
     }

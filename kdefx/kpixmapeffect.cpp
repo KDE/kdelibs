@@ -106,7 +106,7 @@ KPixmap& KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
 KPixmap& KPixmapEffect::intensity(KPixmap &pixmap, float percent)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     KImageEffect::intensity(image, percent);
     pixmap.convertFromImage(image);
 
@@ -119,7 +119,7 @@ KPixmap& KPixmapEffect::intensity(KPixmap &pixmap, float percent)
 KPixmap& KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
                                      RGBComponent channel)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     KImageEffect::channelIntensity(image, percent,
                    (KImageEffect::RGBComponent) channel);
     pixmap.convertFromImage(image);
@@ -140,7 +140,7 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 			  bool anti_dir, int ncols)
 {
 
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     if (image.depth() <=8)
         image = image.convertDepth(32); //Sloww..
 
@@ -177,7 +177,7 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 KPixmap& KPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
 			 unsigned int spacing, int ncols)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     KImageEffect::hash(image, (KImageEffect::Lighting) lite, spacing);
 
     unsigned int tmp;
@@ -224,7 +224,7 @@ KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
     if (pmtile.depth() > 8)
 	ncols = 0;
 
-    QImage img = pmtile.convertToImage();
+    QImage img = pmtile.toImage();
     KImageEffect::flatten(img, ca, cb, ncols);
     KPixmap pixmap;
     pixmap.convertFromImage(img);
@@ -254,7 +254,7 @@ KPixmap KPixmapEffect::createTiled(const KPixmap& pixmap, QSize size)
 
 KPixmap& KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     KImageEffect::fade(img, val, color);
     pixmap.convertFromImage(img);
 
@@ -265,7 +265,7 @@ KPixmap& KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
 // -----------------------------------------------------------------------------
 KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     KImageEffect::toGray(img, fast);
     pixmap.convertFromImage(img);
 
@@ -275,7 +275,7 @@ KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
 // -----------------------------------------------------------------------------
 KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     KImageEffect::desaturate(img, desat);
     pixmap.convertFromImage(img);
 
@@ -284,7 +284,7 @@ KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
 // -----------------------------------------------------------------------------
 KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     KImageEffect::contrast(img, c);
     pixmap.convertFromImage(img);
 
@@ -300,7 +300,7 @@ KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
 // -----------------------------------------------------------------------------
 KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     KImageEffect::dither(img, palette, size);
     pixmap.convertFromImage(img);
 
@@ -315,7 +315,7 @@ KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
 
 KPixmap KPixmapEffect::selectedPixmap( const KPixmap &pix, const QColor &col )
 {
-    QImage img = pix.convertToImage();
+    QImage img = pix.toImage();
     KImageEffect::selectedImage(img, col);
     KPixmap outPix;
     outPix.convertFromImage(img);

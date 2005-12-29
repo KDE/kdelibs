@@ -260,7 +260,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
     }
     else if ( effect != NoEffect )
     {
-        QImage tmpImg = pixmap.convertToImage();
+        QImage tmpImg = pixmap.toImage();
         tmpImg = apply(tmpImg, effect, value, col, col2, trans);
         result.convertFromImage(tmpImg);
     }
@@ -535,7 +535,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 {
     if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
     {
-	QImage img=pix.convertToImage();
+	QImage img=pix.toImage();
 	semiTransparent(img);
 	pix.convertFromImage(img);
 	return;
@@ -543,7 +543,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 
     QImage img;
     if (!pix.mask().isNull())
-	img = pix.mask().convertToImage();
+	img = pix.mask().toImage();
     else
     {
 	img.create(pix.size(), 1, 2, QImage::BigEndian);
