@@ -22,7 +22,7 @@ manager.h manageriface.h managerimpl.h resource.h
 selectdialog.h
 """
 
-includes = ' '
+includes = '.'
 
 obj = env.kdeobj('shlib')
 obj.target = 'kresources'
@@ -37,7 +37,7 @@ obj = env.kdeobj('module')
 obj.target = 'kcm_kresources'
 obj.source = kcm_kresources_sources
 obj.includes = includes
-obj.libpaths = '../kdecore ../dcop '
+obj.libpaths = '../kdecore ../dcop .'
 obj.libs = 'kresources '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
