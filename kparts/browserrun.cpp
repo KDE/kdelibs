@@ -394,10 +394,10 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
                 // Until the shiny new class comes about, send the suggestedFilename
                 // along with the actual URL to download. (DA)
-                if ( suggestedFilename.isEmpty() )
-                    cmd += " " + KProcess::quote(url.url());
-                else
-                    cmd += " " + KProcess::quote(url.url()) + " " + KProcess::quote(suggestedFilename);
+                cmd += " " + KProcess::quote(url.url());
+                if ( !suggestedFilename.isEmpty() )
+                    cmd +=" " + KProcess::quote(suggestedFilename);
+
                 kdDebug(1000) << "Calling command  " << cmd << endl;
                 // slave is already on hold (slotBrowserMimetype())
                 KIO::Scheduler::publishSlaveOnHold();
