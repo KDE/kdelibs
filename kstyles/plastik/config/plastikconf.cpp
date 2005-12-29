@@ -126,11 +126,11 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 	connect(drawTriangularExpander, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );
 	connect(inputFocusHighlight, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );
 	connect(customOverHighlightColor, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );
-	connect(overHighlightColor, SIGNAL( changed(QColor) ), SLOT( updateChanged() ) );
+	connect(overHighlightColor, SIGNAL( changed(const QColor&) ), SLOT( updateChanged() ) );
 	connect(customFocusHighlightColor, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );
-	connect(focusHighlightColor, SIGNAL( changed(QColor) ), SLOT( updateChanged() ) );
+	connect(focusHighlightColor, SIGNAL( changed(const QColor&) ), SLOT( updateChanged() ) );
 	connect(customCheckMarkColor, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );
-	connect(checkMarkColor, SIGNAL( changed(QColor) ), SLOT( updateChanged() ) );
+	connect(checkMarkColor, SIGNAL( changed(const QColor&) ), SLOT( updateChanged() ) );
 	if ( customOverHighlightColor->isChecked() )
 	 overHighlightColor->setEnabled(true);
 	else
