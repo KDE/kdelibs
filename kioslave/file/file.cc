@@ -125,8 +125,6 @@ int kdemain( int argc, char **argv )
 
 FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app ) : SlaveBase( "file", pool, app )
 {
-    usercache.setAutoDelete( true );
-    groupcache.setAutoDelete( true );
 }
 
 
@@ -914,42 +912,31 @@ void FileProtocol::del( const KURL& url, bool isfile)
     finished();
 }
 
-
-QString FileProtocol::getUserName( uid_t uid )
+QString FileProtocol::getUserName( uid_t uid ) const
 {
-    QString *temp;
-    temp = usercache.find( uid );
-    if ( !temp ) {
+    if ( !mUsercache.contains( uid ) ) {
         struct passwd *user = getpwuid( uid );
         if ( user ) {
-            usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
-            return QString::fromLatin1( user->pw_name );
+            mUsercache.insert( uid, QString::fromLatin1(user->pw_name) );
         }
         else
             return QString::number( uid );
     }
-    else
-        return *temp;
+    return mUsercache[uid];
 }
 
-QString FileProtocol::getGroupName( gid_t gid )
+QString FileProtocol::getGroupName( gid_t gid ) const
 {
-    QString *temp;
-    temp = groupcache.find( gid );
-    if ( !temp ) {
+    if ( !mGroupcache.contains( gid ) ) {
         struct group *grp = getgrgid( gid );
         if ( grp ) {
-            groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
-            return QString::fromLatin1( grp->gr_name );
+            mGroupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
         }
         else
             return QString::number( gid );
     }
-    else
-        return *temp;
+    return mGroupcache[gid];
 }
-
-
 
 bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & path, UDSEntry & entry,
                                    short int details, bool withACL )

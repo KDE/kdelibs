@@ -29,9 +29,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <qobject.h>
-#include <q3intdict.h>
-#include <qstring.h>
+#include <QObject>
+#include <QHash>
+#include <QString>
 
 #include <kio/global.h>
 #include <kio/slavebase.h>
@@ -83,11 +83,12 @@ protected:
                        short int details, bool withACL );
   int setACL( const char *path, mode_t perm, bool _directoryDefault );
 
-  QString getUserName( uid_t uid );
-  QString getGroupName( gid_t gid );
+  QString getUserName( uid_t uid ) const;
+  QString getGroupName( gid_t gid ) const;
 
-  Q3IntDict<QString> usercache;      // maps long ==> QString *
-  Q3IntDict<QString> groupcache;
+private:
+  mutable QHash<uid_t, QString> mUsercache;
+  mutable QHash<gid_t, QString> mGroupcache;
 
   class FileProtocolPrivate;
   FileProtocolPrivate *d;
