@@ -24,7 +24,7 @@
 #include <qstring.h>
 
 #include <qstringlist.h>
-#include <q3ptrlist.h>
+#include <QList>
 #include <qobject.h>
 #include <qpair.h>
 #include <dcopobject.h>
@@ -123,7 +123,7 @@ private:
 
 	KConfig			*m_printconfig;
 	Settings		*m_settings;
-	Q3PtrList<KPReloadObject> m_objects;
+	QList<KPReloadObject*> m_objects;
 };
 
 #endif

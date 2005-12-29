@@ -89,7 +89,6 @@ KMFactory::KMFactory()
 	m_settings->pageSize = -1;
 	m_settings->orientation = -1;
 
-	m_objects.setAutoDelete(false);
 
 	m_manager = 0;
 	m_jobmanager = 0;
@@ -273,9 +272,9 @@ void KMFactory::unload()
 void KMFactory::reload(const QString& syst, bool saveSyst)
 {
 	// notify all registered objects about the coming reload
-	Q3PtrListIterator<KPReloadObject>	it(m_objects);
-	for (;it.current();++it)
-		it.current()->aboutToReload();
+	QListIterator<KPReloadObject*>	it(m_objects);
+	while(it.hasNext())
+		it.next()->aboutToReload();
 
 	// unload all objects from the plugin
 	unload();
@@ -294,8 +293,9 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 	loadFactory(syst);
 
 	// notify all registered objects
-	for (it.toFirst();it.current();++it)
-		it.current()->reload();
+	it.toBack();
+	while(it.hasNext())
+		it.next()->reload();
 }
 
 QList<KMFactory::PluginInfo> KMFactory::pluginList()
@@ -338,7 +338,7 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 void KMFactory::registerObject(KPReloadObject *obj, bool priority)
 {
 	// check if object already registered, then add it
-	if (m_objects.findRef(obj) == -1)
+	if (m_objects.indexOf(obj) == -1)
 	{
 		if (priority)
 			m_objects.prepend(obj);
@@ -351,7 +351,7 @@ void KMFactory::registerObject(KPReloadObject *obj, bool priority)
 void KMFactory::unregisterObject(KPReloadObject *obj)
 {
 	// remove object from list (not deleted as autoDelete is false)
-	m_objects.removeRef(obj);
+	m_objects.removeAll(obj);
 	kdDebug(500) << "kdeprint: unregistering " << (void*)obj << ", number of objects = " << m_objects.count() << endl;
 }
 
@@ -397,13 +397,13 @@ void KMFactory::slot_configChanged()
 	printConfig();
 
 	// notify all registered objects about the coming reload
-	Q3PtrListIterator<KPReloadObject>	it(m_objects);
+	QListIterator<KPReloadObject*>	it(m_objects);
 	/*for (;it.current();++it)
 		it.current()->aboutToReload();*/
 
 	// notify all object about the change
-	for (it.toFirst(); it.current();++it)
-		it.current()->configChanged();
+	while(it.hasNext())
+		it.next()->configChanged();
 }
 
 void KMFactory::saveConfig()
