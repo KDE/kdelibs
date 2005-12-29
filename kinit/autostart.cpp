@@ -97,7 +97,7 @@ static bool startCondition(const QString &condition)
 
   bool defaultValue = (list[3].toLower() == "true");
 
-  return config.readBoolEntry(list[2], defaultValue);
+  return config.readEntry(list[2], QVariant(defaultValue)).toBool();
 }
 
 void
@@ -114,14 +114,14 @@ AutoStart::loadAutoStartList()
           continue;
        if (!config.tryExec())
           continue;
-       if (config.readBoolEntry("Hidden", false))
+       if (config.readEntry("Hidden", QVariant(false)).toBool())
           continue;
        
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
        item->service = *it;
        item->startAfter = config.readEntry("X-KDE-autostart-after");
-       item->phase = config.readNumEntry("X-KDE-autostart-phase", 1);
+       item->phase = config.readEntry("X-KDE-autostart-phase", QVariant(1)).toInt();
        if (item->phase < 1)
           item->phase = 1;
        m_startList->append(item);
