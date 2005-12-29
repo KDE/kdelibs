@@ -48,7 +48,7 @@ public:
 	~KPlotAxis() {}
 
 	/**
-	 * Returns whether the axis is visible or not.
+	 * @return whether the axis is visible or not
 	 */
 	bool isVisible() const { return m_visible; }
 
@@ -75,7 +75,7 @@ public:
 	void setLabel( const QString& label ) { m_label = label; }
 
 	/**
-	 * Returns the axis label.
+	 * @return the axis label
 	 */
 	QString label() const { return m_label; }
 
@@ -87,17 +87,17 @@ public:
 		m_labelFieldWidth = fieldWidth; m_labelFmt = fmt; m_labelPrec = prec; }
 
 	/**
-	 * Returns the field width of the tick labels.
+	 * @return the field width of the tick labels
 	 */
 	int labelFieldWidth() const { return m_labelFieldWidth; }
 
 	/**
-	 * Returns the number format of the tick labels.
+	 * @return the number format of the tick labels
 	 */
 	char labelFmt() const { return m_labelFmt; }
 
 	/**
-	 * short Returns the number precision of the tick labels.
+	 * @return the number precision of the tick labels
 	 */
 	int labelPrec() const { return m_labelPrec; }
 

@@ -20,7 +20,6 @@
 
 #include <QColor>
 #include <QPointF>
-#include <QRectF>
 #include <QString>
 
 #include <kdemacros.h>
@@ -29,10 +28,13 @@
  * @class KPlotObject
  * @short Encapsulates an object to be plotted in a KPlotWidget.
  *
- * Each KPlotObject consists of a list of QPoints, an object type, a color, a size,
- * and a name. An additional integer (param) specifies something further
- * about the object's appearance, depending on its type.  There is a draw function
- * for plotting the object on a KPlotWidget's QPainter.
+ * Each KPlotObject consists of a list of QPointF's, an object type, a color,
+ * a size, and a name. An additional integer (param) specifies something
+ * further about the object's appearance, depending on its type.
+ *
+ * @note KPlotObject will take care of the points added to it, so when clearing
+ * the points list (eg with clearPoints()) any previous reference to a QPointF
+ * already added to a KPlotObject will be invalid.
  *
  * @author Jason Harris
  * @version 1.0
@@ -131,11 +133,14 @@ public:
 	void setParam( unsigned int p ) { Parameter = p; }
 
 	/**
-	 * @return a pointer to the QPointF at position i
-	 * @param i the index of the desired point.
+	 * @return a pointer to the QPointF at position index
+	 * @param index the index of the desired point
 	 */
-	QPointF* point( unsigned int i ) { return pList.at(i); }
+	QPointF* point( int index );
 
+	/**
+	 * @return a pointer to the list of points of the current KPlotObject
+	 */
 	QList<QPointF*> *points() { return &pList; }
 
 	/**
@@ -149,7 +154,7 @@ public:
 	 * @overload
 	 * @param p pointer to the QPointF to add.
 	 */
-	void addPoint( QPointF *p ) { pList.append( p ); }
+	void addPoint( QPointF *p );
 
 	/**
 	 * Remove the QPointF at position index from the list of points
@@ -160,12 +165,12 @@ public:
 	/**
 	 * @return the number of QPoints currently in the list
 	 */
-	unsigned int count() const { return pList.count(); }
+	int count() const { return pList.count(); }
 
 	/**
 	 * Clear the Object's points list
 	 */
-	void clearPoints() { pList.clear(); }
+	void clearPoints();
 
 private:
 	QList<QPointF*> pList;

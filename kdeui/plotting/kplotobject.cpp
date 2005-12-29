@@ -17,6 +17,8 @@
 
 #include "kplotobject.h"
 
+#include <QtAlgorithms>
+
 #include <kdebug.h>
 
 KPlotObject::KPlotObject() {
@@ -34,14 +36,35 @@ KPlotObject::KPlotObject( const QString &n, const QColor &c, PTYPE t, unsigned i
 
 KPlotObject::~KPlotObject()
 {
+	qDeleteAll( pList );
+	pList.clear();
+}
+
+QPointF* KPlotObject::point( int index ) {
+	if ( index < 0 || index >= pList.count() ) {
+		kdWarning() << "KPlotObject::object(): index " << index << " out of range!" << endl;
+		return 0;
+	}
+	return pList.at(index);
+}
+
+void KPlotObject::addPoint( QPointF *p ) {
+	// skip null pointers
+	if ( !p ) return;
+	pList.append( p );
 }
 
 void KPlotObject::removePoint( int index ) {
 	if ( ( index < 0 ) || ( index >= pList.count() ) ) {
-		kdWarning() << "Ignoring attempt to remove non-existent plot object" << endl;
+		kdWarning() << "KPlotObject::removePoint(): index " << index << " out of range!" << endl;
 		return;
 	}
 
 	pList.removeAt( index );
+}
+
+void KPlotObject::clearPoints() {
+	qDeleteAll( pList );
+	pList.clear();
 }
 

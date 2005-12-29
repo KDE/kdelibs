@@ -50,6 +50,13 @@ class KPlotObject;
 
 class KDE_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
+	Q_PROPERTY(int leftPadding READ leftPadding WRITE setLeftPadding)
+	Q_PROPERTY(int rightPadding READ rightPadding WRITE setRightPadding)
+	Q_PROPERTY(int topPadding READ topPadding WRITE setTopPadding)
+	Q_PROPERTY(int bottomPadding READ bottomPadding WRITE setBottomPadding)
+	Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+	Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor)
+	Q_PROPERTY(QColor gridColor READ gridColor WRITE setGridColor)
 public:
 	/**
 	 * @short Constructor. Sets the primary x and y limits in data units.
@@ -65,6 +72,8 @@ public:
 	 * Destructor (empty)
 	 */
 	virtual ~KPlotWidget();
+
+	virtual QSize minimumSizeHint() const;
 
 	/**
 	 * @short Determine the placement of major and minor tickmarks,
@@ -115,7 +124,7 @@ public:
 	 * Add an item to the list of KPlotObjects to be plotted.
 	 * @param o pointer to the KPlotObject to be added
 	 */
-	virtual void addObject( KPlotObject *o ) { ObjectList.append( o ); }
+	void addObject( KPlotObject *o );
 
 	/**
 	 * Remove and delete all items from the list of KPlotObjects
@@ -199,18 +208,18 @@ public:
 	 * Sets the X-axis label.
 	 * Set the label to an empty string to omit the axis label.
 	 *
-	 * This function is deprecated, set the label property in the BottomAxis directly.
+	 * @deprecated set the label property in the BottomAxis directly
 	 * @param xlabel a short string describing the data plotted on the x-axis.
 	 */
-	virtual void setXAxisLabel( const QString& xlabel ) { BottomAxis.setLabel(xlabel); }
+	KDE_DEPRECATED void setXAxisLabel( const QString& xlabel ) { BottomAxis.setLabel(xlabel); }
 	/**
 	 * Sets the Y-axis label
 	 * Set the label to an empty string to omit the axis label.
 	 *
-	 * This function is deprecated, set the label property in the LeftAxis directly.
+	 * @deprecated set the label property in the LeftAxis directly
 	 * @param ylabel a short string describing the data plotted on the y-axis.
 	 */
-	virtual void setYAxisLabel( const QString& ylabel ) { LeftAxis.setLabel(ylabel); }
+	KDE_DEPRECATED void setYAxisLabel( const QString& ylabel ) { LeftAxis.setLabel(ylabel); }
 
 	/**
 	 * @returns the number of pixels to the left of the plot area.

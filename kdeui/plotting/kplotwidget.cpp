@@ -60,6 +60,11 @@ KPlotWidget::~KPlotWidget()
 	ObjectList.clear();
 }
 
+QSize KPlotWidget::minimumSizeHint() const
+{
+	return QSize( 150, 150 );
+}
+
 void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 	double XA1, XA2, YA1, YA2;
 	if (x2<x1) { XA1=x2; XA2=x1; }
@@ -137,6 +142,12 @@ void KPlotWidget::updateTickmarks() {
 	} //end for iaxis
 }
 
+void KPlotWidget::addObject( KPlotObject *o ) {
+	// skip null pointers
+	if ( !o ) return;
+	ObjectList.append( o );
+}
+
 void KPlotWidget::clearObjectList() {
 	qDeleteAll( ObjectList );
 	ObjectList.clear();
@@ -144,7 +155,7 @@ void KPlotWidget::clearObjectList() {
 }
 
 KPlotObject *KPlotWidget::object( int i ) {
-	if ( i < 0 || i >= ObjectList.size() ) {
+	if ( i < 0 || i >= ObjectList.count() ) {
 		kdWarning() << "KPlotWidget::object(): index " << i << " out of range!" << endl;
 		return 0;
 	}
