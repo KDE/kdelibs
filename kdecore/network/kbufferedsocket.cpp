@@ -278,6 +278,7 @@ qint64 KBufferedSocket::bytesToWrite() const
 void KBufferedSocket::closeNow()
 {
   KStreamSocket::close();
+  d->output->clear();
 }
 
 bool KBufferedSocket::canReadLine() const
