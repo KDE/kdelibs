@@ -172,7 +172,6 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https" || protocol == "webdavs") )
 {
-  m_requestQueue.setAutoDelete(true);
 
   m_bBusy = false;
   m_bFirstRequest = false;
@@ -197,6 +196,8 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
 HTTPProtocol::~HTTPProtocol()
 {
   httpClose(false);
+  qDeleteAll(m_requestQueue);
+  m_requestQueue.clear();
 }
 
 void HTTPProtocol::reparseConfiguration()
@@ -1772,6 +1773,14 @@ void HTTPProtocol::multiGet(const QByteArray &data)
   if (!m_bBusy)
   {
      m_bBusy = true;
+	 QMutableListIterator<HTTPRequest*> i(m_requestQueue);
+	 while (i.hasNext()) {
+	 	HTTPRequest *request = i.next();
+		m_request = *request;
+		i.remove();
+		retrieveContent();
+	 }
+#if 0
      while(!m_requestQueue.isEmpty())
      {
         HTTPRequest *request = m_requestQueue.take(0);
@@ -1779,6 +1788,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         delete request;
         retrieveContent();
      }
+#endif
      m_bBusy = false;
   }
 }

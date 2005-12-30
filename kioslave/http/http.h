@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <q3ptrlist.h>
+#include <QList>
 #include <q3strlist.h>
 #include <qstringlist.h>
 
@@ -469,7 +469,7 @@ protected:
 protected:
   HTTPState m_state;
   HTTPRequest m_request;
-  Q3PtrList<HTTPRequest> m_requestQueue;
+  QList<HTTPRequest*> m_requestQueue;
 
   bool m_bBusy; // Busy handling request queue.
   bool m_bEOF;
