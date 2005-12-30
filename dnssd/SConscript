@@ -20,7 +20,7 @@ obj.libpaths = '../kdecore '
 obj.libs = 'kdecore '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 DNSSD '
 if env['WINDOWS']:
-    obj.libs    += ' ws2_32.lib '
+    obj.libs    += ' ws2_32'
 obj.execute()
 
 
