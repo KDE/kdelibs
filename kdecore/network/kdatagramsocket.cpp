@@ -82,7 +82,7 @@ bool KDatagramSocket::bind(const QString& node, const QString& service)
     return false;
 
   // see if lookup has finished already
-  // this also catches blocking modewrrrr, since lookup has to finish
+  // this also catches blocking mode, since lookup has to finish
   // its processing if we're in blocking mode
   if (state() > HostLookup)
     return doBind();
