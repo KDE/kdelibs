@@ -88,7 +88,8 @@ def detect(env):
 		env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
 
 		# required libraries should be installed under mingw installation root, so add the search pathes 
-		env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '\\include']
+		# INCLUDES_LAST is used by kde4.py to make sure mingw include dir is searched last 
+		env['INCLUDES_LAST'] = [os.environ['MINGW'] + '\\include']
 		env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-Wl,--script,bksys\\win32\\i386pe.x-no-rdata','-L' + os.environ['MINGW'] + '\\lib']
 
 	env['LIBSUFFIXEXT'] = '.dll'
