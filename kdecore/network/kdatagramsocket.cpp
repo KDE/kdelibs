@@ -82,7 +82,7 @@ bool KDatagramSocket::bind(const QString& node, const QString& service)
     return false;
 
   // see if lookup has finished already
-  // this also catches blocking mode, since lookup has to finish
+  // this also catches blocking modewrrrr, since lookup has to finish
   // its processing if we're in blocking mode
   if (state() > HostLookup)
     return doBind();
@@ -130,6 +130,7 @@ bool KDatagramSocket::connect(const QString& node, const QString& service,
       lookupFinishedPeer();
     }
 
+  KActiveSocketBase::open(mode | Unbuffered);
   return state() == Connected;
 }
 
@@ -170,6 +171,19 @@ KDatagramPacket KDatagramSocket::receive()
 qint64 KDatagramSocket::send(const KDatagramPacket& packet)
 {
   return write(packet.data(), packet.size(), packet.address());
+}
+
+qint64 KDatagramSocket::writeData(const char *data, qint64 len, 
+				  const KSocketAddress* to)
+{
+  if (to->family() != AF_UNSPEC)
+    {
+      // make sure the socket is open at this point
+      if (!socketDevice()->isOpen())
+	// error handling will happen below
+	socketDevice()->create(to->family(), SOCK_DGRAM, 0);
+    }
+  return KClientSocketBase::writeData(data, len, to);
 }
 
 void KDatagramSocket::lookupFinishedLocal()

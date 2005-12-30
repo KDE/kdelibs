@@ -222,7 +222,7 @@ public:
    *
    * Connecting means only to designate the given address as the default
    * destination address for datagrams sent without destination addresses
-   * ( writeBlock(const char*, qint64).
+   * (see write(const char*, qint64) ).
    *
    * @note Calling connect will not cause the socket to be bound. You have
    *       to call @ref bind explicitly.
@@ -257,6 +257,12 @@ public:
    * @returns the number of bytes written or -1 in case of error.
    */
   virtual qint64 send(const KDatagramPacket& packet);
+
+protected:
+  /**
+   * Writes data to the socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
 
 private slots:
   void lookupFinishedLocal();
