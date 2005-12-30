@@ -10,4 +10,4 @@ libknotifyconfig_la_SOURCES =   knotifyconfigactionswidgetbase.ui knotifyconfiga
 
 libknotifyconfig_la_METASOURCES = AUTO
 
-
+include_HEADERS = knotifyconfigwidget.h

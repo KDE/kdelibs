@@ -41,13 +41,12 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	clear();
 	delete config;
 	delete loconf;
-	config= new KConfig(appname + "/eventsrc" , true, false, "data"),
-	loconf= new KConfig(appname + ".eventsrc" , false , false );
+	config= new KConfig(appname +"/" + appname + ".notifyrc" , true, false, "data"),
+	loconf= new KConfig(appname + ".notifyrc" , false , false );
 
 	QStringList conflist = config->groupList();
 	QRegExp rx("^Event/([^/]*)$");
 	conflist=conflist.filter( rx );
-// 	kdDebug() << k_funcinfo << conflist << endl;
 
 	foreach (QString group , conflist )
 	{
@@ -66,18 +65,14 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 		QString name = config->readEntry("Name");
 		QString description = config->readEntry("Comment");
 		
-// 		kdDebug() << k_funcinfo << id <<endl;
 		m_elements << new KNotifyEventListItem(this, id, name, description, loconf , config );
 	}
 }
 
 void KNotifyEventList::save( )
 {
-	kdDebug() << k_funcinfo << endl;
-
 	foreach( KNotifyEventListItem *it , m_elements )
 	{
-		kdDebug() << k_funcinfo << "*" <<  endl;
 		it->save();
 	}
 }
