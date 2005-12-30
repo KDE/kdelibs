@@ -170,6 +170,18 @@ Q_LONG KDatagramSocket::send(const KDatagramPacket& packet)
   return writeBlock(packet.data(), packet.size(), packet.address());
 }
 
+Q_LONG KDatagramSocket::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
+{
+  if (to.family() != AF_UNSPEC)
+    {
+      // make sure the socket is open at this point
+      if (!socketDevice()->isOpen())
+	// error handling will happen below
+	socketDevice()->create(to.family(), SOCK_DGRAM, 0);
+    }
+  return KClientSocketBase::writeBlock(data, len, to);
+}
+
 void KDatagramSocket::lookupFinishedLocal()
 {
   // bind lookup has finished and succeeded

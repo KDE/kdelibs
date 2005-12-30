@@ -238,6 +238,11 @@ public:
   { return KClientSocketBase::connect(entry); }
 
   /**
+   * Writes data to the socket. Reimplemented from KClientSocketBase.
+   */
+  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+
+  /**
    * Receives one datagram from the stream. The reading process is guaranteed
    * to be atomical and not lose data from the packet.
    *
