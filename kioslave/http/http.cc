@@ -2378,9 +2378,6 @@ bool HTTPProtocol::httpOpen()
     else
       header += "Connection: close\r\n";
 
-    if ( m_bPersistentProxyConnection )
-      header += "Proxy-Connection: Keep-Alive\r\n";
-
     if (!m_request.userAgent.isEmpty())
     {
         header += "User-Agent: ";
@@ -2539,7 +2536,12 @@ bool HTTPProtocol::httpOpen()
 
     // Do we need to authorize to the proxy server ?
     if ( m_state.doProxy && !m_bIsTunneled )
+    {
+      if ( m_bPersistentProxyConnection )
+	header += "Proxy-Connection: Keep-Alive\r\n";
+
       header += proxyAuthenticationHeader();
+    }
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
     {
