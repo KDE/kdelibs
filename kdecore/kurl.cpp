@@ -46,7 +46,6 @@
 #include <qmap.h>
 #include <qtextcodec.h>
 #include <qmutex.h>
-#include <QTextDocument>
 
 #ifdef Q_WS_WIN
 # define KURL_ROOTDIR_PATH "C:/"
@@ -1711,11 +1710,6 @@ QString KURL::pathOrURL() const
   } else {
     return prettyURL();
   }
-}
-
-QString KURL::htmlURL() const
-{
-  return Qt::escape(prettyURL());
 }
 
 QString KURL::toMimeDataString() const // don't fold this into setInMimeData, it's also needed by other code like konqdrag

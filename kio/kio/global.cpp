@@ -29,6 +29,7 @@
 
 #include <qbytearray.h>
 #include <qdatetime.h>
+#include <QTextDocument>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -475,7 +476,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
 
   QString url, protocol, datetime;
   if ( reqUrl ) {
-    url = reqUrl->htmlURL();
+    url = Qt::escape(reqUrl->prettyURL());
     protocol = reqUrl->protocol();
   } else {
     url = i18n( "(unknown)" );

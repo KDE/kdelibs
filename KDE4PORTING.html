@@ -255,6 +255,8 @@ Desktop Entry Spec</a>
 <ul>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
+<li>htmlURL() had to be removed, please use Qt::escape(url.prettyURL()) now, with #include &lt;QTextDocument&gt;.
+This requires libQtGui, which is why it can't be in KURL anymore.</li>
 </ul>
 
 <H4>KURLDrag</H4>

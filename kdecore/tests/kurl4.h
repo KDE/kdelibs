@@ -572,14 +572,6 @@ public:
   QString pathOrURL() const;
 
   /**
-   * Returns the URL as string, escaped for HTML.
-   * @return A human readable URL, with no non-necessary encodings/escaped
-   * characters which is html encoded for safe inclusion in html or
-   * rich text. Password will not be shown.
-   */
-  QString htmlURL() const;
-
-  /**
    * Returns the URL as a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
    * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.

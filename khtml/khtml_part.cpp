@@ -1659,11 +1659,11 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   begin();
   QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
                            .arg(QApplication::isRightToLeft() ? "rtl" : "ltr");
-  errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
+  errText += i18n( "Error while loading %1" ).arg( Qt::escape(reqUrl.prettyURL()) );
   errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
+  errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( Qt::escape(reqUrl.prettyURL()) );
   errText += QLatin1String( "</P>" );
-  errText += Q3StyleSheet::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
+  errText += Qt::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
   errText += QLatin1String( "</BODY></HTML>" );
   write(errText);
   end();
@@ -3637,7 +3637,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   emit onURL( url );
 
   if ( url.isEmpty() ) {
-    setStatusBarText(u.htmlURL(), BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyURL()), BarHoverText);
     return;
   }
 
@@ -3661,7 +3661,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     com = typ->comment( u, false );
 
   if ( !u.isValid() ) {
-    setStatusBarText(u.htmlURL(), BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyURL()), BarHoverText);
     return;
   }
 
@@ -3677,7 +3677,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     KDE_struct_stat lbuff;
     if (ok) ok = !KDE_lstat( path.data(), &lbuff );
 
-    QString text = u.htmlURL();
+    QString text = Qt::escape(u.prettyURL());
     QString text2 = text;
 
     if (ok && S_ISLNK( lbuff.st_mode ) )
@@ -3789,7 +3789,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
         }
       }
 #endif
-    setStatusBarText(u.htmlURL() + extra, BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyURL()) + extra, BarHoverText);
   }
 }
 
@@ -6735,14 +6735,14 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
     if (!message.isEmpty())
     {
 	    response = KMessageBox::warningContinueCancel( 0,
-							   message.arg(linkURL.htmlURL()),
+							   message.arg(Qt::escape(linkURL.prettyURL())),
 							   i18n( "Security Warning" ),
 							   button);
     }
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.").arg(linkURL.htmlURL()),
+				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.").arg(Qt::escape(linkURL.prettyURL())),
 				i18n( "Security Alert" ));
     }
 

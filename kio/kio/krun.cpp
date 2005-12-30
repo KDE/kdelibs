@@ -60,6 +60,7 @@
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <kde_file.h>
+#include <QTextDocument>
 
 #ifdef Q_WS_X11
 #include <kwin.h>
@@ -112,7 +113,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
-            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.htmlURL()) );
+            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(Qt::escape(u.prettyURL())) );
     return 0;
   }
   else if ( _mimetype == "application/x-desktop" )
@@ -152,13 +153,13 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   {
     KMessageBox::sorry( 0L,
         i18n("<qt>The file <b>%1</b> is an executable program. "
-             "For safety it will not be started.</qt>").arg(u.htmlURL()));
+             "For safety it will not be started.</qt>").arg(Qt::escape(u.prettyURL())));
     return 0;
   }
   if ( noAuth )
   {
     KMessageBoxWrapper::error( 0L,
-        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(u.htmlURL()) );
+        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(Qt::escape(u.prettyURL())) );
     return 0;
   }
 
@@ -832,7 +833,7 @@ void KRun::init()
       if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );
+        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( Qt::escape(m_strURL.prettyURL()) ) );
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;

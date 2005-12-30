@@ -45,6 +45,7 @@
 #include "xml/dom_xmlimpl.h"
 
 #include <qtextstream.h>
+#include <QTextDocument>
 #include <kdebug.h>
 #include <stdlib.h>
 
@@ -441,147 +442,6 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
         cloneChildNodes(clone);
 }
 
-bool ElementImpl::hasAttributes() const
-{
-    return namedAttrMap && namedAttrMap->length() > 0;
-}
-
-bool ElementImpl::hasAttribute( const DOMString& name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return false;
-    if (!namedAttrMap) return false;
-    return namedAttrMap->getValue(id, false, name.implementation()) != 0;
-}
-
-bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
-                              const DOMString &localName )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
-						 0/*prefix*/, localName.implementation(), true, true);
-    if (!id) return false;
-    if (!namedAttrMap) return false;
-    return namedAttrMap->getValue(id, true) != 0;
-}
-
-DOMString ElementImpl::getAttribute( const DOMString &name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,name.implementation(),true,true);
-    if (!id) return DOMString();
-
-    return getAttribute(id, false, name);
-}
-
-void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), false /* allocate */,
-                                                 true, &exceptioncode);
-
-    setAttribute(id, value, name, exceptioncode);
-}
-
-void ElementImpl::removeAttribute( const DOMString &name, int& exceptioncode )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return; 
-
-    attributes(false)->removeNamedItem(id, false, name.implementation(), exceptioncode);
-}
-
-AttrImpl* ElementImpl::getAttributeNode( const DOMString &name )
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
-    if (!id) return 0;
-    if (!namedAttrMap) return 0;
-
-    return static_cast<AttrImpl*>(attributes()->getNamedItem(id, false, name.implementation()));
-}
-
-Attr ElementImpl::setAttributeNode( AttrImpl* newAttr, int& exceptioncode )
-{
-    if (!newAttr) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return 0;
-    }
-    Attr r = attributes(false)->setNamedItem(newAttr, false,
-                         newAttr->nodeName().implementation(), exceptioncode);
-    if ( !exceptioncode )
-      newAttr->setOwnerElement( this );
-    return r;
-}
-
-Attr ElementImpl::removeAttributeNode( AttrImpl* oldAttr, int& exceptioncode )
-{
-  if (!oldAttr || oldAttr->ownerElement() != this) {
-    exceptioncode = DOMException::NOT_FOUND_ERR;
-    return 0;
-  }
-
-  if (isReadOnly()) {
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-  }
-
-  if (!namedAttrMap) {
-    exceptioncode = DOMException::NOT_FOUND_ERR;
-    return 0;
-  }
-
-  return attributes(false)->removeAttr(oldAttr);
-}
-
-
-DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI,
-                                       const DOMString &localName,
-                                       int& exceptioncode)
-{
-    if (!localName.implementation()) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return DOMString();
-    }
-    
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), true, true);
-    return getAttribute(id, true);
-}
-
-void ElementImpl::removeAttributeNS( const DOMString &namespaceURI,
-                                 const DOMString &localName,
-                                 int& exceptioncode)
-{
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), false, true);
-    attributes(false)->removeNamedItem(id, true, 0, exceptioncode);
-}
-
-AttrImpl* ElementImpl::getAttributeNodeNS( const DOMString &namespaceURI,
-                                  const DOMString &localName,
-                                  int& exceptioncode )
-{
-    if (!localName.implementation()) {
-      exceptioncode = DOMException::NOT_FOUND_ERR;
-      return 0;
-    }
-    
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(),
-						0/*prefix*/, localName.implementation(), true, true);
-    if (!attributes(true)) return 0;
-
-    return static_cast<AttrImpl*>(attributes()->getNamedItem(id, true));
-}
-
-Attr ElementImpl::setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode )
-{
-    if (!newAttr) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
-    }
-    // WRONG_DOCUMENT_ERR and INUSE_ATTRIBUTE_ERR are already tested & thrown by setNamedItem
-    Attr r = attributes(false)->setNamedItem(newAttr, true, 0, exceptioncode);
-    if ( !exceptioncode )
-        newAttr->setOwnerElement( this );
-    return r;
-}
-
-
 DOMString ElementImpl::nodeName() const
 {
     return tagName();
@@ -824,20 +684,10 @@ void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
 
     DocumentImpl* doc = getDocument();
     if (oldId && oldId->l)
-        removeId(DOMString(oldId).string());
+        doc->getElementByIdCache().remove(DOMString(oldId).string(), this);
 
     if (newId && newId->l)
-        addId(DOMString(newId).string());
-}
-
-void ElementImpl::removeId(const QString& id)
-{
-  getDocument()->getElementByIdCache().remove(id, this);
-}
-
-void ElementImpl::addId(const QString& id)
-{
-  getDocument()->getElementByIdCache().add(id, this);
+        doc->getElementByIdCache().add(DOMString(newId).string(), this);
 }
 
 void ElementImpl::insertedIntoDocument()
@@ -890,7 +740,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 			    //FIXME:   are src=  and href=  the only places that might have a password and need to be sanitized?
                             KURL safeURL(getDocument()->completeURL(attribute->value().string()));
                             safeURL.setPass(QString::null);
-			    result += safeURL.htmlURL();
+			    result += Qt::escape(safeURL.prettyURL());
 			}
 		        else {
 		 	    kdWarning() << "getDocument() returned false";
