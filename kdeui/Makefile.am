@@ -58,7 +58,7 @@ include_HEADERS = kprogress.h kcolordialog.h kselect.h \
 	kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h \
 	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h \
 	ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h \
-	kconfigdialogmanager.h
+	kconfigdialogmanager.h knotification.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -89,12 +89,12 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	kspellui.ui3 kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
 	klistviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
-	kconfigdialogmanager.cpp
+	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel
 
 noinst_HEADERS = klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kxmlguifactory_p.h \
-		kstdaction_p.h kwhatsthismanager_p.h
+		kstdaction_p.h kwhatsthismanager_p.h knotificationmanager.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)
