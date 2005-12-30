@@ -2,4 +2,4 @@
 Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KdeHwDeviceManager
-Name=KDE Hadware Discovery Backend
+Name=KDE Hardware Discovery Backend
