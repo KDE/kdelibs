@@ -2,7 +2,7 @@
 
 ## 
 # @file 
-# bksys Makefile.am related tools
+# bksys Makefile.am related classed
 # 
 # note: may be a future base of a Makefile.am to scons converter if someone like to write it 
 #
@@ -177,7 +177,7 @@ class AMFile:
 				if result:
 					retlist.append(str(result.group(1)))
 			return ' '.join(retlist)
-		reg = re.compile("(.*)(_l?a)?_LTLIBRARIES$")
+		reg = re.compile("(.*)(_l?a)?_(?:LT)?LIBRARIES$")
 		for key in self.defines.keys():
 			result=reg.match(key)
 			if result:
@@ -340,76 +340,77 @@ class AMFile:
 		print "### Sources:"
 		printDict(self.sources,' : ')
 
-# uses = 0
-# libadds = 0
-# ldflags = 0
-# defines = 0
-# targets = 0
-# libs = 0
-# sources = 0
-# if len(sys.argv) == 1:
-# 	print "amtool [options] Makefile.am [Makefile.am] ..."
-# 	print "list Makefile.am content" 
-# 	print "options:" 
-# 	print "    --uses print where a library is used" 
-# 	print "    --libadd print all LIBADD depenencies " 
-# 	print "    --ldflags print all LDFLAGS definitions" 
-# 	print "    --defines print all Makefile variables" 
-# 	print "    --targets print all Makefile tarets" 
-# 	print "    --libs print all libraries defined in self Makefile.am" 
-# 	print "    --sources print all sources defined in self Makefile.am" 
-# else:
-# 	all_ams = AMFile()
-# 	for a in range(1,len(sys.argv)):
-# 		if sys.argv[a][:6] == '--uses':
-# 			uses = 1
-# 		elif sys.argv[a][:8] == '--libadd':
-# 			libadds = 1
-# 		elif sys.argv[a][:9] == '--defines':
-# 			defines = 1
-# 		elif sys.argv[a][:9] == '--targets':
-# 			targets = 1			
-# 		elif sys.argv[a][:9] == '--ldflags':
-# 			ldflags = 1
-# 		elif sys.argv[a][:6] == '--libs':
-# 			libs = 1
-# 		elif sys.argv[a][:9] == '--sources':
-# 			sources = 1
-# 		if  libadds or defines or targets or ldflags or libs or sources:	
-# 			uses = 2
-# 						
-# 	for a in range(1,len(sys.argv)):
-# 		if sys.argv[a][:2] == '--':
-# 			continue
-# 		am_file = AMFile()
-# 
-# 		if not am_file.read(sys.argv[a]): 
-# 			continue
-# 
-# 		if uses == 2:
-# 			print "### " + sys.argv[a]
-# 
-# 		if defines:
-# 			am_file.printDefines()
-# 		if targets:
-# 			am_file.printTargets()
-# 		if libadds:
-# 			am_file.printLibraryDeps()
-# 		if ldflags:
-# 			am_file.printLinkerFlags()
-# 		if libs:
-# 			am_file.printLibraries()
-# 		if sources:
-# 			am_file.printSources()
-# 
-# 		all_ams.addLibraryDeps(am_file)
-# 		all_ams.addLinkerFlags(am_file)
-# 		all_ams.addSources(am_file)
-# 		all_ams.addLibraries(am_file)
-# 		generateConscript(am_file, out_buf)
-		
-# 	if uses == 0:
-# 		all_ams.printLibraryDeps()
-# 	elif uses == 1:
-# 		a = all_ams.getReverseLibraryDeps()
-# 		printDict(a)
+
+def amview():
+	uses = 0
+	libadds = 0
+	ldflags = 0
+	defines = 0
+	targets = 0
+	libs = 0
+	sources = 0
+	if len(sys.argv) == 1:
+		print "amtool [options] Makefile.am [Makefile.am] ..."
+		print "list Makefile.am content" 
+		print "options:" 
+		print "    --uses print where a library is used" 
+		print "    --libadd print all LIBADD depenencies " 
+		print "    --ldflags print all LDFLAGS definitions" 
+		print "    --defines print all Makefile variables" 
+		print "    --targets print all Makefile targets" 
+		print "    --libs print all libraries defined in self Makefile.am" 
+		print "    --sources print all sources defined in self Makefile.am" 
+	else:
+		all_ams = AMFile()
+		for a in range(1,len(sys.argv)):
+			if sys.argv[a][:6] == '--uses':
+				uses = 1
+			elif sys.argv[a][:8] == '--libadd':
+				libadds = 1
+			elif sys.argv[a][:9] == '--defines':
+				defines = 1
+			elif sys.argv[a][:9] == '--targets':
+				targets = 1			
+			elif sys.argv[a][:9] == '--ldflags':
+				ldflags = 1
+			elif sys.argv[a][:6] == '--libs':
+				libs = 1
+			elif sys.argv[a][:9] == '--sources':
+				sources = 1
+			if  libadds or defines or targets or ldflags or libs or sources:	
+				uses = 2
+							
+		for a in range(1,len(sys.argv)):
+			if sys.argv[a][:2] == '--':
+				continue
+			am_file = AMFile()
+	
+			if not am_file.read(sys.argv[a]): 
+				continue
+	
+			if uses == 2:
+				print "### " + sys.argv[a]
+	
+			if defines:
+				am_file.printDefines()
+			if targets:
+				am_file.printTargets()
+			if libadds:
+				am_file.printLibraryDeps()
+			if ldflags:
+				am_file.printLinkerFlags()
+			if libs:
+				am_file.printLibraries()
+			if sources:
+				am_file.printSources()
+	
+			all_ams.addLibraryDeps(am_file)
+			all_ams.addLinkerFlags(am_file)
+			all_ams.addSources(am_file)
+			all_ams.addLibraries(am_file)
+	
+		if uses == 0:
+			all_ams.printLibraryDeps()
+		elif uses == 1:
+			a = all_ams.getReverseLibraryDeps()
+			printDict(a)
