@@ -48,7 +48,8 @@ apt-get install python2.4
 <ul>
 <li>either in individual cmd shells
 \code
-set PATH=c:\Python24;%PATH%
+set PYTHON=c:\Python24
+set PATH=%PYTHON%;%PATH%
 \endcode
 	<li>or for all cmd shells global in the registry using the system contol panel \n
 		Go to System->Extended->Environment and add the related path to the PATH enviromnent variable. 
@@ -88,14 +89,14 @@ using command line tar, which is available from http://sourceforge.net/project/s
 \code
 cd kdelibs
 tar xjvf bksys\scons-mini.tar.bz2
-set PATH=%CD%;%PATH%
+bksys\initvars.bat
 \endcode
 
 using winzip(tm) or similar unpacking tool 
 \code
 cd kdelibs
 start bksys\scons-mini.tar.bz2
-set PATH=%CD%;%PATH%
+bksys\initvars.bat
 \endcode
 Please note that is important to unpack the archive in the kdelibs dir. 
 
