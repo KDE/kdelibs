@@ -275,8 +275,3 @@ def detect(env):
 	env['LIB_QTDESIGNER']      = ['QtDesigner'+lib_addon]
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
-
-	if env['CC'] == 'gcc':    
-		qtmingwflags = '-DQT_DLL -DQT_THREAD_SUPPORT'
-		env['GENCXXFLAGS']  += qtmingwflags.split()
-	'-DQT_EDITION=QT_EDITION_DESKTOP -DUNICODE -DQT_LARGEFILE_SUPPORT  -w  -O2  -frtti -DQT_NO_DEBUG '
