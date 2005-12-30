@@ -22,12 +22,15 @@
 
 #include "devicemanager.h"
 #include "device.h"
+#include "fakemanager.h"
 
 int main()
 {
     KInstance instance( "kdehw_test" );
 
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    KDEHW::DeviceManager &manager
+        = KDEHW::DeviceManager::selfForceBackend( new FakeManager() );
+//        = KDEHW::DeviceManager::self();
 
     KDEHW::DeviceList devices = manager.allDevices();
 

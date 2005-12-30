@@ -25,6 +25,7 @@
 #include <kservice.h>
 #include <klibloader.h>
 
+#include <klocale.h>
 #include <kdebug.h>
 
 #include "device.h"
@@ -45,6 +46,8 @@ namespace KDEHW
 
         Ifaces::DeviceManager *backend;
         QMap<QString, Ifaces::Device*> devicesMap;
+
+        QString errorText;
     };
 }
 
@@ -64,34 +67,94 @@ KDEHW::DeviceManager &KDEHW::DeviceManager::self()
     return *s_self;
 }
 
+KDEHW::DeviceManager &KDEHW::DeviceManager::selfForceBackend( KDEHW::Ifaces::DeviceManager *backend )
+{
+    if( !s_self )
+    {
+        s_self = new KDEHW::DeviceManager( backend );
+        sd.setObject( s_self, s_self );
+    }
+
+    return *s_self;
+}
+
 KDEHW::DeviceManager::DeviceManager()
     : QObject(), d( new Private() )
 {
-    // TODO: Of course we don't want HAL hardcoded here...
-    //d->registerBackend( new HalManager() );
+    QStringList error_msg;
+
+    Ifaces::DeviceManager *backend = 0;
 
     KTrader::OfferList offers = KTrader::self()->query( "KdeHwDeviceManager", "(Type == 'Service') and (Name == 'HAL')" );
     KService::Ptr ptr = offers.first();
 
-    KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
-    if ( factory )
+    foreach ( KService::Ptr ptr, offers )
     {
-        Ifaces::DeviceManager *backend = (Ifaces::DeviceManager*)factory->create( 0, "Device Manager", "KDEHW::Ifaces::DeviceManager" );
-        if( backend )
+        KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+
+        if ( factory )
         {
-            d->registerBackend( backend );
+            backend = (Ifaces::DeviceManager*)factory->create( 0, "Device Manager", "KDEHW::Ifaces::DeviceManager" );
+
+            if( backend != 0 )
+            {
+                d->registerBackend( backend );
+                kdDebug() << "Using backend: " << ptr->name() << endl;
+            }
+            else
+            {
+                kdDebug() << "Error loading '" << ptr->name() << "', factory's create method returned 0" << endl;
+                error_msg.append( i18n("Factory's create method failed") );
+            }
         }
         else
         {
-            kdDebug() << "no HAL backend found" << endl;
+            kdDebug() << "Error loading '" << ptr->name() << "', factory creation failed" << endl;
+            error_msg.append( i18n("Factory creation failed") );
         }
     }
 
+    if ( backend == 0 )
+    {
+        if ( offers.size() == 0 )
+        {
+            d->errorText = i18n( "No Hardware Discovery Backend found" );
+        }
+        else
+        {
+            d->errorText = "<qt>";
+            d->errorText+= i18n( "Unable to use any of the Hardware Discovery Backends" );
+            d->errorText+= "<table>";
+
+            QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
+
+            for ( int i = 0; i< offers.size(); i++ )
+            {
+                d->errorText+= line.arg( offers[i]->name() ).arg( error_msg[i] );
+            }
+
+            d->errorText+= "</table></qt>";
+        }
+    }
+}
+
+KDEHW::DeviceManager::DeviceManager( KDEHW::Ifaces::DeviceManager *backend )
+    : QObject(), d( new Private() )
+{
+    if ( backend != 0 )
+    {
+        d->registerBackend( backend );
+    }
 }
 
 KDEHW::DeviceManager::~DeviceManager()
 {
     d->unregisterBackend();
+}
+
+const QString &KDEHW::DeviceManager::errorText() const
+{
+    return d->errorText;
 }
 
 KDEHW::DeviceList KDEHW::DeviceManager::allDevices()
@@ -143,6 +206,11 @@ KDEHW::Device KDEHW::DeviceManager::findDevice( const QString &udi )
     {
         return Device();
     }
+}
+
+const KDEHW::Ifaces::DeviceManager *KDEHW::DeviceManager::backend() const
+{
+    return d->backend;
 }
 
 void KDEHW::DeviceManager::slotDeviceAdded( const QString &udi )

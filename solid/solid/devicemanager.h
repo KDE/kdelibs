@@ -27,6 +27,10 @@
 
 namespace KDEHW
 {
+    namespace Ifaces
+    {
+        class DeviceManager;
+    }
     class Device;
     typedef QList<Device> DeviceList;
 
@@ -53,6 +57,29 @@ namespace KDEHW
          */
         static DeviceManager &self();
 
+        /**
+         * Retrieves the unique instance of this class and forces the registration of
+         * the given backend.
+         * The DeviceManager will use this backend. The parameter will be ignored if an
+         * instance of DeviceManager already exists.
+         *
+         * Use this method at your own risks. It's primarily available to easier tests
+         * writing. If you need to test the DeviceManager, use a call to this method, and
+         * then use self() as usual.
+         *
+         * @param backend the in the application
+         * @return unique instance of the class
+         * @see self()
+         */
+        static DeviceManager &selfForceBackend( Ifaces::DeviceManager *backend );
+
+        /**
+         * Returns a text describing the error that occured while loading
+         * the backend.
+         *
+         * @return the error description, or QString() if the backend loaded successfully
+         */
+        const QString &errorText() const;
 
 
         /**
@@ -72,13 +99,20 @@ namespace KDEHW
         bool deviceExists( const QString &udi );
 
         /**
-         *
+         * Retrieves a device of the system given it's UDI.
          *
          * @param udi the identifier of the device to find
          * @return a device that has the given UDI in the system if possible, an
          * invalid device otherwise
          */
         Device findDevice( const QString &udi );
+
+        /**
+         * Retrieves a reference to the loaded backend.
+         *
+         * @return a pointer to the backend, or 0 if no backend is loaded
+         */
+        const Ifaces::DeviceManager *backend() const;
 
     signals:
         /**
@@ -106,6 +140,7 @@ namespace KDEHW
 
     private:
         DeviceManager();
+        DeviceManager( Ifaces::DeviceManager *backend );
         ~DeviceManager();
 
         void slotDeviceAdded( const QString &udi );
