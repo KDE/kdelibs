@@ -86,8 +86,6 @@ def detect(env):
 			env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-L' + os.environ['MINGW'] + '/lib']
 	elif os.environ.has_key('MINGW'):  
 		env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
-		env['GENCCFLAGS']   += ['-Iwin\\include','-Iwin\\include\\mingw']
-		env['GENLINKFLAGS'] += ['-L'+env['_BUILDDIR_']+'\\win']
 
 		# required libraries should be installed under mingw installation root, so add the search pathes 
 		env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '\\include']

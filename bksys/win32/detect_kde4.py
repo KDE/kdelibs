@@ -73,6 +73,16 @@ def bootstrap(env):
 		env['CPPPATH_KDECORE'] = []
 		env['CPPPATH_KIO']     = []
 		env['CPPPATH_KDEUI']   = []
+
+	if env['CC']:
+		if env['_IN_KDELIBS_']:
+			env['INCLUDES_KDE4'] += ['-Iwin\\include','-Iwin\\include\\mingw']
+			env['LIBPATH_KDE4']  += ['-L'+env['_BUILDDIR_']+'\\win']
+		else:
+			env['INCLUDES_KDE4'] += ['-I'+env.join(env['_KDEDIR_'],'include','mingw')]
+
+
+
 	
 ## detect kde4 configuration
 def detect(env):
