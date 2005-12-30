@@ -228,6 +228,7 @@ def detect(env):
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
 	env['LIB_QT']              = ['QtGui'+lib_addon]
 	env['RPATH_QT']            = [env['QTLIBPATH']]
+
 	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
 	env['CPPPATH_QT3SUPPORT']  = [ env.join(env['QTINCLUDEPATH'], 'Qt3Support') ]
 	env['LIB_QT3SUPPORT']      = ['Qt3Support'+lib_addon]
@@ -238,19 +239,13 @@ def detect(env):
 	env['LIB_QTCORE']          = ['QtCore'+lib_addon]
 	env['RPATH_QTCORE']        = env['RPATH_QT']
 	
-	env['CPPPATH_QTASSISTANT'] = [ env.join(env['QTINCLUDEPATH'], 'QtAssistant') ]
-	env['LIB_QTASSISTANT']     = ['QtAssistant'+lib_addon]
-	
-	env['CPPPATH_QTDESIGNER']  = [ env.join(env['QTINCLUDEPATH'], 'QtDesigner') ]
-	env['LIB_QTDESIGNER']      = ['QtDesigner'+lib_addon]
+	env['CPPPATH_QTGUI']       = [ env.join(env['QTINCLUDEPATH'], 'QtGui') ]
+	env['LIB_QTGUI']           = ['QtCore'+lib_addon, 'QtGui'+lib_addon]
+	env['RPATH_QTGUI']         = env['RPATH_QT']
 	
 	env['CPPPATH_QTNETWORK']   = [ env.join(env['QTINCLUDEPATH'], 'QtNetwork') ]
 	env['LIB_QTNETWORK']       = ['QtNetwork'+lib_addon]
 	env['RPATH_QTNETWORK']     = env['RPATH_QT']
-	
-	env['CPPPATH_QTGUI']       = [ env.join(env['QTINCLUDEPATH'], 'QtGui') ]
-	env['LIB_QTGUI']           = ['QtCore'+lib_addon, 'QtGui'+lib_addon]
-	env['RPATH_QTGUI']         = env['RPATH_QT']
 	
 	env['CPPPATH_OPENGL']      = [ env.join(env['QTINCLUDEPATH'], 'QtOpengl') ]
 	env['LIB_QTOPENGL']        = ['QtOpenGL'+lib_addon]
@@ -267,6 +262,12 @@ def detect(env):
 	env['CPPPATH_QTEST']       = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
 	env['LIB_QTEST']           = ['QtTest'+test_addon]
 	env['RPATH_QTEST']         = env['RPATH_QT']
+	
+	env['CPPPATH_QTASSISTANT'] = [ env.join(env['QTINCLUDEPATH'], 'QtAssistant') ]
+	env['LIB_QTASSISTANT']     = ['QtAssistant'+lib_addon]
+	
+	env['CPPPATH_QTDESIGNER']  = [ env.join(env['QTINCLUDEPATH'], 'QtDesigner') ]
+	env['LIB_QTDESIGNER']      = ['QtDesigner'+lib_addon]
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
     
