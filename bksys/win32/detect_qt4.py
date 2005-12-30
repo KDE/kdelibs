@@ -226,7 +226,7 @@ def detect(env):
 
 	# may be required by msvc too 
 	if env['CC'] == 'gcc':
-		env['CXXFLAGS_QT']         = ['-DQT_DLL','-DQT_THREAD_SUPPORT','-DQT_NEEDS_QMAIN']
+		env['CXXFLAGS_QT']         = ['-DQT_DLL','-DQT_THREAD_SUPPORT']
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
 	env['LIB_QT']              = ['QtGui'+lib_addon]
