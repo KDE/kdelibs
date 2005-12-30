@@ -171,8 +171,8 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
     QString header = (*it).lower();
     // Do not allow Request line to be specified and ignore
     // the other HTTP headers.
-    if (header.find(':') == -1 || header.startsWith("host") ||
-        header.startsWith("proxy-authorization") ||
+    if (header.find(':') == -1 ||
+        header.startsWith("host") ||
         header.startsWith("via"))
       continue;
 
