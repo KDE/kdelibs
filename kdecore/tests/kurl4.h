@@ -806,8 +806,6 @@ public:
 
 private:
   void _setQuery( const QString& query );
-  friend KDECORE_EXPORT QDataStream & operator<< (QDataStream & s, const KURL & a);
-  friend KDECORE_EXPORT QDataStream & operator>> (QDataStream & s, KURL & a);
 private:
   KURLPrivate* d;
 };
@@ -834,8 +832,5 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  * @param _ignore_ref If true, disables comparison of HTML-style references.
  */
 KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref ); // KDE4 TODO: new method with QUrl::FormattingOptions instead of two bools
-
-KDECORE_EXPORT QDataStream & operator<< (QDataStream & s, const KURL & a);
-KDECORE_EXPORT QDataStream & operator>> (QDataStream & s, KURL & a);
 
 #endif
