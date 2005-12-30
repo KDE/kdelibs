@@ -224,6 +224,9 @@ def detect(env):
 		lib_addon = str(ver_major)
 		test_addon = str(ver_major)
 
+	# may be required by msvc too 
+	if env['CC'] == 'gcc':
+		env['CXXFLAGS_QT']         = ['-DQT_DLL','-DQT_THREAD_SUPPORT','-DQT_NEEDS_QMAIN']
 	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
 	env['LIBPATH_QT']          = [env['QTLIBPATH']]
 	env['LIB_QT']              = ['QtGui'+lib_addon]
@@ -239,10 +242,12 @@ def detect(env):
 	env['LIB_QTCORE']          = ['QtCore'+lib_addon]
 	env['RPATH_QTCORE']        = env['RPATH_QT']
 	
+	env['CXXFLAGS_QTGUI']      = ['-DQT_GUI_LIB']
 	env['CPPPATH_QTGUI']       = [ env.join(env['QTINCLUDEPATH'], 'QtGui') ]
 	env['LIB_QTGUI']           = ['QtCore'+lib_addon, 'QtGui'+lib_addon]
 	env['RPATH_QTGUI']         = env['RPATH_QT']
 	
+	env['CXXFLAGS_QTNETWORK']  = ['-DQT_NETWORK_LIB']
 	env['CPPPATH_QTNETWORK']   = [ env.join(env['QTINCLUDEPATH'], 'QtNetwork') ]
 	env['LIB_QTNETWORK']       = ['QtNetwork'+lib_addon]
 	env['RPATH_QTNETWORK']     = env['RPATH_QT']
@@ -270,4 +275,8 @@ def detect(env):
 	env['LIB_QTDESIGNER']      = ['QtDesigner'+lib_addon]
 	
 	env['QTLOCALE']=env.join(env['PREFIX'], 'share', 'locale')
-    
+
+	if env['CC'] == 'gcc':    
+		qtmingwflags = '-DQT_DLL -DQT_THREAD_SUPPORT'
+		env['GENCXXFLAGS']  += qtmingwflags.split()
+	'-DQT_EDITION=QT_EDITION_DESKTOP -DUNICODE -DQT_LARGEFILE_SUPPORT  -w  -O2  -frtti -DQT_NO_DEBUG '

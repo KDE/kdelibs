@@ -91,9 +91,6 @@ def detect(env):
 		env['GENCCFLAGS']   += ['-I' + os.environ['MINGW'] + '\\include']
 		env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-Wl,--script,bksys\\win32\\i386pe.x-no-rdata','-L' + os.environ['MINGW'] + '\\lib']
 
-		qtmingwflags = '-DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '\\include'
-		env['GENCXXFLAGS']  += qtmingwflags.split()
-
 	env['LIBSUFFIXEXT'] = '.dll'
 	
 ## create source package
