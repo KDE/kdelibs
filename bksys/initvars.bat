@@ -1,6 +1,8 @@
 ::
 :: win32 support file: allow running pythons scripts as binary 
 :: 
+:: another solution may be http://mail.python.org/pipermail/python-list/1999-December/018772.html
+:: 
 @echo off
 
 if not "%PYTHON%"=="" (
