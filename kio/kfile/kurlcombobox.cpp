@@ -54,6 +54,8 @@ KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent)
 
 KURLComboBox::~KURLComboBox()
 {
+    qDeleteAll( itemList );
+    qDeleteAll( defaultList );
     delete d;
 }
 
@@ -65,8 +67,6 @@ void KURLComboBox::init( Mode mode )
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
-    itemList.setAutoDelete( true );
-    defaultList.setAutoDelete( true );
     setInsertionPolicy( NoInsertion );
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
@@ -126,8 +126,8 @@ void KURLComboBox::setDefaults()
     clear();
     itemMapper.clear();
 
-    KURLComboItem *item;
-    for ( unsigned int id = 0; id < defaultList.count(); id++ ) {
+    const KURLComboItem *item;
+    for ( int id = 0; id < defaultList.count(); id++ ) {
         item = defaultList.at( id );
         insertURLItem( item );
     }
@@ -141,6 +141,7 @@ void KURLComboBox::setURLs( QStringList urls )
 void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 {
     setDefaults();
+    qDeleteAll( itemList );
     itemList.clear();
 
     if ( urls.isEmpty() )
@@ -228,9 +229,9 @@ void KURLComboBox::setURL( const KURL& url )
 
     setDefaults();
 
-    Q3PtrListIterator<KURLComboItem> it( itemList );
-    for( ; it.current(); ++it )
-        insertURLItem( it.current() );
+    QListIterator<const KURLComboItem*> it( itemList );
+    while ( it.hasNext() )
+        insertURLItem( it.next() );
 
     KURLComboItem *item = new KURLComboItem;
     item->url = url;
@@ -286,13 +287,13 @@ void KURLComboBox::setMaxItems( int max )
 
         setDefaults();
 
-        Q3PtrListIterator<KURLComboItem> it( itemList );
+        QListIterator<const KURLComboItem*> it( itemList );
         int Overload = itemList.count() - myMaximum + defaultList.count();
         for ( int i = 0; i <= Overload; i++ )
-            ++it;
+            it.next();
 
-        for( ; it.current(); ++it )
-            insertURLItem( it.current() );
+        while ( it.hasNext() )
+            insertURLItem( it.next() );
 
         if ( count() > 0 ) { // restore the previous currentItem
             if ( oldCurrent >= count() )
@@ -316,10 +317,9 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 
     blockSignals( true );
     setDefaults();
-    Q3PtrListIterator<KURLComboItem> it( itemList );
-    while ( it.current() ) {
-        insertURLItem( *it );
-        ++it;
+    QListIterator<const KURLComboItem*> it( itemList );
+    while ( it.hasNext() ) {
+        insertURLItem( it.next() );
     }
     blockSignals( false );
 }
