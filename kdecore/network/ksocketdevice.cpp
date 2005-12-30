@@ -67,6 +67,7 @@ class KNetwork::KSocketDevicePrivate
 {
 public:
   mutable QSocketNotifier *input, *output, *exception;
+  KSocketAddress local, peer;
   int af;
   int proto;
 
@@ -210,6 +211,9 @@ void KSocketDevice::close()
 #ifdef Q_WS_WIN
       ::closesocket(m_sockfd);
 #else
+      d->local.setFamily(AF_UNSPEC);
+      d->peer.setFamily(AF_UNSPEC);
+
       ::close(m_sockfd);
 #endif
     }
@@ -241,6 +245,7 @@ bool KSocketDevice::create(int family, int type, int protocol)
   d->af = family;
   d->proto = protocol;
   setSocketOptions(socketOptions());
+  setOpenMode(Unbuffered);	// there's no "Open" flag
   return true;		// successfully created
 }
 
@@ -508,18 +513,21 @@ KSocketAddress KSocketDevice::localAddress() const
   if (m_sockfd == -1)
     return KSocketAddress();	// not open, empty value
 
+  if (d->local.family() != AF_UNSPEC)
+    return d->local;
+
   socklen_t len;
   KSocketAddress localAddress;
   localAddress.setLength(len = 32);	// arbitrary value
   if (kde_getsockname(m_sockfd, localAddress.address(), &len) == -1)
     // error!
-    return KSocketAddress();
+    return d->local = KSocketAddress();
 
   if (len <= localAddress.length())
     {
       // it has fit already
       localAddress.setLength(len);
-      return localAddress;
+      return d->local = localAddress;
     }
 
   // no, the socket address is actually larger than we had anticipated
@@ -527,9 +535,9 @@ KSocketAddress KSocketDevice::localAddress() const
   localAddress.setLength(len);
   if (kde_getsockname(m_sockfd, localAddress.address(), &len) == -1)
     // error!
-    return KSocketAddress();
+    return d->local = KSocketAddress();
 
-  return localAddress;
+  return d->local = localAddress;
 }
 
 KSocketAddress KSocketDevice::peerAddress() const
@@ -537,18 +545,21 @@ KSocketAddress KSocketDevice::peerAddress() const
   if (m_sockfd == -1)
     return KSocketAddress();	// not open, empty value
 
+  if (d->peer.family() != AF_UNSPEC)
+    return d->peer;
+
   socklen_t len;
   KSocketAddress peerAddress;
   peerAddress.setLength(len = 32);	// arbitrary value
   if (kde_getpeername(m_sockfd, peerAddress.address(), &len) == -1)
     // error!
-    return KSocketAddress();
+    return d->peer = KSocketAddress();
 
   if (len <= peerAddress.length())
     {
       // it has fit already
       peerAddress.setLength(len);
-      return peerAddress;
+      return d->peer = peerAddress;
     }
 
   // no, the socket address is actually larger than we had anticipated
@@ -556,9 +567,9 @@ KSocketAddress KSocketDevice::peerAddress() const
   peerAddress.setLength(len);
   if (kde_getpeername(m_sockfd, peerAddress.address(), &len) == -1)
     // error!
-    return KSocketAddress();
+    return d->peer = KSocketAddress();
 
-  return peerAddress;
+  return d->peer = peerAddress;
 }
 
 KSocketAddress KSocketDevice::externalAddress() const
