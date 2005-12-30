@@ -1090,7 +1090,7 @@ bool emailsEquals( const QStringList &list, const QStringList &pattern )
   if ( list.count() != pattern.count() )
     return false;
 
-  if ( !list.count() )
+  if ( list.Empty() || pattern.isEmpty() )
     return true;
 
   if ( list.first() != pattern.first() )
