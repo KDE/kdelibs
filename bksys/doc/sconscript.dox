@@ -30,7 +30,7 @@ obj = env.genobj(<type>,<env>)
 - staticlib - static library 
 - convenience - partial linked static libraries to be included in shared libraries (unix relating) 
 
-\param env is a pointer to the global sconbs environment 
+\param env is a pointer to the global scons environment 
 
 \subsection sconscript_qt4obj qt4 binary object 
 build a qt4 binary object, scanning for moc files and adding the dependencies on .rcc files
