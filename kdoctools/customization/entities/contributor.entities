@@ -145,6 +145,8 @@
 <!ENTITY Michael.Goffioul.mail '<email>kdeprint@swing.be</email>'>
 <!ENTITY Robert.Gogolok '<personname><firstname>Robert</firstname><surname>Gogolok</surname></personname>'>
 <!ENTITY Robert.Gogolok.mail '<email>mail@robert-gogolok.de</email>'>
+<!ENTITY Nicolas.Goutte '<personname><firstname>Nicolas</firstname><surname>Goutte</surname></personname>'>
+<!ENTITY Nicolas.Goutte.mail '<email>goutte@kde.org</email>'>
 <!ENTITY Kurt.Granroth '<personname><firstname>Kurt</firstname><surname>Granroth</surname></personname>'>
 <!ENTITY Kurt.Granroth.mail '<email>granroth@kde.org</email>'>
 <!ENTITY Wilco.Greven '<personname><firstname>Wilco</firstname><surname>Greven</surname></personname>'>
@@ -208,7 +210,7 @@
 <!ENTITY Rob.Kaper '<personname><firstname>Rob</firstname><surname>Kaper</surname></personname>'>
 <!ENTITY Rob.Kaper.mail '<email>cap@capsi.com</email>'>
 <!ENTITY Jason.Katz-Brown '<personname><firstname>Jason</firstname><surname>Katz-Brown</surname></personname>'>
-<!ENTITY Jason.Katz-Brown.mail '<email>jasonkb@mit.edu</email>'>
+<!ENTITY Jason.Katz-Brown.mail '<email>jason@katzbrown.com</email>'>
 <!ENTITY Ulrich.Kuettler '<personname><firstname>Ulrich</firstname><surname>Küttler</surname></personname>'>
 <!ENTITY Stefan.Kebekus '<personname><firstname>Stefan</firstname><surname>Kebekus</surname></personname>'>
 <!ENTITY Stefan.Kebekus.mail '<email>kebekus@kde.org</email>'>
