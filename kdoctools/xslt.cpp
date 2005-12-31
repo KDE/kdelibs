@@ -242,7 +242,7 @@ static bool readCache( const QString &filename,
     if (!fd->open(IO_ReadOnly))
     {
        delete fd;
-       ::unlink( cache.local8Bit() );
+       QFile::remove(cache);
        return false;
     }
 
