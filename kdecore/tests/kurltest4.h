@@ -32,14 +32,19 @@ private slots:
     void testSetRef();
     void testDirectory();
     void testUtf8();
+    void testIsLocalFile();
     void testSimpleMethods();
     void testParsingTolerance();
+    void testNewLine();
+    void testQueryParsing();
     void testEmptyQueryOrRef();
     void testURLsWithoutPath();
     void testPathAndQuery();
     void testSetFileName();
     void testPrettyURL();
     void testIsRelative();
+    void testRelativePath();
+    void testRelativeURL();
     void testAdjustPath();
     void testIPV6();
     void testBaseURL();
@@ -57,7 +62,6 @@ private slots:
     void testEncodeString();
     void testIdn();
     void testUriMode();
-    void testOther();
 };
 
 #endif

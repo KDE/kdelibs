@@ -744,6 +744,7 @@ QString KURL::prettyURL( int _trailing ) const
 {
   // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
   // So prettyURL is just url, with the password removed.
+  // We could replace some chars, like "%20" -> ' ', though?
   if ( password().isEmpty() )
     return url( _trailing );
 
@@ -872,10 +873,9 @@ KURL KURL::join( const KURL::List & lst )
      KURL u(it.previous());
      if (!first)
      {
-        if (u.fragment().isNull())
-            u.setFragment( tmp.url() );
-        else
-            u.setFragment( u.fragment() + '#' + tmp.url() ); // Support more than one suburl thingy
+         // ##### problem: this encodes the '#' into %23 every time,
+         // so at the 2nd level we get %2523, etc...
+         u.setFragment( tmp.url() );
      }
      tmp = u;
 
@@ -1093,7 +1093,7 @@ KURL KURL::upURL( ) const
   while (true)
   {
      KURL &u = lst.last();
-     QString old = u.path();
+     const QString old = u.path();
      u.cd("../");
      if (u.path() != old)
          break; // Finshed.
@@ -1175,7 +1175,15 @@ void KURL::_setQuery( const QString& query )
 
 QString KURL::query() const
 {
-    if (encodedQuery().isNull())
+    // For now we'll ignore the case of "a query but it's empty", waiting for Qt-4.2
+    const bool hasQuery = !encodedQuery().isEmpty();
+#if QT_VERSION >= 0x040200
+#ifdef __GNUC__
+#warning Qt-4.2, use QUrl::hasQuery()
+#endif
+#endif
+
+    if ( !hasQuery )
         return QString();
     return QString( QChar( '?' ) ) + QString::fromAscii( encodedQuery() );
 }
@@ -1245,44 +1253,6 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
       return false;
   return true;
 #endif
-}
-
-QMap< QString, QString > KURL::queryItems( int options ) const {
-  QMap< QString, QString > result;
-  const QList<QPair<QString, QString> > items = QUrl::queryItems();
-  QPair<QString, QString> item;
-  Q_FOREACH( item, items ) {
-      result.insert( options & CaseInsensitiveKeys ? item.first.toLower() : item.first, item.second );
-  }
-#if 0
-  if ( m_strQuery_encoded.isEmpty() )
-    return QMap<QString,QString>();
-
-  QMap< QString, QString > result;
-  QStringList items = m_strQuery_encoded.split( '&', QString::SkipEmptyParts );
-  for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
-    int equal_pos = (*it).indexOf( '=' );
-    if ( equal_pos > 0 ) { // = is not the first char...
-      QString name = (*it).left( equal_pos );
-      if ( options & CaseInsensitiveKeys )
-	name = name.toLower();
-      QString value = (*it).mid( equal_pos + 1 );
-      if ( value.isEmpty() )
-	result.insert( name, QLatin1String("") );
-      else {
-	// ### why is decoding name not necessary?
-	value.replace( '+', ' ' ); // + in queries means space
-	result.insert( name, decode_string( value, encoding_hint ) );
-      }
-    } else if ( equal_pos < 0 ) { // no =
-      QString name = (*it);
-      if ( options & CaseInsensitiveKeys )
-	name = name.toLower();
-      result.insert( name, QString() );
-    }
-  }
-#endif
-  return result;
 }
 
 // static
@@ -1388,4 +1358,100 @@ void KURL::setPath( const QString& path )
     if ( scheme().isEmpty() )
         setScheme( "file" );
     QUrl::setPath( path );
+}
+
+#if 0 // this would be if we didn't decode '+' into ' '
+QMap< QString, QString > KURL::queryItems( int options ) const {
+  QMap< QString, QString > result;
+  const QList<QPair<QString, QString> > items = QUrl::queryItems();
+  QPair<QString, QString> item;
+  Q_FOREACH( item, items ) {
+      result.insert( options & CaseInsensitiveKeys ? item.first.toLower() : item.first, item.second );
+  }
+  return result;
+}
+#endif
+
+QMap< QString, QString > KURL::queryItems( int options ) const {
+  const QString strQueryEncoded = encodedQuery();
+  if ( strQueryEncoded.isEmpty() )
+    return QMap<QString,QString>();
+
+  QMap< QString, QString > result;
+  const QStringList items = strQueryEncoded.split( '&', QString::SkipEmptyParts );
+  for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
+    const int equal_pos = (*it).indexOf( '=' );
+    if ( equal_pos > 0 ) { // = is not the first char...
+      QString name = (*it).left( equal_pos );
+      if ( options & CaseInsensitiveKeys )
+	name = name.toLower();
+      QString value = (*it).mid( equal_pos + 1 );
+      if ( value.isEmpty() )
+        result.insert( name, QString::fromLatin1("") );
+      else {
+	// ### why is decoding name not necessary?
+	value.replace( '+', ' ' ); // + in queries means space
+	result.insert( name, QUrl::fromPercentEncoding( value.toLatin1() ) );
+      }
+    } else if ( equal_pos < 0 ) { // no =
+      QString name = (*it);
+      if ( options & CaseInsensitiveKeys )
+	name = name.toLower();
+      result.insert( name, QString::null );
+    }
+  }
+
+  return result;
+}
+
+QString KURL::queryItem( const QString& _item ) const
+{
+  const QString strQueryEncoded = encodedQuery();
+  const QString item = _item + '=';
+  if ( strQueryEncoded.length() <= 1 )
+    return QString::null;
+
+  const QStringList items = strQueryEncoded.split( '&', QString::SkipEmptyParts );
+  const int _len = item.length();
+  for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
+  {
+    if ( (*it).startsWith( item ) )
+    {
+      if ( (*it).length() > _len )
+      {
+        QString str = (*it).mid( _len );
+        str.replace( '+', ' ' ); // + in queries means space.
+        return QUrl::fromPercentEncoding( str.toLatin1() );
+      }
+      else // empty value
+        return QString::fromLatin1("");
+    }
+  }
+
+  return QString();
+}
+
+void KURL::addQueryItem( const QString& _item, const QString& _value )
+{
+  QString item = _item + '=';
+  QString value = QUrl::toPercentEncoding( _value );
+
+  QString strQueryEncoded = encodedQuery();
+  if (!strQueryEncoded.isEmpty())
+     strQueryEncoded += '&';
+  strQueryEncoded += item + value;
+  setEncodedQuery( strQueryEncoded.toLatin1() );
+}
+
+bool KURL::hasRef() const
+{
+#if QT_VERSION < 0x040200
+    // For now we'll ignore the case of "a fragment but it's empty", waiting for Qt-4.2
+    return !fragment().isEmpty();
+#else
+#ifdef __GNUC__
+#warning Qt-4.2, return QUrl::hasFragment()
+#endif
+    return !fragment().isNull();
+#endif
 }

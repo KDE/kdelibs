@@ -358,7 +358,7 @@ public:
    *         http://www.kde.org/kdebase.tar#tar:/README it would
    *         return true, too.
    */
-  bool hasRef() const { return !fragment().isNull(); }
+  bool hasRef() const;
 
   /**
    * Returns the HTML reference (the part of the URL after "#").
@@ -448,6 +448,10 @@ public:
   /**
    * Returns the list of query items as a map mapping keys to values.
    *
+   * This does the same as QUrl::queryItems(), except that it
+   * decodes "+" into " " in the value, supports CaseInsensitiveKeys,
+   * and returns a different data type.
+   *
    * @param options any of QueryItemsOptions <em>or</em>ed together.
    *
    * @return the map of query items or the empty map if the url has no
@@ -455,13 +459,33 @@ public:
    *
    * @since 3.1
    */
-  QMap< QString, QString > queryItems( int options ) const;
+  QMap< QString, QString > queryItems( int options = 0 ) const;
   // #### TODO port the above queryItems to look more like QUrl's
-  using QUrl::queryItems; // temporary
+  //using QUrl::queryItems; // temporary
 
-  KDE_DEPRECATED QString queryItem(const QString &key) const {
-    return QUrl::queryItemValue( key );
-  }
+  /**
+   * Returns the value of a certain query item.
+   *
+   * This does the same as QUrl::queryItemValue(), except that it
+   * decodes "+" into " " in the value.
+   *
+   * @param item Item whose value we want
+   *
+   * @return the value of the given query item name or QString::null if the
+   * specified item does not exist.
+   */
+  QString queryItem(const QString &item) const;
+
+  /**
+   * Add an additional query item.
+   * To replace an existing query item, the item should first be
+   * removed with removeQueryItem()
+   *
+   * @param _item Name of item to add
+   * @param _value Value of item to add
+   */
+  void addQueryItem( const QString& _item, const QString& _value );
+
 
   /**
    * Sets the filename of the path.
