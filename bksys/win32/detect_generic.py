@@ -66,7 +66,7 @@ def detect(env):
 		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
 
 	if env['CC'] == 'cl':
-		env.AppendUnique(CPPPATH = [os.environ['INCLUDE'].split()])
+		env.AppendUnique(CPPPATH = os.environ['INCLUDE'].split(';'))
 		env['GENCCFLAGS']   += ['/Iwin\\include','/Iwin\\include\\msvc']
 # TODO (rh) don't know required cl flags, don't know how to set not in win dir 
 #		env['GENLINKFLAGS'] += ['']
