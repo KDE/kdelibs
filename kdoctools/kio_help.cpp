@@ -1,42 +1,34 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
-#include <assert.h>
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <grp.h>
-#include <pwd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <time.h>
-#include <unistd.h>
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#endif
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 
 #include <qvaluelist.h>
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qtextcodec.h>
 
-#include <kshred.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kprotocolmanager.h>
 #include <kinstance.h>
-#include <limits.h>
-#include <qtextcodec.h>
 
 #include "kio_help.h"
 #include <libxslt/xsltutils.h>
