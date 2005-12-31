@@ -239,7 +239,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         static QPixmap *loadingIcon;
         QColor bg = khtml::retrieveBackgroundColor(this);
         QColor fg = khtml::hasSufficientContrast(Qt::gray, bg) ? Qt::gray :
-                    (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);    
+                    (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);
 	paintInfo.p->setPen(QPen(fg, 1));
 	paintInfo.p->setBrush( Qt::NoBrush );
 	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
@@ -250,7 +250,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
             }
             paintInfo.p->drawPixmap(_tx + 4, _ty + 4, *loadingIcon, 0, 0, m_width - 5, m_height - 5);
         }
-        
+
     }
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
@@ -300,14 +300,14 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         int x = _tx + leftBorder + leftPad;
         int y = _ty + topBorder + topPad;
         QRect imageGeom   = QRect(0, 0, contentWidth(), contentHeight());
-        
+
         QRect clipPortion = paintInfo.r.translated(-x, -y);
         imageGeom &= clipPortion;
 
         ip.paint(x + imageGeom.x(), y + imageGeom.y(), paintInfo.p,
                                     imageGeom.x(),     imageGeom.y(),
                                     imageGeom.width(), imageGeom.height());
-        
+
     }
     if (m_selectionState != SelectionNone) {
 //    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
@@ -362,7 +362,6 @@ void RenderImage::layout()
 	m_width = (int) (m_width/scale);
 	m_height = (int) (m_height/scale);
     }
-
 
     setNeedsLayout(false);
 }

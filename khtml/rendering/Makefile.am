@@ -28,7 +28,7 @@ libkhtmlrender_la_SOURCES = \
 	render_replaced.cpp render_form.cpp render_list.cpp \
 	render_canvas.cpp render_frames.cpp render_br.cpp \
 	render_body.cpp font.cpp render_line.cpp render_generated.cpp \
-	enumerate.cpp counter_tree.cpp
+	enumerate.cpp counter_tree.cpp render_canvasimage.cpp
 
 libkhtmlrender_la_METASOURCES = AUTO
 
@@ -39,7 +39,7 @@ noinst_HEADERS = \
 	render_flow.h render_text.h render_table.h render_replaced.h \
 	render_form.h render_list.h render_canvas.h render_frames.h \
 	render_br.h render_applet.h font.h table_layout.h render_line.h \
-	render_generated.h enumerate.h
+	render_generated.h enumerate.h render_canvasimage.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/kfile -I$(top_srcdir)/khtml -I$(top_srcdir)/kutils -I$(top_srcdir) $(all_includes)

@@ -26,7 +26,7 @@ libkhtmlhtml_la_SOURCES = \
 	html_elementimpl.cpp   html_inlineimpl.cpp    html_documentimpl.cpp \
 	html_baseimpl.cpp      html_imageimpl.cpp     html_listimpl.cpp \
 	html_miscimpl.cpp      html_formimpl.cpp      html_objectimpl.cpp \
-	html_tableimpl.cpp
+	html_tableimpl.cpp     html_canvasimpl.cpp
 
 libkhtmlhtml_la_METASOURCES = AUTO
 
@@ -37,7 +37,7 @@ noinst_HEADERS = \
 	html_blockimpl.h     html_inlineimpl.h    \
 	html_documentimpl.h  html_listimpl.h      htmltokenizer.h \
 	html_elementimpl.h   html_miscimpl.h \
-	html_formimpl.h      html_objectimpl.h
+	html_formimpl.h      html_objectimpl.h    html_canvasimpl.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/kio/kssl \
