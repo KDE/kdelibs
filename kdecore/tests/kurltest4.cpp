@@ -1301,8 +1301,6 @@ void KURLTest::testOtherEncodings()
   KURL russian = baseURL.directory(false, true) + QString::fromUtf8( "фгн7" );
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
   QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
-  //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
-  QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
 
   KURL utf8_1("audiocd:/By%20Name/15%20Geantra%C3%AE.wav");
   QCOMPARE( utf8_1.fileName(), QString::fromUtf8("15 Geantraî.wav") );
