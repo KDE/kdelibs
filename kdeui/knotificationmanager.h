@@ -39,6 +39,9 @@ class KNotificationManager :  public DCOPObject
 {  
 	K_DCOP
 	public: 
+		enum flags { DefaultNotification=0x1 };
+
+
 		static KNotificationManager* self();		
 		~KNotificationManager();
 		
@@ -47,7 +50,7 @@ class KNotificationManager :  public DCOPObject
 		 * @return the identification number
 		 */
 		unsigned int notify(KNotification *n, const QPixmap& pix, const QStringList &action ,
-							const KNotification::ContextList& contexts);
+							const KNotification::ContextList& contexts, int flags=0);
 		
 		/**
 		 * send the close dcop call to the knotify server for the notification with the identifier @p id .

@@ -193,9 +193,26 @@ public:
 		 * notification will be closed after a small timeout.
 		 * @todo doesn't works yet
 		 */
-		CloseWhenWidgetActivated=0x03
+		CloseWhenWidgetActivated=0x04,
+
+		/**
+		 * @internal
+		 * The event is a standard kde event, and not an event of the application
+ 		 */
+		DefaultEvent=0x08
+		
 	};
 
+	/**
+	 * default events you can use in the event function
+	 */
+	enum StandardEvent {
+		cannotOpenFile,
+		notification,
+		warning,
+		fatalError,
+		catastrophe
+	};
 
 	~KNotification();
 
@@ -306,6 +323,22 @@ public:
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 			const QStringList &actions=QStringList(), ContextList contexts=ContextList() ,
 			unsigned int flags=CloseOnTimeout);
+	
+	/**
+	 * @brief emit standard an event
+	 * @overload
+	 *
+	 * This will emit a standard event
+	 *
+	 * @param eventId is the name of the event
+	 * @param text is the text of the notification to show in the popup.
+	 * @param pixmap is a picture which may be shown in the popup.
+	 * @param widget is a widget where the notification reports to
+	 * @param flags is a bitmask of KNotificationFlags  
+	 */
+	static KNotification *event( StandardEvent eventId , const QString& text=QString::null,
+								 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
+								unsigned int flags=CloseOnTimeout);
 	
 	/**
 	 * This is a simple substitution for QApplication::beep()

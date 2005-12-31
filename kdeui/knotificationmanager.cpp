@@ -105,10 +105,10 @@ void KNotificationManager::close( int id)
 }
 
 unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions , 
-										   const KNotification::ContextList & contexts)
+										   const KNotification::ContextList & contexts , int flags)
 {
 	kdDebug() << k_funcinfo << endl;
-	QString appname=kapp->instanceName();
+	QString appname= (flags & DefaultNotification)  ? QString::fromAscii("kde") : kapp->instanceName();
 	WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
 	DCOPClient *client=KApplication::dcopClient();

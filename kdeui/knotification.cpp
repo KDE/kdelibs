@@ -168,7 +168,12 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	notify->d->actions=actions;
 	notify->d->eventId=eventid;
 
-	notify->d->id=KNotificationManager::self()->notify( notify , pixmap , notify->d->actions , contexts );
+
+	unsigned int f=0;
+	if(flags & DefaultEvent)
+		f |= KNotificationManager::DefaultNotification;
+
+	notify->d->id=KNotificationManager::self()->notify( notify , pixmap , notify->d->actions , contexts , f );
 	if(notify->d->id>0)
 		notify->ref();
 //	kdDebug() << k_funcinfo << d->id << endl;
@@ -185,6 +190,32 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	return notify;
 }
 
+
+KNotification *KNotification::event( StandardEvent eventid , const QString& text,
+			const QPixmap& pixmap, QWidget *widget, unsigned int flags)
+{
+	QString message;
+	switch ( eventid ) {
+		case cannotOpenFile:
+			message = QLatin1String("cannotopenfile");
+			break;
+		case warning:
+			message = QLatin1String("warning");
+			break;
+		case fatalError:
+			message = QLatin1String("fatalerror");
+			break;
+		case catastrophe:
+			message = QLatin1String("catastrophe");
+			break;
+		case notification: // fall through
+		default:
+			message = QLatin1String("notification");
+			break;
+	}
+	return event( message, text, pixmap, widget , QStringList() , ContextList() , flags | DefaultEvent );
+}
+
 void KNotification::ref()
 {
 	d->ref++;
@@ -199,8 +230,7 @@ void KNotification::deref()
 
 void KNotification::beep( const QString & reason, QWidget * widget )
 {
-	QApplication::beep();
-	//TODO use kde configuration
+	event( QLatin1String("beep"), reason, QPixmap(), widget , QStringList() , ContextList() , CloseOnTimeout | DefaultEvent );
 }
 
 #include "knotification.moc"
