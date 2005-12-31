@@ -110,7 +110,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
         result = langLookup(path+"/index.html");
         if (!result.isEmpty())
 	{
-            KURL Qt::red( "help:/" );
+            KURL red( "help:/" );
             red.setPath( path + "/index.html" );
             red.setQuery( query );
             redirection(red);
