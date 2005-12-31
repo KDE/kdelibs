@@ -27,7 +27,7 @@
 #include <kiconloader.h>
 #include <kdialog.h>
 #include <QLabel>
-
+#include <QTextDocument>
 
 NotifyByPopup::NotifyByPopup(QObject *parent) : KNotifyPlugin(parent)
 {
@@ -87,7 +87,7 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 		foreach ( const QString & it , config->actions ) 
 		{
 			i++;
-			linkCode+=QString::fromLatin1("&nbsp;<a href=\"%1:%2\">%3</a> ").arg( id ).arg( i ).arg( Q3StyleSheet::escape(it) );
+			linkCode+=QString::fromLatin1("&nbsp;<a href=\"%1:%2\">%3</a> ").arg( id ).arg( i ).arg( Qt::escape(it) );
 		}
 		linkCode+=QString::fromLatin1("</p>");
 		KActiveLabel *link = new KActiveLabel(linkCode , vb );
