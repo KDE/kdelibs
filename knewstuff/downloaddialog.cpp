@@ -569,6 +569,9 @@ void DownloadDialog::install(Entry *e)
   }
 
   d->m_installlist.append(e);
+  d->m_lvtmp_r->setEnabled( true );
+  d->m_lvtmp_l->setEnabled( true );
+  d->m_lvtmp_d->setEnabled( true );
 }
 
 void DownloadDialog::slotInstalled(KIO::Job *job)
