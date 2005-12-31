@@ -1801,10 +1801,7 @@ KURL KURL::join( const KURL::List & lst )
   {
      KURL u(it.previous());
      if (!first)
-     {
-        if (u.m_strRef_encoded.isNull()) u.m_strRef_encoded = tmp.url();
-        else u.m_strRef_encoded += "#" + tmp.url(); // Support more than one suburl thingy
-     }
+       u.m_strRef_encoded = tmp.url();
      tmp = u;
 
      first = false;
@@ -2368,7 +2365,7 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
 KURL KURL::fromPathOrURL( const QString& text )
 {
     KURL url;
-    
+
     if ( !text.isEmpty() )
     {
         if (!QDir::isRelativePath(text))

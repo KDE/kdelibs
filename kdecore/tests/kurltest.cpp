@@ -226,6 +226,17 @@ int main(int argc, char *argv[])
   //check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
 
+
+  const KURL::List splitted = KURL::split( url1 );
+  assert( splitted.count() == 3 );
+  kdDebug() << splitted << endl;
+  check( "", splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz#myref") );
+  check( "", splitted[1].url(), QString("gzip:/#myref") );
+  check( "", splitted[2].url(), QString("tar:/#myref") );
+
+  KURL rejoined = KURL::join( splitted );
+  check( "", rejoined.url(), url1.url() );
+
   u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";
   url1 = u1;
   check("KURL::url()", url1.url(), "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi");
@@ -864,6 +875,9 @@ int main(int argc, char *argv[])
   check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
   check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
+  theKow.addQueryItem("a", "b+c" );
+  check("queryItem (+ in added item)", theKow.url(), "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25&a=b%2Bc");
+  check("queryItem (+ in added item)", theKow.queryItem("a"), "b+c");
 
   // checks for queryItems(), which returns a QMap<QString,QString>:
   KURL queryUrl( "mailto:Marc%20Mutz%20%3cmutz@kde.org%3E?"
