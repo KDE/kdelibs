@@ -48,7 +48,7 @@ for /R %D in (Makefile.am) do if exist %D am2bksys %D -o %~dD%~pDSConscript
 
 if you like to save the commands at first in a batch file, wun the following command: 
 \code
-for /R %D in (Makefile.am) do if exist %D am2bksys %D -o %~dD%~pDSConscript >>convert_all.bat
+for /R %D in (Makefile.am) do if exist %D echo am2bksys %D -o %~dD%~pDSConscript >>convert_all.bat
 convert_all.bat
 \endcode
 
