@@ -285,7 +285,7 @@ static QString dumpNode(const QDomNode &node)
 
 static QString filenameOnly(QString path)
 {
-   int i = path.lastIndexOf('/');
+   int i = path.lastIndexOf(QRegExp("[/\\]"));
    if (i >= 0)
       return path.mid(i+1);
    return path;
@@ -985,7 +985,11 @@ int main( int argc, char **argv )
   validNameRegexp = new QRegExp("[a-zA-Z_][a-zA-Z0-9_]*");
 
   QString baseDir = QFile::decodeName(args->getOption("directory"));
+#ifdef Q_OS_WIN
+  if (!baseDir.endsWith("/") && !baseDir.endsWith("\\"))
+#else 
   if (!baseDir.endsWith("/"))
+#endif 
     baseDir.append("/");
 
   QString inputFilename = args->url( 0 ).path();
@@ -1131,7 +1135,7 @@ int main( int argc, char **argv )
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( QIODevice::WriteOnly ) ) {
-    kdError() << "Can't open '" << headerFileName << "for writing." << endl;
+    kdError() << "Can't open '" << baseDir  << headerFileName << "for writing." << endl;
     return 1;
   }
 
