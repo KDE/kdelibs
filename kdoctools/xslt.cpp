@@ -230,7 +230,7 @@ static bool readCache( const QString &filename,
     if (!fd->open(QIODevice::ReadOnly))
     {
        delete fd;
-       ::unlink( cache.toLocal8Bit() );
+       QFile::remove(cache);
        return false;
     }
 
