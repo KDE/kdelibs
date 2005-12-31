@@ -1391,16 +1391,16 @@ void KURLTest::testIdn()
   kdDebug() << k_funcinfo << endl;
 
   //qDebug( "trying QUrl with fromPercentEncoding" );
-  QUrl qurltest( QUrl::fromPercentEncoding( "http://\303\244.de" ) ); // ä in utf8
+  QUrl qurltest( QUrl::fromPercentEncoding( "http://\303\244.de" ) ); // a+trema in utf8
   QVERIFY( qurltest.isValid() );
 
   //qDebug( "trying QUrl with fromEncoded" );
-  QUrl qurl = QUrl::fromEncoded( "http://\303\244.de" ); // ä in utf8
+  QUrl qurl = QUrl::fromEncoded( "http://\303\244.de" ); // a+trema in utf8
   QVERIFY( qurl.isValid() );
   QCOMPARE( qurl.toEncoded().constData(), "http://xn--4ca.de" );
 
   //qDebug( "and now trying KURL" );
-  KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // ä in utf8
+  KURL thiago( QString::fromUtf8( "http://\303\244.de" ) ); // a+trema in utf8
   QVERIFY( thiago.isValid() );
   QCOMPARE( thiago.url(), QString("http://xn--4ca.de") );   // Non-ascii is allowed in IDN domain names.
 
