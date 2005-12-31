@@ -3353,9 +3353,8 @@ void KDesktopPropsPlugin::slotAdvanced()
   KDialogBase dlg(w, "KPropertiesDesktopAdv", true,
       i18n("Advanced Options for %1").arg(properties->kurl().fileName()),
       KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
-  KPropertiesDesktopAdvBase *w = new KPropertiesDesktopAdvBase(&dlg);
-
-  dlg.setMainWidget(w);
+  Ui_KPropertiesDesktopAdvBase w;
+  w.setupUi(&dlg);
 
   // If the command is changed we reset certain settings that are strongly
   // coupled to the command.
@@ -3372,36 +3371,36 @@ void KDesktopPropsPlugin::slotAdvanced()
   if (preferredTerminal == "konsole")
   {
      terminalCloseBool = (m_terminalOptionStr.contains( "--noclose" ) > 0);
-     w->terminalCloseCheck->setChecked(terminalCloseBool);
+     w.terminalCloseCheck->setChecked(terminalCloseBool);
      m_terminalOptionStr.replace( "--noclose", "");
   }
   else
   {
-     w->terminalCloseCheck->hide();
+     w.terminalCloseCheck->hide();
   }
 
-  w->terminalCheck->setChecked(m_terminalBool);
-  w->terminalEdit->setText(m_terminalOptionStr);
-  w->terminalCloseCheck->setEnabled(m_terminalBool);
-  w->terminalEdit->setEnabled(m_terminalBool);
-  w->terminalEditLabel->setEnabled(m_terminalBool);
+  w.terminalCheck->setChecked(m_terminalBool);
+  w.terminalEdit->setText(m_terminalOptionStr);
+  w.terminalCloseCheck->setEnabled(m_terminalBool);
+  w.terminalEdit->setEnabled(m_terminalBool);
+  w.terminalEditLabel->setEnabled(m_terminalBool);
 
-  w->suidCheck->setChecked(m_suidBool);
-  w->suidEdit->setText(m_suidUserStr);
-  w->suidEdit->setEnabled(m_suidBool);
-  w->suidEditLabel->setEnabled(m_suidBool);
+  w.suidCheck->setChecked(m_suidBool);
+  w.suidEdit->setText(m_suidUserStr);
+  w.suidEdit->setEnabled(m_suidBool);
+  w.suidEditLabel->setEnabled(m_suidBool);
 
-  w->startupInfoCheck->setChecked(m_startupBool);
-  w->systrayCheck->setChecked(m_systrayBool);
+  w.startupInfoCheck->setChecked(m_startupBool);
+  w.systrayCheck->setChecked(m_systrayBool);
 
   if (m_dcopServiceType == "unique")
-    w->dcopCombo->setCurrentItem(2);
+    w.dcopCombo->setCurrentItem(2);
   else if (m_dcopServiceType == "multi")
-    w->dcopCombo->setCurrentItem(1);
+    w.dcopCombo->setCurrentItem(1);
   else if (m_dcopServiceType == "wait")
-    w->dcopCombo->setCurrentItem(3);
+    w.dcopCombo->setCurrentItem(3);
   else
-    w->dcopCombo->setCurrentItem(0);
+    w.dcopCombo->setCurrentItem(0);
 
   // Provide username completion up to 1000 users.
   KCompletion *kcom = new KCompletion;
@@ -3414,47 +3413,47 @@ void KDesktopPropsPlugin::slotAdvanced()
   endpwent();
   if (i < maxEntries)
   {
-    w->suidEdit->setCompletionObject(kcom, true);
-    w->suidEdit->setAutoDeleteCompletionObject( true );
-    w->suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
+    w.suidEdit->setCompletionObject(kcom, true);
+    w.suidEdit->setAutoDeleteCompletionObject( true );
+    w.suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
   }
   else
   {
     delete kcom;
   }
 
-  connect( w->terminalEdit, SIGNAL( textChanged( const QString & ) ),
+  connect( w.terminalEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
-  connect( w->terminalCloseCheck, SIGNAL( toggled( bool ) ),
+  connect( w.terminalCloseCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w->terminalCheck, SIGNAL( toggled( bool ) ),
+  connect( w.terminalCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w->suidCheck, SIGNAL( toggled( bool ) ),
+  connect( w.suidCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w->suidEdit, SIGNAL( textChanged( const QString & ) ),
+  connect( w.suidEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
-  connect( w->startupInfoCheck, SIGNAL( toggled( bool ) ),
+  connect( w.startupInfoCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w->systrayCheck, SIGNAL( toggled( bool ) ),
+  connect( w.systrayCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w->dcopCombo, SIGNAL( highlighted( int ) ),
+  connect( w.dcopCombo, SIGNAL( highlighted( int ) ),
            this, SIGNAL( changed() ) );
 
   if ( dlg.exec() == QDialog::Accepted )
   {
-    m_terminalOptionStr = w->terminalEdit->text().trimmed();
-    m_terminalBool = w->terminalCheck->isChecked();
-    m_suidBool = w->suidCheck->isChecked();
-    m_suidUserStr = w->suidEdit->text().trimmed();
-    m_startupBool = w->startupInfoCheck->isChecked();
-    m_systrayBool = w->systrayCheck->isChecked();
+    m_terminalOptionStr = w.terminalEdit->text().trimmed();
+    m_terminalBool = w.terminalCheck->isChecked();
+    m_suidBool = w.suidCheck->isChecked();
+    m_suidUserStr = w.suidEdit->text().trimmed();
+    m_startupBool = w.startupInfoCheck->isChecked();
+    m_systrayBool = w.systrayCheck->isChecked();
 
-    if (w->terminalCloseCheck->isChecked())
+    if (w.terminalCloseCheck->isChecked())
     {
       m_terminalOptionStr.append(" --noclose");
     }
 
-    switch(w->dcopCombo->currentItem())
+    switch(w.dcopCombo->currentItem())
     {
       case 1:  m_dcopServiceType = "multi"; break;
       case 2:  m_dcopServiceType = "unique"; break;

@@ -86,7 +86,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	kactivelabel.cpp kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp ksconfig.cpp kspelldlg.cpp \
 	kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
-	kspellui.ui3 kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
+	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
 	klistviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
 	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel

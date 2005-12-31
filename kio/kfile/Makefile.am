@@ -55,7 +55,7 @@ libkfile_la_SOURCES = \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui3 \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
 	kfilemetapreview.cpp kpropertiesdesktopbase.ui3 \
-	kpropertiesdesktopadvbase.ui3 kpropertiesmimetypebase.ui3 \
+	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui3 \
 	kencodingfiledialog.cpp kacleditwidget.cpp
 
 libkfile_la_COMPILE_FIRST = $(srcdir)/../kio/kdirnotify_stub.h
