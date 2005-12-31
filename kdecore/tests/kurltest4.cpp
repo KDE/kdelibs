@@ -319,7 +319,7 @@ void KURLTest::testEmptyQueryOrRef()
   //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
   //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi#" );
 
-  KURL tobi1 = "http://host.net/path/?#http://brokenäadsfküpoij31ü029muß2890zupycÜ*!*'O´+ß0i";
+  KURL tobi1 = "http://host.net/path/?#http://broken-adsfk-poij31-029mu-2890zupyc-*!*'O-+-0i";
   QCOMPARE(tobi1.query(), QString("?")); // query is empty
 
   tobi1 = "http://host.net/path/#no-query";
@@ -1298,7 +1298,9 @@ void KURLTest::testOtherEncodings()
   kdDebug() << k_funcinfo << endl;
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
   KURL baseURL = "file:/home/coolo";
-  KURL russian = baseURL.directory(false, true) + QString::fromLocal8Bit( "ÆÇÎ7" ); // TODO convert to utf8
+  KURL russian = baseURL.directory(false, true) + QString::fromUtf8( "Ñ„Ð³Ð½7" );
+  //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
+  QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
   QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
 
