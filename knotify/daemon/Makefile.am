@@ -18,6 +18,10 @@ noinst_HEADERS	=  knotify.h
 kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = knotify.desktop
 
+kdedatadir = $(kde_datadir)/kde
+kdedata_DATA = kde.notifyrc
+
+
 messages:
 	$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
 
