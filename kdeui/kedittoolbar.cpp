@@ -86,7 +86,7 @@ typedef QList<XmlData> XmlDataList;
 class ToolbarItem : public QTreeWidgetItem
 {
 public:
-  ToolbarItem(QTreeWidget *parent, const QString& tag = QString::null, const QString& name = QString::null, const QString& statusText = QString::null)
+  ToolbarItem(QTreeWidget *parent, const QString& tag = QString(), const QString& name = QString(), const QString& statusText = QString())
     : QTreeWidgetItem(parent)
   {
     setInternalTag(tag);
@@ -121,19 +121,13 @@ public:
     header()->hideSection(4);
     header()->setStretchLastSection(true);
     header()->hide();
+
+    setIndentation(0);
   }
 
   void makeVisible(QTreeWidgetItem* item)
   {
     scrollTo(indexFromItem(item));
-  }
-
-  virtual int sizeHintForColumn(int column) const
-  {
-    if (column == 0)
-      return iconSize().width();
-
-    return QTreeWidget::sizeHintForColumn(column);
   }
 
   ToolbarItem* currentItem() const
@@ -420,7 +414,7 @@ void KEditToolbar::slotDefault()
                     kdWarning() << "Could not delete " << file << endl;
         }
 
-        m_widget = new KEditToolbarWidget(QString::null, d->m_factory, this);
+        m_widget = new KEditToolbarWidget(QString(), d->m_factory, this);
         m_widget->rebuildKXMLGUIClients();
     }
     else
@@ -434,7 +428,7 @@ void KEditToolbar::slotDefault()
             if ( !QFile::remove( xml_file ) )
                 kdWarning() << "Could not delete " << xml_file << endl;
 
-        m_widget = new KEditToolbarWidget(QString::null, d->m_collection, d->m_file, d->m_global, this);
+        m_widget = new KEditToolbarWidget(QString(), d->m_collection, d->m_file, d->m_global, this);
     }
 
     setMainWidget(m_widget);
@@ -560,7 +554,7 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
 
   // then, the merged one (ui_standards + local xml)
   XmlData merge;
-  merge.m_xmlFile  = QString::null;
+  merge.m_xmlFile  = QString();
   merge.m_type     = XmlData::Merged;
   merge.m_document = domDocument();
   elem = merge.m_document.documentElement().toElement();
@@ -739,7 +733,8 @@ void KEditToolbarWidget::setupLayout()
   //m_activeList->setDropVisualizer(true);
   //m_activeList->setAllColumnsShowFocus(true);
 
-  m_activeList->setMinimumWidth(m_inactiveList->minimumWidth());
+  // With Qt-4.1 only setting MiniumWidth results in a 0-width icon column ...
+  m_activeList->setMinimumSize(m_inactiveList->minimumWidth(), 100);
   active_label->setBuddy(m_activeList);
 #ifdef _GNUC
 #warning "kde4: dropped signal doesn't exist now"
@@ -914,7 +909,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if (it.isNull()) continue;
     if (it.tagName() == tagSeparator)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
+      ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString());
       bool isLineSep = ( it.attribute(attrLineSeparator, "true").toLower() == QLatin1String("true") );
       if(isLineSep)
         act->setText(1, LINESEPARATORSTRING);
@@ -989,12 +984,15 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   m_inactiveList->sortItems(1, Qt::DescendingOrder);
 
   // finally, add default separators to the inactive list
-  ToolbarItem *act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString::null);
+  ToolbarItem *act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString());
   act->setText(1, LINESEPARATORSTRING);
   m_inactiveList->insertTopLevelItem(0, act);
-  act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString::null);
+  act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString());
   act->setText(1, SEPARATORSTRING);
   m_inactiveList->insertTopLevelItem(1, act);
+
+  m_inactiveList->resizeColumnToContents(0);
+  m_activeList->resizeColumnToContents(0);
 }
 
 KActionCollection *KEditToolbarWidget::actionCollection() const
@@ -1042,7 +1040,7 @@ void KEditToolbarWidget::slotInactiveSelectionChanged()
   else
   {
     m_insertAction->setEnabled(false);
-    d->m_helpArea->setText( QString::null );
+    d->m_helpArea->setText( QString() );
   }
 }
 
@@ -1071,7 +1069,7 @@ void KEditToolbarWidget::slotActiveSelectionChanged()
   {
     m_upAction->setEnabled(false);
     m_downAction->setEnabled(false);
-    d->m_helpArea->setText( QString::null );
+    d->m_helpArea->setText( QString() );
   }
 }
 
