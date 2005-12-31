@@ -61,3 +61,8 @@ Comment[uk]=Файл JavaScript
 Comment[uz]=JavaScript-файли
 Comment[zh_CN]=JavaScript 文件
 X-KDE-IsAlso=application/x-executable-script
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
+
