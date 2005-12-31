@@ -26,7 +26,7 @@
 #include <qstringlist.h>
 
 #include <q3groupbox.h>
-#include <q3stylesheet.h>
+#include <QTextDocument>
 #include <q3simplerichtext.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
@@ -134,7 +134,7 @@ static QString qrichtextify( const QString& text )
   QStringList lines = text.split('\n',QString::SkipEmptyParts);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
-    *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
+    *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
   }
 
   return lines.join(QString::null);

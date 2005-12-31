@@ -90,7 +90,7 @@
 #include <q3ptrdict.h>
 #include <qtooltip.h>
 #include <qstring.h>
-#include <q3stylesheet.h>
+#include <QTextDocument>
 #include <qtimer.h>
 #include <QAbstractEventDispatcher>
 #include <qvector.h>
@@ -454,7 +454,7 @@ bool KHTMLView::event( QEvent* e )
                 region |= QRect( contentsToViewport( r.topLeft() ), r.size() );
                 if ( !s.isEmpty() ) {
                     QToolTip::showText( viewport()->mapToGlobal(region.bottomLeft()),
-                        Q3StyleSheet::convertFromPlainText( s, Q3StyleSheetItem::WhiteSpaceNormal ) );
+                        Qt::convertFromPlainText( s, Qt::WhiteSpaceNormal ) );
                     break;
                 }
             }

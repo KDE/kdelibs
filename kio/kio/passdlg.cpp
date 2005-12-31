@@ -24,7 +24,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <q3simplerichtext.h>
-#include <q3stylesheet.h>
+#include <QTextDocument>
 
 #include <kcombobox.h>
 #include <kconfig.h>
@@ -265,7 +265,7 @@ static QString qrichtextify( const QString& text )
   QStringList lines = text.split('\n', QString::SkipEmptyParts);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
-    *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
+    *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
   }
 
   return lines.join(QString::null);
