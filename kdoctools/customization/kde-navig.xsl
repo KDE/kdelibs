@@ -187,18 +187,24 @@
       </div>
       <br/>
       <br/>
-    
+
       <div class="bannerBottom" style="background-image: url({$kde.common}bottom-middle.png);
                                        background-repeat: x-repeat; 
                                        width: 100%; 
                                        height: 100px; 
                                        bottom:0px;">
+	
         <div class="BannerBottomRight">
           <img src="{$kde.common}bottom-right.png" style="margin: 0px" alt=""/>
         </div>
         <div class="bannerBottomLeft">
           <img src="{$kde.common}bottom-left.png" style="margin: 0px;" alt=""/>
         </div>
+<div id="comments" style="position:relative; top: 5px; left: 1em; height:85px; width: 50%; color: #cfe1f6">
+	<p>Would you like to make a comment or contribute an update to this page?<br/>
+        Send feedback to the <a href="mailto:kde-docs@kdemail.net" style="background:transparent; color:#cfe1f6; text-decoration: underline;">KDE Docs Team</a></p>
+	</div>
+
       </div>
 
   </xsl:if>
