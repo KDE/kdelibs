@@ -1,0 +1,55 @@
+/** \page tools tools
+
+\ref amview
+\ref am2bksys
+
+
+\section amview amview 
+amview is a Makefile.am viewer, which parses Makefile.am files and show collected informations. 
+
+The syntax and a list of possible options are listed below. 
+
+\code
+F:\daten\kdelibs>amview
+amtool [options] Makefile.am [Makefile.am] ...
+list Makefile.am content
+options:
+    --uses print where a library is used
+    --libadd print all LIBADD depenencies
+    --ldflags print all LDFLAGS definitions
+    --defines print all Makefile variables
+    --targets print all Makefile targets
+    --libs print all libraries defined in self Makefile.am
+    --sources print all sources defined in self Makefile.am
+\endcode
+
+
+\section am2bksys am2bksys
+am2bksys converts Makefile.am files to bksys SConscript files. 
+
+The syntax and a list of possible options are listed below. 
+
+\code
+F:\daten\kdelibs>am2bksys
+am2bksys [options] Makefile.am
+Convert a Makefile.am to bksys SConscript
+options:
+    -o file  Write generated SConscript to this file
+    -w Write generated SConscript to the same dir as the Makefile.am
+By default, am2bksys will output the generated SConscript to stdout
+\code
+
+\code
+
+To convert a whole directory tree directly, you can run the following command from a command shell: 
+\code
+for /R %D in (Makefile.am) do if exist %D am2bksys %D -o %~dD%~pDSConscript
+\endcode
+
+if you like to save the commands at first in a batch file, wun the following command: 
+\code
+for /R %D in (Makefile.am) do if exist %D am2bksys %D -o %~dD%~pDSConscript >>convert_all.bat
+convert_all.bat
+\endcode
+
+*/

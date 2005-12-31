@@ -25,6 +25,8 @@
 - package compiling notes 
 	- kdelibs
 		- \ref how-to-compile-with-mingw	
+
+- \ref tools related tools
 		
 - Appendics
 	- \ref library_filename_specification
