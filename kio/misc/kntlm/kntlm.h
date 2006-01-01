@@ -137,8 +137,8 @@ public:
    *
    * @return true if creating the structure succeeds, false otherwise.   
    */
-  static bool getNegotiate( QByteArray &negotiate, const QString &domain = QString::null, 
-    const QString &workstation = QString::null,
+  static bool getNegotiate( QByteArray &negotiate, const QString &domain = QString(), 
+    const QString &workstation = QString(),
     quint32 flags = Negotiate_Unicode | Request_Target | Negotiate_NTLM );
   /**
    * Creates the type 3 message which should be sent to the server after 
@@ -160,8 +160,8 @@ public:
    * no NTLM supported).
    */
   static bool getAuth( QByteArray &auth, const QByteArray &challenge, const QString &user,
-    const QString &password, const QString &domain = QString::null, 
-    const QString &workstation = QString::null, bool forceNTLM = false, bool forceNTLMv2 = false );
+    const QString &password, const QString &domain = QString(), 
+    const QString &workstation = QString(), bool forceNTLM = false, bool forceNTLMv2 = false );
 
   /**
    * Returns the LanManager response from the password and the server challenge.

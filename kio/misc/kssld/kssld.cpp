@@ -612,7 +612,7 @@ void KSSLD::caVerifyUpdate() {
 	if (!QFile::exists(path))
 		return;
 	
-	cfg->setGroup(QString::null);
+	cfg->setGroup(QString());
 	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
 	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", QVariant(0)).toUInt();
 	if (oldStamp != newStamp)
@@ -699,13 +699,13 @@ static QStringList caReadCerticatesFromFile(QString filename) {
 	while (!file.atEnd()) {
 		file.readLine(temp.data(), 999);
 		if (temp.startsWith("-----BEGIN CERTIFICATE-----")) {
-			certificate = QString::null;
+			certificate.clear();
 			continue;
 		}
 
 		if (temp.startsWith("-----END CERTIFICATE-----")) {
 			certificates.append(certificate);
-			certificate = QString::null;
+			certificate.clear();
 			continue;
 		}
 
@@ -816,11 +816,11 @@ return true;
 QString KSSLD::caGetCert(QString subject) {
 KConfig cfg("ksslcalist", true, false);
 	if (!cfg.hasGroup(subject))
-		return QString::null;
+		return QString();
 
 	cfg.setGroup(subject);
 
-return cfg.readEntry("x509", QString::null);
+return cfg.readEntry("x509", QString());
 }
 
 

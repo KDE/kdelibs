@@ -176,7 +176,7 @@ public:
 	 *  @param realHost the remote hostname as the user believes to be
 	 *         connecting to
 	 */
-	void setPeerHost(const QString& realHost = QString::null);
+	void setPeerHost(const QString& realHost = QString());
 
 	/**
 	 *  Connect the SSL session to the remote host using the provided

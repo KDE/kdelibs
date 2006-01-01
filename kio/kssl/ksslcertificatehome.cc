@@ -145,7 +145,7 @@ KSimpleConfig cfg("ksslauthmap", false);
 
    if (!cfg.hasGroup(KResolver::domainToAscii(host))) {
       if (aa) *aa = AuthNone;
-      return QString::null;
+      return QString();
    } else {
       cfg.setGroup(KResolver::domainToAscii(host));
       if (aa) {

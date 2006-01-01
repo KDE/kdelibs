@@ -36,7 +36,7 @@ QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unic
 {
   //watch for buffer overflows
   if ( secbuf.offset > buf.size() ||
-       secbuf.offset + secbuf.len > buf.size() ) return QString::null;
+       secbuf.offset + secbuf.len > buf.size() ) return QString();
 
   QString str;
   const char *c = buf.data() + secbuf.offset;

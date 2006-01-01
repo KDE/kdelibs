@@ -854,7 +854,7 @@ QString KSSLCertificate::getNotBefore() const {
 #ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notBefore(d->m_cert));
 #else
-return QString::null;
+return QString();
 #endif
 }
 
@@ -863,7 +863,7 @@ QString KSSLCertificate::getNotAfter() const {
 #ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notAfter(d->m_cert));
 #else
-return QString::null;
+return QString();
 #endif
 }
 

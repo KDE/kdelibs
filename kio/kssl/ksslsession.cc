@@ -54,7 +54,7 @@ char *p = csess;
 
 	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, (unsigned char **)&p)) {
 		delete[] csess;
-		return QString::null;
+		return QString();
 	}
 
 	// encode it into a QString

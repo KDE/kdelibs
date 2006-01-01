@@ -39,7 +39,7 @@ class KIO_EXPORT KSSLCSessionCache {
     /**
      * Retrieve a SSL session (client side only)
      * @param url URL the key belongs to
-     * @return if a key can be found, QString::null otherwise
+     * @return if a key can be found, QString() otherwise
      */
     static QString getSessionForURL(const KURL &kurl);
 };

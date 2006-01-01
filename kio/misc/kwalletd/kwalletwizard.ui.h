@@ -28,7 +28,7 @@ void KWalletWizard::passwordPageUpdate()
 	    _matchLabel->setText(i18n("Passwords do not match."));
 	}
     } else {
-	_matchLabel->setText(QString::null);
+	_matchLabel->setText(QString());
     }
     
 }

@@ -158,7 +158,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 
 
 void KSSLPeerInfo::reset() {
-	d->peerHost = QString::null;
+	d->peerHost.clear();
 }
 
 

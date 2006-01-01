@@ -39,7 +39,7 @@ void KSSLX509Map::setValue(const QString& key, const QString& value) {
 
 QString KSSLX509Map::getValue(const QString& key) const {
 	if (!m_pairs.contains(key)) {
-		return QString::null;
+		return QString();
 	}
 
 	return m_pairs[key];

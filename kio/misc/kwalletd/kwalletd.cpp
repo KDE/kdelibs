@@ -933,7 +933,7 @@ QString KWalletD::readPassword(int handle, const QString& folder, const QString&
 		}
 	}
 
-	return QString::null;
+	return QString();
 }
 
 

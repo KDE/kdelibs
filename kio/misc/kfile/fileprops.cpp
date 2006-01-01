@@ -49,7 +49,7 @@ static QString beatifyValue( const QString& value )
 FileProps::FileProps( const QString& path, const QStringList& suppliedGroups )
     : m_dirty( false )
 {
-    m_info = new KFileMetaInfo(path, QString::null, KFileMetaInfo::Everything);
+    m_info = new KFileMetaInfo(path, QString(), KFileMetaInfo::Everything);
     m_userSuppliedGroups = !suppliedGroups.isEmpty();
     m_groupsToUse = m_userSuppliedGroups ? suppliedGroups : m_info->groups();
 }

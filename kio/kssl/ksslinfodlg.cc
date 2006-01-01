@@ -370,7 +370,7 @@ KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, Qt::WFlags f)
 {
     _frame = 0L;
     setBackgroundMode(Qt::PaletteButton);
-    setValues(QString::null, 0L);
+    setValues(QString(), 0L);
 }
 
 
@@ -456,7 +456,7 @@ void KSSLInfoDlg::urlClicked(const QString &url) {
 }
 
 void KSSLInfoDlg::mailClicked(const QString &url) {
-    KToolInvocation::invokeMailer(url, QString::null);
+    KToolInvocation::invokeMailer(url, QString());
 }
 
 #include "ksslinfodlg.moc"

@@ -70,7 +70,7 @@ namespace KPAC
         if ( m_downloader || startDownload() )
         {
             m_requestQueue.append( url );
-            return QString::null;
+            return QString();
         }
         else return "DIRECT";
     }

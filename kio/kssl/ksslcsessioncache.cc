@@ -76,7 +76,7 @@ static void setup() {
 
 QString KSSLCSessionCache::getSessionForURL(const KURL &kurl) {
 #ifdef KSSL_HAVE_SSL
-    if (!sessions) return QString::null;
+    if (!sessions) return QString();
     QString key = URLtoKey(kurl);
 
     for(KSSLCSession *it = sessions->first(); it; it=sessions->next()) {
@@ -91,11 +91,11 @@ QString KSSLCSessionCache::getSessionForURL(const KURL &kurl) {
 #if 0 
     kdDebug(7029) <<"Negative caching " <<key <<endl;
     if (sessions->count() >= MAX_ENTRIES) sessions->removeLast();
-    sessions->prepend(new KSSLCSession(key, QString::null));
+    sessions->prepend(new KSSLCSession(key, QString()));
 #endif
 
 #endif
-    return QString::null;
+    return QString();
 }
 
 

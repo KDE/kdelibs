@@ -268,8 +268,8 @@ void ProgressItem::setPercent( unsigned long percent ) {
 
 void ProgressItem::setInfoMessage( const QString & msg ) {
   QString plainTextMsg(msg);
-  plainTextMsg.replace( QRegExp( "</?b>" ), QString::null );
-  plainTextMsg.replace( QRegExp( "<img.*>" ), QString::null );
+  plainTextMsg.replace( QRegExp( "</?b>" ), QString() );
+  plainTextMsg.replace( QRegExp( "<img.*>" ), QString() );
   setText( ListProgress::TB_PROGRESS, plainTextMsg );
 
   defaultProgress->slotInfoMessage( 0, msg );

@@ -107,7 +107,7 @@ void KSSLKeyGen::slotGenerate() {
 
 #ifndef Q_OS_WIN //TODO: reenable for WIN32
 	if (rc == 0 && KWallet::Wallet::isEnabled()) {
-		rc = KMessageBox::questionYesNo(this, i18n("Do you wish to store the passphrase in your wallet file?"), QString::null, i18n("Store"), i18n("Do Not Store"));
+		rc = KMessageBox::questionYesNo(this, i18n("Do you wish to store the passphrase in your wallet file?"), QString(), i18n("Store"), i18n("Do Not Store"));
 		if (rc == KMessageBox::Yes) {
 			KWallet::Wallet *w = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), winId());
 			if (w) {

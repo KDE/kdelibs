@@ -40,7 +40,7 @@ namespace KPAC
     void Downloader::download( const KURL& url )
     {
         m_data.resize( 0 );
-        m_script = QString::null;
+        m_script.clear();
         m_scriptURL = url;
 
         KIO::TransferJob* job = KIO::get( url, false, false );
