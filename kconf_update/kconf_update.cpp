@@ -159,7 +159,7 @@ KonfUpdate::KonfUpdate()
       updateFile(file);
    }
 
-   config->setGroup(QString::null);
+   config->setGroup(QString());
    if (updateAll && !config->readEntry("updateInfoAdded", QVariant(false)).toBool())
    {
        config->writeEntry("updateInfoAdded", true);
@@ -379,7 +379,7 @@ bool KonfUpdate::updateFile(const QString &filename)
       }
    }
    // Flush.
-   gotId(QString::null);
+   gotId(QString());
   
    struct stat buff;
    stat( QFile::encodeName(filename), &buff);
@@ -407,7 +407,7 @@ void KonfUpdate::gotId(const QString &_id)
    }
 
    // Flush pending changes
-   gotFile(QString::null);
+   gotFile(QString());
 
    config->setGroup(currentFilename);
    QStringList ids = config->readListEntry("done");
@@ -434,7 +434,7 @@ void KonfUpdate::gotId(const QString &_id)
 void KonfUpdate::gotFile(const QString &_file)
 {
    // Reset group
-   gotGroup(QString::null);
+   gotGroup(QString());
  
    if (!oldFile.isEmpty())
    {
@@ -465,7 +465,7 @@ void KonfUpdate::gotFile(const QString &_file)
          }   
       }
 
-      oldFile = QString::null;
+      oldFile.clear();
    }
    if (!newFile.isEmpty())
    {
@@ -482,7 +482,7 @@ void KonfUpdate::gotFile(const QString &_file)
       delete newConfig;
       newConfig = 0;
 
-      newFile = QString::null;
+      newFile.clear();
    }
    newConfig = 0; 
 
@@ -496,7 +496,7 @@ void KonfUpdate::gotFile(const QString &_file)
       oldFile = _file.left(i).trimmed();
       newFile = _file.mid(i+1).trimmed();
       if (oldFile == newFile)
-         newFile = QString::null;
+         newFile.clear();
    }
    
    if (!oldFile.isEmpty())
@@ -508,7 +508,7 @@ void KonfUpdate::gotFile(const QString &_file)
       if (ids.contains(cfg_id))
       {
          skip = true;
-         newFile = QString::null;
+         newFile.clear();
          log() << currentFilename << ": Skipping update '" << id << "'" << endl;
       }
 
@@ -532,7 +532,7 @@ void KonfUpdate::gotFile(const QString &_file)
    }
    else
    {
-      newFile = QString::null;
+      newFile.clear();
    }
    newFileName = newFile;
    if (newFileName.isEmpty())
@@ -806,7 +806,7 @@ void KonfUpdate::gotScript(const QString &_script)
        }
        else 
        {
-           copyGroup(oldConfig1, oldGroup, &cfg, QString::null);
+           copyGroup(oldConfig1, oldGroup, &cfg, QString());
        }
        cfg.sync();
        result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.name(), tmp2.name(), tmp3.name())));
@@ -934,7 +934,7 @@ void KonfUpdate::resetOptions()
 {
    m_bCopy = false;
    m_bOverwrite = false;
-   m_arguments = QString::null;
+   m_arguments.clear();
 }
 
 
