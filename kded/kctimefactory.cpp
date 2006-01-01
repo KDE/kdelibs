@@ -59,7 +59,7 @@ KCTimeInfo::save(QDataStream &str)
   {
      str << it.key() << it.value();
   }
-  str << QString::null << (quint32) 0;
+  str << QString() << (quint32) 0;
 
   int endOfFactoryData = str.device()->pos();
 

@@ -35,7 +35,7 @@
 
 #include "vfolder_menu.h"
 
-static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString::null)
+static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString())
 {
    if (s.isEmpty())
       s = e.text();
@@ -706,8 +706,8 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    m_docInfo.path = locateMenuFile(fileName);
    if (m_docInfo.path.isEmpty())
    {
-      m_docInfo.baseDir = QString::null;
-      m_docInfo.baseName = QString::null;
+      m_docInfo.baseDir.clear();
+      m_docInfo.baseName.clear();
       kdDebug(7021) << "Menu " << fileName << " not found." << endl;
       return;
    }
@@ -720,7 +720,7 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    }
    else
    {
-      m_docInfo.baseDir = QString::null;
+      m_docInfo.baseDir.clear();
       m_docInfo.baseName = baseName.left( baseName.length() - 5 );
    }
 }
@@ -743,7 +743,7 @@ VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
 
    if (result.count() <= 1)
    {
-      m_docInfo.path = QString::null; // No parent found
+      m_docInfo.path.clear(); // No parent found
       return;
    }
    m_docInfo.path = result[1];
@@ -762,7 +762,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
    {
       if (KStandardDirs::exists(fileName))
          return fileName;
-      return QString::null;
+      return QString();
    }
 
    QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
@@ -775,13 +775,13 @@ QString
 VFolderMenu::locateDirectoryFile(const QString &fileName)
 {
    if (fileName.isEmpty())
-      return QString::null;
+      return QString();
 
    if (!QDir::isRelativePath(fileName))
    {
       if (KStandardDirs::exists(fileName))
          return fileName;
-      return QString::null;
+      return QString();
    }
 
    // First location in the list wins
@@ -795,7 +795,7 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
          return tmp;
    }
 
-   return QString::null;
+   return QString();
 }
 
 void
@@ -805,8 +805,8 @@ VFolderMenu::initDirs()
    const QString localDir = m_defaultDataDirs.first();
    m_defaultDataDirs.removeAll(localDir); // Remove local dir
 
-   m_defaultAppDirs = KGlobal::dirs()->findDirs("xdgdata-apps", QString::null);
-   m_defaultDirectoryDirs = KGlobal::dirs()->findDirs("xdgdata-dirs", QString::null);
+   m_defaultAppDirs = KGlobal::dirs()->findDirs("xdgdata-apps", QString());
+   m_defaultDirectoryDirs = KGlobal::dirs()->findDirs("xdgdata-dirs", QString());
    m_defaultLegacyDirs = KGlobal::dirs()->resourceDirs("apps");
 }
 
@@ -995,7 +995,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
    QRegExp dirs("\\.directory$");
 
    (void) KGlobal::dirs()->findAllResources( "apps",
-                                             QString::null,
+                                             QString(),
                                              true, // Recursive!
                                              true, // uniq
                                              relFiles);
@@ -1248,7 +1248,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
 
             registerDirectory(dir);
 
-            loadApplications(dir, QString::null);
+            loadApplications(dir, QString());
          }
          else if (e.tagName() == "KDELegacyDirs")
          {
@@ -1297,7 +1297,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
 
                registerDirectory(dir);
 
-               processLegacyDir(dir, QString::null, prefix);
+               processLegacyDir(dir, QString(), prefix);
 
                m_legacyNodes.insert(dir, m_currentMenu);
                m_currentMenu = oldMenu;

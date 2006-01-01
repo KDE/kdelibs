@@ -227,12 +227,12 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
     KLibLoader *loader = KLibLoader::self();
 
     QVariant v = s->property("X-KDE-FactoryName", QVariant::String);
-    QString factory = v.isValid() ? v.toString() : QString::null;
+    QString factory = v.isValid() ? v.toString() : QString();
     if (factory.isEmpty())
     {
        // Stay bugward compatible
        v = s->property("X-KDE-Factory", QVariant::String);
-       factory = v.isValid() ? v.toString() : QString::null;
+       factory = v.isValid() ? v.toString() : QString();
     }
     if (factory.isEmpty())
       factory = s->library();
@@ -515,7 +515,7 @@ void Kded::readDirectory( const QString& _path )
   if ( m_pDirWatch->contains( path ) ) // Already seen this one?
      return;
 
-  QDir d( _path, QString::null, QDir::Unsorted, QDir::Readable | QDir::Executable | QDir::Dirs | QDir::Hidden );
+  QDir d( _path, QString(), QDir::Unsorted, QDir::Readable | QDir::Executable | QDir::Dirs | QDir::Hidden );
   // set QDir ...
 
 

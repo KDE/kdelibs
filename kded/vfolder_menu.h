@@ -262,7 +262,7 @@ private:
 
   void initDirs();
 
-  void pushDocInfo(const QString &fileName, const QString &baseDir = QString::null);
+  void pushDocInfo(const QString &fileName, const QString &baseDir = QString());
   void pushDocInfoParent(const QString &basePath, const QString &baseDir);
   void popDocInfo();
 

@@ -126,7 +126,7 @@ static QString oldSycocaPath()
   if (ksycoca_env.isEmpty())
      return KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
 
-  return QString::null;
+  return QString();
 }
 
 KBuildSycoca::KBuildSycoca()
@@ -319,7 +319,7 @@ bool KBuildSycoca::build()
      QStringList relFiles;
 
      (void) KGlobal::dirs()->findAllResources( g_resource,
-                                               QString::null,
+                                               QString(),
                                                true, // Recursive!
                                                true, // uniq
                                                relFiles);
@@ -387,7 +387,7 @@ bool KBuildSycoca::build()
 
      KServiceGroup::Ptr entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
      entry->setLayoutInfo(kdeMenu->layoutList);
-     createMenu(QString::null, QString::null, kdeMenu);
+     createMenu(QString(), QString(), kdeMenu);
 
      createMenuAttribute( entry );
 
@@ -925,9 +925,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
         // These directories may have been created with 0700 permission
         // better delete them if they are empty
-        QString applnkDir = KGlobal::dirs()->saveLocation("apps", QString::null, false);
+        QString applnkDir = KGlobal::dirs()->saveLocation("apps", QString(), false);
         ::rmdir(QFile::encodeName(applnkDir));
-        QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString::null, false);
+        QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
         ::rmdir(QFile::encodeName(servicetypesDir));
       }
    }
