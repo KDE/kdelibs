@@ -439,7 +439,7 @@ void KPluginSelectionWidget::save()
             ( *it )->save();
             QStringList names = d->moduleParentComponents.value( *it );
             if( names.isEmpty() )
-                names.append( QString::null );
+                names.append( QString() );
             for( QStringList::ConstIterator nameit = names.begin();
                     nameit != names.end(); ++nameit )
                 if( updatedModules.find( *nameit ) == updatedModules.end() )

@@ -224,7 +224,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     enableButtonOK( !pattern().isEmpty() );
     if (forReplace)
     {
-      setButtonOK(KGuiItem( i18n("&Replace"), QString::null,
+      setButtonOK(KGuiItem( i18n("&Replace"), QString(),
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
@@ -289,7 +289,7 @@ void KFindDialog::showEvent( QShowEvent *e )
         if (!d->pattern.isEmpty()) {
             m_find->lineEdit()->setText( d->pattern );
             m_find->lineEdit()->selectAll();
-            d->pattern = QString::null;
+            d->pattern.clear();
         }
     }
     KDialogBase::showEvent(e);
@@ -419,7 +419,7 @@ void KFindDialog::showPatterns()
 {
     if ( !d->m_regexpDialogQueryDone )
     {
-        d->m_regexpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString::null, this );
+        d->m_regexpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString(), this );
         d->m_regexpDialogQueryDone = true;
     }
 

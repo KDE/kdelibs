@@ -316,7 +316,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 
-    int ret = KMessageBox::questionYesNo( parentWidget(), message, QString::null, i18n("Restart"), i18n("Stop") );
+    int ret = KMessageBox::questionYesNo( parentWidget(), message, QString(), i18n("Restart"), i18n("Stop") );
     return( ret == KMessageBox::Yes );
 }
 

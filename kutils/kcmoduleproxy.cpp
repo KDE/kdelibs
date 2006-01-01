@@ -575,7 +575,7 @@ QString KCModuleProxy::quickHelp() const
 {
 
 	if( !d->rootMode )
-		return realModule() ? realModule()->quickHelp() : QString::null;
+		return realModule() ? realModule()->quickHelp() : QString();
 	else
 	{
 		QByteArray data, replyData;
@@ -596,7 +596,7 @@ QString KCModuleProxy::quickHelp() const
 			else
 				kdDebug(711) << "DCOP function changed() returned mumbo jumbo." << endl;
 		}
-		return QString::null;
+		return QString();
 	}
 }
 
@@ -620,7 +620,7 @@ int KCModuleProxy::buttons() const
 
 QString KCModuleProxy::rootOnlyMsg() const
 {
-	return realModule() ? realModule()->rootOnlyMsg() : QString::null;
+	return realModule() ? realModule()->rootOnlyMsg() : QString();
 }
 
 bool KCModuleProxy::useRootOnlyMsg() const

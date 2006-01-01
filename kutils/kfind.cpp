@@ -437,7 +437,7 @@ void KFind::startNewIncrementalSearch()
     Private::Match *match = d->emptyMatch;
     if(match == 0)
     {
-        m_text = QString::null;
+        m_text.clear();
         m_index = 0;
         d->currentId = 0;
     }
@@ -452,7 +452,7 @@ void KFind::startNewIncrementalSearch()
     delete d->emptyMatch;
     d->emptyMatch = 0;
     d->matchedPattern = m_pattern;
-    m_pattern = QString::null;
+    m_pattern.clear();
 }
 
 // static
@@ -665,7 +665,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         : i18n("Continue from the beginning?");
 
     int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>"),
-                                          QString::null, KStdGuiItem::cont(), KStdGuiItem::stop() );
+                                          QString(), KStdGuiItem::cont(), KStdGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
         const_cast<KFind*>(this)->m_options &= ~KFind::FromCursor; // clear FromCursor option

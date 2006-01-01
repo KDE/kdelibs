@@ -32,7 +32,7 @@ class KMultiTabBarInternal: public Q3ScrollView
         Q_OBJECT
 public:
         KMultiTabBarInternal(QWidget *parent,KMultiTabBar::KMultiTabBarMode bm);
-        int appendTab(const QPixmap &,int=-1,const QString& =QString::null);
+        int appendTab(const QPixmap &,int=-1,const QString& =QString());
         KMultiTabBarTab *tab(int) const;
         void removeTab(int);
         void setPosition(enum KMultiTabBar::KMultiTabBarPosition pos);

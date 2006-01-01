@@ -104,13 +104,13 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
           .arg( mod.moduleName() )
           .arg( mod.fileName() )
           .arg( lib->fileName() ),
-          QString::null, parent );
+          QString(), parent );
     }
 
     lib->unload();
   }
   return reportError( report, i18n("The specified library %1 could not be found.")
-      .arg( mod.library() ), QString::null, parent );
+      .arg( mod.library() ), QString(), parent );
   return 0;
 }
 
@@ -151,7 +151,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
       return module;
     return reportError( report,
         i18n("The module %1 could not be loaded.")
-        .arg( mod.moduleName() ), QString::null, parent );
+        .arg( mod.moduleName() ), QString(), parent );
   }
 
   /*
@@ -164,7 +164,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
    */
   if(withfallback)
   {
-    KToolInvocation::startServiceByDesktopPath(mod.fileName(), QString::null);
+    KToolInvocation::startServiceByDesktopPath(mod.fileName(), QString());
   }
   else
   {

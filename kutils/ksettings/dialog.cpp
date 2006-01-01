@@ -226,7 +226,7 @@ class PageNode
 					icon = SmallIcon( m_value.group->icon,
 							IconSize( KIcon::Small ) );
 				KVBox * page = dlg->addVBoxPage( m_value.group->name,
-						QString::null, icon );
+						QString(), icon );
 				QLabel * comment = new QLabel( m_value.group->comment, page );
 				comment->setTextFormat( Qt::RichText );
 				m_value.group->page = page;

@@ -64,7 +64,7 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
     d->descriptionwidget = new QLabel( d->infowidget );
     d->descriptionwidget->setAlignment( Qt::TextWordWrap );
 
-    d->listview->addColumn( QString::null );
+    d->listview->addColumn( QString() );
     d->listview->header()->hide();
     d->listview->setRootIsDecorated( true );
     d->listview->setSorting( -1 );

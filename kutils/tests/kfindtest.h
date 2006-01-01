@@ -38,7 +38,7 @@ class KFindTest : public QObject
 		{}
 
 		void find(const QString &pattern, long options = 0);
-		void findNext(const QString &pattern = QString::null);
+		void findNext(const QString &pattern = QString());
 
 		void changeText(int line, const QString &text);
 

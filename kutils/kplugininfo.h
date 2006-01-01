@@ -119,7 +119,7 @@ class KUTILS_EXPORT KPluginInfo
          * KService objects. If you get a trader offer of the plugins you want
          * to use you can just pass them to this function.
          */
-        static KPluginInfo::List fromServices( const KService::List & services, KConfig * config = 0, const QString & group = QString::null );
+        static KPluginInfo::List fromServices( const KService::List & services, KConfig * config = 0, const QString & group = QString() );
 
         /**
          * @return A list of KPluginInfo objects constructed from a list of
@@ -127,14 +127,14 @@ class KUTILS_EXPORT KPluginInfo
          * KStandardDirs::findAllResources() you pass the list of files to this
          * function.
          */
-        static KPluginInfo::List fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString::null );
+        static KPluginInfo::List fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString() );
 
         /**
          * @return A list of KPluginInfo objects for the KParts plugins of an
          * instance. You only need the name of the instance not a pointer to the
          * KInstance object.
          */
-        static KPluginInfo::List fromKPartsInstanceName( const QString &, KConfig * config = 0, const QString & group = QString::null );
+        static KPluginInfo::List fromKPartsInstanceName( const QString &, KConfig * config = 0, const QString & group = QString() );
 
         /**
          * @return Whether the plugin should be hidden.

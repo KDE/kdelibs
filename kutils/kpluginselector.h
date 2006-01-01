@@ -98,8 +98,8 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *                     "kviewcanvas" ).
          */
         void addPlugins( const QString & instanceName,
-                const QString & catname = QString::null,
-                const QString & category = QString::null,
+                const QString & catname = QString(),
+                const QString & category = QString(),
                 KConfig * config = 0 );
 
         /**
@@ -107,8 +107,8 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          * If not set explicitely, @p config is set to instance->config().
          */
         void addPlugins( const KInstance * instance,
-                const QString & catname = QString::null,
-                const QString & category = QString::null,
+                const QString & catname = QString(),
+                const QString & category = QString(),
                 KConfig * config = 0 );
 
         /**
@@ -137,8 +137,8 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *                     "kviewcanvas" ).
          */
         void addPlugins( const QList<KPluginInfo*> & plugininfos,
-                const QString & catname = QString::null,
-                const QString & category = QString::null,
+                const QString & catname = QString(),
+                const QString & category = QString(),
                 KConfig * config = 0 );
 
         /**

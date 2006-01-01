@@ -584,7 +584,7 @@ void KMultiTabBarTab::updateState()
 			QPushButton::setText(m_text);
 		} else {
 			kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************"<<endl;
-			QPushButton::setText(QString::null);
+			QPushButton::setText(QString());
 		}
 
 		if ((m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left)) {
@@ -898,7 +898,7 @@ KMultiTabBar::~KMultiTabBar() {
 int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QMenu *popup,const QString&)
 {
 	KMultiTabBarButton  *btn;
-	m_buttons.append(btn= new KMultiTabBarButton(pic,QString::null,
+	m_buttons.append(btn= new KMultiTabBarButton(pic,QString(),
 			popup,id,this,m_position,m_internal->m_style));
 	m_l->insertWidget(0,btn);
 	btn->show();
