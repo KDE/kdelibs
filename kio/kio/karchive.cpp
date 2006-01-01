@@ -293,7 +293,7 @@ KArchiveDirectory * KArchive::rootDir()
         QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
         QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
 
-        d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
+        d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString() );
     }
     return d->rootDir;
 }
@@ -343,7 +343,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     // Found -> add the missing piece
     KArchiveDirectory * e = new KArchiveDirectory( this, dirname, d->rootDir->permissions(),
                                                    d->rootDir->date(), d->rootDir->user(),
-                                                   d->rootDir->group(), QString::null );
+                                                   d->rootDir->group(), QString() );
     parent->addEntry( e );
     return e; // now a directory to <path> exists
 }

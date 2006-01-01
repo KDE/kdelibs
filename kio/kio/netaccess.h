@@ -398,9 +398,9 @@ public:
     /**
      * Returns the error string for the last job, in case it failed.
      * Note that this is already translated.
-     * @return the last error string, or QString::null
+     * @return the last error string, or QString()
      */
-    static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
+    static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString(); }
 
     /**
      * Returns the error code for the last job, in case it failed.

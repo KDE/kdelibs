@@ -247,9 +247,9 @@ public:
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
      */
     int messageBox( MessageBoxType type, const QString &text,
-                    const QString &caption = QString::null,
-                    const QString &buttonYes = QString::null,
-                    const QString &buttonNo = QString::null );
+                    const QString &caption = QString(),
+                    const QString &buttonYes = QString(),
+                    const QString &buttonNo = QString() );
 
     /**
      * Call this to show a message box from the slave
@@ -268,10 +268,10 @@ public:
      * @since 3.3
      */
     int messageBox( const QString &text, MessageBoxType type,
-                    const QString &caption = QString::null,
-                    const QString &buttonYes = QString::null,
-                    const QString &buttonNo = QString::null,
-                    const QString &dontAskAgainName = QString::null );
+                    const QString &caption = QString(),
+                    const QString &buttonYes = QString(),
+                    const QString &buttonNo = QString(),
+                    const QString &dontAskAgainName = QString() );
 
     /**
      * Sets meta-data to be send to the application before the first
@@ -632,7 +632,7 @@ public:
      * @return      @p true if user clicks on "OK", @p false otherwsie.
      * @since 3.1
      */
-    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg = QString::null );
+    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg = QString() );
 
     /**
      * Checks for cached authentication based on parameters
@@ -734,7 +734,7 @@ public:
      * @return true in theorie, the host is reachable
      *         false the system is offline and the host is in a remote network.
      */
-    bool requestNetwork(const QString& host = QString::null);
+    bool requestNetwork(const QString& host = QString());
 
     /**
      * Used by the slave to withdraw a connection requested by
@@ -749,7 +749,7 @@ public:
      *
      * A slave should call this function every time it disconnect from a host.
      * */
-    void dropNetwork(const QString& host = QString::null);
+    void dropNetwork(const QString& host = QString());
 
     /**
      * Return the dcop client used by this slave.

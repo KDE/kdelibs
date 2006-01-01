@@ -106,7 +106,7 @@ KTrader::~KTrader()
 KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _constraint,
                                    const QString& _preferences ) const
 {
-    return query( _servicetype, QString::null, _constraint, _preferences );
+    return query( _servicetype, QString(), _constraint, _preferences );
 }
 
 KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _genericServiceType,

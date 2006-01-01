@@ -67,7 +67,7 @@ public:
   /////////////////
   void setMimeType( const QString& _mime ) { m_strMimeType = _mime; }
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
-  void setInvalid() { m_strMimeType = QString::null; }
+  void setInvalid() { m_strMimeType = QString(); }
 
 protected:
   QString m_strMimeType;

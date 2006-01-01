@@ -71,7 +71,7 @@ KDataToolInfo& KDataToolInfo::operator= ( const KDataToolInfo& info )
 QString KDataToolInfo::dataType() const
 {
     if ( !m_service )
-        return QString::null;
+        return QString();
 
     return m_service->property( "DataType" ).toString();
 }
@@ -123,7 +123,7 @@ QPixmap KDataToolInfo::miniIcon() const
 QString KDataToolInfo::iconName() const
 {
     if ( !m_service )
-        return QString::null;
+        return QString();
     return m_service->icon();
 }
 

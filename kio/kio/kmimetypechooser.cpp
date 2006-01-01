@@ -152,13 +152,13 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
         groupItem = mit.data();
 
     Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
-    item->setPixmap( 0, SmallIcon( mt->icon(QString::null,false) ) );
+    item->setPixmap( 0, SmallIcon( mt->icon(QString(),false) ) );
 
     int cl = 1;
 
     if ( d->visuals & Comments )
     {
-      item->setText( cl, mt->comment(QString::null, false) );
+      item->setText( cl, mt->comment(QString(), false) );
       cl++;
     }
 

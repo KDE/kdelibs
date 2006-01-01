@@ -358,7 +358,7 @@ public:
      * @param date the date (in seconds since 1970)
      * @param user the user that owns the entry
      * @param group the group that owns the entry
-     * @param symlink the symlink, or QString::null
+     * @param symlink the symlink, or QString()
      */
     KArchiveEntry( KArchive* archive, const QString& name, int access, int date,
                    const QString& user, const QString& group,
@@ -402,7 +402,7 @@ public:
 
     /**
      * Symlink if there is one.
-     * @return the symlink, or QString::null
+     * @return the symlink, or QString()
      */
     QString symlink() const { return m_symlink; }
 
@@ -453,7 +453,7 @@ public:
      * @param date the date (in seconds since 1970)
      * @param user the user that owns the entry
      * @param group the group that owns the entry
-     * @param symlink the symlink, or QString::null
+     * @param symlink the symlink, or QString()
      * @param pos the position of the file in the directory
      * @param size the size of the file
      */
@@ -538,7 +538,7 @@ public:
      * @param date the date (in seconds since 1970)
      * @param user the user that owns the entry
      * @param group the group that owns the entry
-     * @param symlink the symlink, or QString::null
+     * @param symlink the symlink, or QString()
      */
     KArchiveDirectory( KArchive* archive, const QString& name, int access, int date,
                    const QString& user, const QString& group,

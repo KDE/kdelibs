@@ -877,7 +877,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
         "<strong>L</strong>ocator (URL) that you entered did not refer to "
         "a valid mechanism of accessing the specific resource, "
         "<strong>%1%2</strong>." )
-        .arg( !host.isNull() ? host + '/' : QString::null ).arg( dir );
+        .arg( !host.isNull() ? host + '/' : QString() ).arg( dir );
       causes << i18n( "KDE is able to communicate through a protocol within a "
         "protocol. This request specified a protocol be used as such, however "
         "this protocol is not capable of such an action. This is a rare event, "
@@ -1239,7 +1239,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
 
     // We assume that the slave has all the details
     case KIO::ERR_SLAVE_DEFINED:
-      errorName = QString::null;
+      errorName.clear();
       description = errorText;
       break;
 
@@ -1390,13 +1390,13 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	if( (volpath = volmgt_root()) == NULL ) {
 		kdDebug( 7007 ) << "findDeviceMountPoint: "
 			<< "VOLMGT: can't find volmgt root dir" << endl;
-		return QString::null;
+		return QString();
 	}
 
 	if( (mnttab = fopen( MNTTAB, "r" )) == NULL ) {
 		kdDebug( 7007 ) << "findDeviceMountPoint: "
 			<< "VOLMGT: can't open mnttab" << endl;
-		return QString::null;
+		return QString();
 	}
 
 	devname = volpath;
@@ -1415,7 +1415,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	 *	/dev/dsk/cXtYdZs2 => <volpath>/dev/dsk/cXtYdZ  (without slice#)
 	 */
 	rewind( mnttab );
-	result = QString::null;
+	result.clear();
 	while( getmntent( mnttab, &mnt ) == 0 ) {
 		/*
 		 *  either match the exact device name (floppies),
@@ -1544,7 +1544,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
         perror("setmntent");
-        return QString::null;
+        return QString();
     }
 
     /* Loop over all file systems and see if we can find our
@@ -1671,7 +1671,7 @@ static QString get_mount_info(const QString& filename,
           isautofs = Wrong;
           isslow = Wrong;
           ismanual = Wrong;
-          fstype = QString::null; // ### do we need it?
+          fstype.clear(); // ### do we need it?
           return root;
        }
        if (cachedDevice && (stat_buf.st_dev == cachedDevice->device))
@@ -1694,7 +1694,7 @@ static QString get_mount_info(const QString& filename,
     /* If the path contains symlinks, get the real name */
     if (realpath(QFile::encodeName(filename), realname) == 0) {
         if( strlcpy(realname, QFile::encodeName(filename), MAXPATHLEN)>=MAXPATHLEN)
-            return QString::null;
+            return QString();
     }
 
     int max = 0;
@@ -1831,7 +1831,7 @@ static QString get_mount_info(const QString& filename,
 
     if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
         perror("setmntent");
-        return QString::null;
+        return QString();
     }
 
     STRUCT_MNTENT me;
@@ -1907,7 +1907,7 @@ static QString get_mount_info(const QString& filename,
 //dummy
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
-    return QString::null;
+    return QString();
 }
 #endif
 
@@ -1918,7 +1918,7 @@ QString KIO::findPathMountPoint(const QString& filename)
   QString fstype;
   return get_mount_info(filename, isautofs, isslow, ismanual, fstype);
 #else //!Q_OS_UNIX
-  return QString::null;
+  return QString();
 #endif
 }
 
@@ -2001,5 +2001,5 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
     if (cacheControl == KIO::CC_Reload)
 	return "Reload";
     kdDebug() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
-    return QString::null;
+    return QString();
 }

@@ -224,14 +224,14 @@ public:
 
   /**
    * Returns the link destination if isLink() == true.
-   * @return the link destination. QString::null if the item is not a link
+   * @return the link destination. QString() if the item is not a link
    */
   QString linkDest() const;
 
   /**
    * Returns the local path if isLocalFile() == true or the KIO item has
    * a UDS_LOCAL_PATH atom.
-   * @return the item local path, or QString::null if not known
+   * @return the item local path, or QString() if not known
    * @since 3.4
    */
   QString localPath() const;

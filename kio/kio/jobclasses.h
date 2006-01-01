@@ -310,7 +310,7 @@ namespace KIO {
          * Query meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
 	 * @param key the key of the meta data to retrieve
-	 * @return the value of the meta data, or QString::null if the
+	 * @return the value of the meta data, or QString() if the
 	 *         @p key does not exist
          */
         QString queryMetaData(const QString &key);
@@ -1387,11 +1387,11 @@ namespace KIO {
 	* @param showProgressInfo true to show progress information to the user
 	* @param recursive true to get the data recursively from child directories,
 	*        false to get only the content of the specified dir
-	* @param prefix the prefix of the files, or QString::null for no prefix
+	* @param prefix the prefix of the files, or QString() for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
         ListJob(const KURL& url, bool showProgressInfo,
-                bool recursive = false, const QString &prefix = QString::null,
+                bool recursive = false, const QString &prefix = QString(),
                 bool includeHidden = true);
 
         /**

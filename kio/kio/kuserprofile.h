@@ -161,11 +161,11 @@ public:
    * Returns the profile for the requested service type.
    * @param servicetype the service type (e.g. a MIME type)
    * @param genericServiceType the generic service type (e.g. "Application"
-   *                           or "KParts/ReadOnlyPart"). Can be QString::null,
+   *                           or "KParts/ReadOnlyPart"). Can be QString(),
    *                           then the "Application" generic type will be used
    * @return the KServiceTypeProfile with the given arguments, or 0 if not found
    */
-  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType = QString::null );
+  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType = QString() );
 
   /**
    * Returns the offers associated with a given servicetype, sorted by preference.
@@ -182,11 +182,11 @@ public:
    *
    * @param servicetype the service type (e.g. a MIME type)
    * @param genericServiceType the generic service type (e.g. "Application"
-   *                           or "KParts/ReadOnlyPart"). Can be QString::null,
+   *                           or "KParts/ReadOnlyPart"). Can be QString(),
    *                           then all generic types will be included
    * @return the list of offers witht he given parameters
    */
-  static OfferList offers( const QString& servicetype, const QString& genericServiceType = QString::null );
+  static OfferList offers( const QString& servicetype, const QString& genericServiceType = QString() );
 
   /**
    * Clear all cached information
@@ -211,11 +211,11 @@ protected:
    * first time.
    * @param serviceType the service type (e.g. a MIME type)
    * @param genericServiceType the generic service type (e.g. "Application"
-   *                           or "KParts/ReadOnlyPart"). Can be QString::null,
+   *                           or "KParts/ReadOnlyPart"). Can be QString(),
    *                           then the "Application" generic type will be used
    */
   KServiceTypeProfile( const QString& serviceType,
-                       const QString& genericServiceType = QString::null );
+                       const QString& genericServiceType = QString() );
 
   /**
    * Add a service to this profile.

@@ -42,7 +42,7 @@ public:
      * specify the compression layer !  If the mimetype is omitted, it
      * will be determined from the filename.
      */
-    KTar( const QString& filename, const QString & mimetype = QString::null );
+    KTar( const QString& filename, const QString & mimetype = QString() );
 
     /**
      * Creates an instance that operates on the given device.
@@ -63,7 +63,7 @@ public:
     /**
      * The name of the tar file, as passed to the constructor
      * Null if you used the QIODevice constructor.
-     * @return the name of the file, or QString::null if unknown
+     * @return the name of the file, or QString() if unknown
      */
     QString fileName() const { return m_filename; }
 

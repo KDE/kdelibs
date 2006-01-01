@@ -593,7 +593,7 @@ QString KACL::asString() const
     ssize_t size = acl_size( d->m_acl );
     return QString::fromLatin1( acl_to_text( d->m_acl, &size ) );
 #else
-    return QString::null;
+    return QString();
 #endif
 }
 

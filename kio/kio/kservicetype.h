@@ -88,13 +88,13 @@ public:
    *         example an URL and returns a special icon for this
    *         URL. An example is KMimeType, KFolderType and
    *         others.
-   * @return the name of the icon, can be QString::null.
+   * @return the name of the icon, can be QString().
    */
   QString icon() const { return m_strIcon; }
 
   /**
    * Returns the descriptive comment associated, if any.
-   * @return the comment, or QString::null
+   * @return the comment, or QString()
    */
   QString comment() const { return m_strComment; }
 

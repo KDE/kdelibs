@@ -268,7 +268,7 @@ static QString qrichtextify( const QString& text )
     *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
   }
 
-  return lines.join(QString::null);
+  return lines.join(QString());
 }
 
 void PasswordDialog::setPrompt(const QString& prompt)

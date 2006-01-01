@@ -86,7 +86,7 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
         // where the d-pointer is compared against null.
 
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
-        null = new Data(info, QString::null, QVariant());
+        null = new Data(info, QString(), QVariant());
         sd_KFileMetaInfoItemData.setObject( null );
     }
     return null;
@@ -714,7 +714,7 @@ KFileMetaInfoGroup KFileMetaInfo::appendGroup(const QString& name)
 
 QString KFileMetaInfo::path() const
 {
-    return d->url.isLocalFile() ? d->url.path() : QString::null;
+    return d->url.isLocalFile() ? d->url.path() : QString();
 }
 
 KURL KFileMetaInfo::url() const
@@ -923,7 +923,7 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
         queryMimeType = "KFilePlugin";
         // hopefully using KFilePlugin as genericMimeType too isn't a problem
     }
-    const KTrader::OfferList offers = KTrader::self()->query( queryMimeType, "KFilePlugin", query, QString::null );
+    const KTrader::OfferList offers = KTrader::self()->query( queryMimeType, "KFilePlugin", query, QString() );
     if ( offers.isEmpty() )
         return 0;
     KService::Ptr service = *(offers.begin());
@@ -985,7 +985,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
             return cache->plugin;
         }
         if ( !cache ) {
-            KFilePlugin* plugin = loadAndRegisterPlugin( QString::null, protocol );
+            KFilePlugin* plugin = loadAndRegisterPlugin( QString(), protocol );
             if ( plugin )
                 return plugin;
         }
@@ -996,7 +996,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
         return cache->plugin;
     }
 
-    KFilePlugin* plugin = loadAndRegisterPlugin( mimeType, QString::null );
+    KFilePlugin* plugin = loadAndRegisterPlugin( mimeType, QString() );
 
 #if 0
     kdDebug(7033) << "currently loaded plugins:\n";
@@ -1050,7 +1050,7 @@ const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mi
         }
 
         if ( !cache ) {
-            loadAndRegisterPlugin( QString::null, protocol );
+            loadAndRegisterPlugin( QString(), protocol );
             cache = m_plugins.find( protocol );
             if ( cache && cache->mimeTypeInfo ) {
                 return cache->mimeTypeInfo;
@@ -1063,7 +1063,7 @@ const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mi
         return cache->mimeTypeInfo;
     }
 
-    loadAndRegisterPlugin( mimeType, QString::null );
+    loadAndRegisterPlugin( mimeType, QString() );
     cache = m_plugins.find( mimeType );
     if ( cache ) {
         return cache->mimeTypeInfo;
@@ -1428,7 +1428,7 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-        null = new Data(QString::null);
+        null = new Data(QString());
         null->mimeTypeInfo = new KFileMimeTypeInfo();
         sd_KFileMetaInfoGroupData.setObject( null );
     }
@@ -1557,7 +1557,7 @@ void KFileMimeTypeInfo::GroupInfo::addVariableInfo( QVariant::Type type,
 {
     // just make sure that it's not already there
     delete m_variableItemInfo;
-    m_variableItemInfo = new ItemInfo(QString::null, QString::null, type);
+    m_variableItemInfo = new ItemInfo(QString(), QString(), type);
     m_variableItemInfo->m_attr = attr;
 }
 

@@ -499,7 +499,7 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
           if ( bCanReuse )
           {
             KIO::MetaData outgoing = tJob->outgoingMetaData();
-            QString resume = (!outgoing.contains("resume")) ? QString::null : outgoing["resume"];
+            QString resume = (!outgoing.contains("resume")) ? QString() : outgoing["resume"];
             kdDebug(7006) << "Resume metadata is '" << resume << "'" << endl;
             bCanReuse = (resume.isEmpty() || resume == "0");
           }

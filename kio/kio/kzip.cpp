@@ -755,7 +755,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
                 }
                 else
                 {
-                    entry = new KArchiveDirectory( this, entryName, access, (int)pfi->mtime, rootDir()->user(), rootDir()->group(), QString::null );
+                    entry = new KArchiveDirectory( this, entryName, access, (int)pfi->mtime, rootDir()->user(), rootDir()->group(), QString() );
                     //kdDebug(7040) << "KArchiveDirectory created, entryName= " << entryName << ", name=" << name << endl;
                 }
 	    }
@@ -1108,7 +1108,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     }
 
     // construct a KZipFileEntry and add it to list
-    KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, mtime, user, group, QString::null,
+    KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, mtime, user, group, QString(),
                                            name, device()->at() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );

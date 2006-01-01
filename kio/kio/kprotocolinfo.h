@@ -107,7 +107,7 @@ public:
    *
    * This corresponds to the "exec=" field in the protocol description file.
    * @param protocol the protocol to check
-   * @return the executable of library to open, or QString::null for
+   * @return the executable of library to open, or QString() for
    *         unsupported protocols
    * @see KURL::protocol()
    */

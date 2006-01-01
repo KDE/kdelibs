@@ -161,7 +161,7 @@ public:
      * This functions returns the error message set
      * by the plugin whenever the uri type is set to
      * KURIFilterData::ERROR.  Otherwise, it returns
-     * a QString::null.
+     * a QString().
      *
      * @return the error message or a NULL when there is none.
      */
@@ -216,7 +216,7 @@ public:
 
     /**
      * Returns the absolute path if one has already been set.
-     * @return the absolute path, or QString::null
+     * @return the absolute path, or QString()
      * @see hasAbsolutePath()
      */
     QString absolutePath() const;
@@ -232,7 +232,7 @@ public:
      * Returns the command line options and arguments for a
      * local resource when present.
      *
-     * @return options and arguments when present, otherwise QString::null
+     * @return options and arguments when present, otherwise QString()
      */
     QString argsAndOptions() const;
 
@@ -252,7 +252,7 @@ public:
      * is found.
      *
      * @return the name of the icon associated with the resource,
-     *         or QString::null if not found
+     *         or QString() if not found
      */
     QString iconName();
 
@@ -314,7 +314,7 @@ protected:
      * Initializes the KURIFilterData on construction.
      * @param url the URL to initialize the object with
      */
-    void init( const QString& url = QString::null );
+    void init( const QString& url = QString() );
 
 private:
     bool m_bCheckForExecutables;
@@ -399,7 +399,7 @@ public:
     /**
      * Returns the name of the configuration module for the filter.
      *
-     * @return the name of a configuration module or QString::null if none.
+     * @return the name of a configuration module or QString() if none.
      */
     virtual QString configName() const { return name(); }
 

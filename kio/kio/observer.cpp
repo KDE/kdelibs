@@ -254,7 +254,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,
                           const QString &buttonNo )
 {
-    return messageBox( progressId, type, text, caption, buttonYes, buttonNo, QString::null );
+    return messageBox( progressId, type, text, caption, buttonYes, buttonNo, QString() );
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text,

@@ -121,7 +121,7 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 			break;
 		}
 	};
-	return QString::null;
+	return QString();
 }
 void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 {
@@ -219,7 +219,7 @@ void KEMailSettings::setProfile (const QString &s)
 	p->m_sCurrentProfile=s;
 	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
 		p->m_pConfig->setGroup(groupname);
-		p->m_pConfig->writeEntry("ServerType", QString::null);
+		p->m_pConfig->writeEntry("ServerType", QString());
 		p->m_pConfig->sync();
 		p->profiles+=s;
 	}
@@ -238,7 +238,7 @@ QStringList KEMailSettings::profiles() const
 KEMailSettings::KEMailSettings()
 {
 	p = new KEMailSettingsPrivate();
-	p->m_sCurrentProfile=QString::null;
+	p->m_sCurrentProfile.clear();
 
 	p->m_pConfig = new KConfig("emaildefaults");
 

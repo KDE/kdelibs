@@ -475,7 +475,7 @@ QString KImageIO::suffix(const QString& type)
       }
   }
 
-  return QString::null;
+  return QString();
 }
 
 QString KImageIO::typeForMime(const QString& mimeType)
@@ -494,7 +494,7 @@ QString KImageIO::typeForMime(const QString& mimeType)
       }
   }
 
-  return QString::null;
+  return QString();
 }
 
 QString KImageIO::type(const QString& filename)
@@ -517,7 +517,7 @@ QString KImageIO::type(const QString& filename)
       }
   }
 
-  return QString::null;
+  return QString();
 }
 
 QStringList KImageIO::mimeTypes( Mode _mode )

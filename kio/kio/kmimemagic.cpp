@@ -2214,7 +2214,7 @@ KMimeMagic::findBufferType(const QByteArray &array)
 {
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
 
-	conf->resultBuf = QString::null;
+	conf->resultBuf.clear();
 	if ( !magicResult )
 	  magicResult = new KMimeMagicResult();
 	magicResult->setInvalid();
@@ -2291,7 +2291,7 @@ KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 #ifdef DEBUG_MIMEMAGIC
     kdDebug(7018) << "KMimeMagic::findFileType " << fn << endl;
 #endif
-    conf->resultBuf = QString::null;
+    conf->resultBuf.clear();
 
         if ( !magicResult )
 	  magicResult = new KMimeMagicResult();

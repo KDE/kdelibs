@@ -91,34 +91,34 @@ public:
   /**
    * Returns the name of the service.
    * @return the name of the service,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   virtual QString name() const { return m_strName; }
   /**
    * Returns the executable.
    * @return the command that the service executes,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString exec() const { return m_strExec; }
   /**
    * Returns the name of the service's library.
    * @return the name of the library that contains the services
    *         implementation,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString library() const { return m_strLibrary; }
   /**
    * Returns the name of the init function to call (KControl modules).
    * @return the name of the init function to call in this service
    *         during startup of KDE. (KControl modules only),
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString init() const { return m_strInit; }
 
   /**
    * Returns the name of the icon.
    * @return the icon associated with the service,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString icon() const { return m_strIcon; }
   /**
@@ -140,7 +140,7 @@ public:
    *
    * The service must be a tty-oriented program.
    * @return the terminal options,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
   /**
@@ -153,7 +153,7 @@ public:
    * Returns the user name, if the service runs with a
    * different user id.
    * @return the username under which the service has to be run,
-   *         or QString::null if not set
+   *         or QString() if not set
    * @see substututeUid()a
    */
   QString username() const;
@@ -167,7 +167,7 @@ public:
    * It is a full path if the desktop entry originates from another
    * location.
    * @return the path of the service's desktop file,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString desktopEntryPath() const { return entryPath(); }
 
@@ -175,7 +175,7 @@ public:
    * Returns the filename of the service desktop entry without any
    * extension. E.g. "kppp"
    * @return the name of the desktop entry without path or extension,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString desktopEntryName() const { return m_strDesktopEntryName; }
 
@@ -219,13 +219,13 @@ public:
   /**
    * Returns the working directory to run the program in.
    * @return the working directory to run the program in,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString path() const { return m_strPath; }
 
   /**
    * Returns the descriptive comment for the service, if there is one.
-   * @return the descriptive comment for the service, or QString::null
+   * @return the descriptive comment for the service, or QString()
    *         if not set
    */
   QString comment() const { return m_strComment; }
@@ -234,7 +234,7 @@ public:
    * Returns the generic name for the service, if there is one
    * (e.g. "Mail Client").
    * @return the generic name,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString genericName() const { return m_strGenName; }
 
@@ -243,7 +243,7 @@ public:
    * for the service, if there is one
    * (e.g. "Mail Client").
    * @return the generic name,
-   *         or QString::null if not set
+   *         or QString() if not set
    * @since 3.2
    */
   QString untranslatedGenericName() const;
@@ -325,7 +325,7 @@ public:
   /**
    * Name of the application this service belongs to.
    * (Useful for e.g. plugins)
-   * @return the parent application, or QString::null if not set
+   * @return the parent application, or QString() if not set
    * @since 3.1
    */
   QString parentApp() const;

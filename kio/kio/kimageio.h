@@ -119,7 +119,7 @@ public:
   /**
    * Returns the suffix of an image type.
    * @param type the type id of the file format
-   * @return the suffix of the file format or QString::null if it does not
+   * @return the suffix of the file format or QString() if it does not
    *         exist
    */
   static QString suffix(const QString& type);
@@ -127,7 +127,7 @@ public:
   /**
    * Returns the type of a MIME type.
    * @param mimeType the MIME type to search
-   * @return type id of the MIME type or QString::null if the MIME type
+   * @return type id of the MIME type or QString() if the MIME type
    *         is not supported
    * @since 3.1
    */
@@ -137,7 +137,7 @@ public:
    * Returns the type of given filename.
    * @param filename the filename to check
    * @return if the file name's suffix is known the type id of the
-   *         file type, otherwise QString::null
+   *         file type, otherwise QString()
    */
   static QString type(const QString& filename);
 
@@ -160,7 +160,7 @@ public:
   /**
    * Returns the MIME type of @p _filename.
    * @param _filename the filename to check
-   * @return the MIME type of the file, or QString::null
+   * @return the MIME type of the file, or QString()
    **/
   static QString mimeType( const QString& _filename );
 };

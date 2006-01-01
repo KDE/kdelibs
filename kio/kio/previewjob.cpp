@@ -358,7 +358,7 @@ void PreviewJob::slotResult( KIO::Job *job )
             if (!d->tempName.isEmpty())
             {
                 QFile::remove(d->tempName);
-                d->tempName = QString::null;
+                d->tempName.clear();
             }
             determineNextFile();
             return;
@@ -373,7 +373,7 @@ bool PreviewJob::statResultThumbnail()
 
     KURL url = d->currentItem.item->url();
     // Don't include the password if any
-    url.setPass(QString::null);
+    url.setPass(QString());
     // The TMS defines local files as file:///path/to/file instead of KDE's
     // way (file:/path/to/file)
 #ifdef KURL_TRIPLE_SLASH_FILE_PROT

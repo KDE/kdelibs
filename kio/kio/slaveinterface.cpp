@@ -450,7 +450,7 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
                                  const QString &buttonYes, const QString &buttonNo )
 {
-    messageBox( type, text, _caption, buttonYes, buttonNo, QString::null );
+    messageBox( type, text, _caption, buttonYes, buttonNo, QString() );
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,

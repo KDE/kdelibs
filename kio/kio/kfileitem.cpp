@@ -127,7 +127,7 @@ KFileItem::~KFileItem()
 
 void KFileItem::init( bool _determineMimeTypeOnDemand )
 {
-  m_access = QString::null;
+  m_access.clear();
   m_size = (KIO::filesize_t) -1;
   //  metaInfo = KFileMetaInfo();
   for ( int i = 0; i < NumFlags; i++ )
@@ -228,8 +228,8 @@ void KFileItem::refresh()
   m_fileMode = KFileItem::Unknown;
   m_permissions = KFileItem::Unknown;
   m_pMimeType = 0L;
-  m_user = QString::null;
-  m_group = QString::null;
+  m_user.clear();
+  m_group.clear();
   m_metaInfo = KFileMetaInfo();
   m_hidden = Auto;
 
@@ -277,7 +277,7 @@ QString KFileItem::linkDest() const
       return QFile::decodeName( buf );
     }
   }
-  return QString::null;
+  return QString();
 }
 
 QString KFileItem::localPath() const
@@ -680,7 +680,7 @@ QString KFileItem::getStatusBarInfo()
 
 QString KFileItem::getToolTipText(int maxcount)
 {
-  // we can return QString::null if no tool tip should be shown
+  // we can return QString() if no tool tip should be shown
   QString tip;
   KFileMetaInfo info = metaInfo();
 
@@ -833,11 +833,11 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
 {
   m_entry = _entry;
   m_url = _url;
-  m_strName = QString::null;
-  m_strText = QString::null;
-  m_user = QString::null;
-  m_group = QString::null;
-  m_strLowerCaseName = QString::null;
+  m_strName.clear();
+  m_strText.clear();
+  m_user.clear();
+  m_group.clear();
+  m_strLowerCaseName.clear();
   m_pMimeType = 0;
   m_fileMode = KFileItem::Unknown;
   m_permissions = KFileItem::Unknown;
@@ -846,11 +846,11 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bIsLocalURL = _url.isLocalFile();
   m_bMimeTypeKnown = false;
   m_hidden = Auto;
-  m_guessedMimeType = QString::null;
+  m_guessedMimeType.clear();
   m_metaInfo = KFileMetaInfo();
 
   if ( d )
-    d->iconName = QString::null;
+    d->iconName.clear();
 
   readUDSEntry( _urlIsDirectory );
   init( _determineMimeTypeOnDemand );

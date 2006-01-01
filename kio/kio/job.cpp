@@ -363,7 +363,7 @@ MetaData Job::metaData() const
 QString Job::queryMetaData(const QString &key)
 {
     if (!m_incomingMetaData.contains(key))
-       return QString::null;
+       return QString();
     return m_incomingMetaData[key];
 }
 
@@ -571,7 +571,7 @@ void SimpleJob::slotError( int error, const QString & errorText )
     m_error = error;
     m_errorText = errorText;
     if ((m_error == ERR_UNKNOWN_HOST) && m_url.host().isEmpty())
-       m_errorText = QString::null;
+       m_errorText.clear();
     // error terminates the job
     slotFinished();
 }
@@ -2083,13 +2083,13 @@ void ListJob::slotMetaData( const KIO::MetaData &_metaData) {
 
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo,false,QString::null,includeHidden);
+    ListJob * job = new ListJob(url, showProgressInfo,false,QString(),includeHidden);
     return job;
 }
 
 ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo, true,QString::null,includeHidden);
+    ListJob * job = new ListJob(url, showProgressInfo, true,QString(),includeHidden);
     return job;
 }
 

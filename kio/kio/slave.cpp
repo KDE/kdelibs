@@ -104,7 +104,7 @@ void Slave::unlinkSocket()
 {
     if (m_socket.isEmpty()) return;
     QFile::remove( m_socket );
-    m_socket = QString::null;
+    m_socket.clear();
 }
 
 void Slave::timeout()
@@ -422,7 +422,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
        KProcess proc;
 
        proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
-       kdDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << sockname << endl;
+       kdDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
 
        proc.start(KProcess::DontCare);
 

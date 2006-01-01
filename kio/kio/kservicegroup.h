@@ -121,14 +121,14 @@ public:
   /**
    * Returns the name of the icon associated with the group.
    * @return the name of the icon associated with the group,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString icon() const { return m_strIcon; }
 
   /**
    * Returns the comment about this service group.
    * @return the descriptive comment for the group, if there is one,
-   *         or QString::null if not set
+   *         or QString() if not set
    */
   QString comment() const { return m_strComment; }
 

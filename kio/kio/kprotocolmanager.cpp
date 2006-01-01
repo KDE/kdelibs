@@ -113,7 +113,7 @@ KConfig *KProtocolManager::http_config()
 int KProtocolManager::readTimeout()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   int val = cfg->readEntry( "ReadTimeout", QVariant(DEFAULT_READ_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
@@ -121,7 +121,7 @@ int KProtocolManager::readTimeout()
 int KProtocolManager::connectTimeout()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   int val = cfg->readEntry( "ConnectTimeout", QVariant(DEFAULT_CONNECT_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
@@ -129,7 +129,7 @@ int KProtocolManager::connectTimeout()
 int KProtocolManager::proxyConnectTimeout()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   int val = cfg->readEntry( "ProxyConnectTimeout", QVariant(DEFAULT_PROXY_CONNECT_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
@@ -137,7 +137,7 @@ int KProtocolManager::proxyConnectTimeout()
 int KProtocolManager::responseTimeout()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   int val = cfg->readEntry( "ResponseTimeout", QVariant(DEFAULT_RESPONSE_TIMEOUT )).toInt();
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
@@ -406,7 +406,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
   }
 
   d->url = url;
-  d->proxy = proxy = QString::null;
+  d->proxy = proxy = QString();
   d->protocol = url.protocol();
   return d->protocol;
 }
@@ -417,7 +417,7 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
   QString sendUserAgent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "SendUserAgent").toLower();
   if (sendUserAgent == "false")
-     return QString::null;
+     return QString();
 
   QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "UserAgent");
 
@@ -431,7 +431,7 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
 
 QString KProtocolManager::defaultUserAgent( )
 {
-  QString modifiers = KIO::SlaveConfig::self()->configData("http", QString::null, "UserAgentKeys");
+  QString modifiers = KIO::SlaveConfig::self()->configData("http", QString(), "UserAgentKeys");
   return defaultUserAgent(modifiers);
 }
 
@@ -490,14 +490,14 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 bool KProtocolManager::markPartial()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   return cfg->readEntry( "MarkPartial", QVariant(true )).toBool();
 }
 
 int KProtocolManager::minimumKeepSize()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   return cfg->readNumEntry( "MinimumKeepSize",
                             DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
 }
@@ -505,21 +505,21 @@ int KProtocolManager::minimumKeepSize()
 bool KProtocolManager::autoResume()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   return cfg->readEntry( "AutoResume", QVariant(false )).toBool();
 }
 
 bool KProtocolManager::persistentConnections()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   return cfg->readEntry( "PersistentConnections", QVariant(true )).toBool();
 }
 
 bool KProtocolManager::persistentProxyConnection()
 {
   KConfig *cfg = config();
-  cfg->setGroup( QString::null );
+  cfg->setGroup( QString() );
   return cfg->readEntry( "PersistentProxyConnection", QVariant(false )).toBool();
 }
 

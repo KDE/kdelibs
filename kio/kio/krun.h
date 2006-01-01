@@ -187,10 +187,10 @@ public:
    * @return the process id, or 0 on error
    */
   static pid_t run( const QString& _exec, const KURL::List& _urls,
-		   const QString& _name = QString::null,
-		   const QString& _icon = QString::null,
-		   const QString& _obsolete1 = QString::null,
-		   const QString& _obsolete2 = QString::null );
+		   const QString& _name = QString(),
+		   const QString& _icon = QString(),
+		   const QString& _obsolete1 = QString(),
+		   const QString& _obsolete2 = QString() );
 
   /**
    * Open the given URL.

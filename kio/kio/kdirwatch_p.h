@@ -96,7 +96,7 @@ public:
 
   Entry* entry(const QString&);
   int scanEntry(Entry* e);
-  void emitEvent(Entry* e, int event, const QString &fileName = QString::null);
+  void emitEvent(Entry* e, int event, const QString &fileName = QString());
 
   // Memory management - delete when last KDirWatch gets deleted
   void ref() { m_ref++; }

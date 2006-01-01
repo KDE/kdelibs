@@ -197,9 +197,9 @@ public:
    * if available. Does NOT attempt to download the favicon, it only returns
    * one that is already available.
    *
-   * If unavailable, returns QString::null.
+   * If unavailable, returns QString().
    * @param url the URL of the favicon
-   * @return the name of the favicon, or QString::null
+   * @return the name of the favicon, or QString()
    */
   static QString favIconForURL( const KURL& url );
 
@@ -422,7 +422,7 @@ public:
    * since an application that handles the specific type doesn't necessarily handle
    * the base type. The opposite is true though.
    *
-   * @return the parent mime type, or QString::null if not set
+   * @return the parent mime type, or QString() if not set
    * @since 3.2
    */
   QString parentMimeType() const;

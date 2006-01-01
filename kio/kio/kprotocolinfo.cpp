@@ -244,7 +244,7 @@ QString KProtocolInfo::defaultMimetype( const KURL &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->m_defaultMimetype;
 }

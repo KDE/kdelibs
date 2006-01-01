@@ -84,7 +84,7 @@ public:
    * specified host.
    *
    * If hostname is not found or is empty (i.e. "" or
-   * QString::null) this function will return the default
+   * QString()) this function will return the default
    * user agent.
    *
    * @param hostname name of the host
@@ -203,7 +203,7 @@ public:
    *
    * @param protocol the protocol whose proxy info is needed
    * @returns the proxy server address if one is available,
-   *          or QString::null if not available
+   *          or QString() if not available
    */
   static QString proxyFor( const QString& protocol );
 
@@ -217,7 +217,7 @@ public:
    *
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address if one is available
-   *          or QString::null otherwise
+   *          or QString() otherwise
    */
   static QString proxyForURL( const KURL& url );
 

@@ -299,13 +299,13 @@ public:
 
         /**
          * Returns a string for the specified @p value, if possible. If not,
-         * QString::null is returned. This can be used by programs if they want
+         * QString() is returned. This can be used by programs if they want
          * to display a sum or an average of some item for a list of files.
          *
          * @param value the value to convert
          * @param mangle if true, the string will already contain prefix and
          *               suffix
-         * @return the converted string, or QString::null if not possible
+         * @return the converted string, or QString() if not possible
          * @since 3.1
          */
         QString string( const QVariant& value, bool mangle = true ) const;
@@ -369,7 +369,7 @@ public:
             : m_key(key), m_translatedKey(translatedKey),
               m_type(type),
               m_attr(0), m_unit(NoUnit), m_hint(NoHint),
-              m_prefix(QString::null), m_suffix(QString::null)
+              m_prefix(QString()), m_suffix(QString())
         {}
 
         QString           m_key;
@@ -556,11 +556,11 @@ public:
 
     /**
      * Returns a string containing the value, if possible. If not,
-     * QString::null is returned.
+     * QString() is returned.
      *
      * @param mangle if true, the string will already contain prefix and
      * suffix
-     * @return the value string, or QString::null if not possible
+     * @return the value string, or QString() if not possible
      */
     QString string( bool mangle = true ) const;
 
@@ -976,7 +976,7 @@ public:
      *
      **/
     KFileMetaInfo( const QString& path,
-                   const QString& mimeType = QString::null,
+                   const QString& mimeType = QString(),
                    uint what = Fastest);
 
    /**
@@ -987,7 +987,7 @@ public:
     *
     **/
     KFileMetaInfo( const KURL& url,
-                   const QString& mimeType = QString::null,
+                   const QString& mimeType = QString(),
                    uint what = Fastest);
 
     /**
@@ -1082,12 +1082,12 @@ public:
      * Saves the item with the given @p key.
      *
      * @param key the key of the item
-     * @param preferredGroup the preferred group, or QString::null
+     * @param preferredGroup the preferred group, or QString()
      * @param createGroup true to create the group if necessary
      * @return the saved item
      */
     KFileMetaInfoItem saveItem( const QString& key,
-                                const QString& preferredGroup = QString::null,
+                                const QString& preferredGroup = QString(),
                                 bool createGroup = true );
 
     /**
@@ -1200,9 +1200,9 @@ public:
     QString mimeType() const;
 
     /**
-     * Returns the path of file - or QString::null if file is non-local
+     * Returns the path of file - or QString() if file is non-local
      *
-     * @return the file's path - or QString::null if file is non-local
+     * @return the file's path - or QString() if file is non-local
      */
     QString path() const;
 
@@ -1236,7 +1236,7 @@ private:
                                         const QString& key );
 
     void init( const KURL& url,
-               const QString& mimeType = QString::null,
+               const QString& mimeType = QString(),
                uint what = Fastest);
 };
 
@@ -1646,9 +1646,9 @@ public:
      *  for the given protocol.
      *  This loads the plugin if it's not in memory yet.
      */
-    KFilePlugin * plugin( const QString& mimeType, const QString& protocol = QString::null  );
+    KFilePlugin * plugin( const QString& mimeType, const QString& protocol = QString()  );
 
-    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol = QString::null );
+    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol = QString() );
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;

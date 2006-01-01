@@ -74,10 +74,10 @@ public:
 	 * The completion is done asyncronously if KIO is used.
 	 *
 	 * Returns the first match for user, environment, and local dir completion
-	 * and QString::null for asynchronous completion (KIO or threaded).
+	 * and QString() for asynchronous completion (KIO or threaded).
 	 *
 	 * @param text the text to complete
-	 * @return the first match, or QString::null if not found
+	 * @return the first match, or QString() if not found
 	 */
 	virtual QString makeCompletion(const QString &text); // KDE4: remove return value, it's often null due to threading
 
@@ -205,7 +205,7 @@ private:
 	                        bool stat_files = true);
 
 	void listURLs( const QList<KURL *> &urls,
-	               const QString &filter = QString::null,
+	               const QString &filter = QString(),
 	               bool only_exe = false,
 	               bool no_hidden = false );
 
@@ -215,13 +215,13 @@ private:
 	void init();
 
 	void setListedURL(int compl_type /* enum ComplType */,
-	                  const QString& dir = QString::null,
-	                  const QString& filter = QString::null,
+	                  const QString& dir = QString(),
+	                  const QString& filter = QString(),
 	                  bool no_hidden = false );
 
 	bool isListedURL( int compl_type /* enum ComplType */,
-	                  const QString& dir = QString::null,
-	                  const QString& filter = QString::null,
+	                  const QString& dir = QString(),
+	                  const QString& filter = QString(),
 	                  bool no_hidden = false );
 
 protected:

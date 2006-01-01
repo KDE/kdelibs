@@ -143,11 +143,11 @@ public:
      * @return Accepted/Rejected based on the user choice.
      */
     static int getNameAndPassword( QString& user, QString& pass, bool* keep,
-                                   const QString& prompt = QString::null,
+                                   const QString& prompt = QString(),
                                    bool readOnly = false,
-                                   const QString& caption = QString::null,
-                                   const QString& comment = QString::null,
-                                   const QString& label = QString::null );
+                                   const QString& caption = QString(),
+                                   const QString& comment = QString(),
+                                   const QString& label = QString() );
 
 private slots:
     void slotKeep( bool );

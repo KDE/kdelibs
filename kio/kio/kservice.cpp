@@ -55,7 +55,7 @@ public:
 };
 
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
- : KSycocaEntry( QString::null), d(new Private)
+ : KSycocaEntry( QString()), d(new Private)
 {
   m_bValid = true;
   m_bDeleted = false;
@@ -656,7 +656,7 @@ QString KService::username() const {
   // See also KDesktopFile::tryExec()
   QString user;
   QVariant v = property("X-KDE-Username", QVariant::String);
-  user = v.isValid() ? v.toString() : QString::null;
+  user = v.isValid() ? v.toString() : QString();
   if (user.isEmpty())
      user = ::getenv("ADMIN_ACCOUNT");
   if (user.isEmpty())
@@ -699,14 +699,14 @@ bool KService::noDisplay() const {
 
 QString KService::untranslatedGenericName() const {
   QVariant v = property("UntranslatedGenericName", QVariant::String);
-  return v.isValid() ? v.toString() : QString::null;
+  return v.isValid() ? v.toString() : QString();
 }
 
 QString KService::parentApp() const {
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "X-KDE-ParentApp" );
   if ( (it == m_mapProps.end()) || (!it->isValid()))
   {
-     return QString::null;
+     return QString();
   }
 
   return it->toString();

@@ -59,8 +59,8 @@ public:
      * @return an error code indicating success (== 0) or failure (> 0).
      */
     int findServiceFor( const QString& serviceType,
-                        const QString& constraint = QString::null,
-                        const QString& preferences = QString::null,
+                        const QString& constraint = QString(),
+                        const QString& preferences = QString(),
                         QString *error=0, DCOPCString* dcopService=0,
                         int flags=0 );
 
@@ -87,8 +87,8 @@ public:
      * @return an error code indicating success (== 0) or failure (> 0).
      */
     virtual int startServiceFor( const QString& serviceType,
-                                 const QString& constraint = QString::null,
-                                 const QString& preferences = QString::null,
+                                 const QString& constraint = QString(),
+                                 const QString& preferences = QString(),
                                  QString *error=0, DCOPCString* dcopService=0,
                                  int flags=0 );
 protected:

@@ -50,7 +50,7 @@ static KURL getNewFileName( const KURL &u, const QString& text )
   QString dialogText( text );
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
-  QString file = KInputDialog::getText( QString::null, dialogText, QString::null, &ok );
+  QString file = KInputDialog::getText( QString(), dialogText, QString(), &ok );
   if ( !ok )
      return KURL();
 
@@ -116,7 +116,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, const QMimeData* mimeData,
     QString dialogText( text );
     if ( dialogText.isEmpty() )
         dialogText = i18n( "Filename for clipboard content:" );
-    KIO::PasteDialog dlg( QString::null, dialogText, QString::null, formatLabels, widget, clipboard );
+    KIO::PasteDialog dlg( QString(), dialogText, QString(), formatLabels, widget, clipboard );
 
     if ( dlg.exec() != KDialogBase::Accepted )
         return 0;
@@ -216,7 +216,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& destUrl, QWidget* widget, 
       QApplication::clipboard()->clear();
     return res;
   }
-  return pasteMimeSource( mimeData, destUrl, QString::null, widget, true /*clipboard*/ );
+  return pasteMimeSource( mimeData, destUrl, QString(), widget, true /*clipboard*/ );
 #else
   QByteArray ba;
   QTextStream txtStream( ba, QIODevice::WriteOnly );
@@ -238,7 +238,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& destUrl, QWidget* widget, 
 
 KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data, QWidget* widget )
 {
-    const KURL newUrl = getNewFileName( u, QString::null );
+    const KURL newUrl = getNewFileName( u, QString() );
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAccess, we can do a synchronous call.
 
@@ -275,7 +275,7 @@ KIO_EXPORT QString KIO::pasteActionText()
     } else if ( !mimeData->formats().isEmpty() ) {
         return i18n( "&Paste Clipboard Contents" );
     } else {
-        return QString::null;
+        return QString();
     }
 }
 

@@ -389,7 +389,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     }
 
     QString rp = relPath();
-    if(rp == "/") rp = QString::null;
+    if(rp == "/") rp.clear();
 
     // Iterate through the sort spec list.
     // If an entry gets mentioned explicitly, we remove it from the sorted list

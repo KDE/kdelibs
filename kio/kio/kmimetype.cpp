@@ -452,7 +452,7 @@ QPixmap KMimeType::pixmap( KIcon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
-  QString iconName=icon( QString::null, false );
+  QString iconName=icon( QString(), false );
   if (!iconLoader->extraDesktopThemesAdded())
   {
     QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
@@ -542,14 +542,14 @@ QString KMimeType::favIconForURL( const KURL& url )
 
     if ( url.isLocalFile() || !url.protocol().startsWith("http")
          || !useFavIcons )
-        return QString::null;
+        return QString();
 
     DCOPRef kded( "kded", "favicons" );
     DCOPReply result = kded.call( "iconForURL(KURL)", url );
     if ( result.isValid() )
         return result;
 
-    return QString::null;
+    return QString();
 }
 
 QString KMimeType::parentMimeType() const
@@ -849,7 +849,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
     bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
     QString fstype = cfg.readEntry( "FSType" );
     if ( fstype == "Default" ) // KDE-1 thing
-      fstype = QString::null;
+      fstype.clear();
     QString point = cfg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
     (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
@@ -1134,7 +1134,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
       bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
       QString fstype = cfg.readEntry( "FSType" );
       if ( fstype == "Default" ) // KDE-1 thing
-          fstype = QString::null;
+          fstype.clear();
       QString point = cfg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
       (void)new KAutoMount( ro, fstype, dev, point, path, false );

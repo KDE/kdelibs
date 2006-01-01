@@ -154,7 +154,7 @@ void ChmodJob::chmodNextFile()
             QString path = info.url.path();
             if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
             {
-                int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" ).arg(path), QString::null, i18n("&Skip File") );
+                int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" ).arg(path), QString(), i18n("&Skip File") );
                 if (answer == KMessageBox::Cancel)
                 {
                     m_error = ERR_USER_CANCELED;

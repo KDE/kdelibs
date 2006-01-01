@@ -344,7 +344,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                         "observe your data in transit."),
                                    WarningContinueCancel,
                                    i18n("Security Information"),
-                                   i18n("C&ontinue Loading"), QString::null,
+                                   i18n("C&ontinue Loading"), QString(),
                                    "WarnOnLeaveSSLMode" );
 
            // Move this setting into KSSL instead
@@ -416,8 +416,8 @@ void TCPSlaveBase::closeDescriptor()
     if (m_bIsSSL)
       d->kssl->close();
     d->socket.close();
-    d->ip = QString();
-    d->host = QString();
+    d->ip.clear();
+    d->host.clear();
 }
 
 bool TCPSlaveBase::initializeSSL()
@@ -557,7 +557,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          break;
         case KSSLCertificateHome::AuthDont:
           send = false; prompt = false;
-          certname = QString::null;
+          certname.clear();
          break;
         case KSSLCertificateHome::AuthPrompt:
           send = false; prompt = true;
@@ -586,7 +586,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         case KSSLCertificateHome::AuthDont:
           send = false;
           prompt = false;
-          certname = QString::null;
+          certname.clear();
          break;
         case KSSLCertificateHome::AuthPrompt:
           send = false;
@@ -676,7 +676,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         else
            showprompt = true;
         if (showprompt) {
-           if (!openPassDlg(ai, first ? QString::null :
+           if (!openPassDlg(ai, first ? QString() :
                    i18n("Unable to open the certificate. Try a new password?")))
               break;
         }

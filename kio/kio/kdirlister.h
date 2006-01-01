@@ -268,14 +268,14 @@ public:
    * "*.cpp *.h".
    * Note: the directory is not automatically reloaded.
    *
-   * @param filter the new filter, QString::null to disable filtering
+   * @param filter the new filter, QString() to disable filtering
    * @see matchesFilter
    */
   virtual void setNameFilter( const QString &filter );
 
   /**
    * Returns the current name filter, as set via setNameFilter()
-   * @return the current name filter, can be QString::null if filtering
+   * @return the current name filter, can be QString() if filtering
    *         is turned off
    */
   const QString& nameFilter() const;

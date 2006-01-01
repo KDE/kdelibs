@@ -630,7 +630,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	setListedURL( CTNone );
 	stop();
 
-	return QString::null;
+	return QString();
 }
 
 /*
@@ -858,7 +858,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 	else {
 		if ( d->dirListThread )
 			setListedURL( CTExe, directory, url.file(), no_hidden_files );
-		*pMatch = QString::null;
+		*pMatch = QString();
 	}
 
 	return true;
@@ -916,12 +916,12 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 
 	// List files if needed
 	//
-	if ( !isListedURL( CTFile, directory, QString::null, no_hidden_files ) )
+	if ( !isListedURL( CTFile, directory, QString(), no_hidden_files ) )
 	{
 		stop();
 		clear();
 
-		setListedURL( CTFile, directory, QString::null, no_hidden_files );
+		setListedURL( CTFile, directory, QString(), no_hidden_files );
 
 		// Append '/' to directories in Popup mode?
 		bool append_slash = ( d->popup_append_slash
@@ -930,14 +930,14 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 
 		bool only_dir = ( d->mode == DirCompletion );
 
-		*pMatch = listDirectories( dirList, QString::null, false, only_dir, no_hidden_files,
+		*pMatch = listDirectories( dirList, QString(), false, only_dir, no_hidden_files,
 		                          append_slash );
 	}
 	else if ( !isRunning() ) {
 		*pMatch = finished();
 	}
 	else {
-		*pMatch = QString::null;
+		*pMatch = QString();
 	}
 
 	return true;
@@ -978,7 +978,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 		return false;
         }
 
-	url_dir.setFileName(QString::null); // not really nesseccary, but clear the filename anyway...
+	url_dir.setFileName(QString()); // not really nesseccary, but clear the filename anyway...
 
 	// Remove escapes
 	QString directory = unescape( url_dir.directory( false, false ) );
@@ -992,20 +992,20 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 		stop();
 		clear();
 
-		setListedURL( CTUrl, url_dir.prettyURL(), QString::null );
+		setListedURL( CTUrl, url_dir.prettyURL(), QString() );
 
 		QList<KURL*> url_list;
 		url_list.append( new KURL( url_dir ) );
 
-		listURLs( url_list, QString::null, false );
+		listURLs( url_list, QString(), false );
 
-		*pMatch = QString::null;
+		*pMatch = QString();
 	}
 	else if ( !isRunning() ) {
 		*pMatch = finished();
 	}
 	else {
-		*pMatch = QString::null;
+		*pMatch = QString();
 	}
 
 	return true;
@@ -1043,7 +1043,7 @@ void KURLCompletion::addMatches( const QStringList &matchList )
  * In either case, addMatches() is called with the listed
  * files, and eventually finished() when the listing is done
  *
- * Returns the match if available, or QString::null if
+ * Returns the match if available, or QString() if
  * DirLister timed out or using kio
  */
 QString KURLCompletion::listDirectories(
@@ -1099,7 +1099,7 @@ QString KURLCompletion::listDirectories(
 	listURLs( url_list, filter, only_exe, no_hidden );
 	// Will call addMatches() and finished()
 
-	return QString::null;
+	return QString();
 }
 
 /*
@@ -1333,7 +1333,7 @@ QString KURLCompletion::replacedPath( const QString& text, bool replaceHome, boo
 	if ( text.isEmpty() )
 		return text;
 
-	MyURL url( text, QString::null ); // no need to replace something of our current cwd
+	MyURL url( text, QString() ); // no need to replace something of our current cwd
 	if ( !url.kurl()->isLocalFile() )
 		return text;
 

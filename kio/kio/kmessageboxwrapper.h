@@ -32,7 +32,7 @@ class KIO_EXPORT KMessageBoxWrapper : public KMessageBox
 public:
   static void error(QWidget *parent, 
                     const QString &text, 
-                    const QString &caption = QString::null)
+                    const QString &caption = QString())
     {
 	if (qApp && qApp->type() == QApplication::GuiClient) {
       	  KMessageBox::error( parent, text, caption );
@@ -42,7 +42,7 @@ public:
 
   static void sorry(QWidget *parent, 
                     const QString &text,
-                    const QString &caption = QString::null)
+                    const QString &caption = QString())
     {
       if (qApp && qApp->type() == QApplication::GuiClient) {
          KMessageBox::sorry( parent, text, caption );

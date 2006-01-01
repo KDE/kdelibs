@@ -435,8 +435,8 @@ void DefaultProgress::setDestVisible( bool visible )
   {
       destInvite->hide();
       destEdit->hide();
-    destInvite->setText( QString::null );
-    destEdit->setText( QString::null );
+    destInvite->setText( QString() );
+    destEdit->setText( QString() );
   }
 }
 

@@ -114,7 +114,7 @@ public:
 
 	/**
 	 * Returns the name of the default profile.
-	 * @returns the name of the one that's currently default QString::null if none
+	 * @returns the name of the one that's currently default QString() if none
 	 **/
 	QString defaultProfileName() const;
 
@@ -127,7 +127,7 @@ public:
 	/**
 	  * Get one of the predefined "basic" settings.
 	  * @param s the setting to get
-	  * @return the value of the setting, or QString::null if not 
+	  * @return the value of the setting, or QString() if not 
 	  *         set
 	  **/
 	QString getSetting(KEMailSettings::Setting s);
@@ -135,7 +135,7 @@ public:
 	/**
 	  * Set one of the predefined "basic" settings.
 	  * @param s the setting to set
-	  * @param v the new value of the setting, or QString::null to 
+	  * @param v the new value of the setting, or QString() to 
 	  *         unset
 	  **/
 	void setSetting(KEMailSettings::Setting s, const QString &v);

@@ -233,7 +233,7 @@ QString NetRC::extract( const char* buf, const char* key, int& pos )
     }
   }
 
-  return QString::null;
+  return QString();
 }
 
 bool NetRC::parse( int fd )

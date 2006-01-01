@@ -59,9 +59,9 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      *        groups are shown.
      * @param parent The parent widget to use
      */
-    KMimeTypeChooser( const QString& text=QString::null,
+    KMimeTypeChooser( const QString& text=QString(),
                       const QStringList &selectedMimeTypes=QStringList(),
-                      const QString &defaultGroup=QString::null,
+                      const QString &defaultGroup=QString(),
                       const QStringList &groupsToShow=QStringList(),
                       int visuals=Comments|Patterns|EditButton,
                       QWidget *parent=0 );
@@ -148,10 +148,10 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
      *        groups are shown.
      * @param parent The parent widget to use
      */
-    KMimeTypeChooserDialog( const QString &caption=QString::null,
-                         const QString& text=QString::null,
+    KMimeTypeChooserDialog( const QString &caption=QString(),
+                         const QString& text=QString(),
                          const QStringList &selectedMimeTypes=QStringList(),
-                         const QString &defaultGroup=QString::null,
+                         const QString &defaultGroup=QString(),
                          const QStringList &groupsToShow=QStringList(),
                          int visuals=KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                          QWidget *parent=0 );

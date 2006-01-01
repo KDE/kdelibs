@@ -355,7 +355,7 @@ QString SlaveBase::metaData(const QString &key) const
       return mIncomingMetaData[key];
    if (d->configData.contains(key))
       return d->configData[key];
-   return QString::null;
+   return QString();
 }
 
 bool SlaveBase::hasMetaData(const QString &key) const
@@ -781,7 +781,7 @@ void SlaveBase::multiGet(const QByteArray &)
 
 
 void SlaveBase::slave_status()
-{ slaveStatus( QString::null, false ); }
+{ slaveStatus( QString(), false ); }
 
 void SlaveBase::reparseConfiguration()
 {
@@ -858,7 +858,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo )
 {
-    return messageBox( text, type, caption, buttonYes, buttonNo, QString::null );
+    return messageBox( text, type, caption, buttonYes, buttonNo, QString() );
 }
 
 int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QString &caption,
@@ -1105,7 +1105,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 QString SlaveBase::createAuthCacheKey( const KURL& url )
 {
     if( !url.isValid() )
-        return QString::null;
+        return QString();
 
     // Generate the basic key sequence.
     QString key = url.protocol();

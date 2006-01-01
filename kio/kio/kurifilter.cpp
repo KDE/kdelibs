@@ -84,8 +84,8 @@ void KURIFilterData::init( const KURL& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
     m_pURI = url;
-    m_strErrMsg = QString::null;
-    m_strIconName = QString::null;
+    m_strErrMsg.clear();
+    m_strIconName.clear();
     m_bCheckForExecutables = true;
     m_bChanged = true;
     d = new KURIFilterDataPrivate;
@@ -96,8 +96,8 @@ void KURIFilterData::init( const QString& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
     m_pURI = url;
-    m_strErrMsg = QString::null;
-    m_strIconName = QString::null;
+    m_strErrMsg.clear();
+    m_strIconName.clear();
     m_bCheckForExecutables = true;
     m_bChanged = true;
     d = new KURIFilterDataPrivate;
@@ -191,7 +191,7 @@ QString KURIFilterData::iconName()
                 break;
             }
             default:
-                m_strIconName = QString::null;
+                m_strIconName.clear();
                 break;
         }
         m_bChanged = false;

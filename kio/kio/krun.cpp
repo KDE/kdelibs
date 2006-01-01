@@ -195,7 +195,7 @@ bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
        return false;
     }
 
-    KOpenWithDlg l( lst, i18n("Open with:"), QString::null, 0L );
+    KOpenWithDlg l( lst, i18n("Open with:"), QString(), 0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
@@ -499,7 +499,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
     if (!(*it).contains('='))
       // Remove path if wanted
       return removePath ? (*it).mid((*it).lastIndexOf('/') + 1) : *it;
-  return QString::null;
+  return QString();
 }
 
 static pid_t runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
@@ -742,7 +742,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
 pid_t KRun::runCommand( const QString &cmd )
 {
-  return KRun::runCommand( cmd, QString::null, QString::null );
+  return KRun::runCommand( cmd, QString(), QString() );
 }
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
@@ -1124,7 +1124,7 @@ void KRun::foundMimeType( const QString& type )
     KURL::List::Iterator it = lst.begin();
     ++it;
     (*lst.begin()).setRef( (*it).ref() );
-    (*it).setRef( QString::null );
+    (*it).setRef( QString() );
 
     // Create the new URL
     m_strURL = KURL::join( lst );
@@ -1220,7 +1220,7 @@ void KRun::setEnableExternalBrowser(bool b)
    if (b)
       d->m_externalBrowser = KConfigGroup(KGlobal::config(), "General").readEntry("BrowserApplication");
    else
-      d->m_externalBrowser = QString::null;
+      d->m_externalBrowser.clear();
 }
 
 void KRun::setPreferredService( const QString& desktopEntryName )
