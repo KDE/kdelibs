@@ -31,6 +31,7 @@
 
 #include "html/html_baseimpl.h"
 #include "html/html_blockimpl.h"
+#include "html/html_canvasimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_elementimpl.h"
 #include "html/html_formimpl.h"
@@ -1018,6 +1019,10 @@ NodeImpl *KHTMLParser::getElement(Token* t)
                 return 0;
         }
         n = new HTMLImageElementImpl(document, form);
+        break;
+
+    case ID_CANVAS:
+        n = new HTMLCanvasElementImpl(document);
         break;
 
     case ID_MAP:

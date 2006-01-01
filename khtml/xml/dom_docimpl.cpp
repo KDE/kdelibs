@@ -69,6 +69,7 @@
 
 #include "html/html_baseimpl.h"
 #include "html/html_blockimpl.h"
+#include "html/html_canvasimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_formimpl.h"
 #include "html/html_headimpl.h"
@@ -860,6 +861,9 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // images
     case ID_IMG:
         n = new HTMLImageElementImpl(docPtr());
+        break;
+    case ID_CANVAS:
+        n = new HTMLCanvasElementImpl(docPtr());
         break;
     case ID_MAP:
         n = new HTMLMapElementImpl(docPtr());
