@@ -103,3 +103,5 @@ void KNotifyEventListItem::save()
 }
 
 
+
+#include "knotifyeventlist.moc"
