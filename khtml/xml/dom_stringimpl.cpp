@@ -169,7 +169,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
     bool collapsingLF = false; // collapsing around linefeed
     bool changedLF = false;
     for(unsigned int i=0; i<l; i++) {
-        QChar ch = s[i];
+        ushort ch = s[i].unicode();
         if (!preserveLF && (ch == '\n' || ch == '\r')) {
             // ### Not strictly correct according to CSS3 text-module.
             // - In ideographic languages linefeed should be ignored
@@ -187,7 +187,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
                 continue;
             }
 
-            n[pos++] = (collapsingLF) ? '\n' : ' ';
+            n[pos++] = (collapsingLF) ? QLatin1Char('\n') : QLatin1Char(' ');
             collapsing = false;
             collapsingLF = false;
         }
@@ -206,7 +206,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
         n[pos++] = ch;
     }
     if (collapsing)
-        n[pos++] = ((collapsingLF) ? '\n' : ' ');
+        n[pos++] = ((collapsingLF) ? QLatin1Char('\n') : QLatin1Char(' '));
 
     if (pos == l && !changedLF) {
         QT_DELETE_QCHAR_VEC(n);

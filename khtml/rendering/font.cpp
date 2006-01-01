@@ -355,6 +355,55 @@ int Font::width( QChar *chs, int slen, int pos ) const
     return w;
 }
 
+/** Querying QFontDB whether something is scalable is expensive, so we cache. */
+struct Font::ScalKey 
+{
+    QString family;
+    int     weight;
+    int     italic;
+
+    ScalKey() {}
+
+    ScalKey(const QFont& font) :
+            family(font.family()), weight(font.weight()), italic(font.italic())
+    {}
+
+    bool operator == (const ScalKey& other) const {
+        return (family == other.family) &&
+               (weight == other.weight) &&
+               (italic == other.italic);
+    }
+};
+
+uint qHash (const Font::ScalKey& key) {
+    return qHash(key.family) ^ qHash(key.weight) ^ qHash(key.italic);
+}
+
+QCache<Font::ScalKey, Font::ScalInfo>* Font::scalCache; 
+
+bool Font::isFontScalable(QFontDatabase& db, const QFont& font) 
+{
+    if (!scalCache)
+        scalCache = new QCache<ScalKey, ScalInfo>(64);
+
+    ScalKey key(font);
+
+    ScalInfo* s = scalCache->object(key);
+    if (!s) {
+        QString styleString = db.styleString(font);
+        s = new ScalInfo;
+        s->scaleable = db.isSmoothlyScalable(font.family(), styleString);
+
+        if (!s->scaleable) {
+            /* Cache size info */
+            s->sizes = db.smoothSizes(font.family(), styleString);
+        }
+
+        scalCache->insert(key, s);
+    }
+
+    return s->scaleable;
+}
 
 void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
 {
@@ -369,9 +418,9 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
-    if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
+    if( !isFontScalable(db, f) )
     {
-        const QList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const QList<int> pointSizes = scalCache->object(ScalKey(f))->sizes;
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
@@ -409,7 +458,6 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     f.setPixelSize( size );
 
     fm = QFontMetrics( f );
-    fontDef.hasNbsp = fm.inFont( 0xa0 );
 
     // small caps
     delete scFont;

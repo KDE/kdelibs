@@ -1260,10 +1260,6 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   }
 }
 
-KParts::ReadOnlyPart *Window::part() const {
-    return m_frame.isNull() ? 0L : static_cast<KParts::ReadOnlyPart *>(m_frame->m_part);
-}
-
 void Window::delayedGoHistory( int steps )
 {
     m_delayed.append( DelayedAction( DelayedGoHistory, steps ) );

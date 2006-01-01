@@ -25,7 +25,9 @@
 #ifndef KHTMLFONT_H
 #define KHTMLFONT_H
 
+#include <QCache>
 #include <qfont.h>
+#include <QFontDatabase>
 #include <qfontmetrics.h>
 #include <qpainter.h>
 
@@ -41,7 +43,7 @@ class FontDef
 {
 public:
     FontDef()
-        : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ), hasNbsp( true ) {}
+        : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ) {}
     bool operator == ( const FontDef &other ) const {
         return ( family == other.family &&
                  size == other.size &&
@@ -55,7 +57,6 @@ public:
     bool italic 		: 1;
     bool smallCaps 		: 1;
     unsigned int weight 		: 8;
-    mutable bool hasNbsp : 1;
 };
 
 
@@ -65,6 +66,8 @@ class Font
     friend class CSSStyleSelector;
 
 public:
+    struct ScalKey;
+
     Font() : fontDef(), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
     Font( const FontDef &fd )
         :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
@@ -163,6 +166,14 @@ private:
     mutable QFont *scFont;
     short letterSpacing;
     short wordSpacing;
+
+    struct ScalInfo {
+        bool scaleable;
+        QList<int> sizes;
+    };
+
+    static QCache<ScalKey, ScalInfo>* scalCache;
+    static bool isFontScalable(QFontDatabase& db, const QFont& font);
 };
 
 } // namespace
