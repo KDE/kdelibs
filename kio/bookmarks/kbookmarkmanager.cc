@@ -352,7 +352,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     KSaveFile file( filename );
     if ( file.status() == 0 )
     {
-        file.backupFile( file.name(), QString::null, ".bak" );
+        file.backupFile( file.name(), QString(), ".bak" );
         QByteArray cstr = internalDocument().toByteArray(); // is in UTF8
         file.file()->writeBlock( cstr.data(), cstr.length() );
         if ( file.close() )
@@ -483,7 +483,7 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
                 else
                 {
                     // this exact URL already exists
-                    return QString::null;
+                    return QString();
                 }
             }
             ch = parentBookmark.next( ch );
@@ -586,7 +586,7 @@ void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
     //kdDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
     //KBookmarkGroup group = findByAddress( groupAddress ).toGroup();
     //Q_ASSERT(!group.isNull());
-    emit changed( groupAddress, QString::null );
+    emit changed( groupAddress, QString() );
 }
 
 bool KBookmarkManager::showNSBookmarks() const

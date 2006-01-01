@@ -67,9 +67,9 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
          else if (type == "FOLDER" )
             emit newFolder( name, false, "" );
 
-         type = QString::null;
-         name = QString::null;
-         url = QString::null;
+         type.clear();
+         name.clear();
+         url.clear();
 
       } else if (currentLine == "-") {
          // end of folder

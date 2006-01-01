@@ -237,7 +237,7 @@ public:
      * @since 3.2
      */
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
-                                      const QString & _parentBookmarkAddress = QString::null );
+                                      const QString & _parentBookmarkAddress = QString() );
 
 public slots:
     void slotEditBookmarks();
@@ -329,7 +329,7 @@ public:
    *
    * @return the title of the current page.
    */
-  virtual QString currentTitle() const { return QString::null; }
+  virtual QString currentTitle() const { return QString(); }
 
   /**
    * This function is called whenever the user wants to add the
@@ -339,7 +339,7 @@ public:
    *
    * @return the URL of the current page.
    */
-  virtual QString currentURL() const { return QString::null; }
+  virtual QString currentURL() const { return QString(); }
 
 protected:
   virtual void virtual_hook( int id, void* data );

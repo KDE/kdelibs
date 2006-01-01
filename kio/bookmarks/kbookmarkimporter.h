@@ -89,7 +89,7 @@ class KIO_EXPORT KXBELBookmarkImporterImpl : public KBookmarkImporterBase, prote
 public:
     KXBELBookmarkImporterImpl() {}
     virtual void parse();
-    virtual QString findDefaultLocation(bool = false) const { return QString::null; }
+    virtual QString findDefaultLocation(bool = false) const { return QString(); }
 protected:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &);

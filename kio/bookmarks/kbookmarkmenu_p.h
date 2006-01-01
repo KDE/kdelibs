@@ -133,7 +133,7 @@ class KBookmarkEditDialog : public KDialogBase
 public:
   typedef enum { ModifyMode, InsertionMode } BookmarkEditType;
 
-  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType, const QString& address = QString::null,
+  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType, const QString& address = QString(),
                        QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
 
   QString finalUrl() const;
@@ -170,8 +170,8 @@ private:
 class KBookmarkFolderTree
 {
 public:
-  static Q3ListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& = QString::null );
-  static void fillTree( Q3ListView*, KBookmarkManager *, const QString& = QString::null );
+  static Q3ListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& = QString() );
+  static void fillTree( Q3ListView*, KBookmarkManager *, const QString& = QString() );
   static QString selectedAddress( Q3ListView* );
   static void setAddress( Q3ListView *, const QString & );
 };

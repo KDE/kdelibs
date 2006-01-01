@@ -96,7 +96,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 
 QString KBookmarkBar::parentAddress()
 {
-    return d->m_filteredMgr ? QString::null : m_pManager->toolbar().address();
+    return d->m_filteredMgr ? QString() : m_pManager->toolbar().address();
 }
 
 #define CURRENT_TOOLBAR() ( \
@@ -289,7 +289,7 @@ static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb,
 /**
  * Handle a QDragMoveEvent event on a toolbar drop
  * @return the address of the bookmark to be dropped after/before
- *         else a QString::null if event should be ignored
+ *         else a QString() if event should be ignored
  * @param pos the current QDragMoveEvent position
  * @param the toolbar
  * @param actions the list of actions plugged into the bar
@@ -351,7 +351,7 @@ static QString handleToolbarDragMoveEvent(
     }
 
     if ( !b )
-        return QString::null; // TODO Make it works for that case
+        return QString(); // TODO Make it works for that case
 
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
@@ -469,7 +469,7 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
     else if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep(d);
-        d->m_dropAddress = QString::null;
+        d->m_dropAddress.clear();
     }
     else if ( e->type() == QEvent::Drop )
     {

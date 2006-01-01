@@ -121,7 +121,7 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
                       i18n( "Create New Bookmark Folder in %1" )
                       .arg( parentGroup().text() );
         txt = KInputDialog::getText( caption, i18n( "New folder:" ),
-                      QString::null, &ok );
+                      QString(), &ok );
         if ( !ok )
             return KBookmarkGroup();
     }
@@ -326,7 +326,7 @@ KBookmarkGroup KBookmark::toGroup() const
 QString KBookmark::address() const
 {
     if ( element.tagName() == "xbel" )
-        return ""; // not QString::null !
+        return ""; // not QString() !
     else
     {
         // Use keditbookmarks's DEBUG_ADDRESSES flag to debug this code :)
@@ -360,7 +360,7 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     return grp.first();
 }
 
-// For some strange reason QString("").left(0) returns QString::null;
+// For some strange reason QString("").left(0) returns QString();
 // That breaks commonParent()
 QString KBookmark::left(const QString & str, uint len)
 {
@@ -478,7 +478,7 @@ QString KBookmark::metaDataItem( const QString &key ) const
             return e.text();
         }
     }
-    return QString::null;
+    return QString();
 }
 
 void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode )

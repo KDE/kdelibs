@@ -84,7 +84,7 @@ public:
     KBookmark( ) {}
     KBookmark( QDomElement elem ) : element(elem) {}
 
-    static KBookmark standaloneBookmark( const QString & text, const KURL & url, const QString & icon = QString::null );
+    static KBookmark standaloneBookmark( const QString & text, const KURL & url, const QString & icon = QString() );
 
     /**
      * Whether the bookmark is a group or a normal bookmark
@@ -185,12 +185,12 @@ public:
 
     /**
      * @return address of previous sibling (e.g. /4/5/2 -> /4/5/1)
-     * Returns QString::null for a first child
+     * Returns QString() for a first child
      */
     static QString previousAddress( const QString & address )
     {
         uint pp = positionInParent(address);
-        return pp>0 ? parentAddress(address) + '/' + QString::number(pp-1) : QString::null;
+        return pp>0 ? parentAddress(address) + '/' + QString::number(pp-1) : QString();
     }
 
     /**
@@ -210,7 +210,7 @@ public:
     /**
      * Get the value of a specific metadata item.
      * @param key Name of the metadata item
-     * @return Value of the metadata item. QString::null is returned in case
+     * @return Value of the metadata item. QString() is returned in case
      * the specified key does not exist.
      * @since 3.4
      */
@@ -305,7 +305,7 @@ public:
      * @param text for the folder. If empty, the user will be queried for it.
      * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString::null, bool emitSignal = true );
+    KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString(), bool emitSignal = true );
     /**
      * Create a new bookmark separator
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
@@ -332,7 +332,7 @@ public:
      * will be determined from the URL if not specified.
      * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString::null, bool emitSignal = true );
+    KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString(), bool emitSignal = true );
 
     /**
      * Moves @p item after @p after (which should be a child of ours).
