@@ -148,8 +148,8 @@ public:
     void determineIcon( KFileListViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
 
-    virtual void readConfig( KConfig *, const QString& group = QString::null );
-    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+    virtual void readConfig( KConfig *, const QString& group = QString() );
+    virtual void writeConfig( KConfig *, const QString& group = QString());
 
 signals:
     /**

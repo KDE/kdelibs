@@ -41,14 +41,14 @@
 
 KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
         const char *name, bool modal )
-    :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
+    :   KDialogBase( Plain, QString(), Ok|Cancel|User1, Ok, parent, name,
                 modal, true, KStdGuiItem::clear() )
 {
   initDialog(i18n( "Location:" ), urlName);
 }
 
 KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal )
-    :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
+    :   KDialogBase( Plain, QString(), Ok|Cancel|User1, Ok, parent, name,
                 modal, true, KStdGuiItem::clear() )
 {
   initDialog(_text, urlName);

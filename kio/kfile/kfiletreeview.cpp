@@ -195,8 +195,8 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
     Q3ListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
 
-    //kdDebug(250) << " parent=" << (parent?parent->text(0):QString::null)
-    //             << " afterme=" << (afterme?afterme->text(0):QString::null) << endl;
+    //kdDebug(250) << " parent=" << (parent?parent->text(0):QString())
+    //             << " afterme=" << (afterme?afterme->text(0):QString()) << endl;
 
     if (e->source() == viewport() && itemsMovable())
         movableDropEvent(parent, afterme);

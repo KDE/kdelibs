@@ -219,12 +219,12 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     Q3Header *header = m_listview->header();
     d->header = header;
-    header->setLabel( COL_EXECUTE, pexec,    QString::null, w );
-    header->setLabel( COL_STDERR,  pstderr,  QString::null, w );
-    header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
-    header->setLabel( COL_LOGFILE, plogfile, QString::null, w );
-    header->setLabel( COL_SOUND,   psound,   QString::null, w );
-    header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
+    header->setLabel( COL_EXECUTE, pexec,    QString(), w );
+    header->setLabel( COL_STDERR,  pstderr,  QString(), w );
+    header->setLabel( COL_MESSAGE, pmessage, QString(), w );
+    header->setLabel( COL_LOGFILE, plogfile, QString(), w );
+    header->setLabel( COL_SOUND,   psound,   QString(), w );
+    header->setLabel( COL_TASKBAR, ptaskbar, QString(), w );
 
     header->installEventFilter( this );
     d->tips[COL_EXECUTE] = i18n("Execute a program");
@@ -831,7 +831,7 @@ QString KNotifyWidget::makeRelative( const QString& fullPath )
     slash = fullPath.lastIndexOf( '/', slash );
 
     if ( slash < 0 )
-        return QString::null;
+        return QString();
 
     return fullPath.mid( slash+1 );
 }

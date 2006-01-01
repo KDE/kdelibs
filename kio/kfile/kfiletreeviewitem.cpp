@@ -74,7 +74,7 @@ KURL KFileTreeViewItem::url() const
 
 QString KFileTreeViewItem::path()  const
 {
-    return m_kfileitem ? m_kfileitem->url().path() : QString::null;
+    return m_kfileitem ? m_kfileitem->url().path() : QString();
 }
 
 bool KFileTreeViewItem::isDir() const

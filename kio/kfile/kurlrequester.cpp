@@ -346,7 +346,7 @@ KFileDialog * KURLRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
         QWidget *p = parentWidget();
-        myFileDialog = new KFileDialog( QString::null, d->fileDialogFilter, p,
+        myFileDialog = new KFileDialog( QString(), d->fileDialogFilter, p,
                                         "file dialog", true );
 
         myFileDialog->setMode( d->fileDialogMode );
@@ -368,7 +368,7 @@ void KURLRequester::setShowLocalProtocol( bool b )
 
 void KURLRequester::clear()
 {
-    d->setText( QString::null );
+    d->setText( QString() );
 }
 
 KLineEdit * KURLRequester::lineEdit() const

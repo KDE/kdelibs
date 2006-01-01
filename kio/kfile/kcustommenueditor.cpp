@@ -122,7 +122,7 @@ void KCustomMenuEditor::refreshButton()
 void
 KCustomMenuEditor::load(KConfigBase *cfg)
 {
-   cfg->setGroup(QString::null);
+   cfg->setGroup(QString());
    int count = cfg->readEntry("NrOfItems", QVariant(0)).toInt();
    Q3ListViewItem *last = 0;
    for(int i = 0; i < count; i++)
@@ -158,7 +158,7 @@ KCustomMenuEditor::save(KConfigBase *cfg)
       cfg->deleteGroup(*it);
    }
 
-   cfg->setGroup(QString::null);
+   cfg->setGroup(QString());
    Item * item = (Item *) m_listView->firstChild();
    int i = 0;
    while(item)

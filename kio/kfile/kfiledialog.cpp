@@ -166,14 +166,14 @@ static KStaticDeleter<KURL> ldd;
 
 KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                          QWidget *parent, const char* name, bool modal)
-    : KDialogBase( parent, name, modal, QString::null, 0 )
+    : KDialogBase( parent, name, modal, QString(), 0 )
 {
     init( startDir, filter, 0 );
 }
 
 KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                          QWidget *parent, const char* name, bool modal, QWidget* widget)
-    : KDialogBase( parent, name, modal, QString::null, 0 )
+    : KDialogBase( parent, name, modal, QString(), 0 )
 {
     init( startDir, filter, widget );
 }
@@ -254,7 +254,7 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
 void KFileDialog::clearFilter()
 {
     d->mimetypes.clear();
-    filterWidget->setFilter( QString::null );
+    filterWidget->setFilter( QString() );
     ops->clearFilter();
     d->hasDefaultFilter = false;
     filterWidget->setEditable( true );
@@ -270,7 +270,7 @@ QString KFileDialog::currentMimeFilter() const
 
     if ((i >= 0) && (i < (int) d->mimetypes.count()))
         return d->mimetypes[i];
-    return QString::null; // The "all types" item has no mimetype
+    return QString(); // The "all types" item has no mimetype
 }
 
 KMimeType::Ptr KFileDialog::currentFilterMimeType()
@@ -359,7 +359,7 @@ void KFileDialog::slotOk()
          !(items->isEmpty() && !dirOnly) ) {
 
         d->urlList.clear();
-        d->filenames = QString::null;
+        d->filenames.clear();
 
         if ( dirOnly ) {
             d->url = ops->url();
@@ -440,7 +440,7 @@ void KFileDialog::slotOk()
             if ( locationEdit->currentText().trimmed().isEmpty() ) {
                 QFileInfo info( d->url.path() );
                 if ( info.isDir() ) {
-                    d->filenames = QString::null;
+                    d->filenames.clear();
                     d->urlList.clear();
                     d->urlList.append( d->url );
                     accept();
@@ -469,7 +469,7 @@ void KFileDialog::slotOk()
                         if ( QFile::exists( fullURL.path() ) )
                         {
                             d->url = fullURL;
-                            d->filenames = QString::null;
+                            d->filenames.clear();
                             d->urlList.clear();
                             accept();
                             return;
@@ -486,7 +486,7 @@ void KFileDialog::slotOk()
         }
         else { // FIXME: remote directory, should we allow that?
 //             qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
-            d->filenames = QString::null;
+            d->filenames.clear();
             d->urlList.clear();
             d->urlList.append( d->url );
 
@@ -571,7 +571,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     {
         if ( ops->dirOnlyMode() )
         {
-            d->filenames = QString::null;
+            d->filenames.clear();
             d->urlList.clear();
             accept();
         }
@@ -606,7 +606,7 @@ void KFileDialog::accept()
        KRecentDirs::add(d->fileClass, ops->url().url());
 
     // clear the topmost item, we insert it as full path later on as item 1
-    locationEdit->changeItem( QString::null, 0 );
+    locationEdit->changeItem( QString(), 0 );
 
     KURL::List list = selectedURLs();
     QList<KURL>::const_iterator it = list.begin();
@@ -1107,7 +1107,7 @@ void KFileDialog::slotFilterChanged()
 
 void KFileDialog::setURL(const KURL& url, bool clearforward)
 {
-    d->selection = QString::null;
+    d->selection.clear();
     ops->setURL( url, clearforward);
 }
 
@@ -1115,7 +1115,7 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 void KFileDialog::urlEntered(const KURL& url)
 {
     QString filename = locationEdit->currentText();
-    d->selection = QString::null;
+    d->selection.clear();
 
     if ( d->pathCombo->count() != 0 ) { // little hack
         d->pathCombo->setURL( url );
@@ -1163,7 +1163,7 @@ void KFileDialog::setSelection(const QString& url)
     kdDebug(kfile_area) << "setSelection " << url << endl;
 
     if (url.isEmpty()) {
-        d->selection = QString::null;
+        d->selection.clear();
         return;
     }
 
@@ -1193,8 +1193,8 @@ void KFileDialog::setSelection(const QString& url)
         if (sep >= 0) { // there is a / in it
             if ( KProtocolInfo::supportsListing( u )) {
                 KURL dir(u);
-                dir.setQuery( QString::null );
-                dir.setFileName( QString::null );
+                dir.setQuery( QString() );
+                dir.setFileName( QString() );
                 setURL(dir, true );
             }
 
@@ -1348,7 +1348,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
     if ( url.isValid() )
         return url.path();
 
-    return QString::null;
+    return QString();
 #endif
 }
 
@@ -1418,7 +1418,7 @@ KURL::List& KFileDialog::parseSelectedURLs() const
     else
         d->urlList = tokenize( d->filenames );
 
-    d->filenames = QString::null; // indicate that we parsed that one
+    d->filenames.clear(); // indicate that we parsed that one
 
     return d->urlList;
 }
@@ -1483,7 +1483,7 @@ QString KFileDialog::selectedFile() const
                                i18n("Remote Files Not Accepted") );
        }
     }
-    return QString::null;
+    return QString();
 }
 
 QStringList KFileDialog::selectedFiles() const
@@ -1520,7 +1520,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      const QString& caption)
 {
     bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
-    KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    KFileDialog dlg( specialDir ? dir : QString(), filter, parent, "filedialog", true);
     if ( !specialDir )
         dlg.setSelection( dir ); // may also be a filename
 
@@ -1543,7 +1543,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
 {
     bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     QWidget* parent = QWidget::find( parent_id );
-    KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    KFileDialog dlg( specialDir ? dir : QString(), filter, parent, "filedialog", true);
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
         XSetTransientForHint(QX11Info::display(), dlg.winId(), parent_id);
@@ -1571,7 +1571,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
     bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
-    KFileDialog dlg(specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    KFileDialog dlg(specialDir ? dir : QString(), filter, parent, "filedialog", true);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
@@ -1705,7 +1705,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
                                                  DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
                            KURLComboBox::RemoveBottom );
-    locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
+    locationEdit->insertItem( QString(), 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
 
     kc->setGroup( oldGroup );
@@ -1851,7 +1851,7 @@ void KFileDialog::updateAutoSelectExtension (void)
 
     kdDebug (kfile_area) << "Figure out an extension: " << endl;
     QString lastExtension = d->extension;
-    d->extension = QString::null;
+    d->extension.clear();
 
     // Automatically Select Extension is only valid if the user is _saving_ a _file_
     if ((operationMode () == Saving) && (mode () & KFile::File))
@@ -2231,7 +2231,7 @@ KURL KFileDialog::getStartURL( const QString& startDir,
 {
     initStatic();
 
-    recentDirClass = QString::null;
+    recentDirClass.clear();
     KURL ret;
 
     bool useDefaultStartDir = startDir.isEmpty();

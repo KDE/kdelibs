@@ -280,18 +280,18 @@ public:
 
   /**
    * If the dialog is being built from a template, this method
-   * returns the current directory. If no template, it returns QString::null.
+   * returns the current directory. If no template, it returns QString().
    * See the template form of the constructor.
    *
-   * @return the current directory or QString::null
+   * @return the current directory or QString()
    */
   const KURL& currentDir() const { return m_currentDir; }
 
   /**
    * If the dialog is being built from a template, this method
-   * returns the default name. If no template, it returns QString::null.
+   * returns the default name. If no template, it returns QString().
    * See the template form of the constructor.
-   * @return the default name or QString::null
+   * @return the default name or QString()
    */
   const QString& defaultName() const { return m_defaultName; }
 

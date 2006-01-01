@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getExistingDirectory();
 
     else if (argv1 == QLatin1String("heap")) {
-	KFileDialog *dlg = new KFileDialog( startDir, QString::null, 0L,
+	KFileDialog *dlg = new KFileDialog( startDir, QString(), 0L,
 					    "file dialog", true );
 	dlg->setMode( KFile::File);
     dlg->setOperationMode( KFileDialog::Saving );
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     else if (argv1 == QLatin1String("save")) {
         KURL u = KFileDialog::getSaveURL();
 //        QString(QDir::homePath() + QLatin1String("/testfile")),
-//        QString::null, 0L);
+//        QString(), 0L);
         name1 = u.url();
     }
 

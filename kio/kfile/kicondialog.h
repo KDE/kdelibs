@@ -168,7 +168,7 @@ public:
 
     /**
      * exec()utes this modal dialog and returns the name of the selected icon,
-     * or QString::null if the dialog was aborted.
+     * or QString() if the dialog was aborted.
      * @returns the name of the icon, suitable for loading with KIconLoader.
      * @see getIcon
      */
@@ -176,7 +176,7 @@ public:
 
     /**
      * show()es this dialog and emits a newIcon(const QString&) signal when
-     * successful. QString::null will be emitted if the dialog was aborted.
+     * successful. QString() will be emitted if the dialog was aborted.
      */
     void showDialog();
 
@@ -203,7 +203,7 @@ public:
                            KIcon::Context context=KIcon::Application,
                            bool strictIconSize=false, int iconSize = 0,
                            bool user=false, QWidget *parent=0,
-                           const QString &caption=QString::null);
+                           const QString &caption=QString());
 
 signals:
     void newIconName(const QString&);

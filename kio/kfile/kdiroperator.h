@@ -439,7 +439,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see setViewConfig
      * @see writeConfig
      */
-    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void readConfig( KConfig *, const QString& group = QString() );
 
     /**
      * Saves the current settings like sorting, simple or detailed view.
@@ -447,7 +447,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see readConfig
      * @see setViewConfig
      */
-    virtual void writeConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString() );
 
 
     /**

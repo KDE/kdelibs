@@ -149,7 +149,7 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
 
-    addDesktopGroup( QString::null );
+    addDesktopGroup( QString() );
     cleanupTree();
 
     connect( this, SIGNAL( currentChanged(Q3ListViewItem*) ),
@@ -366,8 +366,8 @@ KOpenWithDlg::KOpenWithDlg( QWidget *parent)
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>");
-  qServiceType = QString::null;
-  init( text, QString::null );
+  qServiceType.clear();
+  init( text, QString() );
 }
 
 void KOpenWithDlg::setServiceType( const KURL::List& _urls )
@@ -376,10 +376,10 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
   {
     qServiceType = KMimeType::findByURL( _urls.first())->name();
     if (qServiceType == QString::fromLatin1("application/octet-stream"))
-      qServiceType = QString::null;
+      qServiceType.clear();
   }
   else
-      qServiceType = QString::null;
+      qServiceType.clear();
 }
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
@@ -534,7 +534,7 @@ KOpenWithDlg::~KOpenWithDlg()
 
 void KOpenWithDlg::slotClear()
 {
-    edit->setURL(QString::null);
+    edit->setURL(QString());
     edit->setFocus();
 }
 
@@ -688,7 +688,7 @@ void KOpenWithDlg::slotOK()
   if (!bRemember && !d->saveNewApps)
   {
     // Create temp service
-    m_pService = new KService(initialServiceName, fullExec, QString::null);
+    m_pService = new KService(initialServiceName, fullExec, QString());
     if (terminal->isChecked())
     {
       m_pService->setTerminal(true);

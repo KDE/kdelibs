@@ -43,7 +43,7 @@ public:
     /**
      * Constructs a KURLRequesterDlg.
      *
-     * @param url    The url of the directory to start in. Use QString::null
+     * @param url    The url of the directory to start in. Use QString()
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
      * @param parent The parent object of this widget.
@@ -57,7 +57,7 @@ public:
     /**
      * Constructs a KURLRequesterDlg.
      *
-     * @param url    The url of the directory to start in. Use QString::null
+     * @param url    The url of the directory to start in. Use QString()
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
      * @param text   Text of the label
@@ -85,8 +85,8 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The caption to use for the dialog.
      */
-    static KURL getURL(const QString& url = QString::null,
-            QWidget *parent= 0, const QString& caption = QString::null);
+    static KURL getURL(const QString& url = QString(),
+            QWidget *parent= 0, const QString& caption = QString());
 
     /**
      * Returns a pointer to the file dialog used by the KURLRequester.

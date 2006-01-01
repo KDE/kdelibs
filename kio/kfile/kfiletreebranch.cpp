@@ -123,7 +123,7 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
     KURL url = item->url();
     // kdDebug(250) << "Item's url is " << url.prettyURL() << endl;
     KURL dirUrl( url );
-    dirUrl.setFileName( QString::null );
+    dirUrl.setFileName( QString() );
     // kdDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
 
     parent  = findTVIByURL( dirUrl );

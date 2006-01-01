@@ -715,7 +715,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
 
   // Those things only apply to 'single file' mode
-  QString filename = QString::null;
+  QString filename= QString();
   bool isTrash = false;
   bool isDevice = false;
   m_bFromTemplate = false;
@@ -804,15 +804,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       if ( KMimeType::iconNameForURL(url, mode) != iconStr )
         iconStr = "kmultiple";
       if ( url.directory() != directory )
-        directory = QString::null;
+        directory.clear();
       if ( url.protocol() != protocol )
-        protocol = QString::null;
+        protocol.clear();
       if ( !mimeComment.isNull() && (*it)->mimeComment() != mimeComment )
-        mimeComment = QString::null;
+        mimeComment.clear();
       if ( isLocal && !magicMimeComment.isNull() ) {
           KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
           if ( magicMimeType->comment() != magicMimeComment )
-              magicMimeComment = QString::null;
+              magicMimeComment.clear();
       }
 
       if ( isLocal && url.path() == QString::fromLatin1("/") )
@@ -1141,7 +1141,7 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
     {
        m_sRelativePath =KGlobal::dirs()->relativeLocation("mime", path);
        if (m_sRelativePath.startsWith("/"))
-          m_sRelativePath = QString::null;
+          m_sRelativePath.clear();
     }
     else
     {
@@ -1150,7 +1150,7 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
        {
           m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
           if (m_sRelativePath.startsWith("/"))
-             m_sRelativePath = QString::null;
+             m_sRelativePath.clear();
           else
              m_sRelativePath = path;
        }
@@ -1552,9 +1552,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         d->partialPermissions |= (*it)->permissions();
       }
       if ( (*it)->user() != strOwner )
-        strOwner = QString::null;
+        strOwner.clear();
       if ( (*it)->group() != strGroup )
-        strGroup = QString::null;
+        strGroup.clear();
     }
   }
 
@@ -2395,10 +2395,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
     group = grpCombo->currentText();
 
   if (owner == strOwner)
-      owner = QString::null; // no change
+      owner.clear(); // no change
 
   if (group == strGroup)
-      group = QString::null;
+      group.clear();
 
   bool recursive = d->cbRecursive && d->cbRecursive->isChecked();
   bool permissionChange = false;
@@ -2942,7 +2942,7 @@ void KDevicePropsPlugin::slotDeviceChanged()
   if ( index != -1 )
     mountpoint->setText( d->mountpointlist[index] );
   else
-    mountpoint->setText( QString::null );
+    mountpoint->setText( QString() );
 
   updateInfo();
 }
@@ -3146,7 +3146,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
                   i18n("Add File Type for %1").arg(properties->kurl().fileName()),
                   KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
 
-  KGuiItem okItem(i18n("&Add"), QString::null /* no icon */,
+  KGuiItem okItem(i18n("&Add"), QString() /* no icon */,
                   i18n("Add the selected file types to\nthe list of supported file types."),
                   i18n("Add the selected file types to\nthe list of supported file types."));
   dlg.setButtonOK(okItem);
@@ -3255,7 +3255,7 @@ void KDesktopPropsPlugin::checkCommandChanged()
       KRun::binaryName(m_origCommandStr, true))
   {
     QString m_origCommandStr = w->commandEdit->text();
-    m_dcopServiceType= QString::null; // Reset
+    m_dcopServiceType.clear(); // Reset
   }
 }
 
@@ -3333,8 +3333,8 @@ void KDesktopPropsPlugin::applyChanges()
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
-  KURL f = KFileDialog::getOpenURL( QString::null,
-                                      QString::null, w );
+  KURL f = KFileDialog::getOpenURL( QString(),
+                                      QString(), w );
   if ( f.isEmpty() )
     return;
 
@@ -3788,8 +3788,8 @@ void KExecPropsPlugin::applyChanges()
 
 void KExecPropsPlugin::slotBrowseExec()
 {
-    KURL f = KFileDialog::getOpenURL( QString::null,
-                                      QString::null, d->m_frame );
+    KURL f = KFileDialog::getOpenURL( QString(),
+                                      QString(), d->m_frame );
     if ( f.isEmpty() )
         return;
 
@@ -3828,7 +3828,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   QIcon iconSet;
   QPixmap pixMap;
 
-  addExtensionButton = new QPushButton( QString::null, d->m_frame );
+  addExtensionButton = new QPushButton( QString(), d->m_frame );
   iconSet = SmallIconSet( "back" );
   addExtensionButton->setIcon( iconSet );
   pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
@@ -3836,7 +3836,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   connect( addExtensionButton, SIGNAL( clicked() ),
             SLOT( slotAddExtension() ) );
 
-  delExtensionButton = new QPushButton( QString::null, d->m_frame );
+  delExtensionButton = new QPushButton( QString(), d->m_frame );
   iconSet = SmallIconSet( "forward" );
   delExtensionButton->setIcon( iconSet );
   delExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
@@ -4028,7 +4028,7 @@ void KApplicationPropsPlugin::applyChanges()
   config.writeEntry( "ServiceTypes", "" );
   // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
 
-  QString nameStr = nameEdit ? nameEdit->text() : QString::null;
+  QString nameStr = nameEdit ? nameEdit->text() : QString();
   if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
     nameStr = nameFromFileName(properties->kurl().fileName());
 

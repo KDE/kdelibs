@@ -57,8 +57,8 @@ public:
      * @since 3.2
      */
     KURLBarItem( KURLBar *parent, const KURL& url, bool persistent,
-                 const QString& description = QString::null,
-                 const QString& icon = QString::null,
+                 const QString& description = QString(),
+                 const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
 
     /**
@@ -74,8 +74,8 @@ public:
      * dynamic item, that is not saved with KURLBar::writeConfig().
      */
     KURLBarItem( KURLBar *parent, const KURL& url,
-                 const QString& description = QString::null,
-                 const QString& icon = QString::null,
+                 const QString& description = QString(),
+                 const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
 
     /**
@@ -257,7 +257,7 @@ public:
     virtual KURLBarItem * insertItem( const KURL& url,
                                       const QString& description,
                                       bool applicationLocal = true,
-                                      const QString& icon = QString::null,
+                                      const QString& icon = QString(),
                                       KIcon::Group group = KIcon::Panel );
     /**
      * Inserts a new dynamic item into the KURLBar and returns the created
@@ -271,7 +271,7 @@ public:
      */
     virtual KURLBarItem * insertDynamicItem( const KURL& url,
                                              const QString& description,
-                                             const QString& icon = QString::null,
+                                             const QString& icon = QString(),
                                              KIcon::Group group = KIcon::Panel );
     /**
      * The items can be arranged either vertically in one column or

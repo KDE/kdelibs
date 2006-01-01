@@ -200,7 +200,7 @@ void KIconCanvas::slotLoadFiles()
 QString KIconCanvas::getCurrent() const
 {
     if (!currentItem())
-	return QString::null;
+	return QString();
     return currentItem()->key();
 }
 
@@ -211,7 +211,7 @@ void KIconCanvas::stopLoading()
 
 void KIconCanvas::slotCurrentChanged(Q3IconViewItem *item)
 {
-    emit nameChanged((item != 0L) ? item->text() : QString::null);
+    emit nameChanged((item != 0L) ? item->text() : QString());
 }
 
 class KIconDialog::KIconDialogPrivate
@@ -346,7 +346,7 @@ KIconDialog::~KIconDialog()
 
 void KIconDialog::slotAcceptIcons()
 {
-  d->custom=QString::null;
+  d->custom.clear();
   slotOk();
 }
 
@@ -465,7 +465,7 @@ QString KIconDialog::openDialog()
 	QFileInfo fi(name);
 	return fi.baseName();
     }
-    return QString::null;
+    return QString();
 }
 
 void KIconDialog::showDialog()
@@ -538,7 +538,7 @@ void KIconDialog::slotButtonClicked(int id)
             // Create a file dialog to select a PNG, XPM or SVG file,
             // with the image previewer shown.
             // KFileDialog::getImageOpenURL doesn't allow svg.
-            KFileDialog dlg(QString::null, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
+            KFileDialog dlg(QString(), i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
                             this, "filedialog", true);
             dlg.setOperationMode( KFileDialog::Opening );
             dlg.setCaption( i18n("Open") );
@@ -684,7 +684,7 @@ void KIconButton::setIcon(const QString& icon)
 
 void KIconButton::resetIcon()
 {
-    mIcon = QString::null;
+    mIcon.clear();
     setIcon(QIcon());
 }
 

@@ -143,7 +143,7 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultURL( const KURL& url, const QString& text = QString::null );
+    void addDefaultURL( const KURL& url, const QString& text = QString() );
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
@@ -154,7 +154,7 @@ public:
      * Default URLs will be inserted into the combobox by setDefaults()
      */
     void addDefaultURL( const KURL& url, const QIcon& icon,
-			const QString& text = QString::null );
+			const QString& text = QString() );
 
     /**
      * Clears all items and inserts the default urls into the combo. Will be

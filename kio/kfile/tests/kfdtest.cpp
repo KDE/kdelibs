@@ -15,7 +15,7 @@ KFDTest::KFDTest( const QString& startDir, QObject *parent, const char *name )
 
 void KFDTest::doit()
 {
-    KFileDialog *dlg = new KFileDialog( m_startDir, QString::null, 0L,
+    KFileDialog *dlg = new KFileDialog( m_startDir, QString(), 0L,
                                         "file dialog", true );
     dlg->setMode( KFile::File);
     dlg->setOperationMode( KFileDialog::Saving );

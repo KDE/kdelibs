@@ -219,7 +219,7 @@ void KDirOperator::insertViewDependentActions()
 
          // first insert the normal actions, then the grouped ones
          QStringList groups = viewActionCollection->groups();
-         groups.prepend( QString::null ); // actions without group
+         groups.prepend( QString() ); // actions without group
          QStringList::ConstIterator git = groups.begin();
          KActionPtrList list;
          KAction *sep = actionCollection()->action("separator");
@@ -598,7 +598,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
         ASSERT(position >= 0); // we already inserted the current dir in case
         QString filename = text.mid(position + 1, text.length());
         if (filename != selection)
-            selection = QString::null;
+            selection = QString();
     }
 
     KURL u(text); // I have to take care of entered URLs
@@ -778,7 +778,7 @@ void KDirOperator::home()
 
 void KDirOperator::clearFilter()
 {
-    dir->setNameFilter( QString::null );
+    dir->setNameFilter( QString() );
     dir->clearMimeFilter();
     checkPreviewSupport();
 }
@@ -1198,7 +1198,7 @@ QString KDirOperator::makeCompletion(const QString& string)
 {
     if ( string.isEmpty() ) {
         m_fileView->clearSelection();
-        return QString::null;
+        return QString();
     }
 
     prepareCompletionObjects();
@@ -1209,7 +1209,7 @@ QString KDirOperator::makeDirCompletion(const QString& string)
 {
     if ( string.isEmpty() ) {
         m_fileView->clearSelection();
-        return QString::null;
+        return QString();
     }
 
     prepareCompletionObjects();

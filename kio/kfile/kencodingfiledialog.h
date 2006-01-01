@@ -53,7 +53,7 @@ public:
       *
       * @param startDir This can either be
       *         @li The URL of the directory to start in.
-      *         @li QString::null to start in the current working
+      *         @li QString() to start in the current working
       *		    directory, or the last directory where a file has been
       *		    selected.
       *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -64,7 +64,7 @@ public:
       *             same keyword.
       *
       * @param encoding The encoding shown in the encoding combo. If it's
-      *		    QString::null, the global default encoding will be shown.
+      *		    QString(), the global default encoding will be shown.
       *
       * @param filter This is a space separated list of shell globs.
       *             You can set the text to be displayed for the glob, and
@@ -82,10 +82,10 @@ public:
       *
       * @since 3.2
       */
-    KEncodingFileDialog (const QString& startDir = QString::null,
-                    const QString& encoding = QString::null,
-		    const QString& filter = QString::null,
-		    const QString& caption = QString::null, KFileDialog::OperationMode type = KFileDialog::Opening,
+    KEncodingFileDialog (const QString& startDir = QString(),
+                    const QString& encoding = QString(),
+		    const QString& filter = QString(),
+		    const QString& caption = QString(), KFileDialog::OperationMode type = KFileDialog::Opening,
                     QWidget *parent= 0, const char *name="", bool modal = true);
     /**
      * Destructs the file dialog.
@@ -94,7 +94,7 @@ public:
 
 
     /**
-    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString::null.
+    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString().
     */
     QString selectedEncoding() const;
 
@@ -109,7 +109,7 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -126,11 +126,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenFileNameAndEncoding(const QString& encoding=QString::null,
-   				   const QString& startDir= QString::null,
-				   const QString& filter= QString::null,
+    static Result getOpenFileNameAndEncoding(const QString& encoding=QString(),
+   				   const QString& startDir= QString(),
+				   const QString& filter= QString(),
 				   QWidget *parent= 0,
-				   const QString& caption = QString::null);
+				   const QString& caption = QString());
 
     /**
      * Creates a modal file dialog and returns the selected encoding and the selected
@@ -141,7 +141,7 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -158,11 +158,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenFileNamesAndEncoding(const QString& encoding=QString::null,
-					const QString& startDir= QString::null,
-					const QString& filter= QString::null,
+    static Result getOpenFileNamesAndEncoding(const QString& encoding=QString(),
+					const QString& startDir= QString(),
+					const QString& filter= QString(),
 					QWidget *parent = 0,
-					const QString& caption= QString::null);
+					const QString& caption= QString());
 
     /**
      * Creates a modal file dialog and returns the selected encoding and
@@ -173,7 +173,7 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -190,11 +190,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenURLAndEncoding(const QString& encoding=QString::null,
-			   const QString& startDir = QString::null,
-			   const QString& filter= QString::null,
+    static Result getOpenURLAndEncoding(const QString& encoding=QString(),
+			   const QString& startDir = QString(),
+			   const QString& filter= QString(),
 			   QWidget *parent= 0,
-			   const QString& caption = QString::null);
+			   const QString& caption = QString());
 
 
 
@@ -208,7 +208,7 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -225,11 +225,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenURLsAndEncoding(const QString& encoding=QString::null,
-				  const QString& startDir= QString::null,
-				  const QString& filter= QString::null,
+    static Result getOpenURLsAndEncoding(const QString& encoding=QString(),
+				  const QString& startDir= QString(),
+				  const QString& filter= QString(),
 				  QWidget *parent = 0,
-				  const QString& caption= QString::null);
+				  const QString& caption= QString());
 
 
 
@@ -244,7 +244,7 @@ public:
      *         @li The URL of the directory to start in.
      *         @li a relative path or a filename determining the
      *             directory to start in and the file to be selected.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -261,11 +261,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getSaveFileNameAndEncoding(const QString& encoding=QString::null,
-				   const QString& startDir=QString::null,
-				   const QString& filter= QString::null,
+    static Result getSaveFileNameAndEncoding(const QString& encoding=QString(),
+				   const QString& startDir=QString(),
+				   const QString& filter= QString(),
 				   QWidget *parent= 0,
-				   const QString& caption = QString::null);
+				   const QString& caption = QString());
 
 
     /**
@@ -279,7 +279,7 @@ public:
      *         @li The URL of the directory to start in.
      *         @li a relative path or a filename determining the
      *             directory to start in and the file to be selected.
-     *         @li QString::null to start in the current working
+     *         @li QString() to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
      *         @li ':&lt;keyword&gt;' to start in the directory last used
@@ -296,11 +296,11 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getSaveURLAndEncoding(const QString& encoding=QString::null,
-			   const QString& startDir= QString::null,
-			   const QString& filter= QString::null,
+    static Result getSaveURLAndEncoding(const QString& encoding=QString(),
+			   const QString& startDir= QString(),
+			   const QString& filter= QString(),
 			   QWidget *parent= 0,
-			   const QString& caption = QString::null);
+			   const QString& caption = QString());
 
 
 

@@ -138,8 +138,8 @@ public:
 
     virtual void setSorting(QDir::SortSpec sort);
 
-    virtual void readConfig( KConfig *, const QString& group = QString::null );
-    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+    virtual void readConfig( KConfig *, const QString& group = QString() );
+    virtual void writeConfig( KConfig *, const QString& group = QString());
 
     // for KMimeTypeResolver
     void mimeTypeDeterminationFinished();

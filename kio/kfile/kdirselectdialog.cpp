@@ -342,7 +342,7 @@ void KDirSelectDialog::slotCurrentChanged()
             d->urlCombo->setEditText( u.prettyURL() );
     }
     else
-        d->urlCombo->setEditText( QString::null );
+        d->urlCombo->setEditText( QString() );
 }
 
 void KDirSelectDialog::slotURLActivated( const QString& text )

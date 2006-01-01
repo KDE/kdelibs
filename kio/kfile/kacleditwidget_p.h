@@ -169,7 +169,7 @@ public:
     KACLListViewItem( Q3ListView* parent, KACLListView::EntryType type,
                       unsigned short value,
                       bool defaultEntry,
-                      const QString& qualifier = QString::null );
+                      const QString& qualifier = QString() );
     virtual ~KACLListViewItem();
     virtual QString key( int column, bool ascending ) const;
 

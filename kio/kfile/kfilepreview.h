@@ -83,8 +83,8 @@ public:
 
     virtual void setSorting( QDir::SortSpec sort );
 
-    virtual void readConfig( KConfig *, const QString& group = QString::null );
-    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+    virtual void readConfig( KConfig *, const QString& group = QString() );
+    virtual void writeConfig( KConfig *, const QString& group = QString());
 
     /**
      * This overrides KFileView::actionCollection() by returning
