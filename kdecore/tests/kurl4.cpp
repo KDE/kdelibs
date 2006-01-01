@@ -389,7 +389,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
             if ( _u.isLocalFile() )
                 rUrl.remove(0, 2);
         }
-        strPath = QString();
+        strPath.clear();
     }
     else if ( rUrl[0] != '?' )
     {
@@ -603,7 +603,7 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
   decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
   // Throw away encoding for local files, makes file-operations faster.
   if (m_strProtocol == fileProt)
-     m_strPath_encoded = QString();
+     m_strPath_encoded.clear();
 
   if ( m_iUriMode == Auto )
     m_iUriMode = URL;
@@ -956,7 +956,7 @@ void KURL::addPath( const QString& _txt )
      return;
   }
 
-  //m_strPath_encoded = QString();
+  //m_strPath_encoded.clear();
 
   if ( _txt.isEmpty() )
     return;
@@ -1032,7 +1032,7 @@ bool KURL::cd( const QString& _dir )
   // absolute path ?
   if ( _dir[0] == QLatin1Char('/') )
   {
-    //m_strPath_encoded = QString();
+    //m_strPath_encoded.clear();
     setPath( _dir );
     setHTMLRef( QString() );
     setEncodedQuery( QByteArray() );
@@ -1042,7 +1042,7 @@ bool KURL::cd( const QString& _dir )
   // Users home directory on the local disk ?
   if ( ( _dir[0] == '~' ) && ( scheme() == fileProt ))
   {
-    //m_strPath_encoded = QString();
+    //m_strPath_encoded.clear();
     QString strPath = QDir::homePath();
     strPath += QLatin1Char('/');
     strPath += _dir.right( strPath.length() - 1 );
@@ -1397,7 +1397,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
       QString name = (*it);
       if ( options & CaseInsensitiveKeys )
 	name = name.toLower();
-      result.insert( name, QString::null );
+      result.insert( name, QString() );
     }
   }
 
@@ -1409,7 +1409,7 @@ QString KURL::queryItem( const QString& _item ) const
   const QString strQueryEncoded = encodedQuery();
   const QString item = _item + '=';
   if ( strQueryEncoded.length() <= 1 )
-    return QString::null;
+    return QString();
 
   const QStringList items = strQueryEncoded.split( '&', QString::SkipEmptyParts );
   const int _len = item.length();

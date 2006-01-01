@@ -447,9 +447,9 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 {
     kdDebug(125) << "KAcceleratorManager::manage\n";
-    KAcceleratorManagerPrivate::changed_string = QString::null;
-    KAcceleratorManagerPrivate::added_string = QString::null;
-    KAcceleratorManagerPrivate::removed_string = QString::null;
+    KAcceleratorManagerPrivate::changed_string.clear();
+    KAcceleratorManagerPrivate::added_string.clear();
+    KAcceleratorManagerPrivate::removed_string.clear();
     KAcceleratorManagerPrivate::programmers_mode = programmers_mode;
     KAcceleratorManagerPrivate::manage(widget);
 }

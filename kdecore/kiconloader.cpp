@@ -513,7 +513,7 @@ inline QString KIconLoader::unknownIconPath( int size ) const
     {
         kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
                      << size << endl;
-        return QString::null;
+        return QString();
     }
     return icon.path;
 }
@@ -524,7 +524,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 			      bool canReturnNull) const
 {
     if (d->mpThemeRoot == 0L)
-	return QString::null;
+	return QString();
 
     if (!QDir::isRelativePath(_name))
 	return _name;
@@ -565,7 +565,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     if (_name.isEmpty()) {
         if (canReturnNull)
-            return QString::null;
+            return QString();
         else
             return unknownIconPath(size);
     }
@@ -580,7 +580,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	    return path;
 
 	if (canReturnNull)
-	    return QString::null;
+	    return QString();
         else
             return unknownIconPath(size);
     }
@@ -932,7 +932,7 @@ QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size
 
 QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size) const
 {
-    if (!d->mpGroups) return QString::null;
+    if (!d->mpGroups) return QString();
 
     if ( (group < -1 || group >= KIcon::LastGroup) && group != KIcon::User )
     {
@@ -974,7 +974,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 	    }
 	}
 	
-	file = icon.isValid() ? icon.path : QString::null;
+	file = icon.isValid() ? icon.path : QString();
     }
     return file;
 }
@@ -1006,7 +1006,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIcon::Group group, i
 	if (size == 0)
 	    size = d->mpGroups[group].size;
 	KIcon icon = findMatchingIcon(file, size);
-	file = icon.isValid() ? icon.path : QString::null;
+	file = icon.isValid() ? icon.path : QString();
 
     }
     if (file.isEmpty())

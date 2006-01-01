@@ -50,7 +50,7 @@ int KRandom::random()
 
 QString KRandom::randomString(int length)
 {
-   if (length <=0 ) return QString::null;
+   if (length <=0 ) return QString();
 
    QString str; str.resize( length );
    int i = 0;

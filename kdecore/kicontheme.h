@@ -185,7 +185,7 @@ public:
      * @param appName the name of the application. Can be null. This argument
      *        allows applications to have themed application icons.
      */
-    KIconTheme(const QString& name, const QString& appName=QString::null);
+    KIconTheme(const QString& name, const QString& appName=QString());
     ~KIconTheme();
 
     /**
@@ -196,7 +196,7 @@ public:
 
     /**
      * A description for the icon theme.
-     * @return a human-readable description of the theme, QString::null
+     * @return a human-readable description of the theme, QString()
      *         if there is none
      */
     QString description() const { return mDesc; }
@@ -204,13 +204,13 @@ public:
     /**
      * Return the name of the "example" icon. This can be used to
      * present the theme to the user.
-     * @return the name of the example icon, QString::null if there is none
+     * @return the name of the example icon, QString() if there is none
      */
     QString example() const;
 
     /**
      * Return the name of the screenshot.
-     * @return the name of the screenshot, QString::null if there is none
+     * @return the name of the screenshot, QString() if there is none
      */
     QString screenshot() const;
 

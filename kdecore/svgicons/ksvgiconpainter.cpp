@@ -749,7 +749,7 @@ void KSVGIconPainter::setStrokeColor(const QString &stroke)
         d->helper->m_strokeColor = parseColor(stroke);
 
         d->helper->m_useStrokeGradient = false;
-        d->helper->m_strokeGradientReference = QString::null;
+        d->helper->m_strokeGradientReference.clear();
 
         if(stroke.trimmed().toLower() != "none")
             setUseStroke(true);
@@ -777,7 +777,7 @@ void KSVGIconPainter::setFillColor(const QString &fill)
         d->helper->m_fillColor = parseColor(fill);
 
         d->helper->m_useFillGradient = false;
-        d->helper->m_fillGradientReference = QString::null;
+        d->helper->m_fillGradientReference.clear();
 
         if(fill.trimmed().toLower() != "none")
             setUseFill(true);

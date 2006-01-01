@@ -122,7 +122,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   if (result == 0)
      return KLockFile::LockFail;
   
-  KTempFile uniqueFile(lockFile, QString::null, 0644);
+  KTempFile uniqueFile(lockFile, QString(), 0644);
   uniqueFile.setAutoDelete(true);
   if (uniqueFile.status() != 0)
      return KLockFile::LockError;
@@ -319,8 +319,8 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            d->staleTimer.start();
 
            d->pid = -1;
-           d->hostname = QString::null;
-           d->instance = QString::null;
+           d->hostname.clear();
+           d->instance.clear();
         
            QFile file(d->file);
            if (file.open(QIODevice::ReadOnly))

@@ -53,7 +53,7 @@ KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
     bReadOnly(false), bExpand(false), d(0)
 {
-    setGroup(QString::null);
+    setGroup(QString());
 }
 
 KConfigBase::~KConfigBase()
@@ -334,7 +334,7 @@ QByteArray KConfigBase::readEntryUtf8( const char *pKey) const
   if (aEntryData.bExpand)
   {
      // We need to do fancy, take the slow route.
-     return readEntry(pKey, QString::null).toUtf8();
+     return readEntry(pKey, QString()).toUtf8();
   }
   return aEntryData.mValue;
 }

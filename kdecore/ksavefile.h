@@ -70,7 +70,7 @@ public:
 
    /**
     * The name of the file as passed to the constructor.
-    * @return The name of the file, or QString::null if opening the
+    * @return The name of the file, or QString() if opening the
     *         file has failed
     **/
    QString name() const;
@@ -134,7 +134,7 @@ public:
      * @since 3.2
      */
    static bool backupFile( const QString& filename,
-                           const QString& backupDir = QString::null,
+                           const QString& backupDir = QString(),
                            const QString& backupExtension = QLatin1String( "~" ) );
 
 private:

@@ -81,28 +81,28 @@ public:
 
     /**
      * The person's name
-     * @return the person's name (can be QString::null, if it has been
+     * @return the person's name (can be QString(), if it has been
      *           constructed with a NULL name)
      */
     QString name() const;
 
     /**
      * The person's task
-     * @return the person's task (can be QString::null, if it has been
+     * @return the person's task (can be QString(), if it has been
      *           constructed with a NULL task)
      */
     QString task() const;
 
     /**
      * The person's email address
-     * @return the person's email address (can be QString::null, if it has been
+     * @return the person's email address (can be QString(), if it has been
      *           constructed with a NULL email)
      */
     QString emailAddress() const;
 
     /**
      * The home page or a relevant link
-     * @return the persons home page (can be QString::null, if it has been
+     * @return the persons home page (can be QString(), if it has been
      *           constructed with a NULL home page)
      */
     QString webAddress() const;
@@ -134,8 +134,8 @@ public:
      *
      * @param emailAddress The email address of the person.
      */
-    KAboutTranslator(const QString & name=QString::null,
-                     const QString & emailAddress=QString::null);
+    KAboutTranslator(const QString & name=QString(),
+                     const QString & emailAddress=QString());
 
     KAboutTranslator(const KAboutTranslator& other);
 
@@ -144,14 +144,14 @@ public:
 
     /**
      * The translator's name
-     * @return the translators's name (can be QString::null, if it has been
+     * @return the translators's name (can be QString(), if it has been
      *           constructed with a null name)
      */
     QString name() const;
 
     /**
      * The translator's email
-     * @return the translator's email address (can be QString::null, if it has been
+     * @return the translator's email address (can be QString(), if it has been
      *           constructed with a null email)
      */
     QString emailAddress() const;
@@ -480,13 +480,13 @@ class KDECORE_EXPORT KAboutData
     /**
      * Returns a short, translated description.
      * @return the short description (translated). Can be
-     *         QString::null if not set.
+     *         QString() if not set.
      */
     QString shortDescription() const;
 
     /**
      * Returns the application homepage.
-     * @return the application homepage URL. Can be QString::null if
+     * @return the application homepage URL. Can be QString() if
      *         not set.
      */
     QString homepage() const;
@@ -523,7 +523,7 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Returns a translated, free form text.
-     * @return the free form text (translated). Can be QString::null if not set.
+     * @return the free form text (translated). Can be QString() if not set.
      */
     QString otherText() const;
 
@@ -538,7 +538,7 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Returns the copyright statement.
-     * @return the copyright statement. Can be QString::null if not set.
+     * @return the copyright statement. Can be QString() if not set.
      */
     QString copyrightStatement() const;
 
@@ -547,7 +547,7 @@ class KDECORE_EXPORT KAboutData
      * of the default message telling users to send bug reports to bugAddress().
      *
      * @return the plain text displayed around the list of authors instead
-     *         of the default message.  Can be QString::null.
+     *         of the default message.  Can be QString().
      */
     QString customAuthorPlainText() const;
 
@@ -556,7 +556,7 @@ class KDECORE_EXPORT KAboutData
      * of the default message telling users to send bug reports to bugAddress().
      *
      * @return the rich text displayed around the list of authors instead
-     *         of the default message.  Can be QString::null.
+     *         of the default message.  Can be QString().
      */
     QString customAuthorRichText() const;
 
@@ -576,7 +576,7 @@ class KDECORE_EXPORT KAboutData
      * @param plainText The plain text.
      * @param richText The rich text.
      *
-     * Both parameters can be QString::null to not display any message at
+     * Both parameters can be QString() to not display any message at
      * all.  Call unsetCustomAuthorText() to revert to the default mesage.
      */
     void setCustomAuthorText(const QString &plainText, const QString &richText);

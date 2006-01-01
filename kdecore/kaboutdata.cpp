@@ -72,7 +72,7 @@ KAboutPerson::task() const
 {
    if (mTask && *mTask)
       return i18n(mTask);
-   return QString::null;
+   return QString();
 }
 
 QString
@@ -357,7 +357,7 @@ KAboutData::programName() const
 {
    if (mProgramName && *mProgramName)
       return i18n(mProgramName);
-   return QString::null;
+   return QString();
 }
 
 QImage
@@ -386,7 +386,7 @@ KAboutData::shortDescription() const
 {
    if (mShortDescription && *mShortDescription)
       return i18n(mShortDescription);
-   return QString::null;
+   return QString();
 }
 
 QString
@@ -477,7 +477,7 @@ KAboutData::otherText() const
 {
    if (mOtherText && *mOtherText)
       return i18n(mOtherText);
-   return QString::null;
+   return QString();
 }
 
 QString
@@ -548,7 +548,7 @@ KAboutData::copyrightStatement() const
 {
   if (mCopyrightStatement && *mCopyrightStatement)
      return i18n(mCopyrightStatement);
-  return QString::null;
+  return QString();
 }
 
 QString
@@ -581,8 +581,8 @@ KAboutData::setCustomAuthorText(const QString &plainText, const QString &richTex
 void
 KAboutData::unsetCustomAuthorText()
 {
-  d->customAuthorPlainText = QString::null;
-  d->customAuthorRichText = QString::null;
+  d->customAuthorPlainText.clear();
+  d->customAuthorRichText.clear();
 
   d->customAuthorTextEnabled = false;
 }

@@ -90,7 +90,7 @@ QStringList KCompletion::items() const
 {
     KCompletionMatchesWrapper list; // unsorted
     bool addWeight = (myOrder == Weighted);
-    extractStringsFromNode( myTreeRoot, QString::null, &list, addWeight );
+    extractStringsFromNode( myTreeRoot, QString(), &list, addWeight );
 
     return list.list();
 }
@@ -104,7 +104,7 @@ void KCompletion::addItem( const QString& item )
 {
     d->matches.clear();
     myRotationIndex = 0;
-    myLastString = QString::null;
+    myLastString.clear();
 
     addItem( item, 0 );
 }
@@ -166,7 +166,7 @@ void KCompletion::removeItem( const QString& item )
 {
     d->matches.clear();
     myRotationIndex = 0;
-    myLastString = QString::null;
+    myLastString.clear();
 
     myTreeRoot->remove( item );
 }
@@ -176,7 +176,7 @@ void KCompletion::clear()
 {
     d->matches.clear();
     myRotationIndex = 0;
-    myLastString = QString::null;
+    myLastString.clear();
 
     delete myTreeRoot;
     myTreeRoot = new KCompTreeNode;
@@ -186,7 +186,7 @@ void KCompletion::clear()
 QString KCompletion::makeCompletion( const QString& string )
 {
     if ( myCompletionMode == KGlobalSettings::CompletionNone )
-        return QString::null;
+        return QString();
 
     //kdDebug(0) << "KCompletion: completing: " << string << endl;
 
@@ -211,7 +211,7 @@ QString KCompletion::makeCompletion( const QString& string )
         if ( l.isEmpty() )
             doBeep( NoMatch );
     
-        return QString::null;
+        return QString();
     }
 
     QString completion;
@@ -250,7 +250,7 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
     // get all items in the tree, eventually in sorted order
     bool sorted = (myOrder == Weighted);
     KCompletionMatchesWrapper allItems( sorted );
-    extractStringsFromNode( myTreeRoot, QString::null, &allItems, false );
+    extractStringsFromNode( myTreeRoot, QString(), &allItems, false );
 
     QStringList list = allItems.list();
 
@@ -421,7 +421,7 @@ QString KCompletion::findCompletion( const QString& string )
         if ( node )
             completion += ch;
         else
-            return QString::null; // no completion
+            return QString(); // no completion
     }
 
     // Now we have the last node of the to be completed string.
@@ -493,7 +493,7 @@ void KCompletion::findAllCompletions(const QString& string,
         return;
 
     if ( myIgnoreCase ) { // case insensitive completion
-        extractStringsFromNodeCI( myTreeRoot, QString::null, string, matches );
+        extractStringsFromNodeCI( myTreeRoot, QString(), string, matches );
         hasMultipleMatches = (matches->count() > 1);
         return;
     }

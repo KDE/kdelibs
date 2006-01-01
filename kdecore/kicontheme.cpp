@@ -537,13 +537,13 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
 QString KIconThemeDir::iconPath(const QString& name) const
 {
     if (!mbValid)
-        return QString::null;
+        return QString();
     QString file = mDir + "/" + name;
 
     if (access(QFile::encodeName(file), R_OK) == 0)
         return file;
 
-    return QString::null;
+    return QString();
 }
 
 QStringList KIconThemeDir::iconList() const

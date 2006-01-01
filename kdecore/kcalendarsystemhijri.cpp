@@ -348,7 +348,7 @@ QString KCalendarSystemHijri::monthName(int month, int year, bool shortName)
         return locale()->translate("Thu al-Hijjah");
       }
 
-  return QString::null;
+  return QString();
 }
 
 QString KCalendarSystemHijri::monthNamePossessive(int month, int year,
@@ -413,7 +413,7 @@ QString KCalendarSystemHijri::monthNamePossessive(int month, int year,
         return locale()->translate("of Thu al-Hijjah");
       }
 
-  return QString::null;
+  return QString();
 }
 
 bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
@@ -475,7 +475,7 @@ QString KCalendarSystemHijri::weekDayName(int day, bool shortName) const
         return locale()->translate("Yaum al-Ahad");
       }
 
-  return QString::null;
+  return QString();
 }
 
 QString KCalendarSystemHijri::weekDayName(const QDate& date,

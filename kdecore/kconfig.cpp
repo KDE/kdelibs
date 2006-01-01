@@ -291,7 +291,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
   if (!config)
-     config = new KConfig(QString::null, false, false);
+     config = new KConfig(QString(), false, false);
   config->backEnd->changeFileName(file, "config", false);
   config->setReadOnly(false);
   config->bFileImmutable = false;

@@ -160,7 +160,7 @@ public:
     /**
      * Attempts to find an item in the list of available completions,
      * that begins with @p string. Will either return the first matching item
-     * (if there is more than one match) or QString::null, if no match was
+     * (if there is more than one match) or QString(), if no match was
      * found.
      *
      * In the latter case, a sound will be issued, depending on
@@ -174,7 +174,7 @@ public:
      * This happens only in shell-completion-mode.
      *
      * @param string the string to complete
-     * @return the matching item, or QString::null if there is no matching
+     * @return the matching item, or QString() if there is no matching
      * item.
      * @see slotMakeCompletion
      * @see substringCompletion
@@ -196,7 +196,7 @@ public:
      * When reaching the beginning, the list is rotated so it will return the
      * last match and a sound is issued (depending on isSoundsEnabled()).
      * @return the next item from the matching-items-list.
-     * When there is no match, QString::null is returned and
+     * When there is no match, QString() is returned and
      * a sound is be issued.
      * @see slotPreviousMatch
      */
@@ -208,7 +208,7 @@ public:
      * the first match and a sound is issued (depending on
      * isSoundsEnabled()).
      * @return the next item from the matching-items-list.  When there is no
-     * match, QString::null is returned and a sound is issued
+     * match, QString() is returned and a sound is issued
      * @see slotNextMatch
      */
     QString nextMatch();
@@ -216,7 +216,7 @@ public:
     /**
      * Returns the last match. Might be useful if you need to check whether
      * a completion is different from the last one.
-     * @return the last match. QString::null is returned when there is no
+     * @return the last match. QString() is returned when there is no
      *         last match.
      */
     virtual const QString& lastMatch() const { return myLastMatch; }
@@ -474,9 +474,9 @@ public slots:
 signals:
     /**
      * The matching item. Will be emitted by makeCompletion(),
-     * previousMatch() or nextMatch(). May be QString::null if there
+     * previousMatch() or nextMatch(). May be QString() if there
      * is no matching item.
-     * @param item the match, or QString::null if there is none
+     * @param item the match, or QString() if there is none
      */
     void match( const QString& item);
 

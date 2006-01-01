@@ -401,7 +401,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 #ifndef NDEBUG
     if (filename.isEmpty()) {
       kdWarning() << "filename for type " << type << " in KStandardDirs::findResourceDir is not supposed to be empty!!" << endl;
-      return QString::null;
+      return QString();
     }
 #endif
 
@@ -430,7 +430,7 @@ QString KStandardDirs::findResourceDir( const char *type,
       kdDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
 #endif
 
-    return QString::null;
+    return QString();
 }
 
 bool KStandardDirs::exists(const QString &fullPath)
@@ -920,7 +920,7 @@ QString KStandardDirs::findExe( const QString& appname,
             && info.isFile() ) {
             return real_appname;
         }
-        return QString::null;
+        return QString();
     }
 
     QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
@@ -948,7 +948,7 @@ QString KStandardDirs::findExe( const QString& appname,
     // If we reach here, the executable wasn't found.
     // So return empty string.
 
-    return QString::null;
+    return QString();
 }
 
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
@@ -1056,7 +1056,7 @@ QString KStandardDirs::kde_default(const char *type) {
 
 
     qFatal("unknown resource type %s", type);
-    return QString::null;
+    return QString();
 }
 
 QString KStandardDirs::saveLocation(const char *type,
@@ -1183,7 +1183,7 @@ static QString readEnvPath(const char *env)
 {
    QByteArray c_path = getenv(env);
    if (c_path.isEmpty())
-      return QString::null;
+      return QString();
 #ifdef Q_OS_WIN
    //win32 paths are case-insensitive: avoid duplicates on various dir lists
    return QFile::decodeName(c_path).toLower();
@@ -1199,21 +1199,21 @@ static QString executablePrefix()
    path_buffer[MAXPATHLEN] = 0;
    int length = readlink ("/proc/self/exe", path_buffer, MAXPATHLEN);
    if (length == -1)
-      return QString::null;
+      return QString();
 
    path_buffer[length] = '\0';
 
    QString path = QFile::decodeName(path_buffer);
 
    if(path.isEmpty())
-      return QString::null;
+      return QString();
 
    int pos = path.lastIndexOf('/'); // Skip filename
    if(pos <= 0)
-      return QString::null;
+      return QString();
    pos = path.lastIndexOf('/', pos - 1); // Skip last directory
    if(pos <= 0)
-      return QString::null;
+      return QString();
 
    return path.left(pos);
 }
@@ -1679,7 +1679,7 @@ QString locateLocal( const char *type,
     // create the subdir first
     int slash = filename.lastIndexOf('/')+1;
     if (!slash) // only one filename
-	return inst->dirs()->saveLocation(type, QString::null, createDir) + filename;
+	return inst->dirs()->saveLocation(type, QString(), createDir) + filename;
 
     // split path from filename
     QString dir = filename.left(slash);

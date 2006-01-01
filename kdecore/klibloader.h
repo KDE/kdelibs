@@ -360,10 +360,10 @@ public:
 
     /**
      * Returns an error message that can be useful to debug the problem.
-     * Returns QString::null if the last call to library() was successful.
+     * Returns QString() if the last call to library() was successful.
      * You can call this function more than once. The error message is only
      * reset by a new call to library().
-     * @return the last error message, or QString::null if there was no error
+     * @return the last error message, or QString() if there was no error
      */
     QString lastErrorMessage() const;
 

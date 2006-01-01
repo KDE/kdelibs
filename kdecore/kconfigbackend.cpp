@@ -231,7 +231,7 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
    resType = _resType;
    useKDEGlobals = _useKDEGlobals;
    if (mfileName.isEmpty())
-      mLocalFileName = QString::null;
+      mLocalFileName.clear();
    else if (!QDir::isRelativePath(mfileName))
       mLocalFileName = mfileName;
    else
@@ -241,7 +241,7 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
       mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
 	      QLatin1String("kdeglobals");
    else
-      mGlobalFileName = QString::null;
+      mGlobalFileName.clear();
 
    d->localLastModified = QDateTime();
    d->localLastSize = 0;

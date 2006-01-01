@@ -642,7 +642,7 @@ done:
 QString KStringHandler::from8Bit( const char *str )
 {
   if (!str)
-    return QString::null;
+    return QString();
   if (!*str) {
     static const QString &emptyString = KGlobal::staticQString("");
     return emptyString;

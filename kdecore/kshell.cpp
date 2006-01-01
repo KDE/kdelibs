@@ -302,7 +302,7 @@ QString KShell::joinArgs( const QStringList &args )
 QString KShell::joinArgs( const char * const *args, int nargs )
 {
     if (!args)
-        return QString::null; // well, QString::empty, in fact. qt sucks ;)
+        return QString(); // well, QString::empty, in fact. qt sucks ;)
     QLatin1Char q( '\'' );
     QString ret;
     for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
@@ -391,6 +391,6 @@ QString KShell::homeDir( const QString &user )
         return QFile::decodeName( getenv( "HOME" ) );
     struct passwd *pw = getpwnam( QFile::encodeName( user ).data() );
     if (!pw)
-        return QString::null;
+        return QString();
     return QFile::decodeName( pw->pw_dir );
 }

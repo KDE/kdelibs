@@ -435,11 +435,11 @@ KLibrary* KLibLoader::library( const char *_name )
         if(errmsg)
             d->errorMessage = QString::fromLocal8Bit(errmsg);
         else
-            d->errorMessage = QString::null;
+            d->errorMessage.clear();
         return 0;
       }
       else
-        d->errorMessage = QString::null;
+        d->errorMessage.clear();
 
       KLibrary *lib = new KLibrary( QLatin1String(_name), libfile, handle );
       wrap = new KLibWrapPrivate(lib, handle);

@@ -44,7 +44,7 @@ QString KIDNA::toAscii(const QString &idna)
   {
      QString host = QLatin1String(toAsciiCString(idna.mid(1)));
      if (host.isEmpty())
-        return QString::null; // Error
+        return QString(); // Error
      return idna[0] + host;
   }
   return QLatin1String(toAsciiCString(idna));
@@ -57,6 +57,6 @@ QString KIDNA::toUnicode(const QString &idna)
      return idna[0] + KResolver::domainToUnicode(idna.mid(1));
   return KResolver::domainToUnicode(idna);
 #else
-	return QString::null;
+	return QString();
 #endif
 }

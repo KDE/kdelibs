@@ -1424,7 +1424,7 @@ QString get_str( const QString& item_P )
         {
         int pos2 = item_P.left( pos + 2 ).indexOf( QLatin1Char('\"') );
         if( pos2 < 0 )
-            return QString::null;                      // 01234
+            return QString();                      // 01234
         return item_P.mid( pos + 2, pos2 - 2 - pos );  // A="C"
         }
     return item_P.mid( pos + 1 );

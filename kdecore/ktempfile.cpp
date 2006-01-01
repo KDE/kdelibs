@@ -129,7 +129,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
        nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
        kdWarning() << "KTempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
        mError = errno;
-       mTmpName = QString::null;
+       mTmpName.clear();
        return false;
    }
 
@@ -230,7 +230,7 @@ KTempFile::unlink()
 {
    if (!mTmpName.isEmpty())
       QFile::remove( mTmpName );
-   mTmpName = QString::null;
+   mTmpName.clear();
 }
 
 #if defined(_POSIX_SYNCHRONIZED_IO) && _POSIX_SYNCHRONIZED_IO > 0

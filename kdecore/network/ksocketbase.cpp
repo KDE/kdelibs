@@ -264,7 +264,7 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
       break;
 
     default:
-      reason = QString();
+      reason.clear();
       break;
     }
 

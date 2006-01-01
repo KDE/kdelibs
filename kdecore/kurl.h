@@ -333,9 +333,9 @@ public:
   /**
    * Returns the protocol for the URL (i.e., file, http, etc.).
    * @return the protocol of the URL, does not include the colon. If the
-   *         URL is malformed, QString::null will be returned.
+   *         URL is malformed, QString() will be returned.
    **/
-  QString protocol() const { return m_bIsMalformed ? QString::null : m_strProtocol; }
+  QString protocol() const { return m_bIsMalformed ? QString() : m_strProtocol; }
   /**
    * Sets the protocol for the URL (i.e., file, http, etc.)
    * @param _txt the new protocol of the URL (without colon)
@@ -351,14 +351,14 @@ public:
 
   /**
    * Returns the decoded user name (login, user id, ...) included in the URL.
-   * @return the user name or QString::null if there is no user name
+   * @return the user name or QString() if there is no user name
    **/
   QString user() const { return m_strUser; }
   /**
    * Sets the user name (login, user id, ...) included in the URL.
    *
    * Special characters in the user name will appear encoded in the URL.
-   * @param _txt the name of the user or QString::null to remove the user
+   * @param _txt the name of the user or QString() to remove the user
    **/
   void setUser( const QString& _txt );
   /**
@@ -369,7 +369,7 @@ public:
 
   /**
    * Returns the decoded password (corresponding to user()) included in the URL.
-   * @return the password or QString::null if it does not exist
+   * @return the password or QString() if it does not exist
    **/
   QString pass() const { return m_strPass; }
   /**
@@ -378,7 +378,7 @@ public:
    * Special characters in the password will appear encoded in the URL.
    * Note that a password can only appear in a URL string if you also set
    * a user.
-   * @param _txt the password to set or QString::null to remove the password
+   * @param _txt the password to set or QString() to remove the password
    * @see setUser
    * @see hasUser
    **/
@@ -391,7 +391,7 @@ public:
 
   /**
    * Returns the decoded hostname included in the URL.
-   * @return the name of the host or QString::null if no host is set
+   * @return the name of the host or QString() if no host is set
    **/
   QString host() const { return m_strHost; }
 
@@ -399,7 +399,7 @@ public:
    * Sets the hostname included in the URL.
    *
    * Special characters in the hostname will appear encoded in the URL.
-   * @param _txt the new name of the host or QString::null to remove the host
+   * @param _txt the new name of the host or QString() to remove the host
    **/
   void setHost( const QString& _txt );
   /**
@@ -422,7 +422,7 @@ public:
 
   /**
    * Returns the current decoded path. This does @em not include the query.
-   * @return the path of the URL (without query), or QString::null if no
+   * @return the path of the URL (without query), or QString() if no
    *         path set.
    */
   QString path() const  { return m_strPath; }
@@ -438,7 +438,7 @@ public:
    *                  "ftp://host/path/" mean the same directory.
    *
    * @return The current decoded path. This does not include the query. Can
-   *         be QString::null if no path is set.
+   *         be QString() if no path is set.
    */
   QString path( int _trailing ) const;
 
@@ -448,7 +448,7 @@ public:
    * @param path The new path. This is considered to be decoded. This
    *             means: %3f does not become decoded
    *             and the ? does not indicate the start of the query part.
-   *             Can be QString::null to delete the path.
+   *             Can be QString() to delete the path.
    */
   void setPath( const QString& path );
 
@@ -533,19 +533,19 @@ public:
    * If a query is present it always starts with a '?'.
    * A single '?' means an empty query.
    * An empty string means no query.
-   * @return The encoded query, or QString::null if there is none.
+   * @return The encoded query, or QString() if there is none.
    */
   QString query() const;
 
   /**
    * The reference is @em never decoded automatically.
-   * @return the undecoded reference, or QString::null if there is none
+   * @return the undecoded reference, or QString() if there is none
    */
   QString ref() const { return m_strRef_encoded; }
 
   /**
    * Sets the reference part (everything after '#').
-   * @param _txt The encoded reference (or QString::null to remove it).
+   * @param _txt The encoded reference (or QString() to remove it).
    */
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
 
@@ -577,7 +577,7 @@ public:
    * Sets the HTML-style reference.
    *
    * @param _ref The new reference. This is considered to be @em not encoded in
-   *         contrast to setRef(). Use QString::null to remove it.
+   *         contrast to setRef(). Use QString() to remove it.
    * @see htmlRef()
    */
   void setHTMLRef( const QString& _ref );
@@ -606,7 +606,7 @@ public:
   /**
    * Adds encoding information to url by adding a "charset" parameter. If there
    * is already a charset parameter, it will be replaced.
-   * @param encoding the encoding to add or QString::null to remove the
+   * @param encoding the encoding to add or QString() to remove the
    *                 encoding.
    */
   void setFileEncoding(const QString &encoding);
@@ -615,7 +615,7 @@ public:
    * Returns encoding information from url, the content of the "charset"
    * parameter.
    * @return An encoding suitable for QTextCodec::codecForName()
-   *         or QString::null if not encoding was specified.
+   *         or QString() if not encoding was specified.
    */
   QString fileEncoding() const;
 
@@ -645,7 +645,7 @@ public:
    * @param item Item whose value we want
    * @param encoding_hint MIB of encoding of query.
    *
-   * @return the value of the given query item name or QString::null if the
+   * @return the value of the given query item name or QString() if the
    * specified item does not exist.
    */
   QString queryItem( const QString& item, int encoding_hint = 0 ) const;
@@ -735,7 +735,7 @@ public:
    *                                       or <tt>/hallo</tt> depending on the other flag
    * @return The directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
-   *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
+   *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded. QString() is returned when there is no path.
    */
   QString directory( bool _strip_trailing_slash_from_result = true,
 		     bool _ignore_trailing_slash_in_path = true ) const;
@@ -984,7 +984,7 @@ public:
    *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
-   * @param str String to encode (can be QString::null).
+   * @param str String to encode (can be QString()).
    * @param encoding_hint MIB of encoding to use.
    *             @see QTextCodec::mibEnum()
    * @return the encoded string
@@ -1009,7 +1009,7 @@ public:
    * Decode %-style encoding and convert from local encoding to unicode.
    *
    * Reverse of encode_string()
-   * @param str String to decode (can be QString::null).
+   * @param str String to decode (can be QString()).
    * @param encoding_hint MIB of original encoding of @p str .
    *             @see QTextCodec::mibEnum()
    **/

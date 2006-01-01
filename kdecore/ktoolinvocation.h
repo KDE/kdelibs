@@ -65,15 +65,15 @@ public slots:
    *           "" ( empty string ) is the default
    */
 
-  static void invokeHelp( const QString& anchor = QString::null,
-                   const QString& appname = QString::null,
+  static void invokeHelp( const QString& anchor = QString(),
+                   const QString& appname = QString(),
 		   const QByteArray& startup_id = "");
 
   /**
    * Convenience method; invokes the standard email application.
    *
    * @param address The destination address
-   * @param subject Subject string. Can be QString::null.
+   * @param subject Subject string. Can be QString().
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
@@ -107,7 +107,7 @@ public slots:
    */
   static void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
-                    const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList(),const QByteArray& startup_id = "" );
+                    const QString &messageFile = QString(), const QStringList &attachURLs = QStringList(),const QByteArray& startup_id = "" );
 
   /**
    * Invokes the standard browser.

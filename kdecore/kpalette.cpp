@@ -163,7 +163,7 @@ QString
 KPalette::colorName(int index) const
 {
   if ((index < 0) || (index >= nrColors()))
-	return QString::null;
+	return QString();
 
   return mColorList[index].name;
 }

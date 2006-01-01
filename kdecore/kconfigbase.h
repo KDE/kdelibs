@@ -137,7 +137,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault is null.
+   * @return The value for this key. Can be QString() if aDefault is null.
    */
    QString readEntry(const QString& pKey,
                      const QString& aDefault ) const;
@@ -147,7 +147,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault is null.
+   * @return The value for this key. Can be QString() if aDefault is null.
    */
    QString readEntry(const char *pKey,
                      const QString& aDefault ) const;
@@ -157,7 +157,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault is null.
+   * @return The value for this key. Can be QString() if aDefault is null.
    */
    QString readEntry(const char *pKey,
                      const char *aDefault = 0 ) const;
@@ -297,9 +297,9 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault is null.
+   * @return The value for this key. Can be QString() if aDefault is null.
    */
-  QString readPathEntry( const QString& pKey, const QString & aDefault = QString::null ) const;
+  QString readPathEntry( const QString& pKey, const QString & aDefault = QString() ) const;
 
   /**
    * Reads a path.
@@ -310,9 +310,9 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault is null.
+   * @return The value for this key. Can be QString() if aDefault is null.
    */
-  QString readPathEntry( const char *pKey, const QString & aDefault = QString::null ) const;
+  QString readPathEntry( const char *pKey, const QString & aDefault = QString() ) const;
 
   /**
    * Reads a list of string paths.
@@ -748,7 +748,7 @@ public:
    * @return The value for this key.
    */
    QString readEntryUntranslated( const QString& pKey,
-                     const QString& aDefault = QString::null ) const;
+                     const QString& aDefault = QString() ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -759,7 +759,7 @@ public:
    * @return The value for this key.
    */
    QString readEntryUntranslated( const char *pKey,
-                     const QString& aDefault = QString::null ) const;
+                     const QString& aDefault = QString() ) const;
 
   /**
    * Writes a key/value pair.

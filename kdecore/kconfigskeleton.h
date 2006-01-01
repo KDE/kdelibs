@@ -374,7 +374,7 @@ public:
 
     ItemString(const QString & group, const QString & key,
                QString & reference,
-               const QString & defaultValue = QLatin1String(""), // NOT QString::null !!
+               const QString & defaultValue = QLatin1String(""), // NOT QString() !!
                Type type = Normal);
 
     void writeConfig(KConfig * config);
@@ -394,7 +394,7 @@ public:
   public:
     ItemPassword(const QString & group, const QString & key,
                QString & reference,
-               const QString & defaultValue = QLatin1String("")); // NOT QString::null !!
+               const QString & defaultValue = QLatin1String("")); // NOT QString() !!
   };
 
   /**
@@ -405,7 +405,7 @@ public:
   public:
     ItemPath(const QString & group, const QString & key,
              QString & reference,
-             const QString & defaultValue = QString::null);
+             const QString & defaultValue = QString());
   };
 
 
@@ -745,7 +745,7 @@ public:
    * @param configname name of config file. If no name is given, the default
    * config file as returned by kapp()->config() is used.
    */
-  KConfigSkeleton(const QString & configname = QString::null);
+  KConfigSkeleton(const QString & configname = QString());
 
   /**
    * Constructor.
@@ -797,7 +797,7 @@ public:
    * Note that all names must be unique but that multiple entries can have
    * the same key if they reside in different groups. 
    */
-  void addItem(KConfigSkeletonItem *, const QString & name = QString::null );
+  void addItem(KConfigSkeletonItem *, const QString & name = QString() );
 
   /**
    * Register an item of type QString.
@@ -811,8 +811,8 @@ public:
    * @return The created item
    */
   ItemString *addItemString(const QString & name, QString & reference,
-                            const QString & defaultValue = QLatin1String(""), // NOT QString::null !!
-                            const QString & key = QString::null);
+                            const QString & defaultValue = QLatin1String(""), // NOT QString() !!
+                            const QString & key = QString());
 
   /**
    * Register a password item of type QString. The string value is written 
@@ -829,7 +829,7 @@ public:
    */
   ItemPassword *addItemPassword(const QString & name, QString & reference,
                               const QString & defaultValue = QLatin1String(""),
-                              const QString & key = QString::null);
+                              const QString & key = QString());
 
   /**
    * Register a path item of type QString. The string value is interpreted
@@ -846,7 +846,7 @@ public:
    */
   ItemPath *addItemPath(const QString & name, QString & reference,
                           const QString & defaultValue = QLatin1String(""),
-                          const QString & key = QString::null);
+                          const QString & key = QString());
 
   /**
    * Register a property item of type QVariant. Note that only the following
@@ -863,7 +863,7 @@ public:
    */
   ItemProperty *addItemProperty(const QString & name, QVariant & reference,
                                 const QVariant & defaultValue = QVariant(),
-                                const QString & key = QString::null);
+                                const QString & key = QString());
   /**
    * Register an item of type bool.
    * 
@@ -877,7 +877,7 @@ public:
    */
   ItemBool *addItemBool(const QString & name, bool & reference,
                         bool defaultValue = false,
-                        const QString & key = QString::null);
+                        const QString & key = QString());
 
   /**
    * Register an item of type qint32.
@@ -891,13 +891,13 @@ public:
    * @return The created item
    */
   ItemInt32 *addItemInt32(const QString & name, qint32 &reference, qint32 defaultValue = 0,
-                      const QString & key = QString::null);
+                      const QString & key = QString());
 
   // next two should be removed before KDE4
   ItemInt32 *addItemInt(const QString & name, qint32 &reference, qint32 defaultValue = 0,
-                      const QString & key = QString::null) KDE_DEPRECATED;
+                      const QString & key = QString()) KDE_DEPRECATED;
   ItemInt32 *addItemLong(const QString & name, qint32 &reference, qint32 defaultValue = 0,
-                      const QString & key = QString::null) KDE_DEPRECATED;
+                      const QString & key = QString()) KDE_DEPRECATED;
 
   /**
    * Register an item of type quint32.
@@ -912,15 +912,15 @@ public:
    */
   ItemUInt32 *addItemUInt32(const QString & name, quint32 &reference,
                         quint32 defaultValue = 0,
-                        const QString & key = QString::null);
+                        const QString & key = QString());
 
   // next two should be removed before KDE4
   ItemUInt32 *addItemUInt(const QString & name, quint32 &reference,
                         quint32 defaultValue = 0,
-                        const QString & key = QString::null) KDE_DEPRECATED;
+                        const QString & key = QString()) KDE_DEPRECATED;
   ItemUInt32 *addItemULong(const QString & name, quint32 &reference,
                         quint32 defaultValue = 0,
-                        const QString & key = QString::null) KDE_DEPRECATED;
+                        const QString & key = QString()) KDE_DEPRECATED;
 
   /**
    * Register an item of type qint64.
@@ -935,7 +935,7 @@ public:
    */
   ItemInt64 *addItemInt64(const QString & name, qint64 &reference,
                           qint64 defaultValue = 0,
-                          const QString & key = QString::null);
+                          const QString & key = QString());
 
   /**
    * Register an item of type quint64
@@ -950,7 +950,7 @@ public:
    */
   ItemUInt64 *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
-                            const QString & key = QString::null);
+                            const QString & key = QString());
 
   /**
    * Register an item of type double.
@@ -965,7 +965,7 @@ public:
    */
   ItemDouble *addItemDouble(const QString & name, double &reference,
                             double defaultValue = 0.0,
-                            const QString & key = QString::null);
+                            const QString & key = QString());
 
   /**
    * Register an item of type QColor.
@@ -980,7 +980,7 @@ public:
    */
   ItemColor *addItemColor(const QString & name, QColor & reference,
                           const QColor & defaultValue = QColor(128, 128, 128),
-                          const QString & key = QString::null);
+                          const QString & key = QString());
 
   /**
    * Register an item of type QFont.
@@ -996,7 +996,7 @@ public:
   ItemFont *addItemFont(const QString & name, QFont & reference,
                         const QFont & defaultValue =
                         KGlobalSettings::generalFont(),
-                        const QString & key = QString::null);
+                        const QString & key = QString());
 
   /**
    * Register an item of type QRect.
@@ -1011,7 +1011,7 @@ public:
    */
   ItemRect *addItemRect(const QString & name, QRect & reference,
                         const QRect & defaultValue = QRect(),
-                        const QString & key = QString::null);
+                        const QString & key = QString());
 
   /**
    * Register an item of type QPoint.
@@ -1026,7 +1026,7 @@ public:
    */
   ItemPoint *addItemPoint(const QString & name, QPoint & reference,
                           const QPoint & defaultValue = QPoint(),
-                          const QString & key = QString::null);
+                          const QString & key = QString());
 
   /**
    * Register an item of type QSize.
@@ -1041,7 +1041,7 @@ public:
    */
   ItemSize *addItemSize(const QString & name, QSize & reference,
                         const QSize & defaultValue = QSize(),
-                        const QString & key = QString::null);
+                        const QString & key = QString());
 
   /**
    * Register an item of type QDateTime.
@@ -1056,7 +1056,7 @@ public:
    */
   ItemDateTime *addItemDateTime(const QString & name, QDateTime & reference,
                                 const QDateTime & defaultValue = QDateTime(),
-                                const QString & key = QString::null);
+                                const QString & key = QString());
 
   /**
    * Register an item of type QStringList.
@@ -1071,7 +1071,7 @@ public:
    */
   ItemStringList *addItemStringList(const QString & name, QStringList & reference,
                                     const QStringList & defaultValue = QStringList(),
-                                    const QString & key = QString::null);
+                                    const QString & key = QString());
 
   /**
    * Register an item of type QList<int>.
@@ -1087,7 +1087,7 @@ public:
   ItemIntList *addItemIntList(const QString & name, QList < int >&reference,
                               const QList < int >&defaultValue =
                               QList < int >(),
-                              const QString & key = QString::null);
+                              const QString & key = QString());
 
   /**
    * Return the @ref KConfig object used for reading and writing the settings.

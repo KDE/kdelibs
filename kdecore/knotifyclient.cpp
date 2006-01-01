@@ -141,20 +141,20 @@ int KNotifyClient::event( WId winId, StandardEvent type, const QString& text )
     }
 
     return sendNotifyEvent( message, text, Default, Default,
-			    QString::null, QString::null, winId );
+			    QString(), QString(), winId );
 }
 
 int KNotifyClient::event(WId winId, const QString &message,
                           const QString &text)
 {
-  return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null, winId);
+  return sendNotifyEvent(message, text, Default, Default, QString(), QString(), winId);
 }
 
 int KNotifyClient::userEvent(WId winId, const QString &text, int present,
                               int level,
                               const QString &sound, const QString &file)
 {
-  return sendNotifyEvent(QString::null, text, present, level, sound, file, winId);
+  return sendNotifyEvent(QString(), text, present, level, sound, file, winId);
 }
 
 int KNotifyClient::getPresentation(const QString &eventname)
@@ -172,7 +172,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 
 QString KNotifyClient::getFile(const QString &eventname, int present)
 {
-	if (eventname.isEmpty()) return QString::null;
+	if (eventname.isEmpty()) return QString();
 
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
@@ -185,7 +185,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 		return eventsfile.readPathEntry("logfile");
 	}
 
-	return QString::null;
+	return QString();
 }
 
 int KNotifyClient::getDefaultPresentation(const QString &eventname)
@@ -203,7 +203,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 
 QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
-	if (eventname.isEmpty()) return QString::null;
+	if (eventname.isEmpty()) return QString();
 
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
@@ -216,7 +216,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 		return eventsfile.readPathEntry("default_logfile");
 	}
 
-	return QString::null;
+	return QString();
 }
 
 bool KNotifyClient::startDaemon()

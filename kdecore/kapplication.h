@@ -445,7 +445,7 @@ public:
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
-    * @return the geometry argument, or QString::null if there is none
+    * @return the geometry argument, or QString() if there is none
     * @deprecated please use the following code instead:
     *
     * <code>
@@ -458,7 +458,7 @@ public:
     */
   static inline KDE_DEPRECATED QString geometryArgument() {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString::null;
+    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
   };
 #endif
 

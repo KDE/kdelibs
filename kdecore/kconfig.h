@@ -52,7 +52,7 @@ public:
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
-  KConfig( const QString& fileName = QString::null,
+  KConfig( const QString& fileName = QString(),
           bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
   KConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
@@ -231,7 +231,7 @@ protected:
    * keys which indicate the start of a group of entries.
    *
    * These special keys will have the .key portion of their KEntryKey
-   * set to QString::null.
+   * set to QString().
    */
   KEntryMap aEntryMap;
 

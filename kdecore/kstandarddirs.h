@@ -219,7 +219,7 @@ public:
 	 * @param filename A relative filename of the resource.
 	 *
 	 * @return A full path to the filename specified in the second
-	 *         argument, or QString::null if not found.
+	 *         argument, or QString() if not found.
 	 */
 	QString findResource( const char *type,
 			      const QString& filename ) const;
@@ -240,7 +240,7 @@ public:
 	 * @since 3.1
 	 */
 	bool isRestrictedResource( const char *type,
-			      const QString& relPath=QString::null ) const;
+			      const QString& relPath=QString() ) const;
 
         /**
          * Returns a number that identifies this version of the resource.
@@ -292,7 +292,7 @@ public:
 	 * @param type The type of the wanted resource
 	 * @param filename A relative filename of the resource.
 	 * @return The directory where the file specified in the second
-	 *         argument is located, or QString::null if the type
+	 *         argument is located, or QString() if the type
 	 *         of resource specified is unknown or the resource
 	 *         cannot be found.
 	 */
@@ -310,7 +310,7 @@ public:
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRegExp
 	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-	 *        Use QString::null if you do not want a filter.
+	 *        Use QString() if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param unique If specified,  only return items which have
@@ -320,7 +320,7 @@ public:
 	 *         specified filter.
 	 */
 	QStringList findAllResources( const char *type,
-				       const QString& filter = QString::null,
+				       const QString& filter = QString(),
 				       bool recursive = false,
 				       bool unique = false) const;
 
@@ -335,7 +335,7 @@ public:
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRegExp
 	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-	 *        Use QString::null if you do not want a filter.
+	 *        Use QString() if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param unique If specified,  only return items which have
@@ -361,7 +361,7 @@ public:
 	 *
 	 * @return a QStringList list of pathnames in the system path.
 	 */
-	static QStringList systemPaths( const QString& pstr=QString::null );
+	static QStringList systemPaths( const QString& pstr=QString() );
 
 	/**
 	 * Finds the executable in the system path.
@@ -377,11 +377,11 @@ public:
 	 *			even if its executable bit is not set.
 	 *
 	 * @return The path of the executable. If it was not found,
-	 *         it will return QString::null.
+	 *         it will return QString().
 	 * @see findAllExe()
 	 */
 	static QString findExe( const QString& appname,
-				const QString& pathstr=QString::null,
+				const QString& pathstr=QString(),
 				bool ignoreExecBit=false );
 
 	/**
@@ -403,7 +403,7 @@ public:
 	 * @see	findExe()
 	 */
 	static int findAllExe( QStringList& list, const QString& appname,
-			       const QString& pathstr=QString::null,
+			       const QString& pathstr=QString(),
 			       bool ignoreExecBit=false );
 
 	/**
@@ -464,10 +464,10 @@ public:
 	 *        needed (including those given by @p suffix).
 	 *
 	 * @return A path where resources of the specified type should be
-	 *         saved, or QString::null if the resource type is unknown.
+	 *         saved, or QString() if the resource type is unknown.
 	 */
 	 QString saveLocation(const char *type,
-			      const QString& suffix = QString::null,
+			      const QString& suffix = QString(),
 			      bool create = true) const;
 
         /**
@@ -706,7 +706,7 @@ public:
  * @param instance   The KInstance object
  *
  * @return A full path to the filename specified in the second
- *         argument, or QString::null if not found
+ *         argument, or QString() if not found
  **/
 KDECORE_EXPORT QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
@@ -723,7 +723,7 @@ KDECORE_EXPORT QString locate( const char *type, const QString& filename, const 
  * @param instance   The KInstance object
  *
  * @return A full path to the filename specified in the second
- *         argument, or QString::null if not found
+ *         argument, or QString() if not found
  **/
 KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
@@ -742,7 +742,7 @@ KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, c
  * @param instance   The KInstance object
  *
  * @return A full path to the filename specified in the second
- *         argument, or QString::null if not found
+ *         argument, or QString() if not found
  **/
 KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
 

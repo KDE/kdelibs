@@ -463,7 +463,7 @@ KAccelAction* KAccel::insert( const char* psAction, const KShortcut& cutDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	return d->insert( psAction, i18n(psAction), QString::null,
+	return d->insert( psAction, i18n(psAction), QString(),
 		cutDef, pObjSlot, psMethodSlot, bConfigurable, bEnabled );
 }
 

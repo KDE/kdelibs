@@ -511,7 +511,7 @@ int Sym::qt() const
 QString Sym::toString( bool bUserSpace ) const
 {
 	if( m_sym == 0 )
-		return QString::null;
+		return QString();
 
 	// If it's a unicode character,
 #ifdef Q_WS_WIN

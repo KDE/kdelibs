@@ -126,7 +126,7 @@ KConfigTestView::KConfigTestView( QWidget *parent )
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
   // create a default KConfig object in order to be able to start right away
-  pConfig = new KConfig( QString::null );
+  pConfig = new KConfig( QString() );
 }
 
 KConfigTestView::~KConfigTestView()

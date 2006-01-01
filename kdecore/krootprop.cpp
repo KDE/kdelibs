@@ -254,7 +254,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
     }
     else {
 	propDict.insert( rKey, rValue );
-	return QString::null;
+	return QString();
     }
 }
 
@@ -287,7 +287,7 @@ QString KRootProp::removeEntry(const QString& rKey)
 	propDict.remove(rKey);
 	return aValue;
     } else
-	return QString::null;
+	return QString();
 }
 
 QStringList KRootProp::listEntries() const

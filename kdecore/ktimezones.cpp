@@ -637,7 +637,7 @@ void KSystemTimezonesPrivate::readZoneTab()
                 if (!temp.status() || !f.open(QIODevice::ReadOnly))
                 {
                     kdDebug() << "Can't open " << f.name() << endl;
-                    m_zoneinfoDir = QString::null;
+                    m_zoneinfoDir.clear();
                 }
             }
         }
@@ -936,7 +936,7 @@ QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, QIODevice
             return candidateMd5Sum;
         }
     }
-    return QString::null;
+    return QString();
 }
 
 /**

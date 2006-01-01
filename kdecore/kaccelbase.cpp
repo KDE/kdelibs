@@ -395,7 +395,7 @@ bool KAccelBase::updateConnections()
 #ifndef NDEBUG
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
 		kdDebug(125) << "Key: " << it.key().key().toStringInternal() << " => '"
-			<< (((*it).pAction) ? (*it).pAction->name() : QString::null) << "'" << endl;
+			<< (((*it).pAction) ? (*it).pAction->name() : QString()) << "'" << endl;
 	}
 #endif
 #endif //Q_WS_X11

@@ -403,7 +403,7 @@ void kdbgstream::flush() {
     if (d->output.isEmpty() || !d->print)
 	return;
     kDebugBackend( d->level, d->area, d->output.toLocal8Bit().data() );
-    d->output = QString::null;
+    d->output.clear();
 }
 
 kdbgstream &kdbgstream::form(const char *format, ...)

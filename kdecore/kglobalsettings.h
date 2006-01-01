@@ -401,7 +401,7 @@ class KDECORE_EXPORT KGlobalSettings
      * @return the font that is capable to show the text with 48 pt
      * @since 3.1
      */
-    static QFont largeFont(const QString &text = QString::null);
+    static QFont largeFont(const QString &text = QString());
 
     /**
      * Returns if the user specified multihead. In case the display

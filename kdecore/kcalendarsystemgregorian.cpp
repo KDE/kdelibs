@@ -141,7 +141,7 @@ QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName)
         return locale()->translate("December");
       }
 
-  return QString::null;
+  return QString();
 }
 
 QString KCalendarSystemGregorian::monthNamePossessive(int month, int year,
@@ -206,7 +206,7 @@ QString KCalendarSystemGregorian::monthNamePossessive(int month, int year,
         return locale()->translate("of December");
       }
 
-  return QString::null;
+  return QString();
 }
 
 bool KCalendarSystemGregorian::setYMD(QDate & date, int y, int m, int d) const

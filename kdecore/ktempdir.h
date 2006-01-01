@@ -56,7 +56,7 @@ public:
     *
     * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
     * @param directoryPrefix the prefix of the file name, or
-    *        QString::null for the default value
+    *        QString() for the default value
     * @param mode the file permissions,
     * almost always in octal. The first digit selects permissions for
     * the user who owns the file: read (4), write (2), and execute
@@ -65,7 +65,7 @@ public:
     * users not in the file's group, with the same values.
     *
     **/
-   KTempDir(QString directoryPrefix=QString::null,
+   KTempDir(QString directoryPrefix=QString(),
              int mode = 0700 );
 
 
@@ -97,7 +97,7 @@ public:
    /**
     * Returns the full path and name of the directory, including a
     * trailing '/'.
-    * @return The name of the directory, or QString::null if creating the
+    * @return The name of the directory, or QString() if creating the
     *         directory has failed or the directory has been unlinked
     **/
    QString name() const;

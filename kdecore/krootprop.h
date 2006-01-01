@@ -59,7 +59,7 @@ public:
    *              do nothing
    * @see setProp()
    **/
-   KRootProp( const QString& rProp = QString::null );
+   KRootProp( const QString& rProp = QString() );
   /**
    * Destructs the KRootProp object.
    *
@@ -95,7 +95,7 @@ public:
   *	  was found.
   **/	
  QString readEntry( const QString& rKey,
-		    const QString& pDefault = QString::null ) const ;
+		    const QString& pDefault = QString() ) const ;
 					
  /**
   * Reads a numerical value.

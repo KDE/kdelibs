@@ -112,7 +112,7 @@ public:
      * The returned QIODevice has to be deleted after using.
      *
      * @param fileName the name of the file to filter
-     * @param mimetype the mime type of the file to filter, or QString::null if unknown
+     * @param mimetype the mime type of the file to filter, or QString() if unknown
      * @param forceFilter if true, the function will either find a compression filter, or return 0.
      *                    If false, it will always return a QIODevice. If no
      *                    filter is available it will return a simple QFile.
@@ -121,7 +121,7 @@ public:
      *         filter does not exist, the return value depends on @p forceFilter.
      *         The returned QIODevice has to be deleted after using.
      */
-    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null,
+    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString(),
                                       bool forceFilter = false );
 
     /**

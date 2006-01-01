@@ -121,10 +121,10 @@ void KUser::fillPasswd(const passwd *p) {
 
 		// fill up the list, should be at least 4 entries
 		switch (gecosList.size()) {
-		case 0: gecosList << QString::null;
-		case 1: gecosList << QString::null;
-		case 2: gecosList << QString::null;
-		case 3: gecosList << QString::null;
+		case 0: gecosList << QString();
+		case 1: gecosList << QString();
+		case 2: gecosList << QString();
+		case 3: gecosList << QString();
 		}
 
 		d = new Private(p->pw_uid,

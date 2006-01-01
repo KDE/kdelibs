@@ -442,7 +442,7 @@ QString KCalendarSystemJalali::monthName(int month, int year, bool shortName)
         return locale()->translate("Esfand");
       }
 
-  return QString::null;
+  return QString();
 }
 
 QString KCalendarSystemJalali::monthName(const QDate& date, bool shortName)
@@ -506,7 +506,7 @@ QString KCalendarSystemJalali::weekDayName(int day, bool shortName) const
         return locale()->translate("Yek-shanbe");
       }
 
-  return QString::null;
+  return QString();
 }
 
 QString KCalendarSystemJalali::weekDayName(const QDate &date,bool shortName)

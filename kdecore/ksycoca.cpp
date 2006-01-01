@@ -470,7 +470,7 @@ void KSycocaEntry::read( QDataStream &s, QString &str )
   if ( bytes > 8192 ) {                // null string or too big
       if (bytes != 0xffffffff)
          KSycoca::flagError();
-      str = QString::null;
+      str.clear();
   }
   else if ( bytes > 0 ) {              // not empty
       int bt = bytes/2;

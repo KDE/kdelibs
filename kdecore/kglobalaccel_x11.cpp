@@ -312,7 +312,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 		for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
 			KAccelAction* pAction = *it;
 			kdDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
-				<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString::null)
+				<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString())
 				<< endl;
 		}
 #endif

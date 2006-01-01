@@ -401,7 +401,7 @@ public:
    * @see fracDigits()
    */
   QString formatMoney(double num,
-		      const QString & currency = QString::null,
+		      const QString & currency = QString(),
 		      int digits = -1) const;
 
   /**
@@ -976,7 +976,7 @@ public:
   /**
    * Translates a message as a QTranslator is supposed to.
    * The parameters are similar to i18n(), but the result
-   * value has other semantics (it can be QString::null)
+   * value has other semantics (it can be QString())
    * @since 3.1
    **/
   QString translateQt(const char *context,
@@ -1191,7 +1191,7 @@ private:
 
 
   /**
-   * @internal Retrieves the file name of the catalog, or QString::null
+   * @internal Retrieves the file name of the catalog, or QString()
    *           if not found.
    */
   static QString catalogFileName(const QString & language,

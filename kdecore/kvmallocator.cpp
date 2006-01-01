@@ -84,7 +84,7 @@ KVMAllocator::allocate(size_t _size)
 {
    if (!d->tempfile)
    {
-      d->tempfile = new KTempFile(QString::null, "vmdata");
+      d->tempfile = new KTempFile(QString(), "vmdata");
       d->tempfile->unlink();
    }
    // Search in free list

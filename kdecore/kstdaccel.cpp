@@ -166,7 +166,7 @@ QString name( StdAccel id )
 {
 	KStdAccelInfo* pInfo = infoPtr( id );
 	if( !pInfo )
-		return QString::null;
+		return QString();
 	return pInfo->psName;
 }
 
@@ -174,7 +174,7 @@ QString label( StdAccel id )
 {
 	KStdAccelInfo* pInfo = infoPtr( id );
 	if( !pInfo )
-		return QString::null;
+		return QString();
 	return i18n((pInfo->psDesc) ? pInfo->psDesc : pInfo->psName);
 }
 
@@ -185,7 +185,7 @@ QString whatsThis( StdAccel /*id*/ )
 //	if( pInfo && pInfo->psWhatsThis )
 //		return i18n(pInfo->psWhatsThis);
 //	else
-		return QString::null;
+		return QString();
 }
 
 const KShortcut& shortcut( StdAccel id )
@@ -313,7 +313,7 @@ QString ShortcutList::label( uint i ) const
 	{ return i18n((g_infoStdAccel[i].psDesc) ? g_infoStdAccel[i].psDesc : g_infoStdAccel[i].psName); }
 
 QString ShortcutList::whatsThis( uint ) const
-	{ return QString::null; }
+	{ return QString(); }
 
 const KShortcut& ShortcutList::shortcut( uint i ) const
 {
@@ -343,7 +343,7 @@ bool ShortcutList::setOther( Other, uint, const QVariant &)
 
 bool ShortcutList::save() const
 {
-	return writeSettings( QString::null, 0, false, true );
+	return writeSettings( QString(), 0, false, true );
 }
 
 }

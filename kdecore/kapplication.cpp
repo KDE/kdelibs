@@ -206,7 +206,7 @@ public:
     :   refCount( 1 ),
 	oldIceIOErrorHandler( 0 ),
 	checkAccelerators( 0 ),
-	overrideStyle( QString::null ),
+	overrideStyle( QString() ),
 	startup_id( "0" ),
 	app_started_timer( NULL ),
 	m_KAppDCOPInterface( 0L ),

@@ -136,8 +136,8 @@ public:
             return QPolygon();
 
         points.replace(',', ' ');
-        points.replace('\r', QString::null);
-        points.replace('\n', QString::null);
+        points.replace('\r', QString());
+        points.replace('\n', QString());
 
         points = points.simplified();
 

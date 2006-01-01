@@ -148,47 +148,47 @@ public:
 
   /**
    * The login name of the user.
-   * @return the login name of the user or QString::null if user is invalid
+   * @return the login name of the user or QString() if user is invalid
    */
   QString loginName() const;
 
   /**
    * The full name of the user.
-   * @return the full name of the user or QString::null if user is invalid
+   * @return the full name of the user or QString() if user is invalid
    */
   QString fullName() const;
 
   /**
    * The user's room number.
-   * @return the room number of the user or QString::null if not set or the
+   * @return the room number of the user or QString() if not set or the
    *         user is invalid
    */
   QString roomNumber() const;
 
   /**
    * The user's work phone.
-   * @return the work phone of the user or QString::null if not set or the
+   * @return the work phone of the user or QString() if not set or the
    *         user is invalid
    */
   QString workPhone() const;
 
   /**
    * The user's home phone.
-   * @return the home phone of the user or QString::null if not set or the
+   * @return the home phone of the user or QString() if not set or the
    *         user is invalid
    */
   QString homePhone() const;
 
   /**
    * The path to the user's home directory.
-   * @return the home directory of the user or QString::null if the
+   * @return the home directory of the user or QString() if the
    *         user is invalid
    */
   QString homeDir() const;
 
   /**
    * The path to the user's login shell.
-   * @return the login shell of the user or QString::null if the
+   * @return the login shell of the user or QString() if the
    *         user is invalid
    */
   QString shell() const;

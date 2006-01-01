@@ -382,14 +382,14 @@ QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
 QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/) const
 {
   if ( month < 1 )
-    return QString::null;
+    return QString();
   if ( is_leap_year(year) )
   {
     if ( month > 13 )
-      return QString::null;
+      return QString();
   }
   else if ( month > 12 )
-      return QString::null;
+      return QString();
 
   // We must map conversion algorithm month index to real index
   if( month == 6 && is_leap_year(year) )
@@ -433,7 +433,7 @@ QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/
     break;
   }
 
-  return QString::null;
+  return QString();
 }
 
 // ### Fixme

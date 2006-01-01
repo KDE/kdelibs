@@ -115,7 +115,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == ":local" ).toBool();
 
-  tmp = config.readEntry( "URIMode", QString::null ).toLower();
+  tmp = config.readEntry( "URIMode", QString() ).toLower();
   if (tmp == "rawuri")
      d->uriMode = KURL::RawURI;
   else if (tmp == "mailto")
@@ -398,7 +398,7 @@ QString KProtocolInfo::config( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return QString("kio_%1rc").arg(prot->m_config);
 }
@@ -416,7 +416,7 @@ QString KProtocolInfo::defaultMimetype( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->m_defaultMimetype;
 }
@@ -434,7 +434,7 @@ QString KProtocolInfo::exec( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->m_exec;
 }
@@ -470,7 +470,7 @@ QString KProtocolInfo::docPath( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->d->docPath;
 }
@@ -479,7 +479,7 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->d->protClass;
 }
@@ -515,7 +515,7 @@ QString KProtocolInfo::proxiedBy( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::null;
+    return QString();
 
   return prot->d->proxyProtocol;
 }

@@ -86,49 +86,49 @@ public:
 
   /**
    * Returns the value of the "Type=" entry.
-   * @return the type or QString::null if not specified
+   * @return the type or QString() if not specified
    */
   QString readType() const;
 
   /**
    * Returns the value of the "Icon=" entry.
-   * @return the icon or QString::null if not specified
+   * @return the icon or QString() if not specified
    */
   QString readIcon() const;
 
   /**
    * Returns the value of the "Name=" entry.
-   * @return the name or QString::null if not specified
+   * @return the name or QString() if not specified
    */
   QString readName() const;
 
   /**
    * Returns the value of the "Comment=" entry.
-   * @return the comment or QString::null if not specified
+   * @return the comment or QString() if not specified
    */
   QString readComment() const;
 
   /**
    * Returns the value of the "GenericName=" entry.
-   * @return the generic name or QString::null if not specified
+   * @return the generic name or QString() if not specified
    */
   QString readGenericName() const;
 
   /**
    * Returns the value of the "Path=" entry.
-   * @return the path or QString::null if not specified
+   * @return the path or QString() if not specified
    */
   QString readPath() const;
 
   /**
    * Returns the value of the "Dev=" entry.
-   * @return the device or QString::null if not specified
+   * @return the device or QString() if not specified
    */
   QString readDevice() const;
 
   /**
    * Returns the value of the "URL=" entry.
-   * @return the URL or QString::null if not specified
+   * @return the URL or QString() if not specified
    */
   QString readURL() const;
 

@@ -162,7 +162,7 @@ class KDECORE_EXPORT KShortcutList
 	 * @param pConfig the configuration file to load from
 	 * @return true if successful, false otherwise
 	 */
-	virtual bool readSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
+	virtual bool readSettings( const QString& sConfigGroup = QString(), KConfigBase* pConfig = 0 );
 
 	/**
 	 * Writes the shortcuts to the given configuration file.
@@ -173,7 +173,7 @@ class KDECORE_EXPORT KShortcutList
 	 * @param bGlobal true to write to the global configuration file
 	 * @return true if successful, false otherwise
 	 */
-	virtual bool writeSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0,
+	virtual bool writeSettings( const QString& sConfigGroup = QString(), KConfigBase* pConfig = 0,
 			bool bWriteAll = false, bool bGlobal = false ) const;
 
  protected:

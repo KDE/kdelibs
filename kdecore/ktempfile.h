@@ -60,14 +60,14 @@ public:
     *
     * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname/"
     * The default @p fileExtension is ".tmp"
-    * @param filePrefix the prefix of the file name, or QString::null
+    * @param filePrefix the prefix of the file name, or QString()
     *        for the default value
-    * @param fileExtension the extension of the prefix, or QString::null for
+    * @param fileExtension the extension of the prefix, or QString() for
     *        the default value
     * @param mode the file permissions
     **/
-   KTempFile(const QString& filePrefix=QString::null,
-             const QString& fileExtension=QString::null,
+   KTempFile(const QString& filePrefix=QString(),
+             const QString& fileExtension=QString(),
              int mode = 0600 );
 
    /**
@@ -114,7 +114,7 @@ public:
     * recommended since it may lead to the kind of symlink vulnerabilities
     * that the KTempFile design attempts to prevent.
     *
-    * @return The name of the file, or QString::null if opening the
+    * @return The name of the file, or QString() if opening the
     *         file has failed or the file has been unlinked already.
     **/
    QString name() const;

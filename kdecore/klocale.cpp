@@ -111,7 +111,7 @@ QString KLocale::_initLanguage(KConfigBase *config)
      // todo: adapt current catalog list: remove unused languages, insert main catalogs, if not already found
      return this_klocale->language();
   }
-  return QString::null;
+  return QString();
 }
 
 void KLocale::initMainCatalogs(const QString & catalog)
@@ -314,7 +314,7 @@ void KLocale::initFormat()
 
   readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
-  m_thousandsSeparator.replace( QString::fromLatin1("$0"), QString::null );
+  m_thousandsSeparator.replace( QString::fromLatin1("$0"), QString() );
   //kdDebug(173) << "m_thousandsSeparator=" << m_thousandsSeparator << endl;
 
   readConfigEntry("PositiveSign", "", m_positiveSign);
@@ -325,7 +325,7 @@ void KLocale::initFormat()
   readConfigEntry("MonetaryDecimalSymbol", ".", m_monetaryDecimalSymbol);
   readConfigEntry("MonetaryThousandsSeparator", ",",
 		  m_monetaryThousandsSeparator);
-  m_monetaryThousandsSeparator.replace(QString::fromLatin1("$0"), QString::null);
+  m_monetaryThousandsSeparator.replace(QString::fromLatin1("$0"), QString());
 
   readConfigNumEntry("FracDigits", 2, m_fracDigits, int);
   readConfigBoolEntry("PositivePrefixCurrencySymbol", true,
@@ -490,9 +490,9 @@ void KLocale::splitLocale(const QString & aStr,
   if (f >= 0)
     str.truncate(f);
 
-  country = QString::null;
-  chrset = QString::null;
-  language = QString::null;
+  country.clear();
+  chrset.clear();
+  language.clear();
 
   f = str.indexOf('.');
   if (f >= 0)
@@ -603,7 +603,7 @@ QString KLocale::translate_priv(const char *msgid,
     {
       kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
-      return QString::null;
+      return QString();
     }
 
   if ( useDefaultLanguage() ) { // shortcut evaluation if en_US is main language: do not consult the catalogs
@@ -651,7 +651,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
     {
       kdWarning() << "KLocale: trying to look up \"\" in catalog. "
                   << "Fix the program" << endl;
-      return QString::null;
+      return QString();
     }
 
   if ( useDefaultLanguage() )
@@ -688,7 +688,7 @@ QString KLocale::translate( const char *singular, const char *plural,
     {
       kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
-      return QString::null;
+      return QString();
     }
 
   char *newstring = new char[strlen(singular) + strlen(plural) + 6];
@@ -832,7 +832,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   }
   kdFatal() << "The function should have returned in another way" << endl;
 
-  return QString::null;
+  return QString();
 }
 
 QString KLocale::translateQt( const char *context, const char *source,
@@ -841,11 +841,11 @@ QString KLocale::translateQt( const char *context, const char *source,
   if (!source || !source[0]) {
     kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		<< "Fix the program" << endl;
-    return QString::null;
+    return QString();
   }
 
   if ( useDefaultLanguage() ) {
-    return QString::null;
+    return QString();
   }
 
   char *newstring = 0;
@@ -876,7 +876,7 @@ QString KLocale::translateQt( const char *context, const char *source,
   r = translate_priv(source, source, &translation);
   if (translation)
     return r;
-  return QString::null;
+  return QString();
 }
 
 bool KLocale::nounDeclension() const
@@ -990,7 +990,7 @@ static void _insertSeparator(QString &str, const QString &separator,
   QString mainPart = str.section(decimalSymbol, 0, 0);
   QString fracPart = str.section(decimalSymbol, 1, 1,
 				 QString::SectionIncludeLeadingSep);
-  if (fracPart==decimalSymbol) fracPart=QString();
+  if (fracPart==decimalSymbol) fracPart.clear();
   for (int pos = mainPart.length() - 3; pos > 0; pos -= 3)
     mainPart.insert(pos, separator);
 
@@ -1184,7 +1184,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   QString expString = tmpString.section('e', 1, 1,
 					QString::SectionCaseInsensitiveSeps |
 					QString::SectionIncludeLeadingSep);
-  if (expString.length()==1) expString=QString();
+  if (expString.length()==1) expString.clear();
 
   kdDebug(173)<<"mantString:"<<mantString<<endl;
   kdDebug(173)<<"expString:"<<expString<<endl;
@@ -1903,7 +1903,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
 	return *it;
     }
 
-  return QString::null;
+  return QString();
 }
 
 bool KLocale::useDefaultLanguage() const

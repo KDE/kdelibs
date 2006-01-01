@@ -98,7 +98,7 @@ void KURLTest::testSetQuery()
   url1.setQuery( "" );
   QCOMPARE( url1.query(), QString() );
 #endif
-  url1.setQuery( QString::null );
+  url1.setQuery( QString() );
   QCOMPARE( url1.query(), QString() );
 }
 
@@ -117,7 +117,7 @@ void KURLTest::testSetRef()
 #endif
   url1.setRef( "" );
   QCOMPARE( url1.ref(), QString("" ) );
-  url1.setRef( QString::null );
+  url1.setRef( QString() );
   QCOMPARE( url1.ref(), QString() );
 
   qDebug("* setHTMLRef tests\n");
@@ -131,7 +131,7 @@ void KURLTest::testSetRef()
   QCOMPARE( url1.htmlRef(), QString("#") );
   url1.setHTMLRef( "" );
   QCOMPARE( url1.htmlRef(), QString("") );
-  url1.setHTMLRef( QString::null );
+  url1.setHTMLRef( QString() );
   QCOMPARE( url1.htmlRef(), QString() );
 }
 
@@ -888,7 +888,7 @@ void KURLTest::testBaseURL() // those are tests for the KURL(base,relative) cons
   QCOMPARE( waba1.url(), QString("http://waldo@www.website.com/directory/filename?bla#blub") );
   waba1.setUser("waldo/bastian");
   QCOMPARE( waba1.url(), QString("http://waldo%2Fbastian@www.website.com/directory/filename?bla#blub") );
-  waba1.setRef( QString::null );
+  waba1.setRef( QString() );
   waba1.setPass( "pass" );
   waba1.setDirectory( "/foo" );
   waba1.setProtocol( "https" );
@@ -976,7 +976,7 @@ void KURLTest::testSubURL()
 void KURLTest::testSetUser()
 {
   // The KURL equality test below works because in Qt4 null == empty.
-  QString str1 = QString::null;
+  QString str1.clear();
   QString str2 = "";
   QVERIFY( str1 == str2 );
 
@@ -991,7 +991,7 @@ void KURLTest::testSetUser()
   QCOMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
   emptyUserTest2.setUser( "foo" );
   QCOMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
-  emptyUserTest2.setUser( QString::null );
+  emptyUserTest2.setUser( QString() );
   QCOMPARE( emptyUserTest1==emptyUserTest2, true );
 }
 
@@ -1108,7 +1108,7 @@ void KURLTest::testBrokenStuff()
   QCOMPARE( waba1.directory(true, false), QString("") );
   QCOMPARE( waba1.directory(true, true), QString("") );
   KURL broken;
-  broken.setPath( QString::null );
+  broken.setPath( QString() );
   QVERIFY( !broken.isEmpty() );
   // It's valid: because isValid refers to parsing, not to what happens afterwards.
   QVERIFY( broken.isValid() );

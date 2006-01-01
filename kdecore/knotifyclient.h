@@ -182,19 +182,19 @@ namespace KNotifyClient
 	 * @deprecated
 	 * @param message The name of the event
 	 * @param text The text to put in a dialog box.  This won't be shown if
-	 *             the user connected the event to sound, only. Can be QString::null.
+	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	KDECORE_EXPORT_DEPRECATED int event(const QString &message, const QString &text=QString::null) KDE_DEPRECATED;
+	KDECORE_EXPORT_DEPRECATED int event(const QString &message, const QString &text=QString()) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
 	 * Allows to easily emit standard events.
 	 * @param event The event you want to raise.
-	 * @param text The text explaining the event you raise. Can be QString::null.
+	 * @param text The text explaining the event you raise. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	KDECORE_EXPORT_DEPRECATED int event( StandardEvent event, const QString& text=QString::null ) KDE_DEPRECATED;
+	KDECORE_EXPORT_DEPRECATED int event( StandardEvent event, const QString& text=QString() ) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
@@ -206,8 +206,8 @@ namespace KNotifyClient
 	 * @param file The log file to append the message to if selected with @p present
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	KDECORE_EXPORT_DEPRECATED int userEvent(const QString &text=QString::null, int present=Default, int level=Default,
-	                             const QString &sound=QString::null, const QString &file=QString::null) KDE_DEPRECATED;
+	KDECORE_EXPORT_DEPRECATED int userEvent(const QString &text=QString(), int present=Default, int level=Default,
+	                             const QString &sound=QString(), const QString &file=QString()) KDE_DEPRECATED;
 	
 //#endif
 
@@ -222,12 +222,12 @@ namespace KNotifyClient
 	 * @param winId The winId() of the widget where the event originates
 	 * @param message The name of the event
 	 * @param text The text to put in a dialog box.  This won't be shown if
-	 *             the user connected the event to sound, only. Can be QString::null.
+	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
 	KDECORE_EXPORT_DEPRECATED int event( WId winId, const QString& message,
-                              const QString& text = QString::null );
+                              const QString& text = QString() );
 
 	/**
 	 * You should
@@ -236,12 +236,12 @@ namespace KNotifyClient
 	 * @param winId The winId() of the widget where the event originates
 	 * @param event The event you want to raise
 	 * @param text The text to put in a dialog box.  This won't be shown if
-	 *             the user connected the event to sound, only. Can be QString::null.
+	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
 	KDECORE_EXPORT_DEPRECATED int event( WId winId, StandardEvent event,
-                              const QString& text = QString::null );
+                              const QString& text = QString() );
 
 	/**
 	 * Will fire an event that's not registered.
@@ -257,8 +257,8 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	KDECORE_EXPORT_DEPRECATED int userEvent(WId winId, const QString &text=QString::null, int present=Default, int level=Default,
-	                      const QString &sound=QString::null, const QString &file=QString::null);
+	KDECORE_EXPORT_DEPRECATED int userEvent(WId winId, const QString &text=QString(), int present=Default, int level=Default,
+	                      const QString &sound=QString(), const QString &file=QString());
 	
 	/**
 	 * This is a simple substitution for QApplication::beep().
@@ -266,9 +266,9 @@ namespace KNotifyClient
 	 * \code
 	 * KNotifyClient::event( KNotifyClient::notification, reason );
 	 * \endcode
-	 * @param reason the reason, can be QString::null.
+	 * @param reason the reason, can be QString().
 	 */
-	KDECORE_EXPORT_DEPRECATED void beep(const QString& reason=QString::null);
+	KDECORE_EXPORT_DEPRECATED void beep(const QString& reason=QString());
 
 	/**
 	 * Gets the presentation associated with a certain event name
@@ -287,7 +287,7 @@ namespace KNotifyClient
 	 * This has the potential for being slow.
 	 * @param eventname the name of the event
 	 * @param present the presentation method
-	 * @return the associated file. Can be QString::null if not found.
+	 * @return the associated file. Can be QString() if not found.
 	 */
 	KDECORE_EXPORT_DEPRECATED QString getFile(const QString &eventname, int present);
 	
@@ -308,7 +308,7 @@ namespace KNotifyClient
 	 * Some do (Sound)
 	 * @param eventname the name of the event
 	 * @param present the presentation method
-	 * @return the default file. Can be QString::null if not found.
+	 * @return the default file. Can be QString() if not found.
 	 */
 	KDECORE_EXPORT_DEPRECATED QString getDefaultFile(const QString &eventname, int present);
 

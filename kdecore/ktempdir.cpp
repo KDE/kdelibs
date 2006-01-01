@@ -92,7 +92,7 @@ KTempDir::create(const QString &directoryPrefix, int mode)
        kdWarning(180) << "KTempDir: Error trying to create " << nme.data()
 		      << ": " << ::strerror(errno) << endl;
        mError = errno;
-       mTmpName = QString::null;
+       mTmpName.clear();
        return false;
    }
 

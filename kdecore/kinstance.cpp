@@ -201,7 +201,7 @@ KConfig	*KInstance::config() const
             QString kioskException = d->sharedConfig->readEntry("kiosk_exception");
             if (d->sharedConfig->readEntry( "custom_config", true).toBool())
             {
-               d->sharedConfig->setGroup(QString::null);
+               d->sharedConfig->setGroup(QString());
             }
             else
             {
@@ -215,7 +215,7 @@ KConfig	*KInstance::config() const
 	    if ( !_name.isEmpty() )
 	        d->sharedConfig = KSharedConfig::openConfig( _name + "rc");
 	    else
-	        d->sharedConfig = KSharedConfig::openConfig( QString::null );
+	        d->sharedConfig = KSharedConfig::openConfig( QString() );
 	}
 
 	// Check if we are excempt from kiosk restrictions

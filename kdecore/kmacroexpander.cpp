@@ -525,7 +525,7 @@ TexpandMacrosShellQuote( const QString &ostr, const QHash<KT,VT> &map, QChar c )
     QString str( ostr );
     KMacroMapExpander<KT,VT> kmx( map, c );
     if (!kmx.expandMacrosShellQuote( str ))
-        return QString::null;
+        return QString();
     return str;
 }
 

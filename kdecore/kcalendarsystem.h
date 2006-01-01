@@ -233,7 +233,7 @@ public:
 
   /**
    * Gets specific calendar type month name for a given month number
-   * If an invalid month is specified, QString::null is returned.
+   * If an invalid month is specified, QString() is returned.
    *
    * @param month The month number
    * @param year The year the month belongs to
@@ -255,7 +255,7 @@ public:
    * Returns a string containing the possessive form of the month name.
    * ("of January", "of February", etc.)
    * It's needed in long format dates in some languages.
-   * If an invalid month is specified, QString::null is returned.
+   * If an invalid month is specified, QString() is returned.
    *
    * @param month The month number
    * @param year The year the month belongs to
@@ -279,7 +279,7 @@ public:
 
   /**
    * Gets specific calendar type week day name
-   * If an invalid week day is specified, QString::null is returned.
+   * If an invalid week day is specified, QString() is returned.
    *
    * @param weekDay number of day in week (1 -> Monday)
    * @param shortName short or complete day name

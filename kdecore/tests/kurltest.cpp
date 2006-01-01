@@ -16,9 +16,9 @@
 static bool check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
-     a = QString::null;
+     a.clear();
   if (b.isEmpty())
-     b = QString::null;
+     b.clear();
   if (a == b) {
     kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
   }
@@ -195,8 +195,8 @@ int main(int argc, char *argv[])
   check("setQuery(\"?\") -> query", url1.query(), "?" );
   url1.setQuery( "" );
   check("setQuery(\"\") -> query", url1.query(), "?" );
-  url1.setQuery( QString::null );
-  check("setQuery(QString::null) -> query", url1.query(), QString::null );
+  url1.setQuery( QString() );
+  check("setQuery(QString()) -> query", url1.query(), QString() );
 
   u1 = "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
 
   KURL udir;
   printf("\n* Empty URL\n");
-  check("KURL::url()", udir.url(), QString::null);
+  check("KURL::url()", udir.url(), QString());
   check("KURL::isEmpty()", udir.isEmpty() ? "ok" : "ko", "ok");
   check("KURL::isValid()", udir.isValid() ? "ok" : "ko", "ko");
   udir = udir.upURL();
@@ -427,7 +427,7 @@ int main(int argc, char *argv[])
 
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
   printf("\n* URL is %s\n",ftpUrl.url().latin1());
-  check("KURL::path()", ftpUrl.path(), QString::null);
+  check("KURL::path()", ftpUrl.path(), QString());
   ftpUrl = "ftp://ftp.de.kde.org/";
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp.de.kde.org/host/subdir/") ? "yes" : "no", "yes");
   ftpUrl = "ftp://ftp/host/subdir/";
@@ -540,7 +540,7 @@ int main(int argc, char *argv[])
 
 
   // The KURL equality test below works because in Qt4 null == empty.
-  QString str1 = QString::null;
+  QString str1.clear();
   QString str2 = "";
   assert( str1 == str2 );
 
@@ -554,7 +554,7 @@ int main(int argc, char *argv[])
   check( "Empty vs. null fields: password", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
   emptyUserTest2.setUser( "foo" );
   check( "setUser: user", emptyUserTest2.user(), "foo" );
-  emptyUserTest2.setUser( QString::null );
+  emptyUserTest2.setUser( QString() );
   check( "Empty vs. null fields: user", emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
   assert( emptyUserTest2.user().isNull() );
 
@@ -562,7 +562,7 @@ int main(int argc, char *argv[])
   check("http: Set user", waba1.url(), "http://waldo@www.website.com/directory/filename?bla#blub");
   waba1.setUser("waldo/bastian");
   check("http: Set user with slash in it", waba1.url(), "http://waldo%2Fbastian@www.website.com/directory/filename?bla#blub");
-  waba1.setRef( QString::null );
+  waba1.setRef( QString() );
   waba1.setPass( "pass" );
   waba1.setDirectory( "/foo" );
   waba1.setProtocol( "https" );
@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
         "http://www.kde.org/cgi/test.cgi#");
   check("hasRef()", waba1.hasRef()?"true":"false","true");
   check("hasHTMLRef()", waba1.hasHTMLRef()?"true":"false","true");
-  check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString::null);
+  check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString());
 
   // URLs who forgot to encode spaces in the query.
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
@@ -735,7 +735,7 @@ int main(int argc, char *argv[])
   check("Broken stuff #3 directory(true, false)", waba1.directory(true, false), "");
   check("Broken stuff #3 directory(false, true)", waba1.directory(true, true), "");
   KURL broken;
-  broken.setPath( QString::null );
+  broken.setPath( QString() );
   check("Broken stuff #4 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
   // It's valid: because isValid refers to parsing, not to what happens afterwards.
   check("Broken stuff #4 valid", broken.isValid()?"VALID":"MALFORMED", "VALID");
@@ -872,7 +872,7 @@ int main(int argc, char *argv[])
   check("queryItem (first item)", theKow.queryItem("q"), "frerich");
   check("queryItem (middle item)", theKow.queryItem("hl"), "de");
   check("queryItem (last item)", theKow.queryItem("lr"), "lang de");
-  check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
+  check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString());
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
   check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
   theKow.addQueryItem("a", "b+c" );

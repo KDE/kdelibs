@@ -58,7 +58,7 @@ public:
     * the filename is derived from the name.
     * @param name The name of palette as returned by getPaletteList()
     **/
-   KPalette(const QString &name=QString::null);
+   KPalette(const QString &name=QString());
 
    /**
     * KPalette copy constructor.
@@ -183,7 +183,7 @@ public:
     * @return The index of the added color.
     **/
    int addColor(const QColor &newColor, 
-                const QString &newColorName = QString::null);
+                const QString &newColorName = QString());
 
    /**
     * Change a color.
@@ -196,7 +196,7 @@ public:
     **/
    int changeColor(int index, 
                    const QColor &newColor, 
-                   const QString &newColorName = QString::null);
+                   const QString &newColorName = QString());
  
    /**
     * Change a color.
@@ -209,7 +209,7 @@ public:
     **/
    int changeColor(const QColor &oldColor, 
                    const QColor &newColor, 
-                   const QString &newColorName = QString::null)
+                   const QString &newColorName = QString())
    	{ return changeColor( findColor(oldColor), newColor, newColorName); }
 
 private:   

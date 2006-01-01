@@ -229,7 +229,7 @@ void KToolInvocation::invokeMailer(const KURL &mailtoURL, const QByteArray& star
        address = address.isEmpty()? KURL::decode_string((*it).mid(3)): address + ',' + KURL::decode_string((*it).mid(3));
    }
 
-   invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
+   invokeMailer( address, cc, bcc, subject, body, QString(), attachURLs, startup_id );
 }
 
 
@@ -309,7 +309,7 @@ void KToolInvocation::invokeMailer(const QString &address, const QString &subjec
    if (!isMainThreadActive())
      return;
 
-   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
+   invokeMailer(address, QString(), QString(), subject, QString(), QString(),
        QStringList(), startup_id );
 }
 
