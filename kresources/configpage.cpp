@@ -73,7 +73,7 @@ class ConfigViewItem : public QTreeWidgetItem
 
     void setStandard( bool value )
     {
-      setText( 2, ( value ? i18n( "Yes" ) : QString::null ) );
+      setText( 2, ( value ? i18n( "Yes" ) : QString() ) );
       mIsStandard = value;
     }
 
@@ -87,7 +87,7 @@ class ConfigViewItem : public QTreeWidgetItem
       setCheckState( 0, mResource->isActive() ? Qt::Checked : Qt::Unchecked );
       setText( 0, mResource->resourceName() );
       setText( 1, mResource->type() );
-      setText( 2, mIsStandard ? i18n( "Yes" ) : QString::null );
+      setText( 2, mIsStandard ? i18n( "Yes" ) : QString() );
     }
 
     bool isOn()
