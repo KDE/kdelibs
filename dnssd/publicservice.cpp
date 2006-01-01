@@ -51,7 +51,7 @@ public:
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain)
-  		: QObject(), ServiceBase(name, type, QString::null, domain, port)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port)
 {
 	d = new PublicServicePrivate;
 	if (domain.isNull())

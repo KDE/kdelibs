@@ -59,15 +59,15 @@ class KDNSSD_EXPORT PublicService : public QObject, public ServiceBase
 	Q_OBJECT
 public:
 	/**
-	@param name Service name. If set to QString::null, computer name will be used and will be
+	@param name Service name. If set to QString(), computer name will be used and will be
 	available via serviceName() after successful registration
 	@param type Service type. Has to be in form _sometype._udp or _sometype._tcp
 	@param port Port number. Set to 0 to "reserve" service name. 
 	@param domain Domain name. If left as QString:null, user configuration will be used. "local."
 		means local LAN
 	 */
-	PublicService(const QString& name=QString::null,const QString& type=QString::null,
-		      unsigned int port=0,const QString& domain=QString::null);
+	PublicService(const QString& name=QString(),const QString& type=QString(),
+		      unsigned int port=0,const QString& domain=QString());
 
 	~PublicService();
 	
@@ -128,7 +128,7 @@ public:
 	default route) will be used.
 	@since 3.5
 	 */
-	const KURL toInvitation(const QString& host=QString::null);
+	const KURL toInvitation(const QString& host=QString());
 
 signals:
 	/**

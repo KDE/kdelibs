@@ -184,7 +184,7 @@ void resolve_callback    (    DNSServiceRef,
 		&voidValue) == kDNSServiceErr_NoError)  
         {
 		if (voidValue) map[QString::fromUtf8(key)]=QString::fromUtf8((const char*)voidValue,valueLen);
-			else map[QString::fromUtf8(key)]=QString::null;
+			else map[QString::fromUtf8(key)].clear();
         }
 	ResolveEvent rev(DNSToDomain(hosttarget),ntohs(port),map);
 	QApplication::sendEvent(obj, &rev);
