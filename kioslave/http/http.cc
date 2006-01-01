@@ -2369,15 +2369,6 @@ bool HTTPProtocol::httpOpen()
 
     header += " HTTP/1.1\r\n"; /* start header */
 
-    // Support old HTTP/1.0 style keep-alive header for compatability
-    // purposes as well as performance improvements while giving end
-    // users the ability to disable this feature proxy servers that
-    // don't not support such feature, e.g. junkbuster proxy server.
-    if (!m_bUseProxy || m_bPersistentProxyConnection || m_bIsTunneled)
-      header += "Connection: Keep-Alive\r\n";
-    else
-      header += "Connection: close\r\n";
-
     if (!m_request.userAgent.isEmpty())
     {
         header += "User-Agent: ";
@@ -2536,12 +2527,16 @@ bool HTTPProtocol::httpOpen()
 
     // Do we need to authorize to the proxy server ?
     if ( m_state.doProxy && !m_bIsTunneled )
-    {
-      if ( m_bPersistentProxyConnection )
-	header += "Proxy-Connection: Keep-Alive\r\n";
-
       header += proxyAuthenticationHeader();
-    }
+
+    // Support old HTTP/1.0 style keep-alive header for compatability
+    // purposes as well as performance improvements while giving end
+    // users the ability to disable this feature proxy servers that
+    // don't not support such feature, e.g. junkbuster proxy server.
+    if (!m_bUseProxy || m_bPersistentProxyConnection || m_bIsTunneled)
+      header += "Connection: Keep-Alive\r\n";
+    else
+      header += "Connection: close\r\n";
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
     {
@@ -4920,7 +4915,7 @@ void HTTPProtocol::cleanCache()
 //**************************  AUTHENTICATION CODE ********************/
 
 
-void HTTPProtocol::configAuth( char *p, bool b )
+void HTTPProtocol::configAuth( char *p, bool isForProxy )
 {
   HTTP_AUTH f = AUTH_None;
   const char *strAuth = p;
@@ -4949,7 +4944,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   {
     // if we get two 401 in a row let's assume for now that
     // Negotiate isn't working and ignore it
-    if ( !b && !(m_responseCode == 401 && m_prevResponseCode == 401) )
+    if ( !isForProxy && !(m_responseCode == 401 && m_prevResponseCode == 401) )
     {
       f = AUTH_Negotiate;
       memcpy((void *)p, "Negotiate", 9); // Correct for upper-case variations.
@@ -4957,8 +4952,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     };
   }
 #endif
-  else if ( strncasecmp( p, "NTLM", 4 ) == 0 &&
-    (( b && m_bPersistentProxyConnection ) || !b ) )
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0 )
   {
     f = AUTH_NTLM;
     memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
@@ -4969,7 +4963,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   {
     kdWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
                     << "type requested" << endl;
-    if (b)
+    if (isForProxy)
       kdWarning(7113) << "(" << m_pid << ") Proxy URL: " << m_proxyURL << endl;
     else
       kdWarning(7113) << "(" << m_pid << ") URL: " << m_request.url << endl;
@@ -4983,7 +4977,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
          and when multiple Proxy-Authenticate or WWW-Authenticate
          header field is sent.
   */
-  if (b)
+  if (isForProxy)
   {
     if ((f == AUTH_None) ||
         ((m_iProxyAuthCount > 0) && (f < ProxyAuthentication)))
@@ -5022,7 +5016,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
       p += 6;
       if (*p == '"') p++;
       while( p[i] && p[i] != '"' ) i++;
-      if( b )
+      if( isForProxy )
         m_strProxyRealm = QString::fromLatin1( p, i );
       else
         m_strRealm = QString::fromLatin1( p, i );
@@ -5031,7 +5025,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     p+=(i+1);
   }
 
-  if( b )
+  if( isForProxy )
   {
     ProxyAuthentication = f;
     m_strProxyAuthorization = QString::fromLatin1( strAuth );
@@ -5501,6 +5495,10 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     passwd = m_proxyURL.pass();
     strauth = m_strProxyAuthorization.latin1();
     len = m_strProxyAuthorization.length();
+    // Force a persistent proxy connection since NTLM authentication
+    // is completely useless without it! NOTE: we are purposefully
+    // ignoring the user's setting here...
+    m_bPersistentProxyConnection = true;
   }
   else
   {
