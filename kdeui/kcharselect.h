@@ -162,7 +162,7 @@ public:
      * the number of the table which should be displayed.
      */
     KCharSelect( QWidget *parent, const char *name,
-		 const QString &font = QString::null, const QChar &chr = ' ', int tableNum = 0 );
+		 const QString &font = QString(), const QChar &chr = ' ', int tableNum = 0 );
     ~KCharSelect();
     /**
      * Reimplemented.

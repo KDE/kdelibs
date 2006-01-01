@@ -553,7 +553,7 @@ void KToolBar::setLinedText (int id, const QString& text)
 QString KToolBar::getLinedText (int id) const
 {
     KLineEdit * lineEdit = const_cast<KToolBar*>( this )->getLined( id );
-    return lineEdit ? lineEdit->text() : QString::null;
+    return lineEdit ? lineEdit->text() : QString();
 }
 
 
@@ -607,7 +607,7 @@ void KToolBar::clearCombo (int id)
 QString KToolBar::getComboItem (int id, int index) const
 {
     KComboBox * comboBox = const_cast<KToolBar*>( this )->getCombo( id );
-    return comboBox ? comboBox->text( index ) : QString::null;
+    return comboBox ? comboBox->text( index ) : QString();
 }
 
 
@@ -977,7 +977,7 @@ void KToolBar::saveState()
 
     // if that didn't work, we save to the config file
     KConfig *config = KGlobal::config();
-    saveSettings(config, QString::null);
+    saveSettings(config, QString());
     config->sync();
 }
 
@@ -1388,13 +1388,13 @@ void KToolBar::slotReadConfig()
     // Read appearance settings (hmm, we used to do both here,
     // but a well behaved application will call applyMainWindowSettings
     // anyway, right ?)
-    applyAppearanceSettings(KGlobal::config(), QString::null );
+    applyAppearanceSettings(KGlobal::config(), QString() );
 }
 
 void KToolBar::slotAppearanceChanged()
 {
     // Read appearance settings from global file.
-    applyAppearanceSettings(KGlobal::config(), QString::null, true /* lose local settings */ );
+    applyAppearanceSettings(KGlobal::config(), QString(), true /* lose local settings */ );
 
     // And remember to save the new look later
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());

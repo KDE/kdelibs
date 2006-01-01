@@ -61,7 +61,7 @@ public:
      *
      * @param tipFile The absolute path to the tips file.
      */
-    KTipDatabase(const QString &tipFile = QString::null);
+    KTipDatabase(const QString &tipFile = QString());
 
     /**
      * This constructor takes a list of files that will be merged. This constructor
@@ -135,7 +135,7 @@ public:
      * @param force If true, the dialog is show, even when the users
      *              disabled it.
      */
-    static void showTip(QWidget *parent, const QString &tipFile = QString::null, bool force=false);
+    static void showTip(QWidget *parent, const QString &tipFile = QString(), bool force=false);
 
     /**
      * Shows a tip
@@ -156,7 +156,7 @@ public:
      * This methods calls showTip() with the applications main window as parent.
      *
      */
-    static void showTip(const QString &tipFile = QString::null, bool force = false);
+    static void showTip(const QString &tipFile = QString(), bool force = false);
 
     /**
      * Toggles the start behavior.

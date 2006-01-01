@@ -114,10 +114,10 @@ public:
 
  static int questionYesNo(QWidget *parent,
                           const QString &text,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo =  KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
  /**
   * This function accepts the window id of the parent window, instead
@@ -126,10 +126,10 @@ public:
   */
  static int questionYesNoWId(WId parent_id,
                           const QString &text,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo =  KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
  /**
   * Display a simple "question" dialog.
@@ -165,10 +165,10 @@ public:
 
   static int questionYesNoCancel(QWidget *parent,
                           const QString &text,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo  = KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -178,10 +178,10 @@ public:
   */
   static int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo  = KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -221,10 +221,10 @@ public:
  static int questionYesNoList(QWidget *parent,
                           const QString &text,
                           const QStringList &strlist,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -235,10 +235,10 @@ public:
  static int questionYesNoListWId(WId parent_id,
                           const QString &text,
                           const QStringList &strlist,
-                          const QString &caption = QString::null,
+                          const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
-                          const QString &dontAskAgainName = QString::null,
+                          const QString &dontAskAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -273,10 +273,10 @@ public:
   */
  static int warningYesNo(QWidget *parent,
                          const QString &text,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
                          const KGuiItem &buttonNo = KStdGuiItem::no(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify | Dangerous);
 
  /**
@@ -286,10 +286,10 @@ public:
   */
  static int warningYesNoWId(WId parent_id,
                          const QString &text,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
                          const KGuiItem &buttonNo = KStdGuiItem::no(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify | Dangerous);
 
  /**
@@ -329,10 +329,10 @@ public:
  static int warningYesNoList(QWidget *parent,
                             const QString &text,
                             const QStringList &strlist,
-                            const QString &caption = QString::null,
+                            const QString &caption = QString(),
                             const KGuiItem &buttonYes = KStdGuiItem::yes(),
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
-                            const QString &dontAskAgainName = QString::null,
+                            const QString &dontAskAgainName = QString(),
                             int options = Notify | Dangerous);
 
  /**
@@ -343,10 +343,10 @@ public:
  static int warningYesNoListWId(WId parent_id,
                             const QString &text,
                             const QStringList &strlist,
-                            const QString &caption = QString::null,
+                            const QString &caption = QString(),
                             const KGuiItem &buttonYes = KStdGuiItem::yes(),
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
-                            const QString &dontAskAgainName = QString::null,
+                            const QString &dontAskAgainName = QString(),
                             int options = Notify | Dangerous);
 
  /**
@@ -380,9 +380,9 @@ public:
   */
  static int warningContinueCancel(QWidget *parent,
                          const QString &text,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify);
 
  /**
@@ -392,9 +392,9 @@ public:
   */
  static int warningContinueCancelWId(WId parent_id,
                          const QString &text,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify);
 
  /**
@@ -433,9 +433,9 @@ public:
  static int warningContinueCancelList(QWidget *parent,
                          const QString &text,
                          const QStringList &strlist,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify);
 
  /**
@@ -446,9 +446,9 @@ public:
  static int warningContinueCancelListWId(WId parent_id,
                          const QString &text,
                          const QStringList &strlist,
-                         const QString &caption = QString::null,
+                         const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
-                         const QString &dontAskAgainName = QString::null,
+                         const QString &dontAskAgainName = QString(),
                          int options = Notify);
 
  /**
@@ -489,10 +489,10 @@ public:
 
   static int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
-                                const QString &caption = QString::null,
+                                const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
-                                const QString &dontAskAgainName = QString::null,
+                                const QString &dontAskAgainName = QString(),
                                 int options = Notify);
 
  /**
@@ -502,10 +502,10 @@ public:
   */
   static int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
-                                const QString &caption = QString::null,
+                                const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
-                                const QString &dontAskAgainName = QString::null,
+                                const QString &dontAskAgainName = QString(),
                                 int options = Notify);
 
  /**
@@ -552,10 +552,10 @@ public:
   static int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
                                 const QStringList &strlist,
-                                const QString &caption = QString::null,
+                                const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
-                                const QString &dontAskAgainName = QString::null,
+                                const QString &dontAskAgainName = QString(),
                                 int options = Notify);
 
  /**
@@ -566,10 +566,10 @@ public:
   static int warningYesNoCancelListWId(WId parent_id,
                                 const QString &text,
                                 const QStringList &strlist,
-                                const QString &caption = QString::null,
+                                const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
-                                const QString &dontAskAgainName = QString::null,
+                                const QString &dontAskAgainName = QString(),
                                 int options = Notify);
 
  /**
@@ -597,7 +597,7 @@ public:
 
   static void error(QWidget *parent,
                     const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -608,7 +608,7 @@ public:
   */
   static void errorWId(WId parent_id,
                     const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -642,7 +642,7 @@ public:
   static void errorList(QWidget *parent,
                     const QString &text,
                     const QStringList &strlist,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -654,7 +654,7 @@ public:
   static void errorListWId(WId parent_id,
                     const QString &text,
                     const QStringList &strlist,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -686,7 +686,7 @@ public:
   static void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -697,7 +697,7 @@ public:
   static void detailedErrorWId(WId parent_id,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
   /**
@@ -713,7 +713,7 @@ public:
   static void queuedDetailedError( QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null);
+                    const QString &caption = QString());
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -723,7 +723,7 @@ public:
   static void queuedDetailedErrorWId( WId parent_id,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null);
+                    const QString &caption = QString());
 
  /**
   * Display an "Sorry" dialog.
@@ -749,7 +749,7 @@ public:
 
   static void sorry(QWidget *parent,
                     const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -759,7 +759,7 @@ public:
   */
   static void sorryWId(WId parent_id,
                     const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -793,7 +793,7 @@ public:
   static void detailedSorry(QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -804,7 +804,7 @@ public:
   static void detailedSorryWId(WId parent_id,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     int options = Notify);
 
  /**
@@ -835,8 +835,8 @@ public:
 
   static void information(QWidget *parent,
                           const QString &text,
-                          const QString &caption = QString::null,
-                          const QString &dontShowAgainName = QString::null,
+                          const QString &caption = QString(),
+                          const QString &dontShowAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -846,8 +846,8 @@ public:
   */
   static void informationWId(WId parent_id,
                           const QString &text,
-                          const QString &caption = QString::null,
-                          const QString &dontShowAgainName = QString::null,
+                          const QString &caption = QString(),
+                          const QString &dontShowAgainName = QString(),
                           int options = Notify);
 
  /**
@@ -883,8 +883,8 @@ public:
   static void informationList(QWidget *parent,
 			      const QString &text,
 			      const QStringList & strlist,
-			      const QString &caption = QString::null,
-			      const QString &dontShowAgainName = QString::null,
+			      const QString &caption = QString(),
+			      const QString &dontShowAgainName = QString(),
 			      int options = Notify);
 
  /**
@@ -895,8 +895,8 @@ public:
   static void informationListWId(WId parent_id,
 			      const QString &text,
 			      const QStringList & strlist,
-			      const QString &caption = QString::null,
-			      const QString &dontShowAgainName = QString::null,
+			      const QString &caption = QString(),
+			      const QString &dontShowAgainName = QString(),
 			      int options = Notify);
 
   /**
@@ -935,7 +935,7 @@ public:
    */
   static void about(QWidget *parent,
 		    const QString& text,
-		    const QString& caption = QString::null,
+		    const QString& caption = QString(),
                     int options = Notify);
 
     /**
@@ -989,7 +989,7 @@ public:
      */
     // KDE4 - merge with above?
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
                     int options = Notify);
@@ -1000,10 +1000,10 @@ public:
      * @since 3.2
      */
     static int messageBoxWId( WId parent_id, DialogType type, const QString &text,
-                    const QString &caption = QString::null,
+                    const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
-                    const QString &dontShowAskAgainName = QString::null,
+                    const QString &dontShowAskAgainName = QString(),
                     int options = Notify);
 
     /**
@@ -1041,7 +1041,7 @@ public:
      */
     static void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
-                    const QString &caption = QString::null );
+                    const QString &caption = QString() );
 
     /**
      * This function accepts the window id of the parent window, instead
@@ -1050,7 +1050,7 @@ public:
      */
     static void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
-                    const QString &caption = QString::null );
+                    const QString &caption = QString() );
 
     /**
      * @return true if the corresponding yes/no message box should be shown.
@@ -1125,7 +1125,7 @@ public:
     static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
-                             int options, const QString &details=QString::null);
+                             int options, const QString &details=QString());
 
     /**
      * Create content and layout of a standard dialog
@@ -1156,7 +1156,7 @@ public:
     static int createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
-                             int options, const QString &details=QString::null,
+                             int options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information);
 
     // KDE4 make a constructor that takes a QIcon

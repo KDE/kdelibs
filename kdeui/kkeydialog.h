@@ -87,7 +87,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	 * @param title subtree title of this collection of shortcut.
 	 * @since 3.1
 	 */
-    bool insert( KActionCollection *, const QString &title = QString::null);
+    bool insert( KActionCollection *, const QString &title = QString());
 
 	void syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset );
 
@@ -163,7 +163,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	bool insert( KGlobalAccel* );
 	bool insert( KShortcutList* );
 	/// @since 3.1
-	void buildListView( uint iList, const QString &title = QString::null );
+	void buildListView( uint iList, const QString &title = QString() );
 
 	void readGlobalKeys();
 
@@ -289,7 +289,7 @@ public:
          * @return true :)
 	 * @since 3.1
 	 */
-        bool insert(KActionCollection *, const QString &title = QString::null);
+        bool insert(KActionCollection *, const QString &title = QString());
 
 	/**
 	 * Run the dialog and call commitChanges() if @p bSaveSettings

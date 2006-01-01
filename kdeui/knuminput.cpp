@@ -121,7 +121,7 @@ void KNumInput::setLabel(const QString & label, int a)
 QString KNumInput::label() const
 {
     if (m_label) return m_label->text();
-    return QString::null;
+    return QString();
 }
 
 void KNumInput::layout(bool deep)

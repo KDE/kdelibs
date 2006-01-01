@@ -116,10 +116,10 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * @return String user entered if Ok was pressed, else a null string
      */
     static QString getText( const QString &caption, const QString &label,
-        const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
+        const QString &value=QString(), bool *ok=0, QWidget *parent=0,
         const char *name=0, QValidator *validator=0,
-        const QString &mask=QString::null,
-	const QString& whatsThis=QString::null  );
+        const QString &mask=QString(),
+	const QString& whatsThis=QString()  );
 
     /**
      * Static convenience function to get a multiline string from the user.
@@ -140,7 +140,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * @since 3.3
      */
     static QString getMultiLineText( const QString &caption,
-        const QString &label, const QString &value=QString::null,
+        const QString &label, const QString &value=QString(),
         bool *ok=0, QWidget *parent=0, const char *name=0 );
 
     /**

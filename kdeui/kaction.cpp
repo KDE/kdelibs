@@ -367,7 +367,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if(!d->m_cut.isNull() ) {
       kdDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
-      b = kaccel->insert( name(), d->plainText(), QString::null,
+      b = kaccel->insert( name(), d->plainText(), QString(),
           d->m_cut,
           this, SLOT(slotActivated()),
           isShortcutConfigurable(), isEnabled() );
@@ -677,7 +677,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if ( !kacc->actions().actionPtr(name()) )
   {
     d->m_kaccel = kacc;
-    d->m_kaccel->insert(name(), d->plainText(), QString::null,
+    d->m_kaccel->insert(name(), d->plainText(), QString(),
         KShortcut(d->m_cut),
         this, SLOT(slotActivated()),
         configurable, isEnabled());
@@ -894,7 +894,7 @@ void KAction::updateWhatsThis( int i )
   if ( tb )
   {
     QWidget *w = tb->getButton( itemId( i ) );
-    w->setWhatsThis(QString::null);
+    w->setWhatsThis(QString());
     w->setWhatsThis(d->whatsThis() );
     return;
   }

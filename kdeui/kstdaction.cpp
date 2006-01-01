@@ -283,7 +283,7 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
                             parent, _name ? _name : name(ShowMenubar));
     ret->setWhatsThis( i18n( "Show Menubar<p>"
                              "Shows the menubar again after it has been hidden" ) );
-    KGuiItem guiItem( i18n("Hide &Menubar"), 0 /*same icon*/, QString::null,
+    KGuiItem guiItem( i18n("Hide &Menubar"), 0 /*same icon*/, QString(),
                       i18n( "Hide Menubar<p>"
                             "Hide the menubar. You can usually get it back using the right mouse button inside the window itself." ) );
     ret->setCheckedState( guiItem );
@@ -299,7 +299,7 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
                             _name ? _name : name(ShowStatusbar));
     ret->setWhatsThis( i18n( "Show Statusbar<p>"
                              "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
-    KGuiItem guiItem( i18n("Hide St&atusbar"), QString::null, QString::null,
+    KGuiItem guiItem( i18n("Hide St&atusbar"), QString(), QString(),
                       i18n( "Hide Statusbar<p>"
                             "Hides the statusbar, which is the bar at the bottom of the window used for status information." ) );
     ret->setCheckedState( guiItem );

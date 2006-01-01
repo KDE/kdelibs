@@ -80,7 +80,7 @@ public:
    * @param index The visual position in the submenu.
    */
   void insertItem( const QIcon& icon, const QString &text,
-                   const QString & id, const QString &submenu = QString::null,
+                   const QString & id, const QString &submenu = QString(),
                    int index = -1 );
   /**
    * Inserts an item into the combo box. A negative index will append the item.
@@ -91,14 +91,14 @@ public:
    * @param index The visual position in the submenu.
    */
   void insertItem( const QString &text, const QString & id,
-                   const QString &submenu = QString::null, int index = -1 );
+                   const QString &submenu = QString(), int index = -1 );
   /**
    * Inserts a seperator item into the combo box. A negative index will append the item.
    *
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
-  void insertSeparator( const QString &submenu = QString::null,
+  void insertSeparator( const QString &submenu = QString(),
                         int index = -1 );
   /**
    * Inserts a submenu into the combo box. A negative index will append the item.
@@ -110,7 +110,7 @@ public:
    * @param index The visual position in the submenu.
    */
   void insertSubmenu( const QIcon & icon, const QString &text,
-                      const QString & id, const QString &submenu = QString::null,
+                      const QString & id, const QString &submenu = QString(),
                       int index = -1);
   /**
    * Inserts a submenu into the combo box. A negative index will append the item.
@@ -121,12 +121,12 @@ public:
    * @param index The visual position in the submenu.
    */
   void insertSubmenu( const QString &text, const QString & id,
-                      const QString &submenu = QString::null, int index = -1);
+                      const QString &submenu = QString(), int index = -1);
 
 
   void insertLanguage( const QString& path, const QString& name,
-                       const QString& sub = QString::null,
-                       const QString &submenu = QString::null, int index = -1);
+                       const QString& sub = QString(),
+                       const QString &submenu = QString(), int index = -1);
 
 
   int count() const;

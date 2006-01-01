@@ -554,7 +554,7 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
 
   // then, the merged one (ui_standards + local xml)
   XmlData merge;
-  merge.m_xmlFile  = QString();
+  merge.m_xmlFile.clear();
   merge.m_type     = XmlData::Merged;
   merge.m_document = domDocument();
   elem = merge.m_document.documentElement().toElement();

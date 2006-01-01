@@ -165,7 +165,7 @@ void KTipDatabase::prevTip()
 QString KTipDatabase::tip() const
 {
     if (mTips.isEmpty())
-	return QString::null;
+	return QString();
     return mTips[mCurrent];
 }
 

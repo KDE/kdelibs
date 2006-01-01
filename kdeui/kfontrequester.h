@@ -108,7 +108,7 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      * text, but it can be better to do this if the default text is
      * too large for the edit area when using the default font of your
      * application. Default text is current font name and size. Setting
-     * the text to QString::null will restore the default.
+     * the text to QString() will restore the default.
      *
      * @param text The new sample text. The current will be removed.
      */

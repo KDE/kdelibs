@@ -147,7 +147,7 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
     }
 
     QString simplified = text;
-    simplified = simplified.replace( QRegExp( "\\s" ), QString::null ).replace( '|', QLatin1String(">") );
+    simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
     while ( simplified.startsWith( QLatin1String(">>>>") ) )
 	simplified = simplified.mid(3);
     if	( simplified.startsWith( QLatin1String(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )

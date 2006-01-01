@@ -68,7 +68,7 @@ public:
      * Sets the text and alignment of the main description label.
      *
      * @param label The text of the label.
-     *              Use QString::null to remove an existing one.
+     *              Use QString() to remove an existing one.
      *
      * @param a one of @p AlignLeft, @p AlignHCenter, YAlignRight and
      *          @p AlignTop, @p AlignVCenter, @p AlignBottom.
@@ -332,7 +332,7 @@ public slots:
 
     /**
      * Sets the suffix to @p suffix.
-     * Use QString::null to disable this feature.
+     * Use QString() to disable this feature.
      * Formatting has to be provided (e.g. a space separator between the
      * prepended @p value and the suffix's text has to be provided
      * as the first character in the suffix).
@@ -343,7 +343,7 @@ public slots:
 
     /**
      * Sets the prefix to @p prefix.
-     * Use QString::null to disable this feature.
+     * Use QString() to disable this feature.
      * Formatting has to be provided (see above).
      *
      * @see QSpinBox::setPrefix(), #setSuffix()
@@ -590,7 +590,7 @@ public slots:
     void setReferencePoint(double ref);
 
     /**
-     * Sets the suffix to be displayed to @p suffix. Use QString::null to disable
+     * Sets the suffix to be displayed to @p suffix. Use QString() to disable
      * this feature. Note that the suffix is attached to the value without any
      * spacing. So if you prefer to display a space separator, set suffix
      * to something like " cm".
@@ -599,7 +599,7 @@ public slots:
     void setSuffix(const QString &suffix);
 
     /**
-     * Sets the prefix to be displayed to @p prefix. Use QString::null to disable
+     * Sets the prefix to be displayed to @p prefix. Use QString() to disable
      * this feature. Note that the prefix is attached to the value without any
      * spacing.
      * @see setPrefix()

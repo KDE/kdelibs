@@ -281,7 +281,7 @@ void KLineEdit::setReadOnly(bool readOnly)
         if (!d->squeezedText.isEmpty())
         {
            setText(d->squeezedText);
-           d->squeezedText = QString::null;
+           d->squeezedText.clear();
         }
         setBackgroundRole(d->bgRole);
     }
@@ -1285,7 +1285,7 @@ void KLineEdit::slotRestoreSelectionColors()
 
 void KLineEdit::clear()
 {
-    setText( QString::null );
+    setText( QString() );
 }
 
 void KLineEdit::setTextWorkaround( const QString& text )

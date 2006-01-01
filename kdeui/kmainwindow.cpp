@@ -353,7 +353,7 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 {
     if( !mHelpMenu ) {
-        mHelpMenu = new KHelpMenu( this, QString::null, showWhatsThis );
+        mHelpMenu = new KHelpMenu( this, QString(), showWhatsThis );
         connect( mHelpMenu, SIGNAL( showAboutApplication() ),
                  this, SLOT( showAboutApplication() ) );
     }
@@ -376,16 +376,16 @@ bool KMainWindow::canBeRestored( int number )
 const QString KMainWindow::classNameOfToplevel( int number )
 {
     if ( !qApp->isSessionRestored() )
-        return QString::null;
+        return QString();
     KConfig *config = kapp->sessionConfig();
     if ( !config )
-        return QString::null;
+        return QString();
     QString s;
     s.setNum( number );
     s.prepend( QLatin1String("WindowProperties") );
     config->setGroup( s );
     if ( !config->hasKey( QLatin1String("ClassName") ) )
-        return QString::null;
+        return QString();
     else
         return config->readEntry( "ClassName" );
 }

@@ -1259,7 +1259,7 @@ void KColorDialog::slotDefaultColorClicked()
         showColor( d->selColor, i18n( "-default-" ) );
     } else
     {
-        showColor( d->selColor, QString::null );
+        showColor( d->selColor, QString() );
     }
 }
 

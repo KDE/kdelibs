@@ -139,7 +139,7 @@ QString KXMLGUIClient::localXMLFile() const
     return d->m_localXMLFile;
 
   if ( !QDir::isRelativePath(d->m_xmlFile) )
-      return QString::null; // can't save anything here
+      return QString(); // can't save anything here
 
   return locateLocal( "data", QLatin1String( instance()->instanceName() + '/' ) + d->m_xmlFile );
 }
@@ -193,7 +193,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
       if ( !_file.isEmpty() )
           kdWarning() << "KXMLGUIClient::setXMLFile: cannot find .rc file " << _file << endl;
 
-      setXML( QString::null, true );
+      setXML( QString(), true );
       return;
     }
     else if ( !doc.isEmpty() )
@@ -709,7 +709,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
     return (*allDocuments.begin()).file;
   }
 
-  return QString::null;
+  return QString();
 }
 
 
@@ -731,7 +731,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
         //Jump to gui..
         int guipos = xml.find("gui", pos, false /*case-insensitive*/);
         if (guipos == -1)
-          return QString::null; //Reject
+          return QString(); //Reject
 
         pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
         state = ST_AFTER_GUI;
@@ -744,7 +744,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
       {
         int verpos =  xml.find("version=\"", pos, false /*case-insensitive*/);
         if (verpos == -1)
-          return QString::null; //Reject
+          return QString(); //Reject
 
         pos = verpos +  8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
         state = ST_VERSION_NUM;
@@ -777,7 +777,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
     } //switch
   } //for
 
-  return QString::null;
+  return QString();
 }
 
 KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const QDomDocument &doc )

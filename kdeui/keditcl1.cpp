@@ -208,7 +208,7 @@ KEdit::cleanWhiteSpace()
       we->setWordWrap(FixedColumnWidth);
       we->setWrapColumnOrWidth(78);
       we->setText(newText);
-      newText = QString::null;
+      newText.clear();
       for(int i = 0; i < we->numLines(); i++)
       {
         QString line = we->textLine(i);

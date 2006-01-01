@@ -90,7 +90,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Test     : return QLatin1String("test");
   case Properties : return QLatin1String("properties");
   case Overwrite : return QLatin1String("overwrite");
-  default       : return QString::null;
+  default       : return QString();
   };
 }
 
@@ -211,7 +211,7 @@ KGuiItem KStdGuiItem::print()
 
 KGuiItem KStdGuiItem::cont()
 {
-  return KGuiItem( i18n( "C&ontinue" ), QString::null,
+  return KGuiItem( i18n( "C&ontinue" ), QString(),
                    i18n( "Continue operation" ) );
 }
 

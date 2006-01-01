@@ -81,7 +81,7 @@ KURLLabel::KURLLabel (const QString& url, const QString& text,
 
 KURLLabel::KURLLabel (QWidget* parent)
   : QLabel (parent),
-    d (new Private (QString::null, this))
+    d (new Private (QString(), this))
 {
   setFont (font());
   setCursor (KCursor::handCursor());

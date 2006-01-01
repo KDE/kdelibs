@@ -44,13 +44,13 @@ public:
     // get changed behind your back if you do 'setButtonFoo( "Bar" );'
     // It gives the wrong impression that you just change the text.
     KGuiItem( const QString &text, 
-              const QString &iconName  = QString::null,
-              const QString &toolTip   = QString::null, 
-              const QString &whatsThis = QString::null );
+              const QString &iconName  = QString(),
+              const QString &toolTip   = QString(), 
+              const QString &whatsThis = QString() );
 
     KGuiItem( const QString &text, const QIcon &iconSet, 
-              const QString &toolTip   = QString::null, 
-              const QString &whatsThis = QString::null );
+              const QString &toolTip   = QString(), 
+              const QString &whatsThis = QString() );
 
     KGuiItem( const KGuiItem &rhs );
     KGuiItem &operator=( const KGuiItem &rhs );

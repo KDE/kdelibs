@@ -116,7 +116,7 @@ public:
    * return the last XML file set.  This, in almost all cases, will
    * be the local XML file.
    *
-   * @return The name of the XML file or QString::null
+   * @return The name of the XML file or QString()
    */
   virtual QString xmlFile() const;
 

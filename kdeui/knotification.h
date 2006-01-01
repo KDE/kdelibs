@@ -319,7 +319,7 @@ public:
 	 * @param contexts is the lists of contexts, see ContextList
 	 * @param flags is a bitmask of KNotificationFlags  
 	 */
-	static KNotification *event( const QString& eventId , const QString& text=QString::null,
+	static KNotification *event( const QString& eventId , const QString& text=QString(),
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 			const QStringList &actions=QStringList(), ContextList contexts=ContextList() ,
 			unsigned int flags=CloseOnTimeout);
@@ -336,7 +336,7 @@ public:
 	 * @param widget is a widget where the notification reports to
 	 * @param flags is a bitmask of KNotificationFlags  
 	 */
-	static KNotification *event( StandardEvent eventId , const QString& text=QString::null,
+	static KNotification *event( StandardEvent eventId , const QString& text=QString(),
 								 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 								unsigned int flags=CloseOnTimeout);
 	
@@ -346,7 +346,7 @@ public:
 	 * @param reason a small text explaining what's happen (may be null)
 	 * @param widget the widget where the notification refer to 
 	 */
-	static void beep( const QString& reason = QString::null , QWidget *widget=0L);
+	static void beep( const QString& reason = QString() , QWidget *widget=0L);
 
 	/**
 	 * @return the name of the event

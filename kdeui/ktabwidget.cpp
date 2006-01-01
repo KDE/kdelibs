@@ -221,7 +221,7 @@ QString KTabWidget::tabText( int index ) const
         if ( index >= 0 && index < count() )
             return d->m_tabNames[ index ];
         else
-            return QString::null;
+            return QString();
     }
     else
         return QTabWidget::tabText( index );
@@ -421,9 +421,9 @@ void KTabWidget::moveTab( int from, int to )
     insertTab(to, w, tablabel);
     if ( d->m_automaticResizeTabs ) {
         if ( to < 0 || to >= count() )
-            d->m_tabNames.append( QString::null );
+            d->m_tabNames.append( QString() );
         else
-            d->m_tabNames.insert( to, QString::null );
+            d->m_tabNames.insert( to, QString() );
     }
 
     setTabIcon(to,tabiconset);

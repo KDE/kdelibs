@@ -570,7 +570,7 @@ QStringList KSelectAction::items() const
 QString KSelectAction::currentText() const
 {
   if ( currentItem() < 0 )
-    return QString::null;
+    return QString();
 
   return d->m_list[ currentItem() ];
 }
@@ -922,7 +922,7 @@ void KListAction::setCurrentItem( int index )
 QString KListAction::currentText() const
 {
   if ( currentItem() < 0 )
-      return QString::null;
+      return QString();
 
   return items()[ currentItem() ];
 }
@@ -2019,7 +2019,7 @@ KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              KActionCollection* parent, QWidget* window,
                              const char* name )
-  : KToggleAction( QString::null, cut, receiver, slot, parent, name ),
+  : KToggleAction( QString(), cut, receiver, slot, parent, name ),
     window( NULL )
 {
   setWindow( window );

@@ -959,7 +959,7 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
   if( pb )
   {
     if (text.isEmpty())
-      pb->setWhatsThis(QString::null);
+      pb->setWhatsThis(QString());
     else
       pb->setWhatsThis(text );
   }

@@ -61,7 +61,7 @@ public:
    * @param _instance the instance to use for this button
    */
   KToolBarButton(const QString& icon, int id, QWidget *parent,
-                 const char *name=0L, const QString &txt=QString::null,
+                 const char *name=0L, const QString &txt=QString(),
                  KInstance *_instance = KGlobal::instance());
 
   /**
@@ -76,7 +76,7 @@ public:
    * @param txt    This button's text (in a tooltip or otherwise)
    */
   KToolBarButton(const QPixmap& pixmap, int id, QWidget *parent,
-                 const char *name=0L, const QString &txt=QString::null);
+                 const char *name=0L, const QString &txt=QString());
 
   /**
    * Construct a separator button

@@ -137,7 +137,7 @@ static QString qrichtextify( const QString& text )
     *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
   }
 
-  return lines.join(QString::null);
+  return lines.join(QString());
 }
 
 int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
@@ -258,7 +258,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                                label3, SLOT(openLink(const QString &)));
          }
        } else {
-         Q3TextEdit* te = new Q3TextEdit(details, QString::null, detailsGroup);
+         Q3TextEdit* te = new Q3TextEdit(details, QString(), detailsGroup);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
        }
@@ -443,7 +443,7 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
     res = (result==KDialogBase::Yes ? Yes : No);
 
@@ -495,7 +495,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Information,
                        text, QStringList(),
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
     if ( result==KDialogBase::Cancel ) return Cancel;
     res = (result==KDialogBase::Yes ? Yes : No);
@@ -576,7 +576,7 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
     res = (result==KDialogBase::Yes ? Yes : No);
 
@@ -648,7 +648,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
 
     if ( result==KDialogBase::No )
@@ -724,7 +724,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
     if ( result==KDialogBase::Cancel ) return Cancel;
     res = (result==KDialogBase::Yes ? Yes : No);
@@ -773,7 +773,7 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
         XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
-    createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString::null, 0, options);
+    createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString(), 0, options);
 }
 
 void
@@ -803,7 +803,7 @@ KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
         XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
-    createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0, options, details);
+    createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString(), 0, options, details);
 }
 
 void
@@ -850,7 +850,7 @@ KMessageBox::sorryWId(WId parent_id, const QString &text,
         XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
-    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, options);
+    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options);
 }
 
 void
@@ -880,7 +880,7 @@ KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
         XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
-    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, options, details);
+    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options, details);
 }
 
 void
@@ -929,7 +929,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
     bool checkboxResult = false;
 
     createKMessageBox(dialog, QMessageBox::Information, text, strlist,
-		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"),
+		dontShowAgainName.isEmpty() ? QString() : i18n("Do not show this message again"),
                 &checkboxResult, options);
 
     if (checkboxResult)
@@ -994,7 +994,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
   
     int size = IconSize(KIcon::Desktop);
     QPixmap icon = qApp->windowIcon().pixmap(size,size);
-    createKMessageBox(dialog, icon, text, QStringList(), QString::null, 0, options);
+    createKMessageBox(dialog, icon, text, QStringList(), QString(), 0, options);
     return;
 }
 
@@ -1012,7 +1012,7 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
                              const KGuiItem &buttonNo, int options )
 {
     return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
-        buttonYes, buttonNo, QString::null, options );
+        buttonYes, buttonNo, QString(), options );
 }
 
 int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &text,
@@ -1061,7 +1061,7 @@ void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QSt
 {
    KMessageBox_queue = true;
    (void) messageBoxWId(parent_id, type, text, caption, KStdGuiItem::yes(),
-                     KStdGuiItem::no(), QString::null, options);
+                     KStdGuiItem::no(), QString(), options);
    KMessageBox_queue = false;
 }
 

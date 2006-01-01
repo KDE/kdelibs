@@ -1154,7 +1154,7 @@ void KJanusWidget::removePage( QWidget *page )
 QString KJanusWidget::pageTitle(int index) const
 {
   if (!d || !d->mIntToTitle.contains(index))
-    return QString::null;
+    return QString();
   else
     return d->mIntToTitle[index];
 }

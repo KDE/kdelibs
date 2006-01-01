@@ -135,7 +135,7 @@ public slots:
     void setCancelledText( const QString& txt);
 
     /**
-     * @returns the text set via setCancelledText() or QString::null.
+     * @returns the text set via setCancelledText() or QString().
      */
     QString cancelledText() const;
 

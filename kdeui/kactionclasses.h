@@ -816,7 +816,7 @@ public slots:
    *
    *  This method does not effect the active group of KConfig.
    */
-  void loadEntries( KConfig* config, const QString &groupname=QString::null );
+  void loadEntries( KConfig* config, const QString &groupname=QString() );
 
   /**
    *  Saves the current recent files entries to a given KConfig object.
@@ -825,7 +825,7 @@ public slots:
    *
    *  This method does not effect the active group of KConfig.
    */
-  void saveEntries( KConfig* config, const QString &groupname=QString::null );
+  void saveEntries( KConfig* config, const QString &groupname=QString() );
 
   /**
    *  Add URL to recent files list.
@@ -834,7 +834,7 @@ public slots:
    *  @param name The user visible pretty name that appears before the URL
    *  @since 3.5
    */
-  void addURL( const KURL& url, const QString& name = QString::null ); 
+  void addURL( const KURL& url, const QString& name = QString() ); 
 
 
   /**

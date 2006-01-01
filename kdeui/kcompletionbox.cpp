@@ -331,7 +331,7 @@ void KCompletionBox::hide()
 {
     if ( d->m_parent )
         qApp->removeEventFilter( this );
-    d->cancelText = QString::null;
+    d->cancelText.clear();
     KListBox::hide();
 }
 

@@ -63,7 +63,7 @@ public:
     m_isRaised    = false;
     m_isActive    = false;
 
-    m_iconName    = QString::null;
+    m_iconName.clear();
     m_iconText    = KToolBar::IconOnly;
     m_iconSize    = 0;
 

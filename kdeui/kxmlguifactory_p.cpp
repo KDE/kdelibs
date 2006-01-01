@@ -242,7 +242,7 @@ void ContainerNode::plugActionList( BuildState &state, const MergingIndexList::I
         return;
 
     ContainerClient *client = findChildContainerClient( state.guiClient,
-                                                        QString::null,
+                                                        QString(),
                                                         mergingIndices.end() );
 
     client->actionLists.insert( k, state.actionList );
@@ -283,7 +283,7 @@ void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList:
         return;
 
     ContainerClient *client = findChildContainerClient( state.guiClient,
-                                                        QString::null,
+                                                        QString(),
                                                         mergingIndices.end() );
 
     ActionListMap::Iterator lIt( client->actionLists.find( k ) );
@@ -540,7 +540,7 @@ BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
     }
 
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+    parentNode->calcMergingIndex( QString(), m_state.currentClientMergingIt,
                                   m_state, /*ignoreDefaultMergingIndex*/ false );
 }
 
@@ -728,7 +728,7 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name, 
 
     // re-calculate the running default and client merging indices.
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+    parentNode->calcMergingIndex( QString(), m_state.currentClientMergingIt,
                                   m_state, ignoreDefaultMergingIndex );
 }
 
@@ -785,7 +785,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
     // and re-calculate running values, for better performance
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+    parentNode->calcMergingIndex( QString(), m_state.currentClientMergingIt,
                                   m_state, ignoreDefaultMergingIndex );
 }
 
@@ -824,8 +824,8 @@ QWidget *BuildHelper::createContainer( QWidget *parent, int index,
 
 void BuildState::reset()
 {
-    clientName = QString::null;
-    actionListName = QString::null;
+    clientName.clear();
+    actionListName.clear();
     actionList.clear();
     guiClient = 0;
     clientBuilder = 0;

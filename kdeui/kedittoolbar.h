@@ -140,7 +140,7 @@ public:
    * @param parent The parent of the dialog.
    */
   KEditToolbar(KActionCollection *collection,
-               const QString& xmlfile = QString::null, bool global = true,
+               const QString& xmlfile = QString(), bool global = true,
                QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
@@ -156,7 +156,7 @@ public:
    * @since 3.2
    */
   KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
-               const QString& xmlfile = QString::null, bool global = true,
+               const QString& xmlfile = QString(), bool global = true,
                QWidget* parent = 0);
   /**
    * Constructor for KParts based apps.
@@ -296,7 +296,7 @@ public:
    * @param parent This widget's parent
    */
   KEditToolbarWidget(KActionCollection *collection,
-                     const QString& xmlfile = QString::null,
+                     const QString& xmlfile = QString(),
                      bool global = true, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
@@ -312,7 +312,7 @@ public:
    */
   KEditToolbarWidget(const QString& defaultToolbar,
                      KActionCollection *collection,
-                     const QString& file = QString::null,
+                     const QString& file = QString(),
                      bool global = true,
                      QWidget *parent = 0L);
 
@@ -409,7 +409,7 @@ private:
   void moveActive(ToolbarItem *item, ToolbarItem *before);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
-  void loadToolbarCombo(const QString& defaultToolbar = QString::null);
+  void loadToolbarCombo(const QString& defaultToolbar = QString());
   void loadActionList(QDomElement& elem);
   void updateLocal(QDomElement& elem);
 

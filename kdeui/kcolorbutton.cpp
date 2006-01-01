@@ -102,7 +102,7 @@ void KColorButton::setDefaultColor( const QColor &c )
 void KColorButton::initStyleOption(QStyleOptionButton* opt) const
 {
     opt->init(this);
-    opt->text = QString();
+    opt->text.clear();
     opt->icon = QIcon();
     opt->features = QStyleOptionButton::None;
 }

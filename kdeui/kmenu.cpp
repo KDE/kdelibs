@@ -312,7 +312,7 @@ void KMenu::resetKeyboardVars(bool noMatches /* = false */)
     }
 
     if (!noMatches) {
-        d->keySeq = QString::null;
+        d->keySeq.clear();
     }
 
     d->noMatches = noMatches;

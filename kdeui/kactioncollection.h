@@ -173,11 +173,11 @@ public:
   /**
    * Used for reading shortcut configuration from a non-XML rc file.
    */
-  bool readShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
+  bool readShortcutSettings( const QString& sConfigGroup = QString(), KConfigBase* pConfig = 0 );
   /**
    * Used for writing shortcut configuration to a non-XML rc file.
    */
-  bool writeShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 ) const;
+  bool writeShortcutSettings( const QString& sConfigGroup = QString(), KConfigBase* pConfig = 0 ) const;
 
   void setInstance( KInstance *instance );
   /** The instance with which this class is associated. */

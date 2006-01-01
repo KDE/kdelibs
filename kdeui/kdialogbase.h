@@ -269,7 +269,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param user3 User button3 item.
      */
     KDialogBase( QWidget *parent=0, const char *name=0, bool modal=true,
-		 const QString &caption=QString::null,
+		 const QString &caption=QString(),
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
@@ -341,7 +341,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 
     KDialogBase( KDialogBase::DialogType dialogFace, Qt::WFlags f,
 		 QWidget *parent=0, const char *name=0, bool modal=true,
-		 const QString &caption=QString::null,
+		 const QString &caption=QString(),
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
@@ -470,7 +470,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *         the page.
      */
     QFrame  *addPage( const QString &itemName,
-		      const QString &header=QString::null,
+		      const QString &header=QString(),
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -485,7 +485,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @p TreeList, all the strings except the last one is ignored.
      **/
     QFrame  *addPage( const QStringList &items,
-		      const QString &header=QString::null,
+		      const QString &header=QString(),
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -513,7 +513,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *         the page.
      */
     KVBox *addVBoxPage( const QString &itemName,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -528,7 +528,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @p TreeList, all the strings except the last one is ignored.
      **/
     KVBox *addVBoxPage( const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -550,7 +550,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *         the page.
      */
     KHBox *addHBoxPage( const QString &itemName,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -565,7 +565,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @p TreeList, all the strings except the last one is ignored.
      **/
     KHBox *addHBoxPage( const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
 // Deprecated - use addPage() instead, and add a QGridLayout
@@ -592,7 +592,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      */
     Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QString &itemName,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
 
@@ -609,7 +609,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      **/
     Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 #endif
 
@@ -1194,7 +1194,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * KCMultiDialog::slotHelp() for more information.
      */
     void setHelp( const QString &anchor,
-		  const QString &appname = QString::null );
+		  const QString &appname = QString() );
 
     /**
      * Connected to help link label.

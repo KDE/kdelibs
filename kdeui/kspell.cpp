@@ -1544,7 +1544,7 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   curprog=0;
 
   dialogwillprocess = false;
-  dialog3slot = QString::null;
+  dialog3slot.clear();
 
   personaldict = false;
   dlgresult = -1;

@@ -216,7 +216,7 @@ void KGuiItem::setText( const QString &text ) {
 void KGuiItem::setIcon( const QIcon &iconset )
 {
     d->m_iconSet = iconset;
-    d->m_iconName = QString::null;
+    d->m_iconName.clear();
     d->m_hasIcon = !iconset.isNull();
 }
 

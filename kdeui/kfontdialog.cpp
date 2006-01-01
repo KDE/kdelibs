@@ -496,7 +496,7 @@ void KFontChooser::family_chosen_slot(const QString& family)
        styleListBox->setSelected(0, true);
     styleListBox->blockSignals(false);
 
-    style_chosen_slot(QString::null);
+    style_chosen_slot(QString());
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){

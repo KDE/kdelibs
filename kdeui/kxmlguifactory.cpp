@@ -55,7 +55,7 @@ public:
         static const QString &actionList = KGlobal::staticQString( "actionlist" );
         static const QString &name = KGlobal::staticQString( "name" );
 
-        m_rootNode = new ContainerNode( 0L, QString::null, 0L );
+        m_rootNode = new ContainerNode( 0L, QString(), 0L );
         m_defaultMergingName = defaultMergingName;
         tagActionList = actionList;
         attrName = name;
@@ -122,7 +122,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
         if ( never_null )
             return QLatin1String( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
         else
-            return QString::null;
+            return QString();
     }
 
     QByteArray buffer(file.readAll());
@@ -372,7 +372,7 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
     QWidget *result = findRecursive( d->m_rootNode, useTagName );
 
     d->guiClient = 0L;
-    d->m_containerName = QString::null;
+    d->m_containerName.clear();
 
     d->popState();
 

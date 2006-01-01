@@ -449,7 +449,7 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
 
 KPassivePopup *KPassivePopup::message( const QString &text, QWidget *parent, const char *name )
 {
-    return message( DEFAULT_POPUP_TYPE, QString::null, text, QPixmap(), parent, name );
+    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent, name );
 }
 
 KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
@@ -479,7 +479,7 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &text, QWidget *parent, const char *name )
 {
-    return message( popupStyle, QString::null, text, QPixmap(), parent, name );
+    return message( popupStyle, QString(), text, QPixmap(), parent, name );
 }
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,

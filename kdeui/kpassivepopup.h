@@ -118,7 +118,7 @@ public:
     /**
      * Creates a standard view then calls setView(QWidget*) .
      */
-    void setView( const QString &caption, const QString &text = QString::null );
+    void setView( const QString &caption, const QString &text = QString() );
 
     /**
      * Creates a standard view then calls setView(QWidget*) .

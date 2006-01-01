@@ -85,14 +85,14 @@ public:
    * Convenience constructor.
    *
    * @param url is the URL emitted when the label is clicked.
-   * @param text is the displayed string. If it's equal to QString::null
+   * @param text is the displayed string. If it's equal to QString()
    * the @p url will be used instead.
    * @param parent Passed to lower level constructor
    *
    * @p parent and @p name are passed to QLabel, which in turn passes
    * them further down
    */
-  KURLLabel (const QString& url, const QString& text = QString::null,
+  KURLLabel (const QString& url, const QString& text = QString(),
               QWidget* parent = 0L);
 
   /**

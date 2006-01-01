@@ -69,7 +69,7 @@ void KTextBrowser::setSource( const QString& name )
     }
     else
     {
-      emit mailClick( QString::null, name );
+      emit mailClick( QString(), name );
     }
   }
   else

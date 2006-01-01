@@ -89,7 +89,7 @@ void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
 			delete o;
 		}
 	}
-    oldText = QString::null;
+    oldText.clear();
     display( text, pix );
 }
 
@@ -147,7 +147,7 @@ void KWindowInfo::restore()
     if ( KSystemTray *tray = qobject_cast<KSystemTray*>(win) ) {
 	tray->setPixmap( oldIcon );
 	tray->setToolTip( oldText );
-	oldText = QString::null;
+	oldText.clear();
 	return;
     }
 
@@ -156,7 +156,7 @@ void KWindowInfo::restore()
     KWin::setIcons( win->winId(), oldIcon, oldMiniIcon );
 #endif
     win->setCaption( oldText );
-    oldText = QString::null;
+    oldText.clear();
 
     if ( autoDel )
 	delete this;

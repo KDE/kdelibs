@@ -99,7 +99,7 @@ void KFontRequester::setToolTip()
   m_button->setToolTip( i18n( "Click to select a font" ) );
 
   m_sampleLabel->setToolTip( QString() );
-  m_sampleLabel->setWhatsThis(QString::null);
+  m_sampleLabel->setWhatsThis(QString());
 
   if ( m_title.isNull() )
   {

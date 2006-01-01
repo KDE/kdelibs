@@ -199,8 +199,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialogBase
          * @param modal Set to true to make the dialog modal
          */
         KProgressDialog(QWidget* parent = 0, const char* name = 0,
-                        const QString& caption = QString::null,
-                        const QString& text = QString::null,
+                        const QString& caption = QString(),
+                        const QString& text = QString(),
                         bool modal = false);
 
         /**

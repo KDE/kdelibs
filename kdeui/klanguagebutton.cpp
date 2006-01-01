@@ -110,7 +110,7 @@ void KLanguageButton::setText(const QString & text)
 
 void KLanguageButton::init()
 {
-  m_current=QString();
+  m_current.clear();
   m_ids = new QStringList;
   m_popup = new QMenu( this );
   d = new KLanguageButtonPrivate;
@@ -244,7 +244,7 @@ void KLanguageButton::clear()
 
   if ( !d->staticText )
   {
-    d->button->setText( QString::null );
+    d->button->setText( QString() );
     d->button->setIcon( QIcon() );
   }
 }
@@ -266,7 +266,7 @@ QString KLanguageButton::id( int i ) const
   if ( i < 0 || i >= count() )
   {
     kdDebug() << "KLanguageButton::tag(), unknown tag " << i << endl;
-    return QString::null;
+    return QString();
   }
   return m_ids->at( i );
 }

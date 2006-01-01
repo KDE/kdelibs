@@ -196,7 +196,7 @@ public:
      *
      * @return A standard help menu.
      */
-    KMenu* helpMenu( const QString &aboutAppText = QString::null,
+    KMenu* helpMenu( const QString &aboutAppText = QString(),
 			  bool showWhatsThis = true );
 
     /**
@@ -344,7 +344,7 @@ public:
      * KXMLGUIClient::conserveMemory() to free all memory
      *     allocated by the QDomDocument and by the KXMLGUIFactory.
      */
-    void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
+    void createGUI( const QString &xmlfile = QString(), bool _conserveMemory = true );
 
     /**
      * Enables the build of a standard help menu when calling createGUI().
@@ -483,7 +483,7 @@ public:
      * group name is used.
      * @param force if set, even default settings are re-applied
      */
-    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null, bool force = false);
+    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString(), bool force = false);
 
     /**
      * Save settings for statusbar, menubar and toolbar to their respective
@@ -493,7 +493,7 @@ public:
      * @param groupName Group name to use. If not specified, the last used
      * group name is used
      */
-    void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
+    void saveMainWindowSettings(KConfig *config, const QString &groupName = QString());
 
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
@@ -593,7 +593,7 @@ public:
      *
      * @since 3.3
      */
-    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
+    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
 
     /**
      * Configures the current windows and its actions in the typical KDE
@@ -608,7 +608,7 @@ public:
      *
      * @since 3.5
      */
-    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
+    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu

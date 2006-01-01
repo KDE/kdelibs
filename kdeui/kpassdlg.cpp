@@ -262,7 +262,7 @@ void KPasswordEdit::showPass()
 	setText(tmp);
 	break;
     case NoEcho: default:
-	emit textChanged(QString::null); //To update the password comparison if need be.
+	emit textChanged(QString()); //To update the password comparison if need be.
 	break;
     }
 }

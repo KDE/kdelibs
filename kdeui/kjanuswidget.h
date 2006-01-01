@@ -213,7 +213,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual QFrame *addPage(const QString &item,const QString &header=QString::null,
+    virtual QFrame *addPage(const QString &item,const QString &header=QString(),
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -230,7 +230,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 	 * Deleting the returned frame will cause the listitem or tab to be
 	 * removed (you can re-add a page with the same name later.
      **/
-     virtual QFrame *addPage(const QStringList &items, const QString &header=QString::null,
+     virtual QFrame *addPage(const QStringList &items, const QString &header=QString(),
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -253,7 +253,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.  */
     virtual KVBox *addVBoxPage( const QString &item,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -269,7 +269,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * removed (you can re-add a page with the same name later.
      **/
     virtual KVBox *addVBoxPage( const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -293,7 +293,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *         Tabbed.
      */
     virtual KHBox *addHBoxPage( const QString &itemName,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -309,7 +309,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * removed (you can re-add a page with the same name later.
      **/
     virtual KHBox *addHBoxPage( const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
 // Deprecated - use addPage() instead, and add a QGridLayout
@@ -339,7 +339,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      */
     virtual Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QString &itemName,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -356,7 +356,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      **/
     virtual Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QStringList &items,
-			const QString &header=QString::null,
+			const QString &header=QString(),
 			const QPixmap &pixmap=QPixmap() );
 #endif
 

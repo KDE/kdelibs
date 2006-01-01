@@ -38,7 +38,7 @@
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
               bool modal )
   :KAboutDialog( AbtTabbed|AbtProduct,
-                 kapp ? kapp->caption() : QString::null,
+                 kapp ? kapp->caption() : QString(),
                  Close, Close,
      parent, name, modal )
 {
@@ -60,7 +60,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     //
     // Recovery
     //
-    setProduct( kapp ? kapp->caption() : QString::null, i18n("??"), QString::null, QString::null );
+    setProduct( kapp ? kapp->caption() : QString(), i18n("??"), QString(), QString() );
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
     QString appPageText =
@@ -72,7 +72,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   }
 
   setProduct( aboutData->programName(), aboutData->version(),
-        QString::null, QString::null );
+        QString(), QString() );
 
   if (!aboutData->programLogo().isNull())
     setProgramLogo( QPixmap::fromImage(aboutData->programLogo()) );

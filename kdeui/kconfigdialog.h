@@ -142,7 +142,7 @@ public:
   // KDE4: Add a default value for itemName & pixmapName
   void addPage( QWidget *page, const QString &itemName,
                 const QString &pixmapName,
-                const QString &header=QString::null,
+                const QString &header=QString(),
                 bool manage=true );
 
   /**
@@ -165,7 +165,7 @@ public:
   void addPage( QWidget *page, KConfigSkeleton *config,
                 const QString &itemName,
                 const QString &pixmapName,
-                const QString &header=QString::null );
+                const QString &header=QString() );
 
   /**
    * See if a dialog with the name 'name' already exists.

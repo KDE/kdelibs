@@ -1489,7 +1489,7 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 }
 
 KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
-  : KDialogBase(_parent, 0, modal, QString::null, Ok, Ok ),              // TODO: port KDialogBase
+  : KDialogBase(_parent, 0, modal, QString(), Ok, Ok ),              // TODO: port KDialogBase
     about(new KAboutWidget(this)), mContainerBase(0), d(0)
 {
   // #################################################################
@@ -1513,7 +1513,7 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
 			    QWidget *_parent, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
-  :KDialogBase( _parent, 0, modal, QString::null, buttonMask, defaultButton,  // TODO: port KDialogBase
+  :KDialogBase( _parent, 0, modal, QString(), buttonMask, defaultButton,  // TODO: port KDialogBase
 		separator, user1, user2, user3 ),
    about(0), d(0)
 {
@@ -1600,7 +1600,7 @@ void KAboutDialog::setVersion(const QString &_name)
 
 void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
-  KToolInvocation::invokeMailer( email, QString::null );
+  KToolInvocation::invokeMailer( email, QString() );
   /*
   kdDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
 	<< name << ", " << email << endl;
@@ -1723,7 +1723,7 @@ void KAboutDialog::imageURL( QWidget *_parent, const QString &_caption,
 			     const QString &_path, const QColor &_imageColor,
 			     const QString &_url )
 {
-  KAboutDialog a( AbtImageOnly, QString::null, Close, Close, _parent, "image", true );
+  KAboutDialog a( AbtImageOnly, QString(), Close, Close, _parent, "image", true );
   a.setPlainCaption( _caption );
   a.setImage( _path );
   a.setImageBackgroundColor( _imageColor );
@@ -1731,7 +1731,7 @@ void KAboutDialog::imageURL( QWidget *_parent, const QString &_caption,
   KAboutContainer* const c = a.addContainer( Qt::AlignCenter, Qt::AlignCenter );
   if( c )
   {
-    c->addPerson( QString::null, QString::null, _url, QString::null );
+    c->addPerson( QString(), QString(), _url, QString() );
   }
   a.exec();
 }

@@ -107,7 +107,7 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
      * Emitted when a mail link has been activated and the widget has
      * been configured to emit the signal.
      *
-     * @param name The destination name. It is QString::null at the moment.
+     * @param name The destination name. It is QString() at the moment.
      * @param address The destination address.
      */
     void mailClick( const QString &name, const QString &address );

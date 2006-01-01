@@ -266,7 +266,7 @@ public:
 
 protected:
     void init();
-    virtual void calcRect( const QString& text_ = QString::null );
+    virtual void calcRect( const QString& text_ = QString() );
     virtual void paintItem( QPainter *p, const QColorGroup &c );
     KWordWrap *wordWrap();
     void paintPixmap( QPainter *p, const QColorGroup &c );

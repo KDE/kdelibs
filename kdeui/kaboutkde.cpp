@@ -77,7 +77,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "donation, using one of the ways described at "
     "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
     "<br><br>Thank you very much in advance for your support.");
-  setHelp( QLatin1String("khelpcenter/main.html"), QString::null );
+  setHelp( QLatin1String("khelpcenter/main.html"), QString() );
   setTitle(i18n("K Desktop Environment. Release %1").
 	   arg(QLatin1String(KDE_VERSION_STRING)) );
   addTextPage( i18n("About KDE","&About"), text1, true );

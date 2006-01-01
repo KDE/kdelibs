@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
      It is important that your main widget is created with the dialog object
      as its parent! */
-  Q3TextView view(text, QString::null, &dialog);
+  Q3TextView view(text, QString(), &dialog);
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
   dialog.setMainWidget(&view);

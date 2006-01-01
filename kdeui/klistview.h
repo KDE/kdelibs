@@ -1008,28 +1008,28 @@ public:
   KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after);
 
   KListViewItem(Q3ListView *parent,
-    QString, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null);
+    QString, QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString());
 
   KListViewItem(Q3ListViewItem *parent,
-    QString, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null);
+    QString, QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString());
 
   KListViewItem(Q3ListView *parent, Q3ListViewItem *after,
-    QString, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null);
+    QString, QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString());
 
   KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
-    QString, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null,
-    QString = QString::null, QString = QString::null);
+    QString, QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString(),
+    QString = QString(), QString = QString());
 
   virtual ~KListViewItem();
 

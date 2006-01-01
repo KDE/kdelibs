@@ -200,7 +200,7 @@ public:
    * @return The item index.
    */
     int insertButton(const QString& icon, int id, bool enabled = true,
-		     const QString& text = QString::null, int index=-1,
+		     const QString& text = QString(), int index=-1,
 		     KInstance *_instance = KGlobal::instance());
 
    /**
@@ -223,7 +223,7 @@ public:
    */
     int insertButton(const QString& icon, int id, const char *signal,
 		     const QObject *receiver, const char *slot,
-		     bool enabled = true, const QString& text = QString::null,
+		     bool enabled = true, const QString& text = QString(),
 		     int index=-1, KInstance *_instance = KGlobal::instance() );
 
   /**
@@ -251,7 +251,7 @@ public:
    * @return The item index.
    */
     int insertButton(const QPixmap& pixmap, int id, bool enabled = true,
-		     const QString& text = QString::null, int index=-1 );
+		     const QString& text = QString(), int index=-1 );
 
   /**
    * This is the same as above, but with specified signals and
@@ -272,7 +272,7 @@ public:
    */
     int insertButton(const QPixmap& pixmap, int id, const char *signal,
 		     const QObject *receiver, const char *slot,
-		     bool enabled = true, const QString& text = QString::null,
+		     bool enabled = true, const QString& text = QString(),
 		     int index=-1 );
 
   /**
@@ -321,7 +321,7 @@ public:
 		     const char *signal,
 		     const QObject *receiver, const char *slot,
 		     bool enabled = true,
-		     const QString& toolTipText = QString::null,
+		     const QString& toolTipText = QString(),
 		     int size = 70, int index =-1);
 
   /**
@@ -341,7 +341,7 @@ public:
     int insertCombo (const QStringList &list, int id, bool writable,
 		     const char *signal, const QObject *receiver,
 		     const char *slot, bool enabled=true,
-		     const QString& tooltiptext=QString::null,
+		     const QString& tooltiptext=QString(),
 		     int size=70, int index=-1,
 		     QComboBox::InsertPolicy policy = QComboBox::InsertAtBottom);
 
@@ -357,7 +357,7 @@ public:
     int insertCombo (const QString& text, int id, bool writable,
 		     const char *signal, QObject *receiver,
 		     const char *slot, bool enabled=true,
-		     const QString& tooltiptext=QString::null,
+		     const QString& tooltiptext=QString(),
 		     int size=70, int index=-1,
 		     QComboBox::InsertPolicy policy = QComboBox::InsertAtBottom);
 

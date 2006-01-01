@@ -395,7 +395,7 @@ void KBugReport::slotOk( void )
                 "<li>cause serious data loss</li>"
                 "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString::null,KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         case 1: // grave
@@ -406,7 +406,7 @@ void KBugReport::slotOk( void )
                 "<li>cause data loss</li>"
                 "<li>introduce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString::null,KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
 	default:
@@ -533,7 +533,7 @@ bool KBugReport::sendBugReport()
               line = is.readLine();
           d->lastError = line;
       } else {
-          d->lastError = QString::null;
+          d->lastError.clear();
       }
       outputfile.unlink();
       return false;

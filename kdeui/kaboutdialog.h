@@ -96,20 +96,20 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 
   public:
     KAboutContributor( QWidget *parent=0,
-		       const QString &username=QString::null,
-		       const QString &email=QString::null,
-		       const QString &url=QString::null,
-		       const QString &work=QString::null,
+		       const QString &username=QString(),
+		       const QString &email=QString(),
+		       const QString &url=QString(),
+		       const QString &work=QString(),
 		       bool showHeader=false, bool showFrame=true,
 		       bool showBold=false );
 
-    void setName( const QString &text, const QString &header=QString::null,
+    void setName( const QString &text, const QString &header=QString(),
 		  bool update = true );
-    void setEmail( const QString &text, const QString &header=QString::null,
+    void setEmail( const QString &text, const QString &header=QString(),
 		   bool update = true );
-    void setURL( const QString &text, const QString &header=QString::null,
+    void setURL( const QString &text, const QString &header=QString(),
 		 bool update = true );
-    void setWork( const QString &text, const QString &header=QString::null,
+    void setWork( const QString &text, const QString &header=QString(),
 		  bool update = true );
     QString getName( void ) const;
     QString getEmail( void ) const;
@@ -341,9 +341,9 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
     /// KDE4 remove name argument
     KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
 		  ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
-		  const QString &user1 = QString::null,
-		  const QString &user2 = QString::null,
-		  const QString &user3 = QString::null );
+		  const QString &user1 = QString(),
+		  const QString &user2 = QString(),
+		  const QString &user3 = QString() );
 
   /**
    * Adjusts the dialog.

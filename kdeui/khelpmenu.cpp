@@ -190,7 +190,7 @@ void KHelpMenu::aboutApplication()
   {
     if( !mAboutApp )
     {
-      mAboutApp = new KDialogBase( QString::null, // Caption is defined below
+      mAboutApp = new KDialogBase( QString(), // Caption is defined below
 				   KDialogBase::Yes, KDialogBase::Yes,
 				   KDialogBase::Yes, mParent, "about",
 				   false, true, KStdGuiItem::ok() );

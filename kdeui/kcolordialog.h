@@ -470,7 +470,7 @@ class KDEUI_EXPORT KColorDialog : public KDialogBase
     void setRgbEdit( const KColor &col );
     void setHsvEdit( const KColor &col );
     void setHtmlEdit( const KColor &col );
-    void _setColor( const KColor &col, const QString &name=QString::null );
+    void _setColor( const KColor &col, const QString &name=QString() );
     void showColor( const KColor &color, const QString &name );
 
   protected:

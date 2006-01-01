@@ -261,7 +261,7 @@ bool KKeyChooser::insert( KGlobalAccel* pAccel )
 bool KKeyChooser::insert( KShortcutList* pList )
 {
 	d->rgpLists.append( pList );
-	buildListView( d->rgpLists.count() - 1, QString::null );
+	buildListView( d->rgpLists.count() - 1, QString() );
 	return true;
 }
 
@@ -685,7 +685,7 @@ void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfi
 			QString sEntry = cg.readEntry( pItem->actionName(), QString() );
 			if( !sEntry.isNull() || bClearUnset ) {
 				if( sEntry == "none" )
-					sEntry = QString::null;
+					sEntry.clear();
 				pItem->setShortcut( sEntry );
 			}
 			kdDebug(125) << pItem->actionName() << " = " << pItem->shortcut().toStringInternal() << endl;
@@ -774,7 +774,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
         // only check the global keys if one of the keychoosers isn't global
         if( !has_global_chooser ) {
             if( checkGlobalShortcutsConflict( cut, bWarnUser, this, d->mapGlobals,
-                m_type == Global ? pItem->actionName() : QString::null ))
+                m_type == Global ? pItem->actionName() : QString() ))
                 return true;
         }
 
@@ -840,7 +840,7 @@ bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarn
 {
     QMap< QString, KShortcut > map;
     readGlobalKeys( map );
-    return checkGlobalShortcutsConflict( cut, bWarnUser, parent, map, QString::null );
+    return checkGlobalShortcutsConflict( cut, bWarnUser, parent, map, QString() );
 }
 
 bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent,
@@ -1020,7 +1020,7 @@ QString KKeyChooserItem::text( int iCol ) const
 	else if( iCol <= (int) m_cut.count() )
 		return m_cut.seq(iCol-1).toString();
 	else
-		return QString::null;
+		return QString();
 }
 
 int KKeyChooserItem::compare( Q3ListViewItem* item, int iCol, bool bAscending ) const
@@ -1049,7 +1049,7 @@ int KKeyChooserItem::compare( Q3ListViewItem* item, int iCol, bool bAscending ) 
 
 QString KKeyChooserWhatsThis::text( const QPoint& p ) {
     if ( !m_listView )
-        return QString::null;
+        return QString();
 
     const Q3ListViewItem* item = m_listView->itemAt( p );
     const KKeyChooserItem* pItem = dynamic_cast<const KKeyChooserItem*>(item);

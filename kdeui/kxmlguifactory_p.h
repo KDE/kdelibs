@@ -110,8 +110,8 @@ struct ContainerNode
     ContainerNode( QWidget *_container, const QString &_tagName, const QString &_name,
                    ContainerNode *_parent = 0L, KXMLGUIClient *_client = 0L,
                    KXMLGUIBuilder *_builder = 0L, int id = -1,
-                   const QString &_mergingName = QString::null,
-                   const QString &groupName = QString::null,
+                   const QString &_mergingName = QString(),
+                   const QString &groupName = QString(),
                    const QStringList &customTags = QStringList(),
                    const QStringList &containerTags = QStringList() );
     ~ContainerNode();

@@ -193,7 +193,7 @@ case 16:
 
 case 17:
   i = KMessageBox::Ok;
-  KMessageBox::information(0, "You can enable the menubar again\nwith the right mouse button menu.", QString::null, "Enable_Menubar");
+  KMessageBox::information(0, "You can enable the menubar again\nwith the right mouse button menu.", QString(), "Enable_Menubar");
   break;
 
 case 18:
@@ -203,7 +203,7 @@ case 18:
 
 case 19:
   i = KMessageBox::Ok;
-  KMessageBox::information(0, "Return of the annoying popup message.", QString::null, "Enable_Menubar");
+  KMessageBox::information(0, "Return of the annoying popup message.", QString(), "Enable_Menubar");
   break;
 case 20:
   {
@@ -236,7 +236,7 @@ case 23:
 
 case 24:
   i = KMessageBox::Ok;
-  KMessageBox::informationList(0, "The follwoing words have been found:", list, QString::null, "Search_Words");
+  KMessageBox::informationList(0, "The follwoing words have been found:", list, QString(), "Search_Words");
   break;
 
 default:
