@@ -344,8 +344,8 @@ bool KateNormalIndent::skipBlanks (KateDocCursor &cur, KateDocCursor &max, bool 
 
 uint KateNormalIndent::measureIndent (KateDocCursor &cur) const
 {
-  if (useSpaces && !mixedIndent)
-    return cur.col();
+  // We cannot short-cut by checking for useSpaces because there may be
+  // tabs in the line despite this setting.
 
   return doc->plainKateTextLine(cur.line())->cursorX(cur.col(), tabWidth);
 }
