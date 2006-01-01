@@ -32,7 +32,7 @@
 #include <kicontheme.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
 #include <kurl.h>
@@ -579,8 +579,9 @@ void KHistoryCombo::rotateDown()
         }
         else { // bottom of history
             if ( myIterateIndex == -2 ) {
-                KNotifyClient::event( (WId)winId(), KNotifyClient::notification,
-                                      i18n("No further item in the history."));
+                KNotification::event( KNotification::Notification , 
+                                      i18n("No further item in the history."),
+                                       QPixmap() , this);
             }
 
             myIterateIndex = -1;

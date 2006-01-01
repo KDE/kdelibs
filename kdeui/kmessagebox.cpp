@@ -39,7 +39,7 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kstdguiitem.h>
 #include <kactivelabel.h>
 #include <kiconloader.h>
@@ -55,7 +55,7 @@
   * Easy MessageBox Dialog.
   *
   * Provides convenience functions for some i18n'ed standard dialogs,
-  * as well as audible notification via @ref KNotifyClient
+  * as well as audible notification via @ref KNotification
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
@@ -122,7 +122,7 @@ static void sendNotification( QString message,
     }
 
     if ( !message.isEmpty() )
-        KNotifyClient::event( (WId)parent_id, messageType, message );
+        KNotification::event( messageType, message , QPixmap() , QWidget::find( parent_id ) );
 }
 
 static QString qrichtextify( const QString& text )

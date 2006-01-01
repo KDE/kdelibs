@@ -38,7 +38,7 @@
 #include <kaccel.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kcalendarsystem.h>
 #include <kshortcut.h>
 #include <kstdaccel.h>
@@ -392,7 +392,7 @@ KDateTable::keyPressEvent( QKeyEvent *e )
       break;
     default:
       if (!e->state()) { // hm
-    KNotifyClient::beep();
+    KNotification::beep();
 }
     }
 }
@@ -447,7 +447,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
     }
   if(!isEnabled())
     {
-      KNotifyClient::beep();
+      KNotification::beep();
       return;
     }
 
@@ -616,7 +616,7 @@ KDateInternalWeekSelector::weekEnteredSlot()
   week=text().toInt(&ok);
   if(!ok)
     {
-      KNotifyClient::beep();
+      KNotification::beep();
       return;
     }
   result=week;
@@ -743,7 +743,7 @@ KDateInternalMonthPicker::contentsMousePressEvent(QMouseEvent *e)
 {
   if(!isEnabled() || e->button() != Qt::LeftButton)
     {
-      KNotifyClient::beep();
+      KNotification::beep();
       return;
     }
   // -----
@@ -858,14 +858,14 @@ KDateInternalYearSelector::yearEnteredSlot()
   year=text().toInt(&ok);
   if(!ok)
     {
-      KNotifyClient::beep();
+      KNotification::beep();
       return;
     }
   //date.setYMD(year, 1, 1);
   KGlobal::locale()->calendar()->setYMD(date, year, 1, 1);
   if(!date.isValid())
     {
-      KNotifyClient::beep();
+      KNotification::beep();
       return;
     }
   result=year;

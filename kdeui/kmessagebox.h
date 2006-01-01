@@ -71,7 +71,7 @@ public:
 
  enum OptionsType
  {
-   Notify = 1,        ///< Emit a KNotifyClient event
+   Notify = 1,        ///< Emit a KNotify event
    AllowLink = 2,     ///< The message may contain links.
    Dangerous = 4,     ///< The action to be confirmed by the dialog is a potentially destructive one
    PlainCaption = 8,  /**< Do not use KApplication::makeStdCaption()

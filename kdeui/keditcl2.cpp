@@ -34,7 +34,7 @@
 #include <kcombobox.h>
 #include <knuminput.h>
 #include <kmessagebox.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -278,7 +278,7 @@ void KEdit::replace_slot(){
     return;
 
   if(!can_replace){
-    KNotifyClient::beep();
+    KNotification::beep();
     return;
   }
 

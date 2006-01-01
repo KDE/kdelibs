@@ -41,7 +41,7 @@
 #include <ktoolbar.h>
 #include <klineedit.h>
 #include <kdebug.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kcalendarsystem.h>
 #include <QKeyEvent>
 
@@ -411,7 +411,7 @@ KDatePicker::selectYearClicked()
       // ----- set this month
       setDate(date);
     } else {
-      KNotifyClient::beep();
+      KNotification::beep();
     }
   selectYear->setOn( false );
   delete popup;
@@ -444,7 +444,7 @@ KDatePicker::lineEnterPressed()
         emit(dateEntered(temp));
         setDate(temp);
     } else {
-      KNotifyClient::beep();
+      KNotification::beep();
       kdDebug(298) << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
     }
 }
