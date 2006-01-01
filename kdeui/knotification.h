@@ -206,13 +206,7 @@ public:
 	/**
 	 * default events you can use in the event function
 	 */
-	enum StandardEvent {
-		cannotOpenFile,
-		notification,
-		warning,
-		fatalError,
-		catastrophe
-	};
+	enum StandardEvent { Notification , Warning , Error , Catastrophe };
 
 	~KNotification();
 

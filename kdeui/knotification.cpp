@@ -196,19 +196,16 @@ KNotification *KNotification::event( StandardEvent eventid , const QString& text
 {
 	QString message;
 	switch ( eventid ) {
-		case cannotOpenFile:
-			message = QLatin1String("cannotopenfile");
-			break;
-		case warning:
+		case Warning:
 			message = QLatin1String("warning");
 			break;
-		case fatalError:
+		case Error:
 			message = QLatin1String("fatalerror");
 			break;
-		case catastrophe:
+		case Catastrophe:
 			message = QLatin1String("catastrophe");
 			break;
-		case notification: // fall through
+		case Notification: // fall through
 		default:
 			message = QLatin1String("notification");
 			break;
