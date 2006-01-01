@@ -367,7 +367,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     QString extension;
     if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
         extension = "."+ext; // keep the '.'
-    KTempFile tempFile( QString::null, extension );
+    KTempFile tempFile( QString(), extension );
     m_file = tempFile.name();
 
     KURL destURL;
@@ -560,7 +560,7 @@ bool ReadWritePart::save()
   if( saveFile() )
     return saveToURL();
   else
-    emit canceled(QString::null);
+    emit canceled(QString());
   return false;
 }
 

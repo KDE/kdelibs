@@ -88,7 +88,7 @@ namespace KParts {
          * @param suggestedFilename optional filename suggested by the server
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString::null );
+        static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString() );
         /**
          * Similar to askSave but for the case where the current application is
          * able to embed the url itself (instead of passing it to another app).
@@ -98,7 +98,7 @@ namespace KParts {
          * @param flags reserved for later use
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString::null, int flags = 0 );
+        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString(), int flags = 0 );
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KURL & url, const QString & suggestedFilename );

@@ -85,7 +85,7 @@ void Shell::openURL( const KURL & url )
 
 void Shell::slotFileOpen()
 {
-  KURL url = KFileDialog::getOpenURL( QString::null, "*.ps|Postscript files (*.ps)", 0L, "file dialog" );
+  KURL url = KFileDialog::getOpenURL( QString(), "*.ps|Postscript files (*.ps)", 0L, "file dialog" );
 
   if( !url.isEmpty() )
      openURL( url );

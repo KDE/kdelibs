@@ -62,7 +62,7 @@ struct KPARTS_EXPORT URLArgs
   URLArgs( const URLArgs &args );
   URLArgs &operator=( const URLArgs &args);
 
-  URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
+  URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString() );
   virtual ~URLArgs();
 
   /**

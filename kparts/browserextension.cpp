@@ -157,7 +157,7 @@ bool URLArgs::redirectedRequest () const
 
 QString URLArgs::contentType() const
 {
-  return d ? d->contentType : QString::null;
+  return d ? d->contentType : QString();
 }
 
 QMap<QString, QString> &URLArgs::metaData()
@@ -567,7 +567,7 @@ QString BrowserExtension::actionText( const char * name ) const
     QMap<int, QString>::ConstIterator it = d->m_actionText.find( actionNumber );
     if ( it != d->m_actionText.end() )
         return *it;
-    return QString::null;
+    return QString();
 }
 
 // for compatibility

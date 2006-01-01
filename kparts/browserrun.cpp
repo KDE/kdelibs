@@ -235,7 +235,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
-                KTempFile tempFile( QString::null, extension );
+                KTempFile tempFile( QString(), extension );
                 KURL destURL;
                 destURL.setPath( tempFile.name() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
@@ -379,7 +379,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
                 QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
                 QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
                 KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-                cfg.writePathEntry("DownloadManager",QString::null);
+                cfg.writePathEntry("DownloadManager",QString());
                 cfg.sync ();
             }
             else
@@ -402,7 +402,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     }
 
     // no download manager available, let's do it ourself
-    KFileDialog *dlg = new KFileDialog( QString::null, QString::null /*all files*/,
+    KFileDialog *dlg = new KFileDialog( QString(), QString() /*all files*/,
                                         window , "filedialog", true );
     dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
@@ -463,7 +463,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     errText.replace( '#', "%23" ); // a # in the error string would really muck things up...
     KURL newURL(QString("error:/?error=%1&errText=%2")
                 .arg( error ).arg( errText ), 106 );
-    m_strURL.setPass( QString::null ); // don't put the password in the error URL
+    m_strURL.setPass( QString() ); // don't put the password in the error URL
 
     KURL::List lst;
     lst << newURL << m_strURL;

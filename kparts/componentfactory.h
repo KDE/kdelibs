@@ -220,7 +220,7 @@ namespace KParts
          *
          * Example:
          * \code
-         * KMyAppPlugin* plugin = KParts::ComponentFactory::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString::null, parentObject );
+         * KMyAppPlugin* plugin = KParts::ComponentFactory::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString(), parentObject );
          * if ( plugin ) {
          *     ....
          * }
@@ -239,7 +239,7 @@ namespace KParts
          */
         template <class T>
         static T *createInstanceFromQuery( const QString &serviceType,
-                                           const QString &constraint = QString::null,
+                                           const QString &constraint = QString(),
                                            QObject *parent = 0,
                                            const char *name = 0,
                                            const QStringList &args = QStringList(),
@@ -266,7 +266,7 @@ namespace KParts
          * \code
          * // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
          * QString mimetype = KMimeType::findByURL( url )->name();
-         * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString::null, parentWidget, 0, parentObject, 0 );
+         * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, 0, parentObject, 0 );
          * if ( part ) {
          *     part->openURL( url );
          *     part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
@@ -296,7 +296,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            const KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString::null );
+            const KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString() );
             if ( offers.isEmpty() )
             {
                 if ( error )
