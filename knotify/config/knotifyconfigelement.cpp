@@ -34,11 +34,11 @@ QString KNotifyConfigElement::readEntry( const QString & entry, bool path )
 {
 	if(m_cache.contains(entry))
 		return m_cache[entry];
-	QString p=path ?  m_config.readPathEntry(entry) : m_config.readEntry(entry, QString::null);
+	QString p=path ?  m_config.readPathEntry(entry) : m_config.readEntry(entry, QString());
 	if(!p.isNull())
 		return p;
 	
-	return path ?  m_default.readPathEntry(entry) : m_default.readEntry(entry, QString::null);
+	return path ?  m_default.readPathEntry(entry) : m_default.readEntry(entry, QString());
 }
 
 void KNotifyConfigElement::writeEntry( const QString & entry, const QString &data )

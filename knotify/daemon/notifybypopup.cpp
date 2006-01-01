@@ -53,7 +53,7 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 	QPixmap appIcon = iconLoader.loadIcon( iconName, KIcon::Small );
 	QString appCaption = globalgroup.readEntry( "Name", appname );
 
-	KVBox *vb = pop->standardView( appCaption , config->pix.isNull() ? config->text : QString::null , appIcon );
+	KVBox *vb = pop->standardView( appCaption , config->pix.isNull() ? config->text : QString() , appIcon );
 	KVBox *vb2=vb;
 
 	if(!config->pix.isNull())

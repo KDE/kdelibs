@@ -45,7 +45,7 @@ QString KNotifyConfig::readEntry( const QString & entry, bool path )
 		if(configfile.hasGroup( group ) )
 		{
 			configfile.setGroup(group);
-			QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString::null);
+			QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString());
 			if(!p.isNull())
 				return p;
 		}
@@ -55,7 +55,7 @@ QString KNotifyConfig::readEntry( const QString & entry, bool path )
 	if(configfile.hasGroup( group ) )
 	{
 		configfile.setGroup(group);
-		QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString::null);
+		QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString());
 		if(!p.isNull())
 			return p;
 	}
@@ -63,12 +63,12 @@ QString KNotifyConfig::readEntry( const QString & entry, bool path )
 	if(eventsfile.hasGroup( group ) )
 	{
 		eventsfile.setGroup(group);
-		QString p=path ?  eventsfile.readPathEntry(entry) : eventsfile.readEntry(entry, QString::null);
+		QString p=path ?  eventsfile.readPathEntry(entry) : eventsfile.readEntry(entry, QString());
 		if(!p.isNull())
 			return p;
 	}
 //	kdDebug() << k_funcinfo << entry << " not found !!! " << endl;
 
-	return QString::null;
+	return QString();
 }
 

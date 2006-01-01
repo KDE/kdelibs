@@ -39,8 +39,8 @@ class KNotifyEventList : public KListView
 public:
     KNotifyEventList(QWidget *parent);
     ~KNotifyEventList();
-	void fill( const QString & appname , const QString & context_name=QString::null , 
-			   const QString & context_value=QString::null);
+	void fill( const QString & appname , const QString & context_name=QString() , 
+			   const QString & context_value=QString());
 	void save();
 	
 private:
