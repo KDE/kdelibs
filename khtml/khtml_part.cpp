@@ -1345,7 +1345,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
-    QList<KAction*> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -6531,7 +6531,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-        QList<KAction*> lst;
+        Q3PtrList<KAction> lst;
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -6766,7 +6766,7 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
             if (factory()) {
                 factory()->removeClient( part );
             }
-            if (childClients().contains(part)) {
+            if (childClients()->containsRef(part)) {
                 removeChildClient( part );
             }
         }
@@ -7270,7 +7270,7 @@ void KHTMLPart::setDebugScript( bool enable )
       d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
-    QList<KAction*> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paDebugScript );
     plugActionList( "debugScriptList", lst );
   }
