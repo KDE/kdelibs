@@ -90,7 +90,7 @@ void BackgroundThread::setFilter( Filter *filter )
     m_filter = filter;
     if ( oldFilter ) {
         m_filter->setBuffer( oldFilter->buffer() );
-        oldFilter->setBuffer( QString::null );
+        oldFilter->setBuffer( QString() );
     }
     m_mutex.unlock();
     start();

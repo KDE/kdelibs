@@ -112,7 +112,7 @@ void DefaultDictionary::defaultConfigurationChanged()
     if ( d->dict )
         m_language = d->dict->language();
     else
-        m_language = QString::null;
+        m_language.clear();
 }
 
 #include "defaultdictionary.moc"

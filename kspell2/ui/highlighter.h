@@ -33,7 +33,7 @@ namespace KSpell2
     {
     public:
         Highlighter( Q3TextEdit *textEdit,
-                     const QString& configFile = QString::null,
+                     const QString& configFile = QString(),
                      Filter *filter = Filter::defaultFilter() );
         ~Highlighter();
 

@@ -205,7 +205,7 @@ void Settings::loadConfig()
 {
     KConfigGroup conf( d->config.data(), "Spelling" );
     d->defaultClient = conf.readEntry( "defaultClient",
-                                        QString::null );
+                                        QString() );
     d->defaultLanguage = conf.readEntry(
         "defaultLanguage", KGlobal::locale()->language() );
 

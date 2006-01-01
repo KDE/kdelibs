@@ -91,8 +91,8 @@ namespace KSpell2
          *
          */
         Dictionary *dictionary(
-            const QString& language = QString::null,
-            const QString& client = QString::null ) const;
+            const QString& language = QString(),
+            const QString& client = QString() ) const;
 
         /**
          * Returns names of all supported clients (e.g. ISpell, ASpell)

@@ -367,7 +367,7 @@ ISpellChecker::loadDictionary (const char * szdict)
 				return dict_names[i].c_str();
 		}
 
-	return QString::null;
+	return QString();
 }
 
 /*!

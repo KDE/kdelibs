@@ -82,7 +82,7 @@ void BackgroundChecker::stop()
 
 QString BackgroundChecker::getMoreText()
 {
-    return QString::null;
+    return QString();
 }
 
 void BackgroundChecker::finishedCurrentFeed()

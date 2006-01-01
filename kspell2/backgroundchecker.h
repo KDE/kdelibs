@@ -95,7 +95,7 @@ namespace KSpell2
     protected:
         /**
          * This function is called to get the text to spell check.
-         * It will be called continuesly until it returns QString::null
+         * It will be called continuesly until it returns QString()
          * in which case the done() singnal is emitted.
          * Note: the start parameter in mispelling() is not a combined
          * position but a position in the last string returned
