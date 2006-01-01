@@ -256,7 +256,7 @@ namespace khtml
 	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept);
 	virtual ~CachedImage();
 
-	//QPixmap pixmap() const;
+	const QPixmap &pixmap() const;
 	const QPixmap &tiled_pixmap(const QColor& bg);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
@@ -305,7 +305,7 @@ namespace khtml
         virtual void imageDone       (khtmlImLoad::Image* img);
     private:
         void doNotifyFinished();
-        
+
         void do_notify(const QRect& r);
         khtmlImLoad::Image* i;
 
@@ -315,8 +315,8 @@ namespace khtml
 #endif
 /*	QMovie* m;
         QPixmap* p;
-	
-        
+
+
         mutable QPixmap* pixPart;*/
         QPixmap* bg;
         QRgb bgColor;

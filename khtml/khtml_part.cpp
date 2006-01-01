@@ -59,6 +59,7 @@ using namespace DOM;
 #include "ecma/kjs_window.h"
 #include "khtml_settings.h"
 #include "kjserrordlg.h"
+#include <QTextDocument>
 
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
@@ -110,7 +111,6 @@ using namespace DOM;
 #include <qfile.h>
 #include <qtooltip.h>
 #include <qmetaobject.h>
-#include <QTextDocument>
 
 #include "khtmlpart_p.h"
 #include "kpassivepopup.h"
@@ -338,7 +338,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     else
       language = khtml::Decoder::SemiautomaticDetection;
 
-    int _id = config->readEntry( "AutomaticDetectionLanguage", QVariant(language )).toInt();
+    int _id = config->readNumEntry( "AutomaticDetectionLanguage", language );
     d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
 
@@ -1149,10 +1149,10 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+  if (comp.complType() == KJS::Throw && !comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
   }
@@ -1185,6 +1185,8 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy || proxy->paused())
     return QVariant();
+  (void)proxy->interpreter();//Make sure stuff is initialized
+
   ++(d->m_runningScripts);
   KJS::Completion comp;
   const QVariant ret = proxy->evaluate( QString::null, 1, script, n, &comp );
@@ -1193,10 +1195,10 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
+  if (comp.complType() == KJS::Throw && !comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
     }
   }
@@ -3071,8 +3073,8 @@ bool KHTMLPart::findTextNext( bool reverse )
       {
         // Grab text from render object
         QString s;
-        bool renderAreaText = obj->parent() && (QByteArray(obj->parent()->renderName())== "RenderTextArea");
-        bool renderLineText = (QByteArray(obj->renderName())== "RenderLineEdit");
+        bool renderAreaText = obj->parent() && (Q3CString(obj->parent()->renderName())== "RenderTextArea");
+        bool renderLineText = (Q3CString(obj->renderName())== "RenderLineEdit");
         if ( renderAreaText )
         {
           khtml::RenderTextArea *parent= static_cast<khtml::RenderTextArea *>(obj->parent());
@@ -3231,8 +3233,8 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   if ( obj )
   {
     int x = 0, y = 0;
-    renderAreaText = (QByteArray(obj->parent()->renderName())== "RenderTextArea");
-    renderLineText = (QByteArray(obj->renderName())== "RenderLineEdit");
+    renderAreaText = (Q3CString(obj->parent()->renderName())== "RenderTextArea");
+    renderLineText = (Q3CString(obj->renderName())== "RenderLineEdit");
 
 
     if( renderAreaText )
@@ -3646,7 +3648,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
-    setStatusBarText( Qt::escape( jscode ), BarHoverText );
+    setStatusBarText( Q3StyleSheet::escape( jscode ), BarHoverText );
     return;
   }
 
@@ -3761,7 +3763,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QLatin1String("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg = Qt::escape(mailtoMsg);
+      mailtoMsg = Q3StyleSheet::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;
@@ -4679,7 +4681,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
           QString grpNotifMsgs = QLatin1String("Notification Messages");
           KConfigGroup cg( KGlobal::config(), grpNotifMsgs );
 
-          if (!cg.readEntry("WarnOnUnencryptedForm", QVariant(true)).toBool()) {
+          if (!cg.readBoolEntry("WarnOnUnencryptedForm", true)) {
             cg.deleteEntry("WarnOnUnencryptedForm");
             cg.sync();
             kss.setWarnOnUnencrypted(false);

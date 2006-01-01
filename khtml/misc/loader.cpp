@@ -458,7 +458,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
 
-    
+
     QPixmap r (w, h);
     r.fill(color); //Fill with the appropriate bg color/transparency
 
@@ -560,42 +560,27 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     }
 #endif
 }
-/*
-QPixmap CachedImage::pixmap( ) const
+const QPixmap &CachedImage::pixmap( ) const
 {
-#ifdef __GNUC__
-   #warning "Stub!"
-#endif
-    //if(m_hadError)
+    if (m_hadError)
         return *Cache::brokenPixmap;
 
     if(m_wasBlocked)
         return *Cache::blockedPixmap;
 
-    if(m)
-    {
-        if(m->framePixmap().size() != m->frameRect().size())
-        {
-            // pixmap is not yet completely loaded, so we
-            // return a clipped version. asserting here
-            // that the valid rect is always from 0/0 to fullwidth/ someheight
-            if(!pixPart) pixPart = new QPixmap();
+    int w = i->size().width();
+    int h = i->size().height();
+    QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
 
-            (*pixPart) = m->framePixmap();
-            if (m->frameRect().size().isValid())
-                pixPart->resize(m->frameRect().size());
-            else
-                pixPart->resize(0, 0);
-            return *pixPart;
-        }
-        else
-            return m->framePixmap();
-    }
-    else if(p)
-        return *p;
-
-    return *Cache::nullPixmap;
-}*/
+    QPainter paint(&im);
+    ImagePainter pi(i);
+    //Tile as far as needed...
+    for (int x = 0; x < w; x += i->size().width())
+        for (int y = 0; y < h; y += i->size().height())
+            pi.paint(x, y, &paint);
+    paint.end();
+    return QPixmap::fromImage( im );
+}
 
 
 QSize CachedImage::pixmap_size() const
@@ -677,7 +662,7 @@ void CachedImage::do_notify(const QRect& r)
 //     qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
 //            m->framePixmap().size().width(), m->framePixmap().size().height());
 // #endif
-// 
+//
 //     do_notify(m->framePixmap(), r);
 // }
 #if 0
@@ -802,7 +787,7 @@ void CachedImage::clear()
     bgColor = qRgba( 0, 0, 0, 0xff );
     delete bg;  bg = 0;
 /*    delete p;   p = 0;
-    
+
     delete pixPart; pixPart = 0; */
 
     formatType = 0;
@@ -1330,7 +1315,7 @@ void Cache::init()
 
     if ( !brokenPixmap )
         brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::Desktop, 16, KIcon::DisabledState));
-        
+
     if ( !blockedPixmap ) {
         blockedPixmap = new QPixmap();
         blockedPixmap->loadFromData(blocked_icon_data, blocked_icon_len);

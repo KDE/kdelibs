@@ -1904,6 +1904,44 @@ CSSValueListImpl *CSSParser::parseFontFamily()
     return list;
 }
 
+bool CSSParser::parseColor(const QString &name, QRgb& rgb)
+{
+    int len = name.length();
+
+    if ( !len )
+        return false;
+
+
+    bool ok;
+
+    if ( len == 3 || len == 6 ) {
+	int val = name.toInt(&ok, 16);
+	if ( ok ) {
+            if (len == 6) {
+		rgb =  (0xff << 24) | val;
+                return true;
+            }
+            else if ( len == 3 ) {
+		// #abc converts to #aabbcc according to the specs
+		rgb = (0xff << 24) |
+		    (val&0xf00)<<12 | (val&0xf00)<<8 |
+		    (val&0xf0)<<8 | (val&0xf0)<<4 |
+		    (val&0xf)<<4 | (val&0xf);
+                return true;
+            }
+	}
+    }
+
+    // try a little harder
+    QColor tc;
+    tc.setNamedColor(name.lower());
+    if (tc.isValid()) {
+        rgb = tc.rgb();
+        return true;
+    }
+
+    return false;
+}
 
 static bool parseColor(int unit, const QString &name, QRgb& rgb)
 {

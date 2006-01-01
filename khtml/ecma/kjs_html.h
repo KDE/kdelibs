@@ -32,8 +32,10 @@
 #include "ecma/kjs_dom.h"
 #include "xml/dom_nodeimpl.h"  // for NodeImpl::Id
 
-namespace KJS {
+#include <QPointer>
 
+namespace KJS {
+class JSEventListener;
   class HTMLElement;
 
   class HTMLDocument : public DOMDocument {
@@ -43,7 +45,7 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
     void putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/);
-    
+
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
@@ -77,7 +79,7 @@ namespace KJS {
       button_info, label_info, fieldSet_info, legend_info, ul_info, ol_info,
       dl_info, dir_info, menu_info, li_info, div_info, p_info, heading_info,
       blockQuote_info, q_info, pre_info, br_info, baseFont_info, font_info,
-      hr_info, mod_info, a_info, img_info, object_info, param_info,
+      hr_info, mod_info, a_info, canvas_info, img_info, object_info, param_info,
       applet_info, map_info, area_info, script_info, table_info,
       caption_info, col_info, tablesection_info, tr_info,
       tablecell_info, frameSet_info, frame_info, iFrame_info, marquee_info, layer_info;
@@ -154,6 +156,7 @@ namespace KJS {
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            IFrameContentDocument, IFrameContentWindow,
            MarqueeStart, MarqueeStop,
+           GetContext,
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument, ElementChildren, ElementAll };
@@ -162,9 +165,9 @@ namespace KJS {
     ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
     static ValueImp *formNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-  
+
     QString getURLArg(unsigned id) const;
-  
+
     /* Many of properties in the DOM bindings can be implemented by merely returning
       an attribute as the right type, and setting it in similar manner; or perhaps
       returning a collection of appropriate type*/
@@ -178,7 +181,7 @@ namespace KJS {
       T_Res,    //Reserved, ignore sets, return empty string
       T_Coll    //Collection, type is in attrID
     };
-      
+
     struct BoundPropInfo {
       unsigned elId;  //Applicable element type
       int      token; //Token
@@ -261,6 +264,34 @@ namespace KJS {
     virtual ObjectImp* construct(ExecState *exec, const List &args);
   private:
     SharedPtr<DOM::DocumentImpl> doc;
+  };
+
+
+  class Image : public DOMObject, public khtml::CachedObjectClient {
+  public:
+    Image(DOM::DocumentImpl *d, bool ws, int w, bool hs, int h);
+    ~Image();
+    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
+    void notifyFinished(khtml::CachedObject *);
+    virtual bool toBoolean(ExecState *) const { return true; }
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { Src, Complete, OnLoad, Width, Height };
+
+    khtml::CachedImage* image() { return img; }
+
+  private:
+    UString src;
+    QPointer<DOM::DocumentImpl> doc;
+    khtml::CachedImage* img;
+    JSEventListener *onLoadListener;
+    bool widthSet;
+    bool heightSet;
+    int width;
+    int height;
   };
 
   ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide=false);

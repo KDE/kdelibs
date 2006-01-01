@@ -29,6 +29,7 @@
 #include "html/html_listimpl.h"
 #include "html/html_tableimpl.h"
 #include "html/html_objectimpl.h"
+#include "html/html_canvasimpl.h"
 #include "dom/dom_exception.h"
 
 
@@ -48,6 +49,7 @@
 #include "ecma/kjs_events.h"
 #include "ecma/kjs_html.h"
 #include "ecma/kjs_window.h"
+#include "ecma/kjs_context2d.h"
 #include "kjs_html.lut.h"
 
 #include "misc/htmltags.h"
@@ -226,11 +228,11 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   //See whether to return named items under document.
   ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyQString);
   if (info) {
-    //May be a false positive, but we can try to avoid doing it the hard way in 
-    //simpler cases. The trickiness here is that the cache is kept under both 
+    //May be a false positive, but we can try to avoid doing it the hard way in
+    //simpler cases. The trickiness here is that the cache is kept under both
     //name and id, but we sometimes ignore id for IE compat
     DOM::DOMString  propertyDOMString = propertyName.domString();
-    
+
     bool matched = false;
     if (info->nd && DOM::HTMLMappedNameCollectionImpl::matchesName(info->nd,
                               HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString)) {
@@ -282,7 +284,7 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyNa
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::DocumentImpl* docImpl = thisObj->impl();
-  
+
   //Return named items under document (e.g. images, applets, etc.)
   ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
   if (info->nd)
@@ -471,7 +473,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *v
   DOM::HTMLElementImpl* bodyCand = doc.body();
   if (!bodyCand || bodyCand->id() != ID_BODY)
     return; //Just ignore.
-    
+
   DOM::HTMLBodyElementImpl& body = *static_cast<DOM::HTMLBodyElementImpl*>(bodyCand);
 
   switch (token) {
@@ -538,6 +540,7 @@ const ClassInfo KJS::HTMLElement::font_info = { "HTMLFontElement", &KJS::HTMLEle
 const ClassInfo KJS::HTMLElement::hr_info = { "HTMLHRElement", &KJS::HTMLElement::info, &HTMLHRElementTable, 0 };
 const ClassInfo KJS::HTMLElement::mod_info = { "HTMLModElement", &KJS::HTMLElement::info, &HTMLModElementTable, 0 };
 const ClassInfo KJS::HTMLElement::a_info = { "HTMLAnchorElement", &KJS::HTMLElement::info, &HTMLAnchorElementTable, 0 };
+const ClassInfo KJS::HTMLElement::canvas_info = { "HTMLCanvasElement", &KJS::HTMLElement::info, &HTMLCanvasElementTable, 0 };
 const ClassInfo KJS::HTMLElement::img_info = { "HTMLImageElement", &KJS::HTMLElement::info, &HTMLImageElementTable, 0 };
 const ClassInfo KJS::HTMLElement::object_info = { "HTMLObjectElement", &KJS::HTMLElement::info, &HTMLObjectElementTable, 0 };
 const ClassInfo KJS::HTMLElement::param_info = { "HTMLParamElement", &KJS::HTMLElement::info, &HTMLParamElementTable, 0 };
@@ -1162,6 +1165,9 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   stop            KJS::HTMLElement::MarqueeStop                 DontDelete|Function 0
 @end
 
+@begin HTMLCanvasElementTable 1
+  getContext      KJS::HTMLElement::GetContext                  DontDelete|Function 1
+@end
 */
 
 static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl* element)
@@ -1213,7 +1219,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
         return true;
       break;
 #warning "FIXME: LiveConnect!"
-#if 0      
+#if 0
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
@@ -1278,7 +1284,7 @@ ValueImp* HTMLElement::indexGetter(ExecState *exec, unsigned index)
 const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_HTML, HtmlVersion, T_String, ATTR_VERSION},
   {ID_HEAD, HeadProfile, T_String, ATTR_PROFILE},
-  {ID_LINK, LinkDisabled, T_Bool, ATTR_DISABLED}, 
+  {ID_LINK, LinkDisabled, T_Bool, ATTR_DISABLED},
   {ID_LINK, LinkCharset,  T_String, ATTR_CHARSET},
   {ID_LINK, LinkHref,     T_URL,    ATTR_HREF},
   {ID_LINK, LinkHrefLang, T_String, ATTR_HREFLANG},
@@ -1509,7 +1515,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_IFRAME,   IFrameMarginWidth, T_String, ATTR_MARGINWIDTH},
   {ID_IFRAME,   IFrameName,        T_String, ATTR_NAME},
   {ID_IFRAME,   IFrameScrolling,   T_String, ATTR_SCROLLING},
-  {ID_IFRAME,   IFrameSrc,         T_URL,    ATTR_SRC}, 
+  {ID_IFRAME,   IFrameSrc,         T_URL,    ATTR_SRC},
   {ID_IFRAME,   IFrameAlign,       T_String, ATTR_ALIGN},
   {ID_IFRAME,   IFrameHeight,      T_String, ATTR_HEIGHT},
   {ID_IFRAME,   IFrameWidth,       T_String, ATTR_WIDTH},
@@ -2228,6 +2234,15 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       }
       break;
     }
+  case ID_CANVAS: {
+      if (id == KJS::HTMLElement::GetContext) {
+        if (args.size() == 0 || (args.size() == 1 && args[0]->toString(exec).domString().lower() == "2d")) {
+          return new Context2D(&element);
+        }
+        return Undefined();
+      }
+      break;
+    }
   }
 
   return Undefined();
@@ -2327,7 +2342,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
 {
   if (handleBoundWrite(exec, token, value))
     return;
-    
+
   DOMExceptionTranslator exception(exec);
   DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
   DOM::HTMLElementImpl& element = *impl();
@@ -2539,7 +2554,7 @@ ValueImp *HTMLCollection::lengthGetter(ExecState *, const Identifier&, const Pro
   HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
   return Number(thisObj->m_impl->length());
 }
-    
+
 
 ValueImp *HTMLCollection::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
 {
@@ -2575,7 +2590,7 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
     slot.setCustom(this, nameGetter);
     return true;
   }
-  
+
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
@@ -2675,7 +2690,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
     if (ok) {
       return getDOMNode(exec,coll.item(u));
     }
-    
+
     // support for item('<name>') (IE only)
     kdWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead" << endl;
     return getDOMNode(exec,coll.namedItem(s.domString()));
@@ -2798,7 +2813,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
   if ( option->getDocument() != element->getDocument() )
     option = static_cast<DOM::HTMLOptionElementImpl*>(element->ownerDocument()->importNode(option, true, exception));
   if (exception.triggered()) return;
-    
+
   long diff = long(u) - element->length();
   DOM::HTMLElementImpl* before = 0;
   // out of array bounds ? first insert empty dummies
@@ -2847,7 +2862,7 @@ ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
 
   int dummyexception = 0;// #### exec->setException ?
   opt->appendChild(t.get(), dummyexception);
-  
+
   if (sz > 0)
     t->setData(args[0]->toString(exec).domString(), exception); // set the text
   if (sz > 1)
@@ -2898,6 +2913,122 @@ ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
     image->setAttribute(ATTR_HEIGHT, QString::number(height));
 
   return getDOMNode(exec,image)->getObject();
+}
+
+
+const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
+
+/* Source for ImageTable. Use "make hashtables" to regenerate.
+@begin ImageTable 6
+  src		Image::Src		DontDelete
+  complete	Image::Complete		DontDelete|ReadOnly
+  onload        Image::OnLoad           DontDelete
+  width         Image::Width            DontDelete|ReadOnly
+  height        Image::Height           DontDelete|ReadOnly
+@end
+*/
+
+bool Image::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+  return getStaticValueSlot<Image,DOMObject>(exec, &ImageTable, this, propertyName, slot);
+}
+
+ValueImp *Image::getValueProperty(ExecState *, int token) const
+{
+  switch (token) {
+  case Src:
+    return String(doc ? doc->completeURL(src.qstring()) : src);
+  case Complete:
+    return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
+  case OnLoad:
+    if (onLoadListener && onLoadListener->listenerObj()) {
+      return onLoadListener->listenerObj();
+    } else {
+      return Null();
+    }
+  case Width: {
+    if (widthSet)
+        return Number(width);
+    int w = 0;
+    if (img) {
+      QSize size = img->pixmap_size();
+      if (size.isValid())
+        w = size.width();
+    }
+    return Number(w);
+  }
+  case Height: {
+    if (heightSet)
+        return Number(height);
+    int h = 0;
+    if (img) {
+      QSize size = img->pixmap_size();
+      if (size.isValid())
+        h = size.height();
+    }
+    return Number(h);
+  }
+  default:
+    kdWarning() << "Image::getValueProperty unhandled token " << token << endl;
+    return NULL;
+  }
+}
+
+void Image::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+{
+  lookupPut<Image,DOMObject>(exec, propertyName, value, attr, &ImageTable, this );
+}
+
+void Image::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
+{
+  switch(token) {
+  case Src:
+  {
+    src = value->toString(exec);
+    if ( img ) img->deref(this);
+    img = doc ? doc->docLoader()->requestImage( src.domString() ) : 0;
+    if ( img ) img->ref(this);
+    break;
+  }
+  case OnLoad:
+    onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
+    if (onLoadListener) onLoadListener->ref();
+    break;
+  case Width:
+    widthSet = true;
+    width = value->toInt32(exec);
+    break;
+  case Height:
+    heightSet = true;
+    height = value->toInt32(exec);
+    break;
+  default:
+    kdWarning() << "HTMLDocument::putValueProperty unhandled token " << token << endl;
+  }
+}
+
+void Image::notifyFinished(khtml::CachedObject *)
+{
+  if (onLoadListener && doc->part()) {
+    DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
+    ev.initEvent("load", true, true);
+    onLoadListener->handleEvent(ev);
+  }
+}
+
+Image::Image(DocumentImpl *d, bool ws, int w, bool hs, int h)
+  : doc(d), img(0), onLoadListener(0)
+{
+      widthSet = ws;
+      width = w;
+      heightSet = hs;
+      height = h;
+}
+
+Image::~Image()
+{
+  if ( img ) img->deref(this);
+  if ( onLoadListener ) onLoadListener->deref();
 }
 
 ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)

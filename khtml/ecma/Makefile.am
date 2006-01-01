@@ -24,13 +24,13 @@ noinst_LTLIBRARIES = libkjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 	kjs_binding.h kjs_proxy.h kjs_css.h kjs_range.h \
-	kjs_traversal.h kjs_events.h kjs_views.h kjs_debugwin.h
+	kjs_traversal.h kjs_events.h kjs_views.h kjs_debugwin.h kjs_context2d.h
 
 libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp kjs_mozilla.cpp xmlhttprequest.cpp \
-        xmlserializer.cpp domparser.cpp
+        xmlserializer.cpp domparser.cpp kjs_context2d.cpp
 #libkjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
 libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
 libkjs_html_la_METASOURCES = AUTO
@@ -79,7 +79,9 @@ xmlserializer.lo: xmlserializer.lut.h
 domparser.lut.h : $(srcdir)/domparser.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/domparser.cpp > $@
 domparser.lo: domparser.lut.h
-
+kjs_context2d.lut.h : $(srcdir)/kjs_context2d.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_context2d.cpp > $@
+kjs_context2d.lo: kjs_context2d.lut.h
 
 CLEANFILES = $(LUT_FILES)
 
