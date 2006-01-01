@@ -646,6 +646,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
     return &a_info;
   case ID_IMG:
     return &img_info;
+  case ID_CANVAS:
+    return &canvas_info;
   case ID_OBJECT:
     return &object_info;
   case ID_PARAM:
