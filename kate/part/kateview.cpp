@@ -861,7 +861,7 @@ KateView::saveResult KateView::saveAs()
   if( res.URLs.isEmpty() || !checkOverwrite( res.URLs.first() ) )
     return SAVE_CANCEL;
 
-  m_doc->setEncoding( res.encoding );
+  m_doc->config()->setEncoding( res.encoding );
 
   if( m_doc->saveAs( res.URLs.first() ) )
     return SAVE_OK;
