@@ -241,7 +241,7 @@ kdDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " of
 #endif
         mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
 #if 0
-kdDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString::null) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd << endl;
+kdDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd << endl;
 #endif
 	if (r) {
             r->caretPos(r_ofs, override*RenderObject::CFOverride
@@ -833,7 +833,7 @@ bool NodeImpl::maintainsState()
 
 QString NodeImpl::state()
 {
-    return QString::null;
+    return QString();
 }
 
 void NodeImpl::restoreState(const QString &/*state*/)

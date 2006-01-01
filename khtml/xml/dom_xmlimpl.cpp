@@ -414,7 +414,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 // ### some validation on the URL?
                 // ### FIXME charset
                 if (m_cachedSheet) m_cachedSheet->deref(this);
-                m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
+                m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString());
                 if (m_cachedSheet) {
                     getDocument()->addPendingSheet(); //before ref, because during the ref it might load!
                     m_cachedSheet->ref( this );

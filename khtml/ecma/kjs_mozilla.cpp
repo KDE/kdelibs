@@ -38,36 +38,33 @@ const ClassInfo MozillaSidebarExtension::info = { "sidebar", 0, &MozillaSidebarE
 @end
 */
 }
-IMPLEMENT_PROTOFUNC(MozillaSidebarExtensionFunc)
+IMPLEMENT_PROTOFUNC_DOM(MozillaSidebarExtensionFunc)
 
 MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
-  : m_part(p) {
-  setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
-}
+  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), m_part(p) { }
 
-bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+Value MozillaSidebarExtension::get(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
 #endif
-  return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
-            (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
+  return lookupGet<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>(exec,propertyName,&MozillaSidebarExtensionTable,this);
 }
 
-ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
+Value MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
 {
   Q_UNUSED(exec);
   switch (token) {
   default:
     kdDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token << endl;
-    return Null();
+    return Value();
   }
 }
 
-ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MozillaSidebarExtension, thisObj );
-  MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj);
+  MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj.imp());
 
   KHTMLPart *part = mse->part();
   if (!part)
@@ -78,11 +75,11 @@ ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp
   if (ext) {
     QString url, name;
     if (args.size() == 1) {  // I've seen this, don't know if it's legal.
-      name = QString::null;
-      url = args[0]->toString(exec).qstring();
+      name.clear();
+      url = args[0].toString(exec).qstring();
     } else if (args.size() == 2 || args.size() == 3) {
-      name = args[0]->toString(exec).qstring();
-      url = args[1]->toString(exec).qstring();
+      name = args[0].toString(exec).qstring();
+      url = args[1].toString(exec).qstring();
       // 2 is the "CURL" which I don't understand and don't think we need.
     } else {
       return Boolean(false);

@@ -83,7 +83,7 @@ public:
     void setClasspath( const QString& classpath );
 
     /**
-     * Set a property on the java command line as -Dname=value, or -Dname if value is QString::null.
+     * Set a property on the java command line as -Dname=value, or -Dname if value is QString().
      * For example, you could call setSystemProperty( "kjas.debug", "" ) to set the kjas.debug property.
      */
     void setSystemProperty( const QString& name, const QString& value );

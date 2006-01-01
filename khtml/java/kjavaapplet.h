@@ -140,7 +140,7 @@ public:
 
     /**
      * Look up the parameter value for the given Parameter.  Returns
-     * QString::null if the name has not been set.
+     * QString() if the name has not been set.
      */
     QString& parameter( const QString& name );
 

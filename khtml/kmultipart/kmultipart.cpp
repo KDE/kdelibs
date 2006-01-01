@@ -316,7 +316,7 @@ void KMultiPart::setPart( const QString& mimeType )
     delete m_part;
     // Try to find an appropriate viewer component
     m_part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>
-             ( m_mimeType, QString::null, widget(), 0L, this, 0L );
+             ( m_mimeType, QString(), widget(), 0L, this, 0L );
     if ( !m_part ) {
         // TODO launch external app
         KMessageBox::error( widget(), i18n("No handler found for %1!").arg(m_mimeType) );
@@ -431,7 +431,7 @@ void KMultiPart::startOfData()
     if ( childExtension )
         childExtension->setURLArgs( m_extension->urlArgs() );
 
-    m_nextMimeType = QString::null;
+    m_nextMimeType.clear();
     if ( m_tempFile ) {
         m_tempFile->setAutoDelete( true );
         delete m_tempFile;

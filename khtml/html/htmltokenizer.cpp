@@ -233,7 +233,7 @@ void HTMLTokenizer::processListing(TokenizerString list)
     {
         checkBuffer(3*TAB_SIZE);
 
-        if (skipLF && ( list->unicode() != '\n' ))
+        if (skipLF && ( *list != '\n' ))
         {
             skipLF = false;
         }
@@ -243,7 +243,7 @@ void HTMLTokenizer::processListing(TokenizerString list)
             skipLF = false;
             ++list;
         }
-        else if (( list->unicode() == '\n' ) || ( list->unicode() == '\r' ))
+        else if (( *list == '\n' ) || ( *list == '\r' ))
         {
             if (discard == LFDiscard)
             {
@@ -265,13 +265,13 @@ void HTMLTokenizer::processListing(TokenizerString list)
                     pending = LFPending;
             }
             /* Check for MS-DOS CRLF sequence */
-            if (list->unicode() == '\r')
+            if (*list == '\r')
             {
                 skipLF = true;
             }
             ++list;
         }
-        else if (( list->unicode() == ' ' ) || ( list->unicode() == '\t'))
+        else if (( *list == ' ' ) || ( *list == '\t'))
         {
             if (pending)
                 addPending();
@@ -378,7 +378,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
 void HTMLTokenizer::scriptHandler()
 {
     QString currentScriptSrc = scriptSrc;
-    scriptSrc = QString::null;
+    scriptSrc.clear();
 
     processListing(TokenizerString(scriptCode, scriptCodeSize));
     QString exScript( buffer, dest-buffer );
@@ -410,7 +410,7 @@ void HTMLTokenizer::scriptHandler()
                 prependingSrc = src;
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
-            scriptExecution( exScript, QString::null, tagStartLineno /*scriptStartLineno*/ );
+            scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
         }
     }
 
@@ -865,7 +865,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     {
                         tag = SearchValue;
                         *dest++ = 0;
-                        attrName = QString::null;
+                        attrName.clear();
                     }
                     else
                         tag = AttributeName;
@@ -946,7 +946,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     {
                         tag = SearchValue;
                         *dest++ = 0;
-                        attrName = QString::null;
+                        attrName.clear();
                     }
                     else {
                         DOMString v("");
@@ -1097,7 +1097,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             else if ( !brokenScript && tagID == ID_SCRIPT ) {
                 DOMStringImpl* a = 0;
                 bool foundTypeAttribute = false;
-                scriptSrc = scriptSrcCharset = QString::null;
+                scriptSrc = scriptSrcCharset = QString();
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      view &&  /* are we a regular tokenizer or just for innerHTML ? */
                      parser->doc()->view()->part()->jScriptEnabled() /* jscript allowed at all? */
@@ -1244,9 +1244,9 @@ void HTMLTokenizer::addPending()
     else if ( textarea )
     {
         switch(pending) {
-        case LFPending:  *dest++ = QLatin1Char('\n'); prePos = 0; break;
-        case SpacePending: *dest++ = QLatin1Char(' '); ++prePos; break;
-        case TabPending: *dest++ = QLatin1Char('\t'); prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
+        case LFPending:  *dest++ = '\n'; prePos = 0; break;
+        case SpacePending: *dest++ = ' '; ++prePos; break;
+        case TabPending: *dest++ = '\t'; prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
         case NonePending:
             assert(0);
         }
@@ -1259,12 +1259,12 @@ void HTMLTokenizer::addPending()
         {
         case SpacePending:
             // Insert a breaking space
-            *dest++ = QLatin1Char(' ');
+            *dest++ = QChar(' ');
             prePos++;
             break;
 
         case LFPending:
-            *dest = QLatin1Char('\n');
+            *dest = '\n';
             dest++;
             prePos = 0;
             break;
@@ -1272,7 +1272,7 @@ void HTMLTokenizer::addPending()
         case TabPending:
             p = TAB_SIZE - ( prePos % TAB_SIZE );
             for ( int x = 0; x < p; x++ )
-                *dest++ = QLatin1Char(' ');
+                *dest++ = QChar(' ');
             prePos += p;
             break;
 

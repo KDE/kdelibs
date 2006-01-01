@@ -152,7 +152,7 @@ protected:
     void parseEntity(khtml::TokenizerString &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::TokenizerString &str);
     void scriptHandler();
-    void scriptExecution(const QString& script, const QString& scriptURL = QString::null, int baseLine = 0);
+    void scriptExecution(const QString& script, const QString& scriptURL = QString(), int baseLine = 0);
     void setSrc(const TokenizerString& source);
 
     // check if we have enough space in the buffer.

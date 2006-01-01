@@ -52,24 +52,6 @@ using khtml::FontDef;
 
 using namespace DOM;
 
-static int propertyID(const DOMString &s)
-{
-    char buffer[maxCSSPropertyNameLength];
-
-    unsigned len = s.length();
-    if (len > maxCSSPropertyNameLength)
-        return 0;
-
-    for (unsigned i = 0; i != len; ++i) {
-        unsigned short c = s[i].unicode();
-        if (c == 0 || c >= 0x7F)
-            return 0; // illegal character
-        buffer[i] = c;
-    }
-
-    return getPropertyID(buffer, len);
-}
-
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
 {
@@ -105,47 +87,6 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
     delete m_lstValues;
     // we don't use refcounting for m_node, to avoid cyclic references (see ElementImpl)
-}
-
-CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue(const DOMString &propertyName) const
-{
-    int propID = propertyID(propertyName);
-    if (!propID)
-        return 0;
-    return getPropertyCSSValue(propID);
-}
-
-DOMString CSSStyleDeclarationImpl::getPropertyValue(const DOMString &propertyName) const
-{
-    int propID = propertyID(propertyName);
-    if (!propID)
-        return DOMString();
-    return getPropertyValue(propID);
-}
-
-DOMString CSSStyleDeclarationImpl::getPropertyPriority(const DOMString &propertyName) const
-{
-    int propID = propertyID(propertyName);
-    if (!propID)
-        return DOMString();
-    return getPropertyPriority(propID) ? "important" : "";
-}
-
-void CSSStyleDeclarationImpl::setProperty(const DOMString &propertyName, const DOMString &value, const DOMString &priority)
-{
-    int propID = propertyID(propertyName);
-    if (!propID) // set exception?
-        return;
-    bool important = priority.string().find("important", 0, false) != -1;
-    setProperty(propID, value, important);
-}
-
-DOMString CSSStyleDeclarationImpl::removeProperty(const DOMString &propertyName)
-{
-    int propID = propertyID(propertyName);
-    if (!propID)
-        return DOMString();
-    return removeProperty(propID);
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
@@ -881,9 +822,9 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
 
     parsedFontName = string;
     // a language tag is often added in braces at the end. Remove it.
-    parsedFontName.replace(parenReg, QString::null);
+    parsedFontName.replace(parenReg, QString());
     // remove [Xft] qualifiers
-    parsedFontName.replace(braceReg, QString::null);
+    parsedFontName.replace(braceReg, QString());
 
 #ifndef APPLE_CHANGES
     const QString &available = KHTMLSettings::availableFamilies();
@@ -910,7 +851,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
        parsedFontName = available.mid( pos, p - pos);
        // kdDebug(0) << "going for '" << parsedFontName << "'" << endl;
     } else
-        parsedFontName = QString::null;
+        parsedFontName.clear();
 
 #endif // !APPLE_CHANGES
 }

@@ -80,7 +80,7 @@ void HTMLBaseElementImpl::removedFromDocument()
     // Since the document doesn't have a base element...
     // (This will break in the case of multiple base elements, but that's not valid anyway (?))
     getDocument()->setBaseURL( KURL() );
-    getDocument()->setBaseTarget( QString::null );
+    getDocument()->setBaseTarget( QString() );
 }
 
 void HTMLBaseElementImpl::process()

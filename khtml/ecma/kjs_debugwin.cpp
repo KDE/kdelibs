@@ -70,7 +70,6 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
-#include <kjs/value.h>
 #include <QList>
 
 using namespace KJS;
@@ -577,8 +576,7 @@ void KJSDebugWin::slotShowFrame(int frameno)
     return;
 
   Context ctx = m_execs[frameno]->context();
-  abort();
-  //setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
+  setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
 }
 
 void KJSDebugWin::slotSourceSelected(int sourceSelIndex)
@@ -593,9 +591,8 @@ void KJSDebugWin::slotSourceSelected(int sourceSelIndex)
   // the line it's on.
   if (m_contextList->currentItem() >= 0) {
     Context ctx = m_execs[m_contextList->currentItem()]->context();
-    abort();
-    //if (m_sourceFragments[ctx.sourceId()]->sourceFile == m_sourceSelFiles.at(sourceSelIndex))
-    //  setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
+    if (m_sourceFragments[ctx.sourceId()]->sourceFile == m_sourceSelFiles.at(sourceSelIndex))
+      setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
   }
 }
 
@@ -605,7 +602,7 @@ void KJSDebugWin::slotEval()
   // use the current context - otherwise, use the global execution state from the interpreter
   // corresponding to the currently displayed source file.
   ExecState *exec;
-  ObjectImp *thisobj;
+  Object thisobj;
   if (m_execStates.isEmpty()) {
     if (m_sourceSel->currentItem() < 0)
       return;
@@ -629,23 +626,23 @@ void KJSDebugWin::slotEval()
 
   Interpreter *interp = exec->interpreter();
 
-  ObjectImp *obj = interp->globalObject()->get(exec, "eval")->getObject();
+  Object obj = Object::dynamicCast(interp->globalObject().get(exec, "eval"));
   List args;
   args.append(String(code));
 
   m_evalDepth++;
-  ValueImp *retval = obj->call(exec, thisobj, args);
+  Value retval = obj.call(exec, thisobj, args);
   m_evalDepth--;
   guard.stop();
 
   // Print the return value or exception message to the console
   if (exec->hadException()) {
-    ValueImp *exc = exec->exception();
+    Value exc = exec->exception();
     exec->clearException();
-    msg = "Exception: " + exc->toString(interp->globalExec()).qstring();
+    msg = "Exception: " + exc.toString(interp->globalExec()).qstring();
   }
   else {
-    msg = retval->toString(interp->globalExec()).qstring();
+    msg = retval.toString(interp->globalExec()).qstring();
   }
 
   m_evalEdit->insert(msg+"\n");
@@ -721,7 +718,7 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
       if (m_nextSourceUrl == part->url().url()) {
 	// Only store the code here if it's not from the part's html page... in that
 	// case we can get it from KHTMLPageCache
-	code = QString::null;
+	code.clear();
       }
 
       sourceFile = new SourceFile(m_nextSourceUrl,code,exec->interpreter());
@@ -767,8 +764,7 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState *exec, int sourceId)
   // This should never be the case because this function is only called when
   // the interpreter has deleted all Node objects for the source.
   for (int e = 0; e < m_execsCount; e++)
-    abort();
-    //assert(m_execs[e]->context().sourceId() != sourceId);
+    assert(m_execs[e]->context().sourceId() != sourceId);
 
   // Now remove the fragment (and the SourceFile, if it was the last fragment in that file)
   SourceFragment *fragment = m_sourceFragments[sourceId];
@@ -792,9 +788,9 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState *exec, int sourceId)
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
+bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch)
 {
-  assert(value);
+  assert(value.isValid());
 
   // Ignore exceptions that will be caught by the script
   if (inTryCatch)
@@ -807,17 +803,17 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
 
   QWidget *dlgParent = (m_evalDepth == 0) ? (QWidget*)part->widget() : (QWidget*)this;
 
-  QString exceptionMsg = value->toString(exec).qstring();
+  QString exceptionMsg = value.toString(exec).qstring();
 
   // Syntax errors are a special case. For these we want to display the url & lineno,
   // which isn't included in the exception messeage. So we work it out from the values
   // passed to sourceParsed()
-  ObjectImp *valueObj = value->getObject();;
-  ObjectImp *syntaxError = exec->interpreter()->builtinSyntaxError();
-  if (valueObj && valueObj->get(exec,"constructor") == syntaxError) {
-    ValueImp *sidValue = valueObj->get(exec,"sid");
-    if (sidValue->type() == NumberType) { // sid is not set for Function() constructor
-      int sourceId = (int)sidValue->toNumber(exec);
+  Object valueObj = Object::dynamicCast(value);
+  Object syntaxError = exec->interpreter()->builtinSyntaxError();
+  if (valueObj.isValid() && valueObj.get(exec,"constructor").imp() == syntaxError.imp()) {
+    Value sidValue = valueObj.get(exec,"sid");
+    if (sidValue.isA(NumberType)) { // sid is not set for Function() constructor
+      int sourceId = (int)sidValue.toNumber(exec);
       assert(m_sourceFragments[sourceId]);
       exceptionMsg = i18n("Parse error at %1 line %2")
 		     .arg(m_sourceFragments[sourceId]->sourceFile->url)
@@ -838,8 +834,6 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
   }
   else {
     Context ctx = m_execs[m_execsCount-1]->context();
-    abort();
-#if 0
     SourceFragment *sourceFragment = m_sourceFragments[ctx.sourceId()];
     QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3")
 		  .arg(KStringHandler::rsqueeze( sourceFragment->sourceFile->url,80),
@@ -855,7 +849,6 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
       m_steppingDepth = m_execsCount-1;
       enterSession(exec);
     }
-#endif
   }
 
   if (dontShowAgain) {
@@ -984,11 +977,10 @@ void KJSDebugWin::checkBreak(ExecState *exec)
 {
   if (m_breakpointCount > 0) {
     Context ctx = m_execs[m_execsCount-1]->context();
-    abort();
-    //if (haveBreakpoint(ctx.sourceId(),ctx.curStmtFirstLine(),ctx.curStmtLastLine())) {
-    //  m_mode = Next;
-    //  m_steppingDepth = m_execsCount-1;
-   // }
+    if (haveBreakpoint(ctx.sourceId(),ctx.curStmtFirstLine(),ctx.curStmtLastLine())) {
+      m_mode = Next;
+      m_steppingDepth = m_execsCount-1;
+    }
   }
 
   if ((m_mode == Step || m_mode == Next) && m_steppingDepth == m_execsCount-1)
@@ -1056,8 +1048,7 @@ void KJSDebugWin::updateContextList()
   if (m_execsCount > 0) {
     m_contextList->setSelected(m_execsCount-1, true);
     Context ctx = m_execs[m_execsCount-1]->context();
-    abort();
-    //setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
+    setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
   }
 
   connect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(slotShowFrame(int)));
@@ -1065,8 +1056,6 @@ void KJSDebugWin::updateContextList()
 
 QString KJSDebugWin::contextStr(const Context &ctx)
 {
-    abort();
-#if 0
   QString str = "";
   SourceFragment *sourceFragment = m_sourceFragments[ctx.sourceId()];
   QString url = sourceFragment->sourceFile->url;
@@ -1088,7 +1077,6 @@ QString KJSDebugWin::contextStr(const Context &ctx)
   }
 
   return str;
-#endif
 }
 
 bool KJSDebugWin::setBreakpoint(int sourceId, int lineno)

@@ -165,11 +165,11 @@ public:
 
     // Java and JavaScript
     // ### BIC make these const
-    bool isJavaEnabled( const QString& hostname = QString::null );
-    bool isJavaScriptEnabled( const QString& hostname = QString::null );
-    bool isJavaScriptDebugEnabled( const QString& hostname = QString::null );
-    bool isJavaScriptErrorReportingEnabled( const QString& hostname = QString::null ) const;
-    bool isPluginsEnabled( const QString& hostname = QString::null );
+    bool isJavaEnabled( const QString& hostname = QString() );
+    bool isJavaScriptEnabled( const QString& hostname = QString() );
+    bool isJavaScriptDebugEnabled( const QString& hostname = QString() );
+    bool isJavaScriptErrorReportingEnabled( const QString& hostname = QString() ) const;
+    bool isPluginsEnabled( const QString& hostname = QString() );
 
     // AdBlocK Filtering
     bool isAdFiltered( const QString &url ) const;
@@ -180,11 +180,11 @@ public:
     // Access Keys
     bool accessKeysEnabled() const;
 
-    KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString::null ) const;
-    KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString::null ) const;
-    KJSWindowResizePolicy windowResizePolicy( const QString& hostname = QString::null ) const;
-    KJSWindowStatusPolicy windowStatusPolicy( const QString& hostname = QString::null ) const;
-    KJSWindowFocusPolicy windowFocusPolicy( const QString& hostname = QString::null ) const;
+    KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString() ) const;
+    KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString() ) const;
+    KJSWindowResizePolicy windowResizePolicy( const QString& hostname = QString() ) const;
+    KJSWindowStatusPolicy windowStatusPolicy( const QString& hostname = QString() ) const;
+    KJSWindowFocusPolicy windowFocusPolicy( const QString& hostname = QString() ) const;
 
     // helpers for parsing domain-specific configuration, used in KControl module as well
     static KJavaScriptAdvice strToAdvice(const QString& _str);

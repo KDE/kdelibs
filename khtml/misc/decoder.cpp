@@ -463,7 +463,7 @@ QString Decoder::decode(const char *data, int len)
                 body = true;
                 goto found;
             }
-            return QString::null;
+            return QString();
         }
     }
 

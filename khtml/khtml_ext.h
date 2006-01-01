@@ -121,8 +121,8 @@ public:
 
   static void saveURL( QWidget *parent, const QString &caption, const KURL &url,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
-                       const QString &filter = QString::null, long cacheId = 0,
-                       const QString &suggestedFilename = QString::null );
+                       const QString &filter = QString(), long cacheId = 0,
+                       const QString &suggestedFilename = QString() );
 
   static void saveURL( const KURL &url, const KURL &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),

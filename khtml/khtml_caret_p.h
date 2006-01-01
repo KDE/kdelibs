@@ -402,7 +402,7 @@ public:
   {
     QString result;
     QTextStream ts(&result, QIODevice::WriteOnly);
-    dump(ts, QString::null);
+    dump(ts, QString());
     return result;
   }
 #endif

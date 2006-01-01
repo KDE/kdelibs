@@ -69,7 +69,6 @@
 
 #include "html/html_baseimpl.h"
 #include "html/html_blockimpl.h"
-#include "html/html_canvasimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_formimpl.h"
 #include "html/html_headimpl.h"
@@ -153,7 +152,7 @@ DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*fe
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                                     DocumentTypeImpl* dtype, int &exceptioncode )
+                                                     const DocumentType &doctype, int &exceptioncode )
 {
     exceptioncode = 0;
 
@@ -161,6 +160,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
                             true /*nameCanBeEmpty, see #61650*/, &exceptioncode) )
         return 0;
 
+    DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
     if (dtype && (dtype->getDocument() || dtype->implementation() != this)) {
@@ -209,18 +209,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
     return new HTMLDocumentImpl(this, v);
-}
-
-HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
-{
-    HTMLDocumentImpl* r = createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
-
-    r->open();
-
-    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
-             QLatin1String("</TITLE></HEAD>"));
-
-    return r;
 }
 
 DOMImplementationImpl *DOMImplementationImpl::instance()
@@ -692,8 +680,8 @@ void DocumentImpl::setTitle(const DOMString& _title)
 	if (titleStr.isNull() || titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
 	    KURL url = m_url;
-	    url.setRef(QString::null);
-	    url.setQuery(QString::null);
+	    url.setRef(QString());
+	    url.setQuery(QString());
 	    titleStr = url.prettyURL();
 	}
 
@@ -862,9 +850,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_IMG:
         n = new HTMLImageElementImpl(docPtr());
         break;
-    case ID_CANVAS:
-        n = new HTMLCanvasElementImpl(docPtr());
-        break;
     case ID_MAP:
         n = new HTMLMapElementImpl(docPtr());
         /*n = map;*/
@@ -1014,7 +999,7 @@ RangeImpl *DocumentImpl::createRange()
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                                   NodeFilterImpl* filter, bool entityReferenceExpansion,
+                                                   NodeFilter &filter, bool entityReferenceExpansion,
                                                    int &exceptioncode)
 {
     if (!root) {
@@ -2123,11 +2108,11 @@ void DocumentImpl::recalcStyleSelector()
         // the alternative sheet we used doesn't exist anymore
         // so try from scratch again
         if (view())
-            view()->part()->d->m_sheetUsed = QString::null;
+            view()->part()->d->m_sheetUsed.clear();
         if (!m_preferredStylesheetSet.isEmpty() && !(sheetUsed == m_preferredStylesheetSet))
             sheetUsed = m_preferredStylesheetSet.string();
         else
-            sheetUsed = QString::null;
+            sheetUsed.clear();
         autoselect = true;
     }
 
@@ -2250,7 +2235,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     KHTMLPart *thisPart = part();
 
     KURL newURL(completeURL(url));
-    newURL.setRef(QString::null);
+    newURL.setRef(QString());
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered( newURL.url() ))
         return false;
@@ -2268,7 +2253,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     bool foundSelfReference = false;
     for (KHTMLPart *part = thisPart; part; part = part->parentPart()) {
         KURL partURL = part->url();
-        partURL.setRef(QString::null);
+        partURL.setRef(QString());
         if (partURL == newURL) {
             if (foundSelfReference)
                 return false;

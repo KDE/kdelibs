@@ -45,7 +45,7 @@ struct KPerDomainSettings {
     KHTMLSettings::KJSWindowResizePolicy m_windowResizePolicy : 1;
 
 #ifdef DEBUG_SETTINGS
-    void dump(const QString &infix = QString::null) const {
+    void dump(const QString &infix.clear()) const {
       kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
       kdDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
       kdDebug() << "  m_bEnableJavaScript: " << m_bEnableJavaScript << endl;
@@ -187,11 +187,11 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
 
 void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
 	bool global, KPerDomainSettings &pd_settings) {
-  QString jsPrefix = global ? QString::null
+  QString jsPrefix = global ? QString()
   				: QString::fromLatin1("javascript.");
-  QString javaPrefix = global ? QString::null
+  QString javaPrefix = global ? QString()
   				: QString::fromLatin1("java.");
-  QString pluginsPrefix = global ? QString::null
+  QString pluginsPrefix = global ? QString()
   				: QString::fromLatin1("plugins.");
 
   // The setting for Java
@@ -948,14 +948,14 @@ QString KHTMLSettings::fantasyFontName() const
 void KHTMLSettings::setStdFontName(const QString &n)
 {
     while(d->fonts.count() <= 0)
-        d->fonts.append(QString::null);
+        d->fonts.append(QString());
     d->fonts[0] = n;
 }
 
 void KHTMLSettings::setFixedFontName(const QString &n)
 {
     while(d->fonts.count() <= 1)
-        d->fonts.append(QString::null);
+        d->fonts.append(QString());
     d->fonts[1] = n;
 }
 

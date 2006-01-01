@@ -1287,7 +1287,7 @@ static void write(QTextStream &ts, RenderObject& o, const QString& indent )
 
 static void write(QTextStream &ts, const RenderLayer &l,
                   const QRect& layerBounds, const QRect& backgroundClipRect, const QRect& clipRect,
-                  int layerType = 0, const QString& indent = QString::null)
+                  int layerType = 0, const QString& indent = QString())
 
 {
     ts << indent << "layer";

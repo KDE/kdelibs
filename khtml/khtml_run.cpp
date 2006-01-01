@@ -80,7 +80,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
 
 void KHTMLRun::save( const KURL & url, const QString & suggestedFilename )
 {
-    KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As" ), url, m_args.metaData(), QString::null, 0, suggestedFilename );
+    KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As" ), url, m_args.metaData(), QString(), 0, suggestedFilename );
 }
 
 #include "khtml_run.moc"

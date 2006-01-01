@@ -165,7 +165,7 @@ QString KJavaAppletServer::getAppletLabel()
     if( self )
         return self->appletLabel();
     else
-        return QString::null;
+        return QString();
 }
 
 QString KJavaAppletServer::appletLabel()
@@ -288,7 +288,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     d->useKIO = config.readEntry("UseKio", QVariant(false)).toBool();
     if( d->useKIO )
     {
-        p->setSystemProperty( "kjas.useKio", QString::null );
+        p->setSystemProperty( "kjas.useKio", QString() );
     }
 
     //check for http proxies...

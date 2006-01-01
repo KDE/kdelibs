@@ -36,7 +36,6 @@
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <qregexp.h>
-#include <Q3CString>
 
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
@@ -1264,8 +1263,8 @@ public slots:
   void submitFormProxy( const char *action, const QString &url,
                         const QByteArray &formData,
                         const QString &target,
-                        const QString& contentType = QString::null,
-                        const QString& boundary = QString::null );
+                        const QString& contentType = QString(),
+                        const QString& boundary = QString() );
 
 private slots:
 
@@ -1572,8 +1571,8 @@ private:
   //          See the web_module for the sidebar for an example where this is
   //          necessary.
   void submitForm( const char *action, const QString &url, const QByteArray &formData,
-                   const QString &target, const QString& contentType = QString::null,
-                   const QString& boundary = QString::null );
+                   const QString &target, const QString& contentType = QString(),
+                   const QString& boundary = QString() );
 
   void popupMenu( const QString &url );
 
@@ -1612,7 +1611,7 @@ private:
 
   khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
-  bool checkLinkSecurity( const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null );
+  bool checkLinkSecurity( const KURL &linkURL,const QString &message = QString(), const QString &button = QString() );
   QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );
 
   KJSProxy *jScript();

@@ -235,8 +235,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     KURL u = url;
 
-    u.setQuery( QString::null );
-    u.setRef( QString::null );
+    u.setQuery( QString() );
+    u.setRef( QString() );
     encodedurl.file = u.url();
     int pos = encodedurl.file.lastIndexOf('/');
     encodedurl.path = encodedurl.file;
@@ -244,7 +244,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 	encodedurl.path.truncate( pos );
 	encodedurl.path += '/';
     }
-    u.setPath( QString::null );
+    u.setPath( QString() );
     encodedurl.host = u.url();
 
     //kdDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl;
@@ -3272,7 +3272,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #ifdef APPLE_CHANGES
             fontDef.family = initialDef.firstFamily();
 #else
-            fontDef.family = QString::null;
+            fontDef.family.clear();
 #endif
             if (style->setFontDef(fontDef))
                 fontDirty = true;

@@ -375,7 +375,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             bool passed = args[0].toBoolean(exec);
             QString description = args[1].toString(exec).qstring();
             if (args[1].isA(UndefinedType) || args[1].isA(NullType))
-                description = QString::null;
+                description.clear();
             m_regTest->reportResult(passed,description);
             if ( !passed )
                 m_regTest->saw_failure = true;
@@ -874,7 +874,7 @@ RegressionTest::~RegressionTest()
 
 bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
 {
-    m_currentOutput = QString::null;
+    m_currentOutput.clear();
 
     if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());

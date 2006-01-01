@@ -271,6 +271,6 @@ void RenderQuote::generateContent()
          case NO_OPEN_QUOTE:
          case NO_CLOSE_QUOTE:
          case NO_QUOTE:
-            m_item = QString();
+            m_item.clear();
     }
 }

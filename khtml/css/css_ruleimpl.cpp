@@ -200,7 +200,7 @@ void CSSImportRuleImpl::init()
             return;
 
     // ### pass correct charset here!!
-    m_cachedSheet = docLoader->requestStyleSheet(absHref, QString::null);
+    m_cachedSheet = docLoader->requestStyleSheet(absHref, QString());
 
     if (m_cachedSheet)
     {

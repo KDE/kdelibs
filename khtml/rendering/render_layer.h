@@ -248,7 +248,7 @@ public:
     void detach(RenderArena* renderArena);
 
 #ifdef ENABLE_DUMP
-    KHTML_EXPORT void dump(QTextStream &stream, const QString &ind = QString::null);
+    KHTML_EXPORT void dump(QTextStream &stream, const QString &ind = QString());
 #endif
 
      // Overloaded new operator.  Derived classes must override operator new

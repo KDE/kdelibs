@@ -201,7 +201,7 @@ QChar *DOMString::unicode() const
 
 QString DOMString::string() const
 {
-    if(!impl) return QString::null;
+    if(!impl) return QString();
 
     return QString(impl->s, impl->l);
 }

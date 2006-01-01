@@ -2257,7 +2257,7 @@ void KHTMLView::accessKeysTimeout()
 {
 d->accessKeysActivated=false;
 d->accessKeysPreActivate = false;
-m_part->setStatusBarText(QString::null, KHTMLPart::BarOverrideText);
+m_part->setStatusBarText(QString(), KHTMLPart::BarOverrideText);
 emit hideAccessKeys();
 }
 
@@ -3039,7 +3039,7 @@ void KHTMLView::addNonPasswordStorableSite(const QString& host)
     sites.append(host);
     d->formCompletions->writeEntry("Sites", sites);
     d->formCompletions->sync();
-    d->formCompletions->setGroup(QString::null);//reset
+    d->formCompletions->setGroup(QString());//reset
 }
 
 bool KHTMLView::nonPasswordStorableSite(const QString& host) const
@@ -3049,7 +3049,7 @@ bool KHTMLView::nonPasswordStorableSite(const QString& host) const
     }
     d->formCompletions->setGroup("NonPasswordStorableSites");
     QStringList sites =  d->formCompletions->readListEntry("Sites");
-    d->formCompletions->setGroup(QString::null);//reset
+    d->formCompletions->setGroup(QString());//reset
 
     return (sites.find(host) != sites.end());
 }
@@ -3666,7 +3666,7 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
   // Set focus node on the document
 #if DEBUG_CARETMODE > 1
   kdDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
-  	<< (firstAncestor ? firstAncestor->nodeName().string() : QString::null) << endl;
+  	<< (firstAncestor ? firstAncestor->nodeName().string() : QString()) << endl;
 #endif
   doc->setFocusNode(firstAncestor);
   emit m_part->nodeActivated(Node(firstAncestor));
@@ -3678,7 +3678,7 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
     d->caretViewContext();
     NodeImpl *caretNode = m_part->d->caretNode().handle();
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString::null) << endl;
+  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString()) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString()) << endl;
 #endif
     caretNode->getCaret(m_part->d->caretOffset(), caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
@@ -4328,7 +4328,7 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
 //kdDebug(6200) << "mapRTD" << endl;
     caretNodeRef = node;
 #if DEBUG_CARETMODE > 2
-    kdDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString::null) << " offset: " << offset << endl;
+    kdDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString()) << " offset: " << offset << endl;
 #endif
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();

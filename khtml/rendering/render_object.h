@@ -212,7 +212,7 @@ public:
 #ifdef ENABLE_DUMP
     QString information() const;
     virtual void printTree(int indent=0) const;
-    virtual void dump(QTextStream &stream, const QString &ind = QString::null) const;
+    virtual void dump(QTextStream &stream, const QString &ind = QString()) const;
 #endif
 
     static RenderObject *createObject(DOM::NodeImpl* node, RenderStyle* style);

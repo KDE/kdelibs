@@ -66,15 +66,18 @@ NamedNodeMap::~NamedNodeMap()
 Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 {
     if (!impl) return 0;
-    return impl->getNamedItem(name);
+    NodeImpl::Id nid = impl->mapId(0, name.implementation(), true);
+    if (!nid) return 0;
+    return impl->getNamedItem(nid, false, name.implementation());
 }
 
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    
+    if (!arg.impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->setNamedItem(arg, exceptioncode);
+    Node r = impl->setNamedItem(arg.impl, false,
+                       arg.impl->nodeName().implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -84,7 +87,8 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(name, exceptioncode);
+    Node r = impl->removeNamedItem(impl->mapId(0, name.implementation(), false),
+                                   false, name.implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -99,14 +103,15 @@ Node NamedNodeMap::item( unsigned long index ) const
 Node NamedNodeMap::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName ) const
 {
     if (!impl) return 0;
-    return impl->getNamedItemNS(namespaceURI, localName);
+    NodeImpl::Id nid = impl->mapId( namespaceURI.implementation(), localName.implementation(), true );
+    return impl->getNamedItem(nid, true);
 }
 
 Node NamedNodeMap::setNamedItemNS( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->setNamedItemNS(arg, exceptioncode);
+    Node r = impl->setNamedItem(arg.impl, true, 0, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -116,7 +121,8 @@ Node NamedNodeMap::removeNamedItemNS( const DOMString &namespaceURI, const DOMSt
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItemNS(namespaceURI, localName, exceptioncode);
+    NodeImpl::Id nid = impl->mapId( namespaceURI.implementation(), localName.implementation(), false );
+    Node r = impl->removeNamedItem(nid, true, 0, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -240,9 +246,13 @@ NamedNodeMap Node::attributes() const
 
 Document Node::ownerDocument() const
 {
-    if (!impl || !impl->ownerDocument())
-        return Document(false);
-    return impl->ownerDocument();
+    // braindead DOM spec says that ownerDocument
+    // should return null if called on the document node
+    // we don't do that in the *impl tree to avoid excessive if()'s
+    // so we simply hack it here in one central place.
+    if (!impl || impl->getDocument() == impl) return Document(false);
+
+    return impl->getDocument();
 }
 
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
@@ -291,7 +301,9 @@ Node Node::appendChild( const Node &newChild )
 bool Node::hasAttributes()
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    return impl->hasAttributes();
+    if (!impl->isElementNode()) return false;
+    ElementImpl* e = static_cast<ElementImpl*>(impl);
+    return e->attributes(true) && e->attributes(true)->length();
 }
 
 bool Node::hasChildNodes(  )
@@ -313,9 +325,12 @@ void Node::normalize (  )
 }
 
 bool Node::isSupported( const DOMString &feature,
-                        const DOMString &version ) const
+                        const DOMString & /*version*/ ) const
 {
-    return NodeImpl::isSupported(feature, version);
+    DOMString upFeature = feature.upper();
+    return (upFeature == "HTML" ||
+            upFeature == "XML" ||
+            upFeature == "CORE");
 }
 
 DOMString Node::namespaceURI(  ) const
@@ -392,7 +407,7 @@ unsigned long Node::index() const
 
 QString Node::toHTML()
 {
-    if (!impl) return QString::null;
+    if (!impl) return QString();
     return impl->toString().string();
 }
 

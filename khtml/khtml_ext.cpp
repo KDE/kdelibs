@@ -645,9 +645,9 @@ void KHTMLPopupGUIClient::slotSendImage()
     QStringList urls;
     urls.append( d->m_imageURL.url());
     QString subject = d->m_imageURL.url();
-    KToolInvocation::invokeMailer(QString::null, QString::null, QString::null, subject,
-                       QString::null, //body
-                       QString::null,
+    KToolInvocation::invokeMailer(QString(), QString(), QString(), subject,
+                       QString(), //body
+                       QString(),
                        urls); // attachments
 
 
@@ -657,7 +657,7 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 {
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_khtml->referrer();
-  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData, QString::null, 0, d->m_suggestedFilename );
+  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData, QString(), 0, d->m_suggestedFilename );
 }
 
 void KHTMLPopupGUIClient::slotBlockHost()
@@ -697,7 +697,7 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
   KURL safeURL(d->m_url);
-  safeURL.setPass(QString::null);
+  safeURL.setPass(QString());
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -722,7 +722,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
 {
 #ifndef QT_NO_MIMECLIPBOARD
   KURL safeURL(d->m_imageURL);
-  safeURL.setPass(QString::null);
+  safeURL.setPass(QString());
 
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -742,7 +742,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
   KURL safeURL(d->m_imageURL);
-  safeURL.setPass(QString::null);
+  safeURL.setPass(QString());
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -882,14 +882,14 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                     QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
                     QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
                     KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-                    cfg.writePathEntry("DownloadManager",QString::null);
+                    cfg.writePathEntry("DownloadManager",QString());
                     cfg.sync ();
                 }
                 else
                 {
                     downloadViaKIO = false;
                     KURL cleanDest = destURL;
-                    cleanDest.setPass( QString::null ); // don't put password into commandline
+                    cleanDest.setPass( QString() ); // don't put password into commandline
                     cmd += " " + KProcess::quote(url.url()) + " " +
                            KProcess::quote(cleanDest.url());
                     kdDebug(1000) << "Calling command  "<<cmd<<endl;

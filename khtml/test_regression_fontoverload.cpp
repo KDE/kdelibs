@@ -536,11 +536,11 @@ bool KProtocolInfo::isKnownProtocol( const QString& _protocol )
 QString KProtocolInfo::exec( const QString& _protocol )
 {
     if ( _protocol != "file" )
-        return QString::null;
+        return QString();
 
     KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
     if ( !prot )
-        return QString::null;
+        return QString();
 
     return prot->m_exec;
 }
