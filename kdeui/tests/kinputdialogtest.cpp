@@ -3,7 +3,9 @@
  * License: GPL V2
  */
 
-#include <kapplication.h>
+#include <QApplication>
+#include <kinstance.h>
+#include <kaboutdata.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
 #include <klistbox.h>
@@ -12,10 +14,12 @@
 #include <qvalidator.h>
 #include <kcmdlineargs.h>
 
+
 int main( int argc, char *argv[] )
 {
-  KCmdLineArgs::init(argc, argv, "test", "Test" ,"test app" ,"1.0");
-  KApplication app;
+  QApplication app( argc, argv );
+  KAboutData aboutData( "kinputdialogtest", "kinputdialogtest", "1.0" );
+  KInstance i( &aboutData );
 
   bool ok;
   QString svalue;
