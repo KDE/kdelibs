@@ -106,15 +106,15 @@ class KDE_EXPORT Entry
     /**
      * Sets a short description on what the object is all about.
      */
-    void setSummary( const QString &, const QString &lang = QString::null );
+    void setSummary( const QString &, const QString &lang = QString() );
 
     /**
      * Retrieve a short description about the object.
      *
-     * @param lang preferred language, or QString::null for KDE default
+     * @param lang preferred language, or QString() for KDE default
      * @return object description
      */
-    QString summary( const QString &lang = QString::null ) const;
+    QString summary( const QString &lang = QString() ) const;
 
     /**
      * Sets the version number.
@@ -156,29 +156,29 @@ class KDE_EXPORT Entry
     /**
      * Sets the object's file.
      */
-    void setPayload( const KURL &, const QString &lang = QString::null );
+    void setPayload( const KURL &, const QString &lang = QString() );
 
     /**
      * Retrieve the file name of the object.
      *
-     * @param lang preferred language, or QString::null for KDE default
+     * @param lang preferred language, or QString() for KDE default
      * @return object filename
      */
-    KURL payload( const QString &lang = QString::null ) const;
+    KURL payload( const QString &lang = QString() ) const;
 
     /**
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreview( const KURL &, const QString &lang = QString::null );
+    void setPreview( const KURL &, const QString &lang = QString() );
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
      *
-     * @param lang preferred language, or QString::null for KDE default
+     * @param lang preferred language, or QString() for KDE default
      * @return object preview filename
      */
-    KURL preview( const QString &lang = QString::null ) const;
+    KURL preview( const QString &lang = QString() ) const;
 
     /**
      * Sets the rating between 0 (worst) and 10 (best).

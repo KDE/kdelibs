@@ -179,7 +179,7 @@ class KDE_EXPORT ProviderLoader : public QObject
      *    we first try the ProvidersUrl from KGlobal::config, then we
      *    fall back to a hardcoded value.
      */
-    void load( const QString &type, const QString &providerList = QString::null );
+    void load( const QString &type, const QString &providerList = QString() );
 
   signals:
     /**

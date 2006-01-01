@@ -56,7 +56,7 @@ struct DownloadDialog::Private
 class NumSortListViewItem : public KListViewItem
 {
   public:
-  NumSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  NumSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString(), QString label3 = QString(), QString label4 = QString(), QString label5 = QString(), QString label6 = QString(), QString label7 = QString(), QString label8 = QString() )  :
   KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
   {
   }
@@ -75,7 +75,7 @@ class NumSortListViewItem : public KListViewItem
 class DateSortListViewItem : public KListViewItem
 {
   public:
-  DateSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  DateSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString(), QString label3 = QString(), QString label4 = QString(), QString label5 = QString(), QString label6 = QString(), QString label7 = QString(), QString label8 = QString() )  :
   KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
   {
   }

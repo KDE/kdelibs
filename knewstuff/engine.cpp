@@ -355,7 +355,7 @@ bool Engine::createMetaFile( Entry *entry )
 
   QFile f( mUploadMetaFile );
   if ( !f.open( QIODevice::WriteOnly ) ) {
-    mUploadMetaFile = QString::null;
+    mUploadMetaFile.clear();
     return false;
   }
 
@@ -413,7 +413,7 @@ void Engine::slotUploadPreviewJobResult( KIO::Job *job )
 
 void Engine::slotUploadMetaJobResult( KIO::Job *job )
 {
-  mUploadMetaFile = QString::null;
+  mUploadMetaFile.clear();
   if ( job->error() ) {
     kdDebug(5850) << "Error uploading new stuff metadata." << endl;
     job->showErrorDialog( mParentWidget );

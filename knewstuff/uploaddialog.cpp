@@ -167,7 +167,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
 
   if(!name.isNull())
   {
-    int prefill = KMessageBox::questionYesNo(this, i18n("Old upload information found, fill out fields?"),QString::null,i18n("Fill Out"),i18n("Do Not Fill Out"));
+    int prefill = KMessageBox::questionYesNo(this, i18n("Old upload information found, fill out fields?"),QString(),i18n("Fill Out"),i18n("Do Not Fill Out"));
     if(prefill == KMessageBox::Yes)
     {
       mNameEdit->setText(name);

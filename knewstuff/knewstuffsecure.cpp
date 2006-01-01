@@ -216,7 +216,7 @@ void KNewStuffSecure::slotFileSigned(int result)
     }
     tar.close();
     KIO::NetAccess::file_move(KURL::fromPathOrURL(m_signedFileName + ".signed"), KURL::fromPathOrURL(m_signedFileName), -1, true);
-    KNewStuff::upload(m_signedFileName, QString::null);
+    KNewStuff::upload(m_signedFileName, QString());
     disconnect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
   }
 }

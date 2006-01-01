@@ -103,7 +103,7 @@ class KDE_EXPORT Engine : public QObject
       @param fileName name of the payload data file
       @param previewName name of the preview image file
     */
-    void upload( const QString &fileName = QString::null, const QString &previewName = QString::null );
+    void upload( const QString &fileName = QString(), const QString &previewName = QString() );
 
     /**
       Downloads the specified data file.

@@ -72,7 +72,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @param parent the parent window
       @param caption the dialog caption
     */
-    DownloadDialog(Engine *engine = 0L, QWidget *parent =0L , const QString& caption = QString::null);
+    DownloadDialog(Engine *engine = 0L, QWidget *parent =0L , const QString& caption = QString());
 
     /**
       Destructor.
@@ -104,7 +104,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
              we first try the ProvidersUrl from KGlobal::config, then we
              fall back to a hardcoded value.
     */
-    void load(const QString &providerList = QString::null);
+    void load(const QString &providerList = QString());
 
     /**
       Adds another provider to the download dialog.
@@ -137,7 +137,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @param type a data type such as "korganizer/calendar"
       @param caption the dialog caption
     */
-    static void open(const QString& type, const QString& caption=QString::null);
+    static void open(const QString& type, const QString& caption=QString());
 
   public slots:
     /**

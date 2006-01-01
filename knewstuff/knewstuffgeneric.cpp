@@ -110,7 +110,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
   }
   if ( res.isEmpty() && path.isEmpty() )
   {
-    if ( !entry ) return QString::null;
+    if ( !entry ) return QString();
     else return KNewStuff::downloadDestination( entry );
   }
 
@@ -132,8 +132,8 @@ QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
     int result = KMessageBox::warningContinueCancel( parentWidget(),
         i18n("The file '%1' already exists. Do you want to overwrite it?")
         .arg( file ),
-        QString::null, i18n("Overwrite") );
-    if ( result == KMessageBox::Cancel ) return QString::null;
+        QString(), i18n("Overwrite") );
+    if ( result == KMessageBox::Cancel ) return QString();
   }
 
   return file;

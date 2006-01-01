@@ -95,7 +95,7 @@ void Entry::setSummary( const QString &text, const QString &lang )
 
 QString Entry::summary( const QString &lang ) const
 {
-  if ( mSummaryMap.isEmpty() ) return QString::null;
+  if ( mSummaryMap.isEmpty() ) return QString();
 
   if ( !mSummaryMap[ lang ].isEmpty() ) return mSummaryMap[ lang ];
   else {
@@ -103,7 +103,7 @@ QString Entry::summary( const QString &lang ) const
     for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
       if( !mSummaryMap[ *it ].isEmpty() ) return mSummaryMap[ *it ];
   }
-  if ( !mSummaryMap[ QString::null ].isEmpty() ) return mSummaryMap[ QString::null ];
+  if ( !mSummaryMap[ QString() ].isEmpty() ) return mSummaryMap[ QString() ];
   else return *(mSummaryMap.begin());
 }
 
@@ -156,7 +156,7 @@ KURL Entry::payload( const QString &lang ) const
     for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
       if( !mPayloadMap[ *it ].isEmpty() ) return mPayloadMap[ *it ];
   }
-  if ( payload.isEmpty() ) payload = mPayloadMap [ QString::null ];
+  if ( payload.isEmpty() ) payload = mPayloadMap [ QString() ];
   if ( payload.isEmpty() && !mPayloadMap.isEmpty() ) {
     payload = *(mPayloadMap.begin());
   }
@@ -179,7 +179,7 @@ KURL Entry::preview( const QString &lang ) const
     for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
       if( !mPreviewMap[ *it ].isEmpty() ) return mPreviewMap[ *it ];
   }
-  if ( preview.isEmpty() ) preview = mPreviewMap [ QString::null ];
+  if ( preview.isEmpty() ) preview = mPreviewMap [ QString() ];
   if ( preview.isEmpty() && !mPreviewMap.isEmpty() ) {
     preview = *(mPreviewMap.begin());
   }
