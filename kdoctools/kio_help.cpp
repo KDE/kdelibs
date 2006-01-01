@@ -83,7 +83,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     }
 
 
-    return QString::null;
+    return QString();
 }
 
 
@@ -113,7 +113,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
 	{
 	    unicodeError( i18n("There is no documentation available for %1." ).arg(path) );
 	    finished();
-            return QString::null;
+            return QString();
 	}
     } else
         kdDebug( 7119 ) << "result " << result << endl;
@@ -258,7 +258,7 @@ void HelpProtocol::get( const KURL& url )
 
 			    KURL redirURL(url);
 
-			    redirURL.setQuery(QString::null);
+			    redirURL.setQuery(QString());
 			    redirURL.setHTMLRef(anchor);
 			    redirection(redirURL);
 			    finished();

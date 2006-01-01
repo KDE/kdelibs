@@ -9,7 +9,7 @@ class QByteArray;
 QString transform(const QString &file, const QString& stylesheet,
                   const QVector<const char *> &params = QVector<const char *>());
 QString splitOut(const QString &parsed, int index);
-void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
+void fillInstance(KInstance &ins, const QString &srcdir = QString() );
 bool saveToCache( const QString &contents, const QString &filename );
 QString lookForCache( const QString &filename );
 QByteArray fromUnicode( const QString &data );

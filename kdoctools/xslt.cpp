@@ -275,7 +275,7 @@ QString lookForCache( const QString &filename )
                                  "cache.bz2" ), output ) )
         return output;
 
-    return QString::null;
+    return QString();
 }
 
 bool compareTimeStamps( const QString &older, const QString &newer )
