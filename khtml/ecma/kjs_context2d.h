@@ -23,6 +23,7 @@
 
 #include "kjs_dom.h"
 #include "kjs_binding.h"
+#include "kjs_html.h"
 #include <kjs/object.h>
 
 #include "misc/loader_client.h"
@@ -41,7 +42,6 @@ namespace DOM {
 class QGradient;
 
 namespace KJS {
-  class Image;
   ////////////////////// Context2D Object ////////////////////////
 
   class Context2D : public DOMObject {
@@ -172,7 +172,7 @@ private:
 
   class ImagePattern : public DOMObject {
   public:
-    ImagePattern(Image *i, int type);
+    ImagePattern(HTMLElement *i, int type);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     ValueImp *getValueProperty(ExecState *exec, int token) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);

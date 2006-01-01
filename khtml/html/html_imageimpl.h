@@ -83,6 +83,8 @@ public:
 
     virtual void notifyFinished(khtml::CachedObject *finishedObj);
     void dispatchLoadEvent();
+    
+    khtml::CachedImage* image() { return m_image; }
 protected:
     DOMString usemap;
     bool ismap : 1;

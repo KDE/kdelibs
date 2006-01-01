@@ -548,21 +548,8 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         QPixmap pixmap;
         QPainter *sourceContext = 0;
 
-        // Check for JavaScript Image, <img> or <canvas>.
-        if (o->inherits(&Image::info)) {
-            Image *i = static_cast<Image*>(o);
-            khtml::CachedImage *ci = i->image();
-            if (ci) {
-                pixmap = ci->pixmap();
-            }
-            else {
-                // No image.
-                return Undefined();
-            }
-            w = pixmap.width();
-            h = pixmap.height();
-        }
-        else if (o->inherits(&KJS::HTMLElement::img_info)){
+        // Check for <img> or <canvas>.
+        if (o->inherits(&KJS::HTMLElement::img_info)){
             NodeImpl *n = static_cast<HTMLElement *>(args[0])->impl();
             HTMLImageElementImpl *e = static_cast<HTMLImageElementImpl*>(n);
             pixmap = e->currentPixmap();
@@ -635,9 +622,9 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         if (args.size() != 10)
             return throwError(exec, SyntaxError);
         ObjectImp *o = static_cast<ObjectImp*>(args[0]);
-        if (!o->isObject() || !o->inherits(&Image::info))
+        if (!o->isObject() || !o->inherits(&HTMLElement::img_info))
             return throwError(exec, TypeError);
-        Image *i = static_cast<Image*>(o);
+        DOM::HTMLImageElementImpl *i = static_cast<DOM::HTMLImageElementImpl*>(static_cast<HTMLElement*>(o)->impl());
         float sx = args[1]->toNumber(exec);
         float sy = args[2]->toNumber(exec);
         float sw = args[3]->toNumber(exec);
@@ -715,7 +702,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         if (args.size() != 2)
             return throwError(exec, SyntaxError);
         ObjectImp *o = static_cast<ObjectImp*>(args[0]);
-        if (!o->isObject() || !o->inherits(&Image::info))
+        if (!o->isObject() || !o->inherits(&HTMLElement::img_info))
             return throwError(exec, TypeError);
         int repetitionType = ImagePattern::Repeat;
         DOMString repetitionString = args[1]->toString(exec).domString().lower();
@@ -725,7 +712,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
             repetitionType = ImagePattern::RepeatY;
         else if (repetitionString == "no-repeat")
             repetitionType = ImagePattern::NoRepeat;
-        return new ImagePattern(static_cast<Image*>(o), repetitionType);
+        return new ImagePattern(static_cast<HTMLElement*>(o), repetitionType);
     }
     }
 
@@ -1205,10 +1192,10 @@ const ClassInfo ImagePattern::info = { "ImagePattern", 0, &ImagePatternTable, 0 
    @end
 */
 
-ImagePattern::ImagePattern(Image *i, int repetitionType)
+ImagePattern::ImagePattern(HTMLElement *i, int repetitionType)
     : _rw(0), _rh(0)
 {
-    khtml::CachedImage *ci = i->image();
+    khtml::CachedImage *ci = static_cast<DOM::HTMLImageElementImpl*>(i->impl())->image();
     if (ci) {
         _pixmap = ci->pixmap();
         float w = _pixmap.width();

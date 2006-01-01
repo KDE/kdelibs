@@ -2005,7 +2005,7 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
 }
 
 HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
-  : DOMFunction(), id(i)
+  : DOMFunction(exec), id(i)
 {
   //Value protect(this);
   put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
@@ -2915,121 +2915,6 @@ ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
   return getDOMNode(exec,image)->getObject();
 }
 
-
-const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
-
-/* Source for ImageTable. Use "make hashtables" to regenerate.
-@begin ImageTable 6
-  src		Image::Src		DontDelete
-  complete	Image::Complete		DontDelete|ReadOnly
-  onload        Image::OnLoad           DontDelete
-  width         Image::Width            DontDelete|ReadOnly
-  height        Image::Height           DontDelete|ReadOnly
-@end
-*/
-
-bool Image::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
-{
-  return getStaticValueSlot<Image,DOMObject>(exec, &ImageTable, this, propertyName, slot);
-}
-
-ValueImp *Image::getValueProperty(ExecState *, int token) const
-{
-  switch (token) {
-  case Src:
-    return String(doc ? doc->completeURL(src.qstring()) : src);
-  case Complete:
-    return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
-  case OnLoad:
-    if (onLoadListener && onLoadListener->listenerObj()) {
-      return onLoadListener->listenerObj();
-    } else {
-      return Null();
-    }
-  case Width: {
-    if (widthSet)
-        return Number(width);
-    int w = 0;
-    if (img) {
-      QSize size = img->pixmap_size();
-      if (size.isValid())
-        w = size.width();
-    }
-    return Number(w);
-  }
-  case Height: {
-    if (heightSet)
-        return Number(height);
-    int h = 0;
-    if (img) {
-      QSize size = img->pixmap_size();
-      if (size.isValid())
-        h = size.height();
-    }
-    return Number(h);
-  }
-  default:
-    kdWarning() << "Image::getValueProperty unhandled token " << token << endl;
-    return NULL;
-  }
-}
-
-void Image::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
-{
-  lookupPut<Image,DOMObject>(exec, propertyName, value, attr, &ImageTable, this );
-}
-
-void Image::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
-{
-  switch(token) {
-  case Src:
-  {
-    src = value->toString(exec);
-    if ( img ) img->deref(this);
-    img = doc ? doc->docLoader()->requestImage( src.domString() ) : 0;
-    if ( img ) img->ref(this);
-    break;
-  }
-  case OnLoad:
-    onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
-    if (onLoadListener) onLoadListener->ref();
-    break;
-  case Width:
-    widthSet = true;
-    width = value->toInt32(exec);
-    break;
-  case Height:
-    heightSet = true;
-    height = value->toInt32(exec);
-    break;
-  default:
-    kdWarning() << "HTMLDocument::putValueProperty unhandled token " << token << endl;
-  }
-}
-
-void Image::notifyFinished(khtml::CachedObject *)
-{
-  if (onLoadListener && doc->part()) {
-    DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
-    ev.initEvent("load", true, true);
-    onLoadListener->handleEvent(ev);
-  }
-}
-
-Image::Image(DocumentImpl *d, bool ws, int w, bool hs, int h)
-  : doc(d), img(0), onLoadListener(0)
-{
-      widthSet = ws;
-      width = w;
-      heightSet = hs;
-      height = h;
-}
-
-Image::~Image()
-{
-  if ( img ) img->deref(this);
-  if ( onLoadListener ) onLoadListener->deref();
-}
 
 ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)
 {

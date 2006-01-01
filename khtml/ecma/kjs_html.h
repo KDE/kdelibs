@@ -32,10 +32,7 @@
 #include "ecma/kjs_dom.h"
 #include "xml/dom_nodeimpl.h"  // for NodeImpl::Id
 
-#include <QPointer>
-
 namespace KJS {
-class JSEventListener;
   class HTMLElement;
 
   class HTMLDocument : public DOMDocument {
@@ -266,33 +263,6 @@ class JSEventListener;
     SharedPtr<DOM::DocumentImpl> doc;
   };
 
-
-  class Image : public DOMObject, public khtml::CachedObjectClient {
-  public:
-    Image(DOM::DocumentImpl *d, bool ws, int w, bool hs, int h);
-    ~Image();
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
-    void notifyFinished(khtml::CachedObject *);
-    virtual bool toBoolean(ExecState *) const { return true; }
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-    enum { Src, Complete, OnLoad, Width, Height };
-
-    khtml::CachedImage* image() { return img; }
-
-  private:
-    UString src;
-    QPointer<DOM::DocumentImpl> doc;
-    khtml::CachedImage* img;
-    JSEventListener *onLoadListener;
-    bool widthSet;
-    bool heightSet;
-    int width;
-    int height;
-  };
 
   ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide=false);
   ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
