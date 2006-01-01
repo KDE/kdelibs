@@ -409,7 +409,7 @@ void KCertPart::setReadWrite(bool rw) {
 
 bool KCertPart::saveFile() {
 if (_p12) {
-	QString certFile = KFileDialog::getSaveFileName(QString::null, "application/x-pkcs12");
+	QString certFile = KFileDialog::getSaveFileName(QString(), "application/x-pkcs12");
 	if (certFile.isEmpty())
 		return false;
 
@@ -420,7 +420,7 @@ if (_p12) {
 
 	return true;
 } else if (_ca) {
-	QString certFile = KFileDialog::getSaveFileName(QString::null, "application/x-x509-ca-cert");
+	QString certFile = KFileDialog::getSaveFileName(QString(), "application/x-x509-ca-cert");
 	if (certFile.isEmpty())
 		return false;
 
