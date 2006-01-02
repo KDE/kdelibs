@@ -15,7 +15,8 @@ def detect(env):
 	env['GENCXXFLAGS'] = []
 	env['CPPPATH'] = []
 	env['BKS_DEBUG']=0
-
+	env['INCLUDES_LAST'] = []
+	
 	# (rh) The flags from GENCCFLAGS seems to be added to GENCXXFLAGS, 
 	# so there is no need to duplicate settings in GENCXXGLAGS
 	if env['ARGS'].has_key('debug'):
