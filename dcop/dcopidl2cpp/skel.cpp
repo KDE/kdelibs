@@ -125,7 +125,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    Q_ASSERT( a.tagName() == "NAME" );
 		    argnames.append( a.firstChild().toText().data() );
 		} else {
-		    argnames.append( QString::null );
+		    argnames.append( QString() );
 		}
 	    }
 	    funcName += '(';
