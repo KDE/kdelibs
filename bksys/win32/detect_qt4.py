@@ -176,14 +176,13 @@ def detect(env):
 	ver_minor = int(ver_str[2:3])
 	ver_patch = int(ver_str[4:5])
 	ver_add   = ver_str[6:]
-	print str(ver_major)+'.'+str(ver_minor)+'.'+str(ver_patch)+'-'+ver_add
 	if ver_major != 4:
 		p('RED', ver_str + " (too old)")
 		env.Exit(1)
 	p('GREEN', "fine - %s" % version)
 	
 	if ( ver_major == 4 and ver_minor < 1 ):
-		p('RED', "At least Qt version 4.1.0rc1 is needed! You've only "+ ver_str )
+		p('RED', "At least Qt version 4.1.0 is needed! You've only "+ ver_str )
 		env.Exit(1)
 
 	#if os.environ.has_key('PKG_CONFIG_PATH'):
