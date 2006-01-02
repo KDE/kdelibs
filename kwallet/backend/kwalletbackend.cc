@@ -269,7 +269,7 @@ QString Backend::openRCToString(int rc) {
 		case -6:
 			return i18n("Decryption error.");
 		default:
-			return QString::null;
+			return QString();
 	}
 }
 
@@ -791,7 +791,7 @@ bool Backend::removeFolder(const QString& f) {
 
 	if (fi != _entries.end()) {
 		if (_folder == f) {
-			_folder = QString::null;
+			_folder.clear();
 		}
 
 		for (EntryMap::Iterator ei = fi.data().begin(); ei != fi.data().end(); ++ei) {

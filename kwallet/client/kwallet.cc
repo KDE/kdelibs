@@ -95,7 +95,7 @@ Wallet::Wallet(int handle, const QString& name)
 			r.get(rc);
 			if (!rc) {
 				_handle = -1;
-				_name = QString::null;
+				_name.clear();
 			}
 		}
 	}
@@ -106,8 +106,8 @@ Wallet::~Wallet() {
 	if (_handle != -1) {
 		_dcopRef->call("close", _handle, false);
 		_handle = -1;
-		_folder = QString::null;
-		_name = QString::null;
+		_folder.clear();
+		_name.clear();
 	}
 
 	delete _dcopRef;
@@ -239,8 +239,8 @@ int Wallet::lockWallet() {
 
 	DCOPReply r = _dcopRef->call("close", _handle, true);
 	_handle = -1;
-	_folder = QString::null;
-	_name = QString::null;
+	_folder.clear();
+	_name.clear();
 	if (r.isValid()) {
 		int drc = -1;
 		r.get(drc);
@@ -272,8 +272,8 @@ void Wallet::requestChangePassword(WId w) {
 void Wallet::slotWalletClosed(int handle) {
 	if (_handle == handle) {
 		_handle = -1;
-		_folder = QString::null;
-		_name = QString::null;
+		_folder.clear();
+		_name.clear();
 		emit walletClosed();
 	}
 }
@@ -381,7 +381,7 @@ bool Wallet::removeFolder(const QString& f) {
 	}
 
 	if (_folder == f) {
-		setFolder(QString::null);
+		setFolder(QString());
 	}
 
 	return rc;
