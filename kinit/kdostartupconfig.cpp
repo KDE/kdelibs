@@ -38,7 +38,7 @@ QString get_entry( QString* ll )
     QString& l = *ll;
     l = l.trimmed();
     if( l.isEmpty())
-        return QString::null;
+        return QString();
     QString ret;
     if( l[ 0 ] == '\'' )
         {
@@ -47,8 +47,8 @@ QString get_entry( QString* ll )
             ret += l[ pos++ ];
         if( pos >= l.length())
             {
-            *ll = QString::null;
-            return QString::null;
+            *ll = QString();
+            return QString();
             }
         *ll = l.mid( pos + 1 );
         return ret;

@@ -300,7 +300,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
       DCOPCString startup_id = "";
       DCOPresult.result = -1;
       DCOPresult.dcopName = 0;
-      DCOPresult.error = QString::null;
+      DCOPresult.error.clear();
       DCOPresult.pid = 0;
       stream >> serviceName >> urls;
       if ((fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)") ||
@@ -733,7 +733,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       DCOPresult.result = 0;
       DCOPresult.dcopName = request->dcop_name;
-      DCOPresult.error = QString::null;
+      DCOPresult.error.clear();
       DCOPresult.pid = request->pid;
    }
    else
@@ -1056,7 +1056,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
         return;
     bool silent;
     DCOPCString wmclass;
-    if( !KRun::checkStartupNotify( QString::null, service.data(), &silent, &wmclass ))
+    if( !KRun::checkStartupNotify( QString(), service.data(), &silent, &wmclass ))
         return;
     KStartupInfoId id;
     id.initId( startup_id );
@@ -1264,7 +1264,7 @@ KLauncher::requestSlave(const QString &protocol,
     {
        for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
        {
-          if (slave->match(protocol, QString::null, false))
+          if (slave->match(protocol, QString(), false))
              break;
        }
     }
