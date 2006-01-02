@@ -272,7 +272,7 @@ kfile/kfilespeedbar.cpp
 kfile/kpreviewwidgetbase.cpp
 kfile/kfilemetapreview.cpp 
 kfile/kpropertiesdesktopbase.ui3
-kfile/kpropertiesdesktopadvbase.ui3 
+kfile/kpropertiesdesktopadvbase.ui
 kfile/kpropertiesmimetypebase.ui3
 kfile/kencodingfiledialog.cpp
 kfile/kpropertiesdialog.cpp 
