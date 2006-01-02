@@ -49,7 +49,7 @@ def bootstrap(env):
 	else:
 		env['KCONFIGCOMPILER']= env.join(env['_KDEDIR_'],'bin','kconfig_compiler.exe')
 		env['DCOPIDL']        = env.join(env['_KDEDIR_'],'bin','dcopidl.bat')  + ' --srcdir ' + env.join(env['_KDEDIR_'],'share','dcopidl')
-		env['DCOPIDL2CPP']    = env.join(env['_KDEDIR_'],'bin','copidl2cpp.exe')
+		env['DCOPIDL2CPP']    = env.join(env['_KDEDIR_'],'bin','dcopidl2cpp.exe')
 	
 	env['LIB_KDECORE'] = ['kdecore']
 	env['LIB_KIO']     = ['kio', 'kwalletclient']  # TODO: kdesu isn't supported yet
