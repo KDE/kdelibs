@@ -8,6 +8,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 	StandaloneTest = 2
 
 	check_PROGRAMS = {
+		'kdatetimetest'          : ['kdatetimetest.cpp', StandaloneTest],
 		'kconfigtestgui'         : ['kconfigtestgui.cpp', StandaloneTest],
 		'kdebugtest'             : ['kdebugtest.cpp', StandaloneTest],
 		'klocaletest'            : ['klocaletest.cpp', QTestLibTest],

@@ -11,7 +11,7 @@ kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp
 kstandarddirs.cpp kprocess.cpp kprocctrl.cpp
 klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp
 kiconloader.cpp krootprop.cpp kcharsets.cpp
-kckey.cpp kshortcut.cpp 
+kckey.cpp kshortcut.cpp kdatetime.cpp
 kkeynative_x11.cpp 
 kkeyserver_x11.cpp
 kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp
@@ -84,7 +84,7 @@ kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h
 kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h
 kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h kcompletion.h
 kstringhandler.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h
-kallocator.h kvmallocator.h kcrash.h krfcdate.h
+kallocator.h kvmallocator.h kcrash.h krfcdate.h kdatetime.h
 kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h
 krandomsequence.h knotifyclient.h kiconeffect.h
 kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h
