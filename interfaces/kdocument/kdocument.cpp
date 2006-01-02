@@ -23,3 +23,6 @@ int KDocument::Document::documentNumber () const
 KDocument::Factory *KDocument::factory(KParts::Factory *_factory) {
 	return dynamic_cast<KDocument::Factory*>(_factory);
 }
+
+#include "document.moc"
+#include "view.moc"
