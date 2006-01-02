@@ -402,7 +402,7 @@ env.bksys_insttype('KDECONF', '', 'kssl/kssl/ksslcalist')
 env.bksys_insttype('KDEAPPS', 'kssl', 'kssl/kssl/caroot/ca-bundle.crt')
 
 # TODO: how to install files in build dir without this hack
-env.bksys_insttype('KDEINCLUDE','','../'+env['_BUILDDIR_']+'/ksslconfig.h')
+env.bksys_insttype('KDEINCLUDE','','../ksslconfig.h')
 
 env.bksys_insttype('KDESERVTYPES','', 'kfile/kpropsdlgplugin.desktop')
 
