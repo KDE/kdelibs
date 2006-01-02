@@ -125,10 +125,47 @@ public:
  */
 class KDirListerCache : public QObject, KDirNotify
 {
+  friend class KDirLister;
+
   Q_OBJECT
 public:
-  KDirListerCache( int maxCount = 10 );
   ~KDirListerCache();
+
+  void updateDirectory( const KURL& dir );
+
+  KFileItem *itemForURL( const KURL& url ) const;
+  KFileItemList *itemsForDir( const KURL& dir ) const;
+
+  /**
+   * Notify that files have been added in @p directory
+   * The receiver will list that directory again to find
+   * the new items (since it needs more than just the names anyway).
+   * Reimplemented from KDirNotify.
+   */
+  virtual void FilesAdded( const KURL& directory );
+
+  /**
+   * Notify that files have been deleted.
+   * This call passes the exact urls of the deleted files
+   * so that any view showing them can simply remove them
+   * or be closed (if its current dir was deleted)
+   * Reimplemented from KDirNotify.
+   */
+  virtual void FilesRemoved( const KURL::List& fileList );
+
+  /**
+   * Notify that files have been changed.
+   * At the moment, this is only used for new icon, but it could be
+   * used for size etc. as well.
+   * Note: this is ASYNC so that it can be used with a broadcast
+   */
+  virtual void FilesChanged( const KURL::List& fileList );
+  virtual void FileRenamed( const KURL& src, const KURL& dst );
+
+  static KDirListerCache *self();
+
+protected:
+  KDirListerCache( int maxCount = 10 );
 
   void listDir( KDirLister *lister, const KURL &_url, bool _keep, bool _reload );
 
@@ -142,41 +179,10 @@ public:
   void forgetDirs( KDirLister *lister );
   void forgetDirs( KDirLister *lister, const KURL &_url, bool notify );
 
-  void updateDirectory( const KURL &_dir );
-
-  KFileItemList *itemsForDir( const KURL &_dir ) const;
 
   KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
   KFileItem *findByURL( const KDirLister *lister, const KURL &_url ) const;
-
-  /**
-   * Notify that files have been added in @p directory
-   * The receiver will list that directory again to find
-   * the new items (since it needs more than just the names anyway).
-   * Reimplemented from KDirNotify.
-   */
-  virtual void FilesAdded( const KURL &directory );
-
-  /**
-   * Notify that files have been deleted.
-   * This call passes the exact urls of the deleted files
-   * so that any view showing them can simply remove them
-   * or be closed (if its current dir was deleted)
-   * Reimplemented from KDirNotify.
-   */
-  virtual void FilesRemoved( const KURL::List &fileList );
-
-  /**
-   * Notify that files have been changed.
-   * At the moment, this is only used for new icon, but it could be
-   * used for size etc. as well.
-   * Note: this is ASYNC so that it can be used with a broadcast
-   */
-  virtual void FilesChanged( const KURL::List &fileList );
-  virtual void FileRenamed( const KURL &src, const KURL &dst );
-
-  static KDirListerCache *self();
 
 private slots:
   void slotFileDirty( const QString &_file );

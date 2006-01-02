@@ -609,7 +609,12 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     return true;
 }
 
-KFileItemList *KDirListerCache::itemsForDir( const KURL &_dir ) const
+KFileItem *KDirListerCache::itemForURL( const KURL& url ) const
+{
+  return findByURL( 0, url );
+}
+
+KFileItemList *KDirListerCache::itemsForDir( const KURL& _dir ) const
 {
   QString urlStr = _dir.url(-1);
   DirItem *item = itemsInUse[ urlStr ];
@@ -631,7 +636,7 @@ KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString&
         return (*kit);
   }
 
-  return 0L;
+  return 0;
 }
 
 KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
@@ -644,7 +649,7 @@ KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
 
   // If lister is set, check that it contains this dir
   if ( lister && !lister->d->lstDirs.contains( parentDir ) )
-      return 0L;
+      return 0;
 
   KFileItemList *itemList = itemsForDir( parentDir );
   if ( itemList )
@@ -654,7 +659,7 @@ KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
       if ( (*kit)->url() == _url )
         return (*kit);
   }
-  return 0L;
+  return 0;
 }
 
 void KDirListerCache::FilesAdded( const KURL &dir )
