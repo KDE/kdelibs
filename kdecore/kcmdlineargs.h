@@ -691,6 +691,7 @@ private:
   static bool ignoreUnknown; // Ignore unknown options and arguments
   static char *mCwd; // Current working directory. Important for KUnqiueApp!
   static bool parseArgs;
+  static StdCmdLineArgs mStdargs;
 
   class Private;
   Private *d;

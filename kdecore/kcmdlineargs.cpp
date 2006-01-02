@@ -140,6 +140,7 @@ static KStaticDeleter <char> mCwdd;
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 bool KCmdLineArgs::ignoreUnknown = false;
+KCmdLineArgs::StdCmdLineArgs KCmdLineArgs::mStdargs = 0;
 
 //
 // Static functions
@@ -224,6 +225,7 @@ void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
    if (stdargs & KCmdLineArgs::CmdLineArgKDE) {
        KCmdLineArgs::addCmdLineOptions(kde_options, "KDE", "kde");
    }
+   mStdargs = stdargs;
 }
 
 void
@@ -713,6 +715,12 @@ KCmdLineArgs::qt_argc()
    if( qt_argc != -1 )
       return &qt_argc;
 
+   if (!(mStdargs & KCmdLineArgs::CmdLineArgQt))
+   {
+     qt_argc = 2;
+     return &qt_argc;
+   }
+
    KCmdLineArgs *args = parsedArgs("qt");
    Q_ASSERT(args); // No qt options have been added!
    if (!argv)
@@ -743,6 +751,15 @@ KCmdLineArgs::qt_argv()
    static char** qt_argv;
    if( qt_argv != NULL )
       return &qt_argv;
+
+   if (!(mStdargs & KCmdLineArgs::CmdLineArgQt))
+   {
+     qt_argv = new char*[2];
+     qt_argv[0] = qstrdup(appName());
+     qt_argv[1] = 0;
+
+     return &qt_argv;
+   }
 
    KCmdLineArgs *args = parsedArgs("qt");
    Q_ASSERT(args); // No qt options have been added!
