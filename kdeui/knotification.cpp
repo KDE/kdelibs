@@ -163,21 +163,24 @@ void KNotification::raiseWidget(QWidget *w)
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
 			const QPixmap& pixmap, QWidget *widget, const QStringList &actions,
-			ContextList contexts, unsigned int flags)
+			ContextList contexts, unsigned int flags, const KInstance *instance)
 {
-	QString appname = QString::fromAscii(kapp->instanceName());
 	KNotification *notify=new KNotification(widget);
 	notify->d->widget=widget;
 	notify->d->text=text;
 	notify->d->actions=actions;
 	notify->d->eventId=eventid;
 
+	QString appname; 
 
-	unsigned int f=0;
 	if(flags & DefaultEvent)
-		f |= KNotificationManager::DefaultNotification;
+		appname = QLatin1String("kde");
+	else if(instance)
+		appname = QString::fromLatin1(instance->instanceName());
+	else
+		appname = QString::fromLatin1(kapp->instanceName());
 
-	notify->d->id=KNotificationManager::self()->notify( notify , pixmap , notify->d->actions , contexts , f );
+	notify->d->id=KNotificationManager::self()->notify( notify , pixmap , notify->d->actions , contexts , appname );
 	if(notify->d->id>0)
 		notify->ref();
 //	kdDebug() << k_funcinfo << d->id << endl;

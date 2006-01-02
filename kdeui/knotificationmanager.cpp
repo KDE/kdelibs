@@ -105,17 +105,16 @@ void KNotificationManager::close( int id)
 }
 
 unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions , 
-										   const KNotification::ContextList & contexts , int flags)
+										   const KNotification::ContextList & contexts , const QString &appname)
 {
 	kdDebug() << k_funcinfo << endl;
-	QString appname= (flags & DefaultNotification)  ? QString::fromAscii("kde") : kapp->instanceName();
 	WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
 	DCOPClient *client=KApplication::dcopClient();
 	QByteArray data, replyData;
 	DCOPCString replyType;
 	QDataStream arg(&data, QIODevice::WriteOnly);
-	arg << n->eventId() << appname << contexts << n->text() << pix << actions << winId  ;
+	arg << n->eventId() << 	(appname.isEmpty() ? kapp->instanceName() : appname) << contexts << n->text() << pix << actions << winId  ;
 	if (!client->call("knotify", "Notify", "event(QString,QString,ContextList,QString,QPixmap,QStringList,int)" ,
 		 	 data, replyType, replyData))
 	{

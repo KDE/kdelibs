@@ -28,6 +28,7 @@
 #include <kdemacros.h>
 
 class QWidget;
+class KInstance;
 
 /**
  * KNotification is used to notify some event to the user.
@@ -312,12 +313,13 @@ public:
 	 * @param actions is a list of action texts.
 	 * @param contexts is the lists of contexts, see ContextList
 	 * @param flags is a bitmask of KNotificationFlags  
+     * @param instance used to determine the location of the config file.  by default, kapp is used
 	 */
 	static KNotification *event( const QString& eventId , const QString& text=QString(),
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 			const QStringList &actions=QStringList(), ContextList contexts=ContextList() ,
-			unsigned int flags=CloseOnTimeout);
-	
+			unsigned int flags=CloseOnTimeout , const KInstance *instance=0l );
+
 	/**
 	 * @brief emit standard an event
 	 * @overload
