@@ -5490,15 +5490,12 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 
   if ( isForProxy )
   {
-    auth = "Proxy-Authorization: NTLM ";
+    auth = "Proxy-Connection: Keep-Alive\r\n";
+    auth += "Proxy-Authorization: NTLM ";
     user = m_proxyURL.user();
     passwd = m_proxyURL.pass();
     strauth = m_strProxyAuthorization.latin1();
     len = m_strProxyAuthorization.length();
-    // Force a persistent proxy connection since NTLM authentication
-    // is completely useless without it! NOTE: we are purposefully
-    // ignoring the user's setting here...
-    m_bPersistentProxyConnection = true;
   }
   else
   {
