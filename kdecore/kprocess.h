@@ -145,7 +145,7 @@ public:
                * only the signal receivedStdout(int fd, int &len) is emitted. */
   };
 
-  Q_DECLARE_FLAGS(Communication, CommunicationFlag);
+  Q_DECLARE_FLAGS(Communication, CommunicationFlag)
 
   /**
    * Run-modes for a child process.
