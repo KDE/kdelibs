@@ -214,7 +214,7 @@ static QString lprngAnswer(const QString& result, const QString& printer)
 		QString	answer = result.mid(q, p-q).trimmed();
 		return answer;
 	}
-	return QString::null;
+	return QString();
 }
 
 int LpcHelper::parseStateChangeLPRng(const QString& result, const QString& printer)

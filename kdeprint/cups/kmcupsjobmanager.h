@@ -46,7 +46,7 @@ protected:
 
 protected:
 	bool listJobs(const QString&, JobType, int = 0);
-	bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
 	void parseListAnswer(IppRequest& req, KMPrinter *pr);
 };
 

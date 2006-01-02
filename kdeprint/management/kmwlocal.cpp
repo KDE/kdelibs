@@ -96,7 +96,7 @@ void KMWLocal::slotPortSelected(Q3ListViewItem *item)
 
 	QString uri;
 	if (!item || item->depth() <= 1 || item->depth() > 3)
-		uri = QString::null;
+		uri.clear();
 	else if (item->depth() == 3)
 		uri = item->parent()->text( 1 );
 	else
@@ -174,7 +174,7 @@ void KMWLocal::initialize()
 
 		QString	uri = *it;
 		int p = uri.find( ':' );
-		QString	desc = *(++it), prot = ( p != -1 ? uri.left( p ) : QString::null );
+		QString	desc = *(++it), prot = ( p != -1 ? uri.left( p ) : QString() );
 		QString	printer = *(++it);
 		int	index(-1);
 		if (desc.isEmpty())

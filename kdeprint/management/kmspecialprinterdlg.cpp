@@ -40,7 +40,7 @@
 #include <kseparator.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok)
+: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok)
 {
 	setCaption(i18n("Add Special Printer"));
 

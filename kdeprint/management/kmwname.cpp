@@ -58,7 +58,7 @@ bool KMWName::isValid(QString& msg)
 					     "working correctly. The wizard can strip all spaces "
 					     "from the string you entered, resulting in %1; "
 					     "what do you want to do?").arg(conv),
-					QString::null,
+					QString(),
 					i18n("Strip"), i18n("Keep"));
 		switch (result)
 		{

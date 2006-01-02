@@ -414,7 +414,7 @@ void KMCupsManager::loadServerPrinters()
 			req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QLatin1String("printer-name"));
 			if (req.doRequest("/printers/"))
 			{
-				QString	s = QString::null;
+				QString	s = QString();
 				req.name("printer-name",s);
 				setHardDefault(findPrinter(s));
 			}
@@ -792,10 +792,10 @@ QStringList KMCupsManager::detectLocalPrinters()
 			{
 				if (!uri.isEmpty())
 				{
-					if (printer == "Unknown") printer = QString::null;
+					if (printer == "Unknown") printer.clear();
 					list << cl << uri << desc << printer;
 				}
-				uri = desc = printer = cl = QString::null;
+				uri = desc = printer = cl = QString();
 			}
 			attr = attr->next;
 		}

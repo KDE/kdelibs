@@ -823,7 +823,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 //-----------------------------------------------------------------------------------------------------
 
 KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, Ok|Cancel|Details, Ok, true)
+: KDialogBase(parent, name, true, QString(), Ok|Cancel|Details, Ok, true)
 {
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;
@@ -969,7 +969,7 @@ void KXmlCommandDlg::slotOk()
 {
 	if (m_cmd)
 	{
-		m_cmd->setMimeType((m_mimetype->currentText() == "all/all" ? QString::null : m_mimetype->currentText()));
+		m_cmd->setMimeType((m_mimetype->currentText() == "all/all" ? QString() : m_mimetype->currentText()));
 		m_cmd->setDescription(m_description->text());
 		QStringList	l;
 		Q3ListViewItem	*item = m_requirements->firstChild();

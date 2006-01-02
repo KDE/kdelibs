@@ -86,7 +86,7 @@ void QDirMultiLineEdit::addURL(const QString& url)
 
 void QDirMultiLineEdit::slotAddClicked()
 {
-	QString	dirname = KFileDialog::getExistingDirectory(QString::null, this);
+	QString	dirname = KFileDialog::getExistingDirectory(QString(), this);
 	if (!dirname.isEmpty())
 		addURL(dirname);
 }

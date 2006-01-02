@@ -64,5 +64,5 @@ void KMConfigCupsDir::loadConfig(KConfig *conf)
 void KMConfigCupsDir::saveConfig(KConfig *conf)
 {
 	conf->setGroup("CUPS");
-	conf->writePathEntry("InstallDir",(m_stddir->isChecked() ? QString::null : m_installdir->url()));
+	conf->writePathEntry("InstallDir",(m_stddir->isChecked() ? QString() : m_installdir->url()));
 }

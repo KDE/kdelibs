@@ -30,7 +30,7 @@ class IppReportDlg : public KDialogBase
 	Q_OBJECT
 public:
 	IppReportDlg(QWidget *parent = 0, const char *name = 0);
-	static void report(IppRequest *req, int group, const QString& caption = QString::null);
+	static void report(IppRequest *req, int group, const QString& caption = QString());
 
 protected slots:
 	void slotUser1();

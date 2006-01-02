@@ -42,7 +42,7 @@ DrBase::~DrBase()
 
 QString DrBase::valueText()
 {
-	return QString::null;
+	return QString();
 }
 
 QString DrBase::prettyText()
@@ -545,7 +545,7 @@ QString DrListOption::valueText()
 	if (m_current)
 		return m_current->name();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString DrListOption::prettyText()
@@ -553,7 +553,7 @@ QString DrListOption::prettyText()
 	if (m_current)
 		return m_current->get("text");
 	else
-		return QString::null;
+		return QString();
 }
 
 void DrListOption::setValueText(const QString& s)

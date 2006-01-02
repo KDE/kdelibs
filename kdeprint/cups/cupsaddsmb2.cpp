@@ -331,7 +331,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 			m_passwded->setEnabled( true );
 			m_text->setText(i18n("Driver successfully exported."));
 			m_bar->reset();
-			m_textinfo->setText( QString::null );
+			m_textinfo->setText( QString() );
 			return;
 		}
 	}

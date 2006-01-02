@@ -48,7 +48,7 @@ QString KPrintProcess::errorMessage() const
 
 bool KPrintProcess::print()
 {
-	m_buffer = QString::null;
+	m_buffer.clear();
 	m_state = Printing;
 	return start(NotifyOnExit,All);
 }

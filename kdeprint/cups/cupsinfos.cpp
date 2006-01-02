@@ -58,9 +58,9 @@ CupsInfos::CupsInfos()
 	load();
 /*	host_ = cupsServer();
 	login_ = cupsUser();
-	if (login_.isEmpty()) login_ = QString::null;
+	if (login_.isEmpty()) login_.clear();
 	port_ = ippPort();
-	password_ = QString::null;*/
+	password_.clear();*/
 
 	cupsSetPasswordCB(cupsGetPasswordCB);
 }
@@ -122,8 +122,8 @@ void CupsInfos::load()
 		KMFactory::self()->initPassword( login_, password_, host_, port_ );
 	}
 	else
-		password_ = QString::null;
-	if (login_.isEmpty()) login_ = QString::null;
+		password_.clear();
+	if (login_.isEmpty()) login_.clear();
 	reallogin_ = cupsUser();
 
 	// synchronize with CUPS

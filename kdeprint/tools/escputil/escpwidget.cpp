@@ -192,7 +192,7 @@ void EscpWidget::startCommand(const QString& arg)
 		m_proc << "-u";
 
 	m_proc << arg << "-q";
-	m_errorbuffer = m_outbuffer = QString::null;
+	m_errorbuffer = m_outbuffer = QString();
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
 	foreach ( QByteArray arg, m_proc.args() )
 		kdDebug() << "ARG: " << QLatin1String(arg) << endl;

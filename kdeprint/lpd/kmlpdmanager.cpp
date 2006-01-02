@@ -151,7 +151,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 		ent->m_comment = QLatin1String("##PRINTTOOL3## REMOTE");
 	}
 	ent->m_args["mx"] = (printer->option("mx").isEmpty() ? "#0" : printer->option("mx"));
-	ent->m_args["sh"] = QString::null;
+	ent->m_args["sh"].clear();
 	// create spool directory (if necessary) and update PrintcapEntry object
 	if (!createSpooldir(ent))
 	{
@@ -281,7 +281,7 @@ QString KMLpdManager::programName(int f)
 		case 1: return conf->readPathEntry("LpdQueue","lpq");
 		case 2: return conf->readPathEntry("LpdRemove","lprm");
 	}
-	return QString::null;
+	return QString();
 }
 
 void KMLpdManager::checkStatus()

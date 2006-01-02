@@ -51,7 +51,7 @@ extern "C"
 		dlg.setMainWidget( xmlSel );
 		if ( dlg.exec() )
 			return xmlSel->command();
-		return QString::null;
+		return QString();
 	}
 }
 

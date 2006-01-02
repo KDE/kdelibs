@@ -35,7 +35,7 @@ KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
 	insertWidget(0,m_iconview);
 	m_listview = new KMListView(this);
 	insertWidget(1,m_listview);
-	m_current = QString::null;
+	m_current.clear();
 	m_listset = false;
 
 	connect(m_iconview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SIGNAL(rightButtonClicked(const QString&,const QPoint&)));

@@ -32,7 +32,7 @@
 #include <kiconloader.h>
 
 EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, Ok|Cancel)
+: KDialogBase(parent, name, true, QString(), Ok|Cancel)
 {
 	QWidget	*w = new QWidget(this);
 	setMainWidget(w);

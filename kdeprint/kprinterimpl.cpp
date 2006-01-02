@@ -387,7 +387,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 				     "(this may happen with non-CUPS spoolers when performing page selection "
 				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
 				     "format?</p>").arg(mime),
-				QString::null, i18n("Convert")) == KMessageBox::Continue)
+				QString(), i18n("Convert")) == KMessageBox::Continue)
 			{
 				QStringList	ff;
 				int	done(0);
@@ -486,7 +486,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 			// special case of empty file
 			KMessageBox::information( NULL,
 					i18n( "<qt>The print file is empty and will be ignored:<p>%1</p></qt>" ).arg( *it ),
-					QString::null, "emptyFileNotPrinted" );
+					QString(), "emptyFileNotPrinted" );
 			if ( flag )
 				QFile::remove( *it );
 			it = files.remove( it );
@@ -506,7 +506,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 						    "(Select <em>Cancel</em>) </li>"
 						    "</ul> "
 						    "Do you want KDE to attempt and convert this file to %2?</qt>").arg(mime).arg(primaryMimeType),
-					       QString::null,
+					       QString(),
 					       i18n("Convert"),
 					       i18n("Keep"),
 					       QLatin1String("kdeprintAutoConvert"))) == KMessageBox::Yes)

@@ -29,7 +29,7 @@ KMIconViewItem::KMIconViewItem(Q3IconView *parent, KMPrinter *p)
 {
 	m_state = 0;
 	m_mode = parent->itemTextPos();
-	m_pixmap = QString::null;
+	m_pixmap.clear();
 	m_isclass = false;
 	updatePrinter(p, m_mode);
 }
@@ -96,7 +96,7 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 		update = (oldstate != m_state);
 		if (p->name() != text() || update)
 		{
-			setText(QString::null);
+			setText(QString());
 			setText(p->name());
 		}
 		setKey(QString::fromLatin1("%1_%2").arg((p->isSpecial() ? "special" : (p->isClass(false) ? "class" : "printer"))).arg(p->name()));
@@ -209,13 +209,13 @@ void KMIconView::setViewMode(ViewMode m)
 
 void KMIconView::slotRightButtonClicked(Q3IconViewItem *item, const QPoint& p)
 {
-	emit rightButtonClicked(item ? item->text() : QString::null, p);
+	emit rightButtonClicked(item ? item->text() : QString(), p);
 }
 
 void KMIconView::slotSelectionChanged()
 {
 	KMIconViewItem	*item = static_cast<KMIconViewItem*>(currentItem());
-	emit printerSelected((item && !item->isDiscarded() && item->isSelected() ? item->text() : QString::null));
+	emit printerSelected((item && !item->isDiscarded() && item->isSelected() ? item->text() : QString()));
 }
 
 void KMIconView::setPrinter(const QString& prname)
@@ -231,7 +231,7 @@ void KMIconView::setPrinter(const QString& prname)
 
 void KMIconView::setPrinter(KMPrinter *p)
 {
-	setPrinter(p ? p->name() : QString::null);
+	setPrinter(p ? p->name() : QString());
 }
 
 #include "kmiconview.moc"

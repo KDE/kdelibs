@@ -129,7 +129,7 @@ KMPrinter* PrintcapEntry::createPrinter()
 	KMPrinter	*printer = new KMPrinter();
 	printer->setName(m_name);
 	printer->setPrinterName(m_name);
-	printer->setInstanceName(QString::null);
+	printer->setInstanceName(QString());
 	printer->setState(KMPrinter::Idle);
 	printer->setType(KMPrinter::Printer);
 	return printer;

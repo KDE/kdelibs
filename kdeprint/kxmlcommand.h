@@ -79,7 +79,7 @@ protected:
 
 	// use protected constructor to only allow the manager to
 	// create KXmlCommand object.
-	KXmlCommand(const QString& xmlId = QString::null);
+	KXmlCommand(const QString& xmlId = QString());
 
 private:
 	class KXmlCommandPrivate;

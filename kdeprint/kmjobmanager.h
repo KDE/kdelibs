@@ -70,9 +70,9 @@ public:
 
 	//KMJob* findJob(int ID);
 	KMJob* findJob(const QString& uri);
-	//bool sendCommand(int ID, int action, const QString& arg = QString::null);
-	bool sendCommand(const QString& uri, int action, const QString& arg = QString::null);
-	bool sendCommand(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	//bool sendCommand(int ID, int action, const QString& arg = QString());
+	bool sendCommand(const QString& uri, int action, const QString& arg = QString());
+	bool sendCommand(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
 	const Q3PtrList<KMJob>& jobList(bool reload = true);
 	void addJob(KMJob*);
 	KMThreadJob* threadJob();
@@ -88,8 +88,8 @@ protected:
 
 protected:
 	virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
-	virtual bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	bool sendCommandThreadJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	virtual bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
+	bool sendCommandThreadJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
 
 protected:
 	Q3PtrList<KMJob>	m_jobs;

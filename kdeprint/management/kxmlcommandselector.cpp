@@ -122,7 +122,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 
 void KXmlCommandSelector::loadCommands()
 {
-	QString	thisCmd = (m_cmd->currentItem() != -1 ? m_cmdlist[m_cmd->currentItem()] : QString::null);
+	QString	thisCmd = (m_cmd->currentItem() != -1 ? m_cmdlist[m_cmd->currentItem()] : QString());
 
 	m_cmd->clear();
 	m_cmdlist.clear();
@@ -161,7 +161,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 	if (m_usefilter)
 		m_usefilter->setChecked(index != -1);
 	if (m_line)
-		m_line->setText((index == -1 ? cmd : QString::null));
+		m_line->setText((index == -1 ? cmd : QString()));
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
 	if (m_cmd->currentItem() != -1 && m_cmd->isEnabled())
@@ -171,7 +171,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 void KXmlCommandSelector::slotAddCommand()
 {
 	bool	ok(false);
-	QString	cmdId = KInputDialog::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QString::null, &ok, this);
+	QString	cmdId = KInputDialog::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QString(), &ok, this);
 	if (ok)
 	{
 		bool	added(true);
@@ -182,7 +182,7 @@ void KXmlCommandSelector::slotAddCommand()
 				this,
 				i18n("A command named %1 already exists. Do you want "
 				     "to continue and edit the existing one?").arg(cmdId),
-				QString::null,
+				QString(),
 				KStdGuiItem::cont()) == KMessageBox::Cancel)
 			{
 				return;
@@ -222,7 +222,7 @@ void KXmlCommandSelector::slotEditCommand()
 
 void KXmlCommandSelector::slotBrowse()
 {
-	QString	filename = KFileDialog::getOpenFileName(QString::null, QString::null, this);
+	QString	filename = KFileDialog::getOpenFileName(QString(), QString(), this);
 	if (!filename.isEmpty() && m_line)
 		m_line->setText(filename);
 }
@@ -267,7 +267,7 @@ void KXmlCommandSelector::slotXmlCommandToggled( bool on )
 	else
 	{
 		emit commandValid( true );
-		m_shortinfo->setText( QString::null );
+		m_shortinfo->setText( QString() );
 	}
 }
 

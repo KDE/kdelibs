@@ -330,7 +330,7 @@ public:
 class DrConstraint
 {
 public:
-	DrConstraint(const QString& o1, const QString& o2, const QString& c1 = QString::null, const QString& c2 = QString::null);
+	DrConstraint(const QString& o1, const QString& o2, const QString& c1 = QString(), const QString& c2 = QString());
 	DrConstraint(const DrConstraint&);
 
 	bool check(DrMain*);

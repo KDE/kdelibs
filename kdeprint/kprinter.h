@@ -444,7 +444,7 @@ public:
 	 * @param forceExpand force the expansion of the dialog (the show/hide button will be hidden)
 	 * @returns boolean value corresponding to the button clicked by the user
 	 */
-	bool setup(QWidget *parent = 0, const QString& caption = QString::null, bool forceExpand = false);
+	bool setup(QWidget *parent = 0, const QString& caption = QString(), bool forceExpand = false);
 	/**
 	 * See QPrinter::margins().
 	 */
@@ -641,7 +641,7 @@ public:
 	 * }
 	 * \endcode
 	 * @param key the option name (key)
-	 * @returns the option value correponding to the key, or QString::null
+	 * @returns the option value correponding to the key, or QString()
 	 * @see KPrintDialogPage, setOption, options(), setOptions()
 	 */
 	QString option(const QString& key) const;
@@ -714,7 +714,7 @@ public:
 	 * user clicked "Cancel" in the file dialog.
 	 * @see setup()
 	 */
-	bool autoConfigure(const QString& prname = QString::null, QWidget *parent = 0);
+	bool autoConfigure(const QString& prname = QString(), QWidget *parent = 0);
 	/**
 	 * Set the default document filename. This filename will be used as the
 	 * default basename for the output file, instead of the default "print".

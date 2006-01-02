@@ -30,7 +30,7 @@
 #include <klocale.h>
 
 BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
+	: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -103,7 +103,7 @@ QString BrowseDialog::newAddress(QWidget *parent, CupsdConf *conf)
 	{
 		return dlg.addressString();
 	}
-	return QString::null;
+	return QString();
 }
 
 QString BrowseDialog::editAddress(const QString& s, QWidget *parent, CupsdConf *conf)
@@ -129,7 +129,7 @@ QString BrowseDialog::editAddress(const QString& s, QWidget *parent, CupsdConf *
 	{
 		return dlg.addressString();
 	}
-	return QString::null;
+	return QString();
 }
 
 void BrowseDialog::slotTypeChanged(int index)

@@ -134,8 +134,8 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	for (; r<m_tags->numRows(); r++)
 	{
-		m_tags->setText(r, 0, QString::null);
-		m_tags->setText(r, 1, QString::null);
+		m_tags->setText(r, 0, QString());
+		m_tags->setText(r, 1, QString());
 	}
 }
 

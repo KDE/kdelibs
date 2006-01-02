@@ -108,7 +108,7 @@ static KLibFactory* componentFactory()
 {
 	kdDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
-	KTrader::OfferList	offers = KTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString::null, QString::null);
+	KTrader::OfferList	offers = KTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString(), QString());
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
@@ -135,7 +135,7 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 	else
 	{
 		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
-		return (KMessageBox::warningContinueCancel(parent, msg, QString::null, KGuiItem(i18n("Print"),"fileprint")) == KMessageBox::Continue);
+		return (KMessageBox::warningContinueCancel(parent, msg, QString(), KGuiItem(i18n("Print"),"fileprint")) == KMessageBox::Continue);
 	}
 }
 
@@ -281,7 +281,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else
 	{
-		KService::Ptr serv = KServiceTypeProfile::preferredService( mime->name(), QString::null );
+		KService::Ptr serv = KServiceTypeProfile::preferredService( mime->name(), QString() );
 		if ( serv )
 		{
 			KURL url;
@@ -315,7 +315,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else if (!previewOnly)
 	{
-		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString::null, KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
+		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
 	}
 	else
 		return false;

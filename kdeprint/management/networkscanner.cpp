@@ -85,7 +85,7 @@ QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 		IPstr.truncate(p);
 		return IPstr;
 	}
-	return QString::null;
+	return QString();
 }
 
 QString NetworkScanner::NetworkScannerPrivate::scanString()
@@ -152,7 +152,7 @@ void NetworkScanner::slotScanClicked()
 					i18n( "You are about to scan a subnet (%1.*) that does not "
 						  "correspond to the current subnet of this computer (%2.*). Do you want "
 						  "to scan the specified subnet anyway?" ).arg( d->prefixaddress ).arg( d->localPrefix() ),
-					QString::null, KGuiItem( i18n( "&Scan" ), "viewmag" ), "askForScan" ) == KMessageBox::Continue )
+					QString(), KGuiItem( i18n( "&Scan" ), "viewmag" ), "askForScan" ) == KMessageBox::Continue )
 			start();
 	}
 	else
@@ -298,7 +298,7 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)
-	: KDialogBase(scanner, name, true, QString::null, Ok|Cancel, Ok, true)
+	: KDialogBase(scanner, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	scanner_ = scanner;
 	QWidget	*dummy = new QWidget(this);

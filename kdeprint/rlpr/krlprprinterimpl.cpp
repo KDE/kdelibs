@@ -59,7 +59,7 @@ bool KRlprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 		// proxy settings
 		KConfig	*conf = KMFactory::self()->printConfig();
 		conf->setGroup("RLPR");
-		QString	host = conf->readEntry("ProxyHost",QString::null), port = conf->readEntry("ProxyPort",QString::null);
+		QString	host = conf->readEntry("ProxyHost",QString()), port = conf->readEntry("ProxyPort",QString());
 		if (!host.isEmpty())
 		{
 			cmd.append(" -X ").append(quote(host));

@@ -38,7 +38,7 @@
 static QByteArray cups_authstring = "";
 #endif
 
-void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
+void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString())
 {
 	kdDebug(500) << "==========" << endl;
 	if (s.isEmpty())
@@ -134,7 +134,7 @@ IppRequest::IppRequest()
 {
 	request_ = 0;
 	port_ = -1;
-	host_ = QString::null;
+	host_.clear();
 	dump_ = 0;
 	init();
 }

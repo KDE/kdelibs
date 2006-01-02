@@ -48,7 +48,7 @@ QString localRootIP();
 //----------------------------------------------------------------------------------------
 
 SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
+: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -207,7 +207,7 @@ QString localRootIP()
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	KResolverResults    infos = KResolver::resolve(buf, QString::null);
+	KResolverResults    infos = KResolver::resolve(buf, QString());
 	if (!infos.error() && infos.count() > 0)
 	{
 		QString	IPstr = infos.first().address().nodeName();
@@ -215,7 +215,7 @@ QString localRootIP()
 		IPstr.truncate(p);
 		return IPstr;
 	}
-	return QString::null;
+	return QString();
 }
 
 #include "kmwsocketutil.moc"

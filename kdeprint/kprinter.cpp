@@ -219,7 +219,7 @@ bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
 	if (!KAuthorized::authorize("print/dialog"))
 	{
-		autoConfigure(QString::null, parent);
+		autoConfigure(QString(), parent);
 		return true; // Just print it
 	}
 
@@ -440,7 +440,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 bool KPrinter::doPreview(const QString& file)
 {
 	d->m_impl->statusMessage(i18n("Previewing..."), this);
-	d->m_impl->statusMessage(QString::null, this);
+	d->m_impl->statusMessage(QString(), this);
 	return KPrintPreview::preview(file, d->m_previewonly, d->m_parentId);
 }
 
@@ -450,7 +450,7 @@ void KPrinter::preparePrinting()
 	if (d->m_ready) return;
 
 	// re-initialize error
-	setErrorMessage(QString::null);
+	setErrorMessage(QString());
 
 	// re-initialize margins and page size (by default, use Qt mechanism)
 	setRealPageSize(NULL);
@@ -477,7 +477,7 @@ void KPrinter::finishPrinting()
 {
 	d->m_ready = false;
 	// close the status window
-	d->m_impl->statusMessage(QString::null, this);
+	d->m_impl->statusMessage(QString(), this);
 }
 
 QList<int> KPrinter::pageList() const
@@ -881,7 +881,7 @@ void KPrinter::setPrinterName(const QString& s)
 { d->m_printername = s; }
 
 QString KPrinter::printProgram() const
-{ return (option("kde-isspecial") == "1" ? option("kde-special-command") : QString::null); }
+{ return (option("kde-isspecial") == "1" ? option("kde-special-command") : QString()); }
 
 void KPrinter::setPrintProgram(const QString& prg)
 {
@@ -937,7 +937,7 @@ void KPrinter::setOutputToFile(bool on)
 	setOption("kde-outputtofile",(on ? "1" : "0"));
 	if (on)
 	{
-		setOption("kde-special-command",QString::null);
+		setOption("kde-special-command",QString());
 		setOption("kde-isspecial","1");
 	}
 }

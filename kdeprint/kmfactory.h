@@ -72,7 +72,7 @@ public:
 	KMSpecialManager* specialManager();
 	KXmlCommandManager* commandManager();
 	KPrinterImpl* printerImplementation();
-	KConfig* printConfig(const QString& group = QString::null);
+	KConfig* printConfig(const QString& group = QString());
 	QString printSystem();
 	QList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);
@@ -108,7 +108,7 @@ private:
 	void createJobManager();
 	void createUiManager();
 	void createPrinterImpl();
-	void loadFactory(const QString& syst = QString::null);
+	void loadFactory(const QString& syst = QString());
 	void unload();
 	QString autoDetect();
 

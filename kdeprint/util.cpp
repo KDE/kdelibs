@@ -51,7 +51,7 @@ void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 	}
 	else
 	{
-		work = QString::null;
+		work.clear();
 		server = h;
 		printer = l[0];
 	}

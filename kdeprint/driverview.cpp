@@ -30,7 +30,7 @@
 DrListView::DrListView( QWidget *parent )
     : KListView(parent)
 {
-        addColumn(QString::null);
+        addColumn(QString());
 	header()->hide();
 	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	setSorting(-1);

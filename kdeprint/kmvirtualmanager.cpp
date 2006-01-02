@@ -90,7 +90,7 @@ void KMVirtualManager::addPrinter(KMPrinter *p)
 void KMVirtualManager::setDefault(KMPrinter *p, bool saveflag)
 {
         m_manager->setSoftDefault(p);
-        m_defaultprinter = (p ? p->printerName() : QString::null);
+        m_defaultprinter = (p ? p->printerName() : QString());
 	if (saveflag) triggerSave();
 }
 
@@ -163,7 +163,7 @@ void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name, QWidget *
 						  "applications. Note that this will only make your personal default printer "
 						  "as undefined for non-KDE applications and should not prevent you from "
 						  "printing normally. Do you really want to set <b>%1</b> as your personal default?</qt>" ).arg( instname ),
-					QString::null, i18n("Set as Default"), "setSpecialAsDefault" ) == KMessageBox::No )
+					QString(), i18n("Set as Default"), "setSpecialAsDefault" ) == KMessageBox::No )
 			return;
 	}
 
@@ -188,7 +188,7 @@ void KMVirtualManager::refresh()
 
 	if (!m_checktime.isValid() || m_checktime < QMAX(fi.lastModified(),fi2.lastModified()))
 	{
-                m_defaultprinter = QString::null;
+                m_defaultprinter.clear();
 		if (fi2.exists())
 			loadFile(fi2.absoluteFilePath());
 		if (fi.exists() && fi.absoluteFilePath() != fi2.absFilePath())
@@ -280,7 +280,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 				for (int i=2; i<words.count(); i++)
 				{
 					pair = QStringList::split('=',words[i],false);
-					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString::null));
+					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString()));
 				}
 				// add printer to the manager
 				addPrinter(printer);	// don't use "printer" after this point !!!

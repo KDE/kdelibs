@@ -69,11 +69,11 @@ void KMWDriver::updatePrinter(KMPrinter *p)
 {
 	if (p)
 	{
-		p->setManufacturer(QString::null);
-		p->setModel(QString::null);
+		p->setManufacturer(QString());
+		p->setModel(QString());
 		p->setDbEntry(0);
-		p->setDriverInfo(QString::null);
-		p->setOption("kde-driver",QString::null);
+		p->setDriverInfo(QString());
+		p->setOption("kde-driver",QString());
 		setNextPage(KMWizard::DriverTest);
 		if (m_widget->isRaw())
 		{

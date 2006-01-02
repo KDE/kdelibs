@@ -42,7 +42,7 @@
 KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
     : QWidget(parent)
 {
-	m_external = QString::null;
+	m_external.clear();
 	m_valid = false;
 
 	// build widget
@@ -223,7 +223,7 @@ void KMDriverDbWidget::slotOtherClicked()
 {
 	if (m_external.isEmpty())
 	{
-		KFileDialog dlg( QString::null, QString::null, this, 0, true );
+		KFileDialog dlg( QString(), QString(), this, 0, true );
 		KURL url;
 
 		dlg.setMode( KFile::File );
@@ -263,10 +263,10 @@ void KMDriverDbWidget::slotOtherClicked()
 	}
 	else
 	{
-		m_external = QString::null;
+		m_external.clear();
 		connect(m_manu,SIGNAL(highlighted(const QString&)),this,SLOT(slotManufacturerSelected(const QString&)));
 		m_other->setText(i18n("Other"));
-		m_desc = QString::null;
+		m_desc.clear();
 		slotDbLoaded(true);
 	}
 }

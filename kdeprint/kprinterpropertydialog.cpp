@@ -32,7 +32,7 @@
 #include <kguiitem.h>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KStdGuiItem::save()),
+: KDialogBase(parent, name, true, QString(), KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KStdGuiItem::save()),
   m_printer(p), m_driver(0), m_current(0)
 {
 	m_pages.setAutoDelete(false);

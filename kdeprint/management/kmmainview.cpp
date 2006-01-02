@@ -320,7 +320,7 @@ void KMMainView::initActions()
 	m_menubar->getButton( 5 )->setPopup( menu, true );
 
 	loadPluginActions();
-	slotPrinterSelected(QString::null);
+	slotPrinterSelected(QString());
 }
 
 void KMMainView::slotRefresh()
@@ -604,7 +604,7 @@ void KMMainView::slotSoftDefault()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		KMFactory::self()->virtualManager()->setAsDefault(m_current,QString::null);
+		KMFactory::self()->virtualManager()->setAsDefault(m_current,QString());
 		KMTimer::self()->release(true);
 	}
 }
@@ -629,7 +629,7 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(m_current->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(m_current->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
 				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(m_current->printerName()));
@@ -653,7 +653,7 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 		else
 			s = s.arg(m_manager->errorMsg());
 		// clean up error message
-		m_manager->setErrorMsg(QString::null);
+		m_manager->setErrorMsg(QString());
 	}
 	s.prepend("<qt>").append("</qt>");
 	KMTimer::self()->hold();
@@ -894,7 +894,7 @@ void KMMainView::slotHelp()
 {
 	QString s = sender()->name();
 	if ( s == "invoke_help" )
-		KToolInvocation::invokeHelp( QString::null, "kdeprint" );
+		KToolInvocation::invokeHelp( QString(), "kdeprint" );
 	else if ( s == "invoke_web" )
 	{
 		QStringList args;

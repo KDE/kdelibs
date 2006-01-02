@@ -50,7 +50,7 @@ public:
 	void enableDialogPage( int index, bool flag = true );
 	KPrinter* printer() const;
 
-	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString::null, bool forceExpand = false);
+	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString(), bool forceExpand = false);
 
 signals:
 	void printRequested(KPrinter*);

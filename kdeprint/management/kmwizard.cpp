@@ -245,7 +245,7 @@ void KMWizard::slotNext()
 
 void KMWizard::slotHelp()
 {
-	KToolInvocation::invokeHelp(QString::null, "kdeprint");
+	KToolInvocation::invokeHelp(QString(), "kdeprint");
 }
 
 void KMWizard::enableWizard()

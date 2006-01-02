@@ -166,7 +166,7 @@ void KMWRlpr::initialize()
 		while (hitem) if (hitem->text(0) == "localhost") break; else hitem = hitem->nextSibling();
 		while (!t.atEnd())
 		{
-			buffer = QString::null;
+			buffer.clear();
 			while (!t.atEnd())
 			{
 				line = t.readLine().trimmed();

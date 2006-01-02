@@ -117,12 +117,12 @@ void KMWPassword::updatePrinter(KMPrinter *p)
 	switch ( m_btngroup->selectedId() )
 	{
 		case 0:
-			p->setOption( "kde-login", QString::null );
-			p->setOption( "kde-password", QString::null );
+			p->setOption( "kde-login", QString() );
+			p->setOption( "kde-password", QString() );
 			break;
 		case 1:
 			p->setOption( "kde-login", QLatin1String( "guest" ) );
-			p->setOption( "kde-password", QString::null );
+			p->setOption( "kde-password", QString() );
 			break;
 		case 2:
 			p->setOption( "kde-login", m_login->text() );

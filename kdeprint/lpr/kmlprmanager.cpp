@@ -452,7 +452,7 @@ QString KMLprManager::printOptions(KPrinter *prt)
 		if (handler)
 			return handler->printOptions(prt);
 	}
-	return QString::null;
+	return QString();
 }
 
 void KMLprManager::createPluginActions(KActionCollection *coll)
@@ -475,7 +475,7 @@ void KMLprManager::slotEditPrintcap()
 	    i18n("Editing a printcap entry manually should only be "
 		 "done by confirmed system administrator. This may "
 		 "prevent your printer from working. Do you want to "
-		 "continue?"), QString::null, KStdGuiItem::cont(),
+		 "continue?"), QString(), KStdGuiItem::cont(),
 	    "editPrintcap") == KMessageBox::Cancel)
 		return;
 

@@ -28,7 +28,7 @@
 class KDEPRINT_EXPORT KdeprintChecker
 {
 public:
-	static bool check(KConfig *conf, const QString& group = QString::null);
+	static bool check(KConfig *conf, const QString& group = QString());
 	static bool check(const QStringList& uris);
 
 private:

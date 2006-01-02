@@ -111,7 +111,7 @@ QMap<QString,QString> LPRngToolHandler::parseXferOptions(const QString& str)
 
 	while (p < str.length())
 	{
-		key = val = QString::null;
+		key = val = QString();
 		// skip spaces
 		while (p < str.length() && str[p].isSpace())
 			p++;
@@ -206,7 +206,7 @@ QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QStri
 				if (l.count() > 0 && !key.isEmpty())
 					dict << QPair<QString,QStringList>(key, l);
 				l.clear();
-				key = QString::null;
+				key.clear();
 				if (line.contains('|') == 2 || line.right(7) == "BOOLEAN")
 				{
 					int	p = line.find('|', 7);

@@ -70,7 +70,7 @@ QString AddressDialog::newAddress(QWidget *parent)
 	if (dlg.exec())
 		return dlg.addressString();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
@@ -85,5 +85,5 @@ QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
 	if (dlg.exec())
 		return dlg.addressString();
 	else
-		return QString::null;
+		return QString();
 }

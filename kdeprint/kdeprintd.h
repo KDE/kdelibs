@@ -43,7 +43,7 @@ public:
 k_dcop:
 	int print(const QString& cmd, const QStringList& files, bool remove);
 	QString openPassDlg(const QString& user);
-	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString::null);
+	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
 	QString requestPassword( const QString& user, const QString& host, int port, int seqNbr );
 	void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
 

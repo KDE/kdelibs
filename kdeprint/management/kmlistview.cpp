@@ -144,7 +144,7 @@ KMListView::~KMListView()
 
 void KMListView::slotRightButtonClicked(Q3ListViewItem *item, const QPoint& p, int)
 {
-	emit rightButtonClicked(item && item->depth() == 2 ? item->text(0) : QString::null, p);
+	emit rightButtonClicked(item && item->depth() == 2 ? item->text(0) : QString(), p);
 }
 
 KMListViewItem* KMListView::findItem(KMPrinter *p)
@@ -237,7 +237,7 @@ void KMListView::setPrinterList(Q3PtrList<KMPrinter> *list)
 void KMListView::slotSelectionChanged()
 {
 	KMListViewItem	*item = static_cast<KMListViewItem*>(currentItem());
-	emit printerSelected((item && !item->isDiscarded() && item->depth() == 2 ? item->text(0) : QString::null));
+	emit printerSelected((item && !item->isDiscarded() && item->depth() == 2 ? item->text(0) : QString()));
 }
 
 void KMListView::setPrinter(const QString& prname)
@@ -253,7 +253,7 @@ void KMListView::setPrinter(const QString& prname)
 
 void KMListView::setPrinter(KMPrinter *p)
 {
-	setPrinter(p ? p->name() : QString::null);
+	setPrinter(p ? p->name() : QString());
 }
 
 void KMListView::slotOnItem(Q3ListViewItem *)

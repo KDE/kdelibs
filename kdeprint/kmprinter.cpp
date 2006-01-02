@@ -178,7 +178,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 
 			// build-up file dialog
 			KFileDialog *dialog = new KFileDialog (fName,
-								QString::null,
+								QString(),
 								parent,
 								"filedialog",
 								true);
@@ -220,5 +220,5 @@ QString KMPrinter::deviceProtocol() const
 	if ( p != -1 )
 		return m_device.left( p );
 	else
-		return QString::null;
+		return QString();
 }

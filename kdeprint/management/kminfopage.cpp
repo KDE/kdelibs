@@ -95,15 +95,15 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 	// clear everything if p == 0
 	if (!p)
 	{
-		m_title->setText(QString::null);
+		m_title->setText(QString());
 		m_titlepixmap->setPixmap(QPixmap());
-		m_type->setText(QString::null);
-		m_state->setText(QString::null);
-		m_location->setText(QString::null);
-		m_description->setText(QString::null);
-		m_uri->setText(QString::null);
-		m_device->setText(QString::null);
-		m_model->setText(QString::null);
+		m_type->setText(QString());
+		m_state->setText(QString());
+		m_location->setText(QString());
+		m_description->setText(QString());
+		m_uri->setText(QString());
+		m_device->setText(QString());
+		m_model->setText(QString());
 	}
 	else
 	{

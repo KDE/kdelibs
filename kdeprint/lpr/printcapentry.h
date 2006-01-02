@@ -75,7 +75,7 @@ public:
 	bool has(const QString& f) const	{ return fields.contains(f); }
 	QString field(const QString& f) const	{ return fields[f].value; }
 	bool writeEntry(QTextStream&);
-	void addField(const QString& name, Field::Type type = Field::Boolean, const QString& value = QString::null);
+	void addField(const QString& name, Field::Type type = Field::Boolean, const QString& value = QString());
 };
 
 #endif

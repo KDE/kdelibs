@@ -36,7 +36,7 @@ public:
 	void initPrinter(KMPrinter*);
 	void updatePrinter(KMPrinter*);
 
-	void addBackend(int ID, const QString& txt, bool on = true, const QString& whatsThis = QString::null, int nextpage = -1);
+	void addBackend(int ID, const QString& txt, bool on = true, const QString& whatsThis = QString(), int nextpage = -1);
 	void addBackend(int ID = -1, bool on = true, int nextpage = -1);
 	void enableBackend(int ID, bool on = true);
 

@@ -94,7 +94,7 @@ protected:
 	void initActions();
 	JobItem* findItem(const QString& uri);
 	void jobSelection(Q3PtrList<KMJob>& l);
-	void send(int cmd, const QString& name, const QString& arg = QString::null);
+	void send(int cmd, const QString& name, const QString& arg = QString());
 	void loadPrinters();
 	void loadPluginActions();
 	void removePluginActions();

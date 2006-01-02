@@ -80,10 +80,10 @@ CupsdConf::CupsdConf()
 	tmpfiles_ = requestdir_+"/tmp";
 
 	// other options
-	servername_ = QString::null;
-	serveradmin_ = QString::null;
+	servername_.clear();
+	serveradmin_.clear();
 	classification_ = CLASS_NONE;
-	otherclassname_ = QString::null;
+	otherclassname_.clear();
 	classoverride_ = false;
 	charset_ = "utf-8";
 	language_ = "en";
@@ -695,7 +695,7 @@ CupsLocation::CupsLocation()
 	resourcename_ = "";
 	authtype_ = AUTHTYPE_NONE;
 	authclass_ = AUTHCLASS_ANONYMOUS;
-	authname_ = QString::null;
+	authname_.clear();
 	encryption_ = ENCRYPT_IFREQUESTED;
 	satisfy_ = SATISFY_ALL;
 	order_ = ORDER_ALLOW_DENY;

@@ -98,7 +98,7 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 				else
 				{
 					QString uri = buildSmbURI( 
-							QString::null,
+							QString(),
 							opts[ "NCP_SERVER" ],
 							opts[ "NCP_PRINTER" ],
 							opts[ "NCP_USER" ],
@@ -133,7 +133,7 @@ QString ApsHandler::driverDirInternal()
 
 QMap<QString,QString> ApsHandler::loadResources(PrintcapEntry *entry)
 {
-	return loadVarFile(sysconfDir() + "/" + (entry ? entry->name : QString::null) + "/apsfilterrc");
+	return loadVarFile(sysconfDir() + "/" + (entry ? entry->name : QString()) + "/apsfilterrc");
 }
 
 QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)

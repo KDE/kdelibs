@@ -440,7 +440,7 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 			}
 		}
 	}
-	return QPair<QString,QString>( QString::null, QString::null );
+	return QPair<QString,QString>( QString(), QString() );
 }
 
 void KMFactory::initPassword( const QString& user, const QString& password, const QString& host, int port )

@@ -124,7 +124,7 @@ void CupsdSecurityPage::slotAdd()
 		for (locs_.first(); locs_.current(); locs_.next())
 			if (locs_.current()->resource_ == loc->resource_)
 			{
-				if (KMessageBox::warningContinueCancel(this, i18n("This location is already defined. Do you want to replace the existing one?"),QString::null,i18n("Replace")) == KMessageBox::Continue)
+				if (KMessageBox::warningContinueCancel(this, i18n("This location is already defined. Do you want to replace the existing one?"),QString(),i18n("Replace")) == KMessageBox::Continue)
 				{
 					index = locs_.at();
 					locs_.remove();

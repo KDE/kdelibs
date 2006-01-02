@@ -138,7 +138,7 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 		entry->addField("rp", Field::String, rp);
 		// force this entry to null (otherwise it seems it's redirected
 		// to /dev/lp0 by default)
-		entry->addField("lp", Field::String, QString::null);
+		entry->addField("lp", Field::String, QString());
 	}
 	else if ( prot == "socket" )
 	{
@@ -162,7 +162,7 @@ bool LprHandler::removePrinter(KMPrinter*, PrintcapEntry*)
 
 QString LprHandler::printOptions(KPrinter*)
 {
-	return QString::null;
+	return QString();
 }
 
 void LprHandler::reset()
@@ -253,7 +253,7 @@ QString LprHandler::driverDirectory()
 
 QString LprHandler::driverDirInternal()
 {
-	return QString::null;
+	return QString();
 }
 
 QString LprHandler::locateDir(const QString& dirname, const QString& paths)
@@ -265,5 +265,5 @@ QString LprHandler::locateDir(const QString& dirname, const QString& paths)
 		if (::access(QFile::encodeName(testpath), F_OK) == 0)
 			return testpath;
 	}
-	return QString::null;
+	return QString();
 }

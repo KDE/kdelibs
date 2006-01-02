@@ -70,7 +70,7 @@ void LprSettings::init()
 	}
 
 	// Printcap file
-	m_printcapfile = QString::null;
+	m_printcapfile.clear();
 	m_local = true;
 
 	// Spool directory

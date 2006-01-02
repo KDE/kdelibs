@@ -60,7 +60,7 @@ void QDirLineEdit::buttonClicked()
 	if (!fileedit_)
 		dirname = KFileDialog::getExistingDirectory(edit_->text(), this);
 	else
-		dirname = KFileDialog::getOpenFileName(edit_->text(), QString::null, this);
+		dirname = KFileDialog::getOpenFileName(edit_->text(), QString(), this);
 	if (!dirname.isEmpty())
 		edit_->setText(dirname);
 }

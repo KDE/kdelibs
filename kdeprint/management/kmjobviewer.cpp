@@ -121,7 +121,7 @@ KMJobViewer::~KMJobViewer()
 
 void KMJobViewer::setPrinter(KMPrinter *p)
 {
-	setPrinter((p ? p->printerName() : QString::null));
+	setPrinter((p ? p->printerName() : QString()));
 }
 
 void KMJobViewer::setPrinter(const QString& prname)
@@ -478,7 +478,7 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 	{
 		KMessageBox::error(this,"<qt>"+i18n("Unable to perform action \"%1\" on selected jobs. Error received from manager:").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
 		// error reported, clean it
-		KMManager::self()->setErrorMsg(QString::null);
+		KMManager::self()->setErrorMsg(QString());
 	}
 
 	triggerRefresh();
@@ -679,7 +679,7 @@ void KMJobViewer::pluginActionActivated(int ID)
 
 void KMJobViewer::slotUserOnly(bool on)
 {
-	m_username = (on ? m_userfield->text() : QString::null);
+	m_username = (on ? m_userfield->text() : QString());
 	refresh(false);
 }
 

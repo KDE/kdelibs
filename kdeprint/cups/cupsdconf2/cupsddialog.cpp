@@ -62,7 +62,7 @@ extern "C"
 	KDEPRINT_EXPORT bool configureServer(QWidget *parent, QString& msg)
 	{
 		dynamically_loaded = true;
-		bool result = CupsdDialog::configure(QString::null, parent, &msg);
+		bool result = CupsdDialog::configure(QString(), parent, &msg);
 		dynamically_loaded = false;
 		return result;
 	}
@@ -70,7 +70,7 @@ extern "C"
 
 int getServerPid()
 {
-	QDir	dir("/proc",QString::null,QDir::Name,QDir::Dirs);
+	QDir	dir("/proc",QString(),QDir::Name,QDir::Dirs);
 	for (uint i=0;i<dir.count();i++)
 	{
 		if (dir[i] == "." || dir[i] == ".." || dir[i] == "self") continue;

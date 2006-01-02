@@ -79,7 +79,7 @@ public:
 
 	// processing functions
 	bool doRequest(const QString& res);
-	bool doFileRequest(const QString& res, const QString& filename = QString::null);
+	bool doFileRequest(const QString& res, const QString& filename = QString());
 
 	// report functions
 	bool htmlReport(int group, QTextStream& output);

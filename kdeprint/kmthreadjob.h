@@ -38,7 +38,7 @@ public:
 	void createJob(KMJob*);
 	void updateManager(KMJobManager*);
 
-	static void createJob(int ID, const QString& printer, const QString& name = QString::null, const QString& owner = QString::null, int size = 0);
+	static void createJob(int ID, const QString& printer, const QString& name = QString(), const QString& owner = QString(), int size = 0);
 
 protected:
 	QString jobFile();

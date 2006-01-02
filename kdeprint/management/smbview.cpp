@@ -89,7 +89,7 @@ void SmbView::setLoginInfos(const QString& login, const QString& password)
 
 void SmbView::startProcess(int state)
 {
-	m_buffer = QString::null;
+	m_buffer.clear();
 	m_state = state;
 	QApplication::setOverrideCursor(KCursor::waitCursor());
 	m_proc->start(KProcess::NotifyOnExit,KProcess::Stdout);
@@ -132,7 +132,7 @@ void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 void SmbView::init()
 {
 	// Open Samba configuration file and check if a WINS server is defined
-	m_wins_server = QString::null;
+	m_wins_server.clear();
 	QLatin1String wins_keyword("wins server");	
 	QFile smb_conf ("/etc/samba/smb.conf");
 	if (smb_conf.exists () && smb_conf.open (QIODevice::ReadOnly))

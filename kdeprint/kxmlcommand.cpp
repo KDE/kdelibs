@@ -661,7 +661,7 @@ QString KXmlCommandManager::selectCommand(QWidget *parent)
 	if ( !lib )
 	{
 		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ).arg( KLibLoader::self()->lastErrorMessage() ) );
-		return QString::null;
+		return QString();
 	}
 	else
 	{
@@ -669,7 +669,7 @@ QString KXmlCommandManager::selectCommand(QWidget *parent)
 		if ( !func )
 		{
 			KMessageBox::error( parent, i18n( "Unable to find wizard object in management library." ) );
-			return QString::null;
+			return QString();
 		}
 		else
 			return func( parent );

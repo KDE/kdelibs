@@ -35,7 +35,7 @@ public:
 
 	bool setConfigFile(const QString& filename);
 
-	static bool configure(const QString& filename = QString::null, QWidget *parent = 0, QString *errormsg = 0);
+	static bool configure(const QString& filename = QString(), QWidget *parent = 0, QString *errormsg = 0);
 	static bool restartServer(QString& msg);
 	static int serverPid();
 	static int serverOwner();

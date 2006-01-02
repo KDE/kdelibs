@@ -30,7 +30,7 @@
 #include <klocale.h>
 
 PortDialog::PortDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
+	: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -85,7 +85,7 @@ QString PortDialog::newListen(QWidget *parent, CupsdConf *conf)
 	{
 		return dlg.listenString();
 	}
-	return QString::null;
+	return QString();
 }
 
 QString PortDialog::editListen(const QString& s, QWidget *parent, CupsdConf *conf)
@@ -113,5 +113,5 @@ QString PortDialog::editListen(const QString& s, QWidget *parent, CupsdConf *con
 	{
 		return dlg.listenString();
 	}
-	return QString::null;
+	return QString();
 }

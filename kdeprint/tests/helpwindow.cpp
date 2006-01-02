@@ -180,7 +180,7 @@ void HelpWindow::textChanged()
 	    mHistory[ hist->insertItem( selectedURL ) ] = selectedURL;
 	} else
 	    pathCombo->setCurrentItem( i );
-	selectedURL = QString::null;
+	selectedURL.clear();
     }
 }
 
@@ -227,7 +227,7 @@ void HelpWindow::aboutQt()
 void HelpWindow::openFile()
 {
 #ifndef QT_NO_FILEDIALOG
-    QString fn = QFileDialog::getOpenFileName( QString::null, QString::null, this );
+    QString fn = QFileDialog::getOpenFileName( QString(), QString(), this );
     if ( !fn.isEmpty() )
 	browser->setSource( fn );
 #endif

@@ -32,7 +32,7 @@
 #include <kiconloader.h>
 
 LocationDialog::LocationDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
+	: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -131,7 +131,7 @@ void LocationDialog::fillLocation(CupsLocation *loc)
 	loc->resourcename_ = loc->resource_->path_;
 	loc->authtype_ = authtype_->currentItem();
 	loc->authclass_ = (loc->authtype_ == AUTHTYPE_NONE ? AUTHCLASS_ANONYMOUS : authclass_->currentItem());
-	loc->authname_ = (loc->authclass_ == AUTHCLASS_USER || loc->authclass_ == AUTHCLASS_GROUP ? authname_->text() : QString::null);
+	loc->authname_ = (loc->authclass_ == AUTHCLASS_USER || loc->authclass_ == AUTHCLASS_GROUP ? authname_->text() : QString());
 	loc->encryption_ = encryption_->currentItem();
 	loc->satisfy_ = satisfy_->currentItem();
 	loc->order_ = order_->currentItem();

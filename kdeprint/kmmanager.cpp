@@ -224,7 +224,7 @@ KMPrinter* KMManager::defaultPrinter()
 
 Q3PtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
-	setErrorMsg(QString::null);
+	setErrorMsg(QString());
 	//kdDebug(500) << "Getting printer list: " << reload << endl;
 
 	if (reload || m_printers.count() == 0)
@@ -315,12 +315,12 @@ void KMManager::addPrinter(KMPrinter *p)
 
 QString KMManager::driverDbCreationProgram()
 {
-	return QString::null;
+	return QString();
 }
 
 QString KMManager::driverDirectory()
 {
-	return QString::null;
+	return QString();
 }
 
 DrMain* KMManager::loadPrinterDriver(KMPrinter*, bool)
@@ -355,7 +355,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 {
 	QFile	f(filename);
 	bool	result(true);
-	destname = QString::null;
+	destname.clear();
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		char	buf[1024] = {0};
@@ -476,7 +476,7 @@ QStringList KMManager::detectLocalPrinters()
 {
 	QStringList	list;
 	for (int i=0; i<3; i++)
-		list << QString::null << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString::null;
+		list << QString() << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString();
 	return list;
 }
 

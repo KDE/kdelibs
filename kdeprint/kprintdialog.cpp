@@ -608,10 +608,10 @@ void KPrintDialog::initialize(KPrinter *printer)
 void KPrintDialog::slotPrinterSelected(int index)
 {
 	bool 	ok(false);
-	d->m_location->setText(QString::null);
-	d->m_state->setText(QString::null);
-	d->m_comment->setText(QString::null);
-	d->m_type->setText(QString::null);
+	d->m_location->setText(QString());
+	d->m_state->setText(QString());
+	d->m_comment->setText(QString());
+	d->m_type->setText(QString());
 	if (index >= 0 && index < d->m_printers->count())
 	{
 		KMManager	*mgr = KMFactory::self()->manager();
@@ -731,7 +731,7 @@ bool KPrintDialog::checkOutputFile()
 			{
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absoluteFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
-				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->url(),
+				KIO::RenameDlg dlg( this, i18n( "Print" ), QString(), d->m_file->url(),
 						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest, true );
 				int result = dlg.exec();
 				switch ( result )
@@ -915,7 +915,7 @@ void KPrintDialog::slotToggleFilter(bool on)
 
 void KPrintDialog::slotHelp()
 {
-	KToolInvocation::invokeHelp(QString::null, "kdeprint");
+	KToolInvocation::invokeHelp(QString(), "kdeprint");
 }
 
 void KPrintDialog::slotOutputFileSelected(const QString& txt)

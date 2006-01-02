@@ -1166,7 +1166,7 @@ yyreduce:
 
   case 15:
 #line 77 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->openUi(yyvsp[-2][0], QString::null, yyvsp[0][0]); ;}
+    { builder->openUi(yyvsp[-2][0], QString(), yyvsp[0][0]); ;}
     break;
 
   case 16:
@@ -1186,7 +1186,7 @@ yyreduce:
 
   case 19:
 #line 85 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->openGroup(yyvsp[0].join(" "), QString::null); ;}
+    { builder->openGroup(yyvsp[0].join(" "), QString()); ;}
     break;
 
   case 20:
@@ -1211,17 +1211,17 @@ yyreduce:
 
   case 24:
 #line 94 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->putConstraint(yyvsp[-2][0], yyvsp[0][0], yyvsp[-1][0], QString::null); ;}
+    { builder->putConstraint(yyvsp[-2][0], yyvsp[0][0], yyvsp[-1][0], QString()); ;}
     break;
 
   case 25:
 #line 95 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->putConstraint(yyvsp[-2][0], yyvsp[-1][0], QString::null, yyvsp[0][0]); ;}
+    { builder->putConstraint(yyvsp[-2][0], yyvsp[-1][0], QString(), yyvsp[0][0]); ;}
     break;
 
   case 26:
 #line 96 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->putConstraint(yyvsp[-1][0], yyvsp[0][0], QString::null, QString::null); ;}
+    { builder->putConstraint(yyvsp[-1][0], yyvsp[0][0], QString(), QString()); ;}
     break;
 
   case 27:
@@ -1231,7 +1231,7 @@ yyreduce:
 
   case 28:
 #line 100 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->putStatement(yyvsp[-3][0], yyvsp[-2][0], QString::null, yyvsp[0]); ;}
+    { builder->putStatement(yyvsp[-3][0], yyvsp[-2][0], QString(), yyvsp[0]); ;}
     break;
 
   case 29:
@@ -1241,7 +1241,7 @@ yyreduce:
 
   case 30:
 #line 102 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
-    { builder->putStatement(yyvsp[-4][0], yyvsp[-3][0], QString::null, yyvsp[-1]); ;}
+    { builder->putStatement(yyvsp[-4][0], yyvsp[-3][0], QString(), yyvsp[-1]); ;}
     break;
 
   case 31:

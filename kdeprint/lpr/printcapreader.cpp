@@ -28,7 +28,7 @@ void PrintcapReader::setPrintcapFile(QFile *f)
     if (f->isOpen())
     {
         m_stream.setDevice(f);
-        m_buffer = QString::null;
+        m_buffer.clear();
     }
 }
 
@@ -39,7 +39,7 @@ bool PrintcapReader::nextLine(QString& line)
 	else if (!m_buffer.isEmpty())
 	{
 		line = m_buffer;
-		m_buffer = QString::null;
+		m_buffer.clear();
 	}
 	else
 		line = m_stream.readLine().trimmed();

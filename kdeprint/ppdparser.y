@@ -74,7 +74,7 @@ imgarea:   IMGAREA OPTION ':' QUOTED                 { builder->putImageableArea
 	     | IMGAREA OPTION '/' TRANSLATION ':' QUOTED { builder->putImageableArea($2[0], $6[0]); }
 ;
 
-openui:   OPENUI OPTION ':' string                  { builder->openUi($2[0], QString::null, $4[0]); }
+openui:   OPENUI OPTION ':' string                  { builder->openUi($2[0], QString(), $4[0]); }
 	    | OPENUI OPTION '/' TRANSLATION ':' string  { builder->openUi($2[0], $4[0], $6[0]); }
 ;
 
@@ -82,7 +82,7 @@ endui:   CLOSEUI ':' string     { builder->endUi($3[0]); }
 	   | CLOSEUI string         { builder->endUi($2[0]); }
 ;
 
-opengroup:   OPENGROUP ':' string                  { builder->openGroup($3.join(" "), QString::null); }
+opengroup:   OPENGROUP ':' string                  { builder->openGroup($3.join(" "), QString()); }
 		   | OPENGROUP ':' string '/' TRANSLATION  { builder->openGroup($3.join(" "), $5[0]); }
 ;
 
@@ -91,15 +91,15 @@ endgroup:   CLOSEGROUP ':' string                  { builder->endGroup($3.join("
 ;
 
 constraint:   CONSTRAINT ':' KEYWORD OPTION KEYWORD OPTION { builder->putConstraint($3[0], $5[0], $4[0], $6[0]); }
-		    | CONSTRAINT ':' KEYWORD OPTION KEYWORD        { builder->putConstraint($3[0], $5[0], $4[0], QString::null); }
-			| CONSTRAINT ':' KEYWORD KEYWORD OPTION        { builder->putConstraint($3[0], $4[0], QString::null, $5[0]); }
-			| CONSTRAINT ':' KEYWORD KEYWORD               { builder->putConstraint($3[0], $4[0], QString::null, QString::null); }
+		    | CONSTRAINT ':' KEYWORD OPTION KEYWORD        { builder->putConstraint($3[0], $5[0], $4[0], QString()); }
+			| CONSTRAINT ':' KEYWORD KEYWORD OPTION        { builder->putConstraint($3[0], $4[0], QString(), $5[0]); }
+			| CONSTRAINT ':' KEYWORD KEYWORD               { builder->putConstraint($3[0], $4[0], QString(), QString()); }
 ;
 
 ppdelement:   KEYWORD ':' value                          { builder->putStatement2($1[0], $3[0]); }
-		    | KEYWORD OPTION ':' value                   { builder->putStatement($1[0], $2[0], QString::null, $4); }
+		    | KEYWORD OPTION ':' value                   { builder->putStatement($1[0], $2[0], QString(), $4); }
 			| KEYWORD OPTION '/' TRANSLATION ':' value   { builder->putStatement($1[0], $2[0], $4[0], $6); }
-			| KEYWORD OPTION '/' ':' value               { builder->putStatement($1[0], $2[0], QString::null, $4); }
+			| KEYWORD OPTION '/' ':' value               { builder->putStatement($1[0], $2[0], QString(), $4); }
 			| DEFAULT ':' string                         { builder->putDefault($1[0], $3[0]); }
 			| DEFAULT ':' string '/' TRANSLATION         { builder->putDefault($1[0], $3[0]); }
 			| openui

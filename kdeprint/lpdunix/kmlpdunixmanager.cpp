@@ -53,7 +53,7 @@ QString KTextBuffer::readLine()
 	if (!m_linebuf.isEmpty())
 	{
 		line = m_linebuf;
-		m_linebuf = QString::null;
+		m_linebuf.clear();
 	}
 	else
 		line = m_stream.readLine();
@@ -122,7 +122,7 @@ QMap<QString,QString> readEntry(KTextBuffer& t)
 				if ((p=l[i].find('=')) != -1)
 					entry[l[i].left(p).trimmed()] = l[i].right(l[i].length()-p-1).trimmed();
 				else
-					entry[l[i].trimmed()] = QString::null;
+					entry[l[i].trimmed()].clear();
 		}
 	}
 	return entry;

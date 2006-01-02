@@ -58,14 +58,14 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 void KMProxyWidget::loadConfig(KConfig *conf)
 {
 	conf->setGroup("RLPR");
-	m_proxyhost->setText(conf->readEntry("ProxyHost",QString::null));
-	m_proxyport->setText(conf->readEntry("ProxyPort",QString::null));
+	m_proxyhost->setText(conf->readEntry("ProxyHost",QString()));
+	m_proxyport->setText(conf->readEntry("ProxyPort",QString()));
 	m_useproxy->setChecked(!m_proxyhost->text().isEmpty());
 }
 
 void KMProxyWidget::saveConfig(KConfig *conf)
 {
 	conf->setGroup("RLPR");
-	conf->writeEntry("ProxyHost",(m_useproxy->isChecked() ? m_proxyhost->text() : QString::null));
-	conf->writeEntry("ProxyPort",(m_useproxy->isChecked() ? m_proxyport->text() : QString::null));
+	conf->writeEntry("ProxyHost",(m_useproxy->isChecked() ? m_proxyhost->text() : QString()));
+	conf->writeEntry("ProxyPort",(m_useproxy->isChecked() ? m_proxyport->text() : QString()));
 }

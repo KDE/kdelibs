@@ -69,7 +69,7 @@ QString KMWInfoBase::text(int i)
 {
 	if (i >= 0 && i < m_nlines)
 		return m_edits.at(i)->text();
-	return QString::null;
+	return QString();
 }
 
 void KMWInfoBase::setCurrent(int i)

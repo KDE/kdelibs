@@ -97,7 +97,7 @@ QString CupsdComment::comment(const QString& key)
 		if (comm)
 			return comm->comment();
 	}
-        return QString::null;
+        return QString();
 }
 
 QString CupsdComment::toolTip(const QString& key)
@@ -108,7 +108,7 @@ QString CupsdComment::toolTip(const QString& key)
 		if (comm)
 			return comm->toolTip();
 	}
-        return QString::null;
+        return QString();
 }
 
 bool CupsdComment::loadComments()
