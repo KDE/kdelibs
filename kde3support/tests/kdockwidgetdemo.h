@@ -30,17 +30,17 @@ class SFileDialog : public QDialog
 {Q_OBJECT
 
 public:
-	SFileDialog( QString initially = QString::null,
+	SFileDialog( QString initially = QString(),
                                   const QStringList& filter = QStringList("All Files ( * )"), const char* name = 0 );
 	~SFileDialog();
 
-  static QString getOpenFileName( QString initially = QString::null,
+  static QString getOpenFileName( QString initially = QString(),
                                   const QStringList& filter = QStringList("All Files ( * )"),
-                                  const QString caption = QString::null, const char* name = 0 );
+                                  const QString caption = QString(), const char* name = 0 );
 
-  static QStringList getOpenFileNames( QString initially = QString::null,
+  static QStringList getOpenFileNames( QString initially = QString(),
                                   const QStringList& filter = QStringList("All Files ( * )"),
-                                  const QString caption = QString::null, const char* name = 0 );
+                                  const QString caption = QString(), const char* name = 0 );
 
 
 protected:

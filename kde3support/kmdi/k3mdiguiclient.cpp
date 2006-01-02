@@ -224,7 +224,7 @@ void K3MDIGUIClient::setupActions()
 
 	//    m_toolBars = builder.toolBars();
 
-	//    m_toolViewActions.append(new KAction( "TESTK3MDIGUICLIENT", QString::null, 0,
+	//    m_toolViewActions.append(new KAction( "TESTK3MDIGUICLIENT", QString(), 0,
 	//             this, SLOT(blah()),actionCollection(),"nothing"));
 
 	QList<KAction*> addList;
@@ -257,7 +257,7 @@ void K3MDIGUIClient::addToolView( K3MdiToolViewAccessor* mtva )
 	KShortcut sc( cfg->readEntry( aname, QString() ) );
 	cfg->setGroup( _grp );
 	KAction *a = new ToggleToolViewAction( i18n( "Show %1" ).arg( mtva->wrappedWidget() ->caption() ),
-	                                       /*QString::null*/sc, dynamic_cast<K3DockWidget*>( mtva->wrapperWidget() ),
+	                                       /*QString()*/sc, dynamic_cast<K3DockWidget*>( mtva->wrapperWidget() ),
 	                                       m_mdiMainFrm, actionCollection(), aname.latin1() );
 #if KDE_IS_VERSION(3,2,90)
 

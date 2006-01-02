@@ -349,7 +349,7 @@ void K3PopupMenu::resetKeyboardVars(bool noMatches /* = false */)
     }
 
     if (!noMatches) {
-        d->keySeq = QString::null;
+        d->keySeq.clear();
     }
 
     d->noMatches = noMatches;
@@ -603,7 +603,7 @@ QString K3PopupMenu::title(int id) const
     QMenuItem* menuItem = findItem(id);
     Q_ASSERT(menuItem);
     if (!menuItem)
-        return QString::null;
+        return QString();
     return menuItem->text();
 }
 

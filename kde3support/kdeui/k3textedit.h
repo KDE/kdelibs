@@ -50,7 +50,7 @@ public:
      * for details.
      */
     K3TextEdit( const QString& text,
-                const QString& context = QString::null,
+                const QString& context = QString(),
                 QWidget * parent = 0, const char *name = 0 );
     /**
      * Constructs a K3TextEdit object. See Q3TextEdit::Q3TextEdit

@@ -206,7 +206,7 @@ QString SFileDialog::getOpenFileName( QString initially,
 {
   SFileDialog* fd = new SFileDialog( initially, filter, name );
   if ( !caption.isNull() ) fd->setCaption( caption );
-  QString result = ( fd->exec() == QDialog::Accepted ) ? fd->fd->selectedFile():QString::null;
+  QString result = ( fd->exec() == QDialog::Accepted ) ? fd->fd->selectedFile():QString();
   delete fd;
 
   return result;
@@ -298,7 +298,7 @@ void Preview::showPreview( const QString &str )
 		    }
 		}
 	    }
-	    normalText->setText( QString::null );
+	    normalText->setText( QString() );
 	    raiseWidget( normalText );
 	} else {
 	    pixmap->setPixmap( pix );
@@ -781,12 +781,12 @@ int main(int argc, char* argv[]) {
 #endif
 
 #if 0
-  qDebug ( SFileDialog::getOpenFileName( QString::null, QLatin1String("All (*)"),
+  qDebug ( SFileDialog::getOpenFileName( QString(), QLatin1String("All (*)"),
                                          QLatin1String("DockWidget Demo"), "dialog1" ) );
 #endif
 
 #if 1
-  QStringList s = SFileDialog::getOpenFileNames( QString::null, 
+  QStringList s = SFileDialog::getOpenFileNames( QString(), 
           QStringList(QLatin1String("All (*)")), 
           QLatin1String("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();

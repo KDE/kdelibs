@@ -184,7 +184,7 @@ int K3KeySequence::keyCodeQt() const
 
 QString K3KeySequence::toString() const
 {
-	if( m_nKeys < 1 ) return QString::null;
+	if( m_nKeys < 1 ) return QString();
 
 	QString s;
 	s = m_rgkey[0].toString();
@@ -198,7 +198,7 @@ QString K3KeySequence::toString() const
 
 QString K3KeySequence::toStringInternal() const
 {
-	if( m_nKeys < 1 ) return QString::null;
+	if( m_nKeys < 1 ) return QString();
 
 	QString s;
 	s = m_rgkey[0].toStringInternal();

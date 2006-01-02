@@ -1794,7 +1794,7 @@ void K3MdiMainFrm::setToolviewStyle( int flag )
 			switch ( flag )
 			{
 			case K3Mdi::IconOnly:
-				dockWidget->setTabPageLabel( QString::null );
+				dockWidget->setTabPageLabel( QString() );
 				dockWidget->setPixmap( *( it.data()->wrappedWidget()->icon() ) );
 				break;
 			case K3Mdi::TextOnly:

@@ -444,7 +444,7 @@ public:
    * @param f Qt::WidgetFlags widget flags
    */
   K3DockWidget( K3DockManager* dockManager, const char* name,
-               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString::null,
+               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString(),
                const QString& strTabPageLabel = QLatin1String( " " ), Qt::WFlags f = 0);
 
   /**
@@ -948,7 +948,7 @@ public:
    * @param c the KDE configuration saver
    * @param group the name of the section in KConfig
    */
-  void writeConfig( KConfig* c = 0L, QString group = QString::null );
+  void writeConfig( KConfig* c = 0L, QString group = QString() );
 
   /**
    * Like writeConfig but reads the whole stuff in.
@@ -966,7 +966,7 @@ public:
    * @param c the KDE configuration saver
    * @param group the name of the section in KConfig
    */
-  void readConfig ( KConfig* c = 0L, QString group = QString::null );
+  void readConfig ( KConfig* c = 0L, QString group = QString() );
 #endif
 
   /// @since 3.1
@@ -1364,7 +1364,7 @@ public:
    * @return    a pointer to the new created dockwidget
    */
   K3DockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
-    const QString& strCaption = QString::null, const QString& strTabPageLabel = QLatin1String( " " ) );
+    const QString& strCaption = QString(), const QString& strTabPageLabel = QLatin1String( " " ) );
 
   /**
    * Saves the current dock window layout into a DOM tree below the given element.
@@ -1382,7 +1382,7 @@ public:
    * @param c     KDE class for saving configurations
    * @param group name of section to write to
    */
-  void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
+  void writeDockConfig( KConfig* c = 0L, QString group = QString() );
 
   /**
    * It reads the current dock state from the given section of KConfig.
@@ -1390,7 +1390,7 @@ public:
    * @param c     KDE class for saving configurations
    * @param group name of section to read from
    */
-  void readDockConfig ( KConfig* c = 0L, QString group = QString::null );
+  void readDockConfig ( KConfig* c = 0L, QString group = QString() );
 #endif
 
   /**
@@ -1489,14 +1489,14 @@ public:
   K3DockWidget* getMainDockWidget(){ return mainDockWidget; }
 
   K3DockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
-    const QString& strCaption = QString::null, const QString& strTabPageLabel = QLatin1String( " " ) );
+    const QString& strCaption = QString(), const QString& strTabPageLabel = QLatin1String( " " ) );
 
   void writeDockConfig(QDomElement &base);
   void readDockConfig(QDomElement &base);
 
 #ifndef NO_KDE2
-  void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
-  void readDockConfig ( KConfig* c = 0L, QString group = QString::null );
+  void writeDockConfig( KConfig* c = 0L, QString group = QString() );
+  void readDockConfig ( KConfig* c = 0L, QString group = QString() );
 #endif
 
 
