@@ -59,7 +59,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
 	kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
-	kfilterbase.h kfilterdev.h
+	kfilterbase.h kfilterdev.h kdatetime.h
 
 libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -109,7 +109,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp \
 	kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp \
 	kuser.cpp kconfigskeleton.cpp klockfile.cpp \
-	ktimezones.cpp ktzfiletimezone.cpp kmath.cpp \
+	ktimezones.cpp ktzfiletimezone.cpp kdatetime.cpp kmath.cpp \
 	kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp kbzip2filter.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined

@@ -25,12 +25,13 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kurltest4 kuniqueapptest krandomsequencetest \
 	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	cplusplustest kiconloadertest kmdcodectest knotifytest \
+	cplusplustest kiconloadertest kmdcodectest knotifytest kdatetimetest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
-	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest
+	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest \
+	kdatetimetest
 
 # TODO kurltest4 when it works
 
@@ -98,3 +99,4 @@ klockfiletest_SOURCES = klockfiletest.cpp
 ktempdirtest_SOURCES = ktempdirtest.cpp
 ksharedptrtest_SOURCES = ksharedptrtest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
+kdatetimetest_SOURCES = kdatetimetest.cpp
