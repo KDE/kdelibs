@@ -30,6 +30,7 @@
 #include <qlist.h>
 #include <qdatetime.h>
 
+#include "khtmlpart_p.h"
 #include "kjs_binding.h"
 #include "kjs_views.h"
 
@@ -169,7 +170,7 @@ namespace KJS {
     KParts::ReadOnlyPart* frameByIndex(unsigned index);
     static ValueImp *framePartGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
     static ValueImp *namedItemGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
-    
+
     struct DelayedAction;
     friend struct DelayedAction;
 
