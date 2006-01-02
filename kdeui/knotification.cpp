@@ -142,7 +142,11 @@ void KNotification::raiseWidget(QWidget *w)
 	if(w->isTopLevel())
 	{
 		w->raise();
+#ifdef Q_WS_WIN
+		w->activateWindow();
+#else
 		KWin::activateWindow( w->winId() );
+#endif
 	}
 	else
 	{
