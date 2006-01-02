@@ -30,9 +30,9 @@ class Field::FieldImpl
 {
   public:
     FieldImpl( int fieldId, int category = 0,
-               const QString &label.clear(),
-               const QString &key.clear(),
-               const QString &app.clear() )
+               const QString &label = QString(),
+               const QString &key = QString(),
+               const QString &app = QString() )
       : mFieldId( fieldId ), mCategory( category ), mLabel( label ),
         mKey( key ), mApp( app ) {}
   
