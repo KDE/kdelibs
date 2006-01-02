@@ -31,6 +31,7 @@ kparts/dockmainwindow3.cpp
 """
 inst_headers = """
 kdecore/k3keysequence.h
+kdecore/k3multipledrag.h
 kdecore/k3shortcut.h
 kdecore/k3shortcutmenu.h
 kdecore/k3urldrag.h
