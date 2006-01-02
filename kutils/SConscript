@@ -58,6 +58,9 @@ elif not env['WINDOWS']:
 
 for i in noinst_headers.split():
 	env.Moc(i)
+
+env.bksys_insttype('KDEINCLUDE','',include_headers)
+
 	
 """Unhandled Defines 
 METASOURCES = AUTO
