@@ -87,6 +87,14 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
   return syscall (__NR_inotify_rm_watch, fd, wd);
 }
 
+#ifndef  IN_ONLYDIR
+#define  IN_ONLYDIR 0x01000000
+#endif
+
+#ifndef IN_DONT_FOLLOW
+#define IN_DONT_FOLLOW 0x02000000
+#endif
+
 #endif
 
 #include <sys/utsname.h>
@@ -665,22 +673,27 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 bool KDirWatchPrivate::useINotify( Entry* e )
 {
   e->wd = 0;
+  e->dirty = false;
+
   if (!supports_inotify) return false;
 
   e->m_mode = INotifyMode;
-  e->dirty = true;
-  scanEntry( e );
 
   if ( e->m_status == NonExistent ) {
     addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
     return true;
   }
 
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800|IN_DONT_FOLLOW;
+  if(!e->isDir)
+    mask |= IN_MODIFY|IN_ATTRIB|IN_ONLYDIR;
+  // if dependant is a file watch, we check for MODIFY & ATTRIB too
+  for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next()) {
+    if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
+  }
+
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
-                                    QFile::encodeName( e->path ),
-      IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE | IN_MOVE |
-      IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_UNMOUNT
-           ) ) > 0 )
+                                    QFile::encodeName( e->path ), mask) ) > 0)
     return true;
 
   return false;
