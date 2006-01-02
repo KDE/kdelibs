@@ -351,14 +351,14 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
 
   if ( m_host.isEmpty() )
   {
-    error( ERR_UNKNOWN_HOST, QString::null );
+    error( ERR_UNKNOWN_HOST, QString() );
     return false;
   }
 
   assert( !m_bLoggedOn );
 
-  m_initialPath = QString::null;
-  m_currentPath = QString::null;
+  m_initialPath.clear();
+  m_currentPath.clear();
 
   QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
   unsigned short int port = m_bUseProxy ? m_proxyURL.port() : m_port;
@@ -1243,7 +1243,7 @@ void Ftp::stat( const KURL &url)
   if( path.isEmpty() || path == "/" )
   {
     UDSEntry entry;
-    //entry.insert( KIO::UDS_NAME, UDSField( QString::null ) );
+    //entry.insert( KIO::UDS_NAME, UDSField( QString() ) );
     entry.insert( KIO::UDS_NAME, QString::fromLatin1( "." ) );
     entry.insert( KIO::UDS_FILE_TYPE, S_IFDIR );
     entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
@@ -1489,9 +1489,9 @@ bool Ftp::ftpOpenDir( const QString & path )
   // The only way to really know would be to have a metadata flag for this...
   // Since some windows ftp server seems not to support the -a argument, we use a fallback here.
   // In fact we have to use -la otherwise -a removes the default -l (e.g. ftp.trolltech.com)
-  if( !ftpOpenCommand( "list -la", QString::null, 'I', ERR_CANNOT_ENTER_DIRECTORY ) )
+  if( !ftpOpenCommand( "list -la", QString(), 'I', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
-    if ( !ftpOpenCommand( "list", QString::null, 'I', ERR_CANNOT_ENTER_DIRECTORY ) )
+    if ( !ftpOpenCommand( "list", QString(), 'I', ERR_CANNOT_ENTER_DIRECTORY ) )
     {
       kdWarning(7102) << "Can't open for listing" << endl;
       return false;
@@ -1579,10 +1579,10 @@ bool Ftp::ftpReadDir(FtpEntry& de)
             tmp.truncate( i );
           }
           else
-            de.link = QString::null;
+            de.link.clear();
         }
         else
-          de.link = QString::null;
+          de.link.clear();
 
         if ( tmp[0] == '/' ) // listing on ftp://ftp.gnupg.org/ starts with '/'
           tmp.remove( 0, 1 );
@@ -1893,7 +1893,7 @@ void Ftp::ftpAbortTransfer()
    kdDebug(7102) << "send ABOR" << endl;
    QCString buf = "ABOR\r\n";
    if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
-     error( ERR_COULD_NOT_WRITE, QString::null );
+     error( ERR_COULD_NOT_WRITE, QString() );
      return;
    }
 
@@ -1901,7 +1901,7 @@ void Ftp::ftpAbortTransfer()
    kdDebug(7102) << "read resp" << endl;
    if ( readresp() != '2' )
    {
-     error( ERR_COULD_NOT_READ, QString::null );
+     error( ERR_COULD_NOT_READ, QString() );
      return;
    }
 
@@ -2215,7 +2215,7 @@ void Ftp::copy( const KURL &src, const KURL &dest, int permissions, bool overwri
     if( cs == statusServerError ) sCopyFile = src.url();
   }
   else {
-    error( ERR_UNSUPPORTED_ACTION, QString::null );
+    error( ERR_UNSUPPORTED_ACTION, QString() );
     return;
   }
 

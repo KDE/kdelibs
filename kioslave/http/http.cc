@@ -204,8 +204,8 @@ void HTTPProtocol::reparseConfiguration()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration" << endl;
 
-  m_strProxyRealm = QString::null;
-  m_strProxyAuthorization = QString::null;
+  m_strProxyRealm.clear();
+  m_strProxyAuthorization.clear();
   ProxyAuthentication = AUTH_None;
   m_bUseProxy = false;
 
@@ -237,8 +237,8 @@ void HTTPProtocol::resetResponseSettings()
   m_responseHeader.clear();
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
-  m_sContentMD5 = QString::null;
-  m_strMimeType = QString::null;
+  m_sContentMD5.clear();
+  m_strMimeType.clear();
 
   setMetaData("request-id", m_request.id);
 }
@@ -279,7 +279,7 @@ void HTTPProtocol::resetSessionSettings()
   kdDebug(7113) << "(" << m_pid << ") ssl_was_in_use = "
                 << metaData ("ssl_was_in_use") << endl;
 
-  m_request.referrer = QString::null;
+  m_request.referrer.clear();
   if ( config()->readEntry("SendReferrer", QVariant(true)).toBool() &&
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
@@ -297,9 +297,9 @@ void HTTPProtocol::resetSessionSettings()
 
         if (protocol.startsWith("http"))
         {
-           referrerURL.setRef(QString::null);
-           referrerURL.setUser(QString::null);
-           referrerURL.setPass(QString::null);
+           referrerURL.setRef(QString());
+           referrerURL.setUser(QString());
+           referrerURL.setPass(QString());
            m_request.referrer = referrerURL.url();
         }
      }
@@ -316,8 +316,8 @@ void HTTPProtocol::resetSessionSettings()
   }
   else
   {
-      m_request.charsets = QString::null;
-      m_request.languages = QString::null;
+      m_request.charsets.clear();
+      m_request.languages.clear();
   }
 
   // Adjust the offset value based on the "resume" meta-data.
@@ -335,7 +335,7 @@ void HTTPProtocol::resetSessionSettings()
   if ( config()->readEntry("SendUserAgent", QVariant(true)).toBool() )
      m_request.userAgent = metaData("UserAgent");
   else
-     m_request.userAgent = QString::null;
+     m_request.userAgent.clear();
 
   // Deal with cache cleaning.
   // TODO: Find a smarter way to deal with cleaning the
@@ -355,14 +355,14 @@ void HTTPProtocol::resetSessionSettings()
   else
   {
     m_bNeedTunnel = false;
-    setRealHost( QString::null);
+    setRealHost( QString());
   }
 
   m_responseCode = 0;
   m_prevResponseCode = 0;
 
-  m_strRealm = QString::null;
-  m_strAuthorization = QString::null;
+  m_strRealm.clear();
+  m_strAuthorization.clear();
   Authentication = AUTH_None;
 
   // Obtain the proxy and remote server timeout values
@@ -671,7 +671,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
   // WebDAV Stat or List...
   m_request.method = query.isEmpty() ? DAV_PROPFIND : DAV_SEARCH;
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
   m_request.davData.depth = stat ? 0 : 1;
@@ -771,7 +771,7 @@ void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
 
   // WebDAV method
   m_request.method = method;
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1073,7 +1073,7 @@ QString HTTPProtocol::davProcessLocks()
     return response;
   }
 
-  return QString::null;
+  return QString();
 }
 
 bool HTTPProtocol::davHostOk()
@@ -1098,7 +1098,7 @@ bool HTTPProtocol::davHostOk()
 
   // query the server's capabilities generally, not for a specific URL
   m_request.path = "*";
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1148,7 +1148,7 @@ void HTTPProtocol::mkdir( const KURL& url, int )
 
   m_request.method = DAV_MKCOL;
   m_request.path = url.path();
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1211,7 +1211,7 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
 
     // WebDAV Stat or List...
     m_request.method = DAV_PROPFIND;
-    m_request.query = QString::null;
+    m_request.query.clear();
     m_request.cache = CC_Reload;
     m_request.doProxy = m_bUseProxy;
     m_request.davData.depth = 0;
@@ -1219,7 +1219,7 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
     retrieveContent(true);
 
     if (m_responseCode == 207) {
-      error(ERR_FILE_ALREADY_EXIST, QString::null);
+      error(ERR_FILE_ALREADY_EXIST, QString());
       return;
     }
 
@@ -1228,7 +1228,7 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
 
   m_request.method = HTTP_PUT;
   m_request.path = url.path();
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1267,7 +1267,7 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   m_request.path = src.path();
   m_request.davData.desturl = newDest.url();
   m_request.davData.overwrite = overwrite;
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1299,7 +1299,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.path = src.path();
   m_request.davData.desturl = newDest.url();
   m_request.davData.overwrite = overwrite;
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1321,7 +1321,7 @@ void HTTPProtocol::del( const KURL& url, bool )
 
   m_request.method = HTTP_DELETE;
   m_request.path = url.path();
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1363,7 +1363,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
 
   m_request.method = DAV_LOCK;
   m_request.path = url.path();
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1428,7 +1428,7 @@ void HTTPProtocol::davUnlock( const KURL& url )
 
   m_request.method = DAV_UNLOCK;
   m_request.path = url.path();
-  m_request.query = QString::null;
+  m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
@@ -1523,7 +1523,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       // there was an error retrieving the XML document.
       // ironic, eh?
       if ( !readBody( true ) && m_bError )
-        return QString::null;
+        return QString();
 
       QStringList errors;
       QDomDocument multiResponse;
@@ -2278,7 +2278,7 @@ bool HTTPProtocol::httpOpen()
         m_request.bCachedWrite = false;
         break;
     default:
-        error (ERR_UNSUPPORTED_ACTION, QString::null);
+        error (ERR_UNSUPPORTED_ACTION, QString());
         return false;
     }
     // DAV_POLL; DAV_NOTIFY
@@ -2649,9 +2649,9 @@ try_again:
   bool canUpgrade = false;        // The server offered an upgrade
 
 
-  m_request.etag = QString::null;
-  m_request.lastModified = QString::null;
-  m_request.strCharset = QString::null;
+  m_request.etag.clear();
+  m_request.lastModified.clear();
+  m_request.strCharset.clear();
 
   time_t dateHeader = 0;
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
@@ -4475,7 +4475,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   QString result;
 
   long windowId = m_request.window.toLong();
-  result = QString::null;
+  result.clear();
   QDataStream stream(&params, QIODevice::WriteOnly);
   stream << url << windowId;
 
@@ -5275,7 +5275,7 @@ bool HTTPProtocol::getAuthorization()
   if (m_request.bErrorPage)
      errorPage();
   else
-     error( ERR_USER_CANCELED, QString::null );
+     error( ERR_USER_CANCELED, QString() );
   return false;
 }
 
@@ -5385,8 +5385,8 @@ QString HTTPProtocol::createNegotiateAuth()
   if (GSS_ERROR(major_status)) {
     kdDebug(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
     // reset the auth string so that subsequent methods aren't confused
-    m_strAuthorization = QString::null;
-    return QString::null;
+    m_strAuthorization.clear();
+    return QString();
   }
 
   major_status = gss_init_sec_context(&minor_status, GSS_C_NO_CREDENTIAL,
@@ -5405,8 +5405,8 @@ QString HTTPProtocol::createNegotiateAuth()
       ctx = GSS_C_NO_CONTEXT;
     }
     // reset the auth string so that subsequent methods aren't confused
-    m_strAuthorization = QString::null;
-    return QString::null;
+    m_strAuthorization.clear();
+    return QString();
   }
 
   input.duplicate((const char *)output_token.value, output_token.length);
@@ -5435,7 +5435,7 @@ Q3CString HTTPProtocol::gssError( int, int )
 // Dummy
 QString HTTPProtocol::createNegotiateAuth()
 {
-  return QString::null;
+  return QString();
 }
 #endif
 
@@ -5469,7 +5469,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 
   kdDebug(7113) << "(" << m_pid << ") NTLM length: " << len << endl;
   if ( user.isEmpty() || passwd.isEmpty() || len < 4 )
-    return QString::null;
+    return QString();
 
   if ( len > 4 )
   {
@@ -5619,12 +5619,12 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     p = m_strAuthorization.latin1();
   }
   if (!p || !*p)
-    return QString::null;
+    return QString();
 
   p += 6; // Skip "Digest"
 
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
-    return QString::null;
+    return QString();
 
   // info.entityBody = p;  // FIXME: send digest of data for POST action ??
   info.realm = "";
@@ -5771,7 +5771,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   }
 
   if (info.realm.isEmpty() || info.nonce.isEmpty())
-    return QString::null;
+    return QString();
 
   // If the "domain" attribute was not specified and the current response code
   // is authentication needed, add the current request url to the list over which
@@ -5815,7 +5815,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
                      "authentication credential test: " << send << endl;
 
     if (!send)
-      return QString::null;
+      return QString();
   }
 
   kdDebug(7113) << "(" << m_pid << ") RESULT OF PARSING:" << endl;

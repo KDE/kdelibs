@@ -217,7 +217,7 @@ public:
   void davFinished();
 
   // Handle error conditions
-  QString davError( int code = -1, QString url = QString::null );
+  QString davError( int code = -1, QString url = QString() );
 //---------------------------- End WebDAV -----------------------
 
   /**

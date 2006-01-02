@@ -68,11 +68,11 @@ protected:
     QString cookieStr(bool useDOMFormat);
 
 public:
-    KHttpCookie(const QString &_host=QString::null,
-                const QString &_domain=QString::null,
-                const QString &_path=QString::null,
-                const QString &_name=QString::null,
-                const QString &_value=QString::null,
+    KHttpCookie(const QString &_host=QString(),
+                const QString &_domain=QString(),
+                const QString &_path=QString(),
+                const QString &_name=QString(),
+                const QString &_value=QString(),
                 time_t _expireDate=0,
                 int _protocolVersion=0,
                 bool _secure = false,

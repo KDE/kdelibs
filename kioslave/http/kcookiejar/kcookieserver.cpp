@@ -344,7 +344,7 @@ void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
             out << QString::number( cookie->isSecure() ? 1 : 0 );
             break;
          default :
-            out << QString::null;
+            out << QString();
         }
     }
 }
@@ -386,7 +386,7 @@ KCookieServer::findCookies(QString url, long windowId)
       request->DOM = false;
       request->windowId = windowId;
       mRequestList->append( request );
-      return QString::null; // Talk to you later :-)
+      return QString(); // Talk to you later :-)
    }
    
    QString cookies = mCookieJar->findCookies(url, false, windowId);

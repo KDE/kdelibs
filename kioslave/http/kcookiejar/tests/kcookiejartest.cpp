@@ -62,7 +62,7 @@ static void popArg(QString &command, QString & line)
    else
    {
       command = line;
-      line = QString();
+      line.clear();
    }
 }
 

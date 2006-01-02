@@ -138,7 +138,7 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  bool _explicitPath) :
        mHost(_host),
        mDomain(_domain),
-       mPath(_path.isEmpty() ? QString::null : _path),
+       mPath(_path.isEmpty() ? QString() : _path),
        mName(_name),
        mValue(_value),
        mExpireDate(_expireDate),
@@ -807,7 +807,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             else if (cName == "path")
             {
                 if (Value.isEmpty())
-                   lastCookie->mPath = QString::null; // Catch "" <> QString::null
+                   lastCookie->mPath = QString(); // Catch "" <> QString()
                 else
                    lastCookie->mPath = KURL::decode_string(Value);
                 lastCookie->mExplicitPath = true;
@@ -879,7 +879,7 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
         // Host = FQDN
         // Default domain = ""
         // Default path = ""
-        KHttpCookie *cookie = new KHttpCookie(fqdn, QString::null, QString::null,
+        KHttpCookie *cookie = new KHttpCookie(fqdn, QString(), QString(),
                                 Name, Value );
         if (windowId)
             cookie->mWindowIds.append(windowId);
@@ -1014,7 +1014,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 
        if (!valid)
        {
-          cookiePtr->fixDomain(QString::null);
+          cookiePtr->fixDomain(QString());
        }
     }
 
