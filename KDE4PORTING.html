@@ -328,7 +328,7 @@ The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
 difference is a KConfigGroupSaver object direcly affects the config object it
 is acting on, while a KConfigGroup object only ensures the entries read or
 written through it are in the correct group.</p>
-<p>Instead of:
+Instead of:
 <pre>
 KConfig *config = KGlobal::config();
 KConfigGroupSaver saver(config, "group name");
@@ -342,7 +342,6 @@ KConfigGroup cg(config, "group name");
 	...
 cg.readXXX("entry name");
 </pre>
-</p>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
@@ -379,6 +378,11 @@ cg.readXXX("entry name");
 <li>void activated( KAction::ActivationReason reason, Qt::ButtonState state ); -&gt; void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );</li>
 <li>void setStatusText(const QString &amp;text) was depricated during KDE3. Instead use void setToolTip(const QString &amp;test)</li>
 <li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
+</ul>
+
+<H4>KActionSelector</H4>
+<ul>
+<li>Q3ListBox -&gt; QListWidget</li>
 </ul>
 
 <H4>KRootPixmap</H4>
