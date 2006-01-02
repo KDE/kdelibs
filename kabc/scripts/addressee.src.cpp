@@ -189,11 +189,11 @@ void Addressee::setNameFromString( const QString &str )
   setName( str );
 
   // clear all name parts
-  setPrefix( QString::null );
-  setGivenName( QString::null );
-  setAdditionalName( QString::null );
-  setFamilyName( QString::null );
-  setSuffix( QString::null );
+  setPrefix( QString() );
+  setGivenName( QString() );
+  setAdditionalName( QString() );
+  setFamilyName( QString() );
+  setSuffix( QString() );
 
   if ( str.isEmpty() )
     return;
@@ -360,7 +360,7 @@ QString Addressee::fullEmail( const QString &email ) const
   } else {
     e = email;
   }
-  if ( e.isEmpty() ) return QString::null;
+  if ( e.isEmpty() ) return QString();
 
   QString text;
   if ( realName().isEmpty() )
@@ -410,7 +410,7 @@ void Addressee::removeEmail( const QString &email )
 
 QString Addressee::preferredEmail() const
 {
-  if ( mData->emails.count() == 0 ) return QString::null;
+  if ( mData->emails.count() == 0 ) return QString();
   else return mData->emails.first();
 }
 

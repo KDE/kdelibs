@@ -451,7 +451,7 @@ void LdapConfigWidget::setUser( const QString &user )
 
 QString LdapConfigWidget::user() const
 {
-  return ( mUser ? mUser->text() : QString::null );
+  return ( mUser ? mUser->text() : QString() );
 }
 
 void LdapConfigWidget::setPassword( const QString &password )
@@ -461,7 +461,7 @@ void LdapConfigWidget::setPassword( const QString &password )
 
 QString LdapConfigWidget::password() const
 {
-  return ( mPassword ? mPassword->text() : QString::null );
+  return ( mPassword ? mPassword->text() : QString() );
 }
 
 void LdapConfigWidget::setBindDN( const QString &binddn )
@@ -471,7 +471,7 @@ void LdapConfigWidget::setBindDN( const QString &binddn )
 
 QString LdapConfigWidget::bindDN() const
 {
-  return ( mBindDN ? mBindDN->text() : QString::null );
+  return ( mBindDN ? mBindDN->text() : QString() );
 }
 
 void LdapConfigWidget::setRealm( const QString &realm )
@@ -481,7 +481,7 @@ void LdapConfigWidget::setRealm( const QString &realm )
 
 QString LdapConfigWidget::realm() const
 {
-  return ( mRealm ? mRealm->text() : QString::null );
+  return ( mRealm ? mRealm->text() : QString() );
 }
 
 void LdapConfigWidget::setHost( const QString &host )
@@ -491,7 +491,7 @@ void LdapConfigWidget::setHost( const QString &host )
 
 QString LdapConfigWidget::host() const
 {
-  return ( mHost ? mHost->text() : QString::null );
+  return ( mHost ? mHost->text() : QString() );
 }
 
 void LdapConfigWidget::setPort( int port )
@@ -521,7 +521,7 @@ void LdapConfigWidget::setDn( const QString &dn )
 
 QString LdapConfigWidget::dn() const
 {
-  return ( mDn ? mDn->text() : QString::null );
+  return ( mDn ? mDn->text() : QString() );
 }
 
 void LdapConfigWidget::setFilter( const QString &filter )
@@ -531,7 +531,7 @@ void LdapConfigWidget::setFilter( const QString &filter )
 
 QString LdapConfigWidget::filter() const
 {
-  return ( mFilter ? mFilter->text() : QString::null );
+  return ( mFilter ? mFilter->text() : QString() );
 }
 
 void LdapConfigWidget::setMech( const QString &mech )
@@ -550,7 +550,7 @@ void LdapConfigWidget::setMech( const QString &mech )
 
 QString LdapConfigWidget::mech() const
 {
-  return ( mMech ? mMech->currentText() : QString::null );
+  return ( mMech ? mMech->currentText() : QString() );
 }
 
 void LdapConfigWidget::setSecNO( bool b )

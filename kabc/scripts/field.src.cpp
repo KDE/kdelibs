@@ -30,9 +30,9 @@ class Field::FieldImpl
 {
   public:
     FieldImpl( int fieldId, int category = 0,
-               const QString &label = QString::null,
-               const QString &key = QString::null,
-               const QString &app = QString::null )
+               const QString &label.clear(),
+               const QString &key.clear(),
+               const QString &app.clear() )
       : mFieldId( fieldId ), mCategory( category ), mLabel( label ),
         mKey( key ), mApp( app ) {}
   
@@ -122,7 +122,7 @@ QString Field::value( const KABC::Addressee &a )
       if ( a.birthday().isValid() )
         return a.birthday().date().toString( Qt::ISODate );
       else
-        return QString::null;
+        return QString();
     case FieldImpl::Url:
       return a.url().prettyURL();
     case FieldImpl::HomePhone:
@@ -145,7 +145,7 @@ QString Field::value( const KABC::Addressee &a )
             return (*it).number();
       }
 
-      return QString::null;
+      return QString();
     }
     case FieldImpl::BusinessPhone:
     {
@@ -167,7 +167,7 @@ QString Field::value( const KABC::Addressee &a )
             return (*it).number();
       }
 
-      return QString::null;
+      return QString();
     }
     case FieldImpl::MobilePhone:
       return a.phoneNumber( PhoneNumber::Cell ).number();
@@ -204,7 +204,7 @@ QString Field::value( const KABC::Addressee &a )
     case FieldImpl::CustomField:
       return a.custom( mImpl->app(), mImpl->key() );
     default:
-      return QString::null;
+      return QString();
   }
 }
 

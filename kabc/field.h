@@ -114,7 +114,7 @@ public:
    * Returns a string representation of the value the field has in the given
    * Addressee.
    *
-   * @return the string representation of the value or QString::null, if it
+   * @return the string representation of the value or QString(), if it
    * is not possible to convert the value to a string.
    */
   virtual QString value( const KABC::Addressee & );

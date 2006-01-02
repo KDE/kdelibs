@@ -64,7 +64,7 @@ QString EmailSelectDialog::selected()
 {
   QAbstractButton *button = mButtonGroup->checkedButton();
   if ( button ) return button->text();
-  return QString::null;
+  return QString();
 }
 
 QString EmailSelectDialog::getEmail( const QStringList &emails, const QString &current,
@@ -84,7 +84,7 @@ class EditEntryItem : public QTreeWidgetItem
 {
   public:
     EditEntryItem( QTreeWidget *parent, const Addressee &addressee,
-               const QString &email=QString::null ) :
+               const QString &email=QString() ) :
       QTreeWidgetItem( parent ),
       mAddressee( addressee ),
       mEmail( email )
@@ -197,7 +197,7 @@ void DistributionListEditor::newList()
   bool ok = false;
   QString name = KInputDialog::getText( i18n("New Distribution List"),
                                         i18n("Please enter name:"),
-                                        QString::null, &ok, this );
+                                        QString(), &ok, this );
   if ( !ok )
     return;
 

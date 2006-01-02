@@ -49,7 +49,7 @@ class KABC_EXPORT LdapObject
 {
   public:
     LdapObject()
-      : dn( QString::null ), client( 0 ) {}
+      : dn( QString() ), client( 0 ) {}
     explicit LdapObject( const QString& _dn, LdapClient* _cl ) : dn( _dn ), client( _cl ) {}
     LdapObject( const LdapObject& that ) { assign( that ); }
 

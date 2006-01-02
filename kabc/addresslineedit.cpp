@@ -242,7 +242,7 @@ void AddressLineEdit::insert(const QString &t)
     while ((eot > 0) && contents[eot-1].isSpace()) eot--;
     if (eot == 0)
     {
-       contents = QString::null;
+       contents.clear();
     }
     else if (pos >= eot)
     {
@@ -572,7 +572,7 @@ QStringList AddressLineEdit::addresses()
       email = *mit;
       if (!email.isEmpty()) {
         if (n.isEmpty() || (email.find( '<' ) != -1))
-          addr = QString::null;
+          addr.clear();
         else { /* do we really need quotes around this name ? */
                 if (n.find(needQuotes) != -1)
             addr = '"' + n + endQuote;

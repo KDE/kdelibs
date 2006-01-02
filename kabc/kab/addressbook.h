@@ -450,14 +450,14 @@ public:
    * Load the file with the given path. An empty file name reloads the 
    * currently opened file.
    */
-  ErrorCode load(const QString& filename=QString::null);
+  ErrorCode load(const QString& filename=QString());
   /**
    * Save the file to the given path and file name.  An empty file name saves 
    * to the file where the database has been read from.
    * If force is true, the method will switch to r/w mode for saving and
    * back.
    */
-  ErrorCode save(const QString& filename=QString::null, bool force=false);
+  ErrorCode save(const QString& filename=QString(), bool force=false);
   /**
    * Close this file. 
    * ::closeFile assures sure that the ::data object is reset no matter of the 
@@ -562,7 +562,7 @@ public:
    * empty, it creates the users standard data file. The method does not load
    * the new database.
    */
-  ErrorCode createNew(const QString& filename=QString::null);
+  ErrorCode createNew(const QString& filename=QString());
   /**
    * Creates the local configuration file. The filename is fixed to
    * \c kab.config, it will be created in the local kab directory

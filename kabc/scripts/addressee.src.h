@@ -132,9 +132,9 @@ class KABC_EXPORT Addressee
       Return email address including real name.
 
       @param email Email address to be used to construct the full email string.
-                   If this is QString::null the preferred email address is used.
+                   If this is QString() the preferred email address is used.
      */
-    QString fullEmail( const QString &email=QString::null ) const;
+    QString fullEmail( const QString &email=QString() ) const;
 
     /**
       Insert an email address. If the email address already exists in this
@@ -219,7 +219,7 @@ class KABC_EXPORT Addressee
       that should match. If you leave the string empty, the first
       key with a custom value is returned.
      */
-    Key key( int type, QString customTypeString = QString::null ) const;
+    Key key( int type, QString customTypeString = QString() ) const;
 
     /**
       Return list of all keys.
@@ -238,7 +238,7 @@ class KABC_EXPORT Addressee
       that should match. If you leave the string empty, all custom
       keys will be returned.
      */
-    Key::List keys( int type, QString customTypeString = QString::null  ) const;
+    Key::List keys( int type, QString customTypeString = QString()  ) const;
 
     /**
       Return key with the given id.

@@ -87,13 +87,13 @@ class KABC_EXPORT DistributionList
       Insert an entry into this distribution list. If the entry already exists
       nothing happens.
     */
-    void insertEntry( const Addressee &, const QString &email=QString::null );
+    void insertEntry( const Addressee &, const QString &email=QString() );
 
     /**
       Remove an entry from this distribution list. If the entry doesn't exist
       nothing happens.
     */
-    void removeEntry( const Addressee &, const QString &email=QString::null );
+    void removeEntry( const Addressee &, const QString &email=QString() );
 
     /**
       Return list of email addresses, which belong to this distributon list.

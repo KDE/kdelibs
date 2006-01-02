@@ -56,7 +56,7 @@ public:
    * @param text  The text data.
    * @param type  The key type, see Types.
    */
-  Key( const QString &text = QString::null, int type = PGP );
+  Key( const QString &text = QString(), int type = PGP );
 
   /**
    * Destructor.

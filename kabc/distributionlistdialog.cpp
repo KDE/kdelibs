@@ -86,7 +86,7 @@ QString EmailSelector::selected()
 {
   QAbstractButton *button = mButtonGroup->checkedButton();
   if ( button ) return (*sEmailMap)[button];
-  return QString::null;
+  return QString();
 }
 
 QString EmailSelector::getEmail( const QStringList &emails, const QString &current,
@@ -106,7 +106,7 @@ class EntryItem : public QTreeWidgetItem
 {
   public:
     EntryItem( QTreeWidget *parent, const Addressee &addressee,
-               const QString &email=QString::null ) :
+               const QString &email=QString() ) :
       QTreeWidgetItem( parent ),
       mAddressee( addressee ),
       mEmail( email )
@@ -235,7 +235,7 @@ void DistributionListEditorWidget::newList()
 {
   bool ok;
   QString name = KInputDialog::getText( i18n( "New Distribution List" ),
-    i18n( "Please enter &name:" ), QString::null, &ok );
+    i18n( "Please enter &name:" ), QString(), &ok );
   if (!ok) return;
 
   new DistributionList( mManager, name );
@@ -271,7 +271,7 @@ void DistributionListEditorWidget::removeList()
 {
   int result = KMessageBox::warningContinueCancel( this,
       i18n("Delete distribution list '%1'?") .arg( mNameCombo->currentText() ),
-      QString::null, KStdGuiItem::del() );
+      QString(), KStdGuiItem::del() );
 
   if ( result != KMessageBox::Continue ) return;
 

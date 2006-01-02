@@ -275,8 +275,8 @@ class KABC_EXPORT Address
       @param orgaName   the name of the organization or company
       @return           the formatted address (containing newline characters)
     */
-    QString formattedAddress( const QString &realName=QString::null
-                            , const QString &orgaName=QString::null ) const;
+    QString formattedAddress( const QString &realName=QString()
+                            , const QString &orgaName=QString() ) const;
 
     /**
       Returns ISO code for a localized country name. Only localized country

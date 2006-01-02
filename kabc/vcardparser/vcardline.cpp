@@ -141,10 +141,10 @@ QString VCardLine::parameter( const QString& param ) const
 {
   ParamMap::ConstIterator it = mParamMap.find( param );
   if ( it == mParamMap.end() )
-    return QString::null;
+    return QString();
   else {
     if ( (*it).isEmpty() )
-      return QString::null;
+      return QString();
     else
       return (*it).first();
   }

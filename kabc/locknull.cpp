@@ -27,7 +27,7 @@
 using namespace KABC;
 
 LockNull::LockNull( bool allowAccess )
-  : Lock( QString::null ), mAllowAccess( allowAccess )
+  : Lock( QString() ), mAllowAccess( allowAccess )
 {
 }
 

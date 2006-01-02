@@ -791,7 +791,7 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
       if ( pos > start && pos <= (int)value.length() )
         list << value.mid( start, pos - start );
       else
-        list << QString::null;
+        list << QString();
 
       start = pos + 1;
       pos = value.find( sep, start );
@@ -808,7 +808,7 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
   if ( value.mid( start, l - start + 1 ).length() > 0 )
     list << value.mid( start, l - start + 1 );
   else
-    list << QString::null;
+    list << QString();
 
   return list;
 }

@@ -550,7 +550,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
 {
   // get country name from ISO country code (e.g. "no" -> i18n("Norway"))
   if ( ISOname.simplified().isEmpty() )
-    return QString::null;
+    return QString();
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
           QLatin1String( "kabc/countrytransl.map" ) );

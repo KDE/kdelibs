@@ -53,9 +53,9 @@ void TestLDAPClient::runAll()
 bool TestLDAPClient::check(const QString& txt, QString a, QString b)
 {
   if (a.isEmpty())
-    a = QString::null;
+    a.clear();
   if (b.isEmpty())
-    b = QString::null;
+    b.clear();
   if (a == b) {
     kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
   }
@@ -117,7 +117,7 @@ void TestLDAPClient::testIntevation()
 static QString asUtf8( const QByteArray &val )
 {
   if ( val.isEmpty() )
-    return QString::null;
+    return QString();
 
   const char *data = val.data();
 

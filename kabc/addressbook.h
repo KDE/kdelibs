@@ -429,8 +429,8 @@ class KABC_EXPORT AddressBook : public QObject
                       the field.
      */
     bool addCustomField( const QString &label, int category = Field::All,
-                         const QString &key = QString::null,
-                         const QString &app = QString::null );
+                         const QString &key = QString(),
+                         const QString &app = QString() );
 
     /**
       Adds a resource to the address book.
