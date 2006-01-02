@@ -109,7 +109,9 @@ int KNotify::event( const QString & event, const QString & appname, const Contex
 	config.pix=pixmap;
 	config.winId=winId;
 	
-	Event e = { id: m_counter , ref: 1 };
+	Event e;
+	e.id = m_counter;
+	e.ref = 1;
 	m_notifications[m_counter]=e;
 	
 	QString presentstring=config.readEntry("Action");
