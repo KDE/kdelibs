@@ -361,6 +361,9 @@ KHistoryCombo::KHistoryCombo( bool useCompletion,
 
 void KHistoryCombo::init( bool useCompletion )
 {
+    // Set a default history size to something reasonable, Qt sets it to INT_MAX by default
+    setMaxCount( 50 );
+
     if ( useCompletion )
         completionObject()->setOrder( KCompletion::Weighted );
 
