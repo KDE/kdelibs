@@ -258,9 +258,6 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                                   defaultGroup, groupsToShow, visuals,
                                   this );
   setMainWidget(m_chooser);
-
-  KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
-  resize( group.readSizeEntry("size", new QSize(400,300)) );
 }
 
 KMimeTypeChooserDialog::KMimeTypeChooserDialog(
@@ -276,11 +273,13 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                                   KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                   this );
   setMainWidget(m_chooser);
-
-  KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
-  resize( group.readSizeEntry("size", new QSize(400,300)) );
 }
 
+void KMimeTypeChooserDialog::init()
+{
+  KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
+  resize( group.readEntry("size", QSize(400,300)).toSize() );
+}
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
 {

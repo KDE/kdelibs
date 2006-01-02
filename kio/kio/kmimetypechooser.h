@@ -170,9 +170,10 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
     /**
      * @return a pointer to the KMimeTypeChooser widget
      */
-     KMimeTypeChooser* chooser() { return m_chooser; }
+    KMimeTypeChooser* chooser() { return m_chooser; }
 
   private:
+    void init();
     KMimeTypeChooser *m_chooser;
 };
 #endif // _KMIMETYPE_CHOOSER_H_
