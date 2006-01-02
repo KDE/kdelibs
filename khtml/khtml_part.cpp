@@ -206,6 +206,7 @@ KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
+    setObjectName( name );
     d = 0;
     KHTMLFactory::registerPart( this );
     setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );

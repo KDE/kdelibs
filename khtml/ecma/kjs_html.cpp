@@ -1319,7 +1319,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_SELECT, SelectDisabled, T_Bool,  ATTR_DISABLED},
   {ID_SELECT, SelectMultiple, T_Bool,  ATTR_MULTIPLE},
   {ID_SELECT, SelectSize,     T_Int,   ATTR_SIZE}, //toInt on attr, then number
-  {ID_SELECT, SelectTabIndex, T_TabIdx, -1},
+  {ID_SELECT, SelectTabIndex, T_TabIdx, NotApplicable},
   {ID_OPTGROUP, OptGroupDisabled, T_Bool, ATTR_DISABLED},
   {ID_OPTGROUP, OptGroupLabel,    T_String, ATTR_LABEL},
   {ID_OPTION, OptionDefaultSelected, T_Bool, ATTR_SELECTED},
@@ -1336,18 +1336,18 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_INPUT,  InputReadOnly,  T_Bool,   ATTR_READONLY},
   {ID_INPUT,  InputSize,      T_Int,    ATTR_SIZE},
   {ID_INPUT,  InputSrc,       T_URL,    ATTR_SRC},
-  {ID_INPUT,  InputTabIndex,  T_TabIdx, -1},
+  {ID_INPUT,  InputTabIndex,  T_TabIdx, NotApplicable},
   {ID_INPUT,  InputUseMap,    T_String, ATTR_USEMAP},
   {ID_TEXTAREA, TextAreaAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_TEXTAREA, TextAreaCols, T_Int, ATTR_COLS},
   {ID_TEXTAREA, TextAreaDisabled, T_Bool, ATTR_DISABLED},
   {ID_TEXTAREA, TextAreaReadOnly, T_Bool, ATTR_READONLY},
   {ID_TEXTAREA, TextAreaRows, T_Int,  ATTR_ROWS},
-  {ID_TEXTAREA, TextAreaTabIndex, T_TabIdx, -1},
+  {ID_TEXTAREA, TextAreaTabIndex, T_TabIdx, NotApplicable},
   {ID_BUTTON,   ButtonAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_BUTTON,   ButtonDisabled, T_Bool  , ATTR_DISABLED},
   {ID_BUTTON,   ButtonName,     T_String, ATTR_NAME},
-  {ID_BUTTON,   ButtonTabIndex, T_TabIdx, -1},
+  {ID_BUTTON,   ButtonTabIndex, T_TabIdx, NotApplicable},
   {ID_BUTTON,   ButtonValue,    T_String, ATTR_VALUE},
   {ID_LABEL,    LabelAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_LABEL,    LabelHtmlFor,   T_String, ATTR_FOR},
@@ -1365,7 +1365,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_LI,       LIValue,          T_Int,    ATTR_VALUE},
   {ID_DIV,      DivAlign,         T_String, ATTR_ALIGN},
   {ID_P,        ParagraphAlign,   T_String, ATTR_ALIGN},
-  {-1,          HeadingAlign,     T_String, ATTR_ALIGN},
+  {NotApplicable,HeadingAlign,     T_String, ATTR_ALIGN},
   {ID_BLOCKQUOTE, BlockQuoteCite, T_String, ATTR_CITE},
   {ID_Q,        QuoteCite,        T_String, ATTR_CITE},
   {ID_PRE,      PreWidth,         T_Int,    ATTR_WIDTH},
@@ -1380,8 +1380,8 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_HR,       HRNoShade,        T_Bool,   ATTR_NOSHADE},
   {ID_HR,       HRSize,           T_String, ATTR_SIZE},
   {ID_HR,       HRWidth,          T_String, ATTR_WIDTH},
-  {-1,          ModCite,          T_String, ATTR_CITE},
-  {-1,          ModDateTime,      T_String, ATTR_DATETIME},
+  {NotApplicable, ModCite,          T_String, ATTR_CITE},
+  {NotApplicable, ModDateTime,      T_String, ATTR_DATETIME},
   {ID_A,        AnchorAccessKey,  T_String, ATTR_ACCESSKEY},
   {ID_A,        AnchorCharset,    T_String, ATTR_CHARSET},
   {ID_A,        AnchorCoords,     T_String, ATTR_COORDS},
@@ -1446,8 +1446,8 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_AREA,     AreaShape,        T_String, ATTR_SHAPE},
   {ID_AREA,     AreaTabIndex,     T_Int,    ATTR_TABINDEX},
   {ID_AREA,     AreaTarget,       T_String, ATTR_TARGET},
-  {ID_SCRIPT,   ScriptHtmlFor,    T_Res,    -1},
-  {ID_SCRIPT,   ScriptEvent,      T_Res,    -1},
+  {ID_SCRIPT,   ScriptHtmlFor,    T_Res,    NotApplicable},
+  {ID_SCRIPT,   ScriptEvent,      T_Res,    NotApplicable},
   {ID_SCRIPT,   ScriptCharset,    T_String, ATTR_CHARSET},
   {ID_SCRIPT,   ScriptDefer,      T_Bool,   ATTR_DEFER},
   {ID_SCRIPT,   ScriptSrc,        T_URL,    ATTR_SRC},
@@ -1464,37 +1464,37 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_TABLE,    TableRows,        T_Coll,   HTMLCollectionImpl::TABLE_ROWS},
   {ID_TABLE,    TableTBodies,     T_Coll,   HTMLCollectionImpl::TABLE_TBODIES},
   {ID_CAPTION,  TableCaptionAlign,T_String, ATTR_ALIGN},
-  {-1,          TableColAlign,    T_String, ATTR_ALIGN}, //Col/ColGroup
-  {-1,          TableColCh,       T_String, ATTR_CHAR},
-  {-1,          TableColChOff,    T_String, ATTR_CHAROFF},
-  {-1,          TableColSpan,     T_Int,    ATTR_SPAN},
-  {-1,          TableColVAlign,   T_String, ATTR_VALIGN},
-  {-1,          TableColWidth,    T_String, ATTR_WIDTH},
-  {-1,          TableSectionAlign,T_String, ATTR_ALIGN}, //THead/TBody/TFoot
-  {-1,          TableSectionCh,   T_String, ATTR_CHAR},
-  {-1,          TableSectionChOff,T_String, ATTR_CHAROFF},
-  {-1,          TableSectionVAlign,T_String, ATTR_VALIGN},
-  {-1,          TableSectionRows,  T_Coll,  HTMLCollectionImpl::TSECTION_ROWS},
+  {NotApplicable,TableColAlign,    T_String, ATTR_ALIGN}, //Col/ColGroup
+  {NotApplicable,TableColCh,       T_String, ATTR_CHAR},
+  {NotApplicable,TableColChOff,    T_String, ATTR_CHAROFF},
+  {NotApplicable,TableColSpan,     T_Int,    ATTR_SPAN},
+  {NotApplicable,TableColVAlign,   T_String, ATTR_VALIGN},
+  {NotApplicable,TableColWidth,    T_String, ATTR_WIDTH},
+  {NotApplicable,TableSectionAlign,T_String, ATTR_ALIGN}, //THead/TBody/TFoot
+  {NotApplicable,TableSectionCh,   T_String, ATTR_CHAR},
+  {NotApplicable,TableSectionChOff,T_String, ATTR_CHAROFF},
+  {NotApplicable,TableSectionVAlign,T_String, ATTR_VALIGN},
+  {NotApplicable,TableSectionRows,  T_Coll,  HTMLCollectionImpl::TSECTION_ROWS},
   {ID_TR,       TableRowAlign,     T_String, ATTR_ALIGN},  //TR
   {ID_TR,       TableRowBgColor,   T_String, ATTR_BGCOLOR},
   {ID_TR,       TableRowCh,        T_String, ATTR_CHAR},
   {ID_TR,       TableRowChOff,     T_String, ATTR_CHAROFF},
   {ID_TR,       TableRowVAlign,    T_String, ATTR_VALIGN},
   {ID_TR,       TableRowCells,     T_Coll,   HTMLCollectionImpl::TR_CELLS},
-  {-1,          TableCellAbbr,     T_String, ATTR_ABBR}, //TD/TH
-  {-1,          TableCellAlign,    T_String, ATTR_ALIGN},
-  {-1,          TableCellAxis,     T_String, ATTR_AXIS},
-  {-1,          TableCellBgColor,  T_String, ATTR_BGCOLOR},
-  {-1,          TableCellCh,       T_String, ATTR_CHAR},
-  {-1,          TableCellChOff,    T_String, ATTR_CHAROFF},
-  {-1,          TableCellColSpan,  T_Int,    ATTR_COLSPAN},
-  {-1,          TableCellHeaders,  T_String, ATTR_HEADERS},
-  {-1,          TableCellHeight,   T_String, ATTR_HEIGHT},
-  {-1,          TableCellNoWrap,   T_Bool,   ATTR_NOWRAP},
-  {-1,          TableCellRowSpan,  T_Int,    ATTR_ROWSPAN},
-  {-1,          TableCellScope,    T_String, ATTR_SCOPE},
-  {-1,          TableCellVAlign,   T_String, ATTR_VALIGN},
-  {-1,          TableCellWidth,    T_String, ATTR_WIDTH},
+  {NotApplicable,TableCellAbbr,     T_String, ATTR_ABBR}, //TD/TH
+  {NotApplicable,TableCellAlign,    T_String, ATTR_ALIGN},
+  {NotApplicable,TableCellAxis,     T_String, ATTR_AXIS},
+  {NotApplicable,TableCellBgColor,  T_String, ATTR_BGCOLOR},
+  {NotApplicable,TableCellCh,       T_String, ATTR_CHAR},
+  {NotApplicable,TableCellChOff,    T_String, ATTR_CHAROFF},
+  {NotApplicable,TableCellColSpan,  T_Int,    ATTR_COLSPAN},
+  {NotApplicable,TableCellHeaders,  T_String, ATTR_HEADERS},
+  {NotApplicable,TableCellHeight,   T_String, ATTR_HEIGHT},
+  {NotApplicable,TableCellNoWrap,   T_Bool,   ATTR_NOWRAP},
+  {NotApplicable,TableCellRowSpan,  T_Int,    ATTR_ROWSPAN},
+  {NotApplicable,TableCellScope,    T_String, ATTR_SCOPE},
+  {NotApplicable,TableCellVAlign,   T_String, ATTR_VALIGN},
+  {NotApplicable,TableCellWidth,    T_String, ATTR_WIDTH},
   {ID_FRAMESET, FrameSetCols,      T_String, ATTR_COLS},
   {ID_FRAMESET, FrameSetRows,      T_String, ATTR_ROWS},
   {ID_LAYER,    LayerTop,          T_Int,    ATTR_TOP},
@@ -1510,7 +1510,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_FRAME,    FrameNoResize,     T_Bool,   ATTR_NORESIZE},
   {ID_FRAME,    FrameScrolling,    T_String, ATTR_SCROLLING},
   {ID_FRAME,    FrameSrc,          T_String, ATTR_SRC}, //### not URL?
-  {ID_FRAME,    FrameLocation,     T_String, ATTR_SRC},
+  {ID_FRAME,    FrameLocation,     BoundPropType(T_String | T_ReadOnly), ATTR_SRC},
   {ID_IFRAME,   IFrameFrameBorder, T_String, ATTR_FRAMEBORDER},
   {ID_IFRAME,   IFrameLongDesc,    T_String, ATTR_LONGDESC},
   {ID_IFRAME,   IFrameMarginHeight,T_String, ATTR_MARGINHEIGHT},
@@ -1521,12 +1521,12 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_IFRAME,   IFrameAlign,       T_String, ATTR_ALIGN},
   {ID_IFRAME,   IFrameHeight,      T_String, ATTR_HEIGHT},
   {ID_IFRAME,   IFrameWidth,       T_String, ATTR_WIDTH},
-  {-1,          ElementId,         T_String, ATTR_ID},
-  {-1,          ElementTitle,      T_String, ATTR_TITLE},
-  {-1,          ElementLang,       T_String, ATTR_LANG},
-  {-1,          ElementDir,        T_String, ATTR_DIR},
-  {-1,          ElementClassName,  T_String, ATTR_CLASS},
-  {-1,          ElementChildren,   T_Coll,   HTMLCollectionImpl::NODE_CHILDREN},
+  {NotApplicable,ElementId,         T_String, ATTR_ID},
+  {NotApplicable,ElementTitle,      T_String, ATTR_TITLE},
+  {NotApplicable,ElementLang,       T_String, ATTR_LANG},
+  {NotApplicable,ElementDir,        T_String, ATTR_DIR},
+  {NotApplicable,ElementClassName,  T_String, ATTR_CLASS},
+  {NotApplicable,ElementChildren,   T_Coll,   HTMLCollectionImpl::NODE_CHILDREN},
   {0,           0,                 T_Res,    0},
 };
 
@@ -1577,9 +1577,9 @@ ValueImp* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
   const BoundPropInfo* prop = boundPropInfo()->value(token);
   if (!prop) return 0;
 
-  assert(prop->elId == -1 || prop->elId == impl()->id());
+  assert(prop->elId == NotApplicable || prop->elId == impl()->id());
 
-  switch (prop->type) {
+  switch (prop->type & ~T_ReadOnly) {
     case T_String:
       return String(impl()->getAttribute(prop->attrId));
     case T_StrOrNl:
@@ -2313,10 +2313,12 @@ bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, ValueImp* va
 {
   const BoundPropInfo* prop = boundPropInfo()->value(token);
   if (!prop) return false;
+  if (prop->type & T_ReadOnly) return false;
 
   DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
 
-  assert(prop->elId == -1 || prop->elId == impl()->id());
+  assert(prop->elId == NotApplicable || prop->elId == impl()->id());
+
 
   switch (prop->type) {
     case T_String:
@@ -2497,7 +2499,6 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       DOM::HTMLFrameElementImpl& frameElement = static_cast<DOM::HTMLFrameElementImpl&>(element);
       switch (token) {
        // read-only: FrameContentDocument:
-#warning "FIXME: this will never get called"
       case FrameLocation:        {
                                    frameElement.setLocation(str);
                                    return;

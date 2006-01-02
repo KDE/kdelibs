@@ -174,9 +174,14 @@ namespace KJS {
       T_Bool,   //Boolean, return true if property is not null
       T_Int,
       T_URL,
-      T_TabIdx, //Magic tab-index handling
-      T_Res,    //Reserved, ignore sets, return empty string
-      T_Coll    //Collection, type is in attrID
+      T_TabIdx,   //Magic tab-index handling
+      T_Res,      //Reserved, ignore sets, return empty string
+      T_Coll,     //Collection, type is in attrID
+      T_ReadOnly, //Property should be handled only on read.
+    };
+
+    enum {
+        NotApplicable = 0xFFFFFFFu
     };
 
     struct BoundPropInfo {
