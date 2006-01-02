@@ -41,7 +41,7 @@ kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp
 ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp
 ksconfig.cpp kspelldlg.cpp
 kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp
-ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp
+ksplashscreen.cpp kspellui.ui kconfigdialog.cpp
 kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
