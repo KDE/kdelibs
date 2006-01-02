@@ -8,6 +8,12 @@ factory.cpp historyprovider.cpp mainwindow.cpp part.cpp
 partmanager.cpp plugin.cpp statusbarextension.cpp
 """
 
+kpartsinclude_headers = """
+browserextension.h browserinterface.h browserrun.h componentfactory.h
+event.h factory.h genericfactory.h historyprovider.h
+mainwindow.h part.h partmanager.h plugin.h
+statusbarextension.h
+"""
 includes = '../ #/kio/ #/libltdl #/kfile '
 
 obj = env.kdeobj('shlib')
@@ -31,12 +37,17 @@ if env['MAC']:
 elif not env['WINDOWS']:
 	env.Depends('libkparts.so.3.0.1', '../kio/libkio.so')
 
+env.bksys_insttype('KDEINCLUDE','',kpartsinclude_headers)
+env.bksys_insttype('KDESERVTYPES', '', 'kpart.desktop krop.desktop krwp.desktop browserview.desktop')
 
-"""Unhandled Defines 
-servicetypedir = $(kde_servicetypesdir)
-libkparts_la_METASOURCES = AUTO
+
+"""Unhandled Defines
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
 kpartsincludedir = $(includedir)/kparts
-servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop
 DOXYGEN_REFERENCES = kdecore kdeui kdefx kio
+"""
+
+"""Unhandled Targets
+check-local = ###(cd tests && $(MAKE) check )
 """
 
