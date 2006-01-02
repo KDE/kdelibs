@@ -115,13 +115,10 @@
 
 #ifndef Q_WS_WIN // TODO: could be removed ? 
 #include <KDE-ICE/ICElib.h>
+#undef Bool
 #else
 typedef void* IceIOErrorHandler;
 #include <windows.h>
-//KDE4: remove
-#define Button1Mask (1<<8)
-#define Button2Mask (1<<9)
-#define Button3Mask (1<<10)
 #endif
 
 #ifdef Q_WS_X11
@@ -439,7 +436,6 @@ static SmcConn mySmcConnection = 0;
 // FIXME(E): Implement for Qt Embedded
 // Possibly "steal" XFree86's libSM?
 #endif
-static QTime* smModificationTime = 0;
 
 KApplication::KApplication( bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
@@ -1193,8 +1189,6 @@ KApplication::~KApplication()
 
 #ifdef Q_WS_X11
   mySmcConnection = 0;
-  delete smModificationTime;
-  smModificationTime = 0;
 #else
   // FIXME(E): Implement for Qt Embedded
 #endif
