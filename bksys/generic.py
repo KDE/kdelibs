@@ -491,6 +491,17 @@ def find_file(lenv, file, path_list):
 			return lenv.join(dir, file)
 	return ''
 
+## HELPER - find a file in a dir or a subdir and return the directory
+def find_file_ext(lenv, file, path_list):
+	import os, fnmatch;
+
+	for p in path_list:
+		for path, subdirs, files in os.walk( p ):
+			for name in files:
+				if fnmatch.fnmatch( name, file ):
+					return path
+	return ''
+
 def find_program(lenv, file, path_list):
 	if lenv['WINDOWS']:
 		file += '.exe'
@@ -504,6 +515,42 @@ def find_program_using_which(lenv, prog):
 		return ''
 	return os.popen("which %s 2>/dev/null" % prog).read().strip()
 
+#HELPER - write a header file with information if a lib is available or not
+#         and stop if the package is mandatory
+def write_lib_header(lenv, libname, test_result, mandatory=False, headername='',addcontent=''):
+	
+	lib = libname.lower()
+	
+	if lib[0:3] != 'lib':
+		lib = 'lib'+lib
+
+	CACHED_LIB = 'CACHED_'+lib[3:].upper()
+	HAVE_LIB = 'HAVE_'+lib.upper()
+
+	if not test_result:
+		if mandatory:
+			pprint ( lenv, 'RED', lib + ' not found (mandatory).' )
+			lenv.Exit(1)
+		else:
+			pprint ( lenv, 'YELLOW', lib + ' not found.' )
+
+	if headername == '':
+		headername = 'config-'+lib+'.h'
+
+	dest=open(lenv.join(lenv['_BUILDDIR_'], headername), 'w')
+	dest.write('/* '+lib+' configuration created by bksys */\n')
+	if test_result:
+		dest.write('#define '+HAVE_LIB+' 1\n')
+		if addcontent:
+			dest.write(addcontent);
+		lenv['_CONFIG_H_'].append(lib)
+		lenv[CACHED_LIB] = 1
+	else:
+		dest.write('/* #undef '+HAVE_LIB+' */\n')
+
+	dest.close()
+
+
 ## Scons-specific function, do not remove
 def exists(env):
 	return true
@@ -513,8 +560,9 @@ def exists(env):
 ## or when you want to cross-compile (don't forget to set PLATFORM correct - not ready)
 def getCompiler(env,sys):
 	#cached value
-	if env.has_key('COMPILERTOOL'):
-		return env['COMPILERTOOL']
+	# CE: this doesn't work because once this is in generic.cache.py you can never change it
+#	if env.has_key('COMPILERTOOL'):
+#		return env['COMPILERTOOL']
 
 	if env['ARGS'] and env['ARGS'].has_key('platform'):
 		# first check for argument 'platform'
@@ -1093,6 +1141,8 @@ def generate(env):
 	SConsEnvironment.find_program=find_program
 	SConsEnvironment.find_program_using_which=find_program_using_which
 	SConsEnvironment.getInstDirForResType=getInstDirForResType
+	SConsEnvironment.write_lib_header=write_lib_header
+	SConsEnvironment.find_file_ext=find_file_ext
 
 	if env.has_key('GENCXXFLAGS'):   env.AppendUnique( CPPFLAGS  = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):    env.AppendUnique( CCFLAGS   = env['GENCCFLAGS'] )

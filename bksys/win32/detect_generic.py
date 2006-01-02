@@ -28,7 +28,7 @@ def detect(env):
 		elif env['CC'] == 'cl':
 #			env['GENCCFLAGS'] = ['-Od','-ZI','-MDd','-GX','-GR']
 			env['GENCCFLAGS'] = ['-Od','-ZI','-MDd']
-			env['GENLINKFLAGS'] = ['/INCREMENTAL', '/DEBUG']
+			env['GENLINKFLAGS'] = ['/INCREMENTAL:YES', '/DEBUG']
 	else:
 		if env['CC'] == 'gcc':
 			env['GENCCFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
