@@ -46,7 +46,7 @@ kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
-kpixmapio.cpp krootpixmap.cpp
+kpixmapio.cpp krootpixmap.cpp knotification.cpp
 """
 
 install_headers = """
