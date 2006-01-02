@@ -304,7 +304,7 @@ def generate(env):
 			elif ext in ui_ext:
 				lenv.Uic(file)
 			elif ext in ui3_ext:
-				lenv.Uic3(bs+'.ui')
+				lenv.Uic3(file)
 				src.append(bs+'.cpp')
 			else:
 				src.append(file)
