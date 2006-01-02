@@ -169,7 +169,7 @@ k_dcop:
 	 * @param fileSize file size in bytes
 	 */
 	virtual void sendFile(const QString &uid, const KURL &sourceURL,
-		const QString &altFileName = QString::null, uint fileSize = 0) = 0;
+		const QString &altFileName = QString(), uint fileSize = 0) = 0;
 
 // MUTATORS
 // Contact list

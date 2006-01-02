@@ -39,7 +39,7 @@ class KFileAudioPreview::KFileAudioPreviewPrivate
 public:
     KFileAudioPreviewPrivate( QWidget *parent )
     {
-        player = KParts::ComponentFactory::createInstanceFromQuery<KMediaPlayer::Player>( "KMediaPlayer/Player", QString::null, parent );
+        player = KParts::ComponentFactory::createInstanceFromQuery<KMediaPlayer::Player>( "KMediaPlayer/Player", QString(), parent );
     }
 
     ~KFileAudioPreviewPrivate()

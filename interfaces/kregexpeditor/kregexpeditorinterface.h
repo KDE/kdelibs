@@ -50,7 +50,7 @@
  * \code
  * QWidget *editorWidget =
  * KParts::ComponentFactory::createInstanceFromQuery<QWidget>( 
- *     "KRegExpEditor/KRegExpEditor", QString::null, parent );
+ *     "KRegExpEditor/KRegExpEditor", QString(), parent );
  * if ( editorWidget ) {
  *   // kdeutils was installed, so the widget was found fetch the editor interface
  *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorWidget->qt_cast( "KRegExpEditorInterface" ) );

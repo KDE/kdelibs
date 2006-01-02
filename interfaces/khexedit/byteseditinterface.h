@@ -221,7 +221,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
 {
   return KParts::ComponentFactory::createInstanceFromQuery<QWidget>
-      ( QLatin1String("KHexEdit/KBytesEdit"), QString::null, Parent, Name );
+      ( QLatin1String("KHexEdit/KBytesEdit"), QString(), Parent, Name );
 }
 
 }

@@ -212,7 +212,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */
-		void sendFile(const QString &uid, const KURL &sourceURL, const QString &altFileName = QString::null, uint fileSize = 0);
+		void sendFile(const QString &uid, const KURL &sourceURL, const QString &altFileName = QString(), uint fileSize = 0);
 
 		/**
 		 * Add a contact to the contact list

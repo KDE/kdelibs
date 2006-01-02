@@ -366,7 +366,7 @@ QString KIMProxy::presenceString( const QString& uid )
 		ap = presence.best();
 	}
 	if ( ap.appId.isEmpty() )
-		return QString::null;
+		return QString();
 	else
 		return d->presence_strings[ ap.presence ];
 }
@@ -484,7 +484,7 @@ QString KIMProxy::context( const QString & uid )
 		if ( KIMIface_stub* s = stubForUid( uid ) )
 			return s->context( uid );
 	}
-	return QString::null;
+	return QString();
 }
 	
 void KIMProxy::chatWithContact( const QString& uid )
@@ -548,7 +548,7 @@ QString KIMProxy::locate( const QString & contactId, const QString & protocol )
 		if ( KIMIface_stub* s = stubForProtocol( protocol ) )
 		return s->locate( contactId, protocol );
 	}
-	return QString::null;
+	return QString();
 }
 
 bool KIMProxy::imAppsAvailable()
@@ -565,8 +565,8 @@ bool KIMProxy::startPreferredApp()
 	// Get a preferred IM client.
 	// The app will notify itself to us using registeredToDCOP, so we don't need to record a stub for it here
 	// FIXME: error in preferences, see debug output
-	preferences = QString::null;
-	int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, preferences, &error, &dcopService );
+	preferences.clear();
+	int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString(), preferences, &error, &dcopService );
 
 	kdDebug( 790 ) << k_funcinfo << "error was: " << error << ", dcopService: " << dcopService << endl;
 
