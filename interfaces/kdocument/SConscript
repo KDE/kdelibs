@@ -16,13 +16,12 @@ document.h factory.h view.h
 includes = '#/interfaces '
 
 obj = env.kdeobj('shlib')
-#obj.it_is_a_kdelib()
 obj.target = 'kdocument'
 obj.source = kdocument_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.libpaths = '../../kparts'
-obj.libs = 'kparts'
+obj.libpaths = '../../kparts ../../kdeui'
+obj.libs = 'kparts kdeui'
 obj.execute()
 
 env.bksys_insttype('KDEINCLUDE', 'kdocument', kdocumentinclude_headers)
