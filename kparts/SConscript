@@ -37,7 +37,7 @@ if env['MAC']:
 elif not env['WINDOWS']:
 	env.Depends('libkparts.so.3.0.1', '../kio/libkio.so')
 
-env.bksys_insttype('KDEINCLUDE','',kpartsinclude_headers)
+env.bksys_insttype('KDEINCLUDE','kparts',kpartsinclude_headers)
 env.bksys_insttype('KDESERVTYPES', '', 'kpart.desktop krop.desktop krwp.desktop browserview.desktop')
 
 
