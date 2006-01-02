@@ -171,12 +171,12 @@ private:
 class HostAuthItem : public Q3ListViewItem
 {
 public:
-    HostAuthItem(Q3ListView *view, QString host, QString name, KCryptoConfig *module ) : Q3ListViewItem(view, QString::null ) {
+    HostAuthItem(Q3ListView *view, QString host, QString name, KCryptoConfig *module ) : Q3ListViewItem(view, QString() ) {
                                _name = name;  _host = host;
                                m_module = module;
                                setText(0, _host);
                                setText(1, _name);
-                               _oname = QString::null;
+                               _oname = QString();
                               }
     ~HostAuthItem() {}
 

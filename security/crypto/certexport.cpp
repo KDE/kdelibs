@@ -133,7 +133,7 @@ accept();
 
 void KCertExport::slotChoose() {
   //QString newFile = KFileDialog::getSaveFileName("::x509save", i18n("*.pem|Privacy Enhanced Mail Format\n*.der|DER/ASN1 Format"));
-  QString newFile = KFileDialog::getSaveFileName(QString::null, "application/x-x509-ca-cert");
+  QString newFile = KFileDialog::getSaveFileName(QString(), "application/x-x509-ca-cert");
 
    //  Dunno about this one yet
    // \n*.ncert|Netscape certificate files");
