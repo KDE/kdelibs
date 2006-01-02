@@ -477,7 +477,7 @@ QString whatstr;
   grid->addMultiCellWidget(ocbg, 14, 14, 0, 5);
 #endif
 #else
-  nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
+  QLabel *nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabYourSSLCert);
   grid->addMultiCellWidget(nossllabel, 3, 3, 0, 5);
