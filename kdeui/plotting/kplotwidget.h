@@ -18,17 +18,14 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
-#include <QFrame>
 #include <QList>
+#include <QHash>
+#include <QWidget>
 
-#include "kplotaxis.h"
-
-#define BIGTICKSIZE 10
-#define SMALLTICKSIZE 4
-#define XPADDING 20
-#define YPADDING 20
+#include <kdemacros.h>
 
 class QPixmap;
+class KPlotAxis;
 class KPlotObject;
 
 /**
@@ -47,16 +44,19 @@ class KPlotObject;
  *
  * @version 1.1
  */
-
-class KDE_EXPORT KPlotWidget : public QFrame {
+class KDE_EXPORT KPlotWidget : public QWidget {
 	Q_OBJECT
-	Q_PROPERTY(int leftPadding READ leftPadding WRITE setLeftPadding)
-	Q_PROPERTY(int rightPadding READ rightPadding WRITE setRightPadding)
-	Q_PROPERTY(int topPadding READ topPadding WRITE setTopPadding)
-	Q_PROPERTY(int bottomPadding READ bottomPadding WRITE setBottomPadding)
+	Q_PROPERTY(int leftPadding READ leftPadding)
+	Q_PROPERTY(int rightPadding READ rightPadding)
+	Q_PROPERTY(int topPadding READ topPadding)
+	Q_PROPERTY(int bottomPadding READ bottomPadding)
 	Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
 	Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor)
 	Q_PROPERTY(QColor gridColor READ gridColor WRITE setGridColor)
+	Q_PROPERTY(bool grid READ isGridShown WRITE setShowGrid)
+	Q_PROPERTY(bool tickMarks READ areTickMarksShown WRITE setShowTickMarks)
+	Q_PROPERTY(bool tickLabels READ areTickLabelsShown WRITE setShowTickLabels)
+	Q_PROPERTY(bool objectToolTip READ areObjectToolTipsShown WRITE setShowObjectToolTips)
 public:
 	/**
 	 * @short Constructor. Sets the primary x and y limits in data units.
@@ -69,20 +69,29 @@ public:
 	KPlotWidget( double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0, QWidget *parent=0 );
 
 	/**
-	 * Destructor (empty)
+	 * Destructor.
 	 */
 	virtual ~KPlotWidget();
+
+	/**
+	 * The kinds of axes we have
+	 */
+	enum Axis
+	{
+		LeftAxis = 0,
+		BottomAxis
+	};
 
 	virtual QSize minimumSizeHint() const;
 
 	/**
-	 * @short Determine the placement of major and minor tickmarks,
-	 * Based on the current Limit settings
+	 * Determine the placement of major and minor tickmarks, based on the
+	 * current Limit settings
 	 */
 	virtual void updateTickmarks();
 
 	/**
-	 * @short Reset the data limits.
+	 * Reset the data limits.
 	 * @param x1 the minimum X value in data units
 	 * @param x2 the maximum X value in data units
 	 * @param y1 the minimum Y value in data units
@@ -136,7 +145,7 @@ public:
 	 * @param i the index of th item to be replaced
 	 * @param o pointer to the replacement KPlotObject
 	 */
-	void replaceObject( int i, KPlotObject *o ) { ObjectList.replace( i, o ); }
+	void replaceObject( int i, KPlotObject *o );
 
 	/**
 	 * @return the number of KPlotObjects in the list
@@ -187,22 +196,27 @@ public:
 	 * @param show if true, axes will be drawn.
 	 * The axes are just a box outline around the plot.
 	 */
-	virtual void setShowAxes( bool show ) { BottomAxis.setVisible(show); LeftAxis.setVisible(show); }
+	void setShowAxes( bool show );
+
 	/**
-	 * Toggle whether tick marks are drawn along the axes.
-	 * @param show if true, tick marks will be drawn.
+	 * @return whether the tick marks are shown
 	 */
-	virtual void setShowTickMarks( bool show ) { ShowTickMarks = show; }
+	bool areTickMarksShown() const { return ShowTickMarks; }
+
 	/**
-	 * Toggle whether tick labels are drawn at major tickmarks.
-	 * @param show if true, tick labels will be drawn.
+	 * @return whether the tick labels are shown
 	 */
-	virtual void setShowTickLabels( bool show ) { ShowTickLabels = show; }
+	bool areTickLabelsShown() const { return ShowTickLabels; }
+
 	/**
-	 * Toggle whether grid lines are drawn at major tickmarks.
-	 * @param show if true, grid lines will be drawn.
+	 * @return whether the grid lines are shown
 	 */
-	virtual void setShowGrid( bool show ) { ShowGrid = show; }
+	bool isGridShown() const { return ShowGrid; }
+
+	/**
+	 * @return whether the tooltip for the point objects are shown
+	 */
+	bool areObjectToolTipsShown() const { return ShowObjectToolTips; }
 
 	/**
 	 * Sets the X-axis label.
@@ -211,7 +225,7 @@ public:
 	 * @deprecated set the label property in the BottomAxis directly
 	 * @param xlabel a short string describing the data plotted on the x-axis.
 	 */
-	KDE_DEPRECATED void setXAxisLabel( const QString& xlabel ) { BottomAxis.setLabel(xlabel); }
+	KDE_DEPRECATED void setXAxisLabel( const QString& xlabel );
 	/**
 	 * Sets the Y-axis label
 	 * Set the label to an empty string to omit the axis label.
@@ -219,7 +233,7 @@ public:
 	 * @deprecated set the label property in the LeftAxis directly
 	 * @param ylabel a short string describing the data plotted on the y-axis.
 	 */
-	KDE_DEPRECATED void setYAxisLabel( const QString& ylabel ) { LeftAxis.setLabel(ylabel); }
+	KDE_DEPRECATED void setYAxisLabel( const QString& ylabel );
 
 	/**
 	 * @returns the number of pixels to the left of the plot area.
@@ -272,22 +286,50 @@ public:
 	 */
 	void setDefaultPaddings() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
-	QPoint mapToPoint( const QPointF& p ) {
+	QPoint mapToPoint( const QPointF& p ) const {
 		int px = PixRect.left() + int( PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width() );
 		int py = PixRect.top() + int( PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height() );
 		return QPoint( px, py );
 	}
 
 	/**
-	 * The bottom X axis.
+	 * Retrieve the pointer to the axis of type @p a.
+	 * @sa Axis
+	 * @return a pointer to the axis @p a , or 0 if not found
 	 */
-	KPlotAxis BottomAxis;
+	KPlotAxis* axis( Axis a );
+
+public slots:
 	/**
-	 * The left Y axis.
+	 * Toggle whether tick marks are drawn along the axes.
+	 * @param show if true, tick marks will be drawn.
 	 */
-	KPlotAxis LeftAxis;
+	void setShowTickMarks( bool show );
+
+	/**
+	 * Toggle whether tick labels are drawn at major tickmarks.
+	 * @param show if true, tick labels will be drawn.
+	 */
+	void setShowTickLabels( bool show );
+
+	/**
+	 * Toggle whether grid lines are drawn at major tickmarks.
+	 * @param show if true, grid lines will be drawn.
+	 */
+	void setShowGrid( bool show );
+
+	/**
+	 * Toggle whether the tooltip for point objects are shown.
+	 * @param show if true, the tooltips will be shown.
+	 */
+	void setShowObjectToolTips( bool show );
 
 protected:
+	/**
+	 * Generic event handler.
+	 */
+	virtual bool event( QEvent* );
+
 	/**
 	 * The paint event handler, executed when update() or repaint() is called.
 	 */
@@ -320,9 +362,14 @@ protected:
 	 * @code
 	 * double m = dmod( 17.0, 7.0 ); // m == 3.0
 	 * @endcode
+	 * @deprecated use fmod (already defined in \<math.h\>)
 	 * @return the remainder after dividing @p b into @p a.
 	 */
-	double dmod( double a, double b );
+	KDE_DEPRECATED double dmod( double a, double b );
+
+	virtual void recalcPixRect();
+
+	QList<KPlotObject*> pointsUnderPoint( const QPoint& p ) const;
 
 	//The distance between major tickmarks in data units
 	double dXtick, dYtick;
@@ -342,10 +389,15 @@ protected:
 	 */
 	QList<KPlotObject*> ObjectList;
 
+	/**
+	 * Hashmap with the axes we have
+	 */
+	QHash<Axis, KPlotAxis*> mAxes;
+
 	//Colors
 	QColor cBackground, cForeground, cGrid;
 	//draw options
-	bool ShowTickMarks, ShowTickLabels, ShowGrid;
+	bool ShowTickMarks, ShowTickLabels, ShowGrid, ShowObjectToolTips;
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
 

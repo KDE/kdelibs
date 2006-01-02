@@ -23,27 +23,37 @@
 #include <qpixmap.h>
 #include <qpolygon.h>
 #include <QtAlgorithms>
+#include <qtooltip.h>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
 
+#include "kplotaxis.h"
 #include "kplotobject.h"
 
+#define BIGTICKSIZE 10
+#define SMALLTICKSIZE 4
+#define XPADDING 20
+#define YPADDING 20
+
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent )
- : QFrame( parent ),
+ : QWidget( parent ),
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
-   ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
+   ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false ), ShowObjectToolTips( true )
 {
 	setAttribute( Qt::WA_NoBackground, true );
+
+	// creating the axes
+	mAxes[LeftAxis] = new KPlotAxis();
+	mAxes[BottomAxis] = new KPlotAxis();
 
 	//set DataRect
 	setLimits( x1, x2, y1, y2 );
 	setDefaultPaddings();
 
-	//Set PixRect (starts at (0,0) because we will translate by leftPadding(), topPadding() )
-	PixRect = QRect( 0, 0, width() - leftPadding() - rightPadding(),
-	                       height() - topPadding() - bottomPadding() );
+	//Set PixRect
+	recalcPixRect();
 
 	buffer = new QPixmap();
 
@@ -51,6 +61,8 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
 	setBackgroundColor( Qt::black );
 	setForegroundColor( Qt::white );
 	setGridColor( Qt::gray );
+
+	setMinimumSize( 150, 150 );
 }
 
 KPlotWidget::~KPlotWidget()
@@ -58,6 +70,8 @@ KPlotWidget::~KPlotWidget()
 	delete (buffer);
 	qDeleteAll( ObjectList );
 	ObjectList.clear();
+	qDeleteAll( mAxes );
+	mAxes.clear();
 }
 
 QSize KPlotWidget::minimumSizeHint() const
@@ -74,17 +88,18 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 
 	DataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
 	updateTickmarks();
+	update();
 }
 
 void KPlotWidget::updateTickmarks() {
 	// Determine the number and spacing of tickmarks for the current plot limits.
 	if ( dataWidth() == 0.0 ) {
-		kdWarning() << "X range invalid! " << x() << " to " << x2() << endl;
+		kdWarning() << "KPlotWidget::updateTickmarks(): X range [" << x() << ", " << x2() << "] invalid!" << endl;
 		DataRect.setWidth( 1.0 );
 		return;
 	}
 	if ( dataHeight() == 0.0 ) {
-		kdWarning() << "Y range invalid! " << y() << " to " << y2() << endl;
+		kdWarning() << "KPlotWidget::updateTickmarks(): Y range [" << y() << ", " << y2() << "] invalid!" << endl;
 		DataRect.setHeight( 1.0 );
 		return;
 	}
@@ -146,6 +161,7 @@ void KPlotWidget::addObject( KPlotObject *o ) {
 	// skip null pointers
 	if ( !o ) return;
 	ObjectList.append( o );
+	update();
 }
 
 void KPlotWidget::clearObjectList() {
@@ -153,6 +169,14 @@ void KPlotWidget::clearObjectList() {
 	ObjectList.clear();
 	update();
 }
+
+void KPlotWidget::replaceObject( int i, KPlotObject *o ) {
+	// skip null pointers
+	if ( !o ) return;
+	ObjectList.replace( i, o );
+	update();
+}
+
 
 KPlotObject *KPlotWidget::object( int i ) {
 	if ( i < 0 || i >= ObjectList.count() ) {
@@ -167,12 +191,86 @@ void KPlotWidget::setBackgroundColor( const QColor &bg ) {
 	QPalette palette;
 	palette.setColor( backgroundRole(), bg );
 	setPalette( palette );
+	update();
+}
+
+void KPlotWidget::setShowAxes( bool show ) {
+	QHash<Axis, KPlotAxis*>::iterator itEnd = mAxes.end();
+	for ( QHash<Axis, KPlotAxis*>::iterator it = mAxes.begin(); it != itEnd; ++it ) {
+		(*it)->setVisible(show);
+	}
+	update();
+}
+
+
+void KPlotWidget::setShowTickMarks( bool show ) {
+	ShowTickMarks = show;
+	update();
+}
+
+void KPlotWidget::setShowTickLabels( bool show ) {
+	ShowTickLabels = show;
+	recalcPixRect();
+	update();
+}
+
+void KPlotWidget::setShowGrid( bool show ) {
+	ShowGrid = show;
+	update();
+}
+
+void KPlotWidget::setShowObjectToolTips( bool show ) {
+	ShowObjectToolTips = show;
+}
+
+
+KPlotAxis* KPlotWidget::axis( Axis a ) {
+	return mAxes.contains( a ) ? mAxes[a] : 0;
+}
+
+void KPlotWidget::recalcPixRect() {
+	int newWidth = width() - leftPadding() - rightPadding();
+	int newHeight = height() - topPadding() - bottomPadding();
+	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
+	PixRect = QRect( 0, 0, newWidth, newHeight );
+}
+
+QList<KPlotObject*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
+	QList<KPlotObject*> pts;
+	for ( QList<KPlotObject*>::ConstIterator it = ObjectList.begin(); it != ObjectList.constEnd(); ++it ) {
+		KPlotObject *po = ( *it );
+		if ( ( po->count() == 0 ) || ( po->type() != KPlotObject::POINTS ) )
+//		if ( ( po->count() == 0 ) || ( po->type() != KPlotObject::POINTS ) || ( po->type() != KPlotObject::POLYGON ) )
+			continue;
+
+		for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit ) {
+			if ( ( p - mapToPoint( **dpit ) ).manhattanLength() <= 4 )
+				pts << po;
+		}
+	}
+	return pts;
+}
+
+
+bool KPlotWidget::event( QEvent* e ) {
+	if ( e->type() == QEvent::ToolTip ) {
+		if ( ShowObjectToolTips )
+		{
+			QHelpEvent *he = static_cast<QHelpEvent*>( e );
+			QList<KPlotObject*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) );
+			if ( pts.count() > 0 ) {
+				QToolTip::showText( he->globalPos(), pts.front()->name(), this );
+			}
+		}
+		e->accept();
+		return true;
+	}
+	else
+		return QWidget::event( e );
 }
 
 void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
-	int newWidth = width() - leftPadding() - rightPadding();
-	int newHeight = height() - topPadding() - bottomPadding();
-	PixRect = QRect( 0, 0, newWidth, newHeight );
+	recalcPixRect();
 
 	QPixmap *tmp = new QPixmap( size() );
 	delete buffer;
@@ -259,12 +357,13 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::UNKNOWN_TYPE :
 				default:
-					kdDebug() << "Unknown object type: " << po->type() << endl;
+					kdDebug() << "KPlotWidget::drawObjects(): Unknown object type: " << po->type() << endl;
 			}
 		}
 	}
 }
 
+// DEPRECATED
 double KPlotWidget::dmod( double a, double b ) { return ( b * ( ( a / b ) - int( a / b ) ) ); }
 
 void KPlotWidget::drawBox( QPainter *p ) {
@@ -289,16 +388,16 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		p->setPen( gridColor() );
 
 		//vertical grid lines
-		double x0 = x() - dmod( x(), dXtick ); //zeropoint; x(i) is this plus i*dXtick1
-		for ( int ix = 0; ix <= nmajX+1; ix++ ) {
+		double x0 = x() - fmod( x(), dXtick ); //zeropoint; x(i) is this plus i*dXtick1
+		for ( int ix = 0; ix <= nmajX; ix++ ) {
 			int px = int( PixRect.width() * ( (x0 + ix*dXtick - x())/dataWidth() ) );
 			p->drawLine( px, 0, px, PixRect.height() );
 		}
 
 		//horizontal grid lines
-		double y0 = y() - dmod( y(), dYtick ); //zeropoint; y(i) is this plus i*mX
-		for ( int iy = 0; iy <= nmajY+1; iy++ ) {
-			int py = int( PixRect.height() * ( (y0 + iy*dYtick - y())/dataHeight() ) );
+		double y0 = y() - fmod( y(), dYtick ); //zeropoint; y(i) is this plus i*mX
+		for ( int iy = 0; iy <= nmajY; iy++ ) {
+			int py = PixRect.height() - int( PixRect.height() * ( (y0 + iy*dYtick - y())/dataHeight() ) );
 			p->drawLine( 0, py, PixRect.width(), py );
 		}
 	}
@@ -306,7 +405,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 	p->setPen( foregroundColor() );
 	p->setBrush( Qt::NoBrush );
 
-	if (BottomAxis.isVisible() || LeftAxis.isVisible())  p->drawRect( PixRect ); //box outline
+	if (mAxes[BottomAxis]->isVisible() || mAxes[LeftAxis]->isVisible())  p->drawRect( PixRect ); //box outline
 
 	if ( ShowTickMarks ) {
 		//spacing between minor tickmarks (in data units)
@@ -320,9 +419,9 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		p->setFont( f );
 
 		//--- Draw bottom X Axis ---//
-		if (BottomAxis.isVisible()) {
+		if (mAxes[BottomAxis]->isVisible()) {
 			// Draw X tickmarks
-			double x0 = x() - dmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
+			double x0 = x() - fmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
 			if ( x() < 0.0 ) x0 -= dXtick;
 		
 			for ( int ix = 0; ix <= nmajX+1; ix++ ) {
@@ -339,7 +438,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					double lab = x0 + ix*dXtick;
 					if ( fabs(lab)/dXtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 		
-					QString str = QString( "%1" ).arg( lab, BottomAxis.labelFieldWidth(), BottomAxis.labelFmt(), BottomAxis.labelPrec() );
+					QString str = QString( "%1" ).arg( lab, mAxes[BottomAxis]->labelFieldWidth(), mAxes[BottomAxis]->labelFmt(), mAxes[BottomAxis]->labelPrec() );
 					if ( px > 0 && px < PixRect.width() ) {
 						QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 						p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, str );
@@ -359,17 +458,17 @@ void KPlotWidget::drawBox( QPainter *p ) {
 			} // end draw X tickmarks
 
 			// Draw X Axis Label
-			if ( ! BottomAxis.label().isEmpty() ) {
+			if ( ! mAxes[BottomAxis]->label().isEmpty() ) {
 				QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
-				p->drawText( r, Qt::AlignCenter, BottomAxis.label() );
+				p->drawText( r, Qt::AlignCenter, mAxes[BottomAxis]->label() );
 			}
 
 		}
 
 		//--- Draw left Y Axis ---//
-		if (LeftAxis.isVisible()) {
+		if (mAxes[LeftAxis]->isVisible()) {
 			// Draw Y tickmarks
-			double y0 = y() - dmod( y(), dYtick ); //zeropoint; tickmark i is this plus i*dYtick1 (in data units)
+			double y0 = y() - fmod( y(), dYtick ); //zeropoint; tickmark i is this plus i*dYtick1 (in data units)
 			if ( y() < 0.0 ) y0 -= dYtick;
 	
 			for ( int iy = 0; iy <= nmajY+1; iy++ ) {
@@ -385,7 +484,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					double lab = y0 + iy*dYtick;
 					if ( fabs(lab)/dYtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 	
-					QString str = QString( "%1" ).arg( lab, LeftAxis.labelFieldWidth(), LeftAxis.labelFmt(), LeftAxis.labelPrec() );
+					QString str = QString( "%1" ).arg( lab, mAxes[LeftAxis]->labelFieldWidth(), mAxes[LeftAxis]->labelFmt(), mAxes[LeftAxis]->labelPrec() );
 					if ( py > 0 && py < PixRect.height() ) {
 						QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
 						p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, str );
@@ -404,7 +503,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 			} // end draw Y tickmarks
 
 			//Draw Y Axis Label.  We need to draw the text sideways.
-			if ( ! LeftAxis.label().isEmpty() ) {
+			if ( ! mAxes[LeftAxis]->label().isEmpty() ) {
 				//store current painter translation/rotation state
 				p->save();
 		
@@ -413,7 +512,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 				p->rotate( -90.0 );
 		
 				QRect r( 0, 0, PixRect.height(), XPADDING );
-				p->drawText( r, Qt::AlignCenter, LeftAxis.label() ); //draw the label, now that we are sideways
+				p->drawText( r, Qt::AlignCenter, mAxes[LeftAxis]->label() ); //draw the label, now that we are sideways
 		
 				p->restore();  //restore translation/rotation state
 			}
@@ -424,10 +523,21 @@ void KPlotWidget::drawBox( QPainter *p ) {
 
 }
 
+// DEPRECATED
+void KPlotWidget::setXAxisLabel( const QString& xlabel ) {
+	mAxes[BottomAxis]->setLabel(xlabel);
+}
+
+// DEPRECATED
+void KPlotWidget::setYAxisLabel( const QString& ylabel ) {
+	mAxes[LeftAxis]->setLabel(ylabel);
+}
+
+
 int KPlotWidget::leftPadding() const {
 	if ( LeftPadding >= 0 ) return LeftPadding;
-	if ( ! LeftAxis.label().isEmpty() && ShowTickLabels ) return 3*XPADDING;
-	if ( ! LeftAxis.label().isEmpty() || ShowTickLabels ) return 2*XPADDING;
+	if ( ! mAxes[LeftAxis]->label().isEmpty() && ShowTickLabels ) return 3*XPADDING;
+	if ( ! mAxes[LeftAxis]->label().isEmpty() || ShowTickLabels ) return 2*XPADDING;
 	return XPADDING;
 }
 
@@ -443,8 +553,8 @@ int KPlotWidget::topPadding() const {
 
 int KPlotWidget::bottomPadding() const {
 	if ( BottomPadding >= 0 ) return BottomPadding;
-	if ( ! BottomAxis.label().isEmpty() && ShowTickLabels ) return 3*YPADDING;
-	if ( ! BottomAxis.label().isEmpty() || ShowTickLabels ) return 2*YPADDING;
+	if ( ! mAxes[BottomAxis]->label().isEmpty() && ShowTickLabels ) return 3*YPADDING;
+	if ( ! mAxes[BottomAxis]->label().isEmpty() || ShowTickLabels ) return 2*YPADDING;
 	return YPADDING;
 }
 
