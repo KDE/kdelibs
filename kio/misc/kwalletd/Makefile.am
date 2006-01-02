@@ -31,5 +31,5 @@ noinst_HEADERS = kwalletd.h ktimeout.h kwalletwizard.ui.h
 services_DATA = kwalletd.desktop
 servicesdir = $(kde_servicesdir)/kded
 
-kwalletwizard.lo: kwalletwizard.ui kwalletwizard.ui.h
-kbetterthankdialogbase.lo: kbetterthankdialogbase.ui kbetterthankdialogbase.ui.h
+kwalletwizard.lo: kwalletwizard.ui3 kwalletwizard.ui.h
+kbetterthankdialogbase.lo: kbetterthankdialogbase.ui3 kbetterthankdialogbase.ui.h
