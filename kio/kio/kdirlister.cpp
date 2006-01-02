@@ -1,7 +1,8 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
-                 2001-2005 Michael Brade <brade@kde.org>
+                 2003-2005 David Faure <faure@kde.org>
+                 2001-2006 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -2011,13 +2012,6 @@ KFileItem *KDirLister::findByName( const QString& _name ) const
 {
   return s_pCache->findByName( this, _name );
 }
-
-#ifndef KDE_NO_COMPAT
-KFileItem *KDirLister::find( const KURL& _url ) const
-{
-  return findByURL( _url );
-}
-#endif
 
 
 // ================ public filter methods ================ //

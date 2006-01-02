@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
-                 2001, 2002, 2004, 2005 Michael Brade <brade@kde.org>
+                 2001, 2002, 2004-2006 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -250,9 +250,6 @@ public:
    * @return the pointer to the KFileItem
    */
   virtual KFileItem *findByURL( const KURL& _url ) const;
-#ifndef KDE_NO_COMPAT
-  KFileItem *find( const KURL& _url ) const;
-#endif
 
   /**
    * Find an item by its name.
