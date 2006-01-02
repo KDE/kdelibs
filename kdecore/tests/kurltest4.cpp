@@ -976,7 +976,7 @@ void KURLTest::testSubURL()
 void KURLTest::testSetUser()
 {
   // The KURL equality test below works because in Qt4 null == empty.
-  QString str1.clear();
+  QString str1;
   QString str2 = "";
   QVERIFY( str1 == str2 );
 

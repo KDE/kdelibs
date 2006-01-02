@@ -540,7 +540,7 @@ int main(int argc, char *argv[])
 
 
   // The KURL equality test below works because in Qt4 null == empty.
-  QString str1.clear();
+  QString str1;
   QString str2 = "";
   assert( str1 == str2 );
 
