@@ -70,6 +70,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif
