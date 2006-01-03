@@ -101,6 +101,7 @@ static const char* const charsets_for_encoding[] = {
     "sjis",
     "jis7",
     "big5",
+    "big5-hkscs",
     "gbk",
     "gb18030",
     "gb2312",
@@ -157,6 +158,7 @@ static struct LanguageForEncoding
 //    { "pt 154", 6 },
     { "ibm866", 6 },
     { "big5", 5 },
+    { "big5-hkscs", 5 },
     { "gb18030", 4 },
     { "gbk", 4 },
     { "gb2312", 4 },
@@ -284,6 +286,8 @@ static struct Builtin
     { "macintosh", "apple roman" },
     { "mac", "apple roman" },
     { "csiso2022jp", "jis7" }, // See bug #77243
+    { "big5-eten", "big5-hkscs" },
+    { "cp950", "big5-hkscs" },
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
