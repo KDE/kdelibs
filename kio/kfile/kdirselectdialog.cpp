@@ -34,6 +34,7 @@
 #include <klocale.h>
 #include <kprotocolinfo.h>
 #include <krecentdirs.h>
+#include <kshell.h>
 #include <kurl.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
@@ -374,7 +375,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
 {
     if ( d->branch )
     {
-        KURL url = KURL::fromPathOrURL( text );
+        KURL url = KURL::fromPathOrURL( KShell::tildeExpand( text ) );
         KFileTreeViewItem *item = d->branch->findTVIByURL( url );
         if ( item )
         {
