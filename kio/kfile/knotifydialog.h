@@ -175,6 +175,9 @@ namespace KNotify
 
     class KIO_EXPORT ApplicationList : public QList<Application*>
     {
+		public:
+		virtual ~ApplicationList(){}
+		private:
         virtual int compareItems ( Q3PtrCollection::Item item1,
                                    Q3PtrCollection::Item item2 )
         {
