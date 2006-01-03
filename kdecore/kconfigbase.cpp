@@ -369,14 +369,9 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
       case QVariant::String:
           return readEntry( pKey, aDefault.toString() );
       case QVariant::StringList:
-          return readListEntry( pKey );
-      case QVariant::List: {
-          QList<QVariant> list;
-
-          foreach ( QString str, readListEntry( pKey ) )
-              list.append( str );
-          return list;
-      }
+          return readEntry( pKey, aDefault.toStringList() );
+      case QVariant::List:
+          return readEntry( pKey, aDefault.toList() );
       case QVariant::ByteArray:
             return readEntryUtf8(pKey);
       case QVariant::Font:
@@ -391,21 +386,21 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Point: {
-          QList<int> list = readIntListEntry( pKey );
+          QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() == 2 )
               tmp = QPoint(list.at( 0 ), list.at( 1 ));
           return tmp;
       }
       case QVariant::Rect: {
-          QList<int> list = readIntListEntry( pKey );
+          QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() == 4)
               tmp = QRect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
           return tmp;
       }
       case QVariant::Size: {
-          QList<int> list = readIntListEntry( pKey );
+          QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() == 2 )
               tmp = QSize(list.at( 0 ), list.at( 1 ));
@@ -434,7 +429,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return tmp;
       }
       case QVariant::DateTime: {
-          QList<int> list = readIntListEntry( pKey );
+          QList<int> list = readEntry( pKey, QList<int>() );
           if ( list.count() == 6 ) {
               QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
               QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
@@ -445,7 +440,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return tmp;
       }
       case QVariant::Date: {
-          QList<int> list = readIntListEntry( pKey );
+          QList<int> list = readEntry( pKey, QList<int>() );
           if ( list.count() == 6 )
               return QDate( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
           if ( !aDefault.toDate().isValid() )
@@ -509,22 +504,31 @@ int KConfigBase::readListEntry( const char *pKey,
 }
 #endif
 
-QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
+QVariantList KConfigBase::readEntry( const char* pKey, const QVariantList& aDefault) const
 {
-  return readListEntry(pKey.toUtf8().data(), sep);
+  if (!hasKey(pKey))
+    return aDefault;
+
+  QStringList slist = readEntry( pKey, QVariant(aDefault).toStringList() );
+
+  return QVariant(slist).toList();
 }
 
-QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
+QStringList KConfigBase::readEntry(const QString& pKey, const QStringList& aDefault, char sep) const
 {
-  static const QString& emptyString = KGlobal::staticQString("");
+  return readEntry(pKey.toUtf8().constData(), aDefault, sep);
+}
 
-  QStringList list;
+QStringList KConfigBase::readEntry(const char* pKey, const QStringList& aDefault, char sep) const
+{
   if( !hasKey( pKey ) )
-    return list;
+    return aDefault;
+
   const QString str_list = readEntry( pKey );
+  QStringList list;
   if( str_list.isEmpty() )
     return list;
-  QString value(emptyString);
+  QString value;
   const int len = str_list.length();
   // obviously too big, but faster than letting each += resize the string.
   value.reserve( len );
@@ -555,75 +559,30 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
   return list;
 }
 
+QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
+{
+  return readEntry(pKey.toUtf8().constData(), QStringList(), sep);
+}
+
+QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
+{
+  return readEntry(pKey, QStringList(), sep);
+}
+
 QStringList KConfigBase::readListEntry( const char* pKey, const QStringList& aDefault,
 		char sep ) const
 {
-  if ( !hasKey( pKey ) )
-    return aDefault;
-  else
-    return readListEntry( pKey, sep );
-}
-
-QList<QByteArray> KConfigBase::readByteArrayListEntry( const QString& pKey, char sep ) const
-{
-  return readByteArrayListEntry(pKey.toUtf8().data(), sep);
-}
-
-QList<QByteArray> KConfigBase::readByteArrayListEntry( const char *pKey, char sep ) const
-{
-  QList<QByteArray> list;
-  if( !hasKey( pKey ) )
-    return list;
-  const QString str_list = readEntry( pKey );
-  if( str_list.isEmpty() )
-    return list;
-  QByteArray value;
-  const int len = str_list.length();
-  // obviously too big, but faster than letting each += resize the string.
-  value.reserve( len );
-  for( int i = 0; i < len; i++ )
-    {
-      if( str_list[i] != sep && str_list[i] != '\\' )
-        {
-          value += str_list[i].toLatin1();
-          continue;
-        }
-      if( str_list[i] == '\\' )
-        {
-          i++;
-          if ( i < len )
-            value += str_list[i].toLatin1();
-          continue;
-        }
-      QByteArray finalvalue( value );
-      finalvalue.squeeze();
-      list.append( finalvalue );
-      value.truncate( 0 );
-    }
-  if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
-  {
-    value.squeeze();
-    list.append( value );
-  }
-  return list;
+  return readEntry(pKey, aDefault, sep);
 }
 
 QList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
 {
-  return readIntListEntry(pKey.toUtf8().data());
+  return readEntry(pKey.toUtf8().data(), QList<int>());
 }
 
 QList<int> KConfigBase::readIntListEntry( const char *pKey ) const
 {
-  QStringList strlist = readListEntry(pKey);
-  QList<int> list;
-  QStringList::ConstIterator end(strlist.end());
-  for (QStringList::ConstIterator it = strlist.begin(); it != end; ++it)
-    // I do not check if the toInt failed because I consider the number of items
-    // more important than their value
-    list << (*it).toInt();
-
-  return list;
+  return readEntry( pKey, QList<int>() );
 }
 
 QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault ) const
@@ -1307,16 +1266,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::StringList:
+    case QVariant::List:
       writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
       return;
-    case QVariant::List: {
-        QStringList strList;
-        foreach ( QVariant aValue, prop.toList() )
-            strList.append( aValue.toString() );
-
-        writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
-
-        return;
+    case QVariant::ByteArray: {
+      QByteArray ba = prop.toByteArray();
+      writeEntry( pKey, QString::fromUtf8(ba.constData(), ba.length()), bPersistent, bGlobal, bNLS );
+      return;
     }
     case QVariant::Point: {
         QList<int> list;
@@ -1354,7 +1310,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Color:
 //    case QVariant::KeySequence:
     case QVariant::Font:
-	kdDebug() << "write " << "Type: " << prop.typeName() << " Value: " << prop.toString() << endl;
         writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
         return;
     case QVariant::LongLong:
@@ -1382,8 +1337,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
         return;
     }
-      writeEntry( pKey, prop.toDateTime(), bPersistent, bGlobal, bNLS);
-      return;
 
     case QVariant::Pixmap:
     case QVariant::Image:
@@ -1396,7 +1349,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Cursor:
     case QVariant::SizePolicy:
     case QVariant::Time:
-    case QVariant::ByteArray:
     case QVariant::BitArray:
     case QVariant::Pen:
     default:
@@ -1483,57 +1435,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry( const QString& pKey, const QList<QByteArray> &list,
-                              char sep, bool bPersistent, bool bGlobal, bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), list, sep, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry( const char *pKey, const QList<QByteArray> &list,
-                              char sep, bool bPersistent, bool bGlobal, bool bNLS )
-{
-  if( list.isEmpty() )
-    {
-      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
-      return;
-    }
-  QByteArray str_list;
-  str_list.reserve( 4096 );
-  QList<QByteArray>::ConstIterator it = list.begin();
-  const QList<QByteArray>::ConstIterator end = list.end();
-  for( ; it != end; ++it )
-    {
-      const QByteArray value = *it;
-      const int strLength(value.length());
-      for( int i = 0; i < strLength; i++ )
-        {
-          if( value[i] == sep || value[i] == '\\' )
-            str_list += '\\';
-          str_list += value[i];
-        }
-      str_list += sep;
-    }
-  if( str_list.at(str_list.length() - 1) == sep )
-    str_list.truncate( str_list.length() -1 );
-  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
-}
-
-void KConfigBase::writeEntry ( const QString& pKey, const QList<int> &list,
-                               bool bPersistent, bool bGlobal, bool bNLS )
-{
-  writeEntry(pKey.toUtf8().data(), list, bPersistent, bGlobal, bNLS);
-}
-
-void KConfigBase::writeEntry ( const char *pKey, const QList<int> &list,
-                               bool bPersistent, bool bGlobal, bool bNLS )
-{
-    QStringList strlist;
-    QList<int>::ConstIterator end = list.end();
-    for (QList<int>::ConstIterator it = list.begin(); it != end; it++)
-        strlist << QString::number(*it);
-    writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
 }
 
 void KConfigBase::parseConfigFiles()

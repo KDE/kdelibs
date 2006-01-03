@@ -44,8 +44,9 @@ QTTEST_KDEMAIN( KConfigTest, NoGUI )
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define COLORENTRY QColor("steelblue")
 #define FONTENTRY QFont("Times", 16, QFont::Normal)
+#define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 
-void KConfigTest::writeConfigFile()
+void KConfigTest::initTestCase()
 {
   KConfig sc( "kconfigtest" );
 
@@ -68,32 +69,35 @@ void KConfigTest::writeConfigFile()
   sc.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   sc.deleteEntry( "stringEntry5" );
   sc.deleteEntry( "stringEntry6" );
+  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true );
 
   sc.deleteGroup("deleteMe", true);
 
-  sc.setGroup("OtherTypes");
+  sc.setGroup("ComplexTypes");
   sc.writeEntry( "rectEntry", RECTENTRY );
   sc.writeEntry( "pointEntry", POINTENTRY );
   sc.writeEntry( "sizeEntry", SIZEENTRY );
   sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
-  sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
-  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true );
-  sc.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
-  sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   sc.writeEntry( "colorEntry", COLORENTRY );
   sc.writeEntry( "fontEntry", FONTENTRY );
+
+  sc.setGroup( "ListTypes" );
+  sc.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
+  sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
+  sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
+  sc.writeEntry( "variantListEntry", VARIANTLISTENTRY );
   sc.sync();
 }
 
 // ### TODO: call this, and test the state of things afterwards
 void KConfigTest::revertEntries()
 {
-  qWarning("Reverting entries");
+//  qWarning("Reverting entries");
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("Hello");
-  sc.revertToDefault( "boolEntry1");
-  sc.revertToDefault( "boolEntry2");
+  sc.revertToDefault( "boolEntry1" );
+  sc.revertToDefault( "boolEntry2" );
 
   sc.revertToDefault( "Test" );
   sc.revertToDefault( "Test2" );
@@ -105,10 +109,9 @@ void KConfigTest::revertEntries()
   sc.sync();
 }
 
-void KConfigTest::testAll()
+void KConfigTest::testSimple()
 {
-  kdDebug() << k_funcinfo << endl;
-  writeConfigFile();
+//  kdDebug() << k_funcinfo << endl;
 
   KConfig sc2( "kconfigtest" );
 
@@ -153,7 +156,32 @@ void KConfigTest::testAll()
   }
 #endif
 
-  sc2.setGroup("OtherTypes");
+  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QVariant::ByteArray ).toByteArray(),
+            QByteArray( STRINGENTRY1 ) );
+}
+
+void KConfigTest::testLists()
+{
+  KConfig sc2( "kconfigtest" );
+  sc2.setGroup("ListTypes");
+
+  QCOMPARE( sc2.readEntry( "stringListEntry", QStringList()),
+            STRINGLISTENTRY );
+
+  QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
+  QList<int> expectedIntList = INTLISTENTRY1;
+  QVERIFY( sc2.readEntry( "listOfIntsEntry1", QList<int>() ) == expectedIntList );
+
+  QCOMPARE( QVariant(sc2.readEntry( "variantListEntry", VARIANTLISTENTRY )).toStringList(),
+            QVariant(VARIANTLISTENTRY).toStringList() );
+
+  QCOMPARE( sc2.readEntry( "listOfByteArraysEntry1", QList<QByteArray>()), BYTEARRAYLISTENTRY1 );
+}
+
+void KConfigTest::testComplex()
+{
+  KConfig sc2( "kconfigtest" );
+  sc2.setGroup("ComplexTypes");
 
   QCOMPARE( sc2.readEntry( "pointEntry", QPoint() ).toPoint(), POINTENTRY );
   QCOMPARE( sc2.readEntry( "sizeEntry", SIZEENTRY ).toSize(), SIZEENTRY);
@@ -162,20 +190,8 @@ void KConfigTest::testAll()
             DATETIMEENTRY.toString(Qt::ISODate) );
   QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "stringListEntry", QStringList()).toStringList().join( "," ),
-            STRINGLISTENTRY.join( "," ) );
   QCOMPARE( sc2.readEntry( "colorEntry", QColor(Qt::black) ).toString(),
             QVariant(COLORENTRY).toString() );
   QCOMPARE( qvariant_cast<QColor>(sc2.readEntry( "colorEntry" )), COLORENTRY );
-  QCOMPARE( sc2.readEntry( "fontEntry", /*QFont()*/QVariant::Font ).toString(), QVariant(FONTENTRY).toString() );
-
-  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QVariant::ByteArray ).toByteArray(), QByteArray( STRINGENTRY1 ) );
-  QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
-  QList<int> expectedIntList = INTLISTENTRY1;
-  QCOMPARE( sc2.readIntListEntry( "listOfIntsEntry1" ), expectedIntList );
-
-  QCOMPARE( sc2.readEntry( "listOfByteArraysEntry1" ), QString::fromLatin1( ",1\\,2,end" ) );
-  QList<QByteArray> baList = sc2.readByteArrayListEntry( "listOfByteArraysEntry1" );
-  QList<QByteArray> expectedBaList = BYTEARRAYLISTENTRY1;
-  QCOMPARE( baList, expectedBaList );
+  QCOMPARE( sc2.readEntry( "fontEntry", QVariant::Font ).toString(), QVariant(FONTENTRY).toString() );
 }

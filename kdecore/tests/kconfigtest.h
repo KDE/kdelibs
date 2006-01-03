@@ -7,9 +7,12 @@ class KConfigTest : public QObject
 {
     Q_OBJECT
 private slots:
-    void testAll();
+    void testSimple();
+    void testLists();
+    void testComplex();
+    void initTestCase();
 private:
-    void writeConfigFile();
+//    void writeConfigFile();
     void revertEntries();
 };
 

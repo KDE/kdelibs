@@ -166,7 +166,7 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the type of the given default value.
    *
-   * Note that only the following QVariant types are allowed : String,
+   * @note Only the following QVariant types are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
    * Double, LongLong, ULongLong, DateTime and Date.
    *
@@ -175,22 +175,14 @@ public:
    * if the read value cannot be converted to the QVariant::Type.
    * @return The value for the key or the default value if the key was not
    *         found.
+   * @since 4.0
    */
   QVariant readEntry( const QString& pKey, const QVariant &aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
-   * The value is treated as if it is of the type of the given default value.
    *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, LongLong, ULongLong, DateTime and Date.
-   *
-   * @param pKey The key to search for.
-   * @param aDefault A default value returned if the key was not found or
-   * if the read value cannot be converted to the QVariant::Type.
-   * @return The value for the key or the default value if the key was not
-   *         found.
+   * @copydoc readEntry(const QString&, const QVariant&) const
    */
   QVariant readEntry( const char *pKey, const QVariant &aDefault) const;
 
@@ -250,43 +242,83 @@ public:
    * @param sep The list separator (default is ",").
    * @return The list. Contains @p aDefault if the Key does not exist.
    * @since 3.3
+   * @deprecated use readEntry(const char*, const QStringList&, char) const instead.
    */
   QStringList readListEntry( const char* pKey, const QStringList& aDefault,
-		  char sep = ',' ) const;
+		  char sep = ',' ) const KDE_DEPRECATED;
+
+  /**
+   * Reads a list from the config object.
+   *
+   * @note This function only works for those types that QVariant can convert
+   * from QString.
+   * @param pKey The key to search for.
+   * @param aDefault The default value to use if the key does not exist.
+   * @return The list.
+   * @since 4.0
+   */
+  template <typename T>
+  QList<T> readEntry( const char* pKey, const QList<T>& aDefault ) const;
+
+  /**
+   * Reads a list from the config object.
+   *
+   * @copydoc readEntry(const char*, const QList<T>&) const
+   */
+  template <typename T>
+  QList<T> readEntry( const QString& pKey, const QList<T>& aDefault ) const {
+	return readEntry( pKey.toUtf8().constData(), aDefault);
+  }
+
+  /**
+   * Reads a list from the config object.
+   *
+   * @copydoc readEntry(const char*, const QList<T>&) const
+   *
+   * @warning This function doesn't convert the items returned
+   *          to any type. It's actually a list of QVariant::String's. If you
+   *          want the items converted to a specific type use
+   *          readEntry(const char*, const QList<T>&) const
+   */
+  QVariantList readEntry( const char* pKey, const QVariantList& aDefault ) const;
+
+  /**
+   * Reads a list of strings from the config object.
+   * @param pKey The key to search for.
+   * @param aDefault The default value to use if the key does not exist.
+   * @param sep The list separator.
+   * @return The list. Contains @p aDefault if @p pKey does not exist.
+   * @since 4.0
+   */
+  QStringList readEntry(const char* pKey, const QStringList& aDefault,
+                        char sep=',') const;
+
+  /**
+   * Reads a list of strings, but returns a default if the key
+   * did not exist.
+   *
+   * @copydoc readEntry(const char*, const QStringList&, char) const
+   */
+  QStringList readEntry(const QString& pKey, const QStringList& aDefault,
+                        char sep=',') const;
 
   /**
    * Reads a list of Integers.
    *
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
+   * @deprecated use readEntry(const QString&, const QList<T>&) const instead.
    */
-  QList<int> readIntListEntry( const QString& pKey ) const;
+  QList<int> readIntListEntry( const QString& pKey ) const KDE_DEPRECATED;
 
   /**
    * Reads a list of Integers.
    *
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
+   * @deprecated use readEntry(const char*, const QList<T>&) const instead.
    */
-  QList<int> readIntListEntry( const char *pKey ) const;
-
-  /**
-   * Reads a list of byte arrays.
-   *
-   * @param pKey The key to search for.
-   * @param sep  The list separator (default is ",").
-   * @return The list. Empty if the entry does not exist.
-   */
-  QList<QByteArray> readByteArrayListEntry( const QString& pKey, char sep = ',' ) const;
-
-  /**
-   * Reads a list of byte arrays.
-   *
-   * @param pKey The key to search for.
-   * @param sep  The list separator (default is ",").
-   * @return The list. Empty if the entry does not exist.
-   */
-  QList<QByteArray> readByteArrayListEntry( const char *pKey, char sep = ',' ) const;
+  QList<int> readIntListEntry( const char *pKey ) const KDE_DEPRECATED;
 
   /**
    * Reads a path.
@@ -907,46 +939,6 @@ public:
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
-   * writeEntry() overridden to accept a list of byte arrays (8-bit strings).
-   *
-   * @param pKey The key to write
-   * @param rValue The list to write
-   * @param sep  The list separator (default is ",").
-   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
-   *                    will not be set and thus the entry will not be
-   *                    written to disk at deletion time.
-   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
-   *                application specific config file, but to the
-   *                global KDE config file.
-   * @param bNLS If @p bNLS is true, the locale tag is added to the key
-   *             when writing it back.
-   *
-   * @see  writeEntry()
-   */
-  void writeEntry( const char *pKey, const QList<QByteArray> &rValue,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
-
-  /**
-   * writeEntry() overridden to accept a list of byte arrays (8-bit strings).
-   *
-   * @param pKey The key to write
-   * @param rValue The list to write
-   * @param sep  The list separator (default is ",").
-   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
-   *                    will not be set and thus the entry will not be
-   *                    written to disk at deletion time.
-   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
-   *                application specific config file, but to the
-   *                global KDE config file.
-   * @param bNLS If @p bNLS is true, the locale tag is added to the key
-   *             when writing it back.
-   *
-   * @see  writeEntry()
-   */
-  void writeEntry( const QString& pKey, const QList<QByteArray> &rValue,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
-
-  /**
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
@@ -966,11 +958,11 @@ public:
   void writeEntry( const char *pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
- /**
-   * writeEntry() overridden to accept a list of Integers.
+  /**
+   * writeEntry() overridden to accept a list.
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param rValue The list to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -981,27 +973,29 @@ public:
    *             when writing it back.
    *
    * @see  writeEntry()
+   * @since 4.0
    */
-  void writeEntry( const QString& pKey, const QList<int>& rValue,
-		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
- /**
-   * writeEntry() overridden to accept a list of Integers.
-   *
-   * @param pKey The key to write
-   * @param rValue The list to write
-   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
-   *                    will not be set and thus the entry will not be
-   *                    written to disk at deletion time.
-   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
-   *                application specific config file, but to the
-   *                global KDE config file.
-   * @param bNLS If @p bNLS is true, the locale tag is added to the key
-   *             when writing it back.
-   *
-   * @see  writeEntry()
+  template <typename T>
+  void writeEntry( const QString& pKey, const QList<T>& rValue,
+		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+    { writeEntry( pKey.toUtf8().constData(), rValue, bPersistent, bGlobal, bNLS ); }
+
+  /**
+   * writeEntry() overridden to accept a list.
+   * @copydoc writeEntry(const QString&, const QList<T>&, bool, bool, bool)
    */
-  void writeEntry( const char *pKey, const QList<int>& rValue,
+  template <typename T>
+  void writeEntry( const char* pKey, const QList<T>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+
+
+  /**
+   * writeEntry() overridden to accept a list.
+   * @copydoc writeEntry(const char*, const QList<T>&, bool, bool, bool)
+   */
+  void writeEntry( const char* pKey, const QVariantList& rValue,
+                   bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+    { writeEntry( pKey, QVariant(rValue), bPersistent, bGlobal, bNLS ); }
 
   /**
    * Write a (key/value) pair.
@@ -1572,6 +1566,40 @@ private:
   class Private;
   Private *d;
 };
+
+template <typename T>
+QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
+{
+  if (!hasKey(pKey))
+    return aDefault;
+
+  QList<QVariant> vList;
+
+  if (!aDefault.isEmpty()) {
+    foreach (T aValue, aDefault)
+      vList.append( aValue );
+  }
+  vList = readEntry( pKey, vList );
+
+  QList<T> list;
+  if (!vList.isEmpty()) {
+    foreach (QVariant aValue, vList)
+      list.append( qvariant_cast<T>(aValue) );
+  }
+
+  return list;
+}
+
+template <typename T>
+void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
+                              bool bPersistent, bool bGlobal, bool bNLS )
+{
+  QVariantList vList;
+  foreach(T aValue, rValue)
+    vList.append(aValue);
+
+  writeEntry( pKey, QVariant(vList), bPersistent, bGlobal, bNLS );
+}
 
 #ifdef KDE3_SUPPORT
 /**
