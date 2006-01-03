@@ -26,48 +26,50 @@
 #include "kcatalog.h"
 #include "kstandarddirs.h"
 
-char *k_nl_find_msg(struct kde_loaded_l10nfile *domain_file,
-	       const char *msgid);
-void k_nl_unload_domain (struct loaded_domain *domain);
+#include <stdlib.h>
+#include <locale.h>
+#include "gettext.h"
 
-#ifndef KDE_USE_FINAL // with --enable-final, we're getting this from libintl.cpp
-struct kde_loaded_l10nfile
-{
-  const char *filename;
-  int decided;
-
-  const void *data;
-
-  kde_loaded_l10nfile() : filename(0), decided(0), data(0) {}
-};
-#endif
+static const QByteArray GLUE = GETTEXT_CONTEXT_GLUE;
 
 class KCatalogPrivate
 {
 public:
-  QString name;
-  QString language;
-  int	  pluralType;
+  QByteArray language;
+  QByteArray name;
+  QByteArray localeDir;
 
-  kde_loaded_l10nfile domain;
+  static int localeSet;
+  static QByteArray currentLanguage;
+
+  void changeBindings () const;
 };
+
+int KCatalogPrivate::localeSet = 0;
+QByteArray KCatalogPrivate::currentLanguage;
 
 KCatalog::KCatalog(const QString & name, const QString & language )
   : d( new KCatalogPrivate )
 {
-  d->name = name;
-  d->language = language;
-  // at the moment we do not know more. To find out the plural type we first have to look into
-  // kdelibs.mo for the language. And for this we already need a catalog object. So this data
-  // has to be set after we have the first catalog objects.
-  d->pluralType = -1; 
+  // Set locales only once.
+  if (! KCatalogPrivate::localeSet)
+  {
+    setlocale(LC_ALL, "");
+    KCatalogPrivate::localeSet = 1;
+  }
 
-  QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
-    .arg( d->language )
-    .arg( d->name );
+  // Find locale directory for this catalog.
+  QString localeDir = catalogLocaleDir( name, language );
 
-  setFileName( locate( "locale", path ) );
-    
+  d->language = QFile::encodeName( language );
+  d->name = QFile::encodeName( name );
+  d->localeDir = QFile::encodeName( localeDir );
+
+  // Always get translations in UTF-8, regardless of user's environment.
+  bind_textdomain_codeset( d->name, "UTF-8" );
+
+  // Invalidate current language, to trigger binding at next translate call.
+  KCatalogPrivate::currentLanguage.clear();
 }
 
 KCatalog::KCatalog(const KCatalog & rhs)
@@ -78,19 +80,24 @@ KCatalog::KCatalog(const KCatalog & rhs)
 
 KCatalog & KCatalog::operator=(const KCatalog & rhs)
 {
-  d->name       = rhs.d->name;
-  d->language   = rhs.d->language;
-  d->pluralType = rhs.d->pluralType;
-  setFileName( rhs.fileName() );
+  d->name      = rhs.d->name;
+  d->language  = rhs.d->language;
+  d->localeDir = rhs.d->localeDir;
 
   return *this;
 }
 
 KCatalog::~KCatalog()
 {
-  doUnload();
-
   delete d;
+}
+
+QString KCatalog::catalogLocaleDir( const QString &name,
+                                    const QString &language )
+{
+  QString relpath =  QString::fromLatin1( "%1/LC_MESSAGES/%2.mo" )
+                    .arg( language ).arg( name );
+  return KGlobal::dirs()->findResourceDir( "locale", relpath );
 }
 
 QString KCatalog::name() const
@@ -101,57 +108,69 @@ QString KCatalog::name() const
 QString KCatalog::language() const
 {
   return d->language;
-}	  
-
-void KCatalog::setPluralType( int pluralType) 
-{
-  d->pluralType = pluralType;
 }
 
-int KCatalog::pluralType() const
+QString KCatalog::localeDir() const
 {
-  return d->pluralType;
+  return d->localeDir;
 }
 
-  
-void KCatalog::setFileName( const QString & fileName )
+void KCatalogPrivate::changeBindings () const
 {
-  // nothing to do if the file name is already the same
-  if ( this->fileName() == fileName ) return;
+  if (language != currentLanguage)
+  {
+    currentLanguage = language;
 
-  doUnload();
+    // Point Gettext to new language.
+    setenv("LANGUAGE", language, 1);
 
-  QByteArray newFileName = QFile::encodeName( fileName );
+    // Locale directories may differ between languages.
+    bindtextdomain(name, localeDir);
 
-  if ( !fileName.isEmpty() )
-    {
-      // set file name
-      char *filename = new char[ newFileName.length() + 1 ];
-      ::qstrcpy( filename, newFileName );
-      d->domain.filename = filename;
-    }
+    // // Magic to make sure Gettext doesn't use stale cached translation
+    // // from previous language.
+    // extern int _nl_msg_cat_cntr;
+    // ++_nl_msg_cat_cntr;
+    //
+    // Note: Not needed, caching of translations is not an issue because
+    // language is switched only if translation is not found.
+  }
 }
 
-QString KCatalog::fileName() const
+QString KCatalog::translate(const char * msgid) const
 {
-  return QFile::decodeName( d->domain.filename );
+  d->changeBindings();
+  return QString::fromUtf8(dgettext(d->name, msgid));
 }
 
-const char * KCatalog::translate(const char * msgid) const
+QString KCatalog::translate(const char * msgctxt, const char * msgid) const
 {
-  return ::k_nl_find_msg( &d->domain, msgid );
+  d->changeBindings();
+  // dpgettext is a macro which needs string literals for msgctxt and msgid
+  // so until and unless that is changed, we cannot use it this way.
+  //return QString::fromUtf8(dpgettext(d->name, msgctxt, msgid));
+  QByteArray tmpstr;
+  tmpstr.append(msgctxt).append(GLUE).append(msgid);
+  QString r = QString::fromUtf8(dgettext(d->name, tmpstr));
+  return r.mid(r.indexOf(GLUE) + 1); // because we may get tmpstr back
 }
 
-void KCatalog::doUnload()
+QString KCatalog::translate(const char * msgid, const char * msgid_plural,
+                            unsigned long n) const
 {
-  // use gettext's unloader
-  if ( d->domain.data )
-    ::k_nl_unload_domain( (struct loaded_domain *)d->domain.data );
-  d->domain.data = 0;
+  d->changeBindings();
+  return QString::fromUtf8(dngettext(d->name, msgid, msgid_plural, n));
+}
 
-  // free name
-  delete [] const_cast<char *>(d->domain.filename);
-  d->domain.filename = 0;
-
-  d->domain.decided = 0;
+QString KCatalog::translate(const char * msgctxt, const char * msgid,
+                            const char * msgid_plural, unsigned long n) const
+{
+  d->changeBindings();
+  // dnpgettext is a macro which needs string literals for msgctxt and msgid
+  // so until and unless that is changed, we cannot use it this way.
+  //return QString::fromUtf8(dnpgettext(d->name, msgctxt, msgid, msgid_plural, n));
+  QByteArray tmpstr;
+  tmpstr.append(msgctxt).append(GLUE).append(msgid);
+  QString r = QString::fromUtf8(dngettext(d->name, tmpstr, msgid_plural, n));
+  return r.mid(r.indexOf(GLUE) + 1); // because we may get tmpstr back
 }

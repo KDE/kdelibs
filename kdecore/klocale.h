@@ -1140,12 +1140,13 @@ private:
   void initFormat();
 
   /**
-   * @internal function used by the two translate versions
+   * @internal function used by the translate versions
    */
-  QString translate_priv(const char *index,
-			 const char *text,
-			 const char ** original = 0,
-			 int* pluralType = 0) const;
+  QString translate_priv(const char *msgctxt,
+                         const char *msgid,
+                         const char *msgid_plural = 0,
+                         unsigned long n = 0,
+                         QString *language = 0) const;
 
   /**
    * @internal function used to determine if we are using the en_US translation
@@ -1153,49 +1154,10 @@ private:
   bool useDefaultLanguage() const;
 
   /**
-   * @internal Checks if the specified language is installed
-   */
-  bool isLanguageInstalled(const QString & language) const;
-
-  /**
    * @internal evaluate the list of catalogs and check that all instances for all languages are loaded
    * and that they are sorted according to the catalog names
    */
   void updateCatalogs( );
-
-  /**
-   * @internal Find the plural type for all loaded catalogs
-   */
-  void initPluralTypes( );
-  /**
-   * @internal Find the plural type for a language. Look this up in the corresponding kdelibs.po.
-   *
-   * @param language The language to examine
-   */
-  int pluralType( const QString & language );
-
-  /**
-   * @internal Find the plural type information for a given catalog. This catalog will be a kdelibs.mo. Method
-   * just exists to make code more readable.
-   *
-   * @param language The language to examine
-   */
-  int pluralType( const KCatalog& catalog );
-  /**
-   * @internal Find catalog for given language and given catalog name.
-   *
-   * @param language language of the catalog
-   * @param name name of the catalog
-   */
-  // const KCatalog * catalog( const QString & language, const QString & name );
-
-
-  /**
-   * @internal Retrieves the file name of the catalog, or QString()
-   *           if not found.
-   */
-  static QString catalogFileName(const QString & language,
-				   const KCatalog & catalog);
 
   /**
    * @internal Checks whether or not theFind catalog for given language and given catalog name.

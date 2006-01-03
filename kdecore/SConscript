@@ -5,7 +5,7 @@ Import('env')
 env.subdirs('kconfig_compiler tests')
 	
 core_files="""
-libintl.cpp kapplication.cpp kauthorized.cpp
+kapplication.cpp kauthorized.cpp
 kdebug.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
 kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp
 kstandarddirs.cpp kprocess.cpp kprocctrl.cpp

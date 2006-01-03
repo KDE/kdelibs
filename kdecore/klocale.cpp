@@ -58,7 +58,8 @@ public:
   int weekStartDay;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)
-  QList<KCatalog> catalogs; // list of all loaded catalogs, contains one instance per catalog name and language
+  QList<KCatalog> catalogs; // list of all found catalogs, one instance per catalog name and language
+  int numberOfSysCatalogs; // number of catalogs that each app draws from
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfigBase * config;
@@ -108,7 +109,6 @@ QString KLocale::_initLanguage(KConfigBase *config)
   if (this_klocale)
   {
      this_klocale->initLanguageList(config, true);
-     // todo: adapt current catalog list: remove unused languages, insert main catalogs, if not already found
      return this_klocale->language();
   }
   return QString();
@@ -129,8 +129,12 @@ void KLocale::initMainCatalogs(const QString & catalog)
   else {
     // do not use insertCatalog here, that would already trigger updateCatalogs
     d->catalogNames.append( mainCatalog );   // application catalog
+
+    // catalogs from which each application can draw translations
+    d->numberOfSysCatalogs = 2;
     d->catalogNames.append( SYSTEM_MESSAGES ); // always include kdelibs.mo
     d->catalogNames.append( "kio" );            // always include kio.mo
+
     updateCatalogs(); // evaluate this for all languages
   }
 }
@@ -177,95 +181,6 @@ void KLocale::initLanguageList(KConfigBase * config, bool useEnv)
 
   // now we have a language list -- let's use the first OK language
   setLanguage( list );
-}
-
-void KLocale::initPluralTypes()
-{
-  for ( QList<KCatalog>::Iterator it = d->catalogs.begin();
-    it != d->catalogs.end();
-    ++it )
-  {
-    it->setPluralType( pluralType( it->language() ) );
-  }
-}
-
-int KLocale::pluralType( const QString & lang )
-{
-  for ( QList<KCatalog>::ConstIterator it = d->catalogs.begin();
-    it != d->catalogs.end();
-    ++it )
-  {
-    if ( ( it->name() == SYSTEM_MESSAGES ) && ( it->language() == lang )) {
-      return pluralType( *it );
-    }
-  }
-  // kdelibs.mo does not seem to exist for this language
-  return -1;
-}
-
-int KLocale::pluralType( const KCatalog& catalog )
-{
-    const char* pluralFormString =
-    I18N_NOOP("_: Dear translator, please do not translate this string "
-      "in any form, but pick the _right_ value out of "
-      "NoPlural/TwoForms/French... If not sure what to do mail "
-      "thd@kde.org and coolo@kde.org, they will tell you. "
-      "Better leave that out if unsure, the programs will "
-      "crash!!\nDefinition of PluralForm - to be set by the "
-      "translator of kdelibs.po");
-    QString pf (catalog.translate( pluralFormString));
-    if ( pf.isEmpty() ) {
-      return -1;
-    }
-	else if ( pf == "NoPlural" )
-      return 0;
-    else if ( pf == "TwoForms" )
-      return 1;
-    else if ( pf == "French" )
-      return 2;
-    else if ( pf == "OneTwoRest" )
-      return 3;
-    else if ( pf == "Russian" )
-      return 4;
-    else if ( pf == "Polish" )
-      return 5;
-    else if ( pf == "Slovenian" )
-      return 6;
-    else if ( pf == "Lithuanian" )
-      return 7;
-    else if ( pf == "Czech" )
-      return 8;
-    else if ( pf == "Slovak" )
-      return 9;
-    else if ( pf == "Maltese" )
-      return 10;
-    else if ( pf == "Arabic" )
-      return 11;
-    else if ( pf == "Balcan" )
-      return 12;
-    else if ( pf == "Macedonian" )
-      return 13;
-    else if ( pf == "Gaeilge" )
-        return 14;
-    else {
-      kdWarning(173) << "Definition of PluralForm is none of "
-		       << "NoPlural/"
-		       << "TwoForms/"
-		       << "French/"
-		       << "OneTwoRest/"
-		       << "Russian/"
-		       << "Polish/"
-		       << "Slovenian/"
-		       << "Lithuanian/"
-		       << "Czech/"
-		       << "Slovak/"
-		       << "Arabic/"
-		       << "Balcan/"
-               << "Macedonian/"
-               << "Gaeilge/"
-		       << "Maltese: " << pf << endl;
-      exit(1);
-    }
 }
 
 void KLocale::doFormatInit() const
@@ -384,16 +299,6 @@ bool KLocale::setCountry(const QString & aCountry)
   return true;
 }
 
-QString KLocale::catalogFileName(const QString & language,
-				   const KCatalog & catalog)
-{
-  QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
-    .arg( language )
-    .arg( catalog.name() );
-
-  return locate( "locale", path );
-}
-
 bool KLocale::setLanguage(const QString & _language)
 {
   if ( d->languageList.contains( _language ) ) {
@@ -462,20 +367,7 @@ bool KLocale::isApplicationTranslatedInto( const QString & lang)
   if (maincatalog) {
     appName = QString::fromLatin1(maincatalog);
   }
-  // sorry, catalogFileName requires catalog object,k which we do not have here
-  // path finding was supposed to be moved completely to KCatalog. The interface cannot
-  // be changed that far during deep freeze. So in order to fix the bug now, we have
-  // duplicated code for file path evaluation. Cleanup will follow later. We could have e.g.
-  // a static method in KCataloge that can translate between these file names.
-  // a stat
-  QString sFileName = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
-    .arg( lang )
-    .arg( appName );
-  // kdDebug(173) << "isApplicationTranslatedInto: filename " << sFileName << endl;
-
-  QString sAbsFileName = locate( "locale", sFileName );
-  // kdDebug(173) << "isApplicationTranslatedInto: absname " << sAbsFileName << endl;
-  return ! sAbsFileName.isEmpty();
+  return ! KCatalog::catalogLocaleDir( appName, lang ).isEmpty();
 }
 
 void KLocale::splitLocale(const QString & aStr,
@@ -524,7 +416,10 @@ QString KLocale::country() const
 void KLocale::insertCatalog( const QString & catalog )
 {
   if ( !d->catalogNames.contains( catalog) ) {
-    d->catalogNames.append( catalog );
+    // Insert new catalog just before system catalogs, to preserve the
+    // lowest priority of system catalogs.
+    d->catalogNames.insert( d->catalogNames.size() - d->numberOfSysCatalogs,
+                            catalog );
   }
   updateCatalogs( ); // evaluate the changed list and generate the neccessary KCatalog objects
 }
@@ -534,15 +429,6 @@ void KLocale::updateCatalogs( )
   // some changes have occured. Maybe we have learned or forgotten some languages.
   // Maybe the language precedence has changed.
   // Maybe we have learned or forgotten some catalog names.
-  // Now examine the list of KCatalog objects and change it according to the new circumstances.
-
-  // this could be optimized: try to reuse old KCatalog objects, but remember that the order of
-  // catalogs might have changed: e.g. in this fashion
-  // 1) move all catalogs into a temporary list
-  // 2) iterate over all languages and catalog names
-  // 3.1) pick the catalog from the saved list, if it already exists
-  // 3.2) else create a new catalog.
-  // but we will do this later.
 
   d->catalogs.clear();
 
@@ -550,21 +436,15 @@ void KLocale::updateCatalogs( )
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
   // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
-  for ( QStringList::ConstIterator itLangs =  d->languageList.begin();
-	  itLangs != d->languageList.end(); ++itLangs)
-  {
-    for ( QStringList::ConstIterator itNames =  d->catalogNames.begin();
-	itNames != d->catalogNames.end(); ++itNames)
-    {
-      KCatalog cat( *itNames, *itLangs ); // create Catalog for this name and this language
-      d->catalogs.append( cat );
-    }
-  }
-  initPluralTypes();  // evaluate the plural type for all languages and remember this in each KCatalog
+  foreach ( QString lang, d->languageList )
+    foreach ( QString name, d->catalogNames )
+      // create and add catalog for this name and language if it exists
+      if ( ! KCatalog::catalogLocaleDir( name, lang ).isEmpty() )
+      {
+        d->catalogs.append( KCatalog( name, lang ) );
+        //kdDebug(173) << "Catalog: " << name << ":" << lang << endl;
+      }
 }
-
-
-
 
 void KLocale::removeCatalog(const QString &catalog)
 {
@@ -591,79 +471,89 @@ KLocale::~KLocale()
   delete d;
 }
 
-QString KLocale::translate_priv(const char *msgid,
-				const char *fallback,
-				const char **translated,
-				int* plural_type ) const
+QString KLocale::translate_priv(const char *msgctxt,
+                                const char *msgid,
+                                const char *msgid_plural,
+                                unsigned long n,
+                                QString *language) const
 {
-  if ( plural_type) {
-  	*plural_type = -1; // unless we find something more precise
+  if ( !msgid || !msgid[0] ) {
+    kdWarning() << "KLocale: trying to look up \"\" in catalog. "
+                << "Fix the program" << endl;
+    return QString();
   }
-  if (!msgid || !msgid[0])
-    {
-      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
-		   << "Fix the program" << endl;
-      return QString();
-    }
+  if ( msgctxt && !msgctxt[0] ) {
+    kdWarning() << "KLocale: trying to use \"\" as context to message. "
+                << "Fix the program" << endl;
+    return QString();
+  }
+  if ( msgid_plural && !msgid_plural[0] ) {
+    kdWarning() << "KLocale: trying to use \"\" as plural message. "
+                << "Fix the program" << endl;
+    return QString();
+  }
 
-  if ( useDefaultLanguage() ) { // shortcut evaluation if en_US is main language: do not consult the catalogs
-    return QString::fromUtf8( fallback );
+  // determine the fallback string
+  QString fallback;
+  if ( msgid_plural == NULL )
+    fallback = QString::fromUtf8( msgid );
+  else {
+    if ( n == 1 )
+      fallback = QString::fromUtf8( msgid );
+    else
+      fallback = QString::fromUtf8( msgid_plural );
   }
+  if ( language )
+    *language = defaultLanguage();
+
+  // shortcut evaluation if en_US is main language: do not consult the catalogs
+  if ( useDefaultLanguage() )
+    return fallback;
 
   for ( QList<KCatalog>::ConstIterator it = d->catalogs.begin();
-	it != d->catalogs.end();
-	++it )
-    {
-	  // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
-	  // the catalog as it will not have an assiciated mo-file. For this default language we can
-	  // immediately pick the fallback string.
-	  if ( (*it).language() == defaultLanguage() ) {
-	  	return QString::fromUtf8( fallback );
-	  }
+        it != d->catalogs.end();
+        ++it )
+  {
+    // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
+    // the catalog as it will not have an assiciated mo-file. For this default language we can
+    // immediately pick the fallback string.
+    if ( (*it).language() == defaultLanguage() )
+      return fallback;
 
-      const char * text = (*it).translate( msgid );
-
-      if ( text )
-	{
-	  // we found it
-	  if (translated) {
-	    *translated = text;
-	  }
-	  if ( plural_type) {
-	  	*plural_type = (*it).pluralType(); // remember the plural type information from the catalog that was used
-	  }
-	  return QString::fromUtf8( text );
-	}
+    QString text;
+    if ( msgctxt == NULL ) {
+      if (msgid_plural == NULL)
+        text = (*it).translate( msgid );
+      else
+        text = (*it).translate( msgid, msgid_plural, n );
+    }
+    else {
+      if ( msgid_plural == NULL )
+        text = (*it).translate( msgctxt, msgid );
+      else
+        text = (*it).translate( msgctxt, msgid, msgid_plural, n );
     }
 
-  // Always use UTF-8 if the string was not found
-  return QString::fromUtf8( fallback );
+    if ( text != fallback ) {
+      // we found it
+      if ( language )
+        *language = (*it).language();
+      return text;
+    }
+  }
+
+  // translation not found, return fallback
+  return fallback;
 }
 
 QString KLocale::translate(const char* msgid) const
 {
-  return translate_priv(msgid, msgid);
+  return translate_priv(0, msgid);
 }
 
 QString KLocale::translate( const char *index, const char *fallback) const
 {
-  if (!index || !index[0] || !fallback || !fallback[0])
-    {
-      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
-                  << "Fix the program" << endl;
-      return QString();
-    }
-
-  if ( useDefaultLanguage() )
-    return QString::fromUtf8( fallback );
-
-  char *newstring = new char[strlen(index) + strlen(fallback) + 5];
-  sprintf(newstring, "_: %s\n%s", index, fallback);
-  // as copying QString is very fast, it looks slower as it is ;/
-  QString r = translate_priv(newstring, fallback);
-  delete [] newstring;
-
-  return r;
+  return translate_priv(index, fallback);
 }
 
 static QString put_n_in(const QString &orig, unsigned long n)
@@ -676,163 +566,10 @@ static QString put_n_in(const QString &orig, unsigned long n)
   return ret;
 }
 
-#define EXPECT_LENGTH(x) \
-   if (forms.count() != x) { \
-      kdError() << "translation of \"" << singular << "\" doesn't contain " << x << " different plural forms as expected\n"; \
-      return QString( "BROKEN TRANSLATION %1" ).arg( singular ); }
-
 QString KLocale::translate( const char *singular, const char *plural,
                             unsigned long n ) const
 {
-  if (!singular || !singular[0] || !plural || !plural[0])
-    {
-      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
-		   << "Fix the program" << endl;
-      return QString();
-    }
-
-  char *newstring = new char[strlen(singular) + strlen(plural) + 6];
-  sprintf(newstring, "_n: %s\n%s", singular, plural);
-  // as copying QString is very fast, it looks slower as it is ;/
-  int plural_type = -1;
-  QString r = translate_priv(newstring, 0, 0, &plural_type);
-  delete [] newstring;
-
-  if ( r.isEmpty() || useDefaultLanguage() || plural_type == -1) {
-    if ( n == 1 ) {
-      return put_n_in( QString::fromUtf8( singular ),  n );
-	} else {
-	  QString tmp = QString::fromUtf8( plural );
-#ifndef NDEBUG
-	  if (tmp.indexOf("%n") == -1) {
-		kdDebug(173) << "the message for i18n should contain a '%n'! "
-			     << plural << endl;
-	  }
-#endif
-      return put_n_in( tmp,  n );
-	}
-  }
-
-  QStringList forms = r.split( "\n", QString::SkipEmptyParts);
-  switch ( plural_type ) {
-  case 0: // NoPlural
-    EXPECT_LENGTH( 1 );
-    return put_n_in( forms[0], n);
-  case 1: // TwoForms
-    EXPECT_LENGTH( 2 );
-    if ( n == 1 )
-      return put_n_in( forms[0], n);
-    else
-      return put_n_in( forms[1], n);
-  case 2: // French
-    EXPECT_LENGTH( 2 );
-    if ( n == 1 || n == 0 )
-      return put_n_in( forms[0], n);
-    else
-      return put_n_in( forms[1], n);
-  case 3: // OneTwoRest
-    EXPECT_LENGTH( 3 );
-    if ( n == 1 )
-      return put_n_in( forms[0], n);
-    else if ( n == 2 )
-      return put_n_in( forms[1], n);
-    else
-      return put_n_in( forms[2], n);
-  case 4: // Russian, corrected by mok
-    EXPECT_LENGTH( 3 );
-    if ( n%10 == 1  &&  n%100 != 11)
-      return put_n_in( forms[0], n); // odin fail
-    else if (( n%10 >= 2 && n%10 <=4 ) && (n%100<10 || n%100>20))
-      return put_n_in( forms[1], n); // dva faila
-    else
-      return put_n_in( forms[2], n); // desyat' failov
-  case 5: // Polish
-    EXPECT_LENGTH( 3 );
-    if ( n == 1 )
-      return put_n_in( forms[0], n);
-    else if ( n%10 >= 2 && n%10 <=4 && (n%100<10 || n%100>=20) )
-      return put_n_in( forms[1], n);
-    else
-      return put_n_in( forms[2], n);
-  case 6: // Slovenian
-    EXPECT_LENGTH( 4 );
-    if ( n%100 == 1 )
-      return put_n_in( forms[1], n); // ena datoteka
-    else if ( n%100 == 2 )
-      return put_n_in( forms[2], n); // dve datoteki
-    else if ( n%100 == 3 || n%100 == 4 )
-      return put_n_in( forms[3], n); // tri datoteke
-    else
-      return put_n_in( forms[0], n); // sto datotek
-  case 7: // Lithuanian
-    EXPECT_LENGTH( 3 );
-    if ( n%10 == 0 || (n%100>=11 && n%100<=19) )
-      return put_n_in( forms[2], n);
-    else if ( n%10 == 1 )
-      return put_n_in( forms[0], n);
-    else
-      return put_n_in( forms[1], n);
-  case 8: // Czech - use modern form which is equivalent to Slovak
-  case 9: // Slovak
-    EXPECT_LENGTH( 3 );
-    if ( n == 1 )
-      return put_n_in( forms[0], n);
-    else if (( n >= 2 ) && ( n <= 4 ))
-      return put_n_in( forms[1], n);
-    else
-      return put_n_in( forms[2], n);
-  case 10: // Maltese
-    EXPECT_LENGTH( 4 );
-    if ( n == 1 )
-      return put_n_in( forms[0], n );
-    else if ( ( n == 0 ) || ( n%100 > 0 && n%100 <= 10 ) )
-      return put_n_in( forms[1], n );
-    else if ( n%100 > 10 && n%100 < 20 )
-      return put_n_in( forms[2], n );
-    else
-      return put_n_in( forms[3], n );
-  case 11: // Arabic
-    EXPECT_LENGTH( 4 );
-    if (n == 1)
-      return put_n_in(forms[0], n);
-    else if (n == 2)
-      return put_n_in(forms[1], n);
-    else if ( n < 11)
-      return put_n_in(forms[2], n);
-    else
-      return put_n_in(forms[3], n);
-  case 12: // Balcan
-     EXPECT_LENGTH( 3 );
-     if (n != 11 && n % 10 == 1)
-	return put_n_in(forms[0], n);
-     else if (n / 10 != 1 && n % 10 >= 2 && n % 10 <= 4)
-	return put_n_in(forms[1], n);
-     else
-	return put_n_in(forms[2], n);
-  case 13: // Macedonian
-     EXPECT_LENGTH(3);
-     if (n % 10 == 1)
-	return put_n_in(forms[0], n);
-     else if (n % 10 == 2)
-	return put_n_in(forms[1], n);
-     else
-	return put_n_in(forms[2], n);
-  case 14: // Gaeilge
-      EXPECT_LENGTH(5);
-      if (n == 1)                       // "ceann amhain"
-          return put_n_in(forms[0], n);
-      else if (n == 2)                  // "dha cheann"
-          return put_n_in(forms[1], n);
-      else if (n < 7)                   // "%n cinn"
-          return put_n_in(forms[2], n);
-      else if (n < 11)                  // "%n gcinn"
-          return put_n_in(forms[3], n);
-      else                              // "%n ceann"
-          return put_n_in(forms[4], n);
-  }
-  kdFatal() << "The function should have returned in another way" << endl;
-
-  return QString();
+  return put_n_in( translate_priv( 0, singular, plural, n ), n );
 }
 
 QString KLocale::translateQt( const char *context, const char *source,
@@ -848,33 +585,23 @@ QString KLocale::translateQt( const char *context, const char *source,
     return QString();
   }
 
-  char *newstring = 0;
-  const char *translation = 0;
+  QString language;
   QString r;
 
   if ( message && message[0]) {
-    newstring = new char[strlen(source) + strlen(message) + 5];
-    sprintf(newstring, "_: %s\n%s", source, message);
-    translation = 0;
-    // as copying QString is very fast, it looks slower as it is ;/
-    r = translate_priv(newstring, source, &translation);
-    delete [] newstring;
-    if (translation)
+    r = translate_priv(source, message, 0, 0, &language);
+    if (language != defaultLanguage())
       return r;
   }
 
   if ( context && context[0] && message && message[0]) {
-    newstring = new char[strlen(context) + strlen(message) + 5];
-    sprintf(newstring, "_: %s\n%s", context, message);
-    // as copying QString is very fast, it looks slower as it is ;/
-    r = translate_priv(newstring, source, &translation);
-    delete [] newstring;
-    if (translation)
+    r = translate_priv(context, message, 0, 0, &language);
+    if (language != defaultLanguage())
       return r;
   }
 
-  r = translate_priv(source, source, &translation);
-  if (translation)
+  r = translate_priv(0, source, 0, 0, &language);
+  if (language != defaultLanguage())
     return r;
   return QString();
 }

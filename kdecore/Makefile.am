@@ -79,7 +79,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
 	kprotocolinfofactory.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp \
+libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
 	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
@@ -113,7 +113,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp kbzip2filter.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(AGG_LIBS) $(LIB_IDN) network/libkdecorenetwork.la $(LIBZ) $(LIBBZ2) $(LIB_QT) $(LIB_QT3SUPPORT) # ../kdefx/libkdefx.la
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(AGG_LIBS) $(LIB_IDN) network/libkdecorenetwork.la $(LIBZ) $(LIBBZ2) $(LIB_QT) $(LIB_QT3SUPPORT) @LTLIBINTL@ # ../kdefx/libkdefx.la
 libkdecore_la_NMCHECK = $(srcdir)/libkdecore.nmcheck
 libkdecore_la_NMCHECKWEAK = $(srcdir)/libkdecore_weak.nmcheck $(srcdir)/libqt-mt_weak.nmcheck \
 	$(top_srcdir)/dcop/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/standard_weak.nmcheck

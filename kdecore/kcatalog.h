@@ -27,7 +27,7 @@ class KCatalogPrivate;
 
 /**
  * This class abstracts a gettext message catalog. It will take care of
- * opening the file and reading the catalog.
+ * needed gettext bindings.
  *
  * @see KLocale
  */
@@ -41,7 +41,7 @@ public:
    * @param name The name of the catalog
    * @param language The language of this catalog
    */
-  explicit KCatalog(const QString & name = QString(), const QString & language = QString());
+  explicit KCatalog( const QString &name, const QString &language );
 
   /**
    * Copy constructor.
@@ -59,6 +59,17 @@ public:
   virtual ~KCatalog();
 
   /**
+   * Finds the locale directory for the given catalog in given language.
+   *
+   * @param name The name of the catalog
+   * @param language The language of this catalog
+   *
+   * @return The locale directory if found, QString() otherwise.
+   */
+  static QString catalogLocaleDir( const QString &name,
+                                   const QString &language );
+
+  /**
    * Returns the name of the catalog.
    *
    * @return The name of the catalog
@@ -71,54 +82,67 @@ public:
    * @return The language of the catalog
    */
   QString language() const;
-  
+
   /**
-   * Returns the plural type for the catalog. This type is based on the language of the catalog
-   and is cached for performance.
+   * Returns locale directory of the catalog.
    *
-   * @return The plural type for the catalog
+   * @return The locale directory of the catalog.
    */
-  int pluralType() const;
-  
-  /**
-   * Sets the plural type for the catalog. The caller has probably looked it up in a kdelibs.mo-catalog 
-   * for the appropriate language
-   *
-   * @return The plural type for the catalog
-   */
-  void setPluralType( int pluralType );
-  
+  QString localeDir() const;
 
   /**
    * Retrieves a translation of the specified message id.
    *
-   * Do not pass 0 or "" strings as message ids.
+   * Do not pass 0 or "" strings as message id.
    *
    * @param msgid The message id
    *
-   * @return The translated message, in utf8 encoding, or 0 if not found
+   * @return The translated message, or @p msgid if not found
    */
-  const char * translate( const char * msgid ) const;
+  QString translate( const char * msgid ) const;
 
-private:
   /**
-   * @internal Changes the current file name.
+   * Retrieves a translation of the specified message id with given context.
    *
-   * @param fileName The new file name
-   */
-
-  void setFileName( const QString & fileName );
-  /**
-   * @internal Retrieves the current file name.
+   * Do not pass 0 or "" strings as message id or context.
    *
-   * @return The current file name, if any.
+   * @param msgctxt The context
+   * @param msgid The message id
+   *
+   * @return The translated message, or @p msgid if not found
    */
-  QString fileName() const;
+  QString translate( const char * msgctxt, const char * msgid ) const;
 
   /**
-   * @internal Unloads the current file.
+   * Retrieves a proper plural form of translation for the specified English
+   * singular and plural message ids.
+   *
+   * Do not pass 0 or "" strings as message ids.
+   *
+   * @param msgid The singular message id
+   * @param msgid_plural The plural message id
+   * @param n The number to which the plural form applies
+   *
+   * @return The translated message, or proper English form if not found
    */
-  void doUnload();
+  QString translate( const char * msgid, const char * msgid_plural,
+                     unsigned long n ) const;
+
+  /**
+   * Retrieves a proper plural form of translation for the specified English
+   * singular and plural message ids, with given context.
+   *
+   * Do not pass 0 or "" strings as message ids or context.
+   *
+   * @param msgctxt The context
+   * @param msgid The singular message id
+   * @param msgid_plural The plural message id
+   * @param n The number to which the plural form applies
+   *
+   * @return The translated message, or proper English form if not found
+   */
+  QString translate( const char * msgctxt, const char * msgid,
+                     const char * msgid_plural, unsigned long n ) const;
 
 private:
   KCatalogPrivate * d;
