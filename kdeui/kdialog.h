@@ -870,8 +870,8 @@ class KDEUI_EXPORT KDialog : public QDialog
   protected:
     virtual void virtual_hook( int id, void* data );
   private:
-    class KDialogPrivate;
-    KDialogPrivate* const d;
+    struct Private;
+    Private* const d;
 
 
 

@@ -30,7 +30,7 @@ kdatetbl.cpp
 kdatetimewidget.cpp     Hans Petter Bieker <bieker@kde.org>
 kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
 kdcopactionproxy.cpp
-kdialog.cpp
+kdialog.cpp         Olivier Goffart <ogoffart@kde.org>
 kdialogbase.cpp		Waldo Bastian <bastian@kde.org>
 kdockwidget.cpp         Joseph Wenninger <jowenn@kde.org>
 kdockwidget_private.cpp Joseph Wenninger <jowenn@kde.org>
