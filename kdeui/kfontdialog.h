@@ -329,7 +329,7 @@ private:
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  */
-class KDEUI_EXPORT KFontDialog : public KDialogBase  {
+class KDEUI_EXPORT KFontDialog : public KDialog  {
     Q_OBJECT
 
 public:

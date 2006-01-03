@@ -66,9 +66,13 @@
 bool KShortcutDialog::s_showMore = false;
 
 KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent, const char* name )
-: KDialogBase( parent, name, true, i18n("Configure Shortcut"),
-               KDialogBase::Details|KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Cancel, true )
+: KDialog( parent, i18n("Configure Shortcut"),
+               KDialog::Details|KDialog::Ok|KDialog::Cancel )
 {
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+
         setButtonText(Details, i18n("Advanced"));
         m_stack = new KVBox(this);
         m_stack->setMinimumWidth(360);
@@ -111,11 +115,11 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 
 	KGuiItem ok = KStdGuiItem::ok();
 	ok.setText( i18n( "OK" ) );
-	setButtonOK( ok );
+	setButtonGuiItem( Ok , ok );
 
 	KGuiItem cancel = KStdGuiItem::cancel();
 	cancel.setText( i18n( "Cancel" ) );
-	setButtonCancel( cancel );
+	setButtonGuiItem( Cancel, cancel );
 
 	setShortcut( shortcut );
 	resize( 0, 0 );
@@ -313,7 +317,7 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 			//kdDebug(125) << "x11Event->type = " << pEvent->type << endl;
 			break;
 	}
-	return KDialogBase::x11Event( pEvent );
+	return KDialog::x11Event( pEvent );
 }
 
 static uint getModsFromModX( uint keyModX )
@@ -485,7 +489,7 @@ bool KShortcutDialog::event ( QEvent * e )
 		if (change)
 			updateShortcutDisplay();
 	}
-	return KDialogBase::event(e);
+	return KDialog::event(e);
 }
 #endif
 

@@ -1075,8 +1075,10 @@ QString KKeyChooserWhatsThis::text( const QPoint& p ) {
 /*                                                                      */
 /************************************************************************/
 KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent, const char* name )
-: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Default|Ok|Cancel, Ok )
+: KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
 {
+	setObjectName(name);
+	setModal(true);
 	m_pKeyChooser = new KKeyChooser( this, type, bAllowLetterShortcuts );
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
@@ -1087,8 +1089,11 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts
 }
 
 KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
-: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Default|Ok|Cancel, Ok )
+: KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
 {
+	setObjectName(name);
+	setModal(true);
+
 	m_pKeyChooser = new KKeyChooser( this, KKeyChooser::Application, bAllowLetterShortcuts );
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
@@ -1186,6 +1191,6 @@ void KKeyChooser::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 void KKeyDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 #include "kkeydialog.moc"

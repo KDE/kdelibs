@@ -1489,9 +1489,10 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 }
 
 KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
-  : KDialogBase(_parent, 0, modal, QString(), Ok, Ok ),              // TODO: port KDialogBase
+  : KDialog(_parent, QString(), Ok ),
     about(new KAboutWidget(this)), mContainerBase(0), d(0)
 {
+  setModal(modal);
   // #################################################################
   if(!about)
   {
@@ -1513,10 +1514,12 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
 			    QWidget *_parent, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
-  :KDialogBase( _parent, 0, modal, QString(), buttonMask, defaultButton,  // TODO: port KDialogBase
-		separator, user1, user2, user3 ),
+  :KDialog( _parent, QString(), buttonMask, 0 , user1, user2, user3 ),
    about(0), d(0)
 {
+  setModal(modal);
+  enableButtonSeparator( separator );
+  setDefaultButton(defaultButton);
   setPlainCaption( i18n("About %1").arg(_caption) );
 
   mContainerBase = new KAboutContainerBase( layoutType, this );
@@ -1769,5 +1772,5 @@ void KImageTrackLabel::mouseMoveEvent ( QMouseEvent *e )
 }
 
 void KAboutDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 

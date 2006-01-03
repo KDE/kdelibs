@@ -26,8 +26,12 @@
 #include <kvbox.h>
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
-     const char *name, bool modal ) : KDialogBase(parent, name, modal, i18n("Select Region of Image"), Help|Ok|Cancel, Ok, true )
+     const char *name, bool modal ) : KDialog(parent, i18n("Select Region of Image"), Help|Ok|Cancel )
 {
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal( modal );
+
   KVBox *vbox=new KVBox(this);
   new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);
   m_pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);

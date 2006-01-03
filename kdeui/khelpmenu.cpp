@@ -209,7 +209,6 @@ void KHelpMenu::aboutApplication()
       label2->setText( mAboutAppText );
 
       mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
-      mAboutApp->disableResize();
     }
     mAboutApp->show();
   }

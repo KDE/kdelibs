@@ -260,7 +260,7 @@ typedef KKeyChooser KKeyChooser;
  *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
-class KDEUI_EXPORT KKeyDialog : public KDialogBase
+class KDEUI_EXPORT KKeyDialog : public KDialog
 {
 	Q_OBJECT
 

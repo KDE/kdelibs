@@ -728,8 +728,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char* name,
 			  bool onlyFixed, bool modal,
 			  const QStringList &fontList, bool makeFrame, bool diff,
                           Qt::CheckState *sizeIsRelativeState )
-  : KDialogBase( parent, name, modal, i18n("Select Font"), Ok|Cancel, Ok )
+  : KDialog( parent, i18n("Select Font"), Ok|Cancel )
 {
+ setObjectName(name);
+ setModal( modal);
   chooser = new KFontChooser( this, "fontChooser",
                               onlyFixed, fontList, makeFrame, 8,
                               diff, sizeIsRelativeState );
@@ -799,4 +801,4 @@ void KFontChooser::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 void KFontDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }

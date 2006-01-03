@@ -39,7 +39,7 @@
  * @author Antonio Larrosa <larrosa@kde.org>
  * @since 3.4
  */ 
-class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialogBase
+class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialog
 {
 public:
    /**

@@ -308,15 +308,6 @@ class KDEUI_EXPORT KDialog : public QDialog
     QWidget *mainWidget();
 
     /**
-     * Convenience method.
-     *
-     *  Freezes the dialog size using the minimum size
-     * of the dialog. This method should only be called right before
-     * show() or exec().
-     */
-    void disableResize();
-
-    /**
      * Convenience method. Sets the initial dialog size.
      *
      *  This method should

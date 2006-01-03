@@ -34,7 +34,7 @@ class QWidget;
 class KAboutData;
 class KAboutKDE;
 class KBugReport;
-class KDialogBase;
+class KDialog;
 class KHelpMenuPrivate;
 
 
@@ -232,7 +232,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
 
   private:
     KMenu   *mMenu;
-    KDialogBase  *mAboutApp;
+    KDialog  *mAboutApp;
     KAboutKDE    *mAboutKDE;
     KBugReport   *mBugReport;
 

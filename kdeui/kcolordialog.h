@@ -368,7 +368,7 @@ private:
  * the currently selected color is a KColorPatch.
  *
  **/
-class KDEUI_EXPORT KColorDialog : public KDialogBase
+class KDEUI_EXPORT KColorDialog : public KDialog
 {
   Q_OBJECT
 

@@ -52,11 +52,13 @@ KInputDialogPrivate::KInputDialogPrivate()
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent, const char *name,
     QValidator *validator, const QString &mask )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel|User1, Ok, true,
-    KStdGuiItem::clear() ),
+    : KDialog( parent, caption, Ok|Cancel|User1 , 0 , KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  QFrame *frame = makeMainWidget();
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+  QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -80,17 +82,20 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotEditTextChanged( const QString & ) ) );
   connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( clear() ) );
 
+  setMainWidget(frame);
   slotEditTextChanged( value );
   setMinimumWidth( 350 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel|User1, Ok, false,
-    KStdGuiItem::clear() ),
+    : KDialog( parent, caption, Ok|Cancel|User1 , 0, KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  QFrame *frame = makeMainWidget();
+  setObjectName(name);
+  enableButtonSeparator( false );
+  setModal(true);
+  QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -105,17 +110,21 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label->setBuddy( d->m_textEdit );
 
   connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( clear() ) );
-
+  setMainWidget(frame);
   setMinimumWidth( 400 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base,
     QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
+    : KDialog( parent, caption, Ok|Cancel ),
     d( new KInputDialogPrivate() )
 {
-  QFrame *frame = makeMainWidget();
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+
+  QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -128,16 +137,21 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addStretch();
 
   d->m_intSpinBox->setFocus();
+  setMainWidget(frame);
   setMinimumWidth( 300 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
     QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
+    : KDialog( parent, caption, Ok|Cancel),
     d( new KInputDialogPrivate() )
 {
-  QFrame *frame = makeMainWidget();
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+
+  QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -150,19 +164,23 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addStretch();
 
   d->m_doubleSpinBox->setFocus();
+  setMainWidget(frame);
   setMinimumWidth( 300 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, int current, bool editable, QWidget *parent,
     const char *name )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel|User1, Ok, true,
-    KStdGuiItem::clear() ),
+    : KDialog( parent, caption, Ok|Cancel|User1, 0 , KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+
   showButton( User1, editable );
 
-  QFrame *frame = makeMainWidget();
+  QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -196,17 +214,21 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   }
 
   layout->addStretch();
-
+  setMainWidget(frame);
   setMinimumWidth( 320 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, const QStringList &select, bool multiple,
     QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
+    : KDialog( parent, caption, Ok|Cancel),
     d( new KInputDialogPrivate() )
 {
-  QFrame *frame = makeMainWidget();
+  setObjectName(name);
+  enableButtonSeparator( true );
+  setModal(true);
+
+  QWidget *frame = new QWidget(this);
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -246,7 +268,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_listBox->setFocus();
 
   layout->addStretch();
-
+  setMainWidget(frame);
   setMinimumWidth( 320 );
 }
 

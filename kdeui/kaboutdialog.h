@@ -251,10 +251,10 @@ private:
 
 class KAboutDialogPrivate;
 /**
- * A KDialogBase with predefined main widget.
+ * A KDialog with predefined main widget.
  *
- * As a KDialogBase it uses your application wide settings
- * for KDialogBase
+ * As a KDialog it uses your application wide settings
+ * for KDialog
  * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
@@ -277,11 +277,11 @@ class KAboutDialogPrivate;
  * a person (developer) information field. The "About KDE" dialog box is
  * created with Constructor II.
  *
- * For the derived features, see the basic class KDialogBase.
+ * For the derived features, see the basic class KDialog.
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espensa@online.no)
- * @see KDialogBase
+ * @see KDialog
  */
-class KDEUI_EXPORT KAboutDialog : public KDialogBase
+class KDEUI_EXPORT KAboutDialog : public KDialog
 {
   Q_OBJECT
 

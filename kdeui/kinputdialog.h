@@ -44,7 +44,7 @@ class KListBox;
  * @since 3.2
  * @author Nadeem Hasan <nhasan@kde.org>
  */
-class KDEUI_EXPORT KInputDialog : public KDialogBase
+class KDEUI_EXPORT KInputDialog : public KDialog
 {
   Q_OBJECT
 

@@ -954,10 +954,12 @@ public:
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Select Color"),
-		modal ? Ok|Cancel : Close,
-		Ok, true )
+  :KDialog( parent, i18n("Select Color"),
+		modal ? Ok|Cancel : Close )
 {
+  setObjectName(name);
+  enableButtonSeparator(true);
+  setModal(modal);
   d = new KColorDialogPrivate;
   d->bRecursion = true;
   d->bColorPicking = false;
@@ -1177,7 +1179,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bEditRgb = false;
   d->bEditHtml = false;
 
-  disableResize();
+  setFixedSize(sizeHint());
   KColor col;
   col.setHsv( 0, 0, 255 );
   _setColor( col );
@@ -1212,7 +1214,7 @@ KColorDialog::eventFilter( QObject *obj, QEvent *ev )
       default:
             break;
     }
-    return KDialogBase::eventFilter(obj, ev);
+    return KDialog::eventFilter(obj, ev);
 }
 
 void
@@ -1236,7 +1238,7 @@ KColorDialog::setDefaultColor( const QColor& col )
         mainWidget()->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX ); // cancel setFixedSize()
         d->tl_layout->activate();
         mainWidget()->setMinimumSize( mainWidget()->sizeHint() );
-        disableResize();
+        setFixedSize(sizeHint());
 
         connect( d->cbDefaultColor, SIGNAL( clicked() ), SLOT( slotDefaultColorClicked() ) );
     }
@@ -1529,7 +1531,7 @@ KColorDialog::mouseReleaseEvent( QMouseEvent *e )
      _setColor( grabColor( e->globalPos() ) );
      return;
   }
-  KDialogBase::mouseReleaseEvent( e );
+  KDialog::mouseReleaseEvent( e );
 }
 
 QColor
@@ -1559,7 +1561,7 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
      e->accept();
      return;
   }
-  KDialogBase::keyPressEvent( e );
+  KDialog::keyPressEvent( e );
 }
 
 void KColorDialog::setRgbEdit( const KColor &col )
@@ -1612,7 +1614,7 @@ void KColorPatch::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 void KColorDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 
 #include "kcolordialog.moc"
