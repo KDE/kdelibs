@@ -1369,9 +1369,10 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
 
   if ( m_responseCode == 301 )
   {
-    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::re-rename " << m_redirectLocation.path() << endl;
     // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
     // with webdav://host/directory, instead requiring webdav://host/directory/
+    // (strangely enough it accepts Destination: without a trailing slash)
+
     if (m_redirectLocation.protocol() == "https")
       m_redirectLocation.setProtocol("webdavs");
     else
