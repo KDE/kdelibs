@@ -290,7 +290,8 @@ Q_ULONG KBufferedSocket::bytesToWrite() const
 void KBufferedSocket::closeNow()
 {
   KStreamSocket::close();
-  d->output->clear();
+  if (d->output)
+    d->output->clear();
 }
 
 bool KBufferedSocket::canReadLine() const
