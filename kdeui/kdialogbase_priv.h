@@ -22,23 +22,6 @@
 #ifndef _KDIALOG_BASE_PRIV_H_
 #define _KDIALOG_BASE_PRIV_H_
 
-#include <kpushbutton.h>
-
-/**
- * Used internally by KDialogBase.
- * @internal
- */
-class KDEUI_EXPORT KDialogBaseButton : public KPushButton
-{
-  Q_OBJECT
-
-  public:
-    KDialogBaseButton( const KGuiItem &text, int key, QWidget *parent=0 );
-    inline int id();
-
-  private:
-    int mKey;
-};
 
 /**
  * Used internally by KDialogBase.
