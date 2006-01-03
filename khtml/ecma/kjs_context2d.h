@@ -90,6 +90,7 @@ namespace KJS {
 
 private:
     QBrush constructBrush(ExecState* exec);
+    QPen constructPen(ExecState* exec);
 
     void save();
     void restore();

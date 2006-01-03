@@ -66,6 +66,7 @@
 #include <QBrush>
 #include <QGradient>
 #include <QColor>
+#include <QtDebug>
 
 using namespace DOM;
 using khtml::RenderCanvasImage;
@@ -340,17 +341,9 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
     case Context2D::Stroke: {
         if (args.size() != 0)
             return throwError(exec, SyntaxError);
-        if (isGradient(contextObject->_strokeStyle)) {
-            ObjectImp *o = static_cast<ObjectImp*>(contextObject->_strokeStyle);
-            Gradient *gradient = static_cast<Gradient*>(o);
-            QPen pen = drawingContext->pen();
-            pen.setBrush( QBrush( *gradient->qgradient() ) );
-            drawingContext->setPen( pen );
-        } else if (isImagePattern(contextObject->_strokeStyle)) {
-            contextObject->updateStrokeImagePattern();
-        }
 
-        drawingContext->strokePath( contextObject->path(), drawingContext->pen() );
+        drawingContext->strokePath( contextObject->path(), contextObject->constructPen( exec ) );
+
         renderer->setNeedsImageUpdate();
         break;
     }
@@ -443,17 +436,23 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float sa = (float)args[3]->toNumber(exec);
         float ea = (float)args[4]->toNumber(exec);
         bool clockwise = args[5]->toBoolean(exec);
-        if ( clockwise ) {
-            float temp = sa;
-            sa = ea;
-            ea = temp;
-        }
+
+        sa *= 180/M_PI;
+        ea *= 180/M_PI;
+
         double xs     = xc - radius;
         double ys     = yc - radius;
         double width  = radius*2;
         double height = radius*2;
         double span   = ea - sa;
+        if ( !clockwise ) {
+            span *= -1;
+        }
+        QPointF cp = contextObject->path().currentPosition();
+        //contextObject->path().moveTo( xs, ys );
+        qDebug()<<"arcTo "<<xs<<ys<<width<<height<<sa<<span;
         contextObject->path().arcTo(xs, ys, width, height, sa, span);
+        //contextObject->path().moveTo( cp );
         break;
     }
     case Context2D::Rect: {
@@ -504,16 +503,14 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float w = (float)args[2]->toNumber(exec);
         float h = (float)args[3]->toNumber(exec);
 
-        if (isImagePattern(contextObject->_strokeStyle))
-            contextObject->updateStrokeImagePattern();
         QPainterPath path; path.addRect( x, y, w, h );
         if (size > 4) {
-            QPen pen = drawingContext->pen();
+            QPen pen = contextObject->constructPen( exec );
             pen.setWidthF( (float)args[4]->toNumber(exec) );
             drawingContext->strokePath( path, pen );
         }
         else {
-            drawingContext->strokePath( path, drawingContext->pen() );
+            drawingContext->strokePath( path, contextObject->constructPen( exec ) );
         }
         renderer->setNeedsImageUpdate();
         break;
@@ -589,10 +586,9 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
             return throwError(exec, SyntaxError);
 
         if (!sourceContext) {
-            QPainter p;
             //### set composite op
             //QPainter::compositeOperatorFromString(contextObject->_globalComposite->toString(exec).qstring().lower())
-            p.drawPixmap( QRectF( dx, dy, dw, dh ), pixmap, QRectF( sx, sy, sw, sh ) );
+            drawingContext->drawPixmap( QRectF( dx, dy, dw, dh ), pixmap, QRectF( sx, sy, sw, sh ) );
         }
         else {
             // Cheap, because the image is backed by copy-on-write memory, and we're
@@ -853,7 +849,7 @@ QBrush Context2D::constructBrush(ExecState* exec)
     }
     else {
         ObjectImp *o = static_cast<ObjectImp*>(_fillStyle);
-    
+
         if (o->inherits(&Gradient::info)) {
             Gradient *gradient = static_cast<Gradient*>(o);
             return QBrush( *gradient->qgradient() );
@@ -861,6 +857,31 @@ QBrush Context2D::constructBrush(ExecState* exec)
             //Must be an image pattern
             ImagePattern *imagePattern = static_cast<ImagePattern *>(_fillStyle);
             return imagePattern->createPattern();
+        }
+    }
+}
+
+
+QPen Context2D::constructPen(ExecState* exec)
+{
+    //### FIXME: caching and such
+    QPen pen = drawingContext()->pen();
+    if (_strokeStyle->isString()) {
+        QColor qc = colorFromValue(exec, _strokeStyle);
+        pen.setColor( qc );
+        return pen;
+    }
+    else {
+        ObjectImp *o = static_cast<ObjectImp*>(_strokeStyle);
+        if (o->inherits(&Gradient::info)) {
+            Gradient *gradient = static_cast<Gradient*>(o);
+            pen.setBrush( QBrush( *gradient->qgradient() ) );
+            return pen;
+        } else {
+            //Must be an image pattern
+            ImagePattern *imagePattern = static_cast<ImagePattern *>(_fillStyle);
+            pen.setBrush( imagePattern->createPattern() );
+            return pen;
         }
     }
 }
