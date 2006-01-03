@@ -259,6 +259,7 @@ void HTTPProtocol::resetConnectionSettings()
 void HTTPProtocol::resetResponseSettings()
 {
   m_bRedirect = false;
+  m_redirectLocation = KURL();
   m_bChunked = false;
   m_iSize = NO_SIZE;
 
@@ -1365,6 +1366,30 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.doProxy = m_bUseProxy;
 
   retrieveHeader( false );
+
+  if ( m_responseCode == 301 )
+  {
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::re-rename " << m_redirectLocation.path() << endl;
+    // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
+    // with webdav://host/directory, instead requiring webdav://host/directory/
+    if (m_redirectLocation.protocol() == "https")
+      m_redirectLocation.setProtocol("webdavs");
+    else
+      m_redirectLocation.setProtocol("webdav");
+
+    if ( !checkRequestURL( m_redirectLocation ) )
+      return;
+
+    m_request.method = DAV_MOVE;
+    m_request.path = m_redirectLocation.path();
+    m_request.davData.desturl = newDest.url();
+    m_request.davData.overwrite = overwrite;
+    m_request.query = QString::null;
+    m_request.cache = CC_Reload;
+    m_request.doProxy = m_bUseProxy;
+
+    retrieveHeader( false );
+  }
 
   if ( m_responseCode == 201 )
     davFinished();
@@ -3561,6 +3586,7 @@ try_again:
       return false;
     }
     m_bRedirect = true;
+    m_redirectLocation = u;
 
     if (!m_request.id.isEmpty())
     {

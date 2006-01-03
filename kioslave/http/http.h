@@ -476,6 +476,7 @@ protected:
 
 //--- Settings related to a single response only
   QStringList m_responseHeader; // All headers
+  KURL m_redirectLocation;
   bool m_bRedirect; // Indicates current request is a redirection
 
   // Processing related
