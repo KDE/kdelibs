@@ -40,8 +40,8 @@ int main(int argc, char** argv)
   if(bg.load("background_1.png"))
     {
       pix=bg;
-      about.setBackgroundTile(&pix);
-      about.showTile( true );
+      //about.setBackgroundTile(&pix);
+      //about.showTile( true );
       about.enableLinkedHelp( true );
 
       //about.showBaseFrameTile(true);
