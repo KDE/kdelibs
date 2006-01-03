@@ -18,16 +18,18 @@ def generate(env):
 		if env['WINDOWS']:
 			jpeg_include_path += ['c:\\libjpeg\\include']
 			jpeg_lib_path += ['c:\\libjpeg\\lib']
+			ext='.lib'
 		else:
 			jpeg_include_path += ['/usr/include','/usr/local/include']
 			jpeg_lib_path += ['/usr/lib','/usr/local/lib']
+			ext='.so'
 
 		#we need to check for libjpeg6b then normal libjpeg to
 		#be compatible with the current autoconf check
 		header = env.find_file_ext('jpeglib.h', jpeg_include_path)
-		libjpeg = env.find_file_ext('jpeg'+env['LIBSUFFIX'], jpeg_lib_path)
-		libjpeg6b = env.find_file_ext('jpeg6b'+env['LIBSUFFIX'], jpeg_lib_path)
-		
+		libjpeg = env.find_file_ext('jpeg'+ext, jpeg_lib_path)
+		libjpeg6b = env.find_file_ext('jpeg6b'+ext, jpeg_lib_path)
+
 		if header != '':
 			if libjpeg != '':
 				conf.env.AppendUnique( LIBPATH = [ libjpeg ] )
