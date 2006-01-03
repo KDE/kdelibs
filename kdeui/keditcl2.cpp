@@ -734,8 +734,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
 
-  if ( !modal )
-    connect( this, SIGNAL( closeClicked() ), this, SLOT( slotCancel() ) );
+  connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotUser1() ) );
 }
 
 KEdFind::~KEdFind()
@@ -748,10 +747,10 @@ void KEdFind::textSearchChanged ( const QString &text )
    enableButton( KDialogBase::User1, !text.isEmpty() );
 }
 
+//FIXME: it seems this slot is never called
 void KEdFind::slotCancel( void )
 {
   emit done();
-  KDialogBase::slotCancel();
 }
 
 void KEdFind::slotUser1( void )
@@ -873,6 +872,11 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
+  
+  connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotUser1() ) );
+  connect( this, SIGNAL( user2Clicked() ), this, SLOT( slotUser2() ) );
+  connect( this, SIGNAL( user3Clicked() ), this, SLOT( slotUser3() ) );
+
 }
 
 
@@ -889,18 +893,17 @@ void KEdReplace::textSearchChanged ( const QString &text )
     enableButton( KDialogBase::User3, !state );
 }
 
+//FIXME: it seems this slot is never called (remove it?)
 void KEdReplace::slotCancel( void )
 {
   emit done();
-  d->searchCombo->clearEdit();
-  d->replaceCombo->clearEdit();
-  KDialogBase::slotCancel();
 }
-
+//FIXME: it seems this slot is never called (remove it?)
 void KEdReplace::slotClose( void )
 {
-  slotCancel();
+	emit done();
 }
+
 
 void KEdReplace::slotUser1( void )
 {

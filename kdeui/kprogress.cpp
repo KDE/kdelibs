@@ -169,8 +169,7 @@ struct KProgressDialog::KProgressDialogPrivate
 KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
                                  const QString& caption, const QString& text,
                                  bool modal)
-    : KDialogBase(KDialogBase::Plain, caption, KDialogBase::Cancel,
-                  KDialogBase::Cancel, parent, name, modal),
+    : KDialog(parent, caption, KDialogBase::Cancel),
       mAutoClose(true),
       mAutoReset(false),
       mCancelled(false),
@@ -179,12 +178,14 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
       mMinDuration(2000),
       d(new KProgressDialogPrivate)
 {
+	setObjectName(name);
+	setModal(modal);
+
     mShowTimer = new QTimer(this);
     
-    showButton(KDialogBase::Close, false);
-    mCancelText = actionButton(KDialogBase::Cancel)->text();
+    mCancelText = actionButton(KDialog::Cancel)->text();
 
-    QFrame* mainWidget = plainPage();
+	QWidget *mainWidget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(mainWidget, 10);
 
     mLabel = new QLabel(text, mainWidget);
@@ -192,6 +193,8 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
 
     mProgressBar = new KProgress(mainWidget);
     layout->addWidget(mProgressBar);
+	
+	setMainWidget(mainWidget);
 
     connect(mProgressBar, SIGNAL(percentageChanged(int)),
             this, SLOT(slotAutoActions(int)));
@@ -216,13 +219,13 @@ void KProgressDialog::slotAutoShow()
     mShown = true;
 }
 
-void KProgressDialog::slotCancel()
+void KProgressDialog::reject()
 {
     mCancelled = true;
 
     if (mAllowCancel)
     {
-        KDialogBase::slotCancel();
+		KDialog::reject();
     }
 }
 
@@ -301,7 +304,7 @@ QString KProgressDialog::labelText() const
 
 void KProgressDialog::showCancelButton(bool show)
 {
-    showButtonCancel(show);
+    showButton(Cancel, show);
 }
 
 // ### KDE 4 remove
@@ -339,7 +342,7 @@ void KProgressDialog::setAutoReset(bool autoReset)
 void KProgressDialog::setButtonText(const QString& text)
 {
     mCancelText = text;
-    setButtonCancel(text);
+    setButtonGuiItem(Cancel, text);
 }
 
 // ### KDE 4 remove
@@ -359,7 +362,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     {
         if (!d->cancelButtonShown)
         {
-            setButtonCancel(mCancelText);
+			setButtonGuiItem(Cancel, mCancelText);
             d->cancelButtonShown = true;
         }
         return;
@@ -374,7 +377,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     else
     {
         setAllowCancel(true);
-        setButtonCancel(KStdGuiItem::close());
+		setButtonGuiItem(Cancel,KStdGuiItem::close());
         d->cancelButtonShown = false;
     }
 
@@ -395,6 +398,6 @@ void KProgress::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 void KProgressDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 #include "kprogress.moc"

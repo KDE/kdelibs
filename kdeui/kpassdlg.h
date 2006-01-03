@@ -193,7 +193,7 @@ public:
      *
      * @since 3.0
      */
-    KPasswordDialog(Types type, bool enableKeep, int extraBttn, QWidget *parent=0);
+    KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, QWidget *parent=0);
 
 
     /**
@@ -210,7 +210,7 @@ public:
      * @param parent Passed to lower level constructor.
      * @since 3.3
      */
-    KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& iconName,
+	KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, const QString& iconName,
                     QWidget *parent = 0);
 
     /**
@@ -360,10 +360,10 @@ public:
      * Static helper function that disables core dumps.
      */
     static void disableCoreDumps();
+	
+	virtual void accept();
 
 protected slots:
-    void slotOk();
-    void slotCancel();
     void slotKeep(bool);
 
 protected:
@@ -374,6 +374,7 @@ protected:
      * password is valid, @p false otherwise.
      */
     virtual bool checkPassword(const char *) { return true; }
+
 
 private slots:
   void enableOkBtn();

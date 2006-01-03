@@ -421,6 +421,7 @@ cg.readXXX("entry name");
 <li>getBorderWidths -&gt; gone</li>
 <li>Q3[HV]Box -&gt; K[HV]Box</li>
 <li>Signal aboutToChangePage(QWidget*) is no longer possible with the new QStackedWidget; it has been replaced with currentPageChanged(QWidget*), the only difference being that it is emitted after the page has changed.  If you need such a notification, you will have to subclass the QWidgets you add to the stack, and override show().</li>
+<li>don't overide anymore slotFoo().  You now need to connect to FooClicked signal.   Or reimplement accept() and reject() to intercept the Ok and Cancel button</li>
 </ul>
 
 <H4>KDatePicker</H4>

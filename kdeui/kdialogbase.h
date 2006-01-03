@@ -898,6 +898,9 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     QSize calculateSize( int w, int h ) const;
 
 
+	virtual void accept();
+	virtual void reject();
+
   public slots:
 
     /**
@@ -951,6 +954,22 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * actions!
      */
     void slotDelayedDestruct();
+
+    /**
+     * @deprecated  use accept()
+     */
+    virtual void slotOk();
+
+    /**
+     * @deprecated use reject()
+     */
+    virtual void slotCancel();
+    /**
+     * @deprecated use applyClicked signal;
+     */
+	virtual void slotApply(){};
+
+
 
   private:
 

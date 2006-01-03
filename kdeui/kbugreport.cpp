@@ -74,17 +74,14 @@ public:
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
-  : KDialogBase( Plain,
+  : KDialog( parentw,
                  i18n("Submit Bug Report"),
-                 Ok | Cancel,
-                 Ok,
-                 parentw,
-                 "KBugReport",
-                 modal, // modal
-                 true // separator
+                 Ok | Cancel
                  )
 {
   d = new KBugReportPrivate;
+  enableButtonSeparator(true);
+  setModal(modal);
 
   // Use supplied aboutdata, otherwise the one from the active instance
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
@@ -93,14 +90,14 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     : ( KGlobal::_activeInstance ? KGlobal::_activeInstance->aboutData()
                                  : KGlobal::instance()->aboutData() );
   m_process = 0;
-  QWidget * parent = plainPage();
+  QWidget * parent = new QWidget(this);
   d->submitBugButton = 0;
 
   if ( m_aboutData->bugAddress() == QString::fromLatin1("submit@bugs.kde.org") )
   {
     // This is a core KDE application -> redirect to the web form
     d->submitBugButton = new QPushButton( parent );
-    setButtonCancel( KStdGuiItem::close() );
+    setButtonGuiItem( Cancel, KStdGuiItem::close() );
   }
 
   QLabel * tmpLabel;
@@ -143,7 +140,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     glay->addWidget( tmpLabel, row, 1 );
     tmpLabel->setWhatsThis(qwtstr );
 
-    setButtonOK( KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
+    setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
 
   }
@@ -151,7 +148,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   {
     m_configureEmail = 0;
     m_from = 0;
-    showButtonOK( false );
+    showButton(Ok, false );
   }
 
   // Program name
@@ -281,9 +278,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addWidget( d->submitBugButton );
     lay->addSpacing(10);
 
-    connect( d->submitBugButton, SIGNAL(clicked()),
-             this, SLOT(slotOk()));
+	connect( d->submitBugButton, SIGNAL(clicked()),
+			 this, SLOT(accept()));
   }
+  setMainWidget(parent);
 }
 
 KBugReport::~KBugReport()
@@ -369,7 +367,7 @@ void KBugReport::slotSetFrom()
   m_from->setText( fromaddr );
 }
 
-void KBugReport::slotOk( void )
+void KBugReport::accept()
 {
     if ( d->submitBugButton ) {
             KToolInvocation::invokeBrowser( d->url.url() );
@@ -423,10 +421,10 @@ void KBugReport::slotOk( void )
 
     KMessageBox::information(this,
                              i18n("Bug report sent, thank you for your input."));
-    accept();
+	KDialog::accept();
 }
 
-void KBugReport::slotCancel()
+void KBugReport::closeEvent( QCloseEvent * e)
 {
   if( !d->submitBugButton && ( (m_lineedit->toPlainText().length()>0) || m_subject->isModified() ) )
   {
@@ -434,9 +432,12 @@ void KBugReport::slotCancel()
              i18n( "Close and discard\nedited message?" ),
              i18n( "Close Message" ), KStdGuiItem::discard(), KStdGuiItem::cont() );
     if( rc == KMessageBox::No )
+	{
+		e->ignore();
       return;
+	}
   }
-  KDialogBase::slotCancel();
+  KDialog::closeEvent( e);
 }
 
 
@@ -543,6 +544,6 @@ bool KBugReport::sendBugReport()
 }
 
 void KBugReport::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 #include "kbugreport.moc"

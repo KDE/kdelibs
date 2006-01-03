@@ -184,7 +184,7 @@ private:
  * @short A dialog with a progress bar
  * @author Aaron J. Seigo
  */
-class KDEUI_EXPORT KProgressDialog : public KDialogBase
+class KDEUI_EXPORT KProgressDialog : public KDialog
 {
     Q_OBJECT
 
@@ -360,11 +360,13 @@ class KDEUI_EXPORT KProgressDialog : public KDialogBase
          * Returns the wait duration in milliseconds
          */
         int  minimumDuration() const;
+		
+		virtual void reject();
 
     protected slots:
         void slotAutoShow();
         void slotAutoActions(int percentage);
-        void slotCancel();
+
 
     private:
         // ### Move these member variables to d in KDE 4.0

@@ -288,7 +288,7 @@ int KPasswordEdit::maxPasswordLength() const
  * Password dialog.
  */
 
-KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn,
                                  QWidget *parent)
     : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
@@ -297,7 +297,7 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
     init();
 }
 
-KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& icon,
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, const QString& icon,
 				  QWidget *parent)
     : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
@@ -486,7 +486,7 @@ void KPasswordDialog::erase()
 }
 
 
-void KPasswordDialog::slotOk()
+void KPasswordDialog::accept()
 {
     if (m_Type == NewPassword) {
 	if (strcmp(m_pEdit->password(), m_pEdit2->password())) {
@@ -513,14 +513,10 @@ void KPasswordDialog::slotOk()
 	erase();
 	return;
     }
-    accept();
+	KDialog::accept();
 }
 
 
-void KPasswordDialog::slotCancel()
-{
-    reject();
-}
 
 
 void KPasswordDialog::slotKeep(bool keep)

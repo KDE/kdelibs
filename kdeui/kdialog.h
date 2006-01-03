@@ -81,14 +81,12 @@ class KDialogTile;
  * for a central KDE control tool. The following buttons are available:
  * OK, Cancel/Close, Apply/Try, Default, Help and three user definable
  * buttons: User1, User2 and User3. You must specify the text of the UserN
- * buttons. Each button has a virtual slot so you can overload the method
- * when required. The default slots emit a signal as well, so you can choose
- * to connect a signal instead of overriding the slot.
- * The default implementation of slotHelp() will automatically enable
- * the help system if you have provided a path to the help text.
- * slotCancel() and slotClose() will run QDialog::reject()
- * while slotOk() will run QDialog::accept(). You define a default
- * button in the constructor.
+ * buttons. Each button emit a signal, so you can choose to connect that signal.
+ *
+ * The default action of the Help button will open the help system if you have
+ * provided a path to the help text.
+ * The default action of Ok and Cancel will run QDialog::accept() and QDialog::reject()
+ * that you can overide.   The default action of the Close button will close the dialog.
  *
  * If you don't want any buttons at all because your dialog is special
  * in some way, then set the buttonMask argument in the constructor to zero
@@ -160,22 +158,22 @@ class KDEUI_EXPORT KDialog : public QDialog
 
     enum ButtonCode
     {
-      Help    = 0x00000001, ///< Show Help button.
+		Help    = 0x00000001, ///< Show Help button. (this button wil run the help set with setHelp)
       Default = 0x00000002, ///< Show Default button.
       Ok      = 0x00000004, ///< Show Ok button. (this button accept the dialog)
       Apply   = 0x00000008, ///< Show Apply button.
       Try     = 0x00000010, ///< Show Try button.
       Cancel  = 0x00000020, ///< Show Cancel-button. (this button reject the dialog)
-      Close   = 0x00000040, ///< Show Close-button. (this button reject the dialog)
-      User1   = 0x00000080, ///< Show User defined button 1.
-      User2   = 0x00000100, ///< Show User defined button 2.
-      User3   = 0x00000200, ///< Show User defined button 3.
+      Close   = 0x00000040, ///< Show Close-button. (this button close the dialog)
       No      = 0x00000080, ///< Show No button. (this button close the dialog and set the result to No)
       Yes     = 0x00000100, ///< Show Yes button. (this button close the fialog and set the result to Yes)
-      Details = 0x00000400, ///< Show Details button.
+	  Details = 0x00000400, ///< Show Details button. (this button will show the detail widget set with setDetailsWidget)
+      User1   = 0x00001000, ///< Show User defined button 1.
+      User2   = 0x00002000, ///< Show User defined button 2.
+      User3   = 0x00004000, ///< Show User defined button 3.
       Filler  = 0x40000000, ///< @internal Ignored when used in a constructor.
       Stretch = 0x80000000, ///< @internal Ignored when used in a constructor.
-      NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. @since 3.3
+      NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. 
     };
 
     enum ActionButtonStyle
@@ -217,10 +215,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param user3 User button3 text item.
      */
     KDialog( QWidget *parent=0, const QString &caption = QString() ,
-		int buttonMask = 0, Qt::WFlags flags = 0 ,
-		const KGuiItem &user1=KGuiItem(),
-		 const KGuiItem &user2=KGuiItem(),
-		 const KGuiItem &user3=KGuiItem() );
+			 QFlags<ButtonCode> buttonMask= 0, Qt::WFlags flags = 0 ,
+			 const KGuiItem &user1=KGuiItem(),
+			 const KGuiItem &user2=KGuiItem(),
+			 const KGuiItem &user3=KGuiItem() );
 
     /**
      * Destructor.
@@ -263,6 +261,24 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setDefaultButton( ButtonCode id );
 
+	
+	/**
+	 * @brief set the button mask
+	 *
+	 * Makes (or re-make) the button box and all the buttons in it. 
+	 *
+	 * This will reset all default KGuiItem of all button. 
+	 * Should be called only once if you haven't set the mask in the constructor
+	 *
+	 * @param buttonMask Specifies what buttons will be made.
+	 * @param user1 User button1 item.
+	 * @param user2 User button2 item.
+	 * @param user2 User button3 item.
+	*/
+	void setButtonMask( QFlags<ButtonCode> buttonMask ,
+						const KGuiItem &user1 = KGuiItem(),
+						const KGuiItem &user2 = KGuiItem(),
+						const KGuiItem &user3 = KGuiItem() );
 
 
     virtual QSize sizeHint() const;
@@ -285,6 +301,58 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param state true display the button(s).
      */
     void showButton( ButtonCode id, bool state );
+	
+	    /**
+	 * Sets the text of any button.
+	 *
+	 * @param id The button identifier.
+	 * @param text Button text.
+		 */
+	void setButtonText( ButtonCode id, const QString &text );
+
+    /**
+	 * Sets the tooltip text of any button.
+	 *
+	 * @param id The button identifier.
+	 * @param text Button text.
+	 */
+	void setButtonTip( ButtonCode id, const QString &text );
+
+    /**
+	 * Sets the "What's this?" text of any button.
+	 *
+	 * @param id The button identifier.
+	 * @param text Button text.
+	 */
+	void setButtonWhatsThis( ButtonCode id, const QString &text );
+
+    /**
+	 * Sets the KGuiItem directly for the button instead of using 3 methods to
+	 * set the text, tooltip and whatsthis strings. This also allows to set an
+	 * icon for the button which is otherwise not possible for the extra
+	 * buttons beside Ok, Cancel and Apply.
+	 *
+	 * @param id The button identifier.
+	 * @param item The KGuiItem for the button.
+	 *
+	 * @since 3.3
+	 */
+	void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
+
+ 
+    /**
+	 * Returns the action button that corresponds to the @p id.
+	 *
+	 * Normally
+	 * you should not use this function. @em Never delete the object returned
+	 * by this function. See also enableButton(), showButton(),
+	 * setButtonTip(), setButtonWhatsThis(), and setButtonText().
+	 *
+	 * @param id Integer identifier of the button.
+	 * @return The action button or 0 if the button does not exists.
+	 *
+	 */
+	KPushButton *actionButton( ButtonCode id );
 
     /**
      * Sets the main user definable widget.
@@ -375,57 +443,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 			     bool global=false ) const;
 
   
-    /**
-     * Sets the text of any button.
-     *
-     * @param id The button identifier.
-     * @param text Button text.
-     */
-    void setButtonText( ButtonCode id, const QString &text );
 
-    /**
-     * Sets the tooltip text of any button.
-     *
-     * @param id The button identifier.
-     * @param text Button text.
-     */
-    void setButtonTip( ButtonCode id, const QString &text );
-
-    /**
-     * Sets the "What's this?" text of any button.
-     *
-     * @param id The button identifier.
-     * @param text Button text.
-     */
-    void setButtonWhatsThis( ButtonCode id, const QString &text );
-
-    /**
-     * Sets the KGuiItem directly for the button instead of using 3 methods to
-     * set the text, tooltip and whatsthis strings. This also allows to set an
-     * icon for the button which is otherwise not possible for the extra
-     * buttons beside Ok, Cancel and Apply.
-     *
-     * @param id The button identifier.
-     * @param item The KGuiItem for the button.
-     *
-     * @since 3.3
-     */
-    void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
-
- 
-    /**
-     * Returns the action button that corresponds to the @p id.
-     *
-     * Normally
-     * you should not use this function. @em Never delete the object returned
-     * by this function. See also enableButton(), showButton(),
-     * setButtonTip(), setButtonWhatsThis(), and setButtonText().
-     *
-     * @param id Integer identifier of the button.
-     * @return The action button or 0 if the button does not exists.
-     *
-     */
-    KPushButton *actionButton( ButtonCode id );
 
     /**
      * Returns the help link text.
@@ -515,8 +533,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @internal
      */
     virtual void keyPressEvent(QKeyEvent*);
-
-
+	
    signals:
     /**
      * Emitted when the margin size and/or spacing size
@@ -591,11 +608,6 @@ class KDEUI_EXPORT KDialog : public QDialog
 		  const QString &appname = QString() );
 
     /**
-     * Connected to help link label.
-     */
-    void helpClickedSlot( const QString & );
-
-    /**
      * Sets the status of the Details button.
      */
     void setDetails(bool showDetails);
@@ -608,93 +620,84 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setDetailsWidget(QWidget *detailsWidget);
 
-    /**
-     * Force closing the dialog, setting its result code to the one Esc would set.
-     * You shouldn't use this, generally (let the user make his choice!)
-     * but it can be useful when you need to make a choice after a timeout
-     * has happened, or when the parent widget has to go somewhere else
-     * (e.g. html redirections).
-     * @since 3.1
-     */
-    void cancel();
-
 
   signals:
     /**
      * The Help button was pressed. This signal is only emitted if
-     * slotHelp() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void helpClicked();
 
     /**
      * The Default button was pressed. This signal is only emitted if
-     * slotDefault() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void defaultClicked();
 
 
     /**
      * The User3 button was pressed. This signal is only emitted if
-     * slotUser3() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void user3Clicked();
 
     /**
      * The User2 button was pressed. This signal is only emitted if
-     * slotUser2() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void user2Clicked();
 
     /**
      * The User1 button was pressed. This signal is only emitted if
-     * slotUser1() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void user1Clicked();
 
     /**
      * The Apply button was pressed. This signal is only emitted if
-     * slotApply() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void applyClicked();
 
     /**
      * The Try button was pressed. This signal is only emitted if
-     * slotTry() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void tryClicked();
 
     /**
      * The OK button was pressed. This signal is only emitted if
-     * slotOk() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void okClicked();
 
     /**
      * The Yes button was pressed. This signal is only emitted if
-     * slotYes() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void yesClicked();
 
     /**
      * The No button was pressed. This signal is only emitted if
-     * slotNo() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void noClicked();
 
     /**
      * The Cancel button was pressed. This signal is only emitted if
-     * slotCancel() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void cancelClicked();
 
     /**
      * The Close button was pressed. This signal is only emitted if
-     * slotClose() is not replaced.
+     * slotButtonClicked is not replaced
      */
     void closeClicked();
 
 	/**
-     * A button has been pressed.
+	 * A button has been pressed. This signal is only emitted if
+	 * slotButtonClicked is not replaced
 	 * @param button is the code of the pressed button.
 	 */
 	void buttonClicked( KDialog::ButtonCode button);
@@ -748,77 +751,10 @@ class KDEUI_EXPORT KDialog : public QDialog
 
   protected slots:
     /**
-     * Activated when the Help button has been clicked. If a help
-     * text has been defined, the help system will be activated.
+     * Activated when the button @p button is clicked
+	 * @param button is the type ButtonCode
      */
-    virtual void slotHelp();
-
-    /**
-     * Activated when the Default button has been clicked.
-     */
-    virtual void slotDefault();
-
-    /**
-     * Activated when the Details button has been clicked.
-     * @see detailsClicked(bool)
-     */
-    virtual void slotDetails();
-
-    /**
-     * Activated when the User3 button has been clicked.
-     */
-    virtual void slotUser3();
-
-    /**
-     * Activated when the User2 button has been clicked.
-     */
-    virtual void slotUser2();
-
-    /**
-     * Activated when the User1 button has been clicked.
-     */
-    virtual void slotUser1();
-
-    /**
-     * Activated when the Ok button has been clicked. The
-     * QDialog::accept() is activated.
-     */
-    virtual void slotOk();
-
-    /**
-     * Activated when the Apply button has been clicked.
-     */
-    virtual void slotApply();
-
-    /**
-     * Activated when the Try button has been clicked.
-     */
-    virtual void slotTry();
-
-    /**
-     * Activated when the Yes button has been clicked. The
-     * QDialog::done( Yes ) is activated.
-     */
-    virtual void slotYes();
-
-    /**
-     * Activated when the Yes button has been clicked. The
-     * QDialog::done( No ) is activated.
-     */
-    virtual void slotNo();
-
-    /**
-     * Activated when the Cancel button has been clicked. The
-     * QDialog::reject() is activated in regular mode and
-     * QDialog::done( Cancel ) when in message box mode.
-     */
-    virtual void slotCancel();
-
-    /**
-     * Activated when the Close button has been clicked. The
-     * QDialog::reject() is activated.
-     */
-    virtual void slotClose();
+	  virtual void slotButtonClicked(int button);
 
     /**
      * Updates the margins and spacings.
@@ -829,21 +765,6 @@ class KDEUI_EXPORT KDialog : public QDialog
   private:
     static const int mMarginSize;
     static const int mSpacingSize;
-
-    /**
-     * Makes the button box and all the buttons in it. This method must
-     * only be ran once from the constructor.
-     *
-     * @param buttonMask Specifies what buttons will be made.
-     * @param user1 User button1 item.
-     * @param user2 User button2 item.
-     * @param user2 User button3 item.
-     */
-    void makeButtonBox( int mask ,
-			const KGuiItem &user1 = KGuiItem(),
-			const KGuiItem &user2 = KGuiItem(),
-			const KGuiItem &user3 = KGuiItem() );
-
 
     /**
      * Sets the action button order according to the 'style'.
@@ -866,16 +787,21 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
+	
+	/**
+	 * @internal
+	 * create a new button
+	 */
+	KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
 
   protected:
     virtual void virtual_hook( int id, void* data );
   private:
     struct Private;
     Private* const d;
-
-
-
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(QFlags<KDialog::ButtonCode>);
 
 
  /**

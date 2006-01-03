@@ -114,7 +114,7 @@ public:
   KConfigDialog( QWidget *parent, const QString& name,
                  KConfigSkeleton *config,
                  DialogType dialogType = IconList,
-                 int dialogButtons = Default|Ok|Apply|Cancel|Help,
+                 QFlags<ButtonCode> dialogButtons = Default|Ok|Apply|Cancel|Help,
                  ButtonCode defaultButton = Ok,
                  bool modal=false );
 

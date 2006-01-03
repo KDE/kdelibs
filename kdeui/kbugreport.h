@@ -39,7 +39,7 @@ class KBugReportPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT KBugReport : public KDialogBase
+class KDEUI_EXPORT KBugReport : public KDialog
 {
   Q_OBJECT
 public:
@@ -68,11 +68,7 @@ protected slots:
   /**
    * OK has been clicked
    */
-  virtual void slotOk( void );
-  /**
-   * Cancel has been clicked
-   */
-  virtual void slotCancel();
+  virtual void accept( );
 
   /**
    * Application combo selection changed (and was activated)
@@ -108,6 +104,7 @@ protected:
 
 protected:
   virtual void virtual_hook( int id, void* data );
+  virtual void closeEvent( QCloseEvent * e);
 private:
   KBugReportPrivate *d;
 };

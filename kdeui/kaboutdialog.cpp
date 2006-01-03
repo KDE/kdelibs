@@ -1510,7 +1510,7 @@ KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
 
 
 KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
-			    int buttonMask, ButtonCode defaultButton,
+							QFlags<ButtonCode> buttonMask, ButtonCode defaultButton,
 			    QWidget *_parent, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
