@@ -180,7 +180,7 @@ Group=Input (KDE)
 
 [KURLLabel]
 ToolTip=URL Label (KDE)
-ConstructorArgs=("KURLLabel", QString::null, parent)
+ConstructorArgs=("KURLLabel", QString(), parent)
 Group=Display (KDE)
 
 [KURLComboRequester]
