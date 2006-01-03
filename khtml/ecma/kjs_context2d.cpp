@@ -332,15 +332,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         if (args.size() != 0)
             return throwError(exec, SyntaxError);
 
-        if (isGradient(contextObject->_fillStyle)) {
-            ObjectImp *o = static_cast<ObjectImp*>(contextObject->_fillStyle);
-            Gradient *gradient = static_cast<Gradient*>(o);
-            drawingContext->setBrush( QBrush( *gradient->qgradient() ) );
-        } else if (isImagePattern(contextObject->_fillStyle)) {
-            contextObject->updateFillImagePattern();
-        }
-
-        drawingContext->fillPath( contextObject->path(), drawingContext->brush() );
+        drawingContext->fillPath( contextObject->path(), contextObject->constructBrush( exec ) );
 
         renderer->setNeedsImageUpdate();
         break;
@@ -499,9 +491,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float y = (float)args[1]->toNumber(exec);
         float w = (float)args[2]->toNumber(exec);
         float h = (float)args[3]->toNumber(exec);
-        if (isImagePattern(contextObject->_fillStyle))
-            contextObject->updateFillImagePattern();
-        drawingContext->fillRect( QRectF( x, y, w, h ), drawingContext->brush() );
+        drawingContext->fillRect( QRectF( x, y, w, h ), contextObject->constructBrush( exec ) );
         renderer->setNeedsImageUpdate();
         break;
     }
@@ -840,18 +830,6 @@ QColor colorFromValue(ExecState *exec, ValueImp *value)
     return QColor(color);
 }
 
-void Context2D::updateFillImagePattern()
-{
-    QPainter *context = drawingContext();
-
-    if (!_validFillImagePattern) {
-        ImagePattern *imagePattern = static_cast<ImagePattern *>(_fillStyle);
-        QBrush pattern = imagePattern->createPattern();
-        context->setBrush( pattern );
-        _validFillImagePattern = true;
-    }
-}
-
 void Context2D::updateStrokeImagePattern()
 {
     QPainter *context = drawingContext();
@@ -863,6 +841,27 @@ void Context2D::updateStrokeImagePattern()
         pen.setBrush( pattern );
         context->setPen( pen );
         _validStrokeImagePattern = true;
+    }
+}
+
+QBrush Context2D::constructBrush(ExecState* exec)
+{
+    //### FIXME: caching and such
+    if (_fillStyle->isString()) {
+        QColor qc = colorFromValue(exec, _fillStyle);
+        return QBrush( qc );
+    }
+    else {
+        ObjectImp *o = static_cast<ObjectImp*>(_fillStyle);
+    
+        if (o->inherits(&Gradient::info)) {
+            Gradient *gradient = static_cast<Gradient*>(o);
+            return QBrush( *gradient->qgradient() );
+        } else {
+            //Must be an image pattern
+            ImagePattern *imagePattern = static_cast<ImagePattern *>(_fillStyle);
+            return imagePattern->createPattern();
+        }
     }
 }
 
@@ -892,23 +891,12 @@ void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, in
     }
 
     case FillStyle: {
-        _fillStyle = value;
-        if (value->isString()) {
-            QColor qc = colorFromValue(exec, value);
-            QBrush brush = context->brush();
-            brush.setColor( qc );
-            context->setBrush( brush );
-        }
-        else {
-            // _fillStyle is checked when fill() is called on the context.
-            //### fix this
+        if (!value->isString()) {
             ObjectImp *o = static_cast<ObjectImp*>(value);
-
             if (!o->isObject() || !(o->inherits(&Gradient::info) || o->inherits(&ImagePattern::info)))
                 throwError(exec, TypeError);
-
-            // Gradients and image patterns are constructed when needed during fill and stroke operations.
         }
+        _fillStyle = value;
         break;
     }
 
@@ -1025,7 +1013,7 @@ void Context2D::restore()
 }
 
 Context2D::Context2D(HTMLElementImpl *e)
-    : _validFillImagePattern(false), _validStrokeImagePattern(false),
+    : _validStrokeImagePattern(false),
       _element(e), _needsFlushRasterCache(false),
       _strokeStyle(Undefined()),
       _fillStyle(Undefined()),

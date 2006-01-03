@@ -89,13 +89,13 @@ namespace KJS {
     };
 
 private:
+    QBrush constructBrush(ExecState* exec);
+
     void save();
     void restore();
 
     QPainter *drawingContext();
-    bool _validFillImagePattern;
     bool _validStrokeImagePattern;
-    void updateFillImagePattern();
     void updateStrokeImagePattern();
 
     SharedPtr<DOM::HTMLElementImpl> _element;
