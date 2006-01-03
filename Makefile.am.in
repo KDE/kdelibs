@@ -35,6 +35,8 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/libltdl/ltdl.m4
 
 AUTOMAKE_OPTIONS = foreign 1.5
 
+ACLOCAL_AMFLAGS = -I m4
+
 potdir = $(kde_includes)
 pot_DATA = kde.pot
 

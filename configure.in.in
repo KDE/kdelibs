@@ -40,6 +40,8 @@ dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files, GNU_GETTEXT for the sources
 AM_KDE_WITH_NLS
 AM_KDE_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
+dnl TODO: some of this becomes redundant with introduction of standard Gettext
 
 dnl Checks for header files.
 KDE_CHECK_STL

@@ -1,0 +1,34 @@
+2005-12-27  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* codeset.m4: New file, from gettext-0.15-pre0.
+	* gettext.m4: New file, from gettext-0.15-pre0.
+	* glibc2.m4: New file, from gettext-0.15-pre0.
+	* glibc21.m4: New file, from gettext-0.15-pre0.
+	* iconv.m4: New file, from gettext-0.15-pre0.
+	* intdiv0.m4: New file, from gettext-0.15-pre0.
+	* intmax.m4: New file, from gettext-0.15-pre0.
+	* inttypes.m4: New file, from gettext-0.15-pre0.
+	* inttypes_h.m4: New file, from gettext-0.15-pre0.
+	* inttypes-pri.m4: New file, from gettext-0.15-pre0.
+	* isc-posix.m4: New file, from gettext-0.15-pre0.
+	* lcmessage.m4: New file, from gettext-0.15-pre0.
+	* lib-ld.m4: New file, from gettext-0.15-pre0.
+	* lib-link.m4: New file, from gettext-0.15-pre0.
+	* lib-prefix.m4: New file, from gettext-0.15-pre0.
+	* lock.m4: New file, from gettext-0.15-pre0.
+	* longdouble.m4: New file, from gettext-0.15-pre0.
+	* longlong.m4: New file, from gettext-0.15-pre0.
+	* nls.m4: New file, from gettext-0.15-pre0.
+	* po.m4: New file, from gettext-0.15-pre0.
+	* printf-posix.m4: New file, from gettext-0.15-pre0.
+	* progtest.m4: New file, from gettext-0.15-pre0.
+	* signed.m4: New file, from gettext-0.15-pre0.
+	* size_max.m4: New file, from gettext-0.15-pre0.
+	* stdint_h.m4: New file, from gettext-0.15-pre0.
+	* uintmax_t.m4: New file, from gettext-0.15-pre0.
+	* ulonglong.m4: New file, from gettext-0.15-pre0.
+	* visibility.m4: New file, from gettext-0.15-pre0.
+	* wchar_t.m4: New file, from gettext-0.15-pre0.
+	* wint_t.m4: New file, from gettext-0.15-pre0.
+	* xsize.m4: New file, from gettext-0.15-pre0.
+
