@@ -195,10 +195,10 @@
 <!ENTITY Geert.Jansen.mail '<email>g.t.jansen@stud.tue.nl</email>'>
 <!ENTITY David.Jarvie '<personname><firstname>David</firstname><surname>Jarvie</surname></personname>'>
 <!ENTITY David.Jarvie.mail '<email>software@astrojar.org.uk</email>'>
-<!ENTITY Stephan.Jochach '<personname><firstname>Stephan</firstname><surname>Jochach</surname></personname>'>
+<!ENTITY Stephan.Johach '<personname><firstname>Stephan</firstname><surname>Johach</surname></personname>'>
+<!ENTITY Stephan.Johach.mail '<email>hunsum@gmx.de</email>'>
 <!ENTITY Antonio.Larrosa.Jimenez '<personname><firstname>Antonio</firstname><othername>Larrosa</othername><surname>Jim&eacute;nez</surname></personname>'>
 <!ENTITY Antonio.Larrosa.Jimenez.mail '<email>larossa@kde.org</email>'>
-<!ENTITY Stephen.Jochach.mail '<email>lucardus@onlinehome.de</email>'>
 <!ENTITY Matt.Johnston '<personname><firstname>Matt</firstname><surname>Johnston</surname></personname>'>
 <!ENTITY Matt.Johnston.mail '<email>mattj@flashmail.com</email>'>
 <!ENTITY Martin.R.Jones '<personname><firstname>Martin</firstname><othername>R.</othername><surname>Jones</surname></personname>'>
