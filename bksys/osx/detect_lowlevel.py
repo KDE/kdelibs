@@ -115,7 +115,7 @@ def detect(env,dest):
 		content += define_line(function_define, conf.CheckFunc(function))
 
 	content += define_line("HAVE_SYS_MMAN_H", conf.CheckHeader(['sys/types.h','sys/mman.h']))
-	content += define_line("HAVE_NET_IF_H", conf.CheckHeader(['sys/socket.h','net/if.h']))
+	content += define_line("HAVE_NET_IF_H", conf.CheckHeader(['sys/types.h','sys/socket.h','net/if.h']))
 
 	env = conf.Finish();
 
