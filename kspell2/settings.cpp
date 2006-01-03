@@ -210,14 +210,14 @@ void Settings::loadConfig()
         "defaultLanguage", KGlobal::locale()->language() );
 
     //same defaults are in the default filter (filter.cpp)
-    d->checkUppercase = conf.readBoolEntry(
-        "checkUppercase", true );
+    d->checkUppercase = conf.readEntry(
+        "checkUppercase", QVariant(true) ).toBool();
 
-    d->skipRunTogether = conf.readBoolEntry(
-        "skipRunTogether", true );
+    d->skipRunTogether = conf.readEntry(
+        "skipRunTogether", QVariant(true) ).toBool();
 
-    d->backgroundCheckerEnabled = conf.readBoolEntry(
-        "backgroundCheckerEnabled", true );
+    d->backgroundCheckerEnabled = conf.readEntry(
+        "backgroundCheckerEnabled", QVariant(true)).toBool();
 
     readIgnoreList();
 }

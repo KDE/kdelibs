@@ -92,8 +92,8 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
         d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
         d->license = file.readEntry( "X-KDE-PluginInfo-License" );
         d->dependencies = file.readListEntry( "X-KDE-PluginInfo-Depends" );
-        d->enabledbydefault = file.readBoolEntry(
-                "X-KDE-PluginInfo-EnabledByDefault", false );
+        d->enabledbydefault = file.readEntry(
+                "X-KDE-PluginInfo-EnabledByDefault", QVariant(false) ).toBool();
     }
     else if( filename.endsWith( QString::fromAscii( ".plugin" ) ) )
     { // provided for noatun style .plugin files compatibility
@@ -344,10 +344,10 @@ void KPluginInfo::load( KConfigGroup * config )
             return;
         }
         d->config->setGroup( d->configgroup );
-        setPluginEnabled( d->config->readBoolEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
+        setPluginEnabled( d->config->readEntry( d->pluginName + "Enabled", QVariant(isPluginEnabledByDefault()) ).toBool() );
     }
     else
-        setPluginEnabled( config->readBoolEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
+        setPluginEnabled( config->readEntry( d->pluginName + "Enabled", QVariant(isPluginEnabledByDefault()) ).toBool() );
 }
 
 void KPluginInfo::defaults()

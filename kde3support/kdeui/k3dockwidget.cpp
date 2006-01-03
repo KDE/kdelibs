@@ -430,7 +430,7 @@ void K3DockWidgetHeader::saveConfig( KConfig* c )
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )
 {
-  setDragEnabled( !c->readBoolEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
+  setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(false) ).toBool() );
 }
 #endif
 
@@ -2711,7 +2711,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
       c->setGroup( group );
       obj->setTabPageLabel(c->readEntry( oname + ":tabCaption", QString() ));
       obj->setToolTipString(c->readEntry( oname + ":tabToolTip", QString() ));
-      if ( c->readBoolEntry( oname + ":visible" ) ){
+      if ( c->readEntry( oname + ":visible",QVariant(false) ).toBool() ){
         obj->QWidget::show();
       }
     }
