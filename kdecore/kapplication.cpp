@@ -1491,13 +1491,13 @@ QPalette KApplication::createApplicationPalette( KConfigBase *config, int contra
     QColor kde34VisitedLink( 82, 24, 139 );
 
     QColor background = qvariant_cast<QColor>(config->readEntry( "background", kde34Background ));
-    QColor foreground = qvariant_cast<QColor>(config->readEntry( "foreground", Qt::black ));
+    QColor foreground = qvariant_cast<QColor>(config->readEntry( "foreground", QColor(Qt::black) ));
     QColor button = qvariant_cast<QColor>(config->readEntry( "buttonBackground", kde34Button ));
-    QColor buttonText = qvariant_cast<QColor>(config->readEntry( "buttonForeground", Qt::black ));
+    QColor buttonText = qvariant_cast<QColor>(config->readEntry( "buttonForeground", QColor(Qt::black) ));
     QColor highlight = qvariant_cast<QColor>(config->readEntry( "selectBackground", kde34Blue ));
-    QColor highlightedText = qvariant_cast<QColor>(config->readEntry( "selectForeground", Qt::white ));
-    QColor base = qvariant_cast<QColor>(config->readEntry( "windowBackground", Qt::white ));
-    QColor baseText = qvariant_cast<QColor>(config->readEntry( "windowForeground", Qt::black ));
+    QColor highlightedText = qvariant_cast<QColor>(config->readEntry( "selectForeground", QColor(Qt::white) ));
+    QColor base = qvariant_cast<QColor>(config->readEntry( "windowBackground", QColor(Qt::white) ));
+    QColor baseText = qvariant_cast<QColor>(config->readEntry( "windowForeground", QColor(Qt::black) ));
     QColor link = qvariant_cast<QColor>(config->readEntry( "linkColor", kde34Link ));
     QColor visitedLink = qvariant_cast<QColor>(config->readEntry( "visitedLinkColor", kde34VisitedLink ));
 
