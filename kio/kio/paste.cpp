@@ -116,7 +116,8 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, const QMimeData* mimeData,
     QString dialogText( text );
     if ( dialogText.isEmpty() )
         dialogText = i18n( "Filename for clipboard content:" );
-    KIO::PasteDialog dlg( QString(), dialogText, QString(), formatLabels, widget, clipboard );
+    //using QString() instead of QString::null didn't compile (with gcc 3.2.3), because the ctor was mistaken as a function declaration, Alex
+    KIO::PasteDialog dlg( QString::null, dialogText, QString::null, formatLabels, widget, clipboard );
 
     if ( dlg.exec() != KDialogBase::Accepted )
         return 0;
