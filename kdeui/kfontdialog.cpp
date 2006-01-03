@@ -92,7 +92,7 @@ public:
 };
 
 
-KFontChooser::KFontChooser(QWidget *parent, const char *name,
+KFontChooser::KFontChooser(QWidget *parent,
 			   bool onlyFixed, const QStringList &fontList,
 			   bool makeFrame, int visibleListSize, bool diff,
                            Qt::CheckState *sizeIsRelativeState )
@@ -732,9 +732,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char* name,
 {
  setObjectName(name);
  setModal( modal);
-  chooser = new KFontChooser( this, "fontChooser",
+  chooser = new KFontChooser( this,
                               onlyFixed, fontList, makeFrame, 8,
                               diff, sizeIsRelativeState );
+  chooser->setObjectName( "fontChooser" );
   setMainWidget(chooser);
 }
 

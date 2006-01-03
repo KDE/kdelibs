@@ -26,8 +26,8 @@
 #include <kfontdialog.h>
 #include <klocale.h>
 
-KFontRequester::KFontRequester( QWidget *parent, const char *name,
-    bool onlyFixed ) : QWidget( parent ),
+KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed ) 
+    : QWidget( parent ),
     m_onlyFixed( onlyFixed )
 {
   QHBoxLayout *layout = new QHBoxLayout( this, 0, KDialog::spacingHint() );

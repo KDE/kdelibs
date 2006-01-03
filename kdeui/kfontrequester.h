@@ -55,12 +55,10 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      * Constructs a font requester widget.
      *
      * @param parent The parent widget.
-     * @param name The widget name.
      * @param onlyFixed Only display fonts which have fixed-width character
      *        sizes.
      */
-    KFontRequester( QWidget *parent=0L, const char *name=0L,
-        bool onlyFixed=false );
+    KFontRequester( QWidget *parent=0L, bool onlyFixed=false );
 
     /**
      * @return The currently selected font in the requester.

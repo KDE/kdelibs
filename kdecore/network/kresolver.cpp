@@ -274,14 +274,14 @@ QStringSet *KResolver::idnDomains;
 
 
 // default constructor
-KResolver::KResolver(QObject *parent, const char *name)
+KResolver::KResolver(QObject *parent)
   : QObject(parent), d(new KResolverPrivate(this))
 {
 }
 
 // constructor with host and service
 KResolver::KResolver(const QString& nodename, const QString& servicename,
-		   QObject *parent, const char *name)
+		   QObject *parent)
   : QObject(parent), d(new KResolverPrivate(this, nodename, servicename))
 {
 }
@@ -572,8 +572,8 @@ KResolverResults
 KResolver::resolve(const QString& host, const QString& service, int flags,
 		  int families)
 {
-  KResolver qres(host, service, QCoreApplication::instance(), 
-		 "synchronous KResolver");
+  KResolver qres(host, service, QCoreApplication::instance());
+  qres.setObjectName("synchronous KResolver");
   qres.setFlags(flags);
   qres.setFamily(families);
   qres.start();
@@ -585,10 +585,10 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 			     const QString& host, const QString& service,
 			     int flags, int families)
 {
-  KResolver* qres = new KResolver(host, service, QCoreApplication::instance(),
-				  "asynchronous KResolver");
+  KResolver* qres = new KResolver(host, service, QCoreApplication::instance());
   QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)), 
 		   userObj, userSlot);
+  qres->setObjectName("asynchronous KResolver");
   qres->setFlags(flags);
   qres->setFamily(families);
   qres->d->deleteWhenDone = true; // this is the only difference from the example code

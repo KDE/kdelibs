@@ -486,7 +486,7 @@ void KCModuleProxy::moduleDestroyed()
 }
 
 KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback,
-		QWidget  * parent, const char * name, const QStringList & args)
+		QWidget  * parent, const QStringList & args)
 	: QWidget( parent )
 {
 	init( KCModuleInfo( service ));
@@ -495,7 +495,7 @@ KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback,
 }
 
 KCModuleProxy::KCModuleProxy( const KCModuleInfo & info, bool withFallback,
-		QWidget * parent, const char * name, const QStringList & args )
+		QWidget * parent, const QStringList & args )
 	: QWidget( parent )
 {
 	init( info );
@@ -504,8 +504,7 @@ KCModuleProxy::KCModuleProxy( const KCModuleInfo & info, bool withFallback,
 }
 
 KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback,
-		QWidget * parent, const char * name,
-		const QStringList & args)
+		QWidget * parent, const QStringList & args)
 	: QWidget( parent )
 {
 	init( KCModuleInfo( serviceName ));

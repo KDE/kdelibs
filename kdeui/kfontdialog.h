@@ -80,7 +80,6 @@ public:
    * The above creates a font chooser dialog with only SmoothScaleble fonts.
    *
    * @param parent The parent widget.
-   * @param name The widget name.
    * @param onlyFixed Only display fonts which have fixed-width
    *        character sizes.
    * @param fontList A list of fonts to display, in XLFD format.  If
@@ -99,8 +98,8 @@ public:
    *        *sizeIsRelativeState, user choice may be retrieved by
    *        calling sizeIsRelative().
    */
-    /// KDE4: remove the name argument and copy to KDE3SUPPORT
-  KFontChooser(QWidget *parent = 0L, const char *name = 0L,
+    /// KDE4: copy to KDE3SUPPORT
+  KFontChooser(QWidget *parent = 0L,
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
 	       bool makeFrame = true, int visibleListSize=8,

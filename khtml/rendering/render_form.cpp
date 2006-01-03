@@ -1228,7 +1228,7 @@ void RenderSelect::updateSelection()
     }
     else {
         bool found = false;
-        unsigned firstOption = listItems.size();
+        int firstOption = listItems.size();
         i = listItems.size();
         while (i--)
             if (listItems[i]->id() == ID_OPTION) {

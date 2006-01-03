@@ -37,7 +37,7 @@ public:
   /**
    * This is the c'tor.
    */
-  RenameDlgPlugin(QDialog *dialog, const char *name, const QStringList &/*list*/ = QStringList() ): QWidget(dialog ) {}
+  RenameDlgPlugin(QDialog *dialog): QWidget(dialog ) {}
 
   /**
    * This function will be called by RenameDlg. The params are infos about the files.

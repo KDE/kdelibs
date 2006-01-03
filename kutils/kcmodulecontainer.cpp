@@ -137,8 +137,10 @@ void KCModuleContainer::addModule( const QString& module )
 	if( !KCModuleLoader::testModule( module ))
 		return;
 
-	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget, module.toLatin1());
+	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget );
 	allModules.append( proxy );
+
+	proxy->setObjectName( module.toLatin1() );
 
 	d->tabWidget->addTab( proxy, QIcon(KGlobal::iconLoader()->loadIcon(
 					proxy->moduleInfo().icon(), KIcon::Desktop)),

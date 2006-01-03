@@ -68,7 +68,7 @@ void KCharSelect::cleanupFontDatabase()
 /******************************************************************/
 
 //==================================================================
-KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
+KCharSelectTable::KCharSelectTable( QWidget *parent, const QString &_font,
 				    const QChar &_chr, int _tableNum )
     : QTableView( parent), vFont( _font ), vChr( _chr ),
       vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ),m_model(0), d(0)
@@ -303,7 +303,9 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
-    charTable = new KCharSelectTable( this, name, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
+    charTable = new KCharSelectTable( this, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
+
+    charTable->setObjectName( name );
 
     const QSize sz( 200,
                     200 );    

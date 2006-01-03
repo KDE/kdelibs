@@ -42,7 +42,7 @@ private:
 
 int KJavaAppletWidget::appletCount = 0;
 
-KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
+KJavaAppletWidget::KJavaAppletWidget( QWidget* parent )
    : QX11EmbedContainer ( parent )
 {
     //setProtocol(QXEmbed::XPLAIN);

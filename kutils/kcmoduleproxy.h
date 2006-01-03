@@ -82,12 +82,11 @@ public:
 	 * own window, if at all.
 	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
-	 * @param name the module's name.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
 	KCModuleProxy( const KCModuleInfo & info, bool withFallback = true,
-			QWidget * parent = 0, const char * name = 0,
+			QWidget * parent = 0,
 			const QStringList & args = QStringList() );
 
 	/**
@@ -101,12 +100,11 @@ public:
 	 * own window, if at all.
 	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
-	 * @param name the module's name.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
 	KCModuleProxy( const QString& serviceName, bool withFallback = true,
-			QWidget * parent = 0, const char * name = 0,
+			QWidget * parent = 0,
 			const QStringList & args = QStringList() );
 
 	/**
@@ -118,12 +116,11 @@ public:
 	 * own window, if at all.
 	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
-	 * @param name the module's name.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
 	KCModuleProxy( const KService::Ptr& service, bool withFallback = true,
-			QWidget  * parent = 0, const char * name = 0,
+			QWidget  * parent = 0,
 			const QStringList & args = QStringList() );
 
 	/**

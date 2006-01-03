@@ -58,7 +58,7 @@ public:
      * Constructor. Using @p _font, draw a table of chars from unicode
      * table @p _tableNum. Character @p _chr in this table is highlighted.
      */
-    KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
+    KCharSelectTable( QWidget *parent, const QString &_font,
 		      const QChar &_chr, int _tableNum );
 
     virtual QSize sizeHint() const;

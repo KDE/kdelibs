@@ -447,7 +447,7 @@ public:
    * names and flags using the member functions before starting
    * the name resolution.
    */
-  KResolver(QObject * = 0L, const char * = 0L);
+  KResolver(QObject * = 0L);
 
   /**
    * Constructor with host and service names.
@@ -460,7 +460,7 @@ public:
    * @param servicename	The service name associated, like "http".
    */
   KResolver(const QString& nodename, const QString& servicename = QString(),
-	    QObject * = 0L, const char * = 0L);
+	    QObject * = 0L);
 
   /**
    * Destructor.
