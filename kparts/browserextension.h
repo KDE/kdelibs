@@ -32,7 +32,7 @@ template <class Key, class T> class QMap;
 template<typename T> class QList;
 
 class KFileItem;
-typedef Q3PtrList<KFileItem> KFileItemList;
+class KFileItemList;
 class QDataStream;
 class QPoint;
 class QString;

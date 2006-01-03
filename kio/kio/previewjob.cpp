@@ -171,20 +171,24 @@ void PreviewJob::startPreview()
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
-    for (KFileItemListIterator it(d->initialItems); it.current(); ++it )
+    KFileItemList::const_iterator kit = d->initialItems.begin();
+    const KFileItemList::const_iterator kend = d->initialItems.end();
+    for ( ; kit != kend; ++kit )
     {
         PreviewItem item;
-        item.item = it.current();
-        QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(it.current()->mimetype());
+        item.item = *kit;
+        const QString mimeType = item.item->mimetype();
+        QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(mimeType);
         if (plugin == mimeMap.end())
         {
-            QString mimeType = it.current()->mimetype();
-            plugin = mimeMap.find(mimeType.replace(QRegExp("/.*"), "/*"));
+            QString groupMimeType = mimeType;
+            groupMimeType.replace(QRegExp("/.*"), "/*");
+            plugin = mimeMap.find(groupMimeType);
 
             if (plugin == mimeMap.end())
             {
                 // check mime type inheritance
-                KMimeType::Ptr mimeInfo = KMimeType::mimeType(it.current()->mimetype());
+                const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
                 QString parentMimeType = mimeInfo->parentMimeType();
                 while (!parentMimeType.isEmpty())
                 {
@@ -201,7 +205,7 @@ void PreviewJob::startPreview()
             if (plugin == mimeMap.end())
             {
                 // check X-KDE-Text property
-                KMimeType::Ptr mimeInfo = KMimeType::mimeType(it.current()->mimetype());
+                KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
                 QVariant textProperty = mimeInfo->property("X-KDE-text");
                 if (textProperty.isValid() && textProperty.type() == QVariant::Bool)
                 {
@@ -222,16 +226,16 @@ void PreviewJob::startPreview()
             item.plugin = *plugin;
             d->items.append(item);
             if (!bNeedCache && d->bSave &&
-                (it.current()->url().protocol() != "file" ||
-                 !it.current()->url().directory( false ).startsWith(d->thumbRoot)) &&
+                ((*kit)->url().protocol() != "file" ||
+                 !(*kit)->url().directory( false ).startsWith(d->thumbRoot)) &&
                 (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
         else
         {
-            emitFailed(it.current());
+            emitFailed( *kit );
             if (d->deleteItems)
-                delete it.current();
+                delete *kit;
         }
     }
 
@@ -248,6 +252,8 @@ void PreviewJob::startPreview()
     }
     else
         d->bSave = false;
+
+    d->initialItems.clear();
     determineNextFile();
 }
 

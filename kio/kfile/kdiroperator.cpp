@@ -448,18 +448,10 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         return 0L;
     }
 
-    KURL::List urls;
+    const KURL::List urls = items.urlList();
     QStringList files;
-    KFileItemListIterator it( items );
-
-    for ( ; it.current(); ++it ) {
-        KURL url = (*it)->url();
-        urls.append( url );
-        if ( url.isLocalFile() )
-            files.append( url.path() );
-        else
-            files.append( url.prettyURL() );
-    }
+    foreach( const KURL& url, urls )
+        files.append( url.pathOrURL() );
 
     bool doIt = !ask;
     if ( ask ) {
@@ -511,18 +503,10 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
         return 0L;
     }
 
-    KURL::List urls;
+    const KURL::List urls = items.urlList();
     QStringList files;
-    KFileItemListIterator it( items );
-
-    for ( ; it.current(); ++it ) {
-        KURL url = (*it)->url();
-        urls.append( url );
-        if ( url.isLocalFile() )
-            files.append( url.path() );
-        else
-            files.append( url.prettyURL() );
-    }
+    foreach( const KURL& url, urls )
+        files.append( url.pathOrURL() );
 
     bool doIt = !ask;
     if ( ask ) {
@@ -801,7 +785,7 @@ bool KDirOperator::checkPreviewSupport()
 
     bool hasPreviewSupport = false;
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
-    if ( cg.readBoolEntry( "Show Default Preview", true ) )
+    if ( cg.readEntry( "Show Default Preview", QVariant(true) ).toBool() )
         hasPreviewSupport = checkPreviewInternal();
 
     previewAction->setEnabled( hasPreviewSupport );
@@ -1019,9 +1003,10 @@ void KDirOperator::connectView(KFileView *view)
 
         const KFileItemList *oldSelected = m_fileView->selectedItems();
         if ( !oldSelected->isEmpty() ) {
-            KFileItemListIterator it( *oldSelected );
-            for ( ; it.current(); ++it )
-                view->setSelected( it.current(), true );
+            KFileItemList::const_iterator kit = oldSelected->begin();
+            const KFileItemList::const_iterator kend = oldSelected->end();
+            for ( ; kit != kend; ++kit )
+                view->setSelected( *kit, true );
         }
 
         m_fileView->widget()->hide();
@@ -1138,18 +1123,16 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     m_fileView->addItemList( newone );
     emit updateInformation(m_fileView->numDirs(), m_fileView->numFiles());
 
-    KFileItem *item;
-    KFileItemListIterator it( newone );
-
-    while ( (item = it.current()) ) {
+    KFileItemList::const_iterator kit = newone.begin();
+    const KFileItemList::const_iterator kend = newone.end();
+    for ( ; kit != kend; ++kit ) {
+        const KFileItem* item = *kit;
 	// highlight the dir we come from, if possible
 	if ( d->dirHighlighting && item->isDir() &&
 	     item->url().url(-1) == d->lastURL ) {
 	    m_fileView->setCurrentItem( item );
 	    m_fileView->ensureItemVisible( item );
 	}
-
-	++it;
     }
 
     QTimer::singleShot(200, this, SLOT(resetCursor()));
@@ -1162,10 +1145,10 @@ void KDirOperator::selectDir(const KFileItem *item)
 
 void KDirOperator::itemDeleted(KFileItem *item)
 {
-    pendingMimeTypes.removeRef( item );
+    pendingMimeTypes.removeAll( item );
     if ( m_fileView )
     {
-        m_fileView->removeItem( static_cast<KFileItem *>( item ));
+        m_fileView->removeItem( item );
         emit updateInformation(m_fileView->numDirs(), m_fileView->numFiles());
     }
 }
@@ -1180,10 +1163,10 @@ void KDirOperator::selectFile(const KFileItem *item)
 void KDirOperator::setCurrentItem( const QString& filename )
 {
     if ( m_fileView ) {
-        const KFileItem *item = 0L;
+        const KFileItem *item = 0;
 
         if ( !filename.isNull() )
-            item = static_cast<KFileItem *>(dir->findByName( filename ));
+            item = dir->findByName( filename );
 
         m_fileView->clearSelection();
         if ( item ) {
@@ -1222,10 +1205,11 @@ void KDirOperator::prepareCompletionObjects()
 	return;
 
     if ( myCompleteListDirty ) { // create the list of all possible completions
-        KFileItemListIterator it( *(m_fileView->items()) );
-        for( ; it.current(); ++it ) {
-            KFileItem *item = it.current();
-
+        const KFileItemList* itemList = m_fileView->items();
+        KFileItemList::const_iterator kit = itemList->begin();
+        const KFileItemList::const_iterator kend = itemList->end();
+        for ( ; kit != kend; ++kit ) {
+            KFileItem *item = *kit;
             myCompletion.addItem( item->name() );
             if ( item->isDir() )
                 myDirCompletion.addItem( item->name() );
@@ -1376,7 +1360,7 @@ void KDirOperator::setupMenu(int whichActions)
             actionMenu->insert( myActionCollection->action( "trash" ) );
         KConfigGroup cg( KGlobal::config(), QLatin1String("KDE") );
         if (!currUrl.isLocalFile() || (QApplication::keyboardModifiers() & Qt::ShiftModifier) ||
-            cg.readBoolEntry("ShowDeleteCommand", false))
+            cg.readEntry("ShowDeleteCommand", QVariant(false)).toBool())
             actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
     }
@@ -1444,17 +1428,17 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
         defaultView |= KFile::Detail;
     else
         defaultView |= KFile::Simple;
-    if ( kc->readBoolEntry( QLatin1String("Separate Directories"),
-                            DefaultMixDirsAndFiles ) )
+    if ( kc->readEntry( QLatin1String("Separate Directories"),
+                        QVariant(DefaultMixDirsAndFiles) ).toBool() )
         defaultView |= KFile::SeparateDirs;
-    if ( kc->readBoolEntry(QLatin1String("Show Preview"), false))
+    if ( kc->readEntry(QLatin1String("Show Preview"), QVariant(false)).toBool())
         defaultView |= KFile::PreviewContents;
 
-    if ( kc->readBoolEntry( QLatin1String("Sort case insensitively"),
-                            DefaultCaseInsensitive ) )
+    if ( kc->readEntry( QLatin1String("Sort case insensitively"),
+                        QVariant(DefaultCaseInsensitive) ).toBool() )
         sorting |= QDir::IgnoreCase;
-    if ( kc->readBoolEntry( QLatin1String("Sort directories first"),
-                            DefaultDirsFirst ) )
+    if ( kc->readEntry( QLatin1String("Sort directories first"),
+                        QVariant(DefaultDirsFirst) ).toBool() )
         sorting |= QDir::DirsFirst;
 
 
@@ -1471,13 +1455,13 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     setSorting( mySorting );
 
 
-    if ( kc->readBoolEntry( QLatin1String("Show hidden files"),
-                            DefaultShowHidden ) ) {
+    if ( kc->readEntry( QLatin1String("Show hidden files"),
+                        QVariant(DefaultShowHidden) ).toBool() ) {
          showHiddenAction->setChecked( true );
          dir->setShowingDotFiles( true );
     }
-    if ( kc->readBoolEntry( QLatin1String("Sort reversed"),
-                            DefaultSortReversed ) )
+    if ( kc->readEntry( QLatin1String("Sort reversed"),
+                        QVariant(DefaultSortReversed) ).toBool() )
         reverseAction->setChecked( true );
 
     kc->setGroup( oldGroup );
@@ -1701,9 +1685,10 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
     if ( !m_fileView )
         return;
 
-    KFileItemListIterator it( items );
-    for ( ; it.current(); ++it )
-        m_fileView->updateView( it.current() );
+  KFileItemList::const_iterator kit = items.begin();
+  const KFileItemList::const_iterator kend = items.end();
+  for ( ; kit != kend; ++kit )
+        m_fileView->updateView( *kit );
 }
 
 void KDirOperator::setViewConfig( KConfig *config, const QString& group )

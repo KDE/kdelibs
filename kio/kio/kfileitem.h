@@ -1,6 +1,6 @@
 // -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
-   Copyright (C) 1999 David Faure <faure@kde.org>
+   Copyright (C) 1999-2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,18 +21,16 @@
 #ifndef __kfileitem_h__
 #define __kfileitem_h__
 
-#include <qstringlist.h>
+#include <qlist.h>
 #include <sys/stat.h>
 
-#include <q3ptrlist.h>
 #include <kio/global.h>
 #include <kurl.h>
 
 #include <kacl.h>
 #include <kmimetype.h>
 #include <kfilemetainfo.h>
-
-#define KFILEITEM_HAS_ISWRITABLE // only used in libkonq/konq_iconviewwidget.cc, will be removed for 3.4
+#include <qlist.h>
 
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
@@ -625,13 +623,45 @@ private:
 
 /**
  * List of KFileItems
+ * This class adds a few helper methods to QList<KFileItem *>
  */
-typedef Q3PtrList<KFileItem> KFileItemList;
+class KFileItemList : public QList<KFileItem *>
+{
+public:
+  /// Find a KFileItem by name and return it.
+  /// @return the item with the given name, or 0 if none was found
+  KFileItem* findByName( const QString& fileName ) const {
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+      if ( (*it)->name() == fileName )
+        return *it;
+    }
+    return 0;
+  }
 
-/**
- * Iterator for KFileItemList
- */
-typedef Q3PtrListIterator<KFileItem> KFileItemListIterator;
+  /// Find a KFileItem by URL and return it.
+  /// @return the item with the given URL, or 0 if none was found
+  KFileItem* findByURL( const KURL& url ) const {
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+      if ( (*it)->url() == url )
+        return *it;
+    }
+    return 0;
+  }
+
+  /// @return the list of URLs that those items represent
+  KURL::List urlList() const {
+    KURL::List lst;
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it )
+      lst.append( (*it)->url() );
+    return lst;
+  }
+};
 
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
 KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );

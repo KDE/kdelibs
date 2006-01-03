@@ -617,10 +617,10 @@ private:
   uint numJobs();
 
 private:
-  virtual void addNewItem( const KFileItem *item );
+  virtual void addNewItem( KFileItem *item );
   virtual void addNewItems( const KFileItemList& items );
   virtual void aboutToRefreshItem( const KFileItem *item );
-  virtual void addRefreshItem( const KFileItem *item );
+  virtual void addRefreshItem( KFileItem *item );
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
 

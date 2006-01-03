@@ -333,18 +333,18 @@ void KFileDialog::slotOk()
             else {
 
                 bool multi = (mode() & KFile::Files) != 0;
-                KFileItemListIterator it( *items );
+                KFileItemList::const_iterator kit = items->begin();
+                const KFileItemList::const_iterator kend = items->end();
                 QString endQuote = QLatin1String("\" ");
                 QString name, files;
-                while ( it.current() ) {
-                    name = (*it)->name();
+                for ( ; kit != kend; ++kit ) {
+                    name = (*kit)->name();
                     if ( multi ) {
                         name.prepend( QLatin1Char( '"' ) );
                         name.append( endQuote );
                     }
 
                     files.append( name );
-                    ++it;
                 }
                 setLocationText( files );
                 return;
@@ -366,16 +366,12 @@ void KFileDialog::slotOk()
         }
         else {
             if ( !(mode() & KFile::Files) ) {// single selection
-                d->url = items->getFirst()->url();
+                d->url = items->first()->url();
             }
 
             else { // multi (dirs and/or files)
                 d->url = ops->url();
-                KFileItemListIterator it( *items );
-                while ( it.current() ) {
-                    d->urlList.append( (*it)->url() );
-                    ++it;
-                }
+                d->urlList = items->urlList();
             }
         }
 
@@ -699,7 +695,6 @@ void KFileDialog::multiSelectionChanged()
         return;
 
     locationEdit->lineEdit()->setEdited( false );
-    KFileItem *item;
     const KFileItemList *list = ops->selectedItems();
     if ( !list ) {
         locationEdit->clearEdit();
@@ -707,11 +702,12 @@ void KFileDialog::multiSelectionChanged()
     }
 
     static const QString &begin = KGlobal::staticQString(" \"");
-    KFileItemListIterator it ( *list );
     QString text;
-    while ( (item = it.current()) ) {
-        text.append( begin ).append( item->name() ).append( QLatin1Char( '"' ) );
-        ++it;
+    KFileItemList::const_iterator kit = list->begin();
+    const KFileItemList::const_iterator kend = list->end();
+    for ( ; kit != kend; ++kit )
+    {
+        text.append( begin ).append( (*kit)->name() ).append( QLatin1Char( '"' ) );
     }
 
     setLocationText( text.trimmed() );
@@ -1636,21 +1632,21 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 
     KURLComboBox *combo = d->pathCombo;
     combo->setURLs( kc->readPathListEntry( RecentURLs ), KURLComboBox::RemoveTop );
-    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
-                                          DefaultRecentURLsNumber ) );
+    combo->setMaxItems( kc->readEntry( RecentURLsNumber,
+                                       DefaultRecentURLsNumber ).toInt() );
     combo->setURL( ops->url() );
-    autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
-                                                DefaultDirectoryFollowing );
+    autoDirectoryFollowing = kc->readEntry( AutoDirectoryFollowing,
+                                            QVariant(DefaultDirectoryFollowing) ).toBool();
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
-                                      kc->readNumEntry( PathComboCompletionMode,
-                                      KGlobalSettings::completionMode() );
+                                      kc->readEntry( PathComboCompletionMode,
+                                      KGlobalSettings::completionMode() ).toInt();
     if ( cm != KGlobalSettings::completionMode() )
         combo->setCompletionMode( cm );
 
     cm = (KGlobalSettings::Completion)
-         kc->readNumEntry( LocationComboCompletionMode,
-                           KGlobalSettings::completionMode() );
+         kc->readEntry( LocationComboCompletionMode,
+                        KGlobalSettings::completionMode() ).toInt();
     if ( cm != KGlobalSettings::completionMode() )
         locationEdit->setCompletionMode( cm );
 
@@ -1701,8 +1697,8 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
 
-    locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
-                                                 DefaultRecentURLsNumber ) );
+    locationEdit->setMaxItems( kc->readEntry( RecentFilesNumber,
+                                              DefaultRecentURLsNumber ).toInt() );
     locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
                            KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString(), 0 ); // dummy item without pixmap

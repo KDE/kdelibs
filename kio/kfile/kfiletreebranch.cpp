@@ -134,34 +134,32 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
 
 void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
 {
-    KFileItemListIterator it( list );
     kdDebug(250) << "Refreshing " << list.count() << " items !" << endl;
-    KFileItem *currItem;
-    KFileTreeViewItem *item = 0;
 
-    while ( (currItem = it.current()) != 0 )
+    KFileItemList::const_iterator kit = list.begin();
+    const KFileItemList::const_iterator kend = list.end();
+    for ( ; kit != kend; ++kit )
     {
-        item = findTVIByURL(currItem->url());
+        KFileTreeViewItem *item = findTVIByURL((*kit)->url());
         if (item) {
             item->setPixmap(0, item->fileItem()->pixmap( KIcon::SizeSmall ));
             item->setText( 0, item->fileItem()->text());
         }
-        ++it;
     }
 }
 
 void KFileTreeBranch::addItems( const KFileItemList& list )
 {
-    KFileItemListIterator it( list );
     kdDebug(250) << "Adding " << list.count() << " items !" << endl;
-    KFileItem *currItem;
     KFileTreeViewItemList treeViewItList;
     KFileTreeViewItem *parentItem = 0;
 
-    while ( (currItem = it.current()) != 0 )
+    KFileItemList::const_iterator kit = list.begin();
+    const KFileItemList::const_iterator kend = list.end();
+    for ( ; kit != kend; ++kit )
     {
+        KFileItem* currItem = *kit;
         parentItem = parentKFTVItem( currItem );
-
 
         /* Only create a new KFileTreeViewItem if it does not yet exist */
         KFileTreeViewItem *newKFTVI =
@@ -173,7 +171,6 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
             if (!newKFTVI)
             {
                 // TODO: Don't fail if parentItem == 0
-                ++it;
                 continue;
             }
             currItem->setExtraData( this, newKFTVI );
@@ -228,8 +225,6 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
                 kdDebug(250) << "stat of " << filename << " failed !" << endl;
             }
         }
-        ++it;
-
         treeViewItList.append( newKFTVI );
     }
 

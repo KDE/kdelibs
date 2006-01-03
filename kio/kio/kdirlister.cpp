@@ -152,7 +152,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       if ( !lister->d->rootFileItem && lister->d->url == _url )
         lister->d->rootFileItem = itemU->rootItem;
 
-      lister->addNewItems( *(itemU->lstItems) );
+      lister->addNewItems( itemU->lstItems );
       lister->emitItems();
 
       lister->d->complete = oldState;
@@ -184,7 +184,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       if ( !lister->d->rootFileItem && lister->d->url == _url )
         lister->d->rootFileItem = itemC->rootItem;
 
-      lister->addNewItems( *(itemC->lstItems) );
+      lister->addNewItems( itemC->lstItems );
       lister->emitItems();
 
       lister->d->complete = oldState;
@@ -264,7 +264,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     if ( !lister->d->rootFileItem && lister->d->url == _url )
       lister->d->rootFileItem = itemU->rootItem;
 
-    lister->addNewItems( *(itemU->lstItems) );
+    lister->addNewItems( itemU->lstItems );
     lister->emitItems();
   }
 
@@ -472,14 +472,15 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         const bool isLocal = item->url.isLocalFile();
         const bool isManuallyMounted = isLocal && KIO::manually_mounted( item->url.path() );
         bool containsManuallyMounted = false;
-        if ( !isManuallyMounted && item->lstItems && isLocal )
+        if ( !isManuallyMounted && isLocal )
         {
           // Look for a manually-mounted directory inside
           // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
           // I hope this isn't too slow (manually_mounted caches the last device so most
           // of the time this is just a stat per subdir)
-          KFileItemListIterator kit( *item->lstItems );
-          for ( ; kit.current() && !containsManuallyMounted; ++kit )
+          KFileItemList::const_iterator kit = item->lstItems.begin();
+          const KFileItemList::const_iterator kend = item->lstItems.end();
+          for ( ; kit != kend && !containsManuallyMounted; ++kit )
             if ( (*kit)->isDir() && KIO::manually_mounted( (*kit)->url().path() ) )
               containsManuallyMounted = true;
         }
@@ -620,7 +621,7 @@ KFileItemList *KDirListerCache::itemsForDir( const KURL& _dir ) const
   DirItem *item = itemsInUse[ urlStr ];
   if ( !item )
     item = itemsCached[ urlStr ];
-  return item ? item->lstItems : 0;
+  return item ? &item->lstItems : 0;
 }
 
 KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString& _name ) const
@@ -630,10 +631,9 @@ KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString&
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
-    KFileItemListIterator kit( *itemsInUse[(*it).url()]->lstItems );
-    for ( ; kit.current(); ++kit )
-      if ( (*kit)->name() == _name )
-        return (*kit);
+    KFileItem* item = itemsInUse[(*it).url()]->lstItems.findByName( _name );
+    if ( item )
+      return item;
   }
 
   return 0;
@@ -651,14 +651,9 @@ KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
   if ( lister && !lister->d->lstDirs.contains( parentDir ) )
       return 0;
 
-  KFileItemList *itemList = itemsForDir( parentDir );
+  const KFileItemList *itemList = itemsForDir( parentDir );
   if ( itemList )
-  {
-    KFileItemListIterator kit( *itemList );
-    for ( ; kit.current(); ++kit )
-      if ( (*kit)->url() == _url )
-        return (*kit);
-  }
+    return itemList->findByURL( _url );
   return 0;
 }
 
@@ -681,13 +676,13 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
     KFileItemList *lstItems = itemsForDir( parentDir );
     if ( lstItems )
     {
-      KFileItem *fit = lstItems->first();
-      for ( ; fit; fit = lstItems->next() )
-        if ( fit->url() == *it ) {
-          fileitem = fit;
-          lstItems->take(); // remove fileitem from list
+      for ( KFileItemList::iterator fit = lstItems->begin(), fend = lstItems->end() ; fit != fend ; ++fit ) {
+        if ( (*fit )->url() == *it ) {
+          fileitem = *fit;
+          lstItems->erase( fit ); // remove fileitem from list
           break;
         }
+      }
     }
 
     // Tell the views about it before deleting the KFileItems. They might need the subdirs'
@@ -950,7 +945,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
       Q_ASSERT( item );
 
       //kdDebug(7004)<< "Adding item: " << item->url() << endl;
-      dir->lstItems->append( item );
+      dir->lstItems.append( item );
 
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->addNewItem( item );
@@ -1187,7 +1182,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
       if ( !kdl->d->rootFileItem && kdl->d->url == newUrl )
         kdl->d->rootFileItem = newDir->rootItem;
 
-      kdl->addNewItems( *(newDir->lstItems) );
+      kdl->addNewItems( newDir->lstItems );
       kdl->emitItems();
     }
 
@@ -1198,7 +1193,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
         if ( !kdl->d->rootFileItem && kdl->d->url == newUrl )
           kdl->d->rootFileItem = newDir->rootItem;
 
-        kdl->addNewItems( *(newDir->lstItems) );
+        kdl->addNewItems( newDir->lstItems );
         kdl->emitItems();
       }
     }
@@ -1219,7 +1214,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
       if ( !kdl->d->rootFileItem && kdl->d->url == newUrl )
         kdl->d->rootFileItem = newDir->rootItem;
 
-      kdl->addNewItems( *(newDir->lstItems) );
+      kdl->addNewItems( newDir->lstItems );
       kdl->emitItems();
     }
 
@@ -1230,7 +1225,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
         if ( !kdl->d->rootFileItem && kdl->d->url == newUrl )
           kdl->d->rootFileItem = newDir->rootItem;
 
-        kdl->addNewItems( *(newDir->lstItems) );
+        kdl->addNewItems( newDir->lstItems );
         kdl->emitItems();
       }
     }
@@ -1241,7 +1236,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
 
     delete dir->rootItem;
     dir->rootItem = 0;
-    dir->lstItems->clear();
+    dir->lstItems.clear();
     dir->redirect( newUrl );
     itemsInUse.insert( newUrl.url(), dir );
     urlsCurrentlyListed.insert( newUrl.url(), listers );
@@ -1307,20 +1302,17 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
       itemsInUse.remove( itu.currentKey() ); // implies ++itu
       itemsInUse.insert( newDirUrl.url(-1), dir );
       goNext = false; // because of the implied ++itu above
-      if ( dir->lstItems )
+      // Rename all items under that dir
+
+      for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
       {
-        // Rename all items under that dir
-        KFileItemListIterator kit( *dir->lstItems );
-        for ( ; kit.current(); ++kit )
-        {
-          KURL oldItemUrl = (*kit)->url();
-          QString oldItemUrlStr( oldItemUrl.url(-1) );
-          KURL newItemUrl( oldItemUrl );
-          newItemUrl.setPath( newDirUrl.path() );
-          newItemUrl.addPath( oldItemUrl.fileName() );
-          kdDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
-          (*kit)->setURL( newItemUrl );
-        }
+        KURL oldItemUrl = (*kit)->url();
+        QString oldItemUrlStr( oldItemUrl.url(-1) );
+        KURL newItemUrl( oldItemUrl );
+        newItemUrl.setPath( newDirUrl.path() );
+        newItemUrl.addPath( oldItemUrl.fileName() );
+        kdDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
+        (*kit)->setURL( newItemUrl );
       }
       emitRedirections( oldDirUrl, newDirUrl );
     }
@@ -1485,10 +1477,8 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   // should be enough to get reasonable speed in most cases
   Q3Dict<KFileItem> fileItems( 9973 );
 
-  KFileItemListIterator kit ( *(dir->lstItems) );
-
   // Unmark all items in url
-  for ( ; kit.current(); ++kit )
+  for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
   {
     (*kit)->unmark();
     fileItems.insert( (*kit)->url().url(), *kit );
@@ -1558,7 +1548,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       //kdDebug(7004) << "slotUpdateResult: new file: " << name << endl;
 
       item->mark();
-      dir->lstItems->append( item );
+      dir->lstItems.append( item );
 
       for ( kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->addNewItem( item );
@@ -1625,12 +1615,13 @@ void KDirListerCache::killJob( KIO::ListJob *job )
   job->kill();
 }
 
-void KDirListerCache::deleteUnmarkedItems( Q3PtrList<KDirLister> *listers, KFileItemList *lstItems )
+void KDirListerCache::deleteUnmarkedItems( Q3PtrList<KDirLister> *listers, KFileItemList &lstItems )
 {
   // Find all unmarked items and delete them
-  KFileItem* item;
-  lstItems->first();
-  while ( (item = lstItems->current()) )
+  QMutableListIterator<KFileItem *> kit( lstItems );
+  while ( kit.hasNext() )
+  {
+    KFileItem* item = kit.next();
     if ( !item->isMarked() )
     {
       //kdDebug() << k_funcinfo << item->name() << endl;
@@ -1641,11 +1632,10 @@ void KDirListerCache::deleteUnmarkedItems( Q3PtrList<KDirLister> *listers, KFile
         deleteDir( item->url() );
 
       // finally actually delete the item
-      lstItems->take();
       delete item;
+      kit.remove();
     }
-    else
-      lstItems->next();
+  }
 }
 
 void KDirListerCache::deleteDir( const KURL& dirUrl )
@@ -1743,7 +1733,7 @@ void KDirListerCache::printDebug()
                     << " rootItem: " << ( itu.current()->rootItem ? itu.current()->rootItem->url() : KURL() )
                     << " autoUpdates refcount: " << itu.current()->autoUpdates
                     << " complete: " << itu.current()->complete
-                  << ( itu.current()->lstItems ? QString(" with %1 items.").arg(itu.current()->lstItems->count()) : QString(" lstItems=NULL") ) << endl;
+                    << QString(" with %1 items.").arg(itu.current()->lstItems.count()) << endl;
   }
 
   kdDebug(7004) << "urlsCurrentlyHeld: " << endl;
@@ -1776,7 +1766,7 @@ void KDirListerCache::printDebug()
   for ( ; itc.current() ; ++itc )
     kdDebug(7004) << "   " << itc.currentKey() << "  rootItem: "
                   << ( itc.current()->rootItem ? itc.current()->rootItem->url().prettyURL() : QString("NULL") )
-                  << ( itc.current()->lstItems ? QString(" with %1 items.").arg(itc.current()->lstItems->count()) : QString(" lstItems=NULL") ) << endl;
+                  << QString(" with %1 items.").arg(itc.current()->lstItems.count()) << endl;
 }
 #endif
 
@@ -1915,8 +1905,10 @@ void KDirLister::emitChanges()
   for ( KURL::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
-    KFileItemListIterator kit( *s_pCache->itemsForDir( *it ) );
-    for ( ; kit.current(); ++kit )
+    const KFileItemList* itemList = s_pCache->itemsForDir( *it );
+    KFileItemList::const_iterator kit = itemList->begin();
+    const KFileItemList::const_iterator kend = itemList->end();
+    for ( ; kit != kend; ++kit )
     {
       if ( (*kit)->text() == dot || (*kit)->text() == dotdot )
         continue;
@@ -1925,10 +1917,11 @@ void KDirLister::emitChanges()
 
       if ( d->changes & MIME_FILTER )
       {
-        oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter )
-                && doMimeExcludeFilter( (*kit)->mimetype(), d->oldMimeExcludeFilter );
-        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter )
-                && doMimeExcludeFilter( (*kit)->mimetype(), d->mimeExcludeFilter );
+        const QString mimetype = (*kit)->mimetype();
+        oldMime = doMimeFilter( mimetype, d->oldMimeFilter )
+                && doMimeExcludeFilter( mimetype, d->oldMimeExcludeFilter );
+        newMime = doMimeFilter( mimetype, d->mimeFilter )
+                && doMimeExcludeFilter( mimetype, d->mimeExcludeFilter );
 
         if ( oldMime && !newMime )
         {
@@ -2190,7 +2183,7 @@ void KDirLister::handleError( KIO::Job *job )
 
 // ================= private methods ================= //
 
-void KDirLister::addNewItem( const KFileItem *item )
+void KDirLister::addNewItem( KFileItem *item )
 {
   if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
     return; // No reason to continue... bailing out here prevents a mimetype scan.
@@ -2217,7 +2210,9 @@ void KDirLister::addNewItems( const KFileItemList& items )
   // DF: was this profiled? The matchesFoo() functions should be fast, w/o filters...
   // Of course if there is no filter and we can do a range-insertion instead of a loop, that might be good.
   // But that's for Qt4, not possible with QPtrList.
-  for ( KFileItemListIterator kit( items ); kit.current(); ++kit )
+  KFileItemList::const_iterator kit = items.begin();
+  const KFileItemList::const_iterator kend = items.end();
+  for ( ; kit != kend; ++kit )
     addNewItem( *kit );
 }
 
@@ -2232,7 +2227,7 @@ void KDirLister::aboutToRefreshItem( const KFileItem *item )
     d->refreshItemWasFiltered = false;
 }
 
-void KDirLister::addRefreshItem( const KFileItem *item )
+void KDirLister::addRefreshItem( KFileItem *item )
 {
   bool isExcluded = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
 
@@ -2298,8 +2293,10 @@ void KDirLister::emitItems()
 
   if ( tmpRemove )
   {
-    for ( KFileItem *tmp = tmpRemove->first(); tmp; tmp = tmpRemove->next() )
-      emit deleteItem( tmp );
+    KFileItemList::const_iterator kit = tmpRemove->begin();
+    const KFileItemList::const_iterator kend = tmpRemove->end();
+    for ( ; kit != kend; ++kit )
+      emit deleteItem( *kit );
     delete tmpRemove;
   }
 }
@@ -2450,7 +2447,9 @@ KFileItemList KDirLister::itemsForDir( const KURL& dir, WhichItems which ) const
         result = *allItems; // shallow copy
     else // only items passing the filters
     {
-        for ( KFileItemListIterator kit( *allItems ); kit.current(); ++kit )
+        KFileItemList::const_iterator kit = allItems->begin();
+        const KFileItemList::const_iterator kend = allItems->end();
+        for ( ; kit != kend; ++kit )
         {
             KFileItem *item = *kit;
             bool isExcluded = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );

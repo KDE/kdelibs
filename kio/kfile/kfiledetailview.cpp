@@ -393,25 +393,24 @@ void KFileDetailView::slotSortingChanged( int col )
 
     KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
 
-    KFileItem *item;
-    KFileItemListIterator it( *items() );
-
-    if ( sortSpec & QDir::Time ) {
-        for ( ; (item = it.current()); ++it )
-            viewItem(item)->setKey( sortingKey( item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), sortSpec ));
-    }
-
-    else if ( sortSpec & QDir::Size ) {
-        for ( ; (item = it.current()); ++it )
-            viewItem(item)->setKey( sortingKey( item->size(), item->isDir(),
-                                                sortSpec ));
-    }
-    else { // Name or Unsorted -> use column text
-        for ( ; (item = it.current()); ++it ) {
-            KFileListViewItem *i = viewItem( item );
-            i->setKey( sortingKey( i->text(m_sortingCol), item->isDir(),
-                                   sortSpec ));
+    const KFileItemList itemList = *items();
+    KFileItemList::const_iterator kit = itemList.begin();
+    const KFileItemList::const_iterator kend = itemList.end();
+    for ( ; kit != kend; ++kit ) {
+        KFileItem *item = *kit;
+        KFileListViewItem *i = viewItem( item );
+        QString key;
+        if ( sortSpec & QDir::Time ) {
+            // warning, time_t is often signed -> cast it
+            key = sortingKey( (unsigned long)item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), sortSpec );
         }
+        else if ( sortSpec & QDir::Size ) {
+            key = sortingKey( item->size(), item->isDir(), sortSpec );
+        }
+        else { // Name or Unsorted -> use column text
+            key = sortingKey( i->text(m_sortingCol), item->isDir(), sortSpec );
+        }
+        i->setKey( key );
     }
 
     KListView::setSorting( m_sortingCol, !reversed );
@@ -538,11 +537,7 @@ void KFileDetailView::listingCompleted()
 Q3DragObject *KFileDetailView::dragObject()
 {
     // create a list of the URL:s that we want to drag
-    KURL::List urls;
-    KFileItemListIterator it( * KFileView::selectedItems() );
-    for ( ; it.current(); ++it ){
-        urls.append( (*it)->url() );
-    }
+    const KURL::List urls = KFileView::selectedItems()->urlList();
     QPixmap pixmap;
     if( urls.count() > 1 )
         pixmap = DesktopIcon( "kmultiple", KIcon::SizeSmall );

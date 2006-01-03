@@ -76,12 +76,13 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
         return false;
     }
 
-    KFileItemListIterator it( items );
-    for ( ; it.current(); ++it )
+    KFileItemList::const_iterator kit = items.begin();
+    const KFileItemList::const_iterator kend = items.end();
+    for ( ; kit != kend; ++kit )
     {
-        bool isLocal = (*it)->isLocalFile();
+        bool isLocal = (*kit)->isLocalFile();
         // We only support local dirs
-        if ( !(*it)->isDir() || !isLocal )
+        if ( !(*kit)->isDir() || !isLocal )
             return false;
     }
     return true;
@@ -110,9 +111,12 @@ void KFileSharePropsPlugin::init()
         // We have 3 possibilities: all shared, all unshared, or mixed.
         d->m_bAllShared = true;
         d->m_bAllUnshared = true;
-        KFileItemListIterator it( items );
-        for ( ; it.current() && ok; ++it ) {
-            QString path = (*it)->url().path();
+        KFileItemList::const_iterator kit = items.begin();
+        const KFileItemList::const_iterator kend = items.end();
+        for ( ; kit != kend && ok; ++kit )
+        {
+            // We know it's local, see supports()
+            const QString path = (*kit)->url().path();
             if ( !path.startsWith( home ) )
                 ok = false;
             if ( KFileShare::isDirectoryShared( path ) )
@@ -236,11 +240,13 @@ void KFileSharePropsPlugin::applyChanges()
         if (!share && d->m_bAllUnshared)
            return; // Nothing to do
 
-        KFileItemList items = properties->items();
-        KFileItemListIterator it( items );
+        const KFileItemList items = properties->items();
         bool ok = true;
-        for ( ; it.current() && ok; ++it ) {
-             QString path = (*it)->url().path();
+        KFileItemList::const_iterator kit = items.begin();
+        const KFileItemList::const_iterator kend = items.end();
+        for ( ; kit != kend && ok; ++kit )
+        {
+             const QString path = (*kit)->url().path();
              ok = setShared( path, share );
              if (!ok) {
                 if (share)

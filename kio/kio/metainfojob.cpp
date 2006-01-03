@@ -34,7 +34,7 @@ using namespace KIO;
 struct KIO::MetaInfoJobPrivate
 {
     KFileItemList          items;       // all the items we got
-    KFileItemListIterator* currentItem; // argh! No default constructor
+    int                    currentItem;
     bool                   deleteItems; // Delete the KFileItems when done?
     bool                   succeeded;   // if the current item is ok
 };
@@ -46,11 +46,9 @@ MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
     d->deleteItems  = deleteItems;
     d->succeeded    = false;
     d->items        = items;
-    d->currentItem  = new KFileItemListIterator(d->items);
+    d->currentItem  = 0;
 
-    d->items.setAutoDelete(deleteItems);
-
-    if (d->currentItem->isEmpty())
+    if (d->items.isEmpty())
     {
         kdDebug(7007) << "nothing to do for the MetaInfoJob\n";
         emitResult();
@@ -66,7 +64,8 @@ MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
 
 MetaInfoJob::~MetaInfoJob()
 {
-    delete d->currentItem;
+    if ( d->deleteItems )
+        qDeleteAll( d->items );
     delete d;
 }
 
@@ -77,7 +76,7 @@ void MetaInfoJob::start()
 
 void MetaInfoJob::removeItem(const KFileItem* item)
 {
-    if (d->currentItem->current() == item)
+    if (d->items.at( d->currentItem ) == item)
     {
         KIO::Job* job = subjobs().first();
         job->kill();
@@ -85,26 +84,27 @@ void MetaInfoJob::removeItem(const KFileItem* item)
         determineNextFile();
     }
 
-    d->items.remove(d->items.find(item));
+    d->items.removeAll(const_cast<KFileItem *>(item));
 }
 
 void MetaInfoJob::determineNextFile()
 {
-    if (d->currentItem->atLast())
+    if (d->currentItem >= d->items.count() - 1)
     {
         kdDebug(7007) << "finished MetaInfoJob\n";
         emitResult();
         return;
     }
 
-    ++(*d->currentItem);
+    ++d->currentItem;
     d->succeeded = false;
 
     // does the file item already have the needed info? Then shortcut
-    if (d->currentItem->current()->metaInfo(false).isValid())
+    KFileItem* item = d->items.at( d->currentItem );
+    if (item->metaInfo(false).isValid())
     {
 //        kdDebug(7007) << "Is already valid *************************\n";
-        emit gotMetaInfo(d->currentItem->current());
+        emit gotMetaInfo(item);
         determineNextFile();
         return;
     }
@@ -122,11 +122,12 @@ void MetaInfoJob::slotResult( KIO::Job *job )
 
 void MetaInfoJob::getMetaInfo()
 {
-    Q_ASSERT(!d->currentItem->isEmpty());
+    KFileItem* item = d->items.at( d->currentItem );
+    Q_ASSERT(item);
 
     KURL URL;
     URL.setProtocol("metainfo");
-    URL.setPath(d->currentItem->current()->url().path());
+    URL.setPath(item->url().path());
 
     KIO::TransferJob* job = KIO::get(URL, false, false);
     addSubjob(job);
@@ -134,7 +135,7 @@ void MetaInfoJob::getMetaInfo()
     connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)),
             this, SLOT(slotMetaInfo(KIO::Job *, const QByteArray &)));
 
-    job->addMetaData("mimeType", d->currentItem->current()->mimetype());
+    job->addMetaData("mimeType", item->mimetype());
 }
 
 
@@ -145,8 +146,9 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 
     s >> info;
 
-    d->currentItem->current()->setMetaInfo(info);
-    emit gotMetaInfo(d->currentItem->current());
+    KFileItem* item = d->items.at( d->currentItem );
+    item->setMetaInfo(info);
+    emit gotMetaInfo(item);
     d->succeeded = true;
 }
 

@@ -617,6 +617,20 @@ a listDir result.</li>
   with the line <pre>entry.insert( KIO::UDS_SIZE, buff.st_size );</pre></li>
 </ul>
 
+<H4>KFileItemList</H4>
+<ul>
+  <li>KFileItemList has been ported from QPtrList to QList. This means you
+      have to iterate using either integers or java-style or stl iterators.
+      Here's the stl version:
+   <pre>
+    KFileItemList::const_iterator kit = list.begin();
+    const KFileItemList::const_iterator kend = list.end();
+    for ( ; kit != kend; ++kit )
+       ...
+    </pre></li>
+   <li>Note however that no loop is necessary anymore for finding an item by name (use findByName), finding an item by URL (use findByURL) or making a list of all urls (use urlList).</li>
+</ul>
+
 <H4>KIO:: global methods</H4>
 <ul>
     <li>KIO::convertSizeFromKB is now KIO::convertSizeFromKiB since it takes a value in KiB (1 KiB = 1024 B)</li>

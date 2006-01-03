@@ -210,10 +210,12 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
   m_singleUrl = _items.first()->url();
   assert(!m_singleUrl.isEmpty());
 
-  KFileItemListIterator it ( _items );
   // Deep copy
-  for ( ; it.current(); ++it )
-      m_items.append( new KFileItem( **it ) );
+  // TODO: why don't we make KFileItem inherit QSharedData?
+  KFileItemList::const_iterator kit = _items.begin();
+  const KFileItemList::const_iterator kend = _items.end();
+  for ( ; kit != kend; ++kit )
+      m_items.append( new KFileItem( **kit ) );
 
   init (modal, autoShow);
 }
@@ -307,15 +309,14 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
                                    const char* name, bool modal)
 {
   if (_items.count()==1)
-    return KPropertiesDialog::showDialog(_items.getFirst(), parent, name, modal);
+    return KPropertiesDialog::showDialog(_items.first(), parent, name, modal);
   new KPropertiesDialog(_items, parent, name, modal);
   return true;
 }
 
-void KPropertiesDialog::init (bool modal, bool autoShow)
+void KPropertiesDialog::init(bool modal, bool autoShow)
 {
   m_pageList.setAutoDelete( true );
-  m_items.setAutoDelete( true );
 
   insertPages();
 
@@ -360,6 +361,7 @@ void KPropertiesDialog::slotStatResult( KIO::Job * )
 
 KPropertiesDialog::~KPropertiesDialog()
 {
+  qDeleteAll( m_items );
   m_pageList.clear();
   delete d;
 }
@@ -787,19 +789,20 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   else
   {
     // Multiple items: see what they have in common
-    KFileItemList items = properties->items();
-    KFileItemListIterator it( items );
-    for ( ++it /*no need to check the first one again*/ ; it.current(); ++it )
+    const KFileItemList items = properties->items();
+    KFileItemList::const_iterator kit = items.begin();
+    const KFileItemList::const_iterator kend = items.end();
+    for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
     {
-      KURL url = (*it)->url();
+      const KURL url = (*kit)->url();
       kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyURL() << endl;
       // The list of things we check here should match the variables defined
       // at the beginning of this method.
       if ( url.isLocalFile() != isLocal )
         isLocal = false; // not all local
-      if ( bDesktopFile && isDesktopFile(*it) != bDesktopFile )
+      if ( bDesktopFile && isDesktopFile(*kit) != bDesktopFile )
         bDesktopFile = false; // not all desktop files
-      if ( (*it)->mode() != mode )
+      if ( (*kit)->mode() != mode )
         mode = (mode_t)0;
       if ( KMimeType::iconNameForURL(url, mode) != iconStr )
         iconStr = "kmultiple";
@@ -807,7 +810,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory.clear();
       if ( url.protocol() != protocol )
         protocol.clear();
-      if ( !mimeComment.isNull() && (*it)->mimeComment() != mimeComment )
+      if ( !mimeComment.isNull() && (*kit)->mimeComment() != mimeComment )
         mimeComment.clear();
       if ( isLocal && !magicMimeComment.isNull() ) {
           KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
@@ -817,7 +820,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
       if ( isLocal && url.path() == QString::fromLatin1("/") )
         hasRoot = true;
-      if ( (*it)->isDir() && !(*it)->isLink() )
+      if ( (*kit)->isDir() && !(*kit)->isLink() )
       {
         iDirCount++;
         hasDirs = true;
@@ -825,7 +828,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       else
       {
         iFileCount++;
-        totalSize += (*it)->size();
+        totalSize += (*kit)->size();
       }
     }
   }
@@ -1441,10 +1444,8 @@ void KFilePropsPlugin::postApplyChanges()
   // Save the icon only after applying the permissions changes (#46192)
   applyIconChanges();
 
-  KURL::List lst;
-  KFileItemList items = properties->items();
-  for ( KFileItemListIterator it( items ); it.current(); ++it )
-    lst.append((*it)->url());
+  const KFileItemList items = properties->items();
+  const KURL::List lst = items.urlList();
   KDirNotify_stub allDirNotify("*", "KDirNotify*");
   allDirNotify.FilesChanged( lst );
 }
@@ -1532,10 +1533,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   if ( properties->items().count() > 1 )
   {
     // Multiple items: see what they have in common
-    KFileItemList items = properties->items();
-    KFileItemListIterator it( items );
-    for ( ++it /*no need to check the first one again*/ ; it.current(); ++it )
+    const KFileItemList items = properties->items();
+    KFileItemList::const_iterator it = items.begin();
+    const KFileItemList::const_iterator kend = items.end();
+    for ( ++it /*no need to check the first one again*/ ; it != kend; ++it )
     {
+      const KURL url = (*it)->url();
       if (!d->isIrregular)
 	d->isIrregular |= isIrregular((*it)->permissions(),
 				      (*it)->isDir() == isDir,
@@ -2075,8 +2078,10 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     }
 
   d->isIrregular = false;
-  KFileItemList items = properties->items();
-  for (KFileItemListIterator it(items); it.current(); ++it) {
+  const KFileItemList items = properties->items();
+  KFileItemList::const_iterator it = items.begin();
+  const KFileItemList::const_iterator kend = items.end();
+  for ( ; it != kend; ++it ) {
     if (isIrregular(((*it)->permissions() & andPermissions) | orPermissions,
 		    (*it)->isDir(), (*it)->isLink())) {
       d->isIrregular = true;
@@ -2404,8 +2409,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
   bool permissionChange = false;
 
   KFileItemList files, dirs;
-  KFileItemList items = properties->items();
-  for (KFileItemListIterator it(items); it.current(); ++it) {
+  const KFileItemList items = properties->items();
+  KFileItemList::const_iterator it = items.begin();
+  const KFileItemList::const_iterator kend = items.end();
+  for ( ; it != kend; ++it ) {
     if ((*it)->isDir()) {
       dirs.append(*it);
       if ((*it)->permissions() != (((*it)->permissions() & andDirPermissions) | orDirPermissions))

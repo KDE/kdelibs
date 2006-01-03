@@ -137,7 +137,7 @@ bool FileProps::setValue( const QString& group,
 
     if ( !ok && wasAdded ) // remove the created group again
         (void) m_info->removeGroup( group );
-        
+
     m_dirty |= ok;
     return ok;
 }
@@ -280,23 +280,22 @@ static void printSupportedMimeTypes()
         kdDebug() << (*it).toLocal8Bit() << endl;
 }
 
-// caller needs to delete the returned list!
-static KFileItemList * fileItemList( const KCmdLineArgs *args )
+// Caller needs to delete the items in the list after use!
+static KFileItemList fileItemList( const KCmdLineArgs *args )
 {
-    KFileItemList * items = new KFileItemList();
-    items->setAutoDelete( true );
+    KFileItemList items;
     for ( int i = 0; i < args->count(); i++ )
-        items->append( new KFileItem( KFileItem::Unknown,
-                                     KFileItem::Unknown,
-                                     args->url( i ) ));
+        items.append( new KFileItem( KFileItem::Unknown,
+                                      KFileItem::Unknown,
+                                      args->url( i ) ));
     return items;
 }
 
 static void showPropertiesDialog( const KCmdLineArgs *args )
 {
-    KFileItemList *items = fileItemList( args );
-    new KPropertiesDialog( *items, 0L, "props dialog", true );
-    delete items;
+    const KFileItemList items = fileItemList( args );
+    new KPropertiesDialog( items, 0L, "props dialog", true );
+    qDeleteAll( items ); // KPropertiesDialog makes a deep copy of the items
 }
 
 static void printMimeTypes( const KCmdLineArgs *args )
@@ -332,7 +331,7 @@ static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
         QString file = props->fileName() + " ";
         QString fileString = line.replace( 3, file.length(), file );
         kdDebug() << QFile::encodeName( fileString ) << endl;
-            
+
         if ( args->isSet( "listsupported" ) )
         {
             kdDebug() << "=Supported Keys=" << endl;

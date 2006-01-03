@@ -225,7 +225,7 @@ void KFilePreview::slotHighlighted(const KFileItem* item)
     else { // item = 0 -> multiselection mode
         const KFileItemList *items = selectedItems();
         if ( items->count() == 1 )
-            emit showPreview( items->getFirst()->url() );
+            emit showPreview( items->first()->url() );
         else
             emit clearPreview();
     }

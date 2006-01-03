@@ -77,7 +77,6 @@ KFileView::KFileView()
     m_viewName = i18n("Unknown View");
 
     myOnlyDoubleClickSelectsFiles = false;
-    m_itemList.setAutoDelete( false ); // just references
 }
 
 KFileView::~KFileView()
@@ -123,25 +122,18 @@ bool KFileView::updateNumbers(const KFileItem *i)
     return true;
 }
 
-void qt_qstring_stats();
-
 // filter out files if we're in directory mode and count files/directories
 // and insert into the view
 void KFileView::addItemList(const KFileItemList& list)
 {
-    KFileItem *tmp;
-
-    for (KFileItemListIterator it(list); (tmp = it.current()); ++it)
-    {
-        if (!updateNumbers(tmp))
+    KFileItemList::const_iterator kit = list.begin();
+    const KFileItemList::const_iterator kend = list.end();
+    for ( ; kit != kend; ++kit ) {
+        KFileItem *item = *kit;
+        if (!updateNumbers(item))
             continue;
-
-        insertItem( tmp );
+        insertItem(item);
     }
-
-#ifdef Q2HELPER
-    qt_qstring_stats();
-#endif
 }
 
 void KFileView::insertItem( KFileItem * )
@@ -280,6 +272,8 @@ void KFileView::setCurrentItem(const QString &filename )
     kdDebug(kfile_area) << "setCurrentItem: no match found: " << filename << endl;
 }
 
+// KDE4 TODO: remove pointer, return by value
+// KDE4 TODO: remove m_itemList
 const KFileItemList * KFileView::items() const
 {
     KFileItem *item = 0L;
@@ -354,7 +348,7 @@ void KFileView::removeItem( const KFileItem *item )
         filesNumber--;
 
     if ( m_selectedList )
-        m_selectedList->removeRef( item );
+        m_selectedList->removeAll( const_cast<KFileItem *>( item ) );
 }
 
 void KFileView::listingCompleted()

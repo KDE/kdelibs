@@ -210,7 +210,7 @@ private:
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the childs.
-  void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList * );
+  void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList & );
   void processPendingUpdates();
   // common for slotRedirection and FileRenamed
   void renameDir( const KURL &oldUrl, const KURL &url );
@@ -231,11 +231,10 @@ private:
   struct DirItem
   {
     DirItem( const KURL &dir )
-      : url(dir), rootItem(0), lstItems(new KFileItemList)
+      : url(dir), rootItem(0), lstItems()
     {
       autoUpdates = 0;
       complete = false;
-      lstItems->setAutoDelete( true );
     }
 
     ~DirItem()
@@ -247,9 +246,9 @@ private:
         sendSignal( false, url );
       }
       delete rootItem;
-      delete lstItems;
+      qDeleteAll( lstItems );
     }
-    
+
     void sendSignal( bool entering, const KURL& url )
     {
       DCOPClient *client = DCOPClient::mainClient();
@@ -283,7 +282,7 @@ private:
     void incAutoUpdate()
     {
       if ( autoUpdates++ == 0 )
-      { 
+      {
         if ( url.isLocalFile() )
           kdirwatch->addDir( url.path() );
         sendSignal( true, url );
@@ -316,7 +315,7 @@ private:
     // Remember that this is optional. FTP sites don't return '.' in
     // the list, so they give no root item
     KFileItem *rootItem;
-    KFileItemList *lstItems;
+    KFileItemList lstItems;
   };
 
   static const unsigned short MAX_JOBS_PER_LISTER;
