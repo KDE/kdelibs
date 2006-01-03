@@ -1236,6 +1236,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
 
     delete dir->rootItem;
     dir->rootItem = 0;
+    qDeleteAll( dir->lstItems );
     dir->lstItems.clear();
     dir->redirect( newUrl );
     itemsInUse.insert( newUrl.url(), dir );
