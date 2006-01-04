@@ -394,13 +394,13 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
 
   const QMetaObject* meta = job->metaObject();
 
-  static const char dataSignal[] = "data(KIO::Job*,const QByteArray&)";
+  static const char dataSignal[] = "data(KIO::Job*,QByteArray)";
   if ( meta->indexOfSignal( dataSignal ) != -1 ) {
       connect( job, SIGNAL(data(KIO::Job*,const QByteArray&)),
                this, SLOT(slotData(KIO::Job*,const QByteArray&)) );
   }
 
-  static const char redirSignal[] = "redirection(KIO::Job*,const KURL&)";
+  static const char redirSignal[] = "redirection(KIO::Job*,KURL)";
   if ( meta->indexOfSignal( redirSignal ) != -1 ) {
       connect( job, SIGNAL(redirection(KIO::Job*,const KURL&)),
                this, SLOT(slotRedirection(KIO::Job*, const KURL&)) );
