@@ -278,7 +278,7 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
 void KMimeTypeChooserDialog::init()
 {
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
-  resize( group.readEntry("size", QSize(400,300)).toSize() );
+  resize( group.readEntry("size", QSize(400,300)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
