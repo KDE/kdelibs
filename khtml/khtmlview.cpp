@@ -829,7 +829,7 @@ void KHTMLView::closeChildDialogs()
                 kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
                 // close() ends up calling QButton::animateClick, which isn't immediate
                 // we need something the exits the event loop immediately (#49068)
-                dlgbase->cancel();
+                dlgbase->reject();
             }
         }
         else
