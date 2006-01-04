@@ -1084,8 +1084,7 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
-	QSize sz = size();
-	resize( group.readEntry( "Dialog Size", &sz ).toSize() );
+	resize( group.readEntry( "Dialog Size", size() ) );
 }
 
 KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
@@ -1099,8 +1098,7 @@ KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char*
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
-	QSize sz = size();
-	resize( group.readEntry( "Dialog Size", &sz ).toSize() );
+	resize( group.readEntry( "Dialog Size", size() ) );
 }
 
 KKeyDialog::~KKeyDialog()
