@@ -50,12 +50,11 @@ KInputDialogPrivate::KInputDialogPrivate()
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QString &value, QWidget *parent, const char *name,
+    const QString &value, QWidget *parent,
     QValidator *validator, const QString &mask )
     : KDialog( parent, caption, Ok|Cancel|User1 , 0 , KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
   QWidget *frame = new QWidget( this );
@@ -88,11 +87,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QString &value, QWidget *parent, const char *name )
+    const QString &value, QWidget *parent )
     : KDialog( parent, caption, Ok|Cancel|User1 , 0, KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( false );
   setModal(true);
   QWidget *frame = new QWidget( this );
@@ -116,11 +114,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base,
-    QWidget *parent, const char *name )
+    QWidget *parent )
     : KDialog( parent, caption, Ok|Cancel ),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
 
@@ -143,11 +140,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
-    QWidget *parent, const char *name )
+    QWidget *parent )
     : KDialog( parent, caption, Ok|Cancel),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
 
@@ -169,12 +165,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QStringList &list, int current, bool editable, QWidget *parent,
-    const char *name )
+    const QStringList &list, int current, bool editable, QWidget *parent )
     : KDialog( parent, caption, Ok|Cancel|User1, 0 , KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
 
@@ -220,11 +214,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, const QStringList &select, bool multiple,
-    QWidget *parent, const char *name )
+    QWidget *parent )
     : KDialog( parent, caption, Ok|Cancel),
     d( new KInputDialogPrivate() )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
 
@@ -280,10 +273,10 @@ KInputDialog::~KInputDialog()
 
 QString KInputDialog::getText( const QString &caption,
     const QString &label, const QString &value, bool *ok, QWidget *parent,
-    const char *name, QValidator *validator, const QString &mask,
+    QValidator *validator, const QString &mask,
     const QString &whatsThis )
 {
-  KInputDialog dlg( caption, label, value, parent, name, validator, mask );
+  KInputDialog dlg( caption, label, value, parent, validator, mask );
 
   if( !whatsThis.isEmpty() )
     dlg.lineEdit()->setWhatsThis(whatsThis );
@@ -306,9 +299,9 @@ QString KInputDialog::getText( const QString &caption,
 
 QString KInputDialog::getMultiLineText( const QString &caption,
     const QString &label, const QString &value, bool *ok,
-    QWidget *parent, const char *name )
+    QWidget *parent )
 {
-  KInputDialog dlg( caption, label, value, parent, name );
+  KInputDialog dlg( caption, label, value, parent );
 
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -324,10 +317,10 @@ QString KInputDialog::getMultiLineText( const QString &caption,
 
 int KInputDialog::getInteger( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base, bool *ok,
-    QWidget *parent, const char *name )
+    QWidget *parent )
 {
   KInputDialog dlg( caption, label, value, minValue,
-    maxValue, step, base, parent, name );
+    maxValue, step, base, parent );
 
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -343,18 +336,18 @@ int KInputDialog::getInteger( const QString &caption, const QString &label,
 
 int KInputDialog::getInteger( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, bool *ok,
-    QWidget *parent, const char *name )
+    QWidget *parent )
 {
   return getInteger( caption, label, value, minValue, maxValue, step,
-    10, ok, parent, name );
+    10, ok, parent );
 }
 
 double KInputDialog::getDouble( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
-    bool *ok, QWidget *parent, const char *name )
+    bool *ok, QWidget *parent )
 {
   KInputDialog dlg( caption, label, value, minValue,
-    maxValue, step, decimals, parent, name );
+    maxValue, step, decimals, parent );
 
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -370,18 +363,18 @@ double KInputDialog::getDouble( const QString &caption, const QString &label,
 
 double KInputDialog::getDouble( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, int decimals,
-    bool *ok, QWidget *parent, const char *name )
+    bool *ok, QWidget *parent )
 {
   return getDouble( caption, label, value, minValue, maxValue, 0.1, decimals,
-    ok, parent, name );
+    ok, parent );
 }
 
 QString KInputDialog::getItem( const QString &caption, const QString &label,
     const QStringList &list, int current, bool editable, bool *ok,
-    QWidget *parent, const char *name )
+    QWidget *parent )
 {
   KInputDialog dlg( caption, label, list, current,
-    editable, parent, name );
+    editable, parent );
   if ( !editable)
   {
       connect( dlg.listBox(),  SIGNAL(doubleClicked ( Q3ListBoxItem *)), &dlg, SLOT( slotOk()));
@@ -403,10 +396,10 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
 
 QStringList KInputDialog::getItemList( const QString &caption,
     const QString &label, const QStringList &list, const QStringList &select,
-    bool multiple, bool *ok, QWidget *parent, const char *name )
+    bool multiple, bool *ok, QWidget *parent )
 {
   KInputDialog dlg( caption, label, list, select,
-    multiple, parent, name );
+    multiple, parent );
 
   bool _ok = ( dlg.exec() == Accepted );
 

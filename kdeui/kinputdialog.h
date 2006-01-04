@@ -55,22 +55,20 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * from the static member functions.
      */
     KInputDialog( const QString &caption, const QString &label,
-      const QString &value, QWidget *parent, const char *name,
+      const QString &value, QWidget *parent,
       QValidator *validator, const QString &mask );
     KInputDialog( const QString &caption, const QString &label,
-      const QString &value, QWidget *parent, const char *name );
+      const QString &value, QWidget *parent );
     KInputDialog( const QString &caption, const QString &label, int value,
-      int minValue, int maxValue, int step, int base, QWidget *parent,
-      const char *name );
+      int minValue, int maxValue, int step, int base, QWidget *parent );
     KInputDialog( const QString &caption, const QString &label, double value,
       double minValue, double maxValue, double step, int decimals,
-      QWidget *parent, const char *name );
+      QWidget *parent );
     KInputDialog( const QString &caption, const QString &label,
-      const QStringList &list, int current, bool editable, QWidget *parent,
-      const char *name );
+      const QStringList &list, int current, bool editable, QWidget *parent );
     KInputDialog( const QString &caption, const QString &label,
       const QStringList &list, const QStringList &select, bool editable,
-      QWidget *parent, const char *name );
+      QWidget *parent );
 
     ~KInputDialog();
 
@@ -108,7 +106,6 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param value     Initial value of the line edit
      * @param ok        This bool would be set to true if user pressed Ok
      * @param parent    Parent of the dialog widget
-     * @param name      Name of the dialog widget
      * @param validator A @ref QValidator to be associated with the line edit
      * @param mask      Mask associated with the line edit. See the
      *                  documentation for @ref QLineEdit about masks
@@ -117,7 +114,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      */
     static QString getText( const QString &caption, const QString &label,
         const QString &value=QString(), bool *ok=0, QWidget *parent=0,
-        const char *name=0, QValidator *validator=0,
+        QValidator *validator=0,
         const QString &mask=QString(),
 	const QString& whatsThis=QString()  );
 
@@ -134,14 +131,13 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param value     Initial value of the line edit
      * @param ok        This bool would be set to true if user pressed Ok
      * @param parent    Parent of the dialog widget
-     * @param name      Name of the dialog widget
      *
      * @return String user entered if Ok was pressed, else a null string
      * @since 3.3
      */
     static QString getMultiLineText( const QString &caption,
         const QString &label, const QString &value=QString(),
-        bool *ok=0, QWidget *parent=0, const char *name=0 );
+        bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to get an integer from the user.
@@ -162,15 +158,13 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param base     Base of the number
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
-     * @param name     Name of the dialog widget
      *
      * @return Number user entered if Ok was pressed, else 0
      */
 
     static int getInteger( const QString &caption, const QString &label,
         int value=0, int minValue=-2147483647, int maxValue=2147483647,
-        int step=1, int base=10, bool *ok=0, QWidget *parent=0,
-        const char *name=0 );
+        int step=1, int base=10, bool *ok=0, QWidget *parent=0 );
 
     /**
      * This is an overloaded convenience function. It behaves exactly same as
@@ -178,7 +172,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      */
     static int getInteger( const QString &caption, const QString &label,
         int value=0, int minValue=-2147483647, int maxValue=2147483647,
-        int step=1, bool *ok=0, QWidget *parent=0, const char *name=0 );
+        int step=1, bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to get a floating point number from the user.
@@ -199,14 +193,13 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param decimals Number of digits after the decimal point
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
-     * @param name     Name of the dialog widget
      *
      * @return Number user entered if Ok was pressed, else 0
      */
     static double getDouble( const QString &caption, const QString &label,
         double value=0, double minValue=-2147483647,
         double maxValue=2147483647, double step=0.1, int decimals=1,
-        bool *ok=0, QWidget *parent=0, const char *name=0 );
+        bool *ok=0, QWidget *parent=0 );
 
     /**
      * This is an overloaded convenience function. It behaves exctly like
@@ -215,7 +208,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
     static double getDouble( const QString &caption, const QString &label,
         double value=0, double minValue=-2147483647,
         double maxValue=2147483647, int decimals=1, bool *ok=0,
-        QWidget *parent=0, const char *name=0 );
+        QWidget *parent=0 );
 
     /**
      * Static convenience function to let the user select an item from a
@@ -232,14 +225,13 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param editable If true, user can enter own text
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
-     * @param name     Name of the dialog widget
      *
      * @return Text of the selected item. If @p editable is true this can be
      *         a text entered by the user.
      */
     static QString getItem( const QString &caption, const QString &label,
         const QStringList &list, int current=0, bool editable=false,
-        bool *ok=0, QWidget *parent=0, const char *name=0 );
+        bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to let the user select one or more
@@ -256,7 +248,6 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param multiple If true, user can select multiple items
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
-     * @param name     Name of the dialog widget
      *
      * @return List of selected items if multiple is true, else currently
      *         selected item as a QStringList
@@ -264,7 +255,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
     static QStringList getItemList( const QString &caption,
         const QString &label, const QStringList &list=QStringList(),
         const QStringList &select=QStringList(), bool multiple=false,
-        bool *ok=0, QWidget *parent=0, const char *name=0 );
+        bool *ok=0, QWidget *parent=0 );
 
   private:
 
