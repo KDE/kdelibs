@@ -1614,32 +1614,32 @@ void KApplication::propagateSettings(SettingsCategory arg)
 {
     KConfigGroup cg( KGlobal::config(), "KDE" );
 
-    int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime()).toInt();
+    int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if ((num != 0) && (num < 200))
         num = 200;
     if (num > 2000)
         num = 2000;
     QApplication::setCursorFlashTime(num);
-    num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval()).toInt();
+    num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval());
     QApplication::setDoubleClickInterval(num);
-    num = cg.readEntry("StartDragTime", QApplication::startDragTime()).toInt();
+    num = cg.readEntry("StartDragTime", QApplication::startDragTime());
     QApplication::setStartDragTime(num);
-    num = cg.readEntry("StartDragDist", QApplication::startDragDistance()).toInt();
+    num = cg.readEntry("StartDragDist", QApplication::startDragDistance());
     QApplication::setStartDragDistance(num);
-    num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()).toInt();
+    num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
-    bool b = cg.readEntry("EffectAnimateMenu", QVariant::Bool).toBool();
+    bool b = cg.readEntry("EffectAnimateMenu", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
-    b = cg.readEntry("EffectFadeMenu", QVariant::Bool).toBool();
+    b = cg.readEntry("EffectFadeMenu", false);
     QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = cg.readEntry("EffectAnimateCombo", QVariant::Bool).toBool();
+    b = cg.readEntry("EffectAnimateCombo", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
-    b = cg.readEntry("EffectAnimateTooltip", QVariant::Bool).toBool();
+    b = cg.readEntry("EffectAnimateTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
-    b = cg.readEntry("EffectFadeTooltip", QVariant::Bool).toBool();
+    b = cg.readEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
-    //b = !cg.readEntry("EffectNoTooltip", QVariant(false)).toBool();
+    //b = !cg.readEntry("EffectNoTooltip", false);
     //QToolTip::setGloballyEnabled( b ); ###
 
     emit settingsChanged(arg);

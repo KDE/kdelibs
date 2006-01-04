@@ -220,12 +220,12 @@ void KLocale::initFormat()
   save = cg.readEntry(key, save);
 
 #define readConfigNumEntry(key, default, save, type) \
-  save = (type)entry.readEntry(key, QVariant(default)).toInt(); \
-  save = (type)cg.readEntry(key, save).toInt();
+  save = (type)entry.readEntry(key, int(default)); \
+  save = (type)cg.readEntry(key, int(save));
 
 #define readConfigBoolEntry(key, default, save) \
-  save = entry.readEntry(key, QVariant(default)).toBool(); \
-  save = cg.readEntry(key, save).toBool();
+  save = entry.readEntry(key, default); \
+  save = cg.readEntry(key, save);
 
   readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
@@ -274,9 +274,9 @@ void KLocale::initFormat()
                              .arg(m_language)), true);
   lang.setGroup("KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
-  save = entry.readEntry(key, QVariant(default)).toBool(); \
-  save = lang.readEntry(key, save).toBool(); \
-  save = cg.readEntry(key, save).toBool();
+  save = entry.readEntry(key, default); \
+  save = lang.readEntry(key, save); \
+  save = cg.readEntry(key, save);
 
   read3ConfigBoolEntry("NounDeclension", false, d->nounDeclension);
   read3ConfigBoolEntry("DateMonthNamePossessive", false,

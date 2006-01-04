@@ -138,13 +138,13 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     cfg.setGroup(mainSection);
     mName = cfg.readEntry("Name");
     mDesc = cfg.readEntry("Comment");
-    mDepth = cfg.readEntry("DisplayDepth", 32).toInt();
+    mDepth = cfg.readEntry("DisplayDepth", 32);
     mInherits = cfg.readListEntry("Inherits");
     if ( name != "crystalsvg" )
       for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it )
          if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";
 
-    d->hidden = cfg.readEntry("Hidden", QVariant::Bool).toBool();
+    d->hidden = cfg.readEntry("Hidden", false);
     d->example = cfg.readPathEntry("Example");
     d->screenshot = cfg.readPathEntry("ScreenShot");
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
@@ -197,8 +197,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     cfg.setGroup(mainSection);
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
-        mDefSize[i] = cfg.readEntry(*it + "Default", defDefSizes[i]).toInt();
-        QList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
+        mDefSize[i] = cfg.readEntry(*it + "Default", defDefSizes[i]);
+        QList<int> exp, lst = cfg.readEntry(*it + "Sizes", QList<int>());
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
@@ -491,7 +491,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
 {
     mbValid = false;
     mDir = dir;
-    mSize = config->readEntry("Size", QVariant::Int).toInt();
+    mSize = config->readEntry("Size", 0);
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
     mType = KIcon::Fixed;
@@ -527,10 +527,10 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     }
     if (mType == KIcon::Scalable)
     {
-        mMinSize = config->readEntry("MinSize", mSize).toInt();
-        mMaxSize = config->readEntry("MaxSize", mSize).toInt();
+        mMinSize = config->readEntry("MinSize", mSize);
+        mMaxSize = config->readEntry("MaxSize", mSize);
     } else if (mType == KIcon::Threshold)
-	mThreshold = config->readEntry("Threshold", 2).toInt();
+	mThreshold = config->readEntry("Threshold", 2);
     mbValid = true;
 }
 

@@ -284,7 +284,7 @@ bool KDesktopFile::tryExec() const
   }
 
   // See also KService::username()
-  bool su = readEntry("X-KDE-SubstituteUID", QVariant::Bool).toBool();
+  bool su = readEntry("X-KDE-SubstituteUID", false);
   if (su)
   {
       QString user = readEntry("X-KDE-Username");

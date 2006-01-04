@@ -186,6 +186,26 @@ public:
    */
   QVariant readEntry( const char *pKey, const QVariant &aDefault) const;
 
+  /**
+   * Reads the value of an entry specified by @p pKey in the current group.
+   *
+   * @param pKey The key to search for.
+   * @param aDefault A default value returned if the key was not found.
+   * @return The value for this key, or @p aDefault.
+   * @since 4.0
+   */
+  template <typename T>
+  T readEntry( const char* pKey, const T& aDefault) const
+    { return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault))); }
+
+  /**
+   * Reads the value of an entry specified by @p pKey in the current group.
+   * @copydoc readEntry(const char*, const T&) const
+   */
+  template <typename T>
+  T readEntry( const QString& pKey, const T& aDefault) const
+    { return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault))); }
+
   // these two are here temporarily for porting, remove before KDE4
   QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const KDE_DEPRECATED;
   QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const KDE_DEPRECATED;

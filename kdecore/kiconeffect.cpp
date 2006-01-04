@@ -119,10 +119,10 @@ void KIconEffect::init()
 		continue;
 	    if(effect != -1)
                 mEffect[i][j] = effect;
-	    mValue[i][j] = cg.readEntry(*it2 + "Value", 0.0).toDouble();
-	    mColor[i][j] = qvariant_cast<QColor>(cg.readEntry(*it2 + "Color", QColor()));
-	    d->mColor2[i][j] = qvariant_cast<QColor>(cg.readEntry(*it2 + "Color2", QColor()));
-	    mTrans[i][j] = cg.readEntry(*it2 + "SemiTransparent", QVariant::Bool).toBool();
+	    mValue[i][j] = cg.readEntry(*it2 + "Value", 0.0);
+	    mColor[i][j] = cg.readEntry(*it2 + "Color", QColor());
+	    d->mColor2[i][j] = cg.readEntry(*it2 + "Color2", QColor());
+	    mTrans[i][j] = cg.readEntry(*it2 + "SemiTransparent", false);
 
 	}
     }

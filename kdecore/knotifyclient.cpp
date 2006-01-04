@@ -52,8 +52,8 @@ static bool canAvoidStartupEvent( const QString& event, const QString& appname, 
         : new KConfig( "knotify/eventsrc", true, false, "data" );
     configfile->setGroup( event );
     eventsfile->setGroup( event );
-    int ev1 = configfile->readEntry( "presentation", QVariant(-2 )).toInt();
-    int ev2 = eventsfile->readEntry( "default_presentation", QVariant(-2 )).toInt();
+    int ev1 = configfile->readEntry( "presentation", -2 );
+    int ev2 = eventsfile->readEntry( "default_presentation", -2 );
     if(( ev1 == -2 && ev2 == -2 ) // unknown
         || ev1 > 0 // configured to have presentation
         || ( ev1 == -2 && ev2 > 0 )) { // not configured, has default presentation
@@ -165,7 +165,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
 
-	present=eventsfile.readEntry("presentation", QVariant(-1)).toInt();
+	present=eventsfile.readEntry("presentation", -1);
 
 	return present;
 }
@@ -196,7 +196,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
 
-	present=eventsfile.readEntry("default_presentation", QVariant(-1)).toInt();
+	present=eventsfile.readEntry("default_presentation", -1);
 
 	return present;
 }

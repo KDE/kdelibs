@@ -246,7 +246,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
    if (!config)
       return;
 
-   if (!(config->readEntry("SOCKS_enable", QVariant::Bool).toBool())) {
+   if (!config->readEntry("SOCKS_enable", false)) {
       _disabled = true;
    }
 
@@ -284,7 +284,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
    KLibLoader *ll = KLibLoader::self();
 
 
-   int _meth = config->readEntry("SOCKS_method", 1).toInt();
+   int _meth = config->readEntry("SOCKS_method", 1);
          /****       Current methods
           *   1) Autodetect (read: any)     2) NEC
           *   3) Dante                      4) Custom

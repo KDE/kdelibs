@@ -86,8 +86,8 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
       if( cuts.count() > 0 )
         key = int(cuts.seq(0).qt());
     }
-    alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", QVariant::Bool ).toBool();
-    autoCheck = cg.readEntry( "AutoCheckAccelerators", true ).toBool();
+    alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
+    autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
 

@@ -353,7 +353,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
      bcc = _bcc;
    }
 
-   if (config.readEntry("TerminalClient", QVariant::Bool).toBool())
+   if (config.readEntry("TerminalClient", false))
    {
      KConfigGroup confGroup( KGlobal::config(), "General" );
      QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", "konsole");

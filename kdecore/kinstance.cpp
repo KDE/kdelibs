@@ -199,7 +199,7 @@ KConfig	*KInstance::config() const
             // Check whether custom config files are allowed.
             d->sharedConfig->setGroup( "KDE Action Restrictions" );
             QString kioskException = d->sharedConfig->readEntry("kiosk_exception");
-            if (d->sharedConfig->readEntry( "custom_config", true).toBool())
+            if (d->sharedConfig->readEntry( "custom_config", true))
             {
                d->sharedConfig->setGroup(QString());
             }

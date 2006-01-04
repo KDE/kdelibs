@@ -244,7 +244,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       break;
   }
 
-  short nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2).toInt() : 2;
+  short nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2) : 2;
 
   // If the application doesn't have a QApplication object it can't use
   // a messagebox.
@@ -316,7 +316,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL )
       && ( !kDebug_data->config ||
-           kDebug_data->config->readEntry( "AbortFatal", true ).toBool() ) )
+           kDebug_data->config->readEntry( "AbortFatal", true ) ) )
         abort();
 }
 

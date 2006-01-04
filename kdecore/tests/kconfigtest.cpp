@@ -141,8 +141,8 @@ void KConfigTest::testSimple()
   QCOMPARE( sc2.readEntry( "stringEntry5", QString("test") ), QString( "test" ) );
   QVERIFY( !sc2.hasKey( "stringEntry6" ) );
   QCOMPARE( sc2.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
-  QCOMPARE( sc2.readEntry( "boolEntry1", BOOLENTRY1 ).toBool(), BOOLENTRY1 );
-  QCOMPARE( sc2.readEntry( "boolEntry2", QVariant::Bool ).toBool(), BOOLENTRY2 );
+  QCOMPARE( sc2.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
+  QCOMPARE( sc2.readEntry( "boolEntry2", false ), BOOLENTRY2 );
 
 #if 0
   QString s;
@@ -156,7 +156,7 @@ void KConfigTest::testSimple()
   }
 #endif
 
-  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QVariant::ByteArray ).toByteArray(),
+  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QByteArray() ),
             QByteArray( STRINGENTRY1 ) );
 }
 
@@ -183,15 +183,15 @@ void KConfigTest::testComplex()
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("ComplexTypes");
 
-  QCOMPARE( sc2.readEntry( "pointEntry", QPoint() ).toPoint(), POINTENTRY );
-  QCOMPARE( sc2.readEntry( "sizeEntry", SIZEENTRY ).toSize(), SIZEENTRY);
-  QCOMPARE( sc2.readEntry( "rectEntry", QVariant::Rect ).toRect(), RECTENTRY );
-  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDateTime() ).toString(),
+  QCOMPARE( sc2.readEntry( "pointEntry", QPoint() ), POINTENTRY );
+  QCOMPARE( sc2.readEntry( "sizeEntry", SIZEENTRY ), SIZEENTRY);
+  QCOMPARE( sc2.readEntry( "rectEntry", QRect(1,2,3,4) ), RECTENTRY );
+  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDateTime() ).toString(Qt::ISODate),
             DATETIMEENTRY.toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(),
+  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "colorEntry", QColor(Qt::black) ).toString(),
+  QCOMPARE( QVariant(sc2.readEntry( "colorEntry", QColor(Qt::black) )).toString(),
             QVariant(COLORENTRY).toString() );
   QCOMPARE( qvariant_cast<QColor>(sc2.readEntry( "colorEntry" )), COLORENTRY );
-  QCOMPARE( sc2.readEntry( "fontEntry", QVariant::Font ).toString(), QVariant(FONTENTRY).toString() );
+  QCOMPARE( sc2.readEntry( "fontEntry", QFont() ), FONTENTRY );
 }
