@@ -1633,20 +1633,20 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     KURLComboBox *combo = d->pathCombo;
     combo->setURLs( kc->readPathListEntry( RecentURLs ), KURLComboBox::RemoveTop );
     combo->setMaxItems( kc->readEntry( RecentURLsNumber,
-                                       DefaultRecentURLsNumber ).toInt() );
+                                       DefaultRecentURLsNumber ) );
     combo->setURL( ops->url() );
     autoDirectoryFollowing = kc->readEntry( AutoDirectoryFollowing,
                                             QVariant(DefaultDirectoryFollowing) ).toBool();
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
                                       kc->readEntry( PathComboCompletionMode,
-                                      KGlobalSettings::completionMode() ).toInt();
+                                      static_cast<int>( KGlobalSettings::completionMode() ) );
     if ( cm != KGlobalSettings::completionMode() )
         combo->setCompletionMode( cm );
 
     cm = (KGlobalSettings::Completion)
          kc->readEntry( LocationComboCompletionMode,
-                        KGlobalSettings::completionMode() ).toInt();
+                        static_cast<int>( KGlobalSettings::completionMode() ) );
     if ( cm != KGlobalSettings::completionMode() )
         locationEdit->setCompletionMode( cm );
 
@@ -1698,7 +1698,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     kc->setGroup( ConfigGroup );
 
     locationEdit->setMaxItems( kc->readEntry( RecentFilesNumber,
-                                              DefaultRecentURLsNumber ).toInt() );
+                                              DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
                            KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString(), 0 ); // dummy item without pixmap
