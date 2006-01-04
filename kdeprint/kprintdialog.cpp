@@ -92,9 +92,11 @@ public:
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
-: KDialog(parent,name,true)
+: KDialog(parent)
 {
-	//WhatsThis strings.... (added by pfeifle@kde.org)
+	setObjectName(name);
+	setModal(true);
+		//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisLocationLabel = i18n(  " <qt><b>Printer Location:</b> The <em>Location</em> may describe where the"
 						" selected printer is located. The Location description is created"
 						" by the administrator of the print system (or may be"
