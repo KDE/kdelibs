@@ -323,7 +323,7 @@ void KMenuBar::selectionTimeout()
     {
         d->fallback_mode = true; // KMenuBar is handling its position itself
         KConfigGroup xineramaConfig(KGlobal::config(),"Xinerama");
-        int screen = xineramaConfig.readNumEntry("MenubarScreen",
+        int screen = xineramaConfig.readEntry("MenubarScreen",
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);
         int margin = 0;

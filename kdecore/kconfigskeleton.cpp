@@ -738,7 +738,7 @@ void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
   if ( !config->hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readIntListEntry( mKey );
+    mReference = config->readEntry( mKey , QList<int>() );
   mLoadedValue = mReference;
 
   readImmutability( config );

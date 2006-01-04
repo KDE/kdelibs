@@ -341,7 +341,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
 {
     KConfigGroup configGroup(KGlobal::config(), "TipOfDay");
 
-    const bool runOnStart = configGroup.readEntry("RunOnStart", QVariant(true)).toBool();
+    const bool runOnStart = configGroup.readEntry("RunOnStart", true);
 
     if (!force)
     {
@@ -352,7 +352,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
         if (hasLastShown)
         {
            const int oneDay = 24*60*60;
-           QDateTime lastShown = configGroup.readDateTimeEntry("TipLastShown");
+           QDateTime lastShown = configGroup.readEntry("TipLastShown", QDateTime());
            // Show tip roughly once a week
            if (lastShown.secsTo(QDateTime::currentDateTime()) < (oneDay + (KRandom::random() % (10*oneDay))))
                return;

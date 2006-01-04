@@ -369,7 +369,7 @@ bool KMainWindow::canBeRestored( int number )
     if ( !config )
         return false;
     config->setGroup( QLatin1String("Number") );
-    int n = config->readNumEntry( QLatin1String("NumberOfWindows") , 1 );
+    int n = config->readEntry( QLatin1String("NumberOfWindows") , 1 );
     return number >= 1 && number <= n;
 }
 
@@ -939,12 +939,12 @@ void KMainWindow::restoreWindowSize( KConfigBase * config )
         QRect desk = QApplication::desktop()->screenGeometry(scnum);
         if ( d->defaultWindowSize.isNull() ) // only once
           d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
-        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
-                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
+        QSize size( config->readEntry<int>( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
+                    config->readEntry<int>( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
         if (size.isEmpty()) {
             // try the KDE 2.0 way
-            size = QSize( config->readNumEntry( QLatin1String("Width"), 0 ),
-                          config->readNumEntry( QLatin1String("Height"), 0 ) );
+            size = QSize( config->readEntry<int>( QLatin1String("Width"), 0 ),
+                          config->readEntry<int>( QLatin1String("Height"), 0 ) );
             if (!size.isEmpty()) {
                 // make sure the other resolutions don't get old settings
                 config->writeEntry( QLatin1String("Width"), 0 );

@@ -2030,7 +2030,7 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
 
 void KListView::restoreLayout(KConfigGroup & cg)
 {
-  QStringList cols = cg.readListEntry("ColumnWidths");
+  QStringList cols = cg.readEntry("ColumnWidths", QStringList());
   int i = 0;
   { // scope the iterators
     QStringList::ConstIterator it = cols.constBegin();
@@ -2042,7 +2042,7 @@ void KListView::restoreLayout(KConfigGroup & cg)
   // move sections in the correct sequence: from lowest to highest index position
   // otherwise we move a section from an index, which modifies
   // all index numbers to the right of the moved one
-  cols = cg.readListEntry("ColumnOrder");
+  cols = cg.readEntry("ColumnOrder", QStringList());
   const int colCount = columns();
   for (i = 0; i < colCount; ++i)   // final index positions from lowest to highest
   {
