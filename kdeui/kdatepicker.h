@@ -59,24 +59,14 @@ public:
    * initially.
    **/
   KDatePicker(QWidget *parent=0,
-	      QDate=QDate::currentDate(),
-	      const char *name=0);
-
-  /** The usual constructor.  The given date will be displayed
-   * initially.
-   * @since 3.1
-   **/
-  KDatePicker(QWidget *parent,
-	      QDate,
-	      const char *name,
-	      Qt::WFlags f); // ### KDE 4.0: Merge
+	      QDate=QDate::currentDate());
 
   /**
    * Standard qt widget constructor. The initial date will be the
    * current date.
    * @since 3.1
    */
-  KDatePicker( QWidget *parent, const char *name );
+  KDatePicker( QWidget *parent );
 
   /**
    * The destructor.

@@ -98,20 +98,14 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   }
 }
 
-KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  : QFrame(parent,name)
+KDatePicker::KDatePicker(QWidget *parent, QDate dt)
+  : QFrame(parent)
 {
   init( dt );
 }
 
-KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, Qt::WFlags f)
-  : QFrame(parent,name, f)
-{
-  init( dt );
-}
-
-KDatePicker::KDatePicker( QWidget *parent, const char *name )
-  : QFrame(parent,name)
+KDatePicker::KDatePicker( QWidget *parent )
+  : QFrame(parent)
 {
   init( QDate::currentDate() );
 }
