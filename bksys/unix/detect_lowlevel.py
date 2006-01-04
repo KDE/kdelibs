@@ -2,7 +2,7 @@
 
 def detect(lenv,dest):
 	import os
-
+	lenv['CPPPATH'] = [ '/usr/include','/usr/local/include' ]
 	def Check_limits(context):
 		context.Message('Checking for limits.h...')
 		ret = conf.CheckHeader('limits.h')
