@@ -143,6 +143,7 @@ writeEntry("someKey", int(timeVal)); // ok
 <li>all read*ListEntry methods deprecated, renamed to readEntry. Most types use the template version.<br/>
 <b>template &lt;typename T&gt; readEntry(key, const QList&lt;T&gt;&amp;)</b><br/>If you just write readEntry(key, list) it should work for any type that QVariant can convert to QString.
 </li>
+<li>writeEntry, deleteGroup, and deleteEntry doesn't take anymore severals boolean options, but one QFlags</li>
 </ul>
 <H4>KLibFactory</H4>
 
