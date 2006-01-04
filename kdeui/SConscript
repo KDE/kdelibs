@@ -46,7 +46,8 @@ kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
-kpixmapio.cpp krootpixmap.cpp knotification.cpp
+kpixmapio.cpp krootpixmap.cpp knotification.cpp knotificationmanager.cpp
+knotificationmanager.skel
 """
 
 install_headers = """
@@ -71,10 +72,10 @@ kspelldlg.h ksyntaxhighlighter.h ktabbar.h ktabwidget.h ksplashscreen.h
 kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h 
 kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h 
 ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h 
-kconfigdialogmanager.h
+kconfigdialogmanager.h knotification.h
 """
 
-# TODO: could this be replaced with install_headers ? 
+# TODO: could this be replaced with install_headers ?  - no it's about non-installed headers
 for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kdatetable.h kwhatsthismanager_p.h kstdaction_p.h kcharselect_p.h".split():
        env.Moc(i)
 
