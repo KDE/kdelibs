@@ -39,8 +39,9 @@
 using namespace KIO;
 
 SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool _modal ) :
-  KDialog ( parent, "" , _modal )
+  KDialog ( parent)
 {
+  setModal(_modal);
   // TODO : port to KDialogBase
   modal = _modal;
 
