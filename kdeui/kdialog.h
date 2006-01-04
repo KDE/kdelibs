@@ -30,12 +30,14 @@ class KSeparator;
 class KURLLabel;
 class QBoxLayout;
 class QPixmap;
+class KDialogBase;
 
 #include <QDialog>
+#include <Qt>
+#include <kdelibs_export.h>
+#include <kconfigbase.h>
 #include <kguiitem.h>
 #include <kstdguiitem.h>
-#include <kdelibs_export.h>
-#include <Qt>
 
 /**
  * Used internally by KDialog.
@@ -398,51 +400,27 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void incInitialSize( const QSize &s );
 
+ 
    /**
     * read the dialogs size from the configuration according to the screen size.
-    * If no size is saved for one dimension of the screen, sizeHint() is returned.
     *
-    * @param groupName Name of the group to read from. The old group
-    *                  of KGlobal::config is preserved.
-    */
-   QSize configDialogSize( const QString& groupName ) const;
-
-   /**
-    * read the dialogs size from the configuration according to the screen size.
-    * If no size is saved for one dimension of the screen, sizeHint() is returned.
-    *
-    * @param config The KConfig object to read from
-    * @param groupName Name of the group to read from. The old group
-    *                  of KGlobal::config is preserved.
+	* @note the group must be set before calling
+	*
+    * @param config The object to read from. That may be a KConfigGroup
     * @since 3.2
     */
-   QSize configDialogSize( KConfig& config, const QString& groupName ) const;
+   void restoreDialogSize( KConfigBase* config ) ;
 
    /**
     * save the dialogs size dependant on the screen dimension either to the
     * global or application config file.
     *
-    * @param groupName The group to which the dialogs size is saved. See configDialogSize
-    * to read the size.
-    * @param global Set to true if the entry should go to the global config rather
-    *        than to the applications config. Default is false.
+	* @note the group must be set before calling
+	*
+    * @param config The object to read from. That is recommanded to use a KConfigGroup
+    * @param options passed to KConfigBase::writeEntry
     */
-   void saveDialogSize( const QString& groupName, bool global=false );
-
-   /**
-    * save the dialogs size dependant on the screen dimension.
-    *
-    * @param config The KConfig object to write to.
-    * @param groupName The group to which the dialogs size is saved. See
-    * configDialogSize to read the size.
-    * @param global Set to true if the entry should go to the global config.
-    *        Default is false.
-    * @since 3.2
-    */
-   void saveDialogSize( KConfig& config, const QString& groupName,
-			     bool global=false ) const;
-
-  
+   void saveDialogSize( KConfigBase* config, QFlags<KConfigBase::WriteConfigFlag> options=0 ) const;
 
 
     /**

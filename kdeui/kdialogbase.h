@@ -857,6 +857,56 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 	virtual void accept();
 	virtual void reject();
 
+   /**
+    * read the dialogs size from the configuration according to the screen size.
+    * If no size is saved for one dimension of the screen, sizeHint() is returned.
+    *
+    * @param groupName Name of the group to read from. The old group
+    *                  of KGlobal::config is preserved.
+    * @deprecated use restoreDialogSize
+    */
+   QSize configDialogSize( const QString& groupName ) const KDE_DEPRECATED;
+
+   /**
+    * read the dialogs size from the configuration according to the screen size.
+    * If no size is saved for one dimension of the screen, sizeHint() is returned.
+    *
+    * @param config The KConfig object to read from
+    * @param groupName Name of the group to read from. The old group
+    *                  of KGlobal::config is preserved.
+    * @since 3.2
+    * @deprecated use restoreDialogSize
+    */
+   QSize configDialogSize( KConfig& config, const QString& groupName ) const KDE_DEPRECATED;
+
+   /**
+    * save the dialogs size dependant on the screen dimension either to the
+    * global or application config file.
+    *
+    * @param groupName The group to which the dialogs size is saved. See configDialogSize
+    * to read the size.
+    * @param global Set to true if the entry should go to the global config rather
+    *        than to the applications config. Default is false.
+    * @deprecated use restoreDialogSize( KConfigBase )
+    */
+   void saveDialogSize( const QString& groupName, bool global=false ) KDE_DEPRECATED;
+
+   /**
+    * save the dialogs size dependant on the screen dimension.
+    *
+    * @param config The KConfig object to write to.
+    * @param groupName The group to which the dialogs size is saved. See
+    * configDialogSize to read the size.
+    * @param global Set to true if the entry should go to the global config.
+    *        Default is false.
+    * @since 3.2
+    * @deprecated use restoreDialogSize( KConfigBase )
+    */
+   void saveDialogSize( KConfig& config, const QString& groupName,
+			     bool global=false ) const KDE_DEPRECATED;
+
+
+
   public slots:
 
     /**

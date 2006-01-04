@@ -1158,49 +1158,35 @@ void KDialog::closeEvent( QCloseEvent *e )
     }
 }
 
-QSize KDialog::configDialogSize( const QString& groupName ) const
+
+
+void KDialog::restoreDialogSize( KConfigBase *cfg )
 {
-   return configDialogSize( *KGlobal::config(), groupName );
+	int w, h;
+	int scnum = QApplication::desktop()->screenNumber(parentWidget());
+	QRect desk = QApplication::desktop()->screenGeometry(scnum);
+	
+	w = sizeHint().width();
+	h = sizeHint().height();
+	
+	w = cfg->readEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
+	h = cfg->readEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
+	
+	resize(w,h);
 }
 
 
-QSize KDialog::configDialogSize( KConfig& config,
-				      const QString& groupName ) const
-{
-   int w, h;
-   int scnum = QApplication::desktop()->screenNumber(parentWidget());
-   QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-   w = sizeHint().width();
-   h = sizeHint().height();
-
-   KConfigGroup cg(&config, groupName);
-   w = cg.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
-   h = cg.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
-
-   return QSize( w, h );
-}
 
 
-void KDialog::saveDialogSize( const QString& groupName, bool global )
-{
-   saveDialogSize( *KGlobal::config(), groupName, global );
-}
-
-
-void KDialog::saveDialogSize( KConfig& config, const QString& groupName,
-				      bool global ) const
+void KDialog::saveDialogSize( KConfigBase* config, QFlags<KConfigBase::WriteConfigFlag> options ) const
 {
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
-   KConfigGroup cg(&config, groupName);
    QSize sizeToSave = size();
 
-   cg.writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
-		  QString::number( sizeToSave.width()), (global?KConfigBase::Global:KConfigBase::Normal)   );
-   cg.writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
-		  QString::number( sizeToSave.height()), (global?KConfigBase::Global:KConfigBase::Normal));
+   config->writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),  sizeToSave.width(), options   );
+   config->writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),  sizeToSave.height(), options );
 }
 
 

@@ -34,6 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // The same applies to the QT_NO_ACCEL ifdef below. I hope it doesn't make
 // too much trouble... (Simon)
 
+#include "kcookiejar.h"
+#include "kcookiewin.h"
 
 
 #include <q3accel.h>
@@ -68,9 +70,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <X11/Xlib.h>
 #include <kvbox.h>
 #endif
-
-#include "kcookiejar.h"
-#include "kcookiewin.h"
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )

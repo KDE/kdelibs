@@ -462,6 +462,45 @@ int KDialogBase::pageIndex( QWidget *widget ) const
 
 
 
+QSize KDialogBase::configDialogSize( const QString& groupName ) const
+{
+   return configDialogSize( *KGlobal::config(), groupName );
+}
+
+
+QSize KDialogBase::configDialogSize( KConfig& config,
+				      const QString& groupName ) const
+{
+   int w, h;
+   int scnum = QApplication::desktop()->screenNumber(parentWidget());
+   QRect desk = QApplication::desktop()->screenGeometry(scnum);
+
+   w = sizeHint().width();
+   h = sizeHint().height();
+
+   KConfigGroup cg(&config, groupName);
+   w = cg.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
+   h = cg.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
+
+   return size( );
+}
+
+
+void KDialogBase::saveDialogSize( const QString& groupName,  bool global )
+{
+	KConfigGroup cg( KGlobal::config() , groupName);
+	KDialog::saveDialogSize(&cg , global ? KConfigBase::Global : KConfigBase::Normal );
+}
+void KDialogBase::saveDialogSize( KConfig& config, const QString& groupName,  bool global ) const
+{
+	KConfigGroup cg( &config , groupName);
+	KDialog::saveDialogSize(&cg , global ? KConfigBase::Global : KConfigBase::Normal );
+}
+
+
+
+
+
 
 bool KDialogBase::haveBackgroundTile()
 {
@@ -593,6 +632,7 @@ void KDialogBaseTile::cleanup()
   delete mPixmap; mPixmap = 0;
 }
 
+
 void KDialogBase::virtual_hook( int id, void* data )
 { KDialog::virtual_hook( id, data ); }
 
@@ -601,13 +641,13 @@ void KDialogBase::virtual_hook( int id, void* data )
 //  slotOk may call accept,  so we need to call slotOk only if accept() is called because the button Ok has been pressed
 void KDialogBase::accept() 
 { 
-	if(qobject_cast<const QPushButton*>(sender()))  QTimer::singleShot(0,this,SLOT(slotOk()));
+	if(sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotOk()));
 	else KDialog::accept(); 
 }
 void KDialogBase::slotOk() { KDialog::accept(); }
 void KDialogBase::reject()
 { 
-	if(qobject_cast<const QPushButton*>(sender()))  QTimer::singleShot(0,this,SLOT(slotCancel()));
+	if(sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotCancel()));
 	else KDialog::reject(); 
 }
 void KDialogBase::slotCancel() { KDialog::reject(); }
