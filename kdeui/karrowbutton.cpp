@@ -30,9 +30,8 @@ class KArrowButtonPrivate
 		Qt::ArrowType arrow;
 };
 
-KArrowButton::KArrowButton(QWidget *parent, Qt::ArrowType arrow,
-		const char *name)
-	: QPushButton(parent, name)
+KArrowButton::KArrowButton(QWidget *parent, Qt::ArrowType arrow)
+	: QPushButton(parent)
 {
 	d = new KArrowButtonPrivate();
 	d->arrow = arrow;

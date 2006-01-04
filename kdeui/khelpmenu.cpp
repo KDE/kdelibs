@@ -181,7 +181,7 @@ void KHelpMenu::aboutApplication()
   {
     if( !mAboutApp )
     {
-      mAboutApp = new KAboutApplication( d->mAboutData, mParent, "about", false );
+      mAboutApp = new KAboutApplication( d->mAboutData, mParent, false );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     mAboutApp->show();
@@ -219,7 +219,7 @@ void KHelpMenu::aboutKDE()
 {
   if( !mAboutKDE )
   {
-    mAboutKDE = new KAboutKDE( mParent, "aboutkde", false );
+    mAboutKDE = new KAboutKDE( mParent, false );
     connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }
   mAboutKDE->show();

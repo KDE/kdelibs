@@ -338,7 +338,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
     * @param user3 User button3 text.
     *
     */
-    /// KDE4 remove name argument
     KAboutDialog( int dialogLayout, const QString &caption, QFlags<ButtonCode> buttonMask,
 		  ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
 		  const QString &user1 = QString(),

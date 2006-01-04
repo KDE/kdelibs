@@ -45,7 +45,7 @@ public:
     /**
      * Constructs a color combo box.
      */
-    KColorCombo( QWidget *parent, const char *name = 0L );
+    KColorCombo( QWidget *parent );
     ~KColorCombo();
 
     /**

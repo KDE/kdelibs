@@ -26,10 +26,10 @@
 #include <kstandarddirs.h>
 
 
-KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
+KAboutKDE::KAboutKDE( QWidget *parent, bool modal )
   :KAboutDialog( KAboutDialog::AbtKDEStandard, QLatin1String("KDE"),
 		 KDialogBase::Help|KDialogBase::Close, KDialogBase::Close,
-		 parent, name, modal )
+		 parent, modal )
 {
   const QString text1 = i18n(""
     "The <b>K Desktop Environment</b> is written and maintained by the "

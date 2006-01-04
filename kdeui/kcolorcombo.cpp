@@ -107,8 +107,8 @@ class KColorCombo::KColorComboPrivate
 	bool showEmptyList;
 };
 
-KColorCombo::KColorCombo( QWidget *parent, const char *name )
-	: QComboBox( parent, name )
+KColorCombo::KColorCombo( QWidget *parent )
+	: QComboBox( parent )
 {
 	d=new KColorComboPrivate();
 	d->showEmptyList=false;

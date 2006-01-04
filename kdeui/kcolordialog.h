@@ -376,8 +376,7 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     /**
      * Constructs a color selection dialog.
      */
-    KColorDialog( QWidget *parent = 0L, const char *name = 0L,
-		  bool modal = false );
+    KColorDialog( QWidget *parent = 0L, bool modal = false );
     /**
      * Destroys the color selection dialog.
      */

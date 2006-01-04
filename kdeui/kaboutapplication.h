@@ -51,13 +51,11 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *
      * @param parent The parent of the dialog box. You should use the
      *        toplevel window so that the dialog becomes centered.
-     * @param name Internal name of the widget. This name is not used in the
-     *        caption.
      * @param modal If false, this widget will be modeless and must be
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec().
      */
-    KAboutApplication( QWidget *parent=0, const char *name=0, bool modal=true );
+    KAboutApplication( QWidget *parent=0, bool modal=true );
 
     /**
      * Constructor. Mostly does the same stuff as the previous constructor, except
@@ -70,13 +68,11 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *        will be used for filling the dialog.
      * @param parent The parent of the dialog box. You should use the
      *        toplevel window so that the dialog becomes centered.
-     * @param name Internal name of the widget. This name is not used in the
-     *        caption.
      * @param modal If false, this widget will be modeless and must be
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec().
      */
-    KAboutApplication( const KAboutData *aboutData, QWidget *parent=0, const char *name=0, bool modal=true );
+    KAboutApplication( const KAboutData *aboutData, QWidget *parent=0, bool modal=true );
 
 /*
  FIXME: The two constructors should be replaced with the following  after the lib freeze:

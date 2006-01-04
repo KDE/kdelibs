@@ -953,11 +953,10 @@ public:
 #endif
 
 
-KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
+KColorDialog::KColorDialog( QWidget *parent, bool modal )
   :KDialog( parent, i18n("Select Color"),
 		modal ? Ok|Cancel : Close )
 {
-  setObjectName(name);
   enableButtonSeparator(true);
   setModal(modal);
   d = new KColorDialogPrivate;
@@ -1316,7 +1315,8 @@ void KColorDialog::setColor( const QColor &col )
 //
 int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 {
-  KColorDialog dlg( parent, "Color Selector", true );
+  KColorDialog dlg( parent, true );
+  dlg.setObjectName( "Color Selector" );
   if ( theColor.isValid() )
     dlg.setColor( theColor );
   int result = dlg.exec();
@@ -1334,7 +1334,8 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 //
 int KColorDialog::getColor( QColor &theColor, const QColor& defaultCol, QWidget *parent )
 {
-  KColorDialog dlg( parent, "Color Selector", true );
+  KColorDialog dlg( parent, true );
+  dlg.setObjectName( "Color Selector" );
   dlg.setDefaultColor( defaultCol );
   dlg.setColor( theColor );
   int result = dlg.exec();

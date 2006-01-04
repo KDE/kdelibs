@@ -71,10 +71,8 @@ public:
    *               KToolBar; in this case it will use the toolbar's
    *               size.
    * @param parent The standard parent
-   * @param name   The standard internal name
    */
-  KAnimWidget( const QString& icons, int size = 0,
-               QWidget *parent = 0L, const char *name = 0L );
+  KAnimWidget( const QString& icons, int size = 0, QWidget *parent = 0L );
 
   /**
    * Destructor

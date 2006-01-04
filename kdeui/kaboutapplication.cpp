@@ -25,6 +25,7 @@
 #include <qlabel.h>
 #include <QPixmap>
 #include <QList>
+
 #include <kaboutapplication.h>
 #include <kaboutdialog_private.h>
 #include <kaboutdata.h>
@@ -35,20 +36,18 @@
 #include <kactivelabel.h>
 #include "ktextedit.h"
 
-KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
-              bool modal )
+KAboutApplication::KAboutApplication( QWidget *parent, bool modal )
   :KAboutDialog( AbtTabbed|AbtProduct,
                  kapp ? kapp->caption() : QString(),
-                 Close, Close,
-     parent, name, modal )
+                 Close, Close, parent, modal )
 {
   buildDialog(KGlobal::instance()->aboutData());
 }
 
 KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent,
-                                      const char *name, bool modal )
+                                      bool modal )
   :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close,
-     parent, name, modal )
+     parent, modal )
 {
   buildDialog(aboutData);
 }

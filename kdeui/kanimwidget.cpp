@@ -41,9 +41,8 @@ public:
   int                    size;
 };
 
-KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
-                          const char *name )
-  : QFrame( parent, name ),
+KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent )
+  : QFrame( parent ),
     d( new KAnimWidgetPrivate )
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
