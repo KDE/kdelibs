@@ -44,9 +44,11 @@ private:
 };
 
 KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
- : KDialog(parent, name, modal), d(new KSSLCertDlgPrivate) {
+ : KDialog(parent ), d(new KSSLCertDlgPrivate) {
    QGridLayout *grid = new QGridLayout(this, 8, 6, KDialog::marginHint(),
                                                    KDialog::spacingHint() );
+   setObjectName(name);
+   setModal(modal);
 
    _send = new QRadioButton(i18n("Send certificate..."), this);
    grid->addMultiCellWidget(_send, 0, 0, 0, 2);
