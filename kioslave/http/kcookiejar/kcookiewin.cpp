@@ -74,8 +74,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
-           :KDialog( parent, "cookiealert", true )
+           :KDialog( parent )
 {
+	setModal(true);
+	setObjectName("cookiealert");
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setIcon( SmallIcon("cookie") );
