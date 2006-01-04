@@ -662,50 +662,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      */
     void disableResize();
 
-   /**
-    * read the dialogs size from the configuration according to the screen size.
-    * If no size is saved for one dimension of the screen, sizeHint() is returned.
-    *
-    * @param groupName Name of the group to read from. The old group
-    *                  of KGlobal::config is preserved.
-    */
-   QSize configDialogSize( const QString& groupName ) const;
-
-   /**
-    * read the dialogs size from the configuration according to the screen size.
-    * If no size is saved for one dimension of the screen, sizeHint() is returned.
-    *
-    * @param config The KConfig object to read from
-    * @param groupName Name of the group to read from. The old group
-    *                  of KGlobal::config is preserved.
-    * @since 3.2
-    */
-   QSize configDialogSize( KConfig& config, const QString& groupName ) const;
-
-   /**
-    * save the dialogs size dependant on the screen dimension either to the
-    * global or application config file.
-    *
-    * @param groupName The group to which the dialogs size is saved. See configDialogSize
-    * to read the size.
-    * @param global Set to true if the entry should go to the global config rather
-    *        than to the applications config. Default is false.
-    */
-   void saveDialogSize( const QString& groupName, bool global=false );
-
-   /**
-    * save the dialogs size dependant on the screen dimension.
-    *
-    * @param config The KConfig object to write to.
-    * @param groupName The group to which the dialogs size is saved. See
-    * configDialogSize to read the size.
-    * @param global Set to true if the entry should go to the global config.
-    *        Default is false.
-    * @since 3.2
-    */
-   void saveDialogSize( KConfig& config, const QString& groupName,
-			     bool global=false ) const;
-
     /**
      * Sets the appearance of the OK button.
      *

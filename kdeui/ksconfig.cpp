@@ -196,14 +196,12 @@ KSpellConfig::writeGlobalSettings ()
 {
   KConfigGroup cg( kc,"KSpell" );
 
-  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), true, true);
-  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), true, true);
-  cg.writeEntry ("KSpell_Dictionary", dictionary(), true, true);
-  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), true, true);
-  cg.writeEntry ("KSpell_Encoding", (int) encoding(),
-		  true, true);
-  cg.writeEntry ("KSpell_Client", client(),
-		  true, true);
+  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_Dictionary", dictionary(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_Encoding", (int) encoding(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_Client", client(), KConfigBase::Global);
   kc->sync();
 
   return true;

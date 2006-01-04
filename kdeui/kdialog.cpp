@@ -1198,9 +1198,9 @@ void KDialog::saveDialogSize( KConfig& config, const QString& groupName,
    QSize sizeToSave = size();
 
    cg.writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
-		  QString::number( sizeToSave.width()), true, global);
+		  QString::number( sizeToSave.width()), (global?KConfigBase::Global:KConfigBase::Normal)   );
    cg.writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
-		  QString::number( sizeToSave.height()), true, global);
+		  QString::number( sizeToSave.height()), (global?KConfigBase::Global:KConfigBase::Normal));
 }
 
 

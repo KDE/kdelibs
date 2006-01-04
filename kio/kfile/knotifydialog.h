@@ -49,7 +49,7 @@ namespace KNotify
  * @since 3.1
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KNotifyDialog : public KDialogBase
+class KIO_EXPORT_DEPRECATED KNotifyDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -148,7 +148,7 @@ namespace KNotify
     /**
      * @internal
      */
-    class KIO_EXPORT Application
+    class KIO_EXPORT_DEPRECATED Application
     {
     public:
         Application( const QString &path );
@@ -173,7 +173,7 @@ namespace KNotify
     };
 
 
-    class KIO_EXPORT ApplicationList : public QList<Application*>
+    class KIO_EXPORT_DEPRECATED ApplicationList : public QList<Application*>
     {
 		public:
 		virtual ~ApplicationList(){}
@@ -189,7 +189,7 @@ namespace KNotify
     /**
      * @internal
      */
-    class KIO_EXPORT KNotifyWidget : public KNotifyWidgetBase
+    class KIO_EXPORT_DEPRECATED KNotifyWidget : public KNotifyWidgetBase
     {
         Q_OBJECT
 

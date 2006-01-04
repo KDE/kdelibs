@@ -1042,38 +1042,34 @@ QDateTime KConfigBase::readDateTimeEntry( const char *pKey,
 }
 
 void KConfigBase::writeEntry( const QString& pKey, const QString& value,
-                                 bool bPersistent,
-                                 bool bGlobal,
-                                 bool bNLS )
+                                 QFlags<WriteConfigFlag> pFlags )
 {
-   writeEntry(pKey.toUtf8().data(), value, bPersistent,  bGlobal, bNLS);
+   writeEntry(pKey.toUtf8().data(), value, pFlags);
 }
 
 void KConfigBase::writeEntry( const char *pKey, const QString& value,
-                                 bool bPersistent,
-                                 bool bGlobal,
-                                 bool bNLS )
+						QFlags<WriteConfigFlag> pFlags )
 {
   // the KConfig object is dirty now
   // set this before any IO takes place so that if any derivative
   // classes do caching, they won't try and flush the cache out
   // from under us before we read. A race condition is still
   // possible but minimized.
-  if( bPersistent )
+	if( ! (pFlags & NoPersistent) )
     setDirty(true);
 
   if (!bLocaleInitialized && KGlobal::locale())
     setLocale();
 
   KEntryKey entryKey(mGroup, pKey);
-  entryKey.bLocal = bNLS;
+  entryKey.bLocal = pFlags & NLS;
 
   KEntry aEntryData;
   aEntryData.mValue = value.toUtf8();  // set new value
-  aEntryData.bGlobal = bGlobal;
-  aEntryData.bNLS = bNLS;
+  aEntryData.bGlobal = pFlags & Global;
+  aEntryData.bNLS = pFlags & NLS;
 
-  if (bPersistent)
+  if( ! (pFlags & NoPersistent) )
     aEntryData.bDirty = true;
 
   // rewrite the new value
@@ -1081,10 +1077,9 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
 }
 
 void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
-                                  bool bPersistent, bool bGlobal,
-                                  bool bNLS)
+								  QFlags<WriteConfigFlag> pFlags)
 {
-   writePathEntry(pKey.toUtf8().data(), path, bPersistent, bGlobal, bNLS);
+   writePathEntry(pKey.toUtf8().data(), path, pFlags);
 }
 
 
@@ -1150,26 +1145,23 @@ static QString translatePath( QString path )
 }
 
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
-                                  bool bPersistent, bool bGlobal,
-                                  bool bNLS)
+								  QFlags<WriteConfigFlag> pFlags)
 {
-   writeEntry(pKey, translatePath(path), bPersistent, bGlobal, bNLS);
+   writeEntry(pKey, translatePath(path), pFlags);
 }
 
-void KConfigBase::writePathEntry ( const QString& pKey, const QStringList &list,
-                               char sep , bool bPersistent,
-                               bool bGlobal, bool bNLS )
+void KConfigBase::writePathEntry ( const QString& pKey, const QStringList &list, char sep, 
+								   QFlags<WriteConfigFlag> pFlags)
 {
-  writePathEntry(pKey.toUtf8().data(), list, sep, bPersistent, bGlobal, bNLS);
+  writePathEntry(pKey.toUtf8().data(), list, sep, pFlags);
 }
 
 void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
-                               char sep , bool bPersistent,
-                               bool bGlobal, bool bNLS )
+								   char sep , QFlags<WriteConfigFlag> pFlags )
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
+      writeEntry( pKey, QString::fromLatin1(""), pFlags );
       return;
     }
   QStringList new_list;
@@ -1179,19 +1171,18 @@ void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
       QString value = *it;
       new_list.append( translatePath(value) );
     }
-  writeEntry( pKey, new_list, sep, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, new_list, sep, pFlags );
 }
 
+
 void KConfigBase::deleteEntry( const QString& pKey,
-                                 bool bNLS,
-                                 bool bGlobal)
+							   QFlags<WriteConfigFlag> pFlags)
 {
-   deleteEntry(pKey.toUtf8().data(), bNLS, bGlobal);
+	deleteEntry(pKey.toUtf8().data(),  pFlags);
 }
 
 void KConfigBase::deleteEntry( const char *pKey,
-                                 bool bNLS,
-                                 bool bGlobal)
+							   QFlags<WriteConfigFlag> pFlags)
 {
   // the KConfig object is dirty now
   // set this before any IO takes place so that if any derivative
@@ -1206,8 +1197,8 @@ void KConfigBase::deleteEntry( const char *pKey,
   KEntryKey entryKey(mGroup, pKey);
   KEntry aEntryData;
 
-  aEntryData.bGlobal = bGlobal;
-  aEntryData.bNLS = bNLS;
+  aEntryData.bGlobal = pFlags & Global;
+  aEntryData.bNLS = pFlags & NLS;
   aEntryData.bDirty = true;
   aEntryData.bDeleted = true;
 
@@ -1215,11 +1206,11 @@ void KConfigBase::deleteEntry( const char *pKey,
   putData(entryKey, aEntryData, true);
 }
 
-bool KConfigBase::deleteGroup( const QString& _group, bool bDeep, bool bGlobal )
+bool KConfigBase::deleteGroup( const QString& _group, QFlags<WriteConfigFlag> pFlags )
 {
   KEntryMap aEntryMap = internalEntryMap(_group);
 
-  if (!bDeep) {
+  if (!pFlags & NoRecursive) {
     // Check if it empty
     return aEntryMap.isEmpty();
   }
@@ -1234,7 +1225,7 @@ bool KConfigBase::deleteGroup( const QString& _group, bool bDeep, bool bGlobal )
     {
       (*aIt).bDeleted = true;
       (*aIt).bDirty = true;
-      (*aIt).bGlobal = bGlobal;
+      (*aIt).bGlobal = pFlags & Global;
       (*aIt).mValue = 0;
       putData(aIt.key(), *aIt, checkGroup);
       checkGroup = false;
@@ -1246,32 +1237,31 @@ bool KConfigBase::deleteGroup( const QString& _group, bool bDeep, bool bGlobal )
   return true;
 }
 
+
 void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
-                               bool bPersistent,
-                               bool bGlobal, bool bNLS )
+							   QFlags<WriteConfigFlag> pFlags )
 {
-  writeEntry(pKey.toUtf8().data(), prop, bPersistent, bGlobal, bNLS);
+  writeEntry(pKey.toUtf8().data(), prop, pFlags);
 }
 
 void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
-                               bool bPersistent,
-                               bool bGlobal, bool bNLS )
+							   QFlags<WriteConfigFlag> pFlags )
 {
   switch( prop.type() )
     {
     case QVariant::Invalid:
-      writeEntry( pKey, "", bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, "", pFlags );
       return;
     case QVariant::String:
-      writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toString(), pFlags );
       return;
     case QVariant::StringList:
-    case QVariant::List:
-      writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
+	case QVariant::List:
+      writeEntry( pKey, prop.toStringList(), ',', pFlags );
       return;
     case QVariant::ByteArray: {
       QByteArray ba = prop.toByteArray();
-      writeEntry( pKey, QString::fromUtf8(ba.constData(), ba.length()), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QString::fromUtf8(ba.constData(), ba.length()), pFlags);
       return;
     }
     case QVariant::Point: {
@@ -1280,7 +1270,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         list.insert( 0, rPoint.x() );
         list.insert( 1, rPoint.y() );
 
-        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        writeEntry( pKey, list, pFlags );
         return;
     }
     case QVariant::Rect:{
@@ -1291,7 +1281,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         list.insert( 2, rRect.width() );
         list.insert( 3, rRect.height() );
 
-        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        writeEntry( pKey, list, pFlags );
         return;
     }
     case QVariant::Size:{
@@ -1300,7 +1290,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         list.insert( 0, rSize.width() );
         list.insert( 1, rSize.height() );
 
-        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        writeEntry( pKey, list, pFlags );
         return;
     }
     case QVariant::Int:
@@ -1310,13 +1300,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Color:
 //    case QVariant::KeySequence:
     case QVariant::Font:
-        writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
+        writeEntry( pKey, prop.toString(), pFlags );
         return;
     case QVariant::LongLong:
-      writeEntry( pKey, QString::number(prop.toLongLong()), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QString::number(prop.toLongLong()), pFlags );
       return;
     case QVariant::ULongLong:
-      writeEntry( pKey, QString::number(prop.toULongLong()), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QString::number(prop.toULongLong()), pFlags );
       return;
     case QVariant::Date:
     case QVariant::DateTime: {
@@ -1334,7 +1324,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         list.insert( 4, time.minute() );
         list.insert( 5, time.second() );
 
-        writeEntry( pKey, list, bPersistent, bGlobal, bNLS );
+        writeEntry( pKey, list, pFlags );
         return;
     }
 
@@ -1363,7 +1353,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const Q3StrList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
-  writeEntry(pKey.toUtf8().data(), list, sep, bPersistent, bGlobal, bNLS);
+  writeEntry(pKey.toUtf8().data(), list, sep, bPresistent, bGlobal, bNLS);
 }
 
 void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
@@ -1396,24 +1386,22 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
     }
   if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
-  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, str_list, sep, bPresistent, bGlobal, bNLS );
 }
 #endif
 
-void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
-                               char sep , bool bPersistent,
-                               bool bGlobal, bool bNLS )
+void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list, char sep,
+							   QFlags<WriteConfigFlag> pFlags )
 {
-  writeEntry(pKey.toUtf8().data(), list, sep, bPersistent, bGlobal, bNLS);
+  writeEntry(pKey.toUtf8().data(), list, sep, pFlags);
 }
 
-void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
-                               char sep , bool bPersistent,
-                               bool bGlobal, bool bNLS )
+void KConfigBase::writeEntry ( const char *pKey, const QStringList &list, char sep, 
+							   QFlags<WriteConfigFlag> pFlags )
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
+      writeEntry( pKey, QString::fromLatin1(""), pFlags );
       return;
     }
   QString str_list;
@@ -1434,7 +1422,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
     }
   if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
-  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, str_list, pFlags );
 }
 
 void KConfigBase::parseConfigFiles()
@@ -1579,7 +1567,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
 
 void KConfigGroup::deleteGroup(bool bGlobal)
 {
-  mMaster->deleteGroup(KConfigBase::group(), true, bGlobal);
+	mMaster->deleteGroup(KConfigBase::group(),bGlobal?Global:Normal);
 }
 
 bool KConfigGroup::groupIsImmutable() const

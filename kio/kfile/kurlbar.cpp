@@ -642,7 +642,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 
             item = static_cast<KURLBarItem*>( item->next() );
         }
-        config->writeEntry("Number of Entries", numGlobals, true, true);
+        config->writeEntry("Number of Entries", numGlobals, KConfigBase::Global);
     }
 
     m_isModified = false;
@@ -660,11 +660,10 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
     QString IconGroup = "IconGroup_";
 
     QString number = QString::number( i );
-    config->writePathEntry( URL + number, item->url().prettyURL(), true, global );
-
-    config->writeEntry( Description + number, item->description(),true,global);
-    config->writeEntry( Icon + number, item->icon(), true, global );
-    config->writeEntry( IconGroup + number, item->iconGroup(), true, global );
+    config->writePathEntry( URL + number, item->url().prettyURL(),  (global?KConfigBase::Global:KConfigBase::Normal) );
+    config->writeEntry( Description + number, item->description(), (global?KConfigBase::Global:KConfigBase::Normal));
+    config->writeEntry( Icon + number, item->icon(), (global?KConfigBase::Global:KConfigBase::Normal) );
+    config->writeEntry( IconGroup + number, item->iconGroup(), (global?KConfigBase::Global:KConfigBase::Normal) );
 }
 
 

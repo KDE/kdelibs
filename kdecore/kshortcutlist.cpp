@@ -116,7 +116,7 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 
 	// If it has the deprecated group [Keys], remove it
 	if( pConfig->hasGroup( "Keys" ) )
-		pConfig->deleteGroup( "Keys", true );
+		pConfig->deleteGroup( "Keys" );
 
 	KConfigGroup cg( pConfig, sGroup );
 
@@ -133,13 +133,13 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 				if( s.isEmpty() )
 					s = "none";
 				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
-				cg.writeEntry( sName, s, true, bGlobal );
+				cg.writeEntry( sName, s, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
 				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
-				cg.deleteEntry( sName, false, bGlobal );
+				cg.deleteEntry( sName, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 		}
 	}

@@ -490,13 +490,13 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 				kdDebug(125) << "\twriting " << action.m_sName << " = " << s << endl;
 				// Is passing bGlobal irrelevant, since if it's true,
 				//  then we're using the global config anyway? --ellis
-				cg.writeEntry( action.m_sName, s, true, bGlobal );
+				cg.writeEntry( action.m_sName, s, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
 				kdDebug(125) << "\tremoving " << action.m_sName << " because == default" << endl;
-				cg.deleteEntry( action.m_sName, bGlobal );
+				cg.deleteEntry( action.m_sName, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 
 		}

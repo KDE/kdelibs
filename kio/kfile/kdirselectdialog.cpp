@@ -284,8 +284,8 @@ void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
 {
     KConfigGroup conf( config, group );
     conf.writePathEntry( "History Items", d->urlCombo->historyItems(), ',',
-                     true, true);
-    conf.writeEntry( "DirSelectDialog Size", size(), true, true );
+                     KConfigBase::Global);
+    conf.writeEntry( "DirSelectDialog Size", size(), KConfigBase::Global );
 
     d->speedBar->save( config );
 

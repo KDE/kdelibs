@@ -1104,7 +1104,7 @@ KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char*
 KKeyDialog::~KKeyDialog()
 {
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
-	group.writeEntry( "Dialog Size", size(), true, true );
+	group.writeEntry( "Dialog Size", size(), KConfigBase::Global );
 }
 
 bool KKeyDialog::insert(KActionCollection *pColl, const QString &title)

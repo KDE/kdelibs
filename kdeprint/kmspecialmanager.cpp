@@ -66,7 +66,7 @@ bool KMSpecialManager::savePrinters()
 	conf.setGroup("General");
 	int	n = conf.readEntry("Number", QVariant(0)).toInt();
 	for (int i=0;i<n;i++)
-		conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i),true);
+		conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i));
 
 	// then add printers
 	n = 0;

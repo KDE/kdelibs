@@ -1215,7 +1215,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname 
     QString group = groupname;
     if (groupname.isEmpty())
       group = "RecentFiles";
-    config->deleteGroup( group, true );
+    config->deleteGroup( group );
     config->setGroup( group );
 
     // write file list

@@ -547,52 +547,6 @@ void KDialogBase::showTile( bool state )
   }
 }
 
-QSize KDialogBase::configDialogSize( const QString& groupName ) const
-{
-   return configDialogSize( *KGlobal::config(), groupName );
-}
-
-
-QSize KDialogBase::configDialogSize( KConfig& config,
-				      const QString& groupName ) const
-{
-   int w, h;
-   int scnum = QApplication::desktop()->screenNumber(parentWidget());
-   QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-   w = sizeHint().width();
-   h = sizeHint().height();
-
-   KConfigGroup cg(&config, groupName);
-   w = cg.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
-   h = cg.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
-
-   return QSize( w, h );
-}
-
-
-void KDialogBase::saveDialogSize( const QString& groupName, bool global )
-{
-   saveDialogSize( *KGlobal::config(), groupName, global );
-}
-
-
-void KDialogBase::saveDialogSize( KConfig& config, const QString& groupName,
-				      bool global ) const
-{
-   int scnum = QApplication::desktop()->screenNumber(parentWidget());
-   QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-   KConfigGroup cg(&config, groupName);
-   QSize sizeToSave = size();
-
-   cg.writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
-		  QString::number( sizeToSave.width()), true, global);
-   cg.writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
-		  QString::number( sizeToSave.height()), true, global);
-}
-
-
 
 KDialogBaseTile::KDialogBaseTile( QObject *parent )
   : QObject( parent ), mPixmap(0)
