@@ -5,6 +5,7 @@ MimeType=application/mbox
 Patterns=
 Comment=MBOX Mail Folder
 Comment[da]=MBOX mappe til e-mail
+Comment[de]=MBOX Mail-Ordner
 Comment[el]=Φάκελος αλληλογραφίας MBOX
 Comment[es]=Carpeta de correo MBOX
 Comment[et]=MBOX e-posti kaust
