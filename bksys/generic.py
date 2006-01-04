@@ -188,6 +188,10 @@ class genobj:
 
 		## a directory where to install the targets (optional)
 		self.instdir=''
+		if self.instdir=='shlib':
+			self.instdir=self.env['PREFIX']+os.sep+'lib'
+		elif self.instdir=='program':
+			self.instdir=self.env['PREFIX']+os.sep+'bin'
 
 		# change the working directory before reading the targets (do not use)
 		self.chdir=''
@@ -792,6 +796,8 @@ def generate(env):
 	# and set a flag in the environment to show whether or not it was
 	# given.
 	if 'install' in sys.argv:
+		# alias to None to avoid silly errors when there is nothing to install
+		env.Alias('install',None)
 		env['_INSTALL_']=1
 	else:
 		env['_INSTALL_']=0
