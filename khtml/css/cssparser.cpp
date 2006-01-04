@@ -494,9 +494,13 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         }
         break;
 
-    case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
-        // close-quote | no-open-quote | no-close-quote ]+ | inherit
-        return parseContent( propId, important );
+    case CSS_PROP_CONTENT:     //  normal | none | inherit |
+        // [ <string> | <uri> | <counter> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+
+        if ( id == CSS_VAL_NORMAL || id == CSS_VAL_NONE)
+            valid_primitive = true;
+        else
+            return parseContent( propId, important );
+        break;
 
     case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | pre-wrap | pre-line | inherit
         if ( id == CSS_VAL_NORMAL ||

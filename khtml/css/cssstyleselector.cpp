@@ -3169,9 +3169,17 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             break;
 
         if (isInitial) {
-            if (style->contentData())
-                style->contentData()->clearContent();
+            style->clearContent();
             return;
+        }
+
+        if (primitiveValue && primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_IDENT) {
+            // normal | none
+            if (primitiveValue->getIdent() == CSS_VAL_NORMAL || primitiveValue->getIdent() == CSS_VAL_NONE) {
+                style->clearContent();
+                return;
+            }
+            assert(false);
         }
 
         if(!value->isValueList()) return;

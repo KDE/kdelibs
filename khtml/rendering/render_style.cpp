@@ -878,6 +878,11 @@ void RenderStyle::setContent(EQuoteContent q, bool add)
     newContentData->_contentType = CONTENT_QUOTE;
 }
 
+void RenderStyle::clearContent() {
+    delete content;
+    content = 0;
+}
+
 ContentData::~ContentData()
 {
     clearContent();
@@ -900,6 +905,9 @@ void ContentData::clearContent()
         case CONTENT_COUNTER:
             _content.counter->deref();
             _content.counter = 0;
+            break;
+        case CONTENT_QUOTE:
+            _content.quote = NO_QUOTE;
             break;
         default:
             ;
