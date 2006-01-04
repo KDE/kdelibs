@@ -36,7 +36,7 @@ class KIntNumInput;
 class Q3VButtonGroup;
 class QMenu;
 
-class KDEUI_EXPORT KEdGotoLine : public KDialogBase
+class KDEUI_EXPORT KEdGotoLine : public KDialog
 {
     Q_OBJECT
 
@@ -58,7 +58,7 @@ private:
 };
 
 ///
-class KDEUI_EXPORT KEdFind : public KDialogBase
+class KDEUI_EXPORT KEdFind : public KDialog
 {
     Q_OBJECT
     Q_PROPERTY( QString text READ getText WRITE setText )
@@ -83,7 +83,6 @@ public:
     KHistoryCombo *searchCombo() const;
 
 protected slots:
-    void slotCancel( void );
     void slotUser1( void );
     void textSearchChanged ( const QString & );
 
@@ -94,7 +93,7 @@ private:
     QCheckBox *sensitive;
     QCheckBox *direction;
 
-    virtual void done(int i ) { KDialogBase::done(i); }
+    virtual void done(int i ) { KDialog::done(i); }
 
 signals:
 
@@ -108,7 +107,7 @@ private:
 };
 
 ///
-class KDEUI_EXPORT KEdReplace : public KDialogBase
+class KDEUI_EXPORT KEdReplace : public KDialog
 {
     Q_OBJECT
 
@@ -136,9 +135,7 @@ public:
     bool 	case_sensitive();
     bool 	get_direction();
 
-protected slots:
-    void slotCancel( void );
-    void slotClose( void );
+private slots:
     void slotUser1( void );
     void slotUser2( void );
     void slotUser3( void );
@@ -148,7 +145,7 @@ private:
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
 
-	virtual void done(int i ) { KDialogBase::done(i); }
+	virtual void done(int i ) { KDialog::done(i); }
 
 signals:
     void replace();

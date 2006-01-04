@@ -378,7 +378,7 @@ void KEdit::computePosition()
 
 void KEdit::keyPressEvent ( QKeyEvent *e)
 {
-  // ignore Ctrl-Return so that KDialogBase can catch them
+  // ignore Ctrl-Return so that KDialog can catch them
   if ( e->key() == Qt::Key_Return && e->state() == Qt::ControlModifier ) {
       e->ignore();
       return;
@@ -637,13 +637,13 @@ void KEdit::viewportPaintEvent( QPaintEvent*pe )
 
 
 void KEdGotoLine::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 void KEdFind::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 void KEdReplace::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 void KEdit::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

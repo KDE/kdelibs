@@ -697,12 +697,14 @@ public:
 
 
 KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Find"),
-		modal ? User1|Cancel : User1|Close, User1, false, KGuiItem( i18n("&Find"), "find") )
+  :KDialog( parent, i18n("Find"), modal ? User1|Cancel : User1|Close, 0 , KGuiItem( i18n("&Find"), "find") )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
-
+  setObjectName(name);
+  setModal(modal);
+  enableButtonSeparator(false);
+  setDefaultButton(User1);
   QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
@@ -739,18 +741,13 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
 KEdFind::~KEdFind()
 {
+	emit done();
     delete d;
 }
 
 void KEdFind::textSearchChanged ( const QString &text )
 {
    enableButton( KDialogBase::User1, !text.isEmpty() );
-}
-
-//FIXME: it seems this slot is never called
-void KEdFind::slotCancel( void )
-{
-  emit done();
 }
 
 void KEdFind::slotUser1( void )
@@ -826,17 +823,19 @@ public:
 };
 
 KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Replace"),
-		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close,
-                User3, false,
+  :KDialog( parent, i18n("Replace"),
+		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close, 0 ,
 		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
-
+  setObjectName(name);
+  setModal(modal);
+  setDefaultButton(User3);
   setButtonBoxOrientation( Qt::Vertical );
-
-  QFrame *page = makeMainWidget();
+  enableButtonSeparator(false);
+  QWidget *page = new QWidget(this);
+  setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   d = new KEdReplacePrivate( page );
@@ -882,6 +881,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 
 KEdReplace::~KEdReplace()
 {
+	emit done();
     delete d;
 }
 
@@ -891,17 +891,6 @@ void KEdReplace::textSearchChanged ( const QString &text )
     enableButton( KDialogBase::User1, !state );
     enableButton( KDialogBase::User2, !state );
     enableButton( KDialogBase::User3, !state );
-}
-
-//FIXME: it seems this slot is never called (remove it?)
-void KEdReplace::slotCancel( void )
-{
-  emit done();
-}
-//FIXME: it seems this slot is never called (remove it?)
-void KEdReplace::slotClose( void )
-{
-	emit done();
 }
 
 
@@ -977,8 +966,13 @@ KHistoryCombo * KEdReplace::replaceCombo() const
 
 
 KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Go to Line"), modal ? Ok|Cancel : Ok|Close, Ok, false )
+  :KDialog( parent, i18n("Go to Line"), modal ? Ok|Cancel : Ok|Close )
 {
+  setObjectName(name);
+  setModal(modal);
+  setDefaultButton(User3);
+  enableButtonSeparator(false);
+
   QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
