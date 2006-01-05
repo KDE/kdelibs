@@ -1,3 +1,8 @@
+2006-01-03  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * css/cssparser.cpp: Allow content: normal | none
+        * css/cssstyleselector.cpp: Handle content: normal | none
+
 2005-12-09  Germain Garand  <germain@ebooksfrance.org>
 
         implement quirky HTML alignment ; introduce special float values
@@ -14,7 +19,7 @@
 
 2005-12-06  Dirk Mueller  <mueller@kde.org>
 
-	* html/htmltokenizer.cpp: don't treat <!---> specially. 
+	* html/htmltokenizer.cpp: don't treat <!---> specially.
         fixes bug 93799.
 
 2005-12-02  Charles Samuels  <charles@kde.org>
@@ -25,15 +30,15 @@
 
         sizing of percent objects within table cells
 
-        * rendering/render_box.cpp (calcPercentageHeight): transfer most of the logic for table cells in render_table as 
+        * rendering/render_box.cpp (calcPercentageHeight): transfer most of the logic for table cells in render_table as
         it was partly redundant here. Don't apply the table cell sizing hacks in strict mode - no other engine does that.
         Don't forget anonymous blocks - those must not stop recursion obviously.
         Move substraction of the border/padding after calculation (spotted in WC)
 
-        * rendering/render_table.{cpp,h}: 
+        * rendering/render_table.{cpp,h}:
         had member booleans to hold whether flexing of cells in a row is
-        needed, and in the affirmative, whether we need to mark our anonymous childs for relayout (hence go one level deeper). 
-        Part of line 1394 comes from WebCore. 
+        needed, and in the affirmative, whether we need to mark our anonymous childs for relayout (hence go one level deeper).
+        Part of line 1394 comes from WebCore.
         Also: don't allow negative offset in vertical alignment when content overflows ; matches MSIE better.
 
 2005-10-28  Germain Garand  <germain@ebooksfrance.org>
@@ -43,7 +48,7 @@
 
 2005-10-21  Germain Garand  <germain@ebooksfrance.org>
 
-        * rendering/bidi.cpp (findNextLineBreak): implement needed quirk for line breaking of 
+        * rendering/bidi.cpp (findNextLineBreak): implement needed quirk for line breaking of
         replaced elements within table cells.
         * rendering/render_block.cpp (calcInlineMinMaxWidth): ditto.
         Bugs #93745, #72457
@@ -52,12 +57,12 @@
        * ecma/xmlhttprequest.cpp:
        -Add support for default HTTP referer header. Fixes bug# 113962.
        - Sanitize all setRequestHeader calls:
-         - We now use a BANNED_HTTP_HEADERS list to filter out 
+         - We now use a BANNED_HTTP_HEADERS list to filter out
            potentially problematic headers.
-         - We always call open on "get" and "post" requests set 
+         - We always call open on "get" and "post" requests set
            through this function.
          - We sanitize any attempts to set the "referer" field.
-	 
+
 2005-10-15  Dawit Alemayehu <adawit@kde.org>
         * ecma/xmlhttprequest.cpp: Handle HTTP response headers case insensitively.
         Fix for bug 110768.
