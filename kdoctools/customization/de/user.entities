@@ -7,7 +7,7 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY Backspace	"<keycap>Rücktaste</keycap>">
+<!ENTITY Backspace	"<keycap>R&uuml;cktaste</keycap>">
 <!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
 <!ENTITY Ctrl   "<keycap>Strg</keycap>">
 <!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
