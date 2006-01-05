@@ -7,14 +7,18 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY cdrom  "<abbrev>CD-ROM</abbrev>">
-<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
-<!ENTITY dh     "<abbrev>d.h.</abbrev>">
+<!ENTITY Backspace	"<keycap>Rücktaste</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
+<!ENTITY Ctrl   "<keycap>Strg</keycap>">
+<!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY eg		'<abbrev>z.&nbsp;B</abbrev>'> 
+<!ENTITY Enter	"<keycap>Eingabe</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie     "<abbrev>d.&nbsp;h.</abbrev>">
+<!ENTITY infocenter	"<application>Infozentrum</application>">
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
@@ -33,11 +37,12 @@
  kicker -->
 <!ENTITY kwm    "<application>kwm</application>">
 <!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
+<!ENTITY OS     "Betriebssystem">
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
 <!ENTITY Strg "<keycap>Strg</keycap>"><!-- ctrl -->
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
 <!ENTITY Tab "<keycap>Tab</keycap>"> <!-- Tab -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
-<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
- -->
-<!ENTITY zb     "<abbrev>z.B.</abbrev>" ><!-- eg -->
+<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
+<!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
+<!ENTITY ua	    "<abbrev>u.&nbsp;a.</abbrev>" >
