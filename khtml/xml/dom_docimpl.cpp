@@ -2402,10 +2402,10 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
     if (!m_windowEventListeners.listeners)
         return;
 
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
 
     //Grab a copy in case of clear
-    Q3ValueList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
+    QList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
     Event ev(evt);
     for (it = listeners.begin(); it != listeners.end(); ++it) {
         //Check to make sure it didn't get removed. KDE4: use Java-style iterators

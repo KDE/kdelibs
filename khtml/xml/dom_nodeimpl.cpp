@@ -594,8 +594,8 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     // removeEventListener (e.g. called from a JS event listener) might
     // invalidate the item after the current iterator (which "it" is pointing to).
     // So we make a copy of the list.
-    Q3ValueList<RegisteredEventListener> listeners = *m_regdListeners.listeners;
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener> listeners = *m_regdListeners.listeners;
+    QList<RegisteredEventListener>::iterator it;
     for (it = listeners.begin(); it != listeners.end(); ++it) {
         //Check whether this got removed...KDE4: use Java-style iterators
         if (!m_regdListeners.stillContainsListener(*it))
@@ -1891,12 +1891,12 @@ void RegisteredListenerList::addEventListener(int id, EventListener *listener, c
 {
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!listeners)
-        listeners = new Q3ValueList<RegisteredEventListener>;
+        listeners = new QList<RegisteredEventListener>;
 
     // if this id/listener/useCapture combination is already registered, do nothing.
     // the DOM2 spec says that "duplicate instances are discarded", and this keeps
     // the listener order intact.
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
         if (*it == rl)
             return;
@@ -1911,7 +1911,7 @@ void RegisteredListenerList::removeEventListener(int id, EventListener *listener
 
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
         if (*it == rl) {
             listeners->remove(it);
@@ -1927,9 +1927,9 @@ bool RegisteredListenerList::isHTMLEventListener(EventListener* listener)
 void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listener)
 {
     if (!listeners)
-        listeners = new Q3ValueList<RegisteredEventListener>;
+        listeners = new QList<RegisteredEventListener>;
 
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
     if (!listener) {
         for (it = listeners->begin(); it != listeners->end(); ++it) {
             if ((*it).id == id && isHTMLEventListener((*it).listener)) {
@@ -1960,7 +1960,7 @@ EventListener *RegisteredListenerList::getHTMLEventListener(int id)
     if (!listeners)
         return 0;
 
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
         if ((*it).id == id && isHTMLEventListener((*it).listener)) {
             return (*it).listener;
@@ -1973,7 +1973,7 @@ bool RegisteredListenerList::hasEventListener(int id)
     if (!listeners)
         return false;
 
-    Q3ValueList<RegisteredEventListener>::iterator it;
+    QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
         if ((*it).id == id)
             return true;
