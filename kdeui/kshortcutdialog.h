@@ -42,7 +42,7 @@ class KDEUI_EXPORT KShortcutDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
+	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0 );
 	~KShortcutDialog();
 
 	void setShortcut( const KShortcut & shortcut );

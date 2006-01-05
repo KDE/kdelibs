@@ -92,24 +92,24 @@ public:
 
 
 
-KRuler::KRuler(QWidget *parent, const char *name)
+KRuler::KRuler(QWidget *parent)
   : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(Qt::Horizontal)
 {
-  init(name);
+  init();
   setFixedHeight(FIX_WIDTH);
 }
 
 
 KRuler::KRuler(Qt::Orientation orient,
-               QWidget *parent, const char *name, Qt::WFlags f)
+               QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
   setWindowFlags(f);
-  init(name);
+  init();
   if (orient == Qt::Horizontal)
     setFixedHeight(FIX_WIDTH);
   else
@@ -118,13 +118,13 @@ KRuler::KRuler(Qt::Orientation orient,
 
 
 KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
-               QWidget *parent, const char *name, Qt::WFlags f)
+               QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
   setWindowFlags(f);
-  init(name);
+  init();
   if (orient == Qt::Horizontal)
     setFixedHeight(widgetWidth);
   else
@@ -132,9 +132,8 @@ KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
 }
 
 
-void KRuler::init(const char* name)
+void KRuler::init()
 {
-  if (name) setObjectName(name);
 #ifdef __GNUC__
   #warning FIXME setFrameStyle(WinPanel | Raised);
 #endif
@@ -558,7 +557,7 @@ KRuler::slotEndOffset(int offset)
 }
 
 void
-KRuler::paintEvent(QPaintEvent *e)
+KRuler::paintEvent(QPaintEvent */*e*/)
 {
   //  debug ("KRuler::drawContents, %s",(horizontal==dir)?"horizontal":"vertical");
 

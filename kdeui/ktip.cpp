@@ -172,8 +172,8 @@ QString KTipDatabase::tip() const
 KTipDialog *KTipDialog::mInstance = 0;
 
 
-KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
-  : KDialog(parent, name)
+KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
+  : KDialog(parent)
 {
     /**
      * Parent is 0L when TipDialog is used as a mainWidget. This should

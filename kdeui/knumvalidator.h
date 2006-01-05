@@ -45,11 +45,11 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
     /**
       Constuctor.  Also sets the base value.
     */
-    KIntValidator ( QWidget * parent, int base = 10, const char * name = 0 );
+    KIntValidator ( QWidget * parent, int base = 10 );
     /**
      * Constructor.  Also sets the minimum, maximum, and numeric base values.
      */
-    KIntValidator ( int bottom, int top, QWidget * parent, int base = 10, const char * name = 0 );
+    KIntValidator ( int bottom, int top, QWidget * parent, int base = 10 );
     /**
      * Destructs the validator.
      */
@@ -110,15 +110,15 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
     /**
      * Constructor.
      */
-    KFloatValidator ( QWidget * parent, const char * name = 0 );
+    KFloatValidator ( QWidget * parent );
     /**
      * Constructor.  Also sets the minimum and maximum values.
      */
-    KFloatValidator ( double bottom, double top, QWidget * parent, const char * name = 0 );
+    KFloatValidator ( double bottom, double top, QWidget * parent );
     /**
      * Constructor.  Sets the validator to be locale aware if @p localeAware is true.
      */
-    KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent, const char * name = 0 );
+    KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent );
     /**
      * Destructs the validator.
      */
@@ -183,12 +183,12 @@ public:
   /** Constuct a locale-aware KDoubleValidator with default range
       (whatever QDoubleValidator uses for that) and parent @p
       parent */
-  KDoubleValidator( QObject * parent, const char * name=0 );
+  KDoubleValidator( QObject * parent );
   /** Constuct a locale-aware KDoubleValidator for range [@p bottom,@p
       top] and a precision of @p decimals decimals after the decimal
       point.  */
   KDoubleValidator( double bottom, double top, int decimals,
-		    QObject * parent, const char * name=0 );
+		    QObject * parent );
   /** Destructs the validator.
    */
   virtual ~KDoubleValidator();

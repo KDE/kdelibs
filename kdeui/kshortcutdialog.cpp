@@ -65,11 +65,10 @@
 
 bool KShortcutDialog::s_showMore = false;
 
-KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent, const char* name )
+KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent )
 : KDialog( parent, i18n("Configure Shortcut"),
                KDialog::Details|KDialog::Ok|KDialog::Cancel )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal(true);
 

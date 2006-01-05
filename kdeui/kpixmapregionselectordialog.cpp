@@ -26,9 +26,8 @@
 #include <kvbox.h>
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
-     const char *name, bool modal ) : KDialog(parent, i18n("Select Region of Image"), Help|Ok|Cancel )
+     bool modal ) : KDialog(parent, i18n("Select Region of Image"), Help|Ok|Cancel )
 {
-  setObjectName(name);
   enableButtonSeparator( true );
   setModal( modal );
 

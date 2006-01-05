@@ -416,7 +416,8 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
   grid->addLayout( pushLayout, 1, 3 );
 
-  d->pbtnShortcut = new KKeyButton(d->fCArea, "key");
+  d->pbtnShortcut = new KKeyButton( d->fCArea );
+  d->pbtnShortcut->setObjectName( "key" );
   d->pbtnShortcut->setEnabled( false );
   connect( d->pbtnShortcut, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(capturedShortcut(const KShortcut&)) );
   grid->addRowSpacing( 1, d->pbtnShortcut->sizeHint().height() + 5 );

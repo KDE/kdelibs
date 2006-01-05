@@ -114,9 +114,8 @@ public:
      *
      * @param db TipDatabase that should be used by the TipDialog.
      * @param parent Parent widget of TipDialog.
-     * @param name The object name.
      */
-    KTipDialog(KTipDatabase *db, QWidget *parent = 0, const char *name = 0);
+    KTipDialog(KTipDatabase *db, QWidget *parent = 0);
     ~KTipDialog();
 
     /**

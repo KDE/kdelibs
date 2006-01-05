@@ -19,15 +19,15 @@
 #include "ksqueezedtextlabel.h"
 #include "kstringhandler.h"
 
-KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent, const char *name )
- : QLabel ( parent, name ) {
+KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent )
+ : QLabel ( parent ) {
   setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   fullText = text;
   squeezeTextToLabel();
 }
 
-KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent, const char *name )
- : QLabel ( parent, name ) {
+KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent )
+ : QLabel ( parent ) {
   setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 }
 

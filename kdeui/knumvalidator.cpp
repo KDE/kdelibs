@@ -34,8 +34,8 @@
 //  Implementation of KIntValidator
 //
 
-KIntValidator::KIntValidator ( QWidget * parent, int base, const char * name )
-  : QValidator(parent, name)
+KIntValidator::KIntValidator ( QWidget * parent, int base )
+  : QValidator(parent)
 {
   _base = base;
   if (_base < 2) _base = 2;
@@ -44,8 +44,8 @@ KIntValidator::KIntValidator ( QWidget * parent, int base, const char * name )
   _min = _max = 0;
 }
 
-KIntValidator::KIntValidator ( int bottom, int top, QWidget * parent, int base, const char * name )
-  : QValidator(parent, name)
+KIntValidator::KIntValidator ( int bottom, int top, QWidget * parent, int base )
+  : QValidator(parent)
 {
   _base = base;
   if (_base > 36) _base = 36;
@@ -161,16 +161,16 @@ public:
 };
 
 
-KFloatValidator::KFloatValidator ( QWidget * parent, const char * name )
-  : QValidator(parent, name)
+KFloatValidator::KFloatValidator ( QWidget * parent )
+  : QValidator(parent)
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
     _min = _max = 0;
 }
 
-KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent, const char * name )
-  : QValidator(parent, name)
+KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent )
+  : QValidator(parent)
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
@@ -178,8 +178,8 @@ KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent, 
     _max = top;
 }
 
-KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent, const char * name )
-  : QValidator(parent, name)
+KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent )
+  : QValidator(parent)
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers = localeAware;
@@ -297,15 +297,15 @@ public:
   bool acceptLocalizedNumbers;
 };
 
-KDoubleValidator::KDoubleValidator( QObject * parent, const char * name )
-  : QDoubleValidator( parent, name ), d( 0 )
+KDoubleValidator::KDoubleValidator( QObject * parent )
+  : QDoubleValidator( parent ), d( 0 )
 {
   d = new Private();
 }
 
 KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
-				    QObject * parent, const char * name )
-  : QDoubleValidator( bottom, top, decimals, parent, name ), d( 0 )
+				    QObject * parent )
+  : QDoubleValidator( bottom, top, decimals, parent ), d( 0 )
 {
   d = new Private();
 }

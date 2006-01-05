@@ -67,8 +67,8 @@ class KKeyButtonPrivate
 /*                                                                     */
 /***********************************************************************/
 
-KKeyButton::KKeyButton(QWidget *parent, const char *name)
-:	QPushButton( parent, name )
+KKeyButton::KKeyButton(QWidget *parent)
+:	QPushButton( parent )
 {
 	d = new KKeyButtonPrivate;
 	setFocusPolicy( Qt::StrongFocus );

@@ -78,7 +78,7 @@ public:
      * when the user clicks on the trray window with the left mouse
      * button.
      **/
-    KSystemTray( QWidget* parent = 0, const char* name  = 0 );
+    KSystemTray( QWidget* parent = 0 );
 
     /*
       Destructor

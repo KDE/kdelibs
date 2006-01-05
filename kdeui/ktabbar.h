@@ -38,7 +38,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     Q_OBJECT
 
 public:
-    KTabBar( QWidget* parent=0, const char* name=0 );
+    KTabBar( QWidget* parent=0 );
     virtual ~KTabBar();
 
     //virtual void setTabEnabled( int, bool );

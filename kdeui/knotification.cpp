@@ -39,20 +39,18 @@
 #include <kmacroexpander.h>
 #include <kwin.h>
 #include <kdebug.h>
-
 #include <kvbox.h>
+#include <kapplication.h>
+#include <dcopclient.h>
+
 #include <QMap>
 #include <QPixmap>
-#include <dcopclient.h>
-#include <q3cstring.h>
-#include <qpointer.h>
-#include <q3stylesheet.h>
-#include <qlabel.h>
-#include <qtimer.h>
-#include <qtabwidget.h>
-#include <kapplication.h>
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QPointer>
+#include <QLabel>
+#include <QTimer>
+#include <QTabWidget>
+#include <QFile>
+#include <QTextStream>
 #include <QDateTime>
 #include <QMetaObject>
 #include <QMetaEnum>
@@ -238,6 +236,3 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 }
 
 #include "knotification.moc"
-
-
-

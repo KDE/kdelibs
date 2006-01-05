@@ -538,8 +538,8 @@ void KPluginSelector::checkNeedForTabWidget()
         if( w )
         {
             kdDebug( 702 ) << "create TabWidget" << endl;
-            d->tabwidget = new KTabWidget( d->frame,
-                    "KPluginSelector TabWidget" );
+            d->tabwidget = new KTabWidget( d->frame  );
+            d->tabwidget->setObjectName( "KPluginSelector TabWidget" );
             w->reparent( d->tabwidget, QPoint( 0, 0 ) );
             d->tabwidget->addTab( w, w->catName() );
             connect( d->tabwidget, SIGNAL( currentChanged( QWidget * ) ), w,

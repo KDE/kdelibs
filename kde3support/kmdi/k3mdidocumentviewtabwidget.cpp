@@ -10,8 +10,9 @@
 #include <ktabbar.h>
 #include "k3mdidocumentviewtabwidget.h"
 
-K3MdiDocumentViewTabWidget::K3MdiDocumentViewTabWidget( QWidget* parent, const char* name ) : KTabWidget( parent, name )
+K3MdiDocumentViewTabWidget::K3MdiDocumentViewTabWidget( QWidget* parent, const char* name ) : KTabWidget( parent )
 {
+	setObjectName( name );
 	m_visibility = K3Mdi::ShowWhenMoreThanOneTab;
 	tabBar() ->hide();
 	setHoverCloseButton( true );

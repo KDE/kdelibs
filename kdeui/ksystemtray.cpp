@@ -58,8 +58,8 @@ public:
     bool on_all_desktops; // valid only when the parent widget was hidden
 };
 
-KSystemTray::KSystemTray( QWidget* parent, const char* name )
-    : QLabel( parent, name, Qt::WType_TopLevel )
+KSystemTray::KSystemTray( QWidget* parent )
+    : QLabel( parent, Qt::WType_TopLevel )
 {
 #ifdef Q_WS_X11
     #warning KDE4 porting: reinstate when the new QXEmbed is ready

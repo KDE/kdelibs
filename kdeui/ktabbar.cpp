@@ -34,7 +34,7 @@
 #include "ktabbar.h"
 #include "ktabwidget.h"
 
-KTabBar::KTabBar( QWidget *parent, const char *name )
+KTabBar::KTabBar( QWidget *parent )
     : QTabBar( parent )
     , mReorderStartTab( -1 )
     , mReorderPreviousTab( -1 )
@@ -46,9 +46,6 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     , mTabReorderingEnabled( false )
     , mTabCloseActivatePrevious( false )
 {
-    if (name)
-        setObjectName(name);
-
     setAcceptDrops( true );
     setMouseTracking( true );
 

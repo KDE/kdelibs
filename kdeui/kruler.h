@@ -109,22 +109,20 @@ public:
   /**
    * Constructs a horizontal ruler.
    */
-  KRuler(QWidget *parent=0, const char *name=0);
+  KRuler(QWidget *parent=0);
   /**
    * Constructs a ruler with orientation @p orient.
    *
-   * @p parent, @p name and @p f are passed to QFrame.
+   * @p parent and @p f are passed to QFrame.
    * The default look is a raised widget
    * but may be changed with the inherited QFrame methods.
    *
    * @param orient     Orientation of the ruler.
    * @param parent     Will be handed over to QFrame.
-   * @param name       Will be handed over to QFrame.
    * @param f          Will be handed over to QFrame.
    *
    **/
-  KRuler(Qt::Orientation orient, QWidget *parent=0, const char *name=0,
-	 Qt::WFlags f=0);
+  KRuler(Qt::Orientation orient, QWidget *parent=0, Qt::WFlags f=0);
 
   /**
    * Constructs a ruler with orientation @p orient and initial width @p widgetWidth.
@@ -132,17 +130,16 @@ public:
    * The width sets the fixed width of the widget. This is useful if you
    * want to draw the ruler bigger or smaller than the default size.
    * Note: The size of the marks doesn't change.
-   * @p parent, @p name and @p f are passed to QFrame.
+   * @p parent and @p f are passed to QFrame.
    *
    * @param orient      Orientation of the ruler.
    * @param widgetWidth Fixed width of the widget.
    * @param parent      Will be handed over to QFrame.
-   * @param name        Will be handed over to QFrame.
    * @param f           Will be handed over to QFrame.
    *
    */
   KRuler(Qt::Orientation orient, int widgetWidth, QWidget *parent=0,
-	 const char *name=0, Qt::WFlags f=0);
+	 Qt::WFlags f=0);
 
   /**
    * Destructor.
@@ -415,7 +412,7 @@ protected:
   virtual void paintEvent(QPaintEvent *);
 
 private:
-  void init(const char *name);
+  void init();
 
   Q3RangeControl range;
   Qt::Orientation dir;

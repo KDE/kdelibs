@@ -267,7 +267,7 @@ void KToolBar::init( bool readConfig, bool honorStyle )
 int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )
 {
-    KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance );
+    KToolBarButton *button = new KToolBarButton( icon, id, this, text, _instance );
 
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
@@ -280,7 +280,7 @@ int KToolBar::insertButton(const QString& icon, int id, const char *signal,
                             const QObject *receiver, const char *slot,
                             bool enabled, const QString& text, int index, KInstance *_instance )
 {
-    KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance);
+    KToolBarButton *button = new KToolBarButton( icon, id, this, text, _instance);
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     connect( button, signal, receiver, slot );
@@ -292,7 +292,7 @@ int KToolBar::insertButton(const QString& icon, int id, const char *signal,
 int KToolBar::insertButton(const QPixmap& pixmap, int id, bool enabled,
                             const QString& text, int index )
 {
-    KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text);
+    KToolBarButton *button = new KToolBarButton( pixmap, id, this, text);
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     doConnections( button );
@@ -305,7 +305,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
                             bool enabled, const QString& text,
                             int index )
 {
-    KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text);
+    KToolBarButton *button = new KToolBarButton( pixmap, id, this, text);
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     connect( button, signal, receiver, slot );
@@ -317,7 +317,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
 int KToolBar::insertButton(const QString& icon, int id, QMenu *popup,
                             bool enabled, const QString &text, int index )
 {
-    KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text );
+    KToolBarButton *button = new KToolBarButton( icon, id, this, text );
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     button->setPopup( popup );
@@ -329,7 +329,7 @@ int KToolBar::insertButton(const QString& icon, int id, QMenu *popup,
 int KToolBar::insertButton(const QPixmap& pixmap, int id, QMenu *popup,
                             bool enabled, const QString &text, int index )
 {
-    KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text );
+    KToolBarButton *button = new KToolBarButton( pixmap, id, this, text );
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     button->setPopup( popup );

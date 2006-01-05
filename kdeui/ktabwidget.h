@@ -53,7 +53,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool automaticResizeTabs READ automaticResizeTabs WRITE setAutomaticResizeTabs )
 
 public:
-    KTabWidget( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+    KTabWidget( QWidget *parent = 0, Qt::WFlags f = 0 );
     /**
      * Destructor.
      */

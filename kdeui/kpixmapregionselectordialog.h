@@ -47,8 +47,7 @@ public:
     * later the setPixmap method of the KPixmapRegionSelectorWidget widget of
     * the new object.
     */
-   KPixmapRegionSelectorDialog(QWidget *parent=0L, const char *name=0L,
-                      bool modal = false );
+   KPixmapRegionSelectorDialog(QWidget *parent=0L, bool modal = false );
    /**
     * The destructor of the dialog
     */

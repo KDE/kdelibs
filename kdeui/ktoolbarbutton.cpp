@@ -107,9 +107,9 @@ KToolBarButton::KToolBarButton( QWidget *_parent )
 }
 
 KToolBarButton::KToolBarButton( const QString& _icon, int _id,
-                                QWidget *_parent, const char *_name,
+                                QWidget *_parent,
                                 const QString &_txt, KInstance *_instance )
-    : QToolButton( _parent, _name ), d( 0 )
+    : QToolButton( _parent ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
@@ -141,9 +141,9 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
 }
 
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
-                                QWidget *_parent, const char *name,
+                                QWidget *_parent,
                                 const QString& txt)
-    : QToolButton( _parent, name ), d( 0 )
+    : QToolButton( _parent ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
@@ -498,7 +498,7 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
   }
 }
 
-void KToolBarButton::paintEvent( QPaintEvent*e )
+void KToolBarButton::paintEvent( QPaintEvent*/*e*/ )
 {
   QPainter painter(this);
   QStyle::State flags   = QStyle::State_None;

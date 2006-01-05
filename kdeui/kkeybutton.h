@@ -45,7 +45,7 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	/**
 	* Constructs  key button widget.
 	*/
-	KKeyButton( QWidget *parent = 0, const char *name = 0 );
+	KKeyButton( QWidget *parent = 0 );
 	/**
 	* Destructs the key button widget.
 	*/

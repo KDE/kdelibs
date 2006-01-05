@@ -54,11 +54,13 @@ public:
     }
 };
 
-KTabWidget::KTabWidget( QWidget *parent, const char *name, Qt::WFlags f )
-    : QTabWidget( parent, name, f )
+KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags f )
+    : QTabWidget( parent )
 {
+    setWindowFlags( f );
     d = new KTabWidgetPrivate;
-    setTabBar( new KTabBar(this, "tabbar") );
+    setTabBar( new KTabBar(this) );
+    setObjectName( "tabbar" );
     setAcceptDrops( true );
 
     connect(tabBar(), SIGNAL(contextMenu( int, const QPoint & )), SLOT(contextMenu( int, const QPoint & )));
