@@ -30,6 +30,7 @@
 #include <kglobal.h>
 #include <kidna.h>
 #include <kprotocolinfo.h>
+#include <kshell.h>
 #endif
 
 #include <stdio.h>
@@ -2130,7 +2131,11 @@ void KURL::setPath( const QString & path )
   {
     m_strProtocol = fileProt;
   }
+#ifndef KDE_QT_ONLY
+  m_strPath = KShell::tildeExpand( path );
+#else
   m_strPath = path;
+#endif
   m_strPath_encoded.clear();
   if ( m_iUriMode == Auto )
     m_iUriMode = URL;
@@ -2368,10 +2373,15 @@ KURL KURL::fromPathOrURL( const QString& text )
 
     if ( !text.isEmpty() )
     {
-        if (!QDir::isRelativePath(text))
-            url.setPath( text );
+#ifndef KDE_QT_ONLY
+        QString tmp = KShell::tildeExpand( text );
+#else
+        QString tmp = text;
+#endif
+        if ( QDir::isRelativePath( tmp ) )
+            url = tmp;
         else
-            url = text;
+            url.setPath( tmp );
     }
 
     return url;

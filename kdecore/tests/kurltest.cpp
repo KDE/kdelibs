@@ -13,6 +13,11 @@
 #include <assert.h>
 #include <kcmdlineargs.h>
 
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 static bool check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
@@ -818,6 +823,12 @@ int main(int argc, char *argv[])
   // fromPathOrURL tests
   uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%E9riel" );
   check("fromPathOrURL path", uloc.path(), "/home/dfaure/konqtests/Mat%E9riel");
+  struct passwd *pw = getpwuid(getuid());
+  if (pw)
+  {
+    uloc = KURL::fromPathOrURL(QString("~%1/konqtests/Mat%E9riel").arg(pw->pw_name));
+    check("fromPathOrURL tilde expansion", uloc.path(), QString("%1/konqtests/Mat%E9riel").arg(pw->pw_dir));
+  }
   uloc = KURL::fromPathOrURL( "http://www.kde.org" );
   check("pathOrURL url", uloc.pathOrURL(), uloc.url() );
   uloc = KURL::fromPathOrURL( "www.kde.org" );
