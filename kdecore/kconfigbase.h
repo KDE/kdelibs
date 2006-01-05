@@ -23,6 +23,7 @@
 #ifndef KCONFIGBASE_H
 #define KCONFIGBASE_H
 
+#include <qcolor.h>
 #include <qvariant.h>
 #include <kdelibs_export.h>
 
