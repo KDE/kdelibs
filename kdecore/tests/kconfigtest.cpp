@@ -51,8 +51,9 @@ void KConfigTest::initTestCase()
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("AAA");
-  sc.writeEntry("stringEntry1", STRINGENTRY1, true, true);
-  sc.deleteEntry("stringEntry2", false, true);
+  sc.writeEntry("stringEntry1", STRINGENTRY1,
+                KConfigBase::Persistent|KConfigBase::Global);
+  sc.deleteEntry("stringEntry2", KConfigBase::Global);
 
   sc.setGroup("Hello");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
@@ -69,9 +70,10 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   sc.deleteEntry( "stringEntry5" );
   sc.deleteEntry( "stringEntry6" );
-  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ), true, true );
+  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
+                 KConfigBase::Global|KConfigBase::Persistent );
 
-  sc.deleteGroup("deleteMe", true);
+  sc.deleteGroup("deleteMe");
 
   sc.setGroup("ComplexTypes");
   sc.writeEntry( "rectEntry", RECTENTRY );

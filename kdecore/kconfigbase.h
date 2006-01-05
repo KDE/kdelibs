@@ -73,37 +73,38 @@ class KDECORE_EXPORT KConfigBase
   friend class KConfigGroup;
 
 public:
-	/**
-	 * Flags to use in write entry
-	 */
-   enum WriteConfigFlag
-   {
-    Normal=0x00,
-	 /**
-	  * If this flag is set, the entry's dirty flag will not be set and thus the entry will
-	  *  not be written to disk at deletion time.
-	  */
-	 NoPersistent = 0x01, 
-	 /**
-	  * If this flag is set, the pair is not saved to the
-	  * application specific config file, but to the
-	  * global KDE config file.
-	  */
-	 Global = 0x02,
-	 /**
-	  * if set, the locale tag is added to the key
-	  *   when writing it back.
-	  */
-	 NLS = 0x04,
-			 
-	/**
-	 * To be used only in deleteGroup (has no effect elsewhere).
-	 * Don't delete entry of non empty group
-	 */
-	NoRecursive = 0x08
-	   
-   };
-Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
+  /**
+   * Flags to control write entry
+   */
+  enum WriteConfigFlag
+  {
+    Persistent = 0x01,
+    /**<
+     * Save this entry when saving the config object.
+     */
+    Global = 0x02,
+    /**<
+     * Save the entry to the global %KDE config file instead of the
+     * application specific config file.
+     */
+    NLS = 0x04,
+    /**<
+     * Add the locale tag to the key when writing it.
+     */
+    Recursive = 0x08,
+    /**<
+     * Don't delete entries of non-empty group.
+     * @note This flag @b only effects deleteGroup().
+     */
+    Normal=Persistent
+    /**<
+     * Save the entry to the application specific config file without
+     * a locale tag. This is the default.
+     */
+    
+  };
+  Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
+
   /**
    * Construct a KConfigBase object.
    */
@@ -854,10 +855,10 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
-   * @param pFlags       Options, see WriteConfigFlag
-	 */
+   * @param pFlags       The flags to use when writing this entry.
+   */
   void writeEntry( const QString& pKey, const QString& pValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 );
+                   WriteConfigFlags pFlags = Normal );
 
   /**
    * Writes a key/value pair.
@@ -867,95 +868,41 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    */
   void writeEntry( const char *pKey, const QString& pValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 );
+                   WriteConfigFlags pFlags = Normal );
 
   /**
    * writeEntry() Overridden to accept a property.
    *
    * @param pKey The key to write
    * @param rValue The property to write
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    */
   void writeEntry( const QString& pKey, const QVariant& rValue,
-				   QFlags<WriteConfigFlag> pFlags = 0);
+                   WriteConfigFlags pFlags = Normal );
   /**
    * writeEntry() Overridden to accept a property.
    *
    * @param pKey The key to write
    * @param rValue The property to write
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    */
   void writeEntry( const char *pKey, const QVariant& rValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 );
+                   WriteConfigFlags pFlags = Normal );
 
-  /**
-   * Write a (key/value) pair.
-   *
-   * This is stored to the most specific config file when destroying the
-   * config object or when calling sync().
-   *
-   *  @param pKey               The key to write.
-   *  @param pValue     The value to write; assumed to be in latin1 encoding.
-   * @param pFlags       Options, see WriteConfigFlag
-   */
-  void writeEntry( const QString& pKey, const char *pValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 )
-  { writeEntry(pKey, QString::fromLatin1(pValue), pFlags); }
-
-  /**
-   * Write a (key/value) pair.
-   *
-   * This is stored to the most specific config file when destroying the
-   * config object or when calling sync().
-   *
-   *  @param pKey               The key to write.
-   *  @param pValue     The value to write; assumed to be in latin1 encoding.
-   *  @param pFlags       Options, see WriteConfigFlag
-   */
-  void writeEntry( const char *pKey, const char *pValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 )
-  { writeEntry(pKey, QString::fromLatin1(pValue), pFlags); }
-  
-    /**
-   * writeEntry() overridden to accept a list of strings.
-   *
-   * @param pKey The key to write
-   * @param rValue The list to write
-   * @param sep  The list separator (default is ",").
-   *  @param pFlags       Options, see WriteConfigFlag
-   *
-   * @see  writeEntry()
-	 */
-  void writeEntry( const QString& pKey, const QStringList &rValue,
-				   char sep = ',', QFlags<WriteConfigFlag> pFlags = 0);
-
-
+#ifdef KDE3_SUPPORT
   /**
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
    * @param rValue The list to write
    * @param sep  The list separator (default is ",").
-   *  @param pFlags       Options, see WriteConfigFlag
-   *
-   * @see  writeEntry()
-   */
-  void writeEntry( const char *pKey, const QStringList &rValue,
-				   char sep = ',', QFlags<WriteConfigFlag> pFlags = 0);
-
-  
-  /**
-   * writeEntry() overridden to accept a list.
-   *
-   * @param pKey The key to write
-   * @param rValue The list to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
    *                    written to disk at deletion time.
@@ -964,15 +911,76 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    *                global KDE config file.
    * @param bNLS If @p bNLS is true, the locale tag is added to the key
    *             when writing it back.
-   * @deprecated use the function with flags
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const QString& pKey, const Q3StrList &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+		   KDE_DEPRECATED;
+  /**
+   * writeEntry() overridden to accept a list of strings.
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const char *pKey, const Q3StrList &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+		   KDE_DEPRECATED;
+#endif
+
+  /**
+   * writeEntry() overridden to accept a list of strings.
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
+   * @param pFlags       The flags to use when writing this entry.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const QString& pKey, const QStringList &rValue,
+		   char sep = ',',
+                   WriteConfigFlags pFlags = Normal );
+
+  /**
+   * writeEntry() overridden to accept a list of strings.
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param sep  The list separator (default is ",").
+   * @param pFlags       The flags to use when writing this entry.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const char *pKey, const QStringList &rValue,
+		   char sep = ',',
+                   WriteConfigFlags pFlags = Normal );
+
+  /**
+   * writeEntry() overridden to accept a list.
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write.
+   * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    * @since 4.0
-	 */
-   template <typename T>
+   */
+  template <typename T>
   void writeEntry( const QString& pKey, const QList<T>& rValue,
-						   QFlags<WriteConfigFlag> pFlags = 0 )
-  { writeEntry( pKey.toUtf8().constData(), rValue, pFlags ); }
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry( pKey.toUtf8().constData(), rValue, pFlags ); }
 
   /**
    * writeEntry() overridden to accept a list.
@@ -980,18 +988,79 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    */
   template <typename T>
   void writeEntry( const char* pKey, const QList<T>& rValue,
-						   QFlags<WriteConfigFlag> pFlags = 0 );
+                   WriteConfigFlags pFlags = Normal );
 
-  
-  
-    /**
+
+  /**
    * writeEntry() overridden to accept a list.
    * @copydoc writeEntry(const char*, const QList<T>&, bool, bool, bool)
-	 */
+   */
   void writeEntry( const char* pKey, const QVariantList& rValue,
-				   QFlags<WriteConfigFlag> pFlags = 0 )
-  { writeEntry( pKey, QVariant(rValue),  pFlags  ); }
-  
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry( pKey, QVariant(rValue), pFlags ); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *  @param pFlags       The flags to use when writing this entry.
+   */
+  void writeEntry( const QString& pKey, const char *pValue,
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry(pKey, QString::fromLatin1(pValue), pFlags); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *  @param pFlags       The flags to use when writing this entry.
+   */
+  void writeEntry( const char *pKey, const char *pValue,
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry(pKey, QString::fromLatin1(pValue), pFlags); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *                    If it contains the null character between 0 and size()-1,
+   *                    the string will be truncated at the null character.
+   *
+   *  @param pFlags       The flags to use when writing this entry.
+   */
+  void writeEntry( const QString& pKey, const QByteArray& pValue,
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), pFlags); }
+
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *                    If it contains the null character between 0 and size()-1,
+   *                    the string will be truncated at the null character.
+   *
+   * @param pFlags       The flags to use when writing this entry.
+   */
+  void writeEntry( const char *pKey, const QByteArray& pValue,
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), pFlags); }
+
   /**
    * Writes a file path.
    *
@@ -1001,10 +1070,11 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    *
    * @param pKey The key to write.
    * @param path The path to write.
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    */
   void writePathEntry( const QString& pKey, const QString & path,
-					   QFlags<WriteConfigFlag> pFlags = 0 );
+                       WriteConfigFlags pFlags = Normal );
+
   /**
    * Writes a file path.
    *
@@ -1014,10 +1084,10 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    *
    * @param pKey The key to write.
    * @param path The path to write.
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    */
   void writePathEntry( const char *pKey, const QString & path,
-					   QFlags<WriteConfigFlag> pFlags = 0 );
+                       WriteConfigFlags pFlags = Normal );
 
   /**
    * writePathEntry() overridden to accept a list of paths (strings).
@@ -1029,13 +1099,15 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    * @param pKey The key to write
    * @param rValue The list to write
    * @param sep  The list separator (default is ",").
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
+   * @since 3.1.3
    */
   void writePathEntry( const QString& pKey, const QStringList &rValue,
-					   char sep = ',', QFlags<WriteConfigFlag> pFlags = 0 );
+                       char sep = ',', WriteConfigFlags pFlags = Normal );
+
   /**
    * writePathEntry() overridden to accept a list of paths (strings).
    *
@@ -1046,49 +1118,45 @@ Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
    * @param pKey The key to write
    * @param rValue The list to write
    * @param sep  The list separator (default is ",").
-   * @param pFlags       Options, see WriteConfigFlag
+   * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
+   * @since 3.1.3
    */
   void writePathEntry( const char *pKey, const QStringList &rValue,
-					   char sep = ',', QFlags<WriteConfigFlag> pFlags = 0 );
+		   char sep = ',', WriteConfigFlags pFlags = Normal );
 
-  
   /**
    * Deletes the entry specified by @p pKey in the current group.
    *
    * @param pKey The key to delete.
-   * @param pFlags  you may se the flags Global and/or NLS
+   * @param pFlags       The flags to use when deleting this entry.
    */
-  void deleteEntry( const QString& pKey,
-					QFlags<WriteConfigFlag> pFlags = 0 );
+   void deleteEntry( const QString& pKey, WriteConfigFlags pFlags = Normal );
+
   /**
    * Deletes the entry specified by @p pKey in the current group.
    *
    * @param pKey The key to delete.
-   * @param pFlags  you may se the flags Global and/or NLS
+   * @param pFlags       The flags to use when deleting this entry.
    */
-  void deleteEntry( const char *pKey,
-					QFlags<WriteConfigFlag> pFlags = 0);
+   void deleteEntry( const char *pKey, WriteConfigFlags pFlags = Normal );
 
   /**
    * Deletes a configuration entry group
    *
-   * If the group is not empty and bDeep is false, nothing gets
+   * If the group is not empty and Recursive is not set, nothing gets
    * deleted and false is returned.
    * If this group is the current group and it is deleted, the
    * current group is undefined and should be set with setGroup()
    * before the next operation on the configuration object.
    *
    * @param group The name of the group
-   * @param pFlags you may specify the flag Global and/or NoRecursive
-   * @return If the group is not empty and NoRecursive is set,
-   *         deleteGroup returns false.
+   * @param pFlags       The flags to use when writing this entry.
+   * @return Whether the group was deleted.
    */
-  bool deleteGroup( const QString& group, QFlags<WriteConfigFlag> pFlags = 0 );
-
-  
+  bool deleteGroup( const QString& group, WriteConfigFlags pFlags = Recursive );
 
   /**
    * Turns on or off "dollar  expansion" (see KConfigBase introduction)
@@ -1432,10 +1500,7 @@ private:
   Private *d;
 };
 
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( QFlags<KConfigBase::WriteConfigFlag> );
-
-
+Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
 
 template <typename T>
 QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
@@ -1462,7 +1527,7 @@ QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) con
 
 template <typename T>
 void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
-							  QFlags<WriteConfigFlag> pFlags )
+                              WriteConfigFlags pFlags )
 {
   QVariantList vList;
   foreach(T aValue, rValue)
