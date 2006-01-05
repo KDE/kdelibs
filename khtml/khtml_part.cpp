@@ -3133,7 +3133,7 @@ bool KHTMLPart::findTextNext( bool reverse )
           }
           else // KFind itself can search backwards, so str must not be built backwards
           {
-            for( Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+            for( QList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
                  it != d->m_stringPortions.end();
                  ++it )
                 (*it).index += s.length();
@@ -3204,9 +3204,9 @@ bool KHTMLPart::findTextNext( bool reverse )
 void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
 {
   //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
-  Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
-  const Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
-  Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
+  QList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+  const QList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
+  QList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
   // We stop at the first portion whose index is 'greater than', and then use the previous one
   while ( it != itEnd && (*it).index <= index )
   {

@@ -461,7 +461,7 @@ public:
       int index;
       DOM::NodeImpl *node;
   };
-  Q3ValueList<StringPortion> m_stringPortions;
+  QList<StringPortion> m_stringPortions;
 
   KFind *m_find;
   KFindDialog *m_findDialog;
