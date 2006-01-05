@@ -91,8 +91,32 @@ static bool isImagePattern(ValueImp *value)
 
 static QPainter::CompositionMode compositeOperatorFromString(const QString &compositeOperator)
 {
-    //### implement
-    Q_UNUSED( compositeOperator );
+    if ( compositeOperator == "source-over" ) {
+        return QPainter::CompositionMode_SourceOver;
+    } else if ( compositeOperator == "source-out" ) {
+        return QPainter::CompositionMode_SourceOut;
+    } else if ( compositeOperator == "source-in" ) {
+        return QPainter::CompositionMode_SourceIn;
+    } else if ( compositeOperator == "source-atop" ) {
+        return QPainter::CompositionMode_SourceAtop;
+    } else if ( compositeOperator == "destination-atop" ) {
+        return QPainter::CompositionMode_DestinationAtop;
+    } else if ( compositeOperator == "destination-in" ) {
+        return QPainter::CompositionMode_DestinationIn;
+    } else if ( compositeOperator == "destination-out" ) {
+        return QPainter::CompositionMode_DestinationOut;
+    } else if ( compositeOperator == "destination-over" ) {
+        return QPainter::CompositionMode_DestinationOver;
+    } else if ( compositeOperator == "darker" ) {
+        return QPainter::CompositionMode_SourceOver;
+    } else if ( compositeOperator == "lighter" ) {
+        return QPainter::CompositionMode_SourceOver;
+    } else if ( compositeOperator == "copy" ) {
+        return QPainter::CompositionMode_Source;
+    } else if ( compositeOperator == "xor" ) {
+        return QPainter::CompositionMode_Xor;
+    }
+
     return QPainter::CompositionMode_SourceOver;
 }
 #define BITS_PER_COMPONENT 8
@@ -436,21 +460,37 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float sa = (float)args[3]->toNumber(exec);
         float ea = (float)args[4]->toNumber(exec);
         bool clockwise = args[5]->toBoolean(exec);
-
         sa *= 180/M_PI;
         ea *= 180/M_PI;
+
+        //qDebug()<<"xc = "<<xc<<", yc = "<< yc <<", r = "<< radius
+        //<<", sa = "<<sa <<", ea = "<< ea <<", clockwise"<< clockwise;
 
         double xs     = xc - radius;
         double ys     = yc - radius;
         double width  = radius*2;
         double height = radius*2;
         double span   = ea - sa;
-        if ( !clockwise ) {
+        if ( clockwise ) {
+            span = 360-ea;
+        } else
             span *= -1;
-        }
+
         QPointF cp = contextObject->path().currentPosition();
-        //contextObject->path().moveTo( xs, ys );
-        qDebug()<<"arcTo "<<xs<<ys<<width<<height<<sa<<span;
+        contextObject->path().moveTo( QPointF( xc + radius  * cos( sa ),
+                                               yc +-radius * sin( sa ) ) );
+        //qDebug()<<"arcTo "<<xs<<ys<<width<<height<<sa<<span;
+#if 0
+        QPen pen = drawingContext->pen();
+        pen.setColor( Qt::red );
+        pen.setWidth( 10 );
+        drawingContext->save();
+        drawingContext->setPen( pen );
+        drawingContext->drawPoint( QPointF( xc + radius  * cos( sa ),
+                                            yc +-radius * sin( sa ) ) );
+        drawingContext->restore();
+#endif
+
         contextObject->path().arcTo(xs, ys, width, height, sa, span);
         //contextObject->path().moveTo( cp );
         break;
