@@ -93,8 +93,6 @@ private:
     QCheckBox *sensitive;
     QCheckBox *direction;
 
-    virtual void done(int i ) { KDialog::done(i); }
-
 signals:
 
     void search();
@@ -140,12 +138,11 @@ private slots:
     void slotUser2( void );
     void slotUser3( void );
     void textSearchChanged ( const QString & );
+	void slotCancel();
 
 private:
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
-
-	virtual void done(int i ) { KDialog::done(i); }
 
 signals:
     void replace();

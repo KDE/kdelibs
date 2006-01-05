@@ -737,11 +737,14 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
 
   connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotUser1() ) );
+  connect( this, SIGNAL( cancelClicked() ), this, SIGNAL( done() ) );
+  connect( this, SIGNAL( closeClicked() ), this, SIGNAL( done() ) );
+
+
 }
 
 KEdFind::~KEdFind()
 {
-	emit done();
     delete d;
 }
 
@@ -875,13 +878,13 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotUser1() ) );
   connect( this, SIGNAL( user2Clicked() ), this, SLOT( slotUser2() ) );
   connect( this, SIGNAL( user3Clicked() ), this, SLOT( slotUser3() ) );
-
+  connect( this, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
+  connect( this, SIGNAL( closeClicked() ), this, SLOT( slotCancel() ) );
 }
 
 
 KEdReplace::~KEdReplace()
 {
-	emit done();
     delete d;
 }
 
@@ -891,6 +894,13 @@ void KEdReplace::textSearchChanged ( const QString &text )
     enableButton( KDialogBase::User1, !state );
     enableButton( KDialogBase::User2, !state );
     enableButton( KDialogBase::User3, !state );
+}
+
+void KEdReplace::slotCancel( void )
+{ 
+	emit done();
+	d->searchCombo->clearEdit();
+	d->replaceCombo->clearEdit();
 }
 
 
