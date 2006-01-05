@@ -179,12 +179,12 @@ QImage KIconEffect::apply(QImage image, int group, int state) const
 	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans) const
+QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &col, bool trans) const
 {
     return apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, const QColor col2, bool trans) const
+QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &col, const QColor &col2, bool trans) const
 {
     if (effect >= LastEffect )
     {
@@ -237,13 +237,13 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 }
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
-	const QColor col, bool trans) const
+	const QColor &col, bool trans) const
 {
     return apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
-	const QColor col, const QColor col2, bool trans) const
+	const QColor &col, const QColor &col2, bool trans) const
 {
     QPixmap result;
 

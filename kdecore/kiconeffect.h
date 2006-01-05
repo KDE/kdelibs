@@ -102,11 +102,11 @@ public:
      * @return An image with the effect applied.
      */
     // KDE4: make them references
-    QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
+    QImage apply(QImage src, int effect, float value, const QColor &rgb, bool trans) const;
     /**
      * @since 3.4
      */
-    QImage apply(QImage src, int effect, float value, const QColor rgb, const QColor rgb2, bool trans) const;
+    QImage apply(QImage src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
 
     /**
      * Applies an effect to a pixmap.
@@ -126,11 +126,11 @@ public:
      * @param trans Add Transparency if trans = true.
      * @return A pixmap with the effect applied.
      */
-    QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
+    QPixmap apply(QPixmap src, int effect, float value, const QColor &rgb, bool trans) const;
     /**
      * @since 3.4
      */
-    QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, const QColor rgb2, bool trans) const;
+    QPixmap apply(QPixmap src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
 
     /**
      * Returns an image twice as large, consisting of 2x2 pixels.
