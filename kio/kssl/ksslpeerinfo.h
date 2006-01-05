@@ -82,7 +82,7 @@ public:
 	 *
 	 *  @param host the hostname
 	 */
-	void setPeerHost(QString host = QString());
+	void setPeerHost(const QString &host = QString());
 
 	/**
 	 *  Returns the host we are connected to.

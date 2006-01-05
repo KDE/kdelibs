@@ -54,7 +54,7 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
 	return m_cert;
 }
 
-void KSSLPeerInfo::setPeerHost(QString realHost) {
+void KSSLPeerInfo::setPeerHost(const QString &realHost) {
 	d->peerHost = realHost.trimmed();
 	while(d->peerHost.endsWith("."))
 		d->peerHost.truncate(d->peerHost.length()-1);

@@ -95,7 +95,7 @@ public:
 	 *  @param cert the certificate in base64 form
 	 *  @return the X.509 certificate, or NULL
 	 */
-	static KSSLCertificate *fromString(Q3CString cert);
+	static KSSLCertificate *fromString(const Q3CString &cert);
 
 	/**
 	 *  Create an X.509 certificate from the internal representation.

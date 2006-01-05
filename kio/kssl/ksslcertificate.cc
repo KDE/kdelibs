@@ -141,7 +141,7 @@ return n;
 }
 
 
-KSSLCertificate *KSSLCertificate::fromString(Q3CString cert) {
+KSSLCertificate *KSSLCertificate::fromString(const Q3CString &cert) {
 KSSLCertificate *n = NULL;
 #ifdef KSSL_HAVE_SSL
 	if (cert.length() == 0)

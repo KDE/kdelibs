@@ -130,7 +130,7 @@ void KSSLPKCS12::setCert(PKCS12 *c) {
 }
 
 
-bool KSSLPKCS12::changePassword(QString pold, QString pnew) {
+bool KSSLPKCS12::changePassword(const QString &pold, const QString &pnew) {
 #ifdef KSSL_HAVE_SSL
    // OpenSSL makes me cast away the const here.  argh
    return (0 == kossl->PKCS12_newpass(_pkcs, 

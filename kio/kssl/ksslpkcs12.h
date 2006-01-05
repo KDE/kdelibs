@@ -109,7 +109,7 @@ public:
 	 *  @param pnew the new password
 	 *  @return true on success
 	 */
-	bool changePassword(QString pold, QString pnew);
+	bool changePassword(const  QString &pold, const QString &pnew);
  
 	/**
 	 *  Get the private key.
