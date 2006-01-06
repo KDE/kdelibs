@@ -119,8 +119,8 @@ static QPainter::CompositionMode compositeOperatorFromString(const QString &comp
 
     return QPainter::CompositionMode_SourceOver;
 }
-#define BITS_PER_COMPONENT 8
-#define BYTES_PER_ROW(width,bitsPerComponent,numComponents) ((width * bitsPerComponent * numComponents + 7)/8)
+
+#define DEGREES(t) ((t) * 180.0 / M_PI)
 
 ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
@@ -457,42 +457,58 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float xc = (float)args[0]->toNumber(exec);
         float yc = (float)args[1]->toNumber(exec);
         float radius = (float)args[2]->toNumber(exec);
-        float sa = (float)args[3]->toNumber(exec);
-        float ea = (float)args[4]->toNumber(exec);
-        bool clockwise = args[5]->toBoolean(exec);
-        sa *= 180/M_PI;
-        ea *= 180/M_PI;
+        float sar = (float)args[3]->toNumber(exec);
+        float ear = (float)args[4]->toNumber(exec);
+        bool  anticlockwise = args[5]->toBoolean(exec);
 
-        //qDebug()<<"xc = "<<xc<<", yc = "<< yc <<", r = "<< radius
-        //<<", sa = "<<sa <<", ea = "<< ea <<", clockwise"<< clockwise;
+
+        //### HACK
+        // In Qt we don't switch the coordinate system for degrees
+        // and still use the 0,0 as bottom left for degrees so we need
+        // to switch
+        sar = -sar;
+        ear = -ear;
+        anticlockwise = !anticlockwise;
+        //end hack
+
+        float sa = DEGREES( sar );
+        float ea = DEGREES( ear );
+
+        double span = 0;
 
         double xs     = xc - radius;
         double ys     = yc - radius;
         double width  = radius*2;
         double height = radius*2;
-        double span   = ea - sa;
-        if ( clockwise ) {
-            span = 360-ea;
-        } else
-            span *= -1;
 
-        QPointF cp = contextObject->path().currentPosition();
-        contextObject->path().moveTo( QPointF( xc + radius  * cos( sa ),
-                                               yc +-radius * sin( sa ) ) );
-        //qDebug()<<"arcTo "<<xs<<ys<<width<<height<<sa<<span;
+        if ( !anticlockwise && ( ea < sa ) ) {
+            span += 360;
+        } else if ( anticlockwise && ( sa < ea ) ) {
+            span -= 360;
+        }
+
+        //### this is also due to switched coordinate system
+        // we would end up with a 0 span instead of 360
+        if ( !( qFuzzyCompare( span + ( ea - sa ), 0.0 ) &&
+                qFuzzyCompare( abs( span ), 360.0 ) ) ) {
+            span   += ea - sa;
+        }
+
+        contextObject->path().moveTo( QPointF( xc + radius  * cos( sar ),
+                                               yc - radius  * sin( sar ) ) );
 #if 0
         QPen pen = drawingContext->pen();
         pen.setColor( Qt::red );
         pen.setWidth( 10 );
         drawingContext->save();
         drawingContext->setPen( pen );
-        drawingContext->drawPoint( QPointF( xc + radius  * cos( sa ),
-                                            yc +-radius * sin( sa ) ) );
+        drawingContext->drawPoint( QPointF( xc + radius  * cos( sar ),
+                                            yc - radius * sin( sar ) ) );
         drawingContext->restore();
+        qDebug()<<"arcTo "<<xs<<ys<<width<<height<<sa<<span;
 #endif
 
         contextObject->path().arcTo(xs, ys, width, height, sa, span);
-        //contextObject->path().moveTo( cp );
         break;
     }
     case Context2D::Rect: {
