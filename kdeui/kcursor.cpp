@@ -22,17 +22,16 @@
 #endif
 #endif
 
-#include <kcursor.h>
-
-#include <qbitmap.h>
-#include <qcursor.h>
-#include <qevent.h>
-#include <qtimer.h>
-#include <qwidget.h>
+#include <QBitmap>
+#include <QCursor>
+#include <QEvent>
+#include <QAbstractScrollArea>
+#include <QTimer>
+#include <QWidget>
 
 #include <kglobal.h>
 #include <kconfig.h>
-#include <q3scrollview.h>
+#include <kcursor.h>
 
 #include "kcursor_private.h"
 
@@ -303,8 +302,8 @@ QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
 {
     QWidget* w = m_widget;
 
-    // Is w a scrollview ? Call setCursor on the viewport in that case.
-    Q3ScrollView * sv = dynamic_cast<Q3ScrollView *>( w );
+    // Is w a QAbstractScrollArea ? Call setCursor on the viewport in that case.
+    QAbstractScrollArea * sv = dynamic_cast<QAbstractScrollArea *>( w );
     if ( sv )
         w = sv->viewport();
 
