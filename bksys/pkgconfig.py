@@ -51,8 +51,6 @@ def generate(env):
 		return ret
 
 	def pkgConfig_findPackage(env, pkgname, module, version):
-		if env['WINDOWS']:
-			return 0 #pkgConfig_findPackage() doesn't work on win32, why? (js)
 		from SCons.Options import Options
 
 		optionFile = env['CACHEDIR'] + module + '.cache.py'
@@ -90,5 +88,15 @@ def generate(env):
 			haveModule = env['CACHED_'+pkgname]
 			
 		return haveModule
+
+	if not env.has_key('HAVE_PKGCONFIG'):
+		conf = env.Configure(custom_tests =
+				     { 'Check_pkg_config' : Check_pkg_config  }
+				     )
+		if conf.Check_pkg_config('0.15'):
+			env['HAVE_PKGCONFIG'] = 1
+		else:
+		    env['HAVE_PKGCONFIG'] = 0
+		env = conf.Finish()
 
 	SConsEnvironment.pkgConfig_findPackage = pkgConfig_findPackage
