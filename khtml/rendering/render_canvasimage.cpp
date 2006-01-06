@@ -31,6 +31,7 @@
 #include "render_canvas.h"
 
 #include <qpainter.h>
+#include <qdebug.h>
 
 #include "css/csshelper.h"
 #include "misc/helper.h"
@@ -66,8 +67,19 @@ void RenderCanvasImage::createDrawingContext()
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
+    if ( !cWidth ) {
+        cWidth = 300;
+        setWidth( cWidth );
+    }
+    if ( !cHeight ) {
+        cHeight = 200;
+        setHeight( cHeight );
+    }
     m_drawnImage = new QImage( cWidth, cHeight, QImage::Format_ARGB32_Premultiplied );
+    //### clear color is bogus
+    m_drawnImage->fill( 0xffffffff );
     m_drawingContext = new QPainter( m_drawnImage );
+    m_drawingContext->setRenderHint( QPainter::Antialiasing );
 }
 
 QPainter *RenderCanvasImage::drawingContext()
@@ -75,6 +87,11 @@ QPainter *RenderCanvasImage::drawingContext()
     if (!m_drawingContext) {
         document()->updateLayout();
         createDrawingContext();
+    }
+    if ( !m_drawingContext->isActive() ) {
+        //### clear color is bogus
+        //m_drawnImage->fill( 0xffffffff );
+        m_drawingContext->begin( m_drawnImage );
     }
 
     return m_drawingContext;
@@ -122,6 +139,8 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
+    if ( !cWidth )  cWidth = 300;
+    if ( !cHeight ) cHeight = 200;
     int leftBorder = borderLeft();
     int topBorder = borderTop();
     int leftPad = paddingLeft();
@@ -134,7 +153,7 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
         updateDrawnImage();
         m_needsImageUpdate = false;
     }
-
+    //qDebug()<<"drawing image "<<m_drawnImage;
     if (m_drawnImage) {
         HTMLCanvasElementImpl* i = (element() && element()->id() == ID_CANVAS ) ? static_cast<HTMLCanvasElementImpl*>(element()) : 0;
         p->drawImage( QRectF( x, y, cWidth, cHeight ), *m_drawnImage,
