@@ -17,7 +17,7 @@ endif
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 # kimg_hdr.la missing and JP2_MODULES
-kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
+kde_imageformats_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	$(KIMGIO_TIFF_MODULES) kimg_ico.la \
 	kimg_pcx.la kimg_tga.la kimg_rgb.la kimg_xcf.la kimg_dds.la  \
 	$(KIMGIO_EXR_MODULES) kimg_psd.la 
