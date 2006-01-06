@@ -56,10 +56,14 @@ class KDEUI_EXPORT KDatePicker: public QFrame
 
 public:
   /**
+   * The constructor. The current date will be displayed initially.
+   **/
+  explicit KDatePicker(QWidget* parent = 0);
+
+  /**
    * The constructor. The given date will be displayed initially.
    **/
-  explicit KDatePicker(QWidget* parent = 0,
-                       const QDate& dt = QDate::currentDate());
+  explicit KDatePicker(const QDate& dt, QWidget* parent = 0);
 
   /**
    * The destructor.

@@ -34,7 +34,6 @@ Group=Input (KDE)
 [KDatePicker]
 ToolTip=A date selection widget (KDE)
 WhatsThis=Provides a widget for calendar date input
-ConstructorArgs=(parent, QDate::currentDate())
 Group=Input (KDE)
 
 [KDialog]

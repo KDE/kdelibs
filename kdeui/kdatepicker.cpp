@@ -18,34 +18,29 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qcheckbox.h>
-#include <qlayout.h>
-#include <qframe.h>
-#include <qpainter.h>
-#include <qdialog.h>
-#include <qstyle.h>
-#include <qtoolbutton.h>
+#include "kdatepicker.h"
+#include "kdatetable.h"
+
+#include <qapplication.h>
 #include <qcombobox.h>
 #include <qfont.h>
-#include <qvalidator.h>
-#include <qmenu.h>
-#include <QMenuItem>
-#include <QStyleOptionToolButton>
-#include <qapplication.h>
-
-#include "kdatepicker.h"
-#include <kglobal.h>
-#include <kdialog.h>
-#include <klocale.h>
-#include <kiconloader.h>
-#include <ktoolbar.h>
-#include <klineedit.h>
-#include <kdebug.h>
-#include <knotification.h>
-#include <kcalendarsystem.h>
+#include <qlayout.h>
 #include <QKeyEvent>
+#include <qmenu.h>
+#include <qpainter.h>
+#include <qstyle.h>
+#include <qtoolbutton.h>
+#include <qvalidator.h>
 
-#include "kdatetable.h"
+#include <kcalendarsystem.h>
+#include <kdebug.h>
+#include <kdialog.h>
+#include <kglobal.h>
+#include <kiconloader.h>
+#include <klineedit.h>
+#include <klocale.h>
+#include <knotification.h>
+
 #include "kdatepicker.moc"
 
 // Week numbers are defined by ISO 8601
@@ -98,7 +93,13 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   }
 }
 
-KDatePicker::KDatePicker(QWidget* parent, const QDate& dt)
+KDatePicker::KDatePicker(QWidget* parent)
+  : QFrame(parent)
+{
+  init( QDate::currentDate() );
+}
+
+KDatePicker::KDatePicker(const QDate& dt, QWidget* parent)
   : QFrame(parent)
 {
   init( dt );
