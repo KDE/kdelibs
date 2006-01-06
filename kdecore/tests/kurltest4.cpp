@@ -31,6 +31,7 @@ QTTEST_KDEMAIN( KURLTest, NoGUI )
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcharsets.h>
+#include <kuser.h>
 #include <qtextcodec.h>
 #include <qdatastream.h>
 #include <qmap.h>
@@ -279,6 +280,14 @@ void KURLTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( charles.path(), QString("/home/charles/foo%20moo") );
   KURL charles2("file:/home/charles/foo%20moo");
   QCOMPARE( charles2.path(), QString("/home/charles/foo moo") );
+
+  KURL tilde;
+  KUser currentUser;
+  const QString userName = currentUser.loginName();
+  QVERIFY( !userName.isEmpty() );
+  tilde.setPath( QString::fromUtf8( "~%1/Matériel" ).arg( userName ) );
+  QString homeDir = currentUser.homeDir();
+  QCOMPARE( tilde.url(), QString("file://%1/Mat%C3%A9riel").arg(homeDir));
 }
 
 void KURLTest::testEmptyQueryOrRef()
@@ -1327,6 +1336,11 @@ void KURLTest::testPathOrURL()
   QVERIFY( uloc.isValid() ); // KDE3: was invalid; same as above
   uloc = KURL::fromPathOrURL( "" );
   QVERIFY( !uloc.isValid() );
+  KUser currentUser;
+  const QString userName = currentUser.loginName();
+  QVERIFY( !userName.isEmpty() );
+  uloc = KURL::fromPathOrURL(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
+  QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 
   // pathOrURL tests
   uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%C3%A9riel" );

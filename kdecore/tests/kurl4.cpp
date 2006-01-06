@@ -31,6 +31,7 @@
 #ifndef KDE_QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kshell.h>
 #endif
 
 #include <stdio.h>
@@ -1261,7 +1262,7 @@ KURL KURL::fromPathOrURL( const QString& text )
     KURL url;
     if ( !text.isEmpty() )
     {
-        if (!QDir::isRelativePath(text))
+        if (!QDir::isRelativePath(text) || text[0] == '~')
             url.setPath( text );
         else
             url = text;
@@ -1353,10 +1354,15 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url)
    return relURL;
 }
 
-void KURL::setPath( const QString& path )
+void KURL::setPath( const QString& _path )
 {
     if ( scheme().isEmpty() )
         setScheme( "file" );
+#ifndef KDE_QT_ONLY
+    QString path = KShell::tildeExpand( _path );
+#else
+    const QString& path = _path;
+#endif
     QUrl::setPath( path );
 }
 
