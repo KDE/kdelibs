@@ -10,6 +10,7 @@
 <!ENTITY Backspace	"<keycap>R&uuml;cktaste</keycap>">
 <!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
 <!ENTITY Ctrl   "<keycap>Strg</keycap>">
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY eg		'<abbrev>z.&nbsp;B</abbrev>'> 
@@ -22,7 +23,9 @@
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
  khelpcenter -->
 <!ENTITY kicon	"<guiicon>
@@ -33,6 +36,7 @@
 </inlinemediaobject>
 </guiicon>-Symbol"><!-- kicon -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-Men&uuml;"> <!-- kmenu -->
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
 <!ENTITY kwm    "<application>kwm</application>">
@@ -48,12 +52,17 @@
 <!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
 <!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
 <!ENTITY systemtray "<application>Systemabschnitt</application>">
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
 <!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
+<!-- Deprecated, will be removed at a future time, do not use -->
+<!ENTITY ua     "<abbrev>u.&nbsp;a.</abbrev>" >
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
+<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
-<!ENTITY ua	    "<abbrev>u.&nbsp;a.</abbrev>" >
-
