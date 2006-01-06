@@ -1385,7 +1385,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
       part->setSuppressedPopupIndicator(true, 0);
     else {
       part->setSuppressedPopupIndicator(true, part);
-      m_suppressedWindowInfo.append( SuppressedWindowInfo( exec, url, frameName, features ) );
+      m_suppressedWindowInfo.append( SuppressedWindowInfo( url, frameName, features ) );
     }
     return Undefined();
   } else {
@@ -1528,10 +1528,14 @@ void Window::forgetSuppressedWindows()
 
 void Window::showSuppressedWindows()
 {
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
+  KJS::Interpreter *interpreter = part->jScript()->interpreter();
+  ExecState *exec = interpreter->globalExec();
+
   QList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
   m_suppressedWindowInfo.clear();
   foreach ( SuppressedWindowInfo info, suppressedWindowInfo ) {
-    executeOpenWindow(info.exec, info.url, info.frameName, info.features);
+    executeOpenWindow(exec, info.url, info.frameName, info.features);
   }
 }
 
