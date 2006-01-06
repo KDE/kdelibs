@@ -4,13 +4,6 @@ that we would like to make for the next binary incompatible release.
 - Check for forked classes in kde pim and other modules
   (Danimo)
 
-- KConfigBase: For all the read*Entry methods that take a QFont *, QPoint *, QSize *, etc.
-  for the default value, add overloads that use a const reference, so that one can write 
-  resize( config->readSizeEntry( "Bleh", size() ); for example. Constructing a null 
-  QFont/QPoint/QSize is cheap enough to justify a consistent and usable API (IMHO) .
-  Keep source compatibility.
-  (Simon)
-
 - Change all FooPrivate *d; -> Private * const d; and place initialization
   in the constructor (for classes that would benefit from this).  To help catch silly
   mistakes since d should never change. Also consider changing to use KStaticDeleter to
@@ -214,6 +207,9 @@ that we would like to make for the next binary incompatible release.
 - Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
   amount of bool-usage in the CTORs (see KDialogBase, for instance)
   (Michael Brade)
+
+- Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
+  (André Wöbbeking)
 
 - Get rid of KXMLClient::conserveMemory() and the conserveMemory argument in createGUI. It created
   too many problems in the past. Not worth the trouble.
