@@ -620,7 +620,7 @@ void KonfUpdate::gotKey(const QString &_key)
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey);
    log() << currentFilename << ": Removing " << oldFile << ":" << oldGroup << ":" << oldKey << ", moved." << endl;
-   if (oldConfig2->deleteGroup(oldGroup, KConfigBase::NoRecursive)) { // Delete group if empty.
+   if (oldConfig2->deleteGroup(oldGroup, KConfigBase::Normal)) { // Delete group if empty.
       log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }
 }
@@ -649,7 +649,7 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
    // Delete old entry
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey);
-   if (oldConfig2->deleteGroup(oldGroup, KConfigBase::NoRecursive)) { // Delete group if empty.
+   if (oldConfig2->deleteGroup(oldGroup, KConfigBase::Normal)) { // Delete group if empty.
       log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }
 }
@@ -879,7 +879,7 @@ void KonfUpdate::gotScript(const QString &_script)
             oldConfig2->setGroup(group);
             oldConfig2->deleteEntry(key);
             log() << currentFilename << ": Script removes " << oldFile << ":" << group << ":" << key << endl;
-            if (oldConfig2->deleteGroup(group, KConfigBase::NoRecursive)) { // Delete group if empty.
+            if (oldConfig2->deleteGroup(group, KConfigBase::Normal)) { // Delete group if empty.
                log() << currentFilename << ": Removing empty group " << oldFile << ":" << group << endl;
 	    }
          }
