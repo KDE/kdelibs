@@ -33,6 +33,7 @@ class QIcon;
  * @short An abstract class for GUI data such as ToolTip and Icon.
  *
  * @author Holger Freyther <freyher@yahoo.com>
+ * @see KStdGuiItem
  */
 class KDEUI_EXPORT KGuiItem
 {
