@@ -58,7 +58,7 @@ class QEvent;
 class KIO_EXPORT KURLRequester : public KHBox
 {
     Q_OBJECT
-    Q_PROPERTY( QString url READ url WRITE setURL )
+    Q_PROPERTY( QString url READ url WRITE setURL USER true )
     Q_PROPERTY( bool showLocalProtocol READ showLocalProtocol WRITE setShowLocalProtocol )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( uint mode READ mode WRITE setMode )

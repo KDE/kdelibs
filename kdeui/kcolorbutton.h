@@ -38,7 +38,7 @@ class KColorButtonPrivate;
 class KDEUI_EXPORT KColorButton : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY( QColor color READ color WRITE setColor )
+    Q_PROPERTY( QColor color READ color WRITE setColor USER true )
     Q_PROPERTY( QColor defaultColor READ defaultColor WRITE setDefaultColor )
 
 public:

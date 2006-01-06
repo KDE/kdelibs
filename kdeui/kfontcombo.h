@@ -33,7 +33,7 @@
 class KDEUI_EXPORT KFontCombo : public KComboBox
 {
     Q_OBJECT
-    Q_PROPERTY(QString family READ currentFont WRITE setCurrentFont)
+    Q_PROPERTY(QString family READ currentFont WRITE setCurrentFont USER true )
     Q_PROPERTY(bool bold READ bold WRITE setBold DESIGNABLE true)
     Q_PROPERTY(bool italic READ italic WRITE setItalic DESIGNABLE true)
     Q_PROPERTY(bool underline READ underline WRITE setUnderline DESIGNABLE true)

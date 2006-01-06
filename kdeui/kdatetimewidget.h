@@ -39,7 +39,7 @@
 class KDEUI_EXPORT KDateTimeWidget : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime )
+  Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime USER true )
 
 public:
   /**

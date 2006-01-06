@@ -48,7 +48,7 @@ class KIntNumInput;
 class KDEUI_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY( QFont font READ font WRITE setFont )
+  Q_PROPERTY( QFont font READ font WRITE setFont USER true )
 
 public:
   /**

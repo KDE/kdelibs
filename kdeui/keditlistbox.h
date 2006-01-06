@@ -47,7 +47,7 @@ class KDEUI_EXPORT KEditListBox : public Q3GroupBox
 
    Q_SETS( Button )
    Q_PROPERTY( Button buttons READ buttons WRITE setButtons )
-   Q_PROPERTY( QStringList items READ items WRITE setItems )
+   Q_PROPERTY( QStringList items READ items WRITE setItems USER true )
 
 public:
     /**

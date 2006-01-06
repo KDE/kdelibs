@@ -50,7 +50,7 @@ class KDateTable;
 class KDEUI_EXPORT KDatePicker: public QFrame
 {
   Q_OBJECT
-  Q_PROPERTY( QDate date READ date WRITE setDate)
+  Q_PROPERTY( QDate date READ date WRITE setDate USER true )
   Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
   Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 
