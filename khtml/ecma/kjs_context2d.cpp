@@ -635,8 +635,9 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
             return throwError(exec, SyntaxError);
 
         if (!sourceContext) {
-            //### set composite op
-            //QPainter::compositeOperatorFromString(contextObject->_globalComposite->toString(exec).qstring().lower())
+            QString compositeOperator = contextObject->_globalComposite->toString(exec).qstring().lower();
+            QPainter::CompositionMode mode = compositeOperatorFromString(compositeOperator);
+            drawingContext->setCompositionMode( mode );
             drawingContext->drawPixmap( QRectF( dx, dy, dw, dh ), pixmap, QRectF( sx, sy, sw, sh ) );
         }
         else {
