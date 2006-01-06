@@ -98,16 +98,10 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   }
 }
 
-KDatePicker::KDatePicker(QWidget *parent, QDate dt)
+KDatePicker::KDatePicker(QWidget* parent, const QDate& dt)
   : QFrame(parent)
 {
   init( dt );
-}
-
-KDatePicker::KDatePicker( QWidget *parent )
-  : QFrame(parent)
-{
-  init( QDate::currentDate() );
 }
 
 void KDatePicker::init( const QDate &dt )
@@ -345,11 +339,11 @@ KDatePicker::selectMonthClicked()
   // every year can have different month names (in some calendar systems)
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
   QDate date = table->getDate();
-  int i, month, months = calendar->monthsInYear(date);
+  const int months = calendar->monthsInYear(date);
 
   QMenu popup(selectMonth);
 
-  for (i = 1; i <= months; i++)
+  for (int i = 1; i <= months; i++)
     popup.addAction(calendar->monthName(i, calendar->year(date)))->setData(i);
 
   //QMenuItem *item = popup.findItem (calendar->month(date) - 1);

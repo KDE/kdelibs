@@ -55,18 +55,11 @@ class KDEUI_EXPORT KDatePicker: public QFrame
   Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 
 public:
-  /** The usual constructor.  The given date will be displayed
-   * initially.
-   **/
-  KDatePicker(QWidget *parent=0,
-	      QDate=QDate::currentDate());
-
   /**
-   * Standard qt widget constructor. The initial date will be the
-   * current date.
-   * @since 3.1
-   */
-  KDatePicker( QWidget *parent );
+   * The constructor. The given date will be displayed initially.
+   **/
+  explicit KDatePicker(QWidget* parent = 0,
+                       const QDate& dt = QDate::currentDate());
 
   /**
    * The destructor.
