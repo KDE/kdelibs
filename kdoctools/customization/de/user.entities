@@ -36,13 +36,24 @@
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
 <!ENTITY kwm    "<application>kwm</application>">
+<!ENTITY LMB    "<mousebutton>linke</mousebutton> Maustaste">
+<!ENTITY LMBn   "<mousebutton>linken</mousebutton> Maustaste">
+<!ENTITY LMBr   "<mousebutton>linker</mousebutton> Maustaste">
+<!ENTITY MMB    "<mousebutton>mittlere</mousebutton> Maustaste">
+<!ENTITY MMBn   "<mousebutton>mittleren</mousebutton> Maustaste">
+<!ENTITY MMBr   "<mousebutton>mittlerer</mousebutton> Maustaste">
 <!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
 <!ENTITY OS     "Betriebssystem">
+<!ENTITY RMB    "<mousebutton>rechte</mousebutton> Maustaste">
+<!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
+<!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
-<!ENTITY Strg "<keycap>Strg</keycap>"><!-- ctrl -->
+<!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
+<!ENTITY systemtray "<application>Systemabschnitt</application>">
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
-<!ENTITY Tab "<keycap>Tab</keycap>"> <!-- Tab -->
+<!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
 <!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
 <!ENTITY ua	    "<abbrev>u.&nbsp;a.</abbrev>" >
+
