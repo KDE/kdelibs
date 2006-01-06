@@ -458,7 +458,11 @@ public:
     /**
        @since 3.2
     **/
-	KeyboardMove = 10  // move via keyboard
+	KeyboardMove = 10, // move via keyboard
+    /**
+      @since 3.5.1
+    **/
+	MoveResizeCancel = 11 // to ask the WM to stop moving a window
     };
 
     /**
