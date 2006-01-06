@@ -160,7 +160,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 
     enum ButtonCode
     {
-		Help    = 0x00000001, ///< Show Help button. (this button wil run the help set with setHelp)
+      Help    = 0x00000001, ///< Show Help button. (this button wil run the help set with setHelp)
       Default = 0x00000002, ///< Show Default button.
       Ok      = 0x00000004, ///< Show Ok button. (this button accept the dialog)
       Apply   = 0x00000008, ///< Show Apply button.
@@ -169,7 +169,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       Close   = 0x00000040, ///< Show Close-button. (this button close the dialog)
       No      = 0x00000080, ///< Show No button. (this button close the dialog and set the result to No)
       Yes     = 0x00000100, ///< Show Yes button. (this button close the fialog and set the result to Yes)
-	  Details = 0x00000400, ///< Show Details button. (this button will show the detail widget set with setDetailsWidget)
+      Details = 0x00000400, ///< Show Details button. (this button will show the detail widget set with setDetailsWidget)
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
       User3   = 0x00004000, ///< Show User defined button 3.
@@ -779,7 +779,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     Private* const d;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(QFlags<KDialog::ButtonCode>);
+Q_DECLARE_OPERATORS_FOR_FLAGS(QFlags<KDialog::ButtonCode>)
 
 
  /**
