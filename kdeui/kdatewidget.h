@@ -20,9 +20,11 @@
 #define KDATECTL_H
 
 #include <qwidget.h>
-#include <qdatetime.h>
 
 #include <kdelibs_export.h>
+
+class QDate;
+
 
 /**
 * @short A pushbutton to display or allow user selection of a date.
@@ -40,12 +42,12 @@ public:
   /**
    * Constructs a date selection widget.
    */
-  KDateWidget( QWidget *parent=0 );
+  explicit KDateWidget( QWidget *parent=0 );
 
   /**
    * Constructs a date selection widget with the initial date set to @p date.
    */
-  KDateWidget( const QDate &date, QWidget *parent=0 );
+  explicit KDateWidget( const QDate &date, QWidget *parent=0 );
 
   /**
    * Destructs the date selection widget.
@@ -55,7 +57,7 @@ public:
   /**
    * Returns the currently selected date.
    */
-  QDate date() const;
+  const QDate& date() const;
 
   /**
    * Changes the selected date to @p date.
@@ -71,7 +73,6 @@ signals:
    void changed(const QDate&);
 
 protected:
-   void init();
    void init(const QDate&);
 
 protected slots:
