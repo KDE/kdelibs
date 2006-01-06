@@ -36,9 +36,6 @@ that we would like to make for the next binary incompatible release.
 - Remove all methods marked 'deprecated' in KDE 3.x.
   (Martijn)
 
-- Clean up the uses of virtual_hook, use normal virtuals instead (e.g. KZip/KArchive)
-  (David)
-
 - Make it possible to create a KSystemTray without a KMainWindow and instead lazily
   create the main window on demand.
   (Martijn)
@@ -290,8 +287,6 @@ that we would like to make for the next binary incompatible release.
   Maybe just make sure we don't emit multiple copies of per-class data (vtable,RTTI), then
   RTLD_LOCAL should do as well, and it should(?) be simpler this way.
   (Lubos)
-
-- kMin, kMax, KMIN, KMAX can be replaced by their Qt equivalents (Caleb Tennis)
 
 - Replacing QPtrList with QList<*> is tricky for places where the old list used autoDelete().  It
   may be worthwhile to create a convenience class which mimics QList but allows for autoDeleting.
