@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <qbuffer.h>
 #include <qdatastream.h>
 #include <qstring.h>
 
@@ -658,12 +659,13 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
   if ( pic.isIntern() ) {
     if ( !pic.data().isNull() ) {
       QByteArray input;
-      QDataStream s( input, IO_WriteOnly );
-      s.setVersion( 4 );
-      s << pic.data();
+      QBuffer buffer( input );
+      buffer.open( IO_WriteOnly );
+      pic.data().save( &buffer, "JPEG" );
+
       line.setValue( input );
       line.addParameter( "encoding", "b" );
-      line.addParameter( "type", "image/png" );
+      line.addParameter( "type", "image/jpeg" );
     }
   } else if ( !pic.url().isEmpty() ) {
     line.setValue( pic.url() );
