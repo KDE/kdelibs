@@ -1,10 +1,13 @@
+#include "kdatetimewidget.h"
+
+#include <qdatetime.h>
 #include <qlayout.h>
+#include <QTimeEdit>
+
+#include <kdebug.h>
 
 #include "kdatewidget.h"
-#include "kdebug.h"
 #include "kdialog.h"
-#include <QTimeEdit>
-#include "kdatetimewidget.h"
 
 class KDateTimeWidget::KDateTimeWidgetPrivate
 {

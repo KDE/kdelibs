@@ -20,9 +20,10 @@
 #define KDATETIMEWIDGET
 
 #include <qwidget.h>
-#include <qdatetime.h>
 
 #include <kdelibs_export.h>
+
+class QDateTime;
 
 /**
  * @short A combination of a date and a time selection widget.
@@ -45,14 +46,14 @@ public:
   /**
    * Constructs a date and time selection widget.
    */
-  KDateTimeWidget(QWidget * parent = 0);
+  explicit KDateTimeWidget(QWidget * parent = 0);
 
   /**
    * Constructs a date and time selection widget with the initial date and
    * time set to @p datetime.
    */
-  KDateTimeWidget(const QDateTime & datetime,
-                  QWidget * parent = 0 );
+  explicit KDateTimeWidget(const QDateTime & datetime,
+                           QWidget * parent = 0);
 
   /**
    * Destructs the date and time selection widget.
