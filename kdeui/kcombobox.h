@@ -22,12 +22,11 @@
 #ifndef KCOMBOBOX_H
 #define KCOMBOBOX_H
 
-#include <qlineedit.h>
-#include <qcombobox.h>
+#include <QLineEdit>
+#include <QComboBox>
 
 #include <kcompletion.h>
 
-class Q3ListBoxItem;
 class QLineEdit;
 
 class KCompletionBox;
@@ -446,11 +445,6 @@ public slots:
     QT_MOC_COMPAT void setCurrentItem(int index) { QComboBox::setCurrentIndex(index); }
 
 protected slots:
-
-    /**
-    * @deprecated
-    */
-    virtual void itemSelected( Q3ListBoxItem* ) {}
 
     /**
     * Completes text according to the completion mode.
