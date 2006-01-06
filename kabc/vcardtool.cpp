@@ -649,12 +649,13 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
   if ( pic.isIntern() ) {
     if ( !pic.data().isNull() ) {
       QByteArray input;
-      QDataStream s( &input, QIODevice::WriteOnly );
-      s.setVersion( 4 );
-      s << pic.data();
+      QBuffer buffer( &input );
+      buffer.open( QIODevice::WriteOnly );
+      pic.data().save( &buffer, "JPEG" );
+
       line.setValue( input );
       line.addParameter( "encoding", "b" );
-      line.addParameter( "type", "image/png" );
+      line.addParameter( "type", "image/jpeg" );
     }
   } else if ( !pic.url().isEmpty() ) {
     line.setValue( pic.url() );
