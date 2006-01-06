@@ -176,9 +176,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         switch (numArgs) {
         case 1: {
             if (args[0]->isString()) {
-                QRgb color;
-                DOM::CSSParser::parseColor(args[0]->toString(exec).qstring(), color);
-                QColor qc(color);
+                QColor qc = colorFromValue( exec, args[0] );
                 pen.setColor( qc );
 
             }
@@ -193,9 +191,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         case 2: {
             float a = args[1]->toNumber(exec);
             if (args[0]->isString()) {
-                QRgb color;
-                DOM::CSSParser::parseColor(args[0]->toString(exec).qstring(), color);
-                QColor qc(color);
+                QColor qc = colorFromValue( exec, args[0] );
                 qc.setAlphaF( a );
                 pen.setColor( qc );
             }
@@ -246,9 +242,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         switch (numArgs) {
         case 1: {
             if (args[0]->isString()) {
-                QRgb color;
-                DOM::CSSParser::parseColor(args[0]->toString(exec).qstring(), color);
-                QColor qc(color);
+                QColor qc = colorFromValue( exec, args[0] );
                 brush.setColor( qc );
                 drawingContext->setBrush( brush );
             }
@@ -264,9 +258,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         case 2: {
             float a = args[1]->toNumber(exec);
             if (args[0]->isString()) {
-                QRgb color;
-                DOM::CSSParser::parseColor(args[0]->toString(exec).qstring(), color);
-                QColor qc(color);
+                QColor qc = colorFromValue( exec, args[0] );
                 brush.setColor( qc );
                 drawingContext->setBrush( brush );
             }
@@ -875,11 +867,63 @@ QPainter *Context2D::drawingContext()
     return context;
 }
 
+static QList<qreal> parseNumbersList(QString::const_iterator &itr)
+{
+    QList<qreal> points;
+    QString temp;
+    while ((*itr).isSpace())
+        ++itr;
+    while ((*itr).isNumber() ||
+           (*itr) == '-' || (*itr) == '+' || (*itr) == '.') {
+        temp = QString();
+
+        if ((*itr) == '-')
+            temp += *itr++;
+        else if ((*itr) == '+')
+            temp += *itr++;
+        while ((*itr).isDigit())
+            temp += *itr++;
+        if ((*itr) == '.')
+            temp += *itr++;
+        while ((*itr).isDigit())
+            temp += *itr++;
+        while ((*itr).isSpace())
+            ++itr;
+        if ((*itr) == ',')
+            ++itr;
+        points.append(temp.toDouble());
+        //eat spaces
+        while ((*itr).isSpace())
+            ++itr;
+    }
+
+    return points;
+}
+
 QColor colorFromValue(ExecState *exec, ValueImp *value)
 {
-    QRgb color;
-    DOM::CSSParser::parseColor(value->toString(exec).qstring(), color);
-    return QColor(color);
+    QString name = value->toString(exec).qstring();
+    QString::const_iterator itr = name.constBegin();
+    QList<qreal> compo;
+    if ( name.startsWith( "rgba(" ) ) {
+        ++itr; ++itr; ++itr; ++itr; ++itr;
+        compo = parseNumbersList(itr);
+        if ( compo.size() != 4 ) {
+            return QColor();
+        }
+        return QColor( compo[0], compo[1], compo[2], compo[3] );
+    } else if ( name.startsWith( "rgb(" ) ) {
+        ++itr; ++itr; ++itr; ++itr;
+        compo = parseNumbersList(itr);
+        if ( compo.size() != 3 ) {
+            return QColor();
+        }
+        return QColor( compo[0], compo[1], compo[2] );
+    } else {
+        QRgb color;
+        DOM::CSSParser::parseColor(name, color);
+        return QColor(color);
+    }
 }
 
 void Context2D::updateStrokeImagePattern()
@@ -1187,7 +1231,8 @@ ValueImp *GradientFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
             return throwError(exec, SyntaxError);
 
         QColor color = colorFromValue(exec, args[1]);
-        gradient->addColorStop ((float)args[0]->toNumber(exec), color.red()/255.f, color.green()/255.f, color.blue()/255.f, color.alpha()/255.f);
+        gradient->addColorStop((float)args[0]->toNumber(exec), color.red()/255.f, color.green()/255.f, color.blue()/255.f, color.alpha()/255.f);
+        break;
     }
     }
 
