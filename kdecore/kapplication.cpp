@@ -1672,7 +1672,6 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KListBox", "currentItem" );
     kdeMap->insert( "KLineEdit", "text" );
     kdeMap->insert( "KRestrictedLine", "text" );
-    kdeMap->insert( "KSqueezedTextLabel", "text" );
     kdeMap->insert( "KTextBrowser", "source" );
     kdeMap->insert( "KTextEdit", "text" );
     kdeMap->insert( "KURLRequester", "url" );
@@ -1680,9 +1679,6 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KIntNumInput", "value" );
     kdeMap->insert( "KIntSpinBox", "value" );
     kdeMap->insert( "KDoubleNumInput", "value" );
-    // Temp til fixed in QT then enable ifdef with the correct version num
-    kdeMap->insert( "QGroupBox", "checked" );
-    kdeMap->insert( "QTabWidget", "currentPage" );
     Q3SqlPropertyMap::installDefaultMap( kdeMap );
 #endif
 }
