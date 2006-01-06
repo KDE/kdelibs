@@ -42,6 +42,8 @@ obj.libs = 'kresources '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
+env.Depends('kcm_kresources.so','libkresources.so')
+
 env.bksys_insttype('KDESERVTYPES', '', 'kresources_plugin.desktop kresources_manager.desktop')
 
 

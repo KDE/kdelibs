@@ -386,6 +386,7 @@ if env['MAC']:
 elif not env['WINDOWS']:
 	env.Depends('libkio.so.6.0.2', '../kdesu/libkdesu.so')
 	env.Depends('libkio.so.6.0.2', '../kwallet/client/libkwalletclient.so')
+	env.Depends('libkio.so.6.0.2', '../kdeui/libkdeui.so')
 
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]

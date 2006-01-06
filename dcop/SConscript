@@ -71,7 +71,10 @@ def build_dcopfile(target = None, source = None, env = None):
 	dest = open(str(target[0]), 'w')
 	dest.write('#define DCOP_PATH "%s"\n' % env.join(env['PREFIX'], 'bin'))
 	dest.close()
-act=env.Action(build_dcopfile, varlist=['PREFIX'])
+def string_dcopfile(target, source, env):
+	return "creating %s" % (target[0].path)
+act=env.Action(build_dcopfile, string_dcopfile, varlist=['PREFIX'])
+	
 env.Command('dcop-path.h', '', act) # no source needed
 
 # dcopserver_shutdown - program for forcing dcopserver to shutdown

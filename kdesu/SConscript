@@ -12,6 +12,9 @@ obj.libpaths = '../kdecore ../dcop'
 obj.libs     = 'kdecore DCOP'
 obj.execute()
 
+env.Depends('libkdesu.so.6.0.2','../kdecore/libkdecore.so')
+
+
 stubobj = env.qt4obj('program', env)
 stubobj.target = 'kdesu_stub'
 stubobj.source = 'kdesu_stub.c'

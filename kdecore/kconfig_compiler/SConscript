@@ -11,6 +11,8 @@ obj.uselib = 'QTCORE QTGUI QTXML QT3SUPPORT QT KDE4'
 obj.instdir = env['KDEBIN']
 obj.execute()
 
+env.Depends('kconfig_compiler', '../libkdecore.so.6')
+
 """
 SUBDIRS = tests
 AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir) $(all_includes)
