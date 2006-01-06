@@ -92,7 +92,7 @@ public:
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
-: KDialog(parent)
+: KDialog(parent, QString::null)
 {
 	setObjectName(name);
 	setModal(true);

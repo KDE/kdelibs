@@ -65,8 +65,9 @@ public slots:
    void newItems( const KFileItemList& items )
    {
       cout << "*** newItems: " << endl;
-      for ( KFileItemListIterator it( items ) ; it.current() ; ++it )
-          cout << it.current() << " " << it.current()->name().toLocal8Bit().data() << endl;
+      KFileItemList::const_iterator it, itEnd = items.constEnd();
+      for ( it = items.constBegin() ; it != itEnd ; ++it )
+          cout << (*it) << " " << (*it)->name().toLocal8Bit().data() << endl;
    }
    void deleteItem( KFileItem* item )
    {
