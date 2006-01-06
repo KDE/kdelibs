@@ -1224,13 +1224,15 @@ void KURLTest::testMailto()
   QCOMPARE( url1.url(), QString("mailto:user@host.com") );
   QCOMPARE( url1.url(0), QString("mailto:user@host.com") );
 
-#if QT_VERSION < 0x040200
-  QSKIP( "QUrl doesn't parse \"mailto:Faure David <faure@kde.org>\"; asked for 4.2...", SkipSingle );
-#endif
+#if 0
+  // I wrote this test in the very first kurltest, but there's no proof that it's actually valid.
+  // Andreas says this is broken, i.e. against rfc2368.
+  // Let's see if the need ever comes up.
   KURL umail2 ( "mailto:Faure David <faure@kde.org>" );
   QCOMPARE( umail2.protocol(), QString("mailto") );
   QCOMPARE( umail2.path(), QString("Faure David <faure@kde.org>") );
   QVERIFY( !KURL::isRelativeURL("mailto:faure@kde.org") );
+#endif
 }
 
 void KURLTest::testSmb()
