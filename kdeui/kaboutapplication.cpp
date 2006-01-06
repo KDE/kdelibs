@@ -20,45 +20,28 @@
  *
  */
 
-// I (espen) prefer that header files are included alphabetically
-
-#include <qlabel.h>
-#include <QPixmap>
+#include <QLabel>
 #include <QList>
+#include <QPixmap>
 
 #include <kaboutapplication.h>
 #include <kaboutdialog_private.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
+#include <kactivelabel.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kurllabel.h>
-#include <kactivelabel.h>
-#include "ktextedit.h"
 
-KAboutApplication::KAboutApplication( QWidget *parent, bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct,
-                 kapp ? kapp->caption() : QString(),
-                 Close, Close, parent, modal )
+KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
+  :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close, parent, modal )
 {
-  buildDialog(KGlobal::instance()->aboutData());
-}
+  if( aboutData == 0 )
+    aboutData = KGlobal::instance()->aboutData();
 
-KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent,
-                                      bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close,
-     parent, modal )
-{
-  buildDialog(aboutData);
-}
-
-void KAboutApplication::buildDialog( const KAboutData *aboutData )
-{
   if( !aboutData )
   {
-    //
     // Recovery
-    //
     setProduct( kapp ? kapp->caption() : QString(), i18n("??"), QString(), QString() );
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
@@ -132,24 +115,25 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
       authorPage->addWidget( activeLabel );
     }
 
-	QList<KAboutPerson> lst = aboutData->authors();
-	for (int i = 0; i < lst.size(); ++i) {
-		authorPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
-                             lst.at(i).webAddress(), lst.at(i).task() );
-	}
+    QList<KAboutPerson> lst = aboutData->authors();
+    for (int i = 0; i < lst.size(); ++i)
+    {
+      authorPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+      lst.at(i).webAddress(), lst.at(i).task() );
+    }
   }
 
   int creditsCount = aboutData->credits().count();
   if (creditsCount)
   {
-    KAboutContainer *creditsPage =
-      addScrolledContainerPage( i18n("&Thanks To") );
-    
-	QList<KAboutPerson> lst = aboutData->credits();
-	for (int i = 0; i < lst.size(); ++i) {
-		creditsPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
-	                           lst.at(i).webAddress(), lst.at(i).task() );
-	}
+    KAboutContainer *creditsPage = addScrolledContainerPage( i18n("&Thanks To") );
+
+    QList<KAboutPerson> lst = aboutData->credits();
+    for (int i = 0; i < lst.size(); ++i)
+    {
+      creditsPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+           lst.at(i).webAddress(), lst.at(i).task() );
+    }
   }
 
   const QList<KAboutTranslator> translatorList = aboutData->translators();
@@ -161,11 +145,11 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
       QList<KAboutTranslator>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
-   text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
-       "<a href=\"mailto:%2\">%2</a></p>")
-     .arg((*it).name())
-     .arg((*it).emailAddress())
-     .arg((*it).emailAddress());
+        text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
+            "<a href=\"mailto:%2\">%2</a></p>")
+            .arg((*it).name())
+            .arg((*it).emailAddress())
+            .arg((*it).emailAddress());
       }
 
       text += KAboutData::aboutTranslationTeam() + "</qt>";
@@ -176,9 +160,6 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   {
     addLicensePage( i18n("&License Agreement"), aboutData->license() );
   }
-
-  //
   // Make sure the dialog has a reasonable width
-  //
   setInitialSize( QSize(400,1) );
 }

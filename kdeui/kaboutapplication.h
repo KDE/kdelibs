@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _KABOUT_APPLICATION_H_
-#define _KABOUT_APPLICATION_H_
+#ifndef KABOUT_APPLICATION_H
+#define KABOUT_APPLICATION_H
 
 #include <kaboutdata.h>
 #include <kaboutdialog.h>
@@ -49,21 +49,6 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      * Note that this dialog is made modeless in the KHelpMenu class so
      * the users may expect a modeless dialog.
      *
-     * @param parent The parent of the dialog box. You should use the
-     *        toplevel window so that the dialog becomes centered.
-     * @param modal If false, this widget will be modeless and must be
-     *        made visible using QWidget::show(). Otherwise it will be
-     *        modal and must be made visible using QWidget::exec().
-     */
-    KAboutApplication( QWidget *parent=0, bool modal=true );
-
-    /**
-     * Constructor. Mostly does the same stuff as the previous constructor, except
-     * that it can take a custom KAboutData object instead of the one specified
-     * in your main() function. This is especially useful for applications
-     * which are implemented as (dynamically loaded) libraries, e.g. panel
-     * applets.
-     *
      * @param aboutData A pointer to a KAboutData object which data
      *        will be used for filling the dialog.
      * @param parent The parent of the dialog box. You should use the
@@ -72,19 +57,7 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec().
      */
-    KAboutApplication( const KAboutData *aboutData, QWidget *parent=0, bool modal=true );
-
-/*
- FIXME: The two constructors should be replaced with the following  after the lib freeze:
-
-    KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, const char *name=0, bool modal=true );
-
- This will make buildDialog() obsolete as well (Frerich).
-*/
-  protected:
-    void buildDialog( const KAboutData *aboutData );
+    KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
 };
 
-
 #endif
-
