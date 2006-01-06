@@ -178,8 +178,7 @@ namespace KJS {
 
     struct SuppressedWindowInfo {
       SuppressedWindowInfo() {}  // for QValueList
-      SuppressedWindowInfo( ExecState *e, KURL u, QString fr, QString fe ) : exec(e), url(u), frameName(fr), features(fe) {}
-      ExecState *exec;
+      SuppressedWindowInfo( KURL u, QString fr, QString fe ) : url(u), frameName(fr), features(fe) {}
       KURL url;
       QString frameName;
       QString features;
