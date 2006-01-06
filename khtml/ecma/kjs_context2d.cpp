@@ -538,6 +538,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float y = (float)args[1]->toNumber(exec);
         float w = (float)args[2]->toNumber(exec);
         float h = (float)args[3]->toNumber(exec);
+
         drawingContext->fillRect( QRectF( x, y, w, h ), contextObject->constructBrush( exec ) );
         renderer->setNeedsImageUpdate();
         break;
@@ -1208,6 +1209,23 @@ void Context2D::mark()
     DOMObject::mark();
 }
 
+static qreal adjustPosition( qreal pos, const QGradientStops &stops )
+{
+    QGradientStops::const_iterator itr = stops.constBegin();
+    const qreal smallDiff = 0.00001;
+    while ( itr != stops.constEnd() ) {
+        const QGradientStop &stop = *itr;
+        ++itr;
+        bool atEnd = ( itr != stops.constEnd() );
+        if ( qFuzzyCompare( pos, stop.first ) ) {
+            if ( atEnd || !qFuzzyCompare( pos + smallDiff, ( *itr ).first ) ) {
+                return pos + smallDiff;
+            }
+        }
+    }
+    return pos;
+}
+
 const ClassInfo KJS::Gradient::info = { "Gradient", 0, &GradientTable, 0 };
 
 /* Source for GradientTable. Use "make hashtables" to regenerate.
@@ -1231,7 +1249,12 @@ ValueImp *GradientFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
             return throwError(exec, SyntaxError);
 
         QColor color = colorFromValue(exec, args[1]);
-        gradient->addColorStop((float)args[0]->toNumber(exec), color.red()/255.f, color.green()/255.f, color.blue()/255.f, color.alpha()/255.f);
+        qreal pos = (float)args[0]->toNumber(exec);
+        //<canvas> says that gradient can have two stops at the same position
+        //Qt doesn't handle that. We hack around that by creating a fake position
+        //stop.
+        pos = adjustPosition( pos, gradient->qgradient()->stops() );
+        gradient->addColorStop(pos, color.red()/255.f, color.green()/255.f, color.blue()/255.f, color.alpha()/255.f);
         break;
     }
     }
