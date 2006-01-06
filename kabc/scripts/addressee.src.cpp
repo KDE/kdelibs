@@ -830,11 +830,11 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     return; // KPIM::AddressEmpty;
 
   // The code works on 8-bit strings, so convert the input to UTF-8.
-  Q3CString address = rawEmail.toUtf8();
+  QByteArray address = rawEmail.toUtf8();
 
-  Q3CString displayName;
-  Q3CString addrSpec;
-  Q3CString comment;
+  QByteArray displayName;
+  QByteArray addrSpec;
+  QByteArray comment;
 
   // The following is a primitive parser for a mailbox-list (cf. RFC 2822).
   // The purpose is to extract a displayable string from the mailboxes.
