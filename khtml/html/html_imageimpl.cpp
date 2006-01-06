@@ -238,7 +238,7 @@ void HTMLImageElementImpl::attach()
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
     _style->deref();
-    
+
     NodeBaseImpl::attach();
     if (m_render)
         m_render->updateFromElement();
@@ -361,13 +361,9 @@ long HTMLImageElementImpl::y() const
 
 QPixmap HTMLImageElementImpl::currentPixmap() const
 {
-    RenderImage *r = static_cast<RenderImage*>(renderer());
-
-#ifdef __GNUC__
-#warning "FIXME"
-#endif
-    //if(r)
-    //    return r->pixmap();
+    if (m_image) {
+        return m_image->pixmap();
+    }
 
     return QPixmap();
 }

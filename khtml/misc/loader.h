@@ -256,7 +256,7 @@ namespace khtml
 	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept);
 	virtual ~CachedImage();
 
-	const QPixmap &pixmap() const;
+	QPixmap pixmap() const;
 	const QPixmap &tiled_pixmap(const QColor& bg);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading

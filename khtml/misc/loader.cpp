@@ -57,6 +57,7 @@
 #include <qbitmap.h>
 #include <qmovie.h>
 #include <qwidget.h>
+#include <qdebug.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -560,7 +561,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     }
 #endif
 }
-const QPixmap &CachedImage::pixmap( ) const
+QPixmap CachedImage::pixmap( ) const
 {
     if (m_hadError)
         return *Cache::brokenPixmap;
