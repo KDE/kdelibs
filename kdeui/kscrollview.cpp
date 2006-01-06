@@ -23,7 +23,6 @@
 #include <qapplication.h>
 
 #include "kscrollview.h"
-#include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
 
