@@ -36,6 +36,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <kjs/collector.h>
 #include <kjs/function.h>
 
 using namespace KJS;
@@ -94,18 +95,22 @@ KJSProxyImpl::~KJSProxyImpl()
   if ( m_script ) {
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
     // This allows to delete the global-object properties, like all the protos
-    static_cast<ObjectImp*>(m_script->globalObject().imp())->deleteAllProperties( m_script->globalExec() );
+    m_script->globalObject()->clearProperties();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
-    while (KJS::Interpreter::collect())
-        ;
+    Interpreter::lock();
+    while (Collector::collect())
+	    ;
+    Interpreter::unlock();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
     delete m_script;
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
-    while (KJS::Interpreter::collect())
-        ;
+    Interpreter::lock();
+    while (Collector::collect())
+	    ;
+    Interpreter::unlock();
   }
 
 #ifndef NDEBUG
@@ -145,7 +150,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   m_script->setInlineCode(inlineCode);
   Window* window = Window::retrieveWindow( m_frame->m_part );
-  KJS::Value thisNode = n.isNull() ? Window::retrieve( m_frame->m_part ) : getDOMNode(m_script->globalExec(),n);
+  KJS::ValueImp *thisNode = n.isNull() ? Window::retrieve( m_frame->m_part ) : getDOMNode(m_script->globalExec(),n.handle());
 
   UString code( str );
 
@@ -166,13 +171,13 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   window->afterScriptExecution();
 
   // let's try to convert the return value
-  if (success && comp.value().isValid())
+  if (success && comp.value())
     return ValueToVariant( m_script->globalExec(), comp.value());
   else
   {
     if ( comp.complType() == Throw )
     {
-        UString msg = comp.value().toString(m_script->globalExec());
+        UString msg = comp.value()->toString(m_script->globalExec());
         kdDebug(6070) << "WARNING: Script threw exception: " << msg.qstring() << endl;
     }
     return QVariant();
@@ -184,12 +189,12 @@ class TestFunctionImp : public ObjectImp {
 public:
   TestFunctionImp() : ObjectImp() {}
   virtual bool implementsCall() const { return true; }
-  virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+  virtual ValueImp *call(ExecState *exec, ObjectImp *thisObj, const List &args);
 };
 
-Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+ValueImp *TestFunctionImp::call(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
-  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+  fprintf(stderr,"--> %s\n",args[0]->toString(exec).ascii());
   return Undefined();
 }
 
@@ -210,20 +215,22 @@ void KJSProxyImpl::clear() {
 #endif
     m_script->clear();
 
-    Window *win = static_cast<Window *>(m_script->globalObject().imp());
+    Window *win = static_cast<Window *>(m_script->globalObject());
     if (win) {
       win->clear( m_script->globalExec() );
       // re-add "debug", clear() removed it
-      m_script->globalObject().put(m_script->globalExec(),
-                                   "debug", Value(new TestFunctionImp()), Internal);
+      m_script->globalObject()->put(m_script->globalExec(),
+                                   "debug", new TestFunctionImp(), Internal);
       if ( win->part() )
         applyUserAgent();
     }
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
     //kdDebug() << k_funcinfo << "all done -> collecting" << endl;
-    while (KJS::Interpreter::collect())
-        ;
+    Interpreter::lock();
+    while (Collector::collect())
+	    ;
+    Interpreter::unlock();
   }
 }
 
@@ -313,18 +320,18 @@ void KJSProxyImpl::initScript()
     return;
 
   // Build the global object - which is a Window instance
-  Object globalObject( new Window(m_frame) );
+  ObjectImp *globalObject( new Window(m_frame) );
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_frame);
-  static_cast<ObjectImp*>(globalObject.imp())->setPrototype(m_script->builtinObjectPrototype());
+  globalObject->setPrototype(m_script->builtinObjectPrototype());
 
 #ifdef KJS_DEBUGGER
   //m_script->setDebuggingEnabled(m_debugEnabled);
 #endif
   //m_script->enableDebug();
-  globalObject.put(m_script->globalExec(),
-		   "debug", Value(new TestFunctionImp()), Internal);
+  globalObject->put(m_script->globalExec(),
+		   "debug", new TestFunctionImp(), Internal);
   applyUserAgent();
 }
 
@@ -396,6 +403,8 @@ bool KJSCPUGuard::confirmTerminate() {
 }
 
 void KJSCPUGuard::alarmHandler(int) {
-    ExecState::requestTerminate();
-    ExecState::confirmTerminate = KJSCPUGuard::confirmTerminate;
+    //abort();
+    // hmm what happened to this stuff?
+    //ExecState::requestTerminate();
+    //ExecState::confirmTerminate = KJSCPUGuard::confirmTerminate;
 }

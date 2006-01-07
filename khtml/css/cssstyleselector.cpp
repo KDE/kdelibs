@@ -1942,7 +1942,7 @@ static QColor colorForCSSValue( int css_value )
 	    KConfig bckgrConfig("kdesktoprc", true, false); // No multi-screen support
 	    bckgrConfig.setGroup("Desktop0");
 	    // Desktop background.
-	    return bckgrConfig.readEntry("Color1", qApp->palette().disabled().background());
+	    return bckgrConfig.readColorEntry("Color1", &qApp->palette().disabled().background());
 	}
 	return QColor();
     }
@@ -1954,7 +1954,7 @@ static QColor colorForCSSValue( int css_value )
     if ( uicol->configEntry ) {
 	KConfig *globalConfig = KGlobal::config();
 	globalConfig->setGroup( uicol->configGroup );
-	c = globalConfig->readEntry( uicol->configEntry, c );
+	c = globalConfig->readColorEntry( uicol->configEntry, &c );
     }
 #endif
 

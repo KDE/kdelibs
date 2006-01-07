@@ -233,7 +233,7 @@ void HTMLTokenizer::processListing(TokenizerString list)
     {
         checkBuffer(3*TAB_SIZE);
 
-        if (skipLF && ( *list != '\n' ))
+        if (skipLF && ( list->unicode() != '\n' ))
         {
             skipLF = false;
         }
@@ -243,7 +243,7 @@ void HTMLTokenizer::processListing(TokenizerString list)
             skipLF = false;
             ++list;
         }
-        else if (( *list == '\n' ) || ( *list == '\r' ))
+        else if (( list->unicode() == '\n' ) || ( list->unicode() == '\r' ))
         {
             if (discard == LFDiscard)
             {
@@ -265,13 +265,13 @@ void HTMLTokenizer::processListing(TokenizerString list)
                     pending = LFPending;
             }
             /* Check for MS-DOS CRLF sequence */
-            if (*list == '\r')
+            if (list->unicode() == '\r')
             {
                 skipLF = true;
             }
             ++list;
         }
-        else if (( *list == ' ' ) || ( *list == '\t'))
+        else if (( list->unicode() == ' ' ) || ( list->unicode() == '\t'))
         {
             if (pending)
                 addPending();
@@ -1244,9 +1244,9 @@ void HTMLTokenizer::addPending()
     else if ( textarea )
     {
         switch(pending) {
-        case LFPending:  *dest++ = '\n'; prePos = 0; break;
-        case SpacePending: *dest++ = ' '; ++prePos; break;
-        case TabPending: *dest++ = '\t'; prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
+        case LFPending:  *dest++ = QLatin1Char('\n'); prePos = 0; break;
+        case SpacePending: *dest++ = QLatin1Char(' '); ++prePos; break;
+        case TabPending: *dest++ = QLatin1Char('\t'); prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
         case NonePending:
             assert(0);
         }
@@ -1259,12 +1259,12 @@ void HTMLTokenizer::addPending()
         {
         case SpacePending:
             // Insert a breaking space
-            *dest++ = QChar(' ');
+            *dest++ = QLatin1Char(' ');
             prePos++;
             break;
 
         case LFPending:
-            *dest = '\n';
+            *dest = QLatin1Char('\n');
             dest++;
             prePos = 0;
             break;
@@ -1272,7 +1272,7 @@ void HTMLTokenizer::addPending()
         case TabPending:
             p = TAB_SIZE - ( prePos % TAB_SIZE );
             for ( int x = 0; x < p; x++ )
-                *dest++ = QChar(' ');
+                *dest++ = QLatin1Char(' ');
             prePos += p;
             break;
 

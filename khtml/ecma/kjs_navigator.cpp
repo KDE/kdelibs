@@ -79,22 +79,28 @@ namespace KJS {
     class Plugins : public PluginBase {
     public:
         Plugins(ExecState *exec) : PluginBase(exec) {};
-        virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-        Value getValueProperty(ExecState *exec, int token) const;
+        virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+        ValueImp *getValueProperty(ExecState *exec, int token) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        Value pluginByName( ExecState* exec, const QString& name ) const;
+        static ValueImp *pluginByName( ExecState* exec, const QString& name );
+    private:
+        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
     };
 
 
     class MimeTypes : public PluginBase {
     public:
         MimeTypes(ExecState *exec) : PluginBase(exec) { };
-        virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+        virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        Value getValueProperty(ExecState *exec, int token) const;
-        Value mimeTypeByName( ExecState* exec, const QString& name ) const;
+        ValueImp *getValueProperty(ExecState *exec, int token) const;
+        static ValueImp *mimeTypeByName( ExecState* exec, const QString& name );
+    private:
+        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
     };
 
 
@@ -103,14 +109,16 @@ namespace KJS {
         Plugin( ExecState *exec, PluginBase::PluginInfo *info )
           : PluginBase( exec )
         { m_info = info; };
-        virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+        virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        Value mimeByName(ExecState* exec, const QString& name ) const;
-        Value getValueProperty(ExecState *exec, int token) const;
+        ValueImp *mimeByName(ExecState* exec, const QString& name ) const;
+        ValueImp *getValueProperty(ExecState *exec, int token) const;
         PluginBase::PluginInfo *pluginInfo() const { return m_info; }
     private:
         PluginBase::PluginInfo *m_info;
+        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
     };
 
 
@@ -119,10 +127,10 @@ namespace KJS {
         MimeType( ExecState *exec, PluginBase::MimeClassInfo *info )
           : PluginBase( exec )
         { m_info = info; };
-        virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+        virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        Value getValueProperty(ExecState *exec, int token) const;
+        ValueImp *getValueProperty(ExecState *exec, int token) const;
     private:
         PluginBase::MimeClassInfo *m_info;
     };
@@ -155,20 +163,20 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
 @end
 */
-IMPLEMENT_PROTOFUNC_DOM(NavigatorFunc)
+IMPLEMENT_PROTOFUNC(NavigatorFunc)
 
 Navigator::Navigator(ExecState *exec, KHTMLPart *p)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), m_part(p) { }
+  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), m_part(p) { }
 
-Value Navigator::get(ExecState *exec, const Identifier &propertyName) const
+bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Navigator::get " << propertyName.ascii() << endl;
+  kdDebug(6070) << "Navigator::getOwnPropertySlot " << propertyName.ascii() << endl;
 #endif
-  return lookupGet<NavigatorFunc,Navigator,ObjectImp>(exec,propertyName,&NavigatorTable,this);
+  return getStaticPropertySlot<NavigatorFunc, Navigator, ObjectImp>(exec, &NavigatorTable, this, propertyName, slot);
 }
 
-Value Navigator::getValueProperty(ExecState *exec, int token) const
+ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KURL url = m_part->url();
   QString userAgent = url.host();
@@ -261,21 +269,21 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
       return String("x86");
   }
   case _Plugins:
-    return Value(new Plugins(exec));
+    return new Plugins(exec);
   case _MimeTypes:
-    return Value(new MimeTypes(exec));
+    return new MimeTypes(exec);
   case CookieEnabled:
     return Boolean(true); /// ##### FIXME
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
 /*******************************************************************/
 
 PluginBase::PluginBase(ExecState *exec)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype() )
+  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype() )
 {
     if ( !plugins ) {
         plugins = new Q3PtrList<PluginInfo>;
@@ -373,67 +381,83 @@ const ClassInfo Plugins::info = { "PluginArray", 0, &PluginsTable, 0 };
   namedItem  	Plugins_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC_DOM(PluginsFunc)
+IMPLEMENT_PROTOFUNC(PluginsFunc)
 
-Value Plugins::get(ExecState *exec, const Identifier &propertyName) const
+ValueImp *Plugins::getValueProperty(ExecState *exec, int token) const
 {
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "Plugins::get " << propertyName.qstring() << endl;
-#endif
-  if ( propertyName == lengthPropertyName )
-    return Number(plugins->count());
-
-  // plugins[#]
-  bool ok;
-  unsigned int i = propertyName.toULong(&ok);
-  if( ok && i<plugins->count() )
-    return Value( new Plugin( exec, plugins->at(i) ) );
-
-  // plugin[name]
-  Value val = pluginByName( exec, propertyName.qstring() );
-  if (!val.isA(UndefinedType))
-    return val;
-
-  return lookupGet<PluginsFunc,Plugins,ObjectImp>(exec,propertyName,&PluginsTable,this);
+  assert(token == Plugins_Length);
+  return Number(plugins->count());
 }
 
-Value Plugins::pluginByName( ExecState* exec, const QString& name ) const
+ValueImp *Plugins::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+    return new Plugin(exec, plugins->at(slot.index()));
+}
+
+ValueImp *Plugins::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+
+  return pluginByName(exec, propertyName.qstring());
+}
+
+bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "Plugins::getOwnPropertySlot " << propertyName.qstring() << endl;
+#endif
+  if (getStaticOwnPropertySlot<PluginsFunc, Plugins>(&PluginsTable, this, propertyName, slot))
+      return true;
+      
+  // plugins[#]
+  bool ok;
+  unsigned int i = propertyName.toUInt32(&ok);
+  if (ok && i < plugins->count()) {
+      slot.setCustomIndex(this, i, indexGetter);
+      return true;
+  }
+
+  // plugin[name]
+  for (PluginInfo *pl = plugins->first(); pl; pl = plugins->next()) {
+      if (pl->name == propertyName.qstring()) {
+          slot.setCustom(this, nameGetter);
+          return true;
+      }
+  }
+
+  return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
+}
+
+ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
 {
   for ( PluginInfo *pl = plugins->first(); pl!=0; pl = plugins->next() ) {
     if ( pl->name == name )
-      return Value( new Plugin( exec, pl ) );
+      return new Plugin( exec, pl );
   }
   return Undefined();
 }
 
-Value Plugins::getValueProperty(ExecState* /*exec*/, int token) const
-{
-  kdDebug(6070) << "WARNING: Unhandled token in Plugins::getValueProperty : " << token << endl;
-  return Undefined();
-}
-
-Value PluginsFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::Plugins, thisObj );
-  KJS::Plugins* base = static_cast<KJS::Plugins *>(thisObj.imp());
+  KJS::Plugins* base = static_cast<KJS::Plugins *>(thisObj);
   switch( id ) {
   case Plugins_Refresh:
     return Undefined(); //## TODO
   case Plugins_Item:
   {
     bool ok;
-    unsigned int i = args[0].toString(exec).toArrayIndex(&ok);
+    unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if( ok && i<base->plugins->count() )
-      return Value( new Plugin( exec, base->plugins->at(i) ) );
+      return new Plugin( exec, base->plugins->at(i) );
     return Undefined();
   }
   case Plugins_NamedItem:
   {
-    UString s = args[0].toString(exec);
+    UString s = args[0]->toString(exec);
     return base->pluginByName( exec, s.qstring() );
   }
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in PluginsFunc::tryCall : " << id << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in PluginsFunc::callAsFunction : " << id << endl;
     return Undefined();
   }
 }
@@ -448,66 +472,81 @@ const ClassInfo MimeTypes::info = { "MimeTypeArray", 0, &MimeTypesTable, 0 };
   namedItem  	MimeTypes_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC_DOM(MimeTypesFunc)
+IMPLEMENT_PROTOFUNC(MimeTypesFunc)
 
-Value MimeTypes::get(ExecState *exec, const Identifier &propertyName) const
+ValueImp *MimeTypes::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+    return new MimeType(exec, mimes->at(slot.index()));
+}
+
+ValueImp *MimeTypes::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+    return mimeTypeByName(exec, propertyName.qstring());
+}
+
+bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "MimeTypes::get " << propertyName.qstring() << endl;
+  kdDebug(6070) << "MimeTypes::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
-  if( propertyName==lengthPropertyName )
-    return Number( mimes->count() );
+  if (getStaticOwnPropertySlot<MimeTypesFunc, MimeTypes>(&MimeTypesTable, this, propertyName, slot))
+      return true;
 
   // mimeTypes[#]
   bool ok;
-  unsigned int i = propertyName.toULong(&ok);
-  if( ok && i<mimes->count() )
-    return Value( new MimeType( exec, mimes->at(i) ) );
+  unsigned int i = propertyName.toUInt32(&ok);
+  if (ok && i < mimes->count()) {
+      slot.setCustomIndex(this, i, indexGetter);
+      return true;
+  }
 
   // mimeTypes[name]
-  Value val = mimeTypeByName( exec, propertyName.qstring() );
-  if (!val.isA(UndefinedType))
-    return val;
+  for (MimeClassInfo *m = mimes->first(); m; m = mimes->next()) {
+      if (m->type == propertyName.qstring()) {
+          slot.setCustom(this, nameGetter);
+          return true;
+      }
+  }
 
-  return lookupGet<MimeTypesFunc,MimeTypes,ObjectImp>(exec,propertyName,&MimeTypesTable,this);
+  return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-Value MimeTypes::mimeTypeByName( ExecState* exec, const QString& name ) const
+ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 {
   //kdDebug(6070) << "MimeTypes[" << name << "]" << endl;
   for ( MimeClassInfo *m = mimes->first(); m!=0; m = mimes->next() ) {
     if ( m->type == name )
-      return Value( new MimeType( exec, m ) );
+      return new MimeType( exec, m );
   }
   return Undefined();
 }
 
-Value MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
+ValueImp *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
 {
-  kdDebug(6070) << "WARNING: Unhandled token in MimeTypes::getValueProperty : " << token << endl;
-  return Undefined();
+  assert(token == MimeTypes_Length);
+  return Number(mimes->count());
 }
 
-Value MimeTypesFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MimeTypes, thisObj );
-  KJS::MimeTypes* base = static_cast<KJS::MimeTypes *>(thisObj.imp());
+  KJS::MimeTypes* base = static_cast<KJS::MimeTypes *>(thisObj);
   switch( id ) {
   case MimeTypes_Item:
   {
     bool ok;
-    unsigned int i = args[0].toString(exec).toArrayIndex(&ok);
+    unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if( ok && i<base->mimes->count() )
-      return Value( new MimeType( exec, base->mimes->at(i) ) );
+      return new MimeType( exec, base->mimes->at(i) );
     return Undefined();
   }
   case MimeTypes_NamedItem:
   {
-    UString s = args[0].toString(exec);
+    UString s = args[0]->toString(exec);
     return base->mimeTypeByName( exec, s.qstring() );
   }
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in MimeTypesFunc::tryCall : " << id << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in MimeTypesFunc::callAsFunction : " << id << endl;
     return Undefined();
   }
 }
@@ -524,79 +563,94 @@ const ClassInfo Plugin::info = { "Plugin", 0, &PluginTable, 0 };
   namedItem  	Plugin_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC_DOM(PluginFunc)
+IMPLEMENT_PROTOFUNC(PluginFunc)
 
-Value Plugin::get(ExecState *exec, const Identifier &propertyName) const
+ValueImp *Plugin::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+    Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
+    return new MimeType(exec, thisObj->m_info->mimes.at(slot.index()));
+}
+
+ValueImp *Plugin::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+{
+  Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
+  return thisObj->mimeByName(exec, propertyName.qstring());
+}
+
+bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Plugin::get " << propertyName.qstring() << endl;
+  kdDebug(6070) << "Plugin::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
-  if ( propertyName == lengthPropertyName )
-    return Number( m_info->mimes.count() );
+  if (getStaticOwnPropertySlot<PluginFunc, Plugin>(&PluginsTable, this, propertyName, slot))
+      return true;
 
   // plugin[#]
   bool ok;
-  unsigned int i = propertyName.toULong(&ok);
-  //kdDebug(6070) << "Plugin::get plugin[" << i << "]" << endl;
-  if( ok && i<m_info->mimes.count() )
-  {
-    //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
-    return Value(new MimeType(exec, m_info->mimes.at(i)));
+  unsigned int i = propertyName.toUInt32(&ok);
+  if (ok && i < m_info->mimes.count()) {
+    slot.setCustomIndex(this, i, indexGetter);
+    return true;
   }
 
   // plugin["name"]
-  Value val = mimeByName( exec, propertyName.qstring() );
-  if (!val.isA(UndefinedType))
-    return val;
+  for (MimeClassInfo *m=m_info->mimes.first(); m; m = m_info->mimes.next()) {
+    if (m->type == propertyName.qstring()) {
+      slot.setCustom(this, nameGetter);
+      return true;
+    }
+  }
 
-  return lookupGet<PluginFunc,Plugin,ObjectImp>(exec, propertyName, &PluginTable, this );
+  return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-Value Plugin::mimeByName(ExecState* exec, const QString& name) const
+ValueImp *Plugin::mimeByName(ExecState* exec, const QString& name) const
 {
   for ( PluginBase::MimeClassInfo *m = m_info->mimes.first();
         m != 0; m = m_info->mimes.next() ) {
     if ( m->type == name )
-      return Value(new MimeType(exec, m));
+      return new MimeType(exec, m);
   }
   return Undefined();
 }
 
-Value Plugin::getValueProperty(ExecState* /*exec*/, int token) const
+ValueImp *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
 {
   switch( token ) {
   case Plugin_Name:
-    return String( m_info->name );
+    return String( UString(m_info->name) );
   case Plugin_FileName:
-    return String( m_info->file );
+    return String( UString(m_info->file) );
   case Plugin_Description:
-    return String( m_info->desc );
+    return String( UString(m_info->desc) );
+  case Plugin_Length:
+    return Number( m_info->mimes.count() );
   default:
     kdDebug(6070) << "WARNING: Unhandled token in Plugin::getValueProperty : " << token << endl;
     return Undefined();
   }
 }
 
-Value PluginFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::Plugin, thisObj );
-  KJS::Plugin* plugin = static_cast<KJS::Plugin *>(thisObj.imp());
+  KJS::Plugin* plugin = static_cast<KJS::Plugin *>(thisObj);
   switch( id ) {
   case Plugin_Item:
   {
     bool ok;
-    unsigned int i = args[0].toString(exec).toArrayIndex(&ok);
+    unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if( ok && i< plugin->pluginInfo()->mimes.count() )
-      return Value( new MimeType( exec, plugin->pluginInfo()->mimes.at(i) ) );
+      return new MimeType( exec, plugin->pluginInfo()->mimes.at(i) );
     return Undefined();
   }
   case Plugin_NamedItem:
   {
-    UString s = args[0].toString(exec);
+    UString s = args[0]->toString(exec);
     return plugin->mimeByName( exec, s.qstring() );
   }
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in PluginFunc::tryCall : " << id << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in PluginFunc::callAsFunction : " << id << endl;
     return Undefined();
   }
 }
@@ -613,25 +667,25 @@ const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypesTable, 0 };
 @end
 */
 
-Value MimeType::get(ExecState *exec, const Identifier &propertyName) const
+bool MimeType::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "MimeType::get " << propertyName.qstring() << endl;
 #endif
-  return lookupGetValue<MimeType,ObjectImp>(exec, propertyName, &MimeTypeTable, this );
+  return getStaticValueSlot<MimeType, ObjectImp>(exec, &MimeTypesTable, this, propertyName, slot);
 }
 
-Value MimeType::getValueProperty(ExecState* exec, int token) const
+ValueImp *MimeType::getValueProperty(ExecState* exec, int token) const
 {
   switch( token ) {
   case MimeType_Type:
-    return String( m_info->type );
+    return String( UString(m_info->type) );
   case MimeType_Suffixes:
-    return String( m_info->suffixes );
+    return String( UString(m_info->suffixes) );
   case MimeType_Description:
-    return String( m_info->desc );
+    return String( UString(m_info->desc) );
   case MimeType_EnabledPlugin:
-    return Value(new Plugin(exec, m_info->plugin));
+    return new Plugin(exec, m_info->plugin);
   default:
     kdDebug(6070) << "WARNING: Unhandled token in MimeType::getValueProperty : " << token << endl;
     return Undefined();
@@ -639,10 +693,10 @@ Value MimeType::getValueProperty(ExecState* exec, int token) const
 }
 
 
-Value NavigatorFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
+ValueImp *NavigatorFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &)
 {
   KJS_CHECK_THIS( KJS::Navigator, thisObj );
-  Navigator *nav = static_cast<Navigator *>(thisObj.imp());
+  Navigator *nav = static_cast<Navigator *>(thisObj);
   // javaEnabled()
   return Boolean(nav->part()->javaEnabled());
 }

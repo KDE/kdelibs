@@ -23,7 +23,6 @@
 #include "collector.h"
 
 #include <kxmlcore/FastMalloc.h>
-#include <kxmlcore/FastMallocInternal.h>
 #include "internal.h"
 #include "list.h"
 #include "value.h"

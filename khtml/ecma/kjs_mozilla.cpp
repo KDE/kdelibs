@@ -38,33 +38,36 @@ const ClassInfo MozillaSidebarExtension::info = { "sidebar", 0, &MozillaSidebarE
 @end
 */
 }
-IMPLEMENT_PROTOFUNC_DOM(MozillaSidebarExtensionFunc)
+IMPLEMENT_PROTOFUNC(MozillaSidebarExtensionFunc)
 
 MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), m_part(p) { }
+  : m_part(p) {
+  setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
+}
 
-Value MozillaSidebarExtension::get(ExecState *exec, const Identifier &propertyName) const
+bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
 #endif
-  return lookupGet<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>(exec,propertyName,&MozillaSidebarExtensionTable,this);
+  return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
+            (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
 }
 
-Value MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
+ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
 {
   Q_UNUSED(exec);
   switch (token) {
   default:
     kdDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token << endl;
-    return Value();
+    return Null();
   }
 }
 
-Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MozillaSidebarExtension, thisObj );
-  MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj.imp());
+  MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj);
 
   KHTMLPart *part = mse->part();
   if (!part)
@@ -76,10 +79,10 @@ Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, con
     QString url, name;
     if (args.size() == 1) {  // I've seen this, don't know if it's legal.
       name.clear();
-      url = args[0].toString(exec).qstring();
+      url = args[0]->toString(exec).qstring();
     } else if (args.size() == 2 || args.size() == 3) {
-      name = args[0].toString(exec).qstring();
-      url = args[1].toString(exec).qstring();
+      name = args[0]->toString(exec).qstring();
+      url = args[1]->toString(exec).qstring();
       // 2 is the "CURL" which I don't understand and don't think we need.
     } else {
       return Boolean(false);

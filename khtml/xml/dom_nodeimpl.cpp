@@ -949,6 +949,46 @@ long NodeImpl::maxOffset() const
 //  return renderer() ? renderer()->maxOffset() : 1;
 }
 
+NodeListImpl* NodeImpl::getElementsByTagName( const DOMString &tagName )
+{
+    NodeImpl::Id id;
+    if ( tagName == "*" )
+        id = 0;
+    else
+        id = getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
+    return new TagNodeListImpl( this, id );
+}
+
+NodeListImpl* NodeImpl::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    return new TagNodeListImpl( this, namespaceURI, localName );
+}
+
+
+bool NodeImpl::hasAttributes() const
+{
+    return false;
+}
+
+bool NodeImpl::isSupported(const DOMString &feature, const DOMString &version)
+{
+    return DOMImplementationImpl::instance()->hasFeature(feature, version);
+}
+
+DocumentImpl* NodeImpl::ownerDocument() const
+{
+    // braindead DOM spec says that ownerDocument
+    // should return null if called on the document node
+    // we thus have our nicer getDocument, and hack it here
+    // for DOMy clients in one central place
+    DocumentImpl* doc = getDocument();
+    if (doc == this)
+        return 0;
+    else
+        return doc;
+}
+
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::~NodeBaseImpl()
@@ -1785,19 +1825,6 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) co
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
-NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name )
-    : TagNodeListImpl( n, tagId ), nodeName( name )
-{
-}
-
-bool NamedTagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& doRecurse ) const
-{
-    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
-    return TagNodeListImpl::nodeMatches( testNode, doRecurse )
-        && static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
-}
-
-
 // ---------------------------------------------------------------------------
 
 NamedNodeMapImpl::NamedNodeMapImpl()
@@ -1807,6 +1834,52 @@ NamedNodeMapImpl::NamedNodeMapImpl()
 NamedNodeMapImpl::~NamedNodeMapImpl()
 {
 }
+
+NodeImpl* NamedNodeMapImpl::getNamedItem( const DOMString &name )
+{
+    NodeImpl::Id nid = mapId(0, name.implementation(), true);
+    if (!nid) return 0;
+    return getNamedItem(nid, false, name.implementation());
+}
+
+Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
+{
+    if (!arg.handle()) {
+      exceptioncode = DOMException::NOT_FOUND_ERR;
+      return 0;
+    }
+    
+    Node r = setNamedItem(arg.handle(), false,
+                       arg.handle()->nodeName().implementation(), exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::removeNamedItem( const DOMString &name, int& exceptioncode )
+{
+    Node r = removeNamedItem(mapId(0, name.implementation(), false),
+                                   false, name.implementation(), exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), true );
+    return getNamedItem(nid, true);
+}
+
+Node NamedNodeMapImpl::setNamedItemNS( const Node &arg, int& exceptioncode )
+{
+    Node r = setNamedItem(arg.handle(), true, 0, exceptioncode);
+    return r;
+}
+
+Node NamedNodeMapImpl::removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode )
+{
+    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), false );
+    Node r = removeNamedItem(nid, true, 0, exceptioncode);
+    return r;
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -1944,13 +2017,13 @@ void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listene
     // place of the old one, to preserve the order.
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,false);
 
-    int i;
-    for (i = 0, it = listeners->begin(); it != listeners->end(); ++it, ++i)
-        if ((*it).id == id && isHTMLEventListener((*it).listener)) {
-            listeners->insert(it, rl);
-            listeners->remove(it);
+    for (int i = 0; i < listeners->size(); ++i) {
+        const RegisteredEventListener& listener = listeners->at(i);
+        if (listener.id == id && isHTMLEventListener(listener.listener)) {
+            listeners->replace(i, rl);
             return;
         }
+    }
 
     listeners->append(rl);
 }

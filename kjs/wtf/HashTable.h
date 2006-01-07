@@ -217,7 +217,7 @@ namespace KXMLCore {
         static unsigned hash(const KeyType& key) { return HashFunctions::hash(key); }
         static bool equal(const KeyType& a, const KeyType& b) { return HashFunctions::equal(a, b); }                    
         // FIXME: assumes key == value; special lookup needs adjusting
-        static ValueType identityConvert(const KeyType& key, const ValueType& value, unsigned) { return value; }
+        static ValueType identityConvert(const KeyType& /*key*/, const ValueType& value, unsigned) { return value; }
         static KeyType extractKey(const ValueType& value) { return ExtractKey(value); }
         
         static ValueType *allocateTable(int size);

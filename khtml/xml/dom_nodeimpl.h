@@ -127,6 +127,14 @@ public:
     virtual NodeListImpl *childNodes();
     virtual NodeImpl *firstChild() const;
     virtual NodeImpl *lastChild() const;
+
+    virtual bool hasAttributes() const;
+    //OwnerDocument as specified by the DOM. Do not use for other purposes, it's weird!
+    DocumentImpl *ownerDocument() const;
+    NodeListImpl* getElementsByTagName  ( const DOMString &tagName );
+    NodeListImpl* getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName );
+
+
     // insertBefore, replaceChild and appendChild also close newChild
     // unlike the speed optimized addChild (which is used by the parser)
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
@@ -140,6 +148,7 @@ public:
     virtual DOMString namespaceURI() const;
     virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
     void normalize ();
+    static bool isSupported(const DOMString &feature, const DOMString &version);
 
     // Other methods (not part of DOM)
     virtual bool isElementNode() const { return false; }
@@ -653,19 +662,6 @@ protected:
     DOMString nodeName;
 };
 
-/**
- * NodeList which lists all Nodes in a document with a given tag name
- * _and_ a given value for the name attribute (combination of TagNodeListImpl and NameNodeListImpl)
- */
-class NamedTagNodeListImpl : public TagNodeListImpl
-{
-public:
-    NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name );
-protected:
-    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
-    DOMString nodeName;
-};
-
 // Generic NamedNodeMap interface
 // Other classes implement this for more specific situations e.g. attributes
 // of an element
@@ -679,6 +675,14 @@ public:
     virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const = 0;
     virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
     virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
+
+    //The DOM-style wrappers
+    NodeImpl* getNamedItem( const DOMString &name );
+    Node setNamedItem( const Node &arg, int& exceptioncode );
+    Node removeNamedItem( const DOMString &name, int& exceptioncode );
+    Node getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName );
+    Node setNamedItemNS( const Node &arg, int& exceptioncode );
+    Node removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
 
     virtual NodeImpl *item ( unsigned long index ) const = 0;
     virtual unsigned long length(  ) const = 0;

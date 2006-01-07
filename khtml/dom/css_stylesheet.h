@@ -190,7 +190,8 @@ public:
     {
         SYNTAX_ERR                     = 0,
         INVALID_MODIFICATION_ERR       = 1,
-        _EXCEPTION_OFFSET              = 1000
+        _EXCEPTION_OFFSET              = 1000,
+        _EXCEPTION_MAX                 = 1999
     };
 };
 

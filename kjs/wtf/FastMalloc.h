@@ -28,10 +28,21 @@
 
 namespace KXMLCore {
 
-    void *fastMalloc(size_t n);
-    void *fastCalloc(size_t n_elements, size_t element_size);
-    void fastFree(void* p);
-    void *fastRealloc(void* p, size_t n);
+    inline void *fastMalloc(size_t n) {
+        return malloc(n);
+    }
+
+    inline void *fastCalloc(size_t n_elements, size_t element_size) {
+        return calloc(n_elements, element_size);
+    }
+
+    inline void fastFree(void* p) {
+        free(p);
+    }
+
+    inline void *fastRealloc(void* p, size_t n) {
+        return realloc(p, n);
+    }
     
 } // namespace KXMLCore
 
@@ -39,23 +50,6 @@ using KXMLCore::fastMalloc;
 using KXMLCore::fastCalloc;
 using KXMLCore::fastRealloc;
 using KXMLCore::fastFree;
-
-#if __GNUC__
-
-#if __APPLE__
-#define KXMLCORE_PRIVATE_INLINE __private_extern__ inline __attribute__((always_inline))
-#else
-#define KXMLCORE_PRIVATE_INLINE inline __attribute__((always_inline))
-#endif
-
-#else
-#define KXMLCORE_PRIVATE_INLINE inline
-#endif
-
-KXMLCORE_PRIVATE_INLINE void* operator new(size_t s) { return fastMalloc(s); }
-KXMLCORE_PRIVATE_INLINE void operator delete(void* p) { fastFree(p); }
-KXMLCORE_PRIVATE_INLINE void* operator new[](size_t s) { return fastMalloc(s); }
-KXMLCORE_PRIVATE_INLINE void operator delete[](void* p) { fastFree(p); }
 
 
 #endif /* KXMLCORE_FAST_MALLOC_H */

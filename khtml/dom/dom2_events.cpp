@@ -251,10 +251,7 @@ int UIEvent::keyCode() const
 {
     if ( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyCode();
-
-    return 0;
+    return static_cast<UIEventImpl*>(impl)->keyCode();
 }
 
 int UIEvent::charCode() const
@@ -262,10 +259,7 @@ int UIEvent::charCode() const
     if (!impl)
         throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->charCode();
-
-    return 0;
+    return static_cast<UIEventImpl*>(impl)->charCode();
 }
 
 int UIEvent::pageX() const
@@ -273,10 +267,7 @@ int UIEvent::pageX() const
     if (!impl)
         throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    if (impl->isMouseEvent() )
-        return static_cast<MouseEventImpl*>( impl )->pageX();
-    else
-        return 0;
+    return static_cast<UIEventImpl*>(impl)->pageX();
 }
 
 int UIEvent::pageY() const
@@ -284,10 +275,7 @@ int UIEvent::pageY() const
     if (!impl)
         throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    if ( impl->isMouseEvent() )
-        return  static_cast<MouseEventImpl*>( impl )->pageY();
-    else
-        return 0;
+    return static_cast<UIEventImpl*>(impl)->pageY();
 }
 
 int UIEvent::layerX() const
@@ -295,9 +283,7 @@ int UIEvent::layerX() const
     if( !impl )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    if( impl->isMouseEvent() )
-        return static_cast<MouseEventImpl*>( impl )->layerX();
-    return 0;
+    return static_cast<UIEventImpl*>(impl)->layerX();
 }
 
 int UIEvent::layerY() const
@@ -305,21 +291,13 @@ int UIEvent::layerY() const
     if( !impl )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    if( impl->isMouseEvent() )
-        return static_cast<MouseEventImpl*>( impl )->layerY();
-    return 0;
+    return static_cast<UIEventImpl*>(impl)->layerY();
 }
 
 int UIEvent::which() const
 {
     if( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    if( impl->isMouseEvent() )
-        return static_cast<MouseEventImpl*>( impl )->button() + 1;
-    else if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyCode();
-
-    return 0;
+    return static_cast<UIEventImpl*>(impl)->which();
 }
 
 void UIEvent::initUIEvent(const DOMString &typeArg,
@@ -332,7 +310,7 @@ void UIEvent::initUIEvent(const DOMString &typeArg,
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     static_cast<UIEventImpl*>(impl)->initUIEvent(typeArg,canBubbleArg,cancelableArg,
-						 viewArg,detailArg);
+						 viewArg.handle(),detailArg);
 }
 
 // -----------------------------------------------------------------------------
@@ -476,7 +454,7 @@ void MouseEvent::initMouseEvent(const DOMString &typeArg,
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     static_cast<MouseEventImpl*>(impl)->initMouseEvent(typeArg,canBubbleArg,
-	cancelableArg,viewArg,detailArg,screenXArg,screenYArg,clientXArg,
+	cancelableArg,viewArg.handle(),detailArg,screenXArg,screenYArg,clientXArg,
         clientYArg,ctrlKeyArg,altKeyArg,shiftKeyArg,metaKeyArg,buttonArg,
 	relatedTargetArg);
 }
@@ -536,7 +514,7 @@ void TextEvent::initTextEvent(const DOMString &typeArg,
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
+    return static_cast<TextEventImpl*>(impl)->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg.handle(), detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
 }
 
 unsigned long TextEvent::keyVal() const

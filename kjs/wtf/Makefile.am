@@ -17,25 +17,16 @@
 
 lib_LTLIBRARIES = libkxmlcore.la
 
-libkxmlcore_la_SOURCES = TCSystemAlloc.cpp HashTable.cpp FastMalloc.cpp
+libkxmlcore_la_SOURCES = HashTable.cpp
 
 kxmlcoreincludedir = $(includedir)/kxmlcore
 kxmlcoreinclude_HEADERS = HashMap.h \
 			HashTraits.h \
-			TCSystemAlloc.h \
-			FastMalloc.h \
 			HashMapPtrSpec.h \
 			SharedPtr.h \
-			FastMallocInternal.h \
 			HashSet.h \
-			TCPageMap.h \
 			HashFunctions.h \
-			HashTable.h \
-			TCSpinLock.h
-
-if include_VERSION_SCRIPT
-VSCRIPT = -Wl,--version-script=$(srcdir)/libkxmlcore.map
-endif
+			HashTable.h 
 
 libkxmlcore_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 

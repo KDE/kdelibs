@@ -45,7 +45,7 @@ struct KPerDomainSettings {
     KHTMLSettings::KJSWindowResizePolicy m_windowResizePolicy : 1;
 
 #ifdef DEBUG_SETTINGS
-    void dump(const QString &infix.clear()) const {
+    void dump(const QString &infix = QString()) const {
       kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
       kdDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
       kdDebug() << "  m_bEnableJavaScript: " << m_bEnableJavaScript << endl;
@@ -454,22 +454,22 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "General" ); // group will be restored by cgs anyway
     if ( reset || config->hasKey( "foreground" ) ) {
       QColor def(HTML_DEFAULT_TXT_COLOR);
-      d->m_textColor = config->readEntry( "foreground", def );
+      d->m_textColor = config->readColorEntry( "foreground", &def );
     }
 
     if ( reset || config->hasKey( "linkColor" ) ) {
       QColor def(HTML_DEFAULT_LNK_COLOR);
-      d->m_linkColor = config->readEntry( "linkColor", def );
+      d->m_linkColor = config->readColorEntry( "linkColor", &def );
     }
 
     if ( reset || config->hasKey( "visitedLinkColor" ) ) {
       QColor def(HTML_DEFAULT_VLNK_COLOR);
-      d->m_vLinkColor = config->readEntry( "visitedLinkColor", def);
+      d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &def);
     }
 
     if ( reset || config->hasKey( "background" ) ) {
       QColor def(HTML_DEFAULT_BASE_COLOR);
-      d->m_baseColor = config->readEntry( "background", def);
+      d->m_baseColor = config->readColorEntry( "background", &def);
     }
   }
 

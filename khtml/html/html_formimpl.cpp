@@ -104,6 +104,22 @@ NodeImpl::Id HTMLFormElementImpl::id() const
     return ID_FORM;
 }
 
+HTMLCollectionImpl* HTMLFormElementImpl::elements()
+{
+    return new HTMLFormCollectionImpl(this);
+}
+
+DOMString HTMLFormElementImpl::target() const
+{
+  return getAttribute(ATTR_TARGET);
+}
+
+DOMString HTMLFormElementImpl::action() const
+{
+  return getAttribute(ATTR_ACTION);
+}
+
+
 long HTMLFormElementImpl::length() const
 {
     int len = 0;
@@ -735,6 +751,19 @@ void HTMLFormElementImpl::insertedIntoDocument()
     getDocument()->underDocNamedCache().add(m_name.string(), this);
     HTMLElementImpl::insertedIntoDocument();
 }
+
+void HTMLFormElementImpl::removeId(const QString& id)
+{
+    getDocument()->underDocNamedCache().remove(id, this);
+    HTMLElementImpl::removeId(id);
+}
+
+void HTMLFormElementImpl::addId   (const QString& id)
+{
+    getDocument()->underDocNamedCache().add(id, this);
+    HTMLElementImpl::addId(id);
+}
+
 
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
@@ -1892,6 +1921,11 @@ DOMString HTMLSelectElementImpl::type() const
     return (m_multiple ? "select-multiple" : "select-one");
 }
 
+HTMLCollectionImpl* HTMLSelectElementImpl::options()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::SELECT_OPTIONS);
+}
+
 long HTMLSelectElementImpl::selectedIndex() const
 {
     // return the number of the first option selected
@@ -1939,12 +1973,12 @@ long HTMLSelectElementImpl::length() const
     return len;
 }
 
-void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before, int& exceptioncode )
+void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* before, int& exceptioncode )
 {
-    if(element.isNull() || element.handle()->id() != ID_OPTION)
+    if(!element || element->id() != ID_OPTION)
         return;
 
-    insertBefore(element.handle(), before.handle(), exceptioncode );
+    insertBefore(element, before, exceptioncode );
     if (!exceptioncode)
         setRecalcListItems();
 }
@@ -2477,6 +2511,11 @@ void HTMLOptionElementImpl::setSelected(bool _selected)
     HTMLSelectElementImpl* const select = getSelect();
     if (select)
         select->notifyOptionSelected(this,_selected);
+}
+
+void HTMLOptionElementImpl::setDefaultSelected( bool _defaultSelected )
+{
+    setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
 }
 
 HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const

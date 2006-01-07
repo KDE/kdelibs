@@ -75,7 +75,7 @@ public:
     RegTestFunction(KJS::ExecState *exec, RegressionTest *_regTest, int _id, int length);
 
     bool implementsCall() const;
-    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+    KJS::ValueImp* callAsFunction(KJS::ExecState *exec, KJS::ObjectImp* thisObj, const KJS::List &args);
 
     enum { Print, ReportResult, CheckOutput, Quit };
 
@@ -92,9 +92,10 @@ class KHTMLPartObject : public KJS::ObjectImp
 public:
     KHTMLPartObject(KJS::ExecState *exec, KHTMLPart *_part);
 
-    virtual KJS::Value get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
-
+    virtual bool getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot);
 private:
+    static KJS::ValueImp *winGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot&);
+    static KJS::ValueImp *docGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot&);
     KHTMLPart *m_part;
 };
 
@@ -107,7 +108,7 @@ public:
     KHTMLPartFunction(KJS::ExecState *exec, KHTMLPart *_part, int _id, int length);
 
     bool implementsCall() const;
-    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+    KJS::ValueImp* callAsFunction(KJS::ExecState *exec, KJS::ObjectImp* thisObj, const KJS::List &args);
 
     enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript, ProcessEvents };
 private:

@@ -36,6 +36,7 @@
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <qregexp.h>
+#include <Q3CString>
 
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
