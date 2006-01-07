@@ -37,7 +37,7 @@
 #define YPADDING 20
 
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent )
- : QWidget( parent ),
+ : QFrame( parent ),
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false ), ShowObjectToolTips( true )
@@ -104,57 +104,48 @@ void KPlotWidget::updateTickmarks() {
 		return;
 	}
 
-	int nmajor(0), nminor(0);
-	double z(0.0), z2(0.0);
-	double Range(0.0), s(0.0), t(0.0), pwr(0.0), dTick(0.0);
+	calcTickMarks( DataRect.width(), dXtick, nmajX, nminX );
+	calcTickMarks( DataRect.height(), dYtick, nmajY, nminY );
+}
 
-	//loop over X and Y axes...the z variables substitute for either X or Y
-	for ( unsigned int iaxis=0; iaxis<2; ++iaxis ) {
-		if ( iaxis == 1 ) {
-			z = x(); z2 = x2();
-		} else {
-			z = y(); z2 = y2();
-		}
+void KPlotWidget::calcTickMarks( double length, double& dTick, int& nmajor, int& nminor ) {
+	//s is the power-of-ten factor of length:
+	//length = t * s; s = 10^(pwr).  e.g., length=350.0 then t=3.5, s = 100.0; pwr = 2.0
+	double pwr = 0.0;
+	modf( log10( length ), &pwr );
+	double s = pow( 10.0, pwr );
+	double t = length / s;
 
-		//determine size of region to be drawn, in draw units
-		Range = z2 - z;
+	//adjust s and t such that t is between 3 and 5:
+	if ( t < 3.0 ) {
+		t *= 10.0;
+		s /= 10.0;
+		// t now between 3 and 30
+	}
+	double _dTick = 0.0;
+	int _nmajor = 0;
+	int _nminor = 0;
+	if ( t < 6.0 ) { //accept current values
+		_dTick = s;
+		_nmajor = int( t );
+		_nminor = 5;
+	} else if ( t < 10.0 ) { //factor of 2
+		_dTick = s * 2.0;
+		_nmajor = int( t / 2.0 );
+		_nminor = 4;
+	} else if ( t < 20.0 ) { //factor of 4
+		_dTick = s * 4.0;
+		_nmajor = int( t / 4.0 );
+		_nminor = 4;
+	} else { //factor of 5
+		_dTick = s * 5.0;
+		_nmajor = int( t / 5.0 );
+		_nminor = 5;
+	}
 
-		//s is the power-of-ten factor of Range:
-		//Range = t * s; s = 10^(pwr).  e.g., Range=350.0 then t=3.5, s = 100.0; pwr = 2.0
-		modf( log10(Range), &pwr );
-		s = pow( 10.0, pwr );
-		t = Range/s;
-
-		//adjust s and t such that t is between 3 and 5:
-		if ( t < 3.0 ) { t *= 10.0; s /= 10.0; } //t now btwn 3 and 30
-		if ( t < 6.0 ) { //accept current values
-			dTick = s;
-			nmajor = int(t);
-			nminor = 5;
-		} else if ( t < 10.0 ) { //factor of 2
-			dTick = s*2.0;
-			nmajor = int(t/2.0);
-			nminor = 4;
-		} else if ( t < 20.0 ) { //factor of 4
-			dTick = s*4.0;
-			nmajor = int(t/4.0);
-			nminor = 4;
-		} else { //factor of 5
-			dTick = s*5.0;
-			nmajor = int(t/5.0);
-			nminor = 5;
-		}
-
-		if ( iaxis==1 ) { //X axis
-			nmajX = nmajor;
-			nminX = nminor;
-			dXtick = dTick;
-		} else { //Y axis
-			nmajY = nmajor;
-			nminY = nminor;
-			dYtick = dTick;
-		}
-	} //end for iaxis
+	nmajor = _nmajor;
+	nminor = _nminor;
+	dTick = _dTick;
 }
 
 void KPlotWidget::addObject( KPlotObject *o ) {
@@ -188,9 +179,6 @@ KPlotObject *KPlotWidget::object( int i ) {
 
 void KPlotWidget::setBackgroundColor( const QColor &bg ) {
 	cBackground = bg;
-	QPalette palette;
-	palette.setColor( backgroundRole(), bg );
-	setPalette( palette );
 	update();
 }
 
@@ -229,8 +217,8 @@ KPlotAxis* KPlotWidget::axis( Axis a ) {
 }
 
 void KPlotWidget::recalcPixRect() {
-	int newWidth = width() - leftPadding() - rightPadding();
-	int newHeight = height() - topPadding() - bottomPadding();
+	int newWidth = contentsRect().width() - leftPadding() - rightPadding();
+	int newHeight = contentsRect().height() - topPadding() - bottomPadding();
 	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
 	PixRect = QRect( 0, 0, newWidth, newHeight );
 }
@@ -257,7 +245,7 @@ bool KPlotWidget::event( QEvent* e ) {
 		if ( ShowObjectToolTips )
 		{
 			QHelpEvent *he = static_cast<QHelpEvent*>( e );
-			QList<KPlotObject*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) );
+			QList<KPlotObject*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
 			if ( pts.count() > 0 ) {
 				QToolTip::showText( he->globalPos(), pts.front()->name(), this );
 			}
@@ -272,25 +260,30 @@ bool KPlotWidget::event( QEvent* e ) {
 void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
 	recalcPixRect();
 
-	QPixmap *tmp = new QPixmap( size() );
+	QPixmap *tmp = new QPixmap( contentsRect().size() );
 	delete buffer;
 	buffer = tmp;
 	tmp = 0;
 }
 
-void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
+void KPlotWidget::paintEvent( QPaintEvent *e ) {
+	// let QFrame draw its default stuff (like the frame)
+	QFrame::paintEvent( e );
 	QPainter p;
 
 	p.begin( buffer );
-	p.fillRect( 0, 0, width(), height(), backgroundColor() );
+	p.fillRect( buffer->rect(), backgroundColor() );
 	p.translate( leftPadding(), topPadding() );
 
+	p.setClipRect( PixRect );
+	p.setClipping( true );
 	drawObjects( &p );
+	p.setClipping( false );
 	drawBox( &p );
 
 	p.end();
 	p.begin( this );
-	p.drawPixmap( 0, 0, *buffer );
+	p.drawPixmap( contentsRect().topLeft(), *buffer );
 	p.end();
 }
 
@@ -367,22 +360,6 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 double KPlotWidget::dmod( double a, double b ) { return ( b * ( ( a / b ) - int( a / b ) ) ); }
 
 void KPlotWidget::drawBox( QPainter *p ) {
-	//First, fill in padding region with bgColor() to mask out-of-bounds plot data
-	p->setPen( backgroundColor() );
-	p->setBrush( backgroundColor() );
-
-	//left padding ( don't forget: we have translated by XPADDING, YPADDING )
-	p->drawRect( -leftPadding(), -topPadding(), leftPadding(), height() );
-
-	//right padding
-	p->drawRect( PixRect.width(), -topPadding(), rightPadding(), height() );
-
-	//top padding
-	p->drawRect( 0, -topPadding(), PixRect.width(), topPadding() );
-
-	//bottom padding
-	p->drawRect( 0, PixRect.height(), PixRect.width(), bottomPadding() );
-
 	if ( ShowGrid ) {
 		//Grid lines are placed at locations of primary axes' major tickmarks
 		p->setPen( gridColor() );

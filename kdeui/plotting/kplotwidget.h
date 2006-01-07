@@ -18,9 +18,9 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
-#include <QList>
+#include <QFrame>
 #include <QHash>
-#include <QWidget>
+#include <QList>
 
 #include <kdemacros.h>
 
@@ -44,7 +44,7 @@ class KPlotObject;
  *
  * @version 1.1
  */
-class KDE_EXPORT KPlotWidget : public QWidget {
+class KDE_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
 	Q_PROPERTY(int leftPadding READ leftPadding)
 	Q_PROPERTY(int rightPadding READ rightPadding)
@@ -286,6 +286,11 @@ public:
 	 */
 	void setDefaultPaddings() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
+	/**
+	 * Map a coordinate @p p from the data rect to the physical pixel rect.
+	 * Used mainly when drawing.
+	 * @return the coordinate in the pixel coordinate system
+	 */
 	QPoint mapToPoint( const QPointF& p ) const {
 		int px = PixRect.left() + int( PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width() );
 		int py = PixRect.top() + int( PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height() );
@@ -370,6 +375,14 @@ protected:
 	virtual void recalcPixRect();
 
 	QList<KPlotObject*> pointsUnderPoint( const QPoint& p ) const;
+
+	/**
+	 * Recalc the ticks for the specified @p length.
+	 * @p dTick , @p nmajor and @p nminor will contain respectively the
+	 * distance between every major tick, the number of number of major
+	 * ticks, and the number of minor ticks.
+	 */
+	void calcTickMarks( double length, double& dTick, int& nmajor, int& nminor );
 
 	//The distance between major tickmarks in data units
 	double dXtick, dYtick;
