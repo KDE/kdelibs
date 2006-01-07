@@ -20,21 +20,21 @@
  */
 
 // I (espen) prefer that header files are included alphabetically
-#include <khbox.h>
-#include <qlabel.h>
-#include <qtimer.h>
-#include <qtoolbutton.h>
-#include <qwidget.h>
+
+#include <QLabel>
+#include <QTimer>
+#include <QWidget>
+#include <QWhatsThis>
 
 #include <kaboutapplication.h>
 #include <kaboutdata.h>
 #include <kaboutkde.h>
 #include <kaction.h>
 #include <kapplication.h>
-#include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kbugreport.h>
 #include <kdialogbase.h>
+#include <khbox.h>
 #include <khelpmenu.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -42,8 +42,7 @@
 #include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
-
-#include <q3whatsthis.h>
+#include <ktoolinvocation.h>
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -128,12 +127,7 @@ KMenu* KHelpMenu::menu()
 
     if( mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-#ifdef __GNUC__
-      #warning find a better way to get the default iconset, or reconsider using BarIconSet
-#endif
-      QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
-      mMenu->addAction( wtb->icon(),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
-      delete wtb;
+      mMenu->addAction( SmallIconSet("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       need_separator = true;
     }
 
