@@ -26,6 +26,7 @@
 #include <qcolor.h>
 #include <qvariant.h>
 #include <kdelibs_export.h>
+#include <kdebug.h>
 
 template <typename KT, typename KV> class QMap;
 class QString;
@@ -228,8 +229,7 @@ public:
    * @since 4.0
    */
   template <typename T>
-  T readEntry( const char* pKey, const T& aDefault) const
-    { return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault))); }
+  T readEntry( const char* pKey, const T& aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -237,7 +237,7 @@ public:
    */
   template <typename T>
   T readEntry( const QString& pKey, const T& aDefault) const
-    { return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault))); }
+    { return readEntry(pKey.toUtf8().constData(), aDefault); }
 
 #if QT_VERSION < 0x040200
   /**
@@ -1523,9 +1523,30 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
 
+#define KCONFIG_QVARIANT_CHECK 1
+#if KCONFIG_QVARIANT_CHECK
+#include <conversion_check.h>
+#endif
+
+#ifdef NDEBUG
+#define kcbError kdWarning
+#else
+#define kcbError kdFatal
+#endif
+
 template <typename T>
 QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
 {
+  QVariant::Type wanted = QVariant(T()).type();
+#if KCONFIG_QVARIANT_CHECK
+  ConversionCheck::to_QVariant<T>();
+  ConversionCheck::to_QString<T>();
+#else
+  kcbError(!QVariant(QVariant::String).canConvert(wanted))
+    << "QString cannot convert to \"" << QVariant::typeToName(wanted)
+    << "\" information will be lost" << endl;
+#endif
+
   if (!hasKey(pKey))
     return aDefault;
 
@@ -1539,17 +1560,39 @@ QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) con
 
   QList<T> list;
   if (!vList.isEmpty()) {
-    foreach (QVariant aValue, vList)
+    foreach (QVariant aValue, vList) {
+      kcbError(!aValue.convert(wanted)) << "conversion to "
+        << QVariant::typeToName(wanted) << " information has been lost" << endl;
       list.append( qvariant_cast<T>(aValue) );
+    }
   }
 
   return list;
 }
 
 template <typename T>
+T KConfigBase::readEntry( const char* pKey, const T& aDefault) const
+{
+#if KCONFIG_QVARIANT_CHECK
+  ConversionCheck::to_QVariant<T>();
+#endif
+  return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault)));
+}
+
+template <typename T>
 void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
                               WriteConfigFlags pFlags )
 {
+#if KCONFIG_QVARIANT_CHECK
+  ConversionCheck::to_QVariant<T>();
+  ConversionCheck::to_QString<T>();
+#else
+  QVariant dummy QVariant(T());
+  kcbError(!dummy.canConvert(QVariant::String))
+    << QVariant::typeToName(dummy.type())
+    << " cannot convert to QString information will be lost" << endl;
+#endif
+
   QVariantList vList;
   foreach(T aValue, rValue)
     vList.append(aValue);

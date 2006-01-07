@@ -24,6 +24,8 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
+#define CRASH_ON_VARIANTLIST2 0
+
 QTTEST_KDEMAIN( KConfigTest, NoGUI )
 
 #define BOOLENTRY1 true
@@ -45,6 +47,7 @@ QTTEST_KDEMAIN( KConfigTest, NoGUI )
 #define COLORENTRY QColor("steelblue")
 #define FONTENTRY QFont("Times", 16, QFont::Normal)
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
+#define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 
 void KConfigTest::initTestCase()
 {
@@ -88,6 +91,11 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
   sc.writeEntry( "variantListEntry", VARIANTLISTENTRY );
+
+#if CRASH_ON_VARIANTLIST2
+  // if debugging this _should_ cause a crash, otherwise a warning
+  sc.writeEntry( "variantListEntry2", VARIANTLISTENTRY2 );
+#endif
   sc.sync();
 }
 

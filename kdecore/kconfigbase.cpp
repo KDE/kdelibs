@@ -362,6 +362,9 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
 
   QVariant tmp = aDefault;
 
+  // if a type handler is added here you must add a QVConversions definition
+  // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
+  // readEntry<T> to convert to QVariant.
   switch( aDefault.type() )
   {
       case QVariant::Invalid:
@@ -1243,6 +1246,9 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
 void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
                                WriteConfigFlags pFlags )
 {
+  // if a type handler is added here you must add a QVConversions definition
+  // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
+  // writeEntry<T> to convert to QVariant.
   switch( prop.type() )
     {
     case QVariant::Invalid:
@@ -1251,8 +1257,11 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::String:
       writeEntry( pKey, prop.toString(), pFlags );
       return;
-    case QVariant::StringList:
     case QVariant::List:
+      kcbError(!prop.canConvert(QVariant::StringList))
+        << "not all types in \"" << pKey << "\" can convert to QString,"
+           " information will be lost" << endl;
+    case QVariant::StringList:
       writeEntry( pKey, prop.toStringList(), ',', pFlags );
       return;
     case QVariant::ByteArray: {
