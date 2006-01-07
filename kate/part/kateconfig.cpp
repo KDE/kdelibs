@@ -161,7 +161,7 @@ void KateDocumentConfig::readConfig (KConfig *config)
 
   setWordWrap (config->readBoolEntry("Word Wrap", false));
   setWordWrapAt (config->readNumEntry("Word Wrap Column", 80));
-  setPageUpDownMovesCursor (config->readNumEntry("PageUp/PageDown Moves Cursor", false));
+  setPageUpDownMovesCursor (config->readBoolEntry("PageUp/PageDown Moves Cursor", false));
   setUndoSteps(config->readNumEntry("Undo Steps", 0));
 
   setConfigFlags (config->readNumEntry("Basic Config Flags", KateDocumentConfig::cfTabIndents
@@ -173,7 +173,7 @@ void KateDocumentConfig::readConfig (KConfig *config)
   setEncoding (config->readEntry("Encoding", ""));
 
   setEol (config->readNumEntry("End of Line", 0));
-  setAllowEolDetection (config->readNumEntry("Allow End of Line Detection", true));
+  setAllowEolDetection (config->readBoolEntry("Allow End of Line Detection", true));
 
   setBackupFlags (config->readNumEntry("Backup Config Flags", 1));
 
