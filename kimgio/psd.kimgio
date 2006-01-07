@@ -2,6 +2,7 @@
 Type=PSD
 Header=^8BPS
 Name=Adobe Photoshop Image
+Name[x-test]=xxAdobe Photoshop Imagexx
 Read=true
 Write=false
 Suffices=psd,PSD

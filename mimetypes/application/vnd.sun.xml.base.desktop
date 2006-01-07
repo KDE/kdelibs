@@ -1,20 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Database
-Comment[af]=OpenOffice.org Databasis
-Comment[bg]=База от данни на OpenOffice.org
-Comment[da]=OpenOffice.org database
-Comment[et]=OpenOffice.org-i andmebaas
-Comment[ga]=Bunachar Sonraí OpenOffice.org
-Comment[gl]=Base de Dados de OpenOffice.org
-Comment[pa]=OpenOffice.org ਡਾਟਾਬੇਸ
-Comment[pt_BR]=Banco de Dados do OpenOffice.org
-Comment[ru]=База данных OpenOffice.org
-Comment[rw]=OpenOffice.org Ububikoshingiro 
-Comment[sv]=OpenOffice.org databas
-Comment[ta]=ழ-ஓப்பன்ஆபீஸ் தரவுதளம்
-Comment[tr]=OpenOffice.org Veritabanı
-Comment[zh_CN]=OpenOffice.org 数据库
+Comment[x-test]=xxOpenOffice.org Databasexx
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.odb;*.ODB;

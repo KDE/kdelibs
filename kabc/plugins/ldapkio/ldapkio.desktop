@@ -1,9 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=LDAP
-Name[bn]=এল-ডি-এ-পি (LDAP)
-Name[hi]=एलडीएपी (LDAP)
-Name[xx]=xxLDAPxx
+Name[x-test]=xxLDAPxx
 X-KDE-Library=kabc_ldapkio
 Type=Service
 ServiceTypes=KResources/Plugin

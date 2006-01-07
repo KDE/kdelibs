@@ -1,8 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XML DTD Document
-Comment[et]=XML DTD-dokument
-Comment[ga]=Cáipéis XML DTD
+Comment[x-test]=xxXML DTD Documentxx
 Icon=html
 Type=MimeType
 # RFC 3023

@@ -1,31 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=EPSON InkJet
-Name[af]=Epson Inkstraal
-Name[ar]=أبسون حبرية
-Name[be]=Epson InkJet
-Name[bg]=Мастиленоструен принтер EPSON InkJet
-Name[bn]=এপসন ইঙ্কজেট
-Name[de]=Epson InkJet
-Name[eo]=Epson-Inkĵet-ilo
-Name[fa]=جوهرافشان EPSON
-Name[fr]=Imprimante jet d'encre Epson
-Name[ga]=Scairdphrintéir EPSON
-Name[hi]=एप्सन इंकजेट
-Name[is]=EPSON bleksprautuprentari
-Name[ja]=EPSON インクジェット
-Name[ko]=엡손 잉크젯
-Name[mn]=Epson InkJet
-Name[ms]=InkJet EPSON
-Name[nb]=EPSON-blekkskriver
-Name[nds]=EPSON Dintenstrahldrucker
-Name[nn]=EPSON-blekkskrivar
-Name[nso]=InkJetEPSON
-Name[pt]=Jacto de Tinta da EPSON
-Name[ta]=EPSON இங்க்ஜெட்
-Name[th]=เครื่องพิมพ์อิงค์เจตเอปสัน
-Name[xx]=xxEPSON InkJetxx
-Name[zh_TW]=EPSON 噴墨印表機
+Name[x-test]=xxEPSON InkJetxx
 Type=Service
 
 X-KDE-Library=escputil
