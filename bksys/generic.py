@@ -806,12 +806,12 @@ def generate(env):
 	else:
 		env['_CONFIGURE_']=0
 
-	# use the compiler the user wants to have    
-	comp = getCompiler(env,sys)                   
-	if ( comp != False ):                         
-		Tool(comp).generate(env)                    
-		env['COMPILERTOOL']=comp                    
-                                               
+	# use the compiler the user wants to have
+	comp = getCompiler(env,sys)
+	if ( comp != False ):
+		Tool(comp).generate(env)
+		env['COMPILERTOOL']=comp
+
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('GENERIC_ISCONFIGURED')):
 		env['_CONFIGURE_']=1
