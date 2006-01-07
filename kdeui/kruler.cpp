@@ -20,9 +20,9 @@
 
 #include "kruler.h"
 
-#include <qpainter.h>
-#include <qfont.h>
+#include <QFont>
 #include <QPolygon>
+#include <QStylePainter>
 
 #define INIT_VALUE 0
 #define INIT_MIN_VALUE 0
@@ -94,9 +94,12 @@ public:
 
 KRuler::KRuler(QWidget *parent)
   : QAbstractSlider(parent),
-    range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
+    range(),
     dir(Qt::Horizontal)
 {
+  setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
+  setPageStep(10);
+  setValue(INIT_VALUE);
   init();
   setFixedHeight(FIX_WIDTH);
 }
@@ -105,9 +108,12 @@ KRuler::KRuler(QWidget *parent)
 KRuler::KRuler(Qt::Orientation orient,
                QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent),
-    range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
+    range(),
     dir(orient)
 {
+  setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
+  setPageStep(10);
+  setValue(INIT_VALUE);
   setWindowFlags(f);
   init();
   if (orient == Qt::Horizontal)
@@ -120,9 +126,12 @@ KRuler::KRuler(Qt::Orientation orient,
 KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
                QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent),
-    range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
+    range(),
     dir(orient)
 {
+  setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
+  setPageStep(10);
+  setValue(INIT_VALUE);
   setWindowFlags(f);
   init();
   if (orient == Qt::Horizontal)

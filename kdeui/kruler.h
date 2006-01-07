@@ -22,8 +22,7 @@
 #define KRULER_H
 
 #include <QAbstractSlider>
-#include <QStylePainter>
-#include <q3rangecontrol.h>
+
 #include <kdelibs_export.h>
 
 /**
@@ -414,7 +413,7 @@ protected:
 private:
   void init();
 
-  Q3RangeControl range;
+  QAbstractSlider range;
   Qt::Orientation dir;
   int tmDist;
   int lmDist;
