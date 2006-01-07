@@ -18,16 +18,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef LDAPCONFIGWIDGET_H
-#define LDAPCONFIGWIDGET_H
+#ifndef KABC_LDAPCONFIGWIDGET_H
+#define KABC_LDAPCONFIGWIDGET_H
 
-#include <qwidget.h>
-#include <qmap.h>
-#include <qstring.h>
+#include <QWidget>
+#include <QString>
+
+#include <kio/job.h>
 
 #include <kabc/ldapurl.h>
 #include <kabc/ldif.h>
-#include <kio/job.h>
 
 class QGridLayout;
 class QSpinBox;
@@ -50,7 +50,8 @@ namespace KABC {
   class KABC_EXPORT LdapConfigWidget : public QWidget
   {
     Q_OBJECT
-    Q_PROPERTY( LCW_Flags flags READ flags WRITE setFlags )
+    Q_FLAGS(WinFlags)
+    Q_PROPERTY( WinFlags features READ features WRITE setFeatures )
     Q_PROPERTY( QString user READ user WRITE setUser )
     Q_PROPERTY( QString password READ password WRITE setPassword )
     Q_PROPERTY( QString bindDN READ bindDN WRITE setBindDN )
@@ -69,11 +70,10 @@ namespace KABC {
     Q_PROPERTY( bool authSASL READ isAuthSASL WRITE setAuthSASL )
     Q_PROPERTY( int sizeLimit READ sizeLimit WRITE setSizeLimit )
     Q_PROPERTY( int timeLimit READ timeLimit WRITE setTimeLimit )
-    Q_SETS ( LCW_Flags )
 
     public:
 
-      enum LCW_Flags {
+      enum WinFlag {
         W_USER = 0x1,
         W_PASS = 0x2,
         W_BINDDN = 0x4,
@@ -83,19 +83,21 @@ namespace KABC {
         W_VER = 0x40,
         W_DN = 0x80,
         W_FILTER = 0x100,
-        W_SECBOX = 0x400,
-        W_AUTHBOX = 0x800,
-        W_TIMELIMIT = 0x1000,
-        W_SIZELIMIT = 0x2000,
-        W_ALL = 0xFFFFFFF
+        W_SECBOX = 0x200,
+        W_AUTHBOX = 0x400,
+        W_TIMELIMIT = 0x800,
+        W_SIZELIMIT = 0x1000,
+        W_ALL = 0x1fff
       };
+      
+      Q_DECLARE_FLAGS( WinFlags, WinFlag );
 
       /** Constructs an empty configuration widget.
        * You need to call setFlags() after this.
        */
       LdapConfigWidget( QWidget* parent = 0, Qt::WFlags fl = 0 );
       /** Constructs a configuration widget */
-      LdapConfigWidget( int flags, QWidget* parent = 0,
+      LdapConfigWidget( WinFlags flags, QWidget* parent = 0,
                         Qt::WFlags fl = 0 );
       /** Destructs a configuration widget */
       virtual ~LdapConfigWidget();
@@ -241,8 +243,8 @@ namespace KABC {
        */
       int timeLimit() const;
 
-      int flags() const;
-      void setFlags( int flags );
+      WinFlags features() const;
+      void setFeatures( WinFlags features );
 
       /**
        * Returns a LDAP Url constructed from the settings given.
@@ -253,17 +255,17 @@ namespace KABC {
     private slots:
       void setLDAPPort();
       void setLDAPSPort();
-      void setAnonymous( int state );
-      void setSimple( int state );
-      void setSASL( int state );
+      void setAnonymous( bool on );
+      void setSimple( bool on );
+      void setSASL( bool on );
       void mQueryDNClicked();
       void mQueryMechClicked();
       void loadData( KIO::Job*, const QByteArray& );
       void loadResult( KIO::Job* );
     private:
 
-      int mFlags;
-      LDIF mLdif;
+      WinFlags mFeatures;
+      KABC::LDIF mLdif;
       QStringList mQResult;
       QString mAttr;
 
@@ -291,6 +293,9 @@ namespace KABC {
       void sendQuery();
       void initWidget();
   };
+
+  Q_DECLARE_OPERATORS_FOR_FLAGS(LdapConfigWidget::WinFlags)
+
 }
 
 #endif

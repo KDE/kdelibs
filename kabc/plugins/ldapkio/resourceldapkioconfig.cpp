@@ -48,8 +48,22 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent )
 {
   QBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setAutoAdd( true );
-  cfg = new LdapConfigWidget( LdapConfigWidget::W_ALL, this );
-
+  cfg = new LdapConfigWidget( 
+        LdapConfigWidget::W_USER |
+        LdapConfigWidget::W_PASS |
+        LdapConfigWidget::W_BINDDN |
+        LdapConfigWidget::W_REALM |
+        LdapConfigWidget::W_HOST |
+        LdapConfigWidget::W_PORT |
+        LdapConfigWidget::W_VER |
+        LdapConfigWidget::W_DN |
+        LdapConfigWidget::W_FILTER |
+        LdapConfigWidget::W_SECBOX |
+        LdapConfigWidget::W_AUTHBOX |
+        LdapConfigWidget::W_TIMELIMIT |
+        LdapConfigWidget::W_SIZELIMIT,
+	this );
+   
   mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
   KHBox *box = new KHBox( this );
   box->setSpacing( KDialog::spacingHint() );

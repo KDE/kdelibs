@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _K_LDIF_H_
-#define _K_LDIF_H_
+#ifndef KABC_LDIF_H
+#define KABC_LDIF_H
 
 #include <QString>
 #include <QByteArray>

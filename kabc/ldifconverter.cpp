@@ -40,7 +40,6 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kcodecs.h>
 
 #include "addressee.h"
 #include "address.h"
@@ -168,14 +167,10 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   bool endldif = false, end = false;
   LDIF ldif;
   LDIF::ParseVal ret;
-  const char *latinstr = str.latin1();
-  int latinstrlen = qstrlen( latinstr );
-  QByteArray data;
   Addressee a;
   Address homeAddr, workAddr;
 
-  data.setRawData( latinstr, latinstrlen );
-  ldif.setLDIF( data );
+  ldif.setLDIF( str.toLatin1() );
   if (!dt.isValid())
     dt = QDateTime::currentDateTime();
   a.setRevision(dt);
@@ -219,8 +214,6 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
         break;
     }
   } while ( !end );
-
-  data.resetRawData( latinstr, latinstrlen );
 
   return true;
 }
@@ -488,80 +481,3 @@ addComment:
 
   return true;
 }
-
-/* The following functions are obsoleted. Similar functionality can be found
- * in the LDIF class */
-
-bool LDIFConverter::parseSingleLine( Addressee &a, Address &homeAddr,
-                                     Address &workAddr, QString &line )
-{
-  if ( line.isEmpty() )
-    return true;
-
-  QString fieldname, value;
-  QByteArray val;
-
-  LDIF::splitLine( line.latin1(), fieldname, val );
-  value = QString::fromUtf8( val.data(), val.size() );
-  return evaluatePair( a, homeAddr, workAddr, fieldname, value);
-}
-
-
-bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value)
-{
-  QByteArray val;
-  bool ret = LDIF::splitLine( line.latin1(), fieldname, val );
-  value = QString::fromUtf8( val.data(), val.size() );
-  return ret;
-}
-
-
-QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bool allowEncode )
-{
-  if ( value.isEmpty() )
-    return QString();
-
-  // append format if not given
-  if (formatStr.find(':') == -1)
-    formatStr.append(": %1\n");
-
-  // check if base64-encoding is needed
-  bool printable = true;
-  unsigned int i, len;
-  len = value.length();
-  for (i = 0; i<len; ++i ) {
-     if (!value[i].isPrint()) {
-        printable = false;
-        break;
-     }
-  }
-
-  if (printable) // always encode if we find special chars...
-    printable = (value.find('\n') == -1);
-
-  if (!printable && allowEncode) {
-    // encode to base64
-    value = KCodecs::base64Encode( value.toUtf8() );
-    int p = formatStr.find(':');
-    if (p>=0)
-      formatStr.insert(p, ':');
-  }
-
-  // generate the new string and split it to 72 chars/line
-  QByteArray txt = (formatStr.arg(value)).toUtf8();
-
-  if (allowEncode) {
-    len = txt.length();
-    if (len && txt[len-1] == '\n')
-      --len;
-    i = 72;
-    while (i < len) {
-      txt.insert(i, "\n ");
-      i += 72+1;
-      len += 2;
-    }
-  }
-
-  return QString::fromUtf8(txt);
-}
-

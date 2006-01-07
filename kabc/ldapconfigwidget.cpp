@@ -35,7 +35,6 @@
 #include <klocale.h>
 #include <klineedit.h>
 #include <kcombobox.h>
-
 #include <kdebug.h>
 
 #include "ldapconfigwidget.h"
@@ -47,15 +46,15 @@ LdapConfigWidget::LdapConfigWidget( QWidget* parent,
                                     Qt::WFlags fl ) : QWidget( parent, fl )
 {
   mProg = 0;
-  mFlags = 0;
+  mFeatures = W_ALL;
   mainLayout = new QGridLayout( this, 12, 4, 0,
       KDialog::spacingHint() );
 }
 
-LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
+LdapConfigWidget::LdapConfigWidget( LdapConfigWidget::WinFlags flags, QWidget* parent,
                                     Qt::WFlags fl ) : QWidget( parent, fl )
 {
-  mFlags = flags;
+  mFeatures = flags;
   mProg = 0;
   mainLayout = new QGridLayout( this, 12, 4, 0,
       KDialog::spacingHint() );
@@ -78,7 +77,7 @@ void LdapConfigWidget::initWidget()
   int row = 0;
   int col;
 
-  if ( mFlags & W_USER ) {
+  if ( mFeatures & W_USER ) {
     label = new QLabel( i18n( "User:" ), this );
     mUser = new KLineEdit( this );
     mUser->setObjectName( "kcfg_ldapuser" );
@@ -88,7 +87,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_BINDDN ) {
+  if ( mFeatures & W_BINDDN ) {
     label = new QLabel( i18n( "Bind DN:" ), this );
     mBindDN = new KLineEdit( this);
     mBindDN->setObjectName( "kcfg_ldapbinddn" );
@@ -98,7 +97,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_REALM ) {
+  if ( mFeatures & W_REALM ) {
     label = new QLabel( i18n( "Realm:" ), this );
     mRealm = new KLineEdit( this);
     mRealm->setObjectName("kcfg_ldaprealm" );
@@ -108,7 +107,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_PASS ) {
+  if ( mFeatures & W_PASS ) {
     label = new QLabel( i18n( "Password:" ), this );
     mPassword = new KLineEdit( this);
     mPassword->setObjectName( "kcfg_ldappassword" );
@@ -119,7 +118,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_HOST ) {
+  if ( mFeatures & W_HOST ) {
     label = new QLabel( i18n( "Host:" ), this );
     mHost = new KLineEdit( this);
     mHost->setObjectName( "kcfg_ldaphost" );
@@ -130,7 +129,7 @@ void LdapConfigWidget::initWidget()
   }
 
   col = 0;
-  if ( mFlags & W_PORT ) {
+  if ( mFeatures & W_PORT ) {
     label = new QLabel( i18n( "Port:" ), this );
     mPort = new QSpinBox( 0, 65535, 1, this);
     mPort->setObjectName("kcfg_ldapport" );
@@ -142,7 +141,7 @@ void LdapConfigWidget::initWidget()
     col += 2;
   }
 
-  if ( mFlags & W_VER ) {
+  if ( mFeatures & W_VER ) {
     label = new QLabel( i18n( "LDAP version:" ), this );
     mVer = new QSpinBox( 2, 3, 1, this);
     mVer->setObjectName( "kcfg_ldapver" );
@@ -151,10 +150,10 @@ void LdapConfigWidget::initWidget()
     mainLayout->addWidget( label, row, col );
     mainLayout->addWidget( mVer, row, col+1 );
   }
-  if ( mFlags & ( W_PORT | W_VER ) ) row++;
+  if ( mFeatures & ( W_PORT | W_VER ) ) row++;
 
   col = 0;
-  if ( mFlags & W_SIZELIMIT ) {
+  if ( mFeatures & W_SIZELIMIT ) {
     label = new QLabel( i18n( "Size limit:" ), this );
     mSizeLimit = new QSpinBox( 0, 9999999, 1, this);
     mSizeLimit->setObjectName("kcfg_ldapsizelimit" );
@@ -166,7 +165,7 @@ void LdapConfigWidget::initWidget()
     col += 2;
   }
 
-  if ( mFlags & W_TIMELIMIT ) {
+  if ( mFeatures & W_TIMELIMIT ) {
     label = new QLabel( i18n( "Time limit:" ), this );
     mTimeLimit = new QSpinBox( 0, 9999999, 1, this);
     mTimeLimit->setObjectName("kcfg_ldaptimelimit" );
@@ -177,9 +176,9 @@ void LdapConfigWidget::initWidget()
     mainLayout->addWidget( label, row, col );
     mainLayout->addWidget( mTimeLimit, row, col+1 );
   }
-  if ( mFlags & ( W_SIZELIMIT | W_TIMELIMIT ) ) row++;
+  if ( mFeatures & ( W_SIZELIMIT | W_TIMELIMIT ) ) row++;
 
-  if ( mFlags & W_DN ) {
+  if ( mFeatures & W_DN ) {
     label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
     mDn = new KLineEdit( this);
     mDn->setObjectName("kcfg_ldapdn" );
@@ -195,7 +194,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_FILTER ) {
+  if ( mFeatures & W_FILTER ) {
     label = new QLabel( i18n( "Filter:" ), this );
     mFilter = new KLineEdit( this);
     mFilter->setObjectName("kcfg_ldapfilter" );
@@ -205,7 +204,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_SECBOX ) {
+  if ( mFeatures & W_SECBOX ) {
     QGroupBox *btgroup = new QGroupBox( i18n( "Security" ), this );
     QHBoxLayout *hbox = new QHBoxLayout;
     btgroup->setLayout( hbox );
@@ -228,7 +227,7 @@ void LdapConfigWidget::initWidget()
     row++;
   }
 
-  if ( mFlags & W_AUTHBOX ) {
+  if ( mFeatures & W_AUTHBOX ) {
 
     QGroupBox *authbox =
       new QGroupBox( i18n( "Authentication" ), this );
@@ -268,9 +267,9 @@ void LdapConfigWidget::initWidget()
 
     mainLayout->addMultiCellWidget( authbox, row, row+1, 0, 3 );
 
-    connect( mAnonymous, SIGNAL( stateChanged(int) ), SLOT( setAnonymous(int) ) );
-    connect( mSimple, SIGNAL( stateChanged(int) ), SLOT( setSimple(int) ) );
-    connect( mSASL, SIGNAL( stateChanged(int) ), SLOT( setSASL(int) ) );
+    connect( mAnonymous, SIGNAL( toggled(bool) ), SLOT( setAnonymous(bool) ) );
+    connect( mSimple, SIGNAL( toggled(bool) ), SLOT( setSimple(bool) ) );
+    connect( mSASL, SIGNAL( toggled(bool) ), SLOT( setSASL(bool) ) );
 
     mAnonymous->setChecked( true );
   }
@@ -368,9 +367,9 @@ void LdapConfigWidget::mQueryDNClicked()
   if ( !mQResult.isEmpty() ) mDn->setText( mQResult.first() );
 }
 
-void LdapConfigWidget::setAnonymous( int state )
+void LdapConfigWidget::setAnonymous( bool on )
 {
-  if ( state == QCheckBox::Off ) return;
+  if ( !on ) return;
   if ( mUser ) mUser->setEnabled(false);
   if ( mPassword ) mPassword->setEnabled(false);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -379,9 +378,9 @@ void LdapConfigWidget::setAnonymous( int state )
   if ( mQueryMech ) mQueryMech->setEnabled(false);
 }
 
-void LdapConfigWidget::setSimple( int state )
+void LdapConfigWidget::setSimple( bool on )
 {
-  if ( state == QCheckBox::Off ) return;
+  if ( !on ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -390,9 +389,9 @@ void LdapConfigWidget::setSimple( int state )
   if ( mQueryMech ) mQueryMech->setEnabled(false);
 }
 
-void LdapConfigWidget::setSASL( int state )
+void LdapConfigWidget::setSASL( bool on )
 {
-  if ( state == QCheckBox::Off ) return;
+  if ( !on ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(true);
@@ -633,14 +632,14 @@ int LdapConfigWidget::timeLimit() const
   return ( mTimeLimit ? mTimeLimit->value() : 0 );
 }
 
-int LdapConfigWidget::flags() const
+LdapConfigWidget::WinFlags LdapConfigWidget::features() const
 {
-  return mFlags;
+  return mFeatures;
 }
 
-void LdapConfigWidget::setFlags( int flags )
+void LdapConfigWidget::setFeatures( LdapConfigWidget::WinFlags features )
 {
-  mFlags = flags;
+  mFeatures = features;
 
   // First delete all the child widgets.
   // FIXME: I hope it's correct

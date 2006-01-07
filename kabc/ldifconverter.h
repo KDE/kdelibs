@@ -64,31 +64,7 @@ namespace KABC {
    */
   KABC_EXPORT bool addresseeToLDIF( const Addressee &addr, QString &str );
 
-  /**
-   * @deprecated
-   * Obsoleted - please use LDIF::assembleLine()
-   * Returns a LDIF compatible string representing a given field/value pair.
-   * If necessary, the value parameter will be base64encoded and split into multiple.
-   * This function will return an empty string if the given value is empty.
-   *
-   * @param field   The LDAP field name or a complete LDIF field string (e.g. "cn" or "cn = %1\n").
-   * @param value   The value for this field.
-   * @param allowEncode Set to false if you wish no encoding of the value.
-   * @since 3.2
-   */
-  KABC_EXPORT QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true ) KDE_DEPRECATED;
-
-
-
   /* internal functions - do not use !! */
-  
-  /** No need for this function anymore - use LDIF::splitLine() + evaluatePair() */
-  KABC_EXPORT bool parseSingleLine( Addressee &a,
-		Address &homeAddr, Address &workAddr, QString &line );
-
-  /** No need for this function anymore - use LDIF::splitLine() */
-  KABC_EXPORT bool splitLine( QString &line, QString &fieldname, QString &value);
-
 
   KABC_EXPORT bool evaluatePair( Addressee &a, Address &homeAddr, Address &workAddr,
 	QString &fieldname, QString &value );

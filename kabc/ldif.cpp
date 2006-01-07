@@ -19,7 +19,6 @@
 */
 
 #include <kdebug.h>
-#include <kcodecs.h>
 
 #include "ldif.h"
 
@@ -68,7 +67,7 @@ QByteArray LDIF::assembleLine( const QString &fieldname, const QByteArray &value
     if( safe ) {
       result = fieldname.toUtf8() + ": " + value;
     } else {
-      result = fieldname.toUtf8() + ":: " + KCodecs::base64Encode( value, false );
+      result = fieldname.toUtf8() + ":: " + value.toBase64();
     }
 
     if ( linelen > 0 ) {
@@ -93,7 +92,6 @@ bool LDIF::splitLine( const QByteArray &line, QString &fieldname, QByteArray &va
   int position;
   QByteArray tmp;
   int linelen;
-  const char *data;
 
 //  kdDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
 
@@ -101,57 +99,39 @@ bool LDIF::splitLine( const QByteArray &line, QString &fieldname, QByteArray &va
   if ( position == -1 ) {
     // strange: we did not find a fieldname
     fieldname = "";
-    QByteArray str = line.trimmed();
-    linelen = str.length();
-    data = str.data();
-    tmp.setRawData( data, linelen );
-    value = tmp;
-    tmp.resetRawData( data, linelen );
+    value = line.trimmed();
 //    kdDebug(5700) << "value : " << value[0] << endl;
     return false;
   }
 
-  linelen = line.length();
+  linelen = line.size();
+  fieldname = QString::fromUtf8( line.left( position ).trimmed() );
 
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == ':' ) {
     // String is BASE64 encoded -> decode it now.
-    fieldname = QString::fromUtf8(
-      line.left( position ).trimmed() );
     if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
     }
-    data = &line.data()[ position + 3 ];
-    tmp.setRawData( data, linelen - position - 3 );
-    KCodecs::base64Decode( tmp, value );
-    tmp.resetRawData( data, linelen - position - 3 );
+    value = QByteArray::fromBase64( line.mid( position + 3 ) );
     return false;
   }
 
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == '<' ) {
     // String is an URL.
-    fieldname = QString::fromUtf8(
-      line.left( position ).trimmed() );
     if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
     }
-    data = &line.data()[ position + 3];
-    tmp.setRawData( data, linelen - position - 3 );
-    value = tmp;
-    tmp.resetRawData( data, linelen - position - 3 );
+    value = QByteArray::fromBase64( line.mid( position + 3 ) );
     return true;
   }
 
-  fieldname = QString::fromUtf8(line.left( position ).trimmed());
   if ( linelen <= ( position + 2 ) ) {
     value.resize( 0 );
     return false;
   }
-  data = &line.data()[ position + 2 ];
-  tmp.setRawData( data, linelen - position - 2 );
-  value = tmp;
-  tmp.resetRawData( data, linelen - position - 2 );
+  value = line.mid( position + 2 );
   return false;
 }
 

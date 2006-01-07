@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _K_LDAPURL_H_
-#define _K_LDAPURL_H_
+#ifndef KABC_LDAPURL_H
+#define KABC_LDAPURL_H
 
 #include <qstring.h>
 #include <qstringlist.h>
