@@ -12,6 +12,19 @@
 enum KDEMainFlag { NoGUI = 0, GUI = 1, AutoDcopRegistration = 2 }; // bitfield, next item is 4!
 Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
 
+/**
+ * \short KDE Replacement for QTEST_MAIN from QTestLib
+ *
+ * This macro should be used for classes that need a KInstance or KApplication
+ * object. So instead of writing QTEST_MAIN( TestClass ) you write
+ * QTTEST_KDEMAIN( TestClass, GUI ).
+ *
+ * \param TestObject The class you use for testing.
+ * \param flags one of KDEMainFlag
+ *
+ * \see KDEMainFlag
+ * \see QTestLib
+ */
 #define QTTEST_KDEMAIN(TestObject, flags) \
 int main(int argc, char *argv[]) \
 { \
