@@ -479,8 +479,8 @@ QSize KDialogBase::configDialogSize( KConfig& config,
    h = sizeHint().height();
 
    KConfigGroup cg(&config, groupName);
-   w = cg.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
-   h = cg.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
+   w = cg.readEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
+   h = cg.readEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
 
    return size( );
 }

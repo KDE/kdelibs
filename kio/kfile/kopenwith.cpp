@@ -412,10 +412,10 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     KHistoryCombo *combo = new KHistoryCombo();
     combo->setDuplicatesEnabled( false );
     KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
-    int max = cg.readNumEntry( QString::fromLatin1("Maximum history"), 15 );
+    int max = cg.readEntry( QString::fromLatin1("Maximum history"), 15 );
     combo->setMaxCount( max );
-    int mode = cg.readNumEntry(QString::fromLatin1("CompletionMode"),
-				KGlobalSettings::completionMode());
+    int mode = cg.readEntry(QString::fromLatin1("CompletionMode"),
+				int(KGlobalSettings::completionMode()));
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
     QStringList list = cg.readListEntry( QString::fromLatin1("History") );
     combo->setHistoryItems( list, true );

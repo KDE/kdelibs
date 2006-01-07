@@ -498,7 +498,7 @@ int KProtocolManager::minimumKeepSize()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  return cfg->readNumEntry( "MinimumKeepSize",
+  return cfg->readEntry( "MinimumKeepSize",
                             DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
 }
 

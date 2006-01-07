@@ -196,7 +196,7 @@ public:
         {
             QDomNamedNodeMap attr = (*it);
 
-            for(unsigned int i = 0; i < attr.count(); i++)
+            for(int i = 0; i < attr.count(); i++)
             {
                 QString name, value;
 
@@ -215,7 +215,7 @@ public:
         // Apply local attributes
         QDomNamedNodeMap attr = node.attributes();
 
-        for(unsigned int i = 0; i < attr.count(); i++)
+        for(int i = 0; i < attr.count(); i++)
         {
             QDomNode current = attr.item(i);
 

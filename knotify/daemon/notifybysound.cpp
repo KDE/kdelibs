@@ -163,7 +163,7 @@ void NotifyBySound::loadConfig()
 	}
 #endif
 	// load default volume
-	d->volume = kc->readNumEntry( "Volume", 100 );
+	d->volume = kc->readEntry( "Volume", 100 );
 }
 
 

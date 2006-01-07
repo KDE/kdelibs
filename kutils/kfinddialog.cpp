@@ -58,7 +58,7 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
     d = new KFindDialogPrivate;
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonCancel( KStdGuiItem::close() );
+    setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
@@ -69,7 +69,7 @@ KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long opt
     d = new KFindDialogPrivate;
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonCancel( KStdGuiItem::close() );
+    setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
@@ -78,7 +78,7 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/)
     m_replaceExtension (0)
 {
     d = new KFindDialogPrivate;
-    setButtonCancel( KStdGuiItem::close() );
+    setButtonGuiItem( KDialogBase::Cancel,  KStdGuiItem::close() );
 }
 
 KFindDialog::~KFindDialog()
@@ -224,7 +224,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     enableButtonOK( !pattern().isEmpty() );
     if (forReplace)
     {
-      setButtonOK(KGuiItem( i18n("&Replace"), QString(),
+      setButtonGuiItem( KDialogBase::Ok, KGuiItem( i18n("&Replace"), QString(),
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
@@ -232,7 +232,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     }
     else
     {
-      setButtonOK(KGuiItem( i18n("&Find"), "find",
+      setButtonGuiItem( KDialogBase::Ok, KGuiItem( i18n("&Find"), "find",
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
                          "above is searched for within the document.</qt>")));

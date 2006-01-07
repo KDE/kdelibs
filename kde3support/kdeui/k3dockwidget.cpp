@@ -2741,9 +2741,9 @@ void K3DockManager::readConfig( KConfig* c, QString group )
     if ( type == "GROUP" ){
       K3DockWidget* first = getDockWidgetFromName( c->readEntry( oname + ":first_name", QString() ) );
       K3DockWidget* last  = getDockWidgetFromName( c->readEntry( oname + ":last_name",  QString() ) );
-      int sepPos = c->readNumEntry( oname + ":sepPos" );
+      int sepPos = c->readEntry( oname + ":sepPos",0 );
 
-      Qt::Orientation p = (Qt::Orientation)c->readNumEntry( oname + ":orientation" );
+      Qt::Orientation p = (Qt::Orientation)c->readEntry( oname + ":orientation",0 );
       if ( first  && last ){
         obj = first->manualDock( last, ( p == Qt::Vertical ) ? K3DockWidget::DockLeft : K3DockWidget::DockTop, sepPos );
         if (obj){
@@ -2769,7 +2769,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
           tabDockGroup->setName( oname.latin1() );
           c->setGroup( group );
           if (tab)
-            tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
+            tab->showPage( tab->page( c->readEntry( oname+":curTab",0 ) ) );
         }
       }
       obj = tabDockGroup;
@@ -2796,7 +2796,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
       if (!name.isEmpty()) {
           obj->setFormerBrotherDockWidget(getDockWidgetFromName( name ));
       }
-      obj->formerDockPos = K3DockWidget::DockPosition(c->readNumEntry( oname + ":dockBackToPos" ));
+      obj->formerDockPos = K3DockWidget::DockPosition(c->readEntry( oname + ":dockBackToPos",0 ));
     }
   }
 

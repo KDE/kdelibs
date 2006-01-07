@@ -557,18 +557,18 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
     m_isImmutable = appConfig->groupIsImmutable( itemGroup );
     KConfigGroup appGroup( appConfig, itemGroup );
     d->defaultIconSize = m_iconSize;
-    m_iconSize = appGroup.readNumEntry( "Speedbar IconSize", m_iconSize );
+    m_iconSize = appGroup.readEntry( "Speedbar IconSize", m_iconSize );
 
     if ( m_useGlobal ) { // read global items
         KConfigGroup globalGroup( KGlobal::config(), (QString)(itemGroup +" (Global)"));
-        int num = globalGroup.readNumEntry( "Number of Entries" );
+        int num = globalGroup.readEntry( "Number of Entries",0 );
         for ( int i = 0; i < num; i++ ) {
             readItem( i, &globalGroup, false );
         }
     }
 
     // read application local items
-    int num = appGroup.readNumEntry( "Number of Entries" );
+    int num = appGroup.readEntry( "Number of Entries",0 );
     for ( int i = 0; i < num; i++ ) {
         readItem( i, &appGroup, true );
     }
@@ -586,7 +586,7 @@ void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
                 applicationLocal,
                 config->readEntry( QString("Icon_") + number, QString() ),
                 static_cast<KIcon::Group>(
-                    config->readNumEntry( QString("IconGroup_") + number )) );
+                    config->readEntry( QString("IconGroup_") + number,0 )) );
 }
 
 void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )

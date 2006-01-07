@@ -610,7 +610,7 @@ bool CupsdConf::loadAvailableResources()
 	KConfig	conf("kdeprintrc");
 	conf.setGroup("CUPS");
 	QString	host = conf.readEntry("Host",cupsServer());
-	int 	port = conf.readNumEntry("Port",ippPort());
+	int 	port = conf.readEntry("Port",ippPort());
 	http_t	*http_ = httpConnect(host.toLocal8Bit(),port);
 
 	resources_.clear();

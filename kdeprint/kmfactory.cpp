@@ -326,7 +326,7 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 	if (info.comment.isEmpty())
 		info.comment = info.name;
 	info.detectUris = conf.readListEntry("DetectUris");
-	info.detectPrecedence = conf.readNumEntry("DetectPrecedence", 0);
+	info.detectPrecedence = conf.readEntry("DetectPrecedence", 0);
 	info.mimeTypes = conf.readListEntry("MimeTypes");
 	if (info.mimeTypes.isEmpty())
 		info.mimeTypes << "application/postscript";

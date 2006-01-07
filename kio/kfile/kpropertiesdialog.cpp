@@ -3156,7 +3156,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
   KGuiItem okItem(i18n("&Add"), QString() /* no icon */,
                   i18n("Add the selected file types to\nthe list of supported file types."),
                   i18n("Add the selected file types to\nthe list of supported file types."));
-  dlg.setButtonOK(okItem);
+  dlg.setButtonGuiItem(KDialogBase::Ok,okItem);
 
   KPropertiesMimetypeBase *mw = new KPropertiesMimetypeBase(&dlg);
 
