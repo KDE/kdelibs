@@ -264,11 +264,13 @@ void KDialog::setButtonStyle( int style )
 				if (newButton)
 					lay->addSpacing(newButton->sizeHint().width());
 			}
-			continue;
+			else
+				continue;
 		}
 		else if( d->buttonMask & layout[i] )
 		{
-			lay->addWidget( actionButton( (ButtonCode)(d->buttonMask & layout[i] & ~(Stretch | Filler))) );
+			newButton = actionButton( (ButtonCode)(d->buttonMask & layout[i] & ~(Stretch | Filler)));
+			lay->addWidget( newButton );
 			++numButton;
 		}
 		else
