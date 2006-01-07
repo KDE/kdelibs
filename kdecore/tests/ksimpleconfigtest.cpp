@@ -41,12 +41,12 @@ int main( int argc, char **argv )
   sleep( 10 );
 
   aConfig.setGroup( "Test group" );
-  aConfig.deleteEntry( "key2", false );
+  aConfig.deleteEntry( "key2", KConfigBase::Normal );
   fprintf( stderr, "Deleted on entry from Test group, sleeping\n" );
   aConfig.sync();
   sleep( 10 );
 
-  aConfig.deleteGroup( "Another Test group", true );
+  aConfig.deleteGroup( "Another Test group" );
   fprintf( stderr, "Deleted Another Test group\n" );
 }
 
