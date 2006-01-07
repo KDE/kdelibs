@@ -21,8 +21,8 @@
 #define KNTLM_H
 
 #include <qglobal.h>
-#include <q3cstring.h>
-#include <qstring.h>
+#include <QByteArray>
+#include <QString>
 
 #include <kdelibs_export.h>
 
@@ -225,7 +225,7 @@ private:
   static QByteArray QString2UnicodeLE( const QString &target );
   static QString UnicodeLE2QString( const QChar* data, uint len );
 
-  static void addBuf( QByteArray &buf, SecBuf &secbuf, QByteArray &data );
+  static void addBuf( QByteArray &buf, SecBuf &secbuf, const QByteArray &data );
   static void addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool unicode = false );
   static void convertKey( unsigned char *key_56, void* ks );
 };

@@ -15,7 +15,7 @@
  */
 
 #include <string.h>
-#include <kswap.h>
+#include <qendian.h>
 #include "des.h"
 
 static void permute_ip (unsigned char *inblock, DES_KEY * key, unsigned char *outblock);
@@ -243,8 +243,8 @@ ntlm_des_encrypt (DES_KEY * key, unsigned char *block)
   quint32 work[2];		/* Working data storage */
 
   permute_ip (block, key, (unsigned char *) work);	/* Initial Permutation */
-  left = KFromToBigEndian(work[0]);
-  right = KFromToBigEndian(work[1]);
+  left = qFromBigEndian(work[0]);
+  right = qFromBigEndian(work[1]);
   
   /* Do the 16 rounds.
    * The rounds are numbered from 0 to 15. On even rounds
@@ -285,8 +285,8 @@ ntlm_des_encrypt (DES_KEY * key, unsigned char *block)
   right ^= f (key, left, knp);
 
   /* Left/right half swap, plus byte swap if little-endian */
-  work[1] = KFromToBigEndian( left );
-  work[0] = KFromToBigEndian( right );
+  work[1] = qToBigEndian( left );
+  work[0] = qToBigEndian( right );
 
   permute_fp ((unsigned char *) work, key, block);	/* Inverse initial permutation */
 }

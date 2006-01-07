@@ -24,8 +24,9 @@
 #include <string.h>
 
 #include <qdatetime.h>
+#include <qendian.h>
+
 #include <krandom.h>
-#include <kswap.h>
 #include <kcodecs.h>
 #include <kdebug.h>
 
@@ -35,53 +36,58 @@
 QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode )
 {
   //watch for buffer overflows
-  if ( secbuf.offset > buf.size() ||
-       secbuf.offset + secbuf.len > buf.size() ) return QString();
+  quint32 offset;
+  quint16 len;
+  offset = qFromLittleEndian((quint32)secbuf.offset);
+  len = qFromLittleEndian(secbuf.len);
+  if ( offset > buf.size() ||
+       offset + len > buf.size() ) return QString();
 
   QString str;
-  const char *c = buf.data() + secbuf.offset;
+  const char *c = buf.data() + offset;
   
   if ( unicode ) {
-    str = UnicodeLE2QString( (QChar*) c, secbuf.len >> 1 );
+    str = UnicodeLE2QString( (QChar*) c, len >> 1 );
   } else {
-    str = QString::fromLatin1( c, secbuf.len );
+    str = QString::fromLatin1( c, len );
   }
   return str;
 }
 
 QByteArray KNTLM::getBuf( const QByteArray &buf, const SecBuf &secbuf )
 {
-  QByteArray ret;
+  quint32 offset;
+  quint16 len;
+  offset = qFromLittleEndian((quint32)secbuf.offset);
+  len = qFromLittleEndian(secbuf.len);
   //watch for buffer overflows
-  if ( secbuf.offset > buf.size() ||
-       secbuf.offset + secbuf.len > buf.size() ) return ret;
-  ret.duplicate( buf.data() + secbuf.offset, buf.size() );
-  return ret;
+  if ( offset > buf.size() ||
+       offset + len > buf.size() ) return QByteArray();
+  return QByteArray( buf.data() + offset, buf.size() );
 }
 
 void KNTLM::addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool unicode )
 {
-  QByteArray tmp;
-
   if ( unicode ) {
-    tmp = QString2UnicodeLE( str );
-    addBuf( buf, secbuf, tmp );
+    addBuf( buf, secbuf, QString2UnicodeLE( str ) );
   } else {
-    const char *c;
-    c = str.latin1();
-    tmp.setRawData( c, str.length() );
-    addBuf( buf, secbuf, tmp );
-    tmp.resetRawData( c, str.length() );
+    addBuf( buf, secbuf, str.toLatin1() );
   }
 }
 
-void KNTLM::addBuf( QByteArray &buf, SecBuf &secbuf, QByteArray &data )
+void KNTLM::addBuf( QByteArray &buf, SecBuf &secbuf, const QByteArray &data )
 {
-  secbuf.offset = (buf.size() + 1) & 0xfffffffe;
-  secbuf.len = data.size();
-  secbuf.maxlen = data.size();
-  buf.resize( secbuf.offset + data.size() );
-  memcpy( buf.data() + secbuf.offset, data.data(), data.size() );
+  quint32 offset;
+  quint16 len, maxlen;
+  offset = (buf.size() + 1) & 0xfffffffe;
+  len = data.size();
+  maxlen = data.size();
+  
+  secbuf.offset = qToLittleEndian((quint32)offset);
+  secbuf.len = qToLittleEndian(len);
+  secbuf.maxlen = qToLittleEndian(maxlen);
+  buf.resize( offset + len );
+  memcpy( buf.data() + offset, data.data(), data.size() );
 }
 
 bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QString &workstation, quint32 flags )
@@ -90,7 +96,7 @@ bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QS
   
   rbuf.fill( 0 );
   memcpy( rbuf.data(), "NTLMSSP", 8 );
-  ((Negotiate*) rbuf.data())->msgType = KFromToLittleEndian( (quint32)1 );
+  ((Negotiate*) rbuf.data())->msgType = qToLittleEndian( (quint32)1 );
   if ( !domain.isEmpty() ) {
     flags |= Negotiate_Domain_Supplied;
     addString( rbuf, ((Negotiate*) rbuf.data())->domain, domain );
@@ -99,7 +105,7 @@ bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QS
     flags |= Negotiate_WS_Supplied;
     addString( rbuf, ((Negotiate*) rbuf.data())->domain, workstation );
   }
-  ((Negotiate*) rbuf.data())->flags = KFromToLittleEndian( flags );
+  ((Negotiate*) rbuf.data())->flags = qToLittleEndian( flags );
   negotiate = rbuf;
   return true;
 }
@@ -118,7 +124,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
   //challenge structure too small
   if ( chsize < 32 ) return false;
 
-  unicode = ch->flags & Negotiate_Unicode;
+  unicode = qFromLittleEndian(ch->flags) & Negotiate_Unicode;
   if ( domain.isEmpty() )
     dom = getString( challenge, ch->targetName, unicode );
   else
@@ -126,12 +132,12 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
     
   rbuf.fill( 0 );
   memcpy( rbuf.data(), "NTLMSSP", 8 );
-  ((Auth*) rbuf.data())->msgType = KFromToLittleEndian( (quint32)3 );
+  ((Auth*) rbuf.data())->msgType = qToLittleEndian( (quint32)3 );
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (ch->flags & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
-    if ( ch->flags & Negotiate_NTLM ) {
+  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+    if ( qFromLittleEndian(ch->flags) & Negotiate_NTLM ) {
       if ( targetInfo.isEmpty() ) return false;
       response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
@@ -143,7 +149,8 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
         return false;
     }
   } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
-    if ( ch->flags & Negotiate_NTLM ) {
+
+    if ( qFromLittleEndian(ch->flags) & Negotiate_NTLM ) {
       response = getNTLMResponse( password, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
     } else {
@@ -185,7 +192,7 @@ QByteArray KNTLM::lmHash( const QString &password )
   const char *magic = "KGS!@#$%";
 
   keyBytes.fill( 0 );
-  strncpy( keyBytes.data(), password.toUpper().latin1(), 14 );
+  strncpy( keyBytes.data(), password.toUpper().toLatin1(), 14 );
 
   convertKey( (unsigned char*) keyBytes.data(), &ks );
   ntlm_des_ecb_encrypt( magic, 8, &ks, (unsigned char*) hash.data() );
@@ -232,13 +239,12 @@ QByteArray KNTLM::getNTLMResponse( const QString &password, const unsigned char 
 QByteArray KNTLM::ntlmHash( const QString &password )
 {
   KMD4::Digest digest;
-  QByteArray ret, unicode;
+  QByteArray unicode;
   unicode = QString2UnicodeLE( password );
 
   KMD4 md4( unicode );
   md4.rawDigest( digest );
-  ret.duplicate( (const char*) digest, sizeof( digest ) );
-  return ret;
+  return QByteArray( (const char*) digest, sizeof( digest ) );
 }
 
 QByteArray KNTLM::getNTLMv2Response( const QString &target, const QString &user,
@@ -289,11 +295,11 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
   blob.fill( 0 );
   
   Blob *bl = (Blob *) blob.data();
-  bl->signature = KFromToBigEndian( (quint32) 0x01010000 );
+  bl->signature = qToBigEndian( (quint32) 0x01010000 );
   quint64 now = QDateTime::currentDateTime().toTime_t();
   now += (quint64)3600*(quint64)24*(quint64)134774;
   now *= (quint64)10000000;
-  bl->timestamp = KFromToLittleEndian( now );
+  bl->timestamp = qToLittleEndian( now );
   for ( uint i = 0; i<8; i++ ) {
     bl->challenge[i] = KRandom::random() % 0xff;
   }
@@ -326,8 +332,7 @@ QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
   md5.update( content );
   md5.rawDigest( digest );
 
-  ret.duplicate( (const char*) digest, sizeof( digest ) );
-  return ret;
+  return QByteArray( (const char*) digest, sizeof( digest ) );
 }
 
 /*
@@ -365,7 +370,7 @@ QByteArray KNTLM::QString2UnicodeLE( const QString &target )
 {
   QByteArray unicode( target.length() * 2 );
   for ( int i = 0; i < target.length(); i++ ) {
-    ((quint16*)unicode.data())[ i ] = KFromToLittleEndian( target[i].unicode() );
+    ((quint16*)unicode.data())[ i ] = qToLittleEndian( target[i].unicode() );
   }
   return unicode;
 }
@@ -374,7 +379,7 @@ QString KNTLM::UnicodeLE2QString( const QChar* data, uint len )
 {
   QString ret;
   for ( uint i = 0; i < len; i++ ) {
-    ret += KFromToLittleEndian( data[ i ].unicode() );
+    ret += qFromLittleEndian( data[ i ].unicode() );
   }
   return ret;
 }
