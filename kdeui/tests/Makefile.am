@@ -40,7 +40,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
 	ksqueezedtextlabeltest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
-	khboxtest kbugreporttest
+	khboxtest kbugreporttest kdialogtest
 
 METASOURCES = AUTO
 
@@ -100,4 +100,6 @@ kpixmapregionselectordialogtest_SOURCES = kpixmapregionselectordialogtest.cpp
 ktoolbarlabelactiontest_SOURCES = ktoolbarlabelactiontest.cpp
 khboxtest_SOURCES = khboxtest.cpp
 kbugreporttest_SOURCES = kbugreporttest.cpp
+kdialogtest_SOURCES = kdialogtest.cpp
+
 
