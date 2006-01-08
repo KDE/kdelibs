@@ -25,6 +25,7 @@
 #include <qlayout.h>
 #include <qprogressbar.h>
 
+#include <kconfig.h>
 #include <klocale.h>
 #include <klistbox.h>
 #include <kcombobox.h>
@@ -54,52 +55,58 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
     ),
     progressbar( false )
 {
-  Q_UNUSED( _progressbar );
-  d = new KSpellDlgPrivate;
-  d->ui.setupUi(this);
+  KConfigGroup cg( KGlobal::config(),"KSpell" );
+  kdDebug() << (cg.readEntry("KSpell_DoSpellChecking")) << endl;
+  kdDebug() << "dospellchecking is " << cg.readEntry("KSpell_DoSpellChecking", false)  << endl;
+  if ( (cg.readEntry("KSpell_DoSpellChecking", false) == true) )  //dospellcheck ?
+  {
+    Q_UNUSED( _progressbar );
+    d = new KSpellDlgPrivate;
+    d->ui.setupUi(this);
 
-  connect( d->ui.m_replaceBtn, SIGNAL(clicked()),
-           this, SLOT(replace()));
-  connect( this, SIGNAL(ready(bool)),
-           d->ui.m_replaceBtn, SLOT(setEnabled(bool)) );
+    connect( d->ui.m_replaceBtn, SIGNAL(clicked()),
+             this, SLOT(replace()));
+    connect( this, SIGNAL(ready(bool)),
+             d->ui.m_replaceBtn, SLOT(setEnabled(bool)) );
 
-  connect( d->ui.m_replaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
-  connect(this, SIGNAL(ready(bool)), d->ui.m_replaceAllBtn, SLOT(setEnabled(bool)));
+    connect( d->ui.m_replaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
+    connect(this, SIGNAL(ready(bool)), d->ui.m_replaceAllBtn, SLOT(setEnabled(bool)));
 
-  connect( d->ui.m_skipBtn, SIGNAL(clicked()), this, SLOT(ignore()));
-  connect( this, SIGNAL(ready(bool)), d->ui.m_skipBtn, SLOT(setEnabled(bool)));
+    connect( d->ui.m_skipBtn, SIGNAL(clicked()), this, SLOT(ignore()));
+    connect( this, SIGNAL(ready(bool)), d->ui.m_skipBtn, SLOT(setEnabled(bool)));
 
-  connect( d->ui.m_skipAllBtn, SIGNAL(clicked()), this, SLOT(ignoreAll()));
-  connect( this, SIGNAL(ready(bool)), d->ui.m_skipAllBtn, SLOT(setEnabled(bool)));
+    connect( d->ui.m_skipAllBtn, SIGNAL(clicked()), this, SLOT(ignoreAll()));
+    connect( this, SIGNAL(ready(bool)), d->ui.m_skipAllBtn, SLOT(setEnabled(bool)));
 
-  connect( d->ui.m_addBtn, SIGNAL(clicked()), this, SLOT(add()));
-  connect( this, SIGNAL(ready(bool)), d->ui.m_addBtn, SLOT(setEnabled(bool)));
+    connect( d->ui.m_addBtn, SIGNAL(clicked()), this, SLOT(add()));
+    connect( this, SIGNAL(ready(bool)), d->ui.m_addBtn, SLOT(setEnabled(bool)));
 
-  connect( d->ui.m_suggestBtn, SIGNAL(clicked()), this, SLOT(suggest()));
-  connect( this, SIGNAL(ready(bool)), d->ui.m_suggestBtn, SLOT(setEnabled(bool)) );
-  d->ui.m_suggestBtn->hide();
+    connect( d->ui.m_suggestBtn, SIGNAL(clicked()), this, SLOT(suggest()));
+    connect( this, SIGNAL(ready(bool)), d->ui.m_suggestBtn, SLOT(setEnabled(bool)) );
+    d->ui.m_suggestBtn->hide();
 
-  connect(this, SIGNAL(user1Clicked()), this, SLOT(stop()));
+    connect(this, SIGNAL(user1Clicked()), this, SLOT(stop()));
 
-  connect( d->ui.m_replacement, SIGNAL(textChanged(const QString &)),
-           SLOT(textChanged(const QString &)) );
+    connect( d->ui.m_replacement, SIGNAL(textChanged(const QString &)),
+             SLOT(textChanged(const QString &)) );
 
-  connect( d->ui.m_replacement, SIGNAL(returnPressed()),   SLOT(replace()) );
-  connect( d->ui.m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
-           SLOT(slotSelectionChanged(Q3ListViewItem*)) );
+    connect( d->ui.m_replacement, SIGNAL(returnPressed()),   SLOT(replace()) );
+    connect( d->ui.m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
+             SLOT(slotSelectionChanged(Q3ListViewItem*)) );
 
-  connect( d->ui.m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
-           SLOT( replace() ) );
-  d->spellConfig = new KSpellConfig( 0, 0 , false );
-  d->spellConfig->fillDicts( d->ui.m_language );
-  connect( d->ui.m_language, SIGNAL(activated(int)),
-	   d->spellConfig, SLOT(sSetDictionary(int)) );
-  connect( d->spellConfig, SIGNAL(configChanged()),
+    connect( d->ui.m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
+             SLOT( replace() ) );
+    d->spellConfig = new KSpellConfig( 0, 0 , false );
+    d->spellConfig->fillDicts( d->ui.m_language );
+    connect( d->ui.m_language, SIGNAL(activated(int)),
+    	   d->spellConfig, SLOT(sSetDictionary(int)) );
+    connect( d->spellConfig, SIGNAL(configChanged()),
            SLOT(slotConfigChanged()) );
 
-  setHelp( "spelldlg", "kspell" );
-  setMinimumSize( sizeHint() );
-  emit ready( false );
+    setHelp( "spelldlg", "kspell" );
+    setMinimumSize( sizeHint() );
+    emit ready( false );
+  }
 }
 
 KSpellDlg::~KSpellDlg()

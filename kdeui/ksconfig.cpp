@@ -46,6 +46,7 @@ public:
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   : QWidget(0, 0), nodialog(true)
   , kc(0)
+  , cb0(0)
   , cb1(0)
   , cb2(0)
   , dictlist(0)
@@ -53,7 +54,9 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , encodingcombo(0)
   , clientcombo(0)
 {
+  kdDebug(750) << "Entering KSpellConfig::KSpellConfig(KSpellConfig&)" << endl;
   d = new KSpellConfigPrivate;
+  setDoSpellChecking( _ksc.doSpellChecking() );
   setReplaceAllList( _ksc.replaceAllList() );
   setNoRootAffix( _ksc.noRootAffix() );
   setRunTogether( _ksc.runTogether() );
@@ -70,6 +73,7 @@ KSpellConfig::KSpellConfig( QWidget *parent,
 			    KSpellConfig *_ksc, bool addHelpButton )
   : QWidget (parent), nodialog(false)
   , kc(0)
+  , cb0(0)
   , cb1(0)
   , cb2(0)
   , dictlist(0)
@@ -86,6 +90,7 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   }
   else
   {
+    setDoSpellChecking( _ksc->doSpellChecking() );
     setNoRootAffix( _ksc->noRootAffix() );
     setRunTogether( _ksc->runTogether() );
     setDictionary( _ksc->dictionary() );
@@ -96,25 +101,28 @@ KSpellConfig::KSpellConfig( QWidget *parent,
     setClient( _ksc->client() );
   }
 
-  QGridLayout *glay = new QGridLayout( this, 6, 3, 0, KDialog::spacingHint() );
+  QGridLayout *glay = new QGridLayout( this, 7, 3, 0, KDialog::spacingHint() );
+  cb0 = new QCheckBox( i18n("Do SpellChecking"), this, "DoSpellChecking" );
+  connect( cb0, SIGNAL(toggled(bool)), SLOT(sDoSpell()) );
   cb1 = new QCheckBox( i18n("Create &root/affix combinations"
                             " not in dictionary"), this, "NoRootAffix" );
   connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
-  glay->addMultiCellWidget( cb1, 0, 0, 0, 2 );
+  glay->addMultiCellWidget( cb0, 0, 0, 0, 2 );
+  glay->addMultiCellWidget( cb1, 1, 1, 0, 2 );
 
   cb2 = new QCheckBox( i18n("Consider run-together &words"
 			    " as spelling errors"), this, "RunTogether" );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
-  glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
+  glay->addMultiCellWidget( cb2, 2, 2, 0, 2 );
 
   dictcombo = new QComboBox( this, "DictFromList" );
   dictcombo->setInsertPolicy( QComboBox::NoInsert );
   connect( dictcombo, SIGNAL (activated(int)),
 	   this, SLOT (sSetDictionary(int)) );
-  glay->addMultiCellWidget( dictcombo, 2, 2, 1, 2 );
+  glay->addMultiCellWidget( dictcombo, 3, 3, 1, 2 );
 
   dictlist = new QLabel( dictcombo, i18n("&Dictionary:"), this );
-  glay->addWidget( dictlist, 2 ,0 );
+  glay->addWidget( dictlist, 3 ,0 );
 
   encodingcombo = new QComboBox( this, "Encoding" );
   encodingcombo->addItem( "US-ASCII" );
@@ -136,10 +144,10 @@ KSpellConfig::KSpellConfig( QWidget *parent,
 
   connect( encodingcombo, SIGNAL(activated(int)), this,
 	   SLOT(sChangeEncoding(int)) );
-  glay->addMultiCellWidget( encodingcombo, 3, 3, 1, 2 );
+  glay->addMultiCellWidget( encodingcombo, 4, 4, 1, 2 );
 
   QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("&Encoding:"), this);
-  glay->addWidget( tmpQLabel, 3, 0 );
+  glay->addWidget( tmpQLabel, 4, 0 );
 
 
   clientcombo = new QComboBox( this, "Client" );
@@ -149,16 +157,16 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   clientcombo->addItem( i18n("Zemberek") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
-  glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
+  glay->addMultiCellWidget( clientcombo, 5, 5, 1, 2 );
 
   tmpQLabel = new QLabel( clientcombo, i18n("&Client:"), this );
-  glay->addWidget( tmpQLabel, 4, 0 );
+  glay->addWidget( tmpQLabel, 5, 0 );
 
   if( addHelpButton )
   {
     QPushButton *pushButton = new KPushButton( KStdGuiItem::help(), this );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
-    glay->addWidget(pushButton, 5, 2);
+    glay->addWidget(pushButton, 6, 2);
   }
 
   fillInDialog();
@@ -179,8 +187,10 @@ KSpellConfig::dictFromList() const
 bool
 KSpellConfig::readGlobalSettings()
 {
+  kdDebug(750) << "Entering KSpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
   KConfigGroup cg( kc,"KSpell" );
 
+  setDoSpellChecking ( cg.readEntry("KSpell_DoSpellChecking", false ) );
   setNoRootAffix   ( cg.readEntry("KSpell_NoRootAffix", QVariant(0)).toInt() );
   setRunTogether   ( cg.readEntry("KSpell_RunTogether", QVariant(0)).toInt() );
   setDictionary    ( cg.readEntry("KSpell_Dictionary") );
@@ -196,6 +206,7 @@ KSpellConfig::writeGlobalSettings ()
 {
   KConfigGroup cg( kc,"KSpell" );
 
+  cg.writeEntry ("KSpell_DoSpellChecking", doSpellChecking(), KConfigBase::Global);
   cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global);
   cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), KConfigBase::Global);
   cg.writeEntry ("KSpell_Dictionary", dictionary(), KConfigBase::Global);
@@ -374,6 +385,7 @@ KSpellConfig::fillInDialog ()
 
   kdDebug(750) << "KSpellConfig::fillinDialog" << endl;
 
+  cb0->setChecked( doSpellChecking() );
   cb1->setChecked( noRootAffix() );
   cb2->setChecked( runTogether() );
   encodingcombo->setCurrentIndex( encoding() );
@@ -752,6 +764,15 @@ KSpellConfig::setClient (int c)
 }
 
 void
+KSpellConfig::setDoSpellChecking (bool b)
+{
+  bdospellchecking=b;
+
+  if(cb0)
+    cb0->setChecked(b);
+}
+
+void
 KSpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
@@ -830,6 +851,12 @@ KSpellConfig::client () const
 
 
 bool
+KSpellConfig::doSpellChecking () const
+{
+  return bdospellchecking;
+}
+
+bool
 KSpellConfig::noRootAffix () const
 {
   return bnorootaffix;
@@ -871,6 +898,13 @@ void
 KSpellConfig::sNoAff(bool)
 {
   setNoRootAffix (cb1->isChecked());
+  emit configChanged();
+}
+
+void
+KSpellConfig::sDoSpell()
+{
+  setDoSpellChecking (cb0->isChecked());
   emit configChanged();
 }
 
@@ -972,6 +1006,7 @@ KSpellConfig::operator= (const KSpellConfig &ksc)
 {
   //We want to copy the data members, but not the
   //pointers to the child widgets
+  setDoSpellChecking (ksc.doSpellChecking());
   setNoRootAffix (ksc.noRootAffix());
   setRunTogether (ksc.runTogether());
   setDictionary (ksc.dictionary());

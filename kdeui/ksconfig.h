@@ -163,6 +163,11 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     void setNoRootAffix( bool );
 
     /**
+     * Activate SpellChecking
+     */
+    void setDoSpellChecking( bool b);
+
+    /**
      * Set an ISpell option.
      *
      * If @p true, treat run-together words a valid.
@@ -185,6 +190,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     /**
      * Options reading routines.
      */
+    bool doSpellChecking() const;
     bool noRootAffix() const;
     bool runTogether() const;
     const QString dictionary() const;
@@ -242,6 +248,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     void sHelp();
     //void sBrowseDict();
     //void sBrowsePDict();
+    void sDoSpell();
     void sNoAff( bool );
     void sRunTogether( bool );
     void sDictionary( bool );
@@ -255,6 +262,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
   protected:
     // The options
     int enc;			// 1 ==> -Tlatin1
+    bool bdospellchecking;
     bool bnorootaffix;		// -m
     bool bruntogether;		// -B
     bool dictfromlist;
@@ -266,7 +274,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     KConfig *kc;
     int iclient;            // defaults to ispell, may be aspell, too
 
-    QCheckBox *cb1, *cb2;
+    QCheckBox *cb0, *cb1, *cb2;
     //KLineEdit *kle1, *kle2;
     //QButtonGroup *dictgroup;
     //QRadioButton *dictlistbutton, *dicteditbutton;
