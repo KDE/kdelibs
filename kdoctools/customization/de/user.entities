@@ -10,24 +10,17 @@
 <!ENTITY Backspace	"<keycap>R&uuml;cktaste</keycap>">
 <!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
 <!ENTITY Ctrl   "<keycap>Strg</keycap>">
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY eg		'<abbrev>z.&nbsp;B</abbrev>'> 
 <!ENTITY Enter	"<keycap>Eingabe</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY etc    "<abbrev>usw.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "<abbrev>d.&nbsp;h.</abbrev>">
 <!ENTITY infocenter	"<application>Infozentrum</application>">
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
- khelpcenter -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>K-Symbol von &kde;</title></objectinfo>
@@ -36,9 +29,6 @@
 </inlinemediaobject>
 </guiicon>-Symbol"><!-- kicon -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-Men&uuml;"> <!-- kmenu -->
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
- kicker -->
 <!ENTITY kwm    "<application>kwm</application>">
 <!ENTITY LMB    "<mousebutton>linke</mousebutton> Maustaste">
 <!ENTITY LMBn   "<mousebutton>linken</mousebutton> Maustaste">
@@ -52,17 +42,19 @@
 <!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
 <!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
 <!ENTITY systemtray "<application>Systemabschnitt</application>">
-<!-- Deprecated, will be removed at a future time, do not use -->
-<!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
 <!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
-<!-- Deprecated, will be removed at a future time, do not use -->
+
+<!-- The following entities are deprecated and will be removed at a future time, Do not use! -->
+<!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
+<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
+<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
+ khelpcenter -->
+<!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
+ kicker -->
+<!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
+<!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
-<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY ua     "<abbrev>u.&nbsp;a.</abbrev>" >
-<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
-<!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
