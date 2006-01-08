@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "ktempfiletest.h"
 #include "ktempfile.h"
@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-QTTEST_KDEMAIN( KTempFileTest, NoGUI )
+QTEST_KDEMAIN( KTempFileTest, NoGUI )
 
 void KTempFileTest::testBasic()
 {

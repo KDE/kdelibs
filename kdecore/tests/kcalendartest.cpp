@@ -1,4 +1,4 @@
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "kcalendarsystemfactory.h"
 #include "kcalendarsystem.h"
@@ -8,7 +8,7 @@
 #include "kcalendartest.moc"
 #include "klocale.h"
 
-QTTEST_KDEMAIN(KCalendarTest, NoGUI)
+QTEST_KDEMAIN(KCalendarTest, NoGUI)
 
 void KCalendarTest::listTypes()
 {

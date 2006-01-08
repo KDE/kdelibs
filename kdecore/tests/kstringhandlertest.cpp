@@ -1,8 +1,8 @@
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 #include "kstringhandlertest.h"
 #include "kstringhandlertest.moc"
 
-QTTEST_KDEMAIN(KStringHandlerTest, NoGUI)
+QTEST_KDEMAIN(KStringHandlerTest, NoGUI)
 
 #include "kstringhandler.h"
 #include <QString>

@@ -395,4 +395,4 @@ Test_KCompletion::cycleMatches_Weighted()
 	QCOMPARE(completion.previousMatch(), carp);
 }
 
-QTTEST_KDEMAIN(Test_KCompletion, 0)
+QTEST_KDEMAIN(Test_KCompletion, 0)

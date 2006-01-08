@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "jobtest.h"
 
@@ -44,7 +44,7 @@
 #include <time.h>
 #include <klocale.h>
 
-QTTEST_KDEMAIN( JobTest, GUI )
+QTEST_KDEMAIN( JobTest, GUI )
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 

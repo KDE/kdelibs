@@ -16,11 +16,11 @@
 #include <qfile.h>
 #include <qstring.h>
 #include <kdebug.h>
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
 
-QTTEST_KDEMAIN( KConfigCompiler_Test, NoGUI )
+QTEST_KDEMAIN( KConfigCompiler_Test, NoGUI )
 
 typedef const char * CompilerTestSet[];
 

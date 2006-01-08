@@ -17,7 +17,7 @@
 */
 
 #include <cstdlib>
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
@@ -25,7 +25,7 @@
 #include "kdatetimetest.moc"
 
 
-QTTEST_KDEMAIN(KDateTimeTest, NoGUI)
+QTEST_KDEMAIN(KDateTimeTest, NoGUI)
 
 
 //////////////////////////////////////////////////////

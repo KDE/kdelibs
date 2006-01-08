@@ -26,9 +26,9 @@
 
 #include <QString>
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 
-QTTEST_KDEMAIN( KSharedPtrTest, NoGUI )
+QTEST_KDEMAIN( KSharedPtrTest, NoGUI )
 
 class SharedString : public KShared
 {

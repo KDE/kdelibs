@@ -16,11 +16,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include "kbookmarktest.h"
 #include "kbookmarktest.moc"
 
-QTTEST_KDEMAIN( KBookmarkTest, false )
+QTEST_KDEMAIN( KBookmarkTest, false )
 
 #include <kbookmark.h>
 #include <kdebug.h>

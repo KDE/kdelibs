@@ -23,7 +23,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include <kprotocolinfo.h>
 
 static void checkIcon( const KURL& url, const QString& expectedIcon )
@@ -32,7 +32,7 @@ static void checkIcon( const KURL& url, const QString& expectedIcon )
     QCOMPARE( icon, expectedIcon );
 }
 
-QTTEST_KDEMAIN( KMimeTypeTest, NoGUI )
+QTEST_KDEMAIN( KMimeTypeTest, NoGUI )
 
 void KMimeTypeTest::testByName()
 {

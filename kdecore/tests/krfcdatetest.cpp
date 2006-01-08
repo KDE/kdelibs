@@ -1,8 +1,8 @@
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 #include "krfcdatetest.h"
 #include "krfcdatetest.moc"
 
-QTTEST_KDEMAIN(KRFCDateTest, NoGUI)
+QTEST_KDEMAIN(KRFCDateTest, NoGUI)
 
 #include "krfcdate.h"
 

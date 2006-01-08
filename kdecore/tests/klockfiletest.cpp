@@ -81,4 +81,4 @@ Test_KLockFile::testUnlock()
 	QVERIFY(!lockFile->isLocked());
 }
 
-QTTEST_KDEMAIN(Test_KLockFile, 0)
+QTEST_KDEMAIN(Test_KLockFile, 0)

@@ -18,11 +18,11 @@
 */
 // -*- mode: c++; c-basic-offset: 2 -*-
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 #include "kurltest4.h"
 #include "kurltest4.moc"
 
-QTTEST_KDEMAIN( KURLTest, NoGUI )
+QTEST_KDEMAIN( KURLTest, NoGUI )
 
 #include <config.h>
 #include <kcmdlineargs.h> // before the #define

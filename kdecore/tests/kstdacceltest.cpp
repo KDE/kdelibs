@@ -16,11 +16,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include "kstdacceltest.h"
 #include "kstdacceltest.moc"
 
-QTTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
+QTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
 
 #include <kdebug.h>
 #include <kstdaccel.h>

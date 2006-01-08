@@ -1,5 +1,5 @@
-#ifndef QTTEST_KDE_H
-#define QTTEST_KDE_H
+#ifndef QTEST_KDE_H
+#define QTEST_KDE_H
 
 #include <QtTest/QtTest>
 #include <stdlib.h>
@@ -17,7 +17,7 @@ Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
  *
  * This macro should be used for classes that need a KInstance or KApplication
  * object. So instead of writing QTEST_MAIN( TestClass ) you write
- * QTTEST_KDEMAIN( TestClass, GUI ).
+ * QTEST_KDEMAIN( TestClass, GUI ).
  *
  * \param TestObject The class you use for testing.
  * \param flags one of KDEMainFlag
@@ -25,7 +25,7 @@ Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
  * \see KDEMainFlag
  * \see QTestLib
  */
-#define QTTEST_KDEMAIN(TestObject, flags) \
+#define QTEST_KDEMAIN(TestObject, flags) \
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
@@ -39,5 +39,5 @@ int main(int argc, char *argv[]) \
     return QTest::qExec( &tc, argc, argv ); \
 }
 
-#endif /* QTTEST_KDE_H */
+#endif /* QTEST_KDE_H */
 

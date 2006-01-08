@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "kfilterdev.h"
 #include "kfilterbase.h"
@@ -29,7 +29,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-QTTEST_KDEMAIN(KFilterTest, NoGUI)
+QTEST_KDEMAIN(KFilterTest, NoGUI)
 
 void KFilterTest::initTestCase()
 {

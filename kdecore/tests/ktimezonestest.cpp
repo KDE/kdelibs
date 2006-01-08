@@ -17,14 +17,14 @@
 */
 
 #include <stdio.h>
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include <QDateTime>
 #include "ktimezones.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
 
 
-QTTEST_KDEMAIN(KTimezonesTest, NoGUI)
+QTEST_KDEMAIN(KTimezonesTest, NoGUI)
 
 
 ///////////////////

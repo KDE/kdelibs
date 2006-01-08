@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include <qdir.h>
 
@@ -63,4 +63,4 @@ void KTempDirTest::testCreateSubDir()
 	QVERIFY(d->mkdir(QString("456")));
 }
 
-QTTEST_KDEMAIN(KTempDirTest, 0)
+QTEST_KDEMAIN(KTempDirTest, 0)

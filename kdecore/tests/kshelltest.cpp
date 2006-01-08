@@ -17,7 +17,7 @@
 */
 
 #include "kshelltest.h"
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "kshell.h"
 #include "kuser.h"
@@ -113,4 +113,4 @@ KShellTest::abortOnMeta()
 	QVERIFY(err1 == err2);
 }
 
-QTTEST_KDEMAIN(KShellTest, 0)
+QTEST_KDEMAIN(KShellTest, 0)

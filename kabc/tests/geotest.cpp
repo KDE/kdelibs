@@ -1,9 +1,9 @@
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "geotest.h"
 #include "geo.h"
 
-QTTEST_KDEMAIN(GeoTest, NoGUI)
+QTEST_KDEMAIN(GeoTest, NoGUI)
 
 void GeoTest::emptyConstructor()
 {

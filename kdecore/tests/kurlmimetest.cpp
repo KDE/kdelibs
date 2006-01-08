@@ -16,14 +16,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include <qmimedata.h>
 #include <kurl.h>
 #include <kdebug.h>
 
 #include "kurlmimetest.moc"
 
-QTTEST_KDEMAIN( KURLMimeTest, NoGUI )
+QTEST_KDEMAIN( KURLMimeTest, NoGUI )
 
 void KURLMimeTest::testURLList()
 {

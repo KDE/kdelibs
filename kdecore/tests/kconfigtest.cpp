@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 #include "kconfigtest.h"
 #include "kconfigtest.moc"
 
@@ -26,7 +26,7 @@
 
 #define CRASH_ON_VARIANTLIST2 0
 
-QTTEST_KDEMAIN( KConfigTest, NoGUI )
+QTEST_KDEMAIN( KConfigTest, NoGUI )
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false

@@ -17,7 +17,7 @@
 */
 
 #include "kmacroexpandertest.h"
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 #include "kmacroexpander.h"
 #include "kmacroexpandertest.moc"
 #include <qhash.h>
@@ -180,4 +180,4 @@ KMacroExpanderTest::expandMacrosSubClass()
 	QCOMPARE(s, QLatin1String("subst expanded but not %not equ %"));
 }
 
-QTTEST_KDEMAIN(KMacroExpanderTest, NoGUI)
+QTEST_KDEMAIN(KMacroExpanderTest, NoGUI)

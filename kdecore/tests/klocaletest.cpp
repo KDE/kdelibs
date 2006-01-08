@@ -17,7 +17,7 @@
 */
 
 #include "klocaletest.h"
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 
 #include "klocale.h"
 #include "kglobal.h"
@@ -194,4 +194,4 @@ KLocaleTest::bug95511()
 	QVERIFY(ok);
 }
 
-QTTEST_KDEMAIN(KLocaleTest, NoGUI)
+QTEST_KDEMAIN(KLocaleTest, NoGUI)
