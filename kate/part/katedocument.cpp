@@ -2733,6 +2733,7 @@ bool KateDocument::closeURL()
     // Explicitly call the internal version because we don't want this to look like
     // an external request (and thus have the view not QWidget::scroll()ed.
     view->setCursorPositionInternal(0, 0, 1, false);
+    view->clearSelection();
     view->updateView(true);
   }
 
