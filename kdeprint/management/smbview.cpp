@@ -155,7 +155,7 @@ void SmbView::init()
 				m_wins_server = m_wins_server.stripWhiteSpace ();
 				m_wins_server = m_wins_server.section(' ', 0, 0);
 				// strip any server tag (see man smb.conf(5))
-				if (m_wins_server.section(':', 1, 1) != NULL)
+				if (!m_wins_server.section(':', 1, 1).isNull())
 				{
 					m_wins_server = m_wins_server.section(':', 1, 1);
 				}
