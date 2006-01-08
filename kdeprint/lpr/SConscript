@@ -1,0 +1,55 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kdeprint_lpr_sources = """
+apshandler.cpp editentrydialog.cpp klprfactory.cpp klprprinterimpl.cpp
+kmconfiglpr.cpp kmlprjobmanager.cpp kmlprmanager.cpp kmlpruimanager.cpp
+lpchelper.cpp lpqhelper.cpp lprhandler.cpp lprngtoolhandler.cpp
+lprsettings.cpp matichandler.cpp matichelper.cpp printcapentry.cpp
+printcapreader.cpp
+"""
+
+make_driver_db_lpr_sources = """
+make_driver_db_lpr.c
+"""
+
+kdeprintlpr_headers = """
+lprhandler.h lprsettings.h printcapentry.h
+"""
+
+noinst_headers = """
+apshandler.h editentrydialog.h klprprinterimpl.h kmconfiglpr.h
+kmlprjobmanager.h kmlprmanager.h kmlpruimanager.h lpchelper.h
+lpqhelper.h lprngtoolhandler.h matichandler.h matichelper.h
+printcapreader.h
+"""
+
+includes = '#/kdeprint #/kdeprint/management '
+
+obj = env.kdeobj('module')
+obj.target = 'kdeprint_lpr'
+obj.source = kdeprint_lpr_sources
+obj.includes = includes
+obj.libpaths = '##/kdeprint/management ##/kdecore '
+obj.libs = 'kdeprint_management kdefakes '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'make_driver_db_lpr'
+obj.source = make_driver_db_lpr_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kdeprint', 'apsdriver1 apsdriver2 lprngtooldriver1')
+
+env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'lpr.print')
+
+
+"""Unhandled Defines 
+make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la ../libdriverparse.a $(LIBDL)
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
+kdeprintlprdir = $(includedir)/kdeprint/lpr
+"""
