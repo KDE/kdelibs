@@ -41,9 +41,10 @@ class KSpellDlg;
  *
  * @author David Sweet <dsweet@kde.org>
  * @see KSpellConfig, KSyntaxHighlighter
+ *
+ * @deprecated, use kspell2 instead
  */
-
-class KDEUI_EXPORT KSpell : public QObject
+class KDEUI_EXPORT_DEPRECATED KSpell : public QObject
 {
   Q_OBJECT
 

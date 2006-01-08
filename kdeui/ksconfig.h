@@ -82,9 +82,9 @@ enum KSpellClients {
  *
  * @author David Sweet <dsweet@kde.org>
  * @see KSpell
+ * @deprecated use kspell2 instead
  */
-
-class KDEUI_EXPORT KSpellConfig : public QWidget
+class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
 {
   Q_OBJECT
 

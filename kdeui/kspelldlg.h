@@ -43,7 +43,10 @@ enum KS_RESULT {
   KS_CONFIG=     9
 };
 
-class KDEUI_EXPORT KSpellDlg : public KDialogBase
+/**
+ * @deprecated, use kspell2 instead
+ */
+class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialogBase
 {
   Q_OBJECT
 
