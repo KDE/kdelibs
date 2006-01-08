@@ -59,7 +59,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
 	kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
-	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h
+	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h
 
 libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
