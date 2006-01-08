@@ -90,7 +90,7 @@ namespace KABC {
         W_ALL = 0x1fff
       };
       
-      Q_DECLARE_FLAGS( WinFlags, WinFlag );
+      Q_DECLARE_FLAGS( WinFlags, WinFlag )
 
       /** Constructs an empty configuration widget.
        * You need to call setFlags() after this.
