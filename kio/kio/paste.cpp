@@ -177,6 +177,9 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KURL& destU
           formats.append( (*it) );
       }
 
+      if ( formats.size() == 0 )
+          return 0;
+
       if ( formats.size() > 1 ) {
           return chooseAndPaste( destUrl, mimeData, formats, dialogText, widget, clipboard );
       }
