@@ -1,0 +1,42 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('kcookiejar')
+
+kio_http_cache_cleaner_sources = """
+http_cache_cleaner.cpp
+"""
+
+kio_http_sources = """
+http.cc
+"""
+
+noinst_headers = """
+http.h
+"""
+
+includes = '#/interfaces #/kdecore/network #/kio/httpfilter GSSAPI_INCS '
+
+obj = env.kdeinitobj()
+obj.target = 'kio_http_cache_cleaner'
+obj.source = kio_http_cache_cleaner_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kio_http'
+obj.source = kio_http_sources
+obj.includes = includes
+obj.libpaths = '##/kio/httpfilter ##/kio/misc/kntlm '
+obj.libs = 'httpfilter kntlm '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+env.bksys_insttype('KDESERV', '', 'http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol')
+
+
+"""Unhandled Defines 
+AM_LDFLAGS = $(all_libraries) $(GSSAPI_RPATH)
+"""

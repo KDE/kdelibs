@@ -103,6 +103,7 @@ kresources
 interfaces
 kate
 dnssd
+kioslave
 """
 
 # currently not on windows 

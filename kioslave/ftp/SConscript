@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kio_ftp_sources = """
+ftp.cc
+"""
+
+noinst_headers = """
+ftp.h
+"""
+
+includes = '#/kdecore/network '
+
+obj = env.kdeobj('module')
+obj.target = 'kio_ftp'
+obj.source = kio_ftp_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+env.bksys_insttype('KDESERV', '', 'ftp.protocol')
+
+
+"""Unhandled Defines 
+KDE_CXXFLAGS = -UQT3_SUPPORT
+"""

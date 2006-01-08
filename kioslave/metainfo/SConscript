@@ -1,0 +1,28 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kio_metainfo_sources = """
+metainfo.cpp
+"""
+
+noinst_headers = """
+metainfo.h
+"""
+
+includes = ' '
+
+obj = env.kdeobj('module')
+obj.target = 'kio_metainfo'
+obj.source = kio_metainfo_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+env.bksys_insttype('KDESERV', '', 'metainfo.protocol')
+
+
+"""Unhandled Defines 
+AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+KDE_CXXFLAGS = -UQT3_SUPPORT
+"""
