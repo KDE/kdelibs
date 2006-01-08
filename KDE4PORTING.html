@@ -21,6 +21,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.</p
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
 <LI><A HREF="#kio">Changes in kio</A></LI>
 <LI><A HREF="#kparts">Changes in kparts</A></LI>
+<LI><A HREF="#kded">Changes in kded</A></LI>
 <LI><A HREF="#kspell">Changes in kspell</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 <LI><A HREF="#kfile">Changes in kfile</A></LI>
@@ -754,6 +755,15 @@ in the drop/paste side.</li>
 <li>createInstanceFromFactory is now KLibFactory::create&lt;T&gt;</li>
 <li>createInstanceFromLibrary is now KLibLoader::createInstance&lt;T&gt;</li>
 </ul>
+
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+
+<H3><A NAME="kded">Changes in kded</A></H3>
+
+A library, libkdedmodule, is now provided so that kded modules can link to the
+code they need and link without undefined symbols.
+A number of apparently unused KDEDModule methods have been commented out, contact
+kde-core-devel if you need those after all.
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 

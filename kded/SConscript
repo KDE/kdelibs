@@ -3,6 +3,7 @@
 Import('env')
 
 # TODO: are kdefx kdeui really required ? 
+# DF: can't uselib=KIO bring in all the dependencies automatically, anyway?
 
 if env['WINDOWS']:
 	obj = env.kdeobj('program',env)
@@ -23,42 +24,26 @@ if env['WINDOWS']:
 	obj.libs     += ' kdewin32'
 obj.execute()
 
+obj = env.kdeobj('shlib',env)
+obj.target    = 'kdedmodule'
+# TODO obj.vnum
+obj.source    =  'kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
+obj.uselib    = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+obj.libpaths  = '../kdecore ../kdefx ../kdeui ../dcop'
+obj.libs      = 'kdecore kdefx kdeui DCOP'
 if env['WINDOWS']:
-	obj = env.kdeobj('shlib',env)
-	obj.target    = 'kded'
-	obj.source    =  'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
-	obj.uselib    = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
-	obj.libpaths  = '../kdecore ../kdefx ../kdeui ../dcop'
-	obj.libs      = 'kdecore kdefx kdeui DCOP'
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'
-	obj.execute()
+obj.execute()
 
-	obj = env.kdeobj('program',env)
-	obj.target   = 'kded'
-	obj.source   = 'dummy.cpp'
-	obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+obj = env.kdeinitobj(env)
+obj.target   = 'kded'
+obj.source   = 'kded.cpp'
+obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+if env['WINDOWS']:
 	obj.libpaths = '. ../win'
 	obj.libs     = 'kded kdewin32'
-	obj.execute()
-else: 
-	obj = env.kdeobj('shlib',env)
-	obj.target   = 'kded'
-	obj.source   = 'kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
-	obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
-	obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
-	obj.libs     = 'kdecore kdefx kdeui DCOP'
-	obj.execute()
-
-dummy_cpp = """
-extern "C" int kdemain(int argc, char **argv); 
-int main(int argc,char **argv) 
-{ 
-	return kdemain(argc,argv); 
-}
-"""
-
-env.CreateFile('dummy.cpp', Value(dummy_cpp))
+obj.execute()
 
 obj=env.kdeobj('program', env)
 obj.target='kdontchangehostname'
@@ -82,55 +67,12 @@ if env['WINDOWS']:
 	obj.libs     += ' kdewin32'
 obj.execute()
 
-# TODO: datafiles
+# TODO: include_HEADERS = kdedmodule.h
 
-"""
-INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
+# TODO: kde_servicetypes_DATA = kdedmodule.desktop
 
-lib_LTLIBRARIES =
-kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
+# TODO: xdg_menu_DATA = applications.menu
 
-kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_la_LIBADD = $(LIB_KIO)
-kded_la_SOURCES = kded.cpp kdedmodule.cpp
+#update_DATA = kded.upd
+#updatedir = $(kde_datadir)/kconf_update
 
-kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kbuildsycoca_la_LIBADD = $(LIB_KIO)
-kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
-				kbuildservicefactory.cpp \
-				kbuildservicegroupfactory.cpp \
-				kbuildimageiofactory.cpp \
-				kbuildprotocolinfofactory.cpp \
-				kctimefactory.cpp \
-				vfolder_menu.cpp
-
-bin_PROGRAMS = kdontchangethehostname kde-menu
-
-kdontchangethehostname_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kdontchangethehostname_LDADD = $(LIB_KDECORE) 
-kdontchangethehostname_SOURCES = khostname.cpp
-
-kde_menu_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kde_menu_LDADD = $(LIB_KIO) 
-kde_menu_SOURCES = kde-menu.cpp
-
-METASOURCES = AUTO
-
-include_HEADERS = kdedmodule.h
-
-noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
-		kbuildservicefactory.h kbuildservicegroupfactory.h \
-		kbuildimageiofactory.h kresourcelist.h \
-		kbuildprotocolinfofactory.h
-
-servicetype_DATA = kdedmodule.desktop
-servicetypedir = $(kde_servicetypesdir)
-
-xdg_menu_DATA = applications.menu
-
-update_DATA = kded.upd
-updatedir = $(kde_datadir)/kconf_update
-
-include $(top_srcdir)/admin/Doxyfile.am
-
-"""

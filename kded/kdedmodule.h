@@ -120,10 +120,12 @@ public:
   void removeAll(const DCOPCString &app);
 #endif
 
+#if 0 // does anyone use this?
   /**
    * Returns whether a certain mainwindow has registered itself with KDED
    */
   bool isWindowRegistered(long windowId) const;
+#endif
 
 #if 0
 public slots:

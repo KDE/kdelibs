@@ -1,5 +1,5 @@
 #    This file is part of the KDE libraries
-#    Copyright (C) 1997 David Faure <faure@kde.org>
+#    Copyright (C) 1997-2006 David Faure <faure@kde.org>
 #    Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
 
 #    This library is free software; you can redistribute it and/or
@@ -20,12 +20,16 @@
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 KDE_CXXFLAGS = -UQT3_SUPPORT
 
-lib_LTLIBRARIES =
+lib_LTLIBRARIES = libkdedmodule.la
 kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
 
-kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_la_LIBADD = $(LIB_KIO)
-kded_la_SOURCES = kded.cpp kdedmodule.cpp kdedmodule.stub kdedmodule.skel
+libkdedmodule_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
+libkdedmodule_la_SOURCES = kdedmodule.cpp kdedmodule.stub kdedmodule.skel
+libkdedmodule_la_LIBADD = $(LIB_KIO)
+
+kded_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kded_la_LIBADD = libkdedmodule.la
+kded_la_SOURCES = kded.cpp
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kbuildsycoca_la_LIBADD = $(LIB_KIO)

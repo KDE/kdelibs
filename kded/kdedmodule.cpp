@@ -22,7 +22,6 @@
 
 #include <qtimer.h>
 
-#include "kded.h"
 #include "kdedmodule.h"
 #include "kconfigdata.h"
 
@@ -130,8 +129,12 @@ void KDEDModule::removeAll(const DCOPCString &app)
 }
 #endif
 
+#if 0 // doesn't seem to be used. If this is needed we'll need an interface
+      // for kded that kded implements; or using dcop.
 bool KDEDModule::isWindowRegistered(long windowId) const
 {
    return Kded::self()->isWindowRegistered(windowId);
 }
+#endif
+
 #include "kdedmodule.moc"
