@@ -1,0 +1,15 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+khexeditinclude_headers = """
+byteseditinterface.h charcolumninterface.h clipboardinterface.h valuecolumninterface.h
+zoominterface.h
+"""
+
+includes = '#/kparts '
+
+env.bksys_insttype('KDESERVTYPES', '', 'kbytesedit.desktop')
+
+env.bksys_insttype('KDEINCLUDE','khexedit',khexeditinclude_headers)
+
