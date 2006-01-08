@@ -19,7 +19,7 @@
 #ifndef KLOCKFILETEST_H
 #define KLOCKFILETEST_H
 
-#include "qttest_kde.h"
+#include "qtest_kde.h"
 #include "klockfile.h"
 
 class Test_KLockFile : public QObject
