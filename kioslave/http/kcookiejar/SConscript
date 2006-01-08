@@ -1,0 +1,38 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('tests')
+
+kded_kcookiejar_sources = """
+kcookiejar.cpp kcookieserver.cpp kcookieserver.skel kcookiewin.cpp
+"""
+
+kcookiejar_sources = """
+main.cpp
+"""
+
+includes = ' '
+
+obj = env.kdeinitobj()
+obj.target = 'kcookiejar'
+obj.source = kcookiejar_sources
+obj.includes = includes
+obj.libpaths = "../../../kdecore ../../../kio ../../../kdeui ../../../dcop ../../../kded ../../../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kdefx kded"
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KIO'
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kded_kcookiejar'
+obj.source = kded_kcookiejar_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDED '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'khtml', 'domain_info')
+
+env.bksys_insttype('KDEDATA', 'kconf_update', 'kcookiescfg.upd')
+
+env.bksys_insttype('KDESERV', 'kded', 'kcookiejar.desktop')
+
