@@ -188,6 +188,9 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
           formats.append( fmt );
       }
 
+      if ( formats.size() == 0 )
+          return 0;
+
       if ( formats.size() > 1 ) {
           return chooseAndPaste( dest_url, data, formats, dialogText, widget, clipboard );
       }
