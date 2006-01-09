@@ -108,7 +108,7 @@ void LDAPUrl::removeExtension( const QString &key )
 void LDAPUrl::updateQuery()
 {
   Extension ext;
-  QMap<QString, Extension>::iterator it;
+  QMap<QString, Extension>::const_iterator it;
   QString q = "?";
 
   // set the attributes to query
@@ -135,11 +135,11 @@ void LDAPUrl::updateQuery()
 
   // set the extensions
   q += "?";
-  for ( it = m_extensions.begin(); it != m_extensions.end(); ++it ) {
-    if ( it.data().critical ) q += "!";
+  for ( it = m_extensions.constBegin(); it != m_extensions.constEnd(); ++it ) {
+    if ( it.value().critical ) q += "!";
     q += it.key();
-    if ( !it.data().value.isEmpty() ) 
-      q += "=" + it.data().value;
+    if ( !it.value().value.isEmpty() ) 
+      q += "=" + it.value().value;
     q += ",";
   }
   while  ( q.endsWith("?") || q.endsWith(",") )
@@ -159,7 +159,7 @@ void LDAPUrl::parseQuery()
     q.remove(0,1);
 
   // split into a list
-  QStringList url_items = QStringList::split("?", q, true);
+  QStringList url_items = q.split('?');
 
   m_attributes.clear();
   m_scope = Base;
@@ -170,7 +170,7 @@ void LDAPUrl::parseQuery()
   for ( QStringList::Iterator it = url_items.begin(); it != url_items.end(); ++it, i++ ) {
     switch (i) {
       case 0:
-        m_attributes = QStringList::split(",", (*it), false);
+        m_attributes = (*it).split( ',', QString::SkipEmptyParts );
         break;
       case 1:
         if ( (*it) == "sub" ) m_scope = Sub; else
@@ -180,7 +180,7 @@ void LDAPUrl::parseQuery()
         m_filter = decode_string( *it );
         break;
       case 3:
-        extensions = QStringList::split(",", (*it), false);
+        extensions = (*it).split( ',', QString::SkipEmptyParts );
         break;
     }
   }

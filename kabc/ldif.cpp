@@ -95,7 +95,7 @@ bool LDIF::splitLine( const QByteArray &line, QString &fieldname, QByteArray &va
 
 //  kdDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
 
-  position = line.find( ":" );
+  position = line.indexOf( ":" );
   if ( position == -1 ) {
     // strange: we did not find a fieldname
     fieldname = "";
@@ -307,10 +307,7 @@ LDIF::ParseVal LDIF::nextItem()
 
 void LDIF::endLDIF()
 {
-  QByteArray tmp( 3 );
-  tmp[ 0 ] = '\n';
-  tmp[ 1 ] = '\n';
-  tmp[ 2 ] = '\n';
+  QByteArray tmp( 3, '\n' );
   mLdif = tmp;
   mPos = 0;
 }

@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 /*
     Useful links:
         - http://tldp.org/HOWTO/LDAP-Implementation-HOWTO/schemas.html
@@ -37,6 +36,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qtextstream.h>
+#include <QTextCodec>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -80,7 +80,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
       return false;
 
   QTextStream t( &str, QIODevice::WriteOnly|QIODevice::Append );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t.setCodec( QTextCodec::codecForName("UTF-8") );
 
   const Address homeAddr = addr.address( Address::Home );
   const Address workAddr = addr.address( Address::Work );
@@ -112,7 +112,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "postalcode", workAddr.postalCode() );
   ldif_out( t, "postofficebox", workAddr.postOfficeBox() );
 
-  QStringList streets = QStringList::split( '\n', homeAddr.street() );
+  QStringList streets = homeAddr.street().split('\n');
   if ( streets.count() > 0 )
     ldif_out( t, "homepostaladdress", streets[ 0 ] ); // Netscape 7
   if ( streets.count() > 1 )
@@ -124,7 +124,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "locality", workAddr.locality() );
   ldif_out( t, "streetaddress", workAddr.street() ); // Netscape 4.x
 
-  streets = QStringList::split( '\n', workAddr.street() );
+  streets = workAddr.street().split('\n');
   if ( streets.count() > 0 )
     ldif_out( t, "postaladdress", streets[ 0 ] );
   if ( streets.count() > 1 )
@@ -258,7 +258,7 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
   }
   if ( fieldname == QLatin1String( "mail" ) ||
        fieldname == QLatin1String( "mozillasecondemail" ) ) { // mozilla
-    if ( a.emails().findIndex( value ) == -1 )
+    if ( a.emails().indexOf( value ) == -1 )
       a.insertEmail( value );
     return true;
   }
@@ -446,7 +446,7 @@ addComment:
 
   if ( fieldname == QLatin1String( "member" ) ) {
     // this is a mozilla list member (cn=xxx, mail=yyy)
-    QStringList list( QStringList::split( ',', value ) );
+    QStringList list = value.split(',');
     QString name, email;
 
     QStringList::Iterator it;

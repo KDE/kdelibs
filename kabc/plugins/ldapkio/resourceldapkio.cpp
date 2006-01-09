@@ -231,8 +231,8 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   if ( mod ) tmp += "changetype: modify\n";
   if ( !mod ) {
     tmp += "objectClass: top\n";
-    QStringList obclass = QStringList::split( ',', mAttributes[ "objectClass" ] );
-    for ( QStringList::iterator it = obclass.begin(); it != obclass.end(); it++ ) {
+    QStringList obclass = mAttributes[ "objectClass" ].split(',', QString::SkipEmptyParts);
+    for ( QStringList::const_iterator it = obclass.constBegin(); it != obclass.constEnd(); ++it ) {
       tmp += LDIF::assembleLine( "objectClass", *it ) + "\n";
     }
   }
@@ -383,8 +383,8 @@ void ResourceLDAPKIO::init()
     QMap<QString,QString>::Iterator it;
     QStringList attr;
     for ( it = mAttributes.begin(); it != mAttributes.end(); ++it ) {
-      if ( !it.data().isEmpty() && it.key() != "objectClass" )
-        attr.append( it.data() );
+      if ( !it.value().isEmpty() && it.key() != "objectClass" )
+        attr.append( it.value() );
     }
     d->mLDAPUrl.setAttributes( attr );
   }
@@ -437,9 +437,9 @@ void ResourceLDAPKIO::writeConfig( KConfig *config )
   config->writeEntry( "LdapAutoCache", d->mAutoCache );
 
   QStringList attributes;
-  QMap<QString, QString>::Iterator it;
-  for ( it = mAttributes.begin(); it != mAttributes.end(); ++it )
-    attributes << it.key() << it.data();
+  QMap<QString, QString>::const_iterator it;
+  for ( it = mAttributes.constBegin(); it != mAttributes.constEnd(); ++it )
+    attributes << it.key() << it.value();
 
   config->writeEntry( "LdapAttributes", attributes );
 }
@@ -581,7 +581,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
   if ( data.size() ) {
     d->mLdif.setLDIF( data );
     if ( d->mTmp ) {
-      d->mTmp->file()->writeBlock( data );
+      d->mTmp->file()->write( data );
     }
   } else {
     d->mLdif.endLDIF();
@@ -654,7 +654,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
           d->mAddr.setUid( QString::fromUtf8( value, value.size() ) );
         } else if ( name == mAttributes[ "jpegPhoto" ].toLower() ) {
           KABC::Picture photo;
-          QImage img( value );
+          QImage img = QImage::fromData( value );
           if ( !img.isNull() ) {
             photo.setData( img );
             photo.setType( "image/jpeg" );
@@ -809,10 +809,10 @@ void ResourceLDAPKIO::removeAddressee( const Addressee& addr )
     url.setPath( "/" + dn );
     url.setExtension( "x-dir", "base" );
     url.setScope( LDAPUrl::Base );
-    if ( KIO::NetAccess::del( url, NULL ) ) mAddrMap.erase( addr.uid() );
+    if ( KIO::NetAccess::del( url, NULL ) ) mAddrMap.remove( addr.uid() );
   } else {
     //maybe it's not saved yet
-    mAddrMap.erase( addr.uid() );
+    mAddrMap.remove( addr.uid() );
   }
 }
 
