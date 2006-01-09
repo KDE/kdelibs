@@ -22,7 +22,7 @@
 #ifndef __KSSLD_H__
 #define __KSSLD_H__
 
-#include <kded/kdedmodule.h>
+#include <kdedmodule.h>
 #include <ksslcertificate.h>
 #include <ksslcertificatecache.h>
 #include <qstring.h>

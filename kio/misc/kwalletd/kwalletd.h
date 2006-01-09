@@ -22,7 +22,7 @@
 #ifndef _KWALLETD_H_
 #define _KWALLETD_H_
 
-#include <kded/kdedmodule.h>
+#include <kdedmodule.h>
 #include <q3intdict.h>
 #include <qstring.h>
 #include <qwidget.h>
