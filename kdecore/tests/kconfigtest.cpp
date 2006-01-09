@@ -36,7 +36,7 @@ QTEST_KDEMAIN( KConfigTest, NoGUI )
 #define STRINGENTRY4 " hello "
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
-#define LOCAL8BITENTRY "Hello äöü"
+#define UTF8BITENTRY "Hello äöü"
 #define POINTENTRY QPoint( 4351, 1235 )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
@@ -64,7 +64,9 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
   sc.writeEntry( "boolEntry2", BOOLENTRY2 );
 
-  sc.writeEntry( "Test", QByteArray( LOCAL8BITENTRY ) );
+  QByteArray data( UTF8BITENTRY );
+  QCOMPARE( data.size(), 12 ); // the source file is in utf8
+  sc.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
   sc.writeEntry( "Test2", "");
   sc.writeEntry( "stringEntry1", STRINGENTRY1 );
   sc.writeEntry( "stringEntry2", STRINGENTRY2 );
@@ -146,7 +148,8 @@ void KConfigTest::testSimple()
   QVERIFY( !sc2.hasDefault( "stringEntry1" ) );
 
   sc2.setGroup("Hello");
-  QCOMPARE( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
+  QCOMPARE( sc2.readEntry( "Test", QByteArray() ), QByteArray( UTF8BITENTRY ) );
+  QCOMPARE( sc2.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
   QCOMPARE( sc2.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
   QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
   QCOMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
