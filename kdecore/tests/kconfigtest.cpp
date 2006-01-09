@@ -44,7 +44,9 @@ QTEST_KDEMAIN( KConfigTest, NoGUI )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
-#define COLORENTRY QColor("steelblue")
+#define COLORENTRY1 QColor("steelblue")
+#define COLORENTRY2 QColor(235, 235, 100, 125)
+#define COLORENTRY3 QColor(234, 234, 127)
 #define FONTENTRY QFont("Times", 16, QFont::Normal)
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
@@ -83,7 +85,10 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "pointEntry", POINTENTRY );
   sc.writeEntry( "sizeEntry", SIZEENTRY );
   sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
-  sc.writeEntry( "colorEntry", COLORENTRY );
+  sc.writeEntry( "colorEntry1", COLORENTRY1 );
+  sc.writeEntry( "colorEntry2", COLORENTRY2 );
+  sc.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
+  sc.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
   sc.writeEntry( "fontEntry", FONTENTRY );
 
   sc.setGroup( "ListTypes" );
@@ -200,8 +205,11 @@ void KConfigTest::testComplex()
             DATETIMEENTRY.toString(Qt::ISODate) );
   QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
-  QCOMPARE( QVariant(sc2.readEntry( "colorEntry", QColor(Qt::black) )).toString(),
-            QVariant(COLORENTRY).toString() );
-  QCOMPARE( qvariant_cast<QColor>(sc2.readEntry( "colorEntry" )), COLORENTRY );
+  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", QColor(Qt::black) )).toString(),
+            QVariant(COLORENTRY1).toString() );
+  QCOMPARE( sc2.readEntry( "colorEntry1", QColor()), COLORENTRY1 );
+  QCOMPARE( sc2.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
+  QCOMPARE( sc2.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
+  QCOMPARE( sc2.readEntry( "colorEntry4", QColor()), COLORENTRY2 );
   QCOMPARE( sc2.readEntry( "fontEntry", QFont() ), FONTENTRY );
 }

@@ -378,7 +378,6 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
       case QVariant::ByteArray:
             return readEntryUtf8(pKey);
       case QVariant::Font:
-      case QVariant::Color:
 //      case QVariant::KeySequence:
       case QVariant::Bool:
       case QVariant::Double:
@@ -388,6 +387,23 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
             if ( !tmp.convert(aDefault.type()) )
                 tmp = aDefault;
             return tmp;
+      case QVariant::Color: {
+          QString scolor = QString::fromUtf8(readEntryUtf8(pKey));
+          if (scolor.at(0) == QLatin1Char('#'))
+              tmp = qvariant_cast<QColor>(scolor);
+          else {
+              QList<int> list;
+              foreach(QString str, scolor.split(QLatin1Char(',')))
+                  list.append(str.toInt());
+              QColor color;
+              if (list.count() > 2)
+                  color.setRgb(list.at(0), list.at(1), list.at(2));
+              if (list.count() == 4)
+                  color.setAlpha(list.at(3));
+              tmp = color;
+          }
+          return tmp;
+      }
       case QVariant::Point: {
           QList<int> list = readEntry( pKey, QList<int>() );
 
@@ -1298,11 +1314,22 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         writeEntry( pKey, list, pFlags );
         return;
     }
+    case QVariant::Color:
+        if (prop.value<QColor>().alpha() != 255) {
+            QList<int> list;
+            QColor rColor = prop.value<QColor>();
+            list.insert(0, rColor.red());
+            list.insert(1, rColor.green());
+            list.insert(2, rColor.blue());
+            list.insert(3, rColor.alpha());
+
+            writeEntry( pKey, list, pFlags );
+            return;
+        }
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::Double:
     case QVariant::Bool:
-    case QVariant::Color:
 //    case QVariant::KeySequence:
     case QVariant::Font:
         writeEntry( pKey, prop.toString(), pFlags );
