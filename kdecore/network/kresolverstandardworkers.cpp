@@ -139,7 +139,6 @@ bool KBlacklistWorker::isBlacklisted(const QString& host)
   if (host.isEmpty())
     return false;
 
-  // KDE4: QLatin1String
   QString ascii = QLatin1String(KResolver::domainToAscii(host));
 
   QMutexLocker locker(&blacklistMutex);
