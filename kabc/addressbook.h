@@ -376,8 +376,7 @@ class KABC_EXPORT AddressBook : public QObject
       @return The addressee with the specified unique identifier or an
               empty addressee.
      */
-    Addressee findByUid( const QString &uid ); // KDE4: const
-
+    Addressee findByUid( const QString &uid ) const; 
     /**
       Returns a list of all addressees in the address book.
      */

@@ -566,7 +566,7 @@ AddressBook::Iterator AddressBook::find( const Addressee &a )
   return end();
 }
 
-Addressee AddressBook::findByUid( const QString &uid )
+Addressee AddressBook::findByUid( const QString &uid ) const
 {
   KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
