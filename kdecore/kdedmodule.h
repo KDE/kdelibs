@@ -145,6 +145,7 @@ signals:
    */
   void moduleDeleted(KDEDModule *);
 
+#if 0
   /**
    * Emitted when a mainwindow registers itself.
    */
@@ -154,6 +155,7 @@ signals:
    * Emitted when a mainwindow unregisters itself.
    */
   void windowUnregistered(long windowId);
+#endif
 
 private:
   KDEDModulePrivate *d;

@@ -24,18 +24,6 @@ if env['WINDOWS']:
 	obj.libs     += ' kdewin32'
 obj.execute()
 
-obj = env.kdeobj('shlib',env)
-obj.target    = 'kdedmodule'
-# TODO obj.vnum
-obj.source    =  'kdedmodule.cpp kdedmodule.stub kdedmodule.skel'
-obj.uselib    = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
-obj.libpaths  = '../kdecore ../kdefx ../kdeui ../dcop'
-obj.libs      = 'kdecore kdefx kdeui DCOP'
-if env['WINDOWS']:
-	obj.libpaths += ' ../win'
-	obj.libs     += ' kdewin32'
-obj.execute()
-
 obj = env.kdeinitobj(env)
 obj.target   = 'kded'
 obj.source   = 'kded.cpp'
@@ -66,8 +54,6 @@ if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'
 obj.execute()
-
-# TODO: include_HEADERS = kdedmodule.h
 
 # TODO: kde_servicetypes_DATA = kdedmodule.desktop
 

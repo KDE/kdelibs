@@ -59,7 +59,8 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
 	kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
-	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h
+	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h \
+	kdedmodule.h
 
 libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -110,7 +111,9 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 	kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp \
 	kuser.cpp kconfigskeleton.cpp klockfile.cpp \
 	ktimezones.cpp ktzfiletimezone.cpp kdatetime.cpp kmath.cpp \
-	kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp kbzip2filter.cpp
+	kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp kbzip2filter.cpp \
+	kdedmodule.cpp kdedmodule.skel
+
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(AGG_LIBS) $(LIB_IDN) network/libkdecorenetwork.la $(LIBZ) $(LIBBZ2) $(LIB_QT) $(LIB_QT3SUPPORT) @LTLIBINTL@ # ../kdefx/libkdefx.la

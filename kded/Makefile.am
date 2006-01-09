@@ -20,15 +20,10 @@
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 KDE_CXXFLAGS = -UQT3_SUPPORT
 
-lib_LTLIBRARIES = libkdedmodule.la
 kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
 
-libkdedmodule_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
-libkdedmodule_la_SOURCES = kdedmodule.cpp kdedmodule.stub kdedmodule.skel
-libkdedmodule_la_LIBADD = $(LIB_KIO)
-
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-kded_la_LIBADD = libkdedmodule.la
+kded_la_LIBADD = $(LIB_KIO)
 kded_la_SOURCES = kded.cpp
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
@@ -52,8 +47,6 @@ kde_menu_LDADD = $(LIB_KIO)
 kde_menu_SOURCES = kde-menu.cpp
 
 METASOURCES = AUTO
-
-include_HEADERS = kdedmodule.h kdedmodule_stub.h
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h kbuildservicegroupfactory.h \

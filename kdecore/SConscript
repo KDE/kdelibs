@@ -40,6 +40,7 @@ kuser.cpp kconfigskeleton.cpp klockfile.cpp
 ktimezones.cpp ktzfiletimezone.cpp kmath.cpp
 kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
+kdedmodule.cpp kdedmodule.skel
 network/kresolver.cpp
 network/kresolvermanager.cpp
 network/kresolverworkerbase.cpp
@@ -97,7 +98,7 @@ kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h
 kmanagerselection.h kmountpoint.h kuser.h klockfile.h
 kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h
 kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h
-qttest_kde.h
+kdedmodule.h qttest_kde.h
 """
 
 # not finished (ita)
