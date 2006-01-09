@@ -136,7 +136,7 @@ class KABC_EXPORT DistributionListManager
     /**
       Return distribution list with given name.
     */
-    DistributionList *list( const QString &name, bool caseSensitive = true ); 
+    DistributionList *list( const QString &name, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive ); 
 
     /**
       Insert distribution list. If a list with this name already exists, nothing

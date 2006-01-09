@@ -131,21 +131,23 @@ DistributionListManager::~DistributionListManager()
   d = 0;
 }
 
-DistributionList *DistributionListManager::list( const QString &name, bool caseSensitive )
+DistributionList *DistributionListManager::list( const QString &name, Qt::CaseSensitivity _caseSensitivity )
 {
   QListIterator<DistributionList*> it( mLists );
+  bool caseSensitive = ( _caseSensitivity == Qt::CaseSensitive );
+  QString newName = caseSensitive ?  name : name.lower();
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
 	if ( !caseSensitive )
 	{
-		if ( list->name().lower() == name.lower() )
+		if ( list->name().lower() == newName )
 		{
 				return list;
 		}
 	}
 	else
 	{
-    	if ( list->name() == name ) 
+    	if ( list->name() == newName ) 
 				return list;
 	}
   }
