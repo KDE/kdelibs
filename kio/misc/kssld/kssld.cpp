@@ -60,6 +60,13 @@ extern "C" {
 	KDE_EXPORT void *__kde_do_unload;
 }
 
+template <> inline
+void KConfigBase::writeEntry( const char *pKey,
+                              const KSSLCertificateCache::KSSLCertificatePolicy& aValue,
+                              KConfigBase::WriteConfigFlags flags)
+{
+  writeEntry(pKey, int(aValue), flags);
+}
 
 static void updatePoliciesConfig(KConfig *cfg) {
 	QStringList groups = cfg->groupList();

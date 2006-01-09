@@ -50,6 +50,14 @@
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+template <> inline
+void KConfigBase::writeEntry( const char *pKey,
+                              const KIcon::Group& aValue,
+                              KConfigBase::WriteConfigFlags flags)
+{
+  writeEntry(pKey, int(aValue), flags);
+}
+
 class KURLBarItem::KURLBarItemPrivate
 {
 public:

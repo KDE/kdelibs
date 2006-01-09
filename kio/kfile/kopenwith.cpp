@@ -65,6 +65,13 @@
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
+template <> inline
+void KConfigBase::writeEntry( const char *pKey,
+                              const KGlobalSettings::Completion& aValue,
+                              KConfigBase::WriteConfigFlags flags)
+{
+  writeEntry(pKey, int(aValue), flags);
+}
 
 // ----------------------------------------------------------------------
 
