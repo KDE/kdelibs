@@ -71,7 +71,6 @@ struct KFind::Private
 
     ~Private()
     {
-        qDeleteAll(data);
         data.clear();
         delete emptyMatch;
         emptyMatch = 0;
@@ -86,7 +85,7 @@ struct KFind::Private
           index(_index),
           matchedLength(_matchedLength)
         {
-            Q_ASSERT( index != -1 ); 
+            Q_ASSERT( index != -1 );
         }
 
         int dataId;
@@ -113,7 +112,7 @@ struct KFind::Private
     QString               matchedPattern;
     QHash<QString,Match>  incrementalPath;
     Match *               emptyMatch;
-    QVector<Data*>      data;
+    QList<Data>           data; // used like a vector, not like a linked-list
     int                   currentId;
     bool                  customIds;
 };
@@ -181,16 +180,18 @@ void KFind::setData( int id, const QString& data, int startPos )
     // cache the data for incremental find
     if ( m_options & KFind::FindIncremental )
     {
-        if ( id == -1 )
-            id = d->currentId + 1;
-
-        if ( id >= (int) d->data.size() )
-            d->data.resize( id + 100 );
-
         if ( id != -1 )
             d->customIds = true;
+        else
+            id = d->currentId + 1;
 
-        d->data.insert( id, new Private::Data(id, data, true) );
+        Q_ASSERT( id <= d->data.size() );
+
+        if ( id == d->data.size() )
+            d->data.append( Private::Data(id, data, true) );
+        else
+            d->data.replace( id, Private::Data(id, data, true) );
+        Q_ASSERT( d->data[id].text == data );
     }
 
     if ( !(m_options & KFind::FindIncremental) || needData() )
@@ -200,7 +201,7 @@ void KFind::setData( int id, const QString& data, int startPos )
         if ( startPos != -1 )
             m_index = startPos;
         else if (m_options & KFind::FindBackwards)
-            m_index = m_text.isEmpty() ? 0 : m_text.length() - 1;
+            m_index = m_text.length();
         else
             m_index = 0;
 #ifdef DEBUG_FIND
@@ -261,7 +262,7 @@ KFind::Result KFind::find()
                 bool clean = true;
 
                 // find the first result backwards on the path that isn't dirty
-                while ( d->data[match.dataId]->dirty == true &&
+                while ( d->data[match.dataId].dirty == true &&
                         !m_pattern.isEmpty() )
                 {
                     m_pattern.truncate( m_pattern.length() - 1 );
@@ -279,7 +280,7 @@ KFind::Result KFind::find()
                 }
 
                 // set the current text, index, etc. to the found match
-                m_text = d->data[match.dataId]->text;
+                m_text = d->data[match.dataId].text;
                 m_index = match.index;
                 m_matchedLength = match.matchedLength;
                 d->currentId = match.dataId;
@@ -349,15 +350,16 @@ KFind::Result KFind::find()
             else
                 m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
 
+
             if ( m_options & KFind::FindIncremental )
-                d->data[d->currentId]->dirty = false;
+                d->data[d->currentId].dirty = false;
 
             if ( m_index == -1 && d->currentId < (int) d->data.count() - 1 )
             {
-                m_text = d->data[++d->currentId]->text;
+                m_text = d->data[++d->currentId].text;
 
                 if ( m_options & KFind::FindBackwards )
-                    m_index = m_text.isEmpty() ? 0 : m_text.length() - 1;
+                    m_index = m_text.length();
                 else
                     m_index = 0;
             }
@@ -448,7 +450,7 @@ void KFind::startNewIncrementalSearch()
     }
     else
     {
-        m_text = d->data[match->dataId]->text;
+        m_text = d->data[match->dataId].text;
         m_index = match->index;
         d->currentId = match->dataId;
     }
@@ -470,6 +472,11 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 
         return find(text, regExp, index, options, matchedLength);
     }
+
+    // In Qt4 QString("aaaaaa").lastIndexOf("a",6) returns -1; we need
+    // to start at text.length() - pattern.length() to give a valid index to QString.
+    if (options & KFind::FindBackwards)
+        index = QMIN( text.length() - pattern.length(), index );
 
     Qt::CaseSensitivity caseSensitive = (options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 

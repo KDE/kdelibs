@@ -1,4 +1,4 @@
-SUBDIRS = ksettings .
+SUBDIRS = ksettings . tests
 INCLUDES = -I$(top_srcdir)/interfaces/kregexpeditor $(all_includes)
 
 lib_LTLIBRARIES   = libkutils.la
