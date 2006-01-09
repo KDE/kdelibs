@@ -24,8 +24,6 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
-#define CRASH_ON_VARIANTLIST2 0
-
 QTEST_KDEMAIN( KConfigTest, NoGUI )
 
 #define BOOLENTRY1 true
@@ -87,6 +85,7 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "pointEntry", POINTENTRY );
   sc.writeEntry( "sizeEntry", SIZEENTRY );
   sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
+  sc.writeEntry( "dateEntry", DATETIMEENTRY.date() );
   sc.writeEntry( "colorEntry1", COLORENTRY1 );
   sc.writeEntry( "colorEntry2", COLORENTRY2 );
   sc.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
@@ -99,11 +98,17 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
   sc.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
-#if CRASH_ON_VARIANTLIST2
-  // if debugging this _should_ cause a crash, otherwise a warning
-  sc.writeEntry( "variantListEntry2", VARIANTLISTENTRY2 );
-#endif
   sc.sync();
+
+  KConfig sc1("kdebugrc");
+  sc1.setGroup("0");
+  sc1.writeEntry("AbortFatal", false);
+#ifdef NDEBUG
+  sc1.writeEntry("WarnOutput", 0);
+#else
+  sc1.writeEntry("FatalOutput", 0);
+#endif
+  sc1.sync();
 }
 
 // ### TODO: call this, and test the state of things afterwards
@@ -206,13 +211,93 @@ void KConfigTest::testComplex()
   QCOMPARE( sc2.readEntry( "rectEntry", QRect(1,2,3,4) ), RECTENTRY );
   QCOMPARE( sc2.readEntry( "dateTimeEntry", QDateTime() ).toString(Qt::ISODate),
             DATETIMEENTRY.toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ).toString(Qt::ISODate),
+  QCOMPARE( sc2.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
-  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", QColor(Qt::black) )).toString(),
+  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", Qt::black )).toString(),
             QVariant(COLORENTRY1).toString() );
-  QCOMPARE( sc2.readEntry( "colorEntry1", QColor()), COLORENTRY1 );
+  QCOMPARE( sc2.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
   QCOMPARE( sc2.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
   QCOMPARE( sc2.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
-  QCOMPARE( sc2.readEntry( "colorEntry4", QColor()), COLORENTRY2 );
+  QCOMPARE( sc2.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
   QCOMPARE( sc2.readEntry( "fontEntry", QFont() ), FONTENTRY );
+}
+
+void KConfigTest::testInvalid()
+{
+  KConfig sc( "kconfigtest" );
+
+  // all of these should print a message to the kdebug.dbg file
+  sc.setGroup( "InvalidTypes" );
+  sc.writeEntry( "badList", VARIANTLISTENTRY2 );
+
+  QList<int> list;
+
+  // 1 element list
+  list << 1;
+  sc.writeEntry( "badList", list);
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+
+  // 2 element list
+  list << 2;
+  sc.writeEntry( "badList", list);
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  
+  // 3 element list
+  list << 303;
+  sc.writeEntry( "badList", list);
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
+  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() ); // out of bounds
+  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+
+  // 4 element list
+  list << 4;
+  sc.writeEntry( "badList", list );
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
+  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+
+  // 5 element list
+  list[2] = 3;
+  list << 5;
+  sc.writeEntry( "badList", list);
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+
+  // 6 element list
+  list << 6;
+  sc.writeEntry( "badList", list);
+  sc.sync();
+
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
 }

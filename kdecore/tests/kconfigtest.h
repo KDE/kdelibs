@@ -10,9 +10,9 @@ private slots:
     void testSimple();
     void testLists();
     void testComplex();
+    void testInvalid();
     void initTestCase();
 private:
-//    void writeConfigFile();
     void revertEntries();
 };
 
