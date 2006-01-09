@@ -4,7 +4,7 @@
 
 Import('env')
 
-env.subdirs('kpasswdserver tests') 
+env.subdirs('kpasswdserver tests pics') 
 
 kiocore_sources = """
 kio/authinfo.cpp

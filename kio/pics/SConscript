@@ -1,0 +1,15 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+icon_data = """
+cr16-app-kio_uiserver.png
+"""
+
+for icon in icon_data.split():
+    env.bksys_insttype('KDEDATA', 'kio_uiserver/icons', icon)
+
+"""Unhandled Defines 
+kiouiservericons_ICON = AUTO
+kiouiservericonsdir = $(kde_datadir)/kio_uiserver/icons
+"""
