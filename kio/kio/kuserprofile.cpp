@@ -250,6 +250,7 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
   while (it != s_lstProfiles->end() && it.key() == _servicetype) {
       if ( it.value()->m_strGenericServiceType == _genservicetype )
           return it.value();
+      ++it;
   }
 
   return 0;
