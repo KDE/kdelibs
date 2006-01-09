@@ -917,6 +917,23 @@ public:
   void writeEntry( const char *pKey, const QVariant& rValue,
                    WriteConfigFlags pFlags = Normal );
 
+  /**
+   * @copydoc writeEntry( const QString&, const QString&, WriteConfigFlags )
+   * @since 4.0
+   */
+  template <typename T>
+  void writeEntry( const char* pKey, const T& rValue,
+                   WriteConfigFlags pFlags = Normal );
+
+  /**
+   * @copydoc writeEntry( const QString&, const QString&, WriteConfigFlags )
+   * @since 4.0
+   */
+  template <typename T>
+  void writeEntry( const QString& pKey, const T& rValue,
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry( pKey.toUtf8().constData(), rValue, pFlags ); }
+
 #ifdef KDE3_SUPPORT
   /**
    * writeEntry() overridden to accept a list of strings.
@@ -1571,7 +1588,7 @@ QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) con
 }
 
 template <typename T>
-T KConfigBase::readEntry( const char* pKey, const T& aDefault) const
+inline T KConfigBase::readEntry( const char* pKey, const T& aDefault) const
 {
 #if KCONFIG_QVARIANT_CHECK
   ConversionCheck::to_QVariant<T>();
@@ -1600,6 +1617,15 @@ void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
   writeEntry( pKey, QVariant(vList), pFlags );
 }
 
+template <typename T>
+inline void KConfigBase::writeEntry( const char* pKey, const T& rValue,
+                              WriteConfigFlags pFlags )
+{
+#if KCONFIG_QVARIANT_CHECK
+  ConversionCheck::to_QVariant<T>();
+#endif
+  writeEntry( pKey, QVariant(rValue), pFlags );
+}
 
 #ifdef KDE3_SUPPORT
 /**
