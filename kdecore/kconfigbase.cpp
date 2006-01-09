@@ -360,6 +360,10 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
 {
   if ( !hasKey( pKey ) ) return aDefault;
 
+  QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
+    .arg(pKey).arg(QVariant::typeToName(aDefault.type()));
+  QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
+
   QVariant tmp = aDefault;
 
   // if a type handler is added here you must add a QVConversions definition
@@ -388,42 +392,68 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Color: {
-          QString scolor = QString::fromUtf8(readEntryUtf8(pKey));
-          if (scolor.at(0) == QLatin1Char('#'))
-              tmp = qvariant_cast<QColor>(scolor);
-          else {
-              QList<int> list;
-              foreach(QString str, scolor.split(QLatin1Char(',')))
-                  list.append(str.toInt());
-              QColor color;
-              if (list.count() > 2)
-                  color.setRgb(list.at(0), list.at(1), list.at(2));
-              if (list.count() == 4)
-                  color.setAlpha(list.at(3));
-              tmp = color;
+          QList<int> list = readEntry( pKey, QList<int>() );
+          int count = list.count();
+
+          if (count != 3 && count != 4) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg("3' or '4").arg(count)
+                         << endl;
+              return aDefault;
           }
-          return tmp;
+
+          QColor color(list.at(0), list.at(1), list.at(2));
+          if (count == 4)
+              color.setAlpha(list.at(3));
+
+          if ( !color.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return color;
       }
       case QVariant::Point: {
           QList<int> list = readEntry( pKey, QList<int>() );
 
-          if ( list.count() == 2 )
-              tmp = QPoint(list.at( 0 ), list.at( 1 ));
-          return tmp;
+          if ( list.count() != 2 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          return QPoint(list.at( 0 ), list.at( 1 ));
       }
       case QVariant::Rect: {
           QList<int> list = readEntry( pKey, QList<int>() );
 
-          if ( list.count() == 4)
-              tmp = QRect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
-          return tmp;
+          if ( list.count() != 4 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(4).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+          if ( !rect.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return rect;
       }
       case QVariant::Size: {
           QList<int> list = readEntry( pKey, QList<int>() );
 
-          if ( list.count() == 2 )
-              tmp = QSize(list.at( 0 ), list.at( 1 ));
-          return tmp;
+          if ( list.count() != 2 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          QSize size(list.at( 0 ), list.at( 1 ));
+          if ( !size.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return size;
       }
       case QVariant::LongLong: {
           QByteArray aValue = readEntryUtf8(pKey);
@@ -449,22 +479,35 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
       }
       case QVariant::DateTime: {
           QList<int> list = readEntry( pKey, QList<int>() );
-          if ( list.count() == 6 ) {
-              QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
-              QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
-              return QDateTime( date, time );
+          if ( list.count() != 6 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(6).arg(list.count())
+                         << endl;
+              return aDefault;
           }
-          if ( !aDefault.toDateTime().isValid() )
-              tmp = QDateTime::currentDateTime();
-          return tmp;
+          QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+          QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
+          QDateTime dt( date, time );
+          if ( !dt.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return dt;
       }
       case QVariant::Date: {
           QList<int> list = readEntry( pKey, QList<int>() );
-          if ( list.count() == 6 )
-              return QDate( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
-          if ( !aDefault.toDate().isValid() )
-              tmp = QDate::currentDate();
-          return tmp;
+          if ( list.count() != 3 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(3).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+          if ( !date.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return date;
       }
 
       default:
@@ -1314,18 +1357,19 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         writeEntry( pKey, list, pFlags );
         return;
     }
-    case QVariant::Color:
-        if (prop.value<QColor>().alpha() != 255) {
-            QList<int> list;
-            QColor rColor = prop.value<QColor>();
-            list.insert(0, rColor.red());
-            list.insert(1, rColor.green());
-            list.insert(2, rColor.blue());
+    case QVariant::Color: {
+        QList<int> list;
+        QColor rColor = prop.value<QColor>();
+
+        list.insert(0, rColor.red());
+        list.insert(1, rColor.green());
+        list.insert(2, rColor.blue());
+        if (rColor.alpha() != 255)
             list.insert(3, rColor.alpha());
 
-            writeEntry( pKey, list, pFlags );
-            return;
-        }
+        writeEntry( pKey, list, pFlags );
+        return;
+    }
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::Double:
@@ -1340,7 +1384,17 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::ULongLong:
       writeEntry( pKey, QString::number(prop.toULongLong()), pFlags );
       return;
-    case QVariant::Date:
+    case QVariant::Date: {
+        QList<int> list;
+        QDate date = prop.toDate();
+
+        list.insert( 0, date.year() );
+        list.insert( 1, date.month() );
+        list.insert( 2, date.day() );
+
+        writeEntry( pKey, list, pFlags );
+        return;
+    }
     case QVariant::DateTime: {
         QList<int> list;
         QDateTime rDateTime = prop.toDateTime();
