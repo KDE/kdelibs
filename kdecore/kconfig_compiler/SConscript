@@ -7,11 +7,9 @@ obj.target = 'kconfig_compiler'
 obj.source = 'kconfig_compiler.cpp '
 obj.libpaths = '.. ../../dcop'
 obj.libs   = 'kdecore DCOP'
-obj.uselib = 'QTCORE QTGUI QTXML QT3SUPPORT QT KDE4'
+obj.uselib = 'QTCORE QTGUI QTXML QT3SUPPORT QT KDE4 KDECORE'
 obj.instdir = env['KDEBIN']
 obj.execute()
-
-env.Depends('kconfig_compiler', '../libkdecore.so.6')
 
 """
 SUBDIRS = tests
