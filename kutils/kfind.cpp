@@ -18,6 +18,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#undef QT3_SUPPORT
 
 #include "kfind.h"
 #include "kfinddialog.h"
@@ -144,11 +145,8 @@ void KFind::init( const QString& pattern )
     m_dialogClosed = false;
     m_index = INDEX_NOMATCH;
     m_lastResult = NoMatch;
-    if (m_options & KFind::RegularExpression)
-        m_regExp = new QRegExp(pattern, m_options & KFind::CaseSensitive);
-    else {
-        m_regExp = 0;
-    }
+    m_regExp = 0;
+    setOptions( m_options ); // create m_regExp with the right options
 }
 
 KFind::~KFind()
@@ -468,7 +466,8 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
     // Handle regular expressions in the appropriate way.
     if (options & KFind::RegularExpression)
     {
-        QRegExp regExp(pattern, options & KFind::CaseSensitive);
+        Qt::CaseSensitivity caseSensitive = (options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        QRegExp regExp(pattern, caseSensitive);
 
         return find(text, regExp, index, options, matchedLength);
     }
@@ -476,7 +475,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
     // In Qt4 QString("aaaaaa").lastIndexOf("a",6) returns -1; we need
     // to start at text.length() - pattern.length() to give a valid index to QString.
     if (options & KFind::FindBackwards)
-        index = QMIN( text.length() - pattern.length(), index );
+        index = qMin( text.length() - pattern.length(), index );
 
     Qt::CaseSensitivity caseSensitive = (options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
@@ -555,7 +554,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
 
                 // Is the match delimited correctly?
                 //pattern.match(text, index, matchedLength, false);
-                /*int pos =*/ pattern.search( text.mid(index) );
+                /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
                 if (isWholeWords(text, index, *matchedLength))
                     break;
@@ -574,7 +573,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
 
                 // Is the match delimited correctly?
                 //pattern.match(text, index, matchedLength, false);
-                /*int pos =*/ pattern.search( text.mid(index) );
+                /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
                 if (isWholeWords(text, index, *matchedLength))
                     break;
@@ -598,7 +597,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
         if (index != -1)
         {
             //pattern.match(text, index, matchedLength, false);
-            /*int pos =*/ pattern.search( text.mid(index) );
+            /*int pos =*/ pattern.indexIn( text.mid(index) );
             *matchedLength = pattern.matchedLength();
         }
     }
@@ -689,9 +688,10 @@ void KFind::setOptions( long options )
     m_options = options;
 
     delete m_regExp;
-    if (m_options & KFind::RegularExpression)
-        m_regExp = new QRegExp(m_pattern, m_options & KFind::CaseSensitive);
-    else
+    if (m_options & KFind::RegularExpression) {
+        Qt::CaseSensitivity caseSensitive = (m_options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        m_regExp = new QRegExp(m_pattern, caseSensitive);
+    } else
         m_regExp = 0;
 }
 

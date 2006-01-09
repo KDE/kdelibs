@@ -1,6 +1,9 @@
 SUBDIRS = ksettings . tests
 INCLUDES = -I$(top_srcdir)/interfaces/kregexpeditor $(all_includes)
 
+## TODO
+## KDE_CXXFLAGS = -UQT3_SUPPORT
+
 lib_LTLIBRARIES   = libkutils.la
 libkutils_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
 # Needs KTrader

@@ -5,7 +5,7 @@
   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
 
   This file is part of the KDE project
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License version 2, as published by the Free Software Foundation.
@@ -68,7 +68,7 @@ KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
 }
 
 // this re-implementation exists to ensure that other code always calls
-// our re-implementation, so in case we add data to the d pointer in the future 
+// our re-implementation, so in case we add data to the d pointer in the future
 // we can be sure that we get called when we are copied.
 KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
 {
@@ -113,7 +113,7 @@ bool KCModuleInfo::operator!=( const KCModuleInfo & rhs ) const
 }
 
 KCModuleInfo::~KCModuleInfo()
-{ 
+{
   delete d;
 }
 
@@ -145,7 +145,7 @@ void KCModuleInfo::init(KService::Ptr s)
 }
 
 void
-KCModuleInfo::loadAll() 
+KCModuleInfo::loadAll()
 {
   if( !_service ) /* We have a bogus service. All get functions will return empty/zero values */
     return;
@@ -174,13 +174,13 @@ KCModuleInfo::loadAll()
   setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
 
   tmp = _service->property( "X-KDE-Test-Module", QVariant::Bool );
-  setNeedsTest( tmp.isValid() ? tmp.asBool() : false );
+  setNeedsTest( tmp.isValid() ? tmp.toBool() : false );
 }
 
 QString
 KCModuleInfo::docPath() const
 {
-  if (!_allLoaded) 
+  if (!_allLoaded)
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _doc;
@@ -189,7 +189,7 @@ KCModuleInfo::docPath() const
 QString
 KCModuleInfo::handle() const
 {
-  if (!_allLoaded) 
+  if (!_allLoaded)
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   if (_handle.isEmpty())
@@ -201,7 +201,7 @@ KCModuleInfo::handle() const
 int
 KCModuleInfo::weight() const
 {
-  if (!_allLoaded) 
+  if (!_allLoaded)
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _weight;
@@ -210,7 +210,7 @@ KCModuleInfo::weight() const
 bool
 KCModuleInfo::needsRootPrivileges() const
 {
-  if (!_allLoaded) 
+  if (!_allLoaded)
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _needsRootPrivileges;
@@ -225,7 +225,7 @@ KCModuleInfo::isHiddenByDefault() const
   return _isHiddenByDefault;
 }
 
-bool KCModuleInfo::needsTest() const 
+bool KCModuleInfo::needsTest() const
 {
   return d->testModule;
 }

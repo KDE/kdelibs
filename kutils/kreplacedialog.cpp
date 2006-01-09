@@ -129,7 +129,7 @@ void KReplaceDialog::slotOk()
         QRegExp check(QString("((?:\\\\)+)(\\d+)"));
         int p = 0;
         QString rep = replacement();
-        while ( (p = check.search( rep, p ) ) > -1 )
+        while ( (p = check.indexIn( rep, p ) ) > -1 )
         {
             if ( check.cap(1).length()%2 && check.cap(2).toInt() > caps )
             {

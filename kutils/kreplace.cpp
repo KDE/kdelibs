@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#undef QT3_SUPPORT
+
 #include <qlabel.h>
 #include <kapplication.h>
 #include <kdebug.h>

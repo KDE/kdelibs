@@ -34,7 +34,7 @@
 #include <QX11EmbedWidget>
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
-#endif 
+#endif
 
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -172,7 +172,7 @@ KCModule * KCModuleProxy::realModule() const
 	if( !d->isInitialized )
 	{
   		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").toUtf8();
-		d->topLayout = new QVBoxLayout( that, 0, 0, "topLayout" );
+		d->topLayout = new QVBoxLayout( that, 0, 0 );
 
 		d->isInitialized = true;
 	}
@@ -321,8 +321,7 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame->setFrameStyle( QFrame::Box | QFrame::Raised );
 
 	QPalette pal( Qt::red );
-	pal.setColor( QColorGroup::Background,
-		colorGroup().background() );
+	pal.setColor( QPalette::Background, colorGroup().background() );
 	d->embedFrame->setPalette( pal );
 	d->embedFrame->setLineWidth( 2 );
 	d->embedFrame->setMidLineWidth( 2 );
@@ -332,7 +331,7 @@ void KCModuleProxy::runAsRoot()
 
 	d->embedFrame->show();
 
-	QLabel *lblBusy = new QLabel(i18n("<big>Loading...</big>"), d->embedWidget, "lblBusy" );
+	QLabel *lblBusy = new QLabel(i18n("<big>Loading...</big>"), d->embedWidget );
 	lblBusy->setTextFormat(Qt::RichText);
 	lblBusy->setAlignment(Qt::AlignCenter);
 	lblBusy->setGeometry(0,0, d->kcm->width(), d->kcm->height());
@@ -358,7 +357,7 @@ void KCModuleProxy::runAsRoot()
 
 		/* Remove all kdesu switches */
 		while( cmd.length() > 1 && cmd[ 0 ] == '-' )
-			cmd = cmd.remove( 0, cmd.find( ' ' ) ).trimmed();
+			cmd = cmd.remove( 0, cmd.indexOf( ' ' ) ).trimmed();
 	}
 
 	if (cmd.left(8) == "kcmshell")
