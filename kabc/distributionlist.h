@@ -136,7 +136,7 @@ class KABC_EXPORT DistributionListManager
     /**
       Return distribution list with given name.
     */
-    DistributionList *list( const QString &name ); // KDE4: add bool caseSensitive = true
+    DistributionList *list( const QString &name, bool caseSensitive = true ); 
 
     /**
       Insert distribution list. If a list with this name already exists, nothing

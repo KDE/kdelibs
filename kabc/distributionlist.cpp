@@ -131,12 +131,23 @@ DistributionListManager::~DistributionListManager()
   d = 0;
 }
 
-DistributionList *DistributionListManager::list( const QString &name )
+DistributionList *DistributionListManager::list( const QString &name, bool caseSensitive )
 {
   QListIterator<DistributionList*> it( mLists );
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
-    if ( list->name() == name ) return list;
+	if ( !caseSensitive )
+	{
+		if ( list->name().lower() == name.lower() )
+		{
+				return list;
+		}
+	}
+	else
+	{
+    	if ( list->name() == name ) 
+				return list;
+	}
   }
 
   return 0;
