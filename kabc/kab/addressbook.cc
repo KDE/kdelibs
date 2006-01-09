@@ -1947,7 +1947,7 @@ Section* AddressBook::categoriesSection()
     i18n("Business"),
     i18n("Private"),
     i18n("Dates") };
-  size_t Size=sizeof(Predefines)/sizeof(Predefines[0]);
+  int Size=sizeof(Predefines)/sizeof(Predefines[0]);
   Section* section;
   Section* categories;
   KeyValueMap *keys;
@@ -1971,7 +1971,7 @@ Section* AddressBook::categoriesSection()
       // add the predefined categories:
       categories=new Section;
       keys=categories->getKeys(); 
-      for(size_t count=0; count<Size; ++count)
+      for(int count=0; count<Size; ++count)
 	{
 	  QStringList values; 
 	  values.append(Predefines[count]);
