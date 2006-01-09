@@ -97,8 +97,6 @@ inline void KCMultiDialog::init()
     enableButton(Apply, false);
     connect(this, SIGNAL(currentPageChanged(QWidget *)), this, SLOT(slotCurrentPageChanged(QWidget *)));
     setInitialSize(QSize(640,480));
-    moduleParentComponents.setAutoDelete( true );
-
 }
 
 KCMultiDialog::~KCMultiDialog()
@@ -146,9 +144,9 @@ void KCMultiDialog::apply()
         if( m->changed() )
         {
             m->save();
-            QStringList * names = moduleParentComponents[ m ];
-            kdDebug(710) << k_funcinfo << *names << " saved and added to the list" << endl;
-            for( QStringList::ConstIterator it = names->begin(); it != names->end(); ++it )
+            const QStringList names = moduleParentComponents.value( m );
+            kdDebug(710) << k_funcinfo << names << " saved and added to the list" << endl;
+            for( QStringList::ConstIterator it = names.begin(); it != names.end(); ++it )
                 if( updatedModules.find( *it ) == updatedModules.end() )
                     updatedModules.append( *it );
         }
@@ -296,10 +294,9 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     else
     {
         module = new KCModuleProxy( moduleinfo, withfallback, page );
-        QStringList parentComponents = moduleinfo.service()->property(
-                "X-KDE-ParentComponents" ).toStringList();
-        moduleParentComponents.insert( module,
-                new QStringList( parentComponents ) );
+        const QStringList parentComponents = moduleinfo.service()->property(
+            "X-KDE-ParentComponents" ).toStringList();
+        moduleParentComponents.insert( module, parentComponents );
 
         connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
 

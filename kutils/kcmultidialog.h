@@ -23,12 +23,11 @@
 #ifndef KCMULTIDIALOG_H
 #define KCMULTIDIALOG_H
 
-#include <q3ptrdict.h>
-
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <kservice.h>
 #include <QList>
+#include <qhash.h>
 
 class KCModuleProxy;
 class KCModuleInfo;
@@ -271,7 +270,7 @@ private:
     typedef QMap<KService::Ptr, KCModuleProxy*> OrphanMap;
     OrphanMap m_orphanModules;
 
-    Q3PtrDict<QStringList> moduleParentComponents;
+    QHash<KCModuleProxy *, QStringList> moduleParentComponents;
     QString _docPath;
     int dialogface;
 
