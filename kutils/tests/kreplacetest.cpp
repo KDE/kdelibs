@@ -57,7 +57,7 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
             this, SLOT( slotReplace(const QString &, int, int, int) ) );
 
     // Go to initial position
-    if ( (options & KReplaceDialog::FromCursor) == 0 )
+    if ( (options & KFind::FromCursor) == 0 )
     {
         if ( m_text.isEmpty() )
             return;
@@ -253,56 +253,56 @@ int main( int argc, char **argv )
     testReplaceBlank( 0 );
     testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceBlank( KReplaceDialog::FindBackwards, 0 );
-    testReplaceBlank( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceBlank( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBlank( KFind::FindBackwards, 0 );
+    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceBlankSearch( 0 );
     testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceBlankSearch( KReplaceDialog::FindBackwards, 0 );
-    testReplaceBlankSearch( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceBlankSearch( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBlankSearch( KFind::FindBackwards, 0 );
+    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceSimple( 0 );
     testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceSimple( KReplaceDialog::FindBackwards, 0 );
-    testReplaceSimple( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceSimple( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceSimple( KFind::FindBackwards, 0 );
+    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLonger( 0 );
     testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceLonger( KReplaceDialog::FindBackwards, 0 );
-    testReplaceLonger( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceLonger( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLonger( KFind::FindBackwards, 0 );
+    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLongerInclude( 0 );
     testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceLongerInclude( KReplaceDialog::FindBackwards, 0 );
-    testReplaceLongerInclude( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceLongerInclude( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLongerInclude( KFind::FindBackwards, 0 );
+    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLongerInclude2( 0 );
     testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceLongerInclude2( KReplaceDialog::FindBackwards, 0 );
-    testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLongerInclude2( KFind::FindBackwards, 0 );
+    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceBackRef( 0 );
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceBackRef( KReplaceDialog::FindBackwards, 0 );
-    testReplaceBackRef( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceBackRef( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBackRef( KFind::FindBackwards, 0 );
+    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
     testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
-    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards, 0 );
-    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
-    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards, 0 );
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     QString text = "This file is part of the KDE project.\n"
                    "This library is free software; you can redistribute it and/or\n"

@@ -30,7 +30,7 @@
 #include <qlabel.h>
 #include <qregexp.h>
 #include <qpointer.h>
-#include <q3dict.h>
+#include <qhash.h>
 #include <QTextDocument>
 
 //#define DEBUG_FIND
@@ -63,13 +63,10 @@ struct KFind::Private
       findDialog(0),
       patternChanged(false),
       matchedPattern(""),
-      incrementalPath(29, true),
       emptyMatch(0),
       currentId(0),
       customIds(false)
     {
-        incrementalPath.setAutoDelete(true);
-        //data.setAutoDelete(true);
     }
 
     ~Private()
@@ -82,11 +79,15 @@ struct KFind::Private
 
     struct Match
     {
-        Match(int dataId, int index, int matchedLength) :
-          dataId(dataId),
-          index(index),
-          matchedLength(matchedLength)
-        { }
+        Match() : dataId(-1), index(-1), matchedLength(-1) {}
+        bool isNull() const { return index == -1; }
+        Match(int _dataId, int _index, int _matchedLength) :
+          dataId(_dataId),
+          index(_index),
+          matchedLength(_matchedLength)
+        {
+            Q_ASSERT( index != -1 ); 
+        }
 
         int dataId;
         int index;
@@ -110,7 +111,7 @@ struct KFind::Private
     QPointer<QWidget>  findDialog;
     bool                  patternChanged;
     QString               matchedPattern;
-    Q3Dict<Match>          incrementalPath;
+    QHash<QString,Match>  incrementalPath;
     Match *               emptyMatch;
     QVector<Data*>      data;
     int                   currentId;
@@ -248,20 +249,24 @@ KFind::Result KFind::find()
         // probably look up the match in the incrementalPath
         if ( m_pattern.length() < d->matchedPattern.length() )
         {
-            Private::Match *match = m_pattern.isEmpty() ? d->emptyMatch : d->incrementalPath[m_pattern];
+            Private::Match match;
+            if ( !m_pattern.isEmpty() )
+                match = d->incrementalPath.value( m_pattern );
+            else if ( d->emptyMatch )
+                match = *d->emptyMatch;
             QString previousPattern = d->matchedPattern;
             d->matchedPattern = m_pattern;
-            if ( match != 0 )
+            if ( !match.isNull() )
             {
                 bool clean = true;
 
                 // find the first result backwards on the path that isn't dirty
-                while ( d->data[match->dataId]->dirty == true &&
+                while ( d->data[match.dataId]->dirty == true &&
                         !m_pattern.isEmpty() )
                 {
                     m_pattern.truncate( m_pattern.length() - 1 );
 
-                    match = d->incrementalPath[m_pattern];
+                    match = d->incrementalPath.value( m_pattern );
 
                     clean = false;
                 }
@@ -274,10 +279,10 @@ KFind::Result KFind::find()
                 }
 
                 // set the current text, index, etc. to the found match
-                m_text = d->data[match->dataId]->text;
-                m_index = match->index;
-                m_matchedLength = match->matchedLength;
-                d->currentId = match->dataId;
+                m_text = d->data[match.dataId]->text;
+                m_index = match.index;
+                m_matchedLength = match.matchedLength;
+                d->currentId = match.dataId;
 
                 // if the result is clean we can return it now
                 if ( clean )
@@ -373,7 +378,7 @@ KFind::Result KFind::find()
                         delete d->emptyMatch;
                         d->emptyMatch = new Private::Match( d->currentId, m_index, m_matchedLength );
                     } else
-                        d->incrementalPath.replace(m_pattern, new Private::Match(d->currentId, m_index, m_matchedLength));
+                        d->incrementalPath.insert(m_pattern, Private::Match(d->currentId, m_index, m_matchedLength));
 
                     if ( m_pattern.length() < d->matchedPattern.length() )
                     {
