@@ -42,7 +42,7 @@ KSSLSigners::~KSSLSigners() {
 bool KSSLSigners::addCA(KSSLCertificate& cert,
                         bool ssl,
                         bool email,
-                        bool code) {
+                        bool code) const {
 	return addCA(cert.toString(), ssl, email, code);
 }
 
@@ -50,7 +50,7 @@ bool KSSLSigners::addCA(KSSLCertificate& cert,
 bool KSSLSigners::addCA(const QString &cert,
                         bool ssl,
                         bool email,
-                        bool code) {
+                        bool code) const {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -71,7 +71,7 @@ return false;
 }
 
 
-bool KSSLSigners::regenerate() {
+bool KSSLSigners::regenerate() const {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -90,12 +90,12 @@ return false;
 }
 
 
-bool KSSLSigners::useForSSL(KSSLCertificate& cert) {
+bool KSSLSigners::useForSSL(KSSLCertificate& cert) const {
 	return useForSSL(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForSSL(const QString &subject) {
+bool KSSLSigners::useForSSL(const QString &subject) const{
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -115,12 +115,12 @@ return false;
 }
 
 
-bool KSSLSigners::useForEmail(KSSLCertificate& cert) {
+bool KSSLSigners::useForEmail(KSSLCertificate& cert) const{
 	return useForEmail(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForEmail(const QString &subject) {
+bool KSSLSigners::useForEmail(const QString &subject) const{
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -140,12 +140,12 @@ return false;
 }
 
 
-bool KSSLSigners::useForCode(KSSLCertificate& cert) {
+bool KSSLSigners::useForCode(KSSLCertificate& cert) const{
 	return useForCode(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForCode(const QString &subject) {
+bool KSSLSigners::useForCode(const QString &subject) const{
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -165,12 +165,12 @@ return false;
 }
 
 
-bool KSSLSigners::remove(KSSLCertificate& cert) {
+bool KSSLSigners::remove(KSSLCertificate& cert) const {
 	return remove(cert.getSubject());
 }
 
 
-bool KSSLSigners::remove(const QString &subject) {
+bool KSSLSigners::remove(const QString &subject) const{
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -227,7 +227,7 @@ return drc;
 }
 
 
-bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) {
+bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) const {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);

@@ -61,7 +61,7 @@ public:
 	 *  @param code allow it to sign for code signing
 	 *  @return true on success
 	 */
-	bool addCA(KSSLCertificate& cert, bool ssl, bool email, bool code);
+	bool addCA(KSSLCertificate& cert, bool ssl, bool email, bool code) const;
 
 	/**
 	 *  Add a signer to the database.
@@ -72,69 +72,69 @@ public:
 	 *  @param code allow it to sign for code signing
 	 *  @return true on success
 	 */
-	bool addCA(const QString &cert, bool ssl, bool email, bool code); 
+	bool addCA(const QString &cert, bool ssl, bool email, bool code) const; 
 
 	/**
 	 *  Regenerate the signer-root file from the user's settings.
 	 *  @return true on success
 	 */
-	bool regenerate();
+	bool regenerate() const;
 
 	/**
 	 *  Determine if a certificate can be used for SSL certificate signing
 	 *  @param cert the certificate
 	 *  @return true if it can be used for SSL
 	 */
-	bool useForSSL(KSSLCertificate& cert);
+	bool useForSSL(KSSLCertificate& cert) const;
 
 	/**
 	 *  Determine if a certificate can be used for SSL certificate signing
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for SSL
 	 */
-	bool useForSSL( const QString &subject);
+	bool useForSSL( const QString &subject) const;
 
 	/**
 	 *  Determine if a certificate can be used for S/MIME certificate signing
 	 *  @param cert the certificate
 	 *  @return true if it can be used for S/MIME
 	 */
-	bool useForEmail(KSSLCertificate& cert);
+	bool useForEmail(KSSLCertificate& cert) const;
 
 	/**
 	 *  Determine if a certificate can be used for S/MIME certificate signing
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for S/MIME
 	 */
-	bool useForEmail(const QString &subject);
+	bool useForEmail(const QString &subject) const;
 
 	/**
 	 *  Determine if a certificate can be used for code certificate signing
 	 *  @param cert the certificate
 	 *  @return true if it can be used for code
 	 */
-	bool useForCode(KSSLCertificate& cert);
+	bool useForCode(KSSLCertificate& cert) const;
 
 	/**
 	 *  Determine if a certificate can be used for code certificate signing
 	 *  @param subject the certificate subject
 	 *  @return true if it can be used for code
 	 */
-	bool useForCode(const QString &subject);
+	bool useForCode(const QString &subject) const;
 
 	/**
 	 *  Remove a certificate signer from the database
 	 *  @param cert the certificate to remove
 	 *  @return true on success
 	 */
-	bool remove(KSSLCertificate& cert);
+	bool remove(KSSLCertificate& cert) const;
 
 	/**
 	 *  Remove a certificate signer from the database
 	 *  @param subject the subject of the certificate to remove
 	 *  @return true on success
 	 */
-	bool remove(const QString &subject);
+	bool remove(const QString &subject) const;
 
 	/**
 	 *  List the signers in the database.
@@ -159,7 +159,7 @@ public:
 	 *  @param code allow this for code certificate signing
 	 *  @return true on success
 	 */
-	bool setUse(const QString &subject, bool ssl, bool email, bool code);
+	bool setUse(const QString &subject, bool ssl, bool email, bool code) const;
 
 private:
 	class KSSLSignersPrivate;
