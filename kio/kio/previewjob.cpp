@@ -112,6 +112,7 @@ struct KIO::PreviewJobPrivate
     // Root of thumbnail cache
     QString thumbRoot;
     bool ignoreMaximumSize;
+    QTimer startPreviewTimer;
 };
 
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
@@ -140,7 +141,8 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->ignoreMaximumSize = false;
 
     // Return to event loop first, determineNextFile() might delete this;
-    QTimer::singleShot(0, this, SLOT(startPreview()));
+    connect(&d->startPreviewTimer, SIGNAL(timeout()), SLOT(startPreview()) );
+    d->startPreviewTimer.start(0, true);
 }
 
 PreviewJob::~PreviewJob()
@@ -556,6 +558,12 @@ QStringList PreviewJob::supportedMimeTypes()
     for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result += (*it)->property("MimeTypes").toStringList();
     return result;
+}
+
+void PreviewJob::kill( bool quietly )
+{
+    d->startPreviewTimer.stop();
+    Job::kill( quietly );
 }
 
 PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,

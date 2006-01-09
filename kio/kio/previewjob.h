@@ -90,6 +90,11 @@ namespace KIO {
          */
         static QStringList supportedMimeTypes();
 
+        /**
+         * Reimplemented for internal reasons
+         */
+        virtual void kill( bool quietly = true );
+
     signals:
         /**
          * Emitted when a thumbnail picture for @p item has been successfully
