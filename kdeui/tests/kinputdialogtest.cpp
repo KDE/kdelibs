@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
   kdDebug() << "value1: " << svalue << ", ok: " << ok << endl;
 
   QRegExpValidator validator( QRegExp( "[0-9]{3}\\-[0-9]{3}\\-[0-9]{4}" ), 0 );
-  svalue = KInputDialog::getText( "_caption", "_label:", "_value", &ok, 0L, 0L,
+  svalue = KInputDialog::getText( "_caption", "_label:", "_value", &ok, 0L,
     &validator );
   kdDebug() << "value2: " << svalue << ", ok: " << ok << endl;
 

@@ -42,11 +42,11 @@ public:
     setCentralWidget(main);
 
     KSqueezedTextLabel* accel = new KSqueezedTextLabel
-      ("&Really long, long, long and boring text goes here", main, 
-       "kde toolbar widget");
+      ("&Really long, long, long and boring text goes here", main);
+	accel->setObjectName("kde toolbar widget");
     new KSqueezedTextLabel
-      ("Really long, long, long and boring text goes here", main, 
-       "kde toolbar widget");
+      ("Really long, long, long and boring text goes here", main);
+       //"kde toolbar widget");
 
 
     // first constructor
@@ -69,8 +69,8 @@ public:
 
      // third constructor
     QLabel* customLabel =  new KSqueezedTextLabel
-      ("&Really long, long, long and boring text goes here", this, 
-        "kde toolbar widget");
+      ("&Really long, long, long and boring text goes here", this);
+	customLabel->setObjectName("kde toolbar widget");
 
     KToolBarLabelAction* label3 = new KToolBarLabelAction(customLabel, 0, 0, 0,
  							  actionCollection(),
