@@ -176,14 +176,13 @@ void KFind::setData( int id, const QString& data, int startPos )
     // cache the data for incremental find
     if ( m_options & KFindDialog::FindIncremental )
     {
-        if ( id == -1 )
+        if ( id != -1 )
+            d->customIds = true;
+        else
             id = d->currentId + 1;
 
         if ( id >= (int) d->data.size() )
             d->data.resize( id + 100 );
-
-        if ( id != -1 )
-            d->customIds = true;
 
         d->data.insert( id, new Private::Data(id, data, true) );
     }
