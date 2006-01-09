@@ -35,6 +35,10 @@ def generate(env):
 					conf.env['INCLUDES_Z'] = [ 'png.h' ]
 					conf.env['LIB_Z']      = [ 'png' ]
 					have_lib = 1
+				elif conf.CheckLib('libpng'):
+					conf.env['INCLUDES_Z'] = [ 'png.h' ]
+					conf.env['LIB_Z']      = [ 'libpng' ]
+					have_lib = 1
 			env = conf.Finish()
 		else:
 			have_lib = env.pkgConfig_findPackage('PNG', 'libpng', '1.0')
