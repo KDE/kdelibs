@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#undef QT3_SUPPORT
 #include "kreplacedialog.h"
 
 #include <qcheckbox.h>
@@ -88,7 +89,7 @@ QWidget *KReplaceDialog::replaceExtension()
     if (!m_replaceExtension)
     {
       m_replaceExtension = new QWidget(m_replaceGrp);
-      m_replaceLayout->addMultiCellWidget(m_replaceExtension, 3, 3, 0, 1);
+      m_replaceLayout->addWidget(m_replaceExtension, 3, 0, 1, 2);
     }
 
     return m_replaceExtension;
