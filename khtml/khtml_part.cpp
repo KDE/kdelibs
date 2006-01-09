@@ -59,7 +59,6 @@ using namespace DOM;
 #include "ecma/kjs_window.h"
 #include "khtml_settings.h"
 #include "kjserrordlg.h"
-#include <QTextDocument>
 
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
@@ -207,7 +206,6 @@ KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
-    setObjectName( name );
     d = 0;
     KHTMLFactory::registerPart( this );
     setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
@@ -465,7 +463,7 @@ KHTMLPart::~KHTMLPart()
 
   KConfig *config = KGlobal::config();
   config->setGroup( "HTML Settings" );
-  config->writeEntry( "AutomaticDetectionLanguage", d->m_autoDetectLanguage );
+  config->writeEntry( "AutomaticDetectionLanguage", (int)d->m_autoDetectLanguage );
 
   delete d->m_automaticDetection;
   delete d->m_manualDetection;
@@ -1143,9 +1141,6 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
 
   if (!proxy || proxy->paused())
     return QVariant();
-    
-  //Make sure to initialize the interpreter before creating Completion
-  (void)proxy->interpreter();
 
   KJS::Completion comp;
 
@@ -1154,10 +1149,10 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
   }
@@ -1190,8 +1185,6 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy || proxy->paused())
     return QVariant();
-  (void)proxy->interpreter();//Make sure stuff is initialized
-
   ++(d->m_runningScripts);
   KJS::Completion comp;
   const QVariant ret = proxy->evaluate( QString(), 1, script, n, &comp );
@@ -1200,10 +1193,10 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
     }
   }
