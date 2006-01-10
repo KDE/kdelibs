@@ -33,12 +33,12 @@ def generate(env):
 			conf = env.Configure()
 			if conf.CheckHeader('png.h'):
 				if conf.CheckLib('png'):
-					conf.env['INCLUDES_Z'] = [ 'png.h' ]
-					conf.env['LIB_Z']      = [ 'png' ]
+					conf.env['INCLUDES_PNG'] = [ 'png.h' ]
+					conf.env['LIB_PNG']      = [ 'png' ]
 					have_lib = 1
 				elif conf.CheckLib('libpng'):
-					conf.env['INCLUDES_Z'] = [ 'png.h' ]
-					conf.env['LIB_Z']      = [ 'libpng' ]
+					conf.env['INCLUDES_PNG'] = [ 'png.h' ]
+					conf.env['LIB_PNG']      = [ 'libpng' ]
 					have_lib = 1
 			env = conf.Finish()
 		else:
