@@ -496,6 +496,8 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
       }
       case QVariant::Date: {
           QList<int> list = readEntry( pKey, QList<int>() );
+          if ( list.count() == 6 )
+              list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
           if ( list.count() != 3 ) {
               kcbError() << errString.arg(readEntry(pKey))
                          << formatError.arg(3).arg(list.count())

@@ -236,6 +236,7 @@ void KConfigTest::testComplex()
             DATETIMEENTRY.toString(Qt::ISODate) );
   QCOMPARE( sc2.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
+  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ), DATETIMEENTRY.date() );
   QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", Qt::black )).toString(),
             QVariant(COLORENTRY1).toString() );
   QCOMPARE( sc2.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
@@ -322,5 +323,4 @@ void KConfigTest::testInvalid()
   QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
 }
