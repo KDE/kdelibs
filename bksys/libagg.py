@@ -31,7 +31,7 @@ def generate(env):
 		have_lib = 0
 		if env['HAVE_PKGCONFIG'] == 0:
 			conf = env.Configure()
-			if conf.CheckLib('png'):
+			if conf.CheckLib('agg'):
 				conf.env['INCLUDES_AGG'] = [ '' ]
 				conf.env['LIB_AGG']      = [ 'agg' ]
 				have_lib = 1
