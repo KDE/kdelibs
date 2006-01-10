@@ -1,8 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Type=Service
-MimeType=multipart/mixed;multipart/x-mixed-replace
-Name=Embeddable Component for multipart/mixed
-Name[x-test]=xxEmbeddable Component for multipart/mixedxx
-ServiceTypes=KParts/ReadOnlyPart
-X-KDE-Library=libkmultipart
