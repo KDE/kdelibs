@@ -14,7 +14,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
 	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
 	x-python.desktop x-python-bytecode.desktop \
-	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
+	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop vnd.ms-powerpoint.desktop\
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
 	x-tzo.desktop x-lzop.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
