@@ -128,8 +128,8 @@ if env['MAC']:
 	obj.libs += ' resolv z '
 	obj.frameworks += ' Carbon '
 
-if env.has_key("CACHED_LIBBZ2") and env['CACHED_LIBBZ2']:
-	obj.uselib += ' LIBBZ2 '
+if env.has_key("CACHED_BZ2") and env['CACHED_BZ2']:
+	obj.uselib += ' BZ2 '
 	obj.source += ' kbzip2filter.cpp'
 
 if env.has_key("CACHED_AGG") and env['CACHED_AGG']:
