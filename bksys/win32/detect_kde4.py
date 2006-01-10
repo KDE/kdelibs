@@ -76,7 +76,7 @@ def bootstrap(env):
 
 	if env['CC'] == 'gcc':
 		if env['_IN_KDELIBS_']:
-			env['INCLUDES_KDE4'] += ['win\\include','win\\include\\mingw',env['INCLUDES_LAST']]
+			env['INCLUDES_KDE4'] += ['win\\include','win\\include\\mingw'] + env['INCLUDES_LAST']
 			env['LIBPATH_KDE4']  += [env['_BUILDDIR_']+'\\win']
 		else:
 			env['INCLUDES_KDE4'] += [env.join(env['_KDEDIR_'],'include','mingw')] + env['INCLUDES_LAST']
