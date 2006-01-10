@@ -18,6 +18,7 @@ def generate(env):
 		('CCFLAGS_Z',''),
 		('LINKFLAGS_Z',''),
 		('CPPPATH_Z',''),
+		('INCLUDES_Z',''),
 		('LIB_Z',''),
 		('LIBPATH_Z','')
 		)
@@ -28,7 +29,9 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
-		if env['HAVE_PKGCONFIG'] == 0:
+# zlib has no pkgconfig support
+#		if env['HAVE_PKGCONFIG'] == 0:
+		if 1:
 			conf = env.Configure()
 			if conf.CheckHeader('zlib.h'):
 				if conf.CheckLib('z'):

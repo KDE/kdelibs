@@ -18,6 +18,7 @@ def generate(env):
 		('CCFLAGS_JPEG',''),
 		('LINKFLAGS_JPEG',''),
 		('CPPPATH_JPEG',''),
+		('INCLUDES_JPEG',''),
 		('LIB_JPEG',''),
 		('LIBPATH_JPEG',''),
 		)
@@ -28,7 +29,9 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
-		if env['HAVE_PKGCONFIG'] == 0:
+# jpeg has no pkgconfig support
+#		if env['HAVE_PKGCONFIG'] == 0:
+		if 1:
 	 		conf = env.Configure()
 			if conf.CheckHeader(['stdio.h','jpeglib.h']):
 				if conf.CheckLib('jpeg'):

@@ -17,6 +17,7 @@ def generate(env):
 		('CCFLAGS_TIFF',''),
 		('LINKFLAGS_TIFF',''),
 		('CPPPATH_TIFF',''),
+		('INCLUDES_TIFF',''),
 		('LIB_TIFF',''),
 		('LIBPATH_TIFF','')
 		)
@@ -27,7 +28,9 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
-		if env['HAVE_PKGCONFIG'] == 0:
+# tiff has no pkgconfig support
+#		if env['HAVE_PKGCONFIG'] == 0:
+		if 1:
 			conf = env.Configure()
 			if conf.CheckHeader('tiff.h'):
 				if conf.CheckLib('tiff'):

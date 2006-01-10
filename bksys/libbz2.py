@@ -17,6 +17,7 @@ def generate(env):
 		('CCFLAGS_BZ2',''),
 		('LINKFLAGS_BZ2',''),
 		('CPPPATH_BZ2',''),
+		('INCLUDES_BZ2',''),
 		('LIB_BZ2',''),
 		('LIBPATH_BZ2',''),
 		)
@@ -27,7 +28,9 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
-		if env['HAVE_PKGCONFIG'] == 0:
+# bzip2 has no pkgconfig support
+#		if env['HAVE_PKGCONFIG'] == 0:
+		if 1:
 			conf = env.Configure()
 			if conf.CheckHeader('bzlib.h'):
 				if conf.CheckLib('bz2'):

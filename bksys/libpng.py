@@ -18,6 +18,7 @@ def generate(env):
 		('CCFLAGS_PNG',''),
 		('LINKFLAGS_PNG',''),
 		('CPPPATH_PNG',''),
+		('INCLUDES_PNG',''),
 		('LIB_PNG',''),
 		('LIBPATH_PNG',''),
 		)
