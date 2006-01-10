@@ -1220,8 +1220,11 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 #endif
   }
 
-  Client* c = e->m_clients.first();
-  for(;c;c=e->m_clients.next()) {
+  QPtrListIterator<Client> cit( e->m_clients );
+  for ( ; cit.current(); ++cit )
+  {
+    Client* c = cit.current();
+
     if (c->instance==0 || c->count==0) continue;
 
     if (c->watchingStopped) {
