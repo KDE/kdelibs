@@ -465,7 +465,7 @@ KHTMLPart::~KHTMLPart()
 
   KConfig *config = KGlobal::config();
   config->setGroup( "HTML Settings" );
-  config->writeEntry( "AutomaticDetectionLanguage", d->m_autoDetectLanguage );
+  config->writeEntry( "AutomaticDetectionLanguage", bool(d->m_autoDetectLanguage) );
 
   delete d->m_automaticDetection;
   delete d->m_manualDetection;
