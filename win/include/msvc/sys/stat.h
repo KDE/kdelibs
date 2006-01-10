@@ -25,8 +25,6 @@
 /* regular header from msvc includes */
 #include <../include/sys/stat.h>
 
-typedef short nlink_t;
-
 #include <time.h>
 #include <sys/types.h>
 

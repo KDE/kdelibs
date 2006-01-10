@@ -23,6 +23,11 @@
 /* regular header from msvc includes */
 #include <../include/sys/types.h>
 
+typedef unsigned int uid_t;
+typedef unsigned int gid_t;
+
+typedef unsigned int nlink_t;
+
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
 typedef unsigned int size_t;
@@ -37,6 +42,24 @@ typedef size_t ssize_t;
 #ifndef socklen_t
 #define socklen_t int
 #endif 
+
+#ifndef _PID_T_
+#define	_PID_T_
+typedef int	_pid_t;
+
+#ifndef	_NO_OLDNAMES
+typedef int	pid_t;
+#endif
+#endif	/* Not _PID_T_ */
+
+#ifndef _MODE_T_
+#define	_MODE_T_
+typedef unsigned short _mode_t;
+
+#ifndef	_NO_OLDNAMES
+typedef unsigned short mode_t;
+#endif
+#endif	/* Not _MODE_T_ */
 
 //additional:
 #ifndef _ASM_TYPES_H

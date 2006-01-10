@@ -97,9 +97,6 @@ int kde_start
 #define vsnprintf _vsnprintf
 
 
-/* should be in <sys/types.h> */
-typedef int mode_t;
-
 #if defined(_MSC_VER)
 
 # if (_MSC_VER <= 1200)
