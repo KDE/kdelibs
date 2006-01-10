@@ -641,13 +641,13 @@ void KDialogBase::virtual_hook( int id, void* data )
 //  slotOk may call accept,  so we need to call slotOk only if accept() is called because the button Ok has been pressed
 void KDialogBase::accept() 
 { 
-	if(sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotOk()));
+	if(sender() && sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotOk()));
 	else KDialog::accept(); 
 }
 void KDialogBase::slotOk() { KDialog::accept(); }
 void KDialogBase::reject()
 { 
-	if(sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotCancel()));
+	if(sender() && sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotCancel()));
 	else KDialog::reject(); 
 }
 void KDialogBase::slotCancel() { KDialog::reject(); }
