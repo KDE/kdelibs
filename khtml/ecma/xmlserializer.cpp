@@ -37,10 +37,9 @@ using namespace KJS;
 @end
 */
 DEFINE_PROTOTYPE("XMLSerializer",XMLSerializerProto)
+namespace KJS {
 IMPLEMENT_PROTOFUNC(XMLSerializerProtoFunc)
 IMPLEMENT_PROTOTYPE(XMLSerializerProto,XMLSerializerProtoFunc)
-
-namespace KJS {
 
 XMLSerializerConstructorImp::XMLSerializerConstructorImp(ExecState *)
     : ObjectImp()
