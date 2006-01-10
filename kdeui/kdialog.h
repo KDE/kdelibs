@@ -177,6 +177,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       Stretch = 0x80000000, ///< @internal Ignored when used in a constructor.
       NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. 
     };
+    Q_DECLARE_FLAGS(ButtonCodes, ButtonCode);
 
     enum ActionButtonStyle
     {
@@ -217,7 +218,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param user3 User button3 text item.
      */
     KDialog( QWidget *parent=0, const QString &caption = QString() ,
-			 QFlags<ButtonCode> buttonMask= 0, Qt::WFlags flags = 0 ,
+			 ButtonCodes buttonMask= 0, Qt::WFlags flags = 0 ,
 			 const KGuiItem &user1=KGuiItem(),
 			 const KGuiItem &user2=KGuiItem(),
 			 const KGuiItem &user3=KGuiItem() );
@@ -277,7 +278,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 	 * @param user2 User button2 item.
 	 * @param user2 User button3 item.
 	*/
-	void setButtonMask( QFlags<ButtonCode> buttonMask ,
+	void setButtonMask( ButtonCodes buttonMask ,
 						const KGuiItem &user1 = KGuiItem(),
 						const KGuiItem &user2 = KGuiItem(),
 						const KGuiItem &user3 = KGuiItem() );
@@ -779,7 +780,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     Private* const d;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(QFlags<KDialog::ButtonCode>)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
 
 
  /**
