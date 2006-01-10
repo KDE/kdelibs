@@ -75,9 +75,6 @@ def detect(env):
 	elif sys.platform == 'cygwin':
 		env['GENCCFLAGS']   += ['-mno-cygwin','-Iwin/include','-Iwin/include/mingw']
 		env['GENLINKFLAGS'] += ['-mno-cygwin','-L'+env['_BUILDDIR_']+'\\win']
-		# TODO (rh) move to win32 qt4 stuff 
-		qtmingwflags = '-DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_EDITION=QT_EDITION_DESKTOP -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT' + ' -I' + os.environ['QTDIR'] + '/include'
-		env['GENCXXFLAGS']  += qtmingwflags.split()
 
 		# required libraries should be installed under mingw installation root, so add the search pathes 
 		if os.environ.has_key('MINGW'):  
