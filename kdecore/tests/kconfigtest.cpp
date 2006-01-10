@@ -24,7 +24,19 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
-QTEST_KDEMAIN( KConfigTest, NoGUI )
+int main(int argc, char *argv[])
+{
+    setenv("LC_ALL", "C", 1);
+    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-kconfigtest" ), 1);
+
+    KAboutData aboutData( "qttest", "qttest", "version" );
+    KCmdLineArgs::init( argc, argv, &aboutData );
+    KDEMainFlags mainFlags( NoGUI );
+    KApplication::disableAutoDcopRegistration();
+    KApplication app( (mainFlags & GUI) != 0 );
+    KConfigTest tc;
+    return QTest::qExec( &tc, argc, argv );
+}
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
@@ -109,6 +121,17 @@ void KConfigTest::initTestCase()
   sc1.writeEntry("FatalOutput", 0);
 #endif
   sc1.sync();
+}
+
+void KConfigTest::cleanupTestCase()
+{
+  QDir local = QDir::homePath() + "/.kde-kconfigtest/share/config";
+
+  foreach(QString file, local.entryList(QDir::Files))
+    local.remove(file);
+
+  local.cdUp();
+  local.rmpath("config");
 }
 
 // ### TODO: call this, and test the state of things afterwards

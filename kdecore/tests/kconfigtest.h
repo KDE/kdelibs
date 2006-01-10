@@ -12,6 +12,7 @@ private slots:
     void testComplex();
     void testInvalid();
     void initTestCase();
+    void cleanupTestCase();
 private:
     void revertEntries();
 };
