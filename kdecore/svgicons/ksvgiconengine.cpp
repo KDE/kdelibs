@@ -57,12 +57,12 @@ public:
         float oldOffset = -1, newOffset = -1;
         for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
         {
-            QDomElement element = node.toElement();
-            if(element.isNull() || element.tagName() != "stop")
+            QDomElement subElement = node.toElement();
+            if(subElement.isNull() || subElement.tagName() != "stop")
                 continue;
 
             oldOffset = newOffset;
-            QString temp = element.attribute("offset");
+            QString temp = subElement.attribute("offset");
 
             if(temp.contains("%"))
             {
@@ -79,15 +79,15 @@ public:
             QString parseOpacity;
             QString parseColor;
 
-            if(element.hasAttribute("stop-opacity"))
-                parseOpacity = element.attribute("stop-opacity");
+            if(subElement.hasAttribute("stop-opacity"))
+                parseOpacity = subElement.attribute("stop-opacity");
 
-            if(element.hasAttribute("stop-color"))
-                parseColor = element.attribute("stop-color");
+            if(subElement.hasAttribute("stop-color"))
+                parseColor = subElement.attribute("stop-color");
 
             if(parseOpacity.isEmpty() || parseColor.isEmpty())
             {
-                QString style = element.attribute("style");
+                QString style = subElement.attribute("style");
 
                 QStringList substyles = style.split(';');
                 for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
