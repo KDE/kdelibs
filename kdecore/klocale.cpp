@@ -152,7 +152,7 @@ void KLocale::initLanguageList(KConfigBase * config, bool useEnv)
   if ( useEnv )
     list += QFile::decodeName( ::getenv("KDE_LANG") ).split(':');
 
-  list += cg.readListEntry("Language", ':');
+  list += cg.readEntry("Language", QStringList(), ':');
 
   // same order as setlocale use
   if ( useEnv )
@@ -1900,7 +1900,7 @@ QStringList KLocale::languagesTwoAlpha() const
       QString lang = *it;
       QStringList langLst;
       if (config.hasKey( lang ))
-         langLst = config.readListEntry( lang );
+         langLst = config.readEntry( lang, QStringList() );
       else
       {
          int i = lang.indexOf('_');

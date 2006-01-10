@@ -1465,12 +1465,12 @@ static QStringList lookupProfiles(const QString &mapFile)
     mapCfg.setGroup("Users");
     if (mapCfg.hasKey(user.data()))
     {
-        profiles = mapCfg.readListEntry(user.data());
+        profiles = mapCfg.readEntry(user.data(), QStringList());
         return profiles;
     }
 
     mapCfg.setGroup("General");
-    QStringList groups = mapCfg.readListEntry("groups");
+    QStringList groups = mapCfg.readEntry("groups", QStringList());
 
     mapCfg.setGroup("Groups");
 
@@ -1485,7 +1485,7 @@ static QStringList lookupProfiles(const QString &mapFile)
         if (pw->pw_gid == gid)
         {
             // User is in this group --> add profiles
-            profiles += mapCfg.readListEntry(*it);
+            profiles += mapCfg.readEntry(*it, QStringList());
         }
         else
         {
@@ -1494,7 +1494,7 @@ static QStringList lookupProfiles(const QString &mapFile)
                 if (sup_gids[i] == gid)
                 {
                     // User is in this group --> add profiles
-                    profiles += mapCfg.readListEntry(*it);
+                    profiles += mapCfg.readEntry(*it, QStringList());
                     break;
                 }
             }
@@ -1568,7 +1568,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         while(true)
         {
             config->setGroup(group);
-            QStringList list = config->readListEntry("prefixes");
+            QStringList list = config->readEntry("prefixes", QStringList());
             for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it)
             {
                 addPrefix(*it, priority);

@@ -277,7 +277,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   QString oldGroup = group();
   setGroup("$Version");
   QString cfg_id = updateFile+":"+id;
-  QStringList ids = readListEntry("update_info");
+  QStringList ids = readEntry("update_info", QStringList());
   if (!ids.contains(cfg_id))
   {
      QStringList args;

@@ -509,7 +509,7 @@ KConfigSkeleton::ItemColor::ItemColor( const QString &_group, const QString &_ke
 void KConfigSkeleton::ItemColor::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = qvariant_cast<QColor>(config->readEntry( mKey, mDefault ));
+  mReference = config->readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -674,7 +674,7 @@ void KConfigSkeleton::ItemStringList::readConfig( KConfig *config )
   if ( !config->hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readListEntry( mKey );
+    mReference = config->readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -738,7 +738,7 @@ void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
   if ( !config->hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readEntry( mKey , QList<int>() );
+    mReference = config->readEntry( mKey , mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );

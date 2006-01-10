@@ -139,7 +139,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     mName = cfg.readEntry("Name");
     mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readEntry("DisplayDepth", 32);
-    mInherits = cfg.readListEntry("Inherits");
+    mInherits = cfg.readEntry("Inherits", QStringList());
     if ( name != "crystalsvg" )
       for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it )
          if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";

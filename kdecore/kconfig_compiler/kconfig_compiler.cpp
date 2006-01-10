@@ -400,7 +400,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         kdError() << "Parameter must have a type: " << dumpNode(e) << endl;
         return 0;
       }
-      if ((paramType == "Int") || (paramType == "UInt"))
+      if ((paramType == "Int") || (paramType == "UInt") ||
+          (paramType == "Int32") || (paramType == "UInt32"))
       {
          bool ok;
          paramMax = e.attribute("max").toInt(&ok);
@@ -1010,20 +1011,20 @@ int main( int argc, char **argv )
   QString inherits = codegenConfig.readEntry("Inherits");
   QString visibility = codegenConfig.readEntry("Visibility");
   if (!visibility.isEmpty()) visibility+=" ";
-  bool singleton = codegenConfig.readEntry("Singleton", QVariant(false)).toBool();
+  bool singleton = codegenConfig.readEntry("Singleton", false);
   bool staticAccessors = singleton;
-  //bool useDPointer = codegenConfig.readEntry("DPointer", QVariant(false)).toBool();
-  bool customAddons = codegenConfig.readEntry("CustomAdditions", QVariant(false)).toBool();
+  //bool useDPointer = codegenConfig.readEntry("DPointer", false);
+  bool customAddons = codegenConfig.readEntry("CustomAdditions", false);
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
-  QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
-  QStringList mutators = codegenConfig.readListEntry("Mutators");
+  QStringList headerIncludes = codegenConfig.readEntry("IncludeFiles", QStringList());
+  QStringList mutators = codegenConfig.readEntry("Mutators", QStringList());
   bool allMutators = false;
   if ((mutators.count() == 1) && (mutators[0].toLower() == "true"))
      allMutators = true;
-  itemAccessors = codegenConfig.readEntry("ItemAccessors", QVariant(false )).toBool();
-  bool setUserTexts = codegenConfig.readEntry("SetUserTexts", QVariant(false )).toBool();
+  itemAccessors = codegenConfig.readEntry("ItemAccessors", false);
+  bool setUserTexts = codegenConfig.readEntry("SetUserTexts", false);
 
-  globalEnums = codegenConfig.readEntry("GlobalEnums", QVariant(false )).toBool();
+  globalEnums = codegenConfig.readEntry("GlobalEnums", false);
 
   dpointer = (memberVariables == "dpointer");
 

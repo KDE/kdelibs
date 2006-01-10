@@ -269,7 +269,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
              << "libsocks5_sh.so";             // NEC
 
    // Add the custom library paths here
-   QStringList newlibs = config->readListEntry("SOCKS_lib_path");
+   QStringList newlibs = config->readEntry("SOCKS_lib_path", QStringList());
 
    for (QStringList::Iterator it = newlibs.begin();
                               it != newlibs.end();

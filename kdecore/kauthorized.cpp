@@ -310,7 +310,7 @@ static void initUrlActionRestrictions()
   for(int i = 1; i <= count; i++)
   {
     QString key = keyFormat.arg(i);
-    QStringList rule = cg.readListEntry(key);
+    QStringList rule = cg.readEntry(key, QStringList());
     if (rule.count() != 8)
       continue;
     QString action = rule[0];
@@ -320,9 +320,7 @@ static void initUrlActionRestrictions()
     QString urlProt = rule[4];
     QString urlHost = rule[5];
     QString urlPath = rule[6];
-    QString strEnabled = rule[7].toLower();
-
-    bool bEnabled = (strEnabled == "true");
+    bool bEnabled   = (rule[7].toLower() == "true");
 
     if (refPath.startsWith("$HOME"))
        refPath.replace(0, 5, QDir::homePath());

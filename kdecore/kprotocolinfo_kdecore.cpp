@@ -71,7 +71,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   d->canDeleteRecursive = config.readEntry( "deleteRecursive", false );
   d->fileNameUsedForCopying = config.readEntry( "fileNameUsedForCopying", "FromURL" ) == "Name";
 
-  m_listing = config.readListEntry( "listing" );
+  m_listing = config.readEntry( "listing", QStringList() );
   // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
   if ( m_listing.count() == 1 && m_listing.first() == "false" )
     m_listing.clear();
@@ -103,8 +103,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));
 
-  const QStringList extraNames = config.readListEntry( "ExtraNames" );
-  const QStringList extraTypes = config.readListEntry( "ExtraTypes" );
+  const QStringList extraNames = config.readEntry( "ExtraNames", QStringList() );
+  const QStringList extraTypes = config.readEntry( "ExtraTypes", QStringList() );
   QStringList::const_iterator it = extraNames.begin();
   QStringList::const_iterator typeit = extraTypes.begin();
   for( ; it != extraNames.end() && typeit != extraTypes.end(); ++it, ++typeit ) {
@@ -125,7 +125,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   else
      d->uriMode = KURL::Auto;
 
-  d->capabilities = config.readListEntry( "Capabilities" );
+  d->capabilities = config.readEntry( "Capabilities", QStringList() );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
 }
 

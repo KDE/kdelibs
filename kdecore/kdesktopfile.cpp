@@ -208,7 +208,7 @@ QString KDesktopFile::readURL() const
 
 QStringList KDesktopFile::readActions() const
 {
-    return readListEntry("Actions", ';');
+    return readEntry("Actions", QStringList(), ';');
 }
 
 void KDesktopFile::setActionGroup(const QString &group)
@@ -271,7 +271,7 @@ bool KDesktopFile::tryExec() const
         return false;
     }
   }
-  QStringList list = readListEntry("X-KDE-AuthorizeAction");
+  QStringList list = readEntry("X-KDE-AuthorizeAction", QStringList());
   if (kapp && !list.isEmpty())
   {
      for(QStringList::ConstIterator it = list.begin();
@@ -314,7 +314,7 @@ KDesktopFile::resource() const { return backEnd->resource(); }
 QStringList
 KDesktopFile::sortOrder() const
 {
-  return readListEntry("SortOrder");
+  return readEntry("SortOrder", QStringList());
 }
 
 void KDesktopFile::virtual_hook( int id, void* data )
