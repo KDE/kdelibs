@@ -89,7 +89,8 @@ public:
      * Save the entry to the global %KDE config file instead of the
      * application specific config file.
      */
-    NLS = 0x04,
+    Localized = 0x04,
+    NLS = Localized,
     /**<
      * Add the locale tag to the key when writing it.
      */
@@ -103,7 +104,7 @@ public:
      * Save the entry to the application specific config file without
      * a locale tag. This is the default.
      */
-    
+
   };
   Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
 
