@@ -40,7 +40,7 @@
 
 
 KCertExport::KCertExport(QWidget *parent, const char *name) 
-                             : KDialog(parent, name, true) {
+                             : KDialog(parent) {
 QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
 
    setCaption(i18n("X509 Certificate Export"));

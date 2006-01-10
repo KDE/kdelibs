@@ -35,7 +35,7 @@
 #include <kstdguiitem.h>
 
 KDateTimeDlg::KDateTimeDlg(QWidget *parent, const char *name)
-                             : KDialog(parent, name, true) {
+                             : KDialog(parent) {
 QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
 
    setCaption(i18n("Date & Time Selector"));
