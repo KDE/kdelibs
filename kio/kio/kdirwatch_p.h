@@ -50,9 +50,9 @@ public:
     entryMode m_mode;
     bool isDir;
     // instances interested in events
-    Q3PtrList<Client> m_clients;
+    QList<Client *> m_clients;
     // nonexistent entries of this directory
-    Q3PtrList<Entry> m_entries;
+    QList<Entry *> m_entries;
     QString path;
 
     int msecLeft, freq;
@@ -121,7 +121,7 @@ public:
   bool useStat(Entry*);
 
   bool delayRemove;
-  Q3PtrList<Entry> removeList;
+  QList<Entry *> removeList;
 
   bool rescan_all;
   QTimer rescan_timer;
