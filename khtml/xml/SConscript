@@ -1,0 +1,36 @@
+#! /usr/bin/env python
+#generated from khtml/xml/Makefile.am by am2bksys.py
+Import('env')
+
+#libkhtmlxml_sources = """
+#dom2_eventsimpl.cpp dom2_rangeimpl.cpp dom2_traversalimpl.cpp dom2_viewsimpl.cpp
+#dom_docimpl.cpp dom_elementimpl.cpp dom_nodeimpl.cpp dom_stringimpl.cpp
+#dom_textimpl.cpp dom_xmlimpl.cpp xml_tokenizer.cpp
+#"""
+
+noinst_headers = """
+dom2_eventsimpl.h dom2_rangeimpl.h dom2_traversalimpl.h dom2_viewsimpl.h
+dom_docimpl.h dom_elementimpl.h dom_nodeimpl.h dom_stringimpl.h
+dom_textimpl.h dom_xmlimpl.h xml_tokenizer.h
+"""
+
+#includes = '#/kimgio #/kio #/dcop #/khtml #/kwallet/client #/kutils ##/kjs '
+
+#obj = env.kdeobj('convenience')
+#obj.target = 'libkhtmlxml'
+#obj.source = libkhtmlxml_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+#obj.execute()
+
+
+"""Unhandled Defines 
+libkhtmlxml_la_METASOURCES = AUTO
+SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
+"""
+
+"""Unhandled Targets 
+srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
+"""
+

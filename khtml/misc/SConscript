@@ -1,0 +1,29 @@
+#! /usr/bin/env python
+#generated from khtml/misc/Makefile.am by am2bksys.py
+Import('env')
+
+#libkhtmlmisc_sources = """
+#arena.cpp decoder.cpp guess_ja.cpp helper.cpp
+#htmlhashes.cpp loader.cpp stringit.cpp
+#"""
+
+#includes = '#/dcop #/kio #/libltdl #/khtml #/kutils '
+
+#obj = env.kdeobj('convenience',env)
+#obj.target = 'libkhtmlmisc'
+#obj.source = libkhtmlmisc_sources
+#obj.includes = includes
+#obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 JPEG '
+#obj.execute()
+
+
+"""Unhandled Defines 
+SRCDOC_DEST = $(kde_htmldir)/en/kdelibs/khtml
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
+libkhtmlmisc_la_METASOURCES = AUTO
+"""
+
+"""Unhandled Targets 
+srcdoc = ###$(mkinstalldirs) $(SRCDOC_DEST)###kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
+"""
+

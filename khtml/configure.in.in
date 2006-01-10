@@ -1,0 +1,56 @@
+AM_CONDITIONAL(DOJAVA, test "x$kde_use_qt_emb" != "xyes")
+
+AC_DEFUN([KDE_CHECK_LIBTHAI],
+[
+AC_MSG_CHECKING([if libthai should be compiled in])
+ AC_ARG_WITH(libthai,
+    AC_HELP_STRING(
+      [--with-libthai=yes],
+      [add Thai-language support from libthai library [default=no]]
+    ),
+   [ ac_libthai=$withval],
+   [ ac_libthai=no ]
+ )
+
+if test "$ac_libthai" != "no"; then
+  AC_CACHE_VAL(kde_link_libthai,
+  [
+  kde_ldflags_safe="$LDFLAGS"
+  kde_libs_safe="$LIBS"
+
+  LDFLAGS="$LDFLAGS $USER_LDFLAGS"
+  LIBS="-lthai"
+
+  AC_TRY_LINK([
+  #include <thai/thailib.h>
+  #include <thai/thbrk.h>
+  ],
+  [
+  thchar_t c = 'C';
+  int pos[1];
+  size_t n = 12;  
+  (void)th_brk(&c, pos, n);
+  ],
+  kde_link_libthai=yes,
+  kde_link_libthai=no
+  )
+
+  LDFLAGS=$kde_ldflags_safe
+  LIBS=$kde_libs_safe
+  ])
+
+  LIBTHAI=""
+  if test "$kde_link_libthai" = "no"; then
+     AC_MSG_ERROR([Can't find libthai.])
+  else
+     AC_DEFINE(HAVE_LIBTHAI, 1,
+     [Defined if you have libthai and want to have it compiled in])
+      LIBTHAI="-lthai"
+  fi
+  AC_SUBST(LIBTHAI)
+fi
+AC_MSG_RESULT($ac_libthai)
+])
+
+
+KDE_CHECK_LIBTHAI

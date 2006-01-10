@@ -1,0 +1,47 @@
+#! /usr/bin/env python
+#generated from khtml/java/Makefile.am by am2bksys.py
+Import('env')
+
+kjavaappletviewer_sources = """
+kjavaappletviewer.cpp
+"""
+
+kjava_sources = """
+kjavaapplet.cpp kjavaappletcontext.cpp kjavaappletserver.cpp kjavaappletwidget.cpp
+kjavadownloader.cpp kjavaprocess.cpp
+"""
+
+noinst_headers = """
+kjavaapplet.h kjavaappletcontext.h kjavaappletserver.h kjavaappletviewer.h
+kjavaappletwidget.h kjavaprocess.h kqeventutil.h kxeventutil.h
+"""
+
+includes = '#/khtml #/kio/kssl #/kio/kssl '
+
+obj = env.kdeobj('convenience')
+obj.target = 'kjava'
+obj.source = kjava_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kjavaappletviewer'
+obj.source = kjavaappletviewer_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.libpaths = '. ../../kparts ../../kdecore ../../dcop ../../kio ../../kdeui ../../kdefx ../../kdesu '
+obj.libs = 'kjava kparts kdecore DCOP kio kdeui kdefx kdesu '
+obj.execute()
+
+
+"""Unhandled Defines 
+METASOURCES = AUTO
+kjavadatadir = $(kde_datadir)/kjava/
+kjavaiconsdir = $(kde_datadir)/kjava/icons
+SUBDIRS = . tests dummy
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
+kjavaicons_ICON = AUTO
+kde_services_DATA = kjavaappletviewer.desktop
+kjavadata_DATA = kjava.jar kjava.policy pluginsinfo
+"""
