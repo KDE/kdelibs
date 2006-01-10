@@ -1,0 +1,26 @@
+dnl some setgroups() implementations seem to have short* instead of gid_t*
+dnl and use some flags in the fiels that follows the gids
+AC_MSG_CHECKING([for setgroups with short argument])
+AC_CACHE_VAL([kde_cv_shortsetgroups],[
+    AC_TRY_RUN([
+        int main()
+        {
+            short x[4];
+            x[0] = x[1] = 1;
+            if (getgroups(1, x) == 0) if (setgroups(1, x) == -1) exit(1);
+
+            if (getgroups(1, x) == -1) exit(1);
+            if (x[1] != 1) exit(1);
+            x[1] = 2;
+            if (getgroups(1, x) == -1) exit(1);
+            if (x[1] != 2) exit(1);
+            exit(0);
+        }
+    ],[kde_cv_shortsetgroups="yes"],[kde_cv_shortsetgroups="no"])
+])
+AC_MSG_RESULT($kde_cv_shortsetgroups)
+if test "$kde_cv_shortsetgroups" = "yes"; then
+    AC_DEFINE(HAVE_SHORTSETGROUPS,1,[if setgroups() takes short *as second arg])
+fi
+
+AC_CHECK_HEADERS(arpa/nameser8_compat.h sys/param.h)
