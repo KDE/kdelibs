@@ -1,12 +1,12 @@
-THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING CVS
+THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING SUBVERSION
 
 (If you use source tarballs, you can skip "make -f Makefile.cvs" and
-should use "make distclean" instead of "make cvs-clean")
+should use "make distclean" instead of "svn-clean")
 
 What you need
 =============
 
-Make sure you get the following stuff from CVS:
+Make sure you get the following stuff from the repository:
 
 qt-copy (This is qt-3.3.2)
 arts
@@ -55,15 +55,6 @@ You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 See http://www.kde.org/kde2-and-kde3.html for tips about setting up
 KDE 3.0 next to KDE 2.x.
 
-Preparing CVS modules
-=====================
-All KDE modules require an "admin" sub-directory. You can create it by
-making a symbolic link from kde-common/admin, make sure to check out the
-kde-common module.
-Example:
-cd kdelibs
-ln -s ../kde-common/admin
-
 Compiling
 =========
 
@@ -92,19 +83,19 @@ file, "Makefile.in" as well as "Makefile" files. So it can be that after
 some struggle to get QTDIR/KDEDIR setup correctly your setup is actually 
 correct, but old -incorrect- settings are still lying around.
 
-The best thing to do in such a case is to do a "make cvs-clean". This 
-removes all files which aren't stored in CVS. You can then start all over 
+The best thing to do in such a case is to do a "svn-clean" (from kdesdk/scripts).
+This removes all files which aren't stored in the repository. You can then start all over 
 again with "makefile -f Makefile.cvs". Make sure you don't have any important 
 files lying around in your source tree any more, they will be deleted!
 
 New directories:
-When a new directory gets added to CVS it usually only contains a 
+When a new directory gets added to the repository it usually only contains a 
 Makefile.am but not a Makefile. If you try to compile such a directory
 you will get an error like:
 
   Making all in management
   make[3]: Entering directory /home/gregturp/KDE/kdelibs/kdeprint/management'
-  make[3]: *** No rule to make target ll'.  Stop.
+  make[3]: *** No rule to make target all'.  Stop.
   make[3]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint/management'
   make[2]: *** [all-recursive] Error 1
   make[2]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint'
@@ -125,13 +116,13 @@ See http://www.kde.org/compilationfaq.html for common build problems
 and their solution.
 
 If you encounter _LINK_ problems you are probably doing something wrong.
-Do a "make cvs-clean" and start from scratch, usually this solves the problem.
+Do a "svn-clean" and start from scratch, usually this solves the problem.
 
 If you encounter missing include files, especially if the files start with
 a 'q', you probably have not setup your QTDIR correct or have the wrong 
 version of Qt.
 
-If you encounter compile errors after updating from CVS, check whether you 
+If you encounter compile errors after updating from SVN, check whether you 
 need to update kdelibs as well. If the problems persists, wait a few hours,
 usually compile errors are fixed shortly after they have been introduced.
 
