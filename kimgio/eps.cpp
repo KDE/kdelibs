@@ -247,7 +247,7 @@ bool EPSHandler::write(const QImage &image)
     psOut.setOutputToFile( true );
 
     // Extension must be .eps so that Qt generates EPS file
-    KTempFile tmpFile(QString(), ".eps");
+    KTempFile tmpFile(QString::null, ".eps");
     tmpFile.setAutoDelete(true);
     if ( tmpFile.status() != 0)
         return false;
