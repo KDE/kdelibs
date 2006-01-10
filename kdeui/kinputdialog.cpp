@@ -200,9 +200,9 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d->m_listBox->ensureCurrentVisible();
     layout->addWidget( d->m_listBox, 10 );
     connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
-      SLOT( slotOk() ) );
+      SLOT( accept() ) );
     connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
-      SLOT( slotOk() ) );
+      SLOT( accept() ) );
 
     d->m_listBox->setFocus();
   }
@@ -247,9 +247,9 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   else
   {
     connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
-      SLOT( slotOk() ) );
+      SLOT( accept() ) );
     connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
-      SLOT( slotOk() ) );
+      SLOT( accept() ) );
 
     QString text = select.first();
     item = d->m_listBox->findItem( text, Qt::CaseSensitive|Q3ListBox::ExactMatch );
@@ -377,7 +377,7 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     editable, parent );
   if ( !editable)
   {
-      connect( dlg.listBox(),  SIGNAL(doubleClicked ( Q3ListBoxItem *)), &dlg, SLOT( slotOk()));
+      connect( dlg.listBox(),  SIGNAL(doubleClicked ( Q3ListBoxItem *)), &dlg, SLOT( accept()));
   }
   bool _ok = ( dlg.exec() == Accepted );
 
