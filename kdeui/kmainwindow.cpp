@@ -513,10 +513,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( mb )
         mb->clear();
 
-    //is that any usefull these days ? //mikmak => KDE4
-    (void)toolBarList(); // make sure toolbarList is most-up-to-date
-    qDeleteAll( toolbarList );
-    toolbarList.clear();
+    qDeleteAll( toolBarList() ); // delete all toolbars
 
     // don't build a help menu unless the user ask for it
     if (d->showHelpMenu) {
@@ -757,7 +754,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach ( KToolBar*toolbar, toolbarList ) {
+	foreach ( KToolBar*toolbar, toolBarList() ) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -863,7 +860,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach ( KToolBar*toolbar, toolbarList ) {
+	foreach ( KToolBar*toolbar, toolBarList() ) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -890,7 +887,7 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-	foreach ( KToolBar*toolbar, toolbarList ) {
+	foreach ( KToolBar*toolbar, toolBarList() ) {
         toolbar->positionYourself( force );
     }
 
@@ -1130,13 +1127,12 @@ KToolBar *KMainWindow::toolBar( const char * name )
         return new KToolBar(this, Qt::DockTop, false, name, honor_mode ); // non-XMLGUI
 }
 
-QList<KToolBar*> KMainWindow::toolBarList() // TODO const
+QList<KToolBar*> KMainWindow::toolBarList() const
 {
     // When using QMainWindow instead of Q3MainWindow, simply do:
     // return qFindChildren<KToolBar *>(this);
-    // and get rid of the toolbarList member variable
 
-    toolbarList.clear();
+    QList<KToolBar *> toolbarList;
     QList<Q3ToolBar*> lst;
     for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
         lst = toolBars( (Qt::ToolBarDock)i );

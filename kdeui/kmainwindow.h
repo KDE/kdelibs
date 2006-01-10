@@ -408,7 +408,7 @@ public:
     /**
      * @return A list of all toolbars for this window
      */
-    QList<KToolBar*> toolBarList() /*TODO const*/;
+    QList<KToolBar*> toolBarList() const;
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -980,11 +980,10 @@ private:
     KStatusBar *internalStatusBar();
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    QList<KToolBar*> toolbarList;
     /**
      * List of members of KMainWindow class.
      */
-    static QList<KMainWindow*> sMemberList;
+    static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
