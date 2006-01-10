@@ -944,6 +944,7 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
 {
   int minfreq = 3600000;
 
+  QStringList pathList;
   // put all entries where instance is a client in list
   EntryMap::Iterator it = m_mapEntries.begin();
   for( ; it != m_mapEntries.end(); ++it ) {
@@ -956,14 +957,14 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
     }
     if (c) {
       c->count = 1; // forces deletion of instance as client
-      list.append(&(*it));
+      pathList.append((*it).path);
     }
     else if ( (*it).m_mode == StatMode && (*it).freq < minfreq )
       minfreq = (*it).freq;
   }
 
-  for(Entry* e=list.first();e;e=list.next())
-    removeEntry(instance, e->path, 0);
+  foreach(QString path, pathList)
+    removeEntry(instance, path, 0);
 
   if (minfreq > freq) {
     // we can decrease the global polling frequency
