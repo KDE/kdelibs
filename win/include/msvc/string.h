@@ -21,7 +21,6 @@
 #define KDEWIN_STRING_H
 
 #include <kdelibs_export.h>
-#include "config.h" /* use build/config.h for strlcpy(), etc. */
 
 #define strncasecmp strnicmp
 #define strcasecmp stricmp

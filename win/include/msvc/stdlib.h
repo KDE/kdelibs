@@ -23,8 +23,6 @@
 
 #include <kdelibs_export.h>
 
-#include "config.h" /* use build/config.h for setenv()/unsetenv() */
-
 /* regular header from msvc includes */
 # include <../include/stdlib.h>
 
