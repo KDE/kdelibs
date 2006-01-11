@@ -78,7 +78,7 @@ public:
 	 *  Regenerate the signer-root file from the user's settings.
 	 *  @return true on success
 	 */
-	bool regenerate() const;
+	bool regenerate();
 
 	/**
 	 *  Determine if a certificate can be used for SSL certificate signing
@@ -127,14 +127,14 @@ public:
 	 *  @param cert the certificate to remove
 	 *  @return true on success
 	 */
-	bool remove(KSSLCertificate& cert) const;
+	bool remove(KSSLCertificate& cert);
 
 	/**
 	 *  Remove a certificate signer from the database
 	 *  @param subject the subject of the certificate to remove
 	 *  @return true on success
 	 */
-	bool remove(const QString &subject) const;
+	bool remove(const QString &subject);
 
 	/**
 	 *  List the signers in the database.
@@ -159,7 +159,7 @@ public:
 	 *  @param code allow this for code certificate signing
 	 *  @return true on success
 	 */
-	bool setUse(const QString &subject, bool ssl, bool email, bool code) const;
+	bool setUse(const QString &subject, bool ssl, bool email, bool code);
 
 private:
 	class KSSLSignersPrivate;

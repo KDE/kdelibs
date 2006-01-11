@@ -71,7 +71,7 @@ return false;
 }
 
 
-bool KSSLSigners::regenerate() const {
+bool KSSLSigners::regenerate() {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -165,12 +165,12 @@ return false;
 }
 
 
-bool KSSLSigners::remove(KSSLCertificate& cert) const {
+bool KSSLSigners::remove(KSSLCertificate& cert) {
 	return remove(cert.getSubject());
 }
 
 
-bool KSSLSigners::remove(const QString &subject) const{
+bool KSSLSigners::remove(const QString &subject) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
@@ -227,7 +227,7 @@ return drc;
 }
 
 
-bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) const {
+bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) {
      QByteArray data, retval;
      DCOPCString rettype;
      QDataStream arg(&data, QIODevice::WriteOnly);
