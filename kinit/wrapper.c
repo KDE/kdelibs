@@ -62,7 +62,7 @@ static char *getDisplay()
    {
       display = ":0";
    }
-   result = malloc(strlen(display)+1);
+   result = (char*)malloc(strlen(display)+1);
    if (result == NULL)
       return NULL;
 
