@@ -413,7 +413,7 @@ void KDirWatchPrivate::slotActivated()
         if ( e->wd == ev.wd ) {
           e->dirty = true;
 
-          foreach(Entry *sub_entry; e->m_entries) {
+          foreach(Entry *sub_entry, e->m_entries) {
             if (sub_entry->path == e->path + "/" + QFile::decodeName( path )) {
               removeEntry(0,e->path, sub_entry);
               if (!useINotify(sub_entry))
