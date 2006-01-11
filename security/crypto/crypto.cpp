@@ -827,9 +827,9 @@ void KCryptoConfig::load()
   authDelList.clear();
   caDelList.clear();
   config->setGroup("Warnings");
-  mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
-  mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
-  mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", true));
+  mWarnOnEnter->setChecked(config->readEntry("OnEnter", false));
+  mWarnOnLeave->setChecked(config->readEntry("OnLeave", true));
+  mWarnOnUnencrypted->setChecked(config->readEntry("OnUnencrypted", true));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
@@ -842,10 +842,10 @@ void KCryptoConfig::load()
 
   config->setGroup("EGD");
   slotUseEGD();  // set the defaults
-  if (config->readBoolEntry("UseEGD", false)) {
+  if (config->readEntry("UseEGD", false)) {
     mUseEGD->setChecked(true);
     slotUseEGD();
-  } else if (config->readBoolEntry("UseEFile", false)) {
+  } else if (config->readEntry("UseEFile", false)) {
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
@@ -860,7 +860,7 @@ void KCryptoConfig::load()
   config->setGroup("SSLv3");
   CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
-      item->setOn(config->readBoolEntry(item->configName(),
+      item->setOn(config->readEntry(item->configName(),
 					item->bits() >= 56));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
@@ -874,7 +874,7 @@ void KCryptoConfig::load()
     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString()).toLocal8Bit());
     if (cert) {
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
-                        policies->readBoolEntry("Permanent", true),
+                        policies->readEntry("Permanent", true),
                         policies->readNumEntry("Policy", 3),
                         policies->readDateTimeEntry("Expires"), this );
       delete cert;
@@ -921,9 +921,9 @@ void KCryptoConfig::load()
     if ((*i).isEmpty() || *i == "<default>") continue;
     authcfg->setGroup(*i);
     KSSLCertificateHome::KSSLAuthAction aa = KSSLCertificateHome::AuthDont;
-    if (authcfg->readBoolEntry("send", false) == true)
+    if (authcfg->readEntry("send", false) == true)
        aa = KSSLCertificateHome::AuthSend;
-    else if (authcfg->readBoolEntry("prompt", false) == true)
+    else if (authcfg->readEntry("prompt", false) == true)
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
                                        KResolver::domainToAscii(*i),
@@ -946,9 +946,9 @@ void KCryptoConfig::load()
                 new CAItem(caList,
                      (*i),
                      sigcfg.readEntry("x509"),
-                     sigcfg.readBoolEntry("site", false),
-                     sigcfg.readBoolEntry("email", false),
-                     sigcfg.readBoolEntry("code", false),
+                     sigcfg.readEntry("site", false),
+                     sigcfg.readEntry("email", false),
+                     sigcfg.readEntry("code", false),
                      this );
   }
 
@@ -1941,9 +1941,9 @@ void KCryptoConfig::slotCARestore() {
                 new CAItem(caList,
                      (*i),
                      sigcfg.readEntry("x509", QString()),
-                     sigcfg.readBoolEntry("site", false),
-                     sigcfg.readBoolEntry("email", false),
-                     sigcfg.readBoolEntry("code", false),
+                     sigcfg.readEntry("site", false),
+                     sigcfg.readEntry("email", false),
+                     sigcfg.readEntry("code", false),
                      this );
   }
 
