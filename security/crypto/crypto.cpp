@@ -832,12 +832,12 @@ void KCryptoConfig::load()
   mWarnOnUnencrypted->setChecked(config->readEntry("OnUnencrypted", true));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
-  mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
+  mWarnOnMixed->setChecked(config->readEntry("OnMixed", true));
 
   config->setGroup("Validation");
-  mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
-  mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
-  mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
+  mWarnSelfSigned->setChecked(config->readEntry("WarnSelfSigned", true));
+  mWarnExpired->setChecked(config->readEntry("WarnExpired", true));
+  mWarnRevoked->setChecked(config->readEntry("WarnRevoked", true));
 #endif
 
   config->setGroup("EGD");
