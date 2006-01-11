@@ -35,27 +35,97 @@ FakeManager::~FakeManager()
 
 QStringList FakeManager::allDevices()
 {
-    return QStringList();
+    return m_devices.keys();
 }
 
 bool FakeManager::deviceExists( const QString &udi )
 {
-    return false;
+    return m_devices.contains( udi );
 }
 
 KDEHW::Ifaces::Device *FakeManager::createDevice( const QString &udi )
 {
-    return 0L;
+    if ( m_devices.contains( udi ) )
+    {
+        return m_devices[udi];
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 QStringList FakeManager::findDeviceStringMatch( const QString &key, const QString &value )
 {
-    return QStringList();
+    QStringList matches;
+
+    foreach ( QString udi, m_devices.keys() )
+    {
+        FakeDevice *dev = m_devices[udi];
+
+        if ( dev->propertyExists( key )
+          && dev->property( key ) == value )
+        {
+            matches.append( udi );
+        }
+    }
+
+    return matches;
 }
 
 QStringList FakeManager::findDeviceByCapability( const QString &capability )
 {
-    return QStringList();
+    QStringList matches;
+
+    foreach ( QString udi, m_devices.keys() )
+    {
+        FakeDevice *dev = m_devices[udi];
+
+        if ( dev->queryCapability( capability ) )
+        {
+            matches.append( udi );
+        }
+    }
+
+    return matches;
+}
+
+FakeDevice *FakeManager::newDevice( const QString &udi )
+{
+    if ( m_devices.contains( udi ) )
+    {
+        kdDebug() << "Trying to create a new device, but it already exists" << endl;
+        return 0;
+    }
+    else
+    {
+        FakeDevice *dev = new FakeDevice( udi, this );
+        m_devices[udi] = dev;
+        emit deviceAdded( udi );
+        return dev;
+    }
+}
+
+FakeDevice *FakeManager::findDevice( const QString &udi )
+{
+    if ( m_devices.contains( udi ) )
+    {
+        return m_devices[udi];
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void FakeManager::deleteDevice( const QString &udi )
+{
+    if ( m_devices.contains( udi ) )
+    {
+        emit deviceRemoved( udi );
+
+        m_devices.remove( udi );
+    }
 }
 
 #include "fakemanager.moc"

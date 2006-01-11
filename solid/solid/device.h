@@ -191,9 +191,10 @@ namespace KDEHW
          * This signal is emitted when a property changed in the device.
          *
          * @param key the property key
-         * @param change the type of change that happened to the property
+         * @param change the type of change that happened to the property,
+         * it's one of the type KDEHW::PropertyChange
          */
-        void propertyChanged( const QString &key, PropertyChange change );
+        void propertyChanged( const QString &key, int change );
 
         /**
          * This signal is emitted when a condition has been met in the device.
@@ -204,7 +205,7 @@ namespace KDEHW
         void conditionRaised( const QString &condition, const QString &reason );
 
     private slots:
-        void slotPropertyChanged( const QString &key, PropertyChange change );
+        void slotPropertyChanged( const QString &key, int change );
         void slotConditionRaised( const QString &condition, const QString &reason );
         void slotDestroyed( QObject *object );
 

@@ -17,40 +17,26 @@
 
 */
 
-#ifndef FAKEMANAGER_H
-#define FAKEMANAGER_H
+#ifndef KDEHWTEST_H
+#define KDEHWTEST_H
 
-#include <kdehw/ifaces/devicemanager.h>
-#include <QVariant>
-#include <QStringList>
+#include <qobject.h>
 
-class FakeDevice;
+class FakeManager;
 
-class FakeManager : public KDEHW::Ifaces::DeviceManager
+class KdeHwTest : public QObject
 {
     Q_OBJECT
-
-public:
-    FakeManager();
-    virtual ~FakeManager();
-
-    virtual QStringList allDevices();
-    virtual bool deviceExists( const QString &udi );
-
-    virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
-
-    virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    virtual QStringList findDeviceByCapability( const QString &capability );
-
-
-    FakeDevice *newDevice( const QString &udi );
-    FakeDevice *findDevice( const QString &udi );
-    void deleteDevice( const QString &udi );
-
+private slots:
+    void initTestCase();
+    void testAllDevices();
+    void testDeviceExists();
+    void testDeviceBasicFeatures();
+    void testDeviceLocking();
+    void testManagerSignals();
+    void testDeviceSignals();
 private:
-    QMap<QString, FakeDevice*> m_devices;
-
-    friend class FakeDevice;
+    FakeManager *fakeManager;
 };
 
 #endif

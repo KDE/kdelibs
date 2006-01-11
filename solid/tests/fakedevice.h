@@ -22,13 +22,16 @@
 
 #include <kdehw/ifaces/device.h>
 
+#include <QStringList>
+
+class FakeManager;
 
 class FakeDevice : public KDEHW::Ifaces::Device
 {
     Q_OBJECT
 
 public:
-    FakeDevice(const QString &udi);
+    FakeDevice(const QString &udi, FakeManager *manager);
     virtual ~FakeDevice();
 
     virtual QString udi() const;
@@ -46,6 +49,20 @@ public:
 
     virtual bool lock(const QString &reason);
     virtual bool unlock();
+
+    void raiseCondition( const QString &condition, const QString &reason );
+
+    bool isBroken();
+    void setBroken( bool broken );
+
+private:
+    FakeManager *m_manager;
+    QString m_udi;
+    QStringList m_capabilities;
+    QMap<QString, QVariant> m_data;
+    bool m_brokenDevice;
+    bool m_locked;
+    QString m_lockReason;
 };
 
 #endif

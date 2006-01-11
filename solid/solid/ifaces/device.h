@@ -148,9 +148,11 @@ namespace Ifaces
          * This signal is emitted when a property is changed in the device.
          *
          * @param key the changed property name
-         * @param change the kind of change done on the device property (added/removed/modified)
+         * @param change the kind of change done on the device
+         * property (added/removed/modified), it's one of the type
+         * KDEHW::PropertyChange
          */
-        void propertyChanged( const QString &key, PropertyChange change );
+        void propertyChanged( const QString &key, int change );
 
         /**
          * This signal is emitted when an event occured in the device.

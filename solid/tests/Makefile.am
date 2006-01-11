@@ -1,12 +1,14 @@
-bin_PROGRAMS = kdehw_test
+check_PROGRAMS = kdehwtest
+
+TESTS = kdehwtest
 
 INCLUDES = -I$(srcdir)/../kdehw $(all_includes)
 AM_LDFLAGS = $(all_libraries)
 
-kdehw_test_SOURCES = kdehw_test.cpp fakedevice.cpp fakemanager.cpp
+LDFLAGS = $(KDE_RPATH) $(all_libraries)
+LDADD = $(LIB_KDECORE) -lQtTest_debug ../kdehw/libkdehw.la ../kdehw/ifaces/libkdehwifaces.la
 
-kdehw_test_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-kdehw_test_LDADD = $(LIB_KDECORE) ../kdehw/libkdehw.la ../kdehw/ifaces/libkdehwifaces.la
+kdehwtest_SOURCES = kdehwtest.cpp fakedevice.cpp fakemanager.cpp
 
 METASOURCES = AUTO
 

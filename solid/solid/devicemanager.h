@@ -143,11 +143,13 @@ namespace KDEHW
         DeviceManager( Ifaces::DeviceManager *backend );
         ~DeviceManager();
 
+    private slots:
         void slotDeviceAdded( const QString &udi );
         void slotDeviceRemoved( const QString &udi );
         void slotNewCapability( const QString &udi, const QString &capability );
         void slotDestroyed( QObject *object );
 
+    private:
         static DeviceManager *s_self;
         class Private;
         Private *d;

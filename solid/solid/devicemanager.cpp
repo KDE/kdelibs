@@ -38,12 +38,13 @@ namespace KDEHW
     class DeviceManager::Private
     {
     public:
-        Private() : backend( 0 ) {}
+        Private( DeviceManager *manager ) : q( manager ), backend( 0 ) {}
 
         Ifaces::Device *findRegisteredDevice( const QString &udi );
         void registerBackend( Ifaces::DeviceManager *newBackend );
         void unregisterBackend();
 
+        DeviceManager *q;
         Ifaces::DeviceManager *backend;
         QMap<QString, Ifaces::Device*> devicesMap;
 
@@ -79,7 +80,7 @@ KDEHW::DeviceManager &KDEHW::DeviceManager::selfForceBackend( KDEHW::Ifaces::Dev
 }
 
 KDEHW::DeviceManager::DeviceManager()
-    : QObject(), d( new Private() )
+    : QObject(), d( new Private( this ) )
 {
     QStringList error_msg;
 
@@ -139,7 +140,7 @@ KDEHW::DeviceManager::DeviceManager()
 }
 
 KDEHW::DeviceManager::DeviceManager( KDEHW::Ifaces::DeviceManager *backend )
-    : QObject(), d( new Private() )
+    : QObject(), d( new Private( this ) )
 {
     if ( backend != 0 )
     {
@@ -281,6 +282,13 @@ void KDEHW::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newB
 {
     unregisterBackend();
     backend = newBackend;
+
+    QObject::connect( backend, SIGNAL( deviceAdded( QString ) ),
+                      q, SLOT( slotDeviceAdded( QString ) ) );
+    QObject::connect( backend, SIGNAL( deviceRemoved( QString ) ),
+                      q, SLOT( slotDeviceRemoved( QString ) ) );
+    QObject::connect( backend, SIGNAL( newCapability( QString, QString ) ),
+                      q, SLOT( slotNewCapability( QString, QString ) ) );
 }
 
 void KDEHW::DeviceManager::Private::unregisterBackend()

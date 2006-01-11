@@ -17,13 +17,12 @@
 
 */
 
-#include <kdebug.h>
-
 #include "fakedevice.h"
+#include "fakemanager.h"
 
-
-FakeDevice::FakeDevice(const QString &udi)
-    : Device()
+FakeDevice::FakeDevice(const QString &udi, FakeManager *manager)
+    : Device(), m_manager( manager ), m_udi( udi ),
+      m_brokenDevice( false ), m_locked( false )
 {
 
 }
@@ -35,53 +34,112 @@ FakeDevice::~FakeDevice()
 
 QString FakeDevice::udi() const
 {
-    return property( "info.udi" ).toString();
+    return m_udi;
 }
 
 bool FakeDevice::setProperty( const QString &key, const QVariant &value )
 {
-    return false;
+    if ( m_brokenDevice ) return false;
+
+    KDEHW::PropertyChange change = KDEHW::PropertyModified;
+
+    if ( !m_data.contains( key ) ) change = KDEHW::PropertyAdded;
+
+    m_data[key] = value;
+
+    emit propertyChanged( key, change );
+
+    return true;
 }
 
 QVariant FakeDevice::property( const QString &key ) const
 {
-    return QVariant();
+    if ( m_brokenDevice || !m_data.contains( key ) ) return QVariant();
+
+    return m_data[key];
 }
 
 QMap<QString, QVariant> FakeDevice::allProperties() const
 {
-    return QMap<QString, QVariant>();
+    if ( m_brokenDevice ) return QMap<QString, QVariant>();
+
+    return m_data;
 }
 
 bool FakeDevice::removeProperty( const QString &key )
 {
-    return false;
+    if ( m_brokenDevice ) return false;
+
+    m_data.remove( key );
+    emit propertyChanged( key, KDEHW::PropertyRemoved );
+
+    return true;
 }
 
 bool FakeDevice::propertyExists( const QString &key ) const
 {
-    return false;
+    if ( m_brokenDevice ) return false;
+
+    return m_data.contains( key );
 }
 
 bool FakeDevice::addCapability( const QString &capability )
 {
-    return false;
+    if ( m_brokenDevice )
+    {
+        return false;
+    }
+
+    if ( !m_capabilities.contains( capability ) )
+    {
+        m_capabilities.append( capability );
+        emit m_manager->newCapability( m_udi, capability );
+    }
+
+    return true;
 }
 
 bool FakeDevice::queryCapability( const QString &capability ) const
 {
-    return false;
+    if ( m_brokenDevice ) return false;
+
+    return m_capabilities.contains( capability );
 }
 
-bool FakeDevice::lock(const QString &reason)
+bool FakeDevice::lock( const QString &reason )
 {
-    return false;
+    if ( m_brokenDevice || m_locked ) return false;
+
+    m_locked = true;
+    m_lockReason = reason;
+
+    return true;
 }
 
 bool FakeDevice::unlock()
 {
-    return false;
+    if ( m_brokenDevice || !m_locked ) return false;
+
+    m_locked = false;
+    m_lockReason = QString();
+
+    return true;
 }
 
+
+void FakeDevice::raiseCondition( const QString &condition, const QString &reason )
+{
+    emit conditionRaised( condition, reason );
+}
+
+bool FakeDevice::isBroken()
+{
+    return m_brokenDevice;
+}
+
+void FakeDevice::setBroken( bool broken )
+{
+    m_brokenDevice = broken;
+}
 
 #include "fakedevice.moc"
