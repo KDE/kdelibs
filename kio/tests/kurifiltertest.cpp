@@ -177,7 +177,7 @@ int main(int argc, char **argv)
       cfg.setGroup( "General" );
       cfg.writeEntry( "DefaultSearchEngine", "google" );
       cfg.writeEntry( "Verbose", true );
-      cfg.writeEntry( "KeywordDelimiter", delimiter );
+      cfg.writeEntry( "KeywordDelimiter", QString(delimiter) );
       cfg.sync();
     }
 

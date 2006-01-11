@@ -27,7 +27,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest netaccesstest jobtest \
-		 kurlcompletiontest kmimetypetest kbookmarktest kacltest
+		 kurlcompletiontest kmimetypetest kbookmarktest kacltest kdirwatchtest_gui
 
 # Unfortunately some tests depend on the network settings, it seems
 #check: kurifiltertest
@@ -70,6 +70,7 @@ ksycocaupdatetest_SOURCES = ksycocaupdatetest.cpp
 netaccesstest_SOURCES = netaccesstest.cpp
 kurlcompletiontest_SOURCES = kurlcompletiontest.cpp
 kacltest_SOURCES = kacltest.cpp
+kdirwatchtest_gui_SOURCES = kdirwatchtest_gui.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
 # metadata plugin test and "make install".
