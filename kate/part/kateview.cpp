@@ -592,13 +592,19 @@ void KateView::setupEditActions()
       this, SLOT(deleteWordRight()),
       ac, "delete_word_right" );
 
-    new KAction(i18n("Delete Next Character"), Key_Delete,
+    KAction *a = new KAction(i18n("Delete Next Character"), Key_Delete,
                 this, SLOT(keyDelete()),
                 ac, "delete_next_character");
+    KShortcut cut = a->shortcut();
+    cut.append( KKey( SHIFT + Key_Delete ) );
+    a->setShortcut( cut );
 
-    new KAction(i18n("Backspace"), Key_Backspace,
+    a = new KAction(i18n("Backspace"), Key_Backspace,
                 this, SLOT(backspace()),
                 ac, "backspace");
+    cut = a->shortcut();
+    cut.append( KKey( SHIFT + Key_Backspace ) );
+    a->setShortcut( cut );
   }
 
   connect( this, SIGNAL(gotFocus(Kate::View*)),
