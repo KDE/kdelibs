@@ -40,7 +40,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#ifdef APPLE_CHANGES
 #include <unicode/uchar.h>
+#else
+#include <QChar>
+#endif
 
 namespace KJS {
 
@@ -657,7 +661,11 @@ static bool isStrWhiteSpace(unsigned short c)
         case 0x2029:
             return true;
         default:
+#ifdef APPLE_CHANGES
             return u_charType(c) == U_SPACE_SEPARATOR;
+#else
+	    return QChar(c).isSpace();
+#endif
     }
 }
 

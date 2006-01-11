@@ -51,7 +51,7 @@ endif
 libkjs_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(VSCRIPT) \
           $(USER_LDFLAGS) $(all_libraries)
 # FIXME: remove dependencies and cleanup once we have our own unicode support
-libkjs_la_LIBADD = -lm $(LIBPCRE) ../kxmlcore/libkxmlcore.la -lpthread -licuuc
+libkjs_la_LIBADD = -lm $(LIBPCRE) ../kxmlcore/libkxmlcore.la -lpthread $(LIB_QT)
 
 EXTRA_DIST = grammar.y
 

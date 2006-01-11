@@ -39,7 +39,11 @@
 #include "identifier.h"
 #include "lookup.h"
 #include "internal.h"
+#ifdef APPLE_CHANGES
 #include <unicode/uchar.h>
+#else
+#include <QChar>
+#endif
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
@@ -137,7 +141,11 @@ void Lexer::shift(unsigned int p)
 	break;
       }
       next3 = code[pos++].uc;
+#ifdef APPLE_CHANGES
     } while (u_charType(next3) == U_FORMAT_CHAR);
+#else
+    } while (QChar(next3).category() == QChar::Other_Format);
+#endif
   }
 }
 

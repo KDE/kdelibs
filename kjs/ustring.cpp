@@ -46,7 +46,11 @@
 
 using std::max;
 
+#ifdef APPLE_CHANGES
 #include <unicode/uchar.h>
+#else
+#include <QChar>
+#endif
 
 namespace KJS {
 
@@ -149,12 +153,22 @@ static int statBufferSize = 0;
 
 UChar UChar::toLower() const
 {
+#ifdef APPLE_CHANGES
   return static_cast<unsigned short>(u_tolower(uc));
+#else
+  // This is broken and needs to go away.
+  return (unsigned short)QChar(uc).toLower().unicode();
+#endif
 }
 
 UChar UChar::toUpper() const
 {
+#ifdef APPLE_CHANGES
   return static_cast<unsigned short>(u_toupper(uc));
+#else
+  // This is broken and needs to go away.
+  return (unsigned short)QChar(uc).toUpper().unicode();
+#endif
 }
 
 UCharReference& UCharReference::operator=(UChar c)
