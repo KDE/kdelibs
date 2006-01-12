@@ -746,6 +746,7 @@ public:
    * @li %B with the long form of the month (e.g. "January")
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+   *
    * Everything else in the format string will be taken as is.
    * For example, March 20th 1989 with the format "%y:%m:%d" results
    * in "89:03:20".
@@ -768,6 +769,7 @@ public:
    * @li %B with the long form of the month (e.g. "January")
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+   *
    * Everything else in the format string will be taken as is.
    * For example, March 20th 1989 with the format "%y:%m:%d" results
    * in "89:03:20".
@@ -794,6 +796,7 @@ public:
    * @li %M with the minute with 2 digits (e.g. the minute of 07:02:09 is "02")
    * @li %S with the seconds with 2 digits  (e.g. the minute of 07:02:09 is "09")
    * @li %p with pm or am (e.g. 17.00 is "pm", 05.00 is "am")
+   *
    * Everything else in the format string will be taken as is.
    * For example, 5.23pm with the format "%H:%M" results
    * in "17:23".
