@@ -36,7 +36,6 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <assert.h>
-#include <kjs/collector.h>
 #include <kjs/function.h>
 
 using namespace KJS;
@@ -98,7 +97,7 @@ KJSProxyImpl::~KJSProxyImpl()
     m_script->globalObject()->clearProperties();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
     Interpreter::lock();
-    while (Collector::collect())
+    while (Interpreter::collect())
 	    ;
     Interpreter::unlock();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
@@ -108,7 +107,7 @@ KJSProxyImpl::~KJSProxyImpl()
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
     Interpreter::lock();
-    while (Collector::collect())
+    while (Interpreter::collect())
 	    ;
     Interpreter::unlock();
   }
@@ -228,7 +227,7 @@ void KJSProxyImpl::clear() {
     // Really delete everything that can be, so that the DOM nodes get deref'ed
     //kdDebug() << k_funcinfo << "all done -> collecting" << endl;
     Interpreter::lock();
-    while (Collector::collect())
+    while (Interpreter::collect())
 	    ;
     Interpreter::unlock();
   }

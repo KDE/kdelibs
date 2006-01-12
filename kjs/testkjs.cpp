@@ -30,7 +30,6 @@
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
-#include "collector.h"
 
 using namespace KJS;
 
@@ -63,7 +62,7 @@ ValueImp *TestFunctionImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*
     return Undefined();
   case GC:
     Interpreter::lock();
-    Collector::collect();
+    Interpreter::collect();
     Interpreter::unlock();
     break;
   default:
