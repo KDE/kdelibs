@@ -875,7 +875,7 @@ void KCryptoConfig::load()
     if (cert) {
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
                         policies->readEntry("Permanent", true),
-                        policies->readNumEntry("Policy", 3),
+                        policies->readEntry("Policy", 3),
                         policies->readDateTimeEntry("Expires"), this );
       delete cert;
     }
