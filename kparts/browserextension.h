@@ -481,15 +481,9 @@ public:
    */
   void pasteRequest();
 
-// KDE invents support for public signals...
-#ifndef Q_MOC_RUN
-#undef signals
-#define signals public
-#endif
 signals:
 #ifndef Q_MOC_RUN
-#undef signals
-#define signals protected
+public:  // yes, those signals are public; don't tell moc :)
 #endif
   /**
    * Enables or disable a standard action held by the browser.
