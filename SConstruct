@@ -104,6 +104,7 @@ interfaces
 kate
 dnssd
 kioslave
+kxmlcore
 """
 
 # currently not on windows 
