@@ -128,7 +128,7 @@ KDialog::KDialog(QWidget *parent, const char *name, bool modal, Qt::WFlags f)
 
 
 KDialog::KDialog( QWidget *parent, const QString &caption  ,
-		QFlags<ButtonCode> buttonMask ,  Qt::WFlags f  ,
+		ButtonCodes buttonMask ,  Qt::WFlags f  ,
 		const KGuiItem &user1,  const KGuiItem &user2, const KGuiItem &user3 )
     :  QDialog( parent, f |  Qt::WStyle_DialogBorder),  d(new Private)
 {
@@ -149,7 +149,7 @@ KDialog::~KDialog()
 }
 
 
-void KDialog::setButtonMask( QFlags<ButtonCode> buttonMask ,
+void KDialog::setButtonMask( ButtonCodes buttonMask ,
 				 const KGuiItem &user1, const KGuiItem &user2,
 				 const KGuiItem &user3 )
 {

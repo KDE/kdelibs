@@ -49,7 +49,7 @@ public:
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config,
           DialogType dialogType,
-          QFlags<ButtonCode> dialogButtons,
+          ButtonCodes dialogButtons,
           ButtonCode defaultButton,
           bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder,

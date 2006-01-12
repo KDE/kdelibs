@@ -288,7 +288,7 @@ int KPasswordEdit::maxPasswordLength() const
  * Password dialog.
  */
 
-KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn,
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn,
                                  QWidget *parent)
     : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
@@ -297,7 +297,7 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode>
     init();
 }
 
-KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, const QString& icon,
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& icon,
 				  QWidget *parent)
     : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)

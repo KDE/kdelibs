@@ -193,7 +193,7 @@ public:
      *
      * @since 3.0
      */
-    KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, QWidget *parent=0);
+    KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, QWidget *parent=0);
 
 
     /**
@@ -210,7 +210,7 @@ public:
      * @param parent Passed to lower level constructor.
      * @since 3.3
      */
-	KPasswordDialog(Types type, bool enableKeep, QFlags<ButtonCode> extraBttn, const QString& iconName,
+	KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& iconName,
                     QWidget *parent = 0);
 
     /**

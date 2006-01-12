@@ -338,7 +338,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
     * @param user3 User button3 text.
     *
     */
-    KAboutDialog( int dialogLayout, const QString &caption, QFlags<ButtonCode> buttonMask,
+    KAboutDialog( int dialogLayout, const QString &caption, ButtonCodes buttonMask,
 		  ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
 		  const QString &user1 = QString(),
 		  const QString &user2 = QString(),
