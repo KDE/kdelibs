@@ -442,10 +442,10 @@ public:
   /**
    * Class for handling a 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt32:public KConfigSkeletonGenericItem < qint32 >
+  class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
   {
   public:
-    ItemInt32(const QString & group, const QString & key, qint32 &reference,
+    ItemInt(const QString & group, const QString & key, qint32 &reference,
             qint32 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -463,17 +463,14 @@ public:
     qint32 mMin;
     qint32 mMax;
   };
-  // next two should be removed before KDE4
-  typedef ItemInt32 ItemInt KDE_DEPRECATED;
-  typedef ItemInt32 ItemLong KDE_DEPRECATED;
 
   /**
    * Class for handling a 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < qint64 >
+  class KDECORE_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
-    ItemInt64(const QString & group, const QString & key, qint64 &reference,
+    ItemLongLong(const QString & group, const QString & key, qint64 &reference,
             qint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -492,11 +489,12 @@ public:
     qint64 mMin;
     qint64 mMax;
   };
+  typedef ItemLongLong ItemInt64 KDE_DEPRECATED;
 
   /**
    * Class for handling enums.
    */
-  class KDECORE_EXPORT ItemEnum:public ItemInt32
+  class KDECORE_EXPORT ItemEnum:public ItemInt
   {
   public:
     struct Choice
@@ -522,10 +520,10 @@ public:
   /**
    * Class for handling an unsingend 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt32:public KConfigSkeletonGenericItem < quint32 >
+  class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
   {
   public:
-    ItemUInt32(const QString & group, const QString & key,
+    ItemUInt(const QString & group, const QString & key,
              quint32 &reference, quint32 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -543,17 +541,14 @@ public:
     quint32 mMin;
     quint32 mMax;
   };
-  // next two should be removed before KDE4
-  typedef ItemUInt32 ItemUInt KDE_DEPRECATED;
-  typedef ItemUInt32 ItemULong KDE_DEPRECATED;
 
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < quint64 >
+  class KDECORE_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
-    ItemUInt64(const QString & group, const QString & key, quint64 &reference,
+    ItemULongLong(const QString & group, const QString & key, quint64 &reference,
             quint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -572,6 +567,7 @@ public:
     quint64 mMin;
     quint64 mMax;
   };
+  typedef ItemULongLong ItemUInt64 KDE_DEPRECATED;
 
   /**
    * Class for handling a floating point preference item.
@@ -890,14 +886,8 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemInt32 *addItemInt32(const QString & name, qint32 &reference, qint32 defaultValue = 0,
+  ItemInt *addItemInt(const QString & name, qint32 &reference, qint32 defaultValue = 0,
                       const QString & key = QString());
-
-  // next two should be removed before KDE4
-  ItemInt32 *addItemInt(const QString & name, qint32 &reference, qint32 defaultValue = 0,
-                      const QString & key = QString()) KDE_DEPRECATED;
-  ItemInt32 *addItemLong(const QString & name, qint32 &reference, qint32 defaultValue = 0,
-                      const QString & key = QString()) KDE_DEPRECATED;
 
   /**
    * Register an item of type quint32.
@@ -910,17 +900,9 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemUInt32 *addItemUInt32(const QString & name, quint32 &reference,
+  ItemUInt *addItemUInt(const QString & name, quint32 &reference,
                         quint32 defaultValue = 0,
                         const QString & key = QString());
-
-  // next two should be removed before KDE4
-  ItemUInt32 *addItemUInt(const QString & name, quint32 &reference,
-                        quint32 defaultValue = 0,
-                        const QString & key = QString()) KDE_DEPRECATED;
-  ItemUInt32 *addItemULong(const QString & name, quint32 &reference,
-                        quint32 defaultValue = 0,
-                        const QString & key = QString()) KDE_DEPRECATED;
 
   /**
    * Register an item of type qint64.
@@ -933,9 +915,14 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemInt64 *addItemInt64(const QString & name, qint64 &reference,
+  ItemLongLong *addItemLongLong(const QString & name, qint64 &reference,
                           qint64 defaultValue = 0,
                           const QString & key = QString());
+
+  KDE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
+                          qint64 defaultValue = 0,
+                          const QString & key = QString())
+    { return addItemLongLong(name, reference, defaultValue, key); }
 
   /**
    * Register an item of type quint64
@@ -948,9 +935,14 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemUInt64 *addItemUInt64(const QString & name, quint64 &reference,
+  ItemULongLong *addItemULongLong(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
                             const QString & key = QString());
+
+  KDE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
+                            quint64 defaultValue = 0,
+                            const QString & key = QString())
+    { return addItemULongLong(name, reference, defaultValue, key); }
 
   /**
    * Register an item of type double.

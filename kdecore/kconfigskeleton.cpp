@@ -158,14 +158,14 @@ QVariant KConfigSkeleton::ItemBool::property() const
 }
 
 
-KConfigSkeleton::ItemInt32::ItemInt32( const QString &_group, const QString &_key,
+KConfigSkeleton::ItemInt::ItemInt( const QString &_group, const QString &_key,
                               qint32 &reference, qint32 defaultValue )
   : KConfigSkeletonGenericItem<qint32>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
 
-void KConfigSkeleton::ItemInt32::readConfig( KConfig *config )
+void KConfigSkeleton::ItemInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readEntry( mKey, mDefault );
@@ -178,51 +178,51 @@ void KConfigSkeleton::ItemInt32::readConfig( KConfig *config )
   readImmutability( config );
 }
 
-void KConfigSkeleton::ItemInt32::setProperty(const QVariant & p)
+void KConfigSkeleton::ItemInt::setProperty(const QVariant & p)
 {
   mReference = p.toInt();
 }
 
-QVariant KConfigSkeleton::ItemInt32::property() const
+QVariant KConfigSkeleton::ItemInt::property() const
 {
   return QVariant(mReference);
 }
 
-QVariant KConfigSkeleton::ItemInt32::minValue() const
+QVariant KConfigSkeleton::ItemInt::minValue() const
 {
   if (mHasMin)
     return QVariant(mMin);
   return QVariant();
 }
 
-QVariant KConfigSkeleton::ItemInt32::maxValue() const
+QVariant KConfigSkeleton::ItemInt::maxValue() const
 {
   if (mHasMax)
     return QVariant(mMax);
   return QVariant();
 }
 
-void KConfigSkeleton::ItemInt32::setMinValue(qint32 v)
+void KConfigSkeleton::ItemInt::setMinValue(qint32 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemInt32::setMaxValue(qint32 v)
+void KConfigSkeleton::ItemInt::setMaxValue(qint32 v)
 {
   mHasMax = true;
   mMax = v;
 }
 
 
-KConfigSkeleton::ItemInt64::ItemInt64( const QString &_group, const QString &_key,
+KConfigSkeleton::ItemLongLong::ItemLongLong( const QString &_group, const QString &_key,
                               qint64 &reference, qint64 defaultValue )
   : KConfigSkeletonGenericItem<qint64>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
 
-void KConfigSkeleton::ItemInt64::readConfig( KConfig *config )
+void KConfigSkeleton::ItemLongLong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readEntry( mKey, mDefault );
@@ -235,37 +235,37 @@ void KConfigSkeleton::ItemInt64::readConfig( KConfig *config )
   readImmutability( config );
 }
 
-void KConfigSkeleton::ItemInt64::setProperty(const QVariant & p)
+void KConfigSkeleton::ItemLongLong::setProperty(const QVariant & p)
 {
   mReference = p.toLongLong();
 }
 
-QVariant KConfigSkeleton::ItemInt64::property() const
+QVariant KConfigSkeleton::ItemLongLong::property() const
 {
   return QVariant(mReference);
 }
 
-QVariant KConfigSkeleton::ItemInt64::minValue() const
+QVariant KConfigSkeleton::ItemLongLong::minValue() const
 {
   if (mHasMin)
     return QVariant(mMin);
   return QVariant();
 }
 
-QVariant KConfigSkeleton::ItemInt64::maxValue() const
+QVariant KConfigSkeleton::ItemLongLong::maxValue() const
 {
   if (mHasMax)
     return QVariant(mMax);
   return QVariant();
 }
 
-void KConfigSkeleton::ItemInt64::setMinValue(qint64 v)
+void KConfigSkeleton::ItemLongLong::setMinValue(qint64 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemInt64::setMaxValue(qint64 v)
+void KConfigSkeleton::ItemLongLong::setMaxValue(qint64 v)
 {
   mHasMax = true;
   mMax = v;
@@ -275,7 +275,7 @@ KConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_key,
                                      int &reference,
                                      const QList<Choice> &choicesList,
                                      int defaultValue )
-  : ItemInt32( _group, _key, reference, defaultValue ), mChoices( choicesList )
+  : ItemInt( _group, _key, reference, defaultValue ), mChoices( choicesList )
 {
 }
 
@@ -328,7 +328,7 @@ QList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() co
 }
 
 
-KConfigSkeleton::ItemUInt32::ItemUInt32( const QString &_group, const QString &_key,
+KConfigSkeleton::ItemUInt::ItemUInt( const QString &_group, const QString &_key,
                                 quint32 &reference,
                                 quint32 defaultValue )
   : KConfigSkeletonGenericItem<quint32>( _group, _key, reference, defaultValue )
@@ -336,7 +336,7 @@ KConfigSkeleton::ItemUInt32::ItemUInt32( const QString &_group, const QString &_
 {
 }
 
-void KConfigSkeleton::ItemUInt32::readConfig( KConfig *config )
+void KConfigSkeleton::ItemUInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readEntry( mKey, mDefault );
@@ -349,51 +349,51 @@ void KConfigSkeleton::ItemUInt32::readConfig( KConfig *config )
   readImmutability( config );
 }
 
-void KConfigSkeleton::ItemUInt32::setProperty(const QVariant & p)
+void KConfigSkeleton::ItemUInt::setProperty(const QVariant & p)
 {
   mReference = p.toUInt();
 }
 
-QVariant KConfigSkeleton::ItemUInt32::property() const
+QVariant KConfigSkeleton::ItemUInt::property() const
 {
   return QVariant(mReference);
 }
 
-QVariant KConfigSkeleton::ItemUInt32::minValue() const
+QVariant KConfigSkeleton::ItemUInt::minValue() const
 {
   if (mHasMin)
     return QVariant(mMin);
   return QVariant();
 }
 
-QVariant KConfigSkeleton::ItemUInt32::maxValue() const
+QVariant KConfigSkeleton::ItemUInt::maxValue() const
 {
   if (mHasMax)
     return QVariant(mMax);
   return QVariant();
 }
 
-void KConfigSkeleton::ItemUInt32::setMinValue(quint32 v)
+void KConfigSkeleton::ItemUInt::setMinValue(quint32 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemUInt32::setMaxValue(quint32 v)
+void KConfigSkeleton::ItemUInt::setMaxValue(quint32 v)
 {
   mHasMax = true;
   mMax = v;
 }
 
 
-KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &_group, const QString &_key,
+KConfigSkeleton::ItemULongLong::ItemULongLong( const QString &_group, const QString &_key,
                               quint64 &reference, quint64 defaultValue )
   : KConfigSkeletonGenericItem<quint64>( _group, _key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
 
-void KConfigSkeleton::ItemUInt64::readConfig( KConfig *config )
+void KConfigSkeleton::ItemULongLong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readEntry( mKey, mDefault );
@@ -406,37 +406,37 @@ void KConfigSkeleton::ItemUInt64::readConfig( KConfig *config )
   readImmutability( config );
 }
 
-void KConfigSkeleton::ItemUInt64::setProperty(const QVariant & p)
+void KConfigSkeleton::ItemULongLong::setProperty(const QVariant & p)
 {
   mReference = p.toULongLong();
 }
 
-QVariant KConfigSkeleton::ItemUInt64::property() const
+QVariant KConfigSkeleton::ItemULongLong::property() const
 {
   return QVariant(mReference);
 }
 
-QVariant KConfigSkeleton::ItemUInt64::minValue() const
+QVariant KConfigSkeleton::ItemULongLong::minValue() const
 {
   if (mHasMin)
     return QVariant(mMin);
   return QVariant();
 }
 
-QVariant KConfigSkeleton::ItemUInt64::maxValue() const
+QVariant KConfigSkeleton::ItemULongLong::maxValue() const
 {
   if (mHasMax)
     return QVariant(mMax);
   return QVariant();
 }
 
-void KConfigSkeleton::ItemUInt64::setMinValue(quint64 v)
+void KConfigSkeleton::ItemULongLong::setMinValue(quint64 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemUInt64::setMaxValue(quint64 v)
+void KConfigSkeleton::ItemULongLong::setMaxValue(quint64 v)
 {
   mHasMax = true;
   mMax = v;
@@ -927,63 +927,41 @@ KConfigSkeleton::ItemBool *KConfigSkeleton::addItemBool( const QString &name, bo
   return item;
 }
 
-KConfigSkeleton::ItemInt32 *KConfigSkeleton::addItemInt32( const QString &name, qint32 &reference,
+KConfigSkeleton::ItemInt *KConfigSkeleton::addItemInt( const QString &name, qint32 &reference,
                                   qint32 defaultValue, const QString &key )
 {
-  KConfigSkeleton::ItemInt32 *item;
-  item = new KConfigSkeleton::ItemInt32( mCurrentGroup, key.isNull() ? name : key,
+  KConfigSkeleton::ItemInt *item;
+  item = new KConfigSkeleton::ItemInt( mCurrentGroup, key.isNull() ? name : key,
                                        reference, defaultValue );
   addItem( item, name );
   return item;
 }
 
-KConfigSkeleton::ItemInt32 *KConfigSkeleton::addItemInt( const QString &name, qint32 &reference,
-                                  qint32 defaultValue, const QString &key )
-{
-  return addItemInt32(name, reference, defaultValue, key);
-}
-KConfigSkeleton::ItemInt32 *KConfigSkeleton::addItemLong( const QString &name, qint32 &reference,
-                                  qint32 defaultValue, const QString &key )
-{
-  return addItemInt32(name, reference, defaultValue, key);
-}
-
-KConfigSkeleton::ItemUInt32 *KConfigSkeleton::addItemUInt32( const QString &name, quint32 &reference,
+KConfigSkeleton::ItemUInt *KConfigSkeleton::addItemUInt( const QString &name, quint32 &reference,
                                    quint32 defaultValue, const QString &key )
 {
-  KConfigSkeleton::ItemUInt32 *item;
-  item = new KConfigSkeleton::ItemUInt32( mCurrentGroup, key.isNull() ? name : key,
+  KConfigSkeleton::ItemUInt *item;
+  item = new KConfigSkeleton::ItemUInt( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
   addItem( item, name );
   return item;
 }
 
-KConfigSkeleton::ItemUInt32 *KConfigSkeleton::addItemUInt( const QString &name, quint32 &reference,
-                                   quint32 defaultValue, const QString &key )
-{
-  return addItemUInt32(name, reference, defaultValue, key);
-}
-KConfigSkeleton::ItemUInt32 *KConfigSkeleton::addItemULong( const QString &name, quint32 &reference,
-                                   quint32 defaultValue, const QString &key )
-{
-  return addItemUInt32(name, reference, defaultValue, key);
-}
-
-KConfigSkeleton::ItemInt64 *KConfigSkeleton::addItemInt64( const QString &name, qint64 &reference,
+KConfigSkeleton::ItemLongLong *KConfigSkeleton::addItemLongLong( const QString &name, qint64 &reference,
                                     qint64 defaultValue, const QString &key )
 {
-  KConfigSkeleton::ItemInt64 *item;
-  item = new KConfigSkeleton::ItemInt64( mCurrentGroup, key.isNull() ? name : key,
+  KConfigSkeleton::ItemLongLong *item;
+  item = new KConfigSkeleton::ItemLongLong( mCurrentGroup, key.isNull() ? name : key,
                                          reference, defaultValue );
   addItem( item, name );
   return item;
 }
 
-KConfigSkeleton::ItemUInt64 *KConfigSkeleton::addItemUInt64( const QString &name, quint64 &reference,
+KConfigSkeleton::ItemULongLong *KConfigSkeleton::addItemULongLong( const QString &name, quint64 &reference,
                                      quint64 defaultValue, const QString &key )
 {
-  KConfigSkeleton::ItemUInt64 *item;
-  item = new KConfigSkeleton::ItemUInt64( mCurrentGroup, key.isNull() ? name : key,
+  KConfigSkeleton::ItemULongLong *item;
+  item = new KConfigSkeleton::ItemULongLong( mCurrentGroup, key.isNull() ? name : key,
                                           reference, defaultValue );
   addItem( item, name );
   return item;

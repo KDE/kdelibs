@@ -55,7 +55,7 @@
     <entry name="MyStringListHidden" hidden="true" type="StringList">
       <default>up,down</default>
     </entry>
-    <entry name="MyNumber" type="Int64" key="List-$(transport)-$(folder)">
+    <entry name="MyNumber" type="LongLong" key="List-$(transport)-$(folder)">
       <label>List Number</label>
       <default>1</default>
     </entry>

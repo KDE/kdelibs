@@ -400,8 +400,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         kdError() << "Parameter must have a type: " << dumpNode(e) << endl;
         return 0;
       }
-      if ((paramType == "Int") || (paramType == "UInt") ||
-          (paramType == "Int32") || (paramType == "UInt32"))
+      if ((paramType == "Int") || (paramType == "UInt"))
       {
          bool ok;
          paramMax = e.attribute("max").toInt(&ok);
@@ -624,8 +623,8 @@ QString param( const QString &type )
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
     else if ( type == "DateTime" )    return "const QDateTime &";
-    else if ( type == "Int64" )       return "qint64";
-    else if ( type == "UInt64" )      return "quint64";
+    else if ( type == "LongLong" )    return "qint64";
+    else if ( type == "ULongLong" )   return "quint64";
     else if ( type == "IntList" )     return "const QList<int> &";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "const QString &";
@@ -654,8 +653,8 @@ QString cppType( const QString &type )
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
     else if ( type == "DateTime" )    return "QDateTime";
-    else if ( type == "Int64" )       return "qint64";
-    else if ( type == "UInt64" )      return "quint64";
+    else if ( type == "LongLong" )    return "qint64";
+    else if ( type == "ULongLong" )   return "quint64";
     else if ( type == "IntList" )     return "QList<int>";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "QString";
@@ -681,8 +680,8 @@ QString defaultValue( const QString &type )
     else if ( type == "Bool" )        return "false";
     else if ( type == "Double" )      return "0.0";
     else if ( type == "DateTime" )    return "QDateTime()";
-    else if ( type == "Int64" )       return "0";
-    else if ( type == "UInt64" )      return "0";
+    else if ( type == "LongLong" )    return "0";
+    else if ( type == "ULongLong" )   return "0";
     else if ( type == "IntList" )     return "QList<int>()";
     else if ( type == "Enum" )        return "0";
     else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
