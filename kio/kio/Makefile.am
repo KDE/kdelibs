@@ -35,7 +35,7 @@ libkiocore_la_SOURCES = \
 	kurifilter.cpp \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
-	kfileitem.cpp kdirlister.cpp kimageio.cpp \
+	kfileitem.cpp kdirlister.cpp \
 	yacc.c lex.c  \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
@@ -67,7 +67,7 @@ include_HEADERS = \
 	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
 	kdirlister.h kservicegroup.h \
-	kimageio.h kdirnotify.h kdirnotify_stub.h \
+	kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
@@ -96,7 +96,7 @@ kioinclude_HEADERS = connection.h \
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
+	kdirwatch_p.h kdirlister_p.h \
 	renamedlg.h skipdlg.h dataslave.h dataprotocol.h \
 	kservice_p.h
 

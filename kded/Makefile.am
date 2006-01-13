@@ -31,7 +31,6 @@ kbuildsycoca_la_LIBADD = $(LIB_KIO)
 kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp \
 				kbuildservicegroupfactory.cpp \
-				kbuildimageiofactory.cpp \
 				kbuildprotocolinfofactory.cpp \
 				kctimefactory.cpp \
 				vfolder_menu.cpp
@@ -50,7 +49,7 @@ METASOURCES = AUTO
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h kbuildservicegroupfactory.h \
-		kbuildimageiofactory.h kresourcelist.h \
+		kresourcelist.h \
 		kbuildprotocolinfofactory.h
 
 servicetype_DATA = kdedmodule.desktop

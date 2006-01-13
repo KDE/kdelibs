@@ -31,7 +31,6 @@
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
 #include <kbuildservicegroupfactory.h>
-#include <kbuildimageiofactory.h>
 #include <kbuildprotocolinfofactory.h>
 #include <kctimefactory.h>
 #include <kdatastream.h>
@@ -517,7 +516,6 @@ bool KBuildSycoca::recreate()
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   g_bsgf = new KBuildServiceGroupFactory();
   g_bsf = new KBuildServiceFactory(stf, g_bsgf);
-  (void) new KBuildImageIOFactory();
   (void) new KBuildProtocolInfoFactory();
 
   if( build()) // Parse dirs
@@ -686,7 +684,6 @@ QStringList KBuildSycoca::existingResourceDirs()
    resources += KBuildServiceTypeFactory::resourceTypes();
    resources += KBuildServiceGroupFactory::resourceTypes();
    resources += KBuildServiceFactory::resourceTypes();
-   resources += KBuildImageIOFactory::resourceTypes();
    resources += KBuildProtocolInfoFactory::resourceTypes();
    while( !resources.empty())
    {
@@ -892,7 +889,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
          factories->append( new KServiceTypeFactory );
          factories->append( new KServiceGroupFactory );
          factories->append( new KServiceFactory );
-         factories->append( new KImageIOFactory );
          factories->append( new KProtocolInfoFactory );
 
          // For each factory

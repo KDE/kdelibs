@@ -1,8 +1,7 @@
-KDE Image I/O library
----------------------
-This library allows applications that use the Qt library
-(i.e. QImageIO, QImage, QPixmap and friends) to read and
-write images in extra formats. Current formats include:
+This directory contains Qt imageformat plugins. See Qt docs for
+writing a new handler.
+
+Current formats include:
 
 JPEG	<read> <write>
 JPEG2000 <read> <write>
@@ -17,59 +16,3 @@ SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
 DDS	<read>
 XCF	<read>
 
-(Some example files are in kdenonbeta/kimgio_examples.)
-
-
-To use these formats, you only need to:
-
-1. link the application with the libkio library
-2. Include the <kimageio.h> header
-3. call KImageIO::registerFormats() once, somewhere in your code
-   before you load an image.
-
-Writing handlers
-----------------
-
-0. Please read the documentation for the QImageIO class in the Qt
-documentation.
-
-1. When writing handlers, there is a function naming convention;
-suppose, for example, we were writing PNG read and write handlers,
-we would name them
-
-void kimgio_png_read ( QImageIO * );
-void kimgio_png_write( QImageIO * );
-
-ie
-
-kimgio_<format>_<read/write>
-
-This should reduce the chance of identifier clashes with other code.
-
-2. Remember that a given KDE application may try to load dozens of
-images at once such as when loading icons, or creating thumbnails.
-Also, it may well be loading them over a network connection.
-Therefore,
-
-	- Avoid creating temporary files or allocating too much memory
-	when decoding and encoding. Especially try to avoid firing off
-	external programs.
-
-	- Don't assume that the IODevice which is the source or target
-	of the image data is pointing to a file on the local filesystem.
-	Use the IODevice methods to read and write image data.
-
-	- Check for file corruption or premature end of the image,
-	especially before using values read from the file
-	e.g. for memory allocations.
-
-3. If you only have either a reader or the writer for a particular
-format, don't use NULL in QImageIO::defineIOHandler. Instead, write
-a stub function for the unimplemented handler which displays a message
-on standard output. This prevents kimgio-using programs dumping core
-when attempting to call the unimplemented handler.
-
-
-Yours in good faith and pedantry,
-
-Sirtaj Singh Kang <taj@kde.org>, 23 September 1998.
