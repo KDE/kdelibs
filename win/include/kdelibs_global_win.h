@@ -69,13 +69,13 @@ int kde_start
 # endif
 #endif
 */
-
+/*
 # ifndef __pid_t_defined
   //typedef __pid_t pid_t;
   typedef unsigned int pid_t;
 #  define __pid_t_defined
 # endif
-
+*/
 # ifndef __uid_t_defined
 //typedef __uid_t uid_t;
   typedef unsigned int __uid_t;
