@@ -758,7 +758,7 @@ bool KMD5::update(QIODevice& file)
     char buffer[1024];
     int len;
 
-    while ((len=file.readBlock(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
+    while ((len=file.read(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
         update(buffer, len);
 
     return file.atEnd();
@@ -827,7 +827,7 @@ void KMD5::rawDigest( KMD5::Digest& bin )
 
 QByteArray KMD5::hexDigest()
 {
-    QByteArray s(33);
+    QByteArray s(32, 0);
 
     finalize();
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
@@ -841,7 +841,7 @@ QByteArray KMD5::hexDigest()
 void KMD5::hexDigest(QByteArray& s)
 {
     finalize();
-    s.resize(33);
+    s.resize(32);
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
             m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
@@ -850,13 +850,9 @@ void KMD5::hexDigest(QByteArray& s)
 
 QByteArray KMD5::base64Digest()
 {
-    QByteArray ba(16);
-
     finalize();
-    memcpy(ba.data(), m_digest, 16);
-    return KCodecs::base64Encode(ba);
+    return QByteArray::fromRawData(reinterpret_cast<const char*>(m_digest),16).toBase64();
 }
-
 
 void KMD5::init()
 {
@@ -1155,7 +1151,7 @@ bool KMD4::update(QIODevice& file)
     char buffer[1024];
     int len;
 
-    while ((len=file.readBlock(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
+    while ((len=file.read(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
         update(buffer, len);
 
     return file.atEnd();
@@ -1238,7 +1234,7 @@ void KMD4::rawDigest( KMD4::Digest& bin )
 
 QByteArray KMD4::hexDigest()
 {
-    QByteArray s(33);
+    QByteArray s(32, 0);
 
     finalize();
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
@@ -1252,7 +1248,7 @@ QByteArray KMD4::hexDigest()
 void KMD4::hexDigest(QByteArray& s)
 {
     finalize();
-    s.resize(33);
+    s.resize(32);
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
             m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
@@ -1261,11 +1257,8 @@ void KMD4::hexDigest(QByteArray& s)
 
 QByteArray KMD4::base64Digest()
 {
-    QByteArray ba(16);
-
     finalize();
-    memcpy(ba.data(), m_digest, 16);
-    return KCodecs::base64Encode(ba);
+    return QByteArray::fromRawData(reinterpret_cast<const char*>(m_digest), 16).toBase64();
 }
 
 
