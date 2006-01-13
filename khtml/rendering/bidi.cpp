@@ -834,7 +834,11 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             box = box->prevLineBox();
         }
 
-        if (orphans < style()->orphans()) {
+        if (orphans == 0) {
+            setNeedsPageClear(true);
+            doPageBreak = false;
+        } else
+        if (orphans < style()->orphans() ) {
 #ifdef PAGE_DEBUG
             kdDebug(6040) << "Orphans: " << orphans << endl;
 #endif
@@ -1555,7 +1559,8 @@ redo_linebreak:
                 widows++;
             lineBox = lineBox->nextLineBox();
         }
-        if (widows < style()->widows()) {
+        // Widows rule broken and more orphans left to use
+        if (widows < style()->widows() && orphans > 0) {
             kdDebug( 6040 ) << "Widows: " << widows << endl;
             // Check if we have enough orphans after respecting widows count
             int newOrphans = orphans - (style()->widows() - widows);
