@@ -51,6 +51,13 @@
 ///////////////////////////////////////////////////////////////////
 
 template <> inline
+KIcon::Group KConfigBase::readEntry( const char *pKey,
+                                     const KIcon::Group& aDefault ) const
+{
+  return static_cast<KIcon::Group>(readEntry(pKey,int(aDefault)));
+}
+
+template <> inline
 void KConfigBase::writeEntry( const char *pKey,
                               const KIcon::Group& aValue,
                               KConfigBase::WriteConfigFlags flags)
@@ -593,8 +600,7 @@ void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
                 config->readEntry( QString("Description_") + number, QString() ),
                 applicationLocal,
                 config->readEntry( QString("Icon_") + number, QString() ),
-                static_cast<KIcon::Group>(
-                    config->readEntry( QString("IconGroup_") + number,0 )) );
+                config->readEntry( QString("IconGroup_") + number, KIcon::Group() ) );
 }
 
 void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )

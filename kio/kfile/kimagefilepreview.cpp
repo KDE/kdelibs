@@ -35,7 +35,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
       m_job( 0L )
 {
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
-    autoMode = cg.readEntry("Automatic Preview", QVariant(true )).toBool();
+    autoMode = cg.readEntry( "Automatic Preview", true );
 
     QGridLayout *vb = new QGridLayout( this, 2, 2, 0, KDialog::spacingHint() );
     vb->addItem( new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0 );

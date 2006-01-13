@@ -702,12 +702,12 @@ void KBookmarkSettings::readSettings()
    config.setGroup("Bookmarks");
 
    // add bookmark dialog usage - no reparse
-   s_self->m_advancedaddbookmark = config.readEntry("AdvancedAddBookmarkDialog", QVariant(false)).toBool();
+   s_self->m_advancedaddbookmark = config.readEntry("AdvancedAddBookmarkDialog", false);
 
    // these three alter the menu, therefore all need a reparse
-   s_self->m_contextmenu = config.readEntry("ContextMenuActions", QVariant(true)).toBool();
-   s_self->m_quickactions = config.readEntry("QuickActionSubmenu", QVariant(false)).toBool();
-   s_self->m_filteredtoolbar = config.readEntry("FilteredToolbar", QVariant(false)).toBool();
+   s_self->m_contextmenu = config.readEntry("ContextMenuActions", true);
+   s_self->m_quickactions = config.readEntry("QuickActionSubmenu", false);
+   s_self->m_filteredtoolbar = config.readEntry("FilteredToolbar", false);
 }
 
 KBookmarkSettings *KBookmarkSettings::self()

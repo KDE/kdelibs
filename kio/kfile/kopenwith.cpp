@@ -424,7 +424,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     int mode = cg.readEntry(QString::fromLatin1("CompletionMode"),
 				int(KGlobalSettings::completionMode()));
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
-    QStringList list = cg.readListEntry( QString::fromLatin1("History") );
+    QStringList list = cg.readEntry( QString::fromLatin1("History"), QStringList() );
     combo->setHistoryItems( list, true );
     edit = new KURLRequester( combo, this );
   }
@@ -764,7 +764,7 @@ void KOpenWithDlg::slotOK()
 
   if (bRemember || d->saveNewApps)
   {
-    QStringList mimeList = desktop->readListEntry("MimeType", ';');
+    QStringList mimeList = desktop->readEntry("MimeType", QStringList(), ';');
     if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
       mimeList.append(qServiceType);
     desktop->writeEntry("MimeType", mimeList, ';');

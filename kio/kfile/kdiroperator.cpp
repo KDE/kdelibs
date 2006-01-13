@@ -785,7 +785,7 @@ bool KDirOperator::checkPreviewSupport()
 
     bool hasPreviewSupport = false;
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
-    if ( cg.readEntry( "Show Default Preview", QVariant(true) ).toBool() )
+    if ( cg.readEntry( "Show Default Preview", true ) )
         hasPreviewSupport = checkPreviewInternal();
 
     previewAction->setEnabled( hasPreviewSupport );
@@ -1360,7 +1360,7 @@ void KDirOperator::setupMenu(int whichActions)
             actionMenu->insert( myActionCollection->action( "trash" ) );
         KConfigGroup cg( KGlobal::config(), QLatin1String("KDE") );
         if (!currUrl.isLocalFile() || (QApplication::keyboardModifiers() & Qt::ShiftModifier) ||
-            cg.readEntry("ShowDeleteCommand", QVariant(false)).toBool())
+            cg.readEntry("ShowDeleteCommand", false))
             actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
     }
@@ -1422,23 +1422,22 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     defaultView = 0;
     int sorting = 0;
 
-    QString viewStyle = kc->readEntry( "View Style",
-                                       "Simple" );
+    QString viewStyle = kc->readEntry( "View Style", "Simple" );
     if ( viewStyle == QLatin1String("Detail") )
         defaultView |= KFile::Detail;
     else
         defaultView |= KFile::Simple;
     if ( kc->readEntry( QLatin1String("Separate Directories"),
-                        QVariant(DefaultMixDirsAndFiles) ).toBool() )
+                        DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
-    if ( kc->readEntry(QLatin1String("Show Preview"), QVariant(false)).toBool())
+    if ( kc->readEntry(QLatin1String("Show Preview"), false) )
         defaultView |= KFile::PreviewContents;
 
     if ( kc->readEntry( QLatin1String("Sort case insensitively"),
-                        QVariant(DefaultCaseInsensitive) ).toBool() )
+                        DefaultCaseInsensitive ) )
         sorting |= QDir::IgnoreCase;
     if ( kc->readEntry( QLatin1String("Sort directories first"),
-                        QVariant(DefaultDirsFirst) ).toBool() )
+                        DefaultDirsFirst ) )
         sorting |= QDir::DirsFirst;
 
 
@@ -1456,12 +1455,12 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
 
 
     if ( kc->readEntry( QLatin1String("Show hidden files"),
-                        QVariant(DefaultShowHidden) ).toBool() ) {
+                        DefaultShowHidden ) ) {
          showHiddenAction->setChecked( true );
          dir->setShowingDotFiles( true );
     }
     if ( kc->readEntry( QLatin1String("Sort reversed"),
-                        QVariant(DefaultSortReversed) ).toBool() )
+                        DefaultSortReversed ) )
         reverseAction->setChecked( true );
 
     kc->setGroup( oldGroup );

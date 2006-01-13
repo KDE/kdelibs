@@ -276,16 +276,16 @@ void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
     KConfigGroup conf( config, group );
     d->urlCombo->setHistoryItems( conf.readPathListEntry( "History Items" ));
 
-    QSize defaultSize( 400, 450 );
-    resize( conf.readEntry( "DirSelectDialog Size", QVariant(defaultSize) ).toSize());
+    resize( conf.readEntry( "DirSelectDialog Size", QSize( 400, 450 ) ) );
 }
 
 void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
 {
     KConfigGroup conf( config, group );
     conf.writePathEntry( "History Items", d->urlCombo->historyItems(), ',',
-                     KConfigBase::Global);
-    conf.writeEntry( "DirSelectDialog Size", size(), KConfigBase::Global );
+                     KConfigBase::Persistent|KConfigBase::Global);
+    conf.writeEntry( "DirSelectDialog Size", size(),
+                     KConfigBase::Persistent|KConfigBase::Global );
 
     d->speedBar->save( config );
 

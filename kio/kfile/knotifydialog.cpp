@@ -1078,7 +1078,7 @@ void Application::reloadEvents( bool revertToDefaults )
             e = new Event( this );
             e->name = kc->readEntry( "Name" );
             e->description = kc->readEntry( "Comment" );
-            e->dontShow = kc->readEntry("nopresentation", QVariant(0 )).toInt();
+            e->dontShow = kc->readEntry( "nopresentation", 0 );
             e->configGroup = *it;
 
             if ( e->name.isEmpty() || e->description.isEmpty() )
@@ -1087,7 +1087,7 @@ void Application::reloadEvents( bool revertToDefaults )
             else { // load the event
                 // default to passive popups over plain messageboxes
                 int default_rep = kc->readEntry("default_presentation",
-                                                   0 | KNotifyClient::PassivePopup);
+                                                   int(KNotifyClient::PassivePopup));
                 QString default_logfile = kc->readPathEntry("default_logfile");
                 QString default_soundfile = kc->readPathEntry("default_sound");
                 QString default_commandline = kc->readPathEntry("default_commandline");

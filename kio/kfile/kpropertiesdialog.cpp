@@ -2667,7 +2667,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
     mimeEdit->setText( m_sMimeStr );
   cbAutoEmbed->setTristate();
   if ( config.hasKey( "X-KDE-AutoEmbed" ) )
-      cbAutoEmbed->setChecked( config.readEntry( "X-KDE-AutoEmbed" , QVariant(false)).toBool() );
+      cbAutoEmbed->setChecked( config.readEntry( "X-KDE-AutoEmbed", false ) );
   else
       cbAutoEmbed->setNoChange();
 
@@ -2862,7 +2862,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   config.setDesktopGroup();
   QString deviceStr = config.readEntry( "Dev" );
   QString mountPointStr = config.readEntry( "MountPoint" );
-  bool ro = config.readEntry("ReadOnly", QVariant(false )).toBool();
+  bool ro = config.readEntry( "ReadOnly", false );
   QString unmountedStr = config.readEntry( "UnmountIcon" );
 
   fileSystem->setText( i18n(config.readEntry("FSType").toLocal8Bit()) );
@@ -3079,17 +3079,17 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
   m_origCommandStr = commandStr;
   QString pathStr = config.readPathEntry( "Path" );
-  m_terminalBool = config.readEntry( "Terminal" , QVariant(false)).toBool();
+  m_terminalBool = config.readEntry( "Terminal", false );
   m_terminalOptionStr = config.readEntry( "TerminalOptions" );
-  m_suidBool = config.readEntry( "X-KDE-SubstituteUID" , QVariant(false)).toBool();
+  m_suidBool = config.readEntry( "X-KDE-SubstituteUID", false );
   m_suidUserStr = config.readEntry( "X-KDE-Username" );
   if( config.hasKey( "StartupNotify" ))
-    m_startupBool = config.readEntry("StartupNotify", QVariant(true )).toBool();
+    m_startupBool = config.readEntry( "StartupNotify", true );
   else
-    m_startupBool = config.readEntry("X-KDE-StartupNotify", QVariant(true )).toBool();
+    m_startupBool = config.readEntry( "X-KDE-StartupNotify", true );
   m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").toLower();
 
-  QStringList mimeTypes = config.readListEntry( "MimeType", ';' );
+  QStringList mimeTypes = config.readEntry( "MimeType", QStringList(), ';' );
 
   if ( nameStr.isEmpty() || bKDesktopMode ) {
     // We'll use the file name if no name is specified
@@ -3655,9 +3655,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   execStr = config.readPathEntry( "Exec" );
   swallowExecStr = config.readPathEntry( "SwallowExec" );
   swallowTitleStr = config.readEntry( "SwallowTitle" );
-  termBool = config.readEntry( "Terminal" , QVariant(false)).toBool();
+  termBool = config.readEntry( "Terminal", false );
   termOptionsStr = config.readEntry( "TerminalOptions" );
-  suidBool = config.readEntry( "X-KDE-SubstituteUID" , QVariant(false)).toBool();
+  suidBool = config.readEntry( "X-KDE-SubstituteUID", false );
   suidUserStr = config.readEntry( "X-KDE-Username" );
 
   if ( !swallowExecStr.isNull() )
@@ -3914,9 +3914,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   QString commentStr = config.readEntry( "Comment" );
   QString genNameStr = config.readEntry( "GenericName" );
 
-  QStringList selectedTypes = config.readListEntry( "ServiceTypes" );
+  QStringList selectedTypes = config.readEntry( "ServiceTypes", QStringList() );
   // For compatibility with KDE 1.x
-  selectedTypes += config.readListEntry( "MimeType", ';' );
+  selectedTypes += config.readEntry( "MimeType", QStringList(), ';' );
 
   QString nameStr = config.readEntry( "Name" );
   if ( nameStr.isEmpty() || d->m_kdesktopMode ) {

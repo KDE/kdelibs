@@ -1124,7 +1124,7 @@ KBookmarkMenu::DynMenuInfo KBookmarkMenu::showDynamicBookmarks( const QString &i
     // have new version config
     if (config.hasGroup("DynamicMenu-" + id)) {
       config.setGroup("DynamicMenu-" + id);
-      info.show = config.readEntry("Show", QVariant(false)).toBool();
+      info.show = config.readEntry("Show", false);
       info.location = config.readPathEntry("Location");
       info.type = config.readEntry("Type");
       info.name = config.readEntry("Name");
@@ -1141,7 +1141,7 @@ QStringList KBookmarkMenu::dynamicBookmarksList()
 
   QStringList mlist;
   if (config.hasKey("DynamicMenus"))
-    mlist = config.readListEntry("DynamicMenus");
+    mlist = config.readEntry("DynamicMenus", QStringList());
   else
     mlist << "netscape";
 
@@ -1175,7 +1175,7 @@ void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &ne
       config.writeEntry("Name", xbelSetting.name);
     }
   } else {
-    elist = config.readListEntry("DynamicMenus");
+    elist = config.readEntry("DynamicMenus", QStringList());
   }
 
   // make sure list includes type

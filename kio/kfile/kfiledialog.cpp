@@ -1636,7 +1636,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
                                        DefaultRecentURLsNumber ) );
     combo->setURL( ops->url() );
     autoDirectoryFollowing = kc->readEntry( AutoDirectoryFollowing,
-                                            QVariant(DefaultDirectoryFollowing) ).toBool();
+                                            DefaultDirectoryFollowing );
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
                                       kc->readEntry( PathComboCompletionMode,
@@ -1651,13 +1651,13 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
         locationEdit->setCompletionMode( cm );
 
     // show or don't show the speedbar
-    toggleSpeedbar( kc->readEntry(ShowSpeedbar, QVariant(true)).toBool() );
+    toggleSpeedbar( kc->readEntry(ShowSpeedbar, true) );
 
     // show or don't show the bookmarks
-    toggleBookmarks( kc->readEntry(ShowBookmarks, QVariant(false)).toBool() );
+    toggleBookmarks( kc->readEntry(ShowBookmarks, false) );
 
     // does the user want Automatically Select Extension?
-    d->autoSelectExtChecked = kc->readEntry (AutoSelectExtChecked, QVariant(DefaultAutoSelectExtChecked)).toBool();
+    d->autoSelectExtChecked = kc->readEntry (AutoSelectExtChecked, DefaultAutoSelectExtChecked);
     updateAutoSelectExtension ();
 
     int w1 = minimumSize().width();
