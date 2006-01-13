@@ -194,6 +194,15 @@ int Lexer::lex()
         skipCR = false;
         shift(1);
     }
+
+    bool cr = (current == '\r');
+    bool lf = (current == '\n');
+    if (cr)
+      skipLF = true;
+    else if (lf)
+      skipCR = true;
+    bool isLineTerminator = cr || lf;
+
     switch (state) {
     case Start:
       if (isWhiteSpace()) {
@@ -212,7 +221,7 @@ int Lexer::lex()
           setDone(Other);
         } else
           setDone(Eof);
-      } else if (isLineTerminator()) {
+      } else if (isLineTerminator) {
         nextLine();
         terminator = true;
         if (restrKeyword) {
@@ -259,7 +268,7 @@ int Lexer::lex()
       if (current == stringType) {
         shift(1);
         setDone(String);
-      } else if (current == 0 || isLineTerminator()) {
+      } else if (current == 0 || isLineTerminator) {
         setDone(Bad);
       } else if (current == '\\') {
         state = InEscapeSequence;
@@ -289,7 +298,7 @@ int Lexer::lex()
         state = InHexEscape;
       else if (current == 'u')
         state = InUnicodeEscape;
-      else if (isLineTerminator()) {
+      else if (isLineTerminator) {
         nextLine();
         state = InString;
       } else {
@@ -327,7 +336,7 @@ int Lexer::lex()
       }
       break;
     case InSingleLineComment:
-      if (isLineTerminator()) {
+      if (isLineTerminator) {
         nextLine();
         terminator = true;
         if (restrKeyword) {
@@ -342,7 +351,7 @@ int Lexer::lex()
     case InMultiLineComment:
       if (current == 0) {
         setDone(Bad);
-      } else if (isLineTerminator()) {
+      } else if (isLineTerminator) {
         nextLine();
       } else if (current == '*' && next1 == '/') {
         state = Start;
@@ -546,7 +555,7 @@ int Lexer::lex()
     token = NUMBER;
     break;
   case Bad:
-    fprintf(stderr, "yylex: ERROR.\n");
+    fprintf(stderr, "KJS: yylex: ERROR.\n");
     error = true;
     return -1;
   default:
@@ -562,17 +571,6 @@ bool Lexer::isWhiteSpace() const
 {
   return (current == ' ' || current == '\t' ||
           current == 0x0b || current == 0x0c || current == 0xa0);
-}
-
-bool Lexer::isLineTerminator()
-{
-  bool cr = (current == '\r');
-  bool lf = (current == '\n');
-  if (cr)
-      skipLF = true;
-  else if (lf)
-      skipCR = true;
-  return cr || lf;
 }
 
 bool Lexer::isIdentLetter(unsigned short c)
@@ -806,7 +804,7 @@ bool Lexer::scanRegExp()
   bool inBrackets = false;
 
   while (1) {
-    if (isLineTerminator() || current == 0)
+    if (current == '\r' || current == '\n' || current == 0)
       return false;
     else if (current != '/' || lastWasEscape == true || inBrackets == true)
     {
