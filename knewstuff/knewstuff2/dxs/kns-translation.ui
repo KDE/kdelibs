@@ -1,0 +1,295 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>Form1</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>Form1</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>592</width>
+            <height>431</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Translate Contribution</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>140</y>
+                <width>390</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&lt;p align="right"&gt;Translation into language&lt;/p&gt;</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Español</string>
+            </property>
+            <property name="pixmap">
+                <pixmap>image0</pixmap>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>comboBox1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>420</x>
+                <y>140</y>
+                <width>161</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QFrame">
+        <property name="name">
+            <cstring>frame3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>570</width>
+                <height>111</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Raised</enum>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>line1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>170</y>
+                <width>571</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>lineEdit2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>200</y>
+                <width>200</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>200</y>
+                <width>130</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Name</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>240</y>
+                <width>130</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Description</string>
+        </property>
+    </widget>
+    <widget class="QTextEdit">
+        <property name="name">
+            <cstring>textEdit2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>240</y>
+                <width>201</width>
+                <height>64</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>lineEdit1</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>160</x>
+                <y>200</y>
+                <width>190</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QTextEdit">
+        <property name="name">
+            <cstring>textEdit1</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>160</x>
+                <y>240</y>
+                <width>190</width>
+                <height>64</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>320</y>
+                <width>121</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Translated content</string>
+        </property>
+    </widget>
+    <widget class="KURLRequester">
+        <property name="name">
+            <cstring>kURLRequester1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>320</y>
+                <width>201</width>
+                <height>24</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="KPushButton">
+        <property name="name">
+            <cstring>kPushButton2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>480</x>
+                <y>390</y>
+                <width>101</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Submit</string>
+        </property>
+        <property name="iconSet">
+            <iconset>image1</iconset>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>line2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>360</y>
+                <width>570</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="KPushButton">
+        <property name="name">
+            <cstring>kPushButton1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>360</x>
+                <y>390</y>
+                <width>101</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+        <property name="iconSet">
+            <iconset>image2</iconset>
+        </property>
+    </widget>
+</widget>
+<images>
+    <image name="image0">
+        <data format="PNG" length="113">89504e470d0a1a0a0000000d49484452000000150000000e0806000000c00657ce0000003849444154388dedceb10d00201402d1c3fd87c2c9be951b4061e225b42f686008b66dad24782ba103d1f59e7ef41154105def6921d98ea307c6401a9bc7ca667b0000000049454e44ae426082</data>
+    </image>
+    <image name="image1">
+        <data format="PNG" length="489">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff61000001b049444154388dc5d33f4894011cc6f1cffbde7bafff8882ccaeb870b8a1290209a586c082e686041743321c83080a6909daaba125841aa2a9a102e11ac25144171dfa0315941a2786a99579dedd7b6f438221658343bfe5f73cc3971f3c3cbf204d533b9970473402b71c52336b153fb0861a22c4c8fea6a30d1f2bc40d063219472289676aaea3b8eda91475077141cd60a5a61c447ac23009abd9c6ec4355dd7f052bf6e2da9efc9ed15c3e77d39a19eb4e613aa3d3eed663ad679334395d2bd5c605e6d437d2a9db2fd417e5a3e1dc995c6f53dcd43a3f355f4c2b699fd8a7204b942ea7934be5a54ad813e67df1c807e7f04a45bf76fdc189a02bee8cad8caf582dae3e9631a8d1f2668803dab42bbaacc302ee7b6fcda2933a1dc73e3cc1883b9addb0cb8a188d04cd44ea16bc33e1b50e87d1ab2054700055dc5533e1b606433292ad1185d6f1dda469890534a0051f710fa386a4aefe0986c83724c64c5974549b2c66f154d95b97b418deae6e91048937e6bc54d2a682114b665cd1ecc1bfba1aa9a28e75a3c6742bf96cc67991e782ed61c8282040aaaca4cb5717455e086c5677ebcefcd24196e0bf7fe34fa052900b6330921a0000000049454e44ae426082</data>
+    </image>
+    <image name="image2">
+        <data format="PNG" length="832">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000030749444154388d6d935b681c7518c57fdf7f66672fceee26bbd94b2eb268521a29c66d6a9ad2d482a62da808fa20484045305410abe8ab0f0a2a8214158b28a3155f048b3e68056d505a4a4b2f6993d4169b2c36b266a9b96cd84b361b77b333e3436c346d3ff8dece3970be733ee13673695bbfcf71dd3e07ba5c5c71916b655d1b1d3c7fa67a33566e229a02af7b5cf785a052e1c69d1d3402017c990c45db295585af8bbae7ed7de74eff798bc0a56dfd490527a289f8e6f0334fa3ed1a400b0501706b75aa63e354bef892f9cc547ed6ef7ff291d3274fac0b4cf46e3795c885b6dead9b7daf1c400f9ab77386b3daa0f0f961e67e3ab638699af70e9d3cfe9706b0bfb5fd9d5832f998ffa517d143269e9616eab91c4eb5babe28859188a3c56368bf4f0764762ea83dfaf088bad0dbe7f3c0f3de7d7bb12b15f468142d18c448a5a8cfe7a9cfe771566dfc9b36a10583b8b6833cb08b90e30c6d99c9b5e9409f691861bbb909279fa7f8e331c27b1ec24824b823dd43f5d72b04b7df0fc0e277df637efa19ede5255ca5ccce7265a70e74a94884463e8f681a28c5e2916f883cf138de8e768cbd0900960e7d4ce097e378979641c0a7697844ba7440b47a1d2d3b8318066218f8f20b30370f6fbdb976bdf1098247befd2f3757018223a2948b5c734a25a253192297afd07c718c402884f77f64b6a6e1c383ff0a08e81a35a7c18a484e95756db464db2511413485a47bd0de7b770d7ce05578f9b57511f7a3f7b1037e6c9f8f82ed2c5f8d348dabc1f367aa55e1f0ac12ca1d1d38cf3dbbe6f9e007146a350af77453f8c462752a83dcd74375cf20b34a58f0e847b3f1d8750118e91f688ed88dd1961d3b3a8d96e85a84d9ec2d453252292a17c758387b36f7735beb53d389d8e87a957f18d8dd99acd747c2e9f4dd667737221bc9ae0b95c9498a1313b953c9c4fedf92f15396659537c0bedafd606baabaf24620101832ee4a99dea666006ac502f53fb2cb85dadf47cf25e287a613b1cb966595373cd38d191e1e36b6cce4da3acb959d1e912e4744ad88e4ae469ac6b3f1d87560d1b2acfa0dfc3ff65f2612a288fa150000000049454e44ae426082</data>
+    </image>
+</images>
+<layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+</includehints>
+</UI>
