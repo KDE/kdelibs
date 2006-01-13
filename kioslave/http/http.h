@@ -30,9 +30,9 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <QByteArray>
 #include <QList>
-#include <q3strlist.h>
-#include <qstringlist.h>
+#include <QStringList>
 
 #include <kurl.h>
 #include "kio/tcpslavebase.h"
@@ -171,17 +171,17 @@ public:
 
   struct DigestAuthInfo
   {
-    Q3CString nc;
-    Q3CString qop;
-    Q3CString realm;
-    Q3CString nonce;
-    Q3CString method;
-    Q3CString cnonce;
-    Q3CString username;
-    Q3CString password;
-    Q3StrList digestURI;
-    Q3CString algorithm;
-    Q3CString entityBody;
+    QByteArray nc;
+    QByteArray qop;
+    QByteArray realm;
+    QByteArray nonce;
+    QByteArray method;
+    QByteArray cnonce;
+    QByteArray username;
+    QByteArray password;
+    KURL::List digestURI;
+    QByteArray algorithm;
+    QByteArray entityBody;
   };
 
 //---------------------- Re-implemented methods ----------------
@@ -306,7 +306,7 @@ protected:
   /**
    * Performs a WebDAV stat or list
    */
-  void davSetRequest( const Q3CString& requestXML );
+  void davSetRequest( const QByteArray& requestXML );
   void davStatList( const KURL& url, bool stat = true );
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
   void davParseActiveLocks( const QDomNodeList& activeLocks,
@@ -449,12 +449,12 @@ protected:
   /**
    * create GSS error string
    */
-  Q3CString gssError( int major_status, int minor_status );
+  QByteArray gssError( int major_status, int minor_status );
 
   /**
    * Calcualtes the message digest response based on RFC 2617.
    */
-  void calculateResponse( DigestAuthInfo &info, Q3CString &Response );
+  void calculateResponse( DigestAuthInfo &info, QByteArray &Response );
 
   /**
    * Prompts the user for authorization retry.

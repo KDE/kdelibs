@@ -38,7 +38,6 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qdatetime.h>
-#include <qstringlist.h>
 
 #include <kurl.h>
 #include <kidna.h>
@@ -134,8 +133,8 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
   if (a == b)
     return false;
 
-  QStringList l1 = QStringList::split('.', a);
-  QStringList l2 = QStringList::split('.', b);
+  QStringList l1 = a.split(',',QString::SkipEmptyParts);
+  QStringList l2 = b.split('.',QString::SkipEmptyParts);
 
   while(l1.count() > l2.count())
       l1.pop_front();
@@ -402,7 +401,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
     m_davHostOk = m_davHostUnsupported = false;
 
   // is it an IPv6 address?
-  if (host.find(':') == -1)
+  if (host.indexOf(':') == -1)
     {
       m_request.hostname = host;
       m_request.encoded_hostname = KIDNA::toAscii(host);
@@ -410,7 +409,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
   else
     {
       m_request.hostname = host;
-      int pos = host.find('%');
+      int pos = host.indexOf('%');
       if (pos == -1)
 	m_request.encoded_hostname = '[' + host + ']';
       else
@@ -448,10 +447,10 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
      return false;
   }
 
-  if ( m_protocol != u.protocol().latin1() )
+  if ( m_protocol != u.protocol().toLatin1() )
   {
     short unsigned int oldDefaultPort = m_iDefaultPort;
-    m_protocol = u.protocol().latin1();
+    m_protocol = u.protocol().toLatin1();
     reparseConfiguration();
     if ( m_iDefaultPort != oldDefaultPort &&
          m_request.port == oldDefaultPort )
@@ -611,13 +610,10 @@ void HTTPProtocol::listDir( const KURL& url )
   davStatList( url, false );
 }
 
-void HTTPProtocol::davSetRequest( const Q3CString& requestXML )
+void HTTPProtocol::davSetRequest( const QByteArray& requestXML )
 {
   // insert the document into the POST buffer, kill trailing zero byte
   m_bufPOST = requestXML;
-
-  if (m_bufPOST.size())
-    m_bufPOST.truncate( m_bufPOST.size() - 1 );
 }
 
 void HTTPProtocol::davStatList( const KURL& url, bool stat )
@@ -632,7 +628,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   QString query = metaData("davSearchQuery");
   if ( !query.isEmpty() )
   {
-    Q3CString request = "<?xml version=\"1.0\"?>\r\n";
+    QByteArray request = "<?xml version=\"1.0\"?>\r\n";
     request.append( "<D:searchrequest xmlns:D=\"DAV:\">\r\n" );
     request.append( query.toUtf8() );
     request.append( "</D:searchrequest>\r\n" );
@@ -640,7 +636,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     davSetRequest( request );
   } else {
     // We are only after certain features...
-    Q3CString request;
+    QByteArray request;
     request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
     "<D:propfind xmlns:D=\"DAV:\">";
 
@@ -707,7 +703,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
       QString urlStr = href.text();
       int encoding = remoteEncoding()->encodingMib();
-      if ((encoding == 106) && (!KStringHandler::isUtf8(KURL::decode_string(urlStr, 4).latin1())))
+      if ((encoding == 106) && (!KStringHandler::isUtf8(KURL::decode_string(urlStr, 4).toLatin1())))
         encoding = 4; // Use latin1 if the file is not actually utf-8
 
       KURL thisURL ( urlStr, encoding );
@@ -780,8 +776,8 @@ void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
 
 int HTTPProtocol::codeFromResponse( const QString& response )
 {
-  int firstSpace = response.find( ' ' );
-  int secondSpace = response.find( ' ', firstSpace + 1 );
+  int firstSpace = response.indexOf( ' ' );
+  int secondSpace = response.indexOf( ' ', firstSpace + 1 );
   return response.mid( firstSpace + 1, secondSpace - firstSpace - 1 ).toInt();
 }
 
@@ -2511,7 +2507,7 @@ bool HTTPProtocol::httpOpen()
 
   kdDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
 
-  QStringList headerOutput = QStringList::split("\r\n", header);
+  QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
   QStringList::Iterator it = headerOutput.begin();
 
   for (; it != headerOutput.end(); it++)
@@ -2533,7 +2529,7 @@ bool HTTPProtocol::httpOpen()
   }
 
   // Send the data to the remote machine...
-  bool sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
+  bool sendOk = (write(header.toLatin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen: "
@@ -2633,7 +2629,7 @@ try_again:
      return true;
   }
 
-  Q3CString locationStr; // In case we get a redirect.
+  QByteArray locationStr; // In case we get a redirect.
   Q3CString cookieStr; // In case we get a cookie.
 
   QString disposition; // Incase we get a Content-Disposition
@@ -2946,8 +2942,8 @@ try_again:
     }
     // Keep Alive
     else if (strncasecmp(buf, "Keep-Alive:", 11) == 0) {
-      QStringList options = QStringList::split(',',
-                                     QString::fromLatin1(trimLead(buf+11)));
+      QStringList options = QString::fromLatin1(trimLead(buf+11)).
+          split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = options.begin();
           it != options.end();
           it++)
@@ -2962,28 +2958,28 @@ try_again:
 
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
-      QStringList cacheControls = QStringList::split(',',
-                                     QString::fromLatin1(trimLead(buf+14)));
+      QStringList cacheControls = QString::fromLatin1(trimLead(buf+14)).
+          split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
           it++)
       {
          QString cacheControl = (*it).trimmed();
-         if (strncasecmp(cacheControl.latin1(), "no-cache", 8) == 0)
+         if (strncasecmp(cacheControl.toLatin1(), "no-cache", 8) == 0)
          {
             m_request.bCachedWrite = false; // Don't put in cache
             mayCache = false;
          }
-         else if (strncasecmp(cacheControl.latin1(), "no-store", 8) == 0)
+         else if (strncasecmp(cacheControl.toLatin1(), "no-store", 8) == 0)
          {
             m_request.bCachedWrite = false; // Don't put in cache
             mayCache = false;
          }
-         else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
+         else if (strncasecmp(cacheControl.toLatin1(), "max-age=", 8) == 0)
          {
             QString age = cacheControl.mid(8).trimmed();
             if (!age.isNull())
-              maxAge = STRTOLL(age.latin1(), 0, 10);
+              maxAge = STRTOLL(age.toLatin1(), 0, 10);
          }
       }
       hasCacheDirective = true;
@@ -3082,7 +3078,7 @@ try_again:
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      Q3CString pragma = Q3CString(trimLead(buf+7)).trimmed().toLower();
+      QByteArray pragma = QByteArray(trimLead(buf+7)).trimmed().toLower();
       if (pragma == "no-cache")
       {
          m_request.bCachedWrite = false; // Don't put in cache
@@ -3101,7 +3097,7 @@ try_again:
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = Q3CString(trimLead(buf+9)).trimmed();
+        locationStr = QByteArray(trimLead(buf+9)).trimmed();
     }
 
     // Check for cookies
@@ -3123,7 +3119,7 @@ try_again:
     else if (strncasecmp(buf, "Upgrade:", 8) == 0) {
        // Now we have to check to see what is offered for the upgrade
        QString offered = &(buf[8]);
-       upgradeOffers = QStringList::split(QRegExp("[ \n,\r\t]"), offered);
+       upgradeOffers = offered.split(QRegExp("[ \n,\r\t]"), QString::SkipEmptyParts);
     }
 
     // content?
@@ -3213,9 +3209,8 @@ try_again:
     }
     else if (strncasecmp(buf, "Link:", 5) == 0) {
       // We only support Link: <url>; rel="type"   so far
-      QStringList link = QStringList::split(";", QString(buf)
-                                                 .replace(QRegExp("^Link:[ ]*"),
-                                                          ""));
+      QStringList link = QString(buf).replace(QRegExp("^Link:[ ]*"),"").
+          split(';',QString::SkipEmptyParts);
       if (link.count() == 2) {
         QString rel = link[1].trimmed();
         if (rel.startsWith("rel=\"")) {
@@ -3231,11 +3226,11 @@ try_again:
       QString p3pstr = buf;
       p3pstr = p3pstr.mid(4).simplified();
       QStringList policyrefs, compact;
-      QStringList policyfields = QStringList::split(QRegExp(",[ ]*"), p3pstr);
+      QStringList policyfields = p3pstr.split(QRegExp(",[ ]*"), QString::SkipEmptyParts);
       for (QStringList::Iterator it = policyfields.begin();
                                   it != policyfields.end();
                                                       ++it) {
-         QStringList policy = QStringList::split("=", *it);
+         QStringList policy = (*it).split('=',QString::SkipEmptyParts);
 
          if (policy.count() == 2) {
             if (policy[0].toLower() == "policyref") {
@@ -3245,9 +3240,8 @@ try_again:
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
                // efficient but I'm going for correctness right now.
-               QStringList cps = QStringList::split(" ",
-                                        policy[1].replace(QRegExp("[\"\']"), "")
-                                                 .simplified());
+               QStringList cps = policy[1].replace(QRegExp("[\"\']"), "")
+                   .simplified().split(' ',QString::SkipEmptyParts);
 
                for (QStringList::Iterator j = cps.begin(); j != cps.end(); ++j)
                  compact << *j;
@@ -3570,14 +3564,14 @@ try_again:
   {
      if (m_strMimeType == "application/x-tar")
      {
-        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_qContentEncodings.removeLast();
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
      else if (m_strMimeType == "application/postscript")
      {
         // LEONB: Adding another exception for psgz files.
         // Could we use the mimelnk files instead of hardcoding all this?
-        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_qContentEncodings.removeLast();
         m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
      }
      else if ( (m_request.allowCompressedPage &&
@@ -3594,7 +3588,7 @@ try_again:
      }
      else
      {
-        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_qContentEncodings.removeLast();
         m_strMimeType = QString::fromLatin1("application/x-gzip");
      }
   }
@@ -3607,7 +3601,7 @@ try_again:
   //   and set the mimetype to x-bzip2 anyway.
   if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "bzip2")
   {
-     m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+     m_qContentEncodings.removeLast();
      m_strMimeType = QString::fromLatin1("application/x-bzip2");
   }
 
@@ -3820,7 +3814,7 @@ bool HTTPProtocol::sendBody()
   kdDebug( 7113 ) << "(" << m_pid << ")" << size << endl;
 
   // Send the content length...
-  bool sendOk = (write(size.latin1(), size.length()) == (ssize_t) size.length());
+  bool sendOk = (write(size.toLatin1(), size.length()) == (ssize_t) size.length());
   if (!sendOk)
   {
     kdDebug( 7113 ) << "(" << m_pid << ") Connection broken when sending "
@@ -3997,7 +3991,7 @@ int HTTPProtocol::readChunked()
 
      m_bufReceive.resize(4096);
 
-     if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+     if (!gets(m_bufReceive.data(), m_bufReceive.size()))
      {
        kdDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header" << endl;
        return -1;
@@ -4006,7 +4000,7 @@ int HTTPProtocol::readChunked()
      // If so, try again.
      if (m_bufReceive[0] == '\0')
      {
-        if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+        if (!gets(m_bufReceive.data(), m_bufReceive.size()))
         {
            kdDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header" << endl;
            return -1;
@@ -4034,7 +4028,7 @@ int HTTPProtocol::readChunked()
        // Skip trailers.
        do {
          // Skip trailer of last chunk.
-         if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+         if (!gets(m_bufReceive.data(), m_bufReceive.size()))
          {
            kdDebug(7113) << "(" << m_pid << ") gets() failure on Chunk trailer" << endl;
            return -1;
@@ -4250,9 +4244,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
       if (nbytes > 0)
       {
-        m_bufReceive.setRawData( buffer, nbytes);
-        slotData( m_bufReceive );
-        m_bufReceive.resetRawData( buffer, nbytes );
+        slotData( QByteArray::fromRawData( buffer, nbytes ) );
         sz += nbytes;
       }
     }
@@ -4297,8 +4289,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
    // decode all of the transfer encodings
   while (!m_qTransferEncodings.isEmpty())
   {
-    QString enc = m_qTransferEncodings.last();
-    m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
+    QString enc = m_qTransferEncodings.takeLast();
     if ( enc == "gzip" )
       chain.addFilter(new HTTPFilterGZip);
     else if ( enc == "deflate" )
@@ -4328,8 +4319,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // WB: They shouldn't do that. We can work around that though...
   while (!m_qContentEncodings.isEmpty())
   {
-    QString enc = m_qContentEncodings.last();
-    m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+    QString enc = m_qContentEncodings.takeLast();
     if ( enc == "gzip" )
       chain.addFilter(new HTTPFilterGZip);
     else if ( enc == "deflate" )
@@ -4538,12 +4528,12 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    QString CEF = m_request.path;
 
-   int p = CEF.find('/');
+   int p = CEF.indexOf('/');
 
    while(p != -1)
    {
       CEF[p] = separator;
-      p = CEF.find('/', p);
+      p = CEF.indexOf('/', p);
    }
 
    QString host = m_request.hostname.toLower();
@@ -4566,7 +4556,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   Q3CString u = m_request.url.url().latin1();
+   QByteArray u = m_request.url.url().toLatin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u.at(i)) % 2147483563;
@@ -4702,7 +4692,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
            QString date;
            date.setNum( time(0) );
            date = date.leftJustified(16);
-           fputs(date.latin1(), fs);      // Creation date
+           fputs(date.toLatin1(), fs);      // Creation date
            fputc('\n', fs);
         }
 
@@ -4724,7 +4714,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
         date = date.leftJustified(16);
         if (!ok || fseek(fs, m_request.cacheExpireDateOffset, SEEK_SET))
             return;
-        fputs(date.latin1(), fs);      // Expire date
+        fputs(date.toLatin1(), fs);      // Expire date
         fseek(fs, 0, SEEK_END);
         fclose(fs);
     }
@@ -4753,34 +4743,34 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    fputs(CACHE_REVISION, m_request.fcache);    // Revision
 
-   fputs(m_request.url.url().latin1(), m_request.fcache);  // Url
+   fputs(m_request.url.url().toLatin1(), m_request.fcache);  // Url
    fputc('\n', m_request.fcache);
 
    QString date;
    m_request.creationDate = time(0);
    date.setNum( m_request.creationDate );
    date = date.leftJustified(16);
-   fputs(date.latin1(), m_request.fcache);      // Creation date
+   fputs(date.toLatin1(), m_request.fcache);      // Creation date
    fputc('\n', m_request.fcache);
 
    date.setNum( expireDate );
    date = date.leftJustified(16);
-   fputs(date.latin1(), m_request.fcache);      // Expire date
+   fputs(date.toLatin1(), m_request.fcache);      // Expire date
    fputc('\n', m_request.fcache);
 
    if (!m_request.etag.isEmpty())
-      fputs(m_request.etag.latin1(), m_request.fcache);    //ETag
+      fputs(m_request.etag.toLatin1(), m_request.fcache);    //ETag
    fputc('\n', m_request.fcache);
 
    if (!m_request.lastModified.isEmpty())
-      fputs(m_request.lastModified.latin1(), m_request.fcache);    // Last modified
+      fputs(m_request.lastModified.toLatin1(), m_request.fcache);    // Last modified
    fputc('\n', m_request.fcache);
 
-   fputs(mimetype.latin1(), m_request.fcache);  // Mimetype
+   fputs(mimetype.toLatin1(), m_request.fcache);  // Mimetype
    fputc('\n', m_request.fcache);
 
    if (!m_request.strCharset.isEmpty())
-      fputs(m_request.strCharset.latin1(), m_request.fcache);    // Charset
+      fputs(m_request.strCharset.toLatin1(), m_request.fcache);    // Charset
    fputc('\n', m_request.fcache);
 
    return;
@@ -5084,13 +5074,13 @@ bool HTTPProtocol::getAuthorization()
     {
       bool isStaleNonce = false;
       QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
-      int pos = auth.find("stale", 0, false);
+      int pos = auth.indexOf("stale", 0, Qt::CaseInsensitive);
       if ( pos != -1 )
       {
         pos += 5;
         int len = auth.length();
         while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
-        if ( pos < len && auth.find("true", pos, false) != -1 )
+        if ( pos < len && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1 )
         {
           isStaleNonce = true;
           kdDebug(7113) << "(" << m_pid << ") Stale nonce value. "
@@ -5209,13 +5199,13 @@ bool HTTPProtocol::getAuthorization()
       else
         auth = m_strProxyAuthorization;
 
-      int pos = auth.find("stale", 0, false);
+      int pos = auth.indexOf("stale", 0, Qt::CaseInsensitive);
       if ( pos != -1 )
       {
         pos += 5;
         int len = auth.length();
         while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
-        if ( pos < len && auth.find("true", pos, false) != -1 )
+        if ( pos < len && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1 )
         {
           info.digestInfo = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
           kdDebug(7113) << "(" << m_pid << ") Just a stale nonce value! "
@@ -5306,14 +5296,14 @@ void HTTPProtocol::saveAuthorization()
 }
 
 #ifdef HAVE_LIBGSSAPI
-Q3CString HTTPProtocol::gssError( int major_status, int minor_status )
+QByteArray HTTPProtocol::gssError( int major_status, int minor_status )
 {
   OM_uint32 new_status;
   OM_uint32 msg_ctx = 0;
   gss_buffer_desc major_string;
   gss_buffer_desc minor_string;
   OM_uint32 ret;
-  Q3CString errorstr;
+  QByteArray errorstr;
 
   errorstr = "";
 
@@ -5332,8 +5322,7 @@ Q3CString HTTPProtocol::gssError( int major_status, int minor_status )
 QString HTTPProtocol::createNegotiateAuth()
 {
   QString auth;
-  Q3CString servicename;
-  QByteArray input;
+  QByteArray servicename;
   OM_uint32 major_status, minor_status;
   OM_uint32 req_flags = 0;
   gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;
@@ -5371,7 +5360,7 @@ QString HTTPProtocol::createNegotiateAuth()
 
   // the service name is "HTTP/f.q.d.n"
   servicename = "HTTP@";
-  servicename += m_state.hostname.ascii();
+  servicename += m_state.hostname.toAscii();
 
   input_token.value = (void *)servicename.data();
   input_token.length = servicename.length() + 1;
@@ -5409,9 +5398,8 @@ QString HTTPProtocol::createNegotiateAuth()
     return QString();
   }
 
-  input.duplicate((const char *)output_token.value, output_token.length);
   auth = "Authorization: Negotiate ";
-  auth += KCodecs::base64Encode( input );
+  auth += QByteArray::fromRawData((const char *)output_token.value, output_token.length).toBase64();
   auth += "\r\n";
 
   // free everything
@@ -5427,7 +5415,7 @@ QString HTTPProtocol::createNegotiateAuth()
 #else
 
 // Dummy
-Q3CString HTTPProtocol::gssError( int, int )
+QByteArray HTTPProtocol::gssError( int, int )
 {
   return "";
 }
@@ -5443,7 +5431,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
   QString auth, user, domain, passwd;
-  Q3CString strauth;
+  QByteArray strauth;
   QByteArray buf;
 
   if ( isForProxy )
@@ -5451,7 +5439,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     auth = "Proxy-Authorization: NTLM ";
     user = m_proxyURL.user();
     passwd = m_proxyURL.pass();
-    strauth = m_strProxyAuthorization.latin1();
+    strauth = m_strProxyAuthorization.toLatin1();
     len = m_strProxyAuthorization.length();
   }
   else
@@ -5459,7 +5447,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     auth = "Authorization: NTLM ";
     user = m_state.user;
     passwd = m_state.passwd;
-    strauth = m_strAuthorization.latin1();
+    strauth = m_strAuthorization.toLatin1();
     len = m_strAuthorization.length();
   }
   if ( user.contains('\\') ) {
@@ -5499,18 +5487,18 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {
   QString auth;
-  Q3CString user, passwd;
+  QByteArray user, passwd;
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Basic ";
-    user = m_proxyURL.user().latin1();
-    passwd = m_proxyURL.pass().latin1();
+    user = m_proxyURL.user().toLatin1();
+    passwd = m_proxyURL.pass().toLatin1();
   }
   else
   {
     auth = "Authorization: Basic ";
-    user = m_state.user.latin1();
-    passwd = m_state.passwd.latin1();
+    user = m_state.user.toLatin1();
+    passwd = m_state.passwd.toLatin1();
   }
 
   if ( user.isEmpty() )
@@ -5526,14 +5514,14 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   return auth;
 }
 
-void HTTPProtocol::calculateResponse( DigestAuthInfo& info, Q3CString& Response )
+void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response )
 {
   KMD5 md;
-  Q3CString HA1;
-  Q3CString HA2;
+  QByteArray HA1;
+  QByteArray HA2;
 
   // Calculate H(A1)
-  Q3CString authStr = info.username;
+  QByteArray authStr = info.username;
   authStr += ':';
   authStr += info.realm;
   authStr += ':';
@@ -5557,7 +5545,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, Q3CString& Response 
   // Calcualte H(A2)
   authStr = info.method;
   authStr += ':';
-  authStr += m_request.url.encodedPathAndQuery(0, true).latin1();
+  authStr += m_request.url.encodedPathAndQuery(0, true).toLatin1();
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
@@ -5598,8 +5586,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   const char *p;
 
   QString auth;
-  Q3CString opaque;
-  Q3CString Response;
+  QByteArray opaque;
+  QByteArray Response;
 
   DigestAuthInfo info;
 
@@ -5607,16 +5595,16 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Digest ";
-    info.username = m_proxyURL.user().latin1();
-    info.password = m_proxyURL.pass().latin1();
-    p = m_strProxyAuthorization.latin1();
+    info.username = m_proxyURL.user().toLatin1();
+    info.password = m_proxyURL.pass().toLatin1();
+    p = m_strProxyAuthorization.toLatin1();
   }
   else
   {
     auth = "Authorization: Digest ";
-    info.username = m_state.user.latin1();
-    info.password = m_state.passwd.latin1();
-    p = m_strAuthorization.latin1();
+    info.username = m_state.user.toLatin1();
+    info.password = m_state.passwd.toLatin1();
+    p = m_strAuthorization.toLatin1();
   }
   if (!p || !*p)
     return QString();
@@ -5633,7 +5621,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   info.qop = "";
 
   // cnonce is recommended to contain about 64 bits of entropy
-  info.cnonce = KRandom::randomString(16).latin1();
+  info.cnonce = KRandom::randomString(16).toLatin1();
 
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
   info.nc = "00000001";
@@ -5704,21 +5692,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.realm = Q3CString( p, i+1 );
+      info.realm = QByteArray( p, i );
     }
     else if (strncasecmp(p, "algorith=", 9)==0)
     {
       p+=9;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = Q3CString(p, i+1);
+      info.algorithm = QByteArray(p, i);
     }
     else if (strncasecmp(p, "algorithm=", 10)==0)
     {
       p+=10;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = Q3CString(p,i+1);
+      info.algorithm = QByteArray(p,i);
     }
     else if (strncasecmp(p, "domain=", 7)==0)
     {
@@ -5727,21 +5715,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
       int pos;
       int idx = 0;
-      Q3CString uri = Q3CString(p,i+1);
+      QByteArray uri(p, i);
       do
       {
-        pos = uri.find( ' ', idx );
+        pos = uri.indexOf( ' ', idx );
         if ( pos != -1 )
         {
           KURL u (m_request.url, uri.mid(idx, pos-idx));
           if (u.isValid ())
-            info.digestURI.append( u.url().latin1() );
+            info.digestURI.append( u );
         }
         else
         {
           KURL u (m_request.url, uri.mid(idx, uri.length()-idx));
           if (u.isValid ())
-            info.digestURI.append( u.url().latin1() );
+            info.digestURI.append( u );
         }
         idx = pos+1;
       } while ( pos != -1 );
@@ -5751,21 +5739,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.nonce = Q3CString(p,i+1);
+      info.nonce = QByteArray(p,i);
     }
     else if (strncasecmp(p, "opaque=", 7)==0)
     {
       p+=7;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      opaque = Q3CString(p,i+1);
+      opaque = QByteArray(p,i);
     }
     else if (strncasecmp(p, "qop=", 4)==0)
     {
       p+=4;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.qop = Q3CString(p,i+1);
+      info.qop = QByteArray(p,i);
     }
     p+=(i+1);
   }
@@ -5777,7 +5765,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   // is authentication needed, add the current request url to the list over which
   // this credential can be automatically applied.
   if (info.digestURI.isEmpty() && (m_responseCode == 401 || m_responseCode == 407))
-    info.digestURI.append (m_request.url.url().latin1());
+    info.digestURI.append (m_request.url);
   else
   {
     // Verify whether or not we should send a cached credential to the
