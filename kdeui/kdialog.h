@@ -177,7 +177,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       Stretch = 0x80000000, ///< @internal Ignored when used in a constructor.
       NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. 
     };
-    Q_DECLARE_FLAGS(ButtonCodes, ButtonCode);
+    Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
     enum ActionButtonStyle
     {
