@@ -46,6 +46,7 @@ public:
 #endif
 
 KDEsuClient::KDEsuClient()
+    :d(new KDEsuClientPrivate)
 {
     sockfd = -1;
 #ifdef Q_WS_X11
@@ -66,7 +67,6 @@ KDEsuClient::KDEsuClient()
 #endif
 
     sock = QFile::encodeName(locateLocal("socket", QString("kdesud_").append(display)));
-    d = new KDEsuClientPrivate;
     connect();
 }
 

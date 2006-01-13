@@ -195,7 +195,7 @@ private:
     QByteArray escape(const QByteArray &str);
 
     class KDEsuClientPrivate;
-    KDEsuClientPrivate *d;
+    KDEsuClientPrivate* const d;
 };
 
 #endif //Q_OS_UNIX

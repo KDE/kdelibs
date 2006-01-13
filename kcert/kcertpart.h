@@ -125,7 +125,7 @@ protected:
   QString _curName;
 
 private:
-  KCertPartPrivate *d;
+  KCertPartPrivate* const d;
   void displayPKCS12();
 };
 

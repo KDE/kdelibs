@@ -129,7 +129,7 @@ class KCertPartPrivate {
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
                      QObject *parent, const char *name,
 		     const QStringList & /*args*/ )
-          : KParts::ReadWritePart(parent) {
+          : KParts::ReadWritePart(parent),d(new KCertPartPrivate) {
 KInstance *instance = new KInstance("KCertPart");
 QGridLayout *grid;
 setInstance(instance);
@@ -145,7 +145,6 @@ _signers = new KSSLSigners;
 _p12 = NULL;
 _ca = NULL;
 _silentImport = false;
-d = new KCertPartPrivate;
 d->browserExtension = new KParts::BrowserExtension(this);
 
 _frame = new QFrame(parentWidget, widgetName);

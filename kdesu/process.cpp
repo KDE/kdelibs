@@ -110,11 +110,11 @@ public:
 
 
 PtyProcess::PtyProcess()
+    :d(new PtyProcessPrivate)
 {
     m_bTerminal = false;
     m_bErase = false;
     m_pPTY = 0L;
-    d = new PtyProcessPrivate;
 }
 
 
