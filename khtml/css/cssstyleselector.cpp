@@ -3169,17 +3169,20 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             break;
 
         if (isInitial) {
-            style->clearContent();
+            style->setContentNormal();
             return;
         }
 
         if (primitiveValue && primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_IDENT) {
             // normal | none
-            if (primitiveValue->getIdent() == CSS_VAL_NORMAL || primitiveValue->getIdent() == CSS_VAL_NONE) {
-                style->clearContent();
-                return;
-            }
-            assert(false);
+            if (primitiveValue->getIdent() == CSS_VAL_NORMAL)
+                style->setContentNormal();
+            else
+            if (primitiveValue->getIdent() == CSS_VAL_NONE)
+                style->setContentNone();
+            else
+                assert(false);
+            return;
         }
 
         if(!value->isValueList()) return;
@@ -3215,10 +3218,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
             {
-                //DOM::DOMString quotes("-khtml-quotes");
-                //CounterImpl *counter = new CounterImpl;
-                //counter->m_identifier = quotes;
-                //counter->m_listStyle = LNONE;
                 EQuoteContent quote;
                 switch (val->getIdent()) {
                     case CSS_VAL_OPEN_QUOTE:
