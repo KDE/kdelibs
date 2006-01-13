@@ -179,7 +179,7 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
 	  "processing parameters for %s call\n",
-	  name().isEmpty() ? "(internal)" : name().ascii());
+	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
 #endif
 
   if (param) {
@@ -242,13 +242,13 @@ bool FunctionImp::getOwnPropertySlot(ExecState *exec, const Identifier& property
         slot.setCustom(this, argumentsGetter);
         return true;
     }
-    
+
     // Compute length of parameters.
     if (propertyName == lengthPropertyName) {
         slot.setCustom(this, lengthGetter);
         return true;
     }
-    
+
     return InternalFunctionImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
@@ -277,24 +277,24 @@ Identifier FunctionImp::getParameterName(int index)
 {
   int i = 0;
   Parameter *p = param;
-  
+
   if(!p)
     return Identifier::null();
-  
+
   // skip to the parameter we want
   while (i++ < index && (p = p->next))
     ;
-  
+
   if (!p)
     return Identifier::null();
-  
+
   Identifier name = p->name;
 
   // Are there any subsequent parameters with the same name?
   while ((p = p->next))
     if (p->name == name)
       return Identifier::null();
-  
+
   return name;
 }
 
@@ -351,10 +351,10 @@ void DeclaredFunctionImp::processVarDecls(ExecState *exec)
 
 // ------------------------------ IndexToNameMap ---------------------------------
 
-// We map indexes in the arguments array to their corresponding argument names. 
-// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x"). 
+// We map indexes in the arguments array to their corresponding argument names.
+// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x").
 
-// Once we have an argument name, we can get and set the argument's value in the 
+// Once we have an argument name, we can get and set the argument's value in the
 // activation object.
 
 // We use Identifier::null to indicate that a given argument's value
@@ -364,9 +364,9 @@ IndexToNameMap::IndexToNameMap(FunctionImp *func, const List &args)
 {
   _map = new Identifier[args.size()];
   this->size = args.size();
-  
+
   int i = 0;
-  ListIterator iterator = args.begin(); 
+  ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++)
     _map[i] = func->getParameterName(i); // null if there is no corresponding parameter
 }
@@ -379,16 +379,16 @@ bool IndexToNameMap::isMapped(const Identifier &index) const
 {
   bool indexIsNumber;
   int indexAsNumber = index.toUInt32(&indexIsNumber);
-  
+
   if (!indexIsNumber)
     return false;
-  
+
   if (indexAsNumber >= size)
     return false;
 
   if (_map[indexAsNumber].isNull())
     return false;
-  
+
   return true;
 }
 
@@ -398,7 +398,7 @@ void IndexToNameMap::unMap(const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-  
+
   _map[indexAsNumber] = Identifier::null();
 }
 
@@ -413,7 +413,7 @@ Identifier& IndexToNameMap::operator[](const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-  
+
   return (*this)[indexAsNumber];
 }
 
@@ -423,15 +423,15 @@ const ClassInfo ArgumentsImp::info = {"Arguments", 0, 0, 0};
 
 // ECMA 10.1.8
 ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act)
-: ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), 
+: ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()),
 _activationObject(act),
 indexToNameMap(func, args)
 {
   putDirect(calleePropertyName, func, DontEnum);
   putDirect(lengthPropertyName, args.size(), DontEnum);
-  
+
   int i = 0;
-  ListIterator iterator = args.begin(); 
+  ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++) {
     if (!indexToNameMap.isMapped(Identifier::from(i))) {
       ObjectImp::put(exec, Identifier::from(i), *iterator, DontEnum);
@@ -439,7 +439,7 @@ indexToNameMap(func, args)
   }
 }
 
-void ArgumentsImp::mark() 
+void ArgumentsImp::mark()
 {
   ObjectImp::mark();
   if (_activationObject && !_activationObject->marked())
@@ -471,7 +471,7 @@ void ArgumentsImp::put(ExecState *exec, const Identifier &propertyName, ValueImp
   }
 }
 
-bool ArgumentsImp::deleteProperty(ExecState *exec, const Identifier &propertyName) 
+bool ArgumentsImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
   if (indexToNameMap.isMapped(propertyName)) {
     indexToNameMap.unMap(propertyName);
@@ -500,7 +500,7 @@ ValueImp *ActivationImp::argumentsGetter(ExecState *exec, const Identifier& prop
   // default: return builtin arguments array
   if (!thisObj->_argumentsObject)
     thisObj->createArgumentsObject(exec);
-  
+
   return thisObj->_argumentsObject;
 }
 
@@ -532,7 +532,7 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
 
 void ActivationImp::mark()
 {
-    if (_function && !_function->marked()) 
+    if (_function && !_function->marked())
         _function->mark();
     _arguments.mark();
     if (_argumentsObject && !_argumentsObject->marked())
@@ -785,7 +785,7 @@ ValueImp *GlobalFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/,
         return x;
       else {
         UString s = x->toString(exec);
-        
+
         int sid;
         int errLine;
         UString errMsg;
@@ -810,10 +810,10 @@ ValueImp *GlobalFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/,
                        thisVal,
                        EvalCode,
                        exec->context().imp());
-        
+
         ExecState newExec(exec->dynamicInterpreter(), &ctx);
         newExec.setException(exec->exception()); // could be null
-        
+
         // execute the code
         progNode->processVarDecls(&newExec);
         Completion c = progNode->execute(&newExec);

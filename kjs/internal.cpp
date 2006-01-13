@@ -57,7 +57,7 @@ extern int kjsyyparse();
 namespace KJS {
 
 #if !APPLE_CHANGES
- 
+
 #ifdef WORDS_BIGENDIAN
   const unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
   const unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
@@ -68,10 +68,10 @@ namespace KJS {
   const unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
   const unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
 #endif
- 
+
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
- 
+
 #endif // APPLE_CHANGES
 
 #if defined(KJS_MULTIPLE_THREADS) && KJS_MULTIPLE_THREADS
@@ -419,8 +419,15 @@ SharedPtr<ProgramNode> Parser::parse(const UString &sourceURL, int startingLineN
       *errLine = eline;
     if (errMsg)
       *errMsg = "Parse error";
+#ifdef KJS_VERBOSE
+    fprintf( stderr, "%s\n", UString(code,length).ascii() );
+#endif
     return SharedPtr<ProgramNode>();
   }
+
+#ifdef KJS_VERBOSE
+  fprintf( stderr, "%s\n", prog->toString().ascii() );
+#endif
 
   return prog;
 }
@@ -502,7 +509,7 @@ void InterpreterImp::unlock()
  void InterpreterImp::initGlobalObject()
 {
   Identifier::init();
-  
+
   // Contructor prototype objects (Object.prototype, Array.prototype etc)
 
   FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(&globExec);
@@ -691,7 +698,7 @@ Completion InterpreterImp::evaluate(const UString &code, ValueImp *thisV, const 
     if (!cont)
       return Completion(Break);
   }
-  
+
   // no program node means a syntax error occurred
   if (!progNode) {
     ObjectImp *err = Error::create(&globExec, SyntaxError, errMsg, errLine, sid, &sourceURL);
@@ -748,7 +755,7 @@ void InterpreterImp::saveBuiltins (SavedBuiltins &builtins) const
   builtins._internal->b_Date = b_Date;
   builtins._internal->b_RegExp = b_RegExp;
   builtins._internal->b_Error = b_Error;
-  
+
   builtins._internal->b_ObjectPrototype = b_ObjectPrototype;
   builtins._internal->b_FunctionPrototype = b_FunctionPrototype;
   builtins._internal->b_ArrayPrototype = b_ArrayPrototype;
@@ -758,14 +765,14 @@ void InterpreterImp::saveBuiltins (SavedBuiltins &builtins) const
   builtins._internal->b_DatePrototype = b_DatePrototype;
   builtins._internal->b_RegExpPrototype = b_RegExpPrototype;
   builtins._internal->b_ErrorPrototype = b_ErrorPrototype;
-  
+
   builtins._internal->b_evalError = b_evalError;
   builtins._internal->b_rangeError = b_rangeError;
   builtins._internal->b_referenceError = b_referenceError;
   builtins._internal->b_syntaxError = b_syntaxError;
   builtins._internal->b_typeError = b_typeError;
   builtins._internal->b_uriError = b_uriError;
-  
+
   builtins._internal->b_evalErrorPrototype = b_evalErrorPrototype;
   builtins._internal->b_rangeErrorPrototype = b_rangeErrorPrototype;
   builtins._internal->b_referenceErrorPrototype = b_referenceErrorPrototype;
@@ -789,7 +796,7 @@ void InterpreterImp::restoreBuiltins (const SavedBuiltins &builtins)
   b_Date = builtins._internal->b_Date;
   b_RegExp = builtins._internal->b_RegExp;
   b_Error = builtins._internal->b_Error;
-  
+
   b_ObjectPrototype = builtins._internal->b_ObjectPrototype;
   b_FunctionPrototype = builtins._internal->b_FunctionPrototype;
   b_ArrayPrototype = builtins._internal->b_ArrayPrototype;
@@ -799,14 +806,14 @@ void InterpreterImp::restoreBuiltins (const SavedBuiltins &builtins)
   b_DatePrototype = builtins._internal->b_DatePrototype;
   b_RegExpPrototype = builtins._internal->b_RegExpPrototype;
   b_ErrorPrototype = builtins._internal->b_ErrorPrototype;
-  
+
   b_evalError = builtins._internal->b_evalError;
   b_rangeError = builtins._internal->b_rangeError;
   b_referenceError = builtins._internal->b_referenceError;
   b_syntaxError = builtins._internal->b_syntaxError;
   b_typeError = builtins._internal->b_typeError;
   b_uriError = builtins._internal->b_uriError;
-  
+
   b_evalErrorPrototype = builtins._internal->b_evalErrorPrototype;
   b_rangeErrorPrototype = builtins._internal->b_rangeErrorPrototype;
   b_referenceErrorPrototype = builtins._internal->b_referenceErrorPrototype;
@@ -882,6 +889,8 @@ void printInfo(ExecState *exec, const char *s, ValueImp *o, int lineno)
     fprintf(stderr, "KJS: %s: (null)", s);
   else {
     ValueImp *v = o;
+    unsigned int arrayLength = 0;
+    bool hadExcep = exec->hadException();
 
     UString name;
     switch (v->type()) {
@@ -903,13 +912,26 @@ void printInfo(ExecState *exec, const char *s, ValueImp *o, int lineno)
     case NumberType:
       name = "Number";
       break;
-    case ObjectType:
-      name = static_cast<ObjectImp *>(v)->className();
+    case ObjectType: {
+      ObjectImp* obj = static_cast<ObjectImp *>(v);
+      name = obj->className();
       if (name.isNull())
         name = "(unknown class)";
+      if ( obj->inherits(&ArrayInstanceImp::info) )
+        arrayLength = obj->get(exec,lengthPropertyName)->toUInt32(exec);
       break;
     }
-    UString vString = v->toString(exec);
+    }
+
+    UString vString;
+    // Avoid calling toString on a huge array (e.g. 4 billion elements, in mozilla/js/js1_5/Array/array-001.js)
+    if ( arrayLength > 100 )
+      vString = UString( "[ Array with " ) + UString::from( arrayLength ) + " elements ]";
+    else
+      vString = v->toString(exec);
+    if ( !hadExcep )
+      exec->clearException();
+
     if ( vString.size() > 50 )
       vString = vString.substr( 0, 50 ) + "...";
     // Can't use two UString::ascii() in the same fprintf call
