@@ -267,7 +267,7 @@ void SessionData::reset()
     // Get Cookie settings...
     KConfig* cfg = new KConfig("kcookiejarrc", true, false);
     cfg->setGroup( "Cookie Policy" );
-    d->useCookie = cfg->readEntry("Cookies", QVariant(true )).toBool();
+    d->useCookie = cfg->readEntry("Cookies", true);
     delete cfg;
 
     static const QString & english = KGlobal::staticQString( "en" );

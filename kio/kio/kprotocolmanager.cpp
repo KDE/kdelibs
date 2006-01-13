@@ -114,7 +114,7 @@ int KProtocolManager::readTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ReadTimeout", QVariant(DEFAULT_READ_TIMEOUT )).toInt();
+  int val = cfg->readEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -122,7 +122,7 @@ int KProtocolManager::connectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ConnectTimeout", QVariant(DEFAULT_CONNECT_TIMEOUT )).toInt();
+  int val = cfg->readEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -130,7 +130,7 @@ int KProtocolManager::proxyConnectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ProxyConnectTimeout", QVariant(DEFAULT_PROXY_CONNECT_TIMEOUT )).toInt();
+  int val = cfg->readEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -138,7 +138,7 @@ int KProtocolManager::responseTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ResponseTimeout", QVariant(DEFAULT_RESPONSE_TIMEOUT )).toInt();
+  int val = cfg->readEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -153,21 +153,21 @@ bool KProtocolManager::useReverseProxy()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry("ReversedException", QVariant(false)).toBool();
+  return cfg->readEntry("ReversedException", false);
 }
 
 KProtocolManager::ProxyType KProtocolManager::proxyType()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyType>(cfg->readEntry( "ProxyType" , QVariant(0)).toInt());
+  return static_cast<ProxyType>(cfg->readEntry( "ProxyType" , 0));
 }
 
 KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyAuthMode>(cfg->readEntry( "AuthMode" , QVariant(0)).toInt());
+  return static_cast<ProxyAuthMode>(cfg->readEntry( "AuthMode" , 0));
 }
 
 /*========================== CACHING =====================================*/
@@ -175,7 +175,7 @@ KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
 bool KProtocolManager::useCache()
 {
   KConfig *cfg = http_config();
-  return cfg->readEntry( "UseCache", QVariant(true )).toBool();
+  return cfg->readEntry( "UseCache", true );
 }
 
 KIO::CacheControl KProtocolManager::cacheControl()
@@ -196,13 +196,13 @@ QString KProtocolManager::cacheDir()
 int KProtocolManager::maxCacheAge()
 {
   KConfig *cfg = http_config();
-  return cfg->readEntry( "MaxCacheAge", QVariant(DEFAULT_MAX_CACHE_AGE )).toInt(); // 14 days
+  return cfg->readEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
 }
 
 int KProtocolManager::maxCacheSize()
 {
   KConfig *cfg = http_config();
-  return cfg->readEntry( "MaxCacheSize", QVariant(DEFAULT_MAX_CACHE_SIZE )).toInt(); // 5 MB
+  return cfg->readEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
 }
 
 QString KProtocolManager::noProxyFor()
@@ -491,7 +491,7 @@ bool KProtocolManager::markPartial()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  return cfg->readEntry( "MarkPartial", QVariant(true )).toBool();
+  return cfg->readEntry( "MarkPartial", true );
 }
 
 int KProtocolManager::minimumKeepSize()
@@ -506,21 +506,21 @@ bool KProtocolManager::autoResume()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  return cfg->readEntry( "AutoResume", QVariant(false )).toBool();
+  return cfg->readEntry( "AutoResume", false );
 }
 
 bool KProtocolManager::persistentConnections()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  return cfg->readEntry( "PersistentConnections", QVariant(true )).toBool();
+  return cfg->readEntry( "PersistentConnections", true );
 }
 
 bool KProtocolManager::persistentProxyConnection()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString() );
-  return cfg->readEntry( "PersistentProxyConnection", QVariant(false )).toBool();
+  return cfg->readEntry( "PersistentProxyConnection", false );
 }
 
 QString KProtocolManager::proxyConfigScript()

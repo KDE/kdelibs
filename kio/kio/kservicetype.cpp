@@ -68,7 +68,7 @@ KServiceType::init( KDesktopFile *config)
   }
 
   m_strComment = config->readComment();
-  m_bDeleted = config->readEntry("Hidden", QVariant(false )).toBool();
+  m_bDeleted = config->readEntry("Hidden", false);
   m_strIcon = config->readIcon();
 
   // We store this as property to preserve BC, we can't change that
@@ -86,8 +86,9 @@ KServiceType::init( KDesktopFile *config)
     if ( (*gIt).find( "Property::" ) == 0 )
     {
       config->setGroup( *gIt );
-      QVariant v = config->readPropertyEntry( "Value",
-                   QVariant::nameToType( config->readEntry( "Type" ).ascii() ) );
+      QVariant v = QVariant::nameToType( config->readEntry( "Type" ).toLatin1().constData() );
+      v = config->readEntry( "Value", v );
+
       if ( v.isValid() )
           m_mapProps.insert( (*gIt).mid( 10 ), v );
     }
@@ -100,7 +101,7 @@ KServiceType::init( KDesktopFile *config)
     {
       config->setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
-			    QVariant::nameToType( config->readEntry( "Type" ).ascii() ) );
+			    QVariant::nameToType( config->readEntry( "Type" ).toLatin1().constData() ) );
     }
   }
 

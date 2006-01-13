@@ -377,16 +377,16 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
 void KMimeType::init( KDesktopFile * config )
 {
   config->setDesktopGroup();
-  m_lstPatterns = config->readListEntry( "Patterns", ';' );
+  m_lstPatterns = config->readEntry( "Patterns", QStringList(), ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
   if ( config->hasKey( XKDEAutoEmbed ) )
-    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readEntry( XKDEAutoEmbed , QVariant(false)).toBool(), 0 ) );
+    m_mapProps.insert( XKDEAutoEmbed, config->readEntry( XKDEAutoEmbed, false ) );
 
   QString XKDEText = QLatin1String("X-KDE-text");
   if ( config->hasKey( XKDEText ) )
-    m_mapProps.insert( XKDEText, config->readEntry( XKDEText , QVariant(false)).toBool() );
+    m_mapProps.insert( XKDEText, config->readEntry( XKDEText, false ) );
 
   QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) ) {
@@ -400,7 +400,6 @@ void KMimeType::init( KDesktopFile * config )
   QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
   if ( config->hasKey( XKDEPatternsAccuracy ) )
     m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy, QString() ) );
-
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
@@ -537,7 +536,7 @@ QString KMimeType::favIconForURL( const KURL& url )
     if ( check ) {
         check = false;
         KConfigGroup cg( KGlobal::config(), "HTML Settings" );
-        useFavIcons = cg.readEntry("EnableFavicon", QVariant(true )).toBool();
+        useFavIcons = cg.readEntry("EnableFavicon", true);
     }
 
     if ( url.isLocalFile() || !url.protocol().startsWith("http")
@@ -735,7 +734,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
               // So instead kio_trash leaves an entry in its config file for us.
               KSimpleConfig trashConfig( "trashrc", true );
               trashConfig.setGroup( "Status" );
-              if ( trashConfig.readEntry( "Empty", QVariant(true )).toBool() ) {
+              if ( trashConfig.readEntry( "Empty", true ) ) {
                   return emptyIcon;
               }
           }
@@ -846,7 +845,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
   }
   else
   {
-    bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
+    bool ro = cfg.readEntry("ReadOnly", false);
     QString fstype = cfg.readEntry( "FSType" );
     if ( fstype == "Default" ) // KDE-1 thing
       fstype.clear();
@@ -1024,7 +1023,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
     }
   }
 
-  keys += cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
+  keys += cfg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
 
   if ( keys.count() == 0 )
     return result;
@@ -1064,7 +1063,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
           s.m_strIcon = cfg.readEntry( "Icon" );
           s.m_strExec = exec;
           s.m_type = ST_USER_DEFINED;
-          s.m_display = !cfg.readEntry( "NoDisplay" , QVariant(false)).toBool();
+          s.m_display = !cfg.readEntry( "NoDisplay" , false );
           result.append( s );
         }
       }
@@ -1131,7 +1130,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
         return;
       }
 
-      bool ro = cfg.readEntry("ReadOnly", QVariant(false )).toBool();
+      bool ro = cfg.readEntry("ReadOnly", false);
       QString fstype = cfg.readEntry( "FSType" );
       if ( fstype == "Default" ) // KDE-1 thing
           fstype.clear();

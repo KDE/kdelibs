@@ -95,7 +95,7 @@ KService::init( const KDesktopFile *config )
   entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
   entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
 
-  m_bDeleted = config->readEntry("Hidden", QVariant(false )).toBool();
+  m_bDeleted = config->readEntry("Hidden", false);
   entryMap.remove("Hidden");
   if (m_bDeleted)
   {
@@ -186,7 +186,7 @@ KService::init( const KDesktopFile *config )
 
   m_strIcon = config->readEntry( "Icon" );
   entryMap.remove("Icon");
-  m_bTerminal = (config->readEntry( "Terminal" ), QVariant(false)).toBool(); // should be a property IMHO
+  m_bTerminal = config->readEntry( "Terminal", false); // should be a property IMHO
   entryMap.remove("Terminal");
   m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
   entryMap.remove("TerminalOptions");
@@ -199,18 +199,18 @@ KService::init( const KDesktopFile *config )
   QString _untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
   entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
 
-  m_lstKeywords = config->readListEntry("Keywords");
+  m_lstKeywords = config->readEntry("Keywords", QStringList());
   entryMap.remove("Keywords");
-  d->categories = config->readListEntry("Categories", ';');
+  d->categories = config->readEntry("Categories", QStringList(), ';');
   entryMap.remove("Categories");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
   entryMap.remove("X-KDE-Library");
   m_strInit = config->readEntry("X-KDE-Init" );
   entryMap.remove("X-KDE-Init");
 
-  m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
+  m_lstServiceTypes = config->readEntry( "ServiceTypes", QStringList() );
   entryMap.remove("ServiceTypes");
-  m_lstServiceTypes += config->readListEntry( "MimeType", ';' ); // freedesktop.org standard
+  m_lstServiceTypes += config->readEntry( "MimeType", QStringList(), ';' ); // freedesktop.org standard
   entryMap.remove("MimeType");
 
   if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
@@ -230,10 +230,10 @@ KService::init( const KDesktopFile *config )
 
   m_strDesktopEntryName = _name.toLower();
 
-  m_bAllowAsDefault = config->readEntry("AllowDefault", QVariant(true )).toBool();
+  m_bAllowAsDefault = config->readEntry("AllowDefault", true);
   entryMap.remove("AllowDefault");
 
-  m_initialPreference = config->readEntry( "InitialPreference", QVariant(1 )).toInt();
+  m_initialPreference = config->readEntry( "InitialPreference", 1 );
   entryMap.remove("InitialPreference");
 
   // Store all additional entries in the property map.
@@ -554,7 +554,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     default:
         // All others
         KServiceReadProperty ksrp(_name, it->toString().toUtf8());
-        return ksrp.readPropertyEntry(_name, t);
+        return ksrp.readEntry(_name, QVariant(t));
   }
 }
 

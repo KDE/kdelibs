@@ -77,7 +77,7 @@ void KServiceTypeProfile::initStatic()
       QString type2 = config.readEntry( "GenericServiceType" );
       if (type2.isEmpty()) // compat code
           type2 = (pService->type() == "Application") ? "Application" : "KParts/ReadOnlyPart";
-      int pref = config.readEntry( "Preference" , QVariant(0)).toInt();
+      int pref = config.readEntry( "Preference", 0 );
 
       if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
       {
@@ -89,7 +89,7 @@ void KServiceTypeProfile::initStatic()
           s_lstProfiles->insert( type, p );
         }
 
-        bool allow = config.readEntry( "AllowAsDefault",QVariant(false) ).toBool();
+        bool allow = config.readEntry( "AllowAsDefault", false );
         //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }

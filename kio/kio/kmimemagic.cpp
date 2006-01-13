@@ -535,7 +535,7 @@ public:
             {
                 KSimpleConfig cfg( globalConf );
                 cfg.setGroup( "Settings" );
-                tmpDirs = cfg.readListEntry( "atimeDirs" );
+                tmpDirs = cfg.readEntry( "atimeDirs", QStringList() );
             }
             if ( confDirs.count() > 1 )
             {
@@ -544,7 +544,7 @@ public:
                 {
                     KSimpleConfig cfg( localConf );
                     cfg.setGroup( "Settings" );
-                    tmpDirs += cfg.readListEntry( "atimeDirs" );
+                    tmpDirs += cfg.readEntry( "atimeDirs", QStringList() );
                 }
             }
             for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )

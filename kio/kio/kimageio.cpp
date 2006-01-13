@@ -41,9 +41,9 @@ KImageIOFormat::KImageIOFormat( const QString &path)
    mType = config.readEntry("Type");
    mHeader = KURL::decode_string(config.readEntry("Header"), 4); // Latin1
    mFlags = config.readEntry("Flags");
-   bRead = config.readEntry("Read", QVariant(false)).toBool();
-   bWrite = config.readEntry("Write", QVariant(false)).toBool();
-   mSuffices = config.readListEntry("Suffices");
+   bRead = config.readEntry("Read", false);
+   bWrite = config.readEntry("Write", false);
+   mSuffices = config.readEntry("Suffices", QStringList());
    mPattern = config.readEntry("Name");
    mMimetype = config.readEntry("Mimetype");
    mLib = config.readPathEntry("Library");

@@ -351,7 +351,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
           KConfig *config = new KConfig("kioslaverc");
           config->setGroup("Notification Messages");
 
-          if (!config->readEntry("WarnOnLeaveSSLMode", QVariant(true)).toBool()) {
+          if (!config->readEntry("WarnOnLeaveSSLMode", true)) {
               config->deleteEntry("WarnOnLeaveSSLMode");
               config->sync();
               kss.setWarnOnLeave(false);
@@ -1069,7 +1069,7 @@ int TCPSlaveBase::verifyCertificate()
       KConfig *config = new KConfig("kioslaverc");
       config->setGroup("Notification Messages");
 
-      if (!config->readEntry("WarnOnEnterSSLMode", QVariant(true)).toBool()) {
+      if (!config->readEntry("WarnOnEnterSSLMode", true)) {
           config->deleteEntry("WarnOnEnterSSLMode");
           config->sync();
           d->kssl->settings()->setWarnOnEnter(false);

@@ -74,23 +74,23 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   m_strCaption = config.readEntry( "Name" );
   m_strIcon = config.readEntry( "Icon" );
   m_strComment = config.readEntry( "Comment" );
-  m_bDeleted = config.readEntry("Hidden", QVariant(false )).toBool();
-  d->m_bNoDisplay = config.readEntry("NoDisplay", QVariant(false )).toBool();
+  m_bDeleted = config.readEntry("Hidden", false );
+  d->m_bNoDisplay = config.readEntry("NoDisplay", false );
   QStringList tmpList;
   if (config.hasKey("OnlyShowIn"))
   {
-     if (!config.readListEntry("OnlyShowIn", ';').contains("KDE"))
+     if (!config.readEntry("OnlyShowIn", QStringList(), ';').contains("KDE"))
         d->m_bNoDisplay = true;
   }
   if (config.hasKey("NotShowIn"))
   {
-     if (config.readListEntry("NotShowIn", ';').contains("KDE"))
+     if (config.readEntry("NotShowIn", QStringList(), ';').contains("KDE"))
         d->m_bNoDisplay = true;
   }
 
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
-  d->suppressGenericNames = config.readListEntry( "X-KDE-SuppressGenericNames" );
-//  d->sortOrder = config.readListEntry("SortOrder");
+  d->suppressGenericNames = config.readEntry( "X-KDE-SuppressGenericNames", QStringList() );
+//  d->sortOrder = config.readEntry("SortOrder", QStringList());
 
   // Fill in defaults.
   if (m_strCaption.isEmpty())

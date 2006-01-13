@@ -1286,7 +1286,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 	{
 	    KConfig cfg( "kio_httprc", true );
 	    overriden_ports = new QList< int >;
-	    *overriden_ports = cfg.readIntListEntry( "OverriddenPorts" );
+	    *overriden_ports = cfg.readEntry( "OverriddenPorts", QList<int>() );
 	    override_loaded = true;
 	}
 	for( QList< int >::ConstIterator it = overriden_ports->begin();
