@@ -210,10 +210,14 @@ KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
 #ifdef WIN32
 #include <windows.h>
+static void kglobal_init();
 static void kglobal_freeAll();
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID impLoad )
 {
-    if (reason == DLL_PROCESS_DETACH)
+	if (reason == DLL_PROCESS_ATTACH) {
+		kglobal_init();
+	}
+	if (reason == DLL_PROCESS_DETACH)
         kglobal_freeAll();
     return TRUE;
 }
@@ -238,6 +242,7 @@ static void kglobal_init()
     if (KGlobal::_staticDeleters)
         return;
 
+    new KInstance("kdecore.dll");
     KGlobal::_staticDeleters = new KStaticDeleterList;
 }
 

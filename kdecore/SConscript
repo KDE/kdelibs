@@ -117,11 +117,10 @@ obj.libpaths = '../libltdl ../dcop'
 obj.libs     = 'ltdlc DCOP '
 obj.iskdelib = 1
 obj.includes = 'network'
-obj.ccflags += ' -DMAKE_KDECORE_LIB ' # todo: will be generated automatically
 if env['WINDOWS']:
 	obj.libpaths += ' ../win '
 	obj.includes += ' ../win/3rdparty/zlib '
-	obj.libs     += ' kdewin32 ws2_32 user32 '
+	obj.libs     += ' kdewin32 ws2_32 user32 shell32 '
 	obj.ccflags += ' -DKIO_EXPORT= '
 
 if env['MAC']:
