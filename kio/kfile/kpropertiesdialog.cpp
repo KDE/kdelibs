@@ -1378,7 +1378,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
           KDesktopFile config( properties->kurl().path() );
           QString nameStr = nameFromFileName(properties->kurl().fileName());
           config.writeEntry( "Name", nameStr );
-          config.writeEntry( "Name", nameStr, KConfigBase::NLS);
+          config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS);
       }
   }
 }
@@ -2571,7 +2571,7 @@ void KURLPropsPlugin::applyChanges()
   {
     QString nameStr = nameFromFileName(properties->kurl().fileName());
     config.writeEntry( "Name", nameStr );
-    config.writeEntry( "Name", nameStr, KConfigBase::NLS );
+    config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
 
   }
 }
@@ -2725,7 +2725,7 @@ void KBindingPropsPlugin::applyChanges()
   config.writeEntry( "Patterns",  patternEdit->text() );
   config.writeEntry( "Comment", commentEdit->text() );
   config.writeEntry( "Comment",
-		     commentEdit->text(), KConfigBase::NLS ); // for compat
+		     commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
   config.writeEntry( "MimeType", mimeEdit->text() );
   if ( cbAutoEmbed->state() == QCheckBox::NoChange )
       config.deleteEntry( "X-KDE-AutoEmbed" );
@@ -3288,9 +3288,9 @@ void KDesktopPropsPlugin::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Application"));
   config.writeEntry( "Comment", w->commentEdit->text() );
-  config.writeEntry( "Comment", w->commentEdit->text(), KConfigBase::NLS ); // for compat
+  config.writeEntry( "Comment", w->commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
   config.writeEntry( "GenericName", w->genNameEdit->text() );
-  config.writeEntry( "GenericName", w->genNameEdit->text(), KConfigBase::NLS ); // for compat
+  config.writeEntry( "GenericName", w->genNameEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
 
   if (m_systrayBool)
     config.writePathEntry( "Exec", w->commandEdit->text().prepend("ksystraycmd ") );
@@ -3314,7 +3314,7 @@ void KDesktopPropsPlugin::applyChanges()
   if ( !w->nameEdit->isHidden() ) {
       QString nameStr = w->nameEdit->text();
       config.writeEntry( "Name", nameStr );
-      config.writeEntry( "Name", nameStr, KConfigBase::NLS );
+      config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
   }
 
   config.writeEntry("Terminal", m_terminalBool);
@@ -4023,9 +4023,9 @@ void KApplicationPropsPlugin::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Application"));
   config.writeEntry( "Comment", commentEdit->text() );
-  config.writeEntry( "Comment", commentEdit->text(), KConfigBase::NLS ); // for compat
+  config.writeEntry( "Comment", commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
   config.writeEntry( "GenericName", genNameEdit->text() );
-  config.writeEntry( "GenericName", genNameEdit->text(), KConfigBase::NLS ); // for compat
+  config.writeEntry( "GenericName", genNameEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
 
   QStringList selectedTypes;
   for ( uint i = 0; i < extensionsList->count(); i++ )
@@ -4040,7 +4040,7 @@ void KApplicationPropsPlugin::applyChanges()
     nameStr = nameFromFileName(properties->kurl().fileName());
 
   config.writeEntry( "Name", nameStr );
-  config.writeEntry( "Name", nameStr, KConfigBase::NLS );
+  config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
 
   config.sync();
 }
