@@ -258,7 +258,7 @@ void KConfigTest::testInvalid()
 
   // 1 element list
   list << 1;
-  sc.writeEntry( "badList", list);
+  sc.writeEntry( QString("badList"), list);
   sc.sync();
 
   QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
@@ -300,6 +300,10 @@ void KConfigTest::testInvalid()
   QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
   QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
   QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+
+  list[2] = -3;
+  sc.writeEntry( "badList", list ); sc.sync();
+  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   // 5 element list
   list[2] = 3;

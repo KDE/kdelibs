@@ -337,9 +337,9 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
 {
   if ( !hasKey( pKey ) ) return aDefault;
 
-  QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
+  const QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
     .arg(pKey).arg(QVariant::typeToName(aDefault.type()));
-  QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
+  const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
 
   QVariant tmp = aDefault;
 
@@ -369,16 +369,33 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Color: {
-          QList<int> list = readEntry( pKey, QList<int>() );
-          int count = list.count();
+          const QList<int> list = readEntry( pKey, QList<int>() );
+          const int count = list.count();
 
           if (count != 3 && count != 4) {
+              // invalid QColor's are stored as the string "invalid"
+              if (readEntry(pKey) == QLatin1String("invalid"))
+                  return aDefault;
               kcbError() << errString.arg(readEntry(pKey))
                          << formatError.arg("3' or '4").arg(count)
                          << endl;
               return aDefault;
           }
 
+          // bounds check components
+          for(int i=0; i < count; i++) {
+              const int j = list.at(i);
+              if (j < 0 || j > 255) {
+                  const char *const components[] = {
+                      "red", "green", "blue", "alpha"
+                  };
+                  const QString boundsError = QLatin1String(" (bounds error: %1 component %2)");
+                  kcbError() << errString.arg(readEntry(pKey))
+                             << boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255")
+                             << endl;
+                  return aDefault;
+              }
+          }
           QColor color(list.at(0), list.at(1), list.at(2));
           if (count == 4)
               color.setAlpha(list.at(3));
@@ -390,7 +407,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return color;
       }
       case QVariant::Point: {
-          QList<int> list = readEntry( pKey, QList<int>() );
+          const QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() != 2 ) {
               kcbError() << errString.arg(readEntry(pKey))
@@ -401,7 +418,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return QPoint(list.at( 0 ), list.at( 1 ));
       }
       case QVariant::Rect: {
-          QList<int> list = readEntry( pKey, QList<int>() );
+          const QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() != 4 ) {
               kcbError() << errString.arg(readEntry(pKey))
@@ -409,7 +426,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                          << endl;
               return aDefault;
           }
-          QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+          const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
           if ( !rect.isValid() ) {
               kcbError() << errString.arg(readEntry(pKey)) << endl;
               return aDefault;
@@ -417,7 +434,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return rect;
       }
       case QVariant::Size: {
-          QList<int> list = readEntry( pKey, QList<int>() );
+          const QList<int> list = readEntry( pKey, QList<int>() );
 
           if ( list.count() != 2 ) {
               kcbError() << errString.arg(readEntry(pKey))
@@ -425,7 +442,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                          << endl;
               return aDefault;
           }
-          QSize size(list.at( 0 ), list.at( 1 ));
+          const QSize size(list.at( 0 ), list.at( 1 ));
           if ( !size.isValid() ) {
               kcbError() << errString.arg(readEntry(pKey)) << endl;
               return aDefault;
@@ -433,7 +450,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return size;
       }
       case QVariant::LongLong: {
-          QByteArray aValue = readEntryUtf8(pKey);
+          const QByteArray aValue = readEntryUtf8(pKey);
 
           if ( !aValue.isEmpty() ) {
               bool ok;
@@ -444,7 +461,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return tmp;
       }
       case QVariant::ULongLong: {
-          QByteArray aValue = readEntryUtf8(pKey);
+          const QByteArray aValue = readEntryUtf8(pKey);
 
           if( !aValue.isEmpty() ) {
               bool ok;
@@ -455,16 +472,16 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           return tmp;
       }
       case QVariant::DateTime: {
-          QList<int> list = readEntry( pKey, QList<int>() );
+          const QList<int> list = readEntry( pKey, QList<int>() );
           if ( list.count() != 6 ) {
               kcbError() << errString.arg(readEntry(pKey))
                          << formatError.arg(6).arg(list.count())
                          << endl;
               return aDefault;
           }
-          QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
-          QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
-          QDateTime dt( date, time );
+          const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+          const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
+          const QDateTime dt( date, time );
           if ( !dt.isValid() ) {
               kcbError() << errString.arg(readEntry(pKey)) << endl;
               return aDefault;
@@ -481,7 +498,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                          << endl;
               return aDefault;
           }
-          QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+          const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
           if ( !date.isValid() ) {
               kcbError() << errString.arg(readEntry(pKey)) << endl;
               return aDefault;
@@ -544,7 +561,7 @@ QVariantList KConfigBase::readEntry( const char* pKey, const QVariantList& aDefa
   if (!hasKey(pKey))
     return aDefault;
 
-  QStringList slist = readEntry( pKey, QVariant(aDefault).toStringList() );
+  const QStringList slist = readEntry( pKey, QVariant(aDefault).toStringList() );
 
   return QVariant(slist).toList();
 }
@@ -617,7 +634,7 @@ QStringList KConfigBase::readPathListEntry( const char *pKey, char sep ) const
 {
   const bool bExpandSave = bExpand;
   bExpand = true;
-  QStringList aValue = readEntry( pKey, QStringList(), sep );
+  const QStringList aValue = readEntry( pKey, QStringList(), sep );
   bExpand = bExpandSave;
   return aValue;
 }
@@ -625,262 +642,58 @@ QStringList KConfigBase::readPathListEntry( const char *pKey, char sep ) const
 
 QFont KConfigBase::readFontEntry( const QString& pKey, const QFont* pDefault ) const
 {
-  return readFontEntry(pKey.toUtf8().data(), pDefault);
+  return readEntry(pKey, (pDefault? *pDefault: QFont()));
 }
 
 QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) const
 {
-  QFont aRetFont;
-
-  QString aValue = readEntry( pKey );
-  if( !aValue.isNull() ) {
-    if ( aValue.count( ',' ) > 5 ) {
-      // KDE3 and upwards entry
-      if ( !aRetFont.fromString( aValue ) && pDefault )
-        aRetFont = *pDefault;
-    }
-    else {
-      // backward compatibility with older font formats
-      // ### remove KDE 3.1 ?
-      // find first part (font family)
-      int nIndex = aValue.indexOf( ',' );
-      if( nIndex == -1 ){
-        if( pDefault )
-          aRetFont = *pDefault;
-        return aRetFont;
-      }
-      aRetFont.setFamily( aValue.left( nIndex ) );
-
-      // find second part (point size)
-      int nOldIndex = nIndex;
-      nIndex = aValue.indexOf( ',', nOldIndex+1 );
-      if( nIndex == -1 ){
-        if( pDefault )
-          aRetFont = *pDefault;
-        return aRetFont;
-      }
-
-      aRetFont.setPointSize( aValue.mid( nOldIndex+1,
-                                         nIndex-nOldIndex-1 ).toInt() );
-
-      // find third part (style hint)
-      nOldIndex = nIndex;
-      nIndex = aValue.indexOf( ',', nOldIndex+1 );
-
-      if( nIndex == -1 ){
-        if( pDefault )
-          aRetFont = *pDefault;
-        return aRetFont;
-      }
-
-      aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1, nIndex-nOldIndex-1 ).toUInt() );
-
-      // find fourth part (char set)
-      nOldIndex = nIndex;
-      nIndex = aValue.indexOf( ',', nOldIndex+1 );
-
-      if( nIndex == -1 ){
-        if( pDefault )
-          aRetFont = *pDefault;
-        return aRetFont;
-      }
-
-      QString chStr=aValue.mid( nOldIndex+1,
-                                nIndex-nOldIndex-1 );
-      // find fifth part (weight)
-      nOldIndex = nIndex;
-      nIndex = aValue.indexOf( ',', nOldIndex+1 );
-
-      if( nIndex == -1 ){
-        if( pDefault )
-          aRetFont = *pDefault;
-        return aRetFont;
-      }
-
-      aRetFont.setWeight( aValue.mid( nOldIndex+1,
-                                      nIndex-nOldIndex-1 ).toUInt() );
-
-      // find sixth part (font bits)
-      uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
-
-      aRetFont.setItalic( nFontBits & 0x01 );
-      aRetFont.setUnderline( nFontBits & 0x02 );
-      aRetFont.setStrikeOut( nFontBits & 0x04 );
-      aRetFont.setFixedPitch( nFontBits & 0x08 );
-      aRetFont.setRawMode( nFontBits & 0x20 );
-    }
-  }
-  else
-    {
-      if( pDefault )
-        aRetFont = *pDefault;
-    }
-
-  return aRetFont;
+  return readEntry(pKey, (pDefault? *pDefault: QFont()));
 }
-
 
 QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) const
 {
-  return readRectEntry(pKey.toUtf8().data(), pDefault);
+  return readEntry(pKey, (pDefault? *pDefault: QRect()));
 }
 
 QRect KConfigBase::readRectEntry( const char *pKey, const QRect* pDefault ) const
 {
-  QByteArray aValue = readEntryUtf8(pKey);
-
-  if (!aValue.isEmpty())
-  {
-    int left, top, width, height;
-
-    if (sscanf(aValue.data(), "%d,%d,%d,%d", &left, &top, &width, &height) == 4)
-    {
-       return QRect(left, top, width, height);
-    }
-  }
-  if (pDefault)
-    return *pDefault;
-  return QRect();
+  return readEntry(pKey, (pDefault? *pDefault: QRect()));
 }
-
 
 QPoint KConfigBase::readPointEntry( const QString& pKey,
                                     const QPoint* pDefault ) const
 {
-  return readPointEntry(pKey.toUtf8().data(), pDefault);
+  return readEntry(pKey, (pDefault? *pDefault: QPoint()));
 }
 
 QPoint KConfigBase::readPointEntry( const char *pKey,
                                     const QPoint* pDefault ) const
 {
-  QByteArray aValue = readEntryUtf8(pKey);
-
-  if (!aValue.isEmpty())
-  {
-    int x,y;
-
-    if (sscanf(aValue.data(), "%d,%d", &x, &y) == 2)
-    {
-       return QPoint(x,y);
-    }
-  }
-  if (pDefault)
-    return *pDefault;
-  return QPoint();
+  return readEntry(pKey, (pDefault? *pDefault: QPoint()));
 }
 
 QSize KConfigBase::readSizeEntry( const QString& pKey,
                                   const QSize* pDefault ) const
 {
-  return readSizeEntry(pKey.toUtf8().data(), pDefault);
+  return readEntry(pKey, (pDefault? *pDefault: QSize()));
 }
 
 QSize KConfigBase::readSizeEntry( const char *pKey,
                                   const QSize* pDefault ) const
 {
-  QByteArray aValue = readEntryUtf8(pKey);
-
-  if (!aValue.isEmpty())
-  {
-    int width,height;
-
-    if (sscanf(aValue.data(), "%d,%d", &width, &height) == 2)
-    {
-       return QSize(width, height);
-    }
-  }
-  if (pDefault)
-    return *pDefault;
-  return QSize();
+  return readEntry(pKey, (pDefault? *pDefault: QSize()));
 }
-
-
-QColor KConfigBase::readColorEntry( const char *pKey,
-                                    const QColor* pDefault ) const
-{
-  QColor aRetColor;
-  int nRed = 0, nGreen = 0, nBlue = 0;
-
-  QString aValue = readEntry( pKey );
-  if( !aValue.isEmpty() )
-    {
-      if ( aValue.at(0) == '#' )
-        {
-          aRetColor.setNamedColor(aValue);
-        }
-      else
-        {
-
-          bool bOK;
-
-          // find first part (red)
-          int nIndex = aValue.indexOf( ',' );
-
-          if( nIndex == -1 ){
-            // return a sensible default -- Bernd
-            if( pDefault )
-              aRetColor = *pDefault;
-            return aRetColor;
-          }
-
-          nRed = aValue.left( nIndex ).toInt( &bOK );
-
-          // find second part (green)
-          int nOldIndex = nIndex;
-          nIndex = aValue.indexOf( ',', nOldIndex+1 );
-
-          if( nIndex == -1 ){
-            // return a sensible default -- Bernd
-            if( pDefault )
-              aRetColor = *pDefault;
-            return aRetColor;
-          }
-          nGreen = aValue.mid( nOldIndex+1,
-                               nIndex-nOldIndex-1 ).toInt( &bOK );
-
-          // find third part (blue)
-          nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
-
-          aRetColor.setRgb( nRed, nGreen, nBlue );
-        }
-    }
-  else {
-
-    if( pDefault )
-      aRetColor = *pDefault;
-  }
-
-  return aRetColor;
-}
-
 
 QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
                                           const QDateTime* pDefault ) const
 {
-  return readDateTimeEntry(pKey.toUtf8().data(), pDefault);
+  return readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
 }
 
-// ### currentDateTime() as fallback ? (Harri)
 QDateTime KConfigBase::readDateTimeEntry( const char *pKey,
                                           const QDateTime* pDefault ) const
 {
-  if( !hasKey( pKey ) )
-    {
-      if( pDefault )
-        return *pDefault;
-      else
-        return QDateTime::currentDateTime();
-    }
-
-  QStringList list = readEntry( pKey, QStringList() );
-  if( list.count() == 6 ) {
-    QDate date( list.at( 0 ).toInt(), list.at( 1 ).toInt(), list.at( 2 ).toInt() );
-    QTime time( list.at( 3 ).toInt(), list.at( 4 ).toInt(), list.at( 5 ).toInt() );
-
-    return QDateTime( date, time );
-  }
-
-  return QDateTime::currentDateTime();
+  return readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
 }
 
 void KConfigBase::writeEntry( const char *pKey, const QString& value,
@@ -965,9 +778,9 @@ static QString translatePath( QString path )
    // since it would not recognize paths without a trailing '/'.
    // All of the 3 following functions to return the user's home directory
    // can return different paths. We have to test all them.
-   QString homeDir0 = QFile::decodeName(getenv("HOME"));
-   QString homeDir1 = QDir::homePath();
-   QString homeDir2 = QDir(homeDir1).canonicalPath();
+   const QString homeDir0 = QFile::decodeName(getenv("HOME"));
+   const QString homeDir1 = QDir::homePath();
+   const QString homeDir2 = QDir(homeDir1).canonicalPath();
    if (cleanHomeDirPath(path, homeDir0) ||
        cleanHomeDirPath(path, homeDir1) ||
        cleanHomeDirPath(path, homeDir2) ) {
@@ -1092,13 +905,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toStringList(), ',', pFlags );
       return;
     case QVariant::ByteArray: {
-      QByteArray ba = prop.toByteArray();
+      const QByteArray ba = prop.toByteArray();
       writeEntry( pKey, QString::fromUtf8(ba.constData(), ba.length()), pFlags );
       return;
     }
     case QVariant::Point: {
         QList<int> list;
-        QPoint rPoint = prop.toPoint();
+        const QPoint rPoint = prop.toPoint();
         list.insert( 0, rPoint.x() );
         list.insert( 1, rPoint.y() );
 
@@ -1107,7 +920,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     }
     case QVariant::Rect:{
         QList<int> list;
-        QRect rRect = prop.toRect();
+        const QRect rRect = prop.toRect();
         list.insert( 0, rRect.left() );
         list.insert( 1, rRect.top() );
         list.insert( 2, rRect.width() );
@@ -1118,7 +931,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     }
     case QVariant::Size:{
         QList<int> list;
-        QSize rSize = prop.toSize();
+        const QSize rSize = prop.toSize();
         list.insert( 0, rSize.width() );
         list.insert( 1, rSize.height() );
 
@@ -1127,8 +940,12 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     }
     case QVariant::Color: {
         QList<int> list;
-        QColor rColor = prop.value<QColor>();
+        const QColor rColor = prop.value<QColor>();
 
+        if (!rColor.isValid()) {
+            writeEntry(pKey, "invalid", pFlags);
+            return;
+        }
         list.insert(0, rColor.red());
         list.insert(1, rColor.green());
         list.insert(2, rColor.blue());
@@ -1154,7 +971,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       return;
     case QVariant::Date: {
         QList<int> list;
-        QDate date = prop.toDate();
+        const QDate date = prop.toDate();
 
         list.insert( 0, date.year() );
         list.insert( 1, date.month() );
@@ -1165,10 +982,10 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     }
     case QVariant::DateTime: {
         QList<int> list;
-        QDateTime rDateTime = prop.toDateTime();
+        const QDateTime rDateTime = prop.toDateTime();
 
-        QTime time = rDateTime.time();
-        QDate date = rDateTime.date();
+        const QTime time = rDateTime.time();
+        const QDate date = rDateTime.date();
 
         list.insert( 0, date.year() );
         list.insert( 1, date.month() );

@@ -808,7 +808,7 @@ public:
    * @deprecated
    */
   KDE_DEPRECATED QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const
-    { return readEntry(pKey, *pDefault); }
+    { return readEntry(pKey, (pDefault? *pDefault: QColor())); }
 
   /**
    * Reads a QColor entry.
@@ -822,7 +822,8 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const
+    { return readEntry(pKey, (pDefault? *pDefault: QColor())); }
 
   /**
    * Reads a QDateTime entry.
