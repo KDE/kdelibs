@@ -86,7 +86,7 @@ public slots:
 	 */
 	void play();
 private:
-	KAudioPlayerPrivate *d;
+	KAudioPlayerPrivate* const d;
 };
 
 #endif // KAUDIOPLAYER_H

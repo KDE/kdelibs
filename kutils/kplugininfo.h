@@ -311,7 +311,7 @@ class KUTILS_EXPORT KPluginInfo
         const KPluginInfo & operator=( const KPluginInfo & );
 
         class KPluginInfoPrivate;
-        KPluginInfoPrivate * d;
+        KPluginInfoPrivate* const d;
 };
 
 // vim: sw=4 sts=4 et tw=80

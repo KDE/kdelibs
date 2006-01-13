@@ -239,7 +239,7 @@ signals:
     void jsEvent (const QStringList & args);
 private:
     void showStatus( const QString &msg);
-    KJavaAppletPrivate*    d;
+    KJavaAppletPrivate* const d;
     QMap<QString, QString> params;
     KJavaAppletContext*    context;
     int                    id;

@@ -198,7 +198,7 @@ class KUTILS_EXPORT Dialog : public QObject
         void createDialogFromServices();
 
         class DialogPrivate;
-        DialogPrivate * d;
+        DialogPrivate* const d;
 };
 
 }

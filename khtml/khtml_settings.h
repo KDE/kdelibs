@@ -226,7 +226,7 @@ private:
     friend class KHTMLFactory;
     QString lookupFont(int i) const;
 
-    KHTMLSettingsPrivate *d;
+    KHTMLSettingsPrivate* const d;
     static QString *avFamilies;
 };
 

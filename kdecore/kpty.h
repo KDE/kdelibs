@@ -141,7 +141,7 @@ public:
 private:
   bool chownpty(bool grant);
 
-  KPtyPrivate *d;
+  KPtyPrivate* const d;
 };
 
 #endif //Q_OS_UNIX

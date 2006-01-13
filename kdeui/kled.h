@@ -310,7 +310,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KLedPrivate;
-  KLedPrivate *d;
+  KLedPrivate * const d;
 };
 
 #endif

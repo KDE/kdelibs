@@ -44,10 +44,9 @@ public:
 };
 
 KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
-    : filter(_filter)
+    : filter(_filter), d(new KFilterDevPrivate)
 {
     assert(filter);
-    d = new KFilterDevPrivate;
     d->autoDeleteFilterBase = autoDeleteFilterBase;
 }
 

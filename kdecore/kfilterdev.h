@@ -178,7 +178,7 @@ private:
 private:
     KFilterBase *filter;
     class KFilterDevPrivate;
-    KFilterDevPrivate * d;
+    KFilterDevPrivate* const d;
     qint64 ioIndex;
 };
 

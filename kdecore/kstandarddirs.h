@@ -622,7 +622,7 @@ public:
 	bool addedCustoms;
 
 	class KStandardDirsPrivate;
-	KStandardDirsPrivate *d;
+	KStandardDirsPrivate* const d;
 
 	void checkConfig() const;
 	void applyDataRestrictions(const QString &) const;

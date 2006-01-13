@@ -283,7 +283,7 @@ private:
 
     // Binary compatible extensibility.
     class KFindDialogPrivate;
-    KFindDialogPrivate *d;
+    KFindDialogPrivate* const d;
 };
 
 #endif // KFINDDIALOG_H

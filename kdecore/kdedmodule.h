@@ -156,7 +156,7 @@ signals:
   void windowUnregistered(long windowId);
 
 private:
-  KDEDModulePrivate *d;
+  KDEDModulePrivate* const d;
 };
 
 #endif

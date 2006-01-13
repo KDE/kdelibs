@@ -121,17 +121,17 @@ struct KFind::Private
 ////
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent )
-    : QObject( parent )
+    : QObject( parent ),
+	d(new KFind::Private)
 {
-    d = new KFind::Private;
     m_options = options;
     init( pattern );
 }
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent, QWidget *findDialog )
-    : QObject( parent )
+    : QObject( parent ),
+	d(new KFind::Private)
 {
-    d = new KFind::Private;
     d->findDialog = findDialog;
     m_options = options;
     init( pattern );

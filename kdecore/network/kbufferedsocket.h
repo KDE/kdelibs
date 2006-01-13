@@ -216,7 +216,7 @@ private:
   KBufferedSocket(const KBufferedSocket&);
   KBufferedSocket& operator=(const KBufferedSocket&);
 
-  KBufferedSocketPrivate *d;
+  KBufferedSocketPrivate* const d;
 };
 
 }				// namespace KNetwork

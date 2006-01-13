@@ -157,7 +157,7 @@ signals:
     void exited( int status );
 
 private:
-    KJavaProcessPrivate *d;
+    KJavaProcessPrivate* const d;
 
 };
 

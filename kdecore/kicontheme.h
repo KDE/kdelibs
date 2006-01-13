@@ -165,7 +165,7 @@ public:
     QString path;
 
 private:
-    KIconPrivate *d;
+    KIconPrivate* d;
 };
 
 inline KIcon::Group& operator++(KIcon::Group& group) { group = static_cast<KIcon::Group>(group+1); return group; }
@@ -346,7 +346,7 @@ private:
     QString mDir, mName, mDesc;
     QStringList mInherits;
     QList<KIconThemeDir *> mDirs;
-    KIconThemePrivate *d;
+    KIconThemePrivate* const d;
 
     static QString *_theme;
     static QStringList *_theme_list;

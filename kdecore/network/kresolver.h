@@ -946,7 +946,7 @@ protected:
   /** Standard hack to add virtuals later. @internal */
   virtual void virtual_hook( int id, void* data );
 private:
-  KResolverPrivate* d;
+  KResolverPrivate* const d;
   friend class KResolverResults;
   friend class ::KNetwork::Internal::KResolverManager;
 

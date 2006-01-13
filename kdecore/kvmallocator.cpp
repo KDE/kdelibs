@@ -60,8 +60,8 @@ public:
  * Create a KVMAllocator
  */
 KVMAllocator::KVMAllocator()
+	:d(new KVMAllocatorPrivate)
 {
-   d = new KVMAllocatorPrivate;
    d->tempfile = 0;
    d->max_length = 0;
 }

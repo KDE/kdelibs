@@ -489,7 +489,7 @@ private:
   KClientSocketBase(const KClientSocketBase&);
   KClientSocketBase& operator=(const KClientSocketBase&);
 
-  KClientSocketBasePrivate *d;
+  KClientSocketBasePrivate* const d;
 };
 
 }				// namespace KNetwork

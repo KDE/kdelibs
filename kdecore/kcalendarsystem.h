@@ -349,7 +349,7 @@ protected:
   const KLocale * locale() const;
 
 private:
-  KCalendarSystemPrivate * d;
+  KCalendarSystemPrivate* const d;
 };
 
 #endif

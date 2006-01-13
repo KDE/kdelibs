@@ -105,7 +105,7 @@ public:
 			  const KNetworkInterface& iface);
 
 private:
-  KMulticastSocketPrivate *d;
+  KMulticastSocketPrivate* const d;
 };
 
 }				// namespace KNetwork

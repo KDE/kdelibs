@@ -775,7 +775,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;
-  Private *d;
+  Private* d;
 };
 
 #endif

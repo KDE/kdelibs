@@ -46,9 +46,11 @@ private:
     bool processKilled;
 };
 
-KJavaProcess::KJavaProcess() : KProcess()
+KJavaProcess::KJavaProcess() 
+	: KProcess(),
+	d(new KJavaProcessPrivate)
+
 {
-    d = new KJavaProcessPrivate;
     d->processKilled = false;
 
     javaProcess = this; //new KProcess();

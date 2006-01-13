@@ -115,7 +115,7 @@ protected:
     void showEvent (QShowEvent *);
 
 private:
-    KJavaAppletWidgetPrivate* d;
+    KJavaAppletWidgetPrivate* const d;
 
     KJavaApplet* m_applet;
     KWinModule*  m_kwm;

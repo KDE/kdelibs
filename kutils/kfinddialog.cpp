@@ -53,9 +53,9 @@ public:
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
     KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok),
     m_findExtension (0),
-    m_replaceExtension (0)
+    m_replaceExtension (0),
+	d(new KFindDialogPrivate)
 {
-    d = new KFindDialogPrivate;
     init(false, findStrings, hasSelection);
     setOptions(options);
     setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
@@ -64,9 +64,9 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
 KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
     KDialogBase(parent, name, modal, i18n("Find Text"), Ok | Cancel, Ok),
     m_findExtension (0),
-    m_replaceExtension (0)
+    m_replaceExtension (0),
+	d(new KFindDialogPrivate)
 {
-    d = new KFindDialogPrivate;
     init(false, findStrings, hasSelection);
     setOptions(options);
     setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
@@ -75,9 +75,9 @@ KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long opt
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
     KDialogBase(parent, name, true, i18n("Replace Text"), Ok | Cancel, Ok),
     m_findExtension (0),
-    m_replaceExtension (0)
+    m_replaceExtension (0),
+	d(new KFindDialogPrivate)
 {
-    d = new KFindDialogPrivate;
     setButtonGuiItem( KDialogBase::Cancel,  KStdGuiItem::close() );
 }
 

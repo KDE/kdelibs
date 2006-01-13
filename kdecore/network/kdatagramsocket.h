@@ -272,7 +272,7 @@ private:
   bool doBind();
   void setupSignals();
 
-  KDatagramSocketPrivate *d;
+  KDatagramSocketPrivate* const d;
 };
 
 }				// namespace KNetwork

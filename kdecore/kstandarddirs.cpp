@@ -102,9 +102,10 @@ static const char* const types[] = {"html", "icon", "apps", "sound",
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs() : addedCustoms(false)
+KStandardDirs::KStandardDirs() 
+	: addedCustoms(false),
+	d(new KStandardDirsPrivate)
 {
-    d = new KStandardDirsPrivate;
     addKDEDefaults();
 }
 

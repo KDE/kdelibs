@@ -111,7 +111,7 @@ class KUTILS_EXPORT PluginPage : public KCModule
 
     private:
         class PluginPagePrivate;
-        PluginPagePrivate * d;
+        PluginPagePrivate* const d;
 };
 
 }

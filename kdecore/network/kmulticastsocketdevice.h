@@ -143,7 +143,7 @@ public:
   virtual bool leaveGroup(const KSocketAddress& group,
 			  const KNetworkInterface& iface);
 private:
-  KMulticastSocketDevicePrivate *d;
+  KMulticastSocketDevicePrivate* const d;
 };
 
 }				// namespace KNetwork

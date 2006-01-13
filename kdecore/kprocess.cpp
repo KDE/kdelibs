@@ -124,12 +124,12 @@ KProcess::KProcess( QObject* parent )
     communication(NoCommunication),
     input_data(0),
     input_sent(0),
-    input_total(0)
+    input_total(0),
+	 d(new KProcessPrivate)
 {
   KProcessController::ref();
   KProcessController::theKProcessController->addKProcess(this);
 
-  d = new KProcessPrivate;
 
   out[0] = out[1] = -1;
   in[0] = in[1] = -1;

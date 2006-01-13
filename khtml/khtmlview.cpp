@@ -467,12 +467,11 @@ bool KHTMLView::event( QEvent* e )
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : Q3ScrollView( parent, name, Qt::WResizeNoErase | Qt::WNoAutoErase )
+    : Q3ScrollView( parent, name, Qt::WResizeNoErase | Qt::WNoAutoErase ),d(new KHTMLViewPrivate)
 {
     m_medium = "screen";
 
     m_part = part;
-    d = new KHTMLViewPrivate;
     Q3ScrollView::setVScrollBarMode(d->vmode);
     Q3ScrollView::setHScrollBarMode(d->hmode);
     connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
@@ -510,7 +509,7 @@ KHTMLView::~KHTMLView()
         if (doc)
             doc->detach();
     }
-    delete d; d = 0;
+    delete d;
 }
 
 void KHTMLView::init()

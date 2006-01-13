@@ -392,9 +392,8 @@ public:
 
 
 KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url )
-  : QObject( khtml )
+  : QObject( khtml ), d(new KHTMLPopupGUIClientPrivate)
 {
-  d = new KHTMLPopupGUIClientPrivate;
   d->m_khtml = khtml;
   d->m_url = url;
   bool isImage = false;

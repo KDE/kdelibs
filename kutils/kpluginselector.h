@@ -210,7 +210,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
                                  KConfigGroup* cfgGroup );
 
 	class KPluginSelectorPrivate;
-        KPluginSelectorPrivate * d;
+        KPluginSelectorPrivate* const d;
 };
 
 // vim: sw=4 sts=4 et tw=80

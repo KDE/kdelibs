@@ -187,7 +187,7 @@ public:
 		      QString& node, QString& serv, int flags = 0);
 
 private:
-  KReverseResolverPrivate* d;
+  KReverseResolverPrivate* const d;
 };
 
 }				// namespace KNetwork

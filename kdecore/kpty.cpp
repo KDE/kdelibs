@@ -185,8 +185,8 @@ struct KPtyPrivate {
 /////////////////////////////
 
 KPty::KPty()
+	:d(new KPtyPrivate)
 {
-  d = new KPtyPrivate;
 }
 
 KPty::~KPty()

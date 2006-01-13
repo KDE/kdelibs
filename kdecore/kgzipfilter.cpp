@@ -41,8 +41,8 @@ public:
 };
 
 KGzipFilter::KGzipFilter()
+	: d(new KGzipFilterPrivate)
 {
-    d = new KGzipFilterPrivate;
     d->zStream.zalloc = (alloc_func)0;
     d->zStream.zfree = (free_func)0;
     d->zStream.opaque = (voidpf)0;

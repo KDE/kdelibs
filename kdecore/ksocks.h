@@ -202,7 +202,7 @@ private:
 
 
    KSocksTable *_st;
-   KSocksPrivate *d;
+   KSocksPrivate* d;
 };
 
 #endif //Q_OS_UNIX

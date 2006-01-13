@@ -188,7 +188,7 @@ class KPluginSelectionWidget : public QWidget
         void checkDependencies( const KPluginInfo * );
 
         struct KPluginSelectionWidgetPrivate;
-        KPluginSelectionWidgetPrivate * d;
+        KPluginSelectionWidgetPrivate* const d;
 };
 
 // vim: sw=4 sts=4 et

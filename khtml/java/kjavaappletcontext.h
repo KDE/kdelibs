@@ -134,7 +134,7 @@ protected slots:
 
 private:
     int id;
-    KJavaAppletContextPrivate* d;
+    KJavaAppletContextPrivate* const d;
 
 };
 

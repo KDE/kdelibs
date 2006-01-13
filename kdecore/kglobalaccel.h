@@ -218,7 +218,7 @@ protected:
 	/** \internal */
 	virtual void virtual_hook( int id, void* data );
 private:
-	class KGlobalAccelPrivate* d;
+	class KGlobalAccelPrivate* const d;
 };
 
 #endif // _KGLOBALACCEL_H_

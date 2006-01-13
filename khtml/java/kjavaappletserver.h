@@ -157,7 +157,7 @@ protected slots:
     void killTimers();
 
 private:
-    KJavaAppletServerPrivate* d;
+    KJavaAppletServerPrivate* const d;
 
 };
 

@@ -36,8 +36,8 @@ public:
 };
 
 KCompletion::KCompletion()
+	:d(new KCompletionPrivate)
 {
-    d = new KCompletionPrivate;
 
     myCompletionMode = KGlobalSettings::completionMode();
     myTreeRoot = new KCompTreeNode;

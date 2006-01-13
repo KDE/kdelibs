@@ -49,7 +49,7 @@ public:
     virtual Result compress( bool finish );
 private:
     class KBzip2FilterPrivate;
-    KBzip2FilterPrivate *d;
+    KBzip2FilterPrivate* const d;
     int m_mode;
 };
 

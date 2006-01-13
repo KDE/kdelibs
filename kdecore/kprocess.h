@@ -845,7 +845,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KProcessPrivate *d;
+  KProcessPrivate* const d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KProcess::Communication)
@@ -890,7 +890,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KShellProcessPrivate *d;
+  KShellProcessPrivate* d;
 };
 
 

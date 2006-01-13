@@ -51,10 +51,10 @@ KLed::KLed(QWidget *parent)
   : QWidget( parent ),
     led_state(On),
     led_look(Raised),
-    led_shape(Circular)
+    led_shape(Circular),
+	d(new KLed::KLedPrivate)
 {
   QColor col(Qt::green);
-  d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
   d->off_map = 0;
@@ -68,9 +68,9 @@ KLed::KLed(const QColor& col, QWidget *parent)
   : QWidget( parent ),
     led_state(On),
     led_look(Raised),
-    led_shape(Circular)
+    led_shape(Circular),
+	d(new KLed::KLedPrivate)
 {
-  d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
   d->off_map = 0;
@@ -85,9 +85,9 @@ KLed::KLed(const QColor& col, KLed::State state,
   : QWidget(parent),
     led_state(state),
     led_look(look),
-    led_shape(shape)
+    led_shape(shape),
+	d(new KLed::KLedPrivate)
 {
-  d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
   d->off_map = 0;

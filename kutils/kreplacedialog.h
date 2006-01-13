@@ -144,7 +144,7 @@ private:
 
     // Binary compatible extensibility.
     class KReplaceDialogPrivate;
-    KReplaceDialogPrivate *d;
+    KReplaceDialogPrivate* const d;
 };
 
 

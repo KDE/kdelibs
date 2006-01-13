@@ -420,7 +420,7 @@ private:
   KServerSocket(const KServerSocket&);
   KServerSocket& operator=(const KServerSocket&);
 
-  KServerSocketPrivate *d;
+  KServerSocketPrivate* const d;
 };
 
 }				// namespace KNetwork

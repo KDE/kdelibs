@@ -106,7 +106,7 @@ private:
    * Returns true on success and false on failure.
    */
   bool parseServerReply();
-  KHttpProxySocketDevicePrivate *d;
+  KHttpProxySocketDevicePrivate* const d;
 
 public:
   /**

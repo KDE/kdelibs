@@ -43,15 +43,14 @@ public:
 };
 
 KIconEffect::KIconEffect()
+    :d(new KIconEffectPrivate)
 {
-    d = new KIconEffectPrivate;
     init();
 }
 
 KIconEffect::~KIconEffect()
 {
     delete d;
-    d = 0L;
 }
 
 void KIconEffect::init()

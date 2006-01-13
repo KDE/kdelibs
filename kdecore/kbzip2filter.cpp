@@ -49,8 +49,8 @@ public:
 };
 
 KBzip2Filter::KBzip2Filter()
+	:d(new KBzip2FilterPrivate)
 {
-    d = new KBzip2FilterPrivate;
     d->zStream.bzalloc = 0;
     d->zStream.bzfree = 0;
     d->zStream.opaque = 0;

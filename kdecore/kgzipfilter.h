@@ -50,7 +50,7 @@ private:
     ulong m_crc;
     bool m_headerWritten;
     class KGzipFilterPrivate;
-    KGzipFilterPrivate *d;
+    KGzipFilterPrivate* const d;
 };
 
 #endif

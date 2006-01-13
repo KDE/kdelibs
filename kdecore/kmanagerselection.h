@@ -154,7 +154,7 @@ class KDECORE_EXPORT KSelectionOwner
     protected:
         virtual void virtual_hook( int id, void* data );
     private:
-        KSelectionOwnerPrivate* d;
+        KSelectionOwnerPrivate* const d;
     };
 
 class KSelectionWatcherPrivate;
@@ -223,7 +223,7 @@ class KDECORE_EXPORT KSelectionWatcher
     protected:
         virtual void virtual_hook( int id, void* data );
     private:
-        KSelectionWatcherPrivate* d;
+        KSelectionWatcherPrivate* const d;
     };
 
 #endif

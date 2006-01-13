@@ -337,8 +337,8 @@ public:
 // --------------------------------------------------------------------------
 
 KCharsets::KCharsets()
+	:d(new KCharsetsPrivate(this))
 {
-    d = new KCharsetsPrivate(this);
 }
 
 KCharsets::~KCharsets()

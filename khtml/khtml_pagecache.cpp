@@ -127,8 +127,8 @@ KHTMLPageCache::self()
 }
 
 KHTMLPageCache::KHTMLPageCache()
+	:d( new KHTMLPageCachePrivate)
 {
-  d = new KHTMLPageCachePrivate;
   d->newId = 1;
   d->deliveryActive = false;
 }

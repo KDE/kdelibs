@@ -72,9 +72,8 @@ class KCModuleContainer::KCModuleContainerPrivate
 #endif
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-	: KCModule( KGlobal::instance(), parent )
+	: KCModule( KGlobal::instance(), parent ),d(new KCModuleContainerPrivate( QStringList::split( ",", QString(mods).remove( " " )) ))
 {
-	d = new KCModuleContainerPrivate( QStringList::split( ",", QString(mods).remove( " " )) );
 	init();
 }
 

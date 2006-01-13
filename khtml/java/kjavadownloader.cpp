@@ -71,10 +71,10 @@ private:
 
 
 KJavaDownloader::KJavaDownloader( int ID, const QString& url )
+	:d(new KJavaDownloaderPrivate)
 {
     kdDebug(6100) << "KJavaDownloader(" << ID << ") = " << url << endl;
 
-    d = new KJavaDownloaderPrivate;
 
     d->loaderID = ID;
     d->url = new KURL( url );
@@ -197,10 +197,10 @@ public:
 };
 
 KJavaUploader::KJavaUploader( int ID, const QString& url )
+	:d(new KJavaUploaderPrivate)
 {
     kdDebug(6100) << "KJavaUploader(" << ID << ") = " << url << endl;
 
-    d = new KJavaUploaderPrivate;
 
     d->loaderID = ID;
     d->url = new KURL( url );

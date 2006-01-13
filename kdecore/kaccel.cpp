@@ -423,19 +423,19 @@ void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
 //---------------------------------------------------------------------
 
 KAccel::KAccel( QWidget* pParent, const char* psName )
-: Q3Accel( pParent, (psName) ? psName : "KAccel-QAccel" )
+: Q3Accel( pParent, (psName) ? psName : "KAccel-QAccel" ),
+		d(new KAccelPrivate( this, pParent ))
 {
 	kdDebug(125) << "KAccel( pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
-	d = new KAccelPrivate( this, pParent );
 }
 
 KAccel::KAccel( QWidget* watch, QObject* pParent, const char* psName )
-: Q3Accel( watch, pParent, (psName) ? psName : "KAccel-QAccel" )
+: Q3Accel( watch, pParent, (psName) ? psName : "KAccel-QAccel" ),
+		d(new KAccelPrivate( this, watch ))
 {
 	kdDebug(125) << "KAccel( watch = " << watch << ", pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
 	if( !watch )
 		kdDebug(125) << kdBacktrace() << endl;
-	d = new KAccelPrivate( this, watch );
 }
 
 KAccel::~KAccel()

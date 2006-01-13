@@ -114,7 +114,7 @@ public:
   * or a deep copy of the global settings if not existent.
   */
 static KPerDomainSettings &setup_per_domain_policy(
-				KHTMLSettingsPrivate *d,
+				KHTMLSettingsPrivate* const d,
 				const QString &domain) {
   if (domain.isEmpty()) {
     kdWarning() << "setup_per_domain_policy: domain is empty" << endl;
@@ -255,14 +255,14 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
 
 
 KHTMLSettings::KHTMLSettings()
+	:d (new KHTMLSettingsPrivate())
 {
-  d = new KHTMLSettingsPrivate();
   init();
 }
 
 KHTMLSettings::KHTMLSettings(const KHTMLSettings &other)
+	:d(new KHTMLSettingsPrivate())
 {
-  d = new KHTMLSettingsPrivate();
   *d = *other.d;
 }
 
@@ -647,7 +647,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   * In case of doubt, the global domain is returned.
   */
 static const KPerDomainSettings &lookup_hostname_policy(
-			const KHTMLSettingsPrivate *d,
+			const KHTMLSettingsPrivate* const d,
 			const QString& hostname)
 {
 #ifdef DEBUG_SETTINGS

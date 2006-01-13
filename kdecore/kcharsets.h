@@ -135,7 +135,7 @@ public:
     QString encodingForName( const QString &descriptiveName ) const;
 
 private:
-    KCharsetsPrivate *d;
+    KCharsetsPrivate* const d;
 };
 
 #endif

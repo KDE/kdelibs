@@ -108,7 +108,7 @@ private:
 
   static KHTMLPageCache *_self;
 
-  KHTMLPageCachePrivate *d;  
+  KHTMLPageCachePrivate* const d;
 };
 
 class KHTMLPageCacheDelivery : public QObject

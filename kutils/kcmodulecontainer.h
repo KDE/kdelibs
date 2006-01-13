@@ -162,7 +162,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		void init();
 
 		class KCModuleContainerPrivate;
-		KCModuleContainerPrivate *d;
+		KCModuleContainerPrivate* const d;
 
 };
 

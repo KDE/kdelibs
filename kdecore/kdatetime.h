@@ -1207,7 +1207,7 @@ class KDECORE_EXPORT KDateTime
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
-    KDateTimePrivate *d;
+    KDateTimePrivate* const d;
 };
 
 QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);

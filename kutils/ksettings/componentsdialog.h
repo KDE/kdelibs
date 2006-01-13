@@ -81,7 +81,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         void savePluginInfos();
 
         class ComponentsDialogPrivate;
-        ComponentsDialogPrivate * d;
+        ComponentsDialogPrivate* const d;
 };
 
 }

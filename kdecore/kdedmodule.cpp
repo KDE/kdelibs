@@ -39,9 +39,8 @@ public:
 #endif
 };
 
-KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name)
+KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name),d(new KDEDModulePrivate)
 {
-   d = new KDEDModulePrivate;
 #if 0 // KDED_OBJECTS
    d->objMap = 0;
    d->timeout = 0;
@@ -53,7 +52,7 @@ KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name)
 KDEDModule::~KDEDModule()
 {
    emit moduleDeleted(this);
-   delete d; d = 0;
+   delete d; 
 }
 
 #if 0 // see header (grep keyword: KDED_OBJECTS)

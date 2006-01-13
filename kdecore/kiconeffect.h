@@ -224,7 +224,7 @@ private:
     float mValue[6][3];
     QColor mColor[6][3];
     bool mTrans[6][3];
-    KIconEffectPrivate *d;
+    KIconEffectPrivate* const d;
 };
 
 #endif

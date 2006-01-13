@@ -306,7 +306,7 @@ class KDECORE_EXPORT KAccel : public Q3Accel
  protected:
 
  private:
-	class KAccelPrivate* d;
+	class KAccelPrivate* const d;
 	friend class KAccelPrivate;
 };
 

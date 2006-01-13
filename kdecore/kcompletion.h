@@ -571,7 +571,7 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KCompletionPrivate *d;
+    KCompletionPrivate* const d;
 };
 
 // some more helper stuff
@@ -988,7 +988,7 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KCompletionBasePrivate *d;
+    KCompletionBasePrivate* d;
 };
 
 #endif // KCOMPLETION_H

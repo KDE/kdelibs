@@ -146,7 +146,7 @@ private slots:
 
 private:
   class KHTMLPopupGUIClientPrivate;
-  KHTMLPopupGUIClientPrivate *d;
+  KHTMLPopupGUIClientPrivate* const d;
 };
 
 class KHTMLZoomFactorAction : public KAction

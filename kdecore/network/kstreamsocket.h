@@ -241,7 +241,7 @@ private:
   KStreamSocket(const KStreamSocket&);
   KStreamSocket& operator=(const KStreamSocket&);
 
-  KStreamSocketPrivate *d;
+  KStreamSocketPrivate* const d;
 
   friend class KServerSocket;
   friend class KBufferedSocket;

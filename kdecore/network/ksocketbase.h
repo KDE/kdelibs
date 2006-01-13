@@ -443,7 +443,7 @@ private:
   KSocketBase(const KSocketBase&);
   KSocketBase& operator =(const KSocketBase&);
 
-  KSocketBasePrivate *d;
+  KSocketBasePrivate* const d;
 
   friend class KSocketDevice;
 };

@@ -71,7 +71,7 @@ public:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KMimeSourceFactoryPrivate* d;
+  KMimeSourceFactoryPrivate* const d;
 };
 
 #endif // KMIMESOURCEFACTORY_H

@@ -379,7 +379,7 @@ private:
   KSocketDevice(const KSocketDevice&);
   KSocketDevice& operator=(const KSocketDevice&);
 
-  KSocketDevicePrivate *d;
+  KSocketDevicePrivate* const d;
 };
 
 /** @internal

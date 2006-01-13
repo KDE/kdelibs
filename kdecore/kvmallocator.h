@@ -99,7 +99,7 @@ public:
     void unmap(Block *block);
     
 private:
-    KVMAllocatorPrivate *d;
+    KVMAllocatorPrivate* const d;
 };
 
 #endif

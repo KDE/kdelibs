@@ -33,7 +33,7 @@ public:
 private:
 
     class KMathPrivate;
-    KMathPrivate *d;    
+    KMathPrivate* const d;
 };
 
 #endif

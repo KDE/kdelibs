@@ -587,7 +587,7 @@ private:
     int _marginHeight;
 
     KHTMLPart *m_part;
-    KHTMLViewPrivate *d;
+    KHTMLViewPrivate* const d;
 
     QString m_medium;   // media type
 };

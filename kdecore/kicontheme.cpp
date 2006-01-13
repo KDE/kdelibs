@@ -77,8 +77,8 @@ private:
 /*** KIconTheme ***/
 
 KIconTheme::KIconTheme(const QString& name, const QString& appName)
+    :d(new KIconThemePrivate)
 {
-    d = new KIconThemePrivate;
 
     QStringList icnlibs;
     QStringList::ConstIterator it, itDir;

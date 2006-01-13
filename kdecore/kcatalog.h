@@ -145,7 +145,7 @@ public:
                      const char * msgid_plural, unsigned long n ) const;
 
 private:
-  KCatalogPrivate * d;
+  KCatalogPrivate* const d;
 };
 
 #endif

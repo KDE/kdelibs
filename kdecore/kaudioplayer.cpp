@@ -31,9 +31,8 @@ public:
 };
 
 KAudioPlayer::KAudioPlayer( const QString& filename,
-			QObject* parent ) : QObject(parent )
+			QObject* parent ) : QObject(parent ),d(new KAudioPlayerPrivate(filename))
 {
-	d = new KAudioPlayerPrivate(filename);
 }
 
 KAudioPlayer::~KAudioPlayer()

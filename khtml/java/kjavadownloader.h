@@ -65,7 +65,7 @@ protected slots:
     void slotResult( KIO::Job* );
 
 private:
-    KJavaDownloaderPrivate* d;
+    KJavaDownloaderPrivate* const d;
 
 };
 
@@ -84,7 +84,7 @@ protected slots:
     void slotDataRequest( KIO::Job*, QByteArray& );
     void slotResult( KIO::Job* );
 private:
-    KJavaUploaderPrivate* d;
+    KJavaUploaderPrivate* const d;
 
 };
 #endif

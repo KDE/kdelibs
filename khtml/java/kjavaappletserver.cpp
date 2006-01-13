@@ -133,8 +133,8 @@ private:
 static KJavaAppletServer* self = 0;
 
 KJavaAppletServer::KJavaAppletServer()
+	:d(new KJavaAppletServerPrivate)
 {
-    d = new KJavaAppletServerPrivate;
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),

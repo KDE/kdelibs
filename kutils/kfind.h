@@ -387,7 +387,7 @@ private:
 
     // Binary compatible extensibility.
     struct Private;
-    Private *d;
+    Private* const d;
 };
 
 #endif

@@ -50,9 +50,9 @@ int KJavaAppletContext::contextCount = 0;
 /*  Class Implementation
  */
 KJavaAppletContext::KJavaAppletContext()
-    : QObject()
+    : QObject(),
+	d(new KJavaAppletContextPrivate)
 {
-    d = new KJavaAppletContextPrivate;
     server = KJavaAppletServer::allocateJavaServer();
     connect(server->javaProcess(), SIGNAL(exited(int)), this, SLOT(javaProcessExited(int)));
 

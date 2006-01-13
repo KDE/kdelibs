@@ -43,12 +43,12 @@ private:
 int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( QWidget* parent )
-   : QX11EmbedContainer ( parent )
+   : QX11EmbedContainer ( parent ),
+   d(new KJavaAppletWidgetPrivate)
 {
     //setProtocol(QXEmbed::XPLAIN);
 
     m_applet = new KJavaApplet( this );
-    d        = new KJavaAppletWidgetPrivate;
 #ifdef Q_WS_X11
     m_kwm    = new KWinModule( this );
 #endif

@@ -171,7 +171,7 @@ protected slots:
 
 private:
     class KMenuPrivate;
-    KMenuPrivate *d;
+    KMenuPrivate * const d;
 };
 
 /**
