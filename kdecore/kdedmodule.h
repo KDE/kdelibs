@@ -53,7 +53,7 @@ class Kded;
  * @author Waldo Bastian <bastian@kde.org>
  */
 
-class KDED_EXPORT KDEDModule : public QObject, public DCOPObject
+class KDECORE_EXPORT KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
   K_DCOP
