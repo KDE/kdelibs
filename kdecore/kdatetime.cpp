@@ -1851,7 +1851,9 @@ QDataStream & operator<<(QDataStream &s, const KDateTime &dt)
             s << dt.UTCOffset();
             break;
         case KDateTime::TimeZone:
+#ifdef __GNUC__
 #warning TODO: output time zone data
+#endif
 //            s << *dt.timeZone();
             break;
         default:
@@ -1872,7 +1874,9 @@ QDataStream & operator>>(QDataStream &s, KDateTime &kdt)
         case KDateTime::TimeZone:
         {
             KTimezone *tz = new KTimezone;
+#ifdef __GNUC__
 #warning TODO: read time zone data
+#endif
 //            s >> *tz;
             kdt = KDateTime(dt, tz);
             break;
