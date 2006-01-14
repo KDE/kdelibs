@@ -27,7 +27,7 @@ env.CFile(target="grammar.tab.cpp", source="grammar.y", YACCFLAGS="-d -p kjsyy")
 
 env['BUILDERS']['Hash']    = Builder(action="perl kjs/create_hash_table $SOURCE -i > $TARGET" ,suffix='.lut.h',src_suffix='.cpp')
 
-for i in ["array_object.cpp","math_object.cpp", "date_object.cpp", "number_object.cpp", "string_object.cpp", "keywords.table" ]: 
+for i in [ "regexp_object.cpp", "array_object.cpp", "math_object.cpp", "date_object.cpp", "number_object.cpp", "string_object.cpp", "keywords.table" ]: 
     env.Hash(i)
 env.Command('global.h','global.h.in',Copy("$TARGET", "$SOURCE"))
 env.Command('lexer.lut.h','keywords.lut.h',Move("$TARGET", "$SOURCE"))
