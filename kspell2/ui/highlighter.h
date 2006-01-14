@@ -51,7 +51,7 @@ namespace KSpell2
         virtual void unsetMisspelled( int start,  int count );
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 
 }

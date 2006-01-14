@@ -76,6 +76,7 @@ Broker::Ptr Broker::openBroker( KSharedConfig *config )
 }
 
 Broker::Broker( KSharedConfig *config )
+	:d(new Private)
 {
     KSharedConfig::Ptr preventDeletion( config );
     Q_UNUSED( preventDeletion );
@@ -84,7 +85,6 @@ Broker::Broker( KSharedConfig *config )
         s_brokers = new QHash<KSharedConfig*, Broker*>;
     s_brokers->insert( config, this );
 
-    d = new Private;
     d->settings = new Settings( this, config );
     loadPlugins();
 
@@ -104,7 +104,7 @@ Broker::~Broker()
     }
 
     delete d->settings; d->settings = 0;
-    delete d; d = 0;
+    delete d;
 }
 
 DefaultDictionary* Broker::defaultDictionary() const

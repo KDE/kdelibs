@@ -500,7 +500,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 
 	private:
 		class WalletPrivate;
-		WalletPrivate *d;
+		WalletPrivate* const d;
 		QString _name;
 		QString _folder;
 		int _handle;

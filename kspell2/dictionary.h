@@ -103,7 +103,7 @@ namespace KSpell2
         bool    m_default;
     private:
         class Private;
-        Private *d;
+        Private* d;
     };
 }
 

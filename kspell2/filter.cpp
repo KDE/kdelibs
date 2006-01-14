@@ -58,15 +58,14 @@ Word Filter::end()
 }
 
 Filter::Filter()
-    : m_currentPosition( 0 )
+    : m_currentPosition( 0 ),d(new Private)
 {
-    d = new Private;
     d->settings = 0;
 }
 
 Filter::~Filter()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 void Filter::setSettings( Settings *conf )

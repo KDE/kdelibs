@@ -38,9 +38,8 @@ public:
 };
 
 BackgroundChecker::BackgroundChecker( const Broker::Ptr& broker, QObject* parent )
-    : QObject( parent )
+    : QObject( parent ),d(new Private)
 {
-    d = new Private;
     //d->thread.setReceiver( this );
     //d->thread.setBroker( broker );
     d->engine = new BackgroundEngine( this );

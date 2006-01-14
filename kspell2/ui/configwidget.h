@@ -50,7 +50,7 @@ namespace KSpell2
 
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 }
 

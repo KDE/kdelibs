@@ -46,9 +46,8 @@ public:
 Highlighter::Highlighter( Q3TextEdit *textEdit,
                           const QString& configFile,
                           Filter *filter)
-    : Q3SyntaxHighlighter( textEdit )
+    : Q3SyntaxHighlighter( textEdit ),d(new Private)
 {
-    d = new Private;
     d->filter = filter;
     if ( !configFile.isEmpty() )
         d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
@@ -64,7 +63,7 @@ Highlighter::Highlighter( Q3TextEdit *textEdit,
 
 Highlighter::~Highlighter()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 int Highlighter::highlightParagraph( const QString& text,

@@ -41,19 +41,18 @@ public:
 };
 
 ConfigWidget::ConfigWidget( Broker *broker, QWidget *parent )
-    : QWidget( parent )
+    : QWidget( parent ),d(new Private)
 {
     init( broker );
 }
 
 ConfigWidget::~ConfigWidget()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 void ConfigWidget::init( Broker *broker )
 {
-    d = new Private;
     d->broker = broker;
 
     QVBoxLayout *layout = new QVBoxLayout( this, 0, 0, "KSpell2ConfigUILayout");

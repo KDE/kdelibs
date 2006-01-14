@@ -71,7 +71,7 @@ namespace KSpell2
         Settings( Broker *broker, KSharedConfig *config );
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 }
 

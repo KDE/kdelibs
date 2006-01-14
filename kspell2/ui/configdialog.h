@@ -42,7 +42,7 @@ namespace KSpell2
         void init( Broker *broker );
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 }
 

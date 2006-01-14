@@ -115,7 +115,7 @@ namespace KSpell2
         //void customEvent( QCustomEvent *event );
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 
 }

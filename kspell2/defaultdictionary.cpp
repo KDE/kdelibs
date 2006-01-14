@@ -34,9 +34,8 @@ public:
 };
 
 DefaultDictionary::DefaultDictionary( const QString& lang, Broker *broker )
-    : QObject( broker ), Dictionary( lang, true )
+    : QObject( broker ), Dictionary( lang, true ),d(new Private)
 {
-    d = new Private;
     d->dict = broker->dictionary();
     d->broker = broker;
     connect( broker, SIGNAL(configurationChanged()),
@@ -45,7 +44,7 @@ DefaultDictionary::DefaultDictionary( const QString& lang, Broker *broker )
 
 DefaultDictionary::~DefaultDictionary()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 bool DefaultDictionary::isValid() const

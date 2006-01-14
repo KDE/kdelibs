@@ -124,7 +124,7 @@ namespace KSpell2
         void loadPlugin( const QString& );
     private:
         class Private;
-        Private *d;
+        Private* const d;
     };
 }
 

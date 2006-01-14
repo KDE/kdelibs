@@ -61,9 +61,8 @@ Dialog::Dialog( BackgroundChecker *checker,
     : KDialogBase( parent, name, true,
                    i18n( "Check Spelling" ),
                    Help|Cancel|User1, Cancel,  true,
-                   i18n( "&Finished" ) )
+                   i18n( "&Finished" ) ),d(new Private)
 {
-    d = new Private;
 
     d->checker = checker;
 

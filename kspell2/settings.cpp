@@ -51,8 +51,8 @@ public:
 };
 
 Settings::Settings( Broker *broker, KSharedConfig *config )
+	:d(new Private)
 {
-    d = new Private;
     d->broker = broker;
 
     Q_ASSERT( config );
@@ -64,7 +64,7 @@ Settings::Settings( Broker *broker, KSharedConfig *config )
 
 Settings::~Settings()
 {
-    delete d; d = 0;
+    delete d; 
 }
 
 KSharedConfig *Settings::sharedConfig() const
