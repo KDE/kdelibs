@@ -758,7 +758,7 @@ bool KMD5::update(QIODevice& file)
     char buffer[1024];
     int len;
 
-    while ((len=file.read(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
+    while ((len=file.read(buffer, sizeof(buffer))) > 0)
         update(buffer, len);
 
     return file.atEnd();
@@ -1151,7 +1151,7 @@ bool KMD4::update(QIODevice& file)
     char buffer[1024];
     int len;
 
-    while ((len=file.read(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
+    while ((len=file.read(buffer, sizeof(buffer))) > 0)
         update(buffer, len);
 
     return file.atEnd();
