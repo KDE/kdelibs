@@ -53,7 +53,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
       parent, name, _modal, i18n("Check Spelling"), Help|Cancel|User1,
       Cancel, true, i18n("&Finished")
     ),
-    progressbar( false )
+    d(0),progressbar( false )
 {
   KConfigGroup cg( KGlobal::config(),"KSpell" );
   kdDebug() << (cg.readEntry("KSpell_DoSpellChecking")) << endl;
