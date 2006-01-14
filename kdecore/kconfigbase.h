@@ -1492,11 +1492,11 @@ Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
 #include <conversion_check.h>
 #endif
 
-#ifdef NDEBUG
+/*
+ * just output error, or any wrong config file will
+ * let the app exit, which is IMHO bad
+ */
 #define kcbError kdWarning
-#else
-#define kcbError kdFatal
-#endif
 
 template <typename T>
 QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
