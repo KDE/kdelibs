@@ -64,7 +64,6 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
-#include <kimageio.h>
 #include <kcharsets.h>
 #include <kiconloader.h>
 #include <scheduler.h>
