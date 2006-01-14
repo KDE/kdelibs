@@ -44,7 +44,7 @@ private:
 
 private:
 	class KPrintPreviewPrivate;
-	KPrintPreviewPrivate	*d;
+	KPrintPreviewPrivate* const d;
 };
 
 class KPreviewProc : public KProcess

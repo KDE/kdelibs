@@ -762,7 +762,7 @@ protected:
 	void setOption( const QString& key, const QString& value, bool broadcast );
 
 protected:
-	KPrinterPrivate		*d;
+	KPrinterPrivate* const d;
 };
 
 //**************************************************************************************

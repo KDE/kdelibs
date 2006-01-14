@@ -92,7 +92,7 @@ public:
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
-: KDialog(parent, QString::null)
+: KDialog(parent, QString::null), d(new KPrintDialogPrivate)
 {
 	setObjectName(name);
 	setModal(true);
@@ -258,7 +258,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" --> <em>General</em> --> <em>Miscellaneous</em>: <em>\"Defaults"
 						" to the last printer used in the application\"</em> is disabled.)"
 					        " </qt>" );
-	d = new KPrintDialogPrivate;
 
 	d->m_pages.setAutoDelete(false);
 	d->m_printer = 0;

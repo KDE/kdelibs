@@ -51,7 +51,7 @@ protected:
 
 private:
 	class KPrintActionPrivate;
-	KPrintActionPrivate	*d;
+	KPrintActionPrivate* const d;
 };
 
 #endif

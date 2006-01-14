@@ -82,7 +82,7 @@ protected:
 
 protected:
 	class KPrintDialogPrivate;
-	KPrintDialogPrivate	*d;
+	KPrintDialogPrivate* const d;
 };
 
 #endif

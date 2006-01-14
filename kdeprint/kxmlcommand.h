@@ -83,7 +83,7 @@ protected:
 
 private:
 	class KXmlCommandPrivate;
-	KXmlCommandPrivate	*d;
+	KXmlCommandPrivate* const d;
 };
 
 class KDEPRINT_EXPORT KXmlCommandManager : public QObject
@@ -114,7 +114,7 @@ protected:
 
 private:
 	class KXmlCommandManagerPrivate;
-	KXmlCommandManagerPrivate	*d;
+	KXmlCommandManagerPrivate* const d;
 	static KXmlCommandManager	*m_self;
 };
 

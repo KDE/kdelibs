@@ -71,7 +71,7 @@ protected:
 
 private:
 	class NetworkScannerPrivate;
-	NetworkScannerPrivate *d;
+	NetworkScannerPrivate* const d;
 };
 
 class QLineEdit;

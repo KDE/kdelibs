@@ -120,7 +120,7 @@ public:
 //**************************************************************************************
 
 KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
-: QPaintDevice(/*QInternal::Printer|QInternal::ExternalDevice*/)
+: QPaintDevice(/*QInternal::Printer|QInternal::ExternalDevice*/),d(new KPrinterPrivate)
 {
 	init(restore, m);
 }
@@ -142,7 +142,6 @@ KPrinter::~KPrinter()
 void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 {
 	// Private data initialization
-	d = new KPrinterPrivate;
 	d->m_impl = KMFactory::self()->printerImplementation();
 	d->m_restore = restore;
 	d->m_previewonly = false;

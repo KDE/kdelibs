@@ -68,7 +68,7 @@ public:
 };
 
 KXmlCommand::KXmlCommand(const QString& xmlId)
-: QObject(KXmlCommandManager::self())
+: QObject(KXmlCommandManager::self()),d(new KXmlCommandPrivate)
 {
     setObjectName( "XmlCommand" );
     init();
@@ -86,7 +86,6 @@ KXmlCommand::~KXmlCommand()
 
 void KXmlCommand::init()
 {
-	d = new KXmlCommandPrivate;
 	d->m_driver = 0;
 	d->m_loaded[0] = d->m_loaded[1] = false;
 }
@@ -562,10 +561,9 @@ KXmlCommandManager* KXmlCommandManager::self()
 }
 
 KXmlCommandManager::KXmlCommandManager()
-    : QObject(KMFactory::self() )
+    : QObject(KMFactory::self() ),d(new KXmlCommandManagerPrivate)
 {
         setObjectName( "XmlCommandManager" );
-	d = new KXmlCommandManagerPrivate;
 }
 
 KXmlCommandManager::~KXmlCommandManager()

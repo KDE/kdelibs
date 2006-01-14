@@ -97,9 +97,8 @@ QString NetworkScanner::NetworkScannerPrivate::scanString()
 }
 
 NetworkScanner::NetworkScanner( int port, QWidget *parent )
-	: QWidget( parent )
+	: QWidget( parent ),d(new NetworkScannerPrivate( port ))
 {
-	d = new NetworkScannerPrivate( port );
 	d->bar = new QProgressBar( this );
 	d->bar->setRange( 0, 256 );
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );

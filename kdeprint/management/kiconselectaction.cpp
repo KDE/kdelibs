@@ -37,9 +37,8 @@ public:
 };
 
 KIconSelectAction::KIconSelectAction(const QString& text, int accel, KActionCollection* parent, const char* name)
-: KSelectAction(text, accel, parent, name)
+: KSelectAction(text, accel, parent, name),d(new KIconSelectActionPrivate)
 {
-	d = new KIconSelectActionPrivate;
 }
 
 KIconSelectAction::~KIconSelectAction()

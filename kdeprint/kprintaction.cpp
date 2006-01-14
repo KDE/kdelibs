@@ -40,24 +40,21 @@ public:
 };
 
 KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *parentWidget, KActionCollection  *parent, const char *name)
-: KActionMenu(text, parent, name)
+: KActionMenu(text, parent, name),d(new KPrintActionPrivate())
 {
-	d = new KPrintActionPrivate();
 	initialize(type, parentWidget);
 }
 
 KPrintAction::KPrintAction(const QString& text, const QIcon& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char 
 *name)
-: KActionMenu(text, icon, parent, name)
+: KActionMenu(text, icon, parent, name),d(new KPrintActionPrivate())
 {
-	d = new KPrintActionPrivate();
 	initialize(type, parentWidget);
 }
 
 KPrintAction::KPrintAction(const QString& text, const QString& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char *name)
-: KActionMenu(text, icon, parent, name)
+: KActionMenu(text, icon, parent, name),d(new KPrintActionPrivate())
 {
-	d = new KPrintActionPrivate();
 	initialize(type, parentWidget);
 }
 

@@ -43,7 +43,7 @@ protected:
 	virtual void updateCurrentItem(int id);
 
 private:
-	KIconSelectActionPrivate*	d;
+	KIconSelectActionPrivate* const 	d;
 };
 
 #endif
