@@ -249,7 +249,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
 //static
 bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
 {
-    if ( !isExecutable( serviceType ) )
+    if ( !KRun::isExecutable( serviceType ) )
       return true;
 
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
@@ -478,11 +478,6 @@ bool BrowserRun::isTextExecutable( const QString &serviceType )
 {
     return ( serviceType == "application/x-desktop" ||
              serviceType == "application/x-shellscript" );
-}
-
-bool BrowserRun::isExecutable( const QString &serviceType )
-{
-    return KRun::isExecutable( serviceType );
 }
 
 bool BrowserRun::hideErrorDialog() const
