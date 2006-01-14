@@ -47,7 +47,7 @@
 #include <sys/resource.h>
 #include <kvbox.h>
 
-#include "kpassdlg.h"
+#include "kpassworddialog.h"
 
 /*
  * Password line editor.
@@ -692,4 +692,4 @@ int KPasswordDialog::passwordStrengthWarningLevel() const {
     return d->passwordStrengthWarningLevel;
 }
 
-#include "kpassdlg.moc"
+#include "kpassworddialog.moc"

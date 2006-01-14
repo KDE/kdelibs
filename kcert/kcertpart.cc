@@ -31,7 +31,7 @@
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <kmessagebox.h>
-#include <kpassdlg.h>
+#include <kpassworddialog.h>
 #include <ksslall.h>
 #include <kopenssl.h>
 #include <ksslpemcallback.h>

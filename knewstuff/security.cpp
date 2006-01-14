@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kcodecs.h>
 #include <kmessagebox.h>
-#include <kpassdlg.h>
+#include <kpassworddialog.h>
 #include <kprocio.h>
 
  //app includes

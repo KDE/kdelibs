@@ -22,7 +22,7 @@
 #include <config.h>
 #endif
 
-#include <kpassdlg.h>
+#include <kpassworddialog.h>
 #include <klocale.h>
 #include "ksslpemcallback.h"
 

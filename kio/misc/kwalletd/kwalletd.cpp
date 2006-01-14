@@ -36,7 +36,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kpassdlg.h>
+#include <kpassworddialog.h>
 #include <kstandarddirs.h>
 #include <kwalletentry.h>
 #include <kwin.h>

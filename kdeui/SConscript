@@ -27,7 +27,7 @@ ktoolbarradiogroup.cpp ktoolbarbutton.cpp
 ktextbrowser.cpp khelpmenu.cpp
 kcmenumngr.cpp
 kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp
-kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp
+kcombobox.cpp kpassworddialog.cpp kxmlguiclient.cpp kxmlguifactory.cpp
 kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp
 kanimwidget.cpp kaboutkde.cpp
 kaboutapplication.cpp kdcopactionproxy.cpp
@@ -61,7 +61,7 @@ kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdi
 kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h 
 ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h 
 kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h 
-kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h 
+kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h 
 kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h 
 kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h 
 kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h 

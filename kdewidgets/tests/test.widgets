@@ -109,7 +109,7 @@ ToolTip=Line Edit (KDE)
 Group=Input (KDE)
 
 [KPasswordEdit]
-IncludeFile=kpassdlg.h
+IncludeFile=kpassworddialog.h
 ToolTip=Safe Password LineEdit (KDE)
 WhatsThis=A KLineEdit that is safe for prompting the user for passwords
 Group=Input (KDE)
