@@ -47,26 +47,12 @@ namespace KParts {
          * @param window the mainwindow - passed to KIO::Job::setWindow()
          * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
          * @param trustedSource if false, a warning will be shown before launching an executable
-         * Always pass false for @p trustedSource, except for local directory views.
-         */
-        BrowserRun( const KURL& url, const KParts::URLArgs& args,
-                    KParts::ReadOnlyPart *part, QWidget *window,
-                    bool removeReferrer, bool trustedSource );
-
-        // BIC: merge with above constructor
-        /**
-         * @param url the URL we're probing
-         * @param args URL args - includes data for a HTTP POST, etc.
-         * @param part the part going to open this URL - can be 0L if not created yet
-         * @param window the mainwindow - passed to KIO::Job::setWindow()
-         * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
-         * @param trustedSource if false, a warning will be shown before launching an executable
          * @param hideErrorDialog if true, no dialog will be shown in case of errors.
          * Always pass false for @p trustedSource, except for local directory views.
          */
         BrowserRun( const KURL& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
-                    bool removeReferrer, bool trustedSource, bool hideErrorDialog );
+                    bool removeReferrer, bool trustedSource, bool hideErrorDialog = false );
 
         virtual ~BrowserRun();
 

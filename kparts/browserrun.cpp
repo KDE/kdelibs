@@ -40,17 +40,6 @@ public:
 
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         KParts::ReadOnlyPart *part, QWidget* window,
-                        bool removeReferrer, bool trustedSource )
-    : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
-      m_args( args ), m_part( part ), m_window( window ),
-      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource ),d(new BrowserRunPrivate)
-{
-  d->m_bHideErrorDialog = false;
-}
-
-// BIC: merge with above ctor
-BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
-                        KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
     : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       m_args( args ), m_part( part ), m_window( window ),
