@@ -75,7 +75,7 @@ public:
    * If lngSeed is 0, the sequence is initialized with a value from
    * KApplication::random().
    */
-  void setSeed( long lngSeed = 1 );
+  void setSeed( long lngSeed = 0 );
 
   /**
    * Get the next number from the pseudo-random sequence.
