@@ -45,23 +45,26 @@ public:
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
 			   bool checkAtEntering, int buttons )
-    :Q3GroupBox(parent, name ), d(new KEditListBoxPrivate)
+    :QGroupBox(parent ), d(new KEditListBoxPrivate)
 {
+	setObjectName(name);
     init( checkAtEntering, buttons );
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 			   const char *name, bool checkAtEntering, int buttons)
-    :Q3GroupBox(title, parent, name ), d(new KEditListBoxPrivate)
+    :QGroupBox(title, parent ), d(new KEditListBoxPrivate)
 {
+	setObjectName(name);
     init( checkAtEntering, buttons );
 }
 
 KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            QWidget *parent, const char *name,
                            bool checkAtEntering, int buttons)
-    :Q3GroupBox(title, parent, name ), d(new KEditListBoxPrivate)
+    :QGroupBox(title, parent), d(new KEditListBoxPrivate)
 {
+	setObjectName(name);
     m_lineEdit = custom.lineEdit();
     init( checkAtEntering, buttons, custom.representationWidget() );
 }

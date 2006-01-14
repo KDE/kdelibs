@@ -20,7 +20,7 @@
 #ifndef KEDITLISTBOX_H
 #define KEDITLISTBOX_H
 
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <q3listbox.h>
 
 #include <kdelibs_export.h>
@@ -41,7 +41,7 @@ class KEditListBoxPrivate;
  * \image html keditlistbox.png "KDE Edit List Box Widget"
  *
  */
-class KDEUI_EXPORT KEditListBox : public Q3GroupBox
+class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
@@ -55,7 +55,6 @@ public:
      *
      * @since 3.1
      **/
-    // ### KDE4: add virtual destructor
     class CustomEditor
     {
     public:
