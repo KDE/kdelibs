@@ -74,7 +74,6 @@ int main( int argc, char *argv[] )
 
     ExampleWidget *w = new ExampleWidget();
     w->show();    
-    w->deleteLater();
 
     QStringList list; list.append("Hello"); list.append("World");
 
