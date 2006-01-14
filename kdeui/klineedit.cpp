@@ -30,6 +30,7 @@
 #include <qevent.h>
 #include <qstyle.h>
 
+#include <QPainter>
 #include <kconfig.h>
 #include <qtooltip.h>
 #include <kcursor.h>
@@ -61,6 +62,8 @@ public:
         disableRestoreSelection = false;
         enableSqueezedText = false;
 
+		drawClickMsg = false;
+		enableClickMsg = false;
         if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
@@ -94,7 +97,12 @@ public:
     int squeezedStart;
     QPalette::ColorRole bgRole;
     QString squeezedText;
-    KCompletionBox *completionBox;
+
+    QString clickMessage;
+    bool enableClickMsg:1;
+	bool drawClickMsg:1;
+    
+	KCompletionBox *completionBox;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
@@ -102,16 +110,19 @@ bool KLineEdit::KLineEditPrivate::initialized = false;
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent )
-          :QLineEdit( string, parent )
+          :QLineEdit( string, parent ),d(new KLineEditPrivate)
 {
     init();
 }
 
-KLineEdit::KLineEdit( QWidget *parent )
-          :QLineEdit( parent )
+KLineEdit::KLineEdit( QWidget *parent, const QString &msg )
+          :QLineEdit( parent ),d(new KLineEditPrivate)
 {
+	if( !msg.isEmpty())
+		d->enableClickMsg = true;	
     init();
 }
+
 
 KLineEdit::~KLineEdit ()
 {
@@ -121,7 +132,6 @@ KLineEdit::~KLineEdit ()
 
 void KLineEdit::init()
 {
-    d = new KLineEditPrivate;
     possibleTripleClick = false;
     d->bgRole = backgroundRole();
 
@@ -141,6 +151,11 @@ void KLineEdit::init()
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QColorGroup::Highlight);
+}
+
+QString KLineEdit::clickMessage() const 
+{ 
+	return d->clickMessage; 
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -305,6 +320,11 @@ bool KLineEdit::isSqueezedTextEnabled() const
 
 void KLineEdit::setText( const QString& text )
 {
+	if( d->enableClickMsg )
+	{	
+  		d->drawClickMsg = text.isEmpty();
+  		repaint();
+	}	
     if( d->enableSqueezedText && isReadOnly() )
     {
         d->squeezedText = text;
@@ -1308,5 +1328,46 @@ bool KLineEdit::autoSuggest() const
     return d->autoSuggest;
 }
 
+void KLineEdit::paintEvent( QPaintEvent *ev )
+{
+  QLineEdit::paintEvent( ev );
+
+  if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() ) {
+	QPainter p( this );
+    QPen tmp = p.pen();
+    p.setPen( palette().color( QPalette::Disabled, QColorGroup::Text ) );
+    QRect cr = contentsRect();
+    p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
+    p.setPen( tmp );
+  }
+}
+
+void KLineEdit::focusInEvent( QFocusEvent *ev )
+{
+  if ( d->enableClickMsg && d->drawClickMsg )
+  {
+    d->drawClickMsg = false;
+    repaint();
+  }
+  QLineEdit::focusInEvent( ev );
+}
+
+void KLineEdit::focusOutEvent( QFocusEvent *ev )
+{
+  if ( d->enableClickMsg && text().isEmpty() )
+  {
+    d->drawClickMsg = true;
+    repaint();
+  }
+  QLineEdit::focusOutEvent( ev );
+}
+
+void KLineEdit::setClickMessage( const QString &msg )
+{
+  d->clickMessage = msg;
+  repaint();
+}
+
 void KLineEdit::virtual_hook( int id, void* data )
 { KCompletionBase::virtual_hook( id, data ); }
+

@@ -150,6 +150,7 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool enableSqueezedText READ isSqueezedTextEnabled WRITE setEnableSqueezedText )
+	Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
 
@@ -162,13 +163,15 @@ public:
      */
     KLineEdit( const QString &string, QWidget *parent );
 
-    /**
-     * Constructs a KLineEdit object with a parent and a name.
-     *
-     * @param parent The parent object of this widget.
-     */
-    KLineEdit ( QWidget *parent=0 );
-
+	/**
+	 * Constructs a KLineEdit object with a parent and a greyed-out message
+	 * This KLineEdit contains a greyed-out hinting text as long as 
+	 * the user didn't enter any text
+	 * @param parent The parent object of this widget.
+	 * @param msg Greyed-out text displaying
+	 */
+	KLineEdit( QWidget *parent = 0, const QString &msg = QString() );
+	
     /**
      *  Destructor.
      */
@@ -311,6 +314,11 @@ public:
      * @since 3.4
     */
     void setCompletionBox( KCompletionBox *box );
+
+    void setClickMessage( const QString &msg );
+
+    QString clickMessage() const;
+
 
 signals:
 
@@ -517,6 +525,13 @@ protected:
     */
     bool autoSuggest() const;
 
+    virtual void paintEvent( QPaintEvent *ev );
+
+    virtual void focusInEvent( QFocusEvent *ev );
+
+    virtual void focusOutEvent( QFocusEvent *ev );
+
+	
 private slots:
     void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick
