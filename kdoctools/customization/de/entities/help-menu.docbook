@@ -6,7 +6,7 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Hilfe</guimenu>
-<guimenuitem>Inhalt...</guimenuitem>
+<guimenuitem>Inhalt ...</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Startet das Hilfe-System von KDE</action> mit der
@@ -33,11 +33,11 @@ gibt).</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Hilfe</guimenu>
-<guimenuitem>Berichten Sie Probleme oder Wünsche...</guimenuitem>
+<guimenuitem>Probleme oder Wünsche berichten ...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Öffnet den Dialog für
-Problemberichte</action>, in dem man Fehler und Wünsche berichten
-kann.</para></listitem>
+Problemberichte</action>, in dem Sie Fehler und Wünsche berichten
+können.</para></listitem>
 </varlistentry>
 
 <varlistentry>

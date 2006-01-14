@@ -7,20 +7,20 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY cdrom  "<abbrev>CD-ROM</abbrev>">
-<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
-<!ENTITY dh     "<abbrev>d.h.</abbrev>">
+<!ENTITY Backspace	"<keycap>R&uuml;cktaste</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
+<!ENTITY Ctrl   "<keycap>Strg</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY eg		'<abbrev>z.&nbsp;B</abbrev>'> 
+<!ENTITY Enter	"<keycap>Eingabe</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY etc    "<abbrev>usw.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie     "<abbrev>d.&nbsp;h.</abbrev>">
+<!ENTITY infocenter	"<application>Infozentrum</application>">
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
-<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
-<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
- khelpcenter -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>K-Symbol von &kde;</title></objectinfo>
@@ -29,15 +29,32 @@
 </inlinemediaobject>
 </guiicon>-Symbol"><!-- kicon -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-Men&uuml;"> <!-- kmenu -->
+<!ENTITY kwm    "<application>kwm</application>">
+<!ENTITY LMB    "<mousebutton>linke</mousebutton> Maustaste">
+<!ENTITY LMBn   "<mousebutton>linken</mousebutton> Maustaste">
+<!ENTITY LMBr   "<mousebutton>linker</mousebutton> Maustaste">
+<!ENTITY MMB    "<mousebutton>mittlere</mousebutton> Maustaste">
+<!ENTITY MMBn   "<mousebutton>mittleren</mousebutton> Maustaste">
+<!ENTITY MMBr   "<mousebutton>mittlerer</mousebutton> Maustaste">
+<!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
+<!ENTITY OS     "Betriebssystem">
+<!ENTITY RMB    "<mousebutton>rechte</mousebutton> Maustaste">
+<!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
+<!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
+<!ENTITY Shift  "<keycap>Umschalt</keycap>">
+<!ENTITY systemtray "<application>Systemabschnitt</application>">
+<!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
+
+<!-- The following entities are deprecated and will be removed at a future time, Do not use! -->
+<!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
+<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
+<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
+ khelpcenter -->
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
-<!ENTITY kwm    "<application>kwm</application>">
-<!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
-<!ENTITY Shift  "<keycap>Umschalt</keycap>">
-<!ENTITY Strg "<keycap>Strg</keycap>"><!-- ctrl -->
+<!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
-<!ENTITY Tab "<keycap>Tab</keycap>"> <!-- Tab -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
-<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
- -->
-<!ENTITY zb     "<abbrev>z.B.</abbrev>" ><!-- eg -->
+<!ENTITY ua     "<abbrev>u.&nbsp;a.</abbrev>" >
+<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
+<!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
