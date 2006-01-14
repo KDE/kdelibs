@@ -13,7 +13,7 @@ else:
 obj.target   = 'kbuildsycoca'
 obj.source   = """
 kbuildsycoca.cpp kbuildservicetypefactory.cpp kbuildservicefactory.cpp 
-kbuildservicegroupfactory.cpp kbuildimageiofactory.cpp kbuildprotocolinfofactory.cpp 
+kbuildservicegroupfactory.cpp kbuildprotocolinfofactory.cpp 
 kctimefactory.cpp vfolder_menu.cpp
 """
 obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT QTXML KDE4 KIO'

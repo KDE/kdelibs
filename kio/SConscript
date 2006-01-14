@@ -81,7 +81,6 @@ kio/kurlcompletion.cpp
 kio/krun.cpp
 kio/kfileitem.cpp 
 kio/kdirlister.cpp 
-kio/kimageio.cpp
 kio/yacc.c 
 kio/lex.c
 kio/chmodjob.cpp 
@@ -128,7 +127,6 @@ kio/ksambashare.h
 kio/knfsshare.h
 kio/kdirlister.h
 kio/kservicegroup.h
-kio/kimageio.h
 kio/kdirnotify.h
 kio/kdirnotify_stub.h
 kio/kurlpixmapprovider.h
