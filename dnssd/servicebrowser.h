@@ -209,7 +209,7 @@ public slots:
 protected:
 	virtual void virtual_hook(int, void*);
 private:
-	ServiceBrowserPrivate *d;
+	ServiceBrowserPrivate* const d;
 
 	bool allFinished();
 	void init(const QStringList&, DomainBrowser*, int);

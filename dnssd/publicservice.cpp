@@ -51,9 +51,8 @@ public:
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port),d(new PublicServicePrivate)
 {
-	d = new PublicServicePrivate;
 	if (domain.isNull())
 		if (Configuration::publishType()==Configuration::EnumPublishType::LAN) m_domain="local.";
 		else m_domain=Configuration::publishDomain();

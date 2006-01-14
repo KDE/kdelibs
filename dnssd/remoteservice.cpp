@@ -57,19 +57,18 @@ public:
 };
 
 RemoteService::RemoteService(const QString& label)
+	:d(new RemoteServicePrivate())
 {
 	decode(label);
-	d =  new RemoteServicePrivate();
 }
 RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain)
+		: ServiceBase(name, type, domain), d(new RemoteServicePrivate())
 {
-	d = new RemoteServicePrivate();
 }
 
 RemoteService::RemoteService(const KURL& url)
+	:d(new RemoteServicePrivate())
 {
-	d = new RemoteServicePrivate();
 	if (!url.isValid()) return;
 	if (url.protocol()!="invitation") return;
 	if (!url.hasPath()) return;

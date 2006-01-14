@@ -93,7 +93,7 @@ protected:
 	virtual void virtual_hook(int, void*);
 	virtual void customEvent(QCustomEvent* event);
 private:
-	QueryPrivate *d;
+	QueryPrivate* const d;
 private slots:
 	void timeout();
 };

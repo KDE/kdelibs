@@ -37,9 +37,8 @@ public:
 	bool m_running;
 };		
 	
-DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent)
+DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
 {
-	d = new DomainBrowserPrivate;
 	d->m_running = false;
 	d->resolvers.setAutoDelete(true);
 	d->m_recursive = Configuration::recursive();
@@ -49,9 +48,8 @@ DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent)
 	        SLOT(domainListChanged(int,int)));
 }
 
-DomainBrowser::DomainBrowser(const QStringList& domains, bool recursive, QObject *parent) : QObject(parent)
+DomainBrowser::DomainBrowser(const QStringList& domains, bool recursive, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
 {
-	d = new DomainBrowserPrivate;
 	d->m_recursive = recursive;
 	d->m_running = false;
 	d->resolvers.setAutoDelete(true);

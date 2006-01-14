@@ -47,8 +47,8 @@ public:
 };
 
 Query::Query(const QString& type, const QString& domain)
+	:d(new QueryPrivate(type,domain))
 {
-	d = new QueryPrivate(type,domain);
 	connect(&d->timeout,SIGNAL(timeout()),this,SLOT(timeout()));
 }
 

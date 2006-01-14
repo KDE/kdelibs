@@ -137,7 +137,7 @@ signals:
 	*/
 	void published(bool);
 private:
-	PublicServicePrivate *d;
+	PublicServicePrivate* const d;
 
 protected:
 	virtual void customEvent(QCustomEvent* event);

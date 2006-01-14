@@ -48,12 +48,14 @@ public:
 };
 
 ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
+	:d(new ServiceBrowserPrivate())
 {
 	if (domains) init(QStringList( type ),domains,autoResolve ? AutoResolve : 0);
 		else init(QStringList( type ),new DomainBrowser(this),autoResolve ?  AutoResolve|AutoDelete : AutoDelete);
 }
 
 ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags)
+    :d(new ServiceBrowserPrivate())
 {
 	if (domains) init(types,domains,flags);
 		else init(types,new DomainBrowser(this),flags|AutoDelete);
@@ -61,7 +63,6 @@ ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,i
 
 void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int flags)
 {
-	d = new ServiceBrowserPrivate();
 	d->resolvers.setAutoDelete(true);
 	d->m_types=type;
 	d->m_flags=flags;
@@ -72,11 +73,13 @@ void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int fla
 }
 
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool autoResolve)
+	:d(new ServiceBrowserPrivate())
 {
 	init(QStringList( type ) ,new DomainBrowser(QStringList(domain),false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
 }
 
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int flags)
+	:d(new ServiceBrowserPrivate())
 {
 	init(QStringList(type),new DomainBrowser(QStringList(domain),false,this),flags | AutoDelete);
 }

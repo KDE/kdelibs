@@ -47,7 +47,7 @@ void ServiceBase::decode(const QString& name)
 {
 	QString rest;
 	if (name[0]=='_') { 		// metaquery
-		m_serviceName="";
+		m_serviceName.clear();
 		rest=name;
 	} else {		// normal service or domain
 		QString decoded_name=name;
@@ -62,7 +62,7 @@ void ServiceBase::decode(const QString& name)
 	if (m_type[0]=='_' && m_type[m_type.find('.')+1]=='_')
 		m_domain = rest.section('.',2,-1,QString::SectionIncludeTrailingSep);
 	else {
-		m_type="";
+		m_type.clear();
 		m_domain=rest;
 	}
 }

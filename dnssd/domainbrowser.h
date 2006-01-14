@@ -92,7 +92,7 @@ signals:
 protected:
 	virtual void virtual_hook(int,void*);
 private:
-	DomainBrowserPrivate *d;
+	DomainBrowserPrivate* const d;
 private slots:
 	void gotNewDomain(DNSSD::RemoteService::Ptr);
 	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
