@@ -38,7 +38,7 @@ picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordialog.h kselect.h \
-	kdatepicker.h kdatetbl.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
+	kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
 	kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h \
 	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h \
 	kbuttonbox.h keditcl.h kled.h keditlistbox.h kwizard.h kkeydialog.h kkeybutton.h \
@@ -68,7 +68,7 @@ include_HEADERS = kprogress.h kcolordialog.h kselect.h \
 libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	kaction.cpp kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp \
 	kmenubar.cpp kinputdialog.cpp knuminput.cpp klineedit.cpp klistview.cpp \
-	kprogress.cpp kcolordialog.cpp kselect.cpp kdatepicker.cpp kdatetbl.cpp \
+	kprogress.cpp kcolordialog.cpp kselect.cpp kdatepicker.cpp kdatetable.cpp \
 	kfontrequester.cpp kfontdialog.cpp ktabctl.cpp kstatusbar.cpp kmainwindow.cpp \
 	keditlistbox.cpp kscrollview.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp \
 	ksystemtray.cpp kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
