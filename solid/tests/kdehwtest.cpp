@@ -19,7 +19,7 @@
 
 #include "kdehwtest.h"
 
-#include <qttest_kde.h>
+#include <qtest_kde.h>
 
 #include <kinstance.h>
 #include <kdebug.h>
@@ -29,7 +29,7 @@
 #include "fakemanager.h"
 #include "fakedevice.h"
 
-QTTEST_KDEMAIN( KdeHwTest, NoGUI )
+QTEST_KDEMAIN( KdeHwTest, NoGUI )
 
 void KdeHwTest::initTestCase()
 {
