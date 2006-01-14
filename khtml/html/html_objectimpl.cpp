@@ -33,7 +33,6 @@
 #include <QImageReader>
 
 #include <kdebug.h>
-#include <kimageio.h>
 
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"

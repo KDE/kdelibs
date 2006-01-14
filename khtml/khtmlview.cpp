@@ -73,7 +73,6 @@
 #include <kdebug.h>
 #include <kdialogbase.h>
 #include <kiconloader.h>
-#include <kimageio.h>
 #include <klocale.h>
 #include <knotifyclient.h>
 #include <kprinter.h>
