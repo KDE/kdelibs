@@ -30,6 +30,7 @@
 #include <qvariant.h>
 #include <qmap.h>
 #include <qtimer.h>
+#include <QImageReader>
 
 #include <kdebug.h>
 #include <kimageio.h>
@@ -170,9 +171,13 @@ void HTMLObjectBaseElementImpl::attach() {
                 serviceType = "text/plain"; // Data URLs with no MIME type are considered text/plain.
         }
     }
+	
+    QList<QByteArray> supportedtypes = QImageReader::supportedImageFormats();
+    QStringList serviceparts = serviceType.split("/");
+    QString imageformat = serviceparts.takeLast();
 
     bool imagelike = serviceType.startsWith("image/") &&
-                   !KImageIO::typeForMime(serviceType).isNull();
+                   supportedtypes.contains(imageformat.toAscii());
 
     if (m_renderAlternative && !imagelike) {
         // render alternative content

@@ -486,7 +486,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(Qt::NoBackground);
 
-    KImageIO::registerFormats();
+    // Should this just be removed??
+    // KImageIO::registerFormats();
 
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
