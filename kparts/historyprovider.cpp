@@ -43,12 +43,11 @@ HistoryProvider * HistoryProvider::self()
 }
 
 HistoryProvider::HistoryProvider( QObject *parent )
-    : QObject( parent )
+    : QObject( parent ),d(new HistoryProviderPrivate)
 {
     if ( !s_self )
 	s_self = this;
 
-    d = new HistoryProviderPrivate;
 }
 
 HistoryProvider::~HistoryProvider()

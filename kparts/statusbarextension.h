@@ -117,7 +117,7 @@ namespace KParts
 
      // for future extensions
      class StatusBarExtensionPrivate;
-     StatusBarExtensionPrivate *d;
+     StatusBarExtensionPrivate* const d;
   };
 
 }

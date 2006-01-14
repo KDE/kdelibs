@@ -103,7 +103,7 @@ class Button : public KPushButton
         void init();
 
         class ButtonPrivate;
-        ButtonPrivate* d;
+        ButtonPrivate* const d;
 
         QString m_providerList;
         QString m_type;

@@ -95,7 +95,7 @@ class DateSortListViewItem : public KListViewItem
 
 DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption)
 : KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
-  KDialogBase::Close, KDialogBase::Close)
+  KDialogBase::Close, KDialogBase::Close),d(new Private())
 {
   init(engine);
 }
@@ -103,7 +103,6 @@ DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption
 void DownloadDialog::init(Engine *engine)
 {
   resize(700, 400);
-  d = new Private();
 
   m_engine = engine;
   d->m_page = NULL;

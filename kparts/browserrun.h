@@ -162,7 +162,7 @@ namespace KParts {
     private:
         void redirectToError( int error, const QString& errorText );
         class BrowserRunPrivate;
-        BrowserRunPrivate* d;
+        BrowserRunPrivate* const d;
 
     };
 }

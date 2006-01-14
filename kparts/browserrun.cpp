@@ -43,9 +43,8 @@ BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         bool removeReferrer, bool trustedSource )
     : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       m_args( args ), m_part( part ), m_window( window ),
-      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
+      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource ),d(new BrowserRunPrivate)
 {
-  d = new BrowserRunPrivate;
   d->m_bHideErrorDialog = false;
 }
 
@@ -55,9 +54,8 @@ BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
     : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       m_args( args ), m_part( part ), m_window( window ),
-      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
+      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource ),d(new BrowserRunPrivate)
 {
-  d = new BrowserRunPrivate;
   d->m_bHideErrorDialog = hideErrorDialog;
 }
 

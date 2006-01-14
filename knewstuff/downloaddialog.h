@@ -188,7 +188,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     QMap<KIO::Job*, QString> m_data;
     QString m_filter;
     Engine *m_engine;
-    Private *d;
+    Private* const d;
 };
 
 }

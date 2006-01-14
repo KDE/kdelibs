@@ -163,7 +163,7 @@ protected:
   void setPluginInterfaceVersion( int version );
 
 private:
-  PartBasePrivate *d;
+  PartBasePrivate* const d;
   QObject *m_obj;
 };
 
@@ -324,7 +324,7 @@ private:
 
     PartManager * m_manager;
 
-    PartPrivate *d;
+    PartPrivate* const d;
 };
 
 class ReadWritePart;
@@ -542,7 +542,7 @@ protected:
   bool m_bTemp;
 
 private:
-  ReadOnlyPartPrivate *d;
+  ReadOnlyPartPrivate* const d;
 };
 
 /**

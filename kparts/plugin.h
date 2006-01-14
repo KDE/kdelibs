@@ -170,7 +170,7 @@ protected:
 private:
     static bool hasPlugin( QObject* parent, const QString& library );
     class PluginPrivate;
-    PluginPrivate *d;
+    PluginPrivate* const d;
 };
 
 }

@@ -98,7 +98,7 @@ protected:
   virtual void createShellGUI( bool create = true );
 
 private:
-  MainWindowPrivate *d;
+  MainWindowPrivate* const d;
 };
 
 }

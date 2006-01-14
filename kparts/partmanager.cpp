@@ -91,9 +91,8 @@ public:
 }
 
 PartManager::PartManager( QWidget * parent )
- : QObject( parent )
+ : QObject( parent ),d(new PartManagerPrivate)
 {
-  d = new PartManagerPrivate;
 
   qApp->installEventFilter( this );
 
@@ -103,9 +102,8 @@ PartManager::PartManager( QWidget * parent )
 }
 
 PartManager::PartManager( QWidget *topLevel, QObject *parent )
- : QObject( parent )
+ : QObject( parent ),d(new PartManagerPrivate)
 {
-  d = new PartManagerPrivate;
 
   qApp->installEventFilter( this );
 

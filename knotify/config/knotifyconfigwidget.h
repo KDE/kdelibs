@@ -74,7 +74,7 @@ signals:
 
 private:
 	struct Private;
-	Private *d;
+	Private* const d;
 private slots:
 	void slotEventSelected( KNotifyConfigElement *e);
 	

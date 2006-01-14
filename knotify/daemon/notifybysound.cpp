@@ -110,9 +110,8 @@ class SoundManager : public aKode::Player::Manager {
 #endif
 
 
-NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent)
+NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent),d(new Private)
 {
-	d = new Private;
 	d->externalPlayerProc = 0;
 #if defined(HAVE_AKODE)
 	d->manager = 0;

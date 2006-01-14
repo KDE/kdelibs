@@ -86,8 +86,8 @@ public:
 }
 
 PartBase::PartBase()
+  :d(new PartBasePrivate)
 {
-  d = new PartBasePrivate;
   m_obj = 0L;
 }
 
@@ -140,9 +140,8 @@ void KParts::PartBase::setPluginInterfaceVersion( int version )
 }
 
 Part::Part( QObject *parent )
- : QObject( parent )
+ : QObject( parent ),d(new PartPrivate)
 {
-  d = new PartPrivate;
   m_widget = 0L;
   m_manager = 0L;
   PartBase::setPartObject( this );
@@ -310,9 +309,8 @@ public:
 }
 
 ReadOnlyPart::ReadOnlyPart( QObject *parent )
- : Part( parent ), m_bTemp( false )
+ : Part( parent ), m_bTemp( false ),d(new ReadOnlyPartPrivate)
 {
-  d = new ReadOnlyPartPrivate;
 }
 
 ReadOnlyPart::~ReadOnlyPart()

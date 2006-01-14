@@ -178,7 +178,7 @@ class KDE_EXPORT Engine : public QObject
     QString mPreviewFile;
     QString mProviderList;
 
-    Private* d;
+    Private* const d;
 
     QString mType;
 };

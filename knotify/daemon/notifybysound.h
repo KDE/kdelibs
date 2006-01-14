@@ -38,7 +38,7 @@ class NotifyBySound : public KNotifyPlugin
 		
 	private:
 		class Private;
-		Private *d;
+		Private* const d;
 		void loadConfig();
 		
 	public:

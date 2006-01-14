@@ -50,10 +50,9 @@ public:
 };
 
 Plugin::Plugin( QObject* parent )
-    : QObject( parent )
+    : QObject( parent ),d(new PluginPrivate())
 {
   //kdDebug() << className() << endl;
-  d = new PluginPrivate();
 }
 
 Plugin::~Plugin()
