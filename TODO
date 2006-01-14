@@ -29,7 +29,7 @@ that we would like to make for the next binary incompatible release.
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
   (Ben Meyer)
 
-- Remvoe all KSocks references throughout KDE in favor of KNetwork's
+- Remove all KSocks references throughout KDE in favor of KNetwork's
   socket implementations. 
   (Thiago)
 
@@ -146,13 +146,13 @@ that we would like to make for the next binary incompatible release.
   (Frans)
 
 - kpassdlg.h needs to be renamed to kpassworddialog.h - consistent with other classes(it won't 
-  break many apps). The class needs a facelift - see the comments in kpassdlg.{h,cpp}
+  break many apps) (DONE) . The class needs a facelift - see the comments in kpassdlg.{h,cpp}
   (Frans)
 
 - Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
   (Waldo)
 
-- Merge KPIM::ClickLineEdit with KLineEdit
+- Merge KPIM::ClickLineEdit with KLineEdit (DONE)
   (Danimo)
 
 - KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
