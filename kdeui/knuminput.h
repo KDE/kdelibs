@@ -567,7 +567,6 @@ public:
 
     virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
-    virtual bool eventFilter(QObject*, QEvent*);
 
 public slots:
     /**
@@ -629,14 +628,6 @@ protected:
     virtual void doLayout();
     void resizeEvent ( QResizeEvent * );
 
-    virtual void resetEditBox();
-
-    // ### no longer used, remove when BIC allowed
-    KDoubleLine*   edit;
-
-    bool     m_range;
-    double   m_lower, m_upper, m_step;
-    // ### end no longer used
 
     QSize    m_sizeEdit;
 
@@ -647,9 +638,7 @@ private:
     double mapSliderToSpin(int) const;
     void updateLegacyMembers();
     // ### no longer used, remove when BIC allowed:
-    QString  m_specialvalue, m_prefix, m_suffix;
-    double   m_value;
-    short    m_precision;
+    QString  m_specialvalue;
     // ### end remove when BIC allowed
 
 protected:

@@ -80,16 +80,6 @@ public:
     QPointer <QWidget> m_window;
 };
 
-pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
-{
-    return runURL( u, _mimetype, false, true );
-}
-
-pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
-{
-    return runURL( u, _mimetype, tempFile, true );
-}
-
 bool KRun::isExecutableFile( const KURL& url, const QString &mimetype )
 {
   if ( !url.isLocalFile() )
@@ -671,12 +661,6 @@ static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service
     }
   }
   return urls;
-}
-
-// BIC merge with method below
-pid_t KRun::run( const KService& _service, const KURL::List& _urls )
-{
-    return run( _service, _urls, false );
 }
 
 pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFiles )

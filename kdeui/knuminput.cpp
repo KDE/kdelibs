@@ -573,30 +573,10 @@ KDoubleNumInput::~KDoubleNumInput()
 	delete d;
 }
 
-// ### remove when BIC changes are allowed again:
-
-bool KDoubleNumInput::eventFilter( QObject * o, QEvent * e ) {
-    return KNumInput::eventFilter( o, e );
-}
-
-void KDoubleNumInput::resetEditBox() {
-
-}
-
-// ### end stuff to remove when BIC changes are allowed again
-
-
 
 void KDoubleNumInput::init(double value, double lower, double upper,
 			   double step, int precision )
 {
-    // ### init no longer used members:
-    edit = 0;
-    m_range = true;
-    m_value = 0.0;
-    m_precision = 2;
-    // ### end
-
     d = new KDoubleNumInputPrivate( value );
 
     d->spin = new KDoubleSpinBox(lower, upper, step, value, this,precision);
@@ -613,11 +593,6 @@ void KDoubleNumInput::init(double value, double lower, double upper,
 }
 
 void KDoubleNumInput::updateLegacyMembers() {
-    // ### update legacy members that are either not private or for
-    // which an inlined getter exists:
-    m_lower = minValue();
-    m_upper = maxValue();
-    m_step = d->spin->singleStep();
     m_specialvalue = specialValueText();
 }
 

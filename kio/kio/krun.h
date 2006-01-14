@@ -170,8 +170,7 @@ public:
    * @return the process id, or 0 on error
    */
   // BIC merge second overload with first one, using tempFiles=false
-  static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles );
-  static pid_t run( const KService& _service, const KURL::List& _urls );
+  static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles = false );
 
   /**
    * Open a list of URLs with.
@@ -207,12 +206,7 @@ public:
    *        See also isExecutable().
    * @return the process id, or 0 on error
    */
-  // BIC Merge second overload with first one using runExecutables=true, and
-  // merge third overload with first one as well using tempFiles=false and
-  // runExecutables=true
-  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables);
-  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile);
-  static pid_t runURL( const KURL& _url, const QString& _mimetype );
+  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile = false , bool runExecutables = true);
 
   /**
    * Run the given shell command and notifies kicker of the starting
