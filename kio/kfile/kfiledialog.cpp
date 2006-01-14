@@ -51,7 +51,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <kimageio.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
