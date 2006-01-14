@@ -244,7 +244,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         static QPixmap *loadingIcon;
         QColor bg = khtml::retrieveBackgroundColor(this);
         QColor fg = khtml::hasSufficientContrast(Qt::gray, bg) ? Qt::gray :
-                    (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);    
+                    (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);
 	paintInfo.p->setPen(QPen(fg, 1));
 	paintInfo.p->setBrush( Qt::NoBrush );
 	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
@@ -255,7 +255,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
             }
             paintInfo.p->drawPixmap(_tx + 4, _ty + 4, *loadingIcon, 0, 0, m_width - 5, m_height - 5);
         }
-        
+
     }
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
@@ -497,32 +497,87 @@ bool RenderImage::complete() const
      return image && image->valid_rect().size() == image->pixmap_size() && !needsLayout();
 }
 
+bool RenderImage::isWidthSpecified() const
+{
+    switch (style()->width().type()) {
+        case Fixed:
+        case Percent:
+            return true;
+        default:
+            return false;
+    }
+    assert(false);
+    return false;
+}
+
+bool RenderImage::isHeightSpecified() const
+{
+    switch (style()->height().type()) {
+        case Fixed:
+        case Percent:
+            return true;
+        default:
+            return false;
+    }
+    assert(false);
+    return false;
+}
+
+short RenderImage::calcAspectRatioWidth() const
+{
+    if (intrinsicHeight() == 0)
+        return 0;
+    if (!image || image->isErrorImage())
+        return intrinsicWidth(); // Don't bother scaling.
+    return RenderReplaced::calcReplacedHeight() * intrinsicWidth() / intrinsicHeight();
+}
+
+int RenderImage::calcAspectRatioHeight() const
+{
+    if (intrinsicWidth() == 0)
+        return 0;
+    if (!image || image->isErrorImage())
+        return intrinsicHeight(); // Don't bother scaling.
+    return RenderReplaced::calcReplacedWidth() * intrinsicHeight() / intrinsicWidth();
+}
+
 short RenderImage::calcReplacedWidth() const
 {
-    const Length w = style()->width();
+    int width;
+    if (isWidthSpecified())
+        width = calcReplacedWidthUsing(Width);
+    else
+        width = calcAspectRatioWidth();
+    int minW = calcReplacedWidthUsing(MinWidth);
+    int maxW = style()->maxWidth().value() == UNDEFINED ? width : calcReplacedWidthUsing(MaxWidth);
 
-    if (w.isVariable()) {
-	int h = RenderReplaced::calcReplacedHeight();
-	if (m_intrinsicHeight > 0 && h!= m_intrinsicHeight) {
-            return (h*intrinsicWidth())/m_intrinsicHeight;
-	}
-    }
+    if (width > maxW)
+        width = maxW;
 
-    return RenderReplaced::calcReplacedWidth();
+    if (width < minW)
+        width = minW;
+
+    return width;
 }
 
 int RenderImage::calcReplacedHeight() const
 {
-    const Length h = style()->height();
+    int height;
+    if (isHeightSpecified())
+        height = calcReplacedHeightUsing(Height);
+    else
+        height = calcAspectRatioHeight();
 
-    if (h.isVariable()) {
-	int w = RenderReplaced::calcReplacedWidth();
-        if( m_intrinsicWidth > 0 && w != m_intrinsicWidth )
-            return (w*intrinsicHeight())/m_intrinsicWidth;
+    int minH = calcReplacedHeightUsing(MinHeight);
+    int maxH = style()->maxHeight().value() == UNDEFINED ? height : calcReplacedHeightUsing(MaxHeight);
 
-    }
+    if (height > maxH)
+        height = maxH;
 
-    return RenderReplaced::calcReplacedHeight();
+    if (height < minH)
+        height = minH;
+
+    return height;
 }
 
 #if 0

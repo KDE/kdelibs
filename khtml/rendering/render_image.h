@@ -66,6 +66,12 @@ public:
     virtual void notifyFinished(CachedObject *finishedObj);
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inside);
 
+    bool isWidthSpecified() const;
+    bool isHeightSpecified() const;
+
+    short calcAspectRatioWidth() const;
+    int   calcAspectRatioHeight() const;
+
     virtual short calcReplacedWidth() const;
     virtual int   calcReplacedHeight() const;
 
