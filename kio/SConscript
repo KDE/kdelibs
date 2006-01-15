@@ -16,6 +16,7 @@ kio/scheduler.cpp
 kio/connection.cpp
 kio/job.cpp 
 kio/global.cpp
+kio/kimageio.cpp
 kio/slaveconfig.cpp 
 kio/kurlpixmapprovider.cpp
 kio/netaccess.cpp 
@@ -177,6 +178,7 @@ kio/metainfojob.h
 kio/davjob.h
 kio/renamedlg.h
 kio/skipdlg.h
+kio/kimageio.h
 """
 # TODO: this is located in build dir 
 # kio\uiserver_stub.h
