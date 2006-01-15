@@ -855,15 +855,15 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
 		QString email = static_cast<const QString &>(*iter).toLower();
-		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email);
+		QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(email);
 
 		if (it == skEmail.end())
-			it = skEmail.insert(email, Q3PtrVector<KSSLCertificate>());
+			it = skEmail.insert(email, QVector<KSSLCertificate*>());
 
-		Q3PtrVector<KSSLCertificate> &elem = *it;
+		QVector<KSSLCertificate*> &elem = *it;
 		
-		if (elem.findRef(cert) == -1) {
-			unsigned int n = 0;
+		if (elem.indexOf(cert) == -1) {
+			int n = 0;
 			for(; n < elem.size(); n++) {
 				if (!elem.at(n)) {
 					elem.insert(n, cert);
@@ -885,14 +885,14 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 	QStringList mails;
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
-		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).toLower());
+		QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).toLower());
 
 		if (it == skEmail.end())
 		       break;
 
-		Q3PtrVector<KSSLCertificate> &elem = *it;
+		QVector<KSSLCertificate*> &elem = *it;
 
-		int n = elem.findRef(cert);
+		int n = elem.indexOf(cert);
 		if (n != -1)
 			elem.remove(n);
 	}
@@ -901,15 +901,15 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 
 QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 	QStringList rc;
-	QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email.toLower());
+	QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(email.toLower());
 
 	kdDebug() << "GETKDEKey " << email.latin1() << endl;
 
 	if (it == skEmail.end())
 		return rc;
 
-	Q3PtrVector<KSSLCertificate> &elem = *it;
-	for (unsigned int n = 0; n < elem.size(); n++) {
+	QVector<KSSLCertificate*> &elem = *it;
+	for (int n = 0; n < elem.size(); n++) {
 		KSSLCertificate *cert = elem.at(n);
 		if (cert) {
 			rc.append(cert->getKDEKey());

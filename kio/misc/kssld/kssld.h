@@ -29,8 +29,7 @@
 #include <qstringlist.h>
 
 #include <qmap.h>
-#include <q3ptrvector.h>
-#include <q3ptrlist.h>
+#include <QVector>
 
 class KSimpleConfig;
 class KSSLCNode;
@@ -146,7 +145,7 @@ private:
   void searchAddCert(KSSLCertificate *cert);
   void searchRemoveCert(KSSLCertificate *cert);
 
-  QMap<QString, Q3PtrVector<KSSLCertificate> > skEmail;
+  QMap<QString, QVector<KSSLCertificate*> > skEmail;
   QMap<QString, KSSLCertificate *> skMD5Digest;
 };
 
