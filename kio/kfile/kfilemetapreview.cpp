@@ -175,8 +175,10 @@ void KFileMetaPreview::clearPreviewProviders()
 {
 	QHash<QString, KPreviewWidgetBase*>::const_iterator i = m_previewProviders.constBegin();
 	while (i != m_previewProviders.constEnd())
+	{
 		m_stack->removeWidget(i.value());
-
+		++i;
+	}
 	qDeleteAll(m_previewProviders);
     m_previewProviders.clear();
 }

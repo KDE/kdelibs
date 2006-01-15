@@ -210,8 +210,10 @@ bool KSambaShare::isDirectoryShared( const QString & path ) const {
 QStringList KSambaShare::sharedDirectories() const {
   QStringList result;
   QHash<QString, bool>::const_iterator i = d->sharedPaths.constBegin();
-  while (i != d->sharedPaths.constEnd()) 
+  while (i != d->sharedPaths.constEnd()){ 
 		result << i.key();
+  		++i;
+  }
       
   return result;       
 }

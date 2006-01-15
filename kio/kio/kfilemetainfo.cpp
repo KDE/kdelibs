@@ -965,6 +965,7 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
             KFileMimeTypeInfo* info = i.value();
             m_plugins.insert( i.key(), new CachedPluginInfo( plugin, info, first ) );
             first = false;
+			++i;
         }
         // Hopefully the above includes the mimetype we asked for!
         if ( m_pendingMimetypeInfos.find( mimeType ) == 0 )
@@ -1468,8 +1469,10 @@ QStringList KFileMimeTypeInfo::supportedGroups() const
     QStringList list;
 	QHash<QString,GroupInfo *>::const_iterator i = m_groups.constBegin();
 	while (i != m_groups.constEnd())
+	{
         list.append( i.value()->name() );
-
+		++i;
+	}
     return list;
 }
 
@@ -1477,9 +1480,10 @@ QStringList KFileMimeTypeInfo::translatedGroups() const
 {
     QStringList list;
     QHash<QString,GroupInfo *>::const_iterator i = m_groups.constBegin();
-    while (i != m_groups.constEnd())
+    while (i != m_groups.constEnd()){
         list.append( i.value()->translatedName() );
-
+		++i;
+	}
     return list;
 }
 
@@ -1496,6 +1500,7 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
             if ( keys.find( *lit ) == keys.end() )
                 keys.append( *lit );
         }
+		++i;
     }
 
     return keys;

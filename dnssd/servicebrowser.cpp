@@ -203,7 +203,10 @@ bool ServiceBrowser::allFinished()
 	bool all = true;
 	QHash<QString,Query*>::const_iterator i = d->resolvers.constBegin();
   	while (i != d->resolvers.constEnd())
+	{
 		all&=(i.value())->isFinished();	
+		++i;
+	}
 	return all;
 }
 

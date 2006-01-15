@@ -186,8 +186,10 @@ QStringList KNFSShare::sharedDirectories() const {
   QStringList result;
   QHash<QString, bool>::const_iterator i = d->sharedPaths.constBegin();
   while (i != d->sharedPaths.constEnd())
+  {
         result << i.key();
-
+  		++i;
+  }
   return result;
 }
 
