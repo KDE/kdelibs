@@ -183,7 +183,6 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   : KDialogBase( Plain, i18n( "Attributes Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
 {
-  mNameDict.setAutoDelete( true );
   mNameDict.insert( "objectClass", new QString( i18n( "Object classes" ) ) );
   mNameDict.insert( "commonName", new QString( i18n( "Common name" ) ) );
   mNameDict.insert( "formattedName", new QString( i18n( "Formatted name" ) ) );
@@ -291,15 +290,16 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   }
 
   for ( i = 1; i < mMapCombo->count(); i++ ) {
-    Q3DictIterator<KLineEdit> it2( mLineEditDict );
-    for ( ; it2.current(); ++it2 ) {
-      if ( mMapList[ i ].contains( it2.currentKey() ) ) {
-        if ( mMapList[ i ][ it2.currentKey() ] != it2.current()->text() ) break;
+	QHash<QString,KLineEdit*>::const_iterator it2 = mLineEditDict.constBegin();
+	while (it2 != mLineEditDict.constEnd()){
+      if ( mMapList[ i ].contains( it2.key() ) ) {
+        if ( mMapList[ i ][ it2.key() ] != it2.value()->text() ) break;
       } else {
-        if ( mDefaultMap[ it2.currentKey() ] != it2.current()->text() ) break;
+        if ( mDefaultMap[ it2.key() ] != it2.value()->text() ) break;
       }
+	  ++it2;
     }
-    if ( !it2.current() ) {
+    if ( !it2 ) {
       mMapCombo->setCurrentItem( i );
       break;
     }
@@ -310,16 +310,20 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
 
 AttributesDialog::~AttributesDialog()
 {
+	qDeleteAll(mNameDict);
+	mNameDict.clear();
 }
 
 QMap<QString, QString> AttributesDialog::attributes() const
 {
   QMap<QString, QString> map;
 
-  Q3DictIterator<KLineEdit> it( mLineEditDict );
-  for ( ; it.current(); ++it )
-    map.insert( it.currentKey(), it.current()->text() );
-
+  QHash<QString,KLineEdit*>::const_iterator it = mLineEditDict.constBegin();
+  while (it != mLineEditDict.constEnd())
+  {
+	map.insert( it.key(), it.value()->text() );
+	++it;
+  }
   return map;
 }
 

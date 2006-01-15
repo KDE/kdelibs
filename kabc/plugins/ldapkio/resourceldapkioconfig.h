@@ -24,7 +24,7 @@
 #include <qmap.h>
 #include <qradiobutton.h>
 #include <qcombobox.h>
-#include <q3dict.h>
+#include <QHash>
 #include <q3buttongroup.h>
 
 #include <kdialogbase.h>
@@ -88,8 +88,8 @@ class AttributesDialog : public KDialogBase
     KComboBox *mMapCombo, *mRDNCombo;
     QList< QMap<QString, QString> > mMapList;
     QMap<QString, QString> mDefaultMap;
-    Q3Dict<KLineEdit> mLineEditDict;
-    Q3Dict<QString> mNameDict;
+    QHash<QString,KLineEdit*> mLineEditDict;
+    QHash<QString, QString*> mNameDict;
 };
 
 class OfflineDialog : public KDialogBase
