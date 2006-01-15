@@ -30,7 +30,7 @@
 #include <q3textedit.h>
 #include <qtimer.h>
 #include <qcolor.h>
-#include <q3dict.h>
+#include <QHash>
 
 namespace KSpell2 {
 
@@ -40,7 +40,7 @@ public:
     Filter     *filter;
     Broker::Ptr broker;
     Dictionary *dict;
-    Q3Dict<Dictionary>  dictCache;
+	QHash<QString, Dictionary*>dictCache;
 };
 
 Highlighter::Highlighter( Q3TextEdit *textEdit,

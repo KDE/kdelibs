@@ -23,6 +23,7 @@
 #include "query.h"
 #include "servicebrowser.h"
 #include <config.h>
+#include <QHash>
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
 #endif
@@ -44,7 +45,7 @@ public:
 	int m_flags;
 	bool m_running;
 	bool m_finished;
-	Q3Dict<Query> resolvers;
+	QHash<QString,Query*> resolvers;
 };
 
 ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
@@ -63,7 +64,6 @@ ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,i
 
 void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int flags)
 {
-	d->resolvers.setAutoDelete(true);
 	d->m_types=type;
 	d->m_flags=flags;
 	d->m_domains = domains;
@@ -98,6 +98,8 @@ const ServiceBrowser::State ServiceBrowser::isAvailable()
 }
 ServiceBrowser::~ ServiceBrowser()
 {
+	qDeleteAll(d->resolvers);
+	d->resolvers.clear();
 	if (d->m_flags & AutoDelete) delete d->m_domains;
 	delete d;
 }
@@ -199,8 +201,9 @@ bool ServiceBrowser::allFinished()
 {
 	if  (d->m_duringResolve.count()) return false;
 	bool all = true;
-	Q3DictIterator<Query> it(d->resolvers);
-	for ( ; it.current(); ++it) all&=(*it)->isFinished();
+	QHash<QString,Query*>::const_iterator i = d->resolvers.constBegin();
+  	while (i != d->resolvers.constEnd())
+		all&=(i.value())->isFinished();	
 	return all;
 }
 

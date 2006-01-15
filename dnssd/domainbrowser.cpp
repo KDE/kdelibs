@@ -24,6 +24,7 @@
 #include "remoteservice.h"
 #include "query.h"
 #include <kapplication.h>
+#include <QHash>
 
 namespace DNSSD
 {
@@ -31,7 +32,7 @@ namespace DNSSD
 class DomainBrowserPrivate 
 {
 public:
-	Q3Dict<Query> resolvers;
+	QHash<QString,Query*> resolvers;
 	QStringList m_domains;
 	bool m_recursive;
 	bool m_running;
@@ -40,7 +41,6 @@ public:
 DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
 {
 	d->m_running = false;
-	d->resolvers.setAutoDelete(true);
 	d->m_recursive = Configuration::recursive();
 	d->m_domains = Configuration::domainList();
 	if (Configuration::browseLocal()) d->m_domains+="local.";
@@ -52,13 +52,14 @@ DomainBrowser::DomainBrowser(const QStringList& domains, bool recursive, QObject
 {
 	d->m_recursive = recursive;
 	d->m_running = false;
-	d->resolvers.setAutoDelete(true);
 	d->m_domains=domains;
 }
 
 
 DomainBrowser::~DomainBrowser()
 {
+	qDeleteAll(d->resolvers);
+	d->resolvers.clear();
 	delete d;
 }
 

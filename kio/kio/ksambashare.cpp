@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <q3dict.h>
+#include <QHash>
 #include <qfile.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
@@ -37,7 +37,7 @@ public:
   bool findSmbConf();
   bool load();
   
-  Q3Dict<bool> sharedPaths;
+  QHash<QString,bool> sharedPaths;
   QString smbConf;
 };
 
@@ -209,9 +209,9 @@ bool KSambaShare::isDirectoryShared( const QString & path ) const {
 
 QStringList KSambaShare::sharedDirectories() const {
   QStringList result;
-  Q3DictIterator<bool> it(d->sharedPaths);
-  for( ; it.current(); ++it )
-      result << it.currentKey();
+  QHash<QString, bool>::const_iterator i = d->sharedPaths.constBegin();
+  while (i != d->sharedPaths.constEnd()) 
+		result << i.key();
       
   return result;       
 }
