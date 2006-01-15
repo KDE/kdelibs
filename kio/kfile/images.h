@@ -2,7 +2,7 @@
 #ifndef _QEMBED_1804289383
 #define _QEMBED_1804289383
 #include <qimage.h>
-#include <q3dict.h>
+#include <QHash>
 static const QRgb group_grey_data[] = {
     0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x42484848,0xc39b9b9b,0xeab1b1b1,0xce9d9d9d,0x5a4d4d4d,0x0,
     0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x563b3b3b,0xfdaeaeae,0xffcfcfcf,0xffcccccc,0xffcecece,
@@ -247,8 +247,8 @@ static struct EmbedImage {
 
 static const QPixmap& qembed_findImage( const QString& name )
 {
-    static Q3Dict<QPixmap> dict;
-    QPixmap* pixmap = dict.find( name );
+    static QHash<QString,QPixmap*> dict;
+    QPixmap* pixmap = dict.find( name ).value();
     if ( !pixmap ) {
 	for ( int i = 0; embed_image_vec[i].data; i++ ) {
 	    if ( strcmp(embed_image_vec[i].name, name.latin1()) == 0 ) {
