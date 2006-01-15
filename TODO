@@ -296,9 +296,6 @@ that we would like to make for the next binary incompatible release.
 
 - Places where things like "foo = new QString" seem like prime candidates for refactoring. (Caleb Tennis)
 
-- Is KProgress still needed?  The only benefit I can see is the ability to set the format, but
-  it seems like the style API should be able to handle that automatically. (Caleb Tennis)
-
 - Remove all of the (const char *name) arguments to QObject derived classes. (Caleb Tennis)
 
 - Remove kdecore/kde_file.h -> Qt now has largefile support and defines similar macros in
