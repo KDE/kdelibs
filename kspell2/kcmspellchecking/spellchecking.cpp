@@ -19,7 +19,7 @@
 //Added by qt3to4:
 #include <QVBoxLayout>
 #include <QBoxLayout>
-#include <Q3GroupBox>
+#include <QGroupBox>
 
 #include <dcopclient.h>
 
@@ -39,7 +39,7 @@ KSpellCheckingConfig::KSpellCheckingConfig(QWidget *parent, const char *, const 
     KCModule(SpellFactory::instance(), parent)
 {
   QBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
-  Q3GroupBox *box = new Q3GroupBox( 1, Qt::Vertical, i18n("Spell Checking Settings"), this  );
+  QGroupBox *box = new QGroupBox( i18n("Spell Checking Settings"), this );
   box->layout()->setSpacing( KDialog::spacingHint() );
   layout->addWidget(box);
 
