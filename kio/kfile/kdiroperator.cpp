@@ -1243,10 +1243,7 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
-    // ensure our actions get caught even when we aren't the only widget around
-    // e.g. the file dialog
-    myActionCollection->setWidget(topLevelWidget());
+    myActionCollection = new KActionCollection( topLevelWidget(), this, "KDirOperator::myActionCollection" );
 
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
