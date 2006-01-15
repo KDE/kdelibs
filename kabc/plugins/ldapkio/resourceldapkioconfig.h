@@ -89,7 +89,7 @@ class AttributesDialog : public KDialogBase
     QList< QMap<QString, QString> > mMapList;
     QMap<QString, QString> mDefaultMap;
     QHash<QString,KLineEdit*> mLineEditDict;
-    QHash<QString, QString*> mNameDict;
+    QHash<QString, QString> mNameDict;
 };
 
 class OfflineDialog : public KDialogBase

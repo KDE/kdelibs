@@ -183,27 +183,27 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   : KDialogBase( Plain, i18n( "Attributes Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
 {
-  mNameDict.insert( "objectClass", new QString( i18n( "Object classes" ) ) );
-  mNameDict.insert( "commonName", new QString( i18n( "Common name" ) ) );
-  mNameDict.insert( "formattedName", new QString( i18n( "Formatted name" ) ) );
-  mNameDict.insert( "familyName", new QString( i18n( "Family name" ) ) );
-  mNameDict.insert( "givenName", new QString( i18n( "Given name" ) ) );
-  mNameDict.insert( "organization", new QString( i18n( "Organization" ) ) );
-  mNameDict.insert( "title", new QString( i18n( "Title" ) ) );
-  mNameDict.insert( "street", new QString( i18n( "Street" ) ) );
-  mNameDict.insert( "state", new QString( i18n( "State" ) ) );
-  mNameDict.insert( "city", new QString( i18n( "City" ) ) );
-  mNameDict.insert( "postalcode", new QString( i18n( "Postal code" ) ) );
-  mNameDict.insert( "mail", new QString( i18n( "Email" ) ) );
-  mNameDict.insert( "mailAlias", new QString( i18n( "Email alias" ) ) );
-  mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone number" ) ) );
-  mNameDict.insert( "telephoneNumber", new QString( i18n( "Work telephone number" ) ) );
-  mNameDict.insert( "facsimileTelephoneNumber", new QString( i18n( "Fax number" ) ) );
-  mNameDict.insert( "mobile", new QString( i18n( "Cell phone number" ) ) );
-  mNameDict.insert( "pager", new QString( i18n( "Pager" ) ) );
-  mNameDict.insert( "description", new QString( i18n( "Note" ) ) );
-  mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
-  mNameDict.insert( "jpegPhoto", new QString( i18n( "Photo" ) ) );
+  mNameDict.insert( "objectClass", i18n( "Object classes" ) );
+  mNameDict.insert( "commonName",  i18n( "Common name" ) );
+  mNameDict.insert( "formattedName", i18n( "Formatted name" ) );
+  mNameDict.insert( "familyName", i18n( "Family name" ) );
+  mNameDict.insert( "givenName", i18n( "Given name" ) );
+  mNameDict.insert( "organization", i18n( "Organization" ) );
+  mNameDict.insert( "title", i18n( "Title" ) );
+  mNameDict.insert( "street", i18n( "Street" ) );
+  mNameDict.insert( "state", i18n( "State" ) );
+  mNameDict.insert( "city", i18n( "City" ) );
+  mNameDict.insert( "postalcode", i18n( "Postal code" ) );
+  mNameDict.insert( "mail", i18n( "Email" ) );
+  mNameDict.insert( "mailAlias", i18n( "Email alias" ) );
+  mNameDict.insert( "phoneNumber", i18n( "Telephone number" ) );
+  mNameDict.insert( "telephoneNumber", i18n( "Work telephone number" ) );
+  mNameDict.insert( "facsimileTelephoneNumber", i18n( "Fax number" ) );
+  mNameDict.insert( "mobile", i18n( "Cell phone number" ) );
+  mNameDict.insert( "pager", i18n( "Pager" ) );
+  mNameDict.insert( "description", i18n( "Note" ) );
+  mNameDict.insert( "uid", i18n( "UID" ) );
+  mNameDict.insert( "jpegPhoto", i18n( "Photo" ) );
 
   // default map
   mDefaultMap.insert( "objectClass", "inetOrgPerson" );
@@ -280,7 +280,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
       j = 2;
     }
     kdDebug(7125) << "itkey: " << it.key() << " i: " << i << endl;
-    label = new QLabel( *mNameDict[ it.key() ] + ":", page );
+    label = new QLabel( mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );
     lineedit->setText( it.data() );
@@ -310,7 +310,6 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
 
 AttributesDialog::~AttributesDialog()
 {
-	qDeleteAll(mNameDict);
 	mNameDict.clear();
 }
 
