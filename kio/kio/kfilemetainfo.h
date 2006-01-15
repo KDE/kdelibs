@@ -24,7 +24,7 @@
    m_unit is a define in <sys/sysmacros.h> */
 #define m_unit outouftheway_m_unit
 
-#include <q3dict.h>
+#include <QHash>
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>
@@ -142,6 +142,7 @@ public:
     friend class KFilePlugin;
     friend class KFileMimeTypeInfo;
     public:
+		~GroupInfo();
         /**
          * Use this method to get a list of keys in the specified group that
          * the plugin knows about. No variable keys.
@@ -237,7 +238,7 @@ public:
         QStringList     m_supportedKeys;
         uint            m_attr;
         ItemInfo*       m_variableItemInfo;
-        Q3Dict<ItemInfo> m_itemDict;
+        QHash<QString,ItemInfo*> m_itemDict;
 
     };
 
@@ -472,14 +473,14 @@ public:
     QStringList     m_supportedKeys;
     uint            m_attr;
     //        bool            m_supportsVariableKeys : 1;
-    Q3Dict<ItemInfo> m_itemDict;
+    QHash<QString, ItemInfo*> m_itemDict;
 
 // ### this should be made private instead, but this would be BIC
 protected:
     /** @internal */
     KFileMimeTypeInfo( const QString& mimeType );
 
-    Q3Dict<GroupInfo> m_groups;
+    QHash<QString,GroupInfo*> m_groups;
     QString     m_mimeType;
     QStringList m_preferredKeys;   // same as KFileMetaInfoProvider::preferredKeys()
     QStringList m_preferredGroups; // same as KFileMetaInfoProvider::preferredKeys()
@@ -1686,13 +1687,13 @@ private:
 
     // The key is either a mimetype or a protocol. Those things don't look the same
     // so there's no need for two QDicts.
-    Q3Dict<CachedPluginInfo> m_plugins;
+    QHash<QString,CachedPluginInfo*> m_plugins;
 
     // This data is aggregated during the creation of a plugin,
     // before being moved to the appropriate CachedPluginInfo(s)
     // At any other time than during the loading of a plugin, this dict is EMPTY.
     // Same key as in m_plugins: mimetype or protocol
-    Q3Dict<KFileMimeTypeInfo> m_pendingMimetypeInfos;
+    QHash<QString,KFileMimeTypeInfo*> m_pendingMimetypeInfos;
 
 private:
     static KFileMetaInfoProvider * s_self;

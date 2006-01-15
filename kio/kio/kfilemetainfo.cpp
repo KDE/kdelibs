@@ -899,12 +899,12 @@ KFileMetaInfoProvider * KFileMetaInfoProvider::self()
 
 KFileMetaInfoProvider::KFileMetaInfoProvider()
 {
-    m_plugins.setAutoDelete( true );
 }
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
-    m_plugins.clear();
+    qDeleteAll(m_plugins);
+	m_plugins.clear();
     sd.setObject( 0 );
 }
 
@@ -960,10 +960,10 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
     } else {
         // Mimetype-metainfo: the plugin can register itself for multiple mimetypes, remember them all
         bool first = true;
-        Q3DictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
-        for( ; it.current(); ++it ) {
-            KFileMimeTypeInfo* info = it.current();
-            m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info, first ) );
+		QHash<QString,KFileMimeTypeInfo *>::const_iterator i = m_pendingMimetypeInfos.constBegin();
+       	while (i != m_pendingMimetypeInfos.constEnd()){
+            KFileMimeTypeInfo* info = i.value();
+            m_plugins.insert( i.key(), new CachedPluginInfo( plugin, info, first ) );
             first = false;
         }
         // Hopefully the above includes the mimetype we asked for!
@@ -980,7 +980,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
     //kdDebug(7033) << "plugin() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
 
     if ( !protocol.isEmpty() ) {
-        CachedPluginInfo *cache = m_plugins.find( protocol );
+        CachedPluginInfo *cache = m_plugins.find( protocol ).value();
         if ( cache && cache->plugin ) {
             return cache->plugin;
         }
@@ -991,7 +991,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
         }
     }
 
-    CachedPluginInfo *cache = m_plugins.find( mimeType );
+    CachedPluginInfo *cache = m_plugins.find( mimeType ).value();
     if ( cache ) {
         return cache->plugin;
     }
@@ -1044,27 +1044,27 @@ const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mi
 {
     //kdDebug(7033) << "mimeTypeInfo() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
     if ( !protocol.isEmpty() ) {
-        CachedPluginInfo *cache = m_plugins.find( protocol );
+        CachedPluginInfo *cache = m_plugins.find( protocol ).value();
         if ( cache && cache->mimeTypeInfo ) {
             return cache->mimeTypeInfo;
         }
 
         if ( !cache ) {
             loadAndRegisterPlugin( QString(), protocol );
-            cache = m_plugins.find( protocol );
+            cache = m_plugins.find( protocol ).value();
             if ( cache && cache->mimeTypeInfo ) {
                 return cache->mimeTypeInfo;
             }
         }
     }
 
-    CachedPluginInfo *cache = m_plugins.find( mimeType );
+    CachedPluginInfo *cache = m_plugins.find( mimeType ).value();
     if ( cache ) {
         return cache->mimeTypeInfo;
     }
 
     loadAndRegisterPlugin( mimeType, QString() );
-    cache = m_plugins.find( mimeType );
+    cache = m_plugins.find( mimeType ).value();
     if ( cache ) {
         return cache->mimeTypeInfo;
     }
@@ -1075,7 +1075,7 @@ KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
     const QString& mimeType )
 {
 
-    KFileMimeTypeInfo *info = m_pendingMimetypeInfos.find( mimeType );
+    KFileMimeTypeInfo *info = m_pendingMimetypeInfos.find( mimeType ).value();
     Q_ASSERT( !info );
     if ( !info )
     {
@@ -1442,16 +1442,17 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
 KFileMimeTypeInfo::KFileMimeTypeInfo( const QString& mimeType )
     : m_mimeType( mimeType )
 {
-    m_groups.setAutoDelete( true );
 }
 
 KFileMimeTypeInfo::~KFileMimeTypeInfo()
 {
+	qDeleteAll(m_groups);
+	m_groups.clear();
 }
 
 const KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::groupInfo( const QString& group ) const
 {
-    return m_groups.find( group );
+    return m_groups.find( group ).value();
 }
 
 KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::addGroupInfo(
@@ -1465,9 +1466,9 @@ KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::addGroupInfo(
 QStringList KFileMimeTypeInfo::supportedGroups() const
 {
     QStringList list;
-    Q3DictIterator<GroupInfo> it( m_groups );
-    for ( ; it.current(); ++it )
-        list.append( it.current()->name() );
+	QHash<QString,GroupInfo *>::const_iterator i = m_groups.constBegin();
+	while (i != m_groups.constEnd())
+        list.append( i.value()->name() );
 
     return list;
 }
@@ -1475,9 +1476,9 @@ QStringList KFileMimeTypeInfo::supportedGroups() const
 QStringList KFileMimeTypeInfo::translatedGroups() const
 {
     QStringList list;
-    Q3DictIterator<GroupInfo> it( m_groups );
-    for ( ; it.current(); ++it )
-        list.append( it.current()->translatedName() );
+    QHash<QString,GroupInfo *>::const_iterator i = m_groups.constBegin();
+    while (i != m_groups.constEnd())
+        list.append( i.value()->translatedName() );
 
     return list;
 }
@@ -1488,9 +1489,9 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
     // maybe cache the result?
     QStringList keys;
     QStringList::ConstIterator lit;
-    Q3DictIterator<GroupInfo> it( m_groups );
-    for ( ; it.current(); ++it ) { // need to nuke dupes
-        QStringList list = it.current()->supportedKeys();
+	QHash<QString,GroupInfo *>::const_iterator i = m_groups.constBegin();
+    while (i != m_groups.constEnd()) {
+        QStringList list = i.value()->supportedKeys();
         for ( lit = list.begin(); lit != list.end(); ++lit ) {
             if ( keys.find( *lit ) == keys.end() )
                 keys.append( *lit );
@@ -1523,12 +1524,17 @@ KFileMimeTypeInfo::GroupInfo::GroupInfo( const QString& name,
       m_variableItemInfo( 0 )
 
 {
-    m_itemDict.setAutoDelete( true );
+}
+
+KFileMimeTypeInfo::GroupInfo::~GroupInfo()
+{
+	qDeleteAll(m_itemDict);
+	m_itemDict.clear();
 }
 
 const KFileMimeTypeInfo::ItemInfo * KFileMimeTypeInfo::GroupInfo::itemInfo( const QString& key ) const
 {
-    ItemInfo* item = m_itemDict.find( key );
+    ItemInfo* item = m_itemDict.find( key ).value();
 
     // if we the item isn't found and variable keys are supported, we need to
     // return the default variable key iteminfo.
