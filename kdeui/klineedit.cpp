@@ -321,7 +321,7 @@ void KLineEdit::setText( const QString& text )
     if( d->enableClickMsg )
     {
           d->drawClickMsg = text.isEmpty();
-          repaint();
+          update();
     }
     if( d->enableSqueezedText && isReadOnly() )
     {
@@ -1344,7 +1344,7 @@ void KLineEdit::focusInEvent( QFocusEvent *ev )
     if ( d->enableClickMsg && d->drawClickMsg )
     {
         d->drawClickMsg = false;
-        repaint();
+        update();
     }
     QLineEdit::focusInEvent( ev );
 }
@@ -1354,15 +1354,16 @@ void KLineEdit::focusOutEvent( QFocusEvent *ev )
     if ( d->enableClickMsg && text().isEmpty() )
     {
         d->drawClickMsg = true;
-        repaint();
+        update();
     }
     QLineEdit::focusOutEvent( ev );
 }
 
 void KLineEdit::setClickMessage( const QString &msg )
 {
+    d->enableClickMsg = true;
     d->clickMessage = msg;
-    repaint();
+    update();
 }
 
 void KLineEdit::virtual_hook( int id, void* data )
