@@ -454,22 +454,22 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "General" ); // group will be restored by cgs anyway
     if ( reset || config->hasKey( "foreground" ) ) {
       QColor def(HTML_DEFAULT_TXT_COLOR);
-      d->m_textColor = config->readColorEntry( "foreground", &def );
+      d->m_textColor = config->readEntry( "foreground", def );
     }
 
     if ( reset || config->hasKey( "linkColor" ) ) {
       QColor def(HTML_DEFAULT_LNK_COLOR);
-      d->m_linkColor = config->readColorEntry( "linkColor", &def );
+      d->m_linkColor = config->readEntry( "linkColor", def );
     }
 
     if ( reset || config->hasKey( "visitedLinkColor" ) ) {
       QColor def(HTML_DEFAULT_VLNK_COLOR);
-      d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &def);
+      d->m_vLinkColor = config->readEntry( "visitedLinkColor", def);
     }
 
     if ( reset || config->hasKey( "background" ) ) {
       QColor def(HTML_DEFAULT_BASE_COLOR);
-      d->m_baseColor = config->readColorEntry( "background", &def);
+      d->m_baseColor = config->readEntry( "background", def);
     }
   }
 
