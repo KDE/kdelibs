@@ -23,8 +23,8 @@
 #include "ktimeout.h"
 
 KTimeout::KTimeout(int size)
-: QObject(), _timers(size) {
-	_timers.setAutoDelete(true);
+: QObject(){
+	_timers.reserve(size);
 }
 
 
@@ -34,12 +34,13 @@ KTimeout::~KTimeout() {
 
 
 void KTimeout::clear() {
+	qDeleteAll(_timers);
 	_timers.clear();
 }
 
 
 void KTimeout::removeTimer(int id) {
-	QTimer *t = _timers.find(id);
+	QTimer *t = _timers.value(id);
 	if (t != 0L) {
 		_timers.remove(id); // autodeletes
 	}
@@ -59,7 +60,7 @@ void KTimeout::addTimer(int id, int timeout) {
 
 
 void KTimeout::resetTimer(int id, int timeout) {
-	QTimer *t = _timers.find(id);
+	QTimer *t = _timers.value(id);
 	if (t) {
 		t->start(timeout);
 	}
@@ -69,12 +70,13 @@ void KTimeout::resetTimer(int id, int timeout) {
 void KTimeout::timeout() {
 	const QTimer *t = static_cast<const QTimer*>(sender());
 	if (t) {
-		Q3IntDictIterator<QTimer> it(_timers);
-		for (; it.current(); ++it) {
-			if (it.current() == t) {
-				emit timedOut(it.currentKey());
+		QMultiHash<int, QTimer*>::const_iterator it = _timers.constBegin();
+		while (it != _timers.constEnd()) {
+			if (it.value() == t) {
+				emit timedOut(it.key());
 				return;
 			}
+			++it;
 		}
 	}
 }

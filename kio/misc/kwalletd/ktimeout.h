@@ -22,7 +22,7 @@
 #ifndef _KTIMEOUT_H_
 #define _KTIMEOUT_H_
 
-#include <q3intdict.h>
+#include <QMultiHash>
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -46,7 +46,7 @@ class KTimeout : public QObject {
 		void timeout();
 
 	private:
-		Q3IntDict<QTimer> _timers;
+		QMultiHash<int,QTimer*> _timers;
 };
 
 #endif
