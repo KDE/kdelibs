@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=EPS
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=eps,EPS,EPSI,epsf,EPSF
+X-KDE-MimeType=image/x-eps

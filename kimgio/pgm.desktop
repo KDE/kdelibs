@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PGM
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=pgm
+X-KDE-MimeType=image/x-portable-greymap

@@ -28,7 +28,7 @@ libkiocore_la_SOURCES = \
 	kdirwatch.cpp \
 	kfileshare.cpp ksambashare.cpp knfsshare.cpp \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
-        kservicetypefactory.cpp kservicetype.cpp \
+        kservicetypefactory.cpp kservicetype.cpp kimageio.cpp \
 	kmimetype.cpp kservicegroup.cpp \
 	kservice.cpp kservicefactory.cpp \
 	kuserprofile.cpp kservicegroupfactory.cpp \
@@ -62,7 +62,7 @@ libkiocore_la_SOURCES = \
 	kmimetypechooser.cpp
 
 include_HEADERS = \
-	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
+	kservicetype.h kmimetype.h kmimemagic.h kservice.h kimageio.h \
 	krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \

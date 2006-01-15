@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=XPM
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=xpm
+X-KDE-MimeType=image/x-xpm

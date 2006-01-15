@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PCX
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=pcx,PCX
+X-KDE-MimeType=image/x-pcx

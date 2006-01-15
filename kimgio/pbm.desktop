@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PBM
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=pbm
+X-KDE-MimeType=image/x-portable-bitmap

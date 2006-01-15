@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PSD
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=psd,PSD
+X-KDE-MimeType=image/x-vnd.adobe.photoshop

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=BMP
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=bmp
+X-KDE-MimeType=image/x-bmp

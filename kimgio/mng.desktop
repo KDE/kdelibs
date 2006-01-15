@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=MNG
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=mng
+X-KDE-MimeType=video/x-mng

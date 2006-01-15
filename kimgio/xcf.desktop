@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=XCF
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=xcf,XCF
+X-KDE-MimeType=image/x-xcf-gimp

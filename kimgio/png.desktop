@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PNG
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=png
+X-KDE-MimeType=image/png

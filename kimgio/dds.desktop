@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=DDS
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=dds
+X-KDE-MimeType=image/x-dds

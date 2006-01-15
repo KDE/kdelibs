@@ -1,14 +1,17 @@
 
 if include_TIFF_MODULES
 KIMGIO_TIFF_MODULES=kimg_tiff.la # kimg_g3.la
+KIMGIO_TIFF_SERVICEFILES=tiff.desktop
 endif
 
 if include_JP2_MODULES
 KIMGIO_JP2_MODULES=kimg_jp2.la
+KIMGIO_JP2_SERVICEFILES=jp2.desktop
 endif
 
 if include_EXR_MODULES
 KIMGIO_EXR_MODULES=kimg_exr.la
+KIMGIO_EXR_SERVICEFILES=exr.desktop
 endif
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
@@ -82,6 +85,16 @@ noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h rgb.h \
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl \
 	$(all_includes) -Drestrict= $(EXR_FLAGS)
+
+servicetypedir = $(kde_servicetypesdir)
+servicetype_DATA = qimageio_plugin.desktop
+
+servicedir = $(kde_servicesdir)/qimageioplugins
+service_DATA = png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop \
+	ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop \
+	$(KIMGIO_TIFF_SERVICEFILES) ico.desktop $(KIMGIO_JP2_SERVICEFILES) \
+	gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop \
+	$(KIMGIO_EXR_SERVICEFILES) mng.desktop psd.desktop hdr.desktop
 
 include $(top_srcdir)/admin/Doxyfile.am
 

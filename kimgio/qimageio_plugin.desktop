@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=QImageIOPlugins
+Comment=QImageIOHandler plugin
+
+[PropertyDef::X-KDE-ImageFormat]
+Type=QStringList
+
+[PropertyDef::X-KDE-MimeType]
+Type=QString

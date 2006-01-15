@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=HDR
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=hdr
+X-KDE-MimeType=image/x-hdr

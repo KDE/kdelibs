@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=EXR
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=exr,EXR
+X-KDE-MimeType=image/x-exr

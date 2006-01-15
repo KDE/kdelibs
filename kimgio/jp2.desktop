@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=JP2
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=jp2
+X-KDE-MimeType=image/jp2

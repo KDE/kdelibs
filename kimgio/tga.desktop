@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=TGA
+Type=Service
+ServiceTypes=QImageIOPlugins
+X-KDE-ImageFormat=tga,TGA
+X-KDE-MimeType=image/x-targa
