@@ -43,6 +43,7 @@ void KTimeout::removeTimer(int id) {
 	QTimer *t = _timers.value(id);
 	if (t != 0L) {
 		_timers.remove(id); // autodeletes
+		delete t;
 	}
 }
 
