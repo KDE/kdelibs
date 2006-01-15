@@ -8,8 +8,8 @@ ksharedpixmap.cpp
 kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp
 kactioncollection.cpp kactionclasses.cpp
 kurllabel.cpp kmenubar.cpp kinputdialog.cpp
-knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp
-kcolordialog.cpp kselect.cpp kdatepicker.cpp
+knuminput.cpp klineedit.cpp klistview.cpp kprogressbar.cpp
+kprogressdialog.cpp kcolordialog.cpp kselect.cpp kdatepicker.cpp
 kdatetable.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp
 kstatusbar.cpp kmainwindow.cpp
 keditlistbox.cpp kscrollview.cpp
@@ -51,7 +51,7 @@ knotificationmanager.skel
 """
 
 install_headers = """
-kprogress.h kcolordialog.h kselect.h 
+kprogressbar.h kprogressdialog.h kcolordialog.h kselect.h 
 kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h 
 kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h 
 kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h 
