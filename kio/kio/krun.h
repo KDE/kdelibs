@@ -169,7 +169,6 @@ public:
    *        when the application exits.
    * @return the process id, or 0 on error
    */
-  // BIC merge second overload with first one, using tempFiles=false
   static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles = false );
 
   /**
