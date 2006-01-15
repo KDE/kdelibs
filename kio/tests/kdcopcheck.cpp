@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <kstandarddirs.h>
 #include <kservicegroup.h>
-#include <kimageio.h>
 #include <kprotocolinfo.h>
 #include <kprocess.h>
 #include <qtimer.h>

@@ -20,7 +20,7 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kimageio.h>
+//#include <kimageio.h>
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 #include <kservice.h>
