@@ -83,7 +83,7 @@ void ScriptInterpreter::mark()
 {
   Interpreter::mark();
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
+  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects" << endl;
 #endif
   HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
   while (it != m_domObjects.end()) {

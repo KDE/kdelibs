@@ -313,7 +313,7 @@ DOMEvent::~DOMEvent()
 bool DOMEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::DOMEvent::getOwnPropertySlot " << p.qstring() << endl;
+  kdDebug() << "KJS::DOMEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
 
   return getStaticValueSlot<DOMEvent, DOMObject>(exec,&DOMEventTable,this,propertyName,slot);
@@ -594,7 +594,7 @@ DOMMouseEvent::~DOMMouseEvent()
 bool DOMMouseEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << p.qstring() << endl;
+  kdDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
 
   return getStaticValueSlot<DOMMouseEvent, DOMUIEvent>(exec,&DOMMouseEventTable,this,propertyName,slot);
@@ -738,7 +738,7 @@ DOMTextEvent::~DOMTextEvent()
 bool DOMTextEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << p.qstring() << endl;
+  kdDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
 
   return getStaticValueSlot<DOMTextEvent, DOMUIEvent>(exec,&DOMTextEventTable,this,propertyName,slot);

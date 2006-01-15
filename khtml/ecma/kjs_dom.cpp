@@ -1804,7 +1804,7 @@ DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
 bool DOMCharacterData::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070)<<"DOMCharacterData::tryGet "<<p.string().string()<<endl;
+  kdDebug(6070)<<"DOMCharacterData::tryGet "<<propertyName.qstring()<<endl;
 #endif
   return getStaticValueSlot<DOMCharacterData, DOMNode>(exec, &DOMCharacterDataTable, this, propertyName, slot);
 }

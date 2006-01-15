@@ -167,7 +167,7 @@ Screen::Screen(ExecState *exec)
 bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Screen::getPropertyName " << p.qstring() << endl;
+  kdDebug(6070) << "Screen::getPropertyName " << propertyName.qstring() << endl;
 #endif
   return getStaticValueSlot<Screen, ObjectImp>(exec, &ScreenTable, this, propertyName, slot);
 }
@@ -453,7 +453,7 @@ UString Window::toString(ExecState *) const
 bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << p.qstring() << endl;
+  kdDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
   // we don't want any properties other than "closed" on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
@@ -528,8 +528,8 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     unsigned long robjid;
     if (m_frame->m_liveconnect &&
         isSafeScript(exec) &&
-        m_frame->m_liveconnect->get(0, p.qstring(), rtype, robjid, rvalue))
-      return getLiveConnectValue(m_frame->m_liveconnect, p.qstring(), rtype, rvalue, robjid);
+        m_frame->m_liveconnect->get(0, propertyName.qstring(), rtype, robjid, rvalue))
+      return getLiveConnectValue(m_frame->m_liveconnect, propertyName.qstring(), rtype, rvalue, robjid);
     return Undefined();
 #endif
     slot.setUndefined(this);
@@ -574,6 +574,12 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
       return true;
     }
   }
+
+  // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
+  // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "WARNING: Window::get property not found: " << propertyName.qstring() << endl;
+#endif
 
   return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
 }
@@ -849,11 +855,6 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return getListener(exec,DOM::EventImpl::UNLOAD_EVENT);
   }
 
-  // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
-  // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "WARNING: Window::get property not found: " << p.qstring() << endl;
-#endif
   return Undefined();
 }
 
@@ -2169,7 +2170,7 @@ ValueImp *FrameArray::nameGetter(ExecState *exec, const Identifier& propertyName
 bool FrameArray::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "FrameArray::getOwnPropertySlot " << p.qstring() << " part=" << (void*)part << endl;
+  kdDebug(6070) << "FrameArray::getOwnPropertySlot " << propertyName.qstring() << " part=" << (void*)part << endl;
 #endif
 
   if (part.isNull()) {
