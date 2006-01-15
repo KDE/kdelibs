@@ -150,7 +150,7 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool enableSqueezedText READ isSqueezedTextEnabled WRITE setEnableSqueezedText )
-	Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
+    Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
 
@@ -159,19 +159,16 @@ public:
      * and a name.
      *
      * @param string Text to be shown in the edit widget.
-     * @param parent The parent object of this widget.
+     * @param parent The parent widget of the line edit.
      */
     KLineEdit( const QString &string, QWidget *parent );
 
-	/**
-	 * Constructs a KLineEdit object with a parent and a greyed-out message
-	 * This KLineEdit contains a greyed-out hinting text as long as 
-	 * the user didn't enter any text
-	 * @param parent The parent object of this widget.
-	 * @param msg Greyed-out text displaying
-	 */
-	KLineEdit( QWidget *parent = 0, const QString &msg = QString() );
-	
+    /**
+     * Constructs a line edit
+     * @param parent The parent widget of the line edit.
+     */
+    KLineEdit( QWidget *parent = 0 );
+
     /**
      *  Destructor.
      */
@@ -315,8 +312,16 @@ public:
     */
     void setCompletionBox( KCompletionBox *box );
 
+    /*
+     * This makes the line edit display a greyed-out hinting text as long as
+     * the user didn't enter any text. It is often used as indication about
+     * the purpose of the line edit.
+     */
     void setClickMessage( const QString &msg );
 
+    /**
+     * @return the message set with setClickMessage
+     */
     QString clickMessage() const;
 
 
@@ -531,7 +536,7 @@ protected:
 
     virtual void focusOutEvent( QFocusEvent *ev );
 
-	
+
 private slots:
     void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick

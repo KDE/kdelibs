@@ -62,8 +62,8 @@ public:
         disableRestoreSelection = false;
         enableSqueezedText = false;
 
-		drawClickMsg = false;
-		enableClickMsg = false;
+        drawClickMsg = false;
+        enableClickMsg = false;
         if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
@@ -100,9 +100,9 @@ public:
 
     QString clickMessage;
     bool enableClickMsg:1;
-	bool drawClickMsg:1;
-    
-	KCompletionBox *completionBox;
+    bool drawClickMsg:1;
+
+    KCompletionBox *completionBox;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
@@ -110,16 +110,14 @@ bool KLineEdit::KLineEditPrivate::initialized = false;
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent )
-          :QLineEdit( string, parent ),d(new KLineEditPrivate)
+          :QLineEdit( string, parent ), d(new KLineEditPrivate)
 {
     init();
 }
 
-KLineEdit::KLineEdit( QWidget *parent, const QString &msg )
-          :QLineEdit( parent ),d(new KLineEditPrivate)
+KLineEdit::KLineEdit( QWidget *parent )
+          :QLineEdit( parent ), d(new KLineEditPrivate)
 {
-	if( !msg.isEmpty())
-		d->enableClickMsg = true;	
     init();
 }
 
@@ -153,9 +151,9 @@ void KLineEdit::init()
       d->previousHighlightColor=p.color(QPalette::Normal,QColorGroup::Highlight);
 }
 
-QString KLineEdit::clickMessage() const 
-{ 
-	return d->clickMessage; 
+QString KLineEdit::clickMessage() const
+{
+    return d->clickMessage;
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -320,11 +318,11 @@ bool KLineEdit::isSqueezedTextEnabled() const
 
 void KLineEdit::setText( const QString& text )
 {
-	if( d->enableClickMsg )
-	{	
-  		d->drawClickMsg = text.isEmpty();
-  		repaint();
-	}	
+    if( d->enableClickMsg )
+    {
+          d->drawClickMsg = text.isEmpty();
+          repaint();
+    }
     if( d->enableSqueezedText && isReadOnly() )
     {
         d->squeezedText = text;
@@ -707,7 +705,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
                 if ( d->completionBox )
                   d->completionBox->setCancelledText( txt );
-	
+
                 if ( emitSignals() )
                   emit completion( txt ); // emit when requested...
 
@@ -888,16 +886,15 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
         shortAutoCompletionAction = subMenu->addAction( i18n("Short Automatic") );
         popupAutoCompletionAction = subMenu->addAction( i18n("Dropdown List && Automatic"));
 
-	
-	//subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
+        //subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
 
-	shellCompletionAction->setCheckable(true);
-	noCompletionAction->setCheckable(true);
-	popupCompletionAction->setCheckable(true);
-	autoCompletionAction->setCheckable(true);
-	shortAutoCompletionAction->setCheckable(true);
-	popupAutoCompletionAction->setCheckable(true);
-	
+        shellCompletionAction->setCheckable(true);
+        noCompletionAction->setCheckable(true);
+        popupCompletionAction->setCheckable(true);
+        autoCompletionAction->setCheckable(true);
+        shortAutoCompletionAction->setCheckable(true);
+        popupAutoCompletionAction->setCheckable(true);
+
         KGlobalSettings::Completion mode = completionMode();
         noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
         shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
@@ -927,40 +924,40 @@ void KLineEdit::completionMenuActivated( QAction  *act)
 
     if( act == noCompletionAction )
     {
-	 setCompletionMode( KGlobalSettings::CompletionNone );
+        setCompletionMode( KGlobalSettings::CompletionNone );
     }
     else if( act ==  shellCompletionAction)
     {
-	    setCompletionMode( KGlobalSettings::CompletionShell );
-    } 
+        setCompletionMode( KGlobalSettings::CompletionShell );
+    }
     else if( act == autoCompletionAction)
     {
-	    setCompletionMode( KGlobalSettings::CompletionAuto );
+        setCompletionMode( KGlobalSettings::CompletionAuto );
     }
     else if( act == popupCompletionAction)
     {
-	    setCompletionMode( KGlobalSettings::CompletionPopup );
+        setCompletionMode( KGlobalSettings::CompletionPopup );
     }
     else if( act == shortAutoCompletionAction)
     {
-	    setCompletionMode( KGlobalSettings::CompletionMan );
+        setCompletionMode( KGlobalSettings::CompletionMan );
     }
     else if( act == popupAutoCompletionAction)
     {
-	   	setCompletionMode( KGlobalSettings::CompletionPopupAuto );
+        setCompletionMode( KGlobalSettings::CompletionPopupAuto );
     }
     else if( act == defaultAction )
     {
-	   setCompletionMode( KGlobalSettings::completionMode() );
+        setCompletionMode( KGlobalSettings::completionMode() );
     }
     else
-	    return;
-    
+        return;
+
     if ( oldMode != completionMode() )
     {
         if ( (oldMode == KGlobalSettings::CompletionPopup ||
               oldMode == KGlobalSettings::CompletionPopupAuto ) &&
-              d->completionBox && d->completionBox->isVisible() )
+             d->completionBox && d->completionBox->isVisible() )
             d->completionBox->hide();
         emit completionModeChanged( completionMode() );
     }
@@ -1330,42 +1327,42 @@ bool KLineEdit::autoSuggest() const
 
 void KLineEdit::paintEvent( QPaintEvent *ev )
 {
-  QLineEdit::paintEvent( ev );
+    QLineEdit::paintEvent( ev );
 
-  if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() ) {
-	QPainter p( this );
-    QPen tmp = p.pen();
-    p.setPen( palette().color( QPalette::Disabled, QColorGroup::Text ) );
-    QRect cr = contentsRect();
-    p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
-    p.setPen( tmp );
-  }
+    if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() ) {
+        QPainter p( this );
+        QPen tmp = p.pen();
+        p.setPen( palette().color( QPalette::Disabled, QColorGroup::Text ) );
+        QRect cr = contentsRect();
+        p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
+        p.setPen( tmp );
+    }
 }
 
 void KLineEdit::focusInEvent( QFocusEvent *ev )
 {
-  if ( d->enableClickMsg && d->drawClickMsg )
-  {
-    d->drawClickMsg = false;
-    repaint();
-  }
-  QLineEdit::focusInEvent( ev );
+    if ( d->enableClickMsg && d->drawClickMsg )
+    {
+        d->drawClickMsg = false;
+        repaint();
+    }
+    QLineEdit::focusInEvent( ev );
 }
 
 void KLineEdit::focusOutEvent( QFocusEvent *ev )
 {
-  if ( d->enableClickMsg && text().isEmpty() )
-  {
-    d->drawClickMsg = true;
-    repaint();
-  }
-  QLineEdit::focusOutEvent( ev );
+    if ( d->enableClickMsg && text().isEmpty() )
+    {
+        d->drawClickMsg = true;
+        repaint();
+    }
+    QLineEdit::focusOutEvent( ev );
 }
 
 void KLineEdit::setClickMessage( const QString &msg )
 {
-  d->clickMessage = msg;
-  repaint();
+    d->clickMessage = msg;
+    repaint();
 }
 
 void KLineEdit::virtual_hook( int id, void* data )
