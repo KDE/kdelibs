@@ -1180,7 +1180,7 @@ void KDialog::restoreDialogSize( KConfigBase *cfg )
 
 
 
-void KDialog::saveDialogSize( KConfigBase* config, QFlags<KConfigBase::WriteConfigFlag> options ) const
+void KDialog::saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options ) const
 {
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
