@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QHash>
+#include <QSet>
 #include <qfile.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
@@ -36,7 +36,7 @@ public:
   bool readExportsFile();
   bool findExportsFile();
   
-  QHash<QString,bool> sharedPaths;
+  QSet<QString> sharedPaths;
   QString exportsFile;
 };
 
@@ -147,8 +147,7 @@ bool KNFSSharePrivate::readExportsFile() {
     if ( !path.endsWith(QLatin1String("/")) )
              path += QLatin1Char('/');
 
-    bool b = true;
-    sharedPaths.insert(path,&b);
+    sharedPaths.insert(path);
   }
 
   f.close();
@@ -178,19 +177,12 @@ bool KNFSShare::isDirectoryShared( const QString & path ) const {
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
-  
-  return d->sharedPaths.find(fixedPath) > 0;
+
+  return d->sharedPaths.contains(fixedPath);
 }
 
 QStringList KNFSShare::sharedDirectories() const {
-  QStringList result;
-  QHash<QString, bool>::const_iterator i = d->sharedPaths.constBegin();
-  while (i != d->sharedPaths.constEnd())
-  {
-        result << i.key();
-  		++i;
-  }
-  return result;
+  return d->sharedPaths.values();
 }
 
 QString KNFSShare::exportsPath() const {
@@ -202,18 +194,18 @@ QString KNFSShare::exportsPath() const {
 void KNFSShare::slotFileChange( const QString & path ) {
   if (path == d->exportsFile)
      d->readExportsFile();
-     
-  emit changed();     
+
+  emit changed();
 }
 
 KNFSShare* KNFSShare::_instance = 0L; 
 static KStaticDeleter<KNFSShare> ksdNFSShare;
 
 KNFSShare* KNFSShare::instance() {
-  if (! _instance ) 
+  if (! _instance )
       _instance = ksdNFSShare.setObject(_instance, new KNFSShare());
-      
-  return _instance;      
+
+  return _instance;
 }
 
 #include "knfsshare.moc"
