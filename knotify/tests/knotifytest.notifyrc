@@ -1,6 +1,7 @@
 [Global]
 IconName=knotifytest
 Comment=Test for Knotify
+Version=4
 
 [Context/group]
 Name=Group
