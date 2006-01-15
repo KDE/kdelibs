@@ -21,7 +21,7 @@
 #define KMWIZARD_H
 
 #include <qdialog.h>
-#include <q3intdict.h>
+#include <QMultiHash>
 #include <QStack>
 #include <kdelibs_export.h>
 
@@ -80,7 +80,7 @@ protected slots:
 	void slotHelp();
 
 private:
-	Q3IntDict<KMWizardPage>	m_pagepool;
+	QMultiHash<int,KMWizardPage*>	m_pagepool;
 	QStack<int>	m_pagestack;
 
 	QStackedWidget		*m_stack;

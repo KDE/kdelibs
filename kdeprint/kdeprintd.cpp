@@ -104,12 +104,13 @@ KDEPrintd::KDEPrintd(const QByteArray& obj)
 : KDEDModule(obj)
 {
 	m_processpool.setAutoDelete(true);
-	m_windows.setAutoDelete(false);
 	m_requestsPending.setAutoDelete( true );
 }
 
 KDEPrintd::~KDEPrintd()
 {
+	qDeleteAll(m_windows);
+	m_windows.clear();
 }
 
 int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
@@ -195,7 +196,7 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 
 void KDEPrintd::statusMessage(const QString& msg, int pid, const QString& appName)
 {
-	StatusWindow	*w = m_windows.find(pid);
+	StatusWindow	*w = m_windows.value(pid);
 	if (!w && !msg.isEmpty())
 	{
 		w = new StatusWindow(pid);

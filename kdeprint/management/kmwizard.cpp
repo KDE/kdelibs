@@ -59,7 +59,6 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	m_inclusive = true;
 	m_printer = new KMPrinter();
 
-	m_pagepool.setAutoDelete(false);
 
 	m_stack = new QStackedWidget(this);
 	m_next = new KPushButton(i18n("&Next >"), this);
@@ -135,6 +134,8 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 
 KMWizard::~KMWizard()
 {
+	qDeleteAll(m_pagepool);
+	m_pagepool.clear();
 	delete m_printer;
 }
 
@@ -179,14 +180,14 @@ void KMWizard::configure(int start, int end, bool inclusive)
 
 void KMWizard::setNextPage(int page, int next)
 {
-	KMWizardPage	*p = m_pagepool.find(page);
+	KMWizardPage	*p = m_pagepool.value(page);
 	if (p)
 		p->setNextPage(next);
 }
 
 void KMWizard::setCurrentPage(int ID, bool back)
 {
-	KMWizardPage	*page = m_pagepool.find(ID);
+	KMWizardPage	*page = m_pagepool.value(ID);
 	if (!page)
 	{
 		KMessageBox::error(this,i18n("Unable to find the requested page."),i18n("Add Printer Wizard"));

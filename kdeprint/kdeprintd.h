@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <q3ptrdict.h>
 #include <qpointer.h>
-#include <q3intdict.h>
+#include <QMultiHash>
 
 class KPrintProcess;
 class KProcess;
@@ -59,7 +59,7 @@ protected:
 private:
 	class Request;
 	Q3PtrList<KPrintProcess>	m_processpool;
-	Q3IntDict<StatusWindow>	m_windows;
+	QMultiHash<int,StatusWindow*>	m_windows;
 	Q3PtrList<Request>       m_requestsPending;
 };
 

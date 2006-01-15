@@ -20,7 +20,7 @@
 #ifndef KMTHREADJOB_H
 #define KMTHREADJOB_H
 
-#include <q3intdict.h>
+#include <QMultiHash>
 #include <qobject.h>
 
 class KMJob;
@@ -47,7 +47,7 @@ protected:
 	bool checkJob(int ID);
 
 private:
-	Q3IntDict<KMJob>	m_jobs;
+	QMultiHash<int,KMJob*>	m_jobs;
 };
 
 #endif

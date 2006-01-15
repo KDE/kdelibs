@@ -35,11 +35,12 @@
 KMThreadJob::KMThreadJob(QObject *parent)
 : QObject(parent)
 {
-	m_jobs.setAutoDelete(true);
 }
 
 KMThreadJob::~KMThreadJob()
 {
+	qDeleteAll(m_jobs);
+	m_jobs.clear();
 }
 
 QString KMThreadJob::jobFile()
@@ -54,9 +55,12 @@ bool KMThreadJob::saveJobs()
 	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		Q3IntDictIterator<KMJob>	it(m_jobs);
-		for (;it.current();++it)
-			t << it.current()->id() << CHARSEP << it.current()->name() << CHARSEP << it.current()->printer() << CHARSEP << it.current()->owner() << CHARSEP << it.current()->size() << endl;
+		QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
+		while (it != m_jobs.constEnd()){
+			KMJob *tmpJob = it.value();
+			t << tmpJob->id() << CHARSEP << tmpJob->name() << CHARSEP << tmpJob->printer() << CHARSEP << tmpJob->owner() << CHARSEP << tmpJob->size() << endl;
+			++it;
+		}
 		return true;
 	}
 	return false;
@@ -106,7 +110,7 @@ bool KMThreadJob::checkJob(int ID)
 
 KMJob* KMThreadJob::findJob(int ID)
 {
-	return m_jobs.find(ID);
+	return m_jobs.value(ID);
 }
 
 KMJob* KMThreadJob::findJob(const QString& uri)
@@ -115,7 +119,7 @@ KMJob* KMThreadJob::findJob(const QString& uri)
 	{
 		int	pid = uri.mid(6).toInt();
 		if (pid > 0)
-			return m_jobs.find(pid);
+			return m_jobs.value(pid);
 	}
 	return NULL;
 }
@@ -161,10 +165,11 @@ void KMThreadJob::createJob(KMJob *job)
 void KMThreadJob::updateManager(KMJobManager *mgr)
 {
 	loadJobs();
-	Q3IntDictIterator<KMJob>	it(m_jobs);
-	for (;it.current();++it)
+	QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
+	while (it != m_jobs.constEnd())
 	{
-		KMJob	*job = new KMJob(*(it.current()));
+		KMJob	*job = new KMJob(*(it.value()));
 		mgr->addJob(job);
+		++it;
 	}
 }
