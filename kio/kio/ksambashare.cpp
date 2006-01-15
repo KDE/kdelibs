@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QHash>
+#include <QSet>
 #include <qfile.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
@@ -37,7 +37,7 @@ public:
   bool findSmbConf();
   bool load();
   
-  QHash<QString,bool> sharedPaths;
+  QSet<QString> sharedPaths;
   QString smbConf;
 };
 
@@ -156,16 +156,15 @@ bool KSambaSharePrivate::readSmbConf() {
         // Handle quotation marks
         if ( value[0] == '"' )
           value.remove(0,1);
-         
+
         if ( value[value.length()-1] == '"' )
-          value.truncate(value.length()-1);        
-        
+          value.truncate(value.length()-1);
+
         // Normalize path
         if ( value[value.length()-1] != '/' )
              value += '/';
-             
-        bool b = true;             
-        sharedPaths.insert(value,&b);
+
+        sharedPaths.insert(value);
         kdDebug(7000) << "KSambaShare: Found path: " << value << endl;
       }
     }
@@ -203,19 +202,12 @@ bool KSambaShare::isDirectoryShared( const QString & path ) const {
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
-  
-  return d->sharedPaths.find(fixedPath) > 0;
+
+  return d->sharedPaths.contains(fixedPath);
 }
 
 QStringList KSambaShare::sharedDirectories() const {
-  QStringList result;
-  QHash<QString, bool>::const_iterator i = d->sharedPaths.constBegin();
-  while (i != d->sharedPaths.constEnd()){ 
-		result << i.key();
-  		++i;
-  }
-      
-  return result;       
+  return d->sharedPaths.values();
 }
 
 void KSambaShare::slotFileChange( const QString & path ) {
@@ -224,8 +216,8 @@ void KSambaShare::slotFileChange( const QString & path ) {
   else
   if (path == FILESHARECONF)
      d->load();
-              
-  emit changed();     
+
+  emit changed();
 }
 
 KSambaShare* KSambaShare::_instance = 0L; 
@@ -234,8 +226,8 @@ static KStaticDeleter<KSambaShare> ksdSambaShare;
 KSambaShare* KSambaShare::instance() {
   if (! _instance ) 
       _instance = ksdSambaShare.setObject(_instance, new KSambaShare());
-      
-  return _instance;      
+
+  return _instance;
 }
 
 #include "ksambashare.moc"
