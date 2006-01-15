@@ -1226,7 +1226,7 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    myActionCollection = new KActionCollection( this );
+    myActionCollection = new KActionCollection( topLevelWidget(), this );
     myActionCollection->setObjectName( "KDirOperator::myActionCollection" );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
