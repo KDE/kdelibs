@@ -59,17 +59,19 @@
 
 struct KNotification::Private
 {
+	QString eventId;
+	unsigned int id;
+	int ref;
+	
 	QWidget *widget;
 	QString text;
 	QStringList actions;
-	int level;
-	QString eventId;
-	QString title;
-	unsigned int id;
+	QPixmap pixmap;
+	ContextList contexts;
+	QString appname;
+
 	
-	int ref;
-	
-	Private() : widget(0l) , id(0), ref(1) {}
+	Private() :  id(0), ref(1) , widget(0l) {}
 };
 
 KNotification::KNotification(QObject *parent) :
@@ -92,11 +94,6 @@ QString KNotification::eventId() const
 QString KNotification::text() const
 {
 	return d->text;
-}
-
-QString KNotification::title() const
-{
-	return d->title;
 }
 
 QWidget *KNotification::widget() const
@@ -161,13 +158,15 @@ void KNotification::raiseWidget(QWidget *w)
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
 			const QPixmap& pixmap, QWidget *widget, const QStringList &actions,
-			ContextList contexts, unsigned int flags, const KInstance *instance)
+			ContextList contexts, NotificationFlags flags, const KInstance *instance)
 {
 	KNotification *notify=new KNotification(widget);
 	notify->d->widget=widget;
 	notify->d->text=text;
 	notify->d->actions=actions;
 	notify->d->eventId=eventid;
+	notify->d->contexts=contexts;
+	notify->d->pixmap=pixmap;
 
 	QString appname; 
 
@@ -177,27 +176,22 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 		appname = QString::fromLatin1(instance->instanceName());
 	else
 		appname = QString::fromLatin1(kapp->instanceName());
+	
+	notify->d->appname=appname;
 
-	notify->d->id=KNotificationManager::self()->notify( notify , pixmap , notify->d->actions , contexts , appname );
-	if(notify->d->id>0)
-		notify->ref();
-//	kdDebug() << k_funcinfo << d->id << endl;
-
-	if(flags & CloseOnTimeout)
+	if(! flags & NoTimeout)
 	{
 		QTimer::singleShot(6*1000, notify, SLOT(close()));
 	}
 
-	
-	//after a small timeout, the notification will be deleted if all presentation are finished
-	QTimer::singleShot(1000, notify, SLOT(deref()));
+	QTimer::singleShot(0,notify,SLOT(sendEvent()));
 	
 	return notify;
 }
 
 
 KNotification *KNotification::event( StandardEvent eventid , const QString& text,
-			const QPixmap& pixmap, QWidget *widget, unsigned int flags)
+		const QPixmap& pixmap, QWidget *widget, NotificationFlags flags)
 {
 	QString message;
 	switch ( eventid ) {
@@ -233,6 +227,19 @@ void KNotification::deref()
 void KNotification::beep( const QString & reason, QWidget * widget )
 {
 	event( QLatin1String("beep"), reason, QPixmap(), widget , QStringList() , ContextList() , CloseOnTimeout | DefaultEvent );
+}
+
+void KNotification::sendEvent()
+{
+	d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , d->appname );
+	if(d->id>0)
+		ref();
+//	kdDebug() << k_funcinfo << d->id << endl;
+	
+	//after a small timeout, the notification will be deleted if all presentation are finished
+	QTimer::singleShot(1000, this, SLOT(deref()));
+
+
 }
 
 #include "knotification.moc"

@@ -75,7 +75,6 @@ ASYNC KNotificationManager::notificationActivated( int id, int action )
 	if(d->notifications.contains(id))
 	{
 		KNotification *n = d->notifications[id];
-		kdDebug() << k_funcinfo << n->title() << endl;
 		d->notifications.remove(id);
 		n->activate( action );
 	}

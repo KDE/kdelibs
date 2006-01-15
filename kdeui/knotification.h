@@ -172,7 +172,7 @@ public:
 	 */
 	typedef QList< QPair<QString,QString> > ContextList;
 
-	enum NotificationFlags
+	enum NotificationFlag
 	{
 		/**
 		 * When the notification is activated, raise the notification's widget.
@@ -183,9 +183,18 @@ public:
 		RaiseWidgetOnActivation=0x01,
 
 		/**
-		 * The notification will be automatically closed after a timeout.
+		 * The notification will be automatically closed after a timeout. (this is the default)
 		 */
-		CloseOnTimeout=0x02,
+		CloseOnTimeout=0x00,
+		
+		/**
+		 * The notification will NOT be automatically closed after a timeout.
+		 * If you don't set this flag, after a timeout, the notification will be closed.
+		 */
+		NoTimeout=0x02,
+
+		
+		
 		/**
 		 * The notification will be automatically closed if the widget() becomes
 		 * activated.
@@ -203,6 +212,8 @@ public:
 		DefaultEvent=0x08
 		
 	};
+	
+	Q_DECLARE_FLAGS(NotificationFlags , NotificationFlag);
 
 	/**
 	 * default events you can use in the event function
@@ -279,6 +290,11 @@ public slots:
 	 */
 	void deref();
 
+private slots:
+	/**
+	 * emit the event to the deamon
+	 */
+	void sendEvent();
 
 private:
 	struct Private;
@@ -312,13 +328,13 @@ public:
 	 * @param widget is a widget where the notification reports to
 	 * @param actions is a list of action texts.
 	 * @param contexts is the lists of contexts, see ContextList
-	 * @param flags is a bitmask of KNotificationFlags  
+	 * @param flags is a bitmask of NotificationFlag
      * @param instance used to determine the location of the config file.  by default, kapp is used
 	 */
 	static KNotification *event( const QString& eventId , const QString& text=QString(),
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
 			const QStringList &actions=QStringList(), ContextList contexts=ContextList() ,
-			unsigned int flags=CloseOnTimeout , const KInstance *instance=0l );
+			NotificationFlags flags=CloseOnTimeout , const KInstance *instance=0l );
 
 	/**
 	 * @brief emit standard an event
@@ -330,11 +346,11 @@ public:
 	 * @param text is the text of the notification to show in the popup.
 	 * @param pixmap is a picture which may be shown in the popup.
 	 * @param widget is a widget where the notification reports to
-	 * @param flags is a bitmask of KNotificationFlags  
+	 * @param flags is a bitmask of NotificationFlag 
 	 */
 	static KNotification *event( StandardEvent eventId , const QString& text=QString(),
 								 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-								unsigned int flags=CloseOnTimeout);
+								 NotificationFlags flags=CloseOnTimeout);
 	
 	/**
 	 * This is a simple substitution for QApplication::beep()
@@ -353,16 +369,8 @@ public:
 	 * @return the notification text
 	 */
 	QString text() const ;
-	
-	/**
-	 * @return the notification title
-	 */
-	QString title() const;
-
-
-public:	
 };
 
-
+Q_DECLARE_OPERATORS_FOR_FLAGS(KNotification::NotificationFlags)
 
 #endif
