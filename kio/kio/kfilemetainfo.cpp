@@ -981,7 +981,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
     //kdDebug(7033) << "plugin() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
 
     if ( !protocol.isEmpty() ) {
-        CachedPluginInfo *cache = m_plugins.find( protocol ).value();
+        CachedPluginInfo *cache = m_plugins.value( protocol );
         if ( cache && cache->plugin ) {
             return cache->plugin;
         }
@@ -992,7 +992,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
         }
     }
 
-    CachedPluginInfo *cache = m_plugins.find( mimeType ).value();
+    CachedPluginInfo *cache = m_plugins.value( mimeType );
     if ( cache ) {
         return cache->plugin;
     }
@@ -1045,27 +1045,27 @@ const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mi
 {
     //kdDebug(7033) << "mimeTypeInfo() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
     if ( !protocol.isEmpty() ) {
-        CachedPluginInfo *cache = m_plugins.find( protocol ).value();
+        CachedPluginInfo *cache = m_plugins.value( protocol );
         if ( cache && cache->mimeTypeInfo ) {
             return cache->mimeTypeInfo;
         }
 
         if ( !cache ) {
             loadAndRegisterPlugin( QString(), protocol );
-            cache = m_plugins.find( protocol ).value();
+            cache = m_plugins.value( protocol );
             if ( cache && cache->mimeTypeInfo ) {
                 return cache->mimeTypeInfo;
             }
         }
     }
 
-    CachedPluginInfo *cache = m_plugins.find( mimeType ).value();
+    CachedPluginInfo *cache = m_plugins.value( mimeType );
     if ( cache ) {
         return cache->mimeTypeInfo;
     }
 
     loadAndRegisterPlugin( mimeType, QString() );
-    cache = m_plugins.find( mimeType ).value();
+    cache = m_plugins.value( mimeType );
     if ( cache ) {
         return cache->mimeTypeInfo;
     }
@@ -1076,7 +1076,7 @@ KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
     const QString& mimeType )
 {
 
-    KFileMimeTypeInfo *info = m_pendingMimetypeInfos.find( mimeType ).value();
+    KFileMimeTypeInfo *info = m_pendingMimetypeInfos.value( mimeType );
     Q_ASSERT( !info );
     if ( !info )
     {
@@ -1453,7 +1453,7 @@ KFileMimeTypeInfo::~KFileMimeTypeInfo()
 
 const KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::groupInfo( const QString& group ) const
 {
-    return m_groups.find( group ).value();
+    return m_groups.value( group );
 }
 
 KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::addGroupInfo(
@@ -1539,7 +1539,7 @@ KFileMimeTypeInfo::GroupInfo::~GroupInfo()
 
 const KFileMimeTypeInfo::ItemInfo * KFileMimeTypeInfo::GroupInfo::itemInfo( const QString& key ) const
 {
-    ItemInfo* item = m_itemDict.find( key ).value();
+    ItemInfo* item = m_itemDict.value( key );
 
     // if we the item isn't found and variable keys are supported, we need to
     // return the default variable key iteminfo.
