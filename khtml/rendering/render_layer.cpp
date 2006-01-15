@@ -1138,8 +1138,8 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
 // Sort the buffer from lowest z-index to highest.  The common scenario will have
 // most z-indices equal, so we optimize for that case (i.e., the list will be mostly
 // sorted already).
-static void sortByZOrder(Q3PtrVector<RenderLayer>* buffer,
-                         Q3PtrVector<RenderLayer>* mergeBuffer,
+static void sortByZOrder(QVector<RenderLayer*>* buffer,
+                         QVector<RenderLayer*>* mergeBuffer,
                          uint start, uint end)
 {
     if (start >= end)
@@ -1226,18 +1226,18 @@ void RenderLayer::updateZOrderLists()
 
     // Sort the two lists.
     if (m_posZOrderList) {
-        Q3PtrVector<RenderLayer> mergeBuffer;
+        QVector<RenderLayer*> mergeBuffer;
         sortByZOrder(m_posZOrderList, &mergeBuffer, 0, m_posZOrderList->count());
     }
     if (m_negZOrderList) {
-        Q3PtrVector<RenderLayer> mergeBuffer;
+        QVector<RenderLayer*> mergeBuffer;
         sortByZOrder(m_negZOrderList, &mergeBuffer, 0, m_negZOrderList->count());
     }
 
     m_zOrderListsDirty = false;
 }
 
-void RenderLayer::collectLayers(Q3PtrVector<RenderLayer>*& posBuffer, Q3PtrVector<RenderLayer>*& negBuffer)
+void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<RenderLayer*>*& negBuffer)
 {
     // FIXME: A child render object or layer could override visibility.  Don't remove this
     // optimization though until RenderObject's nodeAtPoint is patched to understand what to do
@@ -1246,11 +1246,11 @@ void RenderLayer::collectLayers(Q3PtrVector<RenderLayer>*& posBuffer, Q3PtrVecto
         return;
 
     // Determine which buffer the child should be in.
-    Q3PtrVector<RenderLayer>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
+    QVector<RenderLayer*>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
 
     // Create the buffer if it doesn't exist yet.
     if (!buffer)
-        buffer = new Q3PtrVector<RenderLayer>();
+        buffer = new QVector<RenderLayer*>();
 
     // Resize by a power of 2 when our buffer fills up.
     if (buffer->count() == buffer->size())
@@ -1325,7 +1325,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
     l->updateZOrderLists();
 
     bool shouldPaint = l->intersectsDamageRect(layerBounds, damageRect);
-    Q3PtrVector<RenderLayer>* negList = l->negZOrderList();
+    QVector<RenderLayer*>* negList = l->negZOrderList();
     if (shouldPaint && negList && negList->count() > 0)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, -1, indent);
 
@@ -1337,7 +1337,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
     if (shouldPaint)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
 
-    Q3PtrVector<RenderLayer>* posList = l->posZOrderList();
+    QVector<RenderLayer*>* posList = l->posZOrderList();
     if (posList) {
         for (unsigned i = 0; i != posList->count(); ++i)
             writeLayers(ts, rootLayer, posList->at(i), paintDirtyRect, indent);
