@@ -36,7 +36,8 @@ KFileMetaPreview::~KFileMetaPreview()
 
 void KFileMetaPreview::initPreviewProviders()
 {
-    m_previewProviders.clear();
+    qDeleteAll(m_previewProviders);
+	m_previewProviders.clear();
     // hardcoded so far
 
     // image previews
@@ -62,7 +63,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     if ( mimeType == "inode/directory" )
         return 0L;
 
-    KPreviewWidgetBase *provider = m_previewProviders.find( mimeType );
+    KPreviewWidgetBase *provider = m_previewProviders.find( mimeType ).value();
     if ( provider )
         return provider;
 
@@ -87,7 +88,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     }
 
     // with the new mimetypes from the audio-preview, try again
-    provider = m_previewProviders.find( mimeType );
+    provider = m_previewProviders.find( mimeType ).value();
     if ( provider )
         return provider;
 
@@ -95,7 +96,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     int index = mimeType.indexOf( '/' );
     if ( index > 0 )
     {
-        provider = m_previewProviders.find( mimeType.left( index + 1 ) + "*" );
+        provider = m_previewProviders.find( mimeType.left( index + 1 ) + "*" ).value();
         if ( provider )
             return provider;
     }
@@ -107,7 +108,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
         QString parentMimeType = mimeInfo->parentMimeType();
         while ( !parentMimeType.isEmpty() )
         {
-            provider = m_previewProviders.find( parentMimeType );
+            provider = m_previewProviders.find( parentMimeType ).value();
             if ( provider )
                 return provider;
 
@@ -123,11 +124,11 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
         {
             if ( textProperty.toBool() )
             {
-                provider = m_previewProviders.find( "text/plain" );
+                provider = m_previewProviders.find( "text/plain" ).value();
                 if ( provider )
                     return provider;
 
-                provider = m_previewProviders.find( "text/*" );
+                provider = m_previewProviders.find( "text/*" ).value();
                 if ( provider )
                     return provider;
             }
@@ -169,12 +170,14 @@ void KFileMetaPreview::addPreviewProvider( const QString& mimeType,
     m_previewProviders.insert( mimeType, provider );
 }
 
+
 void KFileMetaPreview::clearPreviewProviders()
 {
-    Q3DictIterator<KPreviewWidgetBase> it( m_previewProviders );
-    for ( ; it.current(); ++it )
-        m_stack->removeWidget( it.current() );
+	QHash<QString, KPreviewWidgetBase*>::const_iterator i = m_previewProviders.constBegin();
+	while (i != m_previewProviders.constEnd())
+		m_stack->removeWidget(i.value());
 
+	qDeleteAll(m_previewProviders);
     m_previewProviders.clear();
 }
 

@@ -9,7 +9,7 @@
 #ifndef KFILEMETAPREVIEW_H
 #define KFILEMETAPREVIEW_H
 
-#include <q3dict.h>
+#include <QHash>
 #include <QStackedWidget>
 #include <kpreviewwidgetbase.h>
 #include <kurl.h>
@@ -40,7 +40,7 @@ private:
     void initPreviewProviders();
 
     QStackedWidget *m_stack;
-    Q3Dict<KPreviewWidgetBase> m_previewProviders;
+    QHash<QString,KPreviewWidgetBase*> m_previewProviders;
     bool haveAudioPreview;
 
     // may return 0L
