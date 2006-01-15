@@ -368,7 +368,7 @@ namespace KIO {
         /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
-         * a progress bar very easily. (see KProgress).
+         * a progress bar very easily. (see KProgressBar).
 	 * Note that this signal is not emitted for finished jobs.
 	 * @param job the job that emitted this signal
 	 * @param percent the percentage

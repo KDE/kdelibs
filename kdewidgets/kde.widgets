@@ -120,9 +120,10 @@ ToolTip=Safe Password LineEdit (KDE)
 WhatsThis=A KLineEdit that is safe for prompting the user for passwords
 Group=Input (KDE)
 
-[KProgress]
+[KProgressBar]
+IncludeFile=kprogressbar.h
 ToolTip=Progress Bar (KDE)
-WhatsThis=An improved progress bar for KDE that uses QFrame and QRangeControl
+WhatsThis=An improved progress bar for KDE that uses QProgressBar
 Group=Display (KDE)
 
 [KPushButton]

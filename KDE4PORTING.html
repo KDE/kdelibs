@@ -608,7 +608,20 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 
 <h4>KPasswordDialog</h4>
 <ul>
-		<li>kpassdlg.h was renamed kpassworddialog.h.</li>
+<li>kpassdlg.h was renamed kpassworddialog.h.</li>
+</ul>
+
+<H4>KProgress</H4>
+<ul>
+<li>KProgress has been renamed to KProgressBar (#include &lt;kprogressbar.h&gt; instead of #include &lt;kprogress.h&gt;)</li>
+<li>QProgressBar is mostly enough. KProgressBar only necessary if setFormat(const QString &amp; format) or advance(int offset) is needed.</li>
+<li>KProgressBar inherits from QProgressBar. QProgressBar has changed a lot in Qt4 ( setTotalSteps(totalSteps) -&gt; setRange(0, totalSteps), setProgress -&gt; setValue, percentageChanged -&gt; valueChanged ). For more details see QProgressBar class reference.</li>
+</ul>
+
+<H4>KProgressDialog</H4>
+<ul>
+<li>#include &lt;kprogressbar.h&gt; instead of #include &lt;kprogress.h&gt;</li>
+<li>See KProgress API changes</li>
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
@@ -764,8 +777,7 @@ in the drop/paste side.</li>
 
 <H4>BrowserRun</H4>
 <ul>
-		<li>BrowserRun::isExecutable obsoleted by KRun::isExecutable</li>
-</li>
+<li>BrowserRun::isExecutable obsoleted by KRun::isExecutable</li>
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>

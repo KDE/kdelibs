@@ -510,7 +510,7 @@ signals:
 
   /**
    * Progress signal showing the overall progress of the KDirLister.
-   * This allows using a progress bar very easily. (see KProgress)
+   * This allows using a progress bar very easily. (see KProgressBar)
    * @param percent the progress in percent
    */
   void percent( int percent );

@@ -1,24 +1,24 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <qwidget.h>
-//Added by qt3to4:
-#include <QTimerEvent>
-#include "kprogress.h"
 
+#include <QWidget>
+#include <QTimerEvent>
+
+#include "kprogressbar.h"
 
 class MyWidget : public QWidget {
 public:
 	MyWidget() : QWidget()
 	{
 		setFixedSize(440, 80);
-		Progress = new KProgress(this);
+		Progress = new KProgressBar(this);
 		Progress->resize(400, 40);
 		Progress->move(20, 20);
 		startTimer(50);
 	}
 	
 private:
-	KProgress *Progress;
+	KProgressBar *Progress;
 	
 	void timerEvent(QTimerEvent *);
 };
@@ -26,10 +26,9 @@ private:
 void MyWidget::timerEvent(QTimerEvent *)
 {
   static enum { fwd, back } direction = fwd;
-  //static KProgress::BarStyle style = KProgress::Solid;
   if (direction == fwd) 
 	{
-	  if (Progress->value() == Progress->maxValue())
+	  if (Progress->value() == Progress->maximum())
 		direction = back;
 	  else
 		Progress->advance(1);
@@ -39,8 +38,6 @@ void MyWidget::timerEvent(QTimerEvent *)
 	  if (Progress->value() == 0 /*Progress->minValue()*/) 
 		{
 				direction = fwd;
-				//style = (style == KProgress::Solid)? KProgress::Blocked : KProgress::Solid;
-				//Progress->setBarStyle(style);
 		} 
 	  else
 		Progress->advance(-1);
