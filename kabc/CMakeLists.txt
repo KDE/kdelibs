@@ -12,6 +12,26 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${KDE
 
 ########### next target ###############
 
+add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
+COMMAND perl
+ARGS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
+)
+
+add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
+COMMAND perl
+ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
+ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
+)
+
 set(kabc_LIB_SRCS
 address.cpp
 addressbook.cpp

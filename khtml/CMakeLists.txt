@@ -72,8 +72,14 @@ install_targets(/lib/kde4 khtmlpart )
 
 ########### next target ###############
 
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
+"#include <kdelibs_export.h>\n
+extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n
+extern \"C\"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }\n" )
+
+
 set(khtmlimagepart_PART_SRCS
-imgdummy.cpp
+${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 )
 
 kde4_automoc(${khtmlimagepart_PART_SRCS})

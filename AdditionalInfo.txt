@@ -4,7 +4,6 @@ config.h.in
 kio/kssl/ksslconfig.h.in
 dcop/dcop-path.h.in
 kjs/global.h.in
-cmake/kdelibs/kjs/global.h.in
 
 .in.in-Files
 configure.in.in

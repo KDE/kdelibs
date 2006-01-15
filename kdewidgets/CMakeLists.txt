@@ -5,7 +5,6 @@ add_subdirectory( tests )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-
 ########### next target ###############
 
 set(makekdewidgets_SRCS
@@ -19,6 +18,12 @@ kde4_add_executable(makekdewidgets ${makekdewidgets_SRCS})
 target_link_libraries(makekdewidgets  ${QT_AND_KDECORE_LIBS} kdecore )
 
 install_targets(/bin makekdewidgets )
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
+COMMAND ${EXECUTABLE_OUTPUT_PATH}/makekdewidgets ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
+DEPENDS kde.widgets makekdewidgets)
+
 
 
 ########### next target ###############
