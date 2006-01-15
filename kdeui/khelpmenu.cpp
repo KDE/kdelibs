@@ -54,33 +54,56 @@ class KHelpMenuPrivate
 public:
     KHelpMenuPrivate()
     {
+        mMenu = 0;
+        mAboutApp = 0;
+        mAboutKDE = 0;
+        mBugReport = 0;
+        mHandBookAction = 0;
+        mWhatsThisAction = 0;
+        mReportBugAction = 0;
+        mAboutAppAction = 0;
+        mAboutKDEAction = 0;
     }
     ~KHelpMenuPrivate()
     {
+        delete mMenu;
+        delete mAboutApp;
+        delete mAboutKDE;
+        delete mBugReport;
     }
+
+    KMenu *mMenu;
+    KDialog *mAboutApp;
+    KAboutKDE *mAboutKDE;
+    KBugReport *mBugReport;
+
+// TODO evaluate if we use static_cast<QWidget*>(parent()) instead of mParent to win that bit of memory
+    QWidget *mParent;
+    QString mAboutAppText;
+
+    bool mShowWhatsThis;
+
+    QAction *mHandBookAction, *mWhatsThisAction, *mReportBugAction, *mAboutAppAction, *mAboutKDEAction;
 
     const KAboutData *mAboutData;
 };
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
 		      bool showWhatsThis )
-  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
-    d(new KHelpMenuPrivate)
+  : QObject(parent), d(new KHelpMenuPrivate)
 {
-  mParent = parent;
-  mAboutAppText = aboutAppText;
-  mShowWhatsThis = showWhatsThis;
+  d->mAboutAppText = aboutAppText;
+  d->mShowWhatsThis = showWhatsThis;
+  d->mParent = parent;
   d->mAboutData = 0;
 }
 
 KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 		      bool showWhatsThis, KActionCollection *actions )
-  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
-    d(new KHelpMenuPrivate)
+  : QObject(parent), d(new KHelpMenuPrivate)
 {
-  mParent = parent;
-  mShowWhatsThis = showWhatsThis;
-
+  d->mShowWhatsThis = showWhatsThis;
+  d->mParent = parent;
   d->mAboutData = aboutData;
 
   if (actions)
@@ -96,68 +119,90 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 
 KHelpMenu::~KHelpMenu()
 {
-  delete mMenu;
-  delete mAboutApp;
-  delete mAboutKDE;
-  delete mBugReport;
   delete d;
 }
 
 
 KMenu* KHelpMenu::menu()
 {
-  if( !mMenu )
+  if( !d->mMenu )
   {
     const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::instance()->aboutData();
     QString appName = (aboutData)? aboutData->programName() : qApp->applicationName();
 
-    mMenu = new KMenu();
-    connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
+    d->mMenu = new KMenu();
+    connect( d->mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->setIcon(SmallIcon("help"));
-    mMenu->setTitle(i18n("&Help"));
+    d->mMenu->setIcon(SmallIcon("help"));
+    d->mMenu->setTitle(i18n("&Help"));
 
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      mMenu->addAction(BarIconSet( "contents", KIcon::SizeSmall),
+      d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", KIcon::SizeSmall),
                      i18n("%1 &Handbook").arg(appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
       need_separator = true;
     }
 
-    if( mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
+    if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-      mMenu->addAction( SmallIconSet("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
+      d->mWhatsThisAction = d->mMenu->addAction( SmallIconSet("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       need_separator = true;
     }
 
     if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
     {
       if (need_separator)
-        mMenu->addSeparator();
-      mMenu->addAction( i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
+        d->mMenu->addSeparator();
+      d->mReportBugAction = d->mMenu->addAction( i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
       need_separator = true;
     }
 
     if (need_separator)
-      mMenu->addSeparator();
+      d->mMenu->addSeparator();
 
     if (KAuthorized::authorizeKAction("help_about_app"))
     {
-      mMenu->addAction( qApp->windowIcon(),
+      d->mAboutAppAction = d->mMenu->addAction( qApp->windowIcon(),
         i18n( "&About %1" ).arg(appName), this, SLOT( aboutApplication() ) );
     }
 
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
-      mMenu->addAction( SmallIconSet("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
+      d->mAboutKDEAction = d->mMenu->addAction( SmallIconSet("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
     }
   }
 
-  return mMenu;
+  return d->mMenu;
 }
 
+QAction *KHelpMenu::action( MenuId id ) const
+{
+  switch (id)
+  {
+    case menuHelpContents:
+      return d->mHandBookAction;
+    break;
 
+    case menuWhatsThis:
+      return d->mWhatsThisAction;
+    break;
+
+    case menuReportBug:
+      return d->mReportBugAction;
+    break;
+
+    case menuAboutApp:
+      return d->mAboutAppAction;
+    break;
+
+    case menuAboutKDE:
+      return d->mAboutKDEAction;
+    break;
+  }
+
+  return 0;
+}
 
 void KHelpMenu::appHelpActivated()
 {
@@ -173,25 +218,25 @@ void KHelpMenu::aboutApplication()
   }
   else if (d->mAboutData)
   {
-    if( !mAboutApp )
+    if( !d->mAboutApp )
     {
-      mAboutApp = new KAboutApplication( d->mAboutData, mParent, false );
-      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+      d->mAboutApp = new KAboutApplication( d->mAboutData, d->mParent, false );
+      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
-    mAboutApp->show();
+    d->mAboutApp->show();
   }
   else
   {
-    if( !mAboutApp )
+    if( !d->mAboutApp )
     {
-      mAboutApp = new KDialogBase( QString(), // Caption is defined below
+      d->mAboutApp = new KDialogBase( QString(), // Caption is defined below
 				   KDialogBase::Yes, KDialogBase::Yes,
-				   KDialogBase::Yes, mParent, "about",
+				   KDialogBase::Yes, d->mParent, "about",
 				   false, true, KStdGuiItem::ok() );
-      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
-      KHBox *hbox = new KHBox( mAboutApp );
-      mAboutApp->setMainWidget( hbox );
+      KHBox *hbox = new KHBox( d->mAboutApp );
+      d->mAboutApp->setMainWidget( hbox );
       hbox->setSpacing(KDialog::spacingHint()*3);
       hbox->setMargin(KDialog::marginHint()*1);
 
@@ -200,34 +245,34 @@ void KHelpMenu::aboutApplication()
       int size = IconSize(KIcon::Desktop);
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
-      label2->setText( mAboutAppText );
+      label2->setText( d->mAboutAppText );
 
-      mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
+      d->mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
     }
-    mAboutApp->show();
+    d->mAboutApp->show();
   }
 }
 
 
 void KHelpMenu::aboutKDE()
 {
-  if( !mAboutKDE )
+  if( !d->mAboutKDE )
   {
-    mAboutKDE = new KAboutKDE( mParent, false );
-    connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+    d->mAboutKDE = new KAboutKDE( d->mParent, false );
+    connect( d->mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }
-  mAboutKDE->show();
+  d->mAboutKDE->show();
 }
 
 
 void KHelpMenu::reportBug()
 {
-  if( !mBugReport )
+  if( !d->mBugReport )
   {
-    mBugReport = new KBugReport( mParent, false, d->mAboutData );
-    connect( mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
+    d->mBugReport = new KBugReport( d->mParent, false, d->mAboutData );
+    connect( d->mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
   }
-  mBugReport->show();
+  d->mBugReport->show();
 }
 
 
@@ -239,26 +284,26 @@ void KHelpMenu::dialogFinished()
 
 void KHelpMenu::timerExpired()
 {
-  if( mAboutKDE && !mAboutKDE->isVisible() )
+  if( d->mAboutKDE && !d->mAboutKDE->isVisible() )
   {
-    delete mAboutKDE; mAboutKDE = 0;
+    delete d->mAboutKDE; d->mAboutKDE = 0;
   }
 
-  if( mBugReport && !mBugReport->isVisible() )
+  if( d->mBugReport && !d->mBugReport->isVisible() )
   {
-    delete mBugReport; mBugReport = 0;
+    delete d->mBugReport; d->mBugReport = 0;
   }
 
-  if( mAboutApp && !mAboutApp->isVisible() )
+  if( d->mAboutApp && !d->mAboutApp->isVisible() )
   {
-    delete mAboutApp; mAboutApp = 0;
+    delete d->mAboutApp; d->mAboutApp = 0;
   }
 }
 
 
 void KHelpMenu::menuDestroyed()
 {
-  mMenu = 0;
+  d->mMenu = 0;
 }
 
 

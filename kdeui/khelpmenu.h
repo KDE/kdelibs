@@ -165,6 +165,22 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      */
     KMenu *menu();
 
+    enum MenuId
+    {
+      menuHelpContents = 0,
+      menuWhatsThis = 1,
+      menuAboutApp = 2,
+      menuAboutKDE = 3,
+      menuReportBug = 4
+    };
+
+    /**
+     * Returns the QAction * associated with the given parameter
+     * 
+     * @param action The action of which you want to get QAction * 
+     */
+    QAction *action( MenuId id ) const;
+
   public slots:
     /**
      * Opens the help page for the application. The application name is
@@ -229,17 +245,6 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * is emitted.
      */
     void showAboutApplication();
-
-  private:
-    KMenu   *mMenu;
-    KDialog  *mAboutApp;
-    KAboutKDE    *mAboutKDE;
-    KBugReport   *mBugReport;
-
-    QString      mAboutAppText;
-    QWidget      *mParent;
-
-    bool         mShowWhatsThis;
 
   protected:
     virtual void virtual_hook( int id, void* data );
