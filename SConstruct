@@ -105,6 +105,7 @@ kate
 dnssd
 kioslave
 kxmlcore
+knewstuff
 """
 
 # currently not on windows 
