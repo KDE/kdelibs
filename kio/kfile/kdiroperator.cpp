@@ -63,7 +63,7 @@
 
 
 template class Q3PtrStack<KURL>;
-template class Q3Dict<KFileItem>;
+template class QHash<QString,KFileItem*>;
 
 
 class KDirOperator::KDirOperatorPrivate
