@@ -109,7 +109,6 @@ KDEPrintd::KDEPrintd(const QByteArray& obj)
 
 KDEPrintd::~KDEPrintd()
 {
-	qDeleteAll(m_windows);
 	m_windows.clear();
 }
 
