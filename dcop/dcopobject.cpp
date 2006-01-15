@@ -49,7 +49,7 @@ public:
 
 DCOPObject::DCOPObject() : d(new Private)
 {
-    qsnprintf(ident.data(), ident.size(), "%p", this );
+    ident=QString().sprintf("%p",this).toAscii();
     objMap()->insert(ident, this );
 }
 
@@ -74,7 +74,7 @@ DCOPObject::DCOPObject(const DCOPCString &_objId)
   : ident(_objId), d(new Private)
 {
     if ( ident.isEmpty() )
-        qsnprintf(ident.data(), ident.size(), "%p", this );
+        ident=QString().sprintf("%p",this).toAscii();
     objMap()->insert(ident, this);
 }
 
