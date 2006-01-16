@@ -55,9 +55,10 @@ obj = env.kdeinitobj()
 obj.target = 'kaddprinterwizard'
 obj.source = kaddprinterwizard_sources
 obj.includes = includes
-obj.libpaths = ' '
 obj.libs = 'kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libpaths = '../../kdecore ../../kdefx ../../kdeui ../../dcop .. '
+obj.libs     = 'kdecore kdefx kdeui DCOP kdeprint_management'
 obj.execute()
 
 obj = env.kdeobj('shlib')
@@ -65,9 +66,9 @@ obj.target = 'kdeprint_management'
 obj.vnum = '6.0.2'
 obj.source = kdeprint_management_sources
 obj.includes = includes
-obj.libpaths = '.. ../kdecore ../kio ../kdeui ../dcop ../kded ../kdefx '
-obj.libs = 'kdecore kdeui DCOP kdeprint '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libpaths = '.. ../../kdecore ../../kio ../../kdeui ../../dcop ../../kded ../../kdefx ../../kio/kio '
+obj.libs = 'kdecore kdeui DCOP kdeprint kio'
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO'
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
@@ -75,16 +76,12 @@ obj = env.kdeobj('module')
 obj.target = 'kdeprint_management_module'
 obj.source = kdeprint_management_module_sources
 obj.includes = includes
-obj.libpaths = ' '
+obj.libpaths = '../../kdecore ../../kdefx ../../kdeui ../../dcop ..'
 obj.libs = 'kdecore kdeui DCOP kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
 env.bksys_insttype('KDEDATA', 'kdeprint', 'tileup.png tiledown.png side.png')
+env.bksys_insttype('KDEINCLUDE', 'kdeprint', kdeprint_headers )
 
-
-"""Unhandled Defines 
-AM_CPPFLAGS = -D_KDEPRINT_COMPILE
-kdeprintdir = $(includedir)/kdeprint
-"""

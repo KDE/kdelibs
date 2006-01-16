@@ -1,0 +1,29 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kdeprint_rlpr_sources = """
+kmconfigproxy.cpp kmproprlpr.cpp kmproxywidget.cpp kmrlprfactory.cpp
+kmrlprmanager.cpp kmrlpruimanager.cpp kmwrlpr.cpp krlprprinterimpl.cpp
+"""
+
+noinst_headers = """
+kmconfigproxy.h kmproprlpr.h kmproxywidget.h kmrlprmanager.h
+kmrlpruimanager.h kmwrlpr.h krlprprinterimpl.h
+"""
+
+includes = '#/kdeprint #/kdeprint/management '
+
+obj = env.kdeobj('module')
+obj.target = 'kdeprint_rlpr'
+obj.source = kdeprint_rlpr_sources
+obj.includes = includes
+obj.libpaths = '##/kdeprint/management '
+obj.libs = 'kdeprint_management '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'rlpr.print')
+
+

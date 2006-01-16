@@ -2,6 +2,8 @@
 #generated from kdeprint/Makefile.am by am2bksys.py
 Import('env')
 
+# Laurent ? $(CUPSSUBDIR)
+env.subdirs('management lpdunix rlpr ext filters pics tools tests')
 
 kded_kdeprintd_sources = """
 kdeprintd.cpp kdeprintd.skel kprintprocess.cpp
