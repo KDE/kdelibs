@@ -25,7 +25,7 @@
 #define KTOOLBAR_H
 
 #include <q3frame.h>
-#include <q3ptrlist.h>
+#include <QList>
 #include <q3toolbar.h>
 #include <qcombobox.h>
 #include <qmap.h>

@@ -38,7 +38,7 @@
 #include <qstyle.h>
 #include <qtimer.h>
 #include <qwidget.h>
-
+#include <q3ptrlist.h>
 #include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>

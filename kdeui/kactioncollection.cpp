@@ -38,7 +38,7 @@
 #include <qmenu.h>
 #include <qvariant.h>
 #include <QHash>
-
+#include <q3ptrlist.h>
 #include <stdio.h>
 
 class KActionCollection::KActionCollectionPrivate
