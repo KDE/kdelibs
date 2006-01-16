@@ -741,7 +741,7 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
 
 KRun::KRun( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,
             bool showProgressInfo )
-     :m_timer(0,"KRun::timer")
+     :m_timer(0,"KRun::timer"),d(new KRunPrivate)
 {
   init (url, window, mode, isLocalFile, showProgressInfo);
 }
@@ -759,7 +759,6 @@ void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFil
   m_bIsDirectory = false;
   m_bIsLocalFile = isLocalFile;
   m_mode = mode;
-  d = new KRunPrivate;
   d->m_runExecutables = true;
   d->m_window = window;
   setEnableExternalBrowser(true);

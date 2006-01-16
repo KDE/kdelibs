@@ -804,7 +804,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
-    SlaveBasePrivate *d;
+    SlaveBasePrivate* const d;
 };
 
 }

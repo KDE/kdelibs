@@ -151,7 +151,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class DefaultProgressPrivate;
-  DefaultProgressPrivate* d;
+  DefaultProgressPrivate* const d;
 private slots:
   void slotKeepOpenToggled(bool);
   void slotOpenFile();

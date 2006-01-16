@@ -1775,10 +1775,10 @@ void KDirListerCache::printDebug()
 
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
+	:d(new KDirListerPrivate)
 {
   kdDebug(7003) << "+KDirLister" << endl;
 
-  d = new KDirListerPrivate;
 
   d->complete = true;
   d->delayedMimeTypes = _delayedMimeTypes;

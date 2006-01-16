@@ -482,13 +482,13 @@ KURLCompletionPrivate::~KURLCompletionPrivate()
 // KURLCompletion
 //
 
-KURLCompletion::KURLCompletion() : KCompletion()
+KURLCompletion::KURLCompletion() : KCompletion(),d(new KURLCompletionPrivate)
 {
 	init();
 }
 
 
-KURLCompletion::KURLCompletion( Mode _mode ) : KCompletion()
+KURLCompletion::KURLCompletion( Mode _mode ) : KCompletion(),d(new KURLCompletionPrivate)
 {
 	init();
 	setMode ( _mode );
@@ -503,7 +503,6 @@ KURLCompletion::~KURLCompletion()
 
 void KURLCompletion::init()
 {
-	d = new KURLCompletionPrivate;
 
 	d->cwd = QDir::homePath();
 

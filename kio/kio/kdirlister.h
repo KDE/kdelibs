@@ -624,7 +624,7 @@ private:
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
 
-  KDirListerPrivate *d;
+  KDirListerPrivate* const d;
 };
 
 #endif

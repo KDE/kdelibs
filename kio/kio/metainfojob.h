@@ -96,7 +96,7 @@ namespace KIO {
 //        void saveMetaInfo(const QByteArray info);
 
     private:
-        struct MetaInfoJobPrivate *d;
+        struct MetaInfoJobPrivate* const d;
     };
 
     /**

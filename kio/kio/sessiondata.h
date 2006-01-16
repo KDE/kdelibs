@@ -57,7 +57,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class SessionDataPrivate;
-    SessionDataPrivate* d;
+    SessionDataPrivate* const d;
 };
 
 } // namespace

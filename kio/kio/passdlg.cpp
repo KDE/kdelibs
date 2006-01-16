@@ -55,7 +55,7 @@ struct PasswordDialog::PasswordDialogPrivate
 PasswordDialog::PasswordDialog( const QString& prompt, const QString& user,
                                 bool enableKeep, bool modal, QWidget* parent,
                                 const char* name )
-               :KDialogBase( parent, name, modal, i18n("Password"), Ok|Cancel, Ok, true)
+               :KDialogBase( parent, name, modal, i18n("Password"), Ok|Cancel, Ok, true),d(new PasswordDialogPrivate)
 {
     init ( prompt, user, enableKeep );
 }
@@ -70,7 +70,6 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
 {
     QWidget *main = makeMainWidget();
 
-    d = new PasswordDialogPrivate;
     d->keep = false;
     d->nRow = 0;
     d->keepCheckBox = 0;

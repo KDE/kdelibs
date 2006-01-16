@@ -52,10 +52,9 @@ public:
 };
 
 KTar::KTar( const QString& filename, const QString & _mimetype )
-    : KArchive( 0 )
+    : KArchive( 0 ),d(new KTarPrivate)
 {
     m_filename = filename;
-    d = new KTarPrivate;
     QString mimetype( _mimetype );
     bool forced = true;
     if ( mimetype.isEmpty() ) // Find out mimetype manually
@@ -135,10 +134,9 @@ void KTar::prepareDevice( const QString & filename,
 }
 
 KTar::KTar( QIODevice * dev )
-    : KArchive( dev )
+    : KArchive( dev ),d(new KTarPrivate)
 {
     Q_ASSERT( dev );
-    d = new KTarPrivate;
 }
 
 KTar::~KTar()

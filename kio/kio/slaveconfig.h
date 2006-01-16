@@ -99,7 +99,7 @@ namespace KIO {
     protected:
         SlaveConfig();
         static SlaveConfig *_self;
-        SlaveConfigPrivate *d;
+        SlaveConfigPrivate* const d;
     };
 }
 

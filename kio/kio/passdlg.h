@@ -160,7 +160,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     struct PasswordDialogPrivate;
-    PasswordDialogPrivate* d;
+    PasswordDialogPrivate* const d;
 };
 
 }

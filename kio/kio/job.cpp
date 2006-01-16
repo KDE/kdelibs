@@ -1520,7 +1520,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
                           bool move, bool overwrite, bool resume, bool showProgressInfo)
     : Job(showProgressInfo), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
-      m_totalSize(0)
+      m_totalSize(0),d(new FileCopyJobPrivate)
 {
    if (showProgressInfo && !move)
       Observer::self()->slotCopying( this, src, dest );
@@ -1532,7 +1532,6 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     m_copyJob = 0;
     m_getJob = 0;
     m_putJob = 0;
-    d = new FileCopyJobPrivate;
     d->m_delJob = 0;
     d->m_sourceSize = (KIO::filesize_t) -1;
     QTimer::singleShot(0, this, SLOT(slotStart()));
@@ -2148,9 +2147,8 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
     m_srcList(src), m_currentStatSrc(m_srcList.begin()),
     m_bCurrentOperationIsLink(false), m_bSingleFileCopy(false), m_bOnlyRenames(mode==Move),
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
-    m_conflictError(0), m_reportTimer(0)
+    m_conflictError(0), m_reportTimer(0),d(new CopyJobPrivate)
 {
-    d = new CopyJobPrivate;
     d->m_globalDest = dest;
     d->m_globalDestinationState = destinationState;
 

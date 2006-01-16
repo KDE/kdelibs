@@ -47,18 +47,16 @@ public:
 KServiceGroup::KServiceGroup( const QString & name )
  : KSycocaEntry(name)
  , m_bDeep(false)
- , m_childCount(-1)
+ , m_childCount(-1),d( new KServiceGroup::Private)
 {
-  d = new KServiceGroup::Private;
   m_bDeleted = false;
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
  : KSycocaEntry(_relpath)
  , m_bDeep(false)
- , m_childCount(-1)
+ , m_childCount(-1),d( new KServiceGroup::Private)
 {
-  d = new KServiceGroup::Private;
   m_bDeleted = false;
 
   QString cfg = configFile;
@@ -107,9 +105,8 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 }
 
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
-    KSycocaEntry( _str, offset )
+    KSycocaEntry( _str, offset ),d(new KServiceGroup::Private)
 {
-  d = new KServiceGroup::Private;
   m_bDeep = deep;
   load( _str );
 }

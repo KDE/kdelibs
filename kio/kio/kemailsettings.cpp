@@ -236,8 +236,8 @@ QStringList KEMailSettings::profiles() const
 }
 
 KEMailSettings::KEMailSettings()
+	:p(new KEMailSettingsPrivate())
 {
-	p = new KEMailSettingsPrivate();
 	p->m_sCurrentProfile.clear();
 
 	p->m_pConfig = new KConfig("emaildefaults");

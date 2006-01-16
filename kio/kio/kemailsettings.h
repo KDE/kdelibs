@@ -141,7 +141,7 @@ public:
 	void setSetting(KEMailSettings::Setting s, const QString &v);
 
 private:
-	KEMailSettingsPrivate *p;
+	KEMailSettingsPrivate* const p;
 };
 
 #endif

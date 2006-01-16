@@ -102,7 +102,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const QByteArray &appSocket)
              :SlaveBase (protocol, poolSocket, appSocket),
               m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol)
+              m_sServiceName(protocol),d(new TcpSlaveBasePrivate)
 {
     // We have to have two constructors, so don't add anything
     // else in here. Put it in init() instead.
@@ -118,7 +118,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
              :SlaveBase (protocol, poolSocket, appSocket),
               m_bIsSSL(useSSL),
               m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol)
+              m_sServiceName(protocol),d(new TcpSlaveBasePrivate)
 {
     init();
     if (useSSL)
@@ -128,7 +128,6 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
 // The constructor procedures go here
 void TCPSlaveBase::init()
 {
-    d = new TcpSlaveBasePrivate;
     d->kssl = 0L;
     d->ip = "";
     d->cc = 0L;

@@ -142,15 +142,15 @@ SlaveConfig *SlaveConfig::self()
 }
 
 SlaveConfig::SlaveConfig()
+	:d(new SlaveConfigPrivate)
 {
-  d = new SlaveConfigPrivate;
   d->protocol.setAutoDelete(true);
   d->readGlobalConfig();
 }
 
 SlaveConfig::~SlaveConfig()
 {
-   delete d; d = 0;
+   delete d;
    _self = 0;
 }
 

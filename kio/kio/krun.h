@@ -373,7 +373,7 @@ private:
              bool isLocalFile, bool showProgressInfo);
 private:
   class KRunPrivate;
-  KRunPrivate *d;
+  KRunPrivate* const d;
 };
 
 /**

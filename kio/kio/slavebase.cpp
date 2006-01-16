@@ -160,7 +160,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
                       const QByteArray &app_socket )
     : mProtocol(protocol), m_pConnection(0),
       mPoolSocket( QFile::decodeName(pool_socket)),
-      mAppSocket( QFile::decodeName(app_socket))
+      mAppSocket( QFile::decodeName(app_socket)),d(new SlaveBasePrivate)
 {
     s_protocol = protocol.data();
 #ifdef Q_OS_UNIX
@@ -211,7 +211,6 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     listEntry_usec = tp.tv_usec;
     mConnectedToApp = true;
 
-    d = new SlaveBasePrivate;
     // by kahl for netmgr (need a way to identify slaves)
     d->slaveid = protocol;
     d->slaveid += QString::number(getpid());

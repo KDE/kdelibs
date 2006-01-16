@@ -49,9 +49,8 @@ public:
 };
 
 DavJob::DavJob( const KURL& url, int method, const QString& request, bool showProgressInfo )
-  : TransferJob( url, KIO::CMD_SPECIAL, QByteArray(), QByteArray(), showProgressInfo )
+  : TransferJob( url, KIO::CMD_SPECIAL, QByteArray(), QByteArray(), showProgressInfo ),d(new DavJobPrivate)
 {
-  d = new DavJobPrivate;
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
   QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
@@ -100,10 +99,8 @@ void DavJob::slotFinished()
 		el.appendChild( textnode );
 		root.appendChild( el );
 		delete d; // Should be in virtual destructor
-		d = 0;
 	} else {
 		delete d; // Should be in virtual destructor
-		d = 0;
 	}
   // kdDebug(7113) << m_response.toString() << endl;
 	TransferJob::slotFinished();

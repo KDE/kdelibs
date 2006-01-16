@@ -138,7 +138,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KTarPrivate;
-    KTarPrivate * d;
+    KTarPrivate* const d;
 };
 
 #endif

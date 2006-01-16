@@ -229,7 +229,7 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    SlaveInterfacePrivate *d;
+    SlaveInterfacePrivate* const d;
 };
 
 }

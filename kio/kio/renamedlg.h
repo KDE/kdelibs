@@ -108,7 +108,7 @@ protected slots:
   void enableRenameButton(const QString &);
 private:
  class RenameDlgPrivate;
- RenameDlgPrivate *d;
+ RenameDlgPrivate* const d;
  void pluginHandling( );
 };
 

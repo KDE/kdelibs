@@ -121,7 +121,7 @@ private:
   KRemoteEncoding(const KRemoteEncoding&);
 
 
-  KRemoteEncodingPrivate *d;
+  KRemoteEncodingPrivate* const d;
 };
 
 #endif

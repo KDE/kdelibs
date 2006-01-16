@@ -333,22 +333,20 @@ public:
 };
 
 KZip::KZip( const QString& filename )
-    : KArchive( 0L )
+    : KArchive( 0L ),d(new KZipPrivate)
 {
     //kdDebug(7040) << "KZip(filename) reached." << endl;
     Q_ASSERT( !filename.isEmpty() );
     m_filename = filename;
-    d = new KZipPrivate;
     // unusual: this ctor leaves the device set to 0.
     // This is for the use of KSaveFile, see openArchive.
     // KDE4: move KSaveFile support to base class, KArchive.
 }
 
 KZip::KZip( QIODevice * dev )
-    : KArchive( dev )
+    : KArchive( dev ),d(new KZipPrivate)
 {
     //kdDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
-    d = new KZipPrivate;
 }
 
 KZip::~KZip()

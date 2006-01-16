@@ -92,9 +92,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                      time_t mtimeSrc,
                      time_t mtimeDest,
                      bool _modal)
-  : QDialog ( parent, "KIO::RenameDialog" , _modal )
+  : QDialog ( parent, "KIO::RenameDialog" , _modal ),d(new RenameDlgPrivate( ))
 {
-    d = new RenameDlgPrivate( );
     d->modal = _modal;
 #if 0
     // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,

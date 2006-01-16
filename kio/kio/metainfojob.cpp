@@ -40,9 +40,8 @@ struct KIO::MetaInfoJobPrivate
 };
 
 MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
-    : KIO::Job(false /* no GUI */)
+    : KIO::Job(false /* no GUI */),d(new MetaInfoJobPrivate)
 {
-    d               = new MetaInfoJobPrivate;
     d->deleteItems  = deleteItems;
     d->succeeded    = false;
     d->items        = items;

@@ -60,7 +60,7 @@ public:
 DefaultProgress::DefaultProgress( bool showNow )
   : ProgressBase( 0 ),
   m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
-  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
+  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0),d(new DefaultProgressPrivate)
 {
   init();
 
@@ -72,7 +72,7 @@ DefaultProgress::DefaultProgress( bool showNow )
 DefaultProgress::DefaultProgress( QWidget* parent, const char* /*name*/ )
   : ProgressBase( parent ),
   m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
-  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
+  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0),d(new DefaultProgressPrivate)
 {
     init();
 }
@@ -84,7 +84,6 @@ bool DefaultProgress::keepOpen() const
 
 void DefaultProgress::init()
 {
-  d = new DefaultProgressPrivate;
 
 #ifdef Q_WS_X11 //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
   // Set a useful icon for this window!

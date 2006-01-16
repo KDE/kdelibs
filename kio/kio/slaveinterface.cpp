@@ -104,11 +104,11 @@ public:
 //////////////
 
 SlaveInterface::SlaveInterface( Connection * connection )
+	:d(new SlaveInterfacePrivate)
 {
     m_pConnection = connection;
     m_progressId = 0;
 
-    d = new SlaveInterfacePrivate;
     connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
 }
 

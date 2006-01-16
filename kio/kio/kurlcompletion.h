@@ -227,7 +227,7 @@ private:
 protected:
 	virtual void virtual_hook( int id, void* data );
 private:
-	KURLCompletionPrivate *d;
+	KURLCompletionPrivate* const d;
 };
 
 #endif // KURLCOMPLETION_H

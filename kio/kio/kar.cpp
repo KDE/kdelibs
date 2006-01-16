@@ -39,19 +39,17 @@ public:
 };
 
 KAr::KAr( const QString& filename )
-    : KArchive( 0 )
+    : KArchive( 0 ),d(new KArPrivate)
 {
     //kdDebug(7042) << "KAr(filename) reached." << endl;
     m_filename = filename;
-    d = new KArPrivate;
     setDevice( new QFile( filename ) );
 }
 
 KAr::KAr( QIODevice * dev )
-    : KArchive( dev )
+    : KArchive( dev ),d(new KArPrivate)
 {
     //kdDebug(7042) << "KAr::KAr( QIODevice * dev) reached." << endl;
-    d = new KArPrivate;
 }
 
 KAr::~KAr()

@@ -78,7 +78,7 @@ namespace KIO {
         TransferJob *m_subJob;
     private:
 	class DavJobPrivate;
-	DavJobPrivate *d;
+	DavJobPrivate* const d;
 	QString dummy; // kept around for BC reasons
 	QDomDocument m_response;
    };

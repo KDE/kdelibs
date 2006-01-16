@@ -469,7 +469,7 @@ private:
     bool bJobOK;
 
 private:
-    class NetAccessPrivate* d; // not really needed, the ctor is private already.
+    class NetAccessPrivate* const d;//notreallyneeded,thectorisprivatealready.
 };
 
 }

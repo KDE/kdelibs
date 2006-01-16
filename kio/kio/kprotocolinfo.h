@@ -672,7 +672,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KProtocolInfoPrivate;
-  KProtocolInfoPrivate* d;
+  KProtocolInfoPrivate* const d;
 };
 
 KIO_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );

@@ -69,8 +69,8 @@ protected:
 ////////////////////////////////////////////////////////////////////////
 
 KArchive::KArchive( QIODevice * dev )
+	:d(new KArchivePrivate)
 {
-    d = new KArchivePrivate;
     d->rootDir = 0;
     m_dev = dev;
     m_open = false;

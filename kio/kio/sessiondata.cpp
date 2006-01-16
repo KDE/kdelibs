@@ -221,16 +221,15 @@ public:
 };
 
 SessionData::SessionData()
+	:d(new SessionDataPrivate)
 {
   authData = 0;
-  d = new SessionDataPrivate;
 }
 
 SessionData::~SessionData()
 {
   delete d;
   delete authData;
-  d = 0L;
   authData = 0L;
 }
 

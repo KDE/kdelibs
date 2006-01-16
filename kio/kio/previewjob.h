@@ -126,7 +126,7 @@ namespace KIO {
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
-        struct PreviewJobPrivate *d;
+        struct PreviewJobPrivate* const d;
     };
 
     /**

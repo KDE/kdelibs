@@ -107,7 +107,7 @@ protected:
 private:
     QString m_filename;
     class KArPrivate;
-    KArPrivate * d;
+    KArPrivate* const d;
 };
 
 #endif
