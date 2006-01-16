@@ -250,7 +250,7 @@ LdapSearch::LdapSearch()
   // stolen from KAddressBook
   KConfig config( "kabldaprc", true );
   config.setGroup( "LDAP" );
-  int numHosts = config.readUnsignedNumEntry( "NumSelectedHosts");
+  int numHosts = config.readEntry( "NumSelectedHosts",0);
   if ( !numHosts ) {
     mNoLDAPLookup = true;
     return;
@@ -262,7 +262,7 @@ LdapSearch::LdapSearch()
       if ( !host.isEmpty() )
         ldapClient->setHost( host );
 
-      QString port = QString::number( config.readUnsignedNumEntry( QString( "SelectedPort%1" ).arg( j ) ) );
+      QString port = QString::number( config.readEntry( QString( "SelectedPort%1" ).arg( j ),0 ) );
       if ( !port.isEmpty() )
         ldapClient->setPort( port );
 
