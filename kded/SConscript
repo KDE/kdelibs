@@ -55,10 +55,7 @@ if env['WINDOWS']:
 	obj.libs     += ' kdewin32'
 obj.execute()
 
-# TODO: kde_servicetypes_DATA = kdedmodule.desktop
-
-# TODO: xdg_menu_DATA = applications.menu
-
-#update_DATA = kded.upd
-#updatedir = $(kde_datadir)/kconf_update
+env.bksys_insttype( 'KDEDATA', 'kconf_update', 'kded.upd' )
+env.bksys_insttype( 'KDESERVTYPES', '', 'kdedmodule.desktop' )
+env.bksys_insttype( 'KDEMENU', '', 'applications.menu' )
 
