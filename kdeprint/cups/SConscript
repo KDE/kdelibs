@@ -1,0 +1,81 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('cupsdconf2')
+
+kdeprint_cups_sources = """
+cupsaddsmb2.cpp cupsinfos.cpp image.cpp imageposition.cpp
+imagepreview.cpp ippreportdlg.cpp ipprequest.cpp kcupsprinterimpl.cpp
+kmconfigcups.cpp kmconfigcupsdir.cpp kmcupsconfigwidget.cpp kmcupsfactory.cpp
+kmcupsjobmanager.cpp kmcupsmanager.cpp kmcupsuimanager.cpp kmpropbanners.cpp
+kmpropquota.cpp kmpropusers.cpp kmwbanners.cpp kmwfax.cpp
+kmwipp.cpp kmwippprinter.cpp kmwippselect.cpp kmwother.cpp
+kmwquota.cpp kmwusers.cpp kphpgl2page.cpp kpimagepage.cpp
+kpschedulepage.cpp kptagspage.cpp kptextpage.cpp
+"""
+
+cupsdoprint_sources = """
+cupsdoprint.c
+"""
+
+make_driver_db_cups_sources = """
+make_driver_db_cups.c
+"""
+
+noinst_headers = """
+cupsaddsmb2.h cupsinfos.h imageposition.h imagepreview.h
+ippreportdlg.h ipprequest.h kcupsprinterimpl.h kmconfigcups.h
+kmconfigcupsdir.h kmcupsconfigwidget.h kmcupsjobmanager.h kmcupsmanager.h
+kmcupsuimanager.h kmpropbanners.h kmpropquota.h kmpropusers.h
+kmwbanners.h kmwfax.h kmwipp.h kmwippprinter.h
+kmwippselect.h kmwother.h kmwquota.h kmwusers.h
+kphpgl2page.h kpimagepage.h kpschedulepage.h kptagspage.h
+kptextpage.h
+"""
+
+includes = '#/kdecore #/kdecore/network #/kio #/kfile #/kdeprint #/kdeprint/management '
+
+obj = env.kdeobj('module')
+obj.target = 'kdeprint_cups'
+obj.source = kdeprint_cups_sources
+obj.includes = includes
+obj.libpaths = '##/kdeprint/management ##/kdecore '
+obj.libs = 'kdeprint_management kdefakes '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO CUPS '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'make_driver_db_cups'
+obj.source = make_driver_db_cups_sources
+obj.includes = includes
+obj.instdir = env['KDEBIN']
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'cupsdoprint'
+obj.source = cupsdoprint_sources
+obj.includes = includes
+obj.instdir = env['KDEBIN']
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'cups.print')
+
+env.bksys_insttype('KDEDATA', 'kdeprint', 'preview.png preview-mini.png')
+
+
+"""Unhandled Defines 
+cupsdoprint_LDADD = $(LIB_CUPS) $(top_builddir)/kdecore/libkdefakes.la
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
+make_driver_db_cups_LDADD = ../libdriverparse.a $(top_builddir)/kdecore/libkdefakes.la $(LIBDL) $(LIBZ)
+EXTRA_DIST = postscript.ppd.gz
+"""
+
+"""Unhandled Targets 
+install-data-local = ###if test -n "$(cups_modeldir)"; then \###	$(INSTALL_DATA) $(srcdir)/postscript.ppd.gz $(DESTDIR)$(cups_modeldir)/postscript.ppd.gz || true ;\###fi
+"""
