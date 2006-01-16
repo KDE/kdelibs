@@ -139,7 +139,8 @@ void KFileAudioPreview::stateChanged( Kdem2m::State newstate, Kdem2m::State olds
 void KFileAudioPreview::showPreview( const KURL &url )
 {
     delete d->player;
-    d->player = new MediaObject( url, this );
+    d->player = new MediaObject( this );
+    d->player->setUrl( url );
     if( d->player->state() == Kdem2m::ErrorState )
     {
         delete d->player;
