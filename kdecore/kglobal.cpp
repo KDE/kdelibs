@@ -242,7 +242,6 @@ static void kglobal_init()
     if (KGlobal::_staticDeleters)
         return;
 
-    new KInstance("kdecore.dll");
     KGlobal::_staticDeleters = new KStaticDeleterList;
 }
 
