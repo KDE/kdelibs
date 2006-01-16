@@ -1,0 +1,31 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+knotifytest_sources = """
+knotifytestview.ui knotifytestwindow.cpp main.cpp
+"""
+
+noinst_headers = """
+knotifytestwindow.h
+"""
+
+includes = '../client ../config ../client '
+
+obj = env.kdeobj('program')
+obj.target = 'knotifytest'
+obj.source = knotifytest_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'knotifytest', 'knotifytestui.rc knotifytest.notifyrc')
+
+
+"""Unhandled Defines 
+knotifytest_LDADD = ../config/libknotifyconfig.la
+"""
+
+"""Unhandled Targets 
+messages = rc.cpp###$(XGETTEXT) rc.cpp *.cpp -o $(podir)/knotifytest.pot
+"""
