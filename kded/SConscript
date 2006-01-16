@@ -19,6 +19,7 @@ kctimefactory.cpp vfolder_menu.cpp
 obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT QTXML KDE4 KIO'
 obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
 obj.libs     = 'kdecore kdefx kdeui DCOP'
+obj.instdir = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'
@@ -28,6 +29,7 @@ obj = env.kdeinitobj(env)
 obj.target   = 'kded'
 obj.source   = 'kded.cpp'
 obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO'
+obj.instdir = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths = '. ../win'
 	obj.libs     = 'kded kdewin32'
@@ -39,6 +41,7 @@ obj.source='khostname.cpp'
 obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'
 obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
 obj.libs     = 'kdecore kdefx kdeui DCOP'
+obj.instdir = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'
@@ -50,6 +53,7 @@ obj.source='kde-menu.cpp'
 obj.uselib   = 'QTCORE QT QTGUI QT3SUPPORT KDE4 KIO'
 obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop'
 obj.libs     = 'kdecore kdefx kdeui DCOP'
+obj.instdir = env['KDEBIN']
 if env['WINDOWS']:
 	obj.libpaths += ' ../win'
 	obj.libs     += ' kdewin32'
@@ -57,7 +61,6 @@ obj.execute()
 
 env.bksys_insttype( 'KDEDATA', 'kconf_update', 'kded.upd' )
 env.bksys_insttype( 'KDESERVTYPES', '', 'kdedmodule.desktop' )
-env.bksys_insttype( 'KDEMENU', '', 'applications.menu' )
+#env.bksys_insttype( 'KDEMENU', '', 'applications.menu' )
 
-env.bksys_insttype( 'KDEBIN', '', 'kdontchangethehostname kde-menu' )
 
