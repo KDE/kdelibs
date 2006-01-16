@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-QString Comment::comment()
+QString Comment::comment() const
 {
         QString str = comment_;
         str.replace(QRegExp("<[^>]*>"), "");
@@ -32,14 +32,14 @@ QString Comment::comment()
         return str;
 }
 
-QString Comment::toolTip()
+QString Comment::toolTip() const
 {
         QString str = comment_;
         str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#[\\s]*"), "\n");
         return i18n("Do not translate the keyword between brackets (e.g. ServerName, ServerAdmin, etc.)", str.toUtf8());
 }
 
-QString Comment::key()
+QString Comment::key() const
 {
 	return key_;
 }
@@ -84,6 +84,11 @@ bool Comment::load(QFile *f)
 
 //------------------------------------------------------------------------------------------------------------
 
+CupsdComment::~CupsdComment()
+{
+	qDeleteAll(comments_);
+}
+
 QString CupsdComment::operator[] (const QString& key)
 {
         return comment(key);
@@ -91,9 +96,9 @@ QString CupsdComment::operator[] (const QString& key)
 
 QString CupsdComment::comment(const QString& key)
 {
-        if (comments_.count() != 0 || loadComments())
+        if (!comments_.isEmpty() || loadComments())
 	{
-		Comment *comm = comments_.find(key);
+		Comment *comm = comments_.value(key);
 		if (comm)
 			return comm->comment();
 	}
@@ -102,9 +107,9 @@ QString CupsdComment::comment(const QString& key)
 
 QString CupsdComment::toolTip(const QString& key)
 {
-        if (comments_.count() != 0 || loadComments())
+        if (!comments_.isEmpty() || loadComments())
 	{
-		Comment *comm = comments_.find(key);
+		Comment *comm = comments_.value(key);
 		if (comm)
 			return comm->toolTip();
 	}
@@ -113,7 +118,7 @@ QString CupsdComment::toolTip(const QString& key)
 
 bool CupsdComment::loadComments()
 {
-        comments_.setAutoDelete(true);
+        qDeleteAll(comments_);
         comments_.clear();
         QFile	f(locate("data", "kdeprint/cupsd.conf.template"));
 	if (f.exists() && f.open(QIODevice::ReadOnly))

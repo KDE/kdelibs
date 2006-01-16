@@ -27,7 +27,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <q3header.h>
-#include <q3dict.h>
+#include <QHash>
 
 #include <klocale.h>
 #include <klistview.h>
@@ -78,9 +78,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 		root = new Q3ListViewItem( m_uriview, i18n( "CUPS Server %1:%2" ).arg( CupsInfos::self()->host() ).arg( CupsInfos::self()->port() ) );
 		root->setPixmap( 0, SmallIcon( "gear" ) );
 		root->setOpen( true );
-		Q3Dict<Q3ListViewItem> parents, last;
-		parents.setAutoDelete( false );
-		last.setAutoDelete( false );
+		QHash<QString, Q3ListViewItem*> parents, last;
 		for ( QStringList::Iterator it=l.begin(); it!=l.end(); ++it )
 		{
 			QString cl = *it;
@@ -89,7 +87,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 			QString prt = *( ++it );
 			if ( !prt.isEmpty() )
 				desc.append( " [" + prt + "]" );
-			Q3ListViewItem *parent = parents.find( cl );
+			Q3ListViewItem *parent = parents.value( cl );
 			if ( !parent )
 			{
 				parent = new Q3ListViewItem( root, lastparent, cl );
@@ -105,7 +103,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 				lastparent = parent;
 				parents.insert( cl, parent );
 			}
-			item = new Q3ListViewItem( parent, last.find( cl ), desc, uri);
+			item = new Q3ListViewItem( parent, last.value( cl ), desc, uri);
 			last.insert( cl, item );
 		}
 	}

@@ -21,7 +21,7 @@
 #define	CUPSDCOMMENT_H
 
 #include <qstringlist.h>
-#include <q3dict.h>
+#include <QHash>
 
 class QFile;
 
@@ -29,9 +29,9 @@ class Comment
 {
 public:
         bool load(QFile* f);
-        QString toolTip();
-        QString comment();
-	QString key();
+        QString toolTip() const;
+        QString comment() const;
+	QString key() const;
 private:
         QString comment_;
         QString example_;
@@ -44,12 +44,13 @@ public:
 	QString operator[] (const QString& key);
         QString comment(const QString& key);
         QString toolTip(const QString& key);
+		~CupsdComment();
 
 private:
 	bool loadComments();
 
 private:
-	Q3Dict<Comment> comments_;
+	QHash<QString, Comment*> comments_;
 };
 
 #endif
