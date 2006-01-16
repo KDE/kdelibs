@@ -1380,6 +1380,7 @@ void process(struct config_rec* conf, const QString & fn)
 	if ((nbytes = read(fd, (char *) buf, HOWMANY)) == -1) {
 		kdError(7018) << "" << fn << " read failed (" << strerror(errno) << ")." << endl;
 		conf->resultBuf = MIME_BINARY_UNREADABLE;
+		(void)close(fd);
 		return;
 	}
         if ((tagbytes = tagmagic(buf, nbytes))) {
@@ -1388,6 +1389,7 @@ void process(struct config_rec* conf, const QString & fn)
 		nbytes = read(fd, (char*)buf, HOWMANY);
 		if (nbytes < 0) {
 			conf->resultBuf = MIME_BINARY_UNREADABLE;
+			(void)close(fd);
 			return;
 		}
         }
