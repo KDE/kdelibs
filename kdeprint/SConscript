@@ -2,6 +2,7 @@
 #generated from kdeprint/Makefile.am by am2bksys.py
 Import('env')
 
+
 kded_kdeprintd_sources = """
 kdeprintd.cpp kdeprintd.skel kprintprocess.cpp
 """
@@ -84,26 +85,23 @@ if env['WINDOWS']:
 obj.execute()
 
 
+env.bksys_insttype( 'KDEDATA', 'kconf_update', 'kdeprintrc.upd' )
+env.bksys_insttype( 'KDECONF', 'ui', 'kprintpreviewui.rc' )
+env.bksys_insttype( 'KDEDATA', 'kdeprint', 'testprint.ps specials.desktop' )
+env.bksys_insttype( 'KDESERV', 'kded', 'kdeprintd.desktop' )
+
+
 """Unhandled Defines 
-services_DATA = kdeprintd.desktop
 KDE_OPTIONS = nofinal
 AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 configdir = $(kde_confdir)
-update_DATA = kdeprintrc.upd
 libkdeprint_la_DEPENDENCIES = $(LIB_KPARTS)
 CUPSSUBDIR = cups
-config_DATA = kdeprintrc
 EXTRA_DIST = fooparser.y fooscanner.l kprintpreviewui.rc
-servicesdir = $(kde_servicesdir)/kded
-updatedir = $(kde_datadir)/kconf_update
-printdatadir = $(kde_datadir)/kdeprint
 SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tools tests
 kdeprintdir = $(includedir)/kdeprint
-uidata_DATA = kprintpreviewui.rc
 noinst_LIBRARIES = libdriverparse.a
 libkdeprint_la_METASOURCES = AUTO
-printdata_DATA = testprint.ps specials.desktop
-uidatadir = $(kde_confdir)/ui
 noinst_DATA = kdeprint
 """
 
