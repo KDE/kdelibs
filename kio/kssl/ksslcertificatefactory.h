@@ -39,8 +39,9 @@ public:
 
 private:
  
-  class KSSLCertificateFactoryPrivate;
-  KSSLCertificateFactoryPrivate* const d;
+  // add this if you ever add a constructor to this class
+  //class KSSLCertificateFactoryPrivate;
+  //KSSLCertificateFactoryPrivate* const d;
  
 protected:
 
