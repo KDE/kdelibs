@@ -43,7 +43,7 @@
 
   //  QFont font = QFont("Times",18,QFont::Bold);
 
-  QFont font = aConfig.readFontEntry( "Chosen" );
+  QFont font = aConfig.readEntry( "Chosen",QFont() );
   int nRet = KFontDialog::getFont(font);
   int flags;
   nRet = KFontDialog::getFontDiff(font, flags);
