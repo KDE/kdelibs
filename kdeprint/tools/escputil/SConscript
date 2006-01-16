@@ -1,0 +1,23 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kdeprint_tool_escputil_sources = """
+escpwidget.cpp
+"""
+
+noinst_headers = """
+escpwidget.h
+"""
+
+includes = ' '
+
+obj = env.kdeobj('module')
+obj.target = 'kdeprint_tool_escputil'
+obj.source = kdeprint_tool_escputil_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kdeprint/tools', 'escputil.desktop')
+
