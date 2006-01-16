@@ -2125,8 +2125,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
 #endif
 
-  emit changed();
   updateAccessControls();
+  emit changed();
 }
 
 // QString KFilePermissionsPropsPlugin::tabName () const
@@ -2266,7 +2266,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     enableAccessControls(false);
     break;
   case PermissionsOnlyFiles:
-    enableAccessControls(d->canChangePermissions && !d->isIrregular);
+    enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
     if (d->canChangePermissions)
       d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
 				   i18n("This file uses advanced permissions",
