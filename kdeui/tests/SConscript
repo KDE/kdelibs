@@ -42,6 +42,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 	kpixmapregionselectordialogtest
 	kpopuptest
 	kprogressbartest
+	kprogressdialogtest
 	krulertest
 	kseparatortest
 	kspelltest

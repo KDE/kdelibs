@@ -30,7 +30,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kledtest klineedittest \
 	kmessageboxtest knuminputtest \
 	kpalettetest \
-	kpopuptest kprogressbartest krulertest kseparatortest \
+	kpopuptest kprogressbartest kprogressdialogtest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
 	itemcontainertest kedittest \
@@ -73,6 +73,7 @@ knuminputtest_SOURCES = knuminputtest.cpp
 kpalettetest_SOURCES = kpalettetest.cpp
 kpopuptest_SOURCES = kpopuptest.cpp
 kprogressbartest_SOURCES = kprogressbartest.cpp
+kprogressdialogtest_SOURCES = kprogressdialogtest.cpp
 krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp

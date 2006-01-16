@@ -196,7 +196,7 @@ QString KProgressDialog::buttonText() const
 
 void KProgressDialog::slotAutoActions(int percentage)
 {
-    if (percentage < 100)
+    if (percentage < d->mProgressBar->maximum())
     {
         if (!d->cancelButtonShown)
         {
