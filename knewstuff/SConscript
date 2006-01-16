@@ -57,7 +57,6 @@ env.bksys_insttype('KDEDATA', 'knewstuff', 'types')
 
 
 """Unhandled Defines 
-knsdir = $(includedir)/knewstuff
 KDE_ICON = AUTO
 khotnewstuff_LDADD = libknewstuff.la
 testnewstuff_LDADD = libknewstuff.la
