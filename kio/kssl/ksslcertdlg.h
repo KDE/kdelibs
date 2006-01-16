@@ -119,8 +119,10 @@ private:
 };
 
 
+#if 0
 class KIO_EXPORT KSSLCertDlgRet {
 public:
+    // TODO constructor
    bool ok;
    QString choice;
    bool send;
@@ -128,11 +130,12 @@ public:
 
 protected:
    class KSSLCertDlgRetPrivate;
-   static KSSLCertDlgRetPrivate* const d;
+   KSSLCertDlgRetPrivate* const d;
 };
 
 KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
 KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
+#endif
 
 #endif
 

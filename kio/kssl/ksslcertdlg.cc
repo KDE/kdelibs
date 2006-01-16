@@ -139,7 +139,7 @@ void KSSLCertDlg::slotDont() {
    _certs->setEnabled(false);
 }
 
-
+#if 0
 QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r) {
    s << qint8(r.ok?1:0) <<  r.choice << qint8(r.save?1:0) << qint8(r.send?1:0);
    return s;
@@ -154,7 +154,7 @@ qint8 tmp;
    s >> tmp; r.send = (tmp == 1);
    return s;
 }
-
+#endif
 
 #include "ksslcertdlg.moc"
 
