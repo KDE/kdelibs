@@ -91,9 +91,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     : KDialogBase( parent, name, modal, i18n("Select Folder"),
                    Ok|Cancel|User1, Ok, false,
                    KGuiItem( i18n("New Folder..."), "folder_new" ) ),
-      m_localOnly( localOnly )
+      m_localOnly( localOnly ),d(new KDirSelectDialogPrivate)
 {
-    d = new KDirSelectDialogPrivate;
     d->branch = 0L;
 
     QFrame *page = makeMainWidget();

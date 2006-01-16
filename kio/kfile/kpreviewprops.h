@@ -51,7 +51,7 @@ private:
   void createLayout();
 
   class KPreviewPropsPluginPrivate;
-  KPreviewPropsPluginPrivate *d;
+  KPreviewPropsPluginPrivate* const d;
 };
 
 #endif

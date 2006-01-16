@@ -184,9 +184,8 @@ public:
 // simple access to all knotify-handled applications
 KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
                               bool handleAllApps )
-    : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" )
+    : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" ),d(new Private)
 {
-    d = new Private;
 
 
     if ( !handleAllApps )

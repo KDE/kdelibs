@@ -86,9 +86,8 @@ public:
  */
 
 KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
-    : KIconView(parent, name)
+    : KIconView(parent, name),d(new KIconCanvasPrivate)
 {
-    d = new KIconCanvasPrivate;
     mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
@@ -236,18 +235,16 @@ class KIconDialog::KIconDialogPrivate
  */
 
 KIconDialog::KIconDialog(QWidget *parent, const char *name)
-    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok)
+    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
-    d = new KIconDialogPrivate;
     mpLoader = KGlobal::iconLoader();
     init();
 }
 
 KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
 	const char *name)
-    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok)
+    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
-    d = new KIconDialogPrivate;
     mpLoader = loader;
     init();
 }
@@ -610,21 +607,20 @@ class KIconButton::KIconButtonPrivate
  */
 
 KIconButton::KIconButton(QWidget *parent, const char *name)
-    : QPushButton(parent, name)
+    : QPushButton(parent, name),d(new KIconButtonPrivate)
 {
     init( KGlobal::iconLoader() );
 }
 
 KIconButton::KIconButton(KIconLoader *loader,
 	QWidget *parent, const char *name)
-    : QPushButton(parent, name)
+    : QPushButton(parent, name),d(new KIconButtonPrivate)
 {
     init( loader );
 }
 
 void KIconButton::init( KIconLoader *loader )
 {
-    d = new KIconButtonPrivate;
     mGroup = KIcon::Desktop;
     mContext = KIcon::Application;
     mbUser = false;

@@ -170,9 +170,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(item->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal)
+                 parent, name, modal),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
   assert( item );
   m_items.append( new KFileItem(*item) ); // deep copy
 
@@ -186,9 +185,8 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent, const char* name, bool modal)
   : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1").arg(title),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal)
+                 parent, name, modal),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
 
   init (modal, false);
 }
@@ -202,9 +200,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 		 _items.count()>1 ? i18n( "<never used>","Properties for %n Selected Items",_items.count()) :
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal)
+                 parent, name, modal),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
 
   assert( !_items.isEmpty() );
   m_singleUrl = _items.first()->url();
@@ -228,9 +225,8 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now u
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
-  m_singleUrl( _url )
+  m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
 
   KIO::UDSEntry entry;
 
@@ -248,9 +244,8 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url,
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
-  m_singleUrl( _url )
+  m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
 
   KIO::UDSEntry entry;
 
@@ -271,9 +266,8 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
 
   m_singleUrl( _tempUrl ),
   m_defaultName( _defaultName ),
-  m_currentDir( _currentDir )
+  m_currentDir( _currentDir ),d(new KPropertiesDialogPrivate)
 {
-  d = new KPropertiesDialogPrivate;
 
   assert(!m_singleUrl.isEmpty());
 
@@ -600,9 +594,8 @@ public:
 };
 
 KPropsDlgPlugin::KPropsDlgPlugin( KPropertiesDialog *_props )
-: QObject( _props )
+: QObject( _props ),d(new KPropsDlgPluginPrivate)
 {
-  d = new KPropsDlgPluginPrivate;
   properties = _props;
   fontHeight = 2*properties->fontMetrics().height();
   d->m_bDirty = false;
@@ -686,9 +679,8 @@ public:
 };
 
 KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props )
+  : KPropsDlgPlugin( _props ),d(new KFilePropsPluginPrivate)
 {
-  d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
   d->bKDesktopMode = (QByteArray(qApp->name()) == "kdesktop"); // nasty heh?
@@ -1505,9 +1497,8 @@ const char *KFilePermissionsPropsPlugin::permissionsTexts[4][4] = {
 
 
 KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props )
+  : KPropsDlgPlugin( _props ),d(new KFilePermissionsPropsPluginPrivate)
 {
-  d = new KFilePermissionsPropsPluginPrivate;
   d->cbRecursive = 0L;
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
@@ -2491,9 +2482,8 @@ public:
 };
 
 KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props )
+  : KPropsDlgPlugin( _props ),d(new KURLPropsPluginPrivate)
 {
-  d = new KURLPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("U&RL"));
   QVBoxLayout *layout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
 
@@ -2596,9 +2586,8 @@ public:
   QFrame *m_frame;
 };
 
-KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
+KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props ),d(new KBindingPropsPluginPrivate)
 {
-  d = new KBindingPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("A&ssociation"));
   patternEdit = new KLineEdit( d->m_frame);
   commentEdit = new KLineEdit( d->m_frame);
@@ -2757,9 +2746,8 @@ public:
   QProgressBar *m_freeSpaceBar;
 };
 
-KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
+KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props ),d(new KDevicePropsPluginPrivate)
 {
-  d = new KDevicePropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("De&vice"));
 
   QStringList devices;
@@ -3513,9 +3501,8 @@ public:
 };
 
 KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props )
+  : KPropsDlgPlugin( _props ),d(new KExecPropsPluginPrivate)
 {
-  d = new KExecPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("E&xecute"));
   QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, 0,
       KDialog::spacingHint());
@@ -3826,9 +3813,8 @@ public:
 };
 
 KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props )
+  : KPropsDlgPlugin( _props ),d(new KApplicationPropsPluginPrivate)
 {
-  d = new KApplicationPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint());
 

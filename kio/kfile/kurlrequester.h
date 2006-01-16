@@ -277,7 +277,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KURLRequesterPrivate;
-    KURLRequesterPrivate *d;
+    KURLRequesterPrivate* const d;
 };
 
 class KIO_EXPORT KURLComboRequester : public KURLRequester // For use in Qt Designer

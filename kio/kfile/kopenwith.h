@@ -172,7 +172,7 @@ protected:
 
     KService::Ptr m_pService;
 
-    KOpenWithDlgPrivate *d;
+    KOpenWithDlgPrivate* const d;
 };
 
 #endif

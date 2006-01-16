@@ -96,13 +96,12 @@ KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
     : QWidget(parent),
       dir(0),
       m_fileView(0),
-      progress(0)
+      progress(0),d(new KDirOperatorPrivate)
 {
     myPreview = 0L;
     myMode = KFile::ModeMax; //try to make KFileDialog::getOpenURL (without s) to work again
     m_viewKind = KFile::Simple;
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
-    d = new KDirOperatorPrivate;
 
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();

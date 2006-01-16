@@ -159,9 +159,8 @@ public:
 
 
 KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
-  : KHBox( parent)
+  : KHBox( parent),d(new KURLRequesterPrivate)
 {
-    d = new KURLRequesterPrivate;
 
     // must have this as parent
     editWidget->reparent( this, 0, QPoint(0,0) );
@@ -173,17 +172,15 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
 
 
 KURLRequester::KURLRequester( QWidget *parent)
-  : KHBox( parent)
+  : KHBox( parent),d(new KURLRequesterPrivate)
 {
-    d = new KURLRequesterPrivate;
     init();
 }
 
 
 KURLRequester::KURLRequester( const QString& url, QWidget *parent)
-  : KHBox( parent)
+  : KHBox( parent),d(new KURLRequesterPrivate)
 {
-    d = new KURLRequesterPrivate;
     init();
     setKURL( KURL::fromPathOrURL( url ) );
 }

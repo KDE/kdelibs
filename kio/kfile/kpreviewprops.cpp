@@ -33,9 +33,8 @@ public:
 };
 
 KPreviewPropsPlugin::KPreviewPropsPlugin(KPropertiesDialog* props)
-  : KPropsDlgPlugin(props)
+  : KPropsDlgPlugin(props),d(new KPreviewPropsPluginPrivate)
 {
-    d = new KPreviewPropsPluginPrivate;
 
     if (properties->items().count()>1)
         return;

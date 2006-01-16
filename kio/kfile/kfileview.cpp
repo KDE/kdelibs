@@ -61,8 +61,8 @@ public:
 
 
 KFileView::KFileView()
+	:d(new KFileViewPrivate())
 {
-    d = new KFileViewPrivate();
     m_sorting  = KFileView::defaultSortSpec;
 
     sig = new KFileViewSignaler();

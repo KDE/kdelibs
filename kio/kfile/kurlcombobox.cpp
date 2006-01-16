@@ -39,14 +39,14 @@ public:
 
 
 KURLComboBox::KURLComboBox( Mode mode, QWidget *parent)
-    : KComboBox( parent)
+    : KComboBox( parent),d(new KURLComboBoxPrivate())
 {
     init( mode );
 }
 
 
 KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent)
-    : KComboBox( rw, parent)
+    : KComboBox( rw, parent),d(new KURLComboBoxPrivate())
 {
     init( mode );
 }
@@ -62,7 +62,6 @@ KURLComboBox::~KURLComboBox()
 
 void KURLComboBox::init( Mode mode )
 {
-    d = new KURLComboBoxPrivate();
 
     myMode    = mode;
     urlAdded  = false;

@@ -94,7 +94,7 @@ private:
 
 private:
     class KFileListViewItemPrivate;
-    KFileListViewItemPrivate *d;
+    KFileListViewItemPrivate* d;
 
 };
 
@@ -212,7 +212,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KFileDetailViewPrivate;
-    KFileDetailViewPrivate *d;
+    KFileDetailViewPrivate* const d;
 };
 
 #endif // KFILEDETAILVIEW_H

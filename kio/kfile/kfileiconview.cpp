@@ -113,9 +113,8 @@ public:
 };
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
-    : KIconView(parent, name), KFileView()
+    : KIconView(parent, name), KFileView(),d(new KFileIconViewPrivate( this ))
 {
-    d = new KFileIconViewPrivate( this );
 
     setViewName( i18n("Icon View") );
 

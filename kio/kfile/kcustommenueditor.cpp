@@ -87,9 +87,8 @@ public:
 
 KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
   : KDialogBase(parent, "custommenueditor", true, i18n("Menu Editor"), Ok|Cancel, Ok, true),
-    m_listView(0)
+    m_listView(0),d(new KCustomMenuEditorPrivate)
 {
-    d = new KCustomMenuEditorPrivate;
    KHBox *page = makeHBoxMainWidget();
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
@@ -108,7 +107,6 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
 KCustomMenuEditor::~KCustomMenuEditor()
 {
     delete d;
-    d=0;
 }
 
 void KCustomMenuEditor::refreshButton()

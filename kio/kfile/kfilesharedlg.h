@@ -61,7 +61,7 @@ private:
     QRadioButton *m_rbUnShare;
     QPushButton *m_pbConfig;
     class Private;
-    Private *d;
+    Private* const d;
 };
 
 #endif

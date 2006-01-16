@@ -437,7 +437,7 @@ protected:
     void setDropOptions_impl(int options);
 private:
     class KFileViewPrivate;
-    KFileViewPrivate *d;
+    KFileViewPrivate* const d;
 };
 
 #endif // KFILEINFOLISTWIDGET_H

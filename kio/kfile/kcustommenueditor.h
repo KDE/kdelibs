@@ -61,7 +61,7 @@ protected:
     KListView *m_listView;
 
     class KCustomMenuEditorPrivate;
-    KCustomMenuEditorPrivate *d;
+    KCustomMenuEditorPrivate* const d;
 };
 
 #endif

@@ -307,7 +307,7 @@ public:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KEncodingFileDialogPrivate *d;
+    KEncodingFileDialogPrivate* const d;
 };
 
 #endif

@@ -132,7 +132,7 @@ private:
     KNotify::KNotifyWidget * m_notifyWidget;
 
     class Private;
-    Private *d;
+    Private* d;
 };
 
 
@@ -285,7 +285,7 @@ namespace KNotify
         ApplicationList m_allApps;
 
         class Private;
-        Private *d;
+        Private* const d;
 
     };
 

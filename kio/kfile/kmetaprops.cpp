@@ -79,9 +79,8 @@ public:
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
-  : KPropsDlgPlugin(props)
+  : KPropsDlgPlugin(props),d(new KFileMetaPropsPluginPrivate)
 {
-    d = new KFileMetaPropsPluginPrivate;
 
     KFileItem * fileitem = properties->item();
     kdDebug(250) << "KFileMetaPropsPlugin constructor" << endl;

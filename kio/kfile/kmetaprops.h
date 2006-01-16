@@ -63,7 +63,7 @@ private slots:
 private:
 
   class KFileMetaPropsPluginPrivate;
-  KFileMetaPropsPluginPrivate *d;
+  KFileMetaPropsPluginPrivate* const d;
 };
 
 #endif

@@ -62,7 +62,7 @@ private:
 
 private:
     class KFileIconViewItemPrivate;
-    KFileIconViewItemPrivate *d;
+    KFileIconViewItemPrivate* d;
 
 };
 
@@ -254,7 +254,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KFileIconViewPrivate;
-    KFileIconViewPrivate *d;
+    KFileIconViewPrivate* const d;
 };
 
 #endif // KFILESIMPLEVIEW_H

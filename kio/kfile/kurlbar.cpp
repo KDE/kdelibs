@@ -83,7 +83,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
       m_url( url ),
       m_pixmap( ),
       m_parent( parent ),
-      m_appLocal( true )
+      m_appLocal( true ),d(new KURLBarItemPrivate)
 {
     init( icon, group, description, persistent );
 }
@@ -95,7 +95,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
       m_url( url ),
       m_pixmap(  ),
       m_parent( parent ),
-      m_appLocal( true )
+      m_appLocal( true ),d(new KURLBarItemPrivate)
 {
     init( icon, group, description, true /*persistent*/ );
 }
@@ -103,7 +103,6 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
 void KURLBarItem::init( const QString& icon, KIcon::Group group,
                         const QString& description, bool persistent )
 {
-    d = new KURLBarItemPrivate;
     d->isPersistent = persistent;
 
     setCustomHighlighting( true );
@@ -325,9 +324,8 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WF
       m_isModified( false ),
       m_isImmutable( false ),
       m_listBox( 0L ),
-      m_iconSize( KIcon::SizeMedium )
+      m_iconSize( KIcon::SizeMedium ),d(new KURLBarPrivate())
 {
-    d = new KURLBarPrivate();
 
     setListBox( 0L );
     setSizePolicy( QSizePolicy( isVertical() ?

@@ -77,7 +77,7 @@ protected:
 
 private:
     class KIconCanvasPrivate;
-    KIconCanvasPrivate *d;
+    KIconCanvasPrivate* const d;
 };
 
 
@@ -238,7 +238,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KIconDialogPrivate;
-    KIconDialogPrivate *d;
+    KIconDialogPrivate* const d;
 };
 
 
@@ -344,7 +344,7 @@ private:
     KIconDialog *mpDialog;
     KIconLoader *mpLoader;
     class KIconButtonPrivate;
-    KIconButtonPrivate *d;
+    KIconButtonPrivate* const d;
 };
 
 

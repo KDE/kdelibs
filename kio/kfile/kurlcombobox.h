@@ -221,7 +221,7 @@ private:
 
 private:
     class KURLComboBoxPrivate;
-    KURLComboBoxPrivate *d;
+    KURLComboBoxPrivate* const d;
 };
 
 

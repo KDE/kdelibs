@@ -420,7 +420,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KPropertiesDialogPrivate;
-  KPropertiesDialogPrivate *d;
+  KPropertiesDialogPrivate* const d;
 };
 
 /**
@@ -487,7 +487,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KPropsDlgPluginPrivate;
-  KPropsDlgPluginPrivate *d;
+  KPropsDlgPluginPrivate* const d;
 };
 
 /**
@@ -564,7 +564,7 @@ private:
   QString oldName;
 
   class KFilePropsPluginPrivate;
-  KFilePropsPluginPrivate *d;
+  KFilePropsPluginPrivate* const d;
 };
 
 /**
@@ -650,7 +650,7 @@ private:
   static mode_t fperm[3][4];
 
   class KFilePermissionsPropsPluginPrivate;
-  KFilePermissionsPropsPluginPrivate *d;
+  KFilePermissionsPropsPluginPrivate* const d;
 };
 
 
@@ -687,7 +687,7 @@ private:
   QString pixmapFile;
 private:
   class KURLPropsPluginPrivate;
-  KURLPropsPluginPrivate *d;
+  KURLPropsPluginPrivate* const d;
 };
 
 
@@ -720,7 +720,7 @@ private:
   QCheckBox * cbAutoEmbed;
 
   class KBindingPropsPluginPrivate;
-  KBindingPropsPluginPrivate *d;
+  KBindingPropsPluginPrivate* const d;
 };
 
 /**
@@ -766,7 +766,7 @@ private:
   QString pixmapFile;
 
   class KDevicePropsPluginPrivate;
-  KDevicePropsPluginPrivate *d;
+  KDevicePropsPluginPrivate* const d;
 };
 
 class KPropertiesDesktopBase;
@@ -817,7 +817,7 @@ private:
   bool m_systrayBool;
 
   class KDesktopPropsPluginPrivate;
-  KDesktopPropsPluginPrivate *d;
+  KDesktopPropsPluginPrivate* d;
 };
 
 /**
@@ -873,7 +873,7 @@ private:
     QString suidUserStr;
 
     class KExecPropsPluginPrivate;
-    KExecPropsPluginPrivate *d;
+    KExecPropsPluginPrivate* const d;
 };
 
 /**
@@ -919,7 +919,7 @@ private:
   QPushButton *delExtensionButton;
 
   class KApplicationPropsPluginPrivate;
-  KApplicationPropsPluginPrivate *d;
+  KApplicationPropsPluginPrivate* const d;
 };
 
 #endif

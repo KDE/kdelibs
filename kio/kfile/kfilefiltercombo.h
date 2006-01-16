@@ -98,7 +98,7 @@ private:
     QStringList m_filters;
     bool m_allTypes;
     class KFileFilterComboPrivate;
-    KFileFilterComboPrivate *d;
+    KFileFilterComboPrivate* const d;
 };
 
 #endif
