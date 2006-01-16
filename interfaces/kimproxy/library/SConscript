@@ -1,0 +1,38 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('icons')
+
+kimproxy_sources = """
+kimiface.stub kimproxy.cpp kimproxyiface.skel
+"""
+
+kimproxyinclude_headers = """
+kimproxy.h kimproxyiface.h
+"""
+
+noinst_headers = """
+kimproxyiface.h
+"""
+
+includes = ' '
+
+obj = env.kdeobj('shlib')
+obj.target = 'kimproxy'
+obj.source = kimproxy_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+
+env.bksys_insttype('KDEINCLUDE', '', kimproxyinclude_headers )
+
+"""Unhandled Defines 
+AM_CPPFLAGS = $(all_includes)
+kimiface_DIR = $(top_srcdir)/interfaces/kimproxy/interface
+"""
+
+"""Unhandled Targets 
+messages = rc.cpp###$(XGETTEXT) *.cpp -o $(podir)/kimproxy.pot
+"""
