@@ -1,0 +1,21 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kdeprint_filter = """
+enscript.desktop enscript.xml
+psnup.desktop psnup.xml
+imagetops.desktop imagetops.xml
+pdfwrite.desktop pdfwrite.xml
+psbook1.desktop psbook1.xml
+psbook2.desktop psbook2.xml
+psbook.desktop psbook.xml
+psselect.desktop psselect.xml
+ps2pdf.desktop ps2pdf.xml
+poster.desktop poster.xml
+"""
+
+env.bksys_insttype('KDEDATA', 'kdeprint/filters', 'kdeprint_filter')
+
+env.bksys_insttype('KDEBIN','','imagetops')
+
