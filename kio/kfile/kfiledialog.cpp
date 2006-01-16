@@ -37,7 +37,6 @@
 #include <qtextcodec.h>
 #include <qtimer.h>
 #include <q3filedialog.h>
-#include <QImageReader>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -51,6 +50,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <kimageio.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
@@ -1351,15 +1351,9 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
 KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
                                    const QString& caption)
 {
-    QString supportedtypes;
-    QList<QByteArray> mimetypes = QImageReader::supportedImageFormats();
-    foreach(QByteArray type, mimetypes) {
-        supportedtypes.append(type);
-        supportedtypes.append(QString(" "));
-    }
-    supportedtypes.chop(1); // Remove trailing " "
+    QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
     KFileDialog dlg(startDir,
-                    supportedtypes,
+                    mimetypes.join(" "),
                     parent, "filedialog", true);
     dlg.setOperationMode( Opening );
     dlg.setWindowTitle( caption.isNull() ? i18n("Open") : caption );
