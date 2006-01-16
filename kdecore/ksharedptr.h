@@ -55,7 +55,7 @@ public:
      * Creates a new pointer.
      * @param p the pointer
      */
-    inline KSharedPtr( T* p ) // TODO: Make explicit
+    inline /*explicit*/ KSharedPtr( T* p )
         : d(p) { if(d) d->ref.ref(); }
 
     /**
@@ -71,10 +71,11 @@ public:
      */
     inline ~KSharedPtr() { if (d && !d->ref.deref()) delete d; }
 
-    inline KSharedPtr<T>& operator= ( const KSharedPtr& o ) { attach(o); return *this; }
-    inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
+    inline KSharedPtr<T>& operator= ( const KSharedPtr& o ) { attach(o.d); return *this; }
     inline bool operator== ( const KSharedPtr& o ) const { return ( d == o.d ); }
     inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
+
+    inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
     inline bool operator== ( const T* p ) const { return ( d == p ); }
     inline bool operator!= ( const T* p ) const { return ( d != p ); }
 
@@ -106,17 +107,16 @@ public:
     inline T* operator->() { Q_ASSERT(d); return d; }
 
     /**
-     * Attach the given pointer to the KSharedPtr.
+     * Attach the given pointer to the current KSharedPtr.
      * If the previous shared pointer is not owned by any KSharedPtr,
      * it is deleted.
      */
-    void attach(T *p);
+    void attach(T* p);
 
     /**
-     * Attach the given pointer to the KSharedPtr.
-     * @see KSharedPtr<T>::attach(T *p)
+     * Clear the pointer, i.e. make it a null pointer.
      */
-    inline void attach(const KSharedPtr& o) { attach(o.d); }
+    void clear();
 
     /**
      * Returns the number of references.
@@ -194,7 +194,7 @@ Q_INLINE_TEMPLATE bool operator!= (const T* p, const KSharedPtr<T>& o)
 }
 
 template <class T>
-Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T *p)
+Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T* p)
 {
     if (d != p) {
         T *x = p;
@@ -206,10 +206,17 @@ Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T *p)
 }
 
 template <class T>
+Q_INLINE_TEMPLATE void KSharedPtr<T>::clear()
+{
+    attach((T*)0);
+}
+
+template <class T>
 Q_INLINE_TEMPLATE void KSharedPtr<T>::detach()
 {
-    if (d && d->ref>1)
+    if (d && d->ref>1) {
         attach(new T(*d));
+    }
 }
 
 #endif
