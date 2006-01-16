@@ -128,7 +128,7 @@ public:
 
 protected:
    class KSSLCertDlgRetPrivate;
-   KSSLCertDlgRetPrivate* const d;
+   static KSSLCertDlgRetPrivate* const d;
 };
 
 KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
