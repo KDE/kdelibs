@@ -27,7 +27,7 @@
 #include <kaboutdata.h>
 
 // katepart version must be a string in double quotes, format: "x.x"
-#define KATEPART_VERSION "2.4"
+#define KATEPART_VERSION "2.5"
 
 class KateCmd;
 class KateFileTypeManager;
