@@ -373,7 +373,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           // this needs to be checked first, or we will catch the
           // asserts in readEntry for an integer list
           if (readEntry(pKey) == QLatin1String("invalid"))
-            return aDefault;
+            return QColor();
       
           const QList<int> list = readEntry( pKey, QList<int>() );
           const int count = list.count();
