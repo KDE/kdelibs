@@ -44,6 +44,7 @@ public:
     void testSettingBasic();
     void testSettingExtended();
     void testSettingErrorHandling();
+    void testNewMask();
 
 private:
     KACL m_acl;
