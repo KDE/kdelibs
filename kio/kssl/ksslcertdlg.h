@@ -119,23 +119,21 @@ private:
 };
 
 
-#if 0
+/**
+ * This class is used in the internal DCOP communication between TPCSlaveBase and kio_uiserver.
+ * Don't use it directly.
+ * \internal
+ */
 class KIO_EXPORT KSSLCertDlgRet {
 public:
-    // TODO constructor
-   bool ok;
    QString choice;
+   bool ok;
    bool send;
    bool save;
-
-protected:
-   class KSSLCertDlgRetPrivate;
-   KSSLCertDlgRetPrivate* const d;
 };
 
 KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
 KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
-#endif
 
 #endif
 
