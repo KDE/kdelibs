@@ -40,7 +40,7 @@ public:
 private:
  
   class KSSLCertificateFactoryPrivate;
-  KSSLCertificateFactoryPrivate *d;
+  KSSLCertificateFactoryPrivate* const d;
  
 protected:
 

@@ -85,8 +85,9 @@ class KSSLSettingsPrivate {
 //                      and do not store them in memory.  This should change.
 //
 
-KSSLSettings::KSSLSettings(bool readConfig) {
-	d = new KSSLSettingsPrivate;
+KSSLSettings::KSSLSettings(bool readConfig) 
+	:d(new KSSLSettingsPrivate)
+{
 	m_cfg = new KConfig("cryptodefaults", false, false);
 
 	if (!KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl")) {

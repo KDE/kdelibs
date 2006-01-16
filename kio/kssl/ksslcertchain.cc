@@ -67,8 +67,9 @@ public:
   KOSSL *kossl;
 };
 
-KSSLCertChain::KSSLCertChain() {
-  d = new KSSLCertChainPrivate;
+KSSLCertChain::KSSLCertChain()
+	:d(new KSSLCertChainPrivate)
+{
   _chain = NULL;
 }
 

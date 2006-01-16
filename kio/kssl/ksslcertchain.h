@@ -126,7 +126,7 @@ public:
 	void *rawChain() { return _chain; }
 
 private:
-	KSSLCertChainPrivate *d;
+	KSSLCertChainPrivate* const d;
 	void *_chain;
 };
 

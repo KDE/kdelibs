@@ -125,7 +125,7 @@ private:
 	void displayCert(KSSLCertificate *x);
 
 	class KSSLInfoDlgPrivate;
-	KSSLInfoDlgPrivate *d;
+	KSSLInfoDlgPrivate* const d;
 
 private slots:
 	void launchConfig();

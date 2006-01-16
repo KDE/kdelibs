@@ -93,7 +93,7 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 
 private:
   class KSSLCertificateCachePrivate;
-  KSSLCertificateCachePrivate *d;
+  KSSLCertificateCachePrivate* const d;
 
   void loadDefaultPolicies();
   void clearList();

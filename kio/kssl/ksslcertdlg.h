@@ -110,7 +110,7 @@ private slots:
 
 private:
 	class KSSLCertDlgPrivate;
-	KSSLCertDlgPrivate *d;
+	KSSLCertDlgPrivate* const d;
 	QCheckBox *_save;
 	QRadioButton *_send, *_dont;
 	Q3ListView *_certs;
@@ -128,7 +128,7 @@ public:
 
 protected:
    class KSSLCertDlgRetPrivate;
-   KSSLCertDlgRetPrivate *d;
+   KSSLCertDlgRetPrivate* const d;
 };
 
 KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);

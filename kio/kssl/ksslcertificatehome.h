@@ -83,7 +83,7 @@ public:
 
 private:
 	class KSSLCertificateHomePrivate;
-	KSSLCertificateHomePrivate *d;
+	KSSLCertificateHomePrivate* d;
 };
 
 #endif

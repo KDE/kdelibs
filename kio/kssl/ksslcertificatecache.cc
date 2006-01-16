@@ -40,8 +40,9 @@ class KSSLCertificateCache::KSSLCertificateCachePrivate {
 
 
 
-KSSLCertificateCache::KSSLCertificateCache() {
-  d = new KSSLCertificateCachePrivate;
+KSSLCertificateCache::KSSLCertificateCache() 
+	:d(new KSSLCertificateCachePrivate)
+{
 }
 
 

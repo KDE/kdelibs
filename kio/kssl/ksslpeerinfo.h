@@ -100,7 +100,7 @@ protected:
 	KSSLCertificate m_cert;
 
 private:
-	KSSLPeerInfoPrivate *d;
+	KSSLPeerInfoPrivate* const d;
 };
 
 

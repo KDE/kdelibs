@@ -42,8 +42,9 @@ public:
 
 
 
-KSSLPeerInfo::KSSLPeerInfo() {
-	d = new KSSLPeerInfoPrivate;
+KSSLPeerInfo::KSSLPeerInfo() 
+	:d(new KSSLPeerInfoPrivate)
+{
 }
 
 KSSLPeerInfo::~KSSLPeerInfo() {

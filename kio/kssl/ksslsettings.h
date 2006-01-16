@@ -179,7 +179,7 @@ private:
 	QList<QString> v3ciphers, v3selectedciphers;
 	QList<int> v3bits;
 
-	KSSLSettingsPrivate *d;
+	KSSLSettingsPrivate* const d;
 };
 
 

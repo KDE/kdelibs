@@ -291,6 +291,7 @@ KSMIMECrypto::KSMIMECrypto() {
     if (!kossl->hasLibCrypto()) kossl = 0L;
 #else
     kossl = 0L;
+	priv = 0L;
 #endif
 }
 
