@@ -127,6 +127,14 @@ void KACLEditWidget::setAllowDefaults( bool value )
     m_listView->setAllowDefaults( value );
 }
 
+void KACLEditWidget::setReadOnly( bool on )
+{
+    m_listView->setEnabled( !on );
+    m_AddBtn->setEnabled( !on );
+    if ( !on )
+      slotUpdateButtons();
+}
+
 KACLListViewItem::KACLListViewItem( QListView* parent,
                                     KACLListView::EntryType _type,
                                     unsigned short _value, bool defaults,

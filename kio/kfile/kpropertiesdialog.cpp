@@ -1842,7 +1842,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
-      if ( pbAdvancedPerm)
+      if ( pbAdvancedPerm  && !d->hasExtendedACL )
           pbAdvancedPerm->setEnabled(false);
   }
 
@@ -2079,6 +2079,9 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
     if ( properties->items().first()->isDir() )
       extendedACLs->setAllowDefaults( true );
+    if ( !d->canChangePermissions )
+      extendedACLs->setReadOnly( true );
+
   }
 #endif
   if (dlg.exec() != KDialogBase::Accepted)
