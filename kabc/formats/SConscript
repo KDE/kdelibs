@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kabcformat_binary_sources = """
+binaryformat.cpp
+"""
+
+noinst_headers = """
+binaryformat.h
+"""
+
+includes = '#/kabc #/kabc '
+
+obj = env.kdeobj('module')
+obj.target = 'kabcformat_binary'
+obj.source = kabcformat_binary_sources
+obj.includes = includes
+obj.libpaths = '##/kabc '
+obj.libs = 'kabc '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kabc/formats', 'binary.desktop')
+
+
+"""Unhandled Defines 
+EXTRA_DIST = $(link_DATA)
+kabcformat_binary_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
+"""
+
+"""Unhandled Targets 
+messages = rc.cpp###$(XGETTEXT) *.cpp -o $(podir)/kabcformat_binary.pot
+"""

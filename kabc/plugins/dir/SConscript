@@ -1,0 +1,45 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kabc_dir_sources = """
+resourcedirplugin.cpp
+"""
+
+kabcinclude_headers = """
+resourcedir.h
+"""
+
+noinst_headers = """
+resourcedirconfig.h
+"""
+
+includes = '#/kabc #/kabc # '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kabc_dir'
+obj.source = kabc_dir_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KABC '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kabc_dir'
+obj.source = kabc_dir_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KABC '
+obj.execute()
+
+env.bksys_insttype('KDESERV', 'kresources/kabc', 'dir.desktop')
+
+env.bksys_insttype('KDEINCLUDE', 'kabc', kabcinclude_headers)
+
+"""Unhandled Defines 
+libkabc_dir_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
+"""
+
+"""Unhandled Targets 
+resourcedirplugin.lo = ../../addressee.h
+messages = rc.cpp###$(XGETTEXT) *.cpp -o $(podir)/kabc_dir.pot
+"""

@@ -1,0 +1,75 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('kab vcardparser formats plugins scripts tests')
+
+kabc_sources = """
+address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp
+addresseehelper.cpp addresseehelper.skel addresseelist.cpp addresslineedit.cpp
+distributionlist.cpp distributionlistdialog.cpp distributionlisteditor.cpp errorhandler.cpp
+field.cpp formatfactory.cpp geo.cpp key.cpp
+ldapclient.cpp ldapconfigwidget.cpp ldapurl.cpp ldif.cpp
+ldifconverter.cpp lock.cpp locknull.cpp phonenumber.cpp
+picture.cpp plugin.cpp resource.cpp secrecy.cpp
+sortmode.cpp sound.cpp stdaddressbook.cpp timezone.cpp
+vcardconverter.cpp vcardformat.cpp vcardtool.cpp
+"""
+
+kab2kabc_sources = """
+kab2kabc.cpp
+"""
+
+kabcinclude_headers = """
+address.h addressbook.h addressee.h addresseedialog.h
+addresseelist.h addresslineedit.h distributionlist.h distributionlistdialog.h
+distributionlisteditor.h errorhandler.h field.h format.h
+format.h formatfactory.h geo.h key.h
+ldapclient.h ldapconfigwidget.h ldapurl.h ldif.h
+ldifconverter.h lock.h locknull.h phonenumber.h
+picture.h plugin.h resource.h secrecy.h
+sortmode.h sound.h stdaddressbook.h timezone.h
+vcardconverter.h vcardformat.h
+"""
+
+includes = '#/kabc #/kabc #/kabc/kab vcardparser '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kabc'
+obj.vnum = '3.0.2'
+obj.source = kabc_sources
+obj.includes = includes
+obj.libpaths = 'vcardparser ##/kresources '
+obj.libs = 'vcards kresources '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kab2kabc'
+obj.source = kab2kabc_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDEDATA', 'kabc', 'countrytransl.map')
+
+env.bksys_insttype('KDESERV', 'kresources', 'kabc_manager.desktop')
+
+env.bksys_insttype('KDEINCLUDE', 'kabc',kabcinclude_headers )
+
+
+"""Unhandled Defines 
+EXTRA_DIST = $(map_DATA)
+kab2kabc_LDADD = libkabc.la ./kab/libkab.la
+CLEANFILES = addressee.h addressee.cpp field.cpp
+libkabc_la_COMPILE_FIRST = addressee.h
+DOXYGEN_EXCLUDE = scripts
+DOXYGEN_REFERENCES = kdecore kdeui
+addressee.cpp addressee.h field.cpp: \###			$(srcdir)/scripts/makeaddressee \###			$(srcdir)/scripts/addressee.src.cpp \###			$(srcdir)/scripts/addressee.src.h \###			$(srcdir)/scripts/entrylist \###			$(srcdir)/scripts/field.src.cpp###mysrcdir = `cd $(srcdir)/scripts && pwd` ; cd scripts && $(PERL) $$mysrcdir/makeaddressee
+"""
+
+"""Unhandled Targets 
+field.cpp = addressee.h addressee.cpp
+addressee.cpp = addressee.h
+"""

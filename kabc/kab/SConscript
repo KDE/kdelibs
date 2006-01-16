@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kab_sources = """
+addressbook.cc kabapi.cc qconfigDB.cc
+"""
+
+includes = ' '
+
+obj = env.kdeobj('convenience')
+obj.target = 'kab'
+obj.source = kab_sources
+obj.includes = includes
+obj.libpaths = '../../kdeui '
+obj.libs = 'kdeui '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+KABVERSION = 4.0.0
+KABPATCH = 0
+"""

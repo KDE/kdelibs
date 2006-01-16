@@ -1,0 +1,49 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kabc_net_sources = """
+resourcenet.cpp resourcenetconfig.cpp
+"""
+
+kabcinclude_headers = """
+resourcenet.h
+"""
+
+noinst_headers = """
+resourcenetconfig.h
+"""
+
+includes = '#/kabc #/kabc '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kabc_net'
+obj.source = kabc_net_sources
+obj.includes = includes
+obj.libpaths = ' '
+obj.libs = 'kabc_net '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('module')
+obj.target = 'kabc_net'
+obj.source = kabc_net_sources
+obj.includes = includes
+obj.libpaths = ' '
+obj.libs = 'kabc_net '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+env.bksys_insttype('KDESERV', 'kresources/kabc', 'net.desktop')
+
+env.bksys_insttype('KDEINLCUDE', 'kabc', kabcinclude_headers )
+
+"""Unhandled Defines 
+libkabc_net_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
+"""
+
+"""Unhandled Targets 
+messages = rc.cpp###$(XGETTEXT) *.cpp -o $(podir)/kabc_net.pot
+resourcenetplugin.lo = ../../addressee.h
+"""
