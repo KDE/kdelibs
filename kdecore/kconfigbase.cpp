@@ -369,13 +369,16 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Color: {
+          // invalid QColor's are stored as the string "invalid"
+          // this needs to be checked first, or we will catch the
+          // asserts in readEntry for an integer list
+          if (readEntry(pKey) == QLatin1String("invalid"))
+            return aDefault;
+      
           const QList<int> list = readEntry( pKey, QList<int>() );
           const int count = list.count();
 
           if (count != 3 && count != 4) {
-              // invalid QColor's are stored as the string "invalid"
-              if (readEntry(pKey) == QLatin1String("invalid"))
-                  return aDefault;
               kcbError() << errString.arg(readEntry(pKey))
                          << formatError.arg("3' or '4").arg(count)
                          << endl;
