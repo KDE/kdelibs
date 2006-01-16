@@ -68,6 +68,7 @@ obj.includes = includes
 obj.libpaths = '.. ../kdecore ../kio ../kdeui ../dcop ../kded ../kdefx '
 obj.libs = 'kdecore kdeui DCOP kdeprint '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
 obj = env.kdeobj('module')
@@ -77,6 +78,7 @@ obj.includes = includes
 obj.libpaths = ' '
 obj.libs = 'kdecore kdeui DCOP kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
 env.bksys_insttype('KDEDATA', 'kdeprint', 'tileup.png tiledown.png side.png')

@@ -57,6 +57,7 @@ obj.target = 'libkdeprint'
 obj.vnum = '6.0.2'
 obj.source = libkdeprint_sources
 obj.includes = includes
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.libpaths = "../kdecore ../kdeui ../kio ../dcop ../kdefx ../kdesu"
 # I know what you're thinking... kdeinit_kded? well, there *is* no libkded,
 # just "kded.so" or "kded.dylib" -- it's a loadable module, not an shlib,
@@ -79,6 +80,7 @@ obj.includes = includes
 obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kdefx"
 obj.libs = "kdecore kdeui kio DCOP kdefx"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.ccflags += ' -D_KDEPRINT_COMPILE '
 if env['WINDOWS']:
 	obj.libpaths += " ../win"
 	obj.libs += " kdewin32"
@@ -93,7 +95,6 @@ env.bksys_insttype( 'KDESERV', 'kded', 'kdeprintd.desktop' )
 
 """Unhandled Defines 
 KDE_OPTIONS = nofinal
-AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 configdir = $(kde_confdir)
 libkdeprint_la_DEPENDENCIES = $(LIB_KPARTS)
 CUPSSUBDIR = cups

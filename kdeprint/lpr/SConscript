@@ -34,6 +34,7 @@ obj.includes = includes
 obj.libpaths = '##/kdeprint/management ##/kdecore '
 obj.libs = 'kdeprint_management kdefakes '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags = ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
 obj = env.kdeobj('program')
@@ -41,6 +42,7 @@ obj.target = 'make_driver_db_lpr'
 obj.source = make_driver_db_lpr_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.ccflags = ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
 env.bksys_insttype('KDEDATA', 'kdeprint', 'apsdriver1 apsdriver2 lprngtooldriver1')
@@ -51,5 +53,4 @@ env.bksys_insttype('KDEINCLUDE', 'kdeprint/lpr', kdeprintlpr_headers )
 
 """Unhandled Defines 
 make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la ../libdriverparse.a $(LIBDL)
-AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 """
