@@ -6,6 +6,7 @@
 #include "newstuff.h"
 #include "kdxsrating.h"
 #include "kdxscomment.h"
+#include "kdxscomments.h"
 
 #include <qlayout.h>
 #include <qdom.h>
@@ -34,12 +35,10 @@ KDXSButton::KDXSButton(QWidget *parent)
 	m_p = new KPopupMenu(this);
 	m_p->insertItem(il->loadIcon("knewstuff", KIcon::Small),
 		i18n("Deinstall"), install);
-	m_p->insertItem(il->loadIcon("wizard", KIcon::Small),
-		i18n("Add Rating"), addrating);
-	m_p->insertItem(il->loadIcon("add", KIcon::Small),
-		i18n("Add Comment"), addcomment);
 	m_p->insertItem(il->loadIcon("bookmark_add", KIcon::Small),
 		i18n("Subscribe"), subscribe);
+	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
+		i18n("Comments"), comments);
 
 	m_history = new KPopupMenu(this);
 
@@ -53,6 +52,10 @@ KDXSButton::KDXSButton(QWidget *parent)
 	m_contact = new KPopupMenu(this);
 
 	KPopupMenu *pcollab = new KPopupMenu(this);
+	pcollab->insertItem(il->loadIcon("wizard", KIcon::Small),
+		i18n("Add Rating"), collabrating);
+	pcollab->insertItem(il->loadIcon("add", KIcon::Small),
+		i18n("Add Comment"), collabcomment);
 	pcollab->insertItem(il->loadIcon("translate", KIcon::Small),
 		i18n("Translate"), collabtranslation);
 	pcollab->insertItem(il->loadIcon("remove", KIcon::Small),
@@ -84,6 +87,9 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_dxs,
 		SIGNAL(signalCategories(QStringList)),
 		SLOT(slotCategories(QStringList)));
+	connect(m_dxs,
+		SIGNAL(signalComments(QStringList)),
+		SLOT(slotComments(QStringList)));
 	connect(m_dxs,
 		SIGNAL(signalHistory(QStringList)),
 		SLOT(slotHistory(QStringList)));
@@ -147,8 +153,23 @@ void KDXSButton::slotCategories(QStringList categories)
 {
 	for(QStringList::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
-		kdDebug() << (*it) << endl;
+		kdDebug() << "Category: " << (*it) << endl;
 	}
+}
+
+void KDXSButton::slotComments(QStringList comments)
+{
+	KDXSComments commentsdlg(this);
+
+	for(QStringList::Iterator it = comments.begin(); it != comments.end(); it++)
+	{
+		kdDebug() << "Comment: " << (*it) << endl;
+		commentsdlg.addComment("foo", (*it));
+	}
+
+	commentsdlg.finish();
+
+	commentsdlg.exec();
 }
 
 void KDXSButton::slotHistory(QStringList entries)
@@ -159,8 +180,6 @@ void KDXSButton::slotHistory(QStringList entries)
 	{
 		kdDebug() << (*it) << endl;
 
-		//pversions->insertItem(il->loadIcon("", KIcon::Small),
-		//	i18n("0.1 (19.08.2005)"));
 		m_history->insertItem(il->loadIcon("history", KIcon::Small),
 			i18n((*it)));
 	}
@@ -251,11 +270,10 @@ void KDXSButton::slotActivated(int id)
 	{
 		m_dxs->call_info();
 	}
-	//if(id == subscribe)
-	//{
-	//	// TEST
-	//	m_dxs->call_categories();
-	//}
+	if(id == comments)
+	{
+		m_dxs->call_comments(0);
+	}
 	if(id == contactbymail)
 	{
 		QString address = "spillner@kde.org";
@@ -288,7 +306,7 @@ void KDXSButton::slotActivated(int id)
 		NewStuffDialog *d = new NewStuffDialog(this);
 		d->show();
 	}
-	if(id == addcomment)
+	if(id == collabcomment)
 	{
 		KDXSComment comment(this);
 		comment.exec();
@@ -298,7 +316,7 @@ void KDXSButton::slotActivated(int id)
 			m_dxs->call_comment(0, s);
 		}
 	}
-	if(id == addrating)
+	if(id == collabrating)
 	{
 		KDXSRating rating(this);
 		rating.exec();
@@ -321,7 +339,7 @@ void KDXSButton::slotHighlighted(int id)
 		m_p->setCursor(KCursor::workingCursor());
 		kdDebug() << "hourglass!" << endl;
 
-		m_dxs->call_history();
+		m_dxs->call_history(0);
 		// .....
 	}
 }

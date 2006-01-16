@@ -29,3 +29,4 @@ int KDXSRating::rating()
 	return m_slider->value();
 }
 
+#include "kdxsrating.moc"

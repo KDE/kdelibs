@@ -29,7 +29,8 @@ public slots:
 
 	void slotInfo(QString provider, QString server, QString version);
 	void slotCategories(QStringList categories);
-	void slotHistory(QStringList categories);
+	void slotComments(QStringList comments);
+	void slotHistory(QStringList entries);
 	void slotRemoval(bool success);
 	void slotSubscription(bool success);
 	void slotComment(bool success);
@@ -42,13 +43,14 @@ private:
 	{
 		install,
 		deinstall,
-		addrating,
-		addcomment,
+		comments,
 		subscribe,
 		info,
 
 		historysub,
 
+		collabrating,
+		collabcomment,
 		collaboratesub,
 		collabremoval,
 		collabtranslation,

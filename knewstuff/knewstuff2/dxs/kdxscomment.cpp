@@ -25,3 +25,4 @@ QString KDXSComment::comment()
 	return m_textbox->text();
 }
 
+#include "kdxscomment.moc"

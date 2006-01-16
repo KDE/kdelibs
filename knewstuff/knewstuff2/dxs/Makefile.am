@@ -10,6 +10,7 @@ kdxspreview_SOURCES = main.cpp \
 	kdxsbutton.cpp \
 	kdxsrating.cpp \
 	kdxscomment.cpp \
+	kdxscomments.cpp \
 	soap.cpp \
 	dxs.cpp \
 	kns-translation.ui \
@@ -23,6 +24,7 @@ noinst_HEADERS = \
 	kdxsbutton.h \
 	kdxsrating.h \
 	kdxscomment.h \
+	kdxscomments.h \
 	soap.h \
 	dxs.h \
 	newstuff.h \

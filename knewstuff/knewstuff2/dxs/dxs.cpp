@@ -41,14 +41,25 @@ void Dxs::call_categories()
 	m_soap->call(info, m_endpoint);
 }
 
-void Dxs::call_history()
+void Dxs::call_comments(int id)
+{
+	QDomDocument doc;
+	QDomElement comments = doc.createElement("ns:GHNSComments");
+	QDomElement eid = doc.createElement("id");
+	QDomText t = doc.createTextNode(QString::number(id));
+	eid.appendChild(t);
+	comments.appendChild(eid);
+	m_soap->call(comments, m_endpoint);
+}
+
+void Dxs::call_history(int id)
 {
 	QDomDocument doc;
 	QDomElement history = doc.createElement("ns:GHNSHistory");
-	QDomElement id = doc.createElement("id");
-	QDomText t = doc.createTextNode("11");
-	id.appendChild(t);
-	history.appendChild(id);
+	QDomElement eid = doc.createElement("id");
+	QDomText t = doc.createTextNode(QString::number(id));
+	eid.appendChild(t);
+	history.appendChild(eid);
 	m_soap->call(history, m_endpoint);
 }
 
@@ -141,6 +152,19 @@ void Dxs::slotResult(QDomNode node)
 
 		emit signalCategories(categories);
 	}
+	else if(m_soap->localname(node) == "GHNSCommentsResponse")
+	{
+		QStringList comments;
+
+		QDomNode array = node.firstChild();
+		QDomNodeList comlist = array.toElement().elementsByTagName("comments");
+		for(unsigned int i = 0; i < comlist.count(); i++)
+		{
+			comments << comlist.item(i).toElement().text();
+		}
+
+		emit signalComments(comments);
+	}
 	else if(m_soap->localname(node) == "GHNSHistoryResponse")
 	{
 		QStringList entries;
@@ -165,6 +189,18 @@ void Dxs::slotResult(QDomNode node)
 		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
 
 		emit signalSubscription(success);
+	}
+	else if(m_soap->localname(node) == "GHNSCommentResponse")
+	{
+		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
+
+		emit signalComment(success);
+	}
+	else if(m_soap->localname(node) == "GHNSRatingResponse")
+	{
+		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
+
+		emit signalRating(success);
 	}
 }
 

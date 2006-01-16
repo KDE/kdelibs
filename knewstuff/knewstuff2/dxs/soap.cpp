@@ -16,7 +16,8 @@ using namespace KNS;
 Soap::Soap()
 : QObject()
 {
-	m_model = canonicaltree;
+	//m_model = canonicaltree;
+	m_model = soap;
 	m_socket = NULL;
 	m_inprogress = false;
 }
