@@ -46,9 +46,8 @@ public:
 // Internal functions:
 //
 KProtocolInfo::KProtocolInfo(const QString &path)
- : KSycocaEntry(path)
+ : KSycocaEntry(path), d( new KProtocolInfoPrivate )
 {
-  d = new KProtocolInfoPrivate;
   QString fullPath = locate("services", path);
 
   KSimpleConfig config( fullPath, true );
@@ -130,9 +129,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
-	KSycocaEntry( _str, offset)
+	KSycocaEntry( _str, offset), d( new KProtocolInfoPrivate )
 {
-   d = new KProtocolInfoPrivate;
    load( _str );
 }
 
