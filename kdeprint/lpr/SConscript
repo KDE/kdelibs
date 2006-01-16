@@ -47,9 +47,9 @@ env.bksys_insttype('KDEDATA', 'kdeprint', 'apsdriver1 apsdriver2 lprngtooldriver
 
 env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'lpr.print')
 
+env.bksys_insttype('KDEINCLUDE', 'kdeprint/lpr', kdeprintlpr_headers )
 
 """Unhandled Defines 
 make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la ../libdriverparse.a $(LIBDL)
 AM_CPPFLAGS = -D_KDEPRINT_COMPILE
-kdeprintlprdir = $(includedir)/kdeprint/lpr
 """
