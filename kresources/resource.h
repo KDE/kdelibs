@@ -379,7 +379,7 @@ class KRESOURCES_EXPORT Resource : public QObject
 
   private:
     class ResourcePrivate;
-    ResourcePrivate *d;
+    ResourcePrivate* const d;
 };
 
 class KRESOURCES_EXPORT PluginFactoryBase : public KLibFactory

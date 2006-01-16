@@ -69,7 +69,6 @@ Resource::Resource( const KConfig* config )
 Resource::~Resource()
 {
   delete d;
-  d = 0;
 }
 
 void Resource::writeConfig( KConfig* config )
