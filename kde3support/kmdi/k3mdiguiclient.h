@@ -23,6 +23,7 @@
 #include <qpointer.h>
 #include <kxmlguiclient.h>
 #include <kaction.h>
+#include <q3ptrlist.h>
 #include "k3mdidefines.h"
 
 class KMainWindow;
