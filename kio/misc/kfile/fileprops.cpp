@@ -302,7 +302,7 @@ static void printMimeTypes( const KCmdLineArgs *args )
 {
     for ( int i = 0; i < args->count(); i++ )
     {
-        KURL url = args->url( i );
+        KUrl url = args->url( i );
         KMimeType::Ptr mt = KMimeType::findByURL( url );
         kdDebug() << args->arg(i) << ": " << mt->comment().toLocal8Bit() << " ("
              << mt->name().toLocal8Bit() << ")" << endl;

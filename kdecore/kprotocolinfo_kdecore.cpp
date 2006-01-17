@@ -36,8 +36,8 @@ public:
   bool canRenameFromFile;
   bool canRenameToFile;
   bool canDeleteRecursive;
-  bool fileNameUsedForCopying; // true if using UDS_NAME, false if using KURL::fileName() [default]
-  KURL::URIMode uriMode;
+  bool fileNameUsedForCopying; // true if using UDS_NAME, false if using KUrl::fileName() [default]
+  KUrl::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
 };
@@ -116,13 +116,13 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   tmp = config.readEntry( "URIMode", QString() ).toLower();
   if (tmp == "rawuri")
-     d->uriMode = KURL::RawURI;
+     d->uriMode = KUrl::RawURI;
   else if (tmp == "mailto")
-     d->uriMode = KURL::Mailto;
+     d->uriMode = KUrl::Mailto;
   else if (tmp == "url")
-     d->uriMode = KURL::URL;
+     d->uriMode = KUrl::URL;
   else
-     d->uriMode = KURL::Auto;
+     d->uriMode = KUrl::Auto;
 
   d->capabilities = config.readEntry( "Capabilities", QStringList() );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
@@ -189,7 +189,7 @@ KProtocolInfo::load( QDataStream& _str)
    d->fileNameUsedForCopying = (i_fileNameUsedForCopying != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
-   d->uriMode = (KURL::URIMode) i_uriMode;
+   d->uriMode = (KUrl::URIMode) i_uriMode;
 }
 
 void
@@ -455,7 +455,7 @@ KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
   return prot->m_outputType;
 }
 
-KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KURL &url )
+KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
   if ( !prot )
@@ -491,11 +491,11 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
   return prot->d->showPreviews;
 }
 
-KURL::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
+KUrl::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return KURL::Auto;
+    return KUrl::Auto;
 
   return prot->d->uriMode;
 }
@@ -552,7 +552,7 @@ QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field 
   return s;
 }
 
-// KURL based static functions are implemented in ../kio/kio/kprotocolinfo.cpp
+// KUrl based static functions are implemented in ../kio/kio/kprotocolinfo.cpp
 
 void KProtocolInfo::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }

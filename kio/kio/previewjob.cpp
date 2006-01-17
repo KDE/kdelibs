@@ -376,7 +376,7 @@ bool PreviewJob::statResultThumbnail()
     if ( d->thumbPath.isEmpty() )
         return false;
 
-    KURL url = d->currentItem.item->url();
+    KUrl url = d->currentItem.item->url();
     // Don't include the password if any
     url.setPass(QString());
     // The TMS defines local files as file:///path/to/file instead of KDE's
@@ -416,9 +416,9 @@ void PreviewJob::getOrCreateThumbnail()
     {
         d->state = PreviewJobPrivate::STATE_GETORIG;
         KTempFile localFile;
-        KURL localURL;
+        KUrl localURL;
         localURL.setPath( d->tempName = localFile.name() );
-        const KURL currentURL = item->url();
+        const KUrl currentURL = item->url();
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
                                          false, false /* No GUI */ );
         job->addMetaData("thumbnail","1");
@@ -429,7 +429,7 @@ void PreviewJob::getOrCreateThumbnail()
 void PreviewJob::createThumbnail( const QString &pixPath )
 {
     d->state = PreviewJobPrivate::STATE_CREATETHUMB;
-    KURL thumbURL;
+    KUrl thumbURL;
     thumbURL.setProtocol("thumbnail");
     thumbURL.setPath(pixPath);
     KIO::TransferJob *job = KIO::get(thumbURL, false, false);
@@ -557,12 +557,12 @@ PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
                           scale, save, enabledPlugins);
 }
 
-PreviewJob *KIO::filePreview( const KURL::List &items, int width, int height,
+PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
     KFileItemList fileItems;
-    for (KURL::List::ConstIterator it = items.begin(); it != items.end(); ++it)
+    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
         fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
     return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
                           scale, save, enabledPlugins, true);

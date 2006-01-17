@@ -27,11 +27,11 @@
 
 using namespace KIO;
 
-SpeedTest::SpeedTest( const KURL & url )
+SpeedTest::SpeedTest( const KUrl & url )
     : QObject(0, "speed")
 {
     Job *job = listRecursive( url );
-    //Job *job = del( KURL("file:" + QDir::currentPath()) ); DANGEROUS !
+    //Job *job = del( KUrl("file:" + QDir::currentPath()) ); DANGEROUS !
     connect(job, SIGNAL( result( KIO::Job*)),
 	    SLOT( finished( KIO::Job* ) ));
     /*connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KURL url;
+    KUrl url;
     if ( args->count() == 1 )
       url = args->url(0);
     else

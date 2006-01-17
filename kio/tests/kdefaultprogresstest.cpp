@@ -11,8 +11,8 @@ int main(int argc, char **argv)
     KApplication app;
 
     DefaultProgress* dlg = new DefaultProgress();
-    KURL src("http://this.host.doesn't.exist/this/dir/neither/andthisfileneither");
-    KURL dest("file:/tmp/dest");
+    KUrl src("http://this.host.doesn't.exist/this/dir/neither/andthisfileneither");
+    KUrl dest("file:/tmp/dest");
     dlg->slotCopying( 0L, src, dest );
     dlg->slotTotalSize( 0L, 12000 );
     dlg->slotTotalFiles( 0L, 12 );

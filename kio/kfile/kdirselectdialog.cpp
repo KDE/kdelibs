@@ -63,21 +63,21 @@ public:
     KHistoryCombo *urlCombo;
     KFileTreeBranch *branch;
     QString recentDirClass;
-    KURL startURL;
-    QStack<KURL> dirsToList;
+    KUrl startURL;
+    QStack<KUrl> dirsToList;
 
     bool comboLocked : 1;
 };
 
-static KURL rootUrl(const KURL &url)
+static KUrl rootUrl(const KUrl &url)
 {
-    KURL root = url;
+    KUrl root = url;
     root.setPath( "/" );
 
-    if (!KAuthorized::authorizeURLAction("list", KURL(), root))
+    if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
     {
-        root = KURL::fromPathOrURL( QDir::homePath() );
-        if (!KAuthorized::authorizeURLAction("list", KURL(), root))
+        root = KUrl::fromPathOrURL( QDir::homePath() );
+        if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
         {
             root = url;
         }
@@ -100,8 +100,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_mainLayout = new QVBoxLayout();
     d->actions=new KActionCollection(this);
     d->speedBar = new KFileSpeedBar( page, "speedbar" );
-    connect( d->speedBar, SIGNAL( activated( const KURL& )),
-             SLOT( setCurrentURL( const KURL& )) );
+    connect( d->speedBar, SIGNAL( activated( const KUrl& )),
+             SLOT( setCurrentURL( const KUrl& )) );
     hlay->addWidget( d->speedBar, 0 );
     hlay->addLayout( m_mainLayout, 1 );
 
@@ -133,7 +133,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )
     {
-        d->startURL = KURL();
+        d->startURL = KUrl();
         QString docPath = KGlobalSettings::documentPath();
         if (QDir(docPath).exists())
             d->startURL.setPath( docPath );
@@ -141,7 +141,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
             d->startURL.setPath( QDir::homePath() );
     }
 
-    KURL root = rootUrl(d->startURL);
+    KUrl root = rootUrl(d->startURL);
 
     m_startDir = d->startURL.url();
 
@@ -171,12 +171,12 @@ KDirSelectDialog::~KDirSelectDialog()
     delete d;
 }
 
-void KDirSelectDialog::setCurrentURL( const KURL& url )
+void KDirSelectDialog::setCurrentURL( const KUrl& url )
 {
     if ( !url.isValid() )
         return;
 
-    KURL root = rootUrl(url);
+    KUrl root = rootUrl(url);
 
     d->startURL = url;
     if ( !d->branch ||
@@ -200,7 +200,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     connect( d->branch, SIGNAL( populateFinished( KFileTreeViewItem * )),
              SLOT( slotNextDirToList( KFileTreeViewItem * ) ));
 
-    KURL dirToList = root;
+    KUrl dirToList = root;
     d->dirsToList.clear();
     QString path = url.path(+1);
     int pos = path.length();
@@ -231,7 +231,7 @@ void KDirSelectDialog::openNextDir( KFileTreeViewItem * /*parent*/ )
     if ( !d->branch )
         return;
 
-    KURL url = d->dirsToList.pop();
+    KUrl url = d->dirsToList.pop();
 
     KFileTreeViewItem *item = view()->findItem( d->branch, url.path().mid(1));
     if ( item )
@@ -304,7 +304,7 @@ void KDirSelectDialog::accept()
 
     if ( !d->recentDirClass.isEmpty() )
     {
-        KURL dir = item->url();
+        KUrl dir = item->url();
         if ( !item->isDir() )
             dir = dir.upURL();
 
@@ -319,7 +319,7 @@ void KDirSelectDialog::accept()
 }
 
 
-KURL KDirSelectDialog::url() const
+KUrl KDirSelectDialog::url() const
 {
     return m_treeView->currentURL();
 }
@@ -330,7 +330,7 @@ void KDirSelectDialog::slotCurrentChanged()
         return;
 
     KFileTreeViewItem *current = view()->currentKFileTreeViewItem();
-    KURL u = current ? current->url() : (d->branch ? d->branch->rootUrl() : KURL());
+    KUrl u = current ? current->url() : (d->branch ? d->branch->rootUrl() : KUrl());
 
     if ( u.isValid() )
     {
@@ -349,20 +349,20 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
     if ( text.isEmpty() )
         return;
 
-    KURL url = KURL::fromPathOrURL( text );
+    KUrl url = KUrl::fromPathOrURL( text );
     d->urlCombo->addToHistory( url.prettyURL() );
 
     if ( localOnly() && !url.isLocalFile() )
         return; // ### messagebox
 
-    KURL oldURL = m_treeView->currentURL();
+    KUrl oldURL = m_treeView->currentURL();
     if ( oldURL.isEmpty() )
-        oldURL = KURL::fromPathOrURL( m_startDir );
+        oldURL = KUrl::fromPathOrURL( m_startDir );
 
     setCurrentURL( url );
 }
 
-KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
+KFileTreeBranch * KDirSelectDialog::createBranch( const KUrl& url )
 {
     QString title = url.isLocalFile() ? url.path() : url.prettyURL();
     KFileTreeBranch *branch = view()->addBranch( url, title, m_showHiddenFolders->isChecked() );
@@ -376,7 +376,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
 {
     if ( d->branch )
     {
-        KURL url = KURL::fromPathOrURL( text );
+        KUrl url = KUrl::fromPathOrURL( text );
         KFileTreeViewItem *item = d->branch->findTVIByURL( url );
         if ( item )
         {
@@ -418,7 +418,7 @@ void KDirSelectDialog::slotMkdir()
     bool selectDirectory = true;
     bool writeOk = false;
     bool exists = false;
-    KURL folderurl( url() );
+    KUrl folderurl( url() );
 
     QStringList dirs = QStringList::split( QDir::separator(), directory );
     QStringList::ConstIterator it = dirs.begin();
@@ -446,20 +446,20 @@ void KDirSelectDialog::slotMkdir()
 
 void KDirSelectDialog::slotShowHiddenFoldersToggled()
 {
-    KURL currentURL = url();
+    KUrl currentURL = url();
 
     d->comboLocked = true;
     view()->removeBranch( d->branch );
     d->comboLocked = false;
 
-    KURL root = rootUrl(d->startURL);
+    KUrl root = rootUrl(d->startURL);
     d->branch = createBranch( root );
 
     setCurrentURL( currentURL );
 }
 
 // static
-KURL KDirSelectDialog::selectDirectory( const QString& startDir,
+KUrl KDirSelectDialog::selectDirectory( const QString& startDir,
                                         bool localOnly,
                                         QWidget *parent,
                                         const QString& caption)
@@ -473,7 +473,7 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
     if ( myDialog.exec() == QDialog::Accepted )
         return myDialog.url();
     else
-        return KURL();
+        return KUrl();
 }
 
 void KDirSelectDialog::virtual_hook( int id, void* data )

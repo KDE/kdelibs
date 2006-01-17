@@ -207,12 +207,12 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        emit dropped(e, parent, afterme);
        emit dropped(this, e, parent, afterme);
 
-       KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+       KUrl::List urls = KUrl::List::fromMimeData( e->mimeData() );
        if ( urls.isEmpty() )
            return;
        emit dropped( this, e, urls );
 
-       KURL parentURL;
+       KUrl parentURL;
        if( parent )
            parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
        else
@@ -232,7 +232,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
    // kdDebug(250) << "Do accept drops: " << ancestOK << endl;
    ancestOK = ancestOK && itemsMovable();
    // kdDebug(250) << "acceptDrag: " << ancestOK << endl;
-   // kdDebug(250) << "canDecode: " << KURL::List::canDecode(e->mimeData()) << endl;
+   // kdDebug(250) << "canDecode: " << KUrl::List::canDecode(e->mimeData()) << endl;
    // kdDebug(250) << "action: " << e->action() << endl;
 
    /*  KListView::acceptDrag(e);  */
@@ -240,7 +240,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
     * acceptDrops() && itemsMovable() && (e->source()==viewport());
     * ask acceptDrops and itemsMovable, but not the third
     */
-   return ancestOK && KURL::List::canDecode( e->mimeData() ) &&
+   return ancestOK && KUrl::List::canDecode( e->mimeData() ) &&
        // Why this test? All DnDs are one of those AFAIK (DF)
       ( e->action() == QDropEvent::Copy
 	|| e->action() == QDropEvent::Move
@@ -252,7 +252,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
 Q3DragObject * KFileTreeView::dragObject()
 {
 
-   KURL::List urls;
+   KUrl::List urls;
    const QList<Q3ListViewItem *> fileList = selectedItems();
    for (int i = 0; i < fileList.size(); ++i) 
    {
@@ -356,7 +356,7 @@ void KFileTreeView::slotSelectionChanged()
 }
 
 
-KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
+KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name,
                               bool showHidden )
 {
     const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( KIcon::Desktop,KIcon::SizeSmall );
@@ -364,7 +364,7 @@ KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name
     return addBranch( path, name, folderPix, showHidden);
 }
 
-KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
+KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name,
                               const QPixmap& pix, bool showHidden )
 {
    kdDebug(250) << "adding another root " << path.prettyURL() << endl;
@@ -461,12 +461,12 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
       bool end = false;
       for( ; !end && it.current(); ++it )
       {
-	 KURL url = (*it)->url();
+	 KUrl url = (*it)->url();
 
 	 if( m_nextUrlToSelect.equals(url, true ))   // ignore trailing / on dirs
 	 {
 	    setCurrentItem( static_cast<Q3ListViewItem*>(*it) );
-	    m_nextUrlToSelect = KURL();
+	    m_nextUrlToSelect = KUrl();
 	    end = true;
 	 }
       }
@@ -590,13 +590,13 @@ KFileTreeViewItem * KFileTreeView::currentKFileTreeViewItem() const
    return static_cast<KFileTreeViewItem *>( selectedItem() );
 }
 
-KURL KFileTreeView::currentURL() const
+KUrl KFileTreeView::currentURL() const
 {
     KFileTreeViewItem *item = currentKFileTreeViewItem();
     if ( item )
         return currentKFileTreeViewItem()->url();
     else
-        return KURL();
+        return KUrl();
 }
 
 void KFileTreeView::slotOnItem( Q3ListViewItem *item )
@@ -604,7 +604,7 @@ void KFileTreeView::slotOnItem( Q3ListViewItem *item )
     KFileTreeViewItem *i = static_cast<KFileTreeViewItem *>( item );
     if( i )
     {
-       const KURL url = i->url();
+       const KUrl url = i->url();
        if ( url.isLocalFile() )
 	  emit onItem( url.path() );
        else
@@ -629,7 +629,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
    KFileTreeViewItem *ret = 0;
    if( brnch )
    {
-      KURL url = brnch->rootUrl();
+      KUrl url = brnch->rootUrl();
 
       if( ! relUrl.isEmpty() && QDir::isRelativePath(relUrl) )
       {

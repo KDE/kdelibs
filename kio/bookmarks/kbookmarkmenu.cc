@@ -321,7 +321,7 @@ void RMB::slotRMBActionProperties( int val )
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
   if ( !dlg.finalUrl().isNull() )
   {
-    KURL u = KURL::fromPathOrURL(dlg.finalUrl());
+    KUrl u = KUrl::fromPathOrURL(dlg.finalUrl());
     bookmark.internalElement().setAttribute("href", u.url(0, 106));
   }
 
@@ -357,14 +357,14 @@ void RMB::slotRMBActionInsert( int val )
   {
     KBookmarkGroup parentBookmark = bookmark.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( m_pManager, title, KURL(  url ) );
+    parentBookmark.addBookmark( m_pManager, title, KUrl(  url ) );
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bookmark.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, KURL( url ) );
+    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, KUrl( url ) );
     parentBookmark.moveItem( newBookmark, parentBookmark.previous(bookmark) );
     m_pManager->emitChanged( parentBookmark );
   }
@@ -721,7 +721,7 @@ void KBookmarkMenu::slotAddBookmarksList()
 
   KExtendedBookmarkOwner::QStringPairList::const_iterator it;
   for ( it = list.begin(); it != list.end(); ++it )
-    group.addBookmark( m_pManager, (*it).first, KURL((*it).second) );
+    group.addBookmark( m_pManager, (*it).first, KUrl((*it).second) );
 
   m_pManager->emitChanged( parentBookmark );
 }

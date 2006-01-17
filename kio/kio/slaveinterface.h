@@ -29,7 +29,7 @@
 #include <kio/authinfo.h>
 #include <kdatastream.h>
 
-class KURL;
+class KUrl;
 
 namespace KIO {
 
@@ -135,7 +135,7 @@ Q_SIGNALS:
     void metaData( const KIO::MetaData & );
     void totalSize( KIO::filesize_t );
     void processedSize( KIO::filesize_t );
-    void redirection( const KURL& );
+    void redirection( const KUrl& );
 
     void speed( unsigned long );
     void errorPage();

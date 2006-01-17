@@ -28,7 +28,7 @@
 #include <qstring.h>
 
 class QStringList;
-class KURL;
+class KUrl;
 class KURLCompletionPrivate;
 
 /**
@@ -155,7 +155,7 @@ public:
 	 * urls.
 	 * @param text the text to process
 	 * @return the path or URL resulting from this operation. If you
-         * want to convert it to a KURL, use KURL::fromPathOrURL.
+         * want to convert it to a KUrl, use KUrl::fromPathOrURL.
 	 */
 	QString replacedPath( const QString& text );
 
@@ -204,7 +204,7 @@ private:
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 
-	void listURLs( const QList<KURL *> &urls,
+	void listURLs( const QList<KUrl *> &urls,
 	               const QString &filter = QString(),
 	               bool only_exe = false,
 	               bool no_hidden = false );

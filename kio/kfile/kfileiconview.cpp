@@ -808,7 +808,7 @@ void KFileIconView::zoomOut()
 Q3DragObject *KFileIconView::dragObject()
 {
     // create a list of the URL:s that we want to drag
-    const KURL::List urls = KFileView::selectedItems()->urlList();
+    const KUrl::List urls = KFileView::selectedItems()->urlList();
     QPixmap pixmap;
     if( urls.count() > 1 )
         pixmap = DesktopIcon( "kmultiple", iconSize() );
@@ -846,7 +846,7 @@ void KFileIconView::slotAutoOpen()
 
 bool KFileIconView::acceptDrag(QDropEvent* e) const
 {
-    return KURL::List::canDecode( e->mimeData() ) &&
+    return KUrl::List::canDecode( e->mimeData() ) &&
        (e->source()!=const_cast<KFileIconView*>(this)) &&
        ( e->action() == QDropEvent::Copy
       || e->action() == QDropEvent::Move
@@ -926,10 +926,10 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
 
     emit dropped(e, fileItem);
 
-    KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+    KUrl::List urls = KUrl::List::fromMimeData( e->mimeData() );
     if ( !urls.isEmpty() )
     {
-        emit dropped( e, urls, fileItem ? fileItem->url() : KURL() );
+        emit dropped( e, urls, fileItem ? fileItem->url() : KUrl() );
         sig->dropURLs( fileItem, e, urls );
     }
 }

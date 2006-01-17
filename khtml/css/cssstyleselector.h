@@ -33,7 +33,7 @@ class KHTMLSettings;
 class KHTMLView;
 class KHTMLPart;
 class KHTMLFactory;
-class KURL;
+class KUrl;
 
 namespace DOM {
     class DocumentImpl;
@@ -113,7 +113,7 @@ namespace khtml
 	 * Also takes into account special cases for HTML documents,
 	 * including the defaultStyle (which is html only)
 	 */
-	CSSStyleSelector( DOM::DocumentImpl* doc, QString userStyleSheet, DOM::StyleSheetListImpl *styleSheets, const KURL &url,
+	CSSStyleSelector( DOM::DocumentImpl* doc, QString userStyleSheet, DOM::StyleSheetListImpl *styleSheets, const KUrl &url,
                           bool _strictParsing );
 	/**
 	 * same as above but for a single stylesheet.

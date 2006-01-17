@@ -264,7 +264,7 @@ namespace KParts
          * You can use this method to create a generic viewer - that can display any
          * kind of file, provided that there is a ReadOnlyPart installed for it - in 5 lines:
          * \code
-         * // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
+         * // Given the following: KUrl url, QWidget* parentWidget and QObject* parentObject.
          * QString mimetype = KMimeType::findByURL( url )->name();
          * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, 0, parentObject, 0 );
          * if ( part ) {

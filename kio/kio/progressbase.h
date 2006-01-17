@@ -23,7 +23,7 @@
 
 #include <kio/global.h>
 
-class KURL;
+class KUrl;
 namespace KIO {
   class Job;
   class CopyJob;
@@ -207,7 +207,7 @@ public Q_SLOTS:
    * @param src the source of the operation
    * @param dest the destination of the operation
    */
-  virtual void slotCopying( KIO::Job* job, const KURL& src, const KURL& dest ) {
+  virtual void slotCopying( KIO::Job* job, const KUrl& src, const KUrl& dest ) {
     Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest);}
   /**
    * Called when the job is moving.
@@ -215,21 +215,21 @@ public Q_SLOTS:
    * @param src the source of the operation
    * @param dest the destination of the operation
    */
-  virtual void slotMoving( KIO::Job* job, const KURL& src, const KURL& dest ) {
+  virtual void slotMoving( KIO::Job* job, const KUrl& src, const KUrl& dest ) {
     Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest);}
   /**
    * Called when the job is deleting.
    * @param job the KIO::Job
    * @param url the URL to delete
    */
-  virtual void slotDeleting( KIO::Job* job, const KURL& url) {
+  virtual void slotDeleting( KIO::Job* job, const KUrl& url) {
     Q_UNUSED(job);Q_UNUSED(url);}
   /**
    * Called when the job is creating a directory.
    * @param job the KIO::Job
    * @param dir the URL of the directory to create
    */
-  virtual void slotCreatingDir( KIO::Job* job, const KURL& dir ) {
+  virtual void slotCreatingDir( KIO::Job* job, const KUrl& dir ) {
     Q_UNUSED(job);Q_UNUSED(dir);}
 
   /**

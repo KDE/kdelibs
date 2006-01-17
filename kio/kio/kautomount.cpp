@@ -50,7 +50,7 @@ void KAutoMount::slotResult( KIO::Job * job )
   }
   else
   {
-    KURL mountpoint;
+    KUrl mountpoint;
     mountpoint.setPath( KIO::findDeviceMountPoint( m_strDevice ) );
     //kdDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint << endl;
     Q_ASSERT( mountpoint.isValid() );
@@ -67,7 +67,7 @@ void KAutoMount::slotResult( KIO::Job * job )
 
     // Update the desktop file which is used for mount/unmount (icon change)
     kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
-    KURL dfURL;
+    KUrl dfURL;
     dfURL.setPath( m_desktopFile );
     allDirNotify.FilesChanged( dfURL );
     //KDirWatch::self()->setFileDirty( m_desktopFile );
@@ -95,7 +95,7 @@ void KAutoUnmount::slotResult( KIO::Job * job )
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
     // Update the desktop file which is used for mount/unmount (icon change)
     kdDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
-    KURL dfURL;
+    KUrl dfURL;
     dfURL.setPath( m_desktopFile );
     allDirNotify.FilesChanged( dfURL );
     //KDirWatch::self()->setFileDirty( m_desktopFile );
@@ -104,7 +104,7 @@ void KAutoUnmount::slotResult( KIO::Job * job )
     // You may think we removed files, but this may have also readded some
     // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
     // is to relist the directory anyway.
-    KURL mp;
+    KUrl mp;
     mp.setPath( m_mountpoint );
     allDirNotify.FilesAdded( mp );
 

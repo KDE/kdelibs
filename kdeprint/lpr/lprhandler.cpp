@@ -58,7 +58,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 {
 	prt->setDescription(i18n("Unknown (unrecognized entry)"));
 	QString val = entry->field("lp");
-	KURL uri;
+	KUrl uri;
 	if (!val.isEmpty() && val != "/dev/null")
 	{
 		int	p = val.find('@');
@@ -120,7 +120,7 @@ DrMain* LprHandler::loadDbDriver(const QString&)
 PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 {
 	// this default handler only supports local parallel and remote lpd URIs
-	KURL	uri ( prt->device() );
+	KUrl	uri ( prt->device() );
 	QString	prot = uri.protocol();
 	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd" && prot != "socket")
 	{

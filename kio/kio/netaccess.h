@@ -114,7 +114,7 @@ public:
      *
      * @see lastErrorString()
      */
-    static bool download(const KURL& src, QString & target, QWidget* window);
+    static bool download(const KUrl& src, QString & target, QWidget* window);
 
     /**
      * Removes the specified file if and only if it was created
@@ -147,7 +147,7 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool upload(const QString& src, const KURL& target, QWidget* window);
+    static bool upload(const QString& src, const KUrl& target, QWidget* window);
 
     /**
      * Alternative to upload for copying over the network.
@@ -167,13 +167,13 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool copy( const KURL& src, const KURL& target, QWidget* window = 0L );
+    static bool copy( const KUrl& src, const KUrl& target, QWidget* window = 0L );
     // KDE4: rename to file_copy
 
     /**
      * Full-fledged equivalent of KIO::file_copy
      */
-    static bool file_copy( const KURL& src, const KURL& dest, int permissions=-1,
+    static bool file_copy( const KUrl& src, const KUrl& dest, int permissions=-1,
                             bool overwrite=false, bool resume=false, QWidget* window = 0L );
 
     /**
@@ -181,7 +181,7 @@ public:
      * Moves or renames *one file*.
      * @since 3.2
      */
-    static bool file_move( const KURL& src, const KURL& target, int permissions=-1,
+    static bool file_move( const KUrl& src, const KUrl& target, int permissions=-1,
                            bool overwrite=false, bool resume=false, QWidget* window = 0L );
 
 
@@ -204,26 +204,26 @@ public:
      *               prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool dircopy( const KURL& src, const KURL& target, QWidget* window );
+    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window );
 
     /**
      * Overloaded method, which takes a list of source URLs
      */
-    static bool dircopy( const KURL::List& src, const KURL& target, QWidget* window = 0L );
+    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames one file or directory.
      * @since 3.2
      */
-    static bool move( const KURL& src, const KURL& target, QWidget* window = 0L );
+    static bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames a list of files or directories.
      * @since 3.2
      */
-    static bool move( const KURL::List& src, const KURL& target, QWidget* window = 0L );
+    static bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Tests whether a URL exists.
@@ -241,7 +241,7 @@ public:
      *              @p source, false otherwise
      * @since 3.2
      */
-    static bool exists(const KURL& url, bool source, QWidget* window);
+    static bool exists(const KUrl& url, bool source, QWidget* window);
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -259,7 +259,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool stat(const KURL& url, KIO::UDSEntry & entry, QWidget* window);
+    static bool stat(const KUrl& url, KIO::UDSEntry & entry, QWidget* window);
 
 
     /**
@@ -278,7 +278,7 @@ public:
      *         original URL, or the original URL if no local URL can be mapped
      * @since 3.5
      */
-    static KURL mostLocalURL(const KURL& url, QWidget* window);
+    static KUrl mostLocalURL(const KUrl& url, QWidget* window);
 
     /**
      * Deletes a file or a directory in a synchronous way.
@@ -294,7 +294,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true on success, false on failure.
      */
-    static bool del( const KURL & url, QWidget* window );
+    static bool del( const KUrl & url, QWidget* window );
 
     /**
      * Creates a directory in a synchronous way.
@@ -311,7 +311,7 @@ public:
      * @param permissions directory permissions.
      * @return true on success, false on failure.
      */
-    static bool mkdir( const KURL & url, QWidget* window, int permissions = -1 );
+    static bool mkdir( const KUrl & url, QWidget* window, int permissions = -1 );
 
     /**
      * Executes a remote process via the fish ioslave in a synchronous way.
@@ -331,7 +331,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return The resulting output of the @p command that is executed.
      */
-    static QString fish_execute( const KURL & url, const QString command, QWidget* window );
+    static QString fish_execute( const KUrl & url, const QString command, QWidget* window );
 
     /**
      * This function executes a job in a synchronous way.
@@ -368,7 +368,7 @@ public:
      * @since 3.4
      */
     static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
-                                KURL* finalURL=0, QMap<QString,QString>* metaData=0 );
+                                KUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
 
     /**
      * @internal
@@ -392,7 +392,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return The mimetype name.
      */
-    static QString mimetype( const KURL & url, QWidget* window );
+    static QString mimetype( const KUrl & url, QWidget* window );
 
 
     /**
@@ -425,19 +425,19 @@ private:
     /**
      * Internal methods
      */
-    bool filecopyInternal(const KURL& src, const KURL& target, int permissions,
+    bool filecopyInternal(const KUrl& src, const KUrl& target, int permissions,
                           bool overwrite, bool resume, QWidget* window, bool move);
-    bool dircopyInternal(const KURL::List& src, const KURL& target,
+    bool dircopyInternal(const KUrl::List& src, const KUrl& target,
                          QWidget* window, bool move);
-    bool statInternal(const KURL & url, int details, bool source, QWidget* window = 0);
+    bool statInternal(const KUrl & url, int details, bool source, QWidget* window = 0);
 
-    bool delInternal(const KURL & url, QWidget* window = 0);
-    bool mkdirInternal(const KURL & url, int permissions, QWidget* window = 0);
-    QString fish_executeInternal(const KURL & url, const QString command, QWidget* window = 0);
+    bool delInternal(const KUrl & url, QWidget* window = 0);
+    bool mkdirInternal(const KUrl & url, int permissions, QWidget* window = 0);
+    QString fish_executeInternal(const KUrl & url, const QString command, QWidget* window = 0);
     bool synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
-                                 KURL* finalURL, QMap<QString,QString>* metaData );
+                                 KUrl* finalURL, QMap<QString,QString>* metaData );
 
-    QString mimetypeInternal(const KURL & url, QWidget* window = 0);
+    QString mimetypeInternal(const KUrl & url, QWidget* window = 0);
     void enter_loop();
 
     /**
@@ -454,13 +454,13 @@ private Q_SLOTS:
     void slotResult( KIO::Job * job );
     void slotMimetype( KIO::Job * job, const QString & type );
     void slotData( KIO::Job*, const QByteArray& );
-    void slotRedirection( KIO::Job*, const KURL& );
+    void slotRedirection( KIO::Job*, const KUrl& );
 
 private:
     UDSEntry m_entry;
     QString m_mimetype;
     QByteArray m_data;
-    KURL m_url;
+    KUrl m_url;
     QMap<QString, QString> *m_metaData;
 
     /**

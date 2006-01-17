@@ -530,7 +530,7 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
+bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KUrl& , const QString& )
 {
     return false;
 }
@@ -736,7 +736,7 @@ void RenderPartObject::close()
 }
 
 
-bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType )
+bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType )
 {
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
     kdDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
@@ -820,7 +820,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
         {
             part->setPluginPageQuestionAsked( serviceType );
             // Prepare the URL to show in the question (host only if http, to make it short)
-            KURL pluginPageURL( embed->pluginPage );
+            KUrl pluginPageURL( embed->pluginPage );
             QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
             int res = KMessageBox::questionYesNo( m_view,
                                                   i18n("No plugin found for '%1'.\nDo you want to download one from %2?").arg(mimeName).arg(shortURL),

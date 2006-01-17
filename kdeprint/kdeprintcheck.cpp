@@ -66,13 +66,13 @@ bool KdeprintChecker::check(const QStringList& uris)
 	bool	state(true);
 	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
 	{
-		state = (state && checkURL(KURL(*it)));
+		state = (state && checkURL(KUrl(*it)));
 		// kdDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state << endl;
 	}
 	return state;
 }
 
-bool KdeprintChecker::checkURL(const KURL& url)
+bool KdeprintChecker::checkURL(const KUrl& url)
 {
 	QString	prot(url.protocol());
 	if (prot == "config")
@@ -86,7 +86,7 @@ bool KdeprintChecker::checkURL(const KURL& url)
 	return false;
 }
 
-bool KdeprintChecker::checkConfig(const KURL& url)
+bool KdeprintChecker::checkConfig(const KUrl& url)
 {
 	// get the config filename (may contain a path)
 	QString	f(url.path().mid(1));
@@ -114,13 +114,13 @@ bool KdeprintChecker::checkConfig(const KURL& url)
 	return state;
 }
 
-bool KdeprintChecker::checkExec(const KURL& url)
+bool KdeprintChecker::checkExec(const KUrl& url)
 {
 	QString	execname(url.path().mid(1));
 	return !(KStandardDirs::findExe(execname).isEmpty());
 }
 
-bool KdeprintChecker::checkService(const KURL& url)
+bool KdeprintChecker::checkService(const KUrl& url)
 {
 	QString	serv(url.path().mid(1));
 	KNetwork::KBufferedSocket	sock;

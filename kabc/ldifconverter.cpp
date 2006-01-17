@@ -303,10 +303,10 @@ addComment:
   if ( fieldname == QLatin1String( "homeurl" ) ||
        fieldname == QLatin1String( "workurl" ) ) {
     if (a.url().isEmpty()) {
-      a.setUrl( KURL( value ) );
+      a.setUrl( KUrl( value ) );
       return true;
     }
-    if ( a.url().prettyURL() == KURL(value).prettyURL() )
+    if ( a.url().prettyURL() == KUrl(value).prettyURL() )
       return true;
     // TODO: current version of kabc only supports one URL.
     // TODO: change this with KDE 4

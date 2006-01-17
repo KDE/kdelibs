@@ -72,7 +72,7 @@ void KTextBrowser::setSource( const QString& name )
   {
     if( !d->mNotifyClick )
     {
-      KToolInvocation::invokeMailer( KURL( name ) );
+      KToolInvocation::invokeMailer( KUrl( name ) );
     }
     else
     {

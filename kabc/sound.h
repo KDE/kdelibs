@@ -40,7 +40,7 @@ namespace KABC {
  *      KAudioPlayer::play( tmp.name() );
  *    } else if(!sound.url().isEmpty()) {
  *      QString tmpFile;
- *      if(!KIO::NetAccess::download(KURL(themeURL.url()), tmpFile, NULL))
+ *      if(!KIO::NetAccess::download(KUrl(themeURL.url()), tmpFile, NULL))
  *      {
  *        KMessageBox::error(0L,
  *                           KIO::NetAccess::lastErrorString(),

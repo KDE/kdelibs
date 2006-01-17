@@ -54,20 +54,20 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
   connect( startT, SIGNAL( clicked() ), SLOT( startTar() ) );
   connect( test, SIGNAL( clicked() ), SLOT( test() ) );
 
-  connect( lister, SIGNAL( started( const KURL & ) ),
-           debug,  SLOT( started( const KURL & ) ) );
+  connect( lister, SIGNAL( started( const KUrl & ) ),
+           debug,  SLOT( started( const KUrl & ) ) );
   connect( lister, SIGNAL( completed() ),
            debug,  SLOT( completed() ) );
-  connect( lister, SIGNAL( completed( const KURL & ) ),
-           debug,  SLOT( completed( const KURL & ) ) );
+  connect( lister, SIGNAL( completed( const KUrl & ) ),
+           debug,  SLOT( completed( const KUrl & ) ) );
   connect( lister, SIGNAL( canceled() ),
            debug,  SLOT( canceled() ) );
-  connect( lister, SIGNAL( canceled( const KURL & ) ),
-           debug,  SLOT( canceled( const KURL & ) ) );
-  connect( lister, SIGNAL( redirection( const KURL & ) ),
-           debug,  SLOT( redirection( const KURL & ) ) );
-  connect( lister, SIGNAL( redirection( const KURL &, const KURL & ) ),
-           debug,  SLOT( redirection( const KURL &, const KURL & ) ) );
+  connect( lister, SIGNAL( canceled( const KUrl & ) ),
+           debug,  SLOT( canceled( const KUrl & ) ) );
+  connect( lister, SIGNAL( redirection( const KUrl & ) ),
+           debug,  SLOT( redirection( const KUrl & ) ) );
+  connect( lister, SIGNAL( redirection( const KUrl &, const KUrl & ) ),
+           debug,  SLOT( redirection( const KUrl &, const KUrl & ) ) );
   connect( lister, SIGNAL( clear() ),
            debug,  SLOT( clear() ) );
   connect( lister, SIGNAL( newItems( const KFileItemList & ) ),
@@ -100,41 +100,41 @@ KDirListerTest::~KDirListerTest()
 
 void KDirListerTest::startHome()
 {
-  KURL home( getenv( "HOME" ) );
+  KUrl home( getenv( "HOME" ) );
   lister->openURL( home, false, false );
 //  lister->stop();
 }
 
 void KDirListerTest::startRoot()
 {
-  KURL root( "file:/" );
+  KUrl root( "file:/" );
   lister->openURL( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
-  KURL root( "file:/home/jowenn/aclocal_1.tgz" );
+  KUrl root( "file:/home/jowenn/aclocal_1.tgz" );
   lister->openURL( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::test()
 {
-  KURL home( getenv( "HOME" ) );
-  KURL root( "file:/" );
+  KUrl home( getenv( "HOME" ) );
+  KUrl root( "file:/" );
 /*  lister->openURL( home, true, false );
   lister->openURL( root, true, true );
-  lister->openURL( KURL("file:/etc"), true, true );
+  lister->openURL( KUrl("file:/etc"), true, true );
   lister->openURL( root, true, true );
-  lister->openURL( KURL("file:/dev"), true, true );
-  lister->openURL( KURL("file:/tmp"), true, true );
-  lister->openURL( KURL("file:/usr/include"), true, true );
-  lister->updateDirectory( KURL("file:/usr/include") );
-  lister->updateDirectory( KURL("file:/usr/include") );
-  lister->openURL( KURL("file:/usr/"), true, true );
+  lister->openURL( KUrl("file:/dev"), true, true );
+  lister->openURL( KUrl("file:/tmp"), true, true );
+  lister->openURL( KUrl("file:/usr/include"), true, true );
+  lister->updateDirectory( KUrl("file:/usr/include") );
+  lister->updateDirectory( KUrl("file:/usr/include") );
+  lister->openURL( KUrl("file:/usr/"), true, true );
 */
-  lister->openURL( KURL("file:/dev"), true, true );
+  lister->openURL( KUrl("file:/dev"), true, true );
 }
 
 void KDirListerTest::completed()

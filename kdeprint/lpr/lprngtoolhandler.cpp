@@ -288,7 +288,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 	else if (prot == "socket")
 	{
 		comment.append("SOCKET ");
-		KURL url( prt->device() );
+		KUrl url( prt->device() );
 		lp = url.host();
 		if (url.port() == 0)
 			lp.append("%9100");
@@ -298,7 +298,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 	else if (prot == "lpd")
 	{
 		comment.append("QUEUE ");
-		KURL url( prt->device() );
+		KUrl url( prt->device() );
 		lp = url.path().mid(1) + "@" + url.host();
 	}
 	else if (prot == "smb")

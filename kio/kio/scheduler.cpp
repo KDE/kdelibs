@@ -279,7 +279,7 @@ void Scheduler::startStep()
     }
 }
 
-void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config)
+void Scheduler::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config)
 {
     QString host = url.host();
     int port = url.port();
@@ -446,7 +446,7 @@ bool Scheduler::startJobDirect()
     return true;
 }
 
-static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QString &protocol, bool &exact)
+static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QString &protocol, bool &exact)
 {
     QString host = url.host();
     int port = url.port();
@@ -518,7 +518,7 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
              slaveOnHold->kill();
           }
           slaveOnHold = 0;
-          urlOnHold = KURL();
+          urlOnHold = KUrl();
        }
        if (slave)
           return slave;
@@ -527,7 +527,7 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
     return searchIdleList(idleSlaves, job->url(), jobData->protocol, exact);
 }
 
-Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url)
+Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url)
 {
    int error;
    QString errortext;
@@ -605,7 +605,7 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
     if (slave == slaveOnHold)
     {
        slaveOnHold = 0;
-       urlOnHold = KURL();
+       urlOnHold = KUrl();
     }
     idleSlaves->removeAll(slave);
     JobList *list = coSlaves.value(slave);
@@ -653,7 +653,7 @@ void Scheduler::_scheduleCleanup()
     }
 }
 
-void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
+void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
 {
     Slave *slave = job->slave();
     slave->disconnect(job);
@@ -682,11 +682,11 @@ void Scheduler::_removeSlaveOnHold()
         slaveOnHold->kill();
     }
     slaveOnHold = 0;
-    urlOnHold = KURL();
+    urlOnHold = KUrl();
 }
 
 Slave *
-Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
+Scheduler::_getConnectedSlave(const KUrl &url, const KIO::MetaData &config )
 {
     QString proxy;
     QString protocol = KProtocolManager::slaveProtocol(url, proxy);
@@ -730,7 +730,7 @@ Scheduler::slotScheduleCoSlave()
            it = coIdleSlaves->erase( it );
 //           kdDebug(7006) << "scheduler: job started " << job << endl;
 
-           KURL url =job->url();
+           KUrl url =job->url();
            QString host = url.host();
            int port = url.port();
 

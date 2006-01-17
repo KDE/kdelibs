@@ -107,7 +107,7 @@ static void processCookie(QString &line)
 
    QString urlStr;
    popArg(urlStr, line);
-   KURL url(urlStr);
+   KUrl url(urlStr);
    if (!url.isValid())
       FAIL(QString("Invalid URL '%1'").arg(urlStr));
    if (url.isEmpty())
@@ -137,7 +137,7 @@ static void processCheck(QString &line)
 {
    QString urlStr;
    popArg(urlStr, line);
-   KURL url(urlStr);
+   KUrl url(urlStr);
    if (!url.isValid())
       FAIL(QString("Invalid URL '%1'").arg(urlStr));
    if (url.isEmpty())

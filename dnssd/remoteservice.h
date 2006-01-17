@@ -26,7 +26,7 @@
 #include <QCustomEvent>
 
 class QDataStream;
-class KURL;
+class KUrl;
 namespace DNSSD
 {
 class RemoteServicePrivate;
@@ -62,7 +62,7 @@ public:
 	Creates resolved remote service from invitation URL constructed by PublicService::toInvitation.
 	If URL was invalid, service is set to unresolved and other fields should not be used.
 	 */
-	RemoteService(const KURL& url);
+	RemoteService(const KUrl& url);
 	
 	virtual ~RemoteService();
 	

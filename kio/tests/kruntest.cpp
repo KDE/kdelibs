@@ -81,7 +81,7 @@ void Receiver::slotStart()
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     kdDebug() << "creating testKRun " << i << endl;
-    myArray[i] = new testKRun( KURL("file:/tmp"), window(),0, true, false /* no autodelete */ );
+    myArray[i] = new testKRun( KUrl("file:/tmp"), window(),0, true, false /* no autodelete */ );
   }
   start->setEnabled(false);
   stop->setEnabled(true);
@@ -108,7 +108,7 @@ void checkBN(QString a, bool tr, QString b)
   check( QString().sprintf("binaryName('%s', %s)", a.latin1(), bt(tr)), KRun::binaryName(a, tr), b);
 }
 
-void checkPDE(const KService &service, const KURL::List &urls, bool hs, bool tf, QString b)
+void checkPDE(const KService &service, const KUrl::List &urls, bool hs, bool tf, QString b)
 {
   check(
    QString().sprintf("processDesktopExec( "
@@ -132,10 +132,10 @@ int main(int argc, char **argv)
   checkBN( "'quoted' \"arg1\"", true, "quoted" );
   checkBN( " 'leading space'   arg1", true, "leading space" );
 
-  KURL::List l0;
-  KURL::List l1; l1 << "file:/tmp";
-  KURL::List l2; l2 << "http://localhost/foo";
-  KURL::List l3; l3 << "file:/local/file" << "http://remotehost.org/bar";
+  KUrl::List l0;
+  KUrl::List l1; l1 << "file:/tmp";
+  KUrl::List l2; l2 << "http://localhost/foo";
+  KUrl::List l3; l3 << "file:/local/file" << "http://remotehost.org/bar";
 
   static const char
     *execs[] = { "Exec=date -u", "Exec=echo $$PWD" },

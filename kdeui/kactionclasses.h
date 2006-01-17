@@ -49,7 +49,7 @@ class KAccel;
 class KAccelActions;
 class KConfig;
 class KConfigBase;
-class KURL;
+class KUrl;
 class KInstance;
 class KActionCollection;
 class KMenu;
@@ -712,7 +712,7 @@ public:
    *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KURL & ).
+   *  Its signature is of the form slotURLSelected( const KUrl & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -752,7 +752,7 @@ public:
    *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KURL & ).
+   *  Its signature is of the form slotURLSelected( const KUrl & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -768,7 +768,7 @@ public:
    *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KURL & ).
+   *  Its signature is of the form slotURLSelected( const KUrl & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -834,7 +834,7 @@ public Q_SLOTS:
    *  @param name The user visible pretty name that appears before the URL
    *  @since 3.5
    */
-  void addURL( const KURL& url, const QString& name = QString() ); 
+  void addURL( const KUrl& url, const QString& name = QString() ); 
 
 
   /**
@@ -842,7 +842,7 @@ public Q_SLOTS:
    *
    *  @param url The URL of the file
    */
-  void removeURL( const KURL& url );
+  void removeURL( const KUrl& url );
 
   /**
    *  Removes all entries from the recent files list.
@@ -856,7 +856,7 @@ Q_SIGNALS:
    *
    *  @param url The URL thats the user selected.
    */
-  void urlSelected( const KURL& url );
+  void urlSelected( const KUrl& url );
 
 protected Q_SLOTS:
   void itemSelected( const QString& string );

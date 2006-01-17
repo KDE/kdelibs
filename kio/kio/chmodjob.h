@@ -66,7 +66,7 @@ namespace KIO {
     private:
         struct ChmodInfo
         {
-            KURL url;
+            KUrl url;
             int permissions;
         };
         enum { STATE_LISTING, STATE_CHMODING } state;
@@ -88,7 +88,7 @@ namespace KIO {
      * Creates a job that changes permissions/ownership on several files or directories,
      * optionally recursively.
      * This version of chmod uses a KFileItemList so that it directly knows
-     * what to do with the items. TODO: a version that takes a KURL::List,
+     * what to do with the items. TODO: a version that takes a KUrl::List,
      * and a general job that stats each url and returns a KFileItemList.
      *
      * Note that change of ownership is only supported for local files.

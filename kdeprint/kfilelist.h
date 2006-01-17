@@ -50,7 +50,7 @@ protected Q_SLOTS:
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
-	void addFiles(const KURL::List&);
+	void addFiles(const KUrl::List&);
 	void selection(Q3PtrList<Q3ListViewItem>&);
 
 private:

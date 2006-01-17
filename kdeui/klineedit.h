@@ -35,7 +35,7 @@
 class QAction;
 class QMenu;
 class KCompletionBox;
-class KURL;
+class KUrl;
 
 /**
  * An enhanced QLineEdit widget for inputting text.
@@ -175,10 +175,10 @@ public:
     virtual ~KLineEdit ();
 
     /**
-     * Sets @p url into the lineedit. It uses KURL::prettyURL() so
+     * Sets @p url into the lineedit. It uses KUrl::prettyURL() so
      * that the url is properly decoded for displaying.
      */
-    void setURL( const KURL& url );
+    void setURL( const KUrl& url );
 
      /**
      * Re-implemented from KCompletionBase for internal reasons.

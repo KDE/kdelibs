@@ -67,7 +67,7 @@ void Shell::slotFileOpen()
 
 void Shell::slotFileOpenRemote()
 {
-  KURL u ( "http://www.kde.org/index.html" );
+  KUrl u ( "http://www.kde.org/index.html" );
   if ( ! m_part1->openURL( u ) )
     KMessageBox::error(this,"Couldn't open file !");
 }

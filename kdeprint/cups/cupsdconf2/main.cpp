@@ -40,7 +40,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 	KApplication	app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
 
-	KURL	configfile;
+	KUrl	configfile;
 	if (args->count() > 0)
 		CupsdDialog::configure(args->url(0).path());
 	else

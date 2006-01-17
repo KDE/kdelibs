@@ -347,7 +347,7 @@ void AttributesDialog::mapChanged( int pos )
   }
 }
 
-OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
+OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
   const QString &dst, QWidget *parent, const char *name )
   : KDialogBase( Plain, i18n( "Offline Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )

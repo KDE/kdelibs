@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 
-class KURL;
+class KUrl;
 class Q3StrIList;
 
 /**
@@ -76,7 +76,7 @@ public:
    * Construct a sasl object and initialize it with the username and password
    * passed via the url.
    */
-  KDESasl(const KURL &aUrl);
+  KDESasl(const KUrl &aUrl);
   /**
    * This is a conveniece function and differs from the above function only by
    * what arguments it accepts.

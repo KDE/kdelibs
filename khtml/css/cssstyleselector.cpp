@@ -190,7 +190,7 @@ static PseudoState pseudoState;
 
 
 CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, StyleSheetListImpl *styleSheets,
-                                    const KURL &url, bool _strictParsing )
+                                    const KUrl &url, bool _strictParsing )
 {
     KHTMLView* view = doc->view();
 
@@ -233,7 +233,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
     //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 
-    KURL u = url;
+    KUrl u = url;
 
     u.setQuery( QString() );
     u.setRef( QString() );

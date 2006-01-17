@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-	KURL url;
+	KUrl url;
 	
 	if(args->count())
 		url = args->arg(0);

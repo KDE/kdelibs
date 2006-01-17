@@ -62,7 +62,7 @@
 #include "kfilemetapreview.h"
 
 
-template class Q3PtrStack<KURL>;
+template class Q3PtrStack<KUrl>;
 template class QHash<QString,KFileItem*>;
 
 
@@ -92,7 +92,7 @@ public:
     QString configGroup;
 };
 
-KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
+KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
     : QWidget(parent),
       dir(0),
       m_fileView(0),
@@ -106,7 +106,7 @@ KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
-        currUrl = KURL();
+        currUrl = KUrl();
         currUrl.setProtocol(QLatin1String("file"));
         currUrl.setPath(strPath);
     }
@@ -402,7 +402,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 
     bool writeOk = false;
     bool exists = false;
-    KURL url( currUrl );
+    KUrl url( currUrl );
 
     QStringList dirs = QStringList::split( QDir::separator(), directory );
     QStringList::ConstIterator it = dirs.begin();
@@ -447,9 +447,9 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         return 0L;
     }
 
-    const KURL::List urls = items.urlList();
+    const KUrl::List urls = items.urlList();
     QStringList files;
-    foreach( const KURL& url, urls )
+    foreach( const KUrl& url, urls )
         files.append( url.pathOrURL() );
 
     bool doIt = !ask;
@@ -502,9 +502,9 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
         return 0L;
     }
 
-    const KURL::List urls = items.urlList();
+    const KUrl::List urls = items.urlList();
     QStringList files;
-    foreach( const KURL& url, urls )
+    foreach( const KUrl& url, urls )
         files.append( url.pathOrURL() );
 
     bool doIt = !ask;
@@ -584,7 +584,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
             selection = QString();
     }
 
-    KURL u(text); // I have to take care of entered URLs
+    KUrl u(text); // I have to take care of entered URLs
     bool filenameEntered = false;
 
     if (u.isLocalFile()) {
@@ -614,9 +614,9 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     kdDebug(kfile_area) << "TODO KDirOperator::checkPath()" << endl;
 }
 
-void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
+void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
 {
-    KURL newurl;
+    KUrl newurl;
 
     if ( !_newurl.isValid() )
 	newurl.setPath( QDir::homePath() );
@@ -644,7 +644,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 
     if (clearforward) {
         // autodelete should remove this one
-        backStack.push(new KURL(currUrl));
+        backStack.push(new KUrl(currUrl));
         forwardStack.clear();
     }
 
@@ -703,7 +703,7 @@ void KDirOperator::pathChanged()
     }
 }
 
-void KDirOperator::slotRedirected( const KURL& newURL )
+void KDirOperator::slotRedirected( const KUrl& newURL )
 {
     currUrl = newURL;
     pendingMimeTypes.clear();
@@ -719,9 +719,9 @@ void KDirOperator::back()
     if ( backStack.isEmpty() )
         return;
 
-    forwardStack.push( new KURL(currUrl) );
+    forwardStack.push( new KUrl(currUrl) );
 
-    KURL *s = backStack.pop();
+    KUrl *s = backStack.pop();
 
     setURL(*s, false);
     delete s;
@@ -733,28 +733,28 @@ void KDirOperator::forward()
     if ( forwardStack.isEmpty() )
         return;
 
-    backStack.push(new KURL(currUrl));
+    backStack.push(new KUrl(currUrl));
 
-    KURL *s = forwardStack.pop();
+    KUrl *s = forwardStack.pop();
     setURL(*s, false);
     delete s;
 }
 
-KURL KDirOperator::url() const
+KUrl KDirOperator::url() const
 {
     return currUrl;
 }
 
 void KDirOperator::cdUp()
 {
-    KURL tmp(currUrl);
+    KUrl tmp(currUrl);
     tmp.cd(QLatin1String(".."));
     setURL(tmp, true);
 }
 
 void KDirOperator::home()
 {
-    KURL u;
+    KUrl u;
     u.setPath( QDir::homePath() );
     setURL(u, true);
 }
@@ -1033,8 +1033,8 @@ void KDirOperator::connectView(KFileView *view)
             this, SLOT( highlightFile(const KFileItem*) ));
     connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
             this, SLOT( slotViewSortingChanged( QDir::SortSpec )));
-    connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&) ),
-            this, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&)) );
+    connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
+            this, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&)) );
 
     if ( reverseAction->isChecked() != m_fileView->isReversed() )
         slotSortReversed();
@@ -1099,15 +1099,15 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
     connect( dir, SIGNAL( percent( int )),
              SLOT( slotProgress( int ) ));
-    connect( dir, SIGNAL(started( const KURL& )), SLOT(slotStarted()));
+    connect( dir, SIGNAL(started( const KUrl& )), SLOT(slotStarted()));
     connect( dir, SIGNAL(newItems(const KFileItemList &)),
              SLOT(insertNewFiles(const KFileItemList &)));
     connect( dir, SIGNAL(completed()), SLOT(slotIOFinished()));
     connect( dir, SIGNAL(canceled()), SLOT(slotCanceled()));
     connect( dir, SIGNAL(deleteItem(KFileItem *)),
              SLOT(itemDeleted(KFileItem *)));
-    connect( dir, SIGNAL(redirection( const KURL& )),
-	     SLOT( slotRedirected( const KURL& )));
+    connect( dir, SIGNAL(redirection( const KUrl& )),
+	     SLOT( slotRedirected( const KUrl& )));
     connect( dir, SIGNAL( clear() ), SLOT( slotClearView() ));
     connect( dir, SIGNAL( refreshItems( const KFileItemList& ) ),
              SLOT( slotRefreshItems( const KFileItemList& ) ) );
@@ -1652,7 +1652,7 @@ void KDirOperator::slotClearView()
 
 // ### temporary code
 #include <dirent.h>
-bool KDirOperator::isReadable( const KURL& url )
+bool KDirOperator::isReadable( const KUrl& url )
 {
     if ( !url.isLocalFile() )
 	return true; // what else can we say?

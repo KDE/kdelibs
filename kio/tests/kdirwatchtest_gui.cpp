@@ -62,7 +62,7 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
 
     lay->addWidget(tree = new KFileTreeView(this));
     QString view = "file:" + dir;
-    KFileTreeBranch *branch = tree->addBranch(KURL(view.latin1()), "Our data dir");
+    KFileTreeBranch *branch = tree->addBranch(KUrl(view.latin1()), "Our data dir");
     tree->addColumn("Folders");
     branch->setOpen(true);
 

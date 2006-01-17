@@ -150,7 +150,7 @@ Q_SIGNALS:
     bool mAnonymous;
     QMap<QString, QString> mAttributes;
 
-    KURL mLDAPUrl;
+    KUrl mLDAPUrl;
     QString mErrorMsg;
 
     KIO::Job *loadFromCache();

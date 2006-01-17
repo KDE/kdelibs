@@ -25,13 +25,13 @@ int KDirNotify::s_serial = 0;
 KDirNotify::KDirNotify()
   :  DCOPObject( DCOPCString(QString("KDirNotify-%1").arg(++s_serial).toUtf8()) )
 {
-   connectDCOPSignal(0, "KDirNotify", "FilesAdded(KURL)", "FilesAdded(KURL)", false);
-   connectDCOPSignal(0, "KDirNotify", "FilesRemoved(KURL::List)", "FilesRemoved(KURL::List)", false);
-   connectDCOPSignal(0, "KDirNotify", "FilesChanged(KURL::List)", "FilesChanged(KURL::List)", false);
-   connectDCOPSignal(0, "KDirNotify", "FileRenamed(KURL,KURL)", "FileRenamed(KURL,KURL)", false);
+   connectDCOPSignal(0, "KDirNotify", "FilesAdded(KUrl)", "FilesAdded(KUrl)", false);
+   connectDCOPSignal(0, "KDirNotify", "FilesRemoved(KUrl::List)", "FilesRemoved(KUrl::List)", false);
+   connectDCOPSignal(0, "KDirNotify", "FilesChanged(KUrl::List)", "FilesChanged(KUrl::List)", false);
+   connectDCOPSignal(0, "KDirNotify", "FileRenamed(KUrl,KUrl)", "FileRenamed(KUrl,KUrl)", false);
 }
 
-void KDirNotify::FileRenamed( const KURL &, const KURL & )
+void KDirNotify::FileRenamed( const KUrl &, const KUrl & )
 {
 }
 

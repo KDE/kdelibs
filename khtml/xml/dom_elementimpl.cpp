@@ -889,7 +889,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 			if(getDocument()) {
                             //We need to sanitize the urls - strip out the passwords.
 			    //FIXME:   are src=  and href=  the only places that might have a password and need to be sanitized?
-			    KURL safeURL(getDocument()->completeURL(attribute->value().string()));
+			    KUrl safeURL(getDocument()->completeURL(attribute->value().string()));
 			    safeURL.setPass(QString());
 			    result += Qt::escape(safeURL.prettyURL());
 			}

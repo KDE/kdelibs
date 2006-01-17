@@ -313,16 +313,16 @@ public:
     void writeln ( const DOMString &text );
     void finishParsing (  );
 
-    KURL URL() const { return m_url; }
+    KUrl URL() const { return m_url; }
     void setURL(const QString& url) { m_url = url; }
 
-    KURL baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
-    void setBaseURL(const KURL& baseURL) { m_baseURL = baseURL; }
+    KUrl baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
+    void setBaseURL(const KUrl& baseURL) { m_baseURL = baseURL; }
 
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) const { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
+    QString completeURL(const QString& url) const { return KUrl(baseURL(),url,m_decoderMibEnum).url(); };
     DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
     void setUserStyleSheet(const QString& sheet);
@@ -541,8 +541,8 @@ protected:
 
     khtml::DocLoader *m_docLoader;
     khtml::Tokenizer *m_tokenizer;
-    KURL m_url;
-    KURL m_baseURL;
+    KUrl m_url;
+    KUrl m_baseURL;
     QString m_baseTarget;
 
     DocumentTypeImpl *m_doctype;

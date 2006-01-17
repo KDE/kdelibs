@@ -26,7 +26,7 @@
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
 
-static void checkIcon( const KURL& url, const QString& expectedIcon )
+static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
     QString icon = KMimeType::iconNameForURL( url );
     QCOMPARE( icon, expectedIcon );
@@ -42,12 +42,12 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
-    qDebug("Comment is %s", qPrintable(s0->comment(KURL(),false)) );
+    qDebug("Comment is %s", qPrintable(s0->comment(KUrl(),false)) );
 
     KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
     QVERIFY( s1 );
     QCOMPARE( s1->name(), QString::fromLatin1("text/plain") );
-    qDebug("Comment is %s", qPrintable(s1->comment(KURL(),false)) );
+    qDebug("Comment is %s", qPrintable(s1->comment(KUrl(),false)) );
 }
 
 void KMimeTypeTest::testIcons()
@@ -81,18 +81,18 @@ void KMimeTypeTest::testFindByURL()
 {
     KMimeType::Ptr mf;
 
-    mf = KMimeType::findByURL( KURL("http://foo/bar.png") );
+    mf = KMimeType::findByURL( KUrl("http://foo/bar.png") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
-    if ( !KProtocolInfo::isKnownProtocol(KURL("man:/")) )
+    if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP( "man protocol not installed", SkipSingle );
 
-    mf = KMimeType::findByURL( KURL("man:/ls") );
+    mf = KMimeType::findByURL( KUrl("man:/ls") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
 
-    mf = KMimeType::findByURL( KURL("man:/ls/") );
+    mf = KMimeType::findByURL( KUrl("man:/ls/") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
 }

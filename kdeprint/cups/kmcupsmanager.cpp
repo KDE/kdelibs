@@ -128,7 +128,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	uri = printerURI(p,false);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	// needed to avoid problems when changing printer name
-	p->setUri(KURL(uri));
+	p->setUri(KUrl(uri));
 
 	if (isclass)
 	{
@@ -148,7 +148,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		if (!otherP || otherP->device() != p->device())
 		{
 			/**
-			 * As now the device is a QString instead of KURL, special encoding
+			 * As now the device is a QString instead of KUrl, special encoding
 			 * required for SMB is not needed anymore. Use a unique mechanism
 			 * for all backends.
 			 */
@@ -295,7 +295,7 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		{
 			/**
 			 * No specific treatment required as the device is
-			 * a normal QString instead of a KURL
+			 * a normal QString instead of a KUrl
 			 */
 			p->setDevice( value );
 		}
@@ -466,7 +466,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 		}
 		else if (attrname == "printer-uri-supported")
 		{
-			printer->setUri(KURL(attr->values[0].string.text));
+			printer->setUri(KUrl(attr->values[0].string.text));
 		}
 		else if (attrname == "printer-location")
 		{

@@ -145,7 +145,7 @@ namespace KIO {
          * @return the following strings: caption, error + description,
 	 *         causes+solutions
          */
-        QStringList detailedErrorStrings(const KURL *reqUrl = 0L,
+        QStringList detailedErrorStrings(const KUrl *reqUrl = 0L,
                                          int method = -1) const;
 
         /**
@@ -542,7 +542,7 @@ namespace KIO {
 	 * @param packedArgs the arguments
 	 * @param showProgressInfo true to show progress information to the user
 	 */
-        SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
+        SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
                   bool showProgressInfo);
 
         ~SimpleJob();
@@ -551,7 +551,7 @@ namespace KIO {
 	 * Returns the SimpleJob's URL
 	 * @return the url
 	 */
-        const KURL& url() const { return m_url; }
+        const KUrl& url() const { return m_url; }
 
         /**
          * Abort job.
@@ -668,8 +668,8 @@ namespace KIO {
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;
-        KURL m_url;
-        KURL m_subUrl;
+        KUrl m_url;
+        KUrl m_subUrl;
         int m_command;
         KIO::filesize_t m_totalSize;
     protected:
@@ -681,7 +681,7 @@ namespace KIO {
 	 * @param m_redirectionURL Reference to redirection URL,
 	 * used instead of m_url if not empty
 	 */
-	void storeSSLSessionFromJob(const KURL &m_redirectionURL);
+	void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
     private:
 	class SimpleJobPrivate* d;
     };
@@ -702,7 +702,7 @@ namespace KIO {
 	 * @param packedArgs the arguments
 	 * @param showProgressInfo true to show progress information to the user
 	 */
-        StatJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        StatJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
 	 * A stat() can have two meanings. Either we want to read from this URL,
@@ -747,7 +747,7 @@ namespace KIO {
 	 * @param job the job that is redirected
 	 * @param url the new url
          */
-        void redirection( KIO::Job *job, const KURL &url );
+        void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
@@ -757,17 +757,17 @@ namespace KIO {
 	 * @param toUrl the new URL
 	 * @since 3.1
          */
-        void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
+        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
     protected Q_SLOTS:
         void slotStatEntry( const KIO::UDSEntry & entry );
-        void slotRedirection( const KURL &url);
+        void slotRedirection( const KUrl &url);
         virtual void slotFinished();
         virtual void slotMetaData( const KIO::MetaData &_metaData);
 
     protected:
         UDSEntry m_statResult;
-        KURL m_redirectionURL;
+        KUrl m_redirectionURL;
         bool m_bSource;
         short int m_details;
     protected:
@@ -794,7 +794,7 @@ namespace KIO {
 	 * @param packedArgs the arguments
 	 * @param showProgressInfo true to show progress information to the user
 	 */
-        MkdirJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        MkdirJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
 	 * @internal
@@ -812,7 +812,7 @@ namespace KIO {
 	 * @param job the job that is redirected
 	 * @param url the new url
          */
-        void redirection( KIO::Job *job, const KURL &url );
+        void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
@@ -821,14 +821,14 @@ namespace KIO {
 	 * @param fromUrl the original URL
 	 * @param toUrl the new URL
          */
-        void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
+        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
     protected Q_SLOTS:
-        void slotRedirection( const KURL &url);
+        void slotRedirection( const KUrl &url);
         virtual void slotFinished();
 
     protected:
-        KURL m_redirectionURL;
+        KUrl m_redirectionURL;
 
     protected:
 	virtual void virtual_hook( int id, void* data );
@@ -848,7 +848,7 @@ namespace KIO {
         /**
          * Do not create a DirectCopyJob. Use KIO::copy() or KIO::file_copy() instead.
          */
-        DirectCopyJob(const KURL& url, int command, const QByteArray &packedArgs,
+        DirectCopyJob(const KUrl& url, int command, const QByteArray &packedArgs,
                       bool showProgressInfo);
         /**
 	 * @internal
@@ -890,7 +890,7 @@ namespace KIO {
 	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
 	* @param showProgressInfo true to show progress information to the user
 	*/
-        TransferJob(const KURL& url, int command,
+        TransferJob(const KUrl& url, int command,
                     const QByteArray &packedArgs,
                     const QByteArray &_staticData,
                     bool showProgressInfo);
@@ -1001,7 +1001,7 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param url the new URL
          */
-        void redirection( KIO::Job *job, const KURL &url );
+        void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
@@ -1011,7 +1011,7 @@ namespace KIO {
 	 * @param toUrl the new URL
 	 * @since 3.1
          */
-        void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
+        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
         /**
          * Mimetype determined.
@@ -1031,7 +1031,7 @@ namespace KIO {
 
 
     protected Q_SLOTS:
-        virtual void slotRedirection( const KURL &url);
+        virtual void slotRedirection( const KUrl &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
@@ -1047,8 +1047,8 @@ namespace KIO {
         bool m_suspended;
         bool m_errorPage;
         QByteArray staticData;
-        KURL m_redirectionURL;
-        KURL::List m_redirectionList;
+        KUrl m_redirectionURL;
+        KUrl::List m_redirectionList;
         QString m_mimetype;
         TransferJob *m_subJob;
     protected:
@@ -1090,7 +1090,7 @@ namespace KIO {
 	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
 	* @param showProgressInfo true to show progress information to the user
 	*/
-        StoredTransferJob(const KURL& url, int command,
+        StoredTransferJob(const KUrl& url, int command,
                           const QByteArray &packedArgs,
                           const QByteArray &_staticData,
                           bool showProgressInfo);
@@ -1133,7 +1133,7 @@ namespace KIO {
 	 * @param url the first url to get
 	 * @param showProgressInfo true to show progress information to the user
 	 */
-        MultiGetJob(const KURL& url, bool showProgressInfo);
+        MultiGetJob(const KUrl& url, bool showProgressInfo);
 
         virtual ~MultiGetJob();
 
@@ -1152,7 +1152,7 @@ namespace KIO {
 	 * @param url the url of the file to get
 	 * @param metaData the meta data for this request
 	 */
-        void get(long id, const KURL &url, const MetaData &metaData);
+        void get(long id, const KUrl &url, const MetaData &metaData);
 
     Q_SIGNALS:
         /**
@@ -1180,17 +1180,17 @@ namespace KIO {
         void result( long id);
 
     protected Q_SLOTS:
-        virtual void slotRedirection( const KURL &url);
+        virtual void slotRedirection( const KUrl &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotMimetype( const QString &mimetype );
     private:
         struct GetRequest {
         public:
-           GetRequest(long _id, const KURL &_url, const MetaData &_metaData)
+           GetRequest(long _id, const KUrl &_url, const MetaData &_metaData)
              : id(_id), url(_url), metaData(_metaData) { }
            long id;
-           KURL url;
+           KUrl url;
            MetaData metaData;
            bool operator==( const GetRequest& req ) const { return req.id == id; }
         };
@@ -1226,7 +1226,7 @@ namespace KIO {
 	* @param packedArgs the arguments
 	* @param showProgressInfo true to show progress information to the user
 	*/
-        MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
          * Call this in the slot connected to result,
@@ -1271,7 +1271,7 @@ namespace KIO {
 	* @param resume true to resume an operation, false otherwise
 	* @param showProgressInfo true to show progress information to the user
 	 */
-        FileCopyJob( const KURL& src, const KURL& dest, int permissions,
+        FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
                      bool move, bool overwrite, bool resume, bool showProgressInfo);
 
         ~FileCopyJob();
@@ -1292,13 +1292,13 @@ namespace KIO {
 	 * Returns the source URL.
 	 * @return the source URL
 	 */
-        KURL srcURL() const { return m_src; }
+        KUrl srcURL() const { return m_src; }
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KURL destURL() const { return m_dest; }
+        KUrl destURL() const { return m_dest; }
 
     public Q_SLOTS:
         void slotStart();
@@ -1339,8 +1339,8 @@ namespace KIO {
 
     protected:
         void startCopyJob();
-        void startCopyJob(const KURL &slave_url);
-        void startRenameJob(const KURL &slave_url);
+        void startCopyJob(const KUrl &slave_url);
+        void startRenameJob(const KUrl &slave_url);
         void startDataPump();
         void connectSubjob( SimpleJob * job );
 
@@ -1348,8 +1348,8 @@ namespace KIO {
         void startBestCopyMethod();
 
     protected:
-        KURL m_src;
-        KURL m_dest;
+        KUrl m_src;
+        KUrl m_dest;
         int m_permissions;
         bool m_move:1;
         bool m_overwrite:1;
@@ -1390,7 +1390,7 @@ namespace KIO {
 	* @param prefix the prefix of the files, or QString() for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
-        ListJob(const KURL& url, bool showProgressInfo,
+        ListJob(const KUrl& url, bool showProgressInfo,
                 bool recursive = false, const QString &prefix = QString(),
                 bool includeHidden = true);
 
@@ -1408,7 +1408,7 @@ namespace KIO {
          * @return the redirection url
          * @since 3.4.1
          */
-        const KURL& redirectionURL() const { return m_redirectionURL; }
+        const KUrl& redirectionURL() const { return m_redirectionURL; }
 
         /**
          * Do not apply any KIOSK restrictions to this job.
@@ -1435,7 +1435,7 @@ namespace KIO {
 	 * @param job the job that is redirected
 	 * @param url the new url
          */
-        void redirection( KIO::Job *job, const KURL &url );
+        void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
@@ -1445,14 +1445,14 @@ namespace KIO {
 	 * @param toUrl the new URL
 	 * @since 3.1
          */
-        void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
+        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
     protected Q_SLOTS:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
-        void slotRedirection( const KURL &url );
+        void slotRedirection( const KUrl &url );
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:
@@ -1460,7 +1460,7 @@ namespace KIO {
         bool includeHidden;
         QString prefix;
         unsigned long m_processedEntries;
-        KURL m_redirectionURL;
+        KUrl m_redirectionURL;
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
@@ -1470,8 +1470,8 @@ namespace KIO {
     /// @internal
     struct KIO_EXPORT CopyInfo
     {
-        KURL uSource;
-        KURL uDest;
+        KUrl uSource;
+        KUrl uDest;
         QString linkDest; // for symlinks only
         int permissions;
         //mode_t type;
@@ -1518,7 +1518,7 @@ namespace KIO {
 	 * @see KIO::link()
 	 * @see KIO::linkAs()
 	 */
-        CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo );
+        CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod, bool showProgressInfo );
 
         virtual ~CopyJob();
 
@@ -1526,13 +1526,13 @@ namespace KIO {
 	 * Returns the list of source URLs.
 	 * @return the list of source URLs.
 	 */
-        KURL::List srcURLs() const { return m_srcList; }
+        KUrl::List srcURLs() const { return m_srcList; }
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KURL destURL() const { return m_dest; }
+        KUrl destURL() const { return m_dest; }
 
         /**
          * By default the permissions of the copied files will be those of the source files.
@@ -1603,7 +1603,7 @@ namespace KIO {
 	 *             being copied
 	 * @param dest the destination of the current operation
          */
-        void copying( KIO::Job *job, const KURL& src, const KURL& dest );
+        void copying( KIO::Job *job, const KUrl& src, const KUrl& dest );
         /**
          * The job is creating a symbolic link.
 	 * @param job the job that emitted this signal
@@ -1611,7 +1611,7 @@ namespace KIO {
 	 *             being linked
 	 * @param to the destination of the current operation
          */
-        void linking( KIO::Job *job, const QString& target, const KURL& to );
+        void linking( KIO::Job *job, const QString& target, const KUrl& to );
         /**
          * The job is moving a file or directory.
 	 * @param job the job that emitted this signal
@@ -1619,20 +1619,20 @@ namespace KIO {
 	 *             being moved
 	 * @param to the destination of the current operation
          */
-        void moving( KIO::Job *job, const KURL& from, const KURL& to );
+        void moving( KIO::Job *job, const KUrl& from, const KUrl& to );
         /**
          * The job is creating the directory @p dir.
 	 * @param job the job that emitted this signal
 	 * @param dir the directory that is currently being created
          */
-        void creatingDir( KIO::Job *job, const KURL& dir );
+        void creatingDir( KIO::Job *job, const KUrl& dir );
         /**
          * The user chose to rename @p from to @p to.
 	 * @param job the job that emitted this signal
 	 * @param from the original name
 	 * @param to the new name
          */
-        void renamed( KIO::Job *job, const KURL& from, const KURL& to );
+        void renamed( KIO::Job *job, const KUrl& from, const KUrl& to );
 
         /**
          * The job emits this signal when copying or moving a file or directory successfully finished.
@@ -1646,7 +1646,7 @@ namespace KIO {
          * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving). true if is has been renamed
          */
-        void copyingDone( KIO::Job *job, const KURL &from, const KURL &to, bool directory, bool renamed );
+        void copyingDone( KIO::Job *job, const KUrl &from, const KUrl &to, bool directory, bool renamed );
         /**
          * The job is copying or moving a symbolic link, that points to target.
          * The new link is created in @p to. The existing one is/was in @p from.
@@ -1656,7 +1656,7 @@ namespace KIO {
 	 * @param target the target
          * @param to the destination URL
          */
-        void copyingLinkDone( KIO::Job *job, const KURL &from, const QString& target, const KURL& to );
+        void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
 
     protected:
         void statCurrentSrc();
@@ -1664,7 +1664,7 @@ namespace KIO {
 
         // Those aren't slots but submethods for slotResult.
         void slotResultStating( KIO::Job * job );
-        void startListing( const KURL & src );
+        void startListing( const KUrl & src );
         void slotResultCreatingDirs( KIO::Job * job );
         void slotResultConflictCreatingDirs( KIO::Job * job );
         void createNextDir();
@@ -1673,10 +1673,10 @@ namespace KIO {
         void copyNextFile();
         void slotResultDeletingDirs( KIO::Job * job );
         void deleteNextDir();
-        void skip( const KURL & sourceURL );
+        void skip( const KUrl & sourceURL );
         void slotResultRenaming( KIO::Job * job );
     private:
-        void startRenameJob(const KURL &slave_url);
+        void startRenameJob(const KUrl &slave_url);
         bool shouldOverwrite( const QString& path ) const;
         bool shouldSkip( const QString& path ) const;
         void skipSrc();
@@ -1711,15 +1711,15 @@ namespace KIO {
         int m_processedDirs;
         QList<CopyInfo> files;
         QList<CopyInfo> dirs;
-        KURL::List dirsToRemove;
-        KURL::List m_srcList;
-        KURL::List::Iterator m_currentStatSrc;
+        KUrl::List dirsToRemove;
+        KUrl::List m_srcList;
+        KUrl::List::Iterator m_currentStatSrc;
         bool m_bCurrentSrcIsDir;
         bool m_bCurrentOperationIsLink;
         bool m_bSingleFileCopy;
         bool m_bOnlyRenames;
-        KURL m_dest;
-        KURL m_currentDest;
+        KUrl m_dest;
+        KUrl m_currentDest;
         //
         QStringList m_skipList;
         QStringList m_overwriteList;
@@ -1729,8 +1729,8 @@ namespace KIO {
 
         QTimer *m_reportTimer;
         //these both are used for progress dialog reporting
-        KURL m_currentSrcURL;
-        KURL m_currentDestURL;
+        KUrl m_currentSrcURL;
+        KUrl m_currentDestURL;
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
@@ -1758,13 +1758,13 @@ namespace KIO {
 	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::del()
 	 */
-        DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo );
+        DeleteJob( const KUrl::List& src, bool shred, bool showProgressInfo );
 
 	/**
 	 * Returns the list of URLs.
 	 * @return the list of URLs.
 	 */
-        KURL::List urls() const { return m_srcList; }
+        KUrl::List urls() const { return m_srcList; }
 
     Q_SIGNALS:
 
@@ -1800,7 +1800,7 @@ namespace KIO {
 	 * @param file the URL of the file or directory that is being
 	 *        deleted
 	 */
-        void deleting( KIO::Job *job, const KURL& file );
+        void deleting( KIO::Job *job, const KUrl& file );
 
     protected Q_SLOTS:
         void slotStart();
@@ -1827,12 +1827,12 @@ namespace KIO {
         int m_processedFiles;
         int m_processedDirs;
         int m_totalFilesDirs;
-        KURL m_currentURL;
-        KURL::List files;
-        KURL::List symlinks;
-        KURL::List dirs;
-        KURL::List m_srcList;
-        KURL::List::Iterator m_currentStat;
+        KUrl m_currentURL;
+        KUrl::List files;
+        KUrl::List symlinks;
+        KUrl::List dirs;
+        KUrl::List m_srcList;
+        KUrl::List::Iterator m_currentStat;
 	QStringList m_parentDirs;
         QTimer *m_reportTimer;
     protected:

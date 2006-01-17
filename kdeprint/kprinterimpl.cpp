@@ -145,7 +145,7 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 	{
 		if (p->option("kde-special-command").isEmpty() && p->outputToFile())
 		{
-			KURL url( p->outputFileName() );
+			KUrl url( p->outputFileName() );
 			if ( !url.isLocalFile() )
 			{
 				cmd = ( flag ? "mv" : "cp" ) + ( " %in $out{" + p->outputFileName() + "}" );

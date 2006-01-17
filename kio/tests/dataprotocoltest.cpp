@@ -23,7 +23,7 @@
 #include <iostream>
 using namespace std;
 
-class KURL;
+class KUrl;
 
 class TestSlave {
 public:
@@ -32,8 +32,8 @@ public:
   virtual ~TestSlave() {
   }
 
-  virtual void get(const KURL &) = 0;
-  virtual void mimetype(const KURL &) = 0;
+  virtual void get(const KUrl &) = 0;
+  virtual void mimetype(const KUrl &) = 0;
 
   void mimeType(const QString &type) {
     testStrings("MIME Type: ",mime_type_expected,type);

@@ -25,7 +25,7 @@
 #include <dnssd/servicebase.h>
 #include <QCustomEvent>
 
-class KURL;
+class KUrl;
 namespace DNSSD
 {
 class PublicServicePrivate;
@@ -128,7 +128,7 @@ public:
 	default route) will be used.
 	@since 3.5
 	 */
-	const KURL toInvitation(const QString& host=QString());
+	const KUrl toInvitation(const QString& host=QString());
 
 Q_SIGNALS:
 	/**

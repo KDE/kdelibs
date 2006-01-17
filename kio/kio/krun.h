@@ -72,7 +72,7 @@ public:
    *        If this parameter is set to @p false then @p url is
    *        examined to find out whether it is a local URL or
    *        not. This flag is just used to improve speed, since the
-   *        function KURL::isLocalFile is a bit slow.
+   *        function KUrl::isLocalFile is a bit slow.
    *
    * @param showProgressInfo
    *        Whether to show progress information when determining the
@@ -81,7 +81,7 @@ public:
    *        a very slow FTP server...
    *        It is always better to provide progress info in such cases.
    */
-  KRun( const KURL& url, QWidget* window, mode_t mode = 0,
+  KRun( const KUrl& url, QWidget* window, mode_t mode = 0,
 	bool isLocalFile = false, bool showProgressInfo = true );
 
   /**
@@ -169,7 +169,7 @@ public:
    *        when the application exits.
    * @return the process id, or 0 on error
    */
-  static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles = false );
+  static pid_t run( const KService& _service, const KUrl::List& _urls, bool tempFiles = false );
 
   /**
    * Open a list of URLs with.
@@ -184,7 +184,7 @@ public:
    * @param _obsolete2 Do not use!
    * @return the process id, or 0 on error
    */
-  static pid_t run( const QString& _exec, const KURL::List& _urls,
+  static pid_t run( const QString& _exec, const KUrl::List& _urls,
 		   const QString& _name = QString(),
 		   const QString& _icon = QString(),
 		   const QString& _obsolete1 = QString(),
@@ -205,7 +205,7 @@ public:
    *        See also isExecutable().
    * @return the process id, or 0 on error
    */
-  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile = false , bool runExecutables = true);
+  static pid_t runURL( const KUrl& _url, const QString& _mimetype, bool tempFile = false , bool runExecutables = true);
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -244,8 +244,8 @@ public:
    * @return false if the dialog was canceled
    */
   // BIC merge second overload with first one, using tempFiles=false
-  static bool displayOpenWithDialog( const KURL::List& lst, bool tempFiles );
-  static bool displayOpenWithDialog( const KURL::List& lst );
+  static bool displayOpenWithDialog( const KUrl::List& lst, bool tempFiles );
+  static bool displayOpenWithDialog( const KUrl::List& lst );
 
   /**
    * Quotes a string for the shell.
@@ -268,8 +268,8 @@ public:
    * @return a list of arguments suitable for either system() or exec().
    */
   // BIC merge second overload with first one, using tempFiles=false
-  static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell, bool tempFiles);
-  static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
+  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool has_shell, bool tempFiles);
+  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool has_shell);
 
   /**
    * Given a full command line (e.g. the Exec= line from a .desktop file),
@@ -301,7 +301,7 @@ public:
    * to the mimetype's desktop file.
    * @since 3.3
    */
-   static bool isExecutableFile( const KURL& url, const QString &mimetype );
+   static bool isExecutableFile( const KUrl& url, const QString &mimetype );
 
    /**
     * @internal
@@ -341,7 +341,7 @@ protected:
 
   virtual void killJob();
 
-  KURL m_strURL;
+  KUrl m_strURL;
   bool m_bFault;
   bool m_bAutoDelete;
   bool m_bProgressInfo;
@@ -369,7 +369,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 
 private:
-  void init (const KURL& url, QWidget* window, mode_t mode,
+  void init (const KUrl& url, QWidget* window, mode_t mode,
              bool isLocalFile, bool showProgressInfo);
 private:
   class KRunPrivate;

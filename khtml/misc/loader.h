@@ -448,7 +448,7 @@ namespace khtml
 	friend class DocLoader;
 
         template<typename CachedObjectType, enum CachedObject::Type CachedType>
-        static CachedObjectType* requestObject( DocLoader* dl, const KURL& kurl, const char* accept );
+        static CachedObjectType* requestObject( DocLoader* dl, const KUrl& kurl, const char* accept );
 
     public:
 	/**
@@ -463,7 +463,7 @@ namespace khtml
          * if the DocLoader is zero, the url must be full-qualified.
          * Otherwise, it is automatically base-url expanded
 	 */
-// 	static CachedImage *requestImage(const KURL& url)
+// 	static CachedImage *requestImage(const KUrl& url)
 //         { return Cache::requestObject<CachedImage, CachedObject::Image>( 0, url, 0 ); }
 
         /**

@@ -70,7 +70,7 @@ namespace KJS {
 
     ValueImp *getStatusText() const;
     ValueImp *getStatus() const;
-    bool urlMatchesDocumentDomain(const KURL&) const;
+    bool urlMatchesDocumentDomain(const KUrl&) const;
 
     XMLHttpRequestQObject *qObject;
 
@@ -80,11 +80,11 @@ namespace KJS {
     void slotData( KIO::Job* job, const QByteArray &data );
 #endif
     void slotFinished( KIO::Job* );
-    void slotRedirection( KIO::Job*, const KURL& );
+    void slotRedirection( KIO::Job*, const KUrl& );
 
-    void processSyncLoadResults(const QByteArray &data, const KURL &finalURL, const QString &headers);
+    void processSyncLoadResults(const QByteArray &data, const KUrl &finalURL, const QString &headers);
 
-    void open(const QString& _method, const KURL& _url, bool _async);
+    void open(const QString& _method, const KUrl& _url, bool _async);
     void send(const QString& _body);
     void abort();
     void setRequestHeader(const QString& name, const QString &value);
@@ -95,7 +95,7 @@ namespace KJS {
 
     QPointer<DOM::DocumentImpl> doc;
 
-    KURL url;
+    KUrl url;
     QString method;
     bool async;
     QMap<QString,QString> requestHeaders;
@@ -129,7 +129,7 @@ namespace KJS {
   public Q_SLOTS:
     void slotData( KIO::Job* job, const QByteArray &data );
     void slotFinished( KIO::Job* job );
-    void slotRedirection( KIO::Job* job, const KURL& url);
+    void slotRedirection( KIO::Job* job, const KUrl& url);
 
   private:
     XMLHttpRequest *jsObject;

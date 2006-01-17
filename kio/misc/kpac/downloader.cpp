@@ -37,7 +37,7 @@ namespace KPAC
     {
     }
 
-    void Downloader::download( const KURL& url )
+    void Downloader::download( const KUrl& url )
     {
         m_data.resize( 0 );
         m_script.clear();

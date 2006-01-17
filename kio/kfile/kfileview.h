@@ -63,7 +63,7 @@ public:
         emit sortingChanged( sorting );
     }
     
-    void dropURLs(const KFileItem *i, QDropEvent*e, const KURL::List&urls) {
+    void dropURLs(const KFileItem *i, QDropEvent*e, const KUrl::List&urls) {
         emit dropped(i, e, urls);
     }
 
@@ -79,7 +79,7 @@ Q_SIGNALS:
     void fileHighlighted(const KFileItem*);
     void fileSelected(const KFileItem*);
     void activatedMenu( const KFileItem *i, const QPoint& );
-    void dropped(const KFileItem *, QDropEvent*, const KURL::List&);
+    void dropped(const KFileItem *, QDropEvent*, const KUrl::List&);
 };
 
 /**

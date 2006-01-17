@@ -48,7 +48,7 @@ public:
    KConfig *config;
    KConfig *http_config;
    bool init_busy;
-   KURL url;
+   KUrl url;
    QString protocol;
    QString proxy;
    QString modifiers;
@@ -233,7 +233,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   return cfg->readEntry( scheme + "Proxy", QString() );
 }
 
-QString KProtocolManager::proxyForURL( const KURL &url )
+QString KProtocolManager::proxyForURL( const KUrl &url )
 {
   QString proxy;
   ProxyType pt = proxyType();
@@ -244,7 +244,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
       case WPADProxy:
           if (!url.host().isEmpty())
           {
-            KURL u (url);
+            KUrl u (url);
             QString p = u.protocol().toLower();
 
             // webdav is a KDE specific protocol. Look up proxy
@@ -324,12 +324,12 @@ static bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
-QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
+QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 {
   if (url.hasSubURL()) // We don't want the suburl's protocol
   {
-     KURL::List list = KURL::split(url);
-     KURL l = list.last();
+     KUrl::List list = KUrl::split(url);
+     KUrl l = list.last();
      return slaveProtocol(l, proxy);
   }
 

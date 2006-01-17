@@ -35,7 +35,7 @@ KHTMLPartIface::~KHTMLPartIface()
 {
 }
 
-KURL KHTMLPartIface::url() const
+KUrl KHTMLPartIface::url() const
 {
     return part->url();
 }
@@ -187,25 +187,25 @@ void KHTMLPartIface::viewDocumentSource()
 
 void KHTMLPartIface::saveBackground(const QString &destination)
 {
-    KURL back = part->backgroundURL();
+    KUrl back = part->backgroundURL();
     if (back.isEmpty())
         return;
 
     KIO::MetaData metaData;
     metaData["referrer"] = part->referrer();
-    KHTMLPopupGUIClient::saveURL( back, KURL( destination ), metaData );
+    KHTMLPopupGUIClient::saveURL( back, KUrl( destination ), metaData );
 }
 
 void KHTMLPartIface::saveDocument(const QString &destination)
 {
-    KURL srcURL( part->url() );
+    KUrl srcURL( part->url() );
 
     if ( srcURL.fileName(false).isEmpty() )
         srcURL.setFileName( "index.html" );
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( srcURL, KURL( destination ), metaData, part->cacheId() );
+    KHTMLPopupGUIClient::saveURL( srcURL, KUrl( destination ), metaData, part->cacheId() );
 }
 
 void KHTMLPartIface::setUserStyleSheet(const QString &styleSheet)

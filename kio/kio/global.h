@@ -28,7 +28,7 @@
 
 #include <sys/stat.h> // S_ISDIR
 
-class KURL;
+class KUrl;
 
 class QTime;
 
@@ -265,7 +265,7 @@ namespace KIO
    * @return the created error string
    */
   KIO_EXPORT QString buildHTMLErrorString(int errorCode, const QString &errorText,
-                                const KURL *reqUrl = 0L, int method = -1 );
+                                const KUrl *reqUrl = 0L, int method = -1 );
 
   /**
    * Returns translated error details for @p errorCode using the
@@ -284,7 +284,7 @@ namespace KIO
    * @li QStringList solutions - a liso of solutions for the error
    */
   KIO_EXPORT QByteArray rawErrorDetail(int errorCode, const QString &errorText,
-                                const KURL *reqUrl = 0L, int method = -1 );
+                                const KUrl *reqUrl = 0L, int method = -1 );
 
   /**
    * Returns an appropriate error message if the given command @p cmd

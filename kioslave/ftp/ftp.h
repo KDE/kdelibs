@@ -73,24 +73,24 @@ public:
    */
   virtual void closeConnection();
 
-  virtual void stat( const KURL &url );
+  virtual void stat( const KUrl &url );
 
-  virtual void listDir( const KURL & url );
-  virtual void mkdir( const KURL & url, int permissions );
-  virtual void rename( const KURL & src, const KURL & dst, bool overwrite );
-  virtual void del( const KURL & url, bool isfile );
-  virtual void chmod( const KURL & url, int permissions );
+  virtual void listDir( const KUrl & url );
+  virtual void mkdir( const KUrl & url, int permissions );
+  virtual void rename( const KUrl & src, const KUrl & dst, bool overwrite );
+  virtual void del( const KUrl & url, bool isfile );
+  virtual void chmod( const KUrl & url, int permissions );
 
-  virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int permissions, bool overwrite, bool resume);
-  //virtual void mimetype( const KURL& url );
+  virtual void get( const KUrl& url );
+  virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume);
+  //virtual void mimetype( const KUrl& url );
 
   virtual void slave_status();
 
   /**
    * Handles the case that one side of the job is a local file
    */
-  virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
+  virtual void copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite );
 
 private:
   // ------------------------------------------------------------------------
@@ -294,7 +294,7 @@ private:
    * @param hCopyOffset local file only: non-zero for resume
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fileoffset_t hCopyOffset);
+  StatusCode ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fileoffset_t hCopyOffset);
 
   /**
    * This is the internal implementation of put() - see copy().
@@ -306,7 +306,7 @@ private:
    * @param iCopyFile   -1 -or- handle of a local source file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpPut(int& iError, int iCopyFile, const KURL& url, int permissions, bool overwrite, bool resume);
+  StatusCode ftpPut(int& iError, int iCopyFile, const KUrl& url, int permissions, bool overwrite, bool resume);
 
   /**
    * helper called from copy() to implement FILE -> FTP transfers
@@ -316,7 +316,7 @@ private:
    * @param sCopyFile   path of the local source file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
+  StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KUrl& url, int permissions, bool overwrite);
 
   /**
    * helper called from copy() to implement FTP -> FILE transfers
@@ -326,7 +326,7 @@ private:
    * @param sCopyFile   path of the local destination file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
+  StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KUrl& url, int permissions, bool overwrite);
 
 private: // data members
 
@@ -338,7 +338,7 @@ private: // data members
    * Where we end up after connecting
    */
   QString m_initialPath;
-  KURL m_proxyURL;
+  KUrl m_proxyURL;
 
  /**
    * the current working directory - see ftpFolder

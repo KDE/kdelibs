@@ -272,7 +272,7 @@ void KFileMetaInfoItem::deref()
 class KFileMetaInfo::Data : public Q3Shared
 {
 public:
-    Data(const KURL& _url, uint _what)
+    Data(const KUrl& _url, uint _what)
         : Q3Shared(),
           url(_url),
           what(_what),
@@ -282,7 +282,7 @@ public:
     // wee use this one for the streaming operators
     Data() {};
 
-    KURL                              url;
+    KUrl                              url;
     uint                              what;
     QMap<QString, KFileMetaInfoGroup> groups;
     const KFileMimeTypeInfo*          mimeTypeInfo;
@@ -296,19 +296,19 @@ public:
 KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
                               uint what )
 {
-    KURL u;
+    KUrl u;
 
     u.setPath(path);
     init(u, mimeType, what);
 }
 
-KFileMetaInfo::KFileMetaInfo( const KURL& url, const QString& mimeType,
+KFileMetaInfo::KFileMetaInfo( const KUrl& url, const QString& mimeType,
                               uint what )
 {
     init(url, mimeType, what);
 }
 
-void KFileMetaInfo::init( const KURL& url, const QString& mimeType,
+void KFileMetaInfo::init( const KUrl& url, const QString& mimeType,
                           uint what )
 {
     d = new Data( url, what );
@@ -717,7 +717,7 @@ QString KFileMetaInfo::path() const
     return d->url.isLocalFile() ? d->url.path() : QString();
 }
 
-KURL KFileMetaInfo::url() const
+KUrl KFileMetaInfo::url() const
 {
     return d->url;
 }
@@ -752,7 +752,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(KURL(), 0) );
+	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(KUrl(), 0) );
     return null;
 }
 

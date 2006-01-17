@@ -219,7 +219,7 @@ public:
    * @returns the proxy server address if one is available
    *          or QString() otherwise
    */
-  static QString proxyForURL( const KURL& url );
+  static QString proxyForURL( const KUrl& url );
 
   /**
    * Marks this proxy as bad (down). It will not be used for the
@@ -341,7 +341,7 @@ public:
    * @param proxy the URL of the proxy to use
    * @return the slave protocol (e.g. 'http'), can be null if unknown
    */
-  static QString slaveProtocol(const KURL &url, QString &proxy);
+  static QString slaveProtocol(const KUrl &url, QString &proxy);
 
   /**
    * @internal

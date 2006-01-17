@@ -54,13 +54,13 @@ KPlayObjectFactory::~KPlayObjectFactory()
 {
 }
 
-KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, bool createBUS)
+KPlayObject *KPlayObjectFactory::createPlayObject(const KUrl& url, bool createBUS)
 {
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
 	return createPlayObject(url, mimetype->name(), createBUS);
 }
 
-KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString &mimetype, bool createBUS)
+KPlayObject *KPlayObjectFactory::createPlayObject(const KUrl& url, const QString &mimetype, bool createBUS)
 {
 	if(!m_server.isNull())
 	{
@@ -118,13 +118,13 @@ void KDE::PlayObjectFactory::setAudioManagerPlay( KAudioManagerPlay * amanPlay )
 		d->helper = new POFHelper;
 }
 
-KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& url, bool createBUS)
+KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KUrl& url, bool createBUS)
 {
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
 	return createPlayObject(url, mimetype->name(), createBUS);
 }
 
-KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KURL& url, const QString &mimetype, bool createBUS)
+KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KUrl& url, const QString &mimetype, bool createBUS)
 {
 	// return a NULL playobject if the server is NULL
 	if ( d->server.isNull() || url.isEmpty() )

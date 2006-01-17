@@ -33,9 +33,9 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 
-    KURL url;
+    KUrl url;
     url.setPath("/tmp");
-    assert( KProtocolInfo::supportsListing( KURL( "ftp://10.1.1.10") ) );
+    assert( KProtocolInfo::supportsListing( KUrl( "ftp://10.1.1.10") ) );
     assert( KProtocolInfo::inputType(url) == KProtocolInfo::T_NONE );
     assert( KProtocolInfo::outputType(url) == KProtocolInfo::T_FILESYSTEM );
     assert( KProtocolInfo::supportsReading(url) == true );

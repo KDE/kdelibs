@@ -28,7 +28,7 @@
 #include "khtml_ext.h"
 #include <qwidget.h>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
                     const KParts::URLArgs &args, bool hideErrorDialog )
     : KParts::BrowserRun( url, args, part, part->widget() ? part->widget()->topLevelWidget() : 0,
                           false, false, hideErrorDialog ),
@@ -78,7 +78,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
     static_cast<KHTMLPart *>(m_part)->checkCompleted();
 }
 
-void KHTMLRun::save( const KURL & url, const QString & suggestedFilename )
+void KHTMLRun::save( const KUrl & url, const QString & suggestedFilename )
 {
     KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As" ), url, m_args.metaData(), QString(), 0, suggestedFilename );
 }

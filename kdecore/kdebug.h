@@ -33,7 +33,7 @@ class QPoint;
 class QSize;
 class QRect;
 class QRegion;
-class KURL;
+class KUrl;
 class QStringList;
 class QColor;
 class QPen;
@@ -306,7 +306,7 @@ class KDECORE_EXPORT kdbgstream {
      * @param url the url to print
      * @return this stream
      */
-    kdbgstream& operator << ( const KURL& url );
+    kdbgstream& operator << ( const KUrl& url );
 
     /**
      * Prints the given value.

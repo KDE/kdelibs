@@ -118,7 +118,7 @@ namespace KJS {
     void goHistory(int steps);
     void goURL(ExecState* exec, const QString& url, bool lockHistory);
     ValueImp* openWindow(ExecState *exec, const List &args);
-    ValueImp* executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features);
+    ValueImp* executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
@@ -194,8 +194,8 @@ namespace KJS {
 
     struct SuppressedWindowInfo {
        SuppressedWindowInfo() {}  // for QValueList
-       SuppressedWindowInfo( KURL u, QString fr, QString fe ) : url(u), frameName(fr), features(fe) {}
-       KURL url;
+       SuppressedWindowInfo( KUrl u, QString fr, QString fe ) : url(u), frameName(fr), features(fe) {}
+       KUrl url;
        QString frameName;
        QString features;
      };

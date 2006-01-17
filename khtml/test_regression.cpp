@@ -482,7 +482,7 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 
             QString filename = args[0]->toString(exec).qstring();
             QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absoluteFilePath();
-            KURL url;
+            KUrl url;
             url.setProtocol("file");
             url.setPath(fullFilename);
             PartMonitor pm(m_part);
@@ -520,7 +520,7 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 		file.close();
 		QString contents(fileData);
 		PartMonitor pm(m_part);
-		m_part->begin(KURL( url ));
+		m_part->begin(KUrl( url ));
 		m_part->write(contents);
 		m_part->end();
 		pm.waitForCompletion();
@@ -530,7 +530,7 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 	}
 	case Begin: {
             QString url = args[0]->toString(exec).qstring();
-            m_part->begin(KURL( url ));
+            m_part->begin(KUrl( url ));
             break;
         }
         case Write: {
@@ -741,8 +741,8 @@ int main(int argc, char *argv[])
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
                                                         !args->isSet( "js" ));
-    QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KURL &, const KParts::URLArgs &)),
-		     regressionTest, SLOT(slotOpenURL(const KURL&, const KParts::URLArgs &)));
+    QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KUrl &, const KParts::URLArgs &)),
+		     regressionTest, SLOT(slotOpenURL(const KUrl&, const KParts::URLArgs &)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
@@ -1413,7 +1413,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     else if (filename.endsWith(".xml")) args.serviceType = "text/xml";
     m_part->browserExtension()->setURLArgs(args);
     // load page
-    KURL url;
+    KUrl url;
     url.setProtocol("file");
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absoluteFilePath());
     PartMonitor pm(m_part);
@@ -1756,7 +1756,7 @@ void RegressionTest::createMissingDirs(const QString & filename)
     }
 }
 
-void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
+void RegressionTest::slotOpenURL(const KUrl &url, const KParts::URLArgs &args)
 {
     m_part->browserExtension()->setURLArgs( args );
 

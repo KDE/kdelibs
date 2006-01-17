@@ -43,7 +43,7 @@ public:
     ~KFileAudioPreview();
 
 public Q_SLOTS:
-    virtual void showPreview(const KURL &url);
+    virtual void showPreview(const KUrl &url);
     virtual void clearPreview();
 
 private Q_SLOTS:
@@ -51,7 +51,7 @@ private Q_SLOTS:
 
 private:
     Q3Dict<void> m_supportedFormats;
-    KURL m_currentURL;
+    KUrl m_currentURL;
     QCheckBox *m_autoPlay;
 
 protected:

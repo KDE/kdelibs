@@ -216,7 +216,7 @@ void Slave::setPID(pid_t pid)
     m_pid = pid;
 }
 
-void Slave::hold(const KURL &url)
+void Slave::hold(const KUrl &url)
 {
    if (d->derived) {		// TODO: clean up before KDE 4
      HoldParams params;
@@ -355,7 +355,7 @@ void Slave::setConfig(const MetaData &config)
     slaveconn.send( CMD_CONFIG, data );
 }
 
-Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text )
+Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
 {
     //kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
     // Firstly take into account all special slaves
@@ -465,7 +465,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     return slave;
 }
 
-Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
+Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
 {
     //kdDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
     // Firstly take into account all special slaves
@@ -500,7 +500,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     stream << url << socketfile.name();
 
     DCOPCString launcher = KApplication::launcher();
-    if (!client->call(launcher, launcher, "requestHoldSlave(KURL,QString)",
+    if (!client->call(launcher, launcher, "requestHoldSlave(KUrl,QString)",
         params, replyType, reply)) {
         delete slave;
         return 0;

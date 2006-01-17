@@ -38,7 +38,7 @@ KDE::PlayObjectCreator::~PlayObjectCreator()
 {
 }
 
-bool KDE::PlayObjectCreator::create(const KURL& url, bool createBUS, const QObject* receiver, const char* slot)
+bool KDE::PlayObjectCreator::create(const KUrl& url, bool createBUS, const QObject* receiver, const char* slot)
 {
 	// no need to go any further, and I hate deep indentation
 	if (m_server.isNull() || url.isEmpty() )

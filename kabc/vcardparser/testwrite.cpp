@@ -62,7 +62,7 @@ int main( int argc, char **argv )
   addressee.setProductId( "testId" );
   addressee.setRevision( QDateTime::currentDateTime() );
   addressee.setSortString( "koenig" );
-  addressee.setUrl( KURL( "http://wgess16.dyndns.org") );
+  addressee.setUrl( KUrl( "http://wgess16.dyndns.org") );
   addressee.setSecrecy(  KABC::Secrecy( KABC::Secrecy::Confidential ) );
 /*
   QImage img;

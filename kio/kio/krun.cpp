@@ -80,7 +80,7 @@ public:
     QPointer <QWidget> m_window;
 };
 
-bool KRun::isExecutableFile( const KURL& url, const QString &mimetype )
+bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
 {
   if ( !url.isLocalFile() )
      return false;
@@ -96,7 +96,7 @@ bool KRun::isExecutableFile( const KURL& url, const QString &mimetype )
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool runExecutables )
+pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool runExecutables )
 {
   bool noRun = false;
   bool noAuth = false;
@@ -153,7 +153,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
     return 0;
   }
 
-  KURL::List lst;
+  KUrl::List lst;
   lst.append( u );
 
   static const QString& app_str = KGlobal::staticQString("Application");
@@ -171,12 +171,12 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   return KRun::run( *offer, lst, tempFile );
 }
 
-bool KRun::displayOpenWithDialog( const KURL::List& lst )
+bool KRun::displayOpenWithDialog( const KUrl::List& lst )
 {
     return displayOpenWithDialog( lst, false );
 }
 
-bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
+bool KRun::displayOpenWithDialog( const KUrl::List& lst, bool tempFiles )
 {
     if (kapp && !KAuthorized::authorizeKAction("openwith"))
     {
@@ -261,7 +261,7 @@ KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 
 class KRunMX2 : public KMacroExpanderBase {
 public:
-    KRunMX2( const KURL::List &_urls ) :
+    KRunMX2( const KUrl::List &_urls ) :
         KMacroExpanderBase( '%' ), ignFile( false ), urls( _urls ) {}
     bool ignFile:1;
 
@@ -269,13 +269,13 @@ protected:
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
-    void subst( int option, const KURL &url, QStringList &ret );
+    void subst( int option, const KUrl &url, QStringList &ret );
 
-    const KURL::List &urls;
+    const KUrl::List &urls;
 };
 
 void
-KRunMX2::subst( int option, const KURL &url, QStringList &ret )
+KRunMX2::subst( int option, const KUrl &url, QStringList &ret )
 {
    switch( option ) {
    case 'u':
@@ -321,7 +321,7 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
    case 'N':
    case 'D':
       option += 'a' - 'A';
-      for( KURL::List::ConstIterator it = urls.begin(); it != urls.end(); ++it )
+      for( KUrl::List::ConstIterator it = urls.begin(); it != urls.end(); ++it )
          subst( option, *it, ret );
       break;
    case '%':
@@ -334,11 +334,11 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 }
 
 // BIC: merge with method below
-QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell) {
+QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool has_shell) {
     return processDesktopExec( _service, _urls, has_shell, false );
 }
 
-QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell /* KDE4: remove */, bool tempFiles)
+QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool has_shell /* KDE4: remove */, bool tempFiles)
 {
   QString exec = _service.exec();
   QStringList result;
@@ -364,7 +364,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 
   // Check if we need kioexec
   if( !mx1.hasUrls ) {
-    for( KURL::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
+    for( KUrl::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
       if ( !(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it) ) {
         // We need to run the app through kioexec
         result << "kioexec";
@@ -586,7 +586,7 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
   return true;
 }
 
-static pid_t runTempService( const KService& _service, const KURL::List& _urls, bool tempFiles )
+static pid_t runTempService( const KService& _service, const KUrl::List& _urls, bool tempFiles )
 {
   if (!_urls.isEmpty()) {
     kdDebug(7010) << "runTempService: first url " << _urls.first().url() << endl;
@@ -600,14 +600,14 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
       // For the first file we launch the application in the
       // usual way. The reported result is based on this
       // application.
-      KURL::List::ConstIterator it = _urls.begin();
+      KUrl::List::ConstIterator it = _urls.begin();
       while(++it != _urls.end())
       {
-         KURL::List singleUrl;
+         KUrl::List singleUrl;
          singleUrl.append(*it);
          runTempService( _service, singleUrl, tempFiles );
       }
-      KURL::List singleUrl;
+      KUrl::List singleUrl;
       singleUrl.append(_urls.first());
       args = KRun::processDesktopExec(_service, singleUrl, false, tempFiles);
   }
@@ -628,7 +628,7 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
 }
 
 // WARNING: don't call this from processDesktopExec, since klauncher uses that too...
-static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service )
+static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service )
 {
   // Check which protocols the application supports.
   // This can be a list of actual protocol names, or just KIO for KDE apps.
@@ -643,16 +643,16 @@ static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service
   }
   kdDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
 
-  KURL::List urls( _urls );
+  KUrl::List urls( _urls );
   if ( supportedProtocols.find( "KIO" ) == supportedProtocols.end() ) {
-    for( KURL::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
-      const KURL url = *it;
+    for( KUrl::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
+      const KUrl url = *it;
       bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().toLower() ) != supportedProtocols.end();
       kdDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
       if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
       {
         // Maybe we can resolve to a local URL?
-        KURL localURL = KIO::NetAccess::mostLocalURL( url, 0 );
+        KUrl localURL = KIO::NetAccess::mostLocalURL( url, 0 );
         if ( localURL != url ) {
           *it = localURL;
           kdDebug(7010) << "Changed to " << localURL << endl;
@@ -663,7 +663,7 @@ static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service
   return urls;
 }
 
-pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFiles )
+pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFiles )
 {
   if (!_service.desktopEntryPath().isEmpty() &&
       !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
@@ -676,7 +676,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   if ( !tempFiles )
   {
       // Remember we opened those urls, for the "recent documents" menu in kicker
-      KURL::List::ConstIterator it = _urls.begin();
+      KUrl::List::ConstIterator it = _urls.begin();
       for(; it != _urls.end(); ++it) {
           //kdDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
           KRecentDocument::add( *it, _service.desktopEntryName() );
@@ -695,7 +695,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   }
 
   // Resolve urls if needed, depending on what the app supports
-  const KURL::List urls = resolveURLs( _urls, _service );
+  const KUrl::List urls = resolveURLs( _urls, _service );
 
   QString error;
   int pid = 0;
@@ -716,7 +716,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
 }
 
 
-pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
+pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, const QString& _name,
                 const QString& _icon, const QString&, const QString&)
 {
   KService::Ptr service = new KService(_name, _exec, _icon);
@@ -739,14 +739,14 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   return runCommandInternal( proc, service.data(), binaryName( execName, false ), execName, iconName );
 }
 
-KRun::KRun( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,
+KRun::KRun( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
             bool showProgressInfo )
      :m_timer(0,"KRun::timer"),d(new KRunPrivate)
 {
   init (url, window, mode, isLocalFile, showProgressInfo);
 }
 
-void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,
+void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
                   bool showProgressInfo )
 {
   m_bFault = false;
@@ -787,7 +787,7 @@ void KRun::init()
     m_timer.start( 0, true );
     return;
   }
-  if ( !KAuthorized::authorizeURLAction( "open", KURL(), m_strURL))
+  if ( !KAuthorized::authorizeURLAction( "open", KUrl(), m_strURL))
   {
     QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyURL());
     d->m_showingError = true;
@@ -836,7 +836,7 @@ void KRun::init()
     kdDebug(7010) << "Helper protocol" << endl;
 
     bool ok = false;
-    KURL::List urls;
+    KUrl::List urls;
     urls.append( m_strURL );
     if (exec.isEmpty())
     {
@@ -1084,7 +1084,7 @@ void KRun::foundMimeType( const QString& type )
        type == "application/x-bzip"  ||
        type == "application/x-bzip2"  )
   {
-    KURL::List lst = KURL::split( m_strURL );
+    KUrl::List lst = KUrl::split( m_strURL );
     if ( lst.isEmpty() )
     {
       QString tmp = i18n( "Malformed URL" );
@@ -1095,22 +1095,22 @@ void KRun::foundMimeType( const QString& type )
     }
 
     if ( type == "application/x-gzip" )
-      lst.prepend( KURL( "gzip:/decompress" ) );
+      lst.prepend( KUrl( "gzip:/decompress" ) );
     else if ( type == "application/x-bzip" )
-      lst.prepend( KURL( "bzip:/decompress" ) );
+      lst.prepend( KUrl( "bzip:/decompress" ) );
     else if ( type == "application/x-bzip2" )
-      lst.prepend( KURL( "bzip2:/decompress" ) );
+      lst.prepend( KUrl( "bzip2:/decompress" ) );
     else if ( type == "application/x-tar" )
-      lst.prepend( KURL( "tar:/" ) );
+      lst.prepend( KUrl( "tar:/" ) );
 
     // Move the HTML style reference to the leftmost URL
-    KURL::List::Iterator it = lst.begin();
+    KUrl::List::Iterator it = lst.begin();
     ++it;
     (*lst.begin()).setRef( (*it).ref() );
     (*it).setRef( QString() );
 
     // Create the new URL
-    m_strURL = KURL::join( lst );
+    m_strURL = KUrl::join( lst );
 
     kdDebug(7010) << "Now trying with " << debugString(m_strURL.url()) << endl;
 
@@ -1143,7 +1143,7 @@ void KRun::foundMimeType( const QString& type )
       KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );
       if ( serv && serv->hasServiceType( type ) )
       {
-          KURL::List lst;
+          KUrl::List lst;
           lst.append( m_strURL );
           m_bFinished = KRun::run( *serv, lst );
           /// Note: the line above means that if that service failed, we'll
@@ -1156,7 +1156,7 @@ void KRun::foundMimeType( const QString& type )
   // Resolve .desktop files from media:/, remote:/, applications:/ etc.
   if ( type == "application/x-desktop" /* or inheriting? */ && !d->m_localPath.isEmpty() )
   {
-    m_strURL = KURL();
+    m_strURL = KUrl();
     m_strURL.setPath( d->m_localPath );
   }
 

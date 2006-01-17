@@ -128,14 +128,14 @@ public:
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
    * @param autoShow tells the dialog whether it should show itself automatically.  */
-  KPropertiesDialog( const KURL& _url, mode_t _mode,
+  KPropertiesDialog( const KUrl& _url, mode_t _mode,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true) KDE_DEPRECATED;
 #endif
 
   /**
    * Brings up a Properties dialog. Convenience constructor for
-   * non-file-manager applications, where you have a KURL rather than a
+   * non-file-manager applications, where you have a KUrl rather than a
    * KFileItem or KFileItemList.
    *
    * @param _url the URL whose properties should be displayed
@@ -150,7 +150,7 @@ public:
    *
    * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( const KURL& _url,
+  KPropertiesDialog( const KUrl& _url,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
 
@@ -168,7 +168,7 @@ public:
    * @param modal tells the dialog whether it should be modal.
    * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
+  KPropertiesDialog( const KUrl& _tempUrl, const KUrl& _currentDir,
                      const QString& _defaultName,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
@@ -213,7 +213,7 @@ public:
    * @return true on succesfull dialog displaying (can be false on win32).
    * @since 3.4
    */
-  static bool showDialog(const KURL& _url, QWidget* parent = 0,
+  static bool showDialog(const KUrl& _url, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
 
   /**
@@ -251,7 +251,7 @@ public:
    *
    * @return a parsed URL.
    */
-  const KURL& kurl() const { return m_singleUrl; }
+  const KUrl& kurl() const { return m_singleUrl; }
 
   /**
    * @return the file item for which the dialog is shown
@@ -285,7 +285,7 @@ public:
    *
    * @return the current directory or QString()
    */
-  const KURL& currentDir() const { return m_currentDir; }
+  const KUrl& currentDir() const { return m_currentDir; }
 
   /**
    * If the dialog is being built from a template, this method
@@ -301,7 +301,7 @@ public:
    * Can only be called if the dialog applies to a single file or URL.
    * @param _newUrl the new URL
    */
-  void updateUrl( const KURL& _newUrl );
+  void updateUrl( const KUrl& _newUrl );
 
   /**
    * Renames the item to the specified name. This can only be called if
@@ -377,7 +377,7 @@ Q_SIGNALS:
    * The receiver may change @p newUrl to point to an alternative
    * save location.
    */
-  void saveAs(const KURL &oldUrl, KURL &newUrl);
+  void saveAs(const KUrl &oldUrl, KUrl &newUrl);
 
 private:
 
@@ -394,7 +394,7 @@ private:
   /**
    * The URL of the props dialog (when shown for only one file)
    */
-  KURL m_singleUrl;
+  KUrl m_singleUrl;
 
   /**
    * List of items this props dialog is shown for
@@ -405,7 +405,7 @@ private:
    * For templates
    */
   QString m_defaultName;
-  KURL m_currentDir;
+  KUrl m_currentDir;
 
   /**
    * List of all plugins inserted ( first one first )
@@ -527,7 +527,7 @@ public:
 protected Q_SLOTS:
   void slotEditFileType();
   void slotCopyFinished( KIO::Job * );
-  void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
+  void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KIO::Job * );
   void slotFoundMountPoint( const QString& mp, unsigned long kBSize,

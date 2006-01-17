@@ -463,7 +463,7 @@ KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, in
   }/*end switch*/
 }
 
-KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
+KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L*/,
                                             int method /*= -1*/ ) const
 {
   QString errorName, techName, description, ret2;
@@ -514,7 +514,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
 }
 
 KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
-                               const KURL *reqUrl /*= 0L*/, int /*method = -1*/ )
+                               const KUrl *reqUrl /*= 0L*/, int /*method = -1*/ )
 {
   QString url, host, protocol, datetime, domain, path, dir, filename;
   bool isSlaveNetwork = false;

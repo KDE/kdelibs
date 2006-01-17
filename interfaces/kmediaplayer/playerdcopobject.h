@@ -38,7 +38,7 @@ public:
 	PlayerDCOPObject(void);
 
 k_dcop:
-	virtual bool openURL(const KURL &file) = 0;
+	virtual bool openURL(const KUrl &file) = 0;
 	virtual void pause() = 0;
 	virtual void play() = 0;
 	virtual void stop() = 0;

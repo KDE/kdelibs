@@ -91,7 +91,7 @@ public:
     * This setting is @em required except when prompting the
     * user for password.
     */
-   KURL url;
+   KUrl url;
 
    /**
     * This is @em required for caching.
@@ -288,7 +288,7 @@ public:
    *        will be taken
    * @param mode the LookUpMode flags (ORed) for the query
    */
-  bool lookup( const KURL& url, AutoLogin& login,
+  bool lookup( const KUrl& url, AutoLogin& login,
                bool userealnetrc = false,
                QString type = QString(),
                LookUpMode mode = LookUpMode(exactOnly) | defaultOnly );

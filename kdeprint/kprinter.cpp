@@ -206,7 +206,7 @@ void KPrinter::saveSettings()
 	// latest used document directory
 	if ( d->m_docdirectory.isEmpty() )
 	{
-		KURL url( outputFileName() );
+		KUrl url( outputFileName() );
 		if ( url.isValid() )
 			conf->writePathEntry( "DocDirectory", url.directory() );
 	}

@@ -51,7 +51,7 @@
  * \code
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
  * KService::Ptr ptr = offers.first();
- * KURL::List lst;
+ * KUrl::List lst;
  * lst.append("http://www.kde.org/index.html");
  * KRun::run(*ptr, lst);
  * \endcode

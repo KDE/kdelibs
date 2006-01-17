@@ -123,7 +123,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 	proc->setCommand( command );
 	if ( re.search( command ) != -1 )
 	{
-		KURL url( re.cap( 1 ) );
+		KUrl url( re.cap( 1 ) );
 		if ( !url.isLocalFile() )
 		{
 			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );

@@ -46,21 +46,21 @@ public:
   FileProtocol( const QByteArray &pool, const QByteArray &app);
   virtual ~FileProtocol() { }
 
-  virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode,
+  virtual void get( const KUrl& url );
+  virtual void put( const KUrl& url, int _mode,
 		    bool _overwrite, bool _resume );
-  virtual void copy( const KURL &src, const KURL &dest,
+  virtual void copy( const KUrl &src, const KUrl &dest,
                      int mode, bool overwrite );
-  virtual void rename( const KURL &src, const KURL &dest,
+  virtual void rename( const KUrl &src, const KUrl &dest,
                        bool overwrite );
-  virtual void symlink( const QString &target, const KURL &dest,
+  virtual void symlink( const QString &target, const KUrl &dest,
                         bool overwrite );
 
-  virtual void stat( const KURL& url );
-  virtual void listDir( const KURL& url );
-  virtual void mkdir( const KURL& url, int permissions );
-  virtual void chmod( const KURL& url, int permissions );
-  virtual void del( const KURL& url, bool isfile);
+  virtual void stat( const KUrl& url );
+  virtual void listDir( const KUrl& url );
+  virtual void mkdir( const KUrl& url, int permissions );
+  virtual void chmod( const KUrl& url, int permissions );
+  virtual void del( const KUrl& url, bool isfile);
 
   /**
    * Special commands supported by this slave:

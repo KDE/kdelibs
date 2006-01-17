@@ -29,7 +29,7 @@
 class QString;
 class QByteArray;
 
-class KURL;
+class KUrl;
 
 #if defined(DATAKIOSLAVE)
 #  include <kio/slavebase.h>
@@ -58,8 +58,8 @@ public:
   DataProtocol();
 #endif
   virtual ~DataProtocol();
-  virtual void mimetype(const KURL &url);
-  virtual void get(const KURL &url);
+  virtual void mimetype(const KUrl &url);
+  virtual void get(const KUrl &url);
 #if defined(TESTKIO)
   void ref() {}
   void deref() {}

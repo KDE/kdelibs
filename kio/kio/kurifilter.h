@@ -110,7 +110,7 @@ public:
      *
      * @param url is the URL to be filtered.
      */
-    KURIFilterData( const KURL& url ) { init( url); }
+    KURIFilterData( const KUrl& url ) { init( url); }
 
     /**
      * Creates a URIFilterData object from the given string.
@@ -153,7 +153,7 @@ public:
      *
      * @return the filtered or original url.
      */
-    KURL uri() const { return m_pURI; }
+    KUrl uri() const { return m_pURI; }
 
     /**
      * Returns an error message.
@@ -196,7 +196,7 @@ public:
      *
      * @param url the URL to be filtered.
      */
-    void setData( const KURL& url ) { init( url ); }
+    void setData( const KUrl& url ) { init( url ); }
 
     /**
      * Sets the absolute path to be used whenever the supplied
@@ -205,7 +205,7 @@ public:
      * NOTE: This function should only be used for local resources,
      * i.e. the "file:/" protocol. It is useful for specifying the
      * absolute path in cases where the actual URL might be relative.
-     * meta object.  If deriving the path from a KURL, make sure you
+     * meta object.  If deriving the path from a KUrl, make sure you
      * set the argument for this function to the result of calling
      * path () instead of url ().
      *
@@ -285,12 +285,12 @@ public:
     /**
      * Overloaded assigenment operator.
      *
-     * This function allows you to easily assign a KURL
+     * This function allows you to easily assign a KUrl
      * to a KURIFilterData object.
      *
      * @return an instance of a KURIFilterData object.
      */
-    KURIFilterData& operator=( const KURL& url ) { init( url ); return *this; }
+    KURIFilterData& operator=( const KUrl& url ) { init( url ); return *this; }
 
     /**
      * Overloaded assigenment operator.
@@ -308,7 +308,7 @@ protected:
      * Initializes the KURIFilterData on construction.
      * @param url the URL to initialize the object with
      */
-    void init( const KURL& url);
+    void init( const KUrl& url);
 
     /**
      * Initializes the KURIFilterData on construction.
@@ -323,7 +323,7 @@ private:
     QString m_strErrMsg;
     QString m_strIconName;
 
-    KURL m_pURI;
+    KUrl m_pURI;
     URITypes m_iType;
     KURIFilterDataPrivate *d;
 };
@@ -408,7 +408,7 @@ protected:
     /**
      * Sets the the URL in @p data to @p uri.
      */
-    void setFilteredURI ( KURIFilterData& data, const KURL& uri ) const;
+    void setFilteredURI ( KURIFilterData& data, const KUrl& uri ) const;
 
     /**
      * Sets the error message in @p data to @p errormsg.
@@ -462,7 +462,7 @@ private:
  * Manages the filtering of URIs.
  *
  * The intention of this plugin class is to allow people to extend the
- * functionality of KURL without modifying it directly. This way KURL will
+ * functionality of KUrl without modifying it directly. This way KUrl will
  * remain a generic parser capable of parsing any generic URL that adheres
  * to specifications.
  *
@@ -486,10 +486,10 @@ private:
  * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
  * \endcode
  *
- * You can alternatively use a KURL:
+ * You can alternatively use a KUrl:
  *
  * \code
- * KURL url = "kde.org";
+ * KUrl url = "kde.org";
  * bool filtered = KURIFilter::self()->filterURI( url );
  * \endcode
  *
@@ -566,7 +566,7 @@ public:
      *
      * @return a boolean indicating whether the URI has been changed
      */
-    bool filterURI( KURL &uri, const QStringList& filters = QStringList() );
+    bool filterURI( KUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Filters a string representing a URI.
@@ -592,7 +592,7 @@ public:
      *
      * @return the filtered URI or null if it cannot be filtered
      */
-    KURL filteredURI( const KURL &uri, const QStringList& filters = QStringList() );
+    KUrl filteredURI( const KUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Return a filtered string representation of a URI.

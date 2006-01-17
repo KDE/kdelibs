@@ -51,16 +51,16 @@ public:
     }
     ~KURLDragPushButton() {}
 
-    void setURL( const KURL& url ) {
+    void setURL( const KUrl& url ) {
 	m_urls.clear();
 	m_urls.append( url );
     }
 
     /* not needed so far
-    void setURLs( const KURL::List& urls ) {
+    void setURLs( const KUrl::List& urls ) {
 	m_urls = urls;
     }
-    const KURL::List& urls() const { return m_urls; }
+    const KUrl::List& urls() const { return m_urls; }
     */
 
 protected:
@@ -74,7 +74,7 @@ protected:
     }
 
 private:
-    KURL::List m_urls;
+    KUrl::List m_urls;
 
 };
 
@@ -182,7 +182,7 @@ KURLRequester::KURLRequester( const QString& url, QWidget *parent)
   : KHBox( parent),d(new KURLRequesterPrivate)
 {
     init();
-    setKURL( KURL::fromPathOrURL( url ) );
+    setKURL( KUrl::fromPathOrURL( url ) );
 }
 
 
@@ -248,7 +248,7 @@ void KURLRequester::setURL( const QString& url )
     }
 }
 
-void KURLRequester::setKURL( const KURL& url )
+void KURLRequester::setKURL( const KUrl& url )
 {
     if ( myShowLocalProt )
         d->setText( url.url() );
@@ -274,7 +274,7 @@ QString KURLRequester::url() const
 
 void KURLRequester::slotOpenDialog()
 {
-    KURL newurl;
+    KUrl newurl;
     if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
          (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) &&
@@ -292,7 +292,7 @@ void KURLRequester::slotOpenDialog()
 
       KFileDialog *dlg = fileDialog();
       if ( !d->url().isEmpty() ) {
-          KURL u( url() );
+          KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolInfo::supportsListing( u ) )
               dlg->setSelection( u.url() );
@@ -381,8 +381,8 @@ KComboBox * KURLRequester::comboBox() const
 void KURLRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
-    KURL u;
-    u = KURL( KURL( QDir::currentPath() + '/' ), url() );
+    KUrl u;
+    u = KUrl( KUrl( QDir::currentPath() + '/' ), url() );
     (static_cast<KURLDragPushButton *>( myButton ))->setURL( u );
 }
 

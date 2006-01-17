@@ -39,19 +39,19 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		virtual QSize sizeHint() const;
 
 	public Q_SLOTS:
-		virtual void showPreview(const KURL &url);
+		virtual void showPreview(const KUrl &url);
 		virtual void clearPreview();
 
 	protected Q_SLOTS:
 		void showPreview();
-		void showPreview( const KURL& url, bool force );
+		void showPreview( const KUrl& url, bool force );
 
 		void toggleAuto(bool);
 		virtual void gotPreview( const KFileItem*, const QPixmap& );
 
 	protected:
 		virtual void resizeEvent(QResizeEvent *e);
-		virtual KIO::PreviewJob * createJob( const KURL& url,
+		virtual KIO::PreviewJob * createJob( const KUrl& url,
                                                      int w, int h );
 
 	private Q_SLOTS:
@@ -60,7 +60,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 
 	private:
 		bool autoMode;
-		KURL currentURL;
+		KUrl currentURL;
 		QTimer *timer;
 		QLabel *imageLabel;
 		QLabel *infoLabel;

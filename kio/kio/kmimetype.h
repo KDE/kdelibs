@@ -107,7 +107,7 @@ public:
    *
    * @return The path to the icon associated with this MIME type.
    */
-  virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
+  virtual QString icon( const KUrl& , bool ) const { return m_strIcon; }
 
   /**
    * Use this function only if you don't have a special URL
@@ -145,7 +145,7 @@ public:
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  virtual QPixmap pixmap( const KURL& _url, KIcon::Group _group, int _force_size = 0,
+  virtual QPixmap pixmap( const KUrl& _url, KIcon::Group _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
@@ -166,7 +166,7 @@ public:
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, KIcon::Group _group = KIcon::Desktop,
+  static QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, KIcon::Group _group = KIcon::Desktop,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
 
@@ -182,7 +182,7 @@ public:
    * @return the name of the icon. The name of a default icon if there is no icon
    *         for the mime type
    */
-  static QString iconNameForURL( const KURL & _url, mode_t _mode = 0 );
+  static QString iconNameForURL( const KUrl & _url, mode_t _mode = 0 );
 
 
   /**
@@ -190,7 +190,7 @@ public:
    * @param _url URL for the file
    * @param _mode the mode of the file
    */
-  static QString iconForURL( const KURL & _url, mode_t _mode = 0 ) KDE_DEPRECATED;
+  static QString iconForURL( const KUrl & _url, mode_t _mode = 0 ) KDE_DEPRECATED;
 
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -201,7 +201,7 @@ public:
    * @param url the URL of the favicon
    * @return the name of the favicon, or QString()
    */
-  static QString favIconForURL( const KURL& url );
+  static QString favIconForURL( const KUrl& url );
 
   /**
    * Returns the descriptive comment associated with the MIME type.
@@ -225,7 +225,7 @@ public:
    *
    * @return The descriptive comment associated with the MIME type, if any.
    */
-  virtual QString comment( const KURL&, bool ) const { return m_strComment; }
+  virtual QString comment( const KUrl&, bool ) const { return m_strComment; }
 
   /**
    * Retrieve the list of patterns associated with the MIME Type.
@@ -306,10 +306,10 @@ public:
    * @return A pointer to the matching mimetype. 0L is never returned.
    * @em Very @em Important: Don't store the result in a KMimeType* !
    */
-  static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
+  static Ptr findByURL( const KUrl& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
 
-  static Ptr findByURL( const KURL& _url, mode_t _mode,
+  static Ptr findByURL( const KUrl& _url, mode_t _mode,
                         bool _is_local_file, bool _fast_mode,
 		  	bool *accurate);
   /**
@@ -325,7 +325,7 @@ public:
    *
    * Equivalent to
    * \code
-   * KURL u;
+   * KUrl u;
    * u.setPath(path);
    * return findByURL( u, mode, true, fast_mode );
    * \endcode
@@ -499,9 +499,9 @@ public:
   KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
-  virtual QString icon( const KURL& _url, bool _is_local ) const;
+  virtual QString icon( const KUrl& _url, bool _is_local ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
-  virtual QString comment( const KURL& _url, bool _is_local ) const;
+  virtual QString comment( const KUrl& _url, bool _is_local ) const;
 protected:
   virtual void virtual_hook( int id, void* data );
 };
@@ -544,18 +544,18 @@ public:
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
-  virtual QString icon( const KURL& _url, bool _is_local ) const;
-  virtual QPixmap pixmap( const KURL& _url, KIcon::Group _group, int _force_size = 0,
+  virtual QString icon( const KUrl& _url, bool _is_local ) const;
+  virtual QPixmap pixmap( const KUrl& _url, KIcon::Group _group, int _force_size = 0,
                           int _state = 0, QString * _path = 0L ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
-  virtual QString comment( const KURL& _url, bool _is_local ) const;
+  virtual QString comment( const KUrl& _url, bool _is_local ) const;
 
   /**
    * Returns a list of services for the given .desktop file that are handled
    * by kio itself. Namely mount/unmount for FSDevice files.
    * @return the list of services
    */
-  static QList<Service> builtinServices( const KURL& _url );
+  static QList<Service> builtinServices( const KUrl& _url );
   /**
    * Returns a list of services defined by the user as possible actions
    * on the given .desktop file. May include empty actions which represent where
@@ -581,7 +581,7 @@ public:
    * the X-KDE-GetActionMenu extension.
    * @since 3.5
    */
-  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KURL::List & file_list);
+  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KUrl::List & file_list);
 
   /**
    * @param path is the path of the desktop entry.
@@ -595,7 +595,7 @@ public:
    * @param urls the list of urls
    * @param service the service to execute
    */
-  static void executeService( const KURL::List& urls, KDEDesktopMimeType::Service& service );
+  static void executeService( const KUrl::List& urls, KDEDesktopMimeType::Service& service );
 
   /**
    * Invokes the default action for the desktop entry. If the desktop
@@ -608,17 +608,17 @@ public:
    * @return true on success and false on failure.
    * @see KRun::runURL
    */
-  static pid_t run( const KURL& _url, bool _is_local );
+  static pid_t run( const KUrl& _url, bool _is_local );
 
 protected:
   virtual QPixmap pixmap( KIcon::Group group, int force_size = 0, int state = 0,
                           QString * path = 0L ) const
      { return KMimeType::pixmap( group, force_size, state, path ); }
 
-  static pid_t runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
-  static pid_t runApplication( const KURL& _url, const QString & _serviceFile );
-  static pid_t runLink( const KURL& _url, const KSimpleConfig &cfg );
-  static pid_t runMimeType( const KURL& _url, const KSimpleConfig &cfg );
+  static pid_t runFSDevice( const KUrl& _url, const KSimpleConfig &cfg );
+  static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
+  static pid_t runLink( const KUrl& _url, const KSimpleConfig &cfg );
+  static pid_t runMimeType( const KUrl& _url, const KSimpleConfig &cfg );
 protected:
   virtual void virtual_hook( int id, void* data );
 };

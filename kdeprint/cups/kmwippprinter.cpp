@@ -113,7 +113,7 @@ bool KMWIppPrinter::isValid(QString& msg)
 		return false;
 	}
 
-	KURL uri( m_uri->text() );
+	KUrl uri( m_uri->text() );
 	if (!m_scanner->checkPrinter(uri.host(),(uri.port()==0?631:uri.port())))
 	{
 		msg = i18n("No printer found at this address/port.");

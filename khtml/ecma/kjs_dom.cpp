@@ -994,7 +994,7 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
       // Security: only allow documents to be loaded from the same host
       QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
       KParts::ReadOnlyPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
-      if (part->url().host() == KURL(dstUrl).host()) {
+      if (part->url().host() == KUrl(dstUrl).host()) {
 	kdDebug(6070) << "JavaScript: access granted for document.load() of " << dstUrl << endl;
 	doc.load(dstUrl);
       }
@@ -1223,7 +1223,7 @@ ValueImp* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, ObjectI
       DOM::DocumentImpl* doc = implementation.createDocument(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),docType,exception);
       if (!doc)
         return Null();
-      KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
+      KUrl url = static_cast<DocumentImpl*>(part->document().handle())->URL();
       doc->setURL(url.url());
       return getDOMNode(exec,doc);
     }

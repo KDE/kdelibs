@@ -38,25 +38,25 @@ public:
    PrintSignals() : QObject() { }
 
 public Q_SLOTS:
-   void started( const KURL &url )
+   void started( const KUrl &url )
    {
       cout << "*** started( " << url.url().toLocal8Bit().data() << " )" << endl;
    }
    void canceled() { cout << "canceled()" << endl; }
-   void canceled( const KURL& url )
+   void canceled( const KUrl& url )
    {
       cout << "*** canceled( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
    void completed() { cout << "*** completed()" << endl; }
-   void completed( const KURL& url )
+   void completed( const KUrl& url )
    {
       cout << "*** completed( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
-   void redirection( const KURL& url )
+   void redirection( const KUrl& url )
    {
       cout << "*** redirection( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
-   void redirection( const KURL& src, const KURL& dest )
+   void redirection( const KUrl& src, const KUrl& dest )
    {
       cout << "*** redirection( " << src.prettyURL().toLocal8Bit().data() << ", "
            << dest.prettyURL().toLocal8Bit().data() << " )" << endl;

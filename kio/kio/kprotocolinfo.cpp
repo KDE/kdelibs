@@ -28,7 +28,7 @@
 // Most of this class is implemented in kdecore/kprotocolinfo_kdecore.cpp
 // This file only contains a few static class-functions that depend on
 // KProtocolManager
-KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KURL &url)
+KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KUrl &url)
 {
    QString protocol = url.protocol();
 
@@ -42,7 +42,7 @@ KProtocolInfo::Ptr KProtocolInfo::findProtocol(const KURL &url)
 }
 
 
-KProtocolInfo::Type KProtocolInfo::inputType( const KURL &url )
+KProtocolInfo::Type KProtocolInfo::inputType( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -51,7 +51,7 @@ KProtocolInfo::Type KProtocolInfo::inputType( const KURL &url )
   return prot->m_inputType;
 }
 
-KProtocolInfo::Type KProtocolInfo::outputType( const KURL &url )
+KProtocolInfo::Type KProtocolInfo::outputType( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -61,7 +61,7 @@ KProtocolInfo::Type KProtocolInfo::outputType( const KURL &url )
 }
 
 
-bool KProtocolInfo::isSourceProtocol( const KURL &url )
+bool KProtocolInfo::isSourceProtocol( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -70,7 +70,7 @@ bool KProtocolInfo::isSourceProtocol( const KURL &url )
   return prot->m_isSourceProtocol;
 }
 
-bool KProtocolInfo::isFilterProtocol( const KURL &url )
+bool KProtocolInfo::isFilterProtocol( const KUrl &url )
 {
   return isFilterProtocol (url.protocol());
 }
@@ -85,7 +85,7 @@ bool KProtocolInfo::isFilterProtocol( const QString &protocol )
   return !prot->m_isSourceProtocol;
 }
 
-bool KProtocolInfo::isHelperProtocol( const KURL &url )
+bool KProtocolInfo::isHelperProtocol( const KUrl &url )
 {
   return isHelperProtocol (url.protocol());
 }
@@ -100,7 +100,7 @@ bool KProtocolInfo::isHelperProtocol( const QString &protocol )
   return prot->m_isHelperProtocol;
 }
 
-bool KProtocolInfo::isKnownProtocol( const KURL &url )
+bool KProtocolInfo::isKnownProtocol( const KUrl &url )
 {
   return isKnownProtocol (url.protocol());
 }
@@ -112,7 +112,7 @@ bool KProtocolInfo::isKnownProtocol( const QString &protocol )
   return prot;
 }
 
-bool KProtocolInfo::supportsListing( const KURL &url )
+bool KProtocolInfo::supportsListing( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -121,7 +121,7 @@ bool KProtocolInfo::supportsListing( const KURL &url )
   return prot->m_supportsListing;
 }
 
-QStringList KProtocolInfo::listing( const KURL &url )
+QStringList KProtocolInfo::listing( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -130,7 +130,7 @@ QStringList KProtocolInfo::listing( const KURL &url )
   return prot->m_listing;
 }
 
-bool KProtocolInfo::supportsReading( const KURL &url )
+bool KProtocolInfo::supportsReading( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -139,7 +139,7 @@ bool KProtocolInfo::supportsReading( const KURL &url )
   return prot->m_supportsReading;
 }
 
-bool KProtocolInfo::supportsWriting( const KURL &url )
+bool KProtocolInfo::supportsWriting( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -148,7 +148,7 @@ bool KProtocolInfo::supportsWriting( const KURL &url )
   return prot->m_supportsWriting;
 }
 
-bool KProtocolInfo::supportsMakeDir( const KURL &url )
+bool KProtocolInfo::supportsMakeDir( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -157,7 +157,7 @@ bool KProtocolInfo::supportsMakeDir( const KURL &url )
   return prot->m_supportsMakeDir;
 }
 
-bool KProtocolInfo::supportsDeleting( const KURL &url )
+bool KProtocolInfo::supportsDeleting( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -166,7 +166,7 @@ bool KProtocolInfo::supportsDeleting( const KURL &url )
   return prot->m_supportsDeleting;
 }
 
-bool KProtocolInfo::supportsLinking( const KURL &url )
+bool KProtocolInfo::supportsLinking( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -175,7 +175,7 @@ bool KProtocolInfo::supportsLinking( const KURL &url )
   return prot->m_supportsLinking;
 }
 
-bool KProtocolInfo::supportsMoving( const KURL &url )
+bool KProtocolInfo::supportsMoving( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -184,7 +184,7 @@ bool KProtocolInfo::supportsMoving( const KURL &url )
   return prot->m_supportsMoving;
 }
 
-bool KProtocolInfo::canCopyFromFile( const KURL &url )
+bool KProtocolInfo::canCopyFromFile( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -194,7 +194,7 @@ bool KProtocolInfo::canCopyFromFile( const KURL &url )
 }
 
 
-bool KProtocolInfo::canCopyToFile( const KURL &url )
+bool KProtocolInfo::canCopyToFile( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -203,7 +203,7 @@ bool KProtocolInfo::canCopyToFile( const KURL &url )
   return prot->m_canCopyToFile;
 }
 
-bool KProtocolInfo::canRenameFromFile( const KURL &url )
+bool KProtocolInfo::canRenameFromFile( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -213,7 +213,7 @@ bool KProtocolInfo::canRenameFromFile( const KURL &url )
 }
 
 
-bool KProtocolInfo::canRenameToFile( const KURL &url )
+bool KProtocolInfo::canRenameToFile( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -222,7 +222,7 @@ bool KProtocolInfo::canRenameToFile( const KURL &url )
   return prot->canRenameToFile();
 }
 
-bool KProtocolInfo::canDeleteRecursive( const KURL &url )
+bool KProtocolInfo::canDeleteRecursive( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -231,7 +231,7 @@ bool KProtocolInfo::canDeleteRecursive( const KURL &url )
   return prot->canDeleteRecursive();
 }
 
-KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying( const KURL &url )
+KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -240,7 +240,7 @@ KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying( con
   return prot->fileNameUsedForCopying();
 }
 
-QString KProtocolInfo::defaultMimetype( const KURL &url )
+QString KProtocolInfo::defaultMimetype( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )

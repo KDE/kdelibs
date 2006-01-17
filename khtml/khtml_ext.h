@@ -100,7 +100,7 @@ public:
 
   virtual const Q3PtrList<KParts::ReadOnlyPart> frames() const;
 
-  virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+  virtual bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -116,15 +116,15 @@ class KHTMLPopupGUIClient : public QObject, public KXMLGUIClient
 {
   Q_OBJECT
 public:
-  KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
+  KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KUrl &url );
   virtual ~KHTMLPopupGUIClient();
 
-  static void saveURL( QWidget *parent, const QString &caption, const KURL &url,
+  static void saveURL( QWidget *parent, const QString &caption, const KUrl &url,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        const QString &filter = QString(), long cacheId = 0,
                        const QString &suggestedFilename = QString() );
 
-  static void saveURL( const KURL &url, const KURL &destination,
+  static void saveURL( const KUrl &url, const KUrl &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        long cacheId = 0 );
 private Q_SLOTS:

@@ -94,7 +94,7 @@ class UploadDialog : public KDialogBase
     QComboBox *mLicenceCombo;
 
     QList<Entry*> mEntryList;
-    KURL mPayloadUrl;
+    KUrl mPayloadUrl;
 };
 
 }

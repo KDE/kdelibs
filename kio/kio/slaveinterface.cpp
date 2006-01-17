@@ -300,7 +300,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_REDIRECTION:
       {
-	KURL url;
+	KUrl url;
 	stream >> url;
 
 	emit redirection( url );

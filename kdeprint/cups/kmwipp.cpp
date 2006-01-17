@@ -76,7 +76,7 @@ bool KMWIpp::isValid(QString& msg)
 
 void KMWIpp::updatePrinter(KMPrinter *p)
 {
-	KURL	url;
+	KUrl	url;
 	url.setProtocol("ipp");
 	url.setHost(text(0));
 	url.setPort(text(1).toInt());

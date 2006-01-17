@@ -987,7 +987,7 @@ public:
     * over other protocols (ftp, etc.)
     *
     **/
-    KFileMetaInfo( const KURL& url,
+    KFileMetaInfo( const KUrl& url,
                    const QString& mimeType = QString(),
                    uint what = Fastest);
 
@@ -1212,7 +1212,7 @@ public:
      *
      * @return the file's url
      */
-    KURL url() const;
+    KUrl url() const;
 
     KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
     KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
@@ -1236,7 +1236,7 @@ private:
     KFileMetaInfoItem findEditableItem( KFileMetaInfoGroup& group,
                                         const QString& key );
 
-    void init( const KURL& url,
+    void init( const KUrl& url,
                const QString& mimeType = QString(),
                uint what = Fastest);
 };

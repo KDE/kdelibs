@@ -117,7 +117,7 @@ public:
     bool wasKilled:1;
     MetaData configData;
     SlaveBaseConfig *config;
-    KURL onHoldUrl;
+    KUrl onHoldUrl;
 
     struct timeval last_tv;
     KIO::filesize_t totalSize;
@@ -528,7 +528,7 @@ void SlaveBase::speed( unsigned long _bytes_per_second )
     if (slaveWriteError) exit();
 }
 
-void SlaveBase::redirection( const KURL& _url )
+void SlaveBase::redirection( const KUrl& _url )
 {
     KIO_DATA << _url;
     m_pConnection->send( INF_REDIRECTION, data );
@@ -749,31 +749,31 @@ void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CONNECT)); }
 void SlaveBase::closeConnection(void)
 { } // No response!
-void SlaveBase::stat(KURL const &)
+void SlaveBase::stat(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_STAT)); }
-void SlaveBase::put(KURL const &, int, bool, bool)
+void SlaveBase::put(KUrl const &, int, bool, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_PUT)); }
 void SlaveBase::special(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SPECIAL)); }
-void SlaveBase::listDir(KURL const &)
+void SlaveBase::listDir(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_LISTDIR)); }
-void SlaveBase::get(KURL const & )
+void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
-void SlaveBase::mimetype(KURL const &url)
+void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
-void SlaveBase::rename(KURL const &, KURL const &, bool)
+void SlaveBase::rename(KUrl const &, KUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_RENAME)); }
-void SlaveBase::symlink(QString const &, KURL const &, bool)
+void SlaveBase::symlink(QString const &, KUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SYMLINK)); }
-void SlaveBase::copy(KURL const &, KURL const &, int, bool)
+void SlaveBase::copy(KUrl const &, KUrl const &, int, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_COPY)); }
-void SlaveBase::del(KURL const &, bool)
+void SlaveBase::del(KUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_DEL)); }
-void SlaveBase::mkdir(KURL const &, int)
+void SlaveBase::mkdir(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MKDIR)); }
-void SlaveBase::chmod(KURL const &, int)
+void SlaveBase::chmod(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHMOD)); }
-void SlaveBase::setSubURL(KURL const &)
+void SlaveBase::setSubURL(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SUBURL)); }
 void SlaveBase::multiGet(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MULTI_GET)); }
@@ -950,7 +950,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 {
     QDataStream stream( data );
 
-    KURL url;
+    KUrl url;
     int i;
 
     switch( command ) {
@@ -985,7 +985,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     } break;
     case CMD_SLAVE_HOLD:
     {
-        KURL url;
+        KUrl url;
         QDataStream stream( data );
         stream >> url;
         d->onHoldUrl = url;
@@ -1045,7 +1045,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_RENAME:
     {
         qint8 iOverwrite;
-        KURL url2;
+        KUrl url2;
         stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         rename( url, url2, overwrite );
@@ -1062,7 +1062,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     {
         int permissions;
         qint8 iOverwrite;
-        KURL url2;
+        KUrl url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         copy( url, url2, permissions, overwrite );
@@ -1101,7 +1101,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     }
 }
 
-QString SlaveBase::createAuthCacheKey( const KURL& url )
+QString SlaveBase::createAuthCacheKey( const KUrl& url )
 {
     if( !url.isValid() )
         return QString();

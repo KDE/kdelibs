@@ -223,11 +223,11 @@ struct KPARTS_EXPORT WindowArgs
 class KPARTS_EXPORT OpenURLEvent : public Event
 {
 public:
-  OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args = URLArgs() );
+  OpenURLEvent( ReadOnlyPart *part, const KUrl &url, const URLArgs &args = URLArgs() );
   virtual ~OpenURLEvent();
 
   ReadOnlyPart *part() const { return m_part; }
-  KURL url() const { return m_url; }
+  KUrl url() const { return m_url; }
   URLArgs args() const { return m_args; }
 
   static bool test( const QEvent *event ) { return Event::test( event, s_strOpenURLEvent ); }
@@ -235,7 +235,7 @@ public:
 private:
   static const char *s_strOpenURLEvent;
   ReadOnlyPart *m_part;
-  KURL m_url;
+  KUrl m_url;
   URLArgs m_args;
 
   class OpenURLEventPrivate;
@@ -248,7 +248,7 @@ class BrowserExtensionPrivate;
   * The Browser Extension is an extension (yes, no kidding) to
   * KParts::ReadOnlyPart, which allows a better integration of parts
   * with browsers (in particular Konqueror).
-  * Remember that ReadOnlyPart only has openURL(KURL), with no other settings.
+  * Remember that ReadOnlyPart only has openURL(KUrl), with no other settings.
   * For full-fledged browsing, we need much more than that, including
   * many arguments about how to open this URL (see URLArgs), allowing
   * parts to save and restore their data into the back/forward history,
@@ -272,7 +272,7 @@ class BrowserExtensionPrivate;
   * @li @p cut : Copy selected items to clipboard and store 'not cut' in clipboard.
   * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
   * @li @p paste : Paste clipboard into view URL.
-  * @li @p pasteTo(const KURL &) : Paste clipboard into given URL.
+  * @li @p pasteTo(const KUrl &) : Paste clipboard into given URL.
   * @li @p rename : Rename item in place.
   * @li @p trash : Move selected items to trash.
   * @li @p del : Delete selected items (couldn't call it delete!).
@@ -507,7 +507,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * appropriate fields in the @p args structure.
    * Hosts should not connect to this signal but to openURLRequestDelayed.
    */
-  void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openURLRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * This signal is emitted when openURLRequest is called, after a 0-seconds timer.
@@ -515,7 +515,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.
    */
-  void openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openURLRequestDelayed( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * Tells the hosting browser that the part opened a new URL (which can be
@@ -542,7 +542,7 @@ public:  // yes, those signals are public; don't tell moc :)
   /**
    * Sets the URL of an icon for the currently displayed page.
    */
-  void setIconURL( const KURL &url );
+  void setIconURL( const KUrl &url );
 
   /**
    * Asks the hosting browser to open a new window for the given @p url.
@@ -551,7 +551,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * browser,
    * @see KParts::URLArgs
    */
-  void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void createNewWindow( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * Asks the hosting browser to open a new window for the given @p url
@@ -560,7 +560,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * if the serviceType is set in the @p args . (otherwise the request cannot be
    * processed synchroniously.
    */
-  void createNewWindow( const KURL &url, const KParts::URLArgs &args,
+  void createNewWindow( const KUrl &url, const KParts::URLArgs &args,
                         const KParts::WindowArgs &windowArgs, KParts::ReadOnlyPart *&part );
 
   /**
@@ -603,7 +603,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * about this URL as possible, like the @p mimeType and the file type
    * (@p mode: S_IFREG, S_IFDIR...)
    */
-  void popupMenu( const QPoint &global, const KURL &url,
+  void popupMenu( const QPoint &global, const KUrl &url,
                   const QString &mimeType, mode_t mode = (mode_t)-1 );
 
   /**
@@ -616,7 +616,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * The GUI described by @p client is being merged with the popupmenu of the host
    */
   void popupMenu( KXMLGUIClient *client,
-                  const QPoint &global, const KURL &url,
+                  const QPoint &global, const KUrl &url,
                   const QString &mimeType, mode_t mode = (mode_t)-1 );
 
   /**
@@ -629,7 +629,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * The GUI described by @p client is being merged with the popupmenu of the host
    */
   void popupMenu( KXMLGUIClient *client,
-                  const QPoint &global, const KURL &url,
+                  const QPoint &global, const KUrl &url,
                   const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i, mode_t mode = (mode_t)-1 );
 
   /**
@@ -647,7 +647,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * Inform the hosting application about the current selection.
    * Used when a set of URLs is selected.
    */
-  void selectionInfo( const KURL::List &urls );
+  void selectionInfo( const KUrl::List &urls );
 
   /**
    * Inform the hosting application that the user moved the mouse over an item.
@@ -659,7 +659,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * Ask the hosting application to add a new HTML (aka Mozilla/Netscape)
    * SideBar entry.
    */
-  void addWebSideBar(const KURL &url, const QString& name);
+  void addWebSideBar(const KUrl &url, const QString& name);
 
   /**
    * Ask the hosting application to move the top level widget.
@@ -686,7 +686,7 @@ public:  // yes, those signals are public; don't tell moc :)
 
 private Q_SLOTS:
   void slotCompleted();
-  void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
+  void slotOpenURLRequest( const KUrl &url, const KParts::URLArgs &args );
   void slotEmitOpenURLRequestDelayed();
   void slotEnableAction( const char *, bool );
   void slotSetActionText( const char*, const QString& );
@@ -745,7 +745,7 @@ public:
    * Opens the given url in a hosted child frame. The frame name is specified in the
    * frameName variable in the urlArgs argument structure (see KParts::URLArgs ) .
    */
-  virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+  virtual bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
 
   /**
    * Queries @p obj for a child object which inherits from this

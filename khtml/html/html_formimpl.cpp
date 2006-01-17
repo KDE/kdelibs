@@ -313,26 +313,26 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE &&
                         current->renderer())
                     {
-                        KURL path;
+                        KUrl path;
                         QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().trimmed();
                         if (!val.isEmpty() &&
                             QDir::isRelativePath(val) &&
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
                             path.setPath(KGlobalSettings::documentPath() + val);
                         } else {
-                            path = KURL::fromPathOrURL(val);
+                            path = KUrl::fromPathOrURL(val);
                         }
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
-                            fileUploads << path.prettyURL(0, KURL::StripFileProtocol);
+                            fileUploads << path.prettyURL(0, KUrl::StripFileProtocol);
                             const KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().ascii();
                             }
                         } else if (!val.isEmpty()) {
-                            fileNotUploads << path.prettyURL(0, KURL::StripFileProtocol);
+                            fileNotUploads << path.prettyURL(0, KUrl::StripFileProtocol);
                         }
                     }
 
@@ -423,7 +423,7 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
 
 static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
 {
-    KURL k(e.getDocument()->URL());
+    KUrl k(e.getDocument()->URL());
     k.setRef(QString());
     k.setQuery(QString());
     // ensure that we have the user / password inside the url
@@ -523,7 +523,7 @@ void HTMLFormElementImpl::gatherWalletData()
     m_walletMap.clear();
     m_havePassword = false;
     m_haveTextarea = false;
-    const KURL formUrl(getDocument()->URL());
+    const KUrl formUrl(getDocument()->URL());
     if (!view->nonPasswordStorableSite(formUrl.host())) {
         for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
             if (it.current()->id() == ID_INPUT)  {
@@ -583,7 +583,7 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     KHTMLView* const view = getDocument()->view();
     const QByteArray form_data = formData(ok);
-    const KURL formUrl(getDocument()->URL());
+    const KUrl formUrl(getDocument()->URL());
 
     if (ok && view) {
         if (m_walletMap.isEmpty()) {
@@ -1585,14 +1585,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 return false;
 
             QString local;
-            KURL fileurl;
+            KUrl fileurl;
             QString val = value().string();
             if (!val.isEmpty() &&
                 QDir::isRelativePath(val) &&
                 QFile::exists(KGlobalSettings::documentPath() + val)) {
                 fileurl.setPath(KGlobalSettings::documentPath() + val);
             } else {
-                fileurl = KURL::fromPathOrURL(val);
+                fileurl = KUrl::fromPathOrURL(val);
             }
 
             KIO::UDSEntry filestat;

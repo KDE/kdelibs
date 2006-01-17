@@ -1757,20 +1757,20 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
     QString href = getURLArg(ATTR_HREF);
     switch (token) {
-    case AnchorHash:            return String('#'+KURL(href).ref());
-    case AnchorHost:            return String(KURL(href).host());
+    case AnchorHash:            return String('#'+KUrl(href).ref());
+    case AnchorHost:            return String(KUrl(href).host());
     case AnchorHostname: {
-      KURL url(href);
+      KUrl url(href);
       kdDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
       if (url.port()==0)
         return String(url.host());
       else
         return String(url.host() + ":" + QString::number(url.port()));
     }
-    case AnchorPathName:        return String(KURL(href).path());
-    case AnchorPort:            return String(QString::number(KURL(href).port()));
-    case AnchorProtocol:        return String(KURL(href).protocol()+":");
-    case AnchorSearch:          return String(KURL(href).query());
+    case AnchorPathName:        return String(KUrl(href).path());
+    case AnchorPort:            return String(QString::number(KUrl(href).port()));
+    case AnchorProtocol:        return String(KUrl(href).protocol()+":");
+    case AnchorSearch:          return String(KUrl(href).query());
     // Not specified in http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/a.asp
     // Mozilla returns the inner text.
     case AnchorText:            return String(anchor.innerText());
@@ -1802,7 +1802,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     // Everything here needs href
     DOM::Document doc = area.ownerDocument();
     DOM::DOMString href = getURLArg(ATTR_HREF);
-    KURL url;
+    KUrl url;
     if ( !href.isNull() ) {
       url = href.string();
       if ( href.isEmpty() )

@@ -62,7 +62,7 @@ QStringList KRecentDocument::recentDocuments()
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
        QString pathDesktop = d.absoluteFilePath( *it );
        KDesktopFile tmpDesktopFile( pathDesktop, false);
-       KURL urlDesktopFile(tmpDesktopFile.readURL());
+       KUrl urlDesktopFile(tmpDesktopFile.readURL());
        if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())
            d.remove(pathDesktop);
        else
@@ -72,12 +72,12 @@ QStringList KRecentDocument::recentDocuments()
     return fullList;
 }
 
-void KRecentDocument::add(const KURL& url)
+void KRecentDocument::add(const KUrl& url)
 {
     KRecentDocument::add(url, qApp->argv()[0]); // ### argv[0] might not match the service filename!
 }
 
-void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
+void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 {
 	if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
 		return;
@@ -148,9 +148,9 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
     if( isUrl ) {
-        add( KURL( openStr ) );
+        add( KUrl( openStr ) );
     } else {
-        KURL url;
+        KUrl url;
         url.setPath( openStr );
         add( url );
     }

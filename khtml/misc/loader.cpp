@@ -1001,7 +1001,7 @@ bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
 }
 
 #define DOCLOADER_SECCHECK(doRedirectCheck) \
-    KURL fullURL (m_doc->completeURL( url.string() )); \
+    KUrl fullURL (m_doc->completeURL( url.string() )); \
     if ( !fullURL.isValid() || \
          ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
          doRedirectCheck && ( kapp && m_doc && !KAuthorized::authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
@@ -1112,7 +1112,7 @@ void Loader::servePendingRequests()
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-        KURL u(req->object->url().string());
+        KUrl u(req->object->url().string());
         KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
 
         job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
@@ -1356,7 +1356,7 @@ void Cache::clear()
 }
 
 template<typename CachedObjectType, enum CachedObject::Type CachedType>
-CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const char* accept )
+CachedObjectType* Cache::requestObject( DocLoader* dl, const KUrl& kurl, const char* accept )
 {
     KIO::CacheControl cachePolicy = dl ? dl->cachePolicy() : KIO::CC_Verify;
 

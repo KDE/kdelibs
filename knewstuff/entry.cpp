@@ -141,16 +141,16 @@ QDate Entry::releaseDate() const
 }
 
 
-void Entry::setPayload( const KURL &url, const QString &lang )
+void Entry::setPayload( const KUrl &url, const QString &lang )
 {
   mPayloadMap.insert( lang, url );
 
   if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
 }
 
-KURL Entry::payload( const QString &lang ) const
+KUrl Entry::payload( const QString &lang ) const
 {
-  KURL payload = mPayloadMap[ lang ];
+  KUrl payload = mPayloadMap[ lang ];
   if ( payload.isEmpty() ) {
     QStringList langs = KGlobal::locale()->languageList();
     for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
@@ -164,16 +164,16 @@ KURL Entry::payload( const QString &lang ) const
 }
 
 
-void Entry::setPreview( const KURL &url, const QString &lang )
+void Entry::setPreview( const KUrl &url, const QString &lang )
 {
   mPreviewMap.insert( lang, url );
   
   if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
 }
 
-KURL Entry::preview( const QString &lang ) const
+KUrl Entry::preview( const QString &lang ) const
 {
-  KURL preview = mPreviewMap[ lang ];
+  KUrl preview = mPreviewMap[ lang ];
   if ( preview.isEmpty() ) {
     QStringList langs = KGlobal::locale()->languageList();
     for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
@@ -241,11 +241,11 @@ void Entry::parseDomElement( const QDomElement &element )
     }
     if ( e.tagName() == "preview" ) {
       QString lang = e.attribute( "lang" );
-      setPreview( KURL( e.text().trimmed() ), lang );
+      setPreview( KUrl( e.text().trimmed() ), lang );
     }
     if ( e.tagName() == "payload" ) {
       QString lang = e.attribute( "lang" );
-      setPayload( KURL( e.text().trimmed() ), lang );
+      setPayload( KUrl( e.text().trimmed() ), lang );
     }
     if ( e.tagName() == "rating" ) setRating( e.text().toInt() );
     if ( e.tagName() == "downloads" ) setDownloads( e.text().toInt() );

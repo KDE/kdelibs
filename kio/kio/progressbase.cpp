@@ -73,12 +73,12 @@ void ProgressBase::setJob( KIO::CopyJob *job )
   connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
 	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
-  connect( job, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
-  connect( job, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
- 	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+  connect( job, SIGNAL( copying( KIO::Job*, const KUrl& , const KUrl& ) ),
+	   SLOT( slotCopying( KIO::Job*, const KUrl&, const KUrl& ) ) );
+  connect( job, SIGNAL( moving( KIO::Job*, const KUrl& , const KUrl& ) ),
+	   SLOT( slotMoving( KIO::Job*, const KUrl&, const KUrl& ) ) );
+  connect( job, SIGNAL( creatingDir( KIO::Job*, const KUrl& ) ),
+ 	   SLOT( slotCreatingDir( KIO::Job*, const KUrl& ) ) );
 
   connect( job, SIGNAL( result( KIO::Job* ) ),
 	   SLOT( slotFinished( KIO::Job* ) ) );
@@ -113,8 +113,8 @@ void ProgressBase::setJob( KIO::DeleteJob *job )
   connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
 	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
-	   SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
+  connect( job, SIGNAL( deleting( KIO::Job*, const KUrl& ) ),
+	   SLOT( slotDeleting( KIO::Job*, const KUrl& ) ) );
 
   connect( job, SIGNAL( result( KIO::Job* ) ),
 	   SLOT( slotFinished( KIO::Job* ) ) );

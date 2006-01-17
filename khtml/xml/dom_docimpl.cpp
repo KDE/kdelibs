@@ -691,7 +691,7 @@ void DocumentImpl::setTitle(const DOMString& _title)
     if ( view() && !view()->part()->parentPart() ) {
 	if (titleStr.isNull() || titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
-	    KURL url = m_url;
+	    KUrl url = m_url;
 	    url.setRef(QString());
 	    url.setQuery(QString());
 	    titleStr = url.prettyURL();
@@ -1660,7 +1660,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
         QString str = content.string().lower().trimmed();
-        KURL url = v->part()->url();
+        KUrl url = v->part()->url();
         if ((str == "no-cache") && url.protocol().startsWith("http"))
         {
            KIO::http_update_cache(url, true, 0);
@@ -2249,7 +2249,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
 {
     KHTMLPart *thisPart = part();
 
-    KURL newURL(completeURL(url));
+    KUrl newURL(completeURL(url));
     newURL.setRef(QString());
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered( newURL.url() ))
@@ -2267,7 +2267,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     // But we don't allow more than one.
     bool foundSelfReference = false;
     for (KHTMLPart *part = thisPart; part; part = part->parentPart()) {
-        KURL partURL = part->url();
+        KUrl partURL = part->url();
         partURL.setRef(QString());
         if (partURL == newURL) {
             if (foundSelfReference)

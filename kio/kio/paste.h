@@ -42,7 +42,7 @@ namespace KIO {
    * @return the job that handles the operation
    * @see pasteData()
    */
-  KIO_EXPORT Job *pasteClipboard( const KURL& destURL, QWidget* widget, bool move = false );
+  KIO_EXPORT Job *pasteClipboard( const KUrl& destURL, QWidget* widget, bool move = false );
 
   /**
    * Pastes the given @p data to the given destination URL.
@@ -55,7 +55,7 @@ namespace KIO {
    * @param widget parent widget to use for dialogs
    * @see pasteClipboard()
    */
-  KIO_EXPORT void pasteData( const KURL& destURL, const QByteArray& data, QWidget* widget );
+  KIO_EXPORT void pasteData( const KUrl& destURL, const QByteArray& data, QWidget* widget );
 
 
   /**
@@ -69,7 +69,7 @@ namespace KIO {
    * @param dialogText the text to show in the dialog
    * @see pasteClipboard()
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data, const QString& dialogText = QString() );
+  KIO_EXPORT CopyJob *pasteDataAsync( const KUrl& destURL, const QByteArray& data, const QString& dialogText = QString() );
 
 
   /**
@@ -90,7 +90,7 @@ namespace KIO {
    *
    * @since 3.5
    */
-  KIO_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KURL& destURL,
+  KIO_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 

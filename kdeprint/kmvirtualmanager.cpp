@@ -263,17 +263,17 @@ void KMVirtualManager::loadFile(const QString& filename)
 			words = QStringList::split(' ',line,false);
 			if (words.count() < 2) continue;
 			pair = QStringList::split('/',words[1],false);
-			realprinter = m_manager->findPrinter(KURL::decode_string(pair[0]));
+			realprinter = m_manager->findPrinter(KUrl::decode_string(pair[0]));
 			if (realprinter && !realprinter->isDiscarded())
 			{ // keep only instances corresponding to an existing and
 			  // non discarded printer.
 			  	// "clone" the real printer and modify settings as needed
 				printer = new KMPrinter(*realprinter);
-				printer->setName(KURL::decode_string(words[1]));
-				printer->setPrinterName(KURL::decode_string(pair[0]));
+				printer->setName(KUrl::decode_string(words[1]));
+				printer->setPrinterName(KUrl::decode_string(pair[0]));
 				if (pair.count() > 1)
 				{
-					printer->setInstanceName(KURL::decode_string(pair[1]));
+					printer->setInstanceName(KUrl::decode_string(pair[1]));
 					printer->addType(KMPrinter::Virtual);
 				}
 				// parse options
@@ -286,7 +286,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 				addPrinter(printer);	// don't use "printer" after this point !!!
 				// check default state
 				if (words[0].toLower().startsWith("default"))
-					setDefault(findPrinter(KURL::decode_string(words[1])),false);
+					setDefault(findPrinter(KUrl::decode_string(words[1])),false);
 			}
 		}
 	}
@@ -321,9 +321,9 @@ void KMVirtualManager::saveFile(const QString& filename)
 			if (it.current()->isSpecial())
 			{
 				t << ( it.current()->isSoftDefault() ? "DefaultSpecial " : "Special " );
-				t << KURL::encode_string_no_slash( it.current()->printerName() );
+				t << KUrl::encode_string_no_slash( it.current()->printerName() );
 				if ( !it.current()->instanceName().isEmpty() )
-					t << "/" << KURL::encode_string_no_slash( it.current()->instanceName() );
+					t << "/" << KUrl::encode_string_no_slash( it.current()->instanceName() );
 			}
 			else
 				t << (it.current()->isSoftDefault() ? "Default " : "Dest ") << it.current()->name();

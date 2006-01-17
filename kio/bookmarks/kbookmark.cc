@@ -195,7 +195,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &b
     return bm;
 }
 
-KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon, bool emitSignal )
+KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & text, const KUrl & url, const QString & icon, bool emitSignal )
 {
     //kdDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address << endl;
     QDomDocument doc = element.ownerDocument();
@@ -246,9 +246,9 @@ QDomElement KBookmarkGroup::findToolbar() const
     return QDomElement();
 }
 
-QList<KURL> KBookmarkGroup::groupUrlList() const
+QList<KUrl> KBookmarkGroup::groupUrlList() const
 {
-    QList<KURL> urlList;
+    QList<KUrl> urlList;
     for ( KBookmark bm = first(); !bm.isNull(); bm = next(bm) )
     {
         if ( bm.isSeparator() || bm.isGroup() )
@@ -291,9 +291,9 @@ QString KBookmark::fullText() const
     return element.namedItem("title").toElement().text();
 }
 
-KURL KBookmark::url() const
+KUrl KBookmark::url() const
 {
-    return KURL(element.attribute("href"), 106); // Decode it from utf8 (106 is mib enum for utf8)
+    return KUrl(element.attribute("href"), 106); // Decode it from utf8 (106 is mib enum for utf8)
 }
 
 QString KBookmark::icon() const
@@ -350,7 +350,7 @@ QString KBookmark::address() const
     }
 }
 
-KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url, const QString & icon )
+KBookmark KBookmark::standaloneBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
     QDomDocument doc("xbel");
     QDomElement elem = doc.createElement("xbel");
@@ -549,7 +549,7 @@ void KBookmark::populateMimeData( QMimeData* mimeData ) const
 
 void KBookmark::List::populateMimeData( QMimeData* mimeData ) const
 {
-    KURL::List urls;
+    KUrl::List urls;
 
     QDomDocument doc( "xbel" );
     QDomElement elem = doc.createElement( "xbel" );
@@ -561,19 +561,19 @@ void KBookmark::List::populateMimeData( QMimeData* mimeData ) const
     }
 
     // This sets text/uri-list and text/plain into the mimedata
-    urls.populateMimeData( mimeData, KURL::MetaDataMap() );
+    urls.populateMimeData( mimeData, KUrl::MetaDataMap() );
 
     mimeData->setData( "application/x-xbel", doc.toByteArray() );
 }
 
 bool KBookmark::List::canDecode( const QMimeData *mimeData )
 {
-    return mimeData->hasFormat( "application/x-xbel" )  || KURL::List::canDecode(mimeData);
+    return mimeData->hasFormat( "application/x-xbel" )  || KUrl::List::canDecode(mimeData);
 }
 
 QStringList KBookmark::List::mimeDataTypes()
 {
-    return QStringList()<<("application/x-xbel")<<KURL::List::mimeDataTypes();
+    return QStringList()<<("application/x-xbel")<<KUrl::List::mimeDataTypes();
 }
 
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
@@ -591,11 +591,11 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         }
         return bookmarks;
     }
-    KURL::List urls = KURL::List::fromMimeData( mimeData );
+    KUrl::List urls = KUrl::List::fromMimeData( mimeData );
     if ( !urls.isEmpty() )
     {
-        KURL::List::ConstIterator uit = urls.begin();
-        KURL::List::ConstIterator uEnd = urls.end();
+        KUrl::List::ConstIterator uit = urls.begin();
+        KUrl::List::ConstIterator uEnd = urls.end();
         for ( ; uit != uEnd ; ++uit )
         {
             //kdDebug(7043) << k_funcinfo << "url=" << (*uit) << endl;

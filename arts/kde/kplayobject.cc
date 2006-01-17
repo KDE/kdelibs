@@ -128,7 +128,7 @@ struct KDE::PlayObject::PrivateData
 	bool createBUS;
 	bool isProxy;
 	Arts::poState internalState;
-	KURL url;
+	KUrl url;
 };
 
 KDE::PlayObject::PlayObject() : QObject()
@@ -150,7 +150,7 @@ KDE::PlayObject::PlayObject(Arts::PlayObject playobject, bool isStream) : QObjec
 	//emit playObjectCreated();
 }
 
-KDE::PlayObject::PlayObject( Arts::SoundServerV2 server, const KURL& url, bool isStream, bool createBUS ) : QObject()
+KDE::PlayObject::PlayObject( Arts::SoundServerV2 server, const KUrl& url, bool isStream, bool createBUS ) : QObject()
 {
 	kdDebug( 400 ) << "KDE::PlayObject: created as proxy for URL " << url.url()<< endl;
 

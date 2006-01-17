@@ -26,7 +26,7 @@ template <class T> class QList;
 typedef QList<QByteArray> QByteArrayList;
 class QString;
 class QDataStream;
-class KURL;
+class KUrl;
 
 /**
  * @short Structure that holds command line options.
@@ -500,7 +500,7 @@ public:
    *
    *  @return a URL representing the n'th argument.
    */
-  KURL url(int n) const;
+  KUrl url(int n) const;
 
   /**
    * Used by url().
@@ -508,7 +508,7 @@ public:
    * @param urlArg the argument
    * @return the url.
    */
-  static KURL makeURL( const char * urlArg );
+  static KUrl makeURL( const char * urlArg );
 
   /**
    * Made public for apps that don't use KCmdLineArgs

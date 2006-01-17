@@ -170,7 +170,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   setCentralWidget( main_widget );
 
   slave = 0;
-//  slave = KIO::Scheduler::getConnectedSlave(KURL("ftp://ftp.kde.org"));
+//  slave = KIO::Scheduler::getConnectedSlave(KUrl("ftp://ftp.kde.org"));
   KIO::Scheduler::connect(SIGNAL(slaveConnected(KIO::Slave*)),
 	this, SLOT(slotSlaveConnected()));
   KIO::Scheduler::connect(SIGNAL(slaveError(KIO::Slave*,int,const QString&)),
@@ -215,9 +215,9 @@ void KioslaveTest::changeProgressMode( QAbstractButton *b ) {
 
 
 void KioslaveTest::startJob() {
-  KURL sCurrent = KURL::fromPathOrURL (QDir::currentPath() );
+  KUrl sCurrent = KUrl::fromPathOrURL (QDir::currentPath() );
   QString sSrc( le_source->text() );
-  KURL src = KURL( sCurrent, sSrc );
+  KUrl src = KUrl( sCurrent, sSrc );
 
   if ( !src.isValid() ) {
     QMessageBox::critical(this, "Kioslave Error Message", "Source URL is malformed" );
@@ -225,7 +225,7 @@ void KioslaveTest::startJob() {
   }
 
   QString sDest( le_dest->text() );
-  KURL dest( sCurrent, sDest );
+  KUrl dest( sCurrent, sDest );
 
   if ( !dest.isValid() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
@@ -396,7 +396,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 
 void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
 
-    KURL url = static_cast<KIO::ListJob*>( job )->url();
+    KUrl url = static_cast<KIO::ListJob*>( job )->url();
     KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(url);
     UDSEntryList::ConstIterator it=list.begin();
     for (; it != list.end(); ++it) {

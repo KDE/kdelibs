@@ -28,7 +28,7 @@ PreviewTest::PreviewTest()
 
 void PreviewTest::slotGenerate()
 {
-    KURL::List urls;
+    KUrl::List urls;
     urls.append(m_url->text());
     KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));

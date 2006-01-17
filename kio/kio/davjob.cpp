@@ -48,7 +48,7 @@ public:
 	QByteArray str_response; // replaces the QString previously used in DavJob itself
 };
 
-DavJob::DavJob( const KURL& url, int method, const QString& request, bool showProgressInfo )
+DavJob::DavJob( const KUrl& url, int method, const QString& request, bool showProgressInfo )
   : TransferJob( url, KIO::CMD_SPECIAL, QByteArray(), QByteArray(), showProgressInfo ),d(new DavJobPrivate)
 {
   // We couldn't set the args when calling the parent constructor,
@@ -79,7 +79,7 @@ void DavJob::slotFinished()
 	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
 		QDataStream istream( m_packedArgs );
 		int s_cmd, s_method;
-		KURL s_url;
+		KUrl s_url;
 		istream >> s_cmd;
 		istream >> s_url;
 		istream >> s_method;
@@ -109,7 +109,7 @@ void DavJob::slotFinished()
 
 /* Convenience methods */
 
-DavJob* KIO::davPropFind( const KURL& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
+DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
 {
   DavJob *job = new DavJob( url, (int) KIO::DAV_PROPFIND, properties.toString(), showProgressInfo );
   job->addMetaData( "davDepth", depth );
@@ -117,12 +117,12 @@ DavJob* KIO::davPropFind( const KURL& url, const QDomDocument& properties, const
 }
 
 
-DavJob* KIO::davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo )
+DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo )
 {
   return new DavJob( url, (int) KIO::DAV_PROPPATCH, properties.toString(), showProgressInfo );
 }
 
-DavJob* KIO::davSearch( const KURL& url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo )
+DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo )
 {
   QDomDocument doc;
   QDomElement searchrequest = doc.createElementNS( "DAV:", "searchrequest" );

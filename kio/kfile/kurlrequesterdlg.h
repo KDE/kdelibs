@@ -18,8 +18,8 @@
 */
 
 
-#ifndef KURLREQUESTERDIALOG_H
-#define KURLREQUESTERDIALOG_H
+#ifndef KUrlREQUESTERDIALOG_H
+#define KUrlREQUESTERDIALOG_H
 
 #include <kdialogbase.h>
 #include <kurl.h>
@@ -76,7 +76,7 @@ public:
     /**
      * Returns the fully qualified filename.
      */
-    KURL selectedURL() const;
+    KUrl selectedURL() const;
 
     /**
      * Creates a modal dialog, executes it and returns the selected URL.
@@ -85,7 +85,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The caption to use for the dialog.
      */
-    static KURL getURL(const QString& url = QString(),
+    static KUrl getURL(const QString& url = QString(),
             QWidget *parent= 0, const QString& caption = QString());
 
     /**
@@ -109,6 +109,6 @@ private:
 
 };
 
-#endif // KURLREQUESTERDIALOG_H
+#endif // KUrlREQUESTERDIALOG_H
 
 // vim:ts=4:sw=4:tw=78

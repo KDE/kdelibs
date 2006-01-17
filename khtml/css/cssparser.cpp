@@ -718,7 +718,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             DOMString uri = khtml::parseURL( domString( value->string ) );
             if (!uri.isEmpty()) {
                 parsedValue = new CSSImageValueImpl(
-                    DOMString(KURL( styleElement->baseURL(), uri.string()).url()),
+                    DOMString(KUrl( styleElement->baseURL(), uri.string()).url()),
                     styleElement );
                 valueList->next();
             }
@@ -1329,7 +1329,7 @@ bool CSSParser::parseContent( int propId, bool important )
             // url
             DOMString value = khtml::parseURL(domString(val->string));
             parsedValue = new CSSImageValueImpl(
-                DOMString(KURL( styleElement->baseURL(), value.string()).url() ), styleElement );
+                DOMString(KUrl( styleElement->baseURL(), value.string()).url() ), styleElement );
 #ifdef CSS_DEBUG
             kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( ) << endl;
 #endif
@@ -1431,7 +1431,7 @@ CSSValueImpl* CSSParser::parseBackgroundImage()
     if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
         DOMString uri = khtml::parseURL(domString(valueList->current()->string));
         if (!uri.isEmpty())
-            return new CSSImageValueImpl(DOMString(KURL(styleElement->baseURL(), uri.string()).url()),
+            return new CSSImageValueImpl(DOMString(KUrl(styleElement->baseURL(), uri.string()).url()),
                                          styleElement);
     }
     return 0;

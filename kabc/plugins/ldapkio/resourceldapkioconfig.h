@@ -97,7 +97,7 @@ class OfflineDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
+    OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
       const QString &dst, QWidget *parent, const char *name = 0 );
     ~OfflineDialog();
 
@@ -108,7 +108,7 @@ class OfflineDialog : public KDialogBase
     void loadCache();
 
   private:
-    KURL mSrc;
+    KUrl mSrc;
     QString mDst;
     Q3ButtonGroup *mCacheGroup;
     QCheckBox *mAutoCache;

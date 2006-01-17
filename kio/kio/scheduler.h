@@ -51,7 +51,7 @@ namespace KIO {
      *
      * Example:
      * \code
-     *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
+     *    TransferJob *job = KIO::get(KUrl("http://www.kde.org"));
      * \endcode
      *
      *
@@ -64,7 +64,7 @@ namespace KIO {
      *
      * Example:
      * \code
-     *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
+     *    TransferJob *job = KIO::get(KUrl("http://www.kde.org"));
      *    KIO::Scheduler::scheduleJob(job);
      * \endcode
      *
@@ -81,15 +81,15 @@ namespace KIO {
      * Example:
      * \code
      *    Slave *slave = KIO::Scheduler::getConnectedSlave(
-     *            KURL("pop3://bastian:password@mail.kde.org"));
+     *            KUrl("pop3://bastian:password@mail.kde.org"));
      *    TransferJob *job1 = KIO::get(
-     *            KURL("pop3://bastian:password@mail.kde.org/msg1"));
+     *            KUrl("pop3://bastian:password@mail.kde.org/msg1"));
      *    KIO::Scheduler::assignJobToSlave(slave, job1);
      *    TransferJob *job2 = KIO::get(
-     *            KURL("pop3://bastian:password@mail.kde.org/msg2"));
+     *            KUrl("pop3://bastian:password@mail.kde.org/msg2"));
      *    KIO::Scheduler::assignJobToSlave(slave, job2);
      *    TransferJob *job3 = KIO::get(
-     *            KURL("pop3://bastian:password@mail.kde.org/msg3"));
+     *            KUrl("pop3://bastian:password@mail.kde.org/msg3"));
      *    KIO::Scheduler::assignJobToSlave(slave, job3);
      *
      *    // ... Wait for jobs to finish...
@@ -164,7 +164,7 @@ namespace KIO {
 	 * @param job the job that should be stopped
 	 * @param url the URL that is handled by the @p url
          */
-        static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
+        static void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
         { self()->_putSlaveOnHold(job, url); }
 
         /**
@@ -193,7 +193,7 @@ namespace KIO {
          * @see assignJobToSlave()
          * @see disconnectSlave()
          */
-        static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &config = MetaData() )
+        static KIO::Slave *getConnectedSlave(const KUrl &url, const KIO::MetaData &config = MetaData() )
         { return self()->_getConnectedSlave(url, config); }
 
         /*
@@ -295,7 +295,7 @@ namespace KIO {
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
 
     protected:
-        void setupSlave(KIO::Slave *slave, const KURL &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);
+        void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);
         bool startJobScheduled(ProtocolInfo *protInfo);
         bool startJobDirect();
         Scheduler();
@@ -321,9 +321,9 @@ namespace KIO {
         void _cancelJob(SimpleJob *job);
         void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
         void _scheduleCleanup();
-        void _putSlaveOnHold(KIO::SimpleJob *job, const KURL &url);
+        void _putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
         void _removeSlaveOnHold();
-        Slave *_getConnectedSlave(const KURL &url, const KIO::MetaData &metaData );
+        Slave *_getConnectedSlave(const KUrl &url, const KIO::MetaData &metaData );
         bool _assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
         bool _disconnectSlave(KIO::Slave *slave);
         void _checkSlaveOnHold(bool b);
@@ -331,7 +331,7 @@ namespace KIO {
         void _registerWindow(QWidget *wid);
 
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
-        Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
+        Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url);
 
 
         QTimer slaveTimer;
@@ -345,7 +345,7 @@ namespace KIO {
 
         ProtocolInfoDict *protInfoDict;
         Slave *slaveOnHold;
-        KURL urlOnHold;
+        KUrl urlOnHold;
         JobList newJobs;
 
         typedef QMap<Slave*, JobList *> CoSlaveMap;

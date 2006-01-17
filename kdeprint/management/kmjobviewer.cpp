@@ -75,7 +75,7 @@ KJobListView::KJobListView( QWidget *parent)
 
 bool KJobListView::acceptDrag( QDropEvent *e ) const
 {
-	if ( KURL::List::canDecode( e->mimeData() ) )
+	if ( KUrl::List::canDecode( e->mimeData() ) )
 		return true;
 	else
 		return KListView::acceptDrag( e );
@@ -722,8 +722,8 @@ void KMJobViewer::slotDropped( QDropEvent *e, Q3ListViewItem* )
 	QStringList files;
 	QString target;
 
-        KURL::List uris = KURL::List::fromMimeData( e->mimeData() );
-	for ( KURL::List::ConstIterator it = uris.begin();
+        KUrl::List uris = KUrl::List::fromMimeData( e->mimeData() );
+	for ( KUrl::List::ConstIterator it = uris.begin();
 	      it != uris.end(); ++it)
 	{
 		if ( KIO::NetAccess::download( *it, target, 0 ) )

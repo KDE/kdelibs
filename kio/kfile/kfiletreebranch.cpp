@@ -33,7 +33,7 @@
 
 
 /* --- KFileTreeViewToplevelItem --- */
-KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
+KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KUrl& url,
                                   const QString& name,
 				  const QPixmap& pix, bool showHidden,
 				  KFileTreeViewItem *branchRoot )
@@ -70,26 +70,26 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
     connect( this, SIGNAL( newItems(const KFileItemList&)),
              this, SLOT  ( addItems( const KFileItemList& )));
 
-    connect( this, SIGNAL( completed(const KURL& )),
-             this,   SLOT(slCompleted(const KURL&)));
+    connect( this, SIGNAL( completed(const KUrl& )),
+             this,   SLOT(slCompleted(const KUrl&)));
 
-    connect( this, SIGNAL( started( const KURL& )),
-             this,   SLOT( slotListerStarted( const KURL& )));
+    connect( this, SIGNAL( started( const KUrl& )),
+             this,   SLOT( slotListerStarted( const KUrl& )));
 
     connect( this, SIGNAL( deleteItem( KFileItem* )),
              this,   SLOT( slotDeleteItem( KFileItem* )));
 
-    connect( this, SIGNAL( canceled(const KURL&) ),
-             this,   SLOT( slotCanceled(const KURL&) ));
+    connect( this, SIGNAL( canceled(const KUrl&) ),
+             this,   SLOT( slotCanceled(const KUrl&) ));
 
     connect( this, SIGNAL( clear()),
              this, SLOT( slotDirlisterClear()));
 
-    connect( this, SIGNAL( clear(const KURL&)),
-             this, SLOT( slotDirlisterClearURL(const KURL&)));
+    connect( this, SIGNAL( clear(const KUrl&)),
+             this, SLOT( slotDirlisterClearURL(const KUrl&)));
 
-    connect( this, SIGNAL( redirection( const KURL& , const KURL& ) ),
-             this, SLOT( slotRedirect( const KURL&, const KURL& )));
+    connect( this, SIGNAL( redirection( const KUrl& , const KUrl& ) ),
+             this, SLOT( slotRedirect( const KUrl&, const KUrl& )));
 
     m_openChildrenURLs.append( url );
 }
@@ -104,7 +104,7 @@ void KFileTreeBranch::setOpenPixmap( const QPixmap& pix )
     }
 }
 
-void KFileTreeBranch::slotListerStarted( const KURL &url )
+void KFileTreeBranch::slotListerStarted( const KUrl &url )
 {
     /* set the parent correct if it is zero. */
     kdDebug( 250) << "Starting to list " << url.prettyURL() << endl;
@@ -120,9 +120,9 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
     /* If it is a directory, check, if it exists in the dict. If not, go one up
      * and check again.
      */
-    KURL url = item->url();
+    KUrl url = item->url();
     // kdDebug(250) << "Item's url is " << url.prettyURL() << endl;
-    KURL dirUrl( url );
+    KUrl dirUrl( url );
     dirUrl.setFileName( QString() );
     // kdDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
 
@@ -191,7 +191,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         /* hardlink entry in the stat-buf. This works only for local directories. */
         if( dirOnlyMode() && !m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
         {
-            KURL url = currItem->url();
+            KUrl url = currItem->url();
             QString filename = url.directory( false, true ) + url.fileName();
             /* do the stat trick of Carsten. The problem is, that the hardlink
              *  count only contains directory links. Thus, this method only seem
@@ -297,7 +297,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
         if( m_lastFoundURL.equals(it->url(), true ))
         {
-          m_lastFoundURL = KURL();
+          m_lastFoundURL = KUrl();
           m_lastFoundItem = 0L;
         }
         delete( kfti );
@@ -309,7 +309,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 }
 
 
-void KFileTreeBranch::slotCanceled( const KURL& url )
+void KFileTreeBranch::slotCanceled( const KUrl& url )
 {
     // ### anything else to do?
     // remove the url from the childrento-recurse-list
@@ -329,7 +329,7 @@ void KFileTreeBranch::slotDirlisterClear()
         deleteChildrenOf( m_root );
 }
 
-void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
+void KFileTreeBranch::slotDirlisterClearURL( const KUrl& url )
 {
     kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
     KFileItem *item = findByURL( url );
@@ -352,7 +352,7 @@ void KFileTreeBranch::deleteChildrenOf( Q3ListViewItem *parent )
         delete parent->firstChild();
 }
 
-void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
+void KFileTreeBranch::slotRedirect( const KUrl& oldUrl, const KUrl&newUrl )
 {
     if( oldUrl.equals( m_startURL, true ))
     {
@@ -360,7 +360,7 @@ void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
     }
 }
 
-KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
+KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 {
     KFileTreeViewItem *resultItem = 0;
 
@@ -392,7 +392,7 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
 }
 
 
-void KFileTreeBranch::slCompleted( const KURL& url )
+void KFileTreeBranch::slCompleted( const KUrl& url )
 {
     kdDebug(250) << "SlotCompleted hit for " << url.prettyURL() << endl;
     KFileTreeViewItem *currParent = findTVIByURL( url );
@@ -423,7 +423,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
     {
         bool wantRecurseUrl = false;
         /* look if the url is in the list for url to recurse */
-        for ( KURL::List::Iterator it = m_openChildrenURLs.begin();
+        for ( KUrl::List::Iterator it = m_openChildrenURLs.begin();
               it != m_openChildrenURLs.end(); ++it )
         {
             /* it is only interesting that the url _is_in_ the list. */
@@ -470,7 +470,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
                     KFileItem *kfi = nextChild->fileItem();
                     if( kfi && kfi->isReadable())
                     {
-                        KURL recurseUrl = kfi->url();
+                        KUrl recurseUrl = kfi->url();
                         kdDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyURL() << endl;
                         openURL( recurseUrl, true );
                     }
@@ -487,7 +487,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
 }
 
 /* This slot is called when a treeviewitem is expanded in the gui */
-bool KFileTreeBranch::populate( const KURL& url,  KFileTreeViewItem *currItem )
+bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
 {
     bool ret = false;
     if( ! currItem )

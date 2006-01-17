@@ -55,7 +55,7 @@ struct _IceConn;
 class QPixmap;
 class KSessionManaged;
 class KStyle;
-class KURL;
+class KUrl;
 
 #define kapp KApplication::kApplication()
 

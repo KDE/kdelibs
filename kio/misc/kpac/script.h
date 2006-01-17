@@ -25,7 +25,7 @@
 
 #include <kjs/interpreter.h>
 
-class KURL;
+class KUrl;
 
 namespace KPAC
 {
@@ -44,7 +44,7 @@ namespace KPAC
         };
 
         Script( const QString& code );
-        QString evaluate( const KURL& );
+        QString evaluate( const KUrl& );
 
     private:
         KJS::Interpreter m_interpreter;

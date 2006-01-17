@@ -101,8 +101,8 @@ void KFileView::setParentView(KFileView *parent)
                             parent->sig,SIGNAL(fileHighlighted(const KFileItem*)));
         QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
                             parent->sig, SIGNAL(sortingChanged( QDir::SortSpec)));
-        QObject::connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&) ),
-                            parent->sig, SIGNAL(dropped(const KFileItem *, QDropEvent*, const KURL::List&)));
+        QObject::connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
+                            parent->sig, SIGNAL(dropped(const KFileItem *, QDropEvent*, const KUrl::List&)));
     }
 }
 

@@ -26,7 +26,7 @@
 #include "artskde.h"
 #include "kplayobject.h"
 
-class KURL;
+class KUrl;
 class QString;
 
 class KAudioConverter : public QObject
@@ -37,7 +37,7 @@ public:
 	~KAudioConverter();
 
 	bool setup(int samplingRate);
-	void requestPlayObject(const KURL &url);
+	void requestPlayObject(const KUrl &url);
 
 	void start();
 	void stop();

@@ -29,27 +29,27 @@ class QStringList;
 class QMimeData;
 
 class KURLPrivate;
-#define KURL KURL4
+#define KUrl KUrl4
 
 // maybe we should encapsulate QUrl instead of inheriting from it.
 // this would even allow us to inherit from KUri instead.
 // and this way hacks like setPath() would be less ugly, and we could avoid
 // half KDE code using setScheme() and the other half using setProtocol(), etc.
 // (DF)
-// TODO: fromPath(), since if we use QUrl::fromLocalFile, we then have to make a QUrl->KURL copy.
-class KDECORE_EXPORT KURL : public QUrl
+// TODO: fromPath(), since if we use QUrl::fromLocalFile, we then have to make a QUrl->KUrl copy.
+class KDECORE_EXPORT KUrl : public QUrl
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;
   enum MimeDataFlags { DefaultMimeDataFlags = 0, NoTextExport = 1 };
 
   /**
-   * KURL::List is a QList that contains KURLs with a few
+   * KUrl::List is a QList that contains KUrls with a few
    * convenience methods.
-   * @see KURL
+   * @see KUrl
    * @see QValueList
    */
-  class KDECORE_EXPORT List : public QList<KURL>
+  class KDECORE_EXPORT List : public QList<KUrl>
   {
   public:
     /**
@@ -61,7 +61,7 @@ public:
        * item.
        * @param url the url to add.
        */
-      List(const KURL &url);
+      List(const KUrl &url);
       /**
        * Creates a list that contains the URLs from the given
        * list.
@@ -94,7 +94,7 @@ public:
        * @since 4.0
        */
       void populateMimeData( QMimeData* mimeData,
-                          const KURL::MetaDataMap& metaData = MetaDataMap(),
+                          const KUrl::MetaDataMap& metaData = MetaDataMap(),
                           MimeDataFlags flags = DefaultMimeDataFlags );
 
       /**
@@ -104,7 +104,7 @@ public:
       static bool canDecode( const QMimeData *mimeData );
 
       /**
-       * Extract a list of KURLs from the contents of @p mimeData.
+       * Extract a list of KUrls from the contents of @p mimeData.
        * Decoding will fail if @p mimeData does not contain any URLs, or if at
        * least one extracted URL is not valid.
        * @param mimeData the mime data to extract from; cannot be 0
@@ -112,18 +112,18 @@ public:
        * @return the list of urls
        * @since 4.0
        */
-      static KURL::List fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData = 0 );
+      static KUrl::List fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData = 0 );
 
   };
   /**
    * Constructs an empty URL.
    */
-  KURL();
+  KUrl();
 
   /**
-   * Destructs the KURL object.
+   * Destructs the KUrl object.
    */
-  ~KURL();
+  ~KUrl();
 
   /**
    * Usual constructor, to construct from a string.
@@ -139,7 +139,7 @@ public:
    *             Instead create an empty url and set the path by using
    * setPath().
    */
-  KURL( const QString& url );
+  KUrl( const QString& url );
   /**
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
@@ -147,7 +147,7 @@ public:
    * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    */
-  KURL( const char * url );
+  KUrl( const char * url );
   /**
    * Constructor taking a QByteArray @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
@@ -155,18 +155,18 @@ public:
    * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    */
-  KURL( const QByteArray& url );
+  KUrl( const QByteArray& url );
 
   /**
    * Copy constructor.
-   * @param u the KURL to copy
+   * @param u the KUrl to copy
    */
-  KURL( const KURL& u );
+  KUrl( const KUrl& u );
   /**
    * Converts from a QUrl.
    * @param u the QUrl
    */
-  KURL( const QUrl &u );
+  KUrl( const QUrl &u );
   /**
    * Constructor allowing relative URLs.
    *
@@ -177,7 +177,7 @@ public:
    * Note that _rel_url should be encoded too, in any case.
    * So do NOT pass a path here (use setPath or addPath instead).
    */
-  KURL( const KURL& _baseurl, const QString& _rel_url );
+  KUrl( const KUrl& _baseurl, const QString& _rel_url );
 
   /**
    * Returns the protocol for the URL (i.e., file, http, etc.), lowercased.
@@ -257,7 +257,7 @@ public:
   QString path( int _trailing ) const;
   QString path() const { return QUrl::path(); }
 
-  /// \reimp so that KURL u; u.setPath(path); implies "file" protocol.
+  /// \reimp so that KUrl u; u.setPath(path); implies "file" protocol.
   void setPath( const QString& path );
 
   /**
@@ -590,7 +590,7 @@ public:
    * Use this method, together with its opposite, fromPathOrURL(),
    * to display and even let the user edit URLs.
    *
-   * @return the new KURL
+   * @return the new KUrl
    * @since 3.4
    */
   QString pathOrURL() const;
@@ -598,7 +598,7 @@ public:
   /**
    * Returns the URL as a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
-   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
    * @since 4.0
    */
   QString toMimeDataString() const;
@@ -611,18 +611,18 @@ public:
    * possible it strips the right most URL. It continues stripping URLs.
    * @return a URL that is a level higher
    */
-  KURL upURL( ) const;
+  KUrl upURL( ) const;
 
 #if 0
-  KURL& operator=( const KURL& _u );
-  KURL& operator=( const QString& _url );
-  KURL& operator=( const char * _url );
-  KURL& operator=( const QUrl & u );
+  KUrl& operator=( const KUrl& _u );
+  KUrl& operator=( const QString& _url );
+  KUrl& operator=( const char * _url );
+  KUrl& operator=( const QUrl & u );
 #endif
 
-  bool operator==( const KURL& _u ) const;
+  bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;
-  bool operator!=( const KURL& _u ) const { return !( *this == _u ); }
+  bool operator!=( const KUrl& _u ) const { return !( *this == _u ); }
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
@@ -635,7 +635,7 @@ public:
    * ignore trailing '/' characters.
    * @deprecated Use equals() instead.
    */
-  bool cmp( const KURL &u, bool ignore_trailing = false ) const KDE_DEPRECATED;
+  bool cmp( const KUrl &u, bool ignore_trailing = false ) const KDE_DEPRECATED;
 
   /**
    * Compares this url with @p u.
@@ -646,7 +646,7 @@ public:
    * ignore trailing '/' characters.
    * @since 3.1
    */
-  bool equals( const KURL &u, bool ignore_trailing = false ) const; // TODO KDE4: add bool _ignore_ref = false
+  bool equals( const KUrl &u, bool ignore_trailing = false ) const; // TODO KDE4: add bool _ignore_ref = false
 
   /**
    * Checks whether the given URL is parent of this URL.
@@ -654,8 +654,8 @@ public:
    * @return true if this url is a parent of @p u (or the same URL as @p u)
    *
    */
-  bool isParentOf( const KURL& u ) const { return QUrl::isParentOf( u ) || equals( u, true ); }
-    // (this overload of the QUrl method allows to use the implicit KURL constructors)
+  bool isParentOf( const KUrl& u ) const { return QUrl::isParentOf( u ) || equals( u, true ); }
+    // (this overload of the QUrl method allows to use the implicit KUrl constructors)
     // but also the equality test
 
   /**
@@ -690,7 +690,7 @@ public:
    * @param _url The URL that has to be split.
    * @see hasSubURL
    */
-  static List split( const KURL& _url );
+  static List split( const KUrl& _url );
 
   /**
    * Reverses split(). Only the first URL may have a reference. This reference
@@ -699,30 +699,30 @@ public:
    * @param _list the list to join
    * @return the joined URL
    */
-  static KURL join( const List& _list );
+  static KUrl join( const List& _list );
 
   /**
-   * Creates a KURL object from a QString representing either an absolute path
+   * Creates a KUrl object from a QString representing either an absolute path
    * or a real URL. Use this method instead of
    * \code
    * QString someDir = ...
-   * KURL url = someDir;
+   * KUrl url = someDir;
    * \endcode
    *
    * Otherwise some characters (e.g. the '#') won't be encoded properly.
    * @param text the string representation of the URL to convert
-   * @return the new KURL
+   * @return the new KUrl
    * @since 3.1
    */
-  static KURL fromPathOrURL( const QString& text );
+  static KUrl fromPathOrURL( const QString& text );
 
   /**
-   * Creates a KURL from a string, using the standard conventions for mime data
+   * Creates a KUrl from a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
-   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
    * @since 4.0
    */
-  static KURL fromMimeDataByteArray( const QByteArray& str );
+  static KUrl fromMimeDataByteArray( const QByteArray& str );
 
   /**
    * Adds URL data into the given QMimeData.
@@ -732,7 +732,7 @@ public:
    * But in some cases this might not be wanted, e.g. if adding other mime data
    * which provides better plain text data.
    *
-   * WARNING: do not call this method multiple times, use KURL::List::populateMimeData instead.
+   * WARNING: do not call this method multiple times, use KUrl::List::populateMimeData instead.
    *
    * @param mimeData the QMimeData instance used to drag or copy this URL
    * @param metaData KIO metadata shipped in the mime data, which is used for instance to
@@ -807,7 +807,7 @@ public:
    * @param url new URL
    * @see adjustPath()
    */
-  static QString relativeURL(const KURL &base_url, const KURL &url);
+  static QString relativeURL(const KUrl &base_url, const KUrl &url);
 
   /**
    * Convenience function
@@ -827,7 +827,7 @@ private:
 };
 
 /**
- * \relates KURL
+ * \relates KUrl
  * Compares URLs. They are parsed, split and compared.
  * Two malformed URLs with the same string representation
  * are nevertheless considered to be unequal.
@@ -836,7 +836,7 @@ private:
 KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
- * \relates KURL
+ * \relates KUrl
  * Compares URLs. They are parsed, split and compared.
  * Two malformed URLs with the same string representation
  * are nevertheless considered to be unequal.
@@ -844,7 +844,7 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  *
  * @param _url1 A reference URL
  * @param _url2 A URL that will be compared with the reference URL
- * @param _ignore_trailing Described in KURL::cmp
+ * @param _ignore_trailing Described in KUrl::cmp
  * @param _ignore_ref If true, disables comparison of HTML-style references.
  */
 KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref ); // KDE4 TODO: new method with QUrl::FormattingOptions instead of two bools

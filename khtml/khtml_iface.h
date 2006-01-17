@@ -42,7 +42,7 @@ k_dcop:
     /**
      * @return the current URL
      */
-    KURL url() const;
+    KUrl url() const;
 
     bool closeURL();
 

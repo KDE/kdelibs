@@ -64,7 +64,7 @@ public:
      * Returns the currently-selected URL, or a blank URL if none is selected.
      * @return The currently-selected URL, if one was selected.
      */
-    KURL url() const;
+    KUrl url() const;
 
     KFileTreeView * view() const { return m_treeView; }
 
@@ -80,7 +80,7 @@ public:
      * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
      */
-    static KURL selectDirectory( const QString& startDir = QString(),
+    static KUrl selectDirectory( const QString& startDir = QString(),
                                  bool localOnly = false, QWidget *parent = 0L,
                                  const QString& caption = QString());
 
@@ -90,7 +90,7 @@ public:
     QString startDir() const { return m_startDir; }
 
 public Q_SLOTS:
-    void setCurrentURL( const KURL& url );
+    void setCurrentURL( const KUrl& url );
 
 protected Q_SLOTS:
     virtual void slotUser1();
@@ -115,7 +115,7 @@ private:
     void readConfig( KConfig *config, const QString& group );
     void saveConfig( KConfig *config, const QString& group );
     void openNextDir( KFileTreeViewItem *parent );
-    KFileTreeBranch * createBranch( const KURL& url );
+    KFileTreeBranch * createBranch( const KUrl& url );
 
     KFileTreeView *m_treeView;
     QMenu *m_contextMenu;

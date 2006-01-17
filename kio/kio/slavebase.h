@@ -28,7 +28,7 @@
 class DCOPClient;
 class KConfigBase;
 class KRemoteEncoding;
-class KURL;
+class KUrl;
 
 namespace KIO {
 
@@ -205,7 +205,7 @@ public:
      * Call this to signal a redirection
      * The job will take care of going to that url.
      */
-    void redirection( const KURL &_url );
+    void redirection( const KUrl &_url );
 
     /**
      * Tell that we will only get an error page here.
@@ -332,7 +332,7 @@ public:
     /**
      * Prepare slave for streaming operation
      */
-    virtual void setSubURL(const KURL&url);
+    virtual void setSubURL(const KUrl&url);
 
     /**
      * Opens the connection (forced)
@@ -361,7 +361,7 @@ public:
      *        can be assumed to be the same as in the last setHost() call.
      * The slave emits the data through data
      */
-    virtual void get( const KURL& url );
+    virtual void get( const KUrl& url );
 
     /**
      * put, aka write.
@@ -372,14 +372,14 @@ public:
      * permissions change to it.
      * @param resume
      */
-    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume ); // KDE4 TODO: add long mtime (for #79937)
+    virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume ); // KDE4 TODO: add long mtime (for #79937)
 
     /**
      * Finds all details for one file or directory.
      * The information returned is the same as what listDir returns,
      * but only for one file or directory.
      */
-    virtual void stat( const KURL& url );
+    virtual void stat( const KUrl& url );
 
     /**
      * Finds mimetype for one file or directory.
@@ -393,7 +393,7 @@ public:
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
      */
-    virtual void mimetype( const KURL& url );
+    virtual void mimetype( const KUrl& url );
 
     /**
      * Lists the contents of @p url.
@@ -402,7 +402,7 @@ public:
      * It should also emit totalFiles as soon as it knows how many
      * files it will list.
      */
-    virtual void listDir( const KURL& url );
+    virtual void listDir( const KUrl& url );
 
     /**
      * Create a directory
@@ -411,7 +411,7 @@ public:
      * (-1 if no permissions to be set)
      * The slave emits ERR_COULD_NOT_MKDIR if failure.
      */
-    virtual void mkdir( const KURL&url, int permissions );
+    virtual void mkdir( const KUrl&url, int permissions );
 
     /**
      * Rename @p oldname into @p newname.
@@ -421,7 +421,7 @@ public:
      * @param dest where to move the file to
      * @param overwrite if true, any existing file will be overwritten
      */
-    virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
+    virtual void rename( const KUrl& src, const KUrl& dest, bool overwrite );
 
     /**
      * Creates a symbolic link named @p dest, pointing to @p target, which
@@ -430,13 +430,13 @@ public:
      * @param dest The symlink to create.
      * @param overwrite whether to automatically overwrite if the dest exists
      */
-    virtual void symlink( const QString& target, const KURL& dest, bool overwrite );
+    virtual void symlink( const QString& target, const KUrl& dest, bool overwrite );
 
     /**
      * Change permissions on @p path
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHMOD
      */
-    virtual void chmod( const KURL& url, int permissions );
+    virtual void chmod( const KUrl& url, int permissions );
 
     /**
      * Copy @p src into @p dest.
@@ -448,7 +448,7 @@ public:
      * @param overwrite if true, any existing file will be overwritten
      *
      */
-    virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
+    virtual void copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite );
 
     /**
      * Delete a file or directory.
@@ -456,7 +456,7 @@ public:
      * @param isfile if true, a file should be deleted.
      *               if false, a directory should be deleted.
      */
-    virtual void del( const KURL &url, bool isfile);
+    virtual void del( const KUrl &url, bool isfile);
 
     // TODO KDE4: add setLinkDest() or something, to modify symlink targets.
     // Will be used for kio_file but also kio_remote (#97129)
@@ -648,7 +648,7 @@ public:
      *
      * \code
      * AuthInfo info;
-     * info.url = KURL("http://www.foobar.org/foo/bar");
+     * info.url = KUrl("http://www.foobar.org/foo/bar");
      * info.username = "somename";
      * info.verifyPath = true;
      * if ( !checkCachedAuthentication( info ) )
@@ -683,7 +683,7 @@ public:
      * Creates a basic key to be used to cache the password.
      * @param url   the url from which the key is supposed to be generated
      */
-    QString createAuthCacheKey( const KURL& url );
+    QString createAuthCacheKey( const KUrl& url );
 
     /**
      * @obsolete as of 3.1. Use openPassDlg instead.

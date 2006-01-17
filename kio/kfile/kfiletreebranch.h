@@ -31,7 +31,7 @@
 #include <kio/job.h>
 #include <kfiletreeviewitem.h>
 
-class KURL;
+class KUrl;
 class KFileTreeView;
 
 
@@ -59,14 +59,14 @@ public:
     *        branch, with the default 0 meaning to let KFileTreeBranch create
     *        it for you.
     */
-   KFileTreeBranch( KFileTreeView*, const KURL& url, const QString& name,
+   KFileTreeBranch( KFileTreeView*, const KUrl& url, const QString& name,
                     const QPixmap& pix, bool showHidden = false,
 		    KFileTreeViewItem *branchRoot = 0 );
 
    /**
     * @returns the root url of the branch.
     */
-   KURL 	rootUrl() const { return( m_startURL ); }
+   KUrl 	rootUrl() const { return( m_startURL ); }
 
    /**
     * sets a KFileTreeViewItem as root widget for the branch.
@@ -144,7 +144,7 @@ public Q_SLOTS:
     * @param url is the url of the root item where the branch starts.
     * @param currItem is the current parent.
     */
-   virtual bool populate( const KURL &url, KFileTreeViewItem* currItem );
+   virtual bool populate( const KUrl &url, KFileTreeViewItem* currItem );
 
    /**
     * sets printing of the file extensions on or off. If you pass false to this
@@ -168,7 +168,7 @@ public:
    /**
     * find the according KFileTreeViewItem by an url
     */
-   virtual KFileTreeViewItem *findTVIByURL( const KURL& );
+   virtual KFileTreeViewItem *findTVIByURL( const KUrl& );
 
 Q_SIGNALS:
    /**
@@ -191,30 +191,30 @@ Q_SIGNALS:
 private Q_SLOTS:
    void slotRefreshItems( const KFileItemList& );
    void addItems( const KFileItemList& );
-   void slCompleted( const KURL& );
-   void slotCanceled( const KURL& );
-   void slotListerStarted( const KURL& );
+   void slCompleted( const KUrl& );
+   void slotCanceled( const KUrl& );
+   void slotListerStarted( const KUrl& );
    void slotDeleteItem( KFileItem* );
    void slotDirlisterClear();
-   void slotDirlisterClearURL( const KURL& url );
-   void slotRedirect( const KURL& oldUrl, const KURL&newUrl );
+   void slotDirlisterClearURL( const KUrl& url );
+   void slotRedirect( const KUrl& oldUrl, const KUrl&newUrl );
 
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
    static void           deleteChildrenOf( Q3ListViewItem *parent );
 
    KFileTreeViewItem 	*m_root;
-   KURL 		m_startURL;
+   KUrl 		m_startURL;
    QString 		m_name;
    QPixmap 		m_rootIcon;
    QPixmap              m_openRootIcon;
 
    /* this list holds the url's which children are opened. */
-   KURL::List           m_openChildrenURLs;
+   KUrl::List           m_openChildrenURLs;
 
 
    /* The next two members are used for caching purposes in findTVIByURL. */
-   KURL                 m_lastFoundURL;
+   KUrl                 m_lastFoundURL;
    KFileTreeViewItem   *m_lastFoundItem;
 
    bool                 m_recurseChildren :1;

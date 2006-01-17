@@ -119,7 +119,7 @@ void KIOInputStream_impl::streamEnd()
 
 bool KIOInputStream_impl::openURL(const std::string& url)
 {
-	m_url = KURL(url.c_str());
+	m_url = KUrl(url.c_str());
 	m_size = 0;
 	return true;
 }

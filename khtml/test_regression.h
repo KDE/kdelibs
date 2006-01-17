@@ -187,7 +187,7 @@ private:
     void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
 
 private Q_SLOTS:
-    void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+    void slotOpenURL(const KUrl &url, const KParts::URLArgs &args);
     void resizeTopLevelWidget( int, int );
 
 };

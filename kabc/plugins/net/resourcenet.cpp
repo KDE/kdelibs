@@ -52,13 +52,13 @@ ResourceNet::ResourceNet( const KConfig *config )
     d( new ResourceNetPrivate )
 {
   if ( config ) {
-    init( KURL( config->readPathEntry( "NetUrl" ) ), config->readEntry( "NetFormat" ) );
+    init( KUrl( config->readPathEntry( "NetUrl" ) ), config->readEntry( "NetFormat" ) );
   } else {
-    init( KURL(), "vcard" );
+    init( KUrl(), "vcard" );
   }
 }
 
-ResourceNet::ResourceNet( const KURL &url, const QString &format )
+ResourceNet::ResourceNet( const KUrl &url, const QString &format )
   : Resource( 0 ), mFormat( 0 ),
     mLocalTempFile( 0 ), mUseLocalTempFile( false ),
     d( new ResourceNetPrivate )
@@ -66,7 +66,7 @@ ResourceNet::ResourceNet( const KURL &url, const QString &format )
   init( url, format );
 }
 
-void ResourceNet::init( const KURL &url, const QString &format )
+void ResourceNet::init( const KUrl &url, const QString &format )
 {
   d->mLoadJob = 0;
   d->mIsLoading = false;
@@ -170,7 +170,7 @@ bool ResourceNet::asyncLoad()
   mUseLocalTempFile = true;
   mTempFile = mLocalTempFile->name();
 
-  KURL dest;
+  KUrl dest;
   dest.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
@@ -209,7 +209,7 @@ bool ResourceNet::asyncSave( Ticket* )
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
-  KURL src;
+  KUrl src;
   src.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
@@ -221,12 +221,12 @@ bool ResourceNet::asyncSave( Ticket* )
   return true;
 }
 
-void ResourceNet::setUrl( const KURL &url )
+void ResourceNet::setUrl( const KUrl &url )
 {
   mUrl = url;
 }
 
-KURL ResourceNet::url() const
+KUrl ResourceNet::url() const
 {
   return mUrl;
 }

@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	if (args->count() != 1)
 		return 1;
 
-	KURL url(args->arg(0));
+	KUrl url(args->arg(0));
 	QStringList cmd;
 	cmd << "--noclose";
 

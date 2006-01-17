@@ -106,13 +106,13 @@ void KFilePreview::setFileView( KFileView *view )
 
 // this url parameter is useless... it's the url of the current directory.
 // what for?
-void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
+void KFilePreview::setPreviewWidget(const QWidget *w, const KUrl &)
 {
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 
     if (w) {
-        connect(this, SIGNAL( showPreview(const KURL &) ),
-                w, SLOT( showPreview(const KURL &) ));
+        connect(this, SIGNAL( showPreview(const KUrl &) ),
+                w, SLOT( showPreview(const KUrl &) ));
         connect( this, SIGNAL( clearPreview() ),
                 w, SLOT( clearPreview() ));
     }

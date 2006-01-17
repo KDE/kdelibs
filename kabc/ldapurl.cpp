@@ -31,8 +31,8 @@ LDAPUrl::LDAPUrl()
   m_scope = Base;
 }
 
-LDAPUrl::LDAPUrl(const KURL &_url)
-  : KURL(_url), m_extensions()
+LDAPUrl::LDAPUrl(const KUrl &_url)
+  : KUrl(_url), m_extensions()
 {
   m_dn = path();
   if ( !QDir::isRelativePath(m_dn) )

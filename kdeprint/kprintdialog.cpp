@@ -682,7 +682,7 @@ void KPrintDialog::done(int result)
 			if (!checkOutputFile()) return;
 			d->m_printer->setOutputToFile(true);
 			/* be sure to decode the output filename */
-			d->m_printer->setOutputFileName( KURL::decode_string( d->m_file->url() ) );
+			d->m_printer->setOutputFileName( KUrl::decode_string( d->m_file->url() ) );
 		}
 		else
 			d->m_printer->setOutputToFile(false);
@@ -717,7 +717,7 @@ bool KPrintDialog::checkOutputFile()
 		KMessageBox::error(this,i18n("The output filename is empty."));
 	else
 	{
-		KURL url( d->m_file->url() );
+		KUrl url( d->m_file->url() );
 		if ( !url.isLocalFile() )
 			return true;
 
@@ -800,14 +800,14 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 {
 	if (!ext.isEmpty())
 	{
-		KURL url( d->m_file->url() );
+		KUrl url( d->m_file->url() );
 		QString f( url.fileName() );
 		int p = f.lastIndexOf( '.' );
 		// change "file.ext"; don't change "file", "file." or ".file" but do change ".file.ext"
 		if ( p > 0 && p != int (f.length () - 1) )
 		{
 			url.setFileName( f.left( p ) + "." + ext );
-			d->m_file->setURL( KURL::decode_string( url.url() ) );
+			d->m_file->setURL( KUrl::decode_string( url.url() ) );
 		}
 	}
 }

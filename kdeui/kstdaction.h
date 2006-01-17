@@ -208,10 +208,10 @@ namespace KStdAction
 
 	/**
 	 * Open a recently used document. The signature of the slot being called
-	 * is of the form slotURLSelected( const KURL & ).
+	 * is of the form slotURLSelected( const KUrl & ).
 	 * @param recvr object to receive slot
 	 * @param slot The SLOT to invoke when a URL is selected. The slot's
-	 * signature is slotURLSelected( const KURL & ).
+	 * signature is slotURLSelected( const KUrl & ).
 	 * @param parent parent widget
 	 * @param name name of widget
 	 */

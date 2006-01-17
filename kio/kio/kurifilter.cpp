@@ -42,7 +42,7 @@ KURIFilterPlugin::KURIFilterPlugin( const QString & name, QObject *parent, doubl
     m_dblPriority = pri;
 }
 
-void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) const
+void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KUrl& uri ) const
 {
     if ( data.uri() != uri )
     {
@@ -80,7 +80,7 @@ KURIFilterData::~KURIFilterData()
     d = 0;
 }
 
-void KURIFilterData::init( const KURL& url )
+void KURIFilterData::init( const KUrl& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
     m_pURI = url;
@@ -265,7 +265,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     return filtered;
 }
 
-bool KURIFilter::filterURI( KURL& uri, const QStringList& filters )
+bool KURIFilter::filterURI( KUrl& uri, const QStringList& filters )
 {
     KURIFilterData data = uri;
     bool filtered = filterURI( data, filters );
@@ -282,7 +282,7 @@ bool KURIFilter::filterURI( QString& uri, const QStringList& filters )
 
 }
 
-KURL KURIFilter::filteredURI( const KURL &uri, const QStringList& filters )
+KUrl KURIFilter::filteredURI( const KUrl &uri, const QStringList& filters )
 {
     KURIFilterData data = uri;
     filterURI( data, filters );

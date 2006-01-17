@@ -40,7 +40,7 @@ int main( int argc, char **argv )
     if ( args->count() != 1 )
         return 1;
 
-    KToolInvocation::invokeMailer(KURL(args->arg(0)), a.startupId(), true);
+    KToolInvocation::invokeMailer(KUrl(args->arg(0)), a.startupId(), true);
 
     return 0;
 }

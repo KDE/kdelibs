@@ -54,7 +54,7 @@ public:
    * @param _urlIsDirectory specifies if the url is just the directory of the
    *       fileitem and the filename from the UDSEntry should be used.
    */
-  KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
+  KFileItem( const KIO::UDSEntry& _entry, const KUrl& _url,
              bool _determineMimeTypeOnDemand = false,
              bool _urlIsDirectory = false );
 
@@ -71,7 +71,7 @@ public:
    * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
    *       should be determined immediately or on demand
    */
-  KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url,
+  KFileItem( mode_t _mode, mode_t _permissions, const KUrl& _url,
              bool _determineMimeTypeOnDemand = false );
 
   /**
@@ -80,7 +80,7 @@ public:
    * @param mimeType the name of the file's mimetype
    * @param mode the mode (S_IFDIR...)
    */
-  KFileItem( const KURL &url, const QString &mimeType, mode_t mode );
+  KFileItem( const KUrl &url, const QString &mimeType, mode_t mode );
 
   /**
    * Copy constructor. Note that extra-data set via setExtraData() is not
@@ -110,14 +110,14 @@ public:
    * Returns the url of the file.
    * @return the url of the file
    */
-  const KURL & url() const { return m_url; }
+  const KUrl & url() const { return m_url; }
 
   /**
    * Sets the item's URL. Do not call unless you know what you are doing!
    * (used for example when an item got renamed).
    * @param url the item's URL
    */
-  void setURL( const KURL &url );
+  void setURL( const KUrl &url );
 
   /**
    * Sets the item's name (i.e. the filename).
@@ -502,7 +502,7 @@ public:
    *        fileitem and the filename from the UDSEntry should be used.
    * @since 3.4.1
    */
-  void setUDSEntry( const KIO::UDSEntry& entry, const KURL& url,
+  void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
                     bool determineMimeTypeOnDemand = false,
                     bool urlIsDirectory = false );
 
@@ -515,7 +515,7 @@ public:
    * Tries to give a local URL for this file item if possible.
    * The given boolean indicates if the returned url is local or not.
    */
-  KURL mostLocalURL(bool &local) const; // KDE4 TODO: bool* local = 0
+  KUrl mostLocalURL(bool &local) const; // KDE4 TODO: bool* local = 0
 
   /////////////
 
@@ -546,7 +546,7 @@ private:
   /**
    * The url of the file
    */
-  KURL m_url;
+  KUrl m_url;
 
   /**
    * The text for this item, i.e. the file name without path,
@@ -642,7 +642,7 @@ public:
 
   /// Find a KFileItem by URL and return it.
   /// @return the item with the given URL, or 0 if none was found
-  KFileItem* findByURL( const KURL& url ) const {
+  KFileItem* findByURL( const KUrl& url ) const {
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
@@ -653,8 +653,8 @@ public:
   }
 
   /// @return the list of URLs that those items represent
-  KURL::List urlList() const {
-    KURL::List lst;
+  KUrl::List urlList() const {
+    KUrl::List lst;
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it )

@@ -88,7 +88,7 @@ public Q_SLOTS:
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
                The default is false; do not honour requests for attachments.
    */
-  static void invokeMailer( const KURL &mailtoURL, const QByteArray& startup_id = "" ,  bool allowAttachments = false );
+  static void invokeMailer( const KUrl &mailtoURL, const QByteArray& startup_id = "" ,  bool allowAttachments = false );
 
   /**
    * Convenience method; invokes the standard email application.

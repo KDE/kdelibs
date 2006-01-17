@@ -295,7 +295,7 @@ private:
 	PlayObject();
 	PlayObject( const PlayObject& ) : QObject() {}
 	PlayObject(Arts::PlayObject playobject, bool isStream);
-	PlayObject( Arts::SoundServerV2 server, const KURL& url, bool isStream, bool createBUS );
+	PlayObject( Arts::SoundServerV2 server, const KUrl& url, bool isStream, bool createBUS );
 
 	friend class KDE::PlayObjectFactory;
 

@@ -61,7 +61,7 @@ namespace KIO {
 	 * Use KIO::davPropFind(), KIO::davPropPatch() and
 	 * KIO::davSearch() to create a new DavJob.
 	 */
-        DavJob(const KURL& url, int method,
+        DavJob(const KUrl& url, int method,
                     const QString& request, bool showProgressInfo);
         /**
 	 * Returns the response as a QDomDocument.
@@ -94,7 +94,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropFind( const KURL& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo=true );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets
@@ -106,7 +106,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo=true );
 
    /**
     * Creates a new DavJob that issues a SEARCH command.
@@ -118,7 +118,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davSearch( const KUrl &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true );
 
 }
 

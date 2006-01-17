@@ -31,7 +31,7 @@ class KIO_EXPORT KDirSize : public KIO::Job
 {
   Q_OBJECT
 protected:
-  KDirSize( const KURL & directory );
+  KDirSize( const KUrl & directory );
   KDirSize( const KFileItemList & lstItems );
   ~KDirSize() {}
 
@@ -60,7 +60,7 @@ public:
    * Asynchronous method. Connect to the result signal.
    * This one lists a single directory.
    */
-  static KDirSize * dirSizeJob( const KURL & directory );
+  static KDirSize * dirSizeJob( const KUrl & directory );
 
   /**
    * Asynchronous method. Connect to the result signal.
@@ -75,7 +75,7 @@ public:
    * Synchronous method - you get the result as soon as
    * the call returns.
    */
-  static KIO::filesize_t dirSize( const KURL & directory );
+  static KIO::filesize_t dirSize( const KUrl & directory );
 
 protected:
   /**
@@ -83,7 +83,7 @@ protected:
    */
   void setSync() { m_bAsync = false; }
 
-  void startNextJob( const KURL & url );
+  void startNextJob( const KUrl & url );
 
 protected Q_SLOTS:
 

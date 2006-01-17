@@ -77,7 +77,7 @@ public:
 };
 
 KURLBarItem::KURLBarItem( KURLBar *parent,
-                          const KURL& url, bool persistent, const QString& description,
+                          const KUrl& url, bool persistent, const QString& description,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
@@ -89,7 +89,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
 }
 
 KURLBarItem::KURLBarItem( KURLBar *parent,
-                          const KURL& url, const QString& description,
+                          const KUrl& url, const QString& description,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
@@ -115,7 +115,7 @@ KURLBarItem::~KURLBarItem()
     delete d;
 }
 
-void KURLBarItem::setURL( const KURL& url )
+void KURLBarItem::setURL( const KUrl& url )
 {
     m_url = url;
     if ( m_description.isEmpty() )
@@ -313,7 +313,7 @@ public:
     }
 
     int defaultIconSize;
-    KURL currentURL;
+    KUrl currentURL;
 };
 
 
@@ -344,7 +344,7 @@ KURLBar::~KURLBar()
     delete d;
 }
 
-KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
+KURLBarItem * KURLBar::insertItem(const KUrl& url, const QString& description,
                                   bool applicationLocal,
                                   const QString& icon, KIcon::Group group )
 {
@@ -354,7 +354,7 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
     return item;
 }
 
-KURLBarItem * KURLBar::insertDynamicItem(const KURL& url, const QString& description,
+KURLBarItem * KURLBar::insertDynamicItem(const KUrl& url, const QString& description,
                                          const QString& icon, KIcon::Group group )
 {
     KURLBarItem *item = new KURLBarItem(this, url, false, description, icon, group);
@@ -523,7 +523,7 @@ void KURLBar::slotSelected( Q3ListBoxItem *item )
     }
 }
 
-void KURLBar::setCurrentItem( const KURL& url )
+void KURLBar::setCurrentItem( const KUrl& url )
 {
     d->currentURL = url;
 
@@ -559,10 +559,10 @@ KURLBarItem * KURLBar::currentItem() const
     return 0L;
 }
 
-KURL KURLBar::currentURL() const
+KUrl KURLBar::currentURL() const
 {
     KURLBarItem *item = currentItem();
-    return item ? item->url() : KURL();
+    return item ? item->url() : KUrl();
 }
 
 void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
@@ -590,7 +590,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KURL url = KURL::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
+    KUrl url = KUrl::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
     if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -685,14 +685,14 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
 
 void KURLBar::slotDropped( QDropEvent *e )
 {
-    KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+    KUrl::List urls = KUrl::List::fromMimeData( e->mimeData() );
     if ( !urls.isEmpty() ) {
-        KURL url;
+        KUrl url;
         QString description;
         QString icon;
         bool appLocal = false;
 
-        KURL::List::const_iterator it = urls.begin();
+        KUrl::List::const_iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
             (void) insertItem( *it, description, appLocal, icon );
             m_isModified = true;
@@ -708,7 +708,7 @@ void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
 
     KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
 
-    KURL lastURL = m_activeItem ? m_activeItem->url() : KURL();
+    KUrl lastURL = m_activeItem ? m_activeItem->url() : KUrl();
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QMenu *popup = new QMenu();
@@ -768,7 +768,7 @@ bool KURLBar::editItem( KURLBarItem *item )
     if ( !item || !item->isPersistent() ) // should never happen tho
         return false;
 
-    KURL url            = item->url();
+    KUrl url            = item->url();
     QString description = item->description();
     QString icon        = item->icon();
     bool appLocal       = item->applicationLocal();
@@ -815,7 +815,7 @@ void KURLBarListBox::paintEvent( QPaintEvent* )
 
 void KURLBarListBox::populateMimeData( QMimeData* mimeData )
 {
-    KURL::List urls;
+    KUrl::List urls;
     KURLBarItem *item = static_cast<KURLBarItem*>( firstItem() );
 
     while ( item ) {
@@ -832,7 +832,7 @@ void KURLBarListBox::populateMimeData( QMimeData* mimeData )
 
 void KURLBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    e->accept( KURL::List::canDecode( e->mimeData() ) );
+    e->accept( KUrl::List::canDecode( e->mimeData() ) );
 }
 
 void KURLBarListBox::contentsDropEvent( QDropEvent *e )
@@ -886,7 +886,7 @@ bool KURLBarListBox::event( QEvent* e )
 ///////////////////////////////////////////////////////////////////
 
 
-bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
+bool KURLBarItemDialog::getInformation( bool allowGlobal, KUrl& url,
                                         QString& description, QString& icon,
                                         bool& appLocal, int iconSize,
                                         QWidget *parent )
@@ -910,7 +910,7 @@ bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
     return false;
 }
 
-KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
+KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KUrl& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
                                       int iconSize,
@@ -989,10 +989,10 @@ void KURLBarItemDialog::urlChanged(const QString & text )
     enableButtonOK( !text.isEmpty() );
 }
 
-KURL KURLBarItemDialog::url() const
+KUrl KURLBarItemDialog::url() const
 {
     QString text = m_urlEdit->url();
-    KURL u;
+    KUrl u;
     if ( text.at(0) == '/' )
         u.setPath( text );
     else

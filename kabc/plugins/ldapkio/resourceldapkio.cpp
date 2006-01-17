@@ -132,7 +132,7 @@ void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
   for (; it != end; ++it) {
     const QString urlStr = (*it).stringValue( KIO::UDS_URL );
     if ( !urlStr.isEmpty() ) {
-      KURL tmpurl( urlStr );
+      KUrl tmpurl( urlStr );
       d->mResultDn = tmpurl.path();
       kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
       if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
@@ -369,7 +369,7 @@ void ResourceLDAPKIO::init()
   if ( !mAttributes.contains("jpegPhoto") )
     mAttributes.insert( "jpegPhoto", "jpegPhoto" );
 
-  d->mLDAPUrl = KURL();
+  d->mLDAPUrl = KUrl();
   if ( !mAnonymous ) {
     d->mLDAPUrl.setUser( mUser );
     d->mLDAPUrl.setPass( mPassword );
@@ -503,7 +503,7 @@ KIO::Job *ResourceLDAPKIO::loadFromCache()
 
     Resource::setReadOnly( true );
 
-    KURL url( d->mCacheDst );
+    KUrl url( d->mCacheDst );
     job = KIO::get( url, true, false );
     connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
       this, SLOT( data( KIO::Job*, const QByteArray& ) ) );

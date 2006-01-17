@@ -42,7 +42,7 @@ class K3MultipleDragPrivate;
  * \code
  * K3MultipleDrag *drag = new K3MultipleDrag( parentWidget );
  * drag->addDragObject( new Q3ImageDrag( someQImage, 0 ) );
- * drag->addDragObject( new K3URLDrag( someKURL, 0 ) );
+ * drag->addDragObject( new K3URLDrag( someKUrl, 0 ) );
  * drag->drag();
  * \endcode
  *

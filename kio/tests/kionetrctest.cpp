@@ -5,7 +5,7 @@
 
 #include "authinfo.h"
 
-void output( const KURL& u )
+void output( const KUrl& u )
 {
     kdDebug() << "Looking up auto login for: " << u.url() << endl;
     KIO::NetRC::AutoLogin l;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         args->usage();
     else
     {
-        KURL u;
+        KUrl u;
         for( int i=0 ; i < count; i++ )
         {
             u = args->arg(i);

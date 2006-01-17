@@ -67,7 +67,7 @@ private Q_SLOTS:
 	void slotTotalSize(KIO::Job *, KIO::filesize_t size);
 
 private:
-	KURL m_url;
+	KUrl m_url;
 	KIO::TransferJob *m_job;
 	QByteArray m_data;
 	bool m_finished;

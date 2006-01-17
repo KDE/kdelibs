@@ -96,13 +96,13 @@ QStringList KURLComboBox::urls() const
 }
 
 
-void KURLComboBox::addDefaultURL( const KURL& url, const QString& text )
+void KURLComboBox::addDefaultURL( const KUrl& url, const QString& text )
 {
     addDefaultURL( url, getIcon( url ), text );
 }
 
 
-void KURLComboBox::addDefaultURL( const KURL& url, const QIcon& icon,
+void KURLComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
                                   const QString& text )
 {
     KURLComboItem *item = new KURLComboItem;
@@ -170,14 +170,14 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     it = urls.begin();
 
     KURLComboItem *item = 0L;
-    KURL u;
+    KUrl u;
 
     while ( it != urls.end() ) {
         if ( (*it).isEmpty() ) {
             ++it;
             continue;
         }
-        u = KURL::fromPathOrURL( *it );
+        u = KUrl::fromPathOrURL( *it );
 
         item = new KURLComboItem;
         item->url = u;
@@ -195,7 +195,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 }
 
 
-void KURLComboBox::setURL( const KURL& url )
+void KURLComboBox::setURL( const KUrl& url )
 {
     if ( url.isEmpty() )
         return;
@@ -303,7 +303,7 @@ void KURLComboBox::setMaxItems( int max )
 }
 
 
-void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
+void KURLComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
 {
     QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
@@ -324,7 +324,7 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 }
 
 
-QIcon KURLComboBox::getIcon( const KURL& url ) const
+QIcon KURLComboBox::getIcon( const KUrl& url ) const
 {
     if ( myMode == Directories )
         return d->dirIcon;

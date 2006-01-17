@@ -122,7 +122,7 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
   if (originURL == "true") // Backwards compatibility
      return true;
 
-  KURL url ( originURL );
+  KUrl url ( originURL );
 
   // Document Origin domain
   QString a = url.host();
@@ -246,7 +246,7 @@ void HTTPProtocol::resetSessionSettings()
 {
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
-  KURL proxy ( config()->readEntry("UseProxy") );
+  KUrl proxy ( config()->readEntry("UseProxy") );
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
@@ -283,7 +283,7 @@ void HTTPProtocol::resetSessionSettings()
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
   {
-     KURL referrerURL ( metaData("referrer") );
+     KUrl referrerURL ( metaData("referrer") );
      if (referrerURL.isValid())
      {
         // Sanitize
@@ -426,7 +426,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
     " (" << m_request.encoded_hostname << ")" <<endl;
 }
 
-bool HTTPProtocol::checkRequestURL( const KURL& u )
+bool HTTPProtocol::checkRequestURL( const KUrl& u )
 {
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestURL:  " << u.url() << endl;
 
@@ -440,7 +440,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
 
   if (u.path().isEmpty())
   {
-     KURL newUrl(u);
+     KUrl newUrl(u);
      newUrl.setPath("/");
      redirection(newUrl);
      finished();
@@ -567,7 +567,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   return true;
 }
 
-void HTTPProtocol::stat(const KURL& url)
+void HTTPProtocol::stat(const KUrl& url)
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyURL()
                 << endl;
@@ -599,7 +599,7 @@ void HTTPProtocol::stat(const KURL& url)
   davStatList( url );
 }
 
-void HTTPProtocol::listDir( const KURL& url )
+void HTTPProtocol::listDir( const KUrl& url )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::listDir " << url.url()
                 << endl;
@@ -616,7 +616,7 @@ void HTTPProtocol::davSetRequest( const QByteArray& requestXML )
   m_bufPOST = requestXML;
 }
 
-void HTTPProtocol::davStatList( const KURL& url, bool stat )
+void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 {
   UDSEntry entry;
 
@@ -703,10 +703,10 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
       QString urlStr = href.text();
       int encoding = remoteEncoding()->encodingMib();
-      if ((encoding == 106) && (!KStringHandler::isUtf8(KURL::decode_string(urlStr, 4).toLatin1())))
+      if ((encoding == 106) && (!KStringHandler::isUtf8(KUrl::decode_string(urlStr, 4).toLatin1())))
         encoding = 4; // Use latin1 if the file is not actually utf-8
 
-      KURL thisURL ( urlStr, encoding );
+      KUrl thisURL ( urlStr, encoding );
 
       if ( thisURL.isValid() ) {
         // don't list the base dir of a listDir()
@@ -753,7 +753,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 }
 
-void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
+void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davGeneric " << url.url()
                 << endl;
@@ -1134,7 +1134,7 @@ void HTTPProtocol::davFinished()
   finished();
 }
 
-void HTTPProtocol::mkdir( const KURL& url, int )
+void HTTPProtocol::mkdir( const KUrl& url, int )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
                 << endl;
@@ -1156,7 +1156,7 @@ void HTTPProtocol::mkdir( const KURL& url, int )
     davError();
 }
 
-void HTTPProtocol::get( const KURL& url )
+void HTTPProtocol::get( const KUrl& url )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::get " << url.url()
                 << endl;
@@ -1181,7 +1181,7 @@ void HTTPProtocol::get( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
+void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyURL()
                 << endl;
@@ -1244,7 +1244,7 @@ void HTTPProtocol::put( const KURL &url, int, bool overwrite, bool)
     httpError();
 }
 
-void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
+void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
@@ -1253,7 +1253,7 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
     return;
 
   // destination has to be "http(s)://..."
-  KURL newDest = dest;
+  KUrl newDest = dest;
   if (newDest.protocol() == "webdavs")
     newDest.setProtocol("https");
   else
@@ -1276,7 +1276,7 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
     davError();
 }
 
-void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
+void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
@@ -1285,7 +1285,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
     return;
 
   // destination has to be "http://..."
-  KURL newDest = dest;
+  KUrl newDest = dest;
   if (newDest.protocol() == "webdavs")
     newDest.setProtocol("https");
   else
@@ -1307,7 +1307,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
     davError();
 }
 
-void HTTPProtocol::del( const KURL& url, bool )
+void HTTPProtocol::del( const KUrl& url, bool )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyURL()
                 << endl;
@@ -1331,7 +1331,7 @@ void HTTPProtocol::del( const KURL& url, bool )
     davError();
 }
 
-void HTTPProtocol::post( const KURL& url )
+void HTTPProtocol::post( const KUrl& url )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::post "
                 << url.prettyURL() << endl;
@@ -1348,7 +1348,7 @@ void HTTPProtocol::post( const KURL& url )
   retrieveContent();
 }
 
-void HTTPProtocol::davLock( const KURL& url, const QString& scope,
+void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
@@ -1414,7 +1414,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
     davError();
 }
 
-void HTTPProtocol::davUnlock( const KURL& url )
+void HTTPProtocol::davUnlock( const KUrl& url )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davUnlock "
                 << url.prettyURL() << endl;
@@ -1699,7 +1699,7 @@ void HTTPProtocol::httpError()
   error( ERR_SLAVE_DEFINED, errorString );
 }
 
-bool HTTPProtocol::isOffline(const KURL &url)
+bool HTTPProtocol::isOffline(const KUrl &url)
 {
   const int NetWorkStatusUnknown = 1;
   const int NetWorkStatusOnline = 8;
@@ -1738,7 +1738,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 //  m_requestQueue.clear();
   for(unsigned i = 0; i < n; i++)
   {
-     KURL url;
+     KUrl url;
      stream >> url >> mIncomingMetaData;
 
      if ( !checkRequestURL( url ) )
@@ -2282,7 +2282,7 @@ bool HTTPProtocol::httpOpen()
     // format the URI
     if (m_state.doProxy && !m_bIsTunneled)
     {
-      KURL u;
+      KUrl u;
 
       if (m_protocol == "webdav")
          u.setProtocol( "http" );
@@ -3497,7 +3497,7 @@ try_again:
   // We need to do a redirect
   if (!locationStr.isEmpty())
   {
-    KURL u(m_request.url, locationStr);
+    KUrl u(m_request.url, locationStr);
     if(!u.isValid())
     {
       error(ERR_MALFORMED_URL, u.url());
@@ -3900,7 +3900,7 @@ void HTTPProtocol::slave_status()
   slaveStatus( m_state.hostname, isConnectionValid() );
 }
 
-void HTTPProtocol::mimetype( const KURL& url )
+void HTTPProtocol::mimetype( const KUrl& url )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mimetype: "
                 << url.prettyURL() << endl;
@@ -3931,14 +3931,14 @@ void HTTPProtocol::special( const QByteArray &data )
   switch (tmp) {
     case 1: // HTTP POST
     {
-      KURL url;
+      KUrl url;
       stream >> url;
       post( url );
       break;
     }
     case 2: // cache_update
     {
-      KURL url;
+      KUrl url;
       bool no_cache;
       time_t expireDate;
       stream >> url >> no_cache >> expireDate;
@@ -3947,7 +3947,7 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 5: // WebDAV lock
     {
-      KURL url;
+      KUrl url;
       QString scope, type, owner;
       stream >> url >> scope >> type >> owner;
       davLock( url, scope, type, owner );
@@ -3955,14 +3955,14 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 6: // WebDAV unlock
     {
-      KURL url;
+      KUrl url;
       stream >> url;
       davUnlock( url );
       break;
     }
     case 7: // Generic WebDAV
     {
-      KURL url;
+      KUrl url;
       int method;
       stream >> url >> method;
       davGeneric( url, (KIO::HTTP_METHOD) method );
@@ -4491,7 +4491,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 /******************************* CACHING CODE ****************************/
 
 
-void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDate)
+void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDate)
 {
   if ( !checkRequestURL( url ) )
       return;
@@ -5161,7 +5161,7 @@ bool HTTPProtocol::getAuthorization()
     {
       // Reset cached proxy auth
       m_bProxyAuthValid = false;
-      KURL proxy ( config()->readEntry("UseProxy") );
+      KUrl proxy ( config()->readEntry("UseProxy") );
       m_proxyURL.setUser(proxy.user());
       m_proxyURL.setPass(proxy.pass());
     }
@@ -5721,13 +5721,13 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
         pos = uri.indexOf( ' ', idx );
         if ( pos != -1 )
         {
-          KURL u (m_request.url, uri.mid(idx, pos-idx));
+          KUrl u (m_request.url, uri.mid(idx, pos-idx));
           if (u.isValid ())
             info.digestURI.append( u );
         }
         else
         {
-          KURL u (m_request.url, uri.mid(idx, uri.length()-idx));
+          KUrl u (m_request.url, uri.mid(idx, uri.length()-idx));
           if (u.isValid ())
             info.digestURI.append( u );
         }
@@ -5781,7 +5781,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
     for (int i = 0; i < count; i++ )
     {
-      KURL u ( info.digestURI.at(i) );
+      KUrl u ( info.digestURI.at(i) );
 
       send &= (m_request.url.protocol().toLower() == u.protocol().toLower());
       send &= (m_request.hostname.toLower() == u.host().toLower());

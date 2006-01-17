@@ -203,7 +203,7 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QS
 
     dlg.exec();
 
-    KURL url = dlg.selectedURL();
+    KUrl url = dlg.selectedURL();
     if (url.isValid())
         KRecentDocument::add( url );
 

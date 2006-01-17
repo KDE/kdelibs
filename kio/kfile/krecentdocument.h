@@ -64,7 +64,7 @@ public:
      *
      * @param url The url to add.
      */
-    static void add(const KURL& url);
+    static void add(const KUrl& url);
 
     /**
      * Add a new item to the Recent Document menu, specifying the application to open it with.
@@ -74,7 +74,7 @@ public:
      * @param url The url to add.
      * @param desktopEntryName The desktopEntryName of the service to use for opening this document.
      */
-    static void add(const KURL& url, const QString& desktopEntryName);
+    static void add(const KUrl& url, const QString& desktopEntryName);
 
     /**
      *

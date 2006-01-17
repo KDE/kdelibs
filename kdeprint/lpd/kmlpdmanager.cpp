@@ -88,7 +88,7 @@ bool KMLpdManager::completePrinterShort(KMPrinter *printer)
 		printer->setLocation(i18n("<Not available>"));
 		printer->setDriverInfo(driver.isEmpty() ? i18n("Unknown Driver", "Unknown") : driver);
 		// device
-		KURL	url;
+		KUrl	url;
 		if (!entry->arg("rm").isEmpty())
 		{
 			url = QString::fromLatin1("lpd://%1/%2").arg(entry->arg("rm")).arg(entry->arg("rp"));
@@ -564,7 +564,7 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 
 bool KMLpdManager::createPrinttoolEntry(KMPrinter *printer, PrintcapEntry *entry)
 {
-	KURL	dev(printer->device());
+	KUrl	dev(printer->device());
 	QString	prot = dev.protocol(), sd(entry->arg("sd"));
 	entry->m_comment = QString::fromLatin1("##PRINTTOOL3## %1").arg(ptPrinterType(printer));
 	if (prot == "smb" || prot == "ncp" || prot == "socket")

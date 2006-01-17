@@ -10,7 +10,7 @@ public:
   Shell();
   virtual ~Shell();
 
-  void openURL( const KURL & url );
+  void openURL( const KUrl & url );
 
 protected Q_SLOTS:
   void slotFileOpen();

@@ -48,21 +48,21 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
    connect( treeView, SIGNAL( onItem( const QString& )),
 	    sta, SLOT( message( const QString& )));
 
-   connect( treeView, SIGNAL( dropped( QWidget*, QDropEvent*, KURL::List& )),
-	    this, SLOT( urlsDropped( QWidget*, QDropEvent*, KURL::List& )));
+   connect( treeView, SIGNAL( dropped( QWidget*, QDropEvent*, KUrl::List& )),
+	    this, SLOT( urlsDropped( QWidget*, QDropEvent*, KUrl::List& )));
 
-   connect( treeView, SIGNAL( dropped( KURL::List&, KURL& )), this,
-	    SLOT( copyURLs( KURL::List&, KURL& )));
+   connect( treeView, SIGNAL( dropped( KUrl::List&, KUrl& )), this,
+	    SLOT( copyURLs( KUrl::List&, KUrl& )));
 
    treeView->addColumn( "File" );
    treeView->addColumn( "ChildCount" );
    setCentralWidget( treeView );
    resize( 600, 400 );
 
-   showPath( KURL::fromPathOrURL( QDir::homePath() ));
+   showPath( KUrl::fromPathOrURL( QDir::homePath() ));
 }
 
-void testFrame::showPath( const KURL &url )
+void testFrame::showPath( const KUrl &url )
 {
    QString fname = "TestBranch"; // url.fileName ();
    /* try a user icon */
@@ -89,17 +89,17 @@ void testFrame::showPath( const KURL &url )
 
 }
 
-void testFrame::urlsDropped( QWidget* , QDropEvent* , KURL::List& list )
+void testFrame::urlsDropped( QWidget* , QDropEvent* , KUrl::List& list )
 {
-   KURL::List::ConstIterator it = list.begin();
+   KUrl::List::ConstIterator it = list.begin();
    for ( ; it != list.end(); ++it ) {
       kdDebug() << "Url dropped: " << (*it).prettyURL() << endl;
    }
 }
 
-void testFrame::copyURLs( KURL::List& list, KURL& to )
+void testFrame::copyURLs( KUrl::List& list, KUrl& to )
 {
-   KURL::List::ConstIterator it = list.begin();
+   KUrl::List::ConstIterator it = list.begin();
    kdDebug() << "Copy to " << to.prettyURL() << endl;
    for ( ; it != list.end(); ++it ) {
       kdDebug() << "Url: " << (*it).prettyURL() << endl;
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 	     tf->setDirOnly();
 	  else
 	  {
-	  KURL u( argv1 );
+	  KUrl u( argv1 );
 	  tf->showPath( u );
        }
     }

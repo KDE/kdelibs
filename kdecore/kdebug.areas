@@ -6,7 +6,7 @@
 #Format : number<tab>description
 
 125        kdecore (KAccel)
-126        kdecore (KURL)
+126        kdecore (KUrl)
 127        kio (KProtocolInfo)
 128        kdecore (KRegExp)
 129        kdecore (KAction)

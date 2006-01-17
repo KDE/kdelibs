@@ -244,7 +244,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
             if (!name.isEmpty()) {
                 const QString name_lower = name.toLower ();
                 if (name == "__KHTML__PLUGINBASEURL") {
-                    baseurl = KURL (KURL (value), QString (".")).url ();
+                    baseurl = KUrl (KUrl (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
                     khtml_codebase = value;
                 else if (name_lower == QLatin1String("codebase") ||
@@ -295,7 +295,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         QString pwd = QDir().absolutePath ();
         if (!pwd.endsWith ( QString(QDir::separator ())))
             pwd += QDir::separator ();
-        baseurl = KURL (KURL (pwd), codebase).url ();
+        baseurl = KUrl (KUrl (pwd), codebase).url ();
     }
     if (width > 0 && height > 0) {
         m_view->resize (width, height);
@@ -303,9 +303,9 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     applet->setBaseURL (baseurl);
     // check codebase first
-    const KURL kbaseURL( baseurl );
-    const KURL newURL(kbaseURL, codebase);
-    if (KAuthorized::authorizeURLAction("redirect", KURL(baseurl), newURL))
+    const KUrl kbaseURL( baseurl );
+    const KUrl newURL(kbaseURL, codebase);
+    if (KAuthorized::authorizeURLAction("redirect", KUrl(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);
@@ -378,7 +378,7 @@ KJavaAppletViewer::~KJavaAppletViewer () {
     }
 }
 
-bool KJavaAppletViewer::openURL (const KURL & url) {
+bool KJavaAppletViewer::openURL (const KUrl & url) {
     if (!m_view) return false;
     m_closed = false;
     KJavaAppletWidget* const w = m_view->appletWidget ();
@@ -511,7 +511,7 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
 
 void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
                                                       const QString & frame) {
-    const KURL url (doc);
+    const KUrl url (doc);
     KParts::URLArgs args;
     args.frameName = frame;
     emit openURLRequest (url, args);

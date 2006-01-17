@@ -193,27 +193,27 @@ bool KComboBox::trapReturnKey() const
 }
 
 
-void KComboBox::setEditURL( const KURL& url )
+void KComboBox::setEditURL( const KUrl& url )
 {
     QComboBox::setEditText( url.prettyURL() );
 }
 
-void KComboBox::insertURL( const KURL& url, int index )
+void KComboBox::insertURL( const KUrl& url, int index )
 {
     QComboBox::insertItem( url.prettyURL(), index );
 }
 
-void KComboBox::insertURL( const QPixmap& pixmap, const KURL& url, int index )
+void KComboBox::insertURL( const QPixmap& pixmap, const KUrl& url, int index )
 {
     QComboBox::insertItem( pixmap, url.prettyURL(), index );
 }
 
-void KComboBox::changeURL( const KURL& url, int index )
+void KComboBox::changeURL( const KUrl& url, int index )
 {
     QComboBox::changeItem( url.prettyURL(), index );
 }
 
-void KComboBox::changeURL( const QPixmap& pixmap, const KURL& url, int index )
+void KComboBox::changeURL( const QPixmap& pixmap, const KUrl& url, int index )
 {
     QComboBox::changeItem( pixmap, url.prettyURL(), index );
 }

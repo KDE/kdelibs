@@ -41,7 +41,7 @@ private:
     void waitForCompletion();
     KURLCompletion* m_completion;
     KTempDir* m_tempDir;
-    KURL m_dirURL;
+    KUrl m_dirURL;
     QString m_dir;
 };
 
@@ -55,7 +55,7 @@ void KURLCompletionTest::setup( bool setDirAsURL )
     kdDebug() << "m_dir=" << m_dir << endl;
     Q_ASSERT( m_dir.endsWith( "/" ) );
     if ( setDirAsURL ) {
-        KURL d; d.setPath( m_dir );
+        KUrl d; d.setPath( m_dir );
         m_completion->setDir( d.url() );
     } else {
         m_completion->setDir( m_dir );
@@ -132,7 +132,7 @@ void KURLCompletionTest::testLocalURL()
 {
     // Completion from URL
     kdDebug() << k_funcinfo << endl;
-    KURL url = KURL::fromPathOrURL( m_dirURL.path() + "file" );
+    KUrl url = KUrl::fromPathOrURL( m_dirURL.path() + "file" );
     m_completion->makeCompletion( url.prettyURL() );
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
@@ -146,7 +146,7 @@ void KURLCompletionTest::testLocalURL()
     assert( filehashPath == m_dirURL.path() + "file#a" );
 
     // Completion from URL with no match
-    url = KURL::fromPathOrURL( m_dirURL.path() + "foobar" );
+    url = KUrl::fromPathOrURL( m_dirURL.path() + "foobar" );
     kdDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
     QString comp2 = m_completion->makeCompletion( url.prettyURL() );
     assert( comp2.isEmpty() );
@@ -154,7 +154,7 @@ void KURLCompletionTest::testLocalURL()
     assert( m_completion->allMatches().isEmpty() );
 
     // Completion from URL with a ref -> no match
-    url = KURL::fromPathOrURL( m_dirURL.path() + "f" );
+    url = KUrl::fromPathOrURL( m_dirURL.path() + "f" );
     url.setRef( "ref" );
     kdDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
     m_completion->makeCompletion( url.prettyURL() );

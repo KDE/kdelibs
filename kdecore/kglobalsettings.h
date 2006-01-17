@@ -34,7 +34,7 @@
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
-class KURL;
+class KUrl;
 
 class QColor;
 class QFont;
@@ -489,7 +489,7 @@ class KDECORE_EXPORT KGlobalSettings
      *
      * @since 3.2
      */
-    static bool showFilePreview(const KURL &);
+    static bool showFilePreview(const KUrl &);
 
     /**
      * Whether the user wishes to use opaque resizing. Primarily

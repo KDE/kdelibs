@@ -138,7 +138,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     return 0L;
 }
 
-void KFileMetaPreview::showPreview(const KURL &url)
+void KFileMetaPreview::showPreview(const KUrl &url)
 {
     KMimeType::Ptr mt = KMimeType::findByURL( url );
     KPreviewWidgetBase *provider = previewProviderFor( mt->name() );

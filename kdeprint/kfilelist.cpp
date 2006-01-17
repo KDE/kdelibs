@@ -166,19 +166,19 @@ KFileList::~KFileList()
 
 void KFileList::dragEnterEvent(QDragEnterEvent *e)
 {
-    e->accept( KURL::List::canDecode( e->mimeData() ) );
+    e->accept( KUrl::List::canDecode( e->mimeData() ) );
 }
 
 void KFileList::dropEvent(QDropEvent *e)
 {
-	KURL::List	files = KURL::List::fromMimeData( e->mimeData() );
+	KUrl::List	files = KUrl::List::fromMimeData( e->mimeData() );
 	if (!files.isEmpty())
 	{
 		addFiles(files);
 	}
 }
 
-void KFileList::addFiles(const KURL::List& files)
+void KFileList::addFiles(const KUrl::List& files)
 {
 	if (files.count() > 0)
 	{
@@ -189,10 +189,10 @@ void KFileList::addFiles(const KURL::List& files)
 
 		// for each file, download it (if necessary) and add it
 		QString	downloaded;
-		for (KURL::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
+		for (KUrl::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
 			if (KIO::NetAccess::download(*it, downloaded, this))
 			{
-				KURL	url;
+				KUrl	url;
 				url.setPath(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
 				item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
@@ -218,7 +218,7 @@ void KFileList::setFileList(const QStringList& files)
 	Q3ListViewItem *item = 0;
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
-		KURL	url;
+		KUrl	url;
 		url.setPath(*it);
 		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
 		item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
@@ -241,9 +241,9 @@ QStringList KFileList::fileList() const
 
 void KFileList::slotAddFile()
 {
-	KURL	fname = KFileDialog::getOpenURL(QString(), QString(), this);
+	KUrl	fname = KFileDialog::getOpenURL(QString(), QString(), this);
 	if (!fname.isEmpty())
-		addFiles(KURL::List(fname));
+		addFiles(KUrl::List(fname));
 }
 
 void KFileList::slotRemoveFile()
@@ -262,7 +262,7 @@ void KFileList::slotOpenFile()
 	Q3ListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
-		KURL url( item->text( 2 ) );
+		KUrl url( item->text( 2 ) );
 		new KRun(url,window());
 	}
 }

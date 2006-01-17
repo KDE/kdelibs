@@ -135,12 +135,12 @@ public:
   void setSpeed( unsigned long bytes_per_second );
   void setInfoMessage( const QString & msg );
 
-  void setCopying( const KURL& from, const KURL& to );
-  void setMoving( const KURL& from, const KURL& to );
-  void setDeleting( const KURL& url );
-  void setTransferring( const KURL& url );
-  void setCreatingDir( const KURL& dir );
-  void setStating( const KURL& url );
+  void setCopying( const KUrl& from, const KUrl& to );
+  void setMoving( const KUrl& from, const KUrl& to );
+  void setDeleting( const KUrl& url );
+  void setTransferring( const KUrl& url );
+  void setCreatingDir( const KUrl& dir );
+  void setStating( const KUrl& url );
   void setMounting( const QString & dev, const QString & point );
   void setUnmounting( const QString & point );
 
@@ -255,12 +255,12 @@ k_dcop:
   ASYNC speed( int id, unsigned long bytes_per_second );
   ASYNC infoMessage( int id, const QString & msg );
 
-  ASYNC copying( int id, KURL from, KURL to );
-  ASYNC moving( int id, KURL from, KURL to );
-  ASYNC deleting( int id, KURL url );
-  ASYNC transferring( int id, KURL url );
-  ASYNC creatingDir( int id, KURL dir );
-  ASYNC stating( int id, KURL url );
+  ASYNC copying( int id, KUrl from, KUrl to );
+  ASYNC moving( int id, KUrl from, KUrl to );
+  ASYNC deleting( int id, KUrl url );
+  ASYNC transferring( int id, KUrl url );
+  ASYNC creatingDir( int id, KUrl dir );
+  ASYNC stating( int id, KUrl url );
 
   ASYNC mounting( int id, QString dev, QString point );
   ASYNC unmounting( int id, QString point );

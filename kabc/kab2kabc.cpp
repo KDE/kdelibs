@@ -253,7 +253,7 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
     } else if ( fieldName == "BDAY" ) {
       a.setBirthday( QDateTime( KGlobal::locale()->readDate( fieldValue ) ) );
     } else if ( fieldName == "WEBPAGE" ) {
-      a.setUrl( KURL( fieldValue ) );
+      a.setUrl( KUrl( fieldValue ) );
     } else if ( fieldName == "N" ) {
     } else if ( fieldName == "X-FirstName" ) {
     } else if ( fieldName == "X-MiddleName" ) {
@@ -371,7 +371,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     }
 
     if ( entry.URLs.count() > 0 ) {
-      a.setUrl( KURL( entry.URLs.first() ) );
+      a.setUrl( KUrl( entry.URLs.first() ) );
       if ( entry.URLs.count() > 1 ) {
         kdWarning() << "More than one URL. Ignoring all but the first." << endl;
       }

@@ -77,17 +77,17 @@ KImageFilePreview::~KImageFilePreview()
 void KImageFilePreview::showPreview()
 {
     // Pass a copy since clearPreview() will clear currentURL
-    KURL url = currentURL;
+    KUrl url = currentURL;
     showPreview( url, true );
 }
 
 // called via KPreviewWidgetBase interface
-void KImageFilePreview::showPreview( const KURL& url )
+void KImageFilePreview::showPreview( const KUrl& url )
 {
     showPreview( url, false );
 }
 
-void KImageFilePreview::showPreview( const KURL &url, bool force )
+void KImageFilePreview::showPreview( const KUrl &url, bool force )
 {
     if ( !url.isValid() ) {
         clearPreview();
@@ -123,7 +123,7 @@ void KImageFilePreview::toggleAuto( bool a )
     if ( autoMode )
     {
         // Pass a copy since clearPreview() will clear currentURL
-        KURL url = currentURL;
+        KUrl url = currentURL;
         showPreview( url, true );
     }
 }
@@ -138,9 +138,9 @@ QSize KImageFilePreview::sizeHint() const
     return QSize( 20, 200 ); // otherwise it ends up huge???
 }
 
-KIO::PreviewJob * KImageFilePreview::createJob( const KURL& url, int w, int h )
+KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
 {
-    KURL::List urls;
+    KUrl::List urls;
     urls.append( url );
     return KIO::filePreview( urls, w, h, 0, 0, true, false );
 }
@@ -174,7 +174,7 @@ void KImageFilePreview::clearPreview()
     }
 
     imageLabel->clear();
-    currentURL = KURL();
+    currentURL = KUrl();
 }
 
 void KImageFilePreview::virtual_hook( int id, void* data )

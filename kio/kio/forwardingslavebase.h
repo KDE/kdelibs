@@ -47,7 +47,7 @@ class ForwardingSlaveBasePrivate;
  * like this in the child class:
  * 
  * \code
- *     void ChildProtocol::stat(const KURL &url)
+ *     void ChildProtocol::stat(const KUrl &url)
  *     {
  *         bool is_special = false;
  *         
@@ -95,30 +95,30 @@ public:
                         const QByteArray &appSocket);
     virtual ~ForwardingSlaveBase();
 
-    virtual void get(const KURL &url);
+    virtual void get(const KUrl &url);
 
-    virtual void put(const KURL &url, int permissions,
+    virtual void put(const KUrl &url, int permissions,
                      bool overwrite, bool resume);
 
-    virtual void stat(const KURL &url);
+    virtual void stat(const KUrl &url);
 
-    virtual void mimetype(const KURL &url);
+    virtual void mimetype(const KUrl &url);
 
-    virtual void listDir(const KURL &url);
+    virtual void listDir(const KUrl &url);
 
-    virtual void mkdir(const KURL &url, int permissions);
+    virtual void mkdir(const KUrl &url, int permissions);
 
-    virtual void rename(const KURL &src, const KURL &dest, bool overwrite);
+    virtual void rename(const KUrl &src, const KUrl &dest, bool overwrite);
 
-    virtual void symlink(const QString &target, const KURL &dest,
+    virtual void symlink(const QString &target, const KUrl &dest,
                          bool overwrite);
 
-    virtual void chmod(const KURL &url, int permissions);
+    virtual void chmod(const KUrl &url, int permissions);
 
-    virtual void copy(const KURL &src, const KURL &dest,
+    virtual void copy(const KUrl &src, const KUrl &dest,
                       int permissions, bool overwrite);
 
-    virtual void del(const KURL &url, bool isfile);
+    virtual void del(const KUrl &url, bool isfile);
 
 protected:
     /**
@@ -133,7 +133,7 @@ protected:
      * @param newURL The new URL to forward the slave call to
      * @return true if the given url could be correctly rewritten
      */
-    virtual bool rewriteURL(const KURL &url, KURL &newURL)=0;
+    virtual bool rewriteURL(const KUrl &url, KUrl &newURL)=0;
     
     /**
      * Allow to modify a UDSEntry before it's sent to the ioslave enpoint.
@@ -152,20 +152,20 @@ protected:
      * Return the URL being processed by the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KURL processedURL() const { return m_processedURL; }
+    KUrl processedURL() const { return m_processedURL; }
 
     /**
      * Return the URL asked to the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KURL requestedURL() const { return m_requestedURL; }
+    KUrl requestedURL() const { return m_requestedURL; }
 
 private:
-    KURL m_processedURL;
-    KURL m_requestedURL;
+    KUrl m_processedURL;
+    KUrl m_requestedURL;
     ForwardingSlaveBasePrivate *d;
     
-    bool internalRewriteURL(const KURL &url, KURL &newURL);
+    bool internalRewriteURL(const KUrl &url, KUrl &newURL);
     
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);
@@ -184,7 +184,7 @@ private Q_SLOTS:
     void slotSpeed(KIO::Job *job, unsigned long bytesPerSecond);
 
     // KIO::SimpleJob subclasses
-    void slotRedirection(KIO::Job *job, const KURL &url);
+    void slotRedirection(KIO::Job *job, const KUrl &url);
 
     // KIO::ListJob
     void slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries);

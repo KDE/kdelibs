@@ -110,7 +110,7 @@ NetRC* NetRC::self()
     return instance;
 }
 
-bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
+bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
                     QString type, LookUpMode mode )
 {
   // kdDebug() << "AutoLogin lookup for: " << url.host() << endl;

@@ -47,7 +47,7 @@ class KABC_EXPORT ResourceNet : public Resource
 
   public:
     ResourceNet( const KConfig* );
-    ResourceNet( const KURL &url, const QString &format );
+    ResourceNet( const KUrl &url, const QString &format );
     ~ResourceNet();
 
     virtual void writeConfig( KConfig* );
@@ -66,12 +66,12 @@ class KABC_EXPORT ResourceNet : public Resource
     /**
       Set url of directory to be used for saving.
      */
-    void setUrl( const KURL & );
+    void setUrl( const KUrl & );
 
     /**
       Return url of directory used for loading and saving the address book.
      */
-    KURL url() const;
+    KUrl url() const;
 
     /**
       Sets a new format by name.
@@ -84,7 +84,7 @@ class KABC_EXPORT ResourceNet : public Resource
     QString format() const;
 
   protected:
-    void init( const KURL &url, const QString &format );
+    void init( const KUrl &url, const QString &format );
 
   private Q_SLOTS:
     void downloadFinished( KIO::Job* );
@@ -94,7 +94,7 @@ class KABC_EXPORT ResourceNet : public Resource
     Format *mFormat;
     QString mFormatName;
 
-    KURL mUrl;
+    KUrl mUrl;
     QString mTempFile;
     KTempFile *mLocalTempFile;
     bool mUseLocalTempFile;

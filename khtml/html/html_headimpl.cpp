@@ -79,7 +79,7 @@ void HTMLBaseElementImpl::removedFromDocument()
 
     // Since the document doesn't have a base element...
     // (This will break in the case of multiple base elements, but that's not valid anyway (?))
-    getDocument()->setBaseURL( KURL() );
+    getDocument()->setBaseURL( KUrl() );
     getDocument()->setBaseTarget( QString() );
 }
 
@@ -89,7 +89,7 @@ void HTMLBaseElementImpl::process()
 	return;
 
     if(!m_href.isEmpty() && getDocument()->view())
-	getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), m_href.string() ) );
+	getDocument()->setBaseURL( KUrl( getDocument()->view()->part()->url(), m_href.string() ) );
 
     if(!m_target.isEmpty())
 	getDocument()->setBaseTarget( m_target.string() );
@@ -180,7 +180,7 @@ void HTMLLinkElementImpl::process()
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
     if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
-        part->browserExtension()->setIconURL( KURL(m_url.string()) );
+        part->browserExtension()->setIconURL( KUrl(m_url.string()) );
 
     // Stylesheet
     else if (!m_isDisabled &&

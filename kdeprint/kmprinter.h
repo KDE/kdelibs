@@ -112,8 +112,8 @@ public:
 	void setDescription(const QString& s) 	{ m_description = s; }
 	const QString& location() const 	{ return m_location; }
 	void setLocation(const QString& s) 	{ m_location = s; }
-	const KURL& uri() const 		{ return m_uri; }
-	void setUri(const KURL& u) 		{ m_uri = u; }
+	const KUrl& uri() const 		{ return m_uri; }
+	void setUri(const KUrl& u) 		{ m_uri = u; }
 	const QString& manufacturer() const	{ return m_manufacturer; }
 	void setManufacturer(const QString&s )	{ m_manufacturer = s; }
 	const QString& model() const		{ return m_model; }
@@ -194,7 +194,7 @@ protected:
 	// other useful information that should be completed by manager on demand
 	QString		m_description;	// short description, comment
 	QString		m_location;	// printer location
-	KURL		m_uri;		// URI printer identification
+	KUrl		m_uri;		// URI printer identification
 	QString		m_manufacturer;	// printer manufacturer (driver)
 	QString		m_model;	// printer model (driver)
 	QString		m_driverinfo;	// short driver info (ex: nick name in PPD)

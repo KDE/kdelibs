@@ -54,7 +54,7 @@ StyleSheetImpl* StyleBaseImpl::stylesheet()
     return static_cast<StyleSheetImpl *>(b);
 }
 
-KURL StyleBaseImpl::baseURL()
+KUrl StyleBaseImpl::baseURL()
 {
     // try to find the style sheet. If found look for its url.
     // If it has none, look for the parentsheet, or the parentNode and
@@ -62,15 +62,15 @@ KURL StyleBaseImpl::baseURL()
 
     StyleSheetImpl *sheet = stylesheet();
 
-    if(!sheet) return KURL();
+    if(!sheet) return KUrl();
 
     if(!sheet->href().isNull())
-        return KURL( sheet->href().string() );
+        return KUrl( sheet->href().string() );
 
     // find parent
     if(sheet->parent()) return sheet->parent()->baseURL();
 
-    if(!sheet->ownerNode()) return KURL();
+    if(!sheet->ownerNode()) return KUrl();
 
     return sheet->ownerNode()->getDocument()->baseURL();
 }

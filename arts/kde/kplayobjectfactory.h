@@ -50,8 +50,8 @@ public:
 
 	~KPlayObjectFactory();
 
-	KPlayObject *createPlayObject(const KURL& url, bool createBUS);
-	KPlayObject *createPlayObject(const KURL& url, const QString &mimetype, bool createBUS);
+	KPlayObject *createPlayObject(const KUrl& url, bool createBUS);
+	KPlayObject *createPlayObject(const KUrl& url, const QString &mimetype, bool createBUS);
 
 	void setAllowStreaming(bool s) { m_allowStreaming = s; }
 	bool allowStreaming() { return m_allowStreaming; }
@@ -110,13 +110,13 @@ public:
 	 * You don't need to know the mimetype of the file or stream, it
 	 * will be detected automatically.
 	 */
-	KDE::PlayObject *createPlayObject(const KURL& url, bool createBUS);
+	KDE::PlayObject *createPlayObject(const KUrl& url, bool createBUS);
 	
 	/**
 	 * This method also creates a KDE::PlayObject, but does no automatic
 	 * mimetype detection. Use this method with care.
 	 */
-	KDE::PlayObject *createPlayObject(const KURL& url, const QString &mimetype, bool createBUS);
+	KDE::PlayObject *createPlayObject(const KUrl& url, const QString &mimetype, bool createBUS);
 
 	/**
 	 * setAllowStreaming( true ) allows the factory to create a

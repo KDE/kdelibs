@@ -694,7 +694,7 @@ bool KGlobalSettings::showIconsOnPushButtons()
                        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
-bool KGlobalSettings::showFilePreview(const KURL &url)
+bool KGlobalSettings::showFilePreview(const KUrl &url)
 {
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
     QString protocol = url.protocol();

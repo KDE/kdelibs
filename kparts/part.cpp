@@ -299,7 +299,7 @@ public:
 
   KIO::FileCopyJob * m_job;
   KIO::FileCopyJob * m_uploadJob;
-  KURL m_originalURL;
+  KUrl m_originalURL;
   bool m_showProgressInfo : 1;
   bool m_saveOk : 1;
   bool m_waitForSave : 1;
@@ -336,7 +336,7 @@ void ReadOnlyPart::showProgressInfo( bool show )
 }
 #endif
 
-bool ReadOnlyPart::openURL( const KURL &url )
+bool ReadOnlyPart::openURL( const KUrl &url )
 {
   if ( !url.isValid() )
     return false;
@@ -368,7 +368,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
-    KURL destURL;
+    KUrl destURL;
     destURL.setPath( m_file );
     d->m_job = KIO::file_copy( m_url, destURL, 0600, true, false, d->m_showProgressInfo );
     d->m_job->setWindow( widget() ? widget()->topLevelWidget() : 0 );
@@ -430,7 +430,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   }
 }
 
-bool ReadOnlyPart::openStream( const QString& mimeType, const KURL& url )
+bool ReadOnlyPart::openStream( const QString& mimeType, const KUrl& url )
 {
   if ( !closeURL() )
     return false;
@@ -514,7 +514,7 @@ bool ReadWritePart::queryClose()
     {
       if (m_url.isEmpty())
       {
-          KURL url = KFileDialog::getSaveURL();
+          KUrl url = KFileDialog::getSaveURL();
           if (url.isEmpty())
             return false;
 
@@ -562,7 +562,7 @@ bool ReadWritePart::save()
   return false;
 }
 
-bool ReadWritePart::saveAs( const KURL & kurl )
+bool ReadWritePart::saveAs( const KUrl & kurl )
 {
   if (!kurl.isValid())
   {
@@ -580,7 +580,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   {
     m_url = d->m_originalURL;
     d->m_duringSaveAs = false;
-    d->m_originalURL = KURL();
+    d->m_originalURL = KUrl();
   }
 
   return result;
@@ -622,7 +622,7 @@ bool ReadWritePart::saveToURL()
     assert( !m_bTemp );
     d->m_saveOk = true;
     d->m_duringSaveAs = false;
-    d->m_originalURL = KURL();
+    d->m_originalURL = KUrl();
     return true; // Nothing to do
   }
   else
@@ -635,7 +635,7 @@ bool ReadWritePart::saveToURL()
     }
     KTempFile tempFile;
     QString uploadFile = tempFile.name();
-    KURL uploadUrl;
+    KUrl uploadUrl;
     uploadUrl.setPath( uploadFile );
     tempFile.unlink();
     // Create hardlink
@@ -665,7 +665,7 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   else
   {
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
-    KURL dirUrl( m_url );
+    KUrl dirUrl( m_url );
     dirUrl.setPath( dirUrl.directory() );
     allDirNotify.FilesAdded( dirUrl );
 
@@ -675,7 +675,7 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
     d->m_saveOk = true;
   }
   d->m_duringSaveAs = false;
-  d->m_originalURL = KURL();
+  d->m_originalURL = KUrl();
   if (d->m_waitForSave)
   {
     emit leaveModality();

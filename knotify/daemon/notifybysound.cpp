@@ -207,7 +207,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 			return;
 		}
 
-		KURL soundURL;
+		KUrl soundURL;
 		soundURL.setPath(soundFile);
 #if defined(HAVE_AKODE)
 		if (d->player.state() != aKode::Player::Open) 

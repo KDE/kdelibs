@@ -573,7 +573,7 @@ bool KCookieJar::parseURL(const QString &_url,
                           QString &_fqdn,
                           QString &_path)
 {
-    KURL kurl(_url);
+    KUrl kurl(_url);
     if (!kurl.isValid())
        return false;
 
@@ -809,7 +809,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (Value.isEmpty())
                    lastCookie->mPath = QString(); // Catch "" <> QString()
                 else
-                   lastCookie->mPath = KURL::decode_string(Value);
+                   lastCookie->mPath = KUrl::decode_string(Value);
                 lastCookie->mExplicitPath = true;
             }
             else if (cName == "version")

@@ -25,14 +25,14 @@ class testFrame: public KMainWindow
    Q_OBJECT
 public:
    testFrame();
-   void showPath( const KURL & );
+   void showPath( const KUrl & );
    void setDirOnly( ) { dirOnlyMode = true; }
 public Q_SLOTS:
    void slotPopulateFinished(KFileTreeViewItem *);
    void slotSetChildCount( KFileTreeViewItem *item, int c );
 
-   void urlsDropped( QWidget*, QDropEvent*, KURL::List& );
-   void copyURLs( KURL::List& list, KURL& to ); 
+   void urlsDropped( QWidget*, QDropEvent*, KUrl::List& );
+   void copyURLs( KUrl::List& list, KUrl& to ); 
 private:
    KFileTreeView *treeView;
    bool          dirOnlyMode;

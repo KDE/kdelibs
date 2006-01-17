@@ -199,7 +199,7 @@ namespace DOM {
 
 	// returns the url of the style sheet this object belongs to
         // not const
-	KURL baseURL();
+	KUrl baseURL();
 
 	virtual bool isStyleSheet() const { return false; }
 	virtual bool isCSSStyleSheet() const { return false; }

@@ -30,7 +30,7 @@
 #include "kio/renamedlg.h"
 
 class UIServer_stub;
-class KURL;
+class KUrl;
 
 namespace KIO {
   class Job;
@@ -190,17 +190,17 @@ public Q_SLOTS:
   void slotPercent( KIO::Job*, unsigned long percent );
   void slotInfoMessage( KIO::Job*, const QString & msg );
 
-  void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
-  void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );
-  void slotDeleting( KIO::Job*, const KURL& url );
+  void slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest );
+  void slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest );
+  void slotDeleting( KIO::Job*, const KUrl& url );
   /// @since 3.1
-  void slotTransferring( KIO::Job*, const KURL& url );
-  void slotCreatingDir( KIO::Job*, const KURL& dir );
+  void slotTransferring( KIO::Job*, const KUrl& url );
+  void slotCreatingDir( KIO::Job*, const KUrl& dir );
   // currently unused
   void slotCanResume( KIO::Job*, KIO::filesize_t offset );
 
 public:
-  void stating( KIO::Job*, const KURL& url );
+  void stating( KIO::Job*, const KUrl& url );
   void mounting( KIO::Job*, const QString & dev, const QString & point );
   void unmounting( KIO::Job*, const QString & point );
 protected:

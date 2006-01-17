@@ -38,7 +38,7 @@ public:
 
     KDE_DUMMY_COMPARISON_OPERATOR(KBookmark)
     /**
-     * KURL::Bookmark is a QList that contains bookmarks with a few
+     * KUrl::Bookmark is a QList that contains bookmarks with a few
      * convenience methods.
      * @see KBookmark
      * @see QList
@@ -84,7 +84,7 @@ public:
     KBookmark( ) {}
     KBookmark( QDomElement elem ) : element(elem) {}
 
-    static KBookmark standaloneBookmark( const QString & text, const KURL & url, const QString & icon = QString() );
+    static KBookmark standaloneBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
 
     /**
      * Whether the bookmark is a group or a normal bookmark
@@ -125,7 +125,7 @@ public:
     /**
      * URL contained by the bookmark
      */
-    KURL url() const;
+    KUrl url() const;
     /**
      * @return the pixmap file for this bookmark
      * (i.e. the name of the icon)
@@ -332,7 +332,7 @@ public:
      * will be determined from the URL if not specified.
      * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString(), bool emitSignal = true );
+    KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KUrl & url, const QString & icon = QString(), bool emitSignal = true );
 
     /**
      * Moves @p item after @p after (which should be a child of ours).
@@ -360,7 +360,7 @@ public:
      * @return the list of urls of bookmarks at top level of the group
      * @since 3.2
      */
-    QList<KURL> groupUrlList() const;
+    QList<KUrl> groupUrlList() const;
 
 protected:
     QDomElement nextKnownTag( QDomElement start, bool goNext ) const;

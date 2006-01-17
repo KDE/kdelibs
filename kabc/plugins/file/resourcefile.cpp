@@ -231,7 +231,7 @@ bool ResourceFile::asyncLoad()
   mLocalTempFile->setAutoDelete( true );
   mTempFile = mLocalTempFile->name();
 
-  KURL dest, src;
+  KUrl dest, src;
   dest.setPath( mTempFile );
   src.setPath( mFileName );
 
@@ -282,7 +282,7 @@ bool ResourceFile::asyncSave( Ticket * )
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
-  KURL src, dest;
+  KUrl src, dest;
   src.setPath( mTempFile );
   dest.setPath( mFileName );
 

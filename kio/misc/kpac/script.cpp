@@ -430,7 +430,7 @@ namespace KPAC
             throw Error( result.value()->toString( exec ).qstring() );
     }
 
-    QString Script::evaluate( const KURL& url )
+    QString Script::evaluate( const KUrl& url )
     {
         ExecState *exec = m_interpreter.globalExec();
         ValueImp *findFunc = m_interpreter.globalObject()->get( exec, "FindProxyForURL" );

@@ -189,7 +189,7 @@ void Engine::download( Entry *entry )
 {
   kdDebug(5850) << "Engine::download(entry)" << endl;
 
-  KURL source = entry->payload();
+  KUrl source = entry->payload();
   mDownloadDestination = d->mNewStuff->downloadDestination( entry );
 
   if ( mDownloadDestination.isEmpty() ) {
@@ -197,7 +197,7 @@ void Engine::download( Entry *entry )
     return;
   }
 
-  KURL destination = KURL( mDownloadDestination );
+  KUrl destination = KUrl( mDownloadDestination );
 
   kdDebug(5850) << "  SOURCE: " << source.url() << endl;
   kdDebug(5850) << "  DESTINATION: " << destination.url() << endl;
@@ -287,7 +287,7 @@ void Engine::upload( Entry *entry )
 
   QString lang = entry->langs().first();
   QFileInfo fi( mUploadFile );
-  entry->setPayload( KURL::fromPathOrURL( fi.fileName() ), lang );
+  entry->setPayload( KUrl::fromPathOrURL( fi.fileName() ), lang );
 
   if ( !createMetaFile( entry ) ) {
     emit uploadFinished( false );
@@ -306,7 +306,7 @@ void Engine::upload( Entry *entry )
   QString caption = i18n("Upload Files");
 
   if ( mUploadProvider->noUpload() ) {
-    KURL noUploadUrl = mUploadProvider->noUploadUrl();
+    KUrl noUploadUrl = mUploadProvider->noUploadUrl();
     if ( noUploadUrl.isEmpty() ) {
       text.append( i18n("Please upload the files manually.") );
       KMessageBox::information( mParentWidget, text, caption );
@@ -322,10 +322,10 @@ void Engine::upload( Entry *entry )
     int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
                                              i18n("&Upload"), KStdGuiItem::cancel() );
     if ( result == KMessageBox::Yes ) {
-      KURL destination = mUploadProvider->uploadUrl();
+      KUrl destination = mUploadProvider->uploadUrl();
       destination.setFileName( fi.fileName() );
 
-      KIO::FileCopyJob *job = KIO::file_copy( KURL::fromPathOrURL( mUploadFile ), destination );
+      KIO::FileCopyJob *job = KIO::file_copy( KUrl::fromPathOrURL( mUploadFile ), destination );
       connect( job, SIGNAL( result( KIO::Job * ) ),
                SLOT( slotUploadPayloadJobResult( KIO::Job * ) ) );
     } else {
@@ -384,10 +384,10 @@ void Engine::slotUploadPayloadJobResult( KIO::Job *job )
 
   QFileInfo fi( mPreviewFile );
 
-  KURL previewDestination = mUploadProvider->uploadUrl();
+  KUrl previewDestination = mUploadProvider->uploadUrl();
   previewDestination.setFileName( fi.fileName() );
 
-  KIO::FileCopyJob *newJob = KIO::file_copy( KURL::fromPathOrURL( mPreviewFile ), previewDestination );
+  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrURL( mPreviewFile ), previewDestination );
   connect( newJob, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotUploadPreviewJobResult( KIO::Job * ) ) );
 }
@@ -403,10 +403,10 @@ void Engine::slotUploadPreviewJobResult( KIO::Job *job )
 
   QFileInfo fi( mUploadMetaFile );
 
-  KURL metaDestination = mUploadProvider->uploadUrl();
+  KUrl metaDestination = mUploadProvider->uploadUrl();
   metaDestination.setFileName( fi.fileName() );
 
-  KIO::FileCopyJob *newJob = KIO::file_copy( KURL::fromPathOrURL( mUploadMetaFile ), metaDestination );
+  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrURL( mUploadMetaFile ), metaDestination );
   connect( newJob, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotUploadMetaJobResult( KIO::Job * ) ) );
 }

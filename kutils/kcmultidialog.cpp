@@ -192,7 +192,7 @@ void KCMultiDialog::slotHelp()
             break;
         }
 
-    KURL url( KURL("help:/"), docPath );
+    KUrl url( KUrl("help:/"), docPath );
 
     if (url.protocol() == "help" || url.protocol() == "man" || url.protocol() == "info") {
         KProcess process;

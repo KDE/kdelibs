@@ -1337,7 +1337,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
   QString str = v->toString(exec).qstring();
 
   // prepare arguments
-  KURL url;
+  KUrl url;
   if (!str.isEmpty())
   {
     KHTMLPart* p = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->m_frame->m_part);
@@ -1396,7 +1396,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
   }
 }
 
-ValueImp *Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features)
+ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features)
 {
     KHTMLPart *p = qobject_cast<KHTMLPart *>(m_frame->m_part);
     KHTMLView *widget = p->view();
@@ -1498,7 +1498,7 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KURL& url, const QStr
 
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0L;
-    emit p->browserExtension()->createNewWindow(KURL(), uargs,winargs,newPart);
+    emit p->browserExtension()->createNewWindow(KUrl(), uargs,winargs,newPart);
     if (newPart && qobject_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
@@ -2269,7 +2269,7 @@ bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, Property
 
 ValueImp* Location::getValueProperty(ExecState *exec, int token) const
 {
-  KURL url = m_frame->m_part->url();
+  KUrl url = m_frame->m_part->url();
   switch(token) {
     case Hash:
       return String( UString(url.ref().isNull() ? QString("") : "#" + url.ref()) );
@@ -2315,7 +2315,7 @@ void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
   if ( !window )
     return;
 
-  KURL url = m_frame->m_part->url();
+  KUrl url = m_frame->m_part->url();
 
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
 

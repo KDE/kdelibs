@@ -105,10 +105,10 @@ IdleSlave::gotInput()
       QString host;
       Q_INT8 b;
       stream >> pid >> protocol >> host >> b;
-// Overload with (bool) onHold, (KURL) url.
+// Overload with (bool) onHold, (KUrl) url.
       if (!stream.atEnd())
       {
-         KURL url;
+         KUrl url;
          stream >> url;
          mOnHold = true;
          mUrl = url;
@@ -151,7 +151,7 @@ IdleSlave::match(const QString &protocol, const QString &host, bool connected)
 }
 
 bool
-IdleSlave::onHold(const KURL &url)
+IdleSlave::onHold(const KUrl &url)
 {
    if (!mOnHold) return false;
    return (url == mUrl);
@@ -370,11 +370,11 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
       stream2 << pid << error;
       return true;
    }
-   else if (fun == "requestHoldSlave(KURL,QString)")
+   else if (fun == "requestHoldSlave(KUrl,QString)")
    {
       QDataStream stream(data);
       stream.setVersion(QDataStream::Qt_3_1);
-      KURL url;
+      KUrl url;
       QString app_socket;
       stream >> url >> app_socket;
       replyType = "pid_t";
@@ -483,7 +483,7 @@ KLauncher::functions()
     funcs << "serviceResult kdeinit_exec(QString,QStringList,QValueList<QCString>)";
     funcs << "serviceResult kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)";
     funcs << "QString requestSlave(QString,QString,QString)";
-    funcs << "pid_t requestHoldSlave(KURL,QString)";
+    funcs << "pid_t requestHoldSlave(KUrl,QString)";
     funcs << "void waitForSlave(pid_t)";
     funcs << "void setLaunchEnv(QCString,QCString)";
     funcs << "void reparseConfiguration()";
@@ -1222,7 +1222,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestHoldSlave(const KURL &url, const QString &app_socket)
+KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())

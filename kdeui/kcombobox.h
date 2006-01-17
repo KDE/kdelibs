@@ -30,7 +30,7 @@
 class QLineEdit;
 
 class KCompletionBox;
-class KURL;
+class KUrl;
 
 /**
  * @short An enhanced combo box.
@@ -173,39 +173,39 @@ public:
 
     /**
      * Sets @p url into the edit field of the combobox. It uses
-     * KURL::prettyURL() so that the url is properly decoded for
+     * KUrl::prettyURL() so that the url is properly decoded for
      * displaying.
      */
-    void setEditURL( const KURL& url );
+    void setEditURL( const KUrl& url );
 
     /**
      * Inserts @p url at position @p index into the combobox. The item will
-     * be appended if @p index is negative. KURL::prettyURL() is used
+     * be appended if @p index is negative. KUrl::prettyURL() is used
      * so that the url is properly decoded for displaying.
      */
-    void insertURL( const KURL& url, int index = -1 );
+    void insertURL( const KUrl& url, int index = -1 );
 
     /**
      * Inserts @p url with the pixmap &p pixmap at position @p index into
      * the combobox. The item will be appended if @p index is negative.
-     * KURL::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void insertURL( const QPixmap& pixmap, const KURL& url, int index = -1 );
+    void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 );
 
     /**
      * Replaces the item at position @p index with @p url.
-     * KURL::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( const KURL& url, int index );
+    void changeURL( const KUrl& url, int index );
 
     /**
      * Replaces the item at position @p index with @p url and pixmap @p pixmap.
-     * KURL::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( const QPixmap& pixmap, const KURL& url, int index );
+    void changeURL( const QPixmap& pixmap, const KUrl& url, int index );
 
     /**
     * Returns the current cursor position.

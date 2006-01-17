@@ -67,9 +67,9 @@ void KFileTreeViewItem::setListed( bool wasListed )
    m_wasListed = wasListed;
 }
 
-KURL KFileTreeViewItem::url() const
+KUrl KFileTreeViewItem::url() const
 {
-    return m_kfileitem ? m_kfileitem->url() : KURL();
+    return m_kfileitem ? m_kfileitem->url() : KUrl();
 }
 
 QString KFileTreeViewItem::path()  const

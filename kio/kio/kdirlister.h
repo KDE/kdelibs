@@ -83,7 +83,7 @@ public:
    * Run the directory lister on the given url.
    *
    * This method causes KDirLister to emit _all_ the items of @p _url, in any case.
-   * Depending on @p _keep either clear() or clear(const KURL &) will be
+   * Depending on @p _keep either clear() or clear(const KUrl &) will be
    * emitted first.
    *
    * The newItems() signal may be emitted more than once to supply you
@@ -102,13 +102,13 @@ public:
    * @return true    if successful, 
    *         false   otherwise (e.g. invalid @p _url)
    */
-  virtual bool openURL( const KURL& _url, bool _keep = false, bool _reload = false );
+  virtual bool openURL( const KUrl& _url, bool _keep = false, bool _reload = false );
 
   /**
    * Stop listing all directories currently being listed.
    *
    * Emits canceled() if there was at least one job running.
-   * Emits canceled( const KURL& ) for each stopped job if
+   * Emits canceled( const KUrl& ) for each stopped job if
    * there are at least two dirctories being watched by KDirLister.
    */
   virtual void stop();
@@ -117,12 +117,12 @@ public:
    * Stop listing the given directory.
    *
    * Emits canceled() if the killed job was the last running one.
-   * Emits canceled( const KURL& ) for the killed job if
+   * Emits canceled( const KUrl& ) for the killed job if
    * there are at least two directories being watched by KDirLister.
    * No signal is emitted if there was no job running for @p _url.
    * @param _url the directory URL
    */
-  virtual void stop( const KURL& _url );
+  virtual void stop( const KUrl& _url );
 
   /**
    * Checks whether KDirWatch will automatically update directories. This is
@@ -200,7 +200,7 @@ public:
    *
    * @return the url used by this instance to list the files.
    */
-  const KURL& url() const;
+  const KUrl& url() const;
 
   /**
    * Returns all URLs that are listed by this KDirLister. This is only
@@ -211,7 +211,7 @@ public:
    * @return the list of all listed URLs
    * @since 3.4
    */
-  const KURL::List& directories() const;
+  const KUrl::List& directories() const;
 
   /**
    * Actually emit the changes made with setShowingDotFiles, setDirOnlyMode,
@@ -230,7 +230,7 @@ public:
    *
    * @param _dir the directory URL
    */
-  virtual void updateDirectory( const KURL& _dir );
+  virtual void updateDirectory( const KUrl& _dir );
 
   /**
    * Returns true if no io operation is currently in progress.
@@ -249,7 +249,7 @@ public:
    * @param _url the item URL
    * @return the pointer to the KFileItem
    */
-  virtual KFileItem *findByURL( const KURL& _url ) const;
+  virtual KFileItem *findByURL( const KUrl& _url ) const;
 
   /**
    * Find an item by its name.
@@ -402,7 +402,7 @@ public:
    * @return the items listed for @p dir.
    * @since 3.1
    */
-  KFileItemList itemsForDir( const KURL& dir,
+  KFileItemList itemsForDir( const KUrl& dir,
                              WhichItems which = FilteredItems ) const;
 
 Q_SIGNALS:
@@ -415,7 +415,7 @@ Q_SIGNALS:
    * but the view also needs to know when an automatic update happens.
    * @param _url the URL to list
    */
-  void started( const KURL& _url );
+  void started( const KUrl& _url );
 
   /**
    * Tell the view that listing is finished. There are no jobs running anymore.
@@ -428,7 +428,7 @@ Q_SIGNALS:
    * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
-  void completed( const KURL& _url );
+  void completed( const KUrl& _url );
 
   /**
    * Tell the view that the user canceled the listing. No running jobs are left.
@@ -441,7 +441,7 @@ Q_SIGNALS:
    * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
-  void canceled( const KURL& _url );
+  void canceled( const KUrl& _url );
 
   /**
    * Signal a redirection.
@@ -449,14 +449,14 @@ Q_SIGNALS:
    * probably openURL() has been called with @p _keep == @p false.
    * @param _url the new URL
    */
-  void redirection( const KURL& _url );
+  void redirection( const KUrl& _url );
 
   /**
    * Signal a redirection.
    * @param oldUrl the original URL
    * @param newUrl the new URL
    */
-  void redirection( const KURL& oldUrl, const KURL& newUrl );
+  void redirection( const KUrl& oldUrl, const KUrl& newUrl );
 
   /**
    * Signal to clear all items.
@@ -469,7 +469,7 @@ Q_SIGNALS:
    * It is only emitted if the lister is holding more than one directory.
    * @param _url the directory that will be emptied
    */
-  void clear( const KURL& _url );
+  void clear( const KUrl& _url );
 
   /**
    * Signal new items.
@@ -594,7 +594,7 @@ protected:
    * if it is and autoErrorHandling is set to true.
    * @return true if url is valid, otherwise false.
    */
-  virtual bool validURL( const KURL& ) const;
+  virtual bool validURL( const KUrl& ) const;
 
   /** Reimplement to customize error handling */
   virtual void handleError( KIO::Job * );

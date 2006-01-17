@@ -294,7 +294,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
 }
 
 
-void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
+void ProgressItem::setCopying( const KUrl& from, const KUrl& to ) {
    setText( ListProgress::TB_OPERATION, i18n("Copying") );
    setText( ListProgress::TB_ADDRESS, from.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
@@ -303,7 +303,7 @@ void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
 }
 
 
-void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
+void ProgressItem::setMoving( const KUrl& from, const KUrl& to ) {
    setText( ListProgress::TB_OPERATION, i18n("Moving") );
    setText( ListProgress::TB_ADDRESS, from.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
@@ -312,7 +312,7 @@ void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
 }
 
 
-void ProgressItem::setCreatingDir( const KURL& dir ) {
+void ProgressItem::setCreatingDir( const KUrl& dir ) {
    setText( ListProgress::TB_OPERATION, i18n("Creating") );
    setText( ListProgress::TB_ADDRESS, dir.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, dir.fileName() );
@@ -321,7 +321,7 @@ void ProgressItem::setCreatingDir( const KURL& dir ) {
 }
 
 
-void ProgressItem::setDeleting( const KURL& url ) {
+void ProgressItem::setDeleting( const KUrl& url ) {
    setText( ListProgress::TB_OPERATION, i18n("Deleting") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -329,7 +329,7 @@ void ProgressItem::setDeleting( const KURL& url ) {
   defaultProgress->slotDeleting( 0, url );
 }
 
-void ProgressItem::setTransferring( const KURL& url ) {
+void ProgressItem::setTransferring( const KUrl& url ) {
    setText( ListProgress::TB_OPERATION, i18n("Loading") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -354,7 +354,7 @@ void ProgressItem::setText(ListProgress::ListProgressFields field, const QString
   }
 }
 
-void ProgressItem::setStating( const KURL& url ) {
+void ProgressItem::setStating( const KUrl& url ) {
    setText( ListProgress::TB_OPERATION, i18n("Examining") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -933,7 +933,7 @@ void UIServer::canResume64( int id, KIO::filesize_t offset )
   }
 }
 
-void UIServer::copying( int id, KURL from, KURL to )
+void UIServer::copying( int id, KUrl from, KUrl to )
 {
   //kdDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
 
@@ -943,7 +943,7 @@ void UIServer::copying( int id, KURL from, KURL to )
   }
 }
 
-void UIServer::moving( int id, KURL from, KURL to )
+void UIServer::moving( int id, KUrl from, KUrl to )
 {
   //kdDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
 
@@ -953,7 +953,7 @@ void UIServer::moving( int id, KURL from, KURL to )
   }
 }
 
-void UIServer::deleting( int id, KURL url )
+void UIServer::deleting( int id, KUrl url )
 {
   //kdDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
 
@@ -963,7 +963,7 @@ void UIServer::deleting( int id, KURL url )
   }
 }
 
-void UIServer::transferring( int id, KURL url )
+void UIServer::transferring( int id, KUrl url )
 {
   //kdDebug(7024) << "UIServer::transferring " << id << " " << url.url() << endl;
 
@@ -973,7 +973,7 @@ void UIServer::transferring( int id, KURL url )
   }
 }
 
-void UIServer::creatingDir( int id, KURL dir )
+void UIServer::creatingDir( int id, KUrl dir )
 {
   kdDebug(7024) << "UIServer::creatingDir " << id << " " << dir.url() << endl;
 
@@ -983,7 +983,7 @@ void UIServer::creatingDir( int id, KURL dir )
   }
 }
 
-void UIServer::stating( int id, KURL url )
+void UIServer::stating( int id, KUrl url )
 {
   kdDebug(7024) << "UIServer::stating " << id << " " << url.url() << endl;
 

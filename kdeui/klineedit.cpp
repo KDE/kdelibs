@@ -965,14 +965,14 @@ void KLineEdit::completionMenuActivated( QAction  *act)
 
 void KLineEdit::dropEvent(QDropEvent *e)
 {
-    KURL::List urlList;
+    KUrl::List urlList;
     if( d->handleURLDrops )
     {
-        urlList = KURL::List::fromMimeData( e->mimeData() );
+        urlList = KUrl::List::fromMimeData( e->mimeData() );
         if ( !urlList.isEmpty() )
         {
             QString dropText = text();
-            KURL::List::ConstIterator it;
+            KUrl::List::ConstIterator it;
             for( it = urlList.begin() ; it != urlList.end() ; ++it )
             {
                 if(!dropText.isEmpty())
@@ -1061,7 +1061,7 @@ bool KLineEdit::trapReturnKey() const
     return d->grabReturnKeyEvents;
 }
 
-void KLineEdit::setURL( const KURL& url )
+void KLineEdit::setURL( const KUrl& url )
 {
     setText( url.prettyURL() );
 }

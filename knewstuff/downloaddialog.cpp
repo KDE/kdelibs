@@ -464,8 +464,8 @@ void DownloadDialog::slotInstall()
 
     m_entry = e;
 
-    KURL source = e->payload();
-    KURL dest = KURL(m_s->downloadDestination(e));
+    KUrl source = e->payload();
+    KUrl dest = KUrl(m_s->downloadDestination(e));
 
     KIO::FileCopyJob *job = KIO::file_copy(source, dest, -1, true);
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotInstalled(KIO::Job*)));

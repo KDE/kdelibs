@@ -35,8 +35,8 @@ namespace KPAC
     public:
         Downloader( QObject* );
 
-        void download( const KURL& );
-        const KURL& scriptURL() { return m_scriptURL; }
+        void download( const KUrl& );
+        const KUrl& scriptURL() { return m_scriptURL; }
         const QString& script() { return m_script; }
         const QString& error() { return m_error; }
 
@@ -53,7 +53,7 @@ namespace KPAC
 
     private:
         QByteArray m_data;
-        KURL m_scriptURL;
+        KUrl m_scriptURL;
         QString m_script;
         QString m_error;
     };

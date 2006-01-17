@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
+    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ),
+		      dummy, SLOT( slotOpenURL( const KUrl&, const KParts::URLArgs & ) ) );
 
     if (args->url(0).url().right(4).find(".xml", 0, false) == 0) {
         KParts::URLArgs ags(doc->browserExtension()->urlArgs());

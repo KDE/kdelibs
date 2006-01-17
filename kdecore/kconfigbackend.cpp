@@ -309,7 +309,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
      else
      {
         // Create the containing dir, maybe it wasn't there
-        KURL path;
+        KUrl path;
         path.setPath(mLocalFileName);
         QString dir=path.directory();
         KStandardDirs::makeDir(dir);
@@ -726,7 +726,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // Create the containing dir if needed
     if ((resType!="config") && !QDir::isRelativePath(mLocalFileName))
     {
-       KURL path;
+       KUrl path;
        path.setPath(mLocalFileName);
        QString dir=path.directory();
        KStandardDirs::makeDir(dir);

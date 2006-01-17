@@ -225,7 +225,7 @@ void KPrintPreview::initView(KLibFactory *factory)
 
 void KPrintPreview::openFile(const QString& file)
 {
-	d->gvpart_->openURL(KURL(file));
+	d->gvpart_->openURL(KUrl(file));
 }
 
 bool KPrintPreview::isValid() const
@@ -283,7 +283,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 		KService::Ptr serv = KServiceTypeProfile::preferredService( mime->name(), QString() );
 		if ( serv )
 		{
-			KURL url;
+			KUrl url;
 			url.setPath( file );
 			QStringList args = KRun::processDesktopExec( *serv, url, false );
 			proc << args;

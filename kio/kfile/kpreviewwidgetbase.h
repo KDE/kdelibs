@@ -26,7 +26,7 @@
 
 #include <kdelibs_export.h>
 
-class KURL;
+class KUrl;
 
 /**
  * Abstract baseclass for all preview widgets which shall be used via
@@ -35,7 +35,7 @@ class KURL;
  * the preview with "new" and let KFileDialog delete it.
  *
  * Just derive your custom preview widget from KPreviewWidgetBase and implement
- * all the pure virtual methods. The slot showPreview(const KURL &) is called
+ * all the pure virtual methods. The slot showPreview(const KUrl &) is called
  * every time the file selection changes.
  *
  * @short Abstract baseclass for all preview widgets.
@@ -63,7 +63,7 @@ public Q_SLOTS:
      *
      * @param url The URL of the currently selected file.
      */
-    virtual void showPreview(const KURL &url) = 0;
+    virtual void showPreview(const KUrl &url) = 0;
 
     /**
      * Reimplement this to clear the preview. This is called when e.g. the

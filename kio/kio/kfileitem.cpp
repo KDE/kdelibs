@@ -52,7 +52,7 @@ class KFileItem::KFileItemPrivate {
 		QString iconName;
 };
 
-KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
+KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KUrl& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
   m_url( _url ),
@@ -70,7 +70,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   init( _determineMimeTypeOnDemand );
 }
 
-KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand ) :
+KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KUrl& _url, bool _determineMimeTypeOnDemand ) :
   m_entry(), // warning !
   m_url( _url ),
   m_strName( _url.fileName() ),
@@ -88,7 +88,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   init( _determineMimeTypeOnDemand );
 }
 
-KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
+KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode )
 :  m_url( url ),
   m_strName( url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
@@ -175,7 +175,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   {
     bool accurate = false;
     bool isLocalURL;
-    KURL url = mostLocalURL(isLocalURL);
+    KUrl url = mostLocalURL(isLocalURL);
 
     m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
                                         // use fast mode if not mimetype on demand
@@ -200,7 +200,7 @@ void KFileItem::readUDSEntry( bool _urlIsDirectory )
   const QString urlStr = m_entry.stringValue( KIO::UDS_URL );
   bool UDS_URL_seen = !urlStr.isEmpty();
   if ( UDS_URL_seen ) {
-      m_url = KURL( urlStr );
+      m_url = KUrl( urlStr );
       if ( m_url.isLocalFile() )
           m_bIsLocalURL = true;
   }
@@ -247,7 +247,7 @@ void KFileItem::refreshMimeType()
   init( false ); // Will determine the mimetype
 }
 
-void KFileItem::setURL( const KURL &url )
+void KFileItem::setURL( const KUrl &url )
 {
   m_url = url;
   setName( url.fileName() );
@@ -432,7 +432,7 @@ KMimeType::Ptr KFileItem::determineMimeType()
   if ( !m_pMimeType || !m_bMimeTypeKnown )
   {
     bool isLocalURL;
-    KURL url = mostLocalURL(isLocalURL);
+    KUrl url = mostLocalURL(isLocalURL);
 
     m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL );
     //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
@@ -455,7 +455,7 @@ QString KFileItem::mimeComment()
  KMimeType::Ptr mType = determineMimeType();
 
  bool isLocalURL;
- KURL url = mostLocalURL(isLocalURL);
+ KUrl url = mostLocalURL(isLocalURL);
 
  QString comment = mType->comment( url, isLocalURL );
  //kdDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
@@ -470,7 +470,7 @@ QString KFileItem::iconName()
   if (d && (!d->iconName.isEmpty())) return d->iconName;
 
   bool isLocalURL;
-  KURL url = mostLocalURL(isLocalURL);
+  KUrl url = mostLocalURL(isLocalURL);
 
   //kdDebug() << "finding icon for " << url.url() << " : " << m_pMimeType->name() << endl;
   return determineMimeType()->icon(url, isLocalURL);
@@ -533,14 +533,14 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   // See also the relevant code in overlays, which adds the zip overlay.
   if ( mime->name() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
   {
-      KURL sf;
+      KUrl sf;
       sf.setPath( m_url.path().left( m_url.path().length() - 3 ) );
       //kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
       mime = KMimeType::findByURL( sf, 0, m_bIsLocalURL );
   }
 
   bool isLocalURL;
-  KURL url = mostLocalURL(isLocalURL);
+  KUrl url = mostLocalURL(isLocalURL);
 
   QPixmap p = mime->pixmap( url, KIcon::Desktop, _size, _state );
   //kdDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
@@ -757,12 +757,12 @@ QString KFileItem::getToolTipText(int maxcount)
 
 void KFileItem::run()
 {
-  KURL url = m_url;
+  KUrl url = m_url;
   // When clicking on a link to e.g. $HOME from the desktop, we want to open $HOME
   // But when following a link on the FTP site, the target be an absolute path
   // that doesn't work in the URL. So we resolve links only on the local filesystem.
   if ( m_bLink && m_bIsLocalURL )
-    url = KURL( m_url, linkDest() );
+    url = KUrl( m_url, linkDest() );
 
   // It might be faster to pass skip that when we know the mimetype,
   // and just call KRun::runURL. But then we need to use mostLocalURL()
@@ -828,7 +828,7 @@ void KFileItem::assign( const KFileItem & item )
     }
 }
 
-void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
+void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     bool _determineMimeTypeOnDemand, bool _urlIsDirectory )
 {
   m_entry = _entry;
@@ -948,7 +948,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
     bool isLocalURL;
-    KURL url = mostLocalURL(isLocalURL);
+    KUrl url = mostLocalURL(isLocalURL);
 
     if ( autoget && !m_metaInfo.isValid() &&
          KGlobalSettings::showFilePreview(url) )
@@ -959,14 +959,14 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
     return m_metaInfo;
 }
 
-KURL KFileItem::mostLocalURL(bool &local) const
+KUrl KFileItem::mostLocalURL(bool &local) const
 {
     QString local_path = localPath();
 
     if ( !local_path.isEmpty() )
     {
         local = true;
-        KURL url;
+        KUrl url;
         url.setPath(local_path);
         return url;
     }

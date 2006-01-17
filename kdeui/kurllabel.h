@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLLABEL_H
-#define KURLLABEL_H
+#ifndef KUrlLABEL_H
+#define KUrlLABEL_H
 
 #include <qlabel.h>
 
@@ -366,4 +366,4 @@ private:
   Private* d;
 };
 
-#endif // KURLLABEL_H
+#endif // KUrlLABEL_H

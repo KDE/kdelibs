@@ -223,9 +223,9 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         DCOPRef r;
         stream >> r;
         result = QString().sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) ).toAscii();
-    } else if ( type == "KURL" )
+    } else if ( type == "KUrl" )
     {
-        KURL r;
+        KUrl r;
         stream >> r;
         result = r.url().toLocal8Bit();
     } else if ( type.startsWith("QList<") )
@@ -359,8 +359,8 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	arg << mkSize( s );
     else if ( type == "QRect" )
 	arg << mkRect( s );
-    else if ( type == "KURL" )
-	arg << KURL( s );
+    else if ( type == "KUrl" )
+	arg << KUrl( s );
     else if ( type == "QVariant" ) {
 	if ( s == "true" || s == "false" )
 	    arg << QVariant( mkBool( s ) );
@@ -377,9 +377,9 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	else
 	    arg << QVariant( s );
     } else if ( type.startsWith("QList<") ||
-	        type == "KURL::List" ) {
-	if ( type == "KURL::List" )
-            type = "KURL";
+	        type == "KUrl::List" ) {
+	if ( type == "KUrl::List" )
+            type = "KUrl";
         else
 	    type = type.mid(11, type.length() - 12);
 	QStringList list;

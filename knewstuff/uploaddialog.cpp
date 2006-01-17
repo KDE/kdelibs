@@ -125,7 +125,7 @@ void UploadDialog::slotOk()
   entry->setVersion( mVersionEdit->text() );
   entry->setRelease( mReleaseSpin->value() );
   entry->setLicence( mLicenceCombo->currentText() );
-  entry->setPreview( KURL( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
+  entry->setPreview( KUrl( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
   entry->setSummary( mSummaryEdit->text(), mLanguageCombo->currentText() );
 
   if ( mPayloadUrl.isValid() ) {

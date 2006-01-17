@@ -563,7 +563,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // URL
         else if ( identifier == "url" )
-          addr.setUrl( KURL( (*lineIt).value().asString() ) );
+          addr.setUrl( KUrl( (*lineIt).value().asString() ) );
 
         // X-
         else if ( identifier.startsWith( "x-" ) ) {

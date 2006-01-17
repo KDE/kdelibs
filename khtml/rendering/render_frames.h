@@ -112,7 +112,7 @@ public:
      * Return false in the normal case, return true if a fallback was found
      * and the url was successfully opened.
      */
-    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
+    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
 
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
@@ -150,7 +150,7 @@ public:
     virtual void layout( );
     virtual void updateWidget();
 
-    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
+    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
 
 public Q_SLOTS:
     void slotViewCleared();

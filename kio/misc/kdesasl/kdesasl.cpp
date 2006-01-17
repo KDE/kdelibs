@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-KDESasl::KDESasl(const KURL &aUrl)
+KDESasl::KDESasl(const KUrl &aUrl)
 {
   mProtocol = aUrl.protocol();
   mUser = aUrl.user();

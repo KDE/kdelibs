@@ -26,7 +26,7 @@
 
 using namespace KIO;
 
-KDirSize::KDirSize( const KURL & directory )
+KDirSize::KDirSize( const KUrl & directory )
     : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L)
 {
     startNextJob( directory );
@@ -49,7 +49,7 @@ void KDirSize::processList()
             if ( item->isDir() )
             {
                 kdDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
-                KURL url = item->url();
+                KUrl url = item->url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
             }
@@ -67,7 +67,7 @@ void KDirSize::processList()
     emitResult();
 }
 
-void KDirSize::startNextJob( const KURL & url )
+void KDirSize::startNextJob( const KUrl & url )
 {
     KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
     connect( listJob, SIGNAL(entries( KIO::Job *,
@@ -104,7 +104,7 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 }
 
 //static
-KDirSize * KDirSize::dirSizeJob( const KURL & directory )
+KDirSize * KDirSize::dirSizeJob( const KUrl & directory )
 {
     return new KDirSize( directory ); // useless - but consistent with other jobs
 }
@@ -116,7 +116,7 @@ KDirSize * KDirSize::dirSizeJob( const KFileItemList & lstItems )
 }
 
 //static
-KIO::filesize_t KDirSize::dirSize( const KURL & directory )
+KIO::filesize_t KDirSize::dirSize( const KUrl & directory )
 {
     KDirSize * dirSize = dirSizeJob( directory );
     dirSize->setSync();

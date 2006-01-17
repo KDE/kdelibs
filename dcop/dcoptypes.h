@@ -72,7 +72,7 @@ class QKeySequence; inline const char* dcopTypeName( const QKeySequence& ) { ret
 class QVariant; inline const char* dcopTypeName( const QVariant& ) { return "QVariant"; }
 
 // And some KDE types
-class KURL; inline const char* dcopTypeName( const KURL& ) { return "KURL"; }
+class KUrl; inline const char* dcopTypeName( const KUrl& ) { return "KUrl"; }
 
 // generic template fallback for unknown types
 template <class T> inline const char* dcopTypeName( const T& ) { return "<unknown>"; }

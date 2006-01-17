@@ -67,7 +67,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 	{
 		// backend information
 		txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Backend")));
-		KURL url ( p->device() );
+		KUrl url ( p->device() );
 		switch (ID)
 		{
 			case KMWizard::Local:

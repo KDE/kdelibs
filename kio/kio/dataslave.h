@@ -62,11 +62,11 @@ namespace KIO {
         virtual bool suspended();
         virtual void send(int cmd, const QByteArray &arr = QByteArray());
 
-	virtual void hold(const KURL &url);
+	virtual void hold(const KUrl &url);
 
 	// pure virtual methods that are defined by the actual protocol
-	virtual void get(const KURL &url) = 0;
-	virtual void mimetype(const KURL &url) = 0;
+	virtual void get(const KUrl &url) = 0;
+	virtual void mimetype(const KUrl &url) = 0;
 
     protected:
         /**

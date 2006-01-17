@@ -1032,7 +1032,7 @@ bool Ftp::ftpCloseCommand()
   return true;
 }
 
-void Ftp::mkdir( const KURL & url, int permissions )
+void Ftp::mkdir( const KUrl & url, int permissions )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
@@ -1068,7 +1068,7 @@ void Ftp::mkdir( const KURL & url, int permissions )
   finished();
 }
 
-void Ftp::rename( const KURL& src, const KURL& dst, bool overwrite )
+void Ftp::rename( const KUrl& src, const KUrl& dst, bool overwrite )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
@@ -1102,7 +1102,7 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   return true;
 }
 
-void Ftp::del( const KURL& url, bool isfile )
+void Ftp::del( const KUrl& url, bool isfile )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
@@ -1145,7 +1145,7 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
   return false;
 }
 
-void Ftp::chmod( const KURL & url, int permissions )
+void Ftp::chmod( const KUrl & url, int permissions )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
@@ -1174,7 +1174,7 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
   {
     entry.insert( UDS_LINK_DEST, ftpEnt.link );
 
-    KMimeType::Ptr mime = KMimeType::findByURL( KURL("ftp://host/" + filename ) );
+    KMimeType::Ptr mime = KMimeType::findByURL( KUrl("ftp://host/" + filename ) );
     // Links on ftp sites are often links to dirs, and we have no way to check
     // that. Let's do like Netscape : assume dirs generally.
     // But we do this only when the mimetype can't be known from the filename.
@@ -1230,7 +1230,7 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
     error( ERR_DOES_NOT_EXIST, path );
 }
 
-void Ftp::stat( const KURL &url)
+void Ftp::stat( const KUrl &url)
 {
   kdDebug(7102) << "Ftp::stat : path='" << url.path() << "'" << endl;
   if( !ftpOpenConnection(loginImplicit) )
@@ -1256,7 +1256,7 @@ void Ftp::stat( const KURL &url)
     return;
   }
 
-  KURL tempurl( url );
+  KUrl tempurl( url );
   tempurl.setPath( path ); // take the clean one
   QString listarg; // = tempurl.directory(false /*keep trailing slash*/);
   QString parentDir;
@@ -1332,7 +1332,7 @@ void Ftp::stat( const KURL &url)
   Q_ASSERT( !search.isEmpty() && search != "/" );
 
   bool bFound = false;
-  KURL      linkURL;
+  KUrl      linkURL;
   FtpEntry  ftpEnt;
   while( ftpReadDir(ftpEnt) )
   {
@@ -1400,7 +1400,7 @@ void Ftp::stat( const KURL &url)
 }
 
 
-void Ftp::listDir( const KURL &url )
+void Ftp::listDir( const KUrl &url )
 {
   kdDebug(7102) << "Ftp::listDir " << url.prettyURL() << endl;
   if( !ftpOpenConnection(loginImplicit) )
@@ -1410,7 +1410,7 @@ void Ftp::listDir( const KURL &url )
   QString path = url.path();
   if ( path.isEmpty() )
   {
-    KURL realURL;
+    KUrl realURL;
     realURL.setProtocol( "ftp" );
     if ( m_user != FTP_LOGIN )
       realURL.setUser( m_user );
@@ -1711,7 +1711,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 // public: get           download file from server
 // helper: ftpGet        called from get() and copy()
 //===============================================================================
-void Ftp::get( const KURL & url )
+void Ftp::get( const KUrl & url )
 {
   kdDebug(7102) << "Ftp::get " << url.url() << endl;
   int iError = 0;
@@ -1721,7 +1721,7 @@ void Ftp::get( const KURL & url )
   ftpCloseCommand();                        // must close command!
 }
 
-Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fileoffset_t llOffset)
+Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fileoffset_t llOffset)
 {
   // Calls error() by itself!
   if( !ftpOpenConnection(loginImplicit) )
@@ -1846,7 +1846,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fi
 }
 
 /*
-void Ftp::mimetype( const KURL& url )
+void Ftp::mimetype( const KUrl& url )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
@@ -1914,7 +1914,7 @@ void Ftp::ftpAbortTransfer()
 // public: put           upload file to server
 // helper: ftpPut        called from put() and copy()
 //===============================================================================
-void Ftp::put(const KURL& url, int permissions, bool overwrite, bool resume)
+void Ftp::put(const KUrl& url, int permissions, bool overwrite, bool resume)
 {
   kdDebug(7102) << "Ftp::put " << url.url() << endl;
   int iError = 0;                           // iError gets status
@@ -1924,7 +1924,7 @@ void Ftp::put(const KURL& url, int permissions, bool overwrite, bool resume)
   ftpCloseCommand();                        // must close command!
 }
 
-Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KURL& dest_url,
+Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
                             int permissions, bool overwrite, bool resume)
 {
   if( !ftpOpenConnection(loginImplicit) )
@@ -2191,7 +2191,7 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
 // helper: ftpCopyPut    called from copy() on upload
 // helper: ftpCopyGet    called from copy() on download
 //===============================================================================
-void Ftp::copy( const KURL &src, const KURL &dest, int permissions, bool overwrite )
+void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite )
 {
   int iError = 0;
   int iCopyFile = -1;
@@ -2229,7 +2229,7 @@ void Ftp::copy( const KURL &src, const KURL &dest, int permissions, bool overwri
 
 
 Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile,
-                                const KURL& url, int permissions, bool overwrite)
+                                const KUrl& url, int permissions, bool overwrite)
 {
   // check if source is ok ...
   KDE_struct_stat buff;
@@ -2266,7 +2266,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile,
 
 
 Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopyFile,
-                                const KURL& url, int permissions, bool overwrite)
+                                const KUrl& url, int permissions, bool overwrite)
 {
   // check if destination is ok ...
   KDE_struct_stat buff;

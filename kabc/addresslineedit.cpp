@@ -210,7 +210,7 @@ void AddressLineEdit::insert(const QString &t)
     newText.replace( QRegExp("\r?\n"), ", " );
     if ( newText.startsWith( "mailto:" ) )
     {
-      KURL u(newText);
+      KUrl u(newText);
       newText = u.path();
     }
     else if (newText.find(" at ") != -1)
@@ -517,15 +517,15 @@ QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
 //-----------------------------------------------------------------------------
 void AddressLineEdit::dropEvent(QDropEvent *e)
 {
-  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
+  KUrl::List uriList = KUrl::List::fromMimeData( e->mimeData() );
   if (!uriList.isEmpty())
   {
     QString ct = text();
-    KURL::List::Iterator it = uriList.begin();
+    KUrl::List::Iterator it = uriList.begin();
     for (; it != uriList.end(); ++it)
     {
       if (!ct.isEmpty()) ct.append(", ");
-      KURL u(*it);
+      KUrl u(*it);
       if ((*it).protocol() == "mailto")
           ct.append( (*it).path() );
       else

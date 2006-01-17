@@ -513,7 +513,7 @@ void KIMProxy::messageContact( const QString& uid, const QString& message )
 	return;
 }
 
-void KIMProxy::sendFile(const QString &uid, const KURL &sourceURL, const QString &altFileName, uint fileSize )
+void KIMProxy::sendFile(const QString &uid, const KUrl &sourceURL, const QString &altFileName, uint fileSize )
 {
 	if ( initialize() )
 	{

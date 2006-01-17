@@ -39,7 +39,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
 
     if ( m_initializeSpeedbar )
     {
-        KURL u;
+        KUrl u;
         u.setPath( KGlobalSettings::desktopPath() );
         insertItem( u, i18n("Desktop"), false );
 

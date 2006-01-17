@@ -370,7 +370,7 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
     if (w) {
 	KHTMLPart *part = w->part()->findFrame(  name.string() );
 	if ( part ) {
-	    part->openURL( KURL( getDocument()->completeURL( url.string() ) ) );
+	    part->openURL( KUrl( getDocument()->completeURL( url.string() ) ) );
 	} else {
 	    w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
 	}

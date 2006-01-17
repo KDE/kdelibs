@@ -156,7 +156,7 @@ class KDE_EXPORT Entry
     /**
      * Sets the object's file.
      */
-    void setPayload( const KURL &, const QString &lang = QString() );
+    void setPayload( const KUrl &, const QString &lang = QString() );
 
     /**
      * Retrieve the file name of the object.
@@ -164,13 +164,13 @@ class KDE_EXPORT Entry
      * @param lang preferred language, or QString() for KDE default
      * @return object filename
      */
-    KURL payload( const QString &lang = QString() ) const;
+    KUrl payload( const QString &lang = QString() ) const;
 
     /**
      * Sets the object's preview file, if available. This should be a
      * picture file.
      */
-    void setPreview( const KURL &, const QString &lang = QString() );
+    void setPreview( const KUrl &, const QString &lang = QString() );
 
     /**
      * Retrieve the file name of an image containing a preview of the object.
@@ -178,7 +178,7 @@ class KDE_EXPORT Entry
      * @param lang preferred language, or QString() for KDE default
      * @return object preview filename
      */
-    KURL preview( const QString &lang = QString() ) const;
+    KUrl preview( const QString &lang = QString() ) const;
 
     /**
      * Sets the rating between 0 (worst) and 10 (best).
@@ -244,8 +244,8 @@ class KDE_EXPORT Entry
     QString mVersion;
     int mRelease;
     QDate mReleaseDate;
-    QMap<QString,KURL> mPayloadMap;
-    QMap<QString,KURL> mPreviewMap;
+    QMap<QString,KUrl> mPayloadMap;
+    QMap<QString,KUrl> mPreviewMap;
     int mRating;
     int mDownloads;
 

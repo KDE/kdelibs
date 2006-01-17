@@ -23,7 +23,7 @@
 
 #include <kdelibs_export.h>
 
-class KURL;
+class KUrl;
 class QString;
 
 class KIO_EXPORT KSSLCSessionCache {
@@ -34,14 +34,14 @@ class KIO_EXPORT KSSLCSessionCache {
      * @param url URL the key belongs to. Method, host and port are used
      * @param session QString representing session to store
      */
-    static void putSessionForURL(const KURL &kurl, const QString &session);
+    static void putSessionForURL(const KUrl &kurl, const QString &session);
 
     /**
      * Retrieve a SSL session (client side only)
      * @param url URL the key belongs to
      * @return if a key can be found, QString() otherwise
      */
-    static QString getSessionForURL(const KURL &kurl);
+    static QString getSessionForURL(const KUrl &kurl);
 };
 
 #endif

@@ -96,7 +96,7 @@ void ResourceNetConfig::saveSettings( KRES::Resource *res )
   if ( !mInEditMode )
     resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
 
-  resource->setUrl( KURL( mUrlEdit->url() ) );
+  resource->setUrl( KUrl( mUrlEdit->url() ) );
 }
 
 #include "resourcenetconfig.moc"

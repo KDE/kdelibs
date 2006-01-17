@@ -102,7 +102,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
         result = langLookup(path+"/index.html");
         if (!result.isEmpty())
 	{
-            KURL red( "help:/" );
+            KUrl red( "help:/" );
             red.setPath( path + "/index.html" );
             red.setQuery( query );
             redirection(red);
@@ -137,7 +137,7 @@ HelpProtocol::HelpProtocol( bool ghelp, const QByteArray &pool, const QByteArray
     slave = this;
 }
 
-void HelpProtocol::get( const KURL& url )
+void HelpProtocol::get( const KUrl& url )
 {
     kdDebug( 7119 ) << "get: path=" << url.path()
               << " query=" << url.query() << endl;
@@ -173,7 +173,7 @@ void HelpProtocol::get( const KURL& url )
     }
 
     mimeType("text/html");
-    KURL target;
+    KUrl target;
     target.setPath(doc);
     if (url.hasHTMLRef())
         target.setHTMLRef(url.htmlRef());
@@ -256,7 +256,7 @@ void HelpProtocol::get( const KURL& url )
                 if (query.left(8) == "?anchor=") {
                     anchor = query.mid(8).toLower();
 
-			    KURL redirURL(url);
+			    KUrl redirURL(url);
 
 			    redirURL.setQuery(QString());
 			    redirURL.setHTMLRef(anchor);
@@ -302,7 +302,7 @@ void HelpProtocol::get( const KURL& url )
     finished();
 }
 
-void HelpProtocol::emitFile( const KURL& url )
+void HelpProtocol::emitFile( const KUrl& url )
 {
     infoMessage(i18n("Looking up section"));
 
@@ -326,7 +326,7 @@ void HelpProtocol::emitFile( const KURL& url )
     data( QByteArray() );
 }
 
-void HelpProtocol::mimetype( const KURL &)
+void HelpProtocol::mimetype( const KUrl &)
 {
     mimeType("text/html");
     finished();
@@ -336,7 +336,7 @@ void HelpProtocol::mimetype( const KURL &)
 
 #define MAX_IPC_SIZE (1024*32)
 
-void HelpProtocol::get_file( const KURL& url )
+void HelpProtocol::get_file( const KUrl& url )
 {
     kdDebug( 7119 ) << "get_file " << url.url() << endl;
 

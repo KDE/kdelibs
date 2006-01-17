@@ -166,7 +166,7 @@ static QString parseQuotedString(const QString &buf, int &pos) {
  * @param header_info fills the given DataHeader structure with the header
  *		information
  */
-static void parseDataHeader(const KURL &url, DataHeader &header_info) {
+static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
   static const QString& text_plain = KGlobal::staticQString("text/plain");
   static const QString& charset = KGlobal::staticQString("charset");
   static const QString& us_ascii = KGlobal::staticQString("us-ascii");
@@ -178,7 +178,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
   header_info.is_base64 = false;
 
   // decode url and save it
-  QString &raw_url = header_info.url = KURL::decode_string(url.url());
+  QString &raw_url = header_info.url = KUrl::decode_string(url.url());
   int raw_url_len = raw_url.length();
 
   // jump over scheme part (must be "data:", we don't even check that)
@@ -250,10 +250,10 @@ DataProtocol::~DataProtocol() {
 
 /* --------------------------------------------------------------------- */
 
-void DataProtocol::get(const KURL& url) {
+void DataProtocol::get(const KUrl& url) {
   ref();
   //kdDebug() << "===============================================================================================================================================================================" << endl;
-  kdDebug() << "kio_data@"<<this<<"::get(const KURL& url)" << endl ;
+  kdDebug() << "kio_data@"<<this<<"::get(const KUrl& url)" << endl ;
 
   DataHeader hdr;
   parseDataHeader(url,hdr);
@@ -316,7 +316,7 @@ void DataProtocol::get(const KURL& url) {
 
 /* --------------------------------------------------------------------- */
 
-void DataProtocol::mimetype(const KURL &url) {
+void DataProtocol::mimetype(const KUrl &url) {
   ref();
   DataHeader hdr;
   parseDataHeader(url,hdr);

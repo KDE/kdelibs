@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLMIMETEST_H
-#define KURLMIMETEST_H
+#ifndef KUrlMIMETEST_H
+#define KUrlMIMETEST_H
 
 #include <qobject.h>
 

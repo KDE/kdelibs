@@ -224,7 +224,7 @@ void KMDriverDbWidget::slotOtherClicked()
 	if (m_external.isEmpty())
 	{
            KFileDialog dlg( QString::null, QString::null, this, 0, true );
-		KURL url;
+		KUrl url;
 
 		dlg.setMode( KFile::File );
 		dlg.setCaption( i18n( "Select Driver" ) );

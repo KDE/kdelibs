@@ -96,13 +96,13 @@ public:
 
     void ensureItemVisible(const KFileItem *);
 
-    void setPreviewWidget(const QWidget *w, const KURL &u);
+    void setPreviewWidget(const QWidget *w, const KUrl &u);
 
 protected Q_SLOTS:
     virtual void slotHighlighted( const KFileItem * );
 
 Q_SIGNALS:
-    void showPreview(const KURL &);
+    void showPreview(const KUrl &);
     void clearPreview();
 
 private:

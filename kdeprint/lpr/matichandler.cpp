@@ -84,7 +84,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 	else
 	{
 		prt->setLocation(i18n("Local printer on %1").arg(val));
-		KURL	url(val);
+		KUrl	url(val);
 		if (val.find("usb") != -1)
 			url.setProtocol("usb");
 		else
@@ -101,7 +101,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 			QString	postpipe = loader.data()[ "POSTPIPE" ].toString();
 			if (!postpipe.isEmpty())
 			{
-				KURL	url ( parsePostpipe(postpipe) );
+				KUrl	url ( parsePostpipe(postpipe) );
 				if (!url.isEmpty())
 				{
 					QString	ds = QString::fromLatin1("%1 (%2)").arg(prt->location()).arg(url.protocol());
@@ -183,7 +183,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 
 QString MaticHandler::createPostpipe(const QString& _url)
 {
-	KURL url( _url );
+	KUrl url( _url );
 	QString	prot = url.protocol();
 	QString	str;
 	if (prot == "socket")
@@ -411,7 +411,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 
 PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 {
-	KURL url( prt->device() );
+	KUrl url( prt->device() );
 	QString	prot = url.protocol();
 	if ((prot != "lpd" || m_rlprpath.isEmpty()) &&
 		(prot != "socket" || m_ncpath.isEmpty()) &&

@@ -95,16 +95,16 @@ void KURLRequesterDlg::slotClear()
     urlRequester_->clear();
 }
 
-KURL KURLRequesterDlg::selectedURL() const
+KUrl KURLRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-        return KURL::fromPathOrURL( urlRequester_->url() );
+        return KUrl::fromPathOrURL( urlRequester_->url() );
     else
-        return KURL();
+        return KUrl();
 }
 
 
-KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
+KUrl KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
         const QString& caption)
 {
     KURLRequesterDlg dlg(dir, parent, "filedialog", true);
@@ -113,7 +113,7 @@ KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
 
     dlg.exec();
 
-    const KURL& url = dlg.selectedURL();
+    const KUrl& url = dlg.selectedURL();
     if (url.isValid())
         KRecentDocument::add(url);
 

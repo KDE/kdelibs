@@ -113,7 +113,7 @@ namespace KIO {
      * @param items files to get metainfo for
      * @return the MetaInfoJob to retrieve the items
      */
-    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KURL::List& items);
+    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KUrl::List& items);
 }
 
 #endif

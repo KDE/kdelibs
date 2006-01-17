@@ -67,7 +67,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 	m_list->clear();
 
 	// retrieve printer list
-	KURL	url = p->device();
+	KUrl	url = p->device();
 	CupsInfos::self()->setHost(url.host());
 	CupsInfos::self()->setLogin(url.user());
 	CupsInfos::self()->setPassword(url.pass());
@@ -99,7 +99,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 
 void KMWIppSelect::updatePrinter(KMPrinter *p)
 {
-	KURL	url = p->device();
+	KUrl	url = p->device();
 	QString	path = m_list->currentText();
 	path.prepend("/printers/");
 	url.setPath(path);

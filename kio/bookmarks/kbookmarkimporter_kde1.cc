@@ -67,7 +67,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
     {
         if ( strcmp( ep->d_name, "." ) != 0 && strcmp( ep->d_name, ".." ) != 0 )
         {
-            KURL file;
+            KUrl file;
             file.setPath( QString( _path ) + '/' + QFile::decodeName(ep->d_name) );
 
             KMimeType::Ptr res = KMimeType::findByURL( file, 0, true );

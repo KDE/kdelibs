@@ -39,7 +39,7 @@ namespace KABC {
  */
 
 
-  class KABC_EXPORT LDAPUrl : public KURL
+  class KABC_EXPORT LDAPUrl : public KUrl
   {
   public:
 
@@ -52,8 +52,8 @@ namespace KABC {
 
     /** Constructs an empty KLDAPUrl. */
     LDAPUrl();
-    /** Constructs a KLDAPUrl from a KURL. */
-    LDAPUrl( const KURL &url );
+    /** Constructs a KLDAPUrl from a KUrl. */
+    LDAPUrl( const KUrl &url );
   
     /**
      * Returns the dn part of the LDAP Url (same as path(), but slash removed

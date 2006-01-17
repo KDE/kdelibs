@@ -66,7 +66,7 @@ public:
    * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
-             // KDE4: make those KURLs, and use pathOrURL() internally.
+             // KDE4: make those KUrls, and use pathOrURL() internally.
              const QString & src, const QString & dest,
              RenameDlg_Mode mode,
              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
@@ -82,7 +82,7 @@ public:
    * @return the new destination
    * valid only if RENAME was chosen
    */
-  KURL newDestURL();
+  KUrl newDestURL();
 
   /**
    * Given a directory path and a filename (which usually exists already),
@@ -91,7 +91,7 @@ public:
    * The suggested file name is of the form foo_1 foo_2 etc.
    * @since 3.4
    */
-  static QString suggestName(const KURL& baseURL, const QString& oldName);
+  static QString suggestName(const KUrl& baseURL, const QString& oldName);
 
 public Q_SLOTS:
   void cancelPressed();
@@ -133,7 +133,7 @@ private:
    * @return the result
    */
 KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
-                                 // KDE4: make those KURLs
+                                 // KDE4: make those KUrls
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
                                  KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,

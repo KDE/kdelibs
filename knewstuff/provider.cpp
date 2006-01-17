@@ -55,45 +55,45 @@ QString Provider::name() const
 }
 
 
-void Provider::setIcon( const KURL &url )
+void Provider::setIcon( const KUrl &url )
 {
   mIcon = url;
 }
 
-KURL Provider::icon() const
+KUrl Provider::icon() const
 {
   return mIcon;
 }
 
 
-void Provider::setDownloadUrl( const KURL &url )
+void Provider::setDownloadUrl( const KUrl &url )
 {
   mDownloadUrl = url;
 }
 
-KURL Provider::downloadUrl() const
+KUrl Provider::downloadUrl() const
 {
   return mDownloadUrl;
 }
 
 
-void Provider::setUploadUrl( const KURL &url )
+void Provider::setUploadUrl( const KUrl &url )
 {
   mUploadUrl = url;
 }
 
-KURL Provider::uploadUrl() const
+KUrl Provider::uploadUrl() const
 {
   return mUploadUrl;
 }
 
 
-void Provider::setNoUploadUrl( const KURL &url )
+void Provider::setNoUploadUrl( const KUrl &url )
 {
   mNoUploadUrl = url;
 }
 
-KURL Provider::noUploadUrl() const
+KUrl Provider::noUploadUrl() const
 {
   return mNoUploadUrl;
 }
@@ -114,11 +114,11 @@ void Provider::parseDomElement( const QDomElement &element )
 {
   if ( element.tagName() != "provider" ) return;
 
-  setDownloadUrl( KURL( element.attribute("downloadurl") ) );
-  setUploadUrl( KURL( element.attribute("uploadurl") ) );
-  setNoUploadUrl( KURL( element.attribute("nouploadurl") ) );
+  setDownloadUrl( KUrl( element.attribute("downloadurl") ) );
+  setUploadUrl( KUrl( element.attribute("uploadurl") ) );
+  setNoUploadUrl( KUrl( element.attribute("nouploadurl") ) );
 
-  KURL iconurl( element.attribute("icon") );
+  KUrl iconurl( element.attribute("icon") );
   if(!iconurl.isValid()) iconurl.setPath( element.attribute("icon") );
   setIcon( iconurl );
 
@@ -180,7 +180,7 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
 
   kdDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
   
-  KIO::TransferJob *job = KIO::get( KURL( providersUrl ) );
+  KIO::TransferJob *job = KIO::get( KUrl( providersUrl ) );
   connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),

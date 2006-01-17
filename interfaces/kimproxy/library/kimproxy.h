@@ -40,7 +40,7 @@
 
 class DCOPClient;
 class KIMIface_stub;
-class KURL;
+class KUrl;
 class ContactPresenceListCurrent;
 
 /** FIXME: remove for KDE4, binary compability again. */
@@ -208,11 +208,11 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Send the file to the contact
 		 * @param uid the KABC uid you are sending to.
-		 * @param sourceURL a KURL to send.
+		 * @param sourceURL a KUrl to send.
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */
-		void sendFile(const QString &uid, const KURL &sourceURL, const QString &altFileName = QString(), uint fileSize = 0);
+		void sendFile(const QString &uid, const KUrl &sourceURL, const QString &altFileName = QString(), uint fileSize = 0);
 
 		/**
 		 * Add a contact to the contact list

@@ -169,17 +169,17 @@ public:
     /**
      * @returns The selected fully qualified filename.
      */
-    KURL selectedURL() const;
+    KUrl selectedURL() const;
 
     /**
      * @returns The list of selected URLs.
      */
-    KURL::List selectedURLs() const;
+    KUrl::List selectedURLs() const;
 
     /**
      * @returns the currently shown directory.
      */
-    KURL baseURL() const;
+    KUrl baseURL() const;
 
     /**
      * Returns the full path of the selected file in the local filesystem.
@@ -199,7 +199,7 @@ public:
      * @param clearforward Indicates whether the forward queue
      * should be cleared.
      */
-    void setURL(const KURL &url, bool clearforward = true);
+    void setURL(const KUrl &url, bool clearforward = true);
 
     /**
      * Sets the file name to preselect to @p name
@@ -452,7 +452,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KURL getOpenURL(const QString& startDir = QString(),
+    static KUrl getOpenURL(const QString& startDir = QString(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,
 			   const QString& caption = QString());
@@ -484,7 +484,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KURL::List getOpenURLs(const QString& startDir= QString(),
+    static KUrl::List getOpenURLs(const QString& startDir= QString(),
 				  const QString& filter= QString(),
 				  QWidget *parent = 0,
 				  const QString& caption= QString());
@@ -560,7 +560,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KURL getSaveURL(const QString& startDir= QString(),
+    static KUrl getSaveURL(const QString& startDir= QString(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,
 			   const QString& caption = QString());
@@ -610,7 +610,7 @@ public:
      * @param caption The name of the dialog widget.
      * @since 3.1
      */
-    static KURL getExistingURL(const QString & startDir = QString(),
+    static KUrl getExistingURL(const QString & startDir = QString(),
                                   QWidget * parent = 0,
                                   const QString& caption= QString());
     /**
@@ -631,7 +631,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KURL getImageOpenURL( const QString& startDir = QString(),
+    static KUrl getImageOpenURL( const QString& startDir = QString(),
 				 QWidget *parent = 0,
 				 const QString& caption = QString() );
     virtual void show();
@@ -746,13 +746,13 @@ public:
      *         KDirSelectDialog).
      * @since 3.1
      */
-    static KURL getStartURL( const QString& startDir, QString& recentDirClass );
+    static KUrl getStartURL( const QString& startDir, QString& recentDirClass );
 
     /**
      * @internal
      * Used by KDirSelectDialog to share the dialog's start directory.
      */
-    static void setStartDir( const KURL& directory );
+    static void setStartDir( const KUrl& directory );
 
 Q_SIGNALS:
     /**
@@ -794,7 +794,7 @@ Q_SIGNALS:
 protected:
     KToolBar *toolbar;
 
-    static KURL *lastDirectory;
+    static KUrl *lastDirectory;
 
     KURLComboBox *locationEdit;
 
@@ -849,13 +849,13 @@ protected:
      * an empty list will be returned. Otherwise, all items enclosed in " "
      * will be returned as correct urls.
      */
-    KURL::List tokenize(const QString& line) const;
+    KUrl::List tokenize(const QString& line) const;
 
     /**
      * Returns the absolute version of the URL specified in locationEdit.
      * @since 3.2
      */
-    KURL getCompleteURL(const QString&);
+    KUrl getCompleteURL(const QString&);
 
     /**
      * Returns the filename extension associated with the currentFilter().
@@ -877,8 +877,8 @@ protected:
 
 
 protected Q_SLOTS:
-    void urlEntered( const KURL& );
-    void enterURL( const KURL& url );
+    void urlEntered( const KUrl& );
+    void enterURL( const KUrl& url );
     void enterURL( const QString& url );
     void locationActivated( const QString& url );
 
@@ -918,7 +918,7 @@ private:
     void setLocationText( const QString& text );
     void updateLocationWhatsThis();
 
-    void appendExtension(KURL &url);
+    void appendExtension(KUrl &url);
     void updateLocationEditExtension(const QString &);
     void updateFilter();
 
@@ -930,7 +930,7 @@ protected:
     KDirOperator *ops;
     bool autoDirectoryFollowing;
 
-    KURL::List& parseSelectedURLs() const;
+    KUrl::List& parseSelectedURLs() const;
 
 protected:
     virtual void virtual_hook( int id, void* data );

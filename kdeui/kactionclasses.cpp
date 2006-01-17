@@ -943,7 +943,7 @@ public:
   int m_maxItems;
   KMenu *m_popup;
   QMap<QString, QString> m_shortNames;
-  QMap<QString, KURL> m_urls;
+  QMap<QString, KUrl> m_urls;
 };
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -972,7 +972,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   init();
 
   if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
+    connect( this,     SIGNAL(urlSelected(const KUrl&)),
              receiver, slot );
 }
 
@@ -1017,7 +1017,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   init();
 
   if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
+    connect( this,     SIGNAL(urlSelected(const KUrl&)),
              receiver, slot );
 }
 
@@ -1036,7 +1036,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   init();
 
   if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
+    connect( this,     SIGNAL(urlSelected(const KUrl&)),
              receiver, slot );
 }
 
@@ -1096,7 +1096,7 @@ void KRecentFilesAction::setMaxItems( int maxItems )
         setItems( lst );
 }
 
-void KRecentFilesAction::addURL( const KURL& url, const QString& name )
+void KRecentFilesAction::addURL( const KUrl& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
@@ -1135,7 +1135,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     setItems( lst );
 }
 
-void KRecentFilesAction::removeURL( const KURL& url )
+void KRecentFilesAction::removeURL( const KUrl& url )
 {
     QStringList lst = items();
     QString     file = url.pathOrURL();
@@ -1171,7 +1171,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     QString      title;
     QString     oldGroup;
     QStringList lst;
-    KURL        url;
+    KUrl        url;
 
     oldGroup = config->group();
 
@@ -1185,7 +1185,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     {
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
-        url = KURL::fromPathOrURL( value );
+        url = KUrl::fromPathOrURL( value );
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = config->readPathEntry( nameKey, url.fileName() );
         title = nameValue + " [" + value + "]";
@@ -1237,7 +1237,7 @@ void KRecentFilesAction::itemSelected( const QString& text )
     // return a copy of the URL since the slot where it is connected might call
     // addURL or removeURL where the d->m_urls.erase( title ) could destroy the
     // d->m_urls[ text ] and the emitted URL will be invalid in the rest of the slot
-    emit urlSelected( KURL( d->m_urls[ text ] ) );
+    emit urlSelected( KUrl( d->m_urls[ text ] ) );
 }
 
 void KRecentFilesAction::menuItemActivated( int id )

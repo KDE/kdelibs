@@ -87,7 +87,7 @@ ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp
     } else {
       return Boolean(false);
     }
-    emit ext->addWebSideBar(KURL( url ), name);
+    emit ext->addWebSideBar(KUrl( url ), name);
     return Boolean(true);
   }
 

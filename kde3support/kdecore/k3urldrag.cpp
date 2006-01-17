@@ -34,13 +34,13 @@ public:
     bool m_exportAsText;
 };
 
-K3URLDrag::K3URLDrag( const KURL::List &urls, QWidget* dragSource )
+K3URLDrag::K3URLDrag( const KUrl::List &urls, QWidget* dragSource )
     : Q3UriDrag(dragSource), m_metaData(), d( 0 )
 {
     init(urls);
 }
 
-K3URLDrag::K3URLDrag( const KURL::List &urls,
+K3URLDrag::K3URLDrag( const KUrl::List &urls,
                     const QMap<QString,QString>& metaData,
                     QWidget* dragSource )
     : Q3UriDrag(dragSource), m_metaData(metaData), d( 0 )
@@ -53,10 +53,10 @@ K3URLDrag::~K3URLDrag()
     delete d;
 }
 
-void K3URLDrag::init(const KURL::List &urls)
+void K3URLDrag::init(const KUrl::List &urls)
 {
-    KURL::List::ConstIterator uit = urls.begin();
-    KURL::List::ConstIterator uEnd = urls.end();
+    KUrl::List::ConstIterator uit = urls.begin();
+    KUrl::List::ConstIterator uEnd = urls.end();
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
@@ -74,18 +74,18 @@ void K3URLDrag::setExportAsText( bool exp )
     d->m_exportAsText = exp;
 }
 
-K3URLDrag * K3URLDrag::newDrag( const KURL::List &urls, QWidget* dragSource )
+K3URLDrag * K3URLDrag::newDrag( const KUrl::List &urls, QWidget* dragSource )
 {
     return new K3URLDrag( urls, QMap<QString, QString>(), dragSource );
 }
 
-K3URLDrag * K3URLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+K3URLDrag * K3URLDrag::newDrag( const KUrl::List &urls, const QMap<QString, QString>& metaData,
                               QWidget* dragSource )
 {
     return new K3URLDrag( urls, metaData, dragSource );
 }
 
-bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris )
+bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris )
 {
     // x-kde-urilist is the same format as text/uri-list, but contains
     // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
@@ -117,7 +117,7 @@ bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris )
     Q3UriDrag::decode( e, lst );
     for (Q3StrListIterator it(lst); *it; ++it)
     {
-      KURL url = stringToUrl( *it );
+      KUrl url = stringToUrl( *it );
       if ( !url.isValid() )
       {
         uris.clear();
@@ -128,7 +128,7 @@ bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris )
     return !uris.isEmpty();
 }
 
-bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QString>& metaData )
+bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris, QMap<QString,QString>& metaData )
 {
     if ( decode( e, uris ) ) // first decode the URLs (see above)
     {
@@ -155,12 +155,12 @@ bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QSt
 }
 
 #ifdef Q_WS_QWS
-bool K3URLDrag::decode( QStringList const &e, KURL::List &uris )
+bool K3URLDrag::decode( QStringList const &e, KUrl::List &uris )
 {
 	QStringList::ConstIterator end(e.end());
     for(QStringList::ConstIterator it=e.begin(); it!=end; ++it)
     {
-      KURL url = KURL( *it, 106 ); // 106 is mib enum for utf8 codec
+      KUrl url = KUrl( *it, 106 ); // 106 is mib enum for utf8 codec
       if ( !url.isValid() )
       {
         uris.clear();
@@ -254,15 +254,15 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-KURL K3URLDrag::stringToUrl(const QByteArray &s)
+KUrl K3URLDrag::stringToUrl(const QByteArray &s)
 {
     if (strncmp(s.data(), "file:", 5) == 0)
-       return KURL(s, KGlobal::locale()->fileEncodingMib());
+       return KUrl(s, KGlobal::locale()->fileEncodingMib());
 
-    return KURL(s, 106); // 106 is mib enum for utf8 codec;
+    return KUrl(s, 106); // 106 is mib enum for utf8 codec;
 }
 
-QString K3URLDrag::urlToString(const KURL &url)
+QString K3URLDrag::urlToString(const KUrl &url)
 {
     if (url.isLocalFile())
     {

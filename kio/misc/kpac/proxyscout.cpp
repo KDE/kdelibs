@@ -33,7 +33,7 @@
 
 namespace KPAC
 {
-    ProxyScout::QueuedRequest::QueuedRequest( const KURL& u )
+    ProxyScout::QueuedRequest::QueuedRequest( const KUrl& u )
         : transaction( KApplication::dcopClient()->beginTransaction() ),
           url( u )
     {
@@ -54,7 +54,7 @@ namespace KPAC
         delete m_instance;
     }
 
-    QString ProxyScout::proxyForURL( const KURL& url )
+    QString ProxyScout::proxyForURL( const KUrl& url )
     {
         if ( m_suspendTime )
         {
@@ -100,7 +100,7 @@ namespace KPAC
                 break;
             case KProtocolManager::PACProxy:
                 m_downloader = new Downloader( this );
-                m_downloader->download( KURL( KProtocolManager::proxyConfigScript() ) );
+                m_downloader->download( KUrl( KProtocolManager::proxyConfigScript() ) );
                 break;
             default:
                 return false;
@@ -144,7 +144,7 @@ namespace KPAC
         if ( !success ) m_suspendTime = std::time( 0 );
     }
 
-    QString ProxyScout::handleRequest( const KURL& url )
+    QString ProxyScout::handleRequest( const KUrl& url )
     {
         try
         {
@@ -156,7 +156,7 @@ namespace KPAC
                 QString proxy = ( *it ).trimmed();
                 if ( proxy.startsWith( QLatin1String( "PROXY" ) ) )
                 {
-                    KURL proxyURL( proxy = proxy.mid( 5 ).trimmed() );
+                    KUrl proxyURL( proxy = proxy.mid( 5 ).trimmed() );
                     // If the URL is invalid or the URL is valid but in opaque
                     // format which indicates a port number being present in
                     // this particular case, simply calling setProtocol() on

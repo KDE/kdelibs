@@ -70,7 +70,7 @@ ALE,revision date,QDateTime,revision,,.toString()
 
 ALE,sort string,QString,sortString
 
-ALF,homepage,KURL,url,,.url()
+ALF,homepage,KUrl,url,,.url()
 
 ALE,security class,Secrecy,secrecy,,.asString()
 

@@ -1289,26 +1289,26 @@ KCmdLineArgs::arg(int n) const
    return parsedArgList->at(n);
 }
 
-KURL
+KUrl
 KCmdLineArgs::url(int n) const
 {
    return makeURL( arg(n) );
 }
 
-KURL KCmdLineArgs::makeURL(const char *_urlArg)
+KUrl KCmdLineArgs::makeURL(const char *_urlArg)
 {
    QString urlArg = QFile::decodeName(_urlArg);
    if (!QDir::isRelativePath(urlArg))
    {
-      KURL result;
+      KUrl result;
       result.setPath(urlArg);
       return result; // Absolute path.
    }
 
-   if ( !KURL::isRelativeURL(urlArg) )
-     return KURL(urlArg); // Argument is a URL
+   if ( !KUrl::isRelativeURL(urlArg) )
+     return KUrl(urlArg); // Argument is a URL
 
-   KURL result;
+   KUrl result;
    result.setPath( cwd()+"/"+urlArg );
    result.cleanPath();
    return result;  // Relative path

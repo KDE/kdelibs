@@ -165,7 +165,7 @@ Q_SIGNALS:
      * user dropped on empty space.
      * @since 3.2
      */
-    void dropped(QDropEvent *event, const KURL::List &urls, const KURL &url);
+    void dropped(QDropEvent *event, const KUrl::List &urls, const KUrl &url);
 
 protected:
     virtual void keyPressEvent( QKeyEvent * );

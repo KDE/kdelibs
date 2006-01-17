@@ -130,7 +130,7 @@ namespace KPAC
         if ( dot >= 0 )
         {
             m_hostname.remove( 0, dot + 1 ); // remove one domain level
-            download( KURL( "http://wpad." + m_hostname + "./wpad.dat" ) );
+            download( KUrl( "http://wpad." + m_hostname + "./wpad.dat" ) );
         }
         else emit result( false );
     }
@@ -140,7 +140,7 @@ namespace KPAC
         m_helper->disconnect( this );
         QString line;
         m_helper->readln( line );
-        download( KURL( line.trimmed() ) );
+        download( KUrl( line.trimmed() ) );
     }
 }
 

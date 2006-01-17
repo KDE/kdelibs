@@ -79,24 +79,24 @@ public Q_SLOTS:
    */
   virtual void slotInfoMessage( KIO::Job *job, const QString & msg );
 
-  virtual void slotCopying( KIO::Job* job, const KURL& src, const KURL& dest );
-  virtual void slotMoving( KIO::Job* job, const KURL& src, const KURL& dest );
-  virtual void slotDeleting( KIO::Job* job, const KURL& url );
+  virtual void slotCopying( KIO::Job* job, const KUrl& src, const KUrl& dest );
+  virtual void slotMoving( KIO::Job* job, const KUrl& src, const KUrl& dest );
+  virtual void slotDeleting( KIO::Job* job, const KUrl& url );
   /**
    * Called when the job is transferring.
    * @param job the KIO::Job
    * @param url the url to transfer
    * @since 3.1
    */
-  void slotTransferring( KIO::Job* job, const KURL& url );
-  virtual void slotCreatingDir( KIO::Job* job, const KURL& dir );
+  void slotTransferring( KIO::Job* job, const KUrl& url );
+  virtual void slotCreatingDir( KIO::Job* job, const KUrl& dir );
   /**
    * Called when the job is requesting a stat.
    * @param job the KIO::Job
    * @param dir the dir to stat
    * @since 3.1
    */
-  virtual void slotStating( KIO::Job* job, const KURL& dir );
+  virtual void slotStating( KIO::Job* job, const KUrl& dir );
   /**
    * Called when the job is mounting.
    * @param job the KIO::Job
@@ -124,7 +124,7 @@ protected:
   void showTotals();
   void setDestVisible( bool visible );
   /// @since 3.1
-  void checkDestination( const KURL& dest);
+  void checkDestination( const KUrl& dest);
 
   KLineEdit* sourceEdit;
   KLineEdit* destEdit;

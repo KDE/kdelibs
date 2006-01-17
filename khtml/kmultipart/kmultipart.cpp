@@ -153,7 +153,7 @@ void KMultiPart::startHeader()
 }
 
 
-bool KMultiPart::openURL( const KURL &url )
+bool KMultiPart::openURL( const KUrl &url )
 {
     m_url = url;
     m_lineParser->reset();
@@ -341,13 +341,13 @@ void KMultiPart::setPart( const QString& mimeType )
         connect( childExtension, SIGNAL( openURLNotify() ),
                  m_extension, SIGNAL( openURLNotify() ) );
 
-        connect( childExtension, SIGNAL( openURLRequestDelayed( const KURL &, const KParts::URLArgs & ) ),
-                 m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+        connect( childExtension, SIGNAL( openURLRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
+                 m_extension, SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
 
-        connect( childExtension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
-                 m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
-        connect( childExtension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
-                 m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
+        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ),
+                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ) );
+        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
+                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
 
         // Keep in sync with khtml_part.cpp
         connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
@@ -356,12 +356,12 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
         connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ),
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ) );
-        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
 
 
         if ( m_isHTMLPart )
@@ -375,8 +375,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( enableAction( const char *, bool ) ) );
         connect( childExtension, SIGNAL( setLocationBarURL( const QString& ) ),
                  m_extension, SIGNAL( setLocationBarURL( const QString& ) ) );
-        connect( childExtension, SIGNAL( setIconURL( const KURL& ) ),
-                 m_extension, SIGNAL( setIconURL( const KURL& ) ) );
+        connect( childExtension, SIGNAL( setIconURL( const KUrl& ) ),
+                 m_extension, SIGNAL( setIconURL( const KUrl& ) ) );
         connect( childExtension, SIGNAL( loadingProgress( int ) ),
                  m_extension, SIGNAL( loadingProgress( int ) ) );
         if ( m_isHTMLPart ) // for non-HTML we have our own
@@ -386,8 +386,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( selectionInfo( const KFileItemList& ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const QString& ) ),
                  m_extension, SIGNAL( selectionInfo( const QString& ) ) );
-        connect( childExtension, SIGNAL( selectionInfo( const KURL::List& ) ),
-                 m_extension, SIGNAL( selectionInfo( const KURL::List& ) ) );
+        connect( childExtension, SIGNAL( selectionInfo( const KUrl::List& ) ),
+                 m_extension, SIGNAL( selectionInfo( const KUrl::List& ) ) );
         connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem* ) ),
                  m_extension, SIGNAL( mouseOverInfo( const KFileItem* ) ) );
         connect( childExtension, SIGNAL( moveTopLevelWidget( int, int ) ),
@@ -495,7 +495,7 @@ void KMultiPart::endOfData()
         else
         {
             kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
-            KURL url;
+            KUrl url;
             url.setPath( m_tempFile->name() );
             m_partIsLoading = true;
             (void) m_part->openURL( url );

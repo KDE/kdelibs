@@ -74,8 +74,8 @@ class RenameDlg::RenameDlgPrivate
   QPushButton *bResumeAll;
   QPushButton *bSuggestNewName;
   QLineEdit* m_pLineEdit;
-  KURL src;
-  KURL dest;
+  KUrl src;
+  KUrl dest;
   QString mimeSrc;
   QString mimeDest;
   bool modal;
@@ -406,9 +406,9 @@ void RenameDlg::enableRenameButton(const QString &newDest)
   }
 }
 
-KURL RenameDlg::newDestURL()
+KUrl RenameDlg::newDestURL()
 {
-  KURL newDest( d->dest );
+  KUrl newDest( d->dest );
   QString fileName = d->m_pLineEdit->text();
   newDest.setFileName( KIO::encodeFileName( fileName ) );
   return newDest;
@@ -425,7 +425,7 @@ void RenameDlg::renamePressed()
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
-  KURL u = newDestURL();
+  KUrl u = newDestURL();
   if ( !u.isValid() )
   {
     KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.url() ) );
@@ -435,7 +435,7 @@ void RenameDlg::renamePressed()
   done( 1 );
 }
 
-QString RenameDlg::suggestName(const KURL& baseURL, const QString& oldName)
+QString RenameDlg::suggestName(const KUrl& baseURL, const QString& oldName)
 {
   QString dotSuffix, suggestedName;
   QString basename = oldName;
@@ -483,7 +483,7 @@ void RenameDlg::suggestNewNamePressed()
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
-  KURL destDirectory( d->dest );
+  KUrl destDirectory( d->dest );
   destDirectory.setPath( destDirectory.directory() );
   d->m_pLineEdit->setText( suggestName( destDirectory, d->m_pLineEdit->text() ) );
   return;
@@ -519,7 +519,7 @@ void RenameDlg::resumeAllPressed()
   done( 7 );
 }
 
-static QString mime( const KURL& src )
+static QString mime( const KUrl& src )
 {
   KMimeType::Ptr type = KMimeType::findByURL( src );
   //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype

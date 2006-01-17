@@ -133,7 +133,7 @@ void JobTest::get()
     kdDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
-    KURL u; u.setPath( filePath );
+    KUrl u; u.setPath( filePath );
     m_result = -1;
     KIO::StoredTransferJob* job = KIO::storedGet( u );
     connect( job, SIGNAL( result( KIO::Job* ) ),
@@ -155,9 +155,9 @@ void JobTest::slotGetResult( KIO::Job* job )
 
 void JobTest::copyLocalFile( const QString& src, const QString& dest )
 {
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     // copy the file with file_copy
@@ -178,9 +178,9 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
 {
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::dircopy( u, d, 0 );
@@ -230,9 +230,9 @@ void JobTest::copyDirectoryToOtherPartition()
 void JobTest::moveLocalFile( const QString& src, const QString& dest )
 {
     QVERIFY( QFile::exists( src ) );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     // move the file with file_move
@@ -252,9 +252,9 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
 {
     KDE_struct_stat buf;
     QVERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     // move the symlink with move, NOT with file_move
@@ -279,9 +279,9 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
     QVERIFY( QFileInfo( src + "/testlink" ).isSymLink() );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     bool ok = KIO::NetAccess::move( u, d, 0 );
@@ -346,9 +346,9 @@ void JobTest::moveFileNoPermissions()
     const QString dest = homeTmpDir() + "passwd";
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isFile() );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, 0 );
@@ -378,9 +378,9 @@ void JobTest::moveDirectoryNoPermissions()
     const QString dest = homeTmpDir() + "mdnp";
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
-    KURL u;
+    KUrl u;
     u.setPath( src );
-    KURL d;
+    KUrl d;
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, 0 );
@@ -401,7 +401,7 @@ void JobTest::listRecursive()
     bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
     Q_ASSERT( symlinkOk );
 
-    KURL u;
+    KUrl u;
     u.setPath( src );
     KIO::ListJob* job = KIO::listRecursive( u );
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
@@ -421,7 +421,7 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 {
     for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
         QString displayName = (*it).stringValue( KIO::UDS_NAME );
-        //KURL url = (*it).stringValue( KIO::UDS_URL );
+        //KUrl url = (*it).stringValue( KIO::UDS_URL );
         m_names.append( displayName );
     }
 }
@@ -567,7 +567,7 @@ void JobTest::newApiPerformance()
 
         QString displayName;
         KIO::filesize_t size;
-        KURL url;
+        KUrl url;
 
         for (int i = 0; i < lookupIterations; ++i) {
             OldUDSEntry::ConstIterator it2 = entry.begin();
@@ -621,13 +621,13 @@ void JobTest::newApiPerformance()
         // Normally the code would look like this, but let's change it to time it like the old api
         /*
         QString displayName = entry.value( KIO::UDS_NAME ).toString();
-        KURL url = entry.value( KIO::UDS_URL ).toString();
+        KUrl url = entry.value( KIO::UDS_URL ).toString();
         KIO::filesize_t size = entry.value( KIO::UDS_SIZE ).toULongLong();
         */
 
         QString displayName;
         KIO::filesize_t size;
-        KURL url;
+        KUrl url;
 
         for (int i = 0; i < lookupIterations; ++i) {
 
@@ -675,7 +675,7 @@ void JobTest::newApiPerformance()
 
         QString displayName;
         KIO::filesize_t size;
-        KURL url;
+        KUrl url;
 
         for (int i = 0; i < lookupIterations; ++i) {
 
@@ -722,7 +722,7 @@ void JobTest::newApiPerformance()
 
         QString displayName;
         KIO::filesize_t size;
-        KURL url;
+        KUrl url;
 
         for (int i = 0; i < lookupIterations; ++i) {
 

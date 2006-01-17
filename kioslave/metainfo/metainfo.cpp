@@ -70,7 +70,7 @@ MetaInfoProtocol::~MetaInfoProtocol()
 {
 }
 
-void MetaInfoProtocol::get(const KURL &url)
+void MetaInfoProtocol::get(const KUrl &url)
 {
     QString mimeType = metaData("mimeType");
     KFileMetaInfo info(url.path(), mimeType);
@@ -84,7 +84,7 @@ void MetaInfoProtocol::get(const KURL &url)
     finished();
 }
 
-void MetaInfoProtocol::put(const KURL& url, int, bool, bool)
+void MetaInfoProtocol::put(const KUrl& url, int, bool, bool)
 {
     QString mimeType = metaData("mimeType");
     KFileMetaInfo info;

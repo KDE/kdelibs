@@ -51,7 +51,7 @@ public:
    pid_t pid() const { return mPid;}
    int age(time_t now);
    void reparseConfiguration();
-   bool onHold(const KURL &url);
+   bool onHold(const KUrl &url);
    QString protocol() const   {return mProtocol;}
 
 Q_SIGNALS:
@@ -68,7 +68,7 @@ protected:
    pid_t mPid;
    time_t mBirthDate;
    bool mOnHold;
-   KURL mUrl;
+   KUrl mUrl;
 };
 
 class SlaveWaitRequest
@@ -153,7 +153,7 @@ protected:
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QStringList &url);
 
-   pid_t requestHoldSlave(const KURL &url, const QString &app_socket);
+   pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
    pid_t requestSlave(const QString &protocol, const QString &host,
                       const QString &app_socket, QString &error);
 

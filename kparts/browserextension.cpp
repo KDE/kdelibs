@@ -50,7 +50,7 @@ public:
   }
 };
 
-OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args )
+OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KUrl &url, const URLArgs &args )
 : Event( s_strOpenURLEvent ), m_part( part ), m_url( url ), m_args( args )
 {
 //  d = new OpenURLEventPrivate();
@@ -337,7 +337,7 @@ public:
   }
 
   struct DelayedRequest {
-    KURL m_delayedURL;
+    KUrl m_delayedURL;
     KParts::URLArgs m_delayedArgs;
   };
   QList<DelayedRequest> m_requests;
@@ -389,8 +389,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   connect( m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-           this, SLOT( slotOpenURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+  connect( this, SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ),
+           this, SLOT( slotOpenURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
   connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
@@ -430,7 +430,7 @@ void BrowserExtension::saveState( QDataStream &stream )
 
 void BrowserExtension::restoreState( QDataStream &stream )
 {
-  KURL u;
+  KUrl u;
   Q_INT32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
 
@@ -501,7 +501,7 @@ void BrowserExtension::pasteRequest()
     }
 }
 
-void BrowserExtension::slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args )
+void BrowserExtension::slotOpenURLRequest( const KUrl &url, const KParts::URLArgs &args )
 {
     //kdDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url() << endl;
     BrowserExtensionPrivate::DelayedRequest req;
@@ -660,7 +660,7 @@ const Q3PtrList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
   return Q3PtrList<KParts::ReadOnlyPart>();
 }
 
-bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs & )
+bool BrowserHostExtension::openURLInFrame( const KUrl &, const KParts::URLArgs & )
 {
   return false;
 }

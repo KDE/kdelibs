@@ -70,10 +70,10 @@ namespace KIO {
  *
  * Basic usage is like this:
  * \code
- *   KDirOperator *op = new KDirOperator( KURL( "file:/home/gis" ), this );
+ *   KDirOperator *op = new KDirOperator( KUrl( "file:/home/gis" ), this );
  *   // some signals you might be interested in
- *   connect(op, SIGNAL(urlEntered(const KURL&)),
- *           SLOT(urlEntered(const KURL&)));
+ *   connect(op, SIGNAL(urlEntered(const KUrl&)),
+ *           SLOT(urlEntered(const KUrl&)));
  *   connect(op, SIGNAL(fileHighlighted(const KFileItem *)),
  *           SLOT(fileHighlighted(const KFileItem *)));
  *   connect(op, SIGNAL(fileSelected(const KFileItem *)),
@@ -114,7 +114,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      *
      * This constructor doesn't start loading the url, setView will do it.
      */
-    KDirOperator(const KURL& urlName = KURL(),
+    KDirOperator(const KUrl& urlName = KUrl(),
 		 QWidget *parent = 0);
     /**
      * Destroys the KDirOperator.
@@ -190,7 +190,7 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * @returns the current url
      */
-    KURL url() const;
+    KUrl url() const;
 
     /**
      * Sets a new url to list.
@@ -198,7 +198,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @param url the URL to set
      */
 	// ### KDE4: make virtual
-    void setURL(const KURL& url, bool clearforward);
+    void setURL(const KUrl& url, bool clearforward);
 
     /**
      * Clears the current selection and attempts to set @p filename
@@ -477,7 +477,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * to the user.
      * @returns true if the directory could be created.
      */
-	// ### KDE4: make virtual and turn QString into KURL
+	// ### KDE4: make virtual and turn QString into KUrl
     bool mkdir( const QString& directory, bool enterDirectory = true );
 
     /**
@@ -792,7 +792,7 @@ protected Q_SLOTS:
     void slotCompletionMatch(const QString& match);
 
 Q_SIGNALS:
-    void urlEntered(const KURL& );
+    void urlEntered(const KUrl& );
     void updateInformation(int files, int dirs);
     void completion(const QString&);
     void finishedLoading();
@@ -820,20 +820,20 @@ Q_SIGNALS:
      * @param urls the urls that where dropped.
      * @since 3.2
      */
-    void dropped(const KFileItem *item, QDropEvent*event, const KURL::List&urls);
+    void dropped(const KFileItem *item, QDropEvent*event, const KUrl::List&urls);
 private:
     /**
      * Contains all URLs you can reach with the back button.
      */
-    Q3PtrStack<KURL> backStack;
+    Q3PtrStack<KUrl> backStack;
 
     /**
      * Contains all URLs you can reach with the forward button.
      */
-    Q3PtrStack<KURL> forwardStack;
+    Q3PtrStack<KUrl> forwardStack;
 
     KDirLister *dir;
-    KURL currUrl;
+    KUrl currUrl;
 
     KCompletion myCompletion;
     KCompletion myDirCompletion;
@@ -919,7 +919,7 @@ private Q_SLOTS:
     void slotShowProgress();
     void slotIOFinished();
     void slotCanceled();
-    void slotRedirected( const KURL& );
+    void slotRedirected( const KUrl& );
 
     void slotViewActionAdded( KAction * );
     void slotViewActionRemoved( KAction * );
@@ -933,7 +933,7 @@ private Q_SLOTS:
     void insertViewDependentActions();
 
 private:
-    static bool isReadable( const KURL& url );
+    static bool isReadable( const KUrl& url );
 
 protected:
     virtual void virtual_hook( int id, void* data );

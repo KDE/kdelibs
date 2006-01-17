@@ -46,7 +46,7 @@ namespace KPAC
         virtual ~ProxyScout();
 
     k_dcop:
-        QString proxyForURL( const KURL& url );
+        QString proxyForURL( const KUrl& url );
         ASYNC blackListProxy( const QString& proxy );
         ASYNC reset();
 
@@ -55,7 +55,7 @@ namespace KPAC
 
     private:
         bool startDownload();
-        QString handleRequest( const KURL& url );
+        QString handleRequest( const KUrl& url );
 
         KInstance* m_instance;
         Downloader* m_downloader;
@@ -64,10 +64,10 @@ namespace KPAC
         struct QueuedRequest
         {
             QueuedRequest() : transaction( 0 ) {}
-            QueuedRequest( const KURL& );
+            QueuedRequest( const KUrl& );
 
             DCOPClientTransaction* transaction;
-            KURL url;
+            KUrl url;
         };
         typedef QList< QueuedRequest > RequestQueue;
         RequestQueue m_requestQueue;

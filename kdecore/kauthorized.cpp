@@ -85,7 +85,7 @@ class URLActionRule
                       checkEqual(destHost, destHostEqual);
                    }
 
-     bool baseMatch(const KURL &url, const QString &protClass)
+     bool baseMatch(const KUrl &url, const QString &protClass)
      {
         if (baseProtWildCard)
         {
@@ -122,7 +122,7 @@ class URLActionRule
         return true;
      }
 
-     bool destMatch(const KURL &url, const QString &protClass, const KURL &base, const QString &baseClass)
+     bool destMatch(const KUrl &url, const QString &protClass, const KUrl &base, const QString &baseClass)
      {
         if (destProtEqual)
         {
@@ -341,7 +341,7 @@ static void initUrlActionRestrictions()
   }
 }
 
-void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
+void KAuthorized::allowURLAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
 {
   MY_D
   QMutexLocker locker((&d->mutex));
@@ -353,7 +353,7 @@ void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, co
                   _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
 }
 
-bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
+bool KAuthorized::authorizeURLAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
 {
   MY_D
   QMutexLocker locker(&(d->mutex));
@@ -366,10 +366,10 @@ bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();
 
-  KURL baseURL(_baseURL);
+  KUrl baseURL(_baseURL);
   baseURL.setPath(QDir::cleanPath(baseURL.path()));
   QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
-  KURL destURL(_destURL);
+  KUrl destURL(_destURL);
   destURL.setPath(QDir::cleanPath(destURL.path()));
   QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 

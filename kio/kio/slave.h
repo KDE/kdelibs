@@ -146,9 +146,9 @@ namespace KIO {
 	 *
 	 * @return 0 on failure, or a pointer to a slave otherwise.
 	 */
-	static Slave* createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text );
+	static Slave* createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text );
 
-        static Slave* holdSlave( const QString &protocol, const KURL& url );
+        static Slave* holdSlave( const QString &protocol, const KUrl& url );
 
 	// == communication with connected kioslave ==
 	// whenever possible prefer these methods over the respective
@@ -179,7 +179,7 @@ namespace KIO {
 	/**
 	 * Puts the kioslave associated with @p url at halt.
 	 */
-	void hold(const KURL &url);	// TODO(BIC): make virtual
+	void hold(const KUrl &url);	// TODO(BIC): make virtual
 
 	/**
 	 * @return The time this slave has been idle.
@@ -238,7 +238,7 @@ namespace KIO {
 	  const QByteArray *arr;
 	};
 	struct HoldParams {
-	  const KURL *url;
+	  const KUrl *url;
 	};
 	struct SuspendedParams {
 	  bool retval;

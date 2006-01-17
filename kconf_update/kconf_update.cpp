@@ -137,7 +137,7 @@ KonfUpdate::KonfUpdate()
    {
       for(int i = 0; i < args->count(); i++)
       {
-         KURL url = args->url(i);
+         KUrl url = args->url(i);
          if (!url.isLocalFile())
             KCmdLineArgs::usage(i18n("Only local files are supported."));
          updateFiles.append(url.path());

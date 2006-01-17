@@ -71,7 +71,7 @@ public:
    * This corresponds to the "protocol=" field in the protocol description file.
    *
    * @return the name of the protocol
-   * @see KURL::protocol()
+   * @see KUrl::protocol()
    */
   virtual QString name() const { return m_name; }
 
@@ -92,7 +92,7 @@ public:
    * @return true if the protocol is known
    * @see name()
    */
-  static bool isKnownProtocol( const KURL &url );
+  static bool isKnownProtocol( const KUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of
@@ -109,7 +109,7 @@ public:
    * @param protocol the protocol to check
    * @return the executable of library to open, or QString() for
    *         unsupported protocols
-   * @see KURL::protocol()
+   * @see KUrl::protocol()
    */
   static QString exec( const QString& protocol );
 
@@ -132,7 +132,7 @@ public:
    * @param url the url to check
    * @return the input type of the given @p url
    */
-  static Type inputType( const KURL &url );
+  static Type inputType( const KUrl &url );
 
   /**
    * Returns whether the protocol should be treated as a filesystem
@@ -144,7 +144,7 @@ public:
    * @param url the url to check
    * @return the output type of the given @p url
    */
-  static Type outputType( const KURL &url );
+  static Type outputType( const KUrl &url );
 
   /**
    * Returns the list of fields this protocol returns when listing
@@ -158,7 +158,7 @@ public:
    * @param url the url to check
    * @return a list of field names
    */
-  static QStringList listing( const KURL &url );
+  static QStringList listing( const KUrl &url );
 
   /**
    * Definition of an extra field in the UDS entries, returned by a listDir operation.
@@ -191,7 +191,7 @@ public:
    *
    * @since 3.2
    */
-  static ExtraFieldList extraFields( const KURL& url );
+  static ExtraFieldList extraFields( const KUrl& url );
 
   /**
    * Returns whether the protocol can act as a source protocol.
@@ -206,7 +206,7 @@ public:
    * @return true if the protocol is a source of data (e.g. http), false if the
    *         protocol is a filter (e.g. gzip)
    */
-  static bool isSourceProtocol( const KURL &url );
+  static bool isSourceProtocol( const KUrl &url );
 
   /**
    * Returns whether the protocol can act as a helper protocol.
@@ -220,7 +220,7 @@ public:
    * @return true if the protocol is a helper protocol (e.g. vnc), false
    *              if not (e.g. http)
    */
-  static bool isHelperProtocol( const KURL &url );
+  static bool isHelperProtocol( const KUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of
@@ -244,7 +244,7 @@ public:
    * @return true if the protocol is a filter (e.g. gzip), false if the
    *         protocol is a helper or source
    */
-  static bool isFilterProtocol( const KURL &url );
+  static bool isFilterProtocol( const KUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of
@@ -267,7 +267,7 @@ public:
    * @return true if the protocol support listing
    * @see listing()
    */
-  static bool supportsListing( const KURL &url );
+  static bool supportsListing( const KUrl &url );
 
   /**
    * Returns whether the protocol can retrieve data from URLs.
@@ -278,7 +278,7 @@ public:
    * @param url the url to check
    * @return true if it is possible to read from the URL
    */
-  static bool supportsReading( const KURL &url );
+  static bool supportsReading( const KUrl &url );
 
   /**
    * Returns whether the protocol can store data to URLs.
@@ -289,7 +289,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports writing
    */
-  static bool supportsWriting( const KURL &url );
+  static bool supportsWriting( const KUrl &url );
 
   /**
    * Returns whether the protocol can create directories/folders.
@@ -300,7 +300,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can create directories
    */
-  static bool supportsMakeDir( const KURL &url );
+  static bool supportsMakeDir( const KUrl &url );
 
   /**
    * Returns whether the protocol can delete files/objects.
@@ -311,7 +311,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports deleting
    */
-  static bool supportsDeleting( const KURL &url );
+  static bool supportsDeleting( const KUrl &url );
 
   /**
    * Returns whether the protocol can create links between files/objects.
@@ -322,7 +322,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports linking
    */
-  static bool supportsLinking( const KURL &url );
+  static bool supportsLinking( const KUrl &url );
 
   /**
    * Returns whether the protocol can move files/objects between different
@@ -334,7 +334,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports moving
    */
-  static bool supportsMoving( const KURL &url );
+  static bool supportsMoving( const KUrl &url );
 
   /**
    * Returns whether the protocol can copy files/objects directly from the
@@ -348,7 +348,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can copy files from the local file system
    */
-  static bool canCopyFromFile( const KURL &url );
+  static bool canCopyFromFile( const KUrl &url );
 
   /**
    * Returns whether the protocol can copy files/objects directly to the
@@ -362,7 +362,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can copy files to the local file system
    */
-  static bool canCopyToFile( const KURL &url );
+  static bool canCopyToFile( const KUrl &url );
 
   /**
    * Returns whether the protocol can rename (i.e. move fast) files/objects
@@ -377,7 +377,7 @@ public:
    * @return true if the protocol can rename/move files from the local file system
    * @since 3.4
    */
-  static bool canRenameFromFile( const KURL &url );
+  static bool canRenameFromFile( const KUrl &url );
 
   /**
    * Returns whether the protocol can rename (i.e. move fast) files/objects
@@ -392,7 +392,7 @@ public:
    * @return true if the protocol can rename files to the local file system
    * @since 3.4
    */
-  static bool canRenameToFile( const KURL &url );
+  static bool canRenameToFile( const KUrl &url );
 
   /**
    * Returns whether the protocol can recursively delete directories by itself.
@@ -406,7 +406,7 @@ public:
    * @return true if the protocol can delete non-empty directories by itself.
    * @since 3.4
    */
-  static bool canDeleteRecursive( const KURL &url );
+  static bool canDeleteRecursive( const KUrl &url );
 
   typedef enum { Name, FromURL } FileNameUsedForCopying;
 
@@ -426,7 +426,7 @@ public:
    * @return how to generate the filename in the destination directory when copying/moving
    * @since 3.4
    */
-  static FileNameUsedForCopying fileNameUsedForCopying( const KURL &url );
+  static FileNameUsedForCopying fileNameUsedForCopying( const KUrl &url );
 
   /**
    * Returns default mimetype for this URL based on the protocol.
@@ -436,7 +436,7 @@ public:
    * @param url the url to check
    * @return the default mime type of the protocol, or null if unknown
    */
-  static QString defaultMimetype( const KURL& url );
+  static QString defaultMimetype( const KUrl& url );
 
   /**
    * Returns the name of the icon, associated with the specified protocol.
@@ -531,7 +531,7 @@ public:
   static bool showFilePreview( const QString& protocol );
 
   /**
-   * Returns the suggested URI parsing mode for the KURL parser.
+   * Returns the suggested URI parsing mode for the KUrl parser.
    *
    * This corresponds to the "URIMode=" field in the protocol description file.
    *
@@ -541,11 +541,11 @@ public:
    * @li "mailto" for a mailto style URI (the path part contains only an email address)
    *
    * @param protocol the protocol to check
-   * @return the suggested parsing mode, or KURL::Auto if unspecified
+   * @return the suggested parsing mode, or KUrl::Auto if unspecified
    *
    * @since 3.2
    */
-  static KURL::URIMode uriParseMode( const QString& protocol );
+  static KUrl::URIMode uriParseMode( const QString& protocol );
 
   /**
    * Returns the list of capabilities provided by the kioslave implementing
@@ -666,7 +666,7 @@ protected:
   bool canRenameToFile() const; // for kprotocolinfo_kdecore
   bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
   FileNameUsedForCopying fileNameUsedForCopying() const; // for kprotocolinfo_kdecore
-  static KProtocolInfo::Ptr findProtocol(const KURL &url); // for kprotocolinfo_kdecore
+  static KProtocolInfo::Ptr findProtocol(const KUrl &url); // for kprotocolinfo_kdecore
 
 protected:
   virtual void virtual_hook( int id, void* data );

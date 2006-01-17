@@ -53,7 +53,7 @@ public:
   KPushButton *openFile;
   KPushButton *openLocation;
   QCheckBox   *keepOpen;
-  KURL        location;
+  KUrl        location;
   QTime       startTime;
 };
 
@@ -328,7 +328,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
 }
 
 
-void DefaultProgress::slotCopying( KIO::Job*, const KURL& src, const KURL& dest )
+void DefaultProgress::slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Copy File(s) Progress"));
@@ -342,7 +342,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& src, const KURL& dest 
 }
 
 
-void DefaultProgress::slotMoving( KIO::Job*, const KURL& src, const KURL& dest )
+void DefaultProgress::slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Move File(s) Progress"));
@@ -356,7 +356,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& src, const KURL& dest )
 }
 
 
-void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
+void DefaultProgress::slotCreatingDir( KIO::Job*, const KUrl& dir )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Creating Folder"));
@@ -368,7 +368,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 }
 
 
-void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
+void DefaultProgress::slotDeleting( KIO::Job*, const KUrl& url )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Delete File(s) Progress"));
@@ -379,7 +379,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
   setDestVisible( false );
 }
 
-void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
+void DefaultProgress::slotTransferring( KIO::Job*, const KUrl& url )
 {
   if ( d->noCaptionYet ) {
     setWindowTitle(i18n("Loading Progress"));
@@ -389,7 +389,7 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
   setDestVisible( false );
 }
 
-void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
+void DefaultProgress::slotStating( KIO::Job*, const KUrl& url )
 {
   setWindowTitle(i18n("Examining File Progress"));
   sourceEdit->setText(url.prettyURL());
@@ -464,7 +464,7 @@ void DefaultProgress::slotKeepOpenToggled(bool keepopen)
   d->keepOpenChecked=keepopen;
 }
 
-void DefaultProgress::checkDestination(const KURL& dest) {
+void DefaultProgress::checkDestination(const KUrl& dest) {
   bool ok = true;
   if ( dest.isLocalFile() ) {
       QString path = dest.path( -1 );

@@ -64,7 +64,7 @@ public:
     QString appname;
     QString os;
     QPushButton *submitBugButton;
-    KURL url;
+    KUrl url;
     QList<QRadioButton*> severityButtons;
     int currentSeverity() {
     	for (int i=0;i<severityButtons.count();i++)
@@ -291,7 +291,7 @@ KBugReport::~KBugReport()
 
 void KBugReport::updateURL()
 {
-    KURL url ( "http://bugs.kde.org/wizard.cgi" );
+    KUrl url ( "http://bugs.kde.org/wizard.cgi" );
     url.addQueryItem( "os", d->os );
     url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
     url.addQueryItem( "kdeVersion", d->kde_version );

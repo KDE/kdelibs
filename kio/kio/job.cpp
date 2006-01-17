@@ -397,7 +397,7 @@ MetaData Job::outgoingMetaData() const
 }
 
 
-SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
+SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command), m_totalSize(0)
@@ -413,9 +413,9 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
 
     if (m_url.hasSubURL())
     {
-       KURL::List list = KURL::split(m_url);
+       KUrl::List list = KUrl::split(m_url);
        list.removeLast();
-       m_subUrl = KURL::join(list);
+       m_subUrl = KUrl::join(list);
        //kdDebug(7007) << "New URL = "  << m_url.url() << endl;
        //kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
     }
@@ -549,13 +549,13 @@ void SimpleJob::slotFinished( )
             KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
             if ( m_command == CMD_MKDIR )
             {
-                KURL urlDir( url() );
+                KUrl urlDir( url() );
                 urlDir.setPath( urlDir.directory() );
                 allDirNotify.FilesAdded( urlDir );
             }
             else /*if ( m_command == CMD_RENAME )*/
             {
-                KURL src, dst;
+                KUrl src, dst;
                 QDataStream str( m_packedArgs );
                 str >> src >> dst;
                 if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
@@ -643,17 +643,17 @@ void SimpleJob::slotMetaData( const KIO::MetaData &_metaData)
     m_incomingMetaData += _metaData;
 }
 
-void SimpleJob::storeSSLSessionFromJob(const KURL &m_redirectionURL) {
+void SimpleJob::storeSSLSessionFromJob(const KUrl &m_redirectionURL) {
     QString sslSession = queryMetaData("ssl_session_id");
 
     if ( !sslSession.isNull() ) {
-	    const KURL &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
+	    const KUrl &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
 	    KSSLCSessionCache::putSessionForURL(queryURL, sslSession);
     }
 }
 
 //////////
-MkdirJob::MkdirJob( const KURL& url, int command,
+MkdirJob::MkdirJob( const KUrl& url, int command,
                     const QByteArray &packedArgs, bool showProgressInfo )
     : SimpleJob(url, command, packedArgs, showProgressInfo)
 {
@@ -661,14 +661,14 @@ MkdirJob::MkdirJob( const KURL& url, int command,
 
 void MkdirJob::start(Slave *slave)
 {
-    connect( slave, SIGNAL( redirection(const KURL &) ),
-             SLOT( slotRedirection(const KURL &) ) );
+    connect( slave, SIGNAL( redirection(const KUrl &) ),
+             SLOT( slotRedirection(const KUrl &) ) );
 
     SimpleJob::start(slave);
 }
 
 // Slave got a redirection request
-void MkdirJob::slotRedirection( const KURL &url)
+void MkdirJob::slotRedirection( const KUrl &url)
 {
      kdDebug(7007) << "MkdirJob::slotRedirection(" << url << ")" << endl;
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
@@ -695,13 +695,13 @@ void MkdirJob::slotFinished()
         //kdDebug(7007) << "MkdirJob: Redirection to " << m_redirectionURL << endl;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, m_url, m_redirectionURL);
-        KURL dummyUrl;
+        KUrl dummyUrl;
         int permissions;
         QDataStream istream( m_packedArgs );
         istream >> dummyUrl >> permissions;
 
         m_url = m_redirectionURL;
-        m_redirectionURL = KURL();
+        m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
         QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url << permissions;
@@ -712,42 +712,42 @@ void MkdirJob::slotFinished()
     }
 }
 
-SimpleJob *KIO::mkdir( const KURL& url, int permissions )
+SimpleJob *KIO::mkdir( const KUrl& url, int permissions )
 {
     //kdDebug(7007) << "mkdir " << url << endl;
     KIO_ARGS << url << permissions;
     return new MkdirJob(url, CMD_MKDIR, packedArgs, false);
 }
 
-SimpleJob *KIO::rmdir( const KURL& url )
+SimpleJob *KIO::rmdir( const KUrl& url )
 {
     //kdDebug(7007) << "rmdir " << url << endl;
     KIO_ARGS << url << qint8(false); // isFile is false
     return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
 
-SimpleJob *KIO::chmod( const KURL& url, int permissions )
+SimpleJob *KIO::chmod( const KUrl& url, int permissions )
 {
     //kdDebug(7007) << "chmod " << url << endl;
     KIO_ARGS << url << permissions;
     return new SimpleJob(url, CMD_CHMOD, packedArgs, false);
 }
 
-SimpleJob *KIO::rename( const KURL& src, const KURL & dest, bool overwrite )
+SimpleJob *KIO::rename( const KUrl& src, const KUrl & dest, bool overwrite )
 {
     //kdDebug(7007) << "rename " << src << " " << dest << endl;
     KIO_ARGS << src << dest << (qint8) overwrite;
     return new SimpleJob(src, CMD_RENAME, packedArgs, false);
 }
 
-SimpleJob *KIO::symlink( const QString& target, const KURL & dest, bool overwrite, bool showProgressInfo )
+SimpleJob *KIO::symlink( const QString& target, const KUrl & dest, bool overwrite, bool showProgressInfo )
 {
     //kdDebug(7007) << "symlink target=" << target << " " << dest << endl;
     KIO_ARGS << target << dest << (qint8) overwrite;
     return new SimpleJob(dest, CMD_SYMLINK, packedArgs, showProgressInfo);
 }
 
-SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgressInfo)
+SimpleJob *KIO::special(const KUrl& url, const QByteArray & data, bool showProgressInfo)
 {
     //kdDebug(7007) << "special " << url << endl;
     return new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
@@ -757,7 +757,7 @@ SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QS
 {
     KIO_ARGS << int(1) << qint8( ro ? 1 : 0 )
              << QString::fromLatin1(fstype) << dev << point;
-    SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
+    SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
          Observer::self()->mounting( job, dev, point );
     return job;
@@ -766,7 +766,7 @@ SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QS
 SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(2) << point;
-    SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
+    SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
          Observer::self()->unmounting( job, point );
     return job;
@@ -776,7 +776,7 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 
 //////////
 
-StatJob::StatJob( const KURL& url, int command,
+StatJob::StatJob( const KUrl& url, int command,
                   const QByteArray &packedArgs, bool showProgressInfo )
     : SimpleJob(url, command, packedArgs, showProgressInfo),
     m_bSource(true), m_details(2)
@@ -790,8 +790,8 @@ void StatJob::start(Slave *slave)
 
     connect( slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
              SLOT( slotStatEntry( const KIO::UDSEntry & ) ) );
-    connect( slave, SIGNAL( redirection(const KURL &) ),
-             SLOT( slotRedirection(const KURL &) ) );
+    connect( slave, SIGNAL( redirection(const KUrl &) ),
+             SLOT( slotRedirection(const KUrl &) ) );
 
     SimpleJob::start(slave);
 }
@@ -803,7 +803,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 }
 
 // Slave got a redirection request
-void StatJob::slotRedirection( const KURL &url)
+void StatJob::slotRedirection( const KUrl &url)
 {
      kdDebug(7007) << "StatJob::slotRedirection(" << url << ")" << endl;
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
@@ -831,7 +831,7 @@ void StatJob::slotFinished()
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, m_url, m_redirectionURL);
         m_url = m_redirectionURL;
-        m_redirectionURL = KURL();
+        m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
         QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
@@ -847,13 +847,13 @@ void StatJob::slotMetaData( const KIO::MetaData &_metaData) {
     storeSSLSessionFromJob(m_redirectionURL);
 }
 
-StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
+StatJob *KIO::stat(const KUrl& url, bool showProgressInfo)
 {
     // Assume sideIsSource. Gets are more common than puts.
     return stat( url, true, 2, showProgressInfo );
 }
 
-StatJob *KIO::stat(const KURL& url, bool sideIsSource, short int details, bool showProgressInfo)
+StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, bool showProgressInfo)
 {
     kdDebug(7007) << "stat " << url << endl;
     KIO_ARGS << url;
@@ -865,7 +865,7 @@ StatJob *KIO::stat(const KURL& url, bool sideIsSource, short int details, bool s
     return job;
 }
 
-SimpleJob *KIO::http_update_cache( const KURL& url, bool no_cache, time_t expireDate)
+SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expireDate)
 {
     assert( (url.protocol() == "http") || (url.protocol() == "https") );
     // Send http update_cache command (2)
@@ -877,7 +877,7 @@ SimpleJob *KIO::http_update_cache( const KURL& url, bool no_cache, time_t expire
 
 //////////
 
-TransferJob::TransferJob( const KURL& url, int command,
+TransferJob::TransferJob( const KUrl& url, int command,
                           const QByteArray &packedArgs,
                           const QByteArray &_staticData,
                           bool showProgressInfo)
@@ -898,7 +898,7 @@ void TransferJob::slotData( const QByteArray &_data)
 }
 
 // Slave got a redirection request
-void TransferJob::slotRedirection( const KURL &url)
+void TransferJob::slotRedirection( const KUrl &url)
 {
      kdDebug(7007) << "TransferJob::slotRedirection(" << url << ")" << endl;
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
@@ -947,10 +947,10 @@ void TransferJob::slotFinished()
             addMetaData("cache","refresh");
         m_suspended = false;
         m_url = m_redirectionURL;
-        m_redirectionURL = KURL();
+        m_redirectionURL = KUrl();
         // The very tricky part is the packed arguments business
         QString dummyStr;
-        KURL dummyUrl;
+        KUrl dummyUrl;
         QDataStream istream( m_packedArgs );
         switch( m_command ) {
             case CMD_GET: {
@@ -1099,8 +1099,8 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL( dataReq() ),
              SLOT( slotDataReq() ) );
 
-    connect( slave, SIGNAL( redirection(const KURL &) ),
-             SLOT( slotRedirection(const KURL &) ) );
+    connect( slave, SIGNAL( redirection(const KUrl &) ),
+             SLOT( slotRedirection(const KUrl &) ) );
 
     connect( slave, SIGNAL(mimeType( const QString& ) ),
              SLOT( slotMimetype( const QString& ) ) );
@@ -1181,7 +1181,7 @@ void TransferJob::slotResult( KIO::Job *job)
    removeSubjob( job );
 }
 
-TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
+TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
@@ -1196,7 +1196,7 @@ class PostErrorJob : public TransferJob
 public:
 
   PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
-      : TransferJob(KURL(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
+      : TransferJob(KUrl(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
     m_error = _error;
     m_errorText = url;
@@ -1204,7 +1204,7 @@ public:
 
 };
 
-TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
+TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, bool showProgressInfo )
 {
     int _error = 0;
 
@@ -1301,14 +1301,14 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
         _error = KIO::ERR_POST_DENIED;
 
     bool redirection = false;
-    KURL _url(url);
+    KUrl _url(url);
     if (_url.path().isEmpty())
     {
       redirection = true;
       _url.setPath("/");
     }
 
-    if (!_error && !KAuthorized::authorizeURLAction("open", KURL(), _url))
+    if (!_error && !KAuthorized::authorizeURLAction("open", KUrl(), _url))
         _error = KIO::ERR_ACCESS_DENIED;
 
     // if request is not valid, return an invalid transfer job
@@ -1341,7 +1341,7 @@ void TransferJob::slotPostRedirection()
 }
 
 
-TransferJob *KIO::put( const KURL& url, int permissions,
+TransferJob *KIO::put( const KUrl& url, int permissions,
                   bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
@@ -1351,7 +1351,7 @@ TransferJob *KIO::put( const KURL& url, int permissions,
 
 //////////
 
-StoredTransferJob::StoredTransferJob(const KURL& url, int command,
+StoredTransferJob::StoredTransferJob(const KUrl& url, int command,
                                      const QByteArray &packedArgs,
                                      const QByteArray &_staticData,
                                      bool showProgressInfo)
@@ -1402,7 +1402,7 @@ void StoredTransferJob::slotStoredDataReq( KIO::Job *, QByteArray &data )
   }
 }
 
-StoredTransferJob *KIO::storedGet( const KURL& url, bool reload, bool showProgressInfo )
+StoredTransferJob *KIO::storedGet( const KUrl& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
@@ -1412,7 +1412,7 @@ StoredTransferJob *KIO::storedGet( const KURL& url, bool reload, bool showProgre
     return job;
 }
 
-StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KURL& url, int permissions,
+StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KUrl& url, int permissions,
                                    bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
@@ -1423,7 +1423,7 @@ StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KURL& url, int p
 
 //////////
 
-MimetypeJob::MimetypeJob( const KURL& url, int command,
+MimetypeJob::MimetypeJob( const KUrl& url, int command,
                   const QByteArray &packedArgs, bool showProgressInfo )
     : TransferJob(url, command, packedArgs, QByteArray(), showProgressInfo)
 {
@@ -1459,7 +1459,7 @@ void MimetypeJob::slotFinished( )
         staticData.truncate(0);
         m_suspended = false;
         m_url = m_redirectionURL;
-        m_redirectionURL = KURL();
+        m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
         QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
@@ -1470,7 +1470,7 @@ void MimetypeJob::slotFinished( )
     }
 }
 
-MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
+MimetypeJob *KIO::mimetype(const KUrl& url, bool showProgressInfo )
 {
     KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
@@ -1481,7 +1481,7 @@ MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
 
 //////////////////////////
 
-DirectCopyJob::DirectCopyJob( const KURL& url, int command,
+DirectCopyJob::DirectCopyJob( const KUrl& url, int command,
                               const QByteArray &packedArgs, bool showProgressInfo )
     : SimpleJob(url, command, packedArgs, showProgressInfo)
 {
@@ -1516,7 +1516,7 @@ public:
  * Tranlated to io-slaves: We alternate between receiving a block of data
  * and sending it away.
  */
-FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
+FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
                           bool move, bool overwrite, bool resume, bool showProgressInfo)
     : Job(showProgressInfo), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
@@ -1616,7 +1616,7 @@ void FileCopyJob::startCopyJob()
     startCopyJob(m_src);
 }
 
-void FileCopyJob::startCopyJob(const KURL &slave_url)
+void FileCopyJob::startCopyJob(const KUrl &slave_url)
 {
     //kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src << m_dest << m_permissions << (qint8) m_overwrite;
@@ -1627,7 +1627,7 @@ void FileCopyJob::startCopyJob(const KURL &slave_url)
              SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
 }
 
-void FileCopyJob::startRenameJob(const KURL &slave_url)
+void FileCopyJob::startRenameJob(const KUrl &slave_url)
 {
     KIO_ARGS << m_src << m_dest << (qint8) m_overwrite;
     m_moveJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
@@ -1907,19 +1907,19 @@ void FileCopyJob::slotResult( KIO::Job *job)
        emitResult();
 }
 
-FileCopyJob *KIO::file_copy( const KURL& src, const KURL& dest, int permissions,
+FileCopyJob *KIO::file_copy( const KUrl& src, const KUrl& dest, int permissions,
                              bool overwrite, bool resume, bool showProgressInfo)
 {
    return new FileCopyJob( src, dest, permissions, false, overwrite, resume, showProgressInfo );
 }
 
-FileCopyJob *KIO::file_move( const KURL& src, const KURL& dest, int permissions,
+FileCopyJob *KIO::file_move( const KUrl& src, const KUrl& dest, int permissions,
                              bool overwrite, bool resume, bool showProgressInfo)
 {
    return new FileCopyJob( src, dest, permissions, true, overwrite, resume, showProgressInfo );
 }
 
-SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
+SimpleJob *KIO::file_delete( const KUrl& src, bool showProgressInfo)
 {
     KIO_ARGS << src << qint8(true); // isFile
     return new SimpleJob(src, CMD_DEL, packedArgs, showProgressInfo );
@@ -1927,7 +1927,7 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
-ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, const QString &_prefix, bool _includeHidden) :
+ListJob::ListJob(const KUrl& u, bool showProgressInfo, bool _recursive, const QString &_prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
     recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)
 {
@@ -1951,7 +1951,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 
             const UDSEntry& entry = *it;
 
-            KURL itemURL;
+            KUrl itemURL;
             const UDSEntry::ConstIterator end2 = entry.end();
             UDSEntry::ConstIterator it2 = entry.find( KIO::UDS_URL );
             if ( it2 != end2 )
@@ -2027,7 +2027,7 @@ void ListJob::slotResult( KIO::Job * job )
         emitResult();
 }
 
-void ListJob::slotRedirection( const KURL & url )
+void ListJob::slotRedirection( const KUrl & url )
 {
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
      {
@@ -2064,7 +2064,7 @@ void ListJob::slotFinished()
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, m_url, m_redirectionURL);
         m_url = m_redirectionURL;
-        m_redirectionURL = KURL();
+        m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
         QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
@@ -2080,13 +2080,13 @@ void ListJob::slotMetaData( const KIO::MetaData &_metaData) {
     storeSSLSessionFromJob(m_redirectionURL);
 }
 
-ListJob *KIO::listDir( const KURL& url, bool showProgressInfo, bool includeHidden )
+ListJob *KIO::listDir( const KUrl& url, bool showProgressInfo, bool includeHidden )
 {
     ListJob * job = new ListJob(url, showProgressInfo,false,QString(),includeHidden);
     return job;
 }
 
-ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo, bool includeHidden )
+ListJob *KIO::listRecursive( const KUrl& url, bool showProgressInfo, bool includeHidden )
 {
     ListJob * job = new ListJob(url, showProgressInfo, true,QString(),includeHidden);
     return job;
@@ -2113,8 +2113,8 @@ void ListJob::start(Slave *slave)
              SLOT( slotListEntries( const KIO::UDSEntryList& )));
     connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
              SLOT( slotTotalSize( KIO::filesize_t ) ) );
-    connect( slave, SIGNAL( redirection(const KURL &) ),
-             SLOT( slotRedirection(const KURL &) ) );
+    connect( slave, SIGNAL( redirection(const KUrl &) ),
+             SLOT( slotRedirection(const KUrl &) ) );
 
     SimpleJob::start(slave);
 }
@@ -2130,7 +2130,7 @@ public:
     // It is copied into m_dest, which can be changed for a given src URL
     // (when using the RENAME dialog in slotResult),
     // and which will be reset for the next src URL.
-    KURL m_globalDest;
+    KUrl m_globalDest;
     // The state info about that global dest
     CopyJob::DestinationState m_globalDestinationState;
     // See setDefaultPermissions
@@ -2139,7 +2139,7 @@ public:
     bool m_bURLDirty;
 };
 
-CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
+CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
     m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
@@ -2204,7 +2204,7 @@ void CopyJob::slotResultStating( Job *job )
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
     {
-        KURL srcurl = ((SimpleJob*)job)->url();
+        KUrl srcurl = ((SimpleJob*)job)->url();
         if ( !srcurl.isLocalFile() )
         {
             // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
@@ -2252,7 +2252,7 @@ void CopyJob::slotResultStating( Job *job )
             d->m_globalDestinationState = destinationState;
 
         if ( !sLocalPath.isEmpty() ) {
-            m_dest = KURL();
+            m_dest = KUrl();
             m_dest.setPath(sLocalPath);
         }
 
@@ -2288,7 +2288,7 @@ void CopyJob::slotResultStating( Job *job )
     m_bCurrentSrcIsDir = false;
     slotEntries(job, lst);
 
-    KURL srcurl;
+    KUrl srcurl;
     if (!sLocalPath.isEmpty())
         srcurl.setPath(sLocalPath);
     else
@@ -2420,7 +2420,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         // recursive listing, displayName can be a/b/c/d
         const QString displayName = entry.stringValue( KIO::UDS_NAME );
         const QString urlStr = entry.stringValue( KIO::UDS_URL );
-        KURL url;
+        KUrl url;
         if ( !urlStr.isEmpty() )
             url = urlStr;
         QString localPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
@@ -2440,7 +2440,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             }
             //kdDebug(7007) << "displayName=" << displayName << " url=" << url << endl;
             if (!localPath.isEmpty()) {
-                url = KURL();
+                url = KUrl();
                 url.setPath(localPath);
             }
 
@@ -2626,9 +2626,9 @@ void CopyJob::statCurrentSrc()
     }
 }
 
-void CopyJob::startRenameJob( const KURL& slave_url )
+void CopyJob::startRenameJob( const KUrl& slave_url )
 {
-    KURL dest = m_dest;
+    KUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest.addPath( m_currentSrcURL.fileName() );
@@ -2654,7 +2654,7 @@ void CopyJob::startRenameJob( const KURL& slave_url )
         m_bOnlyRenames = false;
 }
 
-void CopyJob::startListing( const KURL & src )
+void CopyJob::startListing( const KUrl & src )
 {
     state = STATE_LISTING;
     d->m_bURLDirty = true;
@@ -2667,12 +2667,12 @@ void CopyJob::startListing( const KURL & src )
     addSubjob( newjob );
 }
 
-void CopyJob::skip( const KURL & sourceUrl )
+void CopyJob::skip( const KUrl & sourceUrl )
 {
     // Check if this is one if toplevel sources
     // If yes, remove it from m_srcList, for a correct FilesRemoved() signal
     //kdDebug(7007) << "CopyJob::skip: looking for " << sourceUrl << endl;
-    KURL::List::Iterator sit = m_srcList.find( sourceUrl );
+    KUrl::List::Iterator sit = m_srcList.find( sourceUrl );
     if ( sit != m_srcList.end() )
     {
         //kdDebug(7007) << "CopyJob::skip: removing " << sourceUrl << " from list" << endl;
@@ -2712,7 +2712,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
         if ( (m_conflictError == ERR_DIR_ALREADY_EXIST)
              || (m_conflictError == ERR_FILE_ALREADY_EXIST) )
         {
-            KURL oldURL = ((SimpleJob*)job)->url();
+            KUrl oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
             if ( m_bAutoSkip ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
@@ -2736,7 +2736,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                     assert ( !hasSubjobs() ); // We should have only one job at a time ...
 
                     // We need to stat the existing dir, to get its last-modification time
-                    KURL existingDest( (*it).uDest );
+                    KUrl existingDest( (*it).uDest );
                     SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
                     Scheduler::scheduleJob(newJob);
                     kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest << endl;
@@ -2820,7 +2820,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
         case R_RENAME:
         {
             QString oldPath = (*it).uDest.path( 1 );
-            KURL newUrl( (*it).uDest );
+            KUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
 
@@ -2896,7 +2896,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
 
 void CopyJob::createNextDir()
 {
-    KURL udir;
+    KUrl udir;
     if ( !dirs.isEmpty() )
     {
         // Take first dir to create out of list
@@ -2964,7 +2964,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 removeSubjob( job );
                 assert ( !hasSubjobs() );
                 // We need to stat the existing file, to get its last-modification time
-                KURL existingFile( (*it).uDest );
+                KUrl existingFile( (*it).uDest );
                 SimpleJob * newJob = KIO::stat( existingFile, false, 2, false );
                 Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingFile << endl;
@@ -3114,7 +3114,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             return;
         case R_RENAME:
         {
-            KURL newUrl( (*it).uDest );
+            KUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
@@ -3214,7 +3214,7 @@ void CopyJob::copyNextFile()
                         f.close();
                         KSimpleConfig config( path );
                         config.setDesktopGroup();
-                        KURL url = (*it).uSource;
+                        KUrl url = (*it).uSource;
                         url.setPass( "" );
                         config.writePathEntry( QString::fromLatin1("URL"), url.url() );
                         config.writeEntry( QString::fromLatin1("Name"), url.url() );
@@ -3323,7 +3323,7 @@ void CopyJob::deleteNextDir()
         state = STATE_DELETING_DIRS;
         d->m_bURLDirty = true;
         // Take first dir to delete out of list - last ones first !
-        KURL::List::Iterator it = --dirsToRemove.end();
+        KUrl::List::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
         Scheduler::scheduleJob(job);
         dirsToRemove.remove(it);
@@ -3335,7 +3335,7 @@ void CopyJob::deleteNextDir()
         if ( !m_bOnlyRenames )
         {
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
-            KURL url( d->m_globalDest );
+            KUrl url( d->m_globalDest );
             if ( d->m_globalDestinationState != DEST_IS_DIR || m_asMethod )
                 url.setPath( url.directory() );
             //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url << endl;
@@ -3406,7 +3406,7 @@ void CopyJob::slotResultRenaming( Job* job )
     removeSubjob( job, true ); // merge metadata
     assert ( !hasSubjobs() );
     // Determine dest again
-    KURL dest = m_dest;
+    KUrl dest = m_dest;
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest.addPath( m_currentSrcURL.fileName() );
     if ( err )
@@ -3644,80 +3644,80 @@ void KIO::CopyJob::setInteractive( bool b )
     Job::setInteractive( b );
 }
 
-CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
     //kdDebug(7007) << "KIO::copy src=" << src << " dest=" << dest << endl;
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, false, showProgressInfo );
 }
 
-CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
     //kdDebug(7007) << "KIO::copyAs src=" << src << " dest=" << dest << endl;
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, true, showProgressInfo );
 }
 
-CopyJob *KIO::copy( const KURL::List& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::copy( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
     return new CopyJob( src, dest, CopyJob::Copy, false, showProgressInfo );
 }
 
-CopyJob *KIO::move(const KURL& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::move(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Move, false, showProgressInfo );
 }
 
-CopyJob *KIO::moveAs(const KURL& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Move, true, showProgressInfo );
 }
 
-CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressInfo )
+CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
     return new CopyJob( src, dest, CopyJob::Move, false, showProgressInfo );
 }
 
-CopyJob *KIO::link(const KURL& src, const KURL& destDir, bool showProgressInfo )
+CopyJob *KIO::link(const KUrl& src, const KUrl& destDir, bool showProgressInfo )
 {
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
 }
 
-CopyJob *KIO::link(const KURL::List& srcList, const KURL& destDir, bool showProgressInfo )
+CopyJob *KIO::link(const KUrl::List& srcList, const KUrl& destDir, bool showProgressInfo )
 {
     return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
 }
 
-CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo )
+CopyJob *KIO::linkAs(const KUrl& src, const KUrl& destDir, bool showProgressInfo )
 {
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
 }
 
-CopyJob *KIO::trash(const KURL& src, bool showProgressInfo )
+CopyJob *KIO::trash(const KUrl& src, bool showProgressInfo )
 {
-    KURL::List srcList;
+    KUrl::List srcList;
     srcList.append( src );
-    return new CopyJob( srcList, KURL( "trash:/" ), CopyJob::Move, false, showProgressInfo );
+    return new CopyJob( srcList, KUrl( "trash:/" ), CopyJob::Move, false, showProgressInfo );
 }
 
-CopyJob *KIO::trash(const KURL::List& srcList, bool showProgressInfo )
+CopyJob *KIO::trash(const KUrl::List& srcList, bool showProgressInfo )
 {
-    return new CopyJob( srcList, KURL( "trash:/" ), CopyJob::Move, false, showProgressInfo );
+    return new CopyJob( srcList, KUrl( "trash:/" ), CopyJob::Move, false, showProgressInfo );
 }
 
 //////////
 
-DeleteJob::DeleteJob( const KURL::List& src, bool /*shred*/, bool showProgressInfo )
+DeleteJob::DeleteJob( const KUrl::List& src, bool /*shred*/, bool showProgressInfo )
 : Job(showProgressInfo), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
@@ -3737,8 +3737,8 @@ DeleteJob::DeleteJob( const KURL::List& src, bool /*shred*/, bool showProgressIn
       connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
       m_observer, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
-      connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
-      m_observer, SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );*/
+      connect( this, SIGNAL( deleting( KIO::Job*, const KUrl& ) ),
+      m_observer, SLOT( slotDeleting( KIO::Job*, const KUrl& ) ) );*/
 
      m_reportTimer=new QTimer(this);
      connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
@@ -3800,7 +3800,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         assert(!displayName.isEmpty());
         if (displayName != ".." && displayName != ".")
         {
-            KURL url;
+            KUrl url;
             const QString urlStr = entry.stringValue( KIO::UDS_URL );
             if ( !urlStr.isEmpty() )
                 url = urlStr;
@@ -3871,7 +3871,7 @@ void DeleteJob::deleteNextFile()
         SimpleJob *job;
         do {
             // Take first file to delete out of list
-            KURL::List::Iterator it = files.begin();
+            KUrl::List::Iterator it = files.begin();
             bool isLink = false;
             if ( it == files.end() ) // No more files
             {
@@ -3914,7 +3914,7 @@ void DeleteJob::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KURL::List::Iterator it = --dirs.end();
+            KUrl::List::Iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
 
@@ -4001,7 +4001,7 @@ void DeleteJob::slotResult( Job *job )
         }
 
         const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-        const KURL url = static_cast<SimpleJob*>(job)->url();
+        const KUrl url = static_cast<SimpleJob*>(job)->url();
         const bool isLink = entry.isLink();
 
         removeSubjob( job );
@@ -4090,24 +4090,24 @@ void DeleteJob::slotResult( Job *job )
     }
 }
 
-DeleteJob *KIO::del( const KURL& src, bool shred, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl& src, bool shred, bool showProgressInfo )
 {
-  KURL::List srcList;
+  KUrl::List srcList;
   srcList.append( src );
   DeleteJob *job = new DeleteJob( srcList, shred, showProgressInfo );
   return job;
 }
 
-DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl::List& src, bool shred, bool showProgressInfo )
 {
   DeleteJob *job = new DeleteJob( src, shred, showProgressInfo );
   return job;
 }
 
-MultiGetJob::MultiGetJob(const KURL& url,
+MultiGetJob::MultiGetJob(const KUrl& url,
                          bool showProgressInfo)
  : TransferJob(url, 0, QByteArray(), QByteArray(), showProgressInfo),
-   m_currentEntry( 0, KURL(), MetaData() )
+   m_currentEntry( 0, KUrl(), MetaData() )
 {
 }
 
@@ -4115,7 +4115,7 @@ MultiGetJob::~MultiGetJob()
 {
 }
 
-void MultiGetJob::get(long id, const KURL &url, const MetaData &metaData)
+void MultiGetJob::get(long id, const KUrl &url, const MetaData &metaData)
 {
    GetRequest entry(id, url, metaData);
    entry.metaData["request-id"] = QString::number(id);
@@ -4210,7 +4210,7 @@ bool MultiGetJob::findCurrentEntry()
    }
 }
 
-void MultiGetJob::slotRedirection( const KURL &url)
+void MultiGetJob::slotRedirection( const KUrl &url)
 {
   if (!findCurrentEntry()) return; // Error
   if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
@@ -4233,7 +4233,7 @@ void MultiGetJob::slotFinished()
      // No redirection, tell the world that we are finished.
      emit result(m_currentEntry.id);
   }
-  m_redirectionURL = KURL();
+  m_redirectionURL = KUrl();
   m_error = 0;
   m_incomingMetaData.clear();
   m_activeQueue.removeAll(m_currentEntry);
@@ -4278,7 +4278,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
   emit mimetype(m_currentEntry.id, _mimetype);
 }
 
-MultiGetJob *KIO::multi_get(long id, const KURL &url, const MetaData &metaData)
+MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)
 {
     MultiGetJob * job = new MultiGetJob( url, false );
     job->get(id, url, metaData);
@@ -4287,7 +4287,7 @@ MultiGetJob *KIO::multi_get(long id, const KURL &url, const MetaData &metaData)
 
 
 #ifdef CACHE_INFO
-CacheInfo::CacheInfo(const KURL &url)
+CacheInfo::CacheInfo(const KUrl &url)
 {
     m_url = url;
 }

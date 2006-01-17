@@ -36,7 +36,7 @@ public:
 	PlayObjectCreator(Arts::SoundServerV2 server);
 	~PlayObjectCreator();
 
-	bool create(const KURL& url, bool createBUS, const QObject* receiver, const char* slot);
+	bool create(const KUrl& url, bool createBUS, const QObject* receiver, const char* slot);
 
 Q_SIGNALS:
 	void playObjectCreated(Arts::PlayObject playObject);

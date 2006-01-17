@@ -22,7 +22,7 @@ int main ( int argc, char** argv )
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() < 1 )
         KCmdLineArgs::usage();
-    KURL u = args->url( 0 );
+    KUrl u = args->url( 0 );
 
     // This is the test for the KPropertiesDialog constructor that is now
     // documented to NOT work. Passing only a URL means a KIO::stat will happen,

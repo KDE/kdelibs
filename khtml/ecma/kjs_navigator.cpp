@@ -178,7 +178,7 @@ bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 
 ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
 {
-  KURL url = m_part->url();
+  KUrl url = m_part->url();
   QString userAgent = url.host();
   if (userAgent.isEmpty())
      userAgent = "localhost";

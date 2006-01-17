@@ -134,7 +134,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   return result;
 }
 
-bool KURL::isRelativeURL(const QString &_url)
+bool KUrl::isRelativeURL(const QString &_url)
 {
 #if 0
   // would this work?
@@ -162,25 +162,25 @@ bool KURL::isRelativeURL(const QString &_url)
   return true; // Relative URL
 }
 
-KURL::List::List(const KURL &url)
+KUrl::List::List(const KUrl &url)
 {
     append( url );
 }
 
-KURL::List::List(const QStringList &list)
+KUrl::List::List(const QStringList &list)
 {
   for (QStringList::ConstIterator it = list.begin();
        it != list.end();
        it++)
     {
-      append( KURL(*it) );
+      append( KUrl(*it) );
     }
 }
 
-QStringList KURL::List::toStringList() const
+QStringList KUrl::List::toStringList() const
 {
   QStringList lst;
-   for( KURL::List::ConstIterator it = begin();
+   for( KUrl::List::ConstIterator it = begin();
         it != end();
         it++)
    {
@@ -190,13 +190,13 @@ QStringList KURL::List::toStringList() const
 }
 
 
-void KURL::List::populateMimeData( QMimeData* mimeData,
-                                const KURL::MetaDataMap& metaData,
+void KUrl::List::populateMimeData( QMimeData* mimeData,
+                                const KUrl::MetaDataMap& metaData,
                                 MimeDataFlags flags )
 {
     QList<QByteArray> urlStringList;
-    KURL::List::ConstIterator uit = begin();
-    const KURL::List::ConstIterator uEnd = end();
+    KUrl::List::ConstIterator uit = begin();
+    const KUrl::List::ConstIterator uEnd = end();
     for ( ; uit != uEnd ; ++uit )
     {
         // Get each URL encoded in utf8 - and since we get it in escaped
@@ -212,7 +212,7 @@ void KURL::List::populateMimeData( QMimeData* mimeData,
     }
     mimeData->setData( "text/uri-list", uriListData );
 
-    if ( ( flags & KURL::NoTextExport ) == 0 )
+    if ( ( flags & KUrl::NoTextExport ) == 0 )
     {
         QStringList prettyURLsList;
         for ( uit = begin(); uit != uEnd ; ++uit )
@@ -227,7 +227,7 @@ void KURL::List::populateMimeData( QMimeData* mimeData,
     if ( !metaData.isEmpty() )
     {
         QByteArray metaDataData; // :)
-        for( KURL::MetaDataMap::const_iterator it = metaData.begin(); it != metaData.end(); ++it )
+        for( KUrl::MetaDataMap::const_iterator it = metaData.begin(); it != metaData.end(); ++it )
         {
             metaDataData += it.key().toUtf8();
             metaDataData += "$@@$";
@@ -238,14 +238,14 @@ void KURL::List::populateMimeData( QMimeData* mimeData,
     }
 }
 
-bool KURL::List::canDecode( const QMimeData *mimeData )
+bool KUrl::List::canDecode( const QMimeData *mimeData )
 {
     return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-kde-urilist" );
 }
 
-KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData )
+KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData )
 {
-    KURL::List uris;
+    KUrl::List uris;
     // x-kde-urilist is the same format as text/uri-list, but contains
     // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
     // local files. So we look at it first for decoding, but we let apps set it when encoding.
@@ -263,7 +263,7 @@ KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMa
                 c++;
             QByteArray s( d+f, c-f );
             if ( s[0] != '#' ) // non-comment?
-                uris.append( KURL::fromMimeDataByteArray( s ) );
+                uris.append( KUrl::fromMimeDataByteArray( s ) );
             // Skip junk
             while ( c < payload.size() && d[c] &&
                     ( d[c] == '\n' || d[c] == '\r' ) )
@@ -296,51 +296,51 @@ KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMa
 
 ////
 
-KURL::KURL()
+KUrl::KUrl()
     : QUrl()
 {
 }
 
-KURL::~KURL()
+KUrl::~KUrl()
 {
 }
 
 
-KURL::KURL( const QString &url )
+KUrl::KUrl( const QString &url )
     // : QUrl( url )  can't do that
 {
     setEncodedUrl( url.toUtf8(), QUrl::TolerantMode );
 }
 
-KURL::KURL( const char * url )
+KUrl::KUrl( const char * url )
     // : QUrl( QLatin1String(url) )
 {
     setEncodedUrl( url, QUrl::TolerantMode );
 }
 
-KURL::KURL( const QByteArray& url )
+KUrl::KUrl( const QByteArray& url )
     // : QUrl( QLatin1String(url) )
 {
     setEncodedUrl( url, QUrl::TolerantMode );
 }
 
-KURL::KURL( const KURL& _u )
+KUrl::KUrl( const KUrl& _u )
     : QUrl( _u )
 {
 }
 
-KURL::KURL( const QUrl &u )
+KUrl::KUrl( const QUrl &u )
     : QUrl( u )
 {
 }
 
-KURL::KURL( const KURL& _u, const QString& _rel_url )
+KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
 {
 #if 0
   if (_u.hasSubURL()) // Operate on the last suburl, not the first
   {
-    KURL::List lst = split( _u );
-    KURL u(lst.last(), _rel_url);
+    KUrl::List lst = split( _u );
+    KUrl u(lst.last(), _rel_url);
     lst.erase( --lst.end() );
     lst.append( u );
     *this = join( lst );
@@ -406,14 +406,14 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
     }
     setPath( strPath );
     kdDebug() << "url()=" << url() << " rUrl=" << rUrl << endl;
-    KURL tmp( url() + rUrl);
+    KUrl tmp( url() + rUrl);
     kdDebug() << "assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     cleanPath(false);
   }
   else
   {
-    KURL tmp( rUrl );
+    KUrl tmp( rUrl );
     kdDebug() << "not relative; assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     // Preserve userinfo if applicable.
@@ -426,25 +426,25 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
   }
 }
 
-bool KURL::operator==( const KURL& _u ) const
+bool KUrl::operator==( const KUrl& _u ) const
 {
   if ( !isValid() || !_u.isValid() )
     return false;
   return QUrl::operator==( _u );;
 }
 
-bool KURL::operator==( const QString& _u ) const
+bool KUrl::operator==( const QString& _u ) const
 {
-  KURL u( _u );
+  KUrl u( _u );
   return ( *this == u );
 }
 
-bool KURL::cmp( const KURL &u, bool ignore_trailing ) const
+bool KUrl::cmp( const KUrl &u, bool ignore_trailing ) const
 {
   return equals( u, ignore_trailing );
 }
 
-bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
+bool KUrl::equals( const KUrl &_u, bool ignore_trailing ) const
 {
   if ( !isValid() || !_u.isValid() )
     return false;
@@ -468,7 +468,7 @@ bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
   return ( *this == _u );
 }
 
-void KURL::setFileName( const QString& _txt )
+void KUrl::setFileName( const QString& _txt )
 {
   setFragment( QString() );
   int i = 0;
@@ -509,7 +509,7 @@ void KURL::setFileName( const QString& _txt )
   cleanPath();
 }
 
-void KURL::cleanPath( bool cleanDirSeparator )
+void KUrl::cleanPath( bool cleanDirSeparator )
 {
   //if (m_iUriMode != URL) return;
   const QString newPath = cleanpath(path(), cleanDirSeparator, false);
@@ -550,7 +550,7 @@ static QString trailingSlash( int _trailing, const QString &path )
   }
 }
 
-void KURL::adjustPath( int _trailing )
+void KUrl::adjustPath( int _trailing )
 {
 #if 0
   if (!m_strPath_encoded.isEmpty())
@@ -564,7 +564,7 @@ void KURL::adjustPath( int _trailing )
 }
 
 
-QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
+QString KUrl::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
 {
   QString tmp;
 #if 0
@@ -597,7 +597,7 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
 }
 
 #if 0
-void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
+void KUrl::setEncodedPath( const QString& _txt, int encoding_hint )
 {
   m_strPath_encoded = _txt;
 
@@ -611,7 +611,7 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 }
 #endif
 
-void KURL::setEncodedPathAndQuery( const QString& _txt )
+void KUrl::setEncodedPathAndQuery( const QString& _txt )
 {
   int pos = _txt.indexOf( '?' );
   if ( pos == -1 )
@@ -626,12 +626,12 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   }
 }
 
-QString KURL::path( int _trailing ) const
+QString KUrl::path( int _trailing ) const
 {
   return trailingSlash( _trailing, path() );
 }
 
-bool KURL::isLocalFile() const
+bool KUrl::isLocalFile() const
 {
   if ( ( scheme() != fileProt ) || hasSubURL() )
      return false;
@@ -650,7 +650,7 @@ bool KURL::isLocalFile() const
   return (host() == hostname);
 }
 
-void KURL::setFileEncoding(const QString &encoding)
+void KUrl::setFileEncoding(const QString &encoding)
 {
   if (!isLocalFile())
      return;
@@ -679,7 +679,7 @@ void KURL::setFileEncoding(const QString &encoding)
      _setQuery(args.join("&"));
 }
 
-QString KURL::fileEncoding() const
+QString KUrl::fileEncoding() const
 {
   if (!isLocalFile())
      return QString();
@@ -704,7 +704,7 @@ QString KURL::fileEncoding() const
   return QString();
 }
 
-bool KURL::hasSubURL() const
+bool KUrl::hasSubURL() const
 {
   if ( scheme().isEmpty() || !isValid() )
     return false;
@@ -728,7 +728,7 @@ bool KURL::hasSubURL() const
   return false;
 }
 
-QString KURL::url( int _trailing ) const
+QString KUrl::url( int _trailing ) const
 {
   if ( _trailing == +1 && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1, so that one is a bit tricky.
@@ -741,7 +741,7 @@ QString KURL::url( int _trailing ) const
   return QLatin1String( toEncoded( _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
-QString KURL::prettyURL( int _trailing ) const
+QString KUrl::prettyURL( int _trailing ) const
 {
   // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
   // So prettyURL is just url, with the password removed.
@@ -760,7 +760,7 @@ QString KURL::prettyURL( int _trailing ) const
 }
 
 #if 0
-QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
+QString KUrl::prettyURL( int _trailing, AdjustementFlags _flags) const
 {
   QString u = prettyURL(_trailing);
   if (_flags & StripFileProtocol && u.startsWith("file://")) {
@@ -773,7 +773,7 @@ QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 }
 #endif
 
-QString KURL::pathOrURL() const
+QString KUrl::pathOrURL() const
 {
   if ( isLocalFile() && fragment().isNull() && encodedQuery().isNull() ) {
     return path();
@@ -782,7 +782,7 @@ QString KURL::pathOrURL() const
   }
 }
 
-QString KURL::toMimeDataString() const // don't fold this into populateMimeData, it's also needed by other code like konqdrag
+QString KUrl::toMimeDataString() const // don't fold this into populateMimeData, it's also needed by other code like konqdrag
 {
   if ( isLocalFile() )
   {
@@ -815,28 +815,28 @@ QString KURL::toMimeDataString() const // don't fold this into populateMimeData,
   return url(0 /*, 106*/); // 106 is mib enum for utf8 codec
 }
 
-KURL KURL::fromMimeDataByteArray( const QByteArray& str )
+KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
 {
   if ( str.startsWith( "file:" ) )
-    return KURL( str /*, QTextCodec::codecForLocale()->mibEnum()*/ );
+    return KUrl( str /*, QTextCodec::codecForLocale()->mibEnum()*/ );
 
-  return KURL( str /*, 106*/ ); // 106 is mib enum for utf8 codec;
+  return KUrl( str /*, 106*/ ); // 106 is mib enum for utf8 codec;
 }
 
-KURL::List KURL::split( const KURL& _url )
+KUrl::List KUrl::split( const KUrl& _url )
 {
   QString ref;
-  KURL::List lst;
-  KURL url = _url;
+  KUrl::List lst;
+  KUrl url = _url;
 
   while(true)
   {
-     KURL u = url;
+     KUrl u = url;
      u.setFragment( QString() );
      lst.append(u);
      if (url.hasSubURL())
      {
-        url = KURL(url.fragment());
+        url = KUrl(url.fragment());
      }
      else
      {
@@ -846,7 +846,7 @@ KURL::List KURL::split( const KURL& _url )
   }
 
   // Set HTML ref in all URLs.
-  KURL::List::Iterator it;
+  KUrl::List::Iterator it;
   for( it = lst.begin() ; it != lst.end(); ++it )
   {
      (*it).setFragment( ref );
@@ -855,23 +855,23 @@ KURL::List KURL::split( const KURL& _url )
   return lst;
 }
 
-KURL::List KURL::split( const QString& _url )
+KUrl::List KUrl::split( const QString& _url )
 {
-  return split(KURL(_url));
+  return split(KUrl(_url));
 }
 
-KURL KURL::join( const KURL::List & lst )
+KUrl KUrl::join( const KUrl::List & lst )
 {
-  if (lst.isEmpty()) return KURL();
-  KURL tmp;
+  if (lst.isEmpty()) return KUrl();
+  KUrl tmp;
 
 
   bool first = true;
-  QListIterator<KURL> it(lst);
+  QListIterator<KUrl> it(lst);
   it.toBack();
   while (it.hasPrevious())
   {
-     KURL u(it.previous());
+     KUrl u(it.previous());
      if (!first)
      {
          // ##### problem: this encodes the '#' into %23 every time,
@@ -886,11 +886,11 @@ KURL KURL::join( const KURL::List & lst )
   return tmp;
 }
 
-QString KURL::fileName( bool _strip_trailing_slash ) const
+QString KUrl::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
   if (hasSubURL()) { // If we have a suburl, then return the filename from there
-    KURL::List list = KURL::split(*this);
+    KUrl::List list = KUrl::split(*this);
     return list.last().fileName(_strip_trailing_slash);
   }
   const QString path = this->path();
@@ -946,12 +946,12 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   return fname;
 }
 
-void KURL::addPath( const QString& _txt )
+void KUrl::addPath( const QString& _txt )
 {
   if (hasSubURL())
   {
-     KURL::List lst = split( *this );
-     KURL &u = lst.last();
+     KUrl::List lst = split( *this );
+     KUrl &u = lst.last();
      u.addPath(_txt);
      *this = join( lst );
      return;
@@ -982,7 +982,7 @@ void KURL::addPath( const QString& _txt )
   //kdDebug(126)<<"addPath: resultpath="<<path()<<endl;
 }
 
-QString KURL::directory( bool _strip_trailing_slash_from_result,
+QString KUrl::directory( bool _strip_trailing_slash_from_result,
                          bool _ignore_trailing_slash_in_path ) const
 {
   QString result = path(); //m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
@@ -1016,15 +1016,15 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 }
 
 
-bool KURL::cd( const QString& _dir )
+bool KUrl::cd( const QString& _dir )
 {
   if ( _dir.isEmpty() || !isValid() )
     return false;
 
   if (hasSubURL())
   {
-     KURL::List lst = split( *this );
-     KURL &u = lst.last();
+     KUrl::List lst = split( *this );
+     KUrl &u = lst.last();
      u.cd(_dir);
      *this = join( lst );
      return true;
@@ -1069,18 +1069,18 @@ bool KURL::cd( const QString& _dir )
   return true;
 }
 
-KURL KURL::upURL( ) const
+KUrl KUrl::upURL( ) const
 {
   if (!encodedQuery().isEmpty())
   {
-     KURL u(*this);
+     KUrl u(*this);
      u.setEncodedQuery(QByteArray());
      return u;
   };
 
   if (!hasSubURL())
   {
-     KURL u(*this);
+     KUrl u(*this);
 
      u.cd("../");
 
@@ -1088,12 +1088,12 @@ KURL KURL::upURL( ) const
   }
 
   // We have a subURL.
-  KURL::List lst = split( *this );
+  KUrl::List lst = split( *this );
   if (lst.isEmpty())
-      return KURL(); // Huh?
+      return KUrl(); // Huh?
   while (true)
   {
-     KURL &u = lst.last();
+     KUrl &u = lst.last();
      const QString old = u.path();
      u.cd("../");
      if (u.path() != old)
@@ -1105,7 +1105,7 @@ KURL KURL::upURL( ) const
   return join( lst );
 }
 
-QString KURL::htmlRef() const
+QString KUrl::htmlRef() const
 {
   if ( !hasSubURL() )
   {
@@ -1116,7 +1116,7 @@ QString KURL::htmlRef() const
   return QUrl::fromPercentEncoding( (*lst.begin()).ref().toLatin1() );
 }
 
-QString KURL::encodedHtmlRef() const
+QString KUrl::encodedHtmlRef() const
 {
   if ( !hasSubURL() )
   {
@@ -1127,7 +1127,7 @@ QString KURL::encodedHtmlRef() const
   return (*lst.begin()).ref();
 }
 
-void KURL::setHTMLRef( const QString& _ref )
+void KUrl::setHTMLRef( const QString& _ref )
 {
   if ( !hasSubURL() )
   {
@@ -1142,7 +1142,7 @@ void KURL::setHTMLRef( const QString& _ref )
   *this = join( lst );
 }
 
-bool KURL::hasHTMLRef() const
+bool KUrl::hasHTMLRef() const
 {
   if ( !hasSubURL() )
   {
@@ -1153,7 +1153,7 @@ bool KURL::hasHTMLRef() const
   return (*lst.begin()).hasRef();
 }
 
-void KURL::setDirectory( const QString &dir)
+void KUrl::setDirectory( const QString &dir)
 {
   if ( dir.endsWith("/"))
      setPath(dir);
@@ -1161,7 +1161,7 @@ void KURL::setDirectory( const QString &dir)
      setPath(dir+"/");
 }
 
-void KURL::setQuery( const QString &_txt )
+void KUrl::setQuery( const QString &_txt )
 {
    if (!_txt.isEmpty() && _txt[0] == '?')
       _setQuery( _txt.length() > 1 ? _txt.mid(1) : "" /*empty, not null*/ );
@@ -1169,12 +1169,12 @@ void KURL::setQuery( const QString &_txt )
       _setQuery( _txt );
 }
 
-void KURL::_setQuery( const QString& query )
+void KUrl::_setQuery( const QString& query )
 {
     setEncodedQuery( query.isNull() ? 0 : query.ascii() ); // ### TODO encoding ok?
 }
 
-QString KURL::query() const
+QString KUrl::query() const
 {
     // For now we'll ignore the case of "a query but it's empty", waiting for Qt-4.2
     const bool hasQuery = !encodedQuery().isEmpty();
@@ -1200,8 +1200,8 @@ bool urlcmp( const QString& _url1, const QString& _url2 )
   if ( _url1.isEmpty() || _url2.isEmpty() )
     return false;
 
-  KURL::List list1 = KURL::split( _url1 );
-  KURL::List list2 = KURL::split( _url2 );
+  KUrl::List list1 = KUrl::split( _url1 );
+  KUrl::List list2 = KUrl::split( _url2 );
 
   // Malformed ?
   if ( list1.isEmpty() || list2.isEmpty() )
@@ -1230,8 +1230,8 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
   if ( _url1.isEmpty() || _url2.isEmpty() )
     return false;
 
-  KURL::List list1 = KURL::split( _url1 );
-  KURL::List list2 = KURL::split( _url2 );
+  KUrl::List list1 = KUrl::split( _url1 );
+  KUrl::List list2 = KUrl::split( _url2 );
 
   // Malformed ?
   if ( list1.isEmpty() || list2.isEmpty() )
@@ -1247,8 +1247,8 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
     (*list2.begin()).setRef(QString());
   }
 
-  KURL::List::Iterator it1 = list1.begin();
-  KURL::List::Iterator it2 = list2.begin();
+  KUrl::List::Iterator it1 = list1.begin();
+  KUrl::List::Iterator it2 = list2.begin();
   for( ; it1 != list1.end() ; ++it1, ++it2 )
     if ( !(*it1).equals( *it2, _ignore_trailing ) )
       return false;
@@ -1257,9 +1257,9 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 }
 
 // static
-KURL KURL::fromPathOrURL( const QString& text )
+KUrl KUrl::fromPathOrURL( const QString& text )
 {
-    KURL url;
+    KUrl url;
     if ( !text.isEmpty() )
     {
         if (!QDir::isRelativePath(text) || text[0] == '~')
@@ -1307,7 +1307,7 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
    return result;
 }
 
-QString KURL::relativePath(const QString &base_dir, const QString &path, bool *isParent)
+QString KUrl::relativePath(const QString &base_dir, const QString &path, bool *isParent)
 {
    bool parent = false;
    QString result = _relativePath(base_dir, path, parent);
@@ -1321,7 +1321,7 @@ QString KURL::relativePath(const QString &base_dir, const QString &path, bool *i
 }
 
 
-QString KURL::relativeURL(const KURL &base_url, const KURL &url)
+QString KUrl::relativeURL(const KUrl &base_url, const KUrl &url)
 {
    if ((url.protocol() != base_url.protocol()) ||
        (url.host() != base_url.host()) ||
@@ -1354,7 +1354,7 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url)
    return relURL;
 }
 
-void KURL::setPath( const QString& _path )
+void KUrl::setPath( const QString& _path )
 {
     if ( scheme().isEmpty() )
         setScheme( "file" );
@@ -1367,7 +1367,7 @@ void KURL::setPath( const QString& _path )
 }
 
 #if 0 // this would be if we didn't decode '+' into ' '
-QMap< QString, QString > KURL::queryItems( int options ) const {
+QMap< QString, QString > KUrl::queryItems( int options ) const {
   QMap< QString, QString > result;
   const QList<QPair<QString, QString> > items = QUrl::queryItems();
   QPair<QString, QString> item;
@@ -1378,7 +1378,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
 }
 #endif
 
-QMap< QString, QString > KURL::queryItems( int options ) const {
+QMap< QString, QString > KUrl::queryItems( int options ) const {
   const QString strQueryEncoded = encodedQuery();
   if ( strQueryEncoded.isEmpty() )
     return QMap<QString,QString>();
@@ -1410,7 +1410,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
   return result;
 }
 
-QString KURL::queryItem( const QString& _item ) const
+QString KUrl::queryItem( const QString& _item ) const
 {
   const QString strQueryEncoded = encodedQuery();
   const QString item = _item + '=';
@@ -1437,7 +1437,7 @@ QString KURL::queryItem( const QString& _item ) const
   return QString();
 }
 
-void KURL::addQueryItem( const QString& _item, const QString& _value )
+void KUrl::addQueryItem( const QString& _item, const QString& _value )
 {
   QString item = _item + '=';
   QString value = QUrl::toPercentEncoding( _value );
@@ -1449,7 +1449,7 @@ void KURL::addQueryItem( const QString& _item, const QString& _value )
   setEncodedQuery( strQueryEncoded.toLatin1() );
 }
 
-bool KURL::hasRef() const
+bool KUrl::hasRef() const
 {
 #if QT_VERSION < 0x040200
     // For now we'll ignore the case of "a fragment but it's empty", waiting for Qt-4.2

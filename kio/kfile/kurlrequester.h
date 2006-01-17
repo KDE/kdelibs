@@ -17,8 +17,8 @@
 */
 
 
-#ifndef KURLREQUESTER_H
-#define KURLREQUESTER_H
+#ifndef KUrlREQUESTER_H
+#define KUrlREQUESTER_H
 
 
 
@@ -71,7 +71,7 @@ public:
 
     /**
      * Constructs a KURLRequester widget with the initial URL @p url.
-     * // TODO KDE4: Use KURL instead
+     * // TODO KDE4: Use KUrl instead
      */
     KURLRequester( const QString& url, QWidget *parent=0);
 
@@ -91,7 +91,7 @@ public:
      * @returns the current url in the lineedit. May be malformed, if the user
      * entered something weird. ~user or environment variables are substituted
      * for local files.
-     * // TODO KDE4: Use KURL so that the result is properly defined
+     * // TODO KDE4: Use KUrl so that the result is properly defined
      */
     QString url() const;
 
@@ -194,7 +194,7 @@ public Q_SLOTS:
      * Sets the url in the lineedit to @p url. Depending on the state of
      * showLocalProtocol(), file:/ on local files will be shown or not.
      * @since 3.1
-     * // TODO KDE4: Use KURL instead
+     * // TODO KDE4: Use KUrl instead
      */
     void setURL( const QString& url );
 
@@ -203,7 +203,7 @@ public Q_SLOTS:
      * @since 3.4
      * // TODO KDE4: rename to setURL
      */
-    void setKURL( const KURL& url );
+    void setKURL( const KUrl& url );
 
     /**
      * Clears the lineedit/combobox.
@@ -246,7 +246,7 @@ Q_SIGNALS:
     /**
      * Emitted when the user changed the URL via the file dialog.
      * The parameter contains the contents of the lineedit.
-     * // TODO KDE4: Use KURL instead
+     * // TODO KDE4: Use KUrl instead
      */
     void urlSelected( const QString& );
 
@@ -291,4 +291,4 @@ public:
 };
 
 
-#endif // KURLREQUESTER_H
+#endif // KUrlREQUESTER_H

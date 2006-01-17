@@ -25,15 +25,15 @@
 #include <kurl.h>
 #include <klocale.h>
 
-KURL smbToUrl(const QString& work, const QString& server, const QString& printer);
-void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer);
+KUrl smbToUrl(const QString& work, const QString& server, const QString& printer);
+void urlToSmb(const KUrl& url, QString& work, QString& server, QString& printer);
 // those 2 are only workarounds when the login/password may contain
 // strange characters ('@', '/'). In this case, those chars are not encoded
 // as other SMB tools (smbspool) doesn't seem to support encoding. This
-// utilities allow to continue working KURL class (and encoding) within
+// utilities allow to continue working KUrl class (and encoding) within
 // KDEPrint, but without encoding outside KDEPrint (shoudl fix bug #38733)
-KURL smbToUrl(const QString& s);
-QString urlToSmb(const KURL& url);
+KUrl smbToUrl(const QString& s);
+QString urlToSmb(const KUrl& url);
 KDEPRINT_EXPORT QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd );
 KDEPRINT_EXPORT bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd );
 KDEPRINT_EXPORT QString shadowPassword( const QString& uri );

@@ -526,7 +526,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 
     QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
     if ( !uniqueTitle.isNull() )
-        parentBookmark.addBookmark( this, uniqueTitle, KURL( url ));
+        parentBookmark.addBookmark( this, uniqueTitle, KUrl( url ));
 
     return parentBookmark;
 }
@@ -636,7 +636,7 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 
 void KBookmarkOwner::openBookmarkURL( const QString& url )
 {
-  (void) new KRun(KURL( url ),(QWidget*)0);
+  (void) new KRun(KUrl( url ),(QWidget*)0);
 }
 
 void KBookmarkOwner::virtual_hook( int, void* )

@@ -61,7 +61,7 @@ static KSSLCSessions *sessions = 0L;
 static KStaticDeleter<KSSLCSessions> med;
 
 
-static QString URLtoKey(const KURL &kurl) {
+static QString URLtoKey(const KUrl &kurl) {
     return kurl.host() + ":" + kurl.protocol() + ":" + QString::number(kurl.port());
 }
 
@@ -74,7 +74,7 @@ static void setup() {
 
 #endif
 
-QString KSSLCSessionCache::getSessionForURL(const KURL &kurl) {
+QString KSSLCSessionCache::getSessionForURL(const KUrl &kurl) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) return QString();
     QString key = URLtoKey(kurl);
@@ -99,7 +99,7 @@ QString KSSLCSessionCache::getSessionForURL(const KURL &kurl) {
 }
 
 
-void KSSLCSessionCache::putSessionForURL(const KURL &kurl, const QString &session) {
+void KSSLCSessionCache::putSessionForURL(const KUrl &kurl, const QString &session) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) setup();
     QString key = URLtoKey(kurl);

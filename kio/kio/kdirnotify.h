@@ -43,14 +43,14 @@ k_dcop:
    * Note: this is ASYNC so that it can be used with a broadcast.
    * @param directory the directory that contains the new files
    */
-  virtual ASYNC FilesAdded( const KURL & directory ) = 0;
+  virtual ASYNC FilesAdded( const KUrl & directory ) = 0;
 
   /**
    * Notify that files have been deleted.
    * Note: this is ASYNC so that it can be used with a broadcast
    * @param fileList the files that have been deleted
    */
-  virtual ASYNC FilesRemoved( const KURL::List & fileList ) = 0;
+  virtual ASYNC FilesRemoved( const KUrl::List & fileList ) = 0;
 
   /**
    * Notify that files have been changed.
@@ -59,7 +59,7 @@ k_dcop:
    * Note: this is ASYNC so that it can be used with a broadcast.
    * @param fileList the list of changed files
    */
-  virtual ASYNC FilesChanged( const KURL::List & fileList ) = 0;
+  virtual ASYNC FilesChanged( const KUrl::List & fileList ) = 0;
 
   /**
    * Notify that a file has been renamed.
@@ -67,7 +67,7 @@ k_dcop:
    * @param src a list containing original names of the renamed files
    * @param dst a list of original names of the renamed files
    */
-  virtual ASYNC FileRenamed( const KURL &src, const KURL &dst );
+  virtual ASYNC FileRenamed( const KUrl &src, const KUrl &dst );
 
   // WARNING: When adding new methods, make sure to update 
   // kdirnotify_stub.cpp and kdirnotify_stub.h manually. 

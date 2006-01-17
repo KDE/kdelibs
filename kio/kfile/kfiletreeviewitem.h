@@ -28,7 +28,7 @@
 #include <kdirlister.h>
 #include <kio/job.h>
 
-class KURL;
+class KUrl;
 class KFileTreeView;
 class KFileTreeBranch;
 class KFileTreeItem;
@@ -60,9 +60,9 @@ public:
    QString path() const;
 
    /**
-    * @return the items KURL
+    * @return the items KUrl
     */
-   KURL    url() const;
+   KUrl    url() const;
 
    /**
     * @return if the item represents a directory

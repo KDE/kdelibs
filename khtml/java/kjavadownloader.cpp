@@ -62,7 +62,7 @@ public:
     }
 private:
     int               loaderID;
-    KURL*             url;
+    KUrl*             url;
     QByteArray        file;
     KIO::TransferJob* job;
     int               responseCode;
@@ -77,7 +77,7 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
 
 
     d->loaderID = ID;
-    d->url = new KURL( url );
+    d->url = new KUrl( url );
 
     d->job = KIO::get( *d->url, false, false );
     d->job->addMetaData("PropagateHttpHeader", "true");
@@ -190,7 +190,7 @@ public:
         if (job) job->kill(); // KIO::Job::kill deletes itself
     }
     int               loaderID;
-    KURL*             url;
+    KUrl*             url;
     QByteArray        file;
     KIO::TransferJob* job;
     bool              finished;
@@ -203,7 +203,7 @@ KJavaUploader::KJavaUploader( int ID, const QString& url )
 
 
     d->loaderID = ID;
-    d->url = new KURL( url );
+    d->url = new KUrl( url );
     d->job = 0L;
     d->finished = false;
 }

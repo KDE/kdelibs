@@ -96,7 +96,7 @@ void XMLHttpRequestQObject::slotFinished( KIO::Job* job )
   jsObject->slotFinished(job);
 }
 
-void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KURL& url)
+void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KUrl& url)
 {
   jsObject->slotRedirection( job, url );
 }
@@ -262,13 +262,13 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
   }
 }
 
-bool XMLHttpRequest::urlMatchesDocumentDomain(const KURL& _url) const
+bool XMLHttpRequest::urlMatchesDocumentDomain(const KUrl& _url) const
 {
   // No need to do work if _url is not valid...
   if (!_url.isValid())
     return false;
 
-  KURL documentURL(doc->URL());
+  KUrl documentURL(doc->URL());
 
   // a local file can load anything
   if (documentURL.protocol().toLower() == "file") {
@@ -285,7 +285,7 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KURL& _url) const
   return false;
 }
 
-void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
+void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
 {
   abort();
   aborted = false;
@@ -365,7 +365,7 @@ void XMLHttpRequest::send(const QString& _body)
   // through setRequestHeader. NOTE: the user can still disable
   // this feature at the protocol level (kio_http).
   if (requestHeaders.find("Referer") == requestHeaders.end()) {
-    KURL documentURL(doc->URL());
+    KUrl documentURL(doc->URL());
     documentURL.setPass(QString());
     documentURL.setUser(QString());
     job->addMetaData("referrer", documentURL.url());
@@ -374,7 +374,7 @@ void XMLHttpRequest::send(const QString& _body)
 
   if (!async) {
     QByteArray data;
-    KURL finalURL;
+    KUrl finalURL;
     QString headers;
 
 #ifdef APPLE_CHANGES
@@ -399,8 +399,8 @@ void XMLHttpRequest::send(const QString& _body)
   qObject->connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
 		    SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
 #endif
-  qObject->connect( job, SIGNAL(redirection(KIO::Job*, const KURL& ) ),
-		    SLOT( slotRedirection(KIO::Job*, const KURL&) ) );
+  qObject->connect( job, SIGNAL(redirection(KIO::Job*, const KUrl& ) ),
+		    SLOT( slotRedirection(KIO::Job*, const KUrl&) ) );
 
 #ifdef APPLE_CHANGES
   KWQServeRequest(khtml::Cache::loader(), doc->docLoader(), job);
@@ -432,7 +432,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
 
   // Sanitize the referrer header to protect against spoofing...
   if(name == "referer") {
-    KURL referrerURL(value);
+    KUrl referrerURL(value);
     if (urlMatchesDocumentDomain(referrerURL))
       requestHeaders[name] = referrerURL.url();
     return;
@@ -443,7 +443,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   // TODO: Do something about "put" which kio_http sort of supports and
   // the webDAV headers such as PROPFIND etc...
   if (name == "get"  || name == "post") {
-    KURL reqURL (doc->URL(), value.stripWhiteSpace());
+    KUrl reqURL (doc->URL(), value.stripWhiteSpace());
     open(name, reqURL, async);
     return;
   }
@@ -545,7 +545,7 @@ ValueImp *XMLHttpRequest::getStatusText() const
   return httpStatus(responseHeaders, true);
 }
 
-void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &finalURL, const QString &headers)
+void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KUrl &finalURL, const QString &headers)
 {
   if (!urlMatchesDocumentDomain(finalURL)) {
     abort();
@@ -589,7 +589,7 @@ void XMLHttpRequest::slotFinished(KIO::Job *)
   decoder = 0;
 }
 
-void XMLHttpRequest::slotRedirection(KIO::Job*, const KURL& url)
+void XMLHttpRequest::slotRedirection(KIO::Job*, const KUrl& url)
 {
   if (!urlMatchesDocumentDomain(url)) {
     abort();
@@ -689,7 +689,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
         return Undefined();
-      KURL url = KURL(part->document().completeURL(args[1]->toString(exec).qstring()).string());
+      KUrl url = KUrl(part->document().completeURL(args[1]->toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {

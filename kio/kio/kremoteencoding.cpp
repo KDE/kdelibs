@@ -57,19 +57,19 @@ QByteArray KRemoteEncoding::encode(const QString& name) const
   return result;
 }
 
-QByteArray KRemoteEncoding::encode(const KURL& url) const
+QByteArray KRemoteEncoding::encode(const KUrl& url) const
 {
   return encode(url.path());
 }
 
-QByteArray KRemoteEncoding::directory(const KURL& url, bool ignore_trailing_slash) const
+QByteArray KRemoteEncoding::directory(const KUrl& url, bool ignore_trailing_slash) const
 {
   QString dir = url.directory(true, ignore_trailing_slash);
 
   return encode(dir);
 }
 
-QByteArray KRemoteEncoding::fileName(const KURL& url) const
+QByteArray KRemoteEncoding::fileName(const KUrl& url) const
 {
   return encode(url.fileName());
 }

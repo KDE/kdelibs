@@ -77,7 +77,7 @@ void KAudioConverter::slotMimeType(const QString &mimeType)
 	qApp->exit_loop();
 }
 
-void KAudioConverter::requestPlayObject(const KURL &url)
+void KAudioConverter::requestPlayObject(const KUrl &url)
 {	
 	string queryInterface = "Arts::PlayObject";
 	

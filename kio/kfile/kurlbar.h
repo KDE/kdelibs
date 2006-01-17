@@ -56,7 +56,7 @@ public:
      * dynamic item, that is not saved with KURLBar::writeConfig().
      * @since 3.2
      */
-    KURLBarItem( KURLBar *parent, const KURL& url, bool persistent,
+    KURLBarItem( KURLBar *parent, const KUrl& url, bool persistent,
                  const QString& description = QString(),
                  const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
@@ -73,7 +73,7 @@ public:
      * @p persistent specifies whether this item is a persistent item or a
      * dynamic item, that is not saved with KURLBar::writeConfig().
      */
-    KURLBarItem( KURLBar *parent, const KURL& url,
+    KURLBarItem( KURLBar *parent, const KUrl& url,
                  const QString& description = QString(),
                  const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
@@ -88,7 +88,7 @@ public:
      * filename/directory of the url, if no description is set.
      * @see url
      */
-    void setURL( const KURL& url );
+    void setURL( const KUrl& url );
     /**
      * @p sets the icon for this item. See KIconLoader for a description
      * of the icon groups.
@@ -125,7 +125,7 @@ public:
      * returns the url of this item.
      * @see setURL
      */
-    const KURL& url() const                     { return m_url; }
+    const KUrl& url() const                     { return m_url; }
     /**
      * returns the description of this item.
      * @see setDescription
@@ -182,7 +182,7 @@ private:
     void init( const QString& icon, KIcon::Group group,
                const QString& description, bool persistent );
 
-    KURL m_url;
+    KUrl m_url;
     QString m_description;
     QString m_icon;
     QString m_toolTip;
@@ -254,7 +254,7 @@ public:
      * @p icon an icon -- if empty, the default icon for the url will be used
      * @p group the icon-group for using icon-effects
      */
-    virtual KURLBarItem * insertItem( const KURL& url,
+    virtual KURLBarItem * insertItem( const KUrl& url,
                                       const QString& description,
                                       bool applicationLocal = true,
                                       const QString& icon = QString(),
@@ -269,7 +269,7 @@ public:
      * @p group the icon-group for using icon-effects
      * @since 3.2
      */
-    virtual KURLBarItem * insertDynamicItem( const KURL& url,
+    virtual KURLBarItem * insertDynamicItem( const KUrl& url,
                                              const QString& description,
                                              const QString& icon = QString(),
                                              KIcon::Group group = KIcon::Panel );
@@ -366,7 +366,7 @@ public:
      * @see currentItem
      * @see setCurrentItem
      */
-    KURL currentURL() const;
+    KUrl currentURL() const;
 
     /**
      * @returns true when the urlbar was modified by the user (e.g. by
@@ -392,14 +392,14 @@ public Q_SLOTS:
      * @see currentItem
      * @see currentURL
      */
-    virtual void setCurrentItem( const KURL& url );
+    virtual void setCurrentItem( const KUrl& url );
 
 Q_SIGNALS:
     /**
      * This signal is emitted when the user activated an item, e.g., by
      * clicking on it.
      */
-    void activated( const KURL& url );
+    void activated( const KUrl& url );
 
 protected:
     /**
@@ -577,7 +577,7 @@ public:
      *
      * See the KURLBarItem constructor for the parameter description.
      */
-    static bool getInformation( bool allowGlobal, KURL& url,
+    static bool getInformation( bool allowGlobal, KUrl& url,
                                 QString& description, QString& icon,
                                 bool& appLocal, int iconSize,
                                 QWidget *parent = 0 );
@@ -599,7 +599,7 @@ public:
      * If you leave the icon empty, the default icon for the given url will be
      * used (KMimeType::pixmapForURL()).
      */
-    KURLBarItemDialog( bool allowGlobal, const KURL& url,
+    KURLBarItemDialog( bool allowGlobal, const KUrl& url,
                        const QString& description, QString icon,
                        bool appLocal = true,
                        int iconSize = KIcon::SizeMedium,
@@ -612,7 +612,7 @@ public:
     /**
      * @returns the configured url
      */
-    KURL url() const;
+    KUrl url() const;
 
     /**
      * @returns the configured description

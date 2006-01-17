@@ -23,7 +23,7 @@
 
 #include "kdelibs_export.h"
 
-class KURL;
+class KUrl;
 class QString;
 class QStringList;
 
@@ -64,7 +64,7 @@ public:
    * @return true when the action is authorized, false otherwise.
    * @since 3.1
    */
-  static bool authorizeURLAction(const QString& action, const KURL& baseURL, const KURL& destURL);
+  static bool authorizeURLAction(const QString& action, const KUrl& baseURL, const KUrl& destURL);
 
   /**
    * Allow a certain URL action. This can be useful if your application
@@ -75,7 +75,7 @@ public:
    * @param _destURL The object of the action
    * @since 3.2
    */
-  static void allowURLAction(const QString& action, const KURL& baseURL, const KURL&  _destURL);
+  static void allowURLAction(const QString& action, const KUrl& baseURL, const KUrl&  _destURL);
 
   /**
    * Returns whether access to a certain control module is authorized.

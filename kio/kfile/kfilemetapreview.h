@@ -27,7 +27,7 @@ public:
     virtual void clearPreviewProviders();
 
 public Q_SLOTS:
-    virtual void showPreview(const KURL &url);
+    virtual void showPreview(const KUrl &url);
     virtual void clearPreview();
 
 protected:

@@ -168,19 +168,19 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 }
 #endif
 
-const KURL PublicService::toInvitation(const QString& host)
+const KUrl PublicService::toInvitation(const QString& host)
 {
-	KURL url;
+	KUrl url;
 	url.setProtocol("invitation");
 	if (host.isEmpty()) { // select best address
 		unsigned long s_address = publicIP();
-		if (!s_address) return KURL();
+		if (!s_address) return KUrl();
 		KNetwork::KIpAddress addr(s_address);
 		url.setHost(addr.toString());
 	} else 	url.setHost(host);
 	//FIXME: if there is no public interface, select any non-loopback
 	url.setPort(m_port);
-	url.setPath("/"+m_type+"/"+KURL::encode_string(m_serviceName));
+	url.setPath("/"+m_type+"/"+KUrl::encode_string(m_serviceName));
 	QString query;
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it)

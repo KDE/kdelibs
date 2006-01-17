@@ -182,13 +182,13 @@ void CSSImportRuleImpl::init()
     CSSStyleSheetImpl *parentSheet = parentStyleSheet();
     if (!parentSheet->href().isNull()) {
       // use parent styleheet's URL as the base URL
-      absHref = KURL(KURL( parentSheet->href().string() ),m_strHref.string()).url();
+      absHref = KUrl(KUrl( parentSheet->href().string() ),m_strHref.string()).url();
     }
 /*
     else {
       // use documents's URL as the base URL
       DocumentImpl *doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-      absHref = KURL(doc->URL(),m_strHref.string()).url();
+      absHref = KUrl(doc->URL(),m_strHref.string()).url();
     }
 */
     // Check for a cycle in our import chain.  If we encounter a stylesheet

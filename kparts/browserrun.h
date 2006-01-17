@@ -50,7 +50,7 @@ namespace KParts {
          * @param hideErrorDialog if true, no dialog will be shown in case of errors.
          * Always pass false for @p trustedSource, except for local directory views.
          */
-        BrowserRun( const KURL& url, const KParts::URLArgs& args,
+        BrowserRun( const KUrl& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
                     bool removeReferrer, bool trustedSource, bool hideErrorDialog = false );
 
@@ -58,7 +58,7 @@ namespace KParts {
 
         //KParts::URLArgs urlArgs() const { return m_args; }
         //KParts::ReadOnlyPart* part() const { return m_part; }
-        KURL url() const { return m_strURL; }
+        KUrl url() const { return m_strURL; }
 
         bool hideErrorDialog() const;
         
@@ -74,7 +74,7 @@ namespace KParts {
          * @param suggestedFilename optional filename suggested by the server
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString() );
+        static AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString() );
         /**
          * Similar to askSave but for the case where the current application is
          * able to embed the url itself (instead of passing it to another app).
@@ -84,17 +84,17 @@ namespace KParts {
          * @param flags reserved for later use
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString(), int flags = 0 );
+        static AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFilename = QString(), int flags = 0 );
 
         // virtual so that KHTML can implement differently (HTML cache)
-        virtual void save( const KURL & url, const QString & suggestedFilename );
+        virtual void save( const KUrl & url, const QString & suggestedFilename );
 
         // static so that it can be called from other classes
-        static void simpleSave( const KURL & url, const QString & suggestedFilename,
+        static void simpleSave( const KUrl & url, const QString & suggestedFilename,
                                 QWidget* window =0 );
 
 
-        static bool allowExecution( const QString &serviceType, const KURL &url );
+        static bool allowExecution( const QString &serviceType, const KUrl &url );
 
         static bool isTextExecutable( const QString &serviceType );
 

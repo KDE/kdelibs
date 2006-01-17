@@ -156,10 +156,10 @@ int main(int argc, char *argv[])
 
    //
    //debug("\nTrying findByURL for Makefile.am");
-   //mf = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
+   //mf = KMimeType::findByURL( KUrl("/tmp/Makefile.am"), 0, true, false );
    //assert( mf );
    //debug(QString("Name is %1").arg(mf->name()));
-   //debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
+   //debug(QString("Comment is %1").arg(mf->comment(KUrl(),false)));
 
 #if 1
    KServiceGroup::Ptr root = KServiceGroup::root();

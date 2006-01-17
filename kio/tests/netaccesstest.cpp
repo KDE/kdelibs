@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 {
   KCmdLineArgs::init(argc,argv,"netaccesstest", 0, 0, 0, 0);
   KApplication app;
-  KURL srcURL( "ftp://ftp.kde.org/pub/kde/README" );
-  KURL tmpURL( "file:/tmp/netaccesstest_README" );
+  KUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
+  KUrl tmpURL( "file:/tmp/netaccesstest_README" );
 
   for ( uint i = 0; i < 4 ; ++i ) {
     kdDebug() << "file_copy" << endl;

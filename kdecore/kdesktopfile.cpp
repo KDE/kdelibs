@@ -187,7 +187,7 @@ QString KDesktopFile::readURL() const
             const KSharedPtr<KMountPoint> mp = *it;
             if (mp->mountedFrom() == device)
             {
-                KURL u;
+                KUrl u;
                 u.setPath( mp->mountPoint() );
                 return u.url();
             }
@@ -198,7 +198,7 @@ QString KDesktopFile::readURL() const
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
-            KURL u;
+            KUrl u;
             u.setPath( url );
             return u.url();
         }

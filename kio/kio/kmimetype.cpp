@@ -158,7 +158,7 @@ KMimeType::List KMimeType::allMimeTypes()
   return KServiceTypeFactory::self()->allMimeTypes();
 }
 
-KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
+KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode )
 {
   checkEssentialMimeTypes();
@@ -283,7 +283,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
-KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
+KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode,
                                      bool *accurate)
 {
@@ -299,7 +299,7 @@ KMimeType::Ptr KMimeType::diagnoseFileName(const QString &fileName, QString &pat
 
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )
 {
-    KURL u;
+    KUrl u;
     u.setPath(path);
     return findByURL( u, mode, true, fast_mode );
 }
@@ -463,7 +463,7 @@ QPixmap KMimeType::pixmap( KIcon::Group _group, int _force_size, int _state,
   return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmap( const KURL& _url, KIcon::Group _group, int _force_size,
+QPixmap KMimeType::pixmap( const KUrl& _url, KIcon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
@@ -479,7 +479,7 @@ QPixmap KMimeType::pixmap( const KURL& _url, KIcon::Group _group, int _force_siz
   return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _group,
+QPixmap KMimeType::pixmapForURL( const KUrl & _url, mode_t _mode, KIcon::Group _group,
                                  int _force_size, int _state, QString * _path )
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
@@ -497,12 +497,12 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _
 
 }
 
-QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
+QString KMimeType::iconForURL( const KUrl & _url, mode_t _mode )
 {
   return iconNameForURL(_url,_mode);
 }
 
-QString KMimeType::iconNameForURL( const KURL & _url, mode_t _mode )
+QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
 {
     const KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
                                          false /*HACK*/);
@@ -527,7 +527,7 @@ QString KMimeType::iconNameForURL( const KURL & _url, mode_t _mode )
     return i;
 }
 
-QString KMimeType::favIconForURL( const KURL& url )
+QString KMimeType::favIconForURL( const KUrl& url )
 {
     // this method will be called quite often, so better not read the config
     // again and again.
@@ -544,7 +544,7 @@ QString KMimeType::favIconForURL( const KURL& url )
         return QString();
 
     DCOPRef kded( "kded", "favicons" );
-    DCOPReply result = kded.call( "iconForURL(KURL)", url );
+    DCOPReply result = kded.call( "iconForURL(KUrl)", url );
     if ( result.isValid() )
         return result;
 
@@ -594,15 +594,15 @@ QString KFolderType::icon( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
-  return KFolderType::icon( KURL(_url), _is_local );
+  return KFolderType::icon( KUrl(_url), _is_local );
 }
 
-QString KFolderType::icon( const KURL& _url, bool _is_local ) const
+QString KFolderType::icon( const KUrl& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
 
-  KURL u( _url );
+  KUrl u( _url );
   u.addPath( ".directory" );
 
   QString icon;
@@ -654,7 +654,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   if ( icon.startsWith( "./" ) ) {
     // path is relative with respect to the location
     // of the .directory file (#73463)
-    KURL v( _url );
+    KUrl v( _url );
     v.addPath( icon.mid( 2 ) );
     icon = v.path();
   }
@@ -667,15 +667,15 @@ QString KFolderType::comment( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
-  return KFolderType::comment( KURL(_url), _is_local );
+  return KFolderType::comment( KUrl(_url), _is_local );
 }
 
-QString KFolderType::comment( const KURL& _url, bool _is_local ) const
+QString KFolderType::comment( const KUrl& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
 
-  KURL u( _url );
+  KUrl u( _url );
   u.addPath( ".directory" );
 
   KSimpleConfig cfg( u.path(), true );
@@ -698,11 +698,11 @@ QString KDEDesktopMimeType::icon( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
-  KURL u( _url );
+  KUrl u( _url );
   return icon( u, _is_local );
 }
 
-QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
+QString KDEDesktopMimeType::icon( const KUrl& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
@@ -728,7 +728,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
       const QString emptyIcon = cfg.readEntry( "EmptyIcon" );
       if ( !emptyIcon.isEmpty() ) {
           const QString u = cfg.readPathEntry( "URL" );
-          const KURL url( u );
+          const KUrl url( u );
           if ( url.protocol() == "trash" ) {
               // We need to find if the trash is empty, preferrably without using a KIO job.
               // So instead kio_trash leaves an entry in its config file for us.
@@ -747,7 +747,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIcon::Group _group, int _force_size,
+QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, KIcon::Group _group, int _force_size,
                                     int _state, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
@@ -764,11 +764,11 @@ QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
-  KURL u( _url );
+  KUrl u( _url );
   return comment( u, _is_local );
 }
 
-QString KDEDesktopMimeType::comment( const KURL& _url, bool _is_local ) const
+QString KDEDesktopMimeType::comment( const KUrl& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
@@ -782,7 +782,7 @@ QString KDEDesktopMimeType::comment( const KURL& _url, bool _is_local ) const
   return comment;
 }
 
-pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
+pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
 {
   // It might be a security problem to run external untrusted desktop
   // entry files
@@ -821,7 +821,7 @@ pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   return 0;
 }
 
-pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg )
+pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cfg )
 {
   pid_t retval = 0;
 
@@ -838,7 +838,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
   // Is the device already mounted ?
   if ( !mp.isNull() )
   {
-    KURL mpURL;
+    KUrl mpURL;
     mpURL.setPath( mp );
     // Open a new window
     retval = KRun::runURL( mpURL, QLatin1String("inode/directory") );
@@ -859,18 +859,18 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
   return retval;
 }
 
-pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceFile )
+pid_t KDEDesktopMimeType::runApplication( const KUrl& , const QString & _serviceFile )
 {
   KService s( _serviceFile );
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return 0;
 
-  KURL::List lst;
+  KUrl::List lst;
   return KRun::run( s, lst );
 }
 
-pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
+pid_t KDEDesktopMimeType::runLink( const KUrl& _url, const KSimpleConfig &cfg )
 {
   QString u = cfg.readPathEntry( "URL" );
   if ( u.isEmpty() )
@@ -880,7 +880,7 @@ pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
     return 0;
   }
 
-  KURL url ( u );
+  KUrl url ( u );
   KRun* run = new KRun(url,(QWidget*)0);
 
   // X-KDE-LastOpenedWith holds the service desktop entry name that
@@ -893,7 +893,7 @@ pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
   return -1; // we don't want to return 0, but we don't want to return a pid
 }
 
-pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
+pid_t KDEDesktopMimeType::runMimeType( const KUrl& url , const KSimpleConfig & )
 {
   // Hmm, can't really use keditfiletype since we might be looking
   // at the global file, or at a file not in share/mimelnk...
@@ -912,7 +912,7 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   return p.pid();
 }
 
-QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KUrl& _url )
 {
   QList<Service> result;
 
@@ -973,10 +973,10 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
 
 QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
 {
- return userDefinedServices( path, cfg, bLocalFiles, KURL::List() );
+ return userDefinedServices( path, cfg, bLocalFiles, KUrl::List() );
 }
 
-QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KUrl::List & file_list )
 {
   QList<Service> result;
 
@@ -1008,8 +1008,8 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
     QByteArray replyData;
     DCOPCString object   =  dcopcall.section(' ', 1,-2).toUtf8();
     DCOPCString function =  dcopcall.section(' ', -1).toUtf8();
-    if(!function.endsWith("(KURL::List)")) {
-      kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
+    if(!function.endsWith("(KUrl::List)")) {
+      kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KUrl::List) and must be specified." << endl;
     } else {
       if(KApplication::dcopClient()->call( app, object,
                    function,
@@ -1083,14 +1083,14 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
 
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
-    KURL u;
+    KUrl u;
     u.setPath(_url);
-    KURL::List lst;
+    KUrl::List lst;
     lst.append( u );
     executeService( lst, _service );
 }
 
-void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeType::Service& _service )
+void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeType::Service& _service )
 {
   //kdDebug(7009) << "EXECUTING Service " << _service.m_strName << endl;
 

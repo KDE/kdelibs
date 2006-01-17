@@ -218,7 +218,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 }
 
 #ifndef KDE_NO_COMPAT
-KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now unused */,
+KPropertiesDialog::KPropertiesDialog (const KUrl& _url, mode_t /* _mode is now unused */,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
@@ -237,7 +237,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now u
 }
 #endif
 
-KPropertiesDialog::KPropertiesDialog (const KURL& _url,
+KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
@@ -255,7 +255,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url,
   init (modal, autoShow);
 }
 
-KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _currentDir,
+KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _currentDir,
                                       const QString& _defaultName,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
@@ -288,7 +288,7 @@ bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
   return true;
 }
 
-bool KPropertiesDialog::showDialog(const KURL& _url, QWidget* parent,
+bool KPropertiesDialog::showDialog(const KUrl& _url, QWidget* parent,
                                    const char* name, bool modal)
 {
 #ifdef Q_WS_WIN
@@ -528,11 +528,11 @@ void KPropertiesDialog::insertPages()
   }
 }
 
-void KPropertiesDialog::updateUrl( const KURL& _newUrl )
+void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
 {
   Q_ASSERT( m_items.count() == 1 );
   kdDebug(250) << "KPropertiesDialog::updateUrl (pre)" << _newUrl.url() << endl;
-  KURL newUrl = _newUrl;
+  KUrl newUrl = _newUrl;
   emit saveAs(m_singleUrl, newUrl);
   kdDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl.url() << endl;
 
@@ -556,7 +556,7 @@ void KPropertiesDialog::rename( const QString& _name )
 {
   Q_ASSERT( m_items.count() == 1 );
   kdDebug(250) << "KPropertiesDialog::rename " << _name << endl;
-  KURL newUrl;
+  KUrl newUrl;
   // if we're creating from a template : use currentdir
   if ( !m_currentDir.isEmpty() )
   {
@@ -786,7 +786,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     const KFileItemList::const_iterator kend = items.end();
     for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
     {
-      const KURL url = (*kit)->url();
+      const KUrl url = (*kit)->url();
       kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyURL() << endl;
       // The list of things we check here should match the variables defined
       // at the beginning of this method.
@@ -1285,7 +1285,7 @@ void KFilePropsPlugin::applyChanges()
     kdDebug(250) << "newname = " << n << endl;
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
-      KURL oldurl = properties->kurl();
+      KUrl oldurl = properties->kurl();
 
       QString newFileName = KIO::encodeFileName(n);
       if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
@@ -1309,8 +1309,8 @@ void KFilePropsPlugin::applyChanges()
 
       connect( job, SIGNAL( result( KIO::Job * ) ),
                SLOT( slotCopyFinished( KIO::Job * ) ) );
-      connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
-               SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
+      connect( job, SIGNAL( renamed( KIO::Job *, const KUrl &, const KUrl & ) ),
+               SLOT( slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & ) ) );
       // wait for job
       QEventLoop eventLoop;
       connect(this, SIGNAL(leaveModality()),
@@ -1351,14 +1351,14 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
-    KURL newURL;
+    KUrl newURL;
     newURL.setPath( locateLocal("mime", m_sRelativePath) );
     properties->updateUrl( newURL );
   }
   else if (d->bDesktopFile && !m_sRelativePath.isEmpty())
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
-    KURL newURL;
+    KUrl newURL;
     newURL.setPath( KDesktopFile::locateLocal(m_sRelativePath) );
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path() << endl;
     properties->updateUrl( newURL );
@@ -1424,7 +1424,7 @@ void KFilePropsPlugin::applyIconChanges()
   }
 }
 
-void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
+void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & newUrl )
 {
   // This is called in case of an existing local file during the copy/move operation,
   // if the user chooses Rename.
@@ -1437,7 +1437,7 @@ void KFilePropsPlugin::postApplyChanges()
   applyIconChanges();
 
   const KFileItemList items = properties->items();
-  const KURL::List lst = items.urlList();
+  const KUrl::List lst = items.urlList();
   KDirNotify_stub allDirNotify("*", "KDirNotify*");
   allDirNotify.FilesChanged( lst );
 }
@@ -1529,7 +1529,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     const KFileItemList::const_iterator kend = items.end();
     for ( ++it /*no need to check the first one again*/ ; it != kend; ++it )
     {
-      const KURL url = (*it)->url();
+      const KUrl url = (*it)->url();
       if (!d->isIrregular)
 	d->isIrregular |= isIrregular((*it)->permissions(),
 				      (*it)->isDir() == isDir,
@@ -3328,7 +3328,7 @@ void KDesktopPropsPlugin::applyChanges()
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
-  KURL f = KFileDialog::getOpenURL( QString(),
+  KUrl f = KFileDialog::getOpenURL( QString(),
                                       QString(), w );
   if ( f.isEmpty() )
     return;
@@ -3782,7 +3782,7 @@ void KExecPropsPlugin::applyChanges()
 
 void KExecPropsPlugin::slotBrowseExec()
 {
-    KURL f = KFileDialog::getOpenURL( QString(),
+    KUrl f = KFileDialog::getOpenURL( QString(),
                                       QString(), d->m_frame );
     if ( f.isEmpty() )
         return;

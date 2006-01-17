@@ -299,7 +299,7 @@ void DirectoryListThread::run()
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-// MyURL - wrapper for KURL with some different functionality
+// MyURL - wrapper for KUrl with some different functionality
 //
 
 class KURLCompletion::MyURL
@@ -309,7 +309,7 @@ public:
 	MyURL(const MyURL &url);
 	~MyURL();
 
-	KURL *kurl() const { return m_kurl; }
+	KUrl *kurl() const { return m_kurl; }
 
 	QString protocol() const { return m_kurl->protocol(); }
 	// The directory with a trailing '/'
@@ -327,7 +327,7 @@ public:
 private:
 	void init(const QString &url, const QString &cwd);
 
-	KURL *m_kurl;
+	KUrl *m_kurl;
 	QString m_url;
 	bool m_isURL;
 };
@@ -339,7 +339,7 @@ KURLCompletion::MyURL::MyURL(const QString &_url, const QString &cwd)
 
 KURLCompletion::MyURL::MyURL(const MyURL &_url)
 {
-	m_kurl = new KURL( *(_url.m_kurl) );
+	m_kurl = new KUrl( *(_url.m_kurl) );
 	m_url = _url.m_url;
 	m_isURL = _url.m_isURL;
 }
@@ -364,10 +364,10 @@ void KURLCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	QRegExp protocol_regex = QRegExp( "^[^/\\s\\\\]*:" );
 
 	// Assume "file:" or whatever is given by 'cwd' if there is
-	// no protocol.  (KURL does this only for absoute paths)
+	// no protocol.  (KUrl does this only for absoute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
     {
-		m_kurl = new KURL( url_copy );
+		m_kurl = new KUrl( url_copy );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
@@ -375,7 +375,7 @@ void KURLCompletion::MyURL::init(const QString &_url, const QString &cwd)
 		m_isURL = false;
 		if ( cwd.isEmpty() )
 		{
-			m_kurl = new KURL;
+			m_kurl = new KUrl;
 			if ( !QDir::isRelativePath(url_copy) ||
 			     url_copy.at(0) == QLatin1Char('$') ||
 			     url_copy.at(0) == QLatin1Char('~') )
@@ -385,20 +385,20 @@ void KURLCompletion::MyURL::init(const QString &_url, const QString &cwd)
 		}
 		else
 		{
-			KURL base = KURL::fromPathOrURL( cwd );
+			KUrl base = KUrl::fromPathOrURL( cwd );
 			base.adjustPath(+1);
 
 			if ( !QDir::isRelativePath(url_copy) ||
 			     url_copy.at(0) == QLatin1Char('~') ||
 			     url_copy.at(0) == QLatin1Char('$') )
 			{
-				m_kurl = new KURL;
+				m_kurl = new KUrl;
 				m_kurl->setPath( url_copy );
 			}
 			else // relative path
 			{
-				//m_kurl = new KURL( base, url_copy );
-				m_kurl = new KURL( base );
+				//m_kurl = new KUrl( base, url_copy );
+				m_kurl = new KUrl( base );
 				m_kurl->addPath( url_copy );
 			}
 		}
@@ -430,7 +430,7 @@ public:
 	                          dirListThread(0) {}
 	~KURLCompletionPrivate();
 
-	QList<KURL*> list_urls;
+	QList<KUrl*> list_urls;
 
 	bool onlyLocalProto;
 
@@ -959,10 +959,10 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 		return false;
 
 	// Use d->cwd as base url in case url is not absolute
-	KURL url_cwd = KURL::fromPathOrURL( d->cwd );
+	KUrl url_cwd = KUrl::fromPathOrURL( d->cwd );
 
 	// Create an URL with the directory to be listed
-	KURL url_dir( url_cwd, url.kurl()->url() );
+	KUrl url_dir( url_cwd, url.kurl()->url() );
 
 	// Don't try url completion if
 	// 1. malformed url
@@ -998,8 +998,8 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 
 		setListedURL( CTUrl, url_dir.prettyURL(), QString() );
 
-		QList<KURL*> url_list;
-		url_list.append( new KURL( url_dir ) );
+		QList<KUrl*> url_list;
+		url_list.append( new KUrl( url_dir ) );
 
 		listURLs( url_list, QString(), false );
 
@@ -1032,7 +1032,7 @@ void KURLCompletion::addMatches( const QStringList &matchList )
 
 	if ( d->complete_url )
 		for ( ; it != end; ++it )
-			addItem( d->prepend + KURL::encode_string(*it));
+			addItem( d->prepend + KUrl::encode_string(*it));
 	else
 		for ( ; it != end; ++it )
 			addItem( d->prepend + (*it));
@@ -1075,9 +1075,9 @@ QString KURLCompletion::listDirectories(
 		      it != dirList.end();
 		      ++it )
 		{
-			KURL url;
+			KUrl url;
 			url.setPath(*it);
-			if ( KAuthorized::authorizeURLAction( QLatin1String("list"), KURL(), url ) )
+			if ( KAuthorized::authorizeURLAction( QLatin1String("list"), KUrl(), url ) )
 				dirs.append( *it );
 		}
 
@@ -1093,12 +1093,12 @@ QString KURLCompletion::listDirectories(
 	// Use KIO
 	//kdDebug() << "Listing (listDirectories): " << dirList << " with KIO" << endl;
 
-	QList<KURL*> url_list;
+	QList<KUrl*> url_list;
 
 	QStringList::ConstIterator it = dirList.begin();
 
 	for ( ; it != dirList.end(); ++it )
-		url_list.append( new KURL(*it) );
+		url_list.append( new KUrl(*it) );
 
 	listURLs( url_list, filter, only_exe, no_hidden );
 	// Will call addMatches() and finished()
@@ -1115,7 +1115,7 @@ QString KURLCompletion::listDirectories(
  * finished() is called when the listing is done
  */
 void KURLCompletion::listURLs(
-		const QList<KURL *> &urls,
+		const QList<KUrl *> &urls,
 		const QString &filter,
 		bool only_exe,
 		bool no_hidden )
@@ -1163,7 +1163,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 		QString entry_name;
 		if (!url.isEmpty()) {
 			// kdDebug() << "KURLCompletion::slotEntries url: " << url << endl;
-			entry_name = KURL(url).fileName();
+			entry_name = KUrl(url).fileName();
 		} else {
 			entry_name = entry.stringValue( KIO::UDS_NAME );
 		}
@@ -1217,7 +1217,7 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
 	}
 	else {
 
-		KURL *kurl = d->list_urls.takeFirst();
+		KUrl *kurl = d->list_urls.takeFirst();
 
 //		d->list_urls.removeAll( kurl );
 
@@ -1265,7 +1265,7 @@ void KURLCompletion::postProcessMatch( QString *pMatch ) const
 			QString copy;
 
 			if ( pMatch->startsWith( QLatin1String("file:") ) )
-				copy = KURL(*pMatch).path();
+				copy = KUrl(*pMatch).path();
 			else
 				copy = *pMatch;
 

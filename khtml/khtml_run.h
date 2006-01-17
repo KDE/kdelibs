@@ -39,7 +39,7 @@ class KHTMLRun : public KParts::BrowserRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
             const KParts::URLArgs &args, bool hideErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
@@ -47,8 +47,8 @@ public:
   //KHTMLPart *htmlPart() const;
 
 protected:
-  virtual void save( const KURL & url, const QString & suggestedFilename );
-  bool askSave( const KURL & url, KService::Ptr offer, const QString & mimeType, const QString & suggestedFilename );
+  virtual void save( const KUrl & url, const QString & suggestedFilename );
+  bool askSave( const KUrl & url, KService::Ptr offer, const QString & mimeType, const QString & suggestedFilename );
 
 private:
   khtml::ChildFrame *m_child;

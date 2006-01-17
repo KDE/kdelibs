@@ -23,15 +23,15 @@ public:
     HelpProtocol( bool ghelp, const QByteArray &pool, const QByteArray &app);
     virtual ~HelpProtocol() { }
 
-    virtual void get( const KURL& url );
+    virtual void get( const KUrl& url );
 
-    virtual void mimetype( const KURL& url );
+    virtual void mimetype( const KUrl& url );
 
 private:
 
     QString langLookup(const QString &fname);
-    void emitFile( const KURL &url );
-    void get_file( const KURL& url );
+    void emitFile( const KUrl &url );
+    void get_file( const KUrl& url );
     QString lookupFile(const QString &fname, const QString &query,
                        bool &redirect);
 

@@ -124,7 +124,7 @@ void MetaInfoJob::getMetaInfo()
     KFileItem* item = d->items.at( d->currentItem );
     Q_ASSERT(item);
 
-    KURL URL;
+    KUrl URL;
     URL.setProtocol("metainfo");
     URL.setPath(item->url().path());
 
@@ -174,10 +174,10 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList &items)
     return new MetaInfoJob(items, false);
 }
 
-KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KURL::List &items)
+KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
 {
     KFileItemList fileItems;
-    for (KURL::List::ConstIterator it = items.begin(); it != items.end(); ++it)
+    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
         fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
     return new MetaInfoJob(fileItems, true);
 }

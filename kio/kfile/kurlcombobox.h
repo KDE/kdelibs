@@ -91,7 +91,7 @@ public:
      * Note that you won't receive any signals, e.g. textChanged(),
      * returnPressed() or activated() upon calling this method.
      */
-    void setURL( const KURL& url );
+    void setURL( const KUrl& url );
 
     /**
      * Inserts @p urls into the combobox below the "default urls" (see
@@ -143,7 +143,7 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultURL( const KURL& url, const QString& text = QString() );
+    void addDefaultURL( const KUrl& url, const QString& text = QString() );
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
@@ -153,7 +153,7 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultURL( const KURL& url, const QIcon& icon,
+    void addDefaultURL( const KUrl& url, const QIcon& icon,
 			const QString& text = QString() );
 
     /**
@@ -167,7 +167,7 @@ public:
      * Removes any occurrence of @p url. If @p checkDefaultURLs is false
      * default-urls won't be removed.
      */
-    void removeURL( const KURL& url, bool checkDefaultURLs = true );
+    void removeURL( const KUrl& url, bool checkDefaultURLs = true );
 
 Q_SIGNALS:
     /**
@@ -175,7 +175,7 @@ Q_SIGNALS:
      * @param url is the url of the now current item. If it is a local url,
      * it won't have a protocol (file:/), otherwise it will.
      */
-    void urlActivated( const KURL& url );
+    void urlActivated( const KUrl& url );
 
 
 protected Q_SLOTS:
@@ -185,7 +185,7 @@ protected Q_SLOTS:
 protected:
     struct _KURLComboItem {
 	QString text;
-	KURL url;
+	KUrl url;
 	QIcon icon;
     };
     typedef _KURLComboItem KURLComboItem;
@@ -200,7 +200,7 @@ protected:
      * Uses KMimeType::pixmapForURL() to return a proper pixmap for @p url.
      * In directory mode, a folder icon is always returned.
      */
-    QIcon getIcon( const KURL& url ) const;
+    QIcon getIcon( const KUrl& url ) const;
 
     /**
      * Updates @p item with @p pixmap and sets the url instead of the text

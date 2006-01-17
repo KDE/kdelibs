@@ -175,7 +175,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     return ret;
 }
 
-void FileProtocol::chmod( const KURL& url, int permissions )
+void FileProtocol::chmod( const KUrl& url, int permissions )
 {
     QByteArray _path( QFile::encodeName(url.path()) );
     /* FIXME: Should be atomic */
@@ -202,7 +202,7 @@ void FileProtocol::chmod( const KURL& url, int permissions )
         finished();
 }
 
-void FileProtocol::mkdir( const KURL& url, int permissions )
+void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
     QByteArray _path( QFile::encodeName(url.path()));
 
@@ -239,10 +239,10 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     return;
 }
 
-void FileProtocol::get( const KURL& url )
+void FileProtocol::get( const KUrl& url )
 {
     if (!url.isLocalFile()) {
-        KURL redir(url);
+        KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	finished();
@@ -356,7 +356,7 @@ write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
-void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resume )
+void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resume )
 {
     QString dest_orig = url.path();
     QByteArray _dest_orig( QFile::encodeName(dest_orig));
@@ -556,7 +556,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 }
 
 
-void FileProtocol::copy( const KURL &src, const KURL &dest,
+void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, bool _overwrite )
 {
     kdDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
@@ -778,7 +778,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     finished();
 }
 
-void FileProtocol::rename( const KURL &src, const KURL &dest,
+void FileProtocol::rename( const KUrl &src, const KUrl &dest,
                            bool _overwrite )
 {
     QByteArray _src( QFile::encodeName(src.path()));
@@ -829,7 +829,7 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
     finished();
 }
 
-void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwrite )
+void FileProtocol::symlink( const QString &target, const KUrl &dest, bool overwrite )
 {
     // Assume dest is local too (wouldn't be here otherwise)
     if ( ::symlink( QFile::encodeName( target ), QFile::encodeName( dest.path() ) ) == -1 )
@@ -869,7 +869,7 @@ void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwr
     finished();
 }
 
-void FileProtocol::del( const KURL& url, bool isfile)
+void FileProtocol::del( const KUrl& url, bool isfile)
 {
     QByteArray _path( QFile::encodeName(url.path()));
     /*****
@@ -1015,10 +1015,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     return true;
 }
 
-void FileProtocol::stat( const KURL & url )
+void FileProtocol::stat( const KUrl & url )
 {
     if (!url.isLocalFile()) {
-        KURL redir(url);
+        KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	kdDebug(7101) << "redirecting to " << redir.url() << endl;
@@ -1058,11 +1058,11 @@ void FileProtocol::stat( const KURL & url )
     finished();
 }
 
-void FileProtocol::listDir( const KURL& url)
+void FileProtocol::listDir( const KUrl& url)
 {
     kdDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
     if (!url.isLocalFile()) {
-        KURL redir(url);
+        KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	kdDebug(7101) << "redirecting to " << redir.url() << endl;

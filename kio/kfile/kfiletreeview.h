@@ -64,7 +64,7 @@ public:
    /**
     * @return the URL of the current selected item.
     */
-    KURL currentURL() const;
+    KUrl currentURL() const;
 
    /**
     *  Adds a branch to the treeview item.
@@ -79,12 +79,12 @@ public:
     *  @param name is the name of the branch, which will be the text for column 0
     *  @param showHidden says if hidden files and directories should be visible
     */
-   KFileTreeBranch* addBranch( const KURL &path, const QString& name, bool showHidden = false );
+   KFileTreeBranch* addBranch( const KUrl &path, const QString& name, bool showHidden = false );
 
    /**
     *  same as the function above but with a pixmap to set for the branch.
     */
-   virtual KFileTreeBranch* addBranch( const KURL &path, const QString& name ,
+   virtual KFileTreeBranch* addBranch( const KUrl &path, const QString& name ,
 				       const QPixmap& pix, bool showHidden = false  );
 
    /**
@@ -168,7 +168,7 @@ protected Q_SLOTS:
     virtual void slotNewTreeViewItems( KFileTreeBranch*,
 				       const KFileTreeViewItemList& );
 
-    virtual void slotSetNextUrlToSelect( const KURL &url )
+    virtual void slotSetNextUrlToSelect( const KUrl &url )
       { m_nextUrlToSelect = url; }
 
     virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
@@ -195,10 +195,10 @@ Q_SIGNALS:
    void onItem( const QString& );
    /* New signals if you like it ? */
    void dropped( QWidget*, QDropEvent* );
-   void dropped( QWidget*, QDropEvent*, KURL::List& );
-   void dropped( KURL::List&, KURL& );
+   void dropped( QWidget*, QDropEvent*, KUrl::List& );
+   void dropped( KUrl::List&, KUrl& );
    // The drop event allows to differentiate between move and copy
-   void dropped( QWidget*, QDropEvent*, KURL::List&, KURL& );
+   void dropped( QWidget*, QDropEvent*, KUrl::List&, KUrl& );
 
    void dropped( QDropEvent *, Q3ListViewItem * );
    void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *);
@@ -206,7 +206,7 @@ Q_SIGNALS:
    void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
 
 protected:
-   KURL m_nextUrlToSelect;
+   KUrl m_nextUrlToSelect;
 
 
 private:

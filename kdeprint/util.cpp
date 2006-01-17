@@ -20,9 +20,9 @@
 #include "util.h"
 #include <qstringlist.h>
 
-KURL smbToUrl(const QString& work, const QString& server, const QString& printer)
+KUrl smbToUrl(const QString& work, const QString& server, const QString& printer)
 {
-	KURL	url;
+	KUrl	url;
 	url.setProtocol("smb");
 	if (!work.isEmpty())
 	{
@@ -37,7 +37,7 @@ KURL smbToUrl(const QString& work, const QString& server, const QString& printer
 	return url;
 }
 
-void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
+void urlToSmb(const KUrl& url, QString& work, QString& server, QString& printer)
 {
 	if (url.protocol() != "smb")
 		return;
@@ -57,22 +57,22 @@ void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 	}
 }
 
-KURL smbToUrl(const QString& s)
+KUrl smbToUrl(const QString& s)
 {
 	// allow to handle non-encoded chars in login/password
-	KURL	url;
+	KUrl	url;
 	int	p = s.find('@');
 	if (p == -1)
 	{
 		// assumes url starts with "smb://". Use encoding in
 		// case the printer name contains chars like '#'.
-		url = KURL("smb://" + KURL::encode_string(s.mid(6)));
+		url = KUrl("smb://" + KUrl::encode_string(s.mid(6)));
 	}
 	else
 	{
 		// assumes URL starts with "smb://"
 		QString	username = s.mid(6, p-6);
-		url = KURL("smb://" + KURL::encode_string(s.mid(p+1)));
+		url = KUrl("smb://" + KUrl::encode_string(s.mid(p+1)));
 		int	q = username.find(':');
 		if (q == -1)
 			url.setUser(username);
@@ -85,7 +85,7 @@ KURL smbToUrl(const QString& s)
 	return url;
 }
 
-QString urlToSmb(const KURL& url)
+QString urlToSmb(const KUrl& url)
 {
 	// do not encode special chars in login/password
 	QString	s = "smb://";
@@ -96,7 +96,7 @@ QString urlToSmb(const KURL& url)
 			s.append(":").append(url.pass());
 		s.append("@");
 	}
-	s.append(url.host()).append(KURL::decode_string(url.path()));
+	s.append(url.host()).append(KUrl::decode_string(url.path()));
 	return s;
 }
 

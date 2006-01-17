@@ -106,7 +106,7 @@ namespace khtml
     KParts::URLArgs m_args;
     QPointer<KHTMLRun> m_run;
     bool m_bPreloaded;
-    KURL m_workingURL;
+    KUrl m_workingURL;
     Type m_type;
     QStringList m_params;
     bool m_bNotify;
@@ -334,7 +334,7 @@ public:
   bool m_onlyLocalReferences :1;
   bool m_redirectLockHistory:1;
 
-  KURL m_workingURL;
+  KUrl m_workingURL;
 
   KIO::CacheControl m_cachePolicy;
   QTimer m_redirectionTimer;

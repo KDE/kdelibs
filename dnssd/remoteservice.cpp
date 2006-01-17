@@ -66,7 +66,7 @@ RemoteService::RemoteService(const QString& name,const QString& type,const QStri
 {
 }
 
-RemoteService::RemoteService(const KURL& url)
+RemoteService::RemoteService(const KUrl& url)
 	:d(new RemoteServicePrivate())
 {
 	if (!url.isValid()) return;

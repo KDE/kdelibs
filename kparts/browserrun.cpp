@@ -38,7 +38,7 @@ public:
   bool m_bHideErrorDialog;
 };
 
-BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
+BrowserRun::BrowserRun( const KUrl& url, const KParts::URLArgs& args,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
     : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
@@ -223,7 +223,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
                 KTempFile tempFile( QString::null, extension );
-                KURL destURL;
+                KUrl destURL;
                 destURL.setPath( tempFile.name() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
                 job->setWindow (m_window);
@@ -247,7 +247,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
 }
 
 //static
-bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
+bool BrowserRun::allowExecution( const QString &serviceType, const KUrl &url )
 {
     if ( !KRun::isExecutable( serviceType ) )
       return true;
@@ -259,7 +259,7 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
     i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
 }
 
-static QString makeQuestion( const KURL& url, const QString& mimeType, const QString& suggestedFilename )
+static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFilename )
 {
     QString surl = KStringHandler::csqueeze( url.prettyURL() );
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
@@ -280,7 +280,7 @@ static QString makeQuestion( const KURL& url, const QString& mimeType, const QSt
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
+BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
@@ -303,7 +303,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this funcion in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
@@ -339,12 +339,12 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
 }
 
 // Default implementation, overridden in KHTMLRun
-void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
+void BrowserRun::save( const KUrl & url, const QString & suggestedFilename )
 {
     simpleSave( url, suggestedFilename, m_window );
 }
 
-void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename,
+void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFilename,
                              QWidget* window )
 {
     // DownloadManager <-> konqueror integration
@@ -397,7 +397,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     dlg->setSelection( suggestedFilename.isEmpty() ? url.fileName() : suggestedFilename );
     if ( dlg->exec() )
     {
-        KURL destURL( dlg->selectedURL() );
+        KUrl destURL( dlg->selectedURL() );
         if ( destURL.isValid() )
         {
             KIO::Job *job = KIO::copy( url, destURL );
@@ -448,13 +448,13 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
      */
     QString errText( errorText );
     errText.replace( '#', "%23" ); // a # in the error string would really muck things up...
-    KURL newURL(QString("error:/?error=%1&errText=%2")
+    KUrl newURL(QString("error:/?error=%1&errText=%2")
                 .arg( error ).arg( errText ), 106 );
     m_strURL.setPass( QString() ); // don't put the password in the error URL
 
-    KURL::List lst;
+    KUrl::List lst;
     lst << newURL << m_strURL;
-    m_strURL = KURL::join( lst );
+    m_strURL = KUrl::join( lst );
     //kdDebug(1202) << "BrowserRun::handleError m_strURL=" << m_strURL.prettyURL() << endl;
 
     m_job = 0;

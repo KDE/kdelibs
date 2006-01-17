@@ -305,34 +305,34 @@ void KToolInvocation::invokeMailer(const QString &address, const QString &subjec
        QStringList(), startup_id );
 }
 
-void KToolInvocation::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
+void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
-   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
+   QString address = KUrl::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = mailtoURL.query().mid(1).split( '&');
    QStringList attachURLs;
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
    {
      QString q = (*it).toLower();
      if (q.startsWith("subject="))
-       subject = KURL::decode_string((*it).mid(8));
+       subject = KUrl::decode_string((*it).mid(8));
      else
      if (q.startsWith("cc="))
-       cc = cc.isEmpty()? KURL::decode_string((*it).mid(3)): cc + ',' + KURL::decode_string((*it).mid(3));
+       cc = cc.isEmpty()? KUrl::decode_string((*it).mid(3)): cc + ',' + KUrl::decode_string((*it).mid(3));
      else
      if (q.startsWith("bcc="))
-       bcc = bcc.isEmpty()? KURL::decode_string((*it).mid(4)): bcc + ',' + KURL::decode_string((*it).mid(4));
+       bcc = bcc.isEmpty()? KUrl::decode_string((*it).mid(4)): bcc + ',' + KUrl::decode_string((*it).mid(4));
      else
      if (q.startsWith("body="))
-       body = KURL::decode_string((*it).mid(5));
+       body = KUrl::decode_string((*it).mid(5));
      else
      if (allowAttachments && q.startsWith("attach="))
-       attachURLs.push_back(KURL::decode_string((*it).mid(7)));
+       attachURLs.push_back(KUrl::decode_string((*it).mid(7)));
      else
      if (allowAttachments && q.startsWith("attachment="))
-       attachURLs.push_back(KURL::decode_string((*it).mid(11)));
+       attachURLs.push_back(KUrl::decode_string((*it).mid(11)));
      else
      if (q.startsWith("to="))
-       address = address.isEmpty()? KURL::decode_string((*it).mid(3)): address + ',' + KURL::decode_string((*it).mid(3));
+       address = address.isEmpty()? KUrl::decode_string((*it).mid(3)): address + ',' + KUrl::decode_string((*it).mid(3));
    }
 
    invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
@@ -343,13 +343,13 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
 {
-	KURL url("mailto:"+_to);
+	KUrl url("mailto:"+_to);
 	url.setQuery("?subject="+subject);
 	url.addQueryItem("cc", _cc);
 	url.addQueryItem("bcc", _bcc);
 	url.addQueryItem("body", body);
 	for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
-		url.addQueryItem("attach", KURL::encode_string(*it));
+		url.addQueryItem("attach", KUrl::encode_string(*it));
 
 	QByteArray s = url.url().latin1();
 	const unsigned short *l = (const unsigned short *)s.data();

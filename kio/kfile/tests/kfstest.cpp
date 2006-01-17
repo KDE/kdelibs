@@ -70,13 +70,13 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("existingURL")) {
-        KURL url = KFileDialog::getExistingURL();
+        KUrl url = KFileDialog::getExistingURL();
         qDebug("URL=%s",url.url().latin1());
         name1 = url.url();
     }
 
     else if (argv1 == QLatin1String("preview")) {
-        KURL u =  KFileDialog::getImageOpenURL();
+        KUrl u =  KFileDialog::getImageOpenURL();
         qDebug("filename=%s", u.url().latin1());
     }
 
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
     KURLBar *urlBar = dlg->speedBar();
     if ( urlBar )
     {
-        urlBar->insertDynamicItem( KURL("ftp://ftp.kde.org"), 
+        urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"), 
                                    QLatin1String("KDE FTP Server") );
     }
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("save")) {
-        KURL u = KFileDialog::getSaveURL();
+        KUrl u = KFileDialog::getSaveURL();
 //        QString(QDir::homePath() + QLatin1String("/testfile")),
 //        QString(), 0L);
         name1 = u.url();
@@ -131,9 +131,9 @@ int main(int argc, char **argv)
     }
 
 //     else if ( argv1 == QLatin1String("dirselect") ) {
-//         KURL url;
+//         KUrl url;
 //         url.setPath( "/" );
-//         KURL selected = KDirSelectDialog::selectDirectory( url );
+//         KUrl selected = KDirSelectDialog::selectDirectory( url );
 //         name1 = selected.url();
 //         qDebug("*** selected: %s", selected.url().latin1());
 //     }
@@ -156,8 +156,8 @@ int main(int argc, char **argv)
 //    types.append( KMimeType::mimeType( "text/html" ) );
 //    dlg.setFilterMimeType( "Filetypes:", types, types.first() );
 	if ( dlg.exec() == QDialog::Accepted ) {
-	    KURL::List list = dlg.selectedURLs();
-	    KURL::List::ConstIterator it = list.begin();
+	    KUrl::List list = dlg.selectedURLs();
+	    KUrl::List::ConstIterator it = list.begin();
             qDebug("*** selectedURLs(): ");
 	    while ( it != list.end() ) {
 		name1 = (*it).url();

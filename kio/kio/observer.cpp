@@ -166,31 +166,31 @@ void Observer::slotInfoMessage( KIO::Job* job, const QString & msg )
   m_uiserver->infoMessage( job->progressId(), msg );
 }
 
-void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )
+void Observer::slotCopying( KIO::Job* job, const KUrl& from, const KUrl& to )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->copying( job->progressId(), from, to );
 }
 
-void Observer::slotMoving( KIO::Job* job, const KURL& from, const KURL& to )
+void Observer::slotMoving( KIO::Job* job, const KUrl& from, const KUrl& to )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->moving( job->progressId(), from, to );
 }
 
-void Observer::slotDeleting( KIO::Job* job, const KURL& url )
+void Observer::slotDeleting( KIO::Job* job, const KUrl& url )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotDeleting " << job << " " << url.url() << endl;
   m_uiserver->deleting( job->progressId(), url );
 }
 
-void Observer::slotTransferring( KIO::Job* job, const KURL& url )
+void Observer::slotTransferring( KIO::Job* job, const KUrl& url )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTransferring " << job << " " << url.url() << endl;
   m_uiserver->transferring( job->progressId(), url );
 }
 
-void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
+void Observer::slotCreatingDir( KIO::Job* job, const KUrl& dir )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
   m_uiserver->creatingDir( job->progressId(), dir );
@@ -202,7 +202,7 @@ void Observer::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
   m_uiserver->canResume64( job->progressId(), offset );
 }
 
-void Observer::stating( KIO::Job* job, const KURL& url )
+void Observer::stating( KIO::Job* job, const KUrl& url )
 {
   m_uiserver->stating( job->progressId(), url );
 }

@@ -322,7 +322,7 @@ public:
     KService::Ptr curService;
 };
 
-KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
+KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
              :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
 {
     setWindowTitle( i18n( "Open With" ) );
@@ -340,7 +340,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
     init( text, QString() );
 }
 
-KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
+KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
              :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
 {
@@ -377,7 +377,7 @@ KOpenWithDlg::KOpenWithDlg( QWidget *parent)
   init( text, QString() );
 }
 
-void KOpenWithDlg::setServiceType( const KURL::List& _urls )
+void KOpenWithDlg::setServiceType( const KUrl::List& _urls )
 {
   if ( _urls.count() == 1 )
   {

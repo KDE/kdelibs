@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLDRAG_H
-#define KURLDRAG_H
+#ifndef KUrlDRAG_H
+#define KUrlDRAG_H
 
 #include <qstringlist.h>
 #include <q3dragobject.h>
@@ -28,9 +28,9 @@ class QMimeSource;
 
 class K3URLDragPrivate;
 /**
- * This class is to be used instead of Q3UriDrag when using KURL.
+ * This class is to be used instead of Q3UriDrag when using KUrl.
  * The reason is: Q3UriDrag (and the XDND/W3C standards) expect URLs to
- * be encoded in UTF-8 (unicode), but KURL uses the current locale
+ * be encoded in UTF-8 (unicode), but KUrl uses the current locale
  * by default.
  * The other reasons for using this class are:
  * @li it exports text/plain (for dropping/pasting into lineedits, mails etc.)
@@ -53,7 +53,7 @@ public:
    * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
    * but should be 0 when copying to the clipboard
    */
-  K3URLDrag( const KURL::List &urls, QWidget* dragSource = 0 );
+  K3URLDrag( const KUrl::List &urls, QWidget* dragSource = 0 );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
@@ -63,7 +63,7 @@ public:
    * but should be 0 when copying to the clipboard
    * @see metaData()
    */
-  K3URLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+  K3URLDrag( const KUrl::List &urls, const QMap<QString, QString>& metaData,
             QWidget* dragSource = 0 );
 
   virtual ~K3URLDrag();
@@ -80,12 +80,12 @@ public:
   /**
    * @deprecated Is equivalent with "new K3URLDrag(urls, dragSource, name)".
    */
-  static K3URLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
+  static K3URLDrag * newDrag( const KUrl::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
   /**
    * @deprecated Is equivalent with "new K3URLDrag(urls, metaData, dragSource, name)".
    */
-  static K3URLDrag * newDrag( const KURL::List &urls,
+  static K3URLDrag * newDrag( const KUrl::List &urls,
                              const QMap<QString, QString>& metaData,
                              QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
@@ -100,45 +100,45 @@ public:
 
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs. Decoding will fail if at least one decoded value
-   * is not a valid KURL.
+   * into a list of KUrls. Decoding will fail if at least one decoded value
+   * is not a valid KUrl.
    * @param e the mime source
    * @param urls the list of urls will be written here
    * @return true if successful, false otherwise
    */
-  static bool decode( const QMimeSource *e, KURL::List &urls );
+  static bool decode( const QMimeSource *e, KUrl::List &urls );
 
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs and a set of metadata. Decoding will fail if
-   * at least one decoded value is not a valid KURL.
+   * into a list of KUrls and a set of metadata. Decoding will fail if
+   * at least one decoded value is not a valid KUrl.
    * You should be using this one, if possible.
    * @param e the mime source
    * @param urls the list of urls will be written here
    * @param metaData the metadata map will be written here
    * @return true if successful, false otherwise
    */
-  static bool decode( const QMimeSource *e, KURL::List &urls, QMap<QString,QString>& metaData );
+  static bool decode( const QMimeSource *e, KUrl::List &urls, QMap<QString,QString>& metaData );
 
   /**
    * Converts a URL to a string representation suitable for dragging.
    * @since 3.2
    */
-  static QString urlToString(const KURL &url);
+  static QString urlToString(const KUrl &url);
 
   /**
    * Converts a string used for dragging to a URL.
    * @since 3.2
    */
-  static KURL stringToUrl(const QByteArray &s);
+  static KUrl stringToUrl(const QByteArray &s);
 
 #ifdef Q_WS_QWS
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs for Qt versions without a MIME clipboard.
-   * Decoding will fail if at least one value in the list is not a valid KURL.
+   * into a list of KUrls for Qt versions without a MIME clipboard.
+   * Decoding will fail if at least one value in the list is not a valid KUrl.
    */
-  static bool decode( QStringList const &e, KURL::List &uris );
+  static bool decode( QStringList const &e, KUrl::List &uris );
 #endif
 
   /// @reimp
@@ -148,13 +148,13 @@ public:
 
 protected:
   /**
-   * @deprecated Use a K3URLDrag constructor with a KURL::List
+   * @deprecated Use a K3URLDrag constructor with a KUrl::List
    */
   K3URLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
             QWidget * dragSource ) KDE_DEPRECATED;
 
 private:
-  void init(const KURL::List &urls);
+  void init(const KUrl::List &urls);
 
   Q3StrList m_urls;
   QMap<QString,QString> m_metaData;

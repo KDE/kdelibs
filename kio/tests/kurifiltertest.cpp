@@ -56,7 +56,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     {
         // Copied from minicli...
         QString cmd;
-        KURL uri = m_filterData->uri();
+        KUrl uri = m_filterData->uri();
 
         if ( uri.isLocalFile() && !uri.hasRef() && uri.query().isEmpty() )
             cmd = uri.path();
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
     testLocalFile( "/tmp/kurlfiltertest#foo?bar" ); // local file with both
     testLocalFile( "/tmp/kurlfiltertest?foo#bar" ); // local file with both, the other way round
 
-    // hostnames are lowercased by KURL
+    // hostnames are lowercased by KUrl
     filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
             "http://www.mydomain.commyport/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
     filter( "ftp://ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );

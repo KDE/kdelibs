@@ -45,7 +45,7 @@ KDirNotify_stub::KDirNotify_stub( const DCOPRef& ref )
 {
 }
 
-void KDirNotify_stub::FilesAdded( const KURL& arg0 )
+void KDirNotify_stub::FilesAdded( const KUrl& arg0 )
 {
     if ( !dcopClient()  ) {
 	setStatus( CallFailed );
@@ -54,11 +54,11 @@ void KDirNotify_stub::FilesAdded( const KURL& arg0 )
     QByteArray data;
     QDataStream arg( &data, QIODevice::WriteOnly );
     arg << arg0;
-    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesAdded(KURL)", data );
+    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesAdded(KUrl)", data );
     setStatus( CallSucceeded );
 }
 
-void KDirNotify_stub::FilesRemoved( const KURL::List& arg0 )
+void KDirNotify_stub::FilesRemoved( const KUrl::List& arg0 )
 {
     if ( !dcopClient()  ) {
 	setStatus( CallFailed );
@@ -67,11 +67,11 @@ void KDirNotify_stub::FilesRemoved( const KURL::List& arg0 )
     QByteArray data;
     QDataStream arg( &data, QIODevice::WriteOnly );
     arg << arg0;
-    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesRemoved(KURL::List)", data );
+    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesRemoved(KUrl::List)", data );
     setStatus( CallSucceeded );
 }
 
-void KDirNotify_stub::FilesChanged( const KURL::List& arg0 )
+void KDirNotify_stub::FilesChanged( const KUrl::List& arg0 )
 {
     if ( !dcopClient()  ) {
 	setStatus( CallFailed );
@@ -80,11 +80,11 @@ void KDirNotify_stub::FilesChanged( const KURL::List& arg0 )
     QByteArray data;
     QDataStream arg( &data, QIODevice::WriteOnly );
     arg << arg0;
-    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesChanged(KURL::List)", data );
+    dcopClient()->emitDCOPSignal( "KDirNotify", "FilesChanged(KUrl::List)", data );
     setStatus( CallSucceeded );
 }
 
-void KDirNotify_stub::FileRenamed( const KURL& arg0, const KURL& arg1 )
+void KDirNotify_stub::FileRenamed( const KUrl& arg0, const KUrl& arg1 )
 {
     if ( !dcopClient()  ) {
 	setStatus( CallFailed );
@@ -94,7 +94,7 @@ void KDirNotify_stub::FileRenamed( const KURL& arg0, const KURL& arg1 )
     QDataStream arg( &data, QIODevice::WriteOnly );
     arg << arg0;
     arg << arg1;
-    dcopClient()->emitDCOPSignal( "KDirNotify", "FileRenamed(KURL,KURL)", data );
+    dcopClient()->emitDCOPSignal( "KDirNotify", "FileRenamed(KUrl,KUrl)", data );
     setStatus( CallSucceeded );
 }
 

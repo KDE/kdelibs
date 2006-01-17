@@ -44,7 +44,7 @@ public:
     class Result {
 	public:
 		QStringList fileNames;
-		KURL::List  URLs;
+		KUrl::List  URLs;
 		QString encoding;
     };
 

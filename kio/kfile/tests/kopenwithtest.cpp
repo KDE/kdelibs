@@ -29,9 +29,9 @@
 int main(int argc, char **argv)
 {
     KApplication app;
-    KURL::List list;
+    KUrl::List list;
 
-    list += KURL("file:///tmp/testfile.txt");
+    list += KUrl("file:///tmp/testfile.txt");
 
     // Test with one URL
     KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     delete dlg;
 
     // Test with two URLs
-    list += KURL("http://www.kde.org/index.html");
+    list += KUrl("http://www.kde.org/index.html");
     dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;

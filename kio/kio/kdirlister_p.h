@@ -69,10 +69,10 @@ public:
    * List of dirs handled by this dirlister. The first entry is the base URL.
    * For a tree view, it contains all the dirs shown.
    */
-  KURL::List lstDirs;
+  KUrl::List lstDirs;
 
   // toplevel URL
-  KURL url;
+  KUrl url;
 
   bool complete;
 
@@ -131,10 +131,10 @@ class KDirListerCache : public QObject, KDirNotify
 public:
   ~KDirListerCache();
 
-  void updateDirectory( const KURL& dir );
+  void updateDirectory( const KUrl& dir );
 
-  KFileItem *itemForURL( const KURL& url ) const;
-  KFileItemList *itemsForDir( const KURL& dir ) const;
+  KFileItem *itemForURL( const KUrl& url ) const;
+  KFileItemList *itemsForDir( const KUrl& dir ) const;
 
   /**
    * Notify that files have been added in @p directory
@@ -142,7 +142,7 @@ public:
    * the new items (since it needs more than just the names anyway).
    * Reimplemented from KDirNotify.
    */
-  virtual void FilesAdded( const KURL& directory );
+  virtual void FilesAdded( const KUrl& directory );
 
   /**
    * Notify that files have been deleted.
@@ -151,7 +151,7 @@ public:
    * or be closed (if its current dir was deleted)
    * Reimplemented from KDirNotify.
    */
-  virtual void FilesRemoved( const KURL::List& fileList );
+  virtual void FilesRemoved( const KUrl::List& fileList );
 
   /**
    * Notify that files have been changed.
@@ -159,30 +159,30 @@ public:
    * used for size etc. as well.
    * Note: this is ASYNC so that it can be used with a broadcast
    */
-  virtual void FilesChanged( const KURL::List& fileList );
-  virtual void FileRenamed( const KURL& src, const KURL& dst );
+  virtual void FilesChanged( const KUrl::List& fileList );
+  virtual void FileRenamed( const KUrl& src, const KUrl& dst );
 
   static KDirListerCache *self();
 
 protected:
   KDirListerCache( int maxCount = 10 );
 
-  void listDir( KDirLister *lister, const KURL &_url, bool _keep, bool _reload );
+  void listDir( KDirLister *lister, const KUrl &_url, bool _keep, bool _reload );
 
   // stop all running jobs for lister
   void stop( KDirLister *lister );
   // stop just the job listing url for lister
-  void stop( KDirLister *lister, const KURL &_url );
+  void stop( KDirLister *lister, const KUrl &_url );
 
   void setAutoUpdate( KDirLister *lister, bool enable );
 
   void forgetDirs( KDirLister *lister );
-  void forgetDirs( KDirLister *lister, const KURL &_url, bool notify );
+  void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
 
 
   KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByURL( const KDirLister *lister, const KURL &_url ) const;
+  KFileItem *findByURL( const KDirLister *lister, const KUrl &_url ) const;
 
 private Q_SLOTS:
   void slotFileDirty( const QString &_file );
@@ -193,14 +193,14 @@ private Q_SLOTS:
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotResult( KIO::Job *j );
-  void slotRedirection( KIO::Job *job, const KURL &url );
+  void slotRedirection( KIO::Job *job, const KUrl &url );
 
   void slotUpdateEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotUpdateResult( KIO::Job *job );
 
 private:
   KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
-  const KURL& joburl( KIO::ListJob *job );
+  const KUrl& joburl( KIO::ListJob *job );
 
   void killJob( KIO::ListJob *job );
 
@@ -213,13 +213,13 @@ private:
   void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList & );
   void processPendingUpdates();
   // common for slotRedirection and FileRenamed
-  void renameDir( const KURL &oldUrl, const KURL &url );
+  void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and FilesRemoved
-  void deleteDir( const KURL& dirUrl );
+  void deleteDir( const KUrl& dirUrl );
   // remove directory from cache (itemsCached), including all child dirs
-  void removeDirFromCache( const KURL& dir );
+  void removeDirFromCache( const KUrl& dir );
   // helper for renameDir
-  void emitRedirections( const KURL &oldUrl, const KURL &url );
+  void emitRedirections( const KUrl &oldUrl, const KUrl &url );
 
   void aboutToRefreshItem( KFileItem *fileitem );
   void emitRefreshItem( KFileItem *fileitem );
@@ -230,7 +230,7 @@ private:
 
   struct DirItem
   {
-    DirItem( const KURL &dir )
+    DirItem( const KUrl &dir )
       : url(dir), rootItem(0), lstItems()
     {
       autoUpdates = 0;
@@ -249,7 +249,7 @@ private:
       qDeleteAll( lstItems );
     }
 
-    void sendSignal( bool entering, const KURL& url )
+    void sendSignal( bool entering, const KUrl& url )
     {
       DCOPClient *client = DCOPClient::mainClient();
       if ( !client )
@@ -257,10 +257,10 @@ private:
       QByteArray data;
       QDataStream arg( &data, QIODevice::WriteOnly );
       arg << url;
-      client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KURL)" : "leftDirectory(KURL)", data );
+      client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KUrl)" : "leftDirectory(KUrl)", data );
     }
 
-    void redirect( const KURL& newUrl )
+    void redirect( const KUrl& newUrl )
     {
       if ( autoUpdates )
       {
@@ -309,7 +309,7 @@ private:
     bool complete;
 
     // the complete url of this directory
-    KURL url;
+    KUrl url;
 
     // KFileItem representing the root of this directory.
     // Remember that this is optional. FTP sites don't return '.' in

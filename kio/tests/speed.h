@@ -13,7 +13,7 @@ class SpeedTest : public QObject {
     Q_OBJECT
 
 public:
-    SpeedTest(const KURL & url);
+    SpeedTest(const KUrl & url);
 
 private Q_SLOTS:
     void entries( KIO::Job *, const KIO::UDSEntryList& );

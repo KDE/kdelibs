@@ -68,7 +68,7 @@ bool KMCupsJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int ac
 		QString	jobHost;
 		if (!it.current()->uri().isEmpty())
 		{
-			KURL	url(it.current()->uri());
+			KUrl	url(it.current()->uri());
 			req.setHost(url.host());
 			req.setPort(url.port());
 			jobHost = url.host();
@@ -266,7 +266,7 @@ bool KMCupsJobManager::jobIppReport(KMJob *j)
 	/*
 	if (!j->uri().isEmpty())
 	{
-		KURL	url(j->uri());
+		KUrl	url(j->uri());
 		req.setHost(url.host());
 		req.setPort(url.port());
 	}
@@ -331,7 +331,7 @@ bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
 		/*
 		if (!it.current()->uri().isEmpty())
 		{
-			KURL	url(it.current()->uri());
+			KUrl	url(it.current()->uri());
 			req.setHost(url.host());
 			req.setPort(url.port());
 		}
@@ -372,7 +372,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	/*
 	if (!j->uri().isEmpty())
 	{
-		KURL	url(j->uri());
+		KUrl	url(j->uri());
 		req.setHost(url.host());
 		req.setPort(url.port());
 	}

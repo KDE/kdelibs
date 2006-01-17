@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLPIXMAPPROVIDER_H
-#define KURLPIXMAPPROVIDER_H
+#ifndef KUrlPIXMAPPROVIDER_H
+#define KUrlPIXMAPPROVIDER_H
 
 #include <kpixmapprovider.h>
 #include <kmimetype.h>
@@ -56,4 +56,4 @@ protected:
 };
 
 
-#endif // KURLPIXMAPPROVIDER_H
+#endif // KUrlPIXMAPPROVIDER_H
