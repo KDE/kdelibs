@@ -195,10 +195,10 @@
 0       string          #!/usr/local/bin/bash   application/x-shellscript
 0       string          #!\ /usr/local/bin/bash application/x-shellscript
 
-0       string          #!\ /bin/env bash       application/x-shellscript
-0       string          #!/bin/env bash         application/x-shellscript
-0       string          #!\ /usr/bin/env bash   application/x-shellscript
-0       string          #!/usr/bin/env bash     application/x-shellscript
+0       string          #!\ /bin/env\ bash       application/x-shellscript
+0       string          #!/bin/env\ bash         application/x-shellscript
+0       string          #!\ /usr/bin/env\ bash   application/x-shellscript
+0       string          #!/usr/bin/env\ bash     application/x-shellscript
 
 #
 0       string          #!/bin/ash              application/x-shellscript
