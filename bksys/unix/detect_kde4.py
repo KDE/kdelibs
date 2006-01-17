@@ -30,6 +30,8 @@ def bootstrap(env):
 	env['KDEKCFG']   = env.join( env['PREFIX'], 'share/config.kcfg')
 	env['KDEICONS']  = env.join( env['PREFIX'], 'share/icons')
 	env['KDEMIME']   = env.join( env['PREFIX'], 'share/mimelnk')
+	# Laurent KDEMENU must be installed into KDESYSCONFDIR/xdg/menus/ How to define KDESYSCONFDIR ?
+	env['KDEMENU']   = env.join( env['PREFIX'], 'xdg/menus')
 	env['KDEDOC']    = env.join( env['PREFIX'], 'share/doc')
 	env['KDESERV']   = env.join( env['PREFIX'], 'share/services')
 	env['KDELOCALE'] = env.join( env['PREFIX'], 'share/locale')

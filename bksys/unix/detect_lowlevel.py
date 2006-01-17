@@ -570,7 +570,7 @@ def detect(lenv,dest):
 /* #undef KDEINIT_USE_XFT */
 
 /* The compiled in system configuration prefix */
-#define KDESYSCONFDIR "/usr/etc"
+#define KDESYSCONFDIR "/etc"
 
 /* Distribution Text to append to OS */
 #define KDE_DISTRIBUTION_TEXT "compiled sources"
