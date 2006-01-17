@@ -49,7 +49,7 @@ public:
      */
     void save(KConfigBase *);
 
-public slots:
+public Q_SLOTS:
     void slotNewItem();
     void slotRemoveItem();
     void slotMoveUp();

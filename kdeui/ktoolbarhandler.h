@@ -42,10 +42,10 @@ public:
 
     KAction *toolBarMenuAction();
 
-public slots:
+public Q_SLOTS:
     void setupActions();
 
-private slots:
+private Q_SLOTS:
     void clientAdded( KXMLGUIClient *client );
 
 private:

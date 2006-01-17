@@ -84,7 +84,7 @@ protected:
         return ret;
     }
 
-private slots:
+private Q_SLOTS:
     void slotProcessMimeIcons()
     {
         m_resolver->slotProcessMimeIcons();

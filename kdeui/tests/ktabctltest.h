@@ -18,7 +18,7 @@ protected:
     QPushButton *ok, *cancel;
     Q3MultiLineEdit *e;
     QWidget *pages[3];
-public slots:
+public Q_SLOTS:
     void okPressed();
     void tabChanged(int);
 };

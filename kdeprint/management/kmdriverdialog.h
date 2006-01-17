@@ -34,7 +34,7 @@ public:
 
 	void setDriver(DrMain*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 
 private:

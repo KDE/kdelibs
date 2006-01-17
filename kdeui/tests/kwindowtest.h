@@ -20,7 +20,7 @@ public:
     testWindow (QWidget *parent=0, const char *name=0);
     ~testWindow ();
     
-public slots:
+public Q_SLOTS:
     void beFixed();
     void beYFixed();
 

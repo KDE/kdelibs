@@ -36,7 +36,7 @@ class Test : public QObject
 public:
   Test();
 
-public slots:
+public Q_SLOTS:
   void results(const KNetwork::KResolverResults& r);
 };
 

@@ -105,7 +105,7 @@ public:
     void derefObject(QStringList & args);
 
     KJavaAppletServer* getServer() const { return server; }
-signals:
+Q_SIGNALS:
     /**
      * Signals the KHMTL Part to show this as the status message.
      */
@@ -128,7 +128,7 @@ protected:
     // The applet server this context is attached to.
     KJavaAppletServer* server;
 
-protected slots:
+protected Q_SLOTS:
     void received( const QString& cmd, const QStringList& arg );
     void javaProcessExited(int);
 

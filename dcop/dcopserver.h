@@ -133,7 +133,7 @@ public:
                      const DCOPCString &rApp, const DCOPCString &rObj,
                      const DCOPCString &rFun, const QByteArray &data);
 
-private slots:
+private Q_SLOTS:
     void newClient( int socket );
     void processData( int socket );
     void slotTerminate();

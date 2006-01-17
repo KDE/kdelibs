@@ -41,7 +41,7 @@ public:
     ~KCrashBookmarkImporter() {}
     void parseCrashBookmarks( bool del = true );
     static QString crashBookmarksDir( );
-signals:
+Q_SIGNALS:
     void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();

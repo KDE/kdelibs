@@ -70,7 +70,7 @@ public:
      */
     bool activateOnSelect() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Returns a list of all items currently in the box.
      */
@@ -189,7 +189,7 @@ public slots:
      */
     virtual void hide();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when an item was selected, contains the text of
      * the selected item.
@@ -221,14 +221,14 @@ protected:
      */
     virtual bool eventFilter( QObject *, QEvent * );
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Called when an item was activated. Emits
      * activated() with the item.
      */
     virtual void slotActivated( Q3ListBoxItem * );
 
-private slots:
+private Q_SLOTS:
     void slotSetCurrentItem( Q3ListBoxItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
     void canceled();

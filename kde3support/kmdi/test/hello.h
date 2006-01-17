@@ -22,12 +22,12 @@ class Hello : public K3MdiChildView
     Q_OBJECT
 public:
     Hello( const char *title, const char *text, QWidget* parentWidget = 0 );
-signals:
+Q_SIGNALS:
     void clicked();
 protected:
     void mouseReleaseEvent( QMouseEvent * );
     void paintEvent( QPaintEvent * );
-private slots:
+private Q_SLOTS:
     void animate();
 private:
     QString t;

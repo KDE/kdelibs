@@ -39,7 +39,7 @@ class NotifyByPopup : public KNotifyPlugin
 	private:
 		QHash<int, KPassivePopup * > m_popups;
 		
-	private slots:
+	private Q_SLOTS:
 		void slotPopupDestroyed();
 		void slotLinkClicked(const QString & );
 

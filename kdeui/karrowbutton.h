@@ -68,7 +68,7 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		// hacks for moc braindamages with enums
 		int arrowTp() const { return (int) arrowType(); }
 		void setArrowTp( int tp ) { setArrowType( (Qt::ArrowType) tp ); }
-	public slots:
+	public Q_SLOTS:
 		/**
 		 * Defines in what direction the arrow is pointing to. Will repaint the
 		 * button if necessary.

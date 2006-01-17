@@ -36,11 +36,11 @@ namespace KSpell2
 
         bool backgroundCheckingButtonShown() const;
 
-    public slots:
+    public Q_SLOTS:
         void save();
         void setBackgroundCheckingButtonShown( bool );
         void slotDefault();
-    protected slots:
+    protected Q_SLOTS:
         void slotChanged();
 
     private:

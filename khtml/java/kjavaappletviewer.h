@@ -54,7 +54,7 @@ public:
     void setURLArgs (const KParts::URLArgs & args);
     void saveState (QDataStream & stream);
     void restoreState (QDataStream & stream);
-public slots:
+public Q_SLOTS:
     void showDocument (const QString & doc, const QString & frame);
 };
 
@@ -69,9 +69,9 @@ public:
     void unregister (const unsigned long objid);
 
     int jsSessions () const { return m_jssessions; }
-public slots:
+public Q_SLOTS:
     void jsEvent (const QStringList & args);
-signals:
+Q_SIGNALS:
     void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
 
 private:
@@ -96,14 +96,14 @@ public:
     bool eventFilter (QObject *o, QEvent *e);
 
     bool appletAlive () const;
-public slots:
+public Q_SLOTS:
     virtual bool openURL (const KURL & url);
     virtual bool closeURL ();
     void appletLoaded ();
     void infoMessage (const QString &);
 protected:
     bool openFile();
-private slots:
+private Q_SLOTS:
     void delayedCreateTimeOut ();
 private:
     QPointer <CoverWidget> m_view;
@@ -135,7 +135,7 @@ class AppletParameterDialog : public KDialogBase {
     Q_OBJECT
 public:
     AppletParameterDialog (KJavaAppletWidget * parent);
-protected slots:
+protected Q_SLOTS:
     void slotClose ();
 private:
     KJavaAppletWidget * m_appletWidget;

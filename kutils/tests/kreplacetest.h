@@ -36,12 +36,12 @@ public:
     void print();
     const QStringList& textLines() const { return m_text; }
 
-public slots:
+public Q_SLOTS:
     void slotHighlight( const QString &, int, int );
     void slotReplaceNext();
     void slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
 
-signals:
+Q_SIGNALS:
     void exitLoop();
 
 private:

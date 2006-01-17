@@ -87,7 +87,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
 //X          */
 //X         KInstance * instanceForName( const QCString & instanceName );
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Call this slot when the configuration belonging to the associated
          * instance name has changed. The registered slot will be called.
@@ -104,7 +104,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
          */
         void syncConfiguration();
 
-    private slots:
+    private Q_SLOTS:
         void unregisterInstance( QObject * );
 
     private:

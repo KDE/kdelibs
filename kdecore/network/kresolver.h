@@ -694,7 +694,7 @@ public:
    */
   virtual bool event(QEvent*);
 
-signals:
+Q_SIGNALS:
   // signals
 
   /**

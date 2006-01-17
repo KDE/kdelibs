@@ -58,13 +58,13 @@ public:
 						 const QString & context_name = QString(),
 						 const QString & context_value = QString());
 	
-public slots:
+public Q_SLOTS:
 	/**
 	 * save to the config file
 	 */
 	void save();
 	
-signals:
+Q_SIGNALS:
 	/**
 	 * Indicate that the state of the modules contents has changed. 
 	 * This signal is emitted whenever the state of the configuration changes. 
@@ -75,7 +75,7 @@ signals:
 private:
 	struct Private;
 	Private* const d;
-private slots:
+private Q_SLOTS:
 	void slotEventSelected( KNotifyConfigElement *e);
 	
 };

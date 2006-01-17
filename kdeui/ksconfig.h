@@ -229,7 +229,7 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
     bool interpret( const QString &fname, QString &lname, QString &hname );
 
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Use this function to activate the help information for this
      * widget. The function is particulary useful if the help button is
@@ -241,7 +241,7 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
     void activateHelp( void );
 
 
-  protected slots:
+  protected Q_SLOTS:
     /**
      * Invokes the help documentation for kspell
      */
@@ -283,7 +283,7 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
     //QPushButton *browsebutton1;
     QStringList langfnames;
 
-signals:
+Q_SIGNALS:
     void configChanged();
 
 private:

@@ -14,7 +14,7 @@ public:
 
   Test(const QString &host, const QString &service, bool blocking);
 
-public slots:
+public Q_SLOTS:
   void gotErrorSlot(int errorcode);
   void hostFoundSlot();
   void boundSlot(const KResolverEntry& target);

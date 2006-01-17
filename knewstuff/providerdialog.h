@@ -62,7 +62,7 @@ class ProviderDialog : public KDialogBase
     */
     void addProvider( Provider * );
 
-  protected slots:
+  protected Q_SLOTS:
     void slotOk();
 
   private:

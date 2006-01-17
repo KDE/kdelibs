@@ -248,7 +248,7 @@ public:
 
   bool isOffline(const KURL &url); // Check network status
 
-protected slots:
+protected Q_SLOTS:
   void slotData(const QByteArray &);
   void error( int _errid, const QString &_text );
 

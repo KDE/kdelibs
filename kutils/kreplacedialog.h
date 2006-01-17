@@ -135,7 +135,7 @@ public:
      */
     QWidget *replaceExtension();
 
-protected slots:
+protected Q_SLOTS:
 
     void slotOk();
     virtual void showEvent ( QShowEvent * );

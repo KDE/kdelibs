@@ -15,7 +15,7 @@ class SpeedTest : public QObject {
 public:
     SpeedTest(const KURL & url);
 
-private slots:
+private Q_SLOTS:
     void entries( KIO::Job *, const KIO::UDSEntryList& );
     void finished( KIO::Job *job );
 

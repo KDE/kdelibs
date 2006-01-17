@@ -134,11 +134,11 @@ class KABC_EXPORT ResourceFile : public Resource
      */
     virtual void removeAddressee( const Addressee& addr );
 
-  private slots:
+  private Q_SLOTS:
     void downloadFinished( KIO::Job* );
     void uploadFinished( KIO::Job* );
 
-  protected slots:
+  protected Q_SLOTS:
     void fileChanged();
 
   protected:

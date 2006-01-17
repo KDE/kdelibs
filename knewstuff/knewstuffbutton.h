@@ -84,7 +84,7 @@ class Button : public KPushButton
          */
         void setButtonText(const QString& what);
 
-    signals:
+    Q_SIGNALS:
         /**
          * emitted when the Hot New Stuff dialog is about to be shown, usually
          * as a result of the user having click on the button
@@ -96,7 +96,7 @@ class Button : public KPushButton
          */
         void dialogFinished();
 
-    protected slots:
+    protected Q_SLOTS:
         void showDialog();
 
     private:

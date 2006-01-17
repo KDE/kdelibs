@@ -183,7 +183,7 @@ public:
      * the pixmap exists, NULL otherwise.
      */
     KThemePixmap* verticalPixmap( int h, int widgetID );
-protected slots:
+protected Q_SLOTS:
     void flushTimeout();
 protected:
     Q3IntCache<KThemePixmap> cache;

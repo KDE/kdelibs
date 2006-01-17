@@ -147,7 +147,7 @@ namespace KUnitTest
         /*! @returns The number of skipped tests. */
         int numberOfSkippedTests() const;
 
-    public slots:
+    public Q_SLOTS:
         /*! Call this slot to run all the registered tests.
          * @returns The number of finished tests.
          */
@@ -169,7 +169,7 @@ namespace KUnitTest
          */
         void reset();
 
-    signals:
+    Q_SIGNALS:
         /*! Emitted after a test is finished.
          * @param name The name of the test.
          * @param test A pointer to the Tester object.

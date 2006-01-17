@@ -14,7 +14,7 @@ public:
 
   Test(QString host, QString service, QString lhost, QString lservice, bool blocking);
 
-public slots:
+public Q_SLOTS:
   void stateChangedSlot(int newstate);
   void gotErrorSlot(int errorcode);
   void hostFoundSlot();

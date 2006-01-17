@@ -56,10 +56,10 @@ namespace KSpell2
         virtual bool addToSession( const QString& word );
         //end of Dictionary interfaces
 
-    signals:
+    Q_SIGNALS:
         void changed();
 
-    protected slots:
+    protected Q_SLOTS:
         void defaultConfigurationChanged();
 
     private:

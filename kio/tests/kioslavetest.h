@@ -77,7 +77,7 @@ protected:
 
   QPushButton *close;
 
-protected slots:
+protected Q_SLOTS:
   void changeOperation( QAbstractButton *b );
   void changeProgressMode( QAbstractButton *b );
 

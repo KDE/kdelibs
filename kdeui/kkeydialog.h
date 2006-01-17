@@ -135,13 +135,13 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
          */
         static bool checkStandardShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
 
- signals:
+ Q_SIGNALS:
 	/**
 	 * Emitted when an action's shortcut has been changed.
 	 **/
 	void keyChange();
 
- public slots:
+ public Q_SLOTS:
 	/**
 	 * Set all keys to their default values (bindings).
 	 **/
@@ -173,7 +173,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
 	void _warning( const KKeySequence& seq, QString sAction, QString sTitle );
 
- protected slots:
+ protected Q_SLOTS:
 	void slotNoKey();
 	void slotDefaultKey();
 	void slotCustomKey();
@@ -208,7 +208,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
         // Remove the key sequences contained in cut from this item
         bool removeShortcut( const QString& name, const KShortcut &cut );
 
-private slots:
+private Q_SLOTS:
         void captureCurrentItem();
 
 #ifndef KDE_NO_COMPAT
@@ -228,7 +228,7 @@ private slots:
 			bool bAllowLetterShortcuts,
 			bool bAllowWinKey = false );
 
- public slots:
+ public Q_SLOTS:
 	/**
 	 * Rebuild list entries based on underlying map.
 	 * Use this if you changed the underlying map.

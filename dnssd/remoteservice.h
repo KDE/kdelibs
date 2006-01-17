@@ -85,7 +85,7 @@ public:
 	 */
 	bool isResolved() const;
 	
-signals:
+Q_SIGNALS:
 	/**
 	Emitted when resolving is complete. Parameter is set to TRUE if it was successful.
 	If operating in asynchronous mode this signal can be emitted several times (when 

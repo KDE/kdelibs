@@ -57,10 +57,10 @@ namespace KSpell2
         bool        checkWord( const QString& word );
         QStringList suggest( const QString& word );
         bool        addWord( const QString& word );
-    signals:
+    Q_SIGNALS:
         void misspelling( const QString&, int );
         void done();
-    protected slots:
+    protected Q_SLOTS:
         void checkNext();
     private:
         Filter            *m_filter;

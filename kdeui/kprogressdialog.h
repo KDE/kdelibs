@@ -174,7 +174,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
 
         virtual void reject();
 
-    protected slots:
+    protected Q_SLOTS:
         void slotAutoShow();
         void slotAutoActions(int percentage);
 

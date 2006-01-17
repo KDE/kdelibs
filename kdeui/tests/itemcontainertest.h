@@ -19,7 +19,7 @@ public:
     enum ViewID { IconView, ListView, ListBox };
     enum ModeID { NoSelection, Single, Multi, Extended };
 
-public slots:
+public Q_SLOTS:
     //void slotSwitchView( int id );
     void slotSwitchMode( int id ); 
 

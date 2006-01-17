@@ -257,7 +257,7 @@ public:
 				   WId parent, int timeout = -1 );
 
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the delay for the popup is removed automatically. Setting the delay to 0
      * disables the timeout, if you're doing this, you may want to connect the
@@ -279,7 +279,7 @@ public slots:
      */
     void show(const QPoint &p);
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the popup is clicked.
      */

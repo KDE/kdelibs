@@ -41,7 +41,7 @@ public:
   MyDCOPObject(const QCString &name, const QCString &remoteName);
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString& replyType, QByteArray &replyData);
-public slots:
+public Q_SLOTS:
   void slotTimeout();
 
 private:

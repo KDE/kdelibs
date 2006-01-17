@@ -127,7 +127,7 @@ namespace KParts {
          */
         NonEmbeddableResult handleNonEmbeddable( const QString& mimeType );
 
-    protected slots:
+    protected Q_SLOTS:
         void slotBrowserScanFinished(KIO::Job *job);
         void slotBrowserMimetype(KIO::Job *job, const QString &type);
         void slotCopyToTempFileResult(KIO::Job *job);

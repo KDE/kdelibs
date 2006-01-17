@@ -37,10 +37,10 @@ public:
     // tests
     void testIntevation();
 
-signals:
+Q_SIGNALS:
     void leaveModality();
 
-private slots:
+private Q_SLOTS:
     void slotLDAPResult( const KABC::LdapObject& );
     void slotLDAPError( const QString& );
     void slotLDAPDone();

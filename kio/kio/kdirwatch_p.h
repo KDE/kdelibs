@@ -104,7 +104,7 @@ public:
 
  static bool isNoisyFile( const char *filename );
 
-public slots:
+public Q_SLOTS:
   void slotRescan();
   void famEventReceived(); // for FAM
   void slotActivated(); // for DNOTIFY

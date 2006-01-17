@@ -128,7 +128,7 @@ public:
    */
   void finished();
 
-public slots:
+public Q_SLOTS:
   /**
    * This method should be called for correct cancellation of IO operation
    * Connect this to the progress widgets buttons etc.
@@ -240,13 +240,13 @@ public slots:
   virtual void slotCanResume( KIO::Job* job, KIO::filesize_t offset) {
     Q_UNUSED(job);Q_UNUSED(offset);}
 
-signals:
+Q_SIGNALS:
   /**
    * Called when the operation stopped.
    */
   void stopped();
 
-protected slots:
+protected Q_SLOTS:
   void slotFinished( KIO::Job* );
 
 protected:

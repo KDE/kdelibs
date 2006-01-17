@@ -136,7 +136,7 @@ public:
 	 */
 	static QStringList mimeTypes(void);
 
-/*private slots: ### KDE4 and remove Helper class
+/*private Q_SLOTS: ### KDE4 and remove Helper class
 	void connectAmanPlay();*/
 
 private:

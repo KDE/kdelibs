@@ -80,7 +80,7 @@ public:
    */
   void setTrackId(const QString &id);
 
-signals:
+Q_SIGNALS:
   void newService(const QString &path, KService::Ptr *entry);
 
 public:

@@ -205,7 +205,7 @@ public:
         return static_cast<QMenuItem*>(action)->id();
     }
 #endif
-signals:
+Q_SIGNALS:
     /**
      * connect to this signal to be notified when a context menu is about to be shown
      * @param menu The menu that the context menu is about to be shown for
@@ -229,7 +229,7 @@ protected:
 
     virtual void virtual_hook( int id, void* data );
 
-protected slots:
+protected Q_SLOTS:
     /// @since 3.1
     QString underlineText(const QString& text, uint length);
     /// @since 3.1

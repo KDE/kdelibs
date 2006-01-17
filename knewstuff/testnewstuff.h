@@ -47,7 +47,7 @@ class MyWidget : public QWidget
     MyWidget();
     ~MyWidget();
     
-  public slots:
+  public Q_SLOTS:
     void upload();
     void download();
 

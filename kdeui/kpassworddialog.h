@@ -99,7 +99,7 @@ public:
      */
     int maxPasswordLength() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Reimplementation
      */
@@ -363,7 +363,7 @@ public:
 	
 	virtual void accept();
 
-protected slots:
+protected Q_SLOTS:
     void slotKeep(bool);
 
 protected:
@@ -376,7 +376,7 @@ protected:
     virtual bool checkPassword(const char *) { return true; }
 
 
-private slots:
+private Q_SLOTS:
   void enableOkBtn();
 
 private:

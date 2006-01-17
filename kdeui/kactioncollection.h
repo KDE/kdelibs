@@ -248,7 +248,7 @@ public:
    */
   const KXMLGUIClient *parentGUIClient() const;
 
-signals:
+Q_SIGNALS:
   void inserted( KAction* );
   void removed( KAction* );
 
@@ -300,7 +300,7 @@ private:
   void prepareXMLUnplug();
   void unplugShortcuts( KAccel* kaccel );
 
-private slots:
+private Q_SLOTS:
    void slotMenuItemHighlighted( int id );
    void slotToolBarButtonHighlighted( int id, bool highlight );
    void slotMenuAboutToHide();
@@ -353,7 +353,7 @@ public:
 #endif // !KDE_NO_COMPAT
 
   // KDE4: clear() doesn't need to be a slot
-public slots:
+public Q_SLOTS:
   /**
    * Clears the entire actionCollection, deleting all actions.
    * @see remove

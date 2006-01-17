@@ -90,7 +90,7 @@ class KPluginSelectionWidget : public QWidget
          */
         bool pluginChecked( const QString & pluginName ) const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * Emits true when at least one embedded KCM is changed, or the plugin
          * selection was changed.
@@ -116,7 +116,7 @@ class KPluginSelectionWidget : public QWidget
          */
         virtual bool pluginIsLoaded( const QString & pluginName ) const;
 
-    private slots:
+    private Q_SLOTS:
         /**
          * Called when a QCheckListItem is checked or unchecked. It calls
          * checkDependencies on the Plugin and then updateConfigPage.

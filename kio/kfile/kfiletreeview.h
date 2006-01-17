@@ -137,7 +137,7 @@ public:
     */
    bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; };
 
-public slots:
+public Q_SLOTS:
 
    /**
     * set the flag to show 'extended' folder icons on or off. If switched on, folders will
@@ -164,7 +164,7 @@ protected:
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
     virtual void contentsDropEvent( QDropEvent *ev );
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotNewTreeViewItems( KFileTreeBranch*,
 				       const KFileTreeViewItemList& );
 
@@ -173,7 +173,7 @@ protected slots:
 
     virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
 
-private slots:
+private Q_SLOTS:
     void slotExecuted( Q3ListViewItem * );
     void slotExpanded( Q3ListViewItem * );
     void slotCollapsed( Q3ListViewItem *item );
@@ -190,7 +190,7 @@ private slots:
    void slotPopulateFinished( KFileTreeViewItem* );
 
 
-signals:
+Q_SIGNALS:
 
    void onItem( const QString& );
    /* New signals if you like it ? */

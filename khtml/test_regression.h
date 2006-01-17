@@ -48,7 +48,7 @@ public:
     KHTMLPart *m_part;
     int m_timer_waits;
     QTimer *m_timeout_timer;
-public slots:
+public Q_SLOTS:
     void partCompleted();
     void timeout();
     void finishTimers();
@@ -186,7 +186,7 @@ private:
 private:
     void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
 
-private slots:
+private Q_SLOTS:
     void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
     void resizeTopLevelWidget( int, int );
 

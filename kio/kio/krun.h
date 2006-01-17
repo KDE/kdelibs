@@ -309,7 +309,7 @@ public:
     */
     static bool checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QByteArray* wmclass_arg );
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the operation finished.
    * @see hasFinished()
@@ -321,7 +321,7 @@ signals:
    */
   void error();
 
-protected slots:
+protected Q_SLOTS:
   void slotTimeout();
   void slotScanFinished( KIO::Job * );
   void slotScanMimeType( KIO::Job *, const QString &type );
@@ -397,7 +397,7 @@ class KIO_EXPORT KProcessRunner : public QObject
 
     pid_t pid() const;
 
-  protected slots:
+  protected Q_SLOTS:
 
     void slotProcessExited(KProcess *);
 

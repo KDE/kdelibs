@@ -252,7 +252,7 @@ namespace KABC {
        */
       KABC::LDAPUrl url() const;
 
-    private slots:
+    private Q_SLOTS:
       void setLDAPPort();
       void setLDAPSPort();
       void setAnonymous( bool on );

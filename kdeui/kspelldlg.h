@@ -80,7 +80,7 @@ public:
 
   void standby() { emit ready( false ); }
 
-  public slots:
+  public Q_SLOTS:
   /**
    * Adjust the progress bar to @p p percent.
    **/
@@ -90,7 +90,7 @@ protected:
   virtual void closeEvent( QCloseEvent * e );
   void done( int i );
 
- signals:
+ Q_SIGNALS:
     /**
       This signal is emitted when a button is pressed.
       */
@@ -98,7 +98,7 @@ protected:
 
   void ready( bool );
 
-protected slots:
+protected Q_SLOTS:
   void ignore();
   void add();
   void ignoreAll();

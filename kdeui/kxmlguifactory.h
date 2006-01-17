@@ -175,7 +175,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    */
   void resetContainer( const QString &containerName, bool useTagName = false );
 
- public slots:
+ public Q_SLOTS:
   /**
    * Show a standard configure shortcut for every action in this factory.
    *
@@ -193,7 +193,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    */
   int configureShortcuts(bool bAllowLetterShortcuts = true, bool bSaveSettings = true);
 
- signals:
+ Q_SIGNALS:
   void clientAdded( KXMLGUIClient *client );
   void clientRemoved( KXMLGUIClient *client );
 

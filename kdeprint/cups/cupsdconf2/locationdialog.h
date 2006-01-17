@@ -41,7 +41,7 @@ public:
 	static bool newLocation(CupsLocation*, QWidget *parent = 0, CupsdConf *conf = 0);
 	static bool editLocation(CupsLocation*, QWidget *parent = 0, CupsdConf *conf = 0);
 
-protected slots:
+protected Q_SLOTS:
 	void slotTypeChanged(int);
 	void slotClassChanged(int);
 	void slotAdd();

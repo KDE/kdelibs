@@ -36,7 +36,7 @@ public:
 	void setDevice(const QString&);
 	void setPrinterName(const QString&);
 
-protected slots:
+protected Q_SLOTS:
 	void slotReceivedStdout(KProcess*, char*, int);
 	void slotReceivedStderr(KProcess*, char*, int);
 	void slotProcessExited(KProcess*);

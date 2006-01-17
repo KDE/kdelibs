@@ -12,7 +12,7 @@ class PreviewTest : public QWidget
 public:
     PreviewTest();
 
-private slots:
+private Q_SLOTS:
     void slotGenerate();
     void slotResult(KIO::Job *);
     void slotPreview( const KFileItem *, const QPixmap & );

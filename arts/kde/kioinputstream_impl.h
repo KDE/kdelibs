@@ -57,10 +57,10 @@ public:
 
 	long packetSize() { return m_packetSize; }
 
-signals:
+Q_SIGNALS:
 	void mimeTypeFound(const QString & mimetype);
 	
-private slots:
+private Q_SLOTS:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
 	void slotScanMimeType(KIO::Job *, const QString &mimetype);

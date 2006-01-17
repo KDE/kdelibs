@@ -60,7 +60,7 @@ public:
 
   static KConfig *config();
 
-public slots:
+public Q_SLOTS:
   /**
    * Set cursor to end of line.
    */
@@ -84,7 +84,7 @@ protected:
   virtual void mouseReleaseEvent( QMouseEvent * e );
   void doCompletion(bool ctrlT);
 
-private slots:
+private Q_SLOTS:
   void slotCompletion() { doCompletion(false); }
   void slotPopupCompletion( const QString& );
   void slotStartLDAPLookup();

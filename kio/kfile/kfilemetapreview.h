@@ -26,7 +26,7 @@ public:
                                      KPreviewWidgetBase *provider );
     virtual void clearPreviewProviders();
 
-public slots:
+public Q_SLOTS:
     virtual void showPreview(const KURL &url);
     virtual void clearPreview();
 

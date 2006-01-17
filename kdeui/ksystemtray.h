@@ -119,7 +119,7 @@ public:
      */
     static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when quit is selected in the menu. If you want to perform any other
      * action than to close the main application window please connect to this signal.
@@ -127,7 +127,7 @@ signals:
      */
     void quitSelected();
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Toggles the state of the window associated with this system tray icon (hides it,
@@ -180,7 +180,7 @@ protected:
     void showEvent( QShowEvent * );
 
 
-private slots:
+private Q_SLOTS:
     void minimizeRestoreAction();
     void maybeQuit();
 

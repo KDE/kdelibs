@@ -72,7 +72,7 @@ class KConfigDialogManager;
 class KDEUI_EXPORT KConfigDialog : public KDialogBase {
 Q_OBJECT
 
-signals:
+Q_SIGNALS:
   /**
    * A widget in the dialog was modified.
    */
@@ -183,7 +183,7 @@ public:
    */
   static bool showDialog( const QString& name );
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Update the settings from the dialog.
    * Virtual function for custom additions.
@@ -229,7 +229,7 @@ protected:
    */ 
   virtual void showEvent(QShowEvent *e);
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Updates the Apply and Default buttons.
    */

@@ -10,7 +10,7 @@ class BugMailer : public QObject {
 public:
     BugMailer(SMTP* s) : QObject(0), sm(s) { setObjectName( "mailer" ); }
 
-public slots:
+public Q_SLOTS:
     void slotError(int);
     void slotSend();
 private:

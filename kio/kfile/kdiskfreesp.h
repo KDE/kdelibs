@@ -64,7 +64,7 @@ public:
     */
    static KDiskFreeSp * findUsageInfo( const QString & path );
 
-signals:
+Q_SIGNALS:
    void foundMountPoint( const QString & mountPoint, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
 
    // This one is a hack around a weird (compiler?) bug. In the former signal,
@@ -73,7 +73,7 @@ signals:
    void foundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& );
    void done();
 
-private slots:
+private Q_SLOTS:
    void receivedDFStdErrOut(KProcess *, char *data, int len);
    void dfDone();
 

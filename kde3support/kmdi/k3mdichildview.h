@@ -367,7 +367,7 @@ public:
 	 */
 	inline const QDateTime& getTimeStamp() const { return m_time; }
 
-public slots:
+public Q_SLOTS:
 	/**
 	* Attaches this window to the Mdi manager.
 	* It calls the K3MdiMainFrm attachWindow function , so if you have a pointer
@@ -492,10 +492,10 @@ protected:
 
 	void trackIconAndCaptionChanges( QWidget *view );
 
-protected slots:
+protected Q_SLOTS:
 	void slot_childDestroyed();
 
-signals:
+Q_SIGNALS:
 	/**
 	 * Internally used by K3MdiChildView::attach to send it as command to the mainframe.
 	 */

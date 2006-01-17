@@ -15,7 +15,7 @@ public:
   Shell();
   virtual ~Shell();
 
-protected slots:
+protected Q_SLOTS:
   void slotFileOpen();
   void slotFileOpenRemote();
   void slotFileEdit();

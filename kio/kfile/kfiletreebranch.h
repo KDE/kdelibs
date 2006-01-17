@@ -137,7 +137,7 @@ public:
    bool childRecurse()
       { return m_recurseChildren; }
 
-public slots:
+public Q_SLOTS:
    /**
     * populates a branch. This method must be called after a branch was added
     * to  a KFileTreeView using method addBranch.
@@ -170,7 +170,7 @@ public:
     */
    virtual KFileTreeViewItem *findTVIByURL( const KURL& );
 
-signals:
+Q_SIGNALS:
    /**
     * emitted with the item of a directory which was finished to populate
     */
@@ -188,7 +188,7 @@ signals:
     */
    void directoryChildCount( KFileTreeViewItem* item, int count );
 
-private slots:
+private Q_SLOTS:
    void slotRefreshItems( const KFileItemList& );
    void addItems( const KFileItemList& );
    void slCompleted( const KURL& );

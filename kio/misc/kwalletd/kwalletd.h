@@ -142,7 +142,7 @@ class KWalletD : public KDEDModule {
 
 		virtual QString localWallet();
 
-	private slots:
+	private Q_SLOTS:
 		void slotAppUnregistered(const QByteArray& app);
 		void emitWalletListDirty();
 		void timedOut(int);

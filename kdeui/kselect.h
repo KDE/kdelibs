@@ -96,7 +96,7 @@ public:
    */
   QRect contentsRect() const;
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted whenever the user chooses a value,
    * e.g. by clicking with the mouse on the widget.
@@ -236,7 +236,7 @@ public:
   int maxValue() const
   { return Q3RangeControl::maxValue(); }
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted whenever the user chooses a value,
    * e.g. by clicking with the mouse on the widget.

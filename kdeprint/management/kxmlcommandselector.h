@@ -44,7 +44,7 @@ public:
 protected:
 	void loadCommands();
 
-protected slots:
+protected Q_SLOTS:
 	void slotAddCommand();
 	void slotEditCommand();
 	void slotBrowse();
@@ -52,7 +52,7 @@ protected slots:
 	void slotHelpCommand();
 	void slotXmlCommandToggled( bool );
 
-signals:
+Q_SIGNALS:
 	void commandValid( bool );
 
 private:

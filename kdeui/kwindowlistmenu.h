@@ -43,7 +43,7 @@ public:
 
     void init();
 
-public slots:
+public Q_SLOTS:
     /**
      * Pre-selects the active window in the popup menu, for faster
      * keyboard navigation. Needs to be called after popup().
@@ -51,7 +51,7 @@ public slots:
      */
     void selectActiveWindow();
 
-protected slots:
+protected Q_SLOTS:
     void slotForceActiveWindow();
     void slotSetCurrentDesktop();
     void slotUnclutterWindows();

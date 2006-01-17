@@ -25,7 +25,7 @@ class KMacroExpanderTest : public QObject
 {
 	Q_OBJECT
 
-private slots:
+private Q_SLOTS:
 	void expandMacros();
 	void expandMacrosShellQuote();
 	void expandMacrosSubClass();

@@ -43,7 +43,7 @@ public:
 	virtual void setOption(DrBase*);
 	virtual void setValue(const QString&);
 
-signals:
+Q_SIGNALS:
 	void valueChanged(const QString&);
 
 protected:
@@ -58,7 +58,7 @@ public:
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSliderChanged(int);
 	void slotEditChanged(const QString&);
 
@@ -88,7 +88,7 @@ public:
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelectionChanged();
 
 private:
@@ -104,7 +104,7 @@ public:
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelected(int);
 
 private:
@@ -119,10 +119,10 @@ public:
 	DrOptionView(QWidget *parent = 0, const char *name = 0);
 	void setAllowFixed(bool on) 	{ m_allowfixed = on; }
 
-signals:
+Q_SIGNALS:
 	void changed();
 
-public slots:
+public Q_SLOTS:
 	void slotValueChanged(const QString&);
 	void slotItemSelected(Q3ListViewItem*);
 

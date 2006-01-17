@@ -169,7 +169,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          */
         void defaults();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Tells you whether the configuration is changed or not.
          */

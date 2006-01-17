@@ -165,7 +165,7 @@ public:
 
 
 
-signals:
+Q_SIGNALS:
     void finishedLayout();
     void cleared();
     void zoomView( int );
@@ -203,11 +203,11 @@ protected:
     void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
-protected slots:
+protected Q_SLOTS:
     void slotPaletteChanged();
     void slotScrollBarMoved();
 
-private slots:
+private Q_SLOTS:
     void tripleClickTimeout();
     void findTimeout();
     void accessKeysTimeout();

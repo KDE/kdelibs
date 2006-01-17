@@ -43,11 +43,11 @@ class KRESOURCES_EXPORT ConfigWidget : public QWidget
     */
     virtual void setInEditMode( bool value );
 
-  public slots:
+  public Q_SLOTS:
     virtual void loadSettings( Resource *resource ) = 0;
     virtual void saveSettings( Resource *resource ) = 0;
 
-  signals:
+  Q_SIGNALS:
     void setReadOnly( bool value );
 
   protected:

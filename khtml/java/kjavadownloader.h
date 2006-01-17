@@ -58,7 +58,7 @@ public:
     ~KJavaDownloader();
 
     virtual void jobCommand( int cmd );
-protected slots:
+protected Q_SLOTS:
     void slotData( KIO::Job*, const QByteArray& );
     void slotConnected( KIO::Job* );
     void slotMimetype( KIO::Job*, const QString& );
@@ -80,7 +80,7 @@ public:
     virtual void jobCommand( int cmd );
     virtual void data( const QByteArray& qb );
     void start();
-protected slots:
+protected Q_SLOTS:
     void slotDataRequest( KIO::Job*, QByteArray& );
     void slotResult( KIO::Job* );
 private:

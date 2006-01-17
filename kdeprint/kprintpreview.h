@@ -56,7 +56,7 @@ public:
 
 	bool startPreview();
 
-protected slots:
+protected Q_SLOTS:
 	void slotProcessExited(KProcess*);
 private:
 	bool m_bOk;

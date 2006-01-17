@@ -55,7 +55,7 @@ public:
    */
   virtual ~KBugReport();
 
-protected slots:
+protected Q_SLOTS:
   /**
    * "Configure email" has been clicked - this calls kcmshell System/email
    */

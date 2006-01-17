@@ -108,7 +108,7 @@ class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 		 */
 		bool running() const;
 
-	public slots:
+	public Q_SLOTS:
 		/**
 		 * Detaches the stream from the soundserver but doesn't remove the Synth_AMAN_RECORD
 		 * so that the entry in the Audiomanager remains.
@@ -134,7 +134,7 @@ class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 		 */
 		void flush();
 
-	signals:
+	Q_SIGNALS:
 		/**
 		 * Data from the aRts server has arrived. You should copy the data
 		 * because the passed QByteArray will be deleted right after
@@ -150,7 +150,7 @@ class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 		 */
 		void running( bool );
 
-	private slots:
+	private Q_SLOTS:
 		void slotRestartedServer();
 		void slotData( const char *, unsigned int );
 

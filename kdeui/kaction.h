@@ -442,7 +442,7 @@ public:
     */
     enum ActivationReason { UnknownActivation, EmulatedActivation, AccelActivation, PopupMenuActivation, ToolBarActivation };
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the text associated with this action. The text is used for menu
      * and toolbar labels etc.
@@ -512,7 +512,7 @@ public slots:
      */
     virtual void activate();
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotDestroyed();
     virtual void slotKeycodeChanged();
     virtual void slotActivated();
@@ -550,7 +550,7 @@ protected:
      */
     const KGuiItem& guiItem() const;
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when this action is activated
      */

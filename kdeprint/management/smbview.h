@@ -37,7 +37,7 @@ public:
 	void init();
 	void abort();
 
-signals:
+Q_SIGNALS:
 	void printerSelected(const QString& work, const QString& server, const QString& printer);
 	void running(bool);
 
@@ -48,7 +48,7 @@ protected:
 	void processServers();
 	void processShares();
 
-protected slots:
+protected Q_SLOTS:
 	void slotReceivedStdout(KProcess*, char*, int);
 	void slotProcessExited(KProcess*);
 	void slotSelectionChanged(Q3ListViewItem*);

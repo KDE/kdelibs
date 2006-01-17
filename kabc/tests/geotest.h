@@ -7,7 +7,7 @@ class GeoTest : public QObject
 {
   Q_OBJECT
 
-  private slots:
+  private Q_SLOTS:
     void emptyConstructor();
     void constructor();
     void isValid();

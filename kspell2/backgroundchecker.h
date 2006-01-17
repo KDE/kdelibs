@@ -69,7 +69,7 @@ namespace KSpell2
         bool checkWord( const QString& word );
         QStringList suggest( const QString& ) const;
         bool addWord( const QString& word );
-    public slots:
+    public Q_SLOTS:
         virtual void setFilter( KSpell2::Filter *filter );
         virtual void start();
         virtual void stop();
@@ -81,7 +81,7 @@ namespace KSpell2
          */
         virtual void continueChecking();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted whenever a misspelled word is found
          */
@@ -109,7 +109,7 @@ namespace KSpell2
          */
         virtual void finishedCurrentFeed();
 
-    protected slots:
+    protected Q_SLOTS:
         void slotEngineDone();
     protected:
         //void customEvent( QCustomEvent *event );

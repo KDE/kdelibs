@@ -479,7 +479,7 @@ public:
 	void setSwitching( const bool switching ) { m_bSwitching = switching; }
 	bool switching( void ) const { return m_bSwitching; }
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * addWindow demands a K3MdiChildView. This method wraps every QWidget in such an object and
 	 * this way you can put every widget under MDI control.
@@ -780,7 +780,7 @@ protected:
 	class KTabWidget * tabWidget() const;
 
 
-protected slots:  // Protected slots
+protected Q_SLOTS:  // Protected slots
 	/**
 	 * Sets the focus to this MDI view, raises it, activates its taskbar button and updates
 	 * the system buttons in the main menubar when in maximized (Maximize mode).
@@ -827,7 +827,7 @@ protected slots:  // Protected slots
 	 */
 	void closeViewButtonPressed();
 
-signals:
+Q_SIGNALS:
 	/**
 	 * Signals the last attached K3MdiChildView has been closed
 	 */
@@ -857,11 +857,11 @@ signals:
 	void viewActivated( K3MdiChildView* );
 	void viewDeactivated( K3MdiChildView* );
 
-public slots:
+public Q_SLOTS:
 	void prevToolViewInDock();
 	void nextToolViewInDock();
 
-private slots:
+private Q_SLOTS:
 	void setActiveToolDock( K3MdiDockContainer* );
 	void removeFromActiveDockList( K3MdiDockContainer* );
 	void slotDocCurrentChanged( QWidget* );
@@ -871,7 +871,7 @@ private slots:
 #else
 #define public_signals public
 #endif
-signals:
+Q_SIGNALS:
 
 
 	void toggleTop();

@@ -63,7 +63,7 @@ public:
      **/
      void showEmptyList();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when a new color box has been selected.
      */
@@ -76,7 +76,7 @@ signals:
 protected:
 	virtual void resizeEvent( QResizeEvent *re );
 
-private slots:
+private Q_SLOTS:
 	void slotActivated( int index );
 	void slotHighlighted( int index );
 

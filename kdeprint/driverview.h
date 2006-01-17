@@ -49,7 +49,7 @@ public:
 	void setAllowFixed(bool on);
 	bool hasConflict() const 	{ return (m_conflict != 0); }
 
-protected slots:
+protected Q_SLOTS:
 	void slotChanged();
 
 private:

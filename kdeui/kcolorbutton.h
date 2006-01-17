@@ -86,14 +86,14 @@ public:
 
     QSize sizeHint() const;
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the color of the widget
      * is changed, either with setColor() or via user selection.
      */
     void changed( const QColor &newColor );
 
-protected slots:
+protected Q_SLOTS:
     void chooseColor();
 
 protected:

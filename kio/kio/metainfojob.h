@@ -66,7 +66,7 @@ namespace KIO {
          */
         static QStringList supportedMimeTypes();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted when the meta info for @p item has been successfully
          * retrieved.
@@ -84,10 +84,10 @@ namespace KIO {
     protected:
         void getMetaInfo();
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotResult( KIO::Job *job );
 
-    private slots:
+    private Q_SLOTS:
         void start();
         void slotMetaInfo(KIO::Job *, const QByteArray &);
 

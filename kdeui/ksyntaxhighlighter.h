@@ -157,7 +157,7 @@ public:
      */
     bool automatic() const;
 
-signals:
+Q_SIGNALS:
     void activeChanged(const QString &);
     void newSuggestions(const QString& originalword, const QStringList& suggestions,
                         unsigned int pos);
@@ -166,7 +166,7 @@ protected:
     QString spellKey();
     bool eventFilter(QObject *o, QEvent *e);
 
-protected slots:
+protected Q_SLOTS:
     void slotMisspelling( const QString &originalWord, const QStringList &suggestions, unsigned int pos );
     void slotCorrected( const QString &originalWord, const QString &, unsigned int );
     void slotRehighlight();

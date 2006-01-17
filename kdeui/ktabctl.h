@@ -64,10 +64,10 @@ protected:
     void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
 
-signals:
+Q_SIGNALS:
     void tabSelected(int);
 
-protected slots:
+protected Q_SLOTS:
     void showTab(int i);
 
 protected:

@@ -17,7 +17,7 @@ Q_OBJECT
 public:
     KDesatWidget(QWidget *parent=0);
 
-public slots:
+public Q_SLOTS:
     void change(double);
 
 protected:

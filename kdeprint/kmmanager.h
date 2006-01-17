@@ -141,7 +141,7 @@ public:
 	// utility function
 	void checkUpdatePossible();
 
-signals:
+Q_SIGNALS:
 	void updatePossible( bool );
 
 protected:

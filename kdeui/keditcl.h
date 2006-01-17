@@ -44,7 +44,7 @@ public:
     KEdGotoLine( QWidget *parent=0, const char *name=0, bool modal=true );
     int getLineNumber();
 
-public slots:
+public Q_SLOTS:
     void selected( int );
 
 private:
@@ -82,7 +82,7 @@ public:
      */
     KHistoryCombo *searchCombo() const;
 
-protected slots:
+protected Q_SLOTS:
     void slotUser1( void );
     void textSearchChanged ( const QString & );
 
@@ -93,7 +93,7 @@ private:
     QCheckBox *sensitive;
     QCheckBox *direction;
 
-signals:
+Q_SIGNALS:
 
     void search();
     void done();
@@ -133,7 +133,7 @@ public:
     bool 	case_sensitive();
     bool 	get_direction();
 
-private slots:
+private Q_SLOTS:
     void slotUser1( void );
     void slotUser2( void );
     void slotUser3( void );
@@ -144,7 +144,7 @@ private:
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
 
-signals:
+Q_SIGNALS:
     void replace();
     void find();
     void replaceAll();
@@ -284,7 +284,7 @@ public:
 
     void setAutoUpdate(bool b);
 
-signals:
+Q_SIGNALS:
     /** This signal is emitted whenever the cursor position changes.
      *
      * Use this in conjunction with currentLine(), currentColumn()
@@ -303,7 +303,7 @@ signals:
      */
     void 	toggle_overwrite_signal();
 
-public slots:
+public Q_SLOTS:
       /**
        * @internal
        **/
@@ -312,7 +312,7 @@ public slots:
        * @internal
        **/
     void misspelling (const QString &word, const QStringList &, unsigned int pos);
-private slots:
+private Q_SLOTS:
 
       /**
        * @internal

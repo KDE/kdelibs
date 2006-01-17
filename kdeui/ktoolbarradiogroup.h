@@ -72,7 +72,7 @@ public:
    */
   void removeButton (int id);
 
-public slots:
+public Q_SLOTS:
   /**
    * Internal - nothing for you here.
    */

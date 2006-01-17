@@ -126,7 +126,7 @@ public:
     virtual void abort() {}
     virtual void setAutoClose(bool b=true) = 0;
 
-signals:
+Q_SIGNALS:
     void finishedParsing();
 
 };

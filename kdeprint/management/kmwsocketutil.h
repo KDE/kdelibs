@@ -44,7 +44,7 @@ public:
 	SocketConfig(KMWSocketUtil *util, QWidget *parent = 0, const char *name = 0);
 	~SocketConfig();
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 
 private:

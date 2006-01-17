@@ -18,10 +18,10 @@ public:
    ~KLineEditTest();
    KLineEdit* lineEdit() const { return m_lineedit; }
 
-public slots:
+public Q_SLOTS:
    virtual void show ();
 
-private slots:
+private Q_SLOTS:
    void quitApp();
    void slotHide();
    void slotEnable( bool );

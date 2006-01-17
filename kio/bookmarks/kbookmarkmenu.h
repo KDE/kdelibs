@@ -154,17 +154,17 @@ public:
    */
   static QStringList dynamicBookmarksList();
 
-signals:
+Q_SIGNALS:
   void aboutToShowContextMenu( const KBookmark &, QMenu * );
   /**
    * @since 3.4
    */
   void openBookmark( const QString& url, Qt::ButtonState state );
 
-public slots: // public for bookmark bar
+public Q_SLOTS: // public for bookmark bar
   void slotBookmarksChanged( const QString & );
 
-protected slots:
+protected Q_SLOTS:
   void slotAboutToShow();
   void slotAboutToShowContextMenu( KMenu *, QAction*, QMenu * );
   void slotActionHighlighted( KAction * );
@@ -248,7 +248,7 @@ public:
   void openBookmarks( const QString &location, const QString &type );
   void connectToImporter( const QObject &importer );
 
-protected slots:
+protected Q_SLOTS:
   void newBookmark( const QString & text, const QString & url, const QString & );
   void newFolder( const QString & text, bool, const QString & );
   void newSeparator();

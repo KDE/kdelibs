@@ -36,7 +36,7 @@ public:
 	void initPrinter(KMPrinter*);
 	void updatePrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotDriverComment();
 
 private:

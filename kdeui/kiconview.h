@@ -102,7 +102,7 @@ public:
    */
   virtual void takeItem( Q3IconViewItem * item );
 
-signals:
+Q_SIGNALS:
 
   /**
    * This signal is emitted whenever the user executes an iconview item.
@@ -152,7 +152,7 @@ signals:
    */
   void doubleClicked( Q3IconViewItem *item, const QPoint &pos );
 
-protected slots:
+protected Q_SLOTS:
   void slotOnItem( Q3IconViewItem *item );
   void slotOnViewport();
   void slotSettingsChanged(int);
@@ -185,7 +185,7 @@ protected:
    */
   void cancelPendingHeldSignal();
   
-private slots:
+private Q_SLOTS:
   void slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos );
   void slotDragHoldTimeout();
 

@@ -217,7 +217,7 @@ public:
      */
     static QList<KAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when a tool has been activated.
      * @param info a description of the activated tools

@@ -9,7 +9,7 @@ class KDualColorWidget : public QWidget
     Q_OBJECT
 public:
     KDualColorWidget(QWidget *parent=0);
-protected slots:
+protected Q_SLOTS:
     void slotFgChanged(const QColor &c);
     void slotBgChanged(const QColor &c);
     void slotCurrentChanged(KDualColorButton::DualColor current);

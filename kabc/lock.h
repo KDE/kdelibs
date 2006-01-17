@@ -68,7 +68,7 @@ class KABC_EXPORT Lock : public QObject
 
     static QString locksDir();
 
-  signals:
+  Q_SIGNALS:
     void locked();
     void unlocked();
 

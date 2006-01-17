@@ -92,7 +92,7 @@ class KABC_EXPORT LdapClient : public QObject
     /*! returns true if there is a query running */
     bool isActive() const { return mActive; }
 
-  signals:
+  Q_SIGNALS:
     /*! Emitted when the query is done */
     void done();
 
@@ -104,7 +104,7 @@ class KABC_EXPORT LdapClient : public QObject
      */
     void result( const KABC::LdapObject& );
 
-  public slots:
+  public Q_SLOTS:
     /*!
      * Set the name or IP of the LDAP server
      */
@@ -155,7 +155,7 @@ class KABC_EXPORT LdapClient : public QObject
      */
     void cancelQuery();
 
-  protected slots:
+  protected Q_SLOTS:
     void slotData( KIO::Job*, const QByteArray &data );
     void slotInfoMessage( KIO::Job*, const QString &info );
     void slotDone();
@@ -214,7 +214,7 @@ class KABC_EXPORT LdapSearch : public QObject
     void cancelSearch();
     bool isAvailable() const;
 
-  signals:
+  Q_SIGNALS:
     /// Results, assembled as "Full Name <email>"
     /// (This signal can be emitted many times)
     void searchData( const QStringList& );
@@ -223,7 +223,7 @@ class KABC_EXPORT LdapSearch : public QObject
     void searchData( const KABC::LdapResultList& );
     void searchDone();
 
-  private slots:
+  private Q_SLOTS:
     void slotLDAPResult( const KABC::LdapObject& );
     void slotLDAPError( const QString& );
     void slotLDAPDone();

@@ -39,7 +39,7 @@ public:
 	QStringList fileList() const;
 	QSize sizeHint() const;
 
-protected slots:
+protected Q_SLOTS:
 	void slotAddFile();
 	void slotRemoveFile();
 	void slotOpenFile();

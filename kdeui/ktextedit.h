@@ -86,7 +86,7 @@ public:
     void highLightWord( unsigned int length, unsigned int pos );
 
 
-public slots:
+public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
      * until spell checking has been completed.
@@ -134,7 +134,7 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 
-private slots:
+private Q_SLOTS:
     void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );
     void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);

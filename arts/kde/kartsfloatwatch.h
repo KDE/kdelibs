@@ -74,7 +74,7 @@ public:
 	 */
 	~KArtsFloatWatch();
 
-signals:
+Q_SIGNALS:
 	/**
 	 * this signal will be emitted with values of the aRts stream
 	 */

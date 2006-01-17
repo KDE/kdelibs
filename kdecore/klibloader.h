@@ -102,7 +102,7 @@ public:
      */
     void unload() const;
 
-private slots:
+private Q_SLOTS:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
     void slotTimeout();
@@ -230,7 +230,7 @@ public:
         return result;
     }
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted in #create
      * @param obj the new object
@@ -480,7 +480,7 @@ public:
 protected:
     KLibLoader( QObject* parent = 0 );
 
-private slots:
+private Q_SLOTS:
     void slotLibraryDestroyed();
 private:
     void close_pending( KLibWrapPrivate * );

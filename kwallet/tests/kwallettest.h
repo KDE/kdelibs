@@ -8,7 +8,7 @@ namespace KWallet { class Wallet; }
 class WalletReceiver : public QObject
 {
 	Q_OBJECT
-public slots:
+public Q_SLOTS:
 	void walletOpened( bool );
 };
 

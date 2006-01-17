@@ -130,13 +130,13 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
     */
     static Addressee::List getAddressees( QWidget *parent );
 
-  private slots:
+  private Q_SLOTS:
     void selectItem( const QString & );
     void updateEdit();
     void addSelected( QTreeWidgetItem *item );
     void removeSelected();
 
-  protected slots:
+  protected Q_SLOTS:
     void addressBookChanged();
 
   private:

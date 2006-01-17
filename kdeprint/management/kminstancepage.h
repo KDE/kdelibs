@@ -37,7 +37,7 @@ public:
 
 	void setPrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotNew();
 	void slotCopy();
 	void slotRemove();

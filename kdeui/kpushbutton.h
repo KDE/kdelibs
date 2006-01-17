@@ -139,7 +139,7 @@ private:
     bool m_dragEnabled;
     QPoint startPos;
 
-private slots:
+private Q_SLOTS:
     void slotSettingsChanged( int category );
 
 private:

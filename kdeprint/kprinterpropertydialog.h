@@ -51,7 +51,7 @@ protected:
 	bool synchronize();
 	void collectOptions(QMap<QString,QString>& opts, bool incldef = false);
 
-protected slots:
+protected Q_SLOTS:
 	void slotCurrentChanged(QWidget*);
 	void slotUser1();
 	void slotOk();

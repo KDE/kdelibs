@@ -41,13 +41,13 @@ public:
 	QStringList items();
 	void clear();
 
-signals:
+Q_SIGNALS:
 	void add();
 	void edit(int);
 	void defaultList();
 	void deleted(int);
 
-protected slots:
+protected Q_SLOTS:
 	void slotDelete();
 	void slotEdit();
 	void slotSelected(int);

@@ -24,7 +24,7 @@
 class KLibLoaderTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testNonWorking();
     void testWorking();
     void testWrongClass();

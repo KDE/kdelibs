@@ -70,7 +70,7 @@ public:
    */
   QString validChars() const;
 
-signals:
+Q_SIGNALS:
 
   /**
    * Emitted when an invalid character was typed.

@@ -43,7 +43,7 @@ public:
    */
   static bool supports( KFileItemList _items );
 
-private slots:
+private Q_SLOTS:
   void currentPageChanged( QWidget* );
 
 private:

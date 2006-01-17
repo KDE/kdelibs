@@ -312,7 +312,7 @@ public:
      */
     virtual QSize minimumSizeHint() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the value of the control.
      */
@@ -356,7 +356,7 @@ public slots:
      */
     void setEditFocus( bool mark = true );
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted every time the value changes (by calling setValue() or
      * by user interaction).
@@ -370,7 +370,7 @@ signals:
      */
     void relativeValueChanged(double);
 
-private slots:
+private Q_SLOTS:
     void spinValueChanged(int);
     void slotEmitRelativeValueChanged(int);
 
@@ -568,7 +568,7 @@ public:
     virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the value of the control.
      */
@@ -605,7 +605,7 @@ public slots:
      */
     void setPrefix(const QString &prefix);
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted every time the value changes (by calling setValue() or
      * by user interaction).
@@ -620,7 +620,7 @@ signals:
      */
     void relativeValueChanged(double);
 
-private slots:
+private Q_SLOTS:
     void sliderMoved(int);
     void slotEmitRelativeValueChanged(double);
 
@@ -882,11 +882,11 @@ public:
   /** Overridden to ignore any setValidator() calls. */
   void setValidator( const QValidator * );
 
-signals:
+Q_SIGNALS:
   /** Emitted whenever QSpinBox::valueChanged( int ) is emitted. */
   void valueChanged( double value );
 
-public slots:
+public Q_SLOTS:
   /** Sets the current value to @p value, subject to the constraints
       that @p value is first rounded to the current precision and then
       clipped to the interval [ @p minValue() , @p maxValue() ]. */
@@ -896,7 +896,7 @@ protected:
   virtual QString textFromValue(int) const;
   virtual int valueFromText(const QString &text) const;
 
-protected slots:
+protected Q_SLOTS:
   void slotValueChanged( int value );
 
 protected:

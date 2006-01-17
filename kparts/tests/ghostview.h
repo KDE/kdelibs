@@ -12,7 +12,7 @@ public:
 
   void openURL( const KURL & url );
 
-protected slots:
+protected Q_SLOTS:
   void slotFileOpen();
 
 private:

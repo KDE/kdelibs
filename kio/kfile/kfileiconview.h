@@ -151,7 +151,7 @@ public:
       viewport()->setAcceptDrops(b);
     }
 
-public slots:
+public Q_SLOTS:
     /**
      * Starts loading previews for all files shown and shows them. Switches
      * into 'large rows' mode, if that isn't the current mode yet.
@@ -192,7 +192,7 @@ protected:
 
     virtual bool acceptDrag(QDropEvent* e ) const;
 
-private slots:
+private Q_SLOTS:
     void selected( Q3IconViewItem *item );
     void slotActivate( Q3IconViewItem * );
     void highlighted( Q3IconViewItem *item );
@@ -209,7 +209,7 @@ private slots:
     void gotPreview( const KFileItem *item, const QPixmap& pix );
     void slotAutoOpen();
 
-signals:
+Q_SIGNALS:
     /**
      * The user dropped something.
      * @p fileItem points to the item dropped on or can be 0 if the

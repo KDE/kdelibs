@@ -237,9 +237,9 @@ namespace KJS {
     void clearTimeout(int timerId);
     void mark();
     bool hasTimers() const;
-  public slots:
+  public Q_SLOTS:
     void timeoutClose();
-  protected slots:
+  protected Q_SLOTS:
     void parentDestroyed();
   protected:
     void timerEvent(QTimerEvent *e);

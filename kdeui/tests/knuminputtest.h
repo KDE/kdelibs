@@ -15,7 +15,7 @@ public:
 protected:
     KIntNumInput* i1, *i2, *i3, *i4, *i5, *i6, *i7;
     KDoubleNumInput* d1, *d2, *d3, *d4, *d5, *d6, *d7;
-protected slots:
+protected Q_SLOTS:
     void slotPrint( int );
     void slotPrint( double ); 
 };

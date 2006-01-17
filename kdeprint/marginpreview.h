@@ -36,10 +36,10 @@ public:
 	void setSymetric(bool on);
 	enum	StateType { Fixed = -1, None = 0, TMoving, BMoving, LMoving, RMoving };
 
-public slots:
+public Q_SLOTS:
 	void enableRubberBand(bool on);
 
-signals:
+Q_SIGNALS:
 	void marginChanged(int type, float value);
 
 protected:

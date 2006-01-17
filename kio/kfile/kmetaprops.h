@@ -56,7 +56,7 @@ private:
     QWidget* makeDateTimeWidget(const KFileMetaInfoItem& item, QWidget* parent,
                                                      QString& valClass);
 
-private slots:
+private Q_SLOTS:
     // Code disabled until the "Add" button is implemented
 //    void slotAdd();
 

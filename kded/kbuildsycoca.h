@@ -52,7 +52,7 @@ public:
 
    void setTrackId(const QString &id) { m_trackId = id; }
 
-protected slots:
+protected Q_SLOTS:
    void slotCreateEntry(const QString &file, KService::Ptr *entry);
 
 protected:

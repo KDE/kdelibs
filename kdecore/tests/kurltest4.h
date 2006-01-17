@@ -24,7 +24,7 @@
 class KURLTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testQUrl();
     void testEmptyURL();
     void testIsValid();

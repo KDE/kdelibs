@@ -92,7 +92,7 @@ protected:
     bool m_doAutoFill;
     bool m_htmlRequested;
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Repaints, so that all links get the proper color
      */

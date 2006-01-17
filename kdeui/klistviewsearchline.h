@@ -115,7 +115,7 @@ public:
      */
     const QList<KListView *> &listViews() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Adds a KListView to the list of listviews filtered by this search line.
      * If \a lv is null then the widget will be disabled.
@@ -242,7 +242,7 @@ public slots:
      */
     virtual bool canChooseColumnsCheck();
 
-protected slots:
+protected Q_SLOTS:
     /**
      * When keys are pressed a new search string is created and a timer is
      * activated.  The most recent search is activated when this timer runs out
@@ -292,7 +292,7 @@ private:
      */
     bool checkItemParentsVisible(Q3ListViewItem *item, Q3ListViewItem *highestHiddenParent = 0);
 
-private slots:
+private Q_SLOTS:
     void itemAdded(Q3ListViewItem *item) const;
     void listViewDeleted( QObject *listView );
     void searchColumnsMenuActivated(int);
@@ -335,7 +335,7 @@ public:
      */
     KListViewSearchLine *searchLine() const;
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Creates the widgets inside of the widget.  This is called from the
      * constructor via a single shot timer so that it it guaranteed to run
@@ -344,7 +344,7 @@ protected slots:
      */
     virtual void createWidgets();
 
-private slots:
+private Q_SLOTS:
     void positionInToolBar();
 
 private:

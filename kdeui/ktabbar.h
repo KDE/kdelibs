@@ -67,7 +67,7 @@ public:
 
     int selectTab(const QPoint& pos) const;
     
-signals:
+Q_SIGNALS:
     void contextMenu( int, const QPoint & );
     void mouseDoubleClick( int );
     void mouseMiddleClick( int );
@@ -94,7 +94,7 @@ protected:
 
     //virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
-protected slots:
+protected Q_SLOTS:
     //virtual void closeButtonClicked();
     //virtual void enableCloseButton();
     virtual void activateDragSwitchTab();

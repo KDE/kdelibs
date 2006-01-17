@@ -61,7 +61,7 @@ public:
                                     KIO::filesize_t totalSize,
                                     unsigned long totalFiles );
 
-public slots:
+public Q_SLOTS:
   virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size );
   virtual void slotTotalFiles( KIO::Job* job, unsigned long files );
   virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs );
@@ -152,7 +152,7 @@ protected:
 private:
   class DefaultProgressPrivate;
   DefaultProgressPrivate* const d;
-private slots:
+private Q_SLOTS:
   void slotKeepOpenToggled(bool);
   void slotOpenFile();
   void slotOpenLocation();

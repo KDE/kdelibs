@@ -158,7 +158,7 @@ protected:
     //  QSize sizehint;
   /// the widest month string in pixels:
   QSize maxMonthRect;
-protected slots:
+protected Q_SLOTS:
   void dateChangedSlot(QDate);
   void tableClickedSlot();
   void monthForwardClicked();
@@ -186,7 +186,7 @@ protected slots:
    */
   void weekSelected(int);
 
-signals:
+Q_SIGNALS:
   /** This signal is emitted each time the selected date is changed.
    *  Usually, this does not mean that the date has been entered,
    *  since the date also changes, for example, when another month is

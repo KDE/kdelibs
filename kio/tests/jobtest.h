@@ -31,7 +31,7 @@ class JobTest : public QObject
 public:
     JobTest() {}
 
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void get();
@@ -50,10 +50,10 @@ private slots:
     void newApiPerformance();
     void calculateRemainingSeconds();
 
-signals:
+Q_SIGNALS:
     void exitLoop();
 
-protected slots:
+protected Q_SLOTS:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KIO::Job* );
 

@@ -44,7 +44,7 @@ class KDEUI_EXPORT KListBox : public Q3ListBox
 public:
   KListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
-signals:
+Q_SIGNALS:
 
   /**
    * Emitted whenever the user executes an listbox item.
@@ -87,7 +87,7 @@ signals:
    */
   void doubleClicked( Q3ListBoxItem *item, const QPoint &pos );
 
-protected slots:
+protected Q_SLOTS:
   void slotOnItem( Q3ListBoxItem *item );
   void slotOnViewport();
 
@@ -115,7 +115,7 @@ protected:
   QTimer* m_pAutoSelect;
   int m_autoSelectDelay;
 
-private slots:
+private Q_SLOTS:
   void slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos );
 
 protected:

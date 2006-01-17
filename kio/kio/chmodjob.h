@@ -57,7 +57,7 @@ namespace KIO {
     protected:
         void chmodNextFile();
 
-    protected slots:
+    protected Q_SLOTS:
 
         virtual void slotResult( KIO::Job *job );
         void slotEntries( KIO::Job * , const KIO::UDSEntryList & );

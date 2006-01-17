@@ -140,7 +140,7 @@ public:
    */
   virtual bool event(QEvent* );
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted when the resolution has finished.
    *

@@ -58,7 +58,7 @@ class DistributionListEditor : public QWidget
     DistributionListEditor( AddressBook *, QWidget *parent );
     virtual ~DistributionListEditor();
 
-  private slots:
+  private Q_SLOTS:
     void newList();
     void removeList();
     void addEntry();

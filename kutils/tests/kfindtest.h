@@ -45,7 +45,7 @@ class KFindTest : public QObject
 		const QStringList &hits() const { return m_hits; }
 		void clearHits() { m_hits.clear(); }
 
-	public slots:
+	public Q_SLOTS:
 		void slotHighlight(const QString &text, int index, int matchedLength);
 		void slotHighlight(int id, int index, int matchedLengthlength);
 

@@ -169,7 +169,7 @@ public:
      */
     void removeURL( const KURL& url, bool checkDefaultURLs = true );
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when an item was clicked at.
      * @param url is the url of the now current item. If it is a local url,
@@ -178,7 +178,7 @@ signals:
     void urlActivated( const KURL& url );
 
 
-protected slots:
+protected Q_SLOTS:
     void slotActivated( int );
 
 

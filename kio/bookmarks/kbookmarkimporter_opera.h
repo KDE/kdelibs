@@ -43,7 +43,7 @@ public:
     // Usual place for Opera bookmarks
     static QString operaBookmarksFile();
 
-signals:
+Q_SIGNALS:
     void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();

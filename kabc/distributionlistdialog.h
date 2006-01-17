@@ -106,7 +106,7 @@ class KABC_EXPORT DistributionListEditorWidget : public QWidget
     DistributionListEditorWidget( AddressBook *, QWidget *parent );
     virtual ~DistributionListEditorWidget();
 
-  private slots:
+  private Q_SLOTS:
     void newList();
     void editList();
     void removeList();

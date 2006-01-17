@@ -286,11 +286,11 @@ namespace KIO {
 
         virtual DCOPCStringList functions();
 
-    public slots:
+    public Q_SLOTS:
         void slotSlaveDied(KIO::Slave *slave);
         void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                              const QString &host, bool connected);
-    signals:
+    Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
 
@@ -300,7 +300,7 @@ namespace KIO {
         bool startJobDirect();
         Scheduler();
 
-    protected slots:
+    protected Q_SLOTS:
         void startStep();
         void slotCleanIdleSlaves();
         void slotSlaveConnected();

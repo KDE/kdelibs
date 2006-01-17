@@ -52,10 +52,10 @@ public:
 
 	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString(), bool forceExpand = false);
 
-signals:
+Q_SIGNALS:
 	void printRequested(KPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotPrinterSelected(int);
 	void slotProperties();
 	void slotSetDefault();

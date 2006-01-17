@@ -66,7 +66,7 @@ public:
 	void showPrinterInfos(bool on);
 	bool printerInfosShown() const;
 
-public slots:
+public Q_SLOTS:
 	void slotTimer();
 	void slotShowPrinterInfos(bool);
 	void slotChangePrinterState();
@@ -85,7 +85,7 @@ public slots:
 	void slotToggleFilter(bool);
 	void slotHelp();
 
-protected slots:
+protected Q_SLOTS:
 	void slotPrinterSelected(const QString&);
 	void slotRightButtonClicked(const QString&, const QPoint&);
 	void slotToggleToolBar(bool);

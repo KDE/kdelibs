@@ -39,7 +39,7 @@ public:
 	static void remove( QWidget *parent );
 	static void removeAll();
 
-protected slots:
+protected Q_SLOTS:
 	void slotTimer();
 
 protected:

@@ -193,7 +193,7 @@ protected:
   virtual void resizeEvent(QResizeEvent *ev);
 
 /*
-protected slots:
+protected Q_SLOTS:
   void delayedResize();*/
 
 private:
@@ -279,7 +279,7 @@ public:
   K3DockWidgetPrivate();
   ~K3DockWidgetPrivate();
 
-public slots:
+public Q_SLOTS:
   /**
    * Especially used for Tab page docking. Switching the pages requires additional setFocus() for the embedded widget.
    */

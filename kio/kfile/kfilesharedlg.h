@@ -48,7 +48,7 @@ public:
 
     QWidget* page() const;
 
-protected slots:
+protected Q_SLOTS:
     void slotConfigureFileSharing();
     void slotConfigureFileSharingDone();
 

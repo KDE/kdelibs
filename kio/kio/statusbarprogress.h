@@ -78,7 +78,7 @@ public:
    */
   void setJob( KIO::Job *job );
 
-public slots:
+public Q_SLOTS:
   virtual void slotClean();
   virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size );
   virtual void slotPercent( KIO::Job* job, unsigned long percent );

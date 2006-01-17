@@ -309,7 +309,7 @@ namespace KStdAction
 	* public:
 	*   MyListView( QWidget * parent = 0, const char * name = 0, WFlags f = 0 ) : KListView( parent, name, f ) {}
 	*   virtual ~MyListView() {}
-	* public slots:
+	* public Q_SLOTS:
 	*   virtual void clear() {}
 	* };
 	* \endcode

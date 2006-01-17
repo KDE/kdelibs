@@ -70,11 +70,11 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
          */
         void show();
 
-    protected slots:
+    protected Q_SLOTS:
         void slotOk();
         void slotApply();
 
-    private slots:
+    private Q_SLOTS:
         void executed( Q3ListViewItem * );
 
     private:

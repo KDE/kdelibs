@@ -99,14 +99,14 @@ public:
     QPixmap getYesPixmap() const { return *m_yesPixmap; }
     QPixmap getYesPartialPixmap() const { return *m_yesPartialPixmap; }
 
-public slots:
+public Q_SLOTS:
     void slotAddEntry();
     void slotEditEntry();
     void slotRemoveEntry();
     void setACL( const KACL &anACL );
     void setDefaultACL( const KACL &anACL );
 
-protected slots:
+protected Q_SLOTS:
     void entryClicked( Q3ListViewItem* pItem, const QPoint& pt, int col );
 protected:
     void contentsMousePressEvent( QMouseEvent * e );
@@ -139,10 +139,10 @@ public:
                         int allowedDefaultTypes = KACLListView::AllTypes,
                         bool allowDefault = false );
     KACLListViewItem* item() const { return m_item; }
-public slots:
+public Q_SLOTS:
      void slotOk();
      void slotSelectionChanged( QAbstractButton* );
-private slots:
+private Q_SLOTS:
      void slotUpdateAllowedUsersAndGroups();
      void slotUpdateAllowedTypes();
 private:

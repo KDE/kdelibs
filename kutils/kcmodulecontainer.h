@@ -138,7 +138,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 */
 		ModuleList allModules; // KDE 4 put in the Private class and abstract with getter
 
-	private slots:
+	private Q_SLOTS:
 
 		/**
 		 * Enables/disables the Admin Mode button, as appropriate.

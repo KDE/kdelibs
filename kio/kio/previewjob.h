@@ -90,7 +90,7 @@ namespace KIO {
          */
         static QStringList supportedMimeTypes();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted when a thumbnail picture for @p item has been successfully
          * retrieved.
@@ -111,10 +111,10 @@ namespace KIO {
         bool statResultThumbnail();
         void createThumbnail( const QString& );
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotResult( KIO::Job *job );
 
-    private slots:
+    private Q_SLOTS:
         void startPreview();
         void slotThumbData(KIO::Job *, const QByteArray &);
 

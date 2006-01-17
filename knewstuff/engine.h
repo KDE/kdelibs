@@ -134,12 +134,12 @@ class KDE_EXPORT Engine : public QObject
      */
     void ignoreInstallResult(bool ignore);   
 
-  signals:
+  Q_SIGNALS:
     /** Emitted when the upload has finished.
       @param result indicates the success/failure of the upload
     */
     void uploadFinished( bool result );
-  protected slots:
+  protected Q_SLOTS:
     void getMetaInformation( Provider::List *providers );
     void selectUploadProvider( Provider::List *providers );
 

@@ -297,7 +297,7 @@ class KDECORE_EXPORT KAccel : public Q3Accel
 	 */
 	void emitKeycodeChanged();
 
- signals:
+ Q_SIGNALS:
 	/**
 	 * Emitted when one of the key codes has changed.
 	 */

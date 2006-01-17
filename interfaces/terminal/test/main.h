@@ -9,7 +9,7 @@ class Win
     KParts::Part* p;
 public:
     Win();
-public slots:
+public Q_SLOTS:
     void pythonExited( int status );
 };
 

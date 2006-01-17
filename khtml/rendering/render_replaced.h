@@ -113,7 +113,7 @@ public:
     // for ECMA to flush all pending resizes
     KHTML_EXPORT static void flushWidgetResizes();
 
-public slots:
+public Q_SLOTS:
     void slotWidgetDestructed();
 
 protected:

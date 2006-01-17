@@ -60,7 +60,7 @@ public:
    */
   virtual void setAlignment( int );
 
-public slots:
+public Q_SLOTS:
   void setText( const QString & );
 
 protected:

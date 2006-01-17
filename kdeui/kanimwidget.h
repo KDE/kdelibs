@@ -106,7 +106,7 @@ public:
    */
   void setIcons( const QString& icons );
 
-public slots:
+public Q_SLOTS:
   /**
    * Starts the animation from frame 1
    */
@@ -117,7 +117,7 @@ public slots:
    */
   void stop();
 
-signals:
+Q_SIGNALS:
   void clicked();
 
 protected:
@@ -129,7 +129,7 @@ protected:
   virtual void mousePressEvent( QMouseEvent *e );
   virtual void mouseReleaseEvent( QMouseEvent *e );
 
-protected slots:
+protected Q_SLOTS:
   void slotTimerUpdate();
   void updateIcons();
 

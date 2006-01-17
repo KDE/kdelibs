@@ -40,7 +40,7 @@ public:
 protected:
 	void addURL(const QString&);
 
-private slots:
+private Q_SLOTS:
 	void slotAddClicked();
 	void slotRemoveClicked();
 	void slotSelected(Q3ListViewItem*);

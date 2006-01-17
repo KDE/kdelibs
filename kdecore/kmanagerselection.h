@@ -96,7 +96,7 @@ class KDECORE_EXPORT KSelectionOwner
          * @internal
          */
 	bool filterEvent( XEvent* ev_P ); // internal
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted if the selection was owned and the ownership
          * has been lost due to another client claiming it, this signal is emitted.
@@ -200,7 +200,7 @@ class KDECORE_EXPORT KSelectionWatcher
          * @internal
          */
         void filterEvent( XEvent* ev_P ); // internal
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the selection is successfully claimed by a new
          * owner.

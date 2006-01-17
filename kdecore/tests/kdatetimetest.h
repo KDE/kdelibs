@@ -24,7 +24,7 @@
 class KDateTimeTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void constructors();
     void toUTC();
     void toLocalZone();

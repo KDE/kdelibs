@@ -47,7 +47,7 @@ public:
 	bool isRaw();
 	bool isExternal();
 
-protected slots:
+protected Q_SLOTS:
 	void slotDbLoaded(bool reloaded);
 	void slotManufacturerSelected(const QString& name);
 	void slotPostscriptToggled(bool);

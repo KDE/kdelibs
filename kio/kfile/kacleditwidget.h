@@ -44,7 +44,7 @@ public:
   void setACL( const KACL & );
   void setDefaultACL( const KACL & );
   void setAllowDefaults( bool value );
-private slots:
+private Q_SLOTS:
   void slotUpdateButtons();
 
 private:

@@ -46,7 +46,7 @@ class NotifyBySound : public KNotifyPlugin
 		bool event( QEvent *e );
 
 		
-	private slots:
+	private Q_SLOTS:
 		void slotPlayerProcessExited( KProcess *proc );
 };
 

@@ -392,7 +392,7 @@ public:
    * @since 3.4
    */
   bool shadeSortColumn(void) const;
-signals:
+Q_SIGNALS:
 
   /**
    * This signal is emitted whenever the user executes an listview item.
@@ -549,7 +549,7 @@ signals:
   void itemAdded(Q3ListViewItem *item);
   void itemRemoved(Q3ListViewItem *item);
 
-public slots:
+public Q_SLOTS:
   /**
    * Rename column @p c of @p item.
    */
@@ -893,7 +893,7 @@ protected:
   // KDE 4: remove
   void doubleClicked( Q3ListViewItem *item, const QPoint &pos, int c );
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Update internal settings whenever the global ones change.
    * @internal

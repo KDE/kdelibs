@@ -42,7 +42,7 @@ class KRESOURCES_EXPORT ConfigDialog : public KDialogBase
 
     void setInEditMode( bool value );
 
-  protected slots:
+  protected Q_SLOTS:
     void accept();
     void setReadOnly( bool value );
     void slotNameChanged( const QString &text);

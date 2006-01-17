@@ -36,10 +36,10 @@ public:
 	void setWidget(KMPropWidget*);
 	void setPrinter(KMPrinter*);
 
-signals:
+Q_SIGNALS:
 	void enable(bool);
 
-protected slots:
+protected Q_SLOTS:
 	void slotEnableChange(bool);
 
 private:

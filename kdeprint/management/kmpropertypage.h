@@ -39,7 +39,7 @@ public:
 	void addPropPage(KMPropWidget*);
 	void setPrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotEnable(bool);
 	void initialize();
 

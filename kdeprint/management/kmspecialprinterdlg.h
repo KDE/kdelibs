@@ -41,7 +41,7 @@ public:
 protected:
 	bool checkSettings();
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 	void slotTextChanged(const QString &);
 

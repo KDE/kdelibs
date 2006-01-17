@@ -38,10 +38,10 @@ public:
 
 	bool create(const KURL& url, bool createBUS, const QObject* receiver, const char* slot);
 
-signals:
+Q_SIGNALS:
 	void playObjectCreated(Arts::PlayObject playObject);
 
-private slots:
+private Q_SLOTS:
 	void slotMimeType(const QString &mimetype);
 
 private:

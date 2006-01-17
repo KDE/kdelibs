@@ -51,7 +51,7 @@ private:
 	static DCOPClient *dcopClient();
 public:
 	static KToolInvocation *self();
-public slots:
+public Q_SLOTS:
   /**
    * Invokes the KHelpCenter HTML help viewer from docbook sources.
    *

@@ -74,7 +74,7 @@ public:
      */
     virtual void clear();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted after the history has been cleared.
      */

@@ -162,7 +162,7 @@ public:
     */
     void setTabText( int , const QString & );
 
-public slots:
+public Q_SLOTS:
     /*!
       Move a widget's tab from first to second specified index and emit
       signal movedTab( int, int ) afterwards.
@@ -223,7 +223,7 @@ public slots:
     */
     void setAutomaticResizeTabs( bool enable );
 
-signals:
+Q_SIGNALS:
     /*!
       Connect to this and set accept to true if you can and want to decode the event.
     */
@@ -303,7 +303,7 @@ protected:
     virtual void tabRemoved ( int );
 
 
-protected slots:
+protected Q_SLOTS:
     virtual void receivedDropEvent( int, QDropEvent * );
     virtual void initiateDrag( int );
     virtual void contextMenu( int, const QPoint & );

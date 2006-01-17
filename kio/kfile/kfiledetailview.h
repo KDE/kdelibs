@@ -151,7 +151,7 @@ public:
     virtual void readConfig( KConfig *, const QString& group = QString() );
     virtual void writeConfig( KConfig *, const QString& group = QString());
 
-signals:
+Q_SIGNALS:
     /**
      * The user dropped something.
      * @p fileItem points to the item dropped on or can be 0 if the
@@ -180,10 +180,10 @@ protected:
 
     int m_sortingCol;
 
-protected slots:
+protected Q_SLOTS:
     void slotSelectionChanged();
 
-private slots:
+private Q_SLOTS:
     void slotSortingChanged( int );
     void selected( Q3ListViewItem *item );
     void slotActivate( Q3ListViewItem *item );

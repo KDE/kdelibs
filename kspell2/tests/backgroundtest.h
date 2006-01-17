@@ -32,7 +32,7 @@ class BackgroundTest : public QObject
 public:
     BackgroundTest();
 
-protected slots:
+protected Q_SLOTS:
     void slotDone();
     void slotMisspelling( const QString& word, int start );
 

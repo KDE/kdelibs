@@ -115,7 +115,7 @@ public:
    */
   void addProcess( int pid );
 
-private slots:
+private Q_SLOTS:
   void slotDoHousekeeping();
 
 private:

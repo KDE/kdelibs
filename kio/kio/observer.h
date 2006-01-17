@@ -176,7 +176,7 @@ protected:
 
   QMap< int, KIO::Job* > m_dctJobs;
 
-public slots:
+public Q_SLOTS:
 
   void slotTotalSize( KIO::Job*, KIO::filesize_t size );
   void slotTotalFiles( KIO::Job*, unsigned long files );

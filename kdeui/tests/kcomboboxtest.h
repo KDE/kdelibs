@@ -17,7 +17,7 @@ public:
   KComboBoxTest ( QWidget *parent=0);
   ~KComboBoxTest();
 
-private slots:
+private Q_SLOTS:
   void quitApp();
   void slotTimeout();
   void slotDisable();

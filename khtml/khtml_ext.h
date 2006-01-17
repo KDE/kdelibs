@@ -58,7 +58,7 @@ public:
 
     void setExtensionProxy( KParts::BrowserExtension *proxyExtension );
 
-public slots:
+public Q_SLOTS:
     void cut();
     void copy();
     void paste();
@@ -72,13 +72,13 @@ public slots:
     // on whether data is available in the clipboard
     void updateEditActions();
 
-private slots:
+private Q_SLOTS:
     // connected to a frame's browserextensions enableAction signal
     void extensionProxyActionEnabled( const char *action, bool enable );
     void extensionProxyEditableWidgetFocused();
     void extensionProxyEditableWidgetBlurred();
 
-signals:
+Q_SIGNALS:
     void editableWidgetFocused();
     void editableWidgetBlurred();
 private:
@@ -127,7 +127,7 @@ public:
   static void saveURL( const KURL &url, const KURL &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        long cacheId = 0 );
-private slots:
+private Q_SLOTS:
   void slotSaveLinkAs();
   void slotSaveImageAs();
   void slotCopyLinkLocation();
@@ -160,9 +160,9 @@ public:
 
     virtual int plug( QWidget *w, int index );
 
-private slots:
+private Q_SLOTS:
     void slotActivated( int );
-protected slots:
+protected Q_SLOTS:
     void slotActivated() { KAction::slotActivated(); }
 private:
     void init(KHTMLPart *part, bool direction);

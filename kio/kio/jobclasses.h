@@ -322,7 +322,7 @@ namespace KIO {
          */
         KIO::filesize_t getProcessedSize();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted when the job is finished, in any case (completed, canceled,
          * failed...). Use error to know the result.
@@ -398,7 +398,7 @@ namespace KIO {
          */
         void speed( KIO::Job *job, unsigned long speed );
 
-    protected slots:
+    protected Q_SLOTS:
         /**
          * Called whenever a subjob finishes.
          * Default implementation checks for errors and propagates
@@ -597,7 +597,7 @@ namespace KIO {
          */
         int command() const { return m_command; }
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Forward signal from the slave
          * Can also be called by the parent job, when it knows the size.
@@ -605,7 +605,7 @@ namespace KIO {
          */
         void slotTotalSize( KIO::filesize_t data_size );
 
-    protected slots:
+    protected Q_SLOTS:
         /**
          * Called when the slave marks the job
          * as finished.
@@ -651,7 +651,7 @@ namespace KIO {
          */
         virtual void slotMetaData( const KIO::MetaData &_metaData);
 
-    public slots:
+    public Q_SLOTS:
         /**
          * @internal
          * Called on a slave's error.
@@ -659,7 +659,7 @@ namespace KIO {
          */
         virtual void slotError( int , const QString & );
 
-    protected slots:
+    protected Q_SLOTS:
         /**
          * @internal
          */
@@ -739,7 +739,7 @@ namespace KIO {
          */
         virtual void start( Slave *slave );
 
-    signals:
+    Q_SIGNALS:
         /**
          * Signals a redirection.
          * Use to update the URL shown to the user.
@@ -759,7 +759,7 @@ namespace KIO {
          */
         void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
 
-    protected slots:
+    protected Q_SLOTS:
         void slotStatEntry( const KIO::UDSEntry & entry );
         void slotRedirection( const KURL &url);
         virtual void slotFinished();
@@ -804,7 +804,7 @@ namespace KIO {
          */
         virtual void start( Slave *slave );
 
-    signals:
+    Q_SIGNALS:
         /**
          * Signals a redirection.
          * Use to update the URL shown to the user.
@@ -823,7 +823,7 @@ namespace KIO {
          */
         void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
 
-    protected slots:
+    protected Q_SLOTS:
         void slotRedirection( const KURL &url);
         virtual void slotFinished();
 
@@ -858,7 +858,7 @@ namespace KIO {
          */
         virtual void start(Slave *slave);
 
-    signals:
+    Q_SIGNALS:
         /**
          * @internal
          * Emitted if the job found an existing partial file
@@ -866,7 +866,7 @@ namespace KIO {
          */
         void canResume( KIO::Job *job, KIO::filesize_t offset );
 
-    private slots:
+    private Q_SLOTS:
         void slotCanResume( KIO::filesize_t offset );
     };
 
@@ -969,7 +969,7 @@ namespace KIO {
          */
         bool reportDataSent();
 
-    signals:
+    Q_SIGNALS:
         /**
          * Data from the slave has arrived.
          * @param job the job that emitted this signal
@@ -1030,7 +1030,7 @@ namespace KIO {
         void canResume( KIO::Job *job, KIO::filesize_t offset );
 
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotRedirection( const KURL &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
@@ -1108,7 +1108,7 @@ namespace KIO {
          */
         QByteArray data() const { return m_data; }
 
-    private slots:
+    private Q_SLOTS:
         void slotStoredData( KIO::Job *job, const QByteArray &data );
         void slotStoredDataReq( KIO::Job *job, QByteArray &data );
     private:
@@ -1154,7 +1154,7 @@ namespace KIO {
 	 */
         void get(long id, const KURL &url, const MetaData &metaData);
 
-    signals:
+    Q_SIGNALS:
         /**
          * Data from the slave has arrived.
 	 * @param id the id of the request
@@ -1179,7 +1179,7 @@ namespace KIO {
          */
         void result( long id);
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotRedirection( const KURL &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
@@ -1243,7 +1243,7 @@ namespace KIO {
          */
         virtual void start( Slave *slave );
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotFinished( );
     protected:
 	virtual void virtual_hook( int id, void* data );
@@ -1300,12 +1300,12 @@ namespace KIO {
 	 */
         KURL destURL() const { return m_dest; }
 
-    public slots:
+    public Q_SLOTS:
         void slotStart();
         void slotData( KIO::Job *, const QByteArray &data);
         void slotDataReq( KIO::Job *, QByteArray &data);
 
-    protected slots:
+    protected Q_SLOTS:
         /**
          * Called whenever a subjob finishes.
 	 * @param job the job that emitted this signal
@@ -1416,7 +1416,7 @@ namespace KIO {
          */
         void setUnrestricted(bool unrestricted);
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal emits the entry found by the job while listing.
          * The progress signals aren't specific to ListJob. It simply
@@ -1447,7 +1447,7 @@ namespace KIO {
          */
         void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotResult( KIO::Job *job );
@@ -1559,7 +1559,7 @@ namespace KIO {
          */
         void setInteractive( bool b );
 
-    signals:
+    Q_SIGNALS:
 
         /**
 	 * Emitted when the total number of files is known.
@@ -1681,7 +1681,7 @@ namespace KIO {
         bool shouldSkip( const QString& path ) const;
         void skipSrc();
 
-    protected slots:
+    protected Q_SLOTS:
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
@@ -1766,7 +1766,7 @@ namespace KIO {
 	 */
         KURL::List urls() const { return m_srcList; }
 
-    signals:
+    Q_SIGNALS:
 
         /**
 	 * Emitted when the total number of files is known.
@@ -1802,7 +1802,7 @@ namespace KIO {
 	 */
         void deleting( KIO::Job *job, const KURL& file );
 
-    protected slots:
+    protected Q_SLOTS:
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );

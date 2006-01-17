@@ -44,11 +44,11 @@ namespace KSpell2
         void show();
         void activeAutoCorrect( bool _active );
 
-    public slots:
+    public Q_SLOTS:
         void setBuffer( const QString& );
         void setFilter( Filter* filter );
 
-    signals:
+    Q_SIGNALS:
         void done( const QString& newBuffer );
         void misspelling( const QString& word, int start );
         void replace( const QString& oldWord, int start,
@@ -57,7 +57,7 @@ namespace KSpell2
         void stop();
         void cancel();
         void autoCorrect( const QString & currentWord, const QString & replaceWord );
-    private slots:
+    private Q_SLOTS:
         void slotMisspelling(const QString& word, int start );
         void slotDone();
 

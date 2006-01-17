@@ -65,7 +65,7 @@ public:
     Qt::Orientation orientation() const { return orient; }
     QSizePolicy sizePolicy() const;
     bool showLine() const { return line; }
-public slots:
+public Q_SLOTS:
    void setOrientation( Qt::Orientation );
 protected:
     void styleChange( QStyle& );
@@ -909,7 +909,7 @@ public:
      */
     void positionYourself( bool force = false);
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when button @p id is clicked.
      */
@@ -1021,7 +1021,7 @@ public:
      */
     static IconText iconTextSetting();
 
-public slots:
+public Q_SLOTS:
     virtual void setIconText( const QString &txt )
     { Q3ToolBar::setIconText( txt ); }
 
@@ -1034,7 +1034,7 @@ protected:
     void applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal = false);
     QString settingsGroup() const;
 
-private slots:
+private Q_SLOTS:
     void rebuildLayout();
     void slotReadConfig ();
     void slotAppearanceChanged();

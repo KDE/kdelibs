@@ -194,7 +194,7 @@ public:
 	static void getCaptionColors( const QPalette &pal, QColor &activeBG, QColor &activeFG,
 	                              QColor &inactiveBG, QColor &inactiveFG ) KDE_DEPRECATED;
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * Cascades all windows resizing them to the minimum size.
 	 */
@@ -263,7 +263,7 @@ protected:
 	 */
 	void childMinimized( K3MdiChildFrm *lpC, bool bWasMaximized );
 
-signals:
+Q_SIGNALS:
 	/**
 	 * Signals that there aren't maximized child frames any more
 	 */

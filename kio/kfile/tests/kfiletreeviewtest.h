@@ -27,7 +27,7 @@ public:
    testFrame();
    void showPath( const KURL & );
    void setDirOnly( ) { dirOnlyMode = true; }
-public slots:
+public Q_SLOTS:
    void slotPopulateFinished(KFileTreeViewItem *);
    void slotSetChildCount( KFileTreeViewItem *item, int c );
 

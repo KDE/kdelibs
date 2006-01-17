@@ -35,7 +35,7 @@ public:
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotTestPagePreview();
         void testPageChanged(const QString & );
 	void setEnabledPreviewButton(bool b);

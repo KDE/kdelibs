@@ -217,7 +217,7 @@ protected:
     bool brushHandleSet;
     bool kickerMode;
 
-protected slots:
+protected Q_SLOTS:
     void paletteChanged();
 
 

@@ -62,7 +62,7 @@ public:
 		May Return 0L if there is none. */
 	QWidget *videoWidget();
 
-public slots:
+public Q_SLOTS:
 	/** Set which buttons to display. See Button. */
 	void setButtons(int);
 
@@ -75,7 +75,7 @@ public slots:
 	/** Toggle the display of a particular button. */
 	void toggleButton(int);
 
-signals:
+Q_SIGNALS:
 	/** Emitted when the set of displayed buttons changes. */
 	void buttonsChanged(int);
 

@@ -73,7 +73,7 @@ public:
 	 */
 	const QString& domain() const;
 
-signals:
+Q_SIGNALS:
 	/**
 	Emitted when new service has been discovered
 	 */
@@ -94,7 +94,7 @@ protected:
 	virtual void customEvent(QCustomEvent* event);
 private:
 	QueryPrivate* const d;
-private slots:
+private Q_SLOTS:
 	void timeout();
 };
 

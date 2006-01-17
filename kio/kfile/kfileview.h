@@ -67,7 +67,7 @@ public:
         emit dropped(i, e, urls);
     }
 
-signals:
+Q_SIGNALS:
     void dirActivated(const KFileItem*);
 
     void sortingChanged( QDir::SortSpec );

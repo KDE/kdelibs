@@ -46,7 +46,7 @@ public:
 protected:
   void showEvent( QShowEvent *e );
 
-protected slots:
+protected Q_SLOTS:
   void dockChange();
   void setDockDefaultPos( K3DockWidget* );
   void changeDir( const QString& );
@@ -92,13 +92,13 @@ public:
 
   QString selectedDir();
 
-public slots:
+public Q_SLOTS:
   void setDir( const QString & );
 
-signals:
+Q_SIGNALS:
   void folderSelected( const QString & );
 
-protected slots:
+protected Q_SLOTS:
   void slotFolderSelected( Q3ListViewItem * );
 
 private:
@@ -121,7 +121,7 @@ class Preview : public Q3WidgetStack
 public:
   Preview( QWidget *parent );
 
-public slots:
+public Q_SLOTS:
   void showPreview( const QString& );
 
 private:
@@ -140,13 +140,13 @@ public:
   void setBookmark( QStringList& );
   QStringList getBookmark(){ return bookmarkList; }
 
-public slots:
+public Q_SLOTS:
   void setDir2( const QString & );
 
-signals:
+Q_SIGNALS:
   void signalDone( int );
 
-protected slots:
+protected Q_SLOTS:
   void bookmarkChosen( int i );
   void goHome();
   virtual void done( int );

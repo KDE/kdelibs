@@ -264,7 +264,7 @@ protected:
    */
   virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
 
-private slots:
+private Q_SLOTS:
   void lookupFinishedLocal();
   void lookupFinishedPeer();
 

@@ -9,7 +9,7 @@ class KFilterTest : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void test_block_write();
     void test_block_read();

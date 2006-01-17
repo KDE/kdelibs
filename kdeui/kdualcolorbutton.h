@@ -94,7 +94,7 @@ public:
      */
     virtual QSize sizeHint() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the foreground color.
      */
@@ -112,7 +112,7 @@ public slots:
      */
     void setCurrentColor(const QColor &c);
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the foreground color is changed.
      */

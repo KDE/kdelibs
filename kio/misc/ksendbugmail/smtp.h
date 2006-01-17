@@ -93,7 +93,7 @@ public:
 protected:
     void processLine(QString *line);
 
-public slots:
+public Q_SLOTS:
     void openConnection();
     void sendMessage();
     void closeConnection();
@@ -105,7 +105,7 @@ public slots:
     void socketReadyToRead();
     void socketClosed();
 
-signals:
+Q_SIGNALS:
     void connectionClosed();
     void messageSent();
     void error(int);

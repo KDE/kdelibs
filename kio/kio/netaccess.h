@@ -409,7 +409,7 @@ public:
      */
     static int lastError() { return lastErrorCode; }
 
-signals:
+Q_SIGNALS:
     void leaveModality();
 private:
     /**
@@ -450,7 +450,7 @@ private:
 
     friend class I_like_this_class;
 
-private slots:
+private Q_SLOTS:
     void slotResult( KIO::Job * job );
     void slotMimetype( KIO::Job * job, const QString & type );
     void slotData( KIO::Job*, const QByteArray& );

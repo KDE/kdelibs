@@ -230,7 +230,7 @@ public:
    */
   int reason() const;
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when a new part has been added.
    * @see addPart()
@@ -255,7 +255,7 @@ protected:
    */
   virtual void setActiveInstance( KInstance * instance );
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Removes a part when it is destroyed.
    **/

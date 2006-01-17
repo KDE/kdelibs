@@ -197,19 +197,19 @@ public:
     /// Reimplemented for internal reasons
     virtual QString toolTip() const;
 
-public slots:
+public Q_SLOTS:
     /**
      *  Sets the state of the action.
      */
     virtual void setChecked( bool );
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotActivated();
 
 protected:
     virtual void updateChecked( int id );
 
-signals:
+Q_SIGNALS:
     void toggled( bool );
 
 protected:
@@ -494,7 +494,7 @@ public:
 
     virtual bool isShortcutConfigurable() const { return false; }
 
-public slots:
+public Q_SLOTS:
     /**
      *  Sets the currently checked item.
      *
@@ -537,12 +537,12 @@ protected:
      */
     QStringList comboItems() const;
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotActivated( int id );
     virtual void slotActivated( const QString &text );
     virtual void slotActivated();
 
-signals:
+Q_SIGNALS:
     /**
      * This signal is emitted when an item is selected; @param index indicated
      * the item selected.
@@ -666,7 +666,7 @@ public:
     virtual int currentItem() const;
 
 
-public slots:
+public Q_SLOTS:
     /**
      *  Sets the currently checked item.
      *
@@ -798,7 +798,7 @@ public:
    */
   int maxItems() const;
 
-public slots:
+public Q_SLOTS:
   /**
    *  Sets the maximum of items in the recent files list.
    *  The default for this value is 10 set in the constructor.
@@ -849,7 +849,7 @@ public slots:
    */
   void clearURLList();
 
-signals:
+Q_SIGNALS:
 
   /**
    *  This signal gets emited when the user selects an URL.
@@ -858,7 +858,7 @@ signals:
    */
   void urlSelected( const KURL& url );
 
-protected slots:
+protected Q_SLOTS:
   void itemSelected( const QString& string );
   void menuAboutToShow();
   void menuItemActivated( int id );
@@ -917,7 +917,7 @@ public:
 
     int plug( QWidget*, int index = -1 );
 
-public slots:
+public Q_SLOTS:
     void setFont( const QString &family );
 
 protected:
@@ -952,15 +952,15 @@ public:
 
     virtual int fontSize() const;
 
-public slots:
+public Q_SLOTS:
     virtual void setFontSize( int size );
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotActivated( int );
     virtual void slotActivated( const QString& );
     virtual void slotActivated() { KAction::slotActivated(); }
 
-signals:
+Q_SIGNALS:
     void fontSizeChanged( int );
 
 private:
@@ -1200,7 +1200,7 @@ public:
 
     KToolBar *toolBar() { return (KToolBar*)m_toolBar; }
 
-public slots:
+public Q_SLOTS:
     virtual void setChecked( bool );
 
 private:
@@ -1249,7 +1249,7 @@ public:
      * Sets the window that will be related to this action.
      */
     void setWindow( QWidget* window );
-public slots:
+public Q_SLOTS:
     virtual void setChecked( bool );
 protected:
     /**
@@ -1302,7 +1302,7 @@ public:
      * destroyed. It will be hidden and reparented to 0L instead.
      */
     virtual void unplug( QWidget *w );
-protected slots:
+protected Q_SLOTS:
     void slotToolbarDestroyed();
 private:
     QPointer<QWidget> m_widget;
@@ -1379,7 +1379,7 @@ public:
 
     virtual int plug( QWidget *widget, int index = -1 );
 
-protected slots:
+protected Q_SLOTS:
     void menuAboutToShow();
     void menuItemActivated( int id);
     virtual void slotActivated();

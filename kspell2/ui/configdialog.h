@@ -34,7 +34,7 @@ namespace KSpell2
                       QWidget *parent );
         ~ConfigDialog();
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotOk();
         virtual void slotApply();
 

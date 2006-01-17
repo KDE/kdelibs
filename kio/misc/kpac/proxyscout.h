@@ -50,7 +50,7 @@ namespace KPAC
         ASYNC blackListProxy( const QString& proxy );
         ASYNC reset();
 
-    private slots:
+    private Q_SLOTS:
         void downloadResult( bool );
 
     private:

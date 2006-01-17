@@ -7,7 +7,7 @@ class KCalendarTest : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void listTypes();
     void testGregorian();
     void testHijri();

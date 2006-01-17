@@ -34,7 +34,7 @@ class KDEPRINT_EXPORT PluginComboBox : public QWidget, public KPReloadObject
 public:
 	PluginComboBox(QWidget *parent = 0);
 
-protected slots:
+protected Q_SLOTS:
 	void slotActivated(int);
 
 protected:

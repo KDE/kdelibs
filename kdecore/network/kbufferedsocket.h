@@ -192,7 +192,7 @@ protected:
    */
   virtual void stateChanging(SocketState newState);
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Slot called when there's read activity.
    */
@@ -205,7 +205,7 @@ protected slots:
 
 #if 0
   // Already present in QIODevice
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted whenever data is written.
    */

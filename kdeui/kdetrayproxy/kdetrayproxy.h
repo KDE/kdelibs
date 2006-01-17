@@ -32,7 +32,7 @@ class KDETrayProxy
     Q_OBJECT
     public:
         KDETrayProxy();
-    public slots:
+    public Q_SLOTS:
         void windowAdded( WId );
         void newOwner( Window );
     protected:

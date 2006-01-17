@@ -43,7 +43,7 @@ namespace KDocument {
 			 * Virtual destructor.
 			 */
 			virtual ~View() {}
-		signals:
+		Q_SIGNALS:
 			/**
 			 * This signal is emitted whenever the @p view got the focus.
 			 * @param view view that emitted the signal

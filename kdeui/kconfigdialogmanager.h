@@ -80,7 +80,7 @@ class KDEUI_EXPORT KConfigDialogManager : public QObject {
 
 Q_OBJECT
 
-signals:
+Q_SIGNALS:
   /**
    * One or more of the settings have been saved (such as when the user
    * clicks on the Apply button).  This is only emitted by updateSettings()
@@ -139,7 +139,7 @@ public:
    */
   bool isDefault();
 
-public slots:
+public Q_SLOTS:
   /**
    * Traverse the specified widgets, saving the settings of all known
    * widgets in the settings object.

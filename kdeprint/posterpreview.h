@@ -33,7 +33,7 @@ public:
 	PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent = 0, const char *name = 0 );
 	~PosterPreview();
 
-public slots:
+public Q_SLOTS:
 	void setPosterSize( int );
 	void setPosterSize( const QString& );
 	void setMediaSize( int );
@@ -42,7 +42,7 @@ public slots:
 	void updatePoster();
 	void setSelectedPages( const QString& );
 
-signals:
+Q_SIGNALS:
 	void selectionChanged( const QString& );
 
 protected:
@@ -54,7 +54,7 @@ protected:
 	void mousePressEvent( QMouseEvent* );
 	void emitSelectedPages();
 
-protected slots:
+protected Q_SLOTS:
 	void slotProcessStderr( KProcess*, char*, int );
 	void slotProcessExited( KProcess* );
 

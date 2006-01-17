@@ -105,7 +105,7 @@ namespace KIO {
 	DISPATCH_DECL1(data, const QByteArray &, ba)
 	DISPATCH_DECL(finished)
 
-    protected slots:
+    protected Q_SLOTS:
 	/** dispatches next queued method. Does nothing if there are no
 	 * queued methods.
 	 */

@@ -100,7 +100,7 @@ public:
    */
   void saveData(long id, QDataStream *str);
 
-private slots:
+private Q_SLOTS:
   void sendData();
 
 private:  
@@ -120,7 +120,7 @@ public:
     : fd(_fd) { }
    ~KHTMLPageCacheDelivery();
 
-signals:
+Q_SIGNALS:
    void emitData(const QByteArray &data);
 
 public: 

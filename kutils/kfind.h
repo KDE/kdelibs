@@ -299,7 +299,7 @@ public:
      */
     int index() const;
 
-signals:
+Q_SIGNALS:
 
     /**
      * Connect to this signal to implement highlighting of found text during the find
@@ -358,7 +358,7 @@ protected:
     QWidget* parentWidget() const { return (QWidget *)parent(); }
     QWidget* dialogsParent() const;
 
-protected slots:
+protected Q_SLOTS:
 
     void slotFindNext();
     void slotDialogClosed();

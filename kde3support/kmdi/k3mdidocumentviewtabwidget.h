@@ -88,7 +88,7 @@ public:
 	/** Get the tab widget's visibility */
 	void setTabWidgetVisibility( K3Mdi::TabWidgetVisibility );
 
-private slots:
+private Q_SLOTS:
 
 	/** Close the tab specified by w */
 	void closeTab( QWidget* w );
@@ -96,7 +96,7 @@ private slots:
 	/** Moves a tab. Reimplemented for internal reasons. */
 	void moveTab( int from, int to );
 
-public slots:
+public Q_SLOTS:
 
 	/** Change the icon for the tab */
 	void updateIconInView( QWidget*, QPixmap );
@@ -115,7 +115,7 @@ private:
 
 	K3Mdi::TabWidgetVisibility m_visibility;
 	
-signals:
+Q_SIGNALS:
 	void initiateTabMove(int, int);	
 };
 

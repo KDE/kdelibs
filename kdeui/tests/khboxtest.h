@@ -10,7 +10,7 @@ class KHBoxTest : public KHBox {
 public:
     KHBoxTest( QWidget* parentWidget );
 
-public slots:
+public Q_SLOTS:
     void slotAdd();
     void slotRemove();
 

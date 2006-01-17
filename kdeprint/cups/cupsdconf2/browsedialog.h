@@ -38,7 +38,7 @@ public:
 	static QString newAddress(QWidget *parent = 0, CupsdConf *conf = 0);
 	static QString editAddress(const QString& s, QWidget *parent = 0, CupsdConf *conf = 0);
 
-protected slots:
+protected Q_SLOTS:
 	void slotTypeChanged(int);
 
 private:

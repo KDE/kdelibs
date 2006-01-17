@@ -42,7 +42,7 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	void initialize(bool usePlugin = true);
 
-protected slots:
+protected Q_SLOTS:
 	void slotRangeEntered();
 	void slotCollateClicked();
 

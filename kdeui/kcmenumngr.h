@@ -96,7 +96,7 @@ public:
      */
      static bool showOnButtonPress( void );
 
-private slots:
+private Q_SLOTS:
     void widgetDestroyed();
 private:
     KContextMenuManager( QObject* parent = 0);

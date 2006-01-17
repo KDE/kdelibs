@@ -27,7 +27,7 @@ class KDirWatchTest_GUI : public QWidget
     Q_OBJECT
 public:
     KDirWatchTest_GUI();
-protected slots:
+protected Q_SLOTS:
     void slotNewClicked();
     void slotDeleteClicked();
     void slotDir1(const QString &path);

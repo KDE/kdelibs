@@ -65,7 +65,7 @@ public:
   void setDate(const QDate &date);
 
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted whenever the date of the widget
    * is changed, either with setDate() or via user selection.
@@ -75,7 +75,7 @@ signals:
 protected:
    void init(const QDate&);
 
-protected slots:
+protected Q_SLOTS:
   void slotDateChanged();
 
 protected:

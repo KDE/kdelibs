@@ -385,7 +385,7 @@ public:
      */
     bool isVertical() const { return orientation() == Qt::Vertical; }
 
-public slots:
+public Q_SLOTS:
     /**
      * Makes the item with the url @p url the current item. Does nothing
      * if no item with that url is available.
@@ -394,7 +394,7 @@ public slots:
      */
     virtual void setCurrentItem( const KURL& url );
 
-signals:
+Q_SIGNALS:
     /**
      * This signal is emitted when the user activated an item, e.g., by
      * clicking on it.
@@ -442,7 +442,7 @@ protected:
      */
     bool m_isImmutable :1;
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Reimplemented to show a contextmenu, allowing the user to add, edit
      * or remove items, or change the iconsize.
@@ -460,7 +460,7 @@ protected slots:
      */
     virtual void slotDropped( QDropEvent * );
 
-private slots:
+private Q_SLOTS:
     void slotSelected( int button, Q3ListBoxItem * );
 
 private:
@@ -519,7 +519,7 @@ public:
 
     bool isVertical() const { return m_orientation == Qt::Vertical; }
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when a drop-event happened.
      */
@@ -649,7 +649,7 @@ protected:
      */
     QCheckBox     * m_appLocal;
 
-public slots:
+public Q_SLOTS:
     void urlChanged(const QString & );
 
 private:

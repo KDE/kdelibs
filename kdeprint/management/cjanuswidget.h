@@ -40,7 +40,7 @@ public:
 	void disablePage(QWidget *w);
 	void clearPages();
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelected(Q3ListBoxItem*);
 
 public:

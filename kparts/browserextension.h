@@ -481,7 +481,7 @@ public:
    */
   void pasteRequest();
 
-signals:
+Q_SIGNALS:
 #ifndef Q_MOC_RUN
 public:  // yes, those signals are public; don't tell moc :)
 #endif
@@ -684,7 +684,7 @@ public:  // yes, those signals are public; don't tell moc :)
    */
   void setPageSecurity( int );
 
-private slots:
+private Q_SLOTS:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
   void slotEmitOpenURLRequestDelayed();
@@ -809,7 +809,7 @@ public:
   virtual void unregister( const unsigned long objid );
 
   static LiveConnectExtension *childObject( QObject *obj );
-signals:
+Q_SIGNALS:
   /**
    * notify a event from the part of object objid
    */

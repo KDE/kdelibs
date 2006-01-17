@@ -61,7 +61,7 @@ public:
     virtual void removedFromDocument();
     virtual void addId(const QString& id);
     virtual void removeId(const QString& id);
-protected slots:
+protected Q_SLOTS:
     void slotRenderAlternative();
 protected:
     DOMString     m_name;

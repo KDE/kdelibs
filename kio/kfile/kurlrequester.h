@@ -189,7 +189,7 @@ public:
      */
     KEditListBox::CustomEditor customEditor();
 
-public slots:
+public Q_SLOTS:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
      * showLocalProtocol(), file:/ on local files will be shown or not.
@@ -210,7 +210,7 @@ public slots:
      */
     void clear();
 
-signals:
+Q_SIGNALS:
     // forwards from LineEdit
     /**
      * Emitted when the text in the lineedit changes.
@@ -262,14 +262,14 @@ private:
     mutable KFileDialog * myFileDialog;
 
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Called when the button is pressed to open the filedialog.
      * Also called when KStdAccel::Open (default is Ctrl-O) is pressed.
      */
     void slotOpenDialog();
 
-private slots:
+private Q_SLOTS:
     void slotUpdateURL();
 
 protected:

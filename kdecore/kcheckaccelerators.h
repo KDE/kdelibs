@@ -88,7 +88,7 @@ private:
     QPointer<QDialog> drklash;
     Q3TextView *drklash_view;
 
-private slots:
+private Q_SLOTS:
     void autoCheckSlot();
     void slotDisableCheck(bool);
 };

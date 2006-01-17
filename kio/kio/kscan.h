@@ -135,7 +135,7 @@ protected:
      */
     int nextId() { return ++m_currentId; }
 
-signals:
+Q_SIGNALS:
     /**
      * Informs you that an image has been previewed.
      * @param img the image
@@ -286,7 +286,7 @@ protected:
      */
     int nextId() { return ++m_currentId; }
 
-signals:
+Q_SIGNALS:
     /**
      * Informs you that the image with the id @p id has been run through
      * text-recognition. The text is in the QString parameter. In the future,

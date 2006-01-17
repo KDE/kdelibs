@@ -39,13 +39,13 @@ public:
 	bool createDriverDB(const QString& dirname, const QString& filename, QWidget *parent = 0);
 	bool status() const	{ return m_status; }
 
-protected slots:
+protected Q_SLOTS:
 	void slotReceivedStdout(KProcess *p, char *bufm, int len);
 	void slotReceivedStderr(KProcess *p, char *bufm, int len);
 	void slotProcessExited(KProcess *p);
 	void slotCancelled();
 
-signals:
+Q_SIGNALS:
 	void dbCreated();
 
 private:

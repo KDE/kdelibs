@@ -33,16 +33,16 @@ class KTimeout : public QObject {
 		KTimeout(int size = 29);
 		virtual ~KTimeout();
 
-	signals:
+	Q_SIGNALS:
 		void timedOut(int id);
 
-	public slots:
+	public Q_SLOTS:
 		void resetTimer(int id, int timeout);
 		void addTimer(int id, int timeout);
 		void removeTimer(int id);
 		void clear();
 
-	private slots:
+	private Q_SLOTS:
 		void timeout();
 
 	private:

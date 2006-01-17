@@ -57,7 +57,7 @@ protected:
 	void removeItem(Q3ListViewItem*);
 	void recreateGroup(Q3ListViewItem*, DrGroup*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelectionChanged(Q3ListViewItem*);
 	void slotTypeChanged(int);
 	void slotAddValue();
@@ -100,7 +100,7 @@ public:
 	void setCommand(KXmlCommand*);
 	static bool editCommand(KXmlCommand*, QWidget *parent = 0);
 
-protected slots:
+protected Q_SLOTS:
 	void slotAddMime();
 	void slotRemoveMime();
 	void slotEditCommand();

@@ -139,7 +139,7 @@ protected:
   KPopupAccelManager(QMenu *popup);
 
 
-private slots:
+private Q_SLOTS:
 
   void aboutToShow();
 
@@ -172,7 +172,7 @@ protected:
   QWidgetStackAccelManager(QStackedWidget *popup);
 
 
-private slots:
+private Q_SLOTS:
 
     void currentChanged(int child);
     bool eventFilter ( QObject * watched, QEvent * e );

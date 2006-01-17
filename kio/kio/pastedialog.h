@@ -44,7 +44,7 @@ public:
     int comboItem() const;
     bool clipboardChanged() const { return m_clipboardChanged; }
 
-private slots:
+private Q_SLOTS:
     void slotClipboardDataChanged();
 
 private:

@@ -33,7 +33,7 @@ public:
 
 	virtual int plug(QWidget* widget, int index = -1);
 
-public slots:
+public Q_SLOTS:
 	virtual void setItems(const QStringList& lst, const QStringList& iconlst);
 	virtual void setCurrentItem(int);
 

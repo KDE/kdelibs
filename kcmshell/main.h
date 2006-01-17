@@ -57,7 +57,7 @@ public:
      */
     bool isRunning();
 
-private slots:
+private Q_SLOTS:
 
     /**
      */

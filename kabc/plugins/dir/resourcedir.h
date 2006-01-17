@@ -86,7 +86,7 @@ class KABC_EXPORT ResourceDir : public Resource
      */
     virtual void removeAddressee( const Addressee& addr );
 
-  protected slots:
+  protected Q_SLOTS:
     void pathChanged();
 
   protected:

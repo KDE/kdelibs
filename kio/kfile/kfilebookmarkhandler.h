@@ -42,7 +42,7 @@ public:
 
     KMenu *menu() const { return m_menu; }
 
-signals:
+Q_SIGNALS:
     void openURL( const QString& url );
 
 private:

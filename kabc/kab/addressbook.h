@@ -701,7 +701,7 @@ protected:
    * Get if the URL labels are interactive.
    */
   // bool getInteractiveMode();
-protected slots:
+protected Q_SLOTS:
   /**
    * Called when ::data has been cleared or reloaded.
    */
@@ -715,14 +715,14 @@ protected slots:
    */
   void configFileChanged();
   // ----------------------------------------------------------------------------
-public slots:
+public Q_SLOTS:
   /**
    * This slot is called when an external object changed the database through
    * the kabapi.
    */
   void externalChange(); 
   // ----------------------------------------------------------------------------
-signals:
+Q_SIGNALS:
   void changed(); /**< The entries have changed, update the selector. */
   void setStatus(const QString&); /**< This is kab radio with the news... */
   void newFile(const QString&); /**< Notifies changes of the file name. */

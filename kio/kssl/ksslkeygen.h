@@ -79,7 +79,7 @@ public:
 	 */
 	void setKeySize(int idx) { _idx = idx; }
 
-private slots:
+private Q_SLOTS:
 	void slotPassChanged();
 	void slotGenerate();
 

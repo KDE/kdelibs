@@ -19,7 +19,7 @@ class Dummy : public QObject
 {
  Q_OBJECT
 
- public slots:
+ public Q_SLOTS:
    void printMessage(KProcess *proc)
    {
      printf("Process %d exited!\n", (int)proc->pid()); 

@@ -37,11 +37,11 @@ public:
 
   void setEditMode( bool value );
 
-public slots:
+public Q_SLOTS:
   void loadSettings( KRES::Resource *resource );
   void saveSettings( KRES::Resource *resource );
 
-protected slots:
+protected Q_SLOTS:
   void checkFilePermissions( const QString& fileName );
 
 private:

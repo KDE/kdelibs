@@ -38,15 +38,15 @@ public:
 
 	//This signal and the next two slots are the plugin
 	//page interface
-signals:
+Q_SIGNALS:
 	void changed(bool);
 
-public slots:
+public Q_SLOTS:
 	void save();
 	void defaults();
 
 	//Everything below this is internal.
-protected slots:
+protected Q_SLOTS:
 	void updateChanged();
 
 protected:

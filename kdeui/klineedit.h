@@ -325,7 +325,7 @@ public:
     QString clickMessage() const;
 
 
-signals:
+Q_SIGNALS:
 
     /**
      * Emitted whenever the completion box is activated.
@@ -389,7 +389,7 @@ signals:
      */
     void aboutToShowContextMenu( QMenu * p );
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Re-implemented for internal reasons. API not changed.
@@ -442,7 +442,7 @@ public slots:
     virtual void setText ( const QString& );
 
 
-protected slots:
+protected Q_SLOTS:
 
     /**
     * Completes the remaining text with a matching one from
@@ -537,7 +537,7 @@ protected:
     virtual void focusOutEvent( QFocusEvent *ev );
 
 
-private slots:
+private Q_SLOTS:
     void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick
     void slotRestoreSelectionColors();

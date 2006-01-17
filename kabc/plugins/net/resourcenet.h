@@ -86,7 +86,7 @@ class KABC_EXPORT ResourceNet : public Resource
   protected:
     void init( const KURL &url, const QString &format );
 
-  private slots:
+  private Q_SLOTS:
     void downloadFinished( KIO::Job* );
     void uploadFinished( KIO::Job* );
 

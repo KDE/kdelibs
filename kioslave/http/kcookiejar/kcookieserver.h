@@ -74,7 +74,7 @@ public:
                   long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
 
-public slots:
+public Q_SLOTS:
   void slotSave();
   void slotDeleteSessionCookies(long);
 

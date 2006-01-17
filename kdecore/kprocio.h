@@ -185,7 +185,7 @@ public:
    */
   void enableReadSignals (bool enable);
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the process is ready for reading.
    * @param pio the process that emitted the signal
@@ -202,7 +202,7 @@ protected:
 
   void controlledEmission ();
 
-protected slots:
+protected Q_SLOTS:
   void received (KProcess *proc, char *buffer, int buflen);
   void sent (KProcess *);
 

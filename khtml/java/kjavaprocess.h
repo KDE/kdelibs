@@ -122,7 +122,7 @@ public:
      **/
     void flushBuffers();
 
-protected slots:
+protected Q_SLOTS:
     /**
      * This slot is called whenever something is written to stdin of the process.
      * It's called again to make sure we keep emptying out the buffer that contains
@@ -152,7 +152,7 @@ protected:
 
     KProcess* javaProcess;
 
-signals:
+Q_SIGNALS:
     void received( const QByteArray& );
     void exited( int status );
 

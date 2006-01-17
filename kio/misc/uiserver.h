@@ -84,7 +84,7 @@ public:
 
   friend class ProgressItem;
   friend class UIServer;
-protected slots:
+protected Q_SLOTS:
   void columnWidthChanged(int column);
 protected:
 
@@ -155,14 +155,14 @@ public:
 
   const QString& fullLengthAddress() const {return m_fullLengthAddress;}
   void setText(ListProgress::ListProgressFields field, const QString& text);
-public slots:
+public Q_SLOTS:
   void slotShowDefaultProgress();
   void slotToggleDefaultProgress();
 
-protected slots:
+protected Q_SLOTS:
   void slotCanceled();
 
-signals:
+Q_SIGNALS:
   void jobCanceled( ProgressItem* );
 
 protected:
@@ -361,10 +361,10 @@ k_dcop:
    */
   KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList);
 
-public slots:
+public Q_SLOTS:
   void slotConfigure();
   void slotRemoveSystemTrayIcon();
-protected slots:
+protected Q_SLOTS:
 
   void slotUpdate();
   void slotQuit();

@@ -56,7 +56,7 @@ public:
     QValidator* validator() const              { return m_validator; }
     KFileMetaInfoItem item()const              { return m_item;      }
 
-signals:
+Q_SIGNALS:
     void valueChanged(const QVariant& value);
 
 protected:
@@ -71,7 +71,7 @@ protected:
     QWidget* makeTimeWidget();
     QWidget* makeDateTimeWidget();
 
-private slots:
+private Q_SLOTS:
     void slotChanged(bool value);
     void slotChanged(int value);
     void slotChanged(double value);

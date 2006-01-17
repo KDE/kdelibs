@@ -118,7 +118,7 @@ public:
      */
     virtual void clearApplicationEvents();
 
-private slots:
+private Q_SLOTS:
     void slotDefault();
 
 private:
@@ -216,7 +216,7 @@ namespace KNotify
         void resetDefaults( bool ask );
         void sort( bool ascending = true );
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Clears the view and all the Application events.
          */
@@ -232,7 +232,7 @@ namespace KNotify
         void toggleAdvanced();
 
 
-    signals:
+    Q_SIGNALS:
         void changed( bool hasChanges );
 
     protected:
@@ -247,10 +247,10 @@ namespace KNotify
 
         void reload( bool revertToDefaults = false );
 
-    protected slots:
+    protected Q_SLOTS:
         void playSound();
 
-    private slots:
+    private Q_SLOTS:
         void slotItemClicked( Q3ListViewItem *item, const QPoint& point, 
                               int col );
         void slotEventChanged( Q3ListViewItem * );

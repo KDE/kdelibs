@@ -336,7 +336,7 @@ public:
    */
   void setIgnoreTitleCase(bool b);
 
-signals:
+Q_SIGNALS:
 
   /**
    * Emitted whenever a misspelled word is found by check() or
@@ -447,7 +447,7 @@ signals:
   void death( );
 
 
-protected slots:
+protected Q_SLOTS:
   /* All of those signals from KProcIO get sent here. */
   void KSpell2 (KProcIO *);
   void checkWord2 (KProcIO *);
@@ -467,7 +467,7 @@ protected slots:
   void ispellErrors (KProcess *, char *, int);
   void checkNext();
 
-private slots:
+private Q_SLOTS:
   /**
    * Used for modalCheck().
    */
@@ -488,7 +488,7 @@ private slots:
    */
   void  slotModalSpellCheckerFinished( );
 
-signals:
+Q_SIGNALS:
   void dialog3 ();
 
 protected:

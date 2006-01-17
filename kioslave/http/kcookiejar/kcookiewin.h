@@ -56,7 +56,7 @@ private :
     KHttpCookieList m_cookieList;
     KHttpCookiePtr m_cookie;
 
-private slots:
+private Q_SLOTS:
     void slotNextCookie();
 };
 
@@ -77,7 +77,7 @@ private :
     KCookieDetail* m_detailView;
     bool m_showDetails;
 
-private slots:
+private Q_SLOTS:
     void slotCookieDetails();
 };
 #endif

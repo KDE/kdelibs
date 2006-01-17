@@ -37,7 +37,7 @@ class KABC_EXPORT LockWidget : public QWidget
     LockWidget( const QString &identifier );
     ~LockWidget();
 
-  protected slots:
+  protected Q_SLOTS:
     void lock();
     void unlock();
 

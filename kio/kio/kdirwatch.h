@@ -246,7 +246,7 @@ class KIO_EXPORT KDirWatch : public QObject
     */
    static bool exists();
 
- signals:
+ Q_SIGNALS:
 
    /**
     * Emitted when a watched object is changed.

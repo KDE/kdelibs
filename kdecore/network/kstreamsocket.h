@@ -207,13 +207,13 @@ public:
   virtual bool connect(const KResolverEntry& entry,
 		       OpenMode mode = ReadWrite);
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted when a connection timeout occurs.
    */
   void timedOut();
 
-private slots:
+private Q_SLOTS:
   void hostFoundSlot();
   void connectionEvent();
   void timeoutSlot();

@@ -149,7 +149,7 @@ public:
      */
     void show();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted after all KCModules have been told to save their configuration.
      *
@@ -175,7 +175,7 @@ signals:
      */
     void configCommitted( const QByteArray & instanceName );
 
-protected slots:
+protected Q_SLOTS:
     /**
      * This slot is called when the user presses the "Default" Button.
      * You can reimplement it if needed.
@@ -220,7 +220,7 @@ protected slots:
      **/
     virtual void slotHelp();
 
-private slots:
+private Q_SLOTS:
 
     void slotCurrentPageChanged(QWidget *);
 

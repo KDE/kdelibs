@@ -754,7 +754,7 @@ public:
      */
     static void setStartDir( const KURL& directory );
 
-signals:
+Q_SIGNALS:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
       * selection mode. The best way to get notified about selected file(s)
@@ -876,7 +876,7 @@ protected:
     void updateAutoSelectExtension();
 
 
-protected slots:
+protected Q_SLOTS:
     void urlEntered( const KURL& );
     void enterURL( const KURL& url );
     void enterURL( const QString& url );
@@ -908,7 +908,7 @@ protected slots:
     void addToRecentDocuments();
     void initSpeedbar();
 
-private slots:
+private Q_SLOTS:
     void slotLocationChanged( const QString& text );
 
 private:

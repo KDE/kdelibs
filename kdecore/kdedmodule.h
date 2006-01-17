@@ -128,7 +128,7 @@ public:
 #endif
 
 #if 0
-public slots:
+public Q_SLOTS:
   /**
    * Called whenever the last referenced object gets dereferenced.
    *
@@ -139,7 +139,7 @@ public slots:
   virtual void idle() { }
 #endif
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the module is being deleted.
    */

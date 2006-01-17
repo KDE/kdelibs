@@ -46,7 +46,7 @@ public:
   KConfigTestView( QWidget *parent=0 );
   ~KConfigTestView();
 
-private slots:
+private Q_SLOTS:
   void appConfigEditReturnPressed();
   void groupEditReturnPressed();
   void keyEditReturnPressed();

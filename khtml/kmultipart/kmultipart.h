@@ -59,7 +59,7 @@ protected:
     void sendData( const QByteArray& line );
     void endOfData();
 
-private slots:
+private Q_SLOTS:
     void reallySendData( const QByteArray& line );
     //void slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u, const QString &mime, mode_t mode );
     void slotJobFinished( KIO::Job *job );
@@ -106,7 +106,7 @@ public:
     virtual int xOffset();
     virtual int yOffset();
 
-//protected slots:
+//protected Q_SLOTS:
     void print();
     void reparseConfiguration();
 

@@ -61,7 +61,7 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
-public slots:
+public Q_SLOTS:
     /**
      * Opens @p link in the default browser.
      *
@@ -71,7 +71,7 @@ public slots:
      */
     virtual void openLink(const QString & link);
 
-private slots:
+private Q_SLOTS:
     void setSource( const QString &) { }
 
 protected:

@@ -44,7 +44,7 @@ public:
 	
 	void goOn();
 	
-signals:
+Q_SIGNALS:
 	void newData();
 	void newBlockSize(long blockSize);
 	void newBlockPointer(long blockPointer);

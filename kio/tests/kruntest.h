@@ -46,7 +46,7 @@ class Receiver : public QWidget
 public:
   Receiver();
   ~Receiver() {}
-public slots:
+public Q_SLOTS:
  void slotStart();
  void slotStop();
 private:

@@ -47,7 +47,7 @@ class TestObject : public QObject
 public:
   TestObject(const DCOPCString &app);
 
-public slots:
+public Q_SLOTS:
   void slotTimeout();
   void slotCallBack(int, const DCOPCString&, const QByteArray&);
 private:
@@ -67,7 +67,7 @@ public:
   bool gotRegister( const QByteArray& appName ) const {
     return m_registerReceived.indexOf( appName ) != -1;
   }
-public slots:
+public Q_SLOTS:
   void slotTimeout();
   void slotTimeout2();
   void registered(const QByteArray &appName) {

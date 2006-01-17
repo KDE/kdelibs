@@ -297,7 +297,7 @@ public:
   */
   void setButtonsEnabled();
 
-signals:
+Q_SIGNALS:
   /**
     Emitted when an item is moved to the "selected" listbox.
   */
@@ -323,7 +323,7 @@ signals:
   */
 //  void addedToSelection( QListWidgetItem *item );
 
-public slots:
+public Q_SLOTS:
   /**
     Reimplemented for internal reasons.
     (calls setButtonsEnabled())
@@ -341,7 +341,7 @@ protected:
   */
   bool eventFilter( QObject *, QEvent * );
 
-private slots:
+private Q_SLOTS:
   /**
     Move selected item from available box to the selected box
   */

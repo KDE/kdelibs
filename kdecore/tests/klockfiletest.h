@@ -27,7 +27,7 @@ class Test_KLockFile : public QObject
 	Q_OBJECT
 
 	KLockFile *lockFile;
-private slots:
+private Q_SLOTS:
 	void initTestCase();
 	void testLock();
 	void testStale();

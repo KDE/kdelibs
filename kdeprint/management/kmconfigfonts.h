@@ -36,7 +36,7 @@ public:
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotUp();
 	void slotDown();
 	void slotRemove();

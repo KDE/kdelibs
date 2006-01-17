@@ -33,7 +33,7 @@ class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& );
 	virtual bool disconnectKey( const KKeyServer::Key& );
 
- signals:
+ Q_SIGNALS:
 	void menuItemActivated();
 	void menuItemActivated(KAccelAction*);
 
@@ -42,7 +42,7 @@ class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 	void emitActivatedSignal(KAccelAction*);
 #endif
 
- private slots:
+ private Q_SLOTS:
 	void slotKeyPressed( int id );
 	void slotShowMenu();
 	void slotMenuActivated( int iAction );

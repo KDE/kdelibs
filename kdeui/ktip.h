@@ -169,7 +169,7 @@ protected:
     bool eventFilter(QObject *, QEvent *);
     virtual void virtual_hook( int id, void* data );
 
-private slots:
+private Q_SLOTS:
     void nextTip();
     void prevTip();
     void showOnStart(bool);

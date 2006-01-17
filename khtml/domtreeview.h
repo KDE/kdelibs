@@ -33,13 +33,13 @@ class DOMTreeView : public KListView
 
 	void recursive(const DOM::Node &pNode, const DOM::Node &node);
 
-    signals:
+    Q_SIGNALS:
 	void sigNodeClicked(const DOM::Node &);
 	
-    public slots:
+    public Q_SLOTS:
 	void showTree(const DOM::Node &pNode);
 
-    protected slots:
+    protected Q_SLOTS:
 	void slotItemClicked(Q3ListViewItem *);
 
     private:

@@ -86,7 +86,7 @@ public:
      BAD_PASSPHRASE = 32 ///wrong passhprase entered
   };
 
-public slots:
+public Q_SLOTS:
   /** Reads the available public keys */
   void readKeys();
   /** Reads the available secret keys */
@@ -119,11 +119,11 @@ private:
    QString m_fileName; /// the file to sign/verify
    QString m_secretKey; /// the key used for signing
 
-private slots:
+private Q_SLOTS:
    void slotProcessExited(KProcess *process);
    void slotDataArrived(KProcIO *process);
 
-signals:
+Q_SIGNALS:
    /** Sent when the validity check is done.
    *
    *    @return the result of the check. See @ref Results

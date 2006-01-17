@@ -203,13 +203,13 @@ public:
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
   QString palette() const;
-public slots:
+public Q_SLOTS:
   void setPalette(const QString &paletteName);
-signals:
+Q_SIGNALS:
   void colorSelected( const QColor &, const QString & );
   void colorDoubleClicked( const QColor &, const QString & );
 
-protected slots:
+protected Q_SLOTS:
   void slotColorCellSelected( int );
   void slotColorCellDoubleClicked( int );
   void slotColorTextSelected( const QString &colorText );
@@ -265,7 +265,7 @@ public:
   int getSelected() const
   {	return selected; }
 
-  signals:
+  Q_SIGNALS:
   void colorSelected( int col );
   void colorDoubleClicked( int col );
 
@@ -312,7 +312,7 @@ public:
 
   void setColor( const QColor &col );
 
-signals:
+Q_SIGNALS:
   void colorChanged( const QColor&);
 
 protected:
@@ -429,13 +429,13 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      */
     QColor defaultColor() const;
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Preselects a color.
      */
     void setColor( const QColor &col );
 
-  signals:
+  Q_SIGNALS:
     /**
      * Emitted when a color is selected.
      * Connect to this to monitor the color as it as selected if you are
@@ -443,7 +443,7 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      */
     void colorSelected( const QColor &col );
 
-  private slots:
+  private Q_SLOTS:
     void slotRGBChanged( void );
     void slotHSVChanged( void );
     void slotHtmlChanged( void );

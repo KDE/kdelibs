@@ -79,7 +79,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
     KListBox *listBox() const;
     KTextEdit *textEdit() const;
 
-  private slots:
+  private Q_SLOTS:
 
     void slotEditTextChanged( const QString& );
     void slotUpdateButtons( const QString& );

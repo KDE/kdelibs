@@ -13,7 +13,7 @@ public:
     void setXMLFile( const QString &f, bool merge = true ) { KXMLGUIClient::setXMLFile( f, merge ); }
     void setInstance( KInstance *inst ) { KXMLGUIClient::setInstance( inst ); }
 
-public slots:
+public Q_SLOTS:
     void slotSec();
 };
 #endif

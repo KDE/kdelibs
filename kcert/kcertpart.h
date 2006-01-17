@@ -75,7 +75,7 @@ public:
 
   static KAboutData *createAboutData();
 
-protected slots:
+protected Q_SLOTS:
   void slotChain(int c);
   void slotImport();
   void slotSave();

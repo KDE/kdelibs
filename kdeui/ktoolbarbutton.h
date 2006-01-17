@@ -243,7 +243,7 @@ public:
    */
   void setNoStyle(bool no_style = true);
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the toolbar button is clicked (with LMB or MMB)
    */
@@ -267,7 +267,7 @@ signals:
   void toggled(int);
   void highlighted(int, bool);
 
-public slots:
+public Q_SLOTS:
   /**
    * This slot should be called whenever the toolbar mode has
    * potentially changed.  This includes such events as text changing,
@@ -301,7 +301,7 @@ protected:
   ///Sets up option for this button
   void initStyleOption(QStyleOptionToolButton* opt) const;
 
-protected slots:
+protected Q_SLOTS:
   void slotClicked();
   void slotPressed();
   void slotReleased();

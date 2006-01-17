@@ -33,14 +33,14 @@ public:
 	int resolution() const;
 	void setResolution(int dpi);
 
-public slots:
+public Q_SLOTS:
 	void setMode(int);
 	void setMargin(float);
 
-signals:
+Q_SIGNALS:
 	void marginChanged(float);
 
-protected slots:
+protected Q_SLOTS:
 	void slotValueChanged(double);
 
 protected:

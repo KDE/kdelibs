@@ -50,11 +50,11 @@ class KABC_EXPORT ResourceLDAPKIOConfig : public KRES::ConfigWidget
   public:
     ResourceLDAPKIOConfig( QWidget* parent = 0 );
 
-  public slots:
+  public Q_SLOTS:
     void loadSettings( KRES::Resource* );
     void saveSettings( KRES::Resource* );
 
-  private slots:
+  private Q_SLOTS:
     void editAttributes();
     void editCache();
   private:
@@ -79,7 +79,7 @@ class AttributesDialog : public KDialogBase
     QMap<QString, QString> attributes() const;
     int rdnprefix() const;
 
-  private slots:
+  private Q_SLOTS:
     void mapChanged( int pos );
 
   private:
@@ -104,7 +104,7 @@ class OfflineDialog : public KDialogBase
     int cachePolicy() const;
     bool autoCache() const;
 
-  private slots:
+  private Q_SLOTS:
     void loadCache();
 
   private:

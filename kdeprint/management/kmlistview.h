@@ -37,11 +37,11 @@ public:
 	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 
-signals:
+Q_SIGNALS:
 	void rightButtonClicked(const QString&, const QPoint&);
 	void printerSelected(const QString&);
 
-protected slots:
+protected Q_SLOTS:
 	void slotRightButtonClicked(Q3ListViewItem*, const QPoint&, int);
 	void slotSelectionChanged();
 	void slotOnItem(Q3ListViewItem*);

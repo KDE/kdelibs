@@ -45,7 +45,7 @@ class KNotifyPlugin : public QObject
 	protected:
 		void finish(int id) { emit finished(id); }
 	
-	signals:
+	Q_SIGNALS:
 		void finished(int id);
 		void actionInvoked(int id , int action);
 };

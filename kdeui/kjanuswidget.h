@@ -525,7 +525,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      */
     virtual QWidget *pageWidget(int index) const;
 
-  signals:
+  Q_SIGNALS:
     /**
      * This signal is emitted whenever the current page has changed.
      * @param page the new page.
@@ -533,7 +533,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      */
     void currentPageChanged(QWidget *page);
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Give the keyboard input focus to the widget.
      */
@@ -556,7 +556,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      */
     //virtual bool eventFilter( QObject *o, QEvent *e );
 
-  private slots:
+  private Q_SLOTS:
     bool slotShowPage();
     void slotFontChanged();
     void slotItemClicked(QTreeWidgetItem *it);

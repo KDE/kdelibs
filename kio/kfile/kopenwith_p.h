@@ -87,11 +87,11 @@ protected:
     KAppTreeListItem* currentitem;
 	void cleanupTree();
 
-public slots:
+public Q_SLOTS:
     void slotItemHighlighted(Q3ListViewItem* i);
     void slotSelectionChanged(Q3ListViewItem* i);
 
-signals:
+Q_SIGNALS:
     void selected( const QString& _name, const QString& _exec );
     void highlighted( const QString& _name, const  QString& _exec );
 };

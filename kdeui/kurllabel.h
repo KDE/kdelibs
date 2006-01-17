@@ -145,7 +145,7 @@ public:
    */
   const QPixmap* altPixmap () const;
 
-public slots:
+public Q_SLOTS:
   /**
    * Turns on or off the underlining.
    *
@@ -260,7 +260,7 @@ public slots:
    */
   void setAltPixmap (const QPixmap& altPix);
 
-signals:
+Q_SIGNALS:
 
   /**
    * Emitted when the mouse has passed over the label.
@@ -345,7 +345,7 @@ protected:
   virtual bool event (QEvent *e);
 
 
-private slots:
+private Q_SLOTS:
   /**
    * @internal
    * Slot used to reset the link-color to normal (timer-driven).

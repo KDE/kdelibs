@@ -174,7 +174,7 @@ private:
 
     QEventLoop eventLoop;
 
-private slots:
+private Q_SLOTS:
     // KIO::Job
     void slotResult(KIO::Job *job);
     void slotWarning(KIO::Job *job, const QString &msg);

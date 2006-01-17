@@ -124,7 +124,7 @@ public:
      */
     void setSaveNewApplications(bool b);
 
-public slots:
+public Q_SLOTS:
     /**
     * The slot for clearing the edit widget
     */
@@ -136,7 +136,7 @@ public slots:
     void slotDbClick();
     void slotOK();
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Reimplemented from QDialog::accept() to save history of the combobox
      */

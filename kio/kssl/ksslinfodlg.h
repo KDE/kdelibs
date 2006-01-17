@@ -127,7 +127,7 @@ private:
 	class KSSLInfoDlgPrivate;
 	KSSLInfoDlgPrivate* const d;
 
-private slots:
+private Q_SLOTS:
 	void launchConfig();
 	void urlClicked(const QString &url);
 	void mailClicked(const QString &url);

@@ -88,10 +88,10 @@ protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
     virtual void virtual_hook( int id, void* data );
 
-signals:
+Q_SIGNALS:
     void filterChanged();
 
-private slots:
+private Q_SLOTS:
     void slotFilterChanged();
 
 private:

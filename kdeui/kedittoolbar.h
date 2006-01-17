@@ -204,7 +204,7 @@ public:
   */
   static void setDefaultToolbar(const char *toolbarName);
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Overridden in order to save any changes made to the toolbars
    */
@@ -224,7 +224,7 @@ protected slots:
   **/
   void slotDefault();
 
-signals:
+Q_SIGNALS:
   /**
    * Signal emitted when 'apply' or 'ok' is clicked or toolbars were resetted.
    * Connect to it, to plug action lists and to call applyMainWindowSettings
@@ -379,13 +379,13 @@ public:
    */
   void rebuildKXMLGUIClients();
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted whenever any modifications are made by the user.
    */
   void enableOk(bool);
 
-protected slots:
+protected Q_SLOTS:
   void slotToolbarSelected(const QString& text);
 
   void slotInactiveSelectionChanged();
@@ -398,7 +398,7 @@ protected slots:
 
   void slotChangeIcon();
 
-private slots:
+private Q_SLOTS:
   void slotProcessExited( KProcess* );
 
 private:

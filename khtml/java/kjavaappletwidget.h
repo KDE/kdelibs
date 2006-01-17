@@ -102,7 +102,7 @@ public:
     QSize sizeHint() const;
     void resize( int, int );
 
-protected slots:
+protected Q_SLOTS:
     /**
      * This slot is called by KWin when new windows are added.  We check
      * to see if the window has the title we set.  If so we embed it.

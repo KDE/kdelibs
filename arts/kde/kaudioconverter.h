@@ -42,7 +42,7 @@ public:
 	void start();
 	void stop();
 
-signals:
+Q_SIGNALS:
 	void rawStreamStart();
 
 	void newBlockSize(long blockSize);
@@ -51,7 +51,7 @@ signals:
 	
 	void rawStreamFinished();
 
-private slots:
+private Q_SLOTS:
 	void slotMimeType(const QString &mimeType);
 	
 private:

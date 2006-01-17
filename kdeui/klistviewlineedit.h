@@ -34,10 +34,10 @@ public:
 
 	Q3ListViewItem *currentItem() const;
 
-signals:
+Q_SIGNALS:
 	void done(Q3ListViewItem*, int);
 
-public slots:
+public Q_SLOTS:
 	void terminate();
 	void load(Q3ListViewItem *i, int c);
 
@@ -54,7 +54,7 @@ protected:
 	int col;
 	KListView* const p;
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelectionChanged();
 
 };

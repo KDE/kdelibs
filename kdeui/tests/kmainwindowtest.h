@@ -9,7 +9,7 @@ class MainWindow : public KMainWindow
 public:
     MainWindow();
 
-private slots:
+private Q_SLOTS:
     void showMessage();
 };
 

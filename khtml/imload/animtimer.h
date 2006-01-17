@@ -50,7 +50,7 @@ public:
     void nextFrameIn(AnimProvider* provider, int ms);
     
     void destroyed(AnimProvider* provider);
-private slots:
+private Q_SLOTS:
     void tick();
 private:
     QMap<AnimProvider*, int> pending;

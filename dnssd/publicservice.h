@@ -130,7 +130,7 @@ public:
 	 */
 	const KURL toInvitation(const QString& host=QString());
 
-signals:
+Q_SIGNALS:
 	/**
 	Emitted when publishing is complete - parameter is set to true if it was successfull. It will also
 	emitted when name, port or type of already published service is changed.

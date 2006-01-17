@@ -47,7 +47,7 @@ k_dcop:
 	QString requestPassword( const QString& user, const QString& host, int port, int seqNbr );
 	void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
 
-protected slots:
+protected Q_SLOTS:
 	void slotPrintTerminated( KPrintProcess* );
 	void slotPrintError( KPrintProcess*, const QString& );
 	void slotClosed();

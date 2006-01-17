@@ -166,7 +166,7 @@ k_dcop:
     */
    void notifyDatabaseChanged(const QStringList &);
 
-signals:
+Q_SIGNALS:
    /**
     * Connect to this to get notified when the database changes
     * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)

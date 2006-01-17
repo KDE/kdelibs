@@ -63,11 +63,11 @@ public:
 	void validatePluginActions(KActionCollection*, KMPrinter*);
 	QString stateInformation();
 
-public slots:
+public Q_SLOTS:
 	void exportDriver();
 	void printerIppReport();
 
-protected slots:
+protected Q_SLOTS:
 	void slotConnectionFailed( int );
 	void slotConnectionSuccess();
 	void slotAsyncConnect();

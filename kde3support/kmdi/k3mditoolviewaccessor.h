@@ -69,7 +69,7 @@ public:
 	void place( K3DockWidget::DockPosition pos = K3DockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50 );
 	void placeAndShow( K3DockWidget::DockPosition pos = K3DockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50 );
 	void show();
-public slots:
+public Q_SLOTS:
 	void setWidgetToWrap( QWidget* widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0 );
 	void hide();
 private:

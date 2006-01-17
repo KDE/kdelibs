@@ -38,7 +38,7 @@ public:
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSizeTypeChanged(int);
 	void slotPositionChanged();
 	void slotImageSettingsChanged();

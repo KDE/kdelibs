@@ -29,7 +29,7 @@ class Test_KCompletion : public QObject
 	QStringList strings;
 	QStringList wstrings;
 
-private slots:
+private Q_SLOTS:
 	void initTestCase();
 	void isEmpty();
 	void insertionOrder();

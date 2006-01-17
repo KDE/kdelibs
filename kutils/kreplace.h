@@ -194,7 +194,7 @@ public:
      */
     virtual void displayFinalDialog() const;
 
-signals:
+Q_SIGNALS:
 
     /**
      * Connect to this slot to implement updating of replaced text during the replace
@@ -212,7 +212,7 @@ signals:
      */
     void replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
 
-protected slots:
+protected Q_SLOTS:
 
     void slotSkip();
     void slotReplace();

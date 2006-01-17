@@ -73,7 +73,7 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
   protected:
     virtual void childEvent( QChildEvent *e );
 
-  signals:
+  Q_SIGNALS:
     void urlClick( const QString &url );
     void mailClick( const QString &name, const QString &address );
 
@@ -121,14 +121,14 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
   protected:
     virtual void fontChange( const QFont &oldFont );
 
-  protected slots:
+  protected Q_SLOTS:
     void urlClickedSlot( const QString& );
     void emailClickedSlot( const QString& emailaddress );
 
   private:
     void updateLayout( void );
 
-  signals:
+  Q_SIGNALS:
     void sendEmail(const QString& name, const QString& email);
     void openURL(const QString& url);
 
@@ -189,7 +189,7 @@ public:
    */
   void setVersion(const QString& name);
   // -------------------------------------------------------------------------
-protected slots:
+protected Q_SLOTS:
   /**
    * Catches the signals from the contributors elements.
    */
@@ -199,7 +199,7 @@ protected slots:
    */
   void openURLSlot(const QString& url);
   // -------------------------------------------------------------------------
-signals:
+Q_SIGNALS:
   /**
    * An email address has been selected by the user.
    */
@@ -563,7 +563,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
 			  const QString &path, const QColor &imageColor,
 			  const QString &url );
 
-signals:
+Q_SIGNALS:
   /**
    * Send an email to this person.
    *
@@ -589,7 +589,7 @@ protected:
   KAboutContainerBase *mContainerBase;
 
   // -------------------------------------------------------------------------
-protected slots:
+protected Q_SLOTS:
 
   /**
    * Connected to widget->sendEmail.

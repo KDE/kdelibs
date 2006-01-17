@@ -171,7 +171,7 @@ public:
 	virtual  ~KMultiTabBarButton();
 	int id() const;
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * this is used internaly, but can be used by the user, if (s)he wants to
 	 * It the according call of KMultiTabBar is invoked though this modifications will be overwritten
@@ -199,13 +199,13 @@ protected:
 private:
 	int m_id;
 	KMultiTabBarButtonPrivate *d;
-signals:
+Q_SIGNALS:
 	/**
 	 * this is emitted if  the button is clicked
 	 * @param id	the ID identifying the button
 	 */
 	void clicked(int id);
-protected slots:
+protected Q_SLOTS:
 	virtual void slotClicked();
 };
 
@@ -244,11 +244,11 @@ protected:
 	virtual void drawButtonLabel(QPainter *);
 	void drawButtonStyled(QPainter *);
 	void drawButtonClassic(QPainter *);
-protected slots:
+protected Q_SLOTS:
 	virtual void slotClicked();
 	void setTabsPosition(KMultiTabBar::KMultiTabBarPosition);
 
-public slots:
+public Q_SLOTS:
 	virtual void setIcon(const QString&);
 	virtual void setIcon(const QPixmap&);
 };

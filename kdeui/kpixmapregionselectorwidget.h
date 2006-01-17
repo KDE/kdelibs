@@ -124,7 +124,7 @@ public:
     */
    void rotate(KImageEffect::RotateDirection direction);
 
-public slots:
+public Q_SLOTS:
    /**
     * Rotates the current image 90º clockwise
     */

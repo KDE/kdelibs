@@ -33,7 +33,7 @@ class POFHelper : public QObject
 {
 	friend class PlayObjectFactory;
 	Q_OBJECT
-private slots:
+private Q_SLOTS:
 	void connectAmanPlay();
 private:
 	KDE::PlayObject *po;

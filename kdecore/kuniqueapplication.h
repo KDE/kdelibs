@@ -187,7 +187,7 @@ private:
    */
   void delayRequest(const QByteArray &fun, const QByteArray &data);
 
-private slots:
+private Q_SLOTS:
   /**
    * Delayed processing of DCOP requests.
    */

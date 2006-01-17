@@ -48,12 +48,12 @@ protected:
 
   bool modal;
 
-public slots:
+public Q_SLOTS:
   void b0Pressed();
   void b1Pressed();
   void b2Pressed();
 
-signals:
+Q_SIGNALS:
   void result( SkipDlg *_this, int _button );
 };
 

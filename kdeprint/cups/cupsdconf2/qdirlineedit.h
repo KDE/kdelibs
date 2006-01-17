@@ -37,7 +37,7 @@ public:
 	QString url();
 	void setFileEdit(bool on = true);
 
-private slots:
+private Q_SLOTS:
 	void buttonClicked();
 
 private:

@@ -45,11 +45,11 @@ public:
 	enum State { None = 0, Printing, Finishing };
 	int state() const;
 
-signals:
+Q_SIGNALS:
 	void printTerminated( KPrintProcess* );
 	void printError( KPrintProcess*, const QString& );
 
-protected slots:
+protected Q_SLOTS:
 	void slotReceivedStderr(KProcess*, char*, int);
 	void slotExited( KProcess* );
 

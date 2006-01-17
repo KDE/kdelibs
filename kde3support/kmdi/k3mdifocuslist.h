@@ -31,7 +31,7 @@ public:
 	~K3MdiFocusList();
 	void addWidgetTree( QWidget* );
 	void restore();
-protected slots:
+protected Q_SLOTS:
 	void objectHasBeenDestroyed( QObject* );
 private:
 	QMap<QWidget*, Qt::FocusPolicy> m_list;

@@ -27,7 +27,7 @@ public:
   DockApplication( const char* name );
   ~DockApplication();
 
-public slots:
+public Q_SLOTS:
   void rConfig();
   void wConfig();
   void cap();

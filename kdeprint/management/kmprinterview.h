@@ -44,11 +44,11 @@ public:
 
 	QSize minimumSizeHint() const;
 
-signals:
+Q_SIGNALS:
 	void printerSelected(const QString&);
 	void rightButtonClicked(const QString&, const QPoint&);
 
-protected slots:
+protected Q_SLOTS:
 	void slotPrinterSelected(const QString&);
 
 private:

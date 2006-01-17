@@ -67,7 +67,7 @@ public:
    */
   QString smbConfPath() const;
   
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the smb.conf file has changed
    */
@@ -78,7 +78,7 @@ private:
   static KSambaShare* _instance;
   KSambaSharePrivate* d;
   
-private slots:
+private Q_SLOTS:
   void slotFileChange(const QString&);  
 };
 

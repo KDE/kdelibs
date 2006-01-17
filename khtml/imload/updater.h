@@ -51,7 +51,7 @@ public:
      amount of time has passed.
      */
     void haveUpdates(Image* frame);
-private slots:
+private Q_SLOTS:
     void pushUpdates();
 private:
     QVector<Image*> frames[10];

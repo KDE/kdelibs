@@ -69,7 +69,7 @@ namespace KIO {
 	 */
 	QDomDocument& response() { return m_response; }
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
 

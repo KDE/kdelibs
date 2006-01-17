@@ -86,7 +86,7 @@ public:
      */
     bool isAvailable(const QString & name) const;
 
-signals:
+Q_SIGNALS:
     /** 
      * This signal is raised when a pixmap load operation has finished.
      *

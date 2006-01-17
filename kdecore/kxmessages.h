@@ -140,7 +140,7 @@ class KDECORE_EXPORT KXMessages
 	 */
         static bool broadcastMessageX( Display* disp, const char* msg_type,
             const QString& message );
-    signals:
+    Q_SIGNALS:
 	/**
 	 * Emitted when a message was received.
 	 * @param message the message that has been received

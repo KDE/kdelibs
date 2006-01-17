@@ -41,7 +41,7 @@ public:
 protected:
 	void initialize();
 
-protected slots:
+protected Q_SLOTS:
 	void slotOrientationChanged(int);
 	void slotDuplexChanged(int);
 	void slotNupChanged(int);

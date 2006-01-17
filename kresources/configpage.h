@@ -62,7 +62,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     void save();
     virtual void defaults();
 
-  public slots:
+  public Q_SLOTS:
     void slotFamilyChanged( int );
     void slotAdd();
     void slotRemove();
@@ -79,10 +79,10 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
   protected:
     ConfigViewItem *findItem( Resource *resource );
 
-  protected slots:
+  protected Q_SLOTS:
     void slotItemClicked( QTreeWidgetItem * );
 
-  signals:
+  Q_SIGNALS:
     void changed( bool );
 
   private:

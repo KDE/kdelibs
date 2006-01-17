@@ -104,7 +104,7 @@ public:
      */
     double opacity() const { return m_Fade; }
 
-public slots:
+public Q_SLOTS:
     /**
      * Starts background handling.
      */
@@ -160,7 +160,7 @@ public slots:
      * Returns the name of the shared pixmap (only needed for low level access)
      */
     static QString pixmapName(int desk);
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the background needs updating and custom painting
      * (see setCustomPainting(bool) ) is enabled.
@@ -183,7 +183,7 @@ protected:
      */
     virtual void updateBackground( KSharedPixmap * );
 
-private slots:
+private Q_SLOTS:
     void slotBackgroundChanged(int);
     void slotDone(bool);
     void desktopChanged(int desktop);

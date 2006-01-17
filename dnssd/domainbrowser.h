@@ -78,7 +78,7 @@ public:
 	 */
 	bool isRunning() const;
 
-signals:
+Q_SIGNALS:
 	/**
 	Emitted when domain has been removed from browsing list
 	 */
@@ -93,7 +93,7 @@ protected:
 	virtual void virtual_hook(int,void*);
 private:
 	DomainBrowserPrivate* const d;
-private slots:
+private Q_SLOTS:
 	void gotNewDomain(DNSSD::RemoteService::Ptr);
 	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
 	void domainListChanged(int,int);

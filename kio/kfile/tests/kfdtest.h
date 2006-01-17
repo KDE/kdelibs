@@ -16,7 +16,7 @@ class KFDTest : public QObject
 public:
     KFDTest( const QString& startDir, QObject *parent = 0, const char *name = 0);
 
-public slots:
+public Q_SLOTS:
     void doit();
 
 private:

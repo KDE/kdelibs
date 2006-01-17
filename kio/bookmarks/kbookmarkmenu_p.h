@@ -140,7 +140,7 @@ public:
   QString finalTitle() const;
   QString finalAddress() const;
 
-protected slots:
+protected Q_SLOTS:
   void slotOk();
   void slotCancel();
   void slotUser1();

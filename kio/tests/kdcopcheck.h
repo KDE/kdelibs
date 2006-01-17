@@ -13,7 +13,7 @@ public:
 
     int exec();
 
-public slots:
+public Q_SLOTS:
     void newApp(const QByteArray &appId);
     void endApp(const QByteArray &appId);
     void appExit();

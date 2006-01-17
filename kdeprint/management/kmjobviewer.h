@@ -60,16 +60,16 @@ public:
 	QString printer() const;
 	bool isSticky() const;
 
-signals:
+Q_SIGNALS:
 	void jobsShown(KMJobViewer*, bool hasJobs);
 	void refreshClicked();
 	void printerChanged(KMJobViewer*, const QString& prname);
 	void viewerDestroyed(KMJobViewer*);
 
-public slots:
+public Q_SLOTS:
 	void pluginActionActivated(int);
 
-protected slots:
+protected Q_SLOTS:
 	void slotSelectionChanged();
 	void slotHold();
 	void slotResume();

@@ -93,7 +93,7 @@ public:
 protected:
     ~KClipboardSynchronizer();
 
-private slots:
+private Q_SLOTS:
     void slotSelectionChanged();
     void slotClipboardChanged();
 

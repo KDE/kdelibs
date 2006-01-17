@@ -73,7 +73,7 @@ public:
    void unregisterWindowId(long windowId);
    void recreate(bool initial);
 
-public slots:
+public Q_SLOTS:
    /**
     * Loads / unloads modules according to config.
     */
@@ -109,7 +109,7 @@ public slots:
     */
    void slotKDEDModuleRemoved(KDEDModule *);
 
-protected slots:
+protected Q_SLOTS:
 
    /**
     * @internal Triggers rebuilding
@@ -176,7 +176,7 @@ public:
    KUpdateD();
    ~KUpdateD();
 
-public slots:
+public Q_SLOTS:
    void runKonfUpdate();
    void slotNewUpdateFile();
 
@@ -203,7 +203,7 @@ public:
    KHostnameD(int pollInterval);
    ~KHostnameD();
 
-public slots:
+public Q_SLOTS:
    void checkHostname();
 
 private:

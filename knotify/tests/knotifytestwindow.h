@@ -18,7 +18,7 @@ class KNotifyTestWindow : public KMainWindow
 	private:
 		Ui::KNotifyTestView view;
 
-	public slots:
+	public Q_SLOTS:
 		void slotSendOnlineEvent();
 		void slotSendMessageEvent();
 		void slotMessageRead();

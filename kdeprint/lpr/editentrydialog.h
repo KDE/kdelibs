@@ -40,7 +40,7 @@ public:
 
 	void fillEntry(PrintcapEntry *entry);
 
-protected slots:
+protected Q_SLOTS:
 	void slotItemSelected(Q3ListViewItem*);
 	void slotChanged();
 	void slotTypeChanged(int);

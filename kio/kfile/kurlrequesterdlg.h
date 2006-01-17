@@ -97,7 +97,7 @@ public:
      */
     KURLRequester *urlRequester();
 
-private slots:
+private Q_SLOTS:
     void slotClear();
     void slotTextChanged(const QString &);
 private:

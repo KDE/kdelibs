@@ -57,7 +57,7 @@ public:
 	K3MdiWin32IconButton( QWidget* parent, const char* name = 0 );
 	virtual void mousePressEvent( QMouseEvent* );
 
-signals:
+Q_SIGNALS:
 	void pressed();
 };
 
@@ -299,7 +299,7 @@ public:
 	 */
 	virtual void setMinimumSize ( int minw, int minh );
 
-public slots:
+public Q_SLOTS:
 	
 	void slot_resizeViaSystemMenu();
 
@@ -385,7 +385,7 @@ protected:
 	 */
 	void doResize( bool captionOnly );
 
-protected slots:
+protected Q_SLOTS:
 	
 	/**
 	 * Handles a click on the Maximize button

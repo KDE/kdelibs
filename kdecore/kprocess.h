@@ -539,7 +539,7 @@ public:
    */
   bool setPriority(int prio);
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted after the process has terminated when
    * the process was run in the @p NotifyOnExit  (==default option to
@@ -615,7 +615,7 @@ signals:
   void wroteStdin(KProcess *proc);
 
 
-protected slots:
+protected Q_SLOTS:
 
  /**
   * This slot gets activated when data from the child's stdout arrives.

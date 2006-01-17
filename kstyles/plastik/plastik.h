@@ -268,7 +268,7 @@ protected:
 //     
 //     bool eventFilter(QObject *, QEvent *);
 // 
-// protected slots:
+// protected Q_SLOTS:
 //     void khtmlWidgetDestroyed(QObject* w);
 // 
 //     //Animation slots.

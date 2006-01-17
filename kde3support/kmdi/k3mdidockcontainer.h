@@ -123,13 +123,13 @@ public:
 protected:
 	bool eventFilter( QObject*, QEvent* );
 
-public slots:
+public Q_SLOTS:
 	void init();
 	void collapseOverlapped();
 	void toggle();
 	void nextToolView();
 	void prevToolView();
-protected slots:
+protected Q_SLOTS:
 	void tabClicked( int );
 	void delayedRaise();
 	void changeOverlapMode();
@@ -157,7 +157,7 @@ private:
 	K3DockManager *m_dockManager;
 	QMouseEvent *m_startEvent;
 	enum MovingState {NotMoving = 0, WaitingForMoveStart, Moving} m_movingState;
-signals:
+Q_SIGNALS:
 	void activated( K3MdiDockContainer* );
 	void deactivated( K3MdiDockContainer* );
 };

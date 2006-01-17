@@ -45,7 +45,7 @@ public:
     KLineEdit* edit;
     KHistoryCombo *combo;
 
-protected slots:
+protected Q_SLOTS:
     void slotList();
     void slotAdd();
     void slotRemove();

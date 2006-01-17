@@ -329,7 +329,7 @@ public:
    */
   virtual void enableWrite(bool enable);
 
-protected slots:
+protected Q_SLOTS:
   // protected slots
 
   /**
@@ -354,10 +354,10 @@ protected slots:
    */
   virtual void slotWriteActivity();
 
-private slots:
+private Q_SLOTS:
   void lookupFinishedSlot();
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted whenever the socket state changes.
    *

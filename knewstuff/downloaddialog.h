@@ -139,7 +139,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     */
     static void open(const QString& type, const QString& caption=QString());
 
-  public slots:
+  public Q_SLOTS:
     /**
       Availability of the provider list.
 
@@ -147,11 +147,11 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     */
     void slotProviders(Provider::List *list);
 
-  protected slots:
+  protected Q_SLOTS:
     void slotApply();
     void slotOk();
 
-  private slots:
+  private Q_SLOTS:
     void slotResult(KIO::Job *job);
     void slotData(KIO::Job *job, const QByteArray &a);
     void slotInstall();

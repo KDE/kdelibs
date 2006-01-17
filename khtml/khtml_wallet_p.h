@@ -58,10 +58,10 @@ class KHTMLWalletQueue : public QObject
     CallerList callers;
     QList<QPair<QString, QMap<QString, QString> > > savers;
 
-  signals:
+  Q_SIGNALS:
     void walletOpened(KWallet::Wallet*);
 
-  public slots:
+  public Q_SLOTS:
     void walletOpened(bool success) {
       if (!success) {
         delete wallet;

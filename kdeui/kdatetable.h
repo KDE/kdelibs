@@ -41,10 +41,10 @@ class KDEUI_EXPORT KDateInternalWeekSelector : public QLineEdit
 protected:
   QIntValidator *val;
   int result;
-public slots:
+public Q_SLOTS:
   void weekEnteredSlot();
   void setMaxWeek(int max);
-signals:
+Q_SIGNALS:
   void closeMe(int);
 public:
   KDateInternalWeekSelector( QWidget* parent=0);
@@ -78,7 +78,7 @@ protected:
    * Contains the largest rectangle needed by the month names.
    */
   QRect max;
-signals:
+Q_SIGNALS:
   /**
    * This is send from the mouse click event handler.
    */
@@ -139,9 +139,9 @@ class KDEUI_EXPORT KDateInternalYearSelector : public QLineEdit
 protected:
   QIntValidator *val;
   int result;
-public slots:
+public Q_SLOTS:
   void yearEnteredSlot();
-signals:
+Q_SIGNALS:
   void closeMe(int);
 public:
   KDateInternalYearSelector( QWidget* parent=0);
@@ -174,7 +174,7 @@ protected:
    * The only subwidget that uses the whole dialog window.
    */
   QWidget *main;
-public slots:
+public Q_SLOTS:
   /**
    * Close the popup window. This is called from the main widget, usually.
    * @p r is the result returned from exec().
@@ -219,7 +219,7 @@ protected:
 private:
   class KPopupFramePrivate;
   KPopupFramePrivate *d;
-signals:
+Q_SIGNALS:
   void leaveModality();
 };
 
@@ -381,7 +381,7 @@ protected:
      * Save the size of the largest used cell content.
      */
     QRect maxCell;
-signals:
+Q_SIGNALS:
     /**
      * The selected date changed.
      */
@@ -407,7 +407,7 @@ signals:
      */
     void aboutToShowContextMenu( KMenu * menu, const QDate &date);
 
-private slots:
+private Q_SLOTS:
   void nextMonth();
   void previousMonth();
   void beginningOfMonth();

@@ -105,7 +105,7 @@ protected:
     KFileIconView *left;
     KFileView *right;
 
-protected slots:
+protected Q_SLOTS:
     void slotSortingChanged( QDir::SortSpec );
 
 private:

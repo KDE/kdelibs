@@ -102,7 +102,7 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
     */
     virtual Q3PopupMenu *createPopupMenu( const QPoint &pos );
 
-  signals:
+  Q_SIGNALS:
     /**
      * Emitted when a mail link has been activated and the widget has
      * been configured to emit the signal.

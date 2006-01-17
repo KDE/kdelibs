@@ -134,7 +134,7 @@ namespace KIO {
          */
         bool suspended() const { return m_suspended; }
 
-    protected slots:
+    protected Q_SLOTS:
         void dequeue();
 
     protected:

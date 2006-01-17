@@ -146,7 +146,7 @@ public:
 
     virtual void setCurrentItem(int i);
 
-protected slots:
+protected Q_SLOTS:
     /**
      * @internal
      * Listens to highlighted(int)

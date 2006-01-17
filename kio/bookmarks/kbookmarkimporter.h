@@ -49,7 +49,7 @@ public:
     void setupSignalForwards(QObject *src, QObject *dst);
     static KBookmarkImporterBase *factory(const QString &type);
 
-signals:
+Q_SIGNALS:
     /**
      * Notify about a new bookmark
      * Use "html" for the icon

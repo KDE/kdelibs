@@ -149,7 +149,7 @@ public:
                                    const QString& comment = QString(),
                                    const QString& label = QString() );
 
-private slots:
+private Q_SLOTS:
     void slotKeep( bool );
     void slotActivated( const QString& userName );
 

@@ -48,7 +48,7 @@ public:
     
     void resetWidget();
 
-private slots:
+private Q_SLOTS:
     void hideCursor();
     void unhideCursor();
 
@@ -81,7 +81,7 @@ public:
 
     int hideCursorDelay;
 
-private slots:
+private Q_SLOTS:
     void slotWidgetDestroyed( QObject* );
 
 private:

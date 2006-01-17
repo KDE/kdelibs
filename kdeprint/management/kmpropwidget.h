@@ -41,11 +41,11 @@ public:
 	QString header() const 	{ return m_header; }
 	bool canChange() const 	{ return m_canchange; }
 
-signals:
+Q_SIGNALS:
 	void enable(bool);
 	void enableChange(bool);
 
-public slots:
+public Q_SLOTS:
 	void slotChange();
 
 protected:

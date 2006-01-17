@@ -79,7 +79,7 @@ protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
     virtual bool eventFilter( QObject *filterTarget, QEvent *e );
 
-private slots:
+private Q_SLOTS:
     void restoreScrollPosition();
 //    void slotImageJobFinished( KIO::Job *job );
 
@@ -107,7 +107,7 @@ public:
     virtual int xOffset();
     virtual int yOffset();
 
-protected slots:
+protected Q_SLOTS:
     void print();
     void reparseConfiguration();
     void disableScrolling();

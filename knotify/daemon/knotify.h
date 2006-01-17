@@ -54,11 +54,11 @@ class KNotify : public QObject, public DCOPObject
 		
 		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
-	k_dcop_signals: protected slots: 
+	k_dcop_signals: protected Q_SLOTS: 
 		void notificatonClosed( int id);
 		void actionInvoked(int id,int action);
 		
-	private slots:
+	private Q_SLOTS:
 		void slotPluginFinished(int id);
 		
 	private:

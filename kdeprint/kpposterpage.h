@@ -41,7 +41,7 @@ public:
 	void getOptions( QMap<QString,QString>& opts, bool incldef = false );
 	bool isValid();
 
-protected slots:
+protected Q_SLOTS:
 	void slotPosterSizeChanged( int );
 	void slotMarginChanged( int );
 	void slotLockToggled( bool );

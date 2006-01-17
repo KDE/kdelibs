@@ -36,7 +36,7 @@ public:
 	void updatePrinter(KMPrinter*);
 	void initPrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotScan();
 	void slotAbort();
 	void slotPrinterSelected(const QString& work, const QString& server, const QString& printer);

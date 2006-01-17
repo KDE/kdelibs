@@ -50,10 +50,10 @@ public:
      */
     QString getCurrent() const;
 
-public slots:
+public Q_SLOTS:
     void stopLoading();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the current icon has changed.
      */
@@ -63,7 +63,7 @@ signals:
     void progress(int);
     void finished();
 
-private slots:
+private Q_SLOTS:
     void slotLoadFiles();
     void slotCurrentChanged(Q3IconViewItem *item);
 
@@ -205,13 +205,13 @@ public:
                            bool user=false, QWidget *parent=0,
                            const QString &caption=QString());
 
-signals:
+Q_SIGNALS:
     void newIconName(const QString&);
 
-protected slots:
+protected Q_SLOTS:
     void slotOk();
 
-private slots:
+private Q_SLOTS:
     void slotButtonClicked(int);
     void slotContext(int);
     void slotStartLoading(int);
@@ -323,13 +323,13 @@ public:
      */
     int iconSize() const;
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the icon has changed.
      */
     void iconChanged(const QString &icon);
 
-private slots:
+private Q_SLOTS:
     void slotChangeIcon();
     void newIconName(const QString& name);
 

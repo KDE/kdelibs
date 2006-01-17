@@ -387,7 +387,7 @@ public:
 
   int endOffset() const;
 
-public slots:
+public Q_SLOTS:
 
   /**
    * Sets the pointer to a new position.

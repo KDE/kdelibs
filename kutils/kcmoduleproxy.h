@@ -227,7 +227,7 @@ public:
 	 */
 	QByteArray dcopName() const;
 
-public slots:
+public Q_SLOTS:
 
 	/**
 	 * Calling this will cause the module to be run in
@@ -252,7 +252,7 @@ public slots:
 	 */
 	void deleteClient();
 
-signals:
+Q_SIGNALS:
 
 	/*
 	 * This signal is emitted when the contained module is changed.
@@ -306,7 +306,7 @@ protected:
 	 */
 	void emitQuickHelpChanged();
 
-private slots:
+private Q_SLOTS:
 
    /**
 	* Calls the function @p function of the root module's KCModuleProxy

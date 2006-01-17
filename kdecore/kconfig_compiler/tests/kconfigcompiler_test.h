@@ -23,7 +23,7 @@ class QString;
 class KConfigCompiler_Test : public QObject
 {
 	Q_OBJECT
-private slots:
+private Q_SLOTS:
 	void testExpectedOutput();
 private:
 	void performCompare(const QString &fileName, bool fail=false);

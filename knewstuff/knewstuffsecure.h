@@ -70,7 +70,7 @@ public:
     void uploadResource(const QString &fileName);
     
 
-private slots:
+private Q_SLOTS:
     /** Checks the validity of the downloaded tarball and installs it*/
     void slotValidated(int result);
     /** The file is signed, so it can be uploaded.*/
@@ -83,7 +83,7 @@ private slots:
     */
     void slotUploadFinished(bool result);  
 
-signals:
+Q_SIGNALS:
     void installFinished();
     
 protected:

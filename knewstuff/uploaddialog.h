@@ -78,7 +78,7 @@ class UploadDialog : public KDialogBase
     */
     void setPayloadFile( const QString &payloadFile );
 
-  protected slots:
+  protected Q_SLOTS:
     void slotOk();
 
   private:

@@ -153,7 +153,7 @@ public:
 
     QString id( int i ) const;
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted when a new item is activated. The id is
    * the identificator of the selected item.
@@ -161,7 +161,7 @@ signals:
   void activated( const QString & id );
   void highlighted( const QString & id );
 
-private slots:
+private Q_SLOTS:
   void slotTriggered( QAction* );
   void slotHovered( QAction* );
 

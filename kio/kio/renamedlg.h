@@ -93,7 +93,7 @@ public:
    */
   static QString suggestName(const KURL& baseURL, const QString& oldName);
 
-public slots:
+public Q_SLOTS:
   void cancelPressed();
   void renamePressed();
   void skipPressed();
@@ -104,7 +104,7 @@ public slots:
   void resumeAllPressed();
   void suggestNewNamePressed();
 
-protected slots:
+protected Q_SLOTS:
   void enableRenameButton(const QString &);
 private:
  class RenameDlgPrivate;

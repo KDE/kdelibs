@@ -405,7 +405,7 @@ public:
   KFileItemList itemsForDir( const KURL& dir,
                              WhichItems which = FilteredItems ) const;
 
-signals:
+Q_SIGNALS:
   /**
    * Tell the view that we started to list @p _url. NOTE: this does _not_ imply that there
    * is really a job running! I.e. KDirLister::jobs() may return an empty list. In this case
@@ -602,7 +602,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void *data );
 
-private slots:
+private Q_SLOTS:
   void slotInfoMessage( KIO::Job *, const QString& );
   void slotPercent( KIO::Job *, unsigned long );
   void slotTotalSize( KIO::Job *, KIO::filesize_t );

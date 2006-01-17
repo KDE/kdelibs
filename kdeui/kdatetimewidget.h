@@ -65,13 +65,13 @@ public:
    */
   QDateTime dateTime() const;
 
-public slots:
+public Q_SLOTS:
   /**
    * Changes the selected date and time to @p datetime.
    */
   void setDateTime(const QDateTime & datetime);
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted whenever the date or time of the widget
    * is changed, either with setDateTime() or via user selection.
@@ -81,7 +81,7 @@ signals:
 private:
   void init();
 
-private slots:
+private Q_SLOTS:
   void slotValueChanged();
 
 private:

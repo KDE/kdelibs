@@ -53,7 +53,7 @@ public:
 	void setCustomEnabled(bool on);
 	bool isCustomEnabled() const;
 
-protected slots:
+protected Q_SLOTS:
 	void slotMarginValueChanged();
 	void slotMarginPreviewChanged(int, float);
 	void slotCustomMarginsToggled(bool);

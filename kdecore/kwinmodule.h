@@ -212,7 +212,7 @@ public:
     void doNotManage( const QString& title );
 
 
-signals:
+Q_SIGNALS:
 
     /**
      * Switched to another virtual desktop.

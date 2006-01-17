@@ -35,10 +35,10 @@ namespace KPAC
     public:
         Discovery( QObject* );
 
-    protected slots:
+    protected Q_SLOTS:
         virtual void failed();
 
-    private slots:
+    private Q_SLOTS:
         void helperOutput();
 
     private:

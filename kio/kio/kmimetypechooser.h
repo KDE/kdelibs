@@ -76,7 +76,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      */
     QStringList patterns() const;
 
-  public slots:
+  public Q_SLOTS:
     /**
      * @short edit the current mimetype
      * Uses KRun to start the KDE mimetype editor for editing the currently
@@ -84,7 +84,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      */
     void editMimeType();
 
-  private slots:
+  private Q_SLOTS:
     /**
      * @internal disables the "edit" button for groups
      */

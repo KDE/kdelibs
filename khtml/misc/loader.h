@@ -418,12 +418,12 @@ namespace khtml
         // may return 0L
         KIO::Job *jobForRequest( const DOM::DOMString &url ) const;
 
-    signals:
+    Q_SIGNALS:
         void requestStarted( khtml::DocLoader* dl, khtml::CachedObject* obj );
 	void requestDone( khtml::DocLoader* dl, khtml::CachedObject *obj );
 	void requestFailed( khtml::DocLoader* dl, khtml::CachedObject *obj );
 
-    protected slots:
+    protected Q_SLOTS:
 	void slotFinished( KIO::Job * );
 	void slotData( KIO::Job *, const QByteArray & );
 	void servePendingRequests();

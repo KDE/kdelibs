@@ -38,7 +38,7 @@ public:
 	void setOptions(const QMap<QString,QString>& opts);
 	bool isValid(QString& msg);
 
-protected slots:
+protected Q_SLOTS:
 	void slotTimeChanged();
 
 private:

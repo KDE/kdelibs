@@ -11,7 +11,7 @@ public:
                       const QStringList& = QStringList() );
     virtual ~PluginSpellCheck();
 
-public slots:
+public Q_SLOTS:
     void slotSpellCheck();
 };
 

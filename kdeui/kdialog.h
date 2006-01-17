@@ -488,7 +488,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     static bool avoidArea( QWidget *widget, const QRect& area, int screen = -1 );
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Make a KDE compliant caption.
      *
@@ -513,7 +513,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     virtual void keyPressEvent(QKeyEvent*);
 	
-   signals:
+   Q_SIGNALS:
     /**
      * Emitted when the margin size and/or spacing size
      * have changed.
@@ -524,7 +524,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     void layoutHintChanged();
 
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Enable or disable (gray out) a general action button.
      *
@@ -600,7 +600,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setDetailsWidget(QWidget *detailsWidget);
 
 
-  signals:
+  Q_SIGNALS:
     /**
      * The Help button was pressed. This signal is only emitted if
      * slotButtonClicked is not replaced
@@ -728,7 +728,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     virtual void closeEvent( QCloseEvent *e );
 
-  protected slots:
+  protected Q_SLOTS:
     /**
      * Activated when the button @p button is clicked
 	 * @param button is the type ButtonCode
@@ -812,7 +812,7 @@ protected:
       KDialogQueue();
       static KDialogQueue *self();
 
-private slots:
+private Q_SLOTS:
       void slotShowQueuedDialog();
 
 protected:

@@ -105,7 +105,7 @@ namespace KJS {
     bool debugSelected() const { return m_debugSelected; }
     bool dontShowAgain() const { return m_dontShowAgainCb->isChecked(); }
 
-  protected slots:
+  protected Q_SLOTS:
     virtual void slotUser1();
 
   private:
@@ -133,7 +133,7 @@ namespace KJS {
     void setSource(SourceFile *sourceFile);
     void setCurrentLine(int lineno, bool doCenter = true);
 
-  signals:
+  Q_SIGNALS:
     void lineDoubleClicked(int lineno);
 
   protected:
@@ -197,7 +197,7 @@ namespace KJS {
     bool enterContext(ExecState *exec);
     bool exitContext(ExecState *exec, const Completion &completion);
 
-  public slots:
+  public Q_SLOTS:
     void slotNext();
     void slotStep();
     void slotContinue();

@@ -219,7 +219,7 @@ public:
      */
     void updateActions();
 
-public slots:
+public Q_SLOTS:
     /**
      * Undoes the last action.
      * Call this if you don't use the builtin KActions.
@@ -240,13 +240,13 @@ public slots:
      */
     virtual void documentSaved();
 
-protected slots:
+protected Q_SLOTS:
     void slotUndoAboutToShow();
     void slotUndoActivated( int );
     void slotRedoAboutToShow();
     void slotRedoActivated( int );
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted every time a command is executed
      * (whether by addCommand, undo or redo).

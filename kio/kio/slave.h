@@ -201,11 +201,11 @@ namespace KIO {
         void ref() { m_refCount++; }
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 
-    public slots:
+    public Q_SLOTS:
         void accept();
 	void gotInput();
 	void timeout();
-    signals:
+    Q_SIGNALS:
         void slaveDied(KIO::Slave *slave);
 
     protected:

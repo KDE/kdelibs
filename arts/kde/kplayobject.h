@@ -271,7 +271,7 @@ public:
 	 */
 	Arts::poState state();
 
-signals:
+Q_SIGNALS:
 	/**
 	 * this signal is emitted as soon as the internal Arts::PlayObject
 	 * is created and ready to play. It is granted that the Arts::PlayObject
@@ -281,7 +281,7 @@ signals:
 	 */
 	void playObjectCreated();
 
-private slots:
+private Q_SLOTS:
 	void attachPlayObject( Arts::PlayObject );
 
 private:

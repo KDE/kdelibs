@@ -33,7 +33,7 @@ public:
 
 	void addConfigPage(KMConfigPage*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 
 private:

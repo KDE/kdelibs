@@ -9,7 +9,7 @@ class MyObject: public QObject
 public:
     MyObject();
 
-public slots:
+public Q_SLOTS:
     void slotPaletteChanged() { printf("SIGNAL: Palette changed\n"); }
     void slotStyleChanged() { printf("SIGNAL: Style changed\n"); }
     void slotFontChanged() { printf("SIGNAL: Font changed\n"); }

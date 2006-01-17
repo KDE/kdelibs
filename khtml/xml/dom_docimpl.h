@@ -531,7 +531,7 @@ public:
         return m_getElementByIdCache;
     }
 
-signals:
+Q_SIGNALS:
     void finishedParsing();
 
 protected:

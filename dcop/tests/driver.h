@@ -12,7 +12,7 @@ class Driver : public QObject, public Test_stub
 
 	public:
 		Driver(const char*);
-	public slots:
+	public Q_SLOTS:
 		void test();
 
 	private:

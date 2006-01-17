@@ -54,10 +54,10 @@ public:
    bool onHold(const KURL &url);
    QString protocol() const   {return mProtocol;}
 
-signals:
+Q_SIGNALS:
    void statusUpdate(IdleSlave *);
 
-protected slots:
+protected Q_SLOTS:
    void gotInput();
 
 protected:
@@ -165,7 +165,7 @@ protected:
    void cancel_service_startup_info( KLaunchRequest *request, const DCOPCString& startup_id,
        const DCOPCStringList &envs );
 
-public slots:
+public Q_SLOTS:
    void slotAutoStart();
    void slotDequeue();
    void slotKDEInitData(int);

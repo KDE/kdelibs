@@ -56,7 +56,7 @@ public:
 	 */
 	void addToolView( K3MdiToolViewAccessor* );
 
-private slots:
+private Q_SLOTS:
 
 	/**
 	 * The XMLGUIClient factory has added an XMLGUI client. Plug our actions
@@ -86,7 +86,7 @@ private slots:
 	 */
 	void mdiModeHasBeenChangedTo( K3Mdi::MdiMode );
 
-signals:
+Q_SIGNALS:
 	/** Toggle the top tool dock */
 	void toggleTop();
 
@@ -133,7 +133,7 @@ private:
 
 	K3DockWidget *m_dw;
 	K3MdiMainFrm *m_mdiMainFrm;
-protected slots:
+protected Q_SLOTS:
 
 	void slotToggled( bool );
 	void anDWChanged();

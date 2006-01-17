@@ -714,7 +714,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    */
   static QByteArray iceauthPath();
 
-signals:
+Q_SIGNALS:
   /**
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
@@ -773,16 +773,16 @@ signals:
    */
   void callBack(int, const DCOPCString&, const QByteArray &);
 
-public slots:
+public Q_SLOTS:
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Process data from the socket.
    * @param socknum the fd of the socket
    */
   void processSocketData(int socknum);
 
-private slots:
+private Q_SLOTS:
   void processPostedMessagesInternal();
   void asyncReplyReady();
   void eventLoopTimeout();

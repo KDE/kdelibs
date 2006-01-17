@@ -343,7 +343,7 @@ public:
     */
   void setFileNameReadOnly( bool ro );
 
-public slots:
+public Q_SLOTS:
   /**
    * Called when the user presses 'Ok'.
    */
@@ -353,7 +353,7 @@ public slots:
    */
   virtual void slotCancel();     // Deletes the PropertiesDialog instance
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted when the Properties Dialog is closed (for
    * example, with OK or Cancel buttons)
@@ -412,9 +412,9 @@ private:
    */
   Q3PtrList<KPropsDlgPlugin> m_pageList;
 
-private slots:
+private Q_SLOTS:
   void slotStatResult( KIO::Job * ); // No longer used
-signals:
+Q_SIGNALS:
   void leaveModality();
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -465,10 +465,10 @@ public:
   void setDirty( bool b );
   bool isDirty() const;
 
-public slots:
+public Q_SLOTS:
   void setDirty(); // same as setDirty( true )
 
-signals:
+Q_SIGNALS:
   /**
    * Emit this signal when the user changed anything in the plugin's tabs.
    * The hosting PropertiesDialog will call applyChanges only if the
@@ -524,7 +524,7 @@ public:
 
   void setFileNameReadOnly( bool ro );
 
-protected slots:
+protected Q_SLOTS:
   void slotEditFileType();
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
@@ -535,9 +535,9 @@ protected slots:
   void slotSizeStop();
   void slotSizeDetermine();
 
-signals:
+Q_SIGNALS:
   void leaveModality();
-private slots:
+private Q_SLOTS:
   // workaround for compiler bug
   void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
 			  kBUsed, const unsigned long& kBAvail, const QString& mp );
@@ -603,12 +603,12 @@ public:
    */
   static bool supports( KFileItemList _items );
 
-private slots:
+private Q_SLOTS:
 
   void slotChmodResult( KIO::Job * );
   void slotShowAdvancedPermissions();
 
-signals:
+Q_SIGNALS:
   void leaveModality();
 
 private:
@@ -738,7 +738,7 @@ public:
 
   static bool supports( KFileItemList _items );
 
-private slots:
+private Q_SLOTS:
   void slotActivated( int );
   void slotDeviceChanged();
   void slotFoundMountPoint( const unsigned long& kBSize,
@@ -793,7 +793,7 @@ public:
 
   static bool supports( KFileItemList _items );
 
-public slots:
+public Q_SLOTS:
   void slotAddFiletype();
   void slotDelFiletype();
   void slotBrowseExec();
@@ -844,10 +844,10 @@ public:
 
   static bool supports( KFileItemList _items );
 
-public slots:
+public Q_SLOTS:
   void slotBrowseExec();
 
-private slots:
+private Q_SLOTS:
   void enableCheckedEdit();
   void enableSuidEdit();
 
@@ -900,11 +900,11 @@ public:
 
   static bool supports( KFileItemList _items );
 
-public slots:
+public Q_SLOTS:
   void slotDelExtension();
   void slotAddExtension();
 
-private slots:
+private Q_SLOTS:
   void updateButton();
 
 private:

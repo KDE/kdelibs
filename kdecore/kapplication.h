@@ -468,7 +468,7 @@ public:
    */
   static void installKDEPropertyMap();
 
-public slots:
+public Q_SLOTS:
   /**
    * Tells KApplication about one more operation that should be finished
    * before the application exits. The standard behavior is to exit on the
@@ -508,7 +508,7 @@ protected:
   /// Current application object.
   static KApplication *KApp;
 
-private slots:
+private Q_SLOTS:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
@@ -582,7 +582,7 @@ public:
    */
   static QPalette createApplicationPalette( KConfigBase *config, int contrast );
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted when KApplication has changed its palette due to a KControl request.
    *

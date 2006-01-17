@@ -638,7 +638,7 @@ protected:
      */
     bool checkPreviewSupport();
 
-public slots:
+public Q_SLOTS:
     /**
      * Goes one step back in the history and opens that url.
      */
@@ -709,7 +709,7 @@ public slots:
      */
     virtual void trashSelected(KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers);
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Restores the normal cursor after showing the busy-cursor. Also hides
      * the progressbar.
@@ -791,7 +791,7 @@ protected slots:
      */
     void slotCompletionMatch(const QString& match);
 
-signals:
+Q_SIGNALS:
     void urlEntered(const KURL& );
     void updateInformation(int files, int dirs);
     void completion(const QString&);
@@ -895,7 +895,7 @@ private:
     KActionCollection *myActionCollection;
     KActionCollection *viewActionCollection;
 
-private slots:
+private Q_SLOTS:
     /**
      * @internal
      */

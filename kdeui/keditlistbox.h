@@ -219,7 +219,7 @@ public:
        */
       void setButtons( uint buttons );
 
-   signals:
+   Q_SIGNALS:
       void changed();
 
       /**
@@ -236,7 +236,7 @@ public:
        */
       void removed( const QString & text );
 
-   protected slots:
+   protected Q_SLOTS:
       //the names should be self-explaining
       void moveItemUp();
       void moveItemDown();

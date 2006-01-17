@@ -40,7 +40,7 @@ public:
 	static int serverPid();
 	static int serverOwner();
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 	void slotUser1();
 

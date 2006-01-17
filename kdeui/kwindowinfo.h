@@ -77,7 +77,7 @@ public:
     static void showMessage( QWidget *window, const QString &text,
 			     const QPixmap &pix, int timeout = -1 );
 
-public slots:
+public Q_SLOTS:
     /**
      * Shows the specified text in the window title.
      */
@@ -118,7 +118,7 @@ protected:
      */
     virtual void display( const QString &text, const QPixmap &pix );
 
-protected slots:
+protected Q_SLOTS:
     /**
      * Saves the window title and icon.
      */

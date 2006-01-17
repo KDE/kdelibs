@@ -43,7 +43,7 @@ class KByteSoundReceiver : public QObject,
 		long bits()         { return _bits; }
 		std::string title() { return _title; }
 
-	signals:
+	Q_SIGNALS:
 		/**
 		 * new data arrived, the data pointer will be deleted
 		 * after this signal was emitted. So if you want to keep it

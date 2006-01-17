@@ -197,7 +197,7 @@ class KABC_EXPORT DistributionListWatcher : public QObject
      */
     static DistributionListWatcher *self();
 
-  signals:
+  Q_SIGNALS:
     /**
      * This signal is emmitted whenever the distribution lists has
      * changed (if a list was added or removed, when a list was

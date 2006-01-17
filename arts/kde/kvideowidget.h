@@ -46,7 +46,7 @@ protected:
     virtual void resizeEvent( QResizeEvent *event );
     virtual bool x11Event( XEvent *event );
 
-public slots:
+public Q_SLOTS:
     void setFullscreen();
     void setWindowed();
     void setHalfSize();
@@ -55,13 +55,13 @@ public slots:
 
     void resizeNotify( int width, int height );
 
-protected slots:
+protected Q_SLOTS:
     void fullscreenActivated();
     void halfSizeActivated();
     void normalSizeActivated();
     void doubleSizeActivated();
 
-signals:
+Q_SIGNALS:
     void adaptSize( int width, int height );
     void mouseButtonPressed( int type, const QPoint &, int state );
     void mouseButtonDoubleClick( const QPoint &, int state );

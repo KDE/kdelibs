@@ -388,7 +388,7 @@ class KABC_EXPORT Resource : public KRES::Resource
      */
     void setAddressBook( AddressBook* );
 
-  signals:
+  Q_SIGNALS:
     /**
       This signal is emitted when the resource has finished the loading of all
       addressees from the backend to the internal cache.

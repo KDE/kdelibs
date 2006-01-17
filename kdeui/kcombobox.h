@@ -331,7 +331,7 @@ public:
      */
     virtual void setLineEdit( QLineEdit * );
 
-signals:
+Q_SIGNALS:
     /**
     * Emitted when the user presses the Enter key.
     *
@@ -395,7 +395,7 @@ signals:
      */
     void aboutToShowContextMenu( QMenu * p );
 
-public slots:
+public Q_SLOTS:
 
     /**
     * Iterates through all possible matches of the completed text
@@ -444,7 +444,7 @@ public slots:
      */
     QT_MOC_COMPAT void setCurrentItem(int index) { QComboBox::setCurrentIndex(index); }
 
-protected slots:
+protected Q_SLOTS:
 
     /**
     * Completes text according to the completion mode.
@@ -478,7 +478,7 @@ protected:
 
     virtual void wheelEvent( QWheelEvent *ev );
 
-private slots:
+private Q_SLOTS:
     void lineEditDeleted();
 
 private:
@@ -652,7 +652,7 @@ public:
      */
     void reset() { slotReset(); }
 
-public slots:
+public Q_SLOTS:
     /**
      * Adds an item to the end of the history list and to the completion list.
      * If maxCount() is reached, the first item of the list will be
@@ -679,7 +679,7 @@ public slots:
      */
     void clearHistory();
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the history was cleared by the entry in the popup menu.
      */
@@ -711,7 +711,7 @@ protected:
      */
     bool useCompletion() const { return compObj(); }
 
-private slots:
+private Q_SLOTS:
     /**
      * Resets the iterate index to -1
      */

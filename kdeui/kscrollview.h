@@ -36,7 +36,7 @@ public:
 
     ~KScrollView();
 
-public slots:
+public Q_SLOTS:
     void scrollBy(int dx, int dy);
 //    virtual void setContentsPos(int x, int y);
 
@@ -46,7 +46,7 @@ protected:
     void startScrolling();
     void stopScrolling();
 
-protected slots:
+protected Q_SLOTS:
     void scrollTick();
 
 private:

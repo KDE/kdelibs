@@ -75,7 +75,7 @@ public:
    */
   QString format() const;
 
-public slots:
+public Q_SLOTS:
 
   /**
    * Set the format of the text to use to display status.

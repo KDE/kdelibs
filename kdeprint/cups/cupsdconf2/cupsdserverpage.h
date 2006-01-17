@@ -37,7 +37,7 @@ public:
 	bool saveConfig(CupsdConf*, QString&);
 	void setInfos(CupsdConf*);
 
-protected slots:
+protected Q_SLOTS:
 	void classChanged(int);
 
 private:

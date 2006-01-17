@@ -86,7 +86,7 @@ namespace KIO {
          * Undo any changes made by calls to setConfigData.
          */
         void reset();
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is raised when a slave of type @p protocol deals
          * with @p host for the first time.

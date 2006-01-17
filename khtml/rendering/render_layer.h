@@ -70,7 +70,7 @@ public:
     RenderScrollMediator(RenderLayer* layer)
     :m_layer(layer) {}
 
-public slots:
+public Q_SLOTS:
     void slotValueChanged();
 
 private:

@@ -12,7 +12,7 @@ class Dummy : public QObject
 public:
   Dummy( KHTMLPart *part ) : QObject( part ) { m_part = part; };
 
-private slots:
+private Q_SLOTS:
   void slotOpenURL( const KURL &url, const KParts::URLArgs &args )
   {
     m_part->browserExtension()->setURLArgs( args );

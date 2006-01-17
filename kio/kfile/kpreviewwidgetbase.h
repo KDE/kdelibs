@@ -56,7 +56,7 @@ public:
     KPreviewWidgetBase(QWidget *parent);
     ~KPreviewWidgetBase();
 
-public slots:
+public Q_SLOTS:
     /**
      * This slot is called every time the user selects another file in the
      * file dialog. Implement the stuff necessary to reflect the change here.

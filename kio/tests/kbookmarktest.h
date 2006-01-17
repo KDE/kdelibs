@@ -24,7 +24,7 @@
 class KBookmarkTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testMimeDataOneBookmark();
     void testMimeDataBookmarkList();
 };

@@ -239,7 +239,7 @@ public:
   virtual QSize sizeHint() const;
   virtual QSize minimumSizeHint() const;
 
-public slots:
+public Q_SLOTS:
 
   /**
    * Toggles the state of the led from Off to On or vice versa.

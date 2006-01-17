@@ -32,7 +32,7 @@ public:
 	IppReportDlg(QWidget *parent = 0, const char *name = 0);
 	static void report(IppRequest *req, int group, const QString& caption = QString());
 
-protected slots:
+protected Q_SLOTS:
 	void slotUser1();
 	
 private:

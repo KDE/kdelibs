@@ -150,7 +150,7 @@ protected:
 
     KJavaProcess* process;
 
-protected slots:
+protected Q_SLOTS:
     void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
     void timerEvent(QTimerEvent *);
@@ -171,7 +171,7 @@ public:
 
     QByteArray exec( const QString & cert, const QString & perm );
 
-private slots:
+private Q_SLOTS:
      void clicked();
 
 private:

@@ -42,10 +42,10 @@ public:
 
     void chain(HTTPFilterBase *previous);
 
-public slots:
+public Q_SLOTS:
     virtual void slotInput(const QByteArray &d) = 0;
     
-signals:
+Q_SIGNALS:
     void output(const QByteArray &d);
     void error(int, const QString &);
 
@@ -61,7 +61,7 @@ public:
 
     void addFilter(HTTPFilterBase *filter);
 
-public slots:
+public Q_SLOTS:
     void slotInput(const QByteArray &d);
 
 private:
@@ -76,7 +76,7 @@ public:
 
     QString md5();
 
-public slots:
+public Q_SLOTS:
     void slotInput(const QByteArray &d);
     
 private:
@@ -91,7 +91,7 @@ public:
     HTTPFilterGZip();
     ~HTTPFilterGZip();
 
-public slots:
+public Q_SLOTS:
     void slotInput(const QByteArray &d);
     
 protected:

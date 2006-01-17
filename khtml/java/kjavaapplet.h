@@ -235,7 +235,7 @@ public:
      * JavaScript coming from Java
      **/
     void jsData (const QStringList & args) { emit jsEvent (args); }
-signals:
+Q_SIGNALS:
     void jsEvent (const QStringList & args);
 private:
     void showStatus( const QString &msg);

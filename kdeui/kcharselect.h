@@ -96,7 +96,7 @@ protected:
     QPoint focusPos;
     int temp;
 
-signals:
+Q_SIGNALS:
     void activated( const QChar &c );
     void activated();
     void focusItemChanged();
@@ -105,7 +105,7 @@ signals:
     void tableDown();
     void doubleClicked();
 
-private slots:
+private Q_SLOTS:
     void slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous );
     
 private:
@@ -239,7 +239,7 @@ protected:
     QStringList fontList;
     static QFontDatabase * fontDataBase;
 
-protected slots:
+protected Q_SLOTS:
     void fontSelected( const QString &_font );
     void tableChanged( int _value );
     void charHighlighted( const QChar &c ) { emit highlighted( c ); }
@@ -253,7 +253,7 @@ protected slots:
     void slotDoubleClicked() { emit doubleClicked(); }
     void slotUnicodeEntered();
     void slotUpdateUnicode( const QChar &c );
-signals:
+Q_SIGNALS:
     void highlighted( const QChar &c );
     void highlighted();
     void activated( const QChar &c );

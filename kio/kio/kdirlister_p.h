@@ -184,7 +184,7 @@ protected:
   // if lister is set, it is checked that the url is held by the lister
   KFileItem *findByURL( const KDirLister *lister, const KURL &_url ) const;
 
-private slots:
+private Q_SLOTS:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
   void slotFileDeleted( const QString &_file );

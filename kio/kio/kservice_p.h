@@ -28,7 +28,7 @@ class KServiceProgressDialog : public QProgressDialog
 public:
    KServiceProgressDialog(QWidget *parent, const char *name, 
                           const QString &caption, const QString &text);
-public slots:
+public Q_SLOTS:
    void slotProgress();
    void slotFinished();
 

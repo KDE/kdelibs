@@ -171,7 +171,7 @@ public:
 	 */
 	static const State isAvailable();
 
-signals:
+Q_SIGNALS:
 	/**
 	Emitted when new service is discovered (or resolved
 	if autoresolve is set
@@ -195,7 +195,7 @@ signals:
 	 */
 	void finished();
 
-public slots:
+public Q_SLOTS:
 	/**
 	Remove one domain from list of domains to browse
 	 */
@@ -214,7 +214,7 @@ private:
 	bool allFinished();
 	void init(const QStringList&, DomainBrowser*, int);
 	QList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
-private slots:
+private Q_SLOTS:
 	void serviceResolved(bool success);
 	void gotNewService(DNSSD::RemoteService::Ptr);
 	void gotRemoveService(DNSSD::RemoteService::Ptr);

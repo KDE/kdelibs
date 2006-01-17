@@ -79,7 +79,7 @@ private:
 	virtual bool event(QEvent * e);
 	#endif
 
-protected slots:
+protected Q_SLOTS:
 	void slotDetails();
 	void slotSelectPrimary();
 	void slotSelectAlternate();

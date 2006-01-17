@@ -55,7 +55,7 @@ public:
 	bool isRunning() const;
 	void setRef(DNSServiceRef ref);
 	void stop();
-public slots:
+public Q_SLOTS:
 	void process();
 protected:
 	DNSServiceRef m_ref;

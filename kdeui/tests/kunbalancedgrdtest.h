@@ -43,7 +43,7 @@ private:
 
   int itime, otime;
 
-private slots:
+private Q_SLOTS:
   void rebalance();
 };
 #endif

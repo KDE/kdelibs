@@ -48,10 +48,10 @@ private:
 	KConfig *loconf;
 	QList<KNotifyEventListItem*> m_elements;
 	
-private slots:
+private Q_SLOTS:
 	void slotSelectionChanged();
 	
-signals:
+Q_SIGNALS:
 	void eventSelected(KNotifyConfigElement *);
 
 };

@@ -191,7 +191,7 @@ public:
     void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
     virtual void reparent( QWidget * parent, Qt::WFlags f, const QPoint & p, bool showIt = false );
 
-signals:
+Q_SIGNALS:
     /**
      * This signal is emitted when the embedded window has been lost (destroyed or reparented away)
      *

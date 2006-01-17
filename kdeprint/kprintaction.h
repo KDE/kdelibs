@@ -39,10 +39,10 @@ public:
 	static KPrintAction* exportRegular(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
 	static KPrintAction* exportSpecial(QWidget *parentWidget = 0, KActionCollection  *parent = 0, const char *name = 0);
 
-signals:
+Q_SIGNALS:
 	void print(KPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotAboutToShow();
 	void slotActivated(int);
 

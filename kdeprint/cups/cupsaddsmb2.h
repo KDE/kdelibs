@@ -43,7 +43,7 @@ public:
 
 	static bool exportDest(const QString& dest, const QString& datadir);
 
-protected slots:
+protected Q_SLOTS:
 	void slotReceived(KProcess*, char*, int);
 	void doNextAction();
 	void slotProcessExited(KProcess*);

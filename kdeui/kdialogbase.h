@@ -907,7 +907,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 
 
 
-  public slots:
+  public Q_SLOTS:
 
     /**
      * Destruct the Dialog delayed.
@@ -928,7 +928,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     void updateBackground();
 
 
- signals:
+ Q_SIGNALS:
     /**
      * Do not use this signal. Is is kept for compatibility reasons.
      * @deprecated Use applyClicked() instead.
@@ -950,7 +950,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     void currentPageChanged(QWidget *page);
 
 
-  protected slots:
+  protected Q_SLOTS:
 
     /**
      * Deletes the dialog immediately. If you want to delete the dialog

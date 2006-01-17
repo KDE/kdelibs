@@ -71,7 +71,7 @@ public:
   Q3IconView *iconView() const;
 
 
-public slots:
+public Q_SLOTS:
   /**
    * Updates search to only make visible the items that match \a s.  If
    * \a s is null then the line edit's text will be used.
@@ -129,7 +129,7 @@ protected:
   void showItem( Q3IconViewItem *item );
 
 
-protected slots:
+protected Q_SLOTS:
   /**
    * When keys are pressed a new search string is created and a timer is
    * activated.  The most recent search is activated when this timer runs out
@@ -156,7 +156,7 @@ protected slots:
   void activateSearch();
 
 
-private slots:
+private Q_SLOTS:
   /**
    * Take action need when iconView is deleted.
    */

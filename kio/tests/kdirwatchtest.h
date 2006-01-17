@@ -24,7 +24,7 @@ class myTest : public QObject
    Q_OBJECT
 public:
    myTest() { };
-public slots:
+public Q_SLOTS:
    void dirty(const QString &a) { printf("Dirty: %s\n", a.ascii()); };
    void created(const QString& f) { printf("Created: %s\n", f.ascii()); }
    void deleted(const QString& f) { printf("Deleted: %s\n", f.ascii()); }

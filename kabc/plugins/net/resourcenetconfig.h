@@ -37,7 +37,7 @@ class KABC_EXPORT ResourceNetConfig : public KRES::ConfigWidget
 
     void setEditMode( bool value );
 
-  public slots:
+  public Q_SLOTS:
     void loadSettings( KRES::Resource *resource );
     void saveSettings( KRES::Resource *resource );
 

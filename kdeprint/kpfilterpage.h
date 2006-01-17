@@ -42,7 +42,7 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	bool isValid(QString& msg);
 
-protected slots:
+protected Q_SLOTS:
 	void slotAddClicked();
 	void slotRemoveClicked();
 	void slotUpClicked();

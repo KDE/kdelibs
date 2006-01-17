@@ -1043,7 +1043,7 @@ public:
    */
   bool inProgress() const;
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted if the cursor is moved over an URL.
    */
@@ -1185,7 +1185,7 @@ protected:
    */
   virtual bool doCloseStream();
 
-public slots:
+public Q_SLOTS:
 
   /**
    * Sets the focused node of the document to the specified node. If the node is a form control, the control will
@@ -1267,7 +1267,7 @@ public slots:
                         const QString& contentType = QString(),
                         const QString& boundary = QString() );
 
-private slots:
+private Q_SLOTS:
 
   /**
    * @internal

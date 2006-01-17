@@ -51,7 +51,7 @@ private:
 
   int id;
 
-signals:
+Q_SIGNALS:
 
   void itemPressed (int id);
   void itemReleased (int id);
@@ -175,7 +175,7 @@ public:
    */
   void setItemFixed(int id, int width=-1);
 
-signals:
+Q_SIGNALS:
 
   /**
    *  Emitted when mouse is pressed over item @p id.

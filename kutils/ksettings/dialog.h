@@ -145,14 +145,14 @@ class KUTILS_EXPORT Dialog : public QObject
 
         KCMultiDialog * dialog();
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Show the config dialog. The slot immediatly returns since the dialog
          * is non-modal.
          */
         void show();
 
-    signals:
+    Q_SIGNALS:
         /**
          * If you use the dialog in Configurable mode and want to be notified
          * when the user changes the plugin selections use this signal. It's
@@ -162,7 +162,7 @@ class KUTILS_EXPORT Dialog : public QObject
          */
         void pluginSelectionChanged();
 
-    protected slots:
+    protected Q_SLOTS:
         void configureTree();
         void updateTreeList();
 

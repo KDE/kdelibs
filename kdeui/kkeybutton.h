@@ -63,10 +63,10 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	*/
 	void setText( const QString& text );
 
- signals:
+ Q_SIGNALS:
 	void capturedShortcut( const KShortcut& );
 
- public slots:
+ public Q_SLOTS:
 	/**
 	 * Call this method to capture a shortcut from the keyboard.
 	 * If it succeeds, the capturedShortcut() signal will be emitted.

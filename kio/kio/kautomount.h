@@ -57,13 +57,13 @@ public:
   KAutoMount( bool readonly, const QString& format, const QString& device, const QString& mountpoint,
               const QString & desktopFile, bool show_filemanager_window = true );
 
-signals:
+Q_SIGNALS:
   /** Emitted when the directory has been mounted */
   void finished();
   /** Emitted in case the directory could not been mounted */
   void error();
 
-protected slots:
+protected Q_SLOTS:
   void slotResult( KIO::Job * );
 
 protected:
@@ -96,13 +96,13 @@ public:
    */
   KAutoUnmount( const QString & mountpoint, const QString & desktopFile );
 
-signals:
+Q_SIGNALS:
   /** Emitted when the directory has been unmounted */
   void finished();
   /** Emitted in case the directory could not been unmounted */
   void error();
 
-protected slots:
+protected Q_SLOTS:
   void slotResult( KIO::Job * );
 private:
   QString m_desktopFile;

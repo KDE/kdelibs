@@ -381,7 +381,7 @@ public:
      */
     bool hasMultipleMatches() const { return myHasMultipleMatches; }
 
-public slots:
+public Q_SLOTS:
     /**
      * Attempts to complete "string" and emits the completion via match().
      * Same as makeCompletion() (just as a slot).
@@ -471,7 +471,7 @@ public slots:
     virtual void clear();
 
 
-signals:
+Q_SIGNALS:
     /**
      * The matching item. Will be emitted by makeCompletion(),
      * previousMatch() or nextMatch(). May be QString() if there

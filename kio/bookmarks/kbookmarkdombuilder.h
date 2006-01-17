@@ -34,7 +34,7 @@ public:
    KBookmarkDomBuilder(const KBookmarkGroup &group, KBookmarkManager *);
    virtual ~KBookmarkDomBuilder();
    void connectImporter(const QObject *);
-protected slots:
+protected Q_SLOTS:
    void newBookmark(const QString &text, const QString &url, const QString &additionalInfo);
    void newFolder(const QString &text, bool open, const QString &additionalInfo);
    void newSeparator();

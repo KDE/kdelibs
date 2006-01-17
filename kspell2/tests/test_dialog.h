@@ -32,7 +32,7 @@ class TestDialog : public QObject
 public:
     TestDialog();
 
-public slots:
+public Q_SLOTS:
     void check( const QString& buffer );
     void doneChecking( const QString& );
 private:

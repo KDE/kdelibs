@@ -61,14 +61,14 @@ public:
    */
   virtual bool status() const = 0;
 
-public slots:
+public Q_SLOTS:
   /**
    * Re-implement this method if you want the icon to update itself
    * when something external has changed (i.e. a file on disk, uid/gid).
    */
   virtual void updateStatus() = 0;
 
-signals:
+Q_SIGNALS:
   /**
    * this signal is emitted when authorization has changed from
    * its previous state.
@@ -113,7 +113,7 @@ public:
    */
   bool status() const { return root; }
 
-public slots:
+public Q_SLOTS:
   void updateStatus();
 
 protected:
@@ -157,7 +157,7 @@ public:
   */
   QString fileName() const { return fi.fileName(); }
 
-public slots:
+public Q_SLOTS:
   void updateStatus();
 
 protected:

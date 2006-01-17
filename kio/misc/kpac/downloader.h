@@ -40,14 +40,14 @@ namespace KPAC
         const QString& script() { return m_script; }
         const QString& error() { return m_error; }
 
-    signals:
+    Q_SIGNALS:
         void result( bool );
 
     protected:
         virtual void failed();
         void setError( const QString& );
 
-    private slots:
+    private Q_SLOTS:
         void data( KIO::Job*, const QByteArray& );
         void result( KIO::Job* );
 

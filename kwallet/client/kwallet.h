@@ -430,7 +430,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 		static bool keyDoesNotExist(const QString& wallet, const QString& folder, 
 					    const QString& key);
 
-	signals:
+	Q_SIGNALS:
 		/**
 		 *  Emitted when this wallet is closed.
 		 */
@@ -491,7 +491,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 		 */
 		ASYNC walletOpenResult(int rc);
 
-	private slots:
+	private Q_SLOTS:
 		/**
 		 *  @internal
 		 *  Used to detect when the wallet service dies.

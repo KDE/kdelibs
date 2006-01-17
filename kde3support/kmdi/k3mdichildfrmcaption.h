@@ -70,7 +70,7 @@ public:
 	 */
 	int heightHint();
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * Grabs the mouse, a move cursor, sets a move indicator variable to true and keeps the global mouse position in mind
 	 */

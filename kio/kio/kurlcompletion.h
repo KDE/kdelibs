@@ -175,7 +175,7 @@ protected:
 
 	virtual void customEvent( QEvent *e );
 
-protected slots:
+protected Q_SLOTS:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
 	void slotIOFinished( KIO::Job * );
 

@@ -56,7 +56,7 @@ public:
     RestartWidget();
     void setWindow(MainWidget *w);
 
-private slots:
+private Q_SLOTS:
     void onStateChanged(int on);
 
 // attributes

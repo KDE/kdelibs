@@ -37,7 +37,7 @@ class PrintSignals : public QObject
 public:
    PrintSignals() : QObject() { }
 
-public slots:
+public Q_SLOTS:
    void started( const KURL &url )
    {
       cout << "*** started( " << url.url().toLocal8Bit().data() << " )" << endl;
@@ -106,7 +106,7 @@ public:
    KDirListerTest( QWidget *parent=0, const char *name=0 );
    ~KDirListerTest();
 
-public slots:
+public Q_SLOTS:
    void startRoot();
    void startHome();
    void startTar();

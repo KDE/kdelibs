@@ -111,7 +111,7 @@ public:
     void setOffset( KIO::filesize_t offset );
     KIO::filesize_t offset() const;
 
-signals:
+Q_SIGNALS:
     ///////////
     // Messages sent by the slave
     ///////////
@@ -218,7 +218,7 @@ protected:
     void requestNetwork( const QString &, const QString &);
     void dropNetwork( const QString &, const QString &);
 
-protected slots:
+protected Q_SLOTS:
     void calcSpeed();
 
 protected:

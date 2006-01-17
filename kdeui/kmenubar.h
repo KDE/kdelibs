@@ -80,7 +80,7 @@ public:
     virtual void setLineWidth( int );
     virtual void setMargin( int );
     virtual QSize sizeHint() const;
-protected slots:
+protected Q_SLOTS:
     void slotReadConfig();
 protected:
     virtual void resizeEvent( QResizeEvent* );
@@ -90,7 +90,7 @@ protected:
 #endif
     virtual void closeEvent( QCloseEvent* );
     virtual void paintEvent( QPaintEvent* );
-private slots:
+private Q_SLOTS:
     void updateFallbackSize();
     void selectionTimeout();
 private:

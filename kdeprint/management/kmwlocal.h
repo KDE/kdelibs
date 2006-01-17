@@ -38,7 +38,7 @@ public:
 	void updatePrinter(KMPrinter*);
 	void initPrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotPortSelected(Q3ListViewItem*);
 	void slotTextChanged( const QString& );
 

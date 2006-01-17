@@ -649,7 +649,7 @@ public:
     // KDE4 remove
     virtual void setIcon( const QPixmap & );
 
-public slots:
+public Q_SLOTS:
     /**
      * Show a standard configure toolbar dialog.
      *
@@ -911,7 +911,7 @@ protected:
     /// parse the geometry from the geometry command line argument
     void parseGeometry(bool parsewidth);
 
-protected slots:
+protected Q_SLOTS:
    /**
     * Rebuilds the GUI after KEditToolbar changed the toolbar layout.
     * @see configureToolbars()
@@ -969,7 +969,7 @@ protected slots:
     */
     void saveAutoSaveSettings();
 
-private slots:
+private Q_SLOTS:
    /**
     * Called when the app is shutting down.
     */

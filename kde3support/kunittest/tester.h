@@ -695,7 +695,7 @@ namespace KUnitTest
         /// Return the list of results - used internally by Runner
         const TestResultsList &resultsList() const { return m_resultsList; }
 
-    signals:
+    Q_SIGNALS:
         void invoke();
 
     private:

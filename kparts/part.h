@@ -259,7 +259,7 @@ public:
      */
     bool isSelectable() const;
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted by the part, to set the caption of the window(s)
      * hosting this part
@@ -314,9 +314,9 @@ protected:
      */
     QWidget *hostContainer( const QString &containerName );
 
-signals:
+Q_SIGNALS:
     void leaveModality();
-private slots:
+private Q_SLOTS:
     void slotWidgetDestroyed();
 
 private:
@@ -383,7 +383,7 @@ public:
   void showProgressInfo( bool show );
 #endif
 
-public slots:
+public Q_SLOTS:
   /**
    * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement openFile() only .
@@ -468,7 +468,7 @@ private: // Makes no sense for inherited classes to call those. But make it prot
    */
   virtual bool doCloseStream() { return false; }
 
-signals:
+Q_SIGNALS:
   /**
    * The part emits this when starting data.
    * If using a KIO::Job, it sets the job in the signal, so that
@@ -500,7 +500,7 @@ signals:
    */
   void canceled( const QString &errMsg );
 
-protected slots:
+protected Q_SLOTS:
   void slotJobFinished( KIO::Job * job );
 
 protected:
@@ -644,7 +644,7 @@ public:
    */
   virtual void setModified( bool modified );
 
-signals:
+Q_SIGNALS:
    /**
     * @since 3.2, remove in KDE 4, when queryClose is made virtual
     *
@@ -654,7 +654,7 @@ signals:
     */
    void sigQueryClose(bool *handled, bool* abortClosing);
 
-public slots:
+public Q_SLOTS:
   /**
    * Call setModified() whenever the contents get modified.
    * This is a slot for convenience, so that you can connect it
@@ -699,7 +699,7 @@ protected:
    */
   virtual bool saveToURL();
 
-protected slots:
+protected Q_SLOTS:
   /**
    * @internal
    */

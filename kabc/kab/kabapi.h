@@ -193,7 +193,7 @@ protected:
    * KabAPI dialog has been executed and accepted by the user.
    */
   int selection;
-protected slots:
+protected Q_SLOTS:
   /**
    * Capture selections in the dialog (listbox).
    */
@@ -206,7 +206,7 @@ protected slots:
    * Double clicked on an item. @reimp
    */
   void slotDoubleClicked ( Q3ListBoxItem * );
-  signals:
+  Q_SIGNALS:
   /**
    * Send status messages.
    */

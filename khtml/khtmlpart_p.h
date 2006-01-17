@@ -111,7 +111,7 @@ namespace khtml
     QStringList m_params;
     bool m_bNotify;
     bool m_bPendingRedirection;
-  protected slots:
+  protected Q_SLOTS:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
   };
 

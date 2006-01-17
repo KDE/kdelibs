@@ -39,7 +39,7 @@ public:
 	bool isValid(QString&);
 	void updatePrinter(KMPrinter*);
 
-protected slots:
+protected Q_SLOTS:
 	void slotScanStarted();
 	void slotScanFinished();
 	void slotPrinterSelected(Q3ListViewItem*);

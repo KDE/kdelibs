@@ -368,10 +368,10 @@ public:
    */
   virtual KSocketAddress externalAddress() const;
 
-private slots:
+private Q_SLOTS:
   void lookupFinishedSlot();
 
-signals:
+Q_SIGNALS:
   /**
    * This signal is emitted when this object finds an error.
    * The @p code parameter contains the error code that can

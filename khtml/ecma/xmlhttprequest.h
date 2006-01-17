@@ -126,7 +126,7 @@ namespace KJS {
   public:
     XMLHttpRequestQObject(XMLHttpRequest *_jsObject);
 
-  public slots:
+  public Q_SLOTS:
     void slotData( KIO::Job* job, const QByteArray &data );
     void slotFinished( KIO::Job* job );
     void slotRedirection( KIO::Job* job, const KURL& url);

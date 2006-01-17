@@ -37,7 +37,7 @@ class GhnsWidget : public QWidget
     GhnsWidget();
     ~GhnsWidget();
     
-  public slots:
+  public Q_SLOTS:
     void downloadWallpapers();
 
   private:

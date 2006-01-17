@@ -15,7 +15,7 @@ public:
     testWindow (QWidget *parent=0);
     ~testWindow ();
     
-public slots:
+public Q_SLOTS:
     void slotPress(int i);
     void slotClick(int i);
     void slotMenu(int i);

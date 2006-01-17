@@ -38,7 +38,7 @@ public:
   bool kled_round;
 
 
-public slots:
+public Q_SLOTS:
   void timeout();
 
   void nextColor();

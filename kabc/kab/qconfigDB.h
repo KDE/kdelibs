@@ -743,7 +743,7 @@ protected:
    */
   static list<QString> LockFiles;
   // ----------------------------------------------------------------------------
-public slots:
+public Q_SLOTS:
   /**
    * Check for file changes.
    * This method returns true if the file has been changed on disk
@@ -751,7 +751,7 @@ public slots:
    */
   bool checkFileChanged();
   // ----------------------------------------------------------------------------
-signals:
+Q_SIGNALS:
   /**
    * This signal will be send when the database is cleared or reloaded.
    * The notification might be needed if pointers or iterators are stored

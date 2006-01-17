@@ -38,11 +38,11 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 
 		virtual QSize sizeHint() const;
 
-	public slots:
+	public Q_SLOTS:
 		virtual void showPreview(const KURL &url);
 		virtual void clearPreview();
 
-	protected slots:
+	protected Q_SLOTS:
 		void showPreview();
 		void showPreview( const KURL& url, bool force );
 
@@ -54,7 +54,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		virtual KIO::PreviewJob * createJob( const KURL& url,
                                                      int w, int h );
 
-	private slots:
+	private Q_SLOTS:
 		void slotResult( KIO::Job * );
 		virtual void slotFailed( const KFileItem* );
 

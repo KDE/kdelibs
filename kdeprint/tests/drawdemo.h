@@ -12,7 +12,7 @@ class DrawView : public QWidget
 public:
     DrawView();
     ~DrawView();
-public slots:
+public Q_SLOTS:
     void   updateIt( int );
     void   printIt();
 protected:

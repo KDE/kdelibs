@@ -57,7 +57,7 @@ class KDE3SUPPORT_EXPORT DockMainWindow3 : public K3DockMainWindow, virtual publ
    */
   virtual ~DockMainWindow3();
 
-protected slots:
+protected Q_SLOTS:
 
   /**
    * Create the GUI (by merging the host's and the active part's)

@@ -65,7 +65,7 @@ public:
 	 */
 	virtual View *view(void) = 0;
 
-public slots:
+public Q_SLOTS:
 	/** Pause playback of the media track.*/
 	virtual void pause(void) = 0;
 
@@ -94,7 +94,7 @@ public:
 	/** Returns the length of the current track.*/
 	virtual unsigned long length(void) const = 0;
 
-public slots:
+public Q_SLOTS:
 	/** Set whether the Player should continue playing at the beginning of
 	 * the track when the end of the track is reached.
 	 */
@@ -102,7 +102,7 @@ public slots:
 public:
 	/** Return the current looping state. */
 	bool isLooping(void) const;
-signals:
+Q_SIGNALS:
 	/** Emitted when the looping state is changed. */
 	void loopingChanged(bool);
 
@@ -121,11 +121,11 @@ public:
 	};
 	/** Return the current state of the player. */
 	int state(void) const;
-signals:
+Q_SIGNALS:
 	/** Emitted when the state changes. */
 	void stateChanged(int);
 
-protected slots:
+protected Q_SLOTS:
 	/** Implementers use this to control what users see as the current
 	 * state.*/
 	void setState(int);

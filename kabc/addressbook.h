@@ -492,7 +492,7 @@ class KABC_EXPORT AddressBook : public QObject
      */
     bool loadingHasFinished() const;
 
-  signals:
+  Q_SIGNALS:
     /**
       Emitted when one of the resources discovered a change in its backend
       or the asynchronous loading of all resources has finished.
@@ -536,7 +536,7 @@ class KABC_EXPORT AddressBook : public QObject
      */
     void savingFinished( Resource *resource );
 
-  protected slots:
+  protected Q_SLOTS:
     void resourceLoadingFinished( Resource* );
     void resourceSavingFinished( Resource* );
     void resourceLoadingError( Resource*, const QString& );

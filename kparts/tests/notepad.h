@@ -30,7 +30,7 @@ protected:
   virtual bool openFile();
   virtual bool saveFile();
 
-protected slots:
+protected Q_SLOTS:
   void slotSearchReplace();
 
 protected:

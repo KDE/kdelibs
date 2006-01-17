@@ -50,7 +50,7 @@ public:
 	Arts::ByteSoundProducerV2 _artssender;
 	bool _polling, _attached, _effects;
 
-public slots:
+public Q_SLOTS:
 	void initaRts();
 };
 

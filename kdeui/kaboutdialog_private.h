@@ -49,7 +49,7 @@ class KImageTrackLabel : public QLabel
   public:
     KImageTrackLabel( QWidget * parent, Qt::WFlags f=0 );
 
-  signals:
+  Q_SIGNALS:
     void mouseTrack( int mode, const QMouseEvent *e );
 
   protected:
@@ -113,7 +113,7 @@ class KAboutContainerBase : public QWidget
 
     KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
-  public slots:
+  public Q_SLOTS:
     virtual void slotMouseTrack( int mode, const QMouseEvent *e );
     virtual void slotUrlClick( const QString &url );
     virtual void slotMailClick( const QString &name, const QString &address );
@@ -121,7 +121,7 @@ class KAboutContainerBase : public QWidget
   protected:
     virtual void fontChange( const QFont &oldFont );
 
-  signals:
+  Q_SIGNALS:
     void mouseTrack( int mode, const QMouseEvent *e );
     void urlClick( const QString &url );
     void mailClick( const QString &name, const QString &address );

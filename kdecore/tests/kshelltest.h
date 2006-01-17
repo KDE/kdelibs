@@ -25,7 +25,7 @@ class KShellTest : public QObject
 {
 	Q_OBJECT
 
-private slots:
+private Q_SLOTS:
 	void tildeExpand();
 	void joinArgs();
 	void splitJoinDQ();

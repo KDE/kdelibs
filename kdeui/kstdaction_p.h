@@ -142,7 +142,7 @@ public:
       connect(this, SIGNAL( activated() ), this, slot );
     }
     
-public slots:
+public Q_SLOTS:
     inline void cut(){ invokeEditSlot("cut"); };
     inline void copy(){ invokeEditSlot("copy"); };
     inline void paste(){ invokeEditSlot("paste"); };

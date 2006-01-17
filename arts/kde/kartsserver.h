@@ -55,7 +55,7 @@ public:
 	 */
 	Arts::SoundServerV2 server(void);
 
-signals:
+Q_SIGNALS:
 	/**
 	 * This is emitted when the soundserver has been restarted (by this
 	 * KArtsServer instance or outside). It is not

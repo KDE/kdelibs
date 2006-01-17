@@ -65,7 +65,7 @@ class KPARTS_EXPORT MainWindow : public KMainWindow, virtual public PartBase
    */
   virtual ~MainWindow();
 
-protected slots:
+protected Q_SLOTS:
 
   /**
    * Create the GUI (by merging the host's and the active part's)

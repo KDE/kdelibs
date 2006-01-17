@@ -30,7 +30,7 @@ Q_OBJECT
 public:
 	KConvertTest();
 
-public slots:
+public Q_SLOTS:
 	void slotRawStreamStart();
 
 	void slotNewBlockSize(long blockSize);

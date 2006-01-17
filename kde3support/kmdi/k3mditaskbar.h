@@ -73,7 +73,7 @@ public:
 	* Sets the text and avoids any abbreviation. Memorizes that text in m_actualText, too.
 	*/
 	void setText( const QString& );
-signals:
+Q_SIGNALS:
 	/**
 	* Emitted when the button has been clicked. Internally connected to setFocus of the according MDI view.
 	*/
@@ -90,12 +90,12 @@ signals:
 	* Emitted when the button text has changed. Internally connected with K3MdiTaskBar::layoutTaskBar
 	*/
 	void buttonTextChanged( int );
-public slots:
+public Q_SLOTS:
 	/**
 	* A slot version of setText
 	*/
 	void setNewText( const QString& );
-protected slots:
+protected Q_SLOTS:
 	/**
 	* Reimplemented from its base class to catch right and left mouse button clicks
 	*/
@@ -174,7 +174,7 @@ protected:
 	* Reimplemented from its base class to call layoutTaskBar, additionally.
 	*/
 	void resizeEvent( QResizeEvent* );
-protected slots:
+protected Q_SLOTS:
 	/**
 	* Checks if all buttons fits into this. If not, it recalculates all button widths
 	* in a way that all buttons fits into the taskbar and have got equal width.
@@ -183,7 +183,7 @@ protected slots:
 	* If one drags the taskbar to a vertical orientation, the button width is set to 80 pixel.
 	*/
 	void layoutTaskBar( int taskBarWidth = 0 );
-public slots:
+public Q_SLOTS:
 	/**
 	* Pushes the desired taskbar button down (switch on), the old one is released (switched off).
 	* Actually it's a radiobutton group behavior.

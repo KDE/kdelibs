@@ -25,7 +25,7 @@ Q_OBJECT
 public:
 MouseWidget( QWidget *parent=0 );
 
-signals:
+Q_SIGNALS:
   void newXPos(int);
   void newYPos(int);
   void newWidth(int);
@@ -49,7 +49,7 @@ public:
 KRulerTest();
 ~KRulerTest();
 
-private slots:
+private Q_SLOTS:
   void slotNewWidth(int);
   void slotNewHeight(int);
 

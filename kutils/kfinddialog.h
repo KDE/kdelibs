@@ -218,7 +218,7 @@ public:
      */
     QWidget *findExtension();
 
-protected slots:
+protected Q_SLOTS:
 
     void slotOk();
     void slotSelectedTextToggled(bool);
@@ -229,7 +229,7 @@ protected slots:
 protected:
     virtual void showEvent ( QShowEvent * );
 
-private slots:
+private Q_SLOTS:
     /**
      * connected to the aboutToShow of the placeholders menu,
      * updates it according to the text in the pattern.

@@ -73,7 +73,7 @@ public:
   bool pumount( const QString &point );
   bool pmount( const QString &dev );
 
-protected slots:
+protected Q_SLOTS:
   void slotProcessedSize( KIO::filesize_t _bytes );
   void slotInfoMessage( const QString & msg );
 

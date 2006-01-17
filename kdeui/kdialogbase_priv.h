@@ -38,10 +38,10 @@ class KDEUI_EXPORT KDialogBaseTile : public QObject
     void set( const QPixmap *pix );
     const QPixmap *get() const;
 
-  public slots:
+  public Q_SLOTS:
     void cleanup();
 
-  signals:
+  Q_SIGNALS:
     void pixmapChanged();
 
   private:

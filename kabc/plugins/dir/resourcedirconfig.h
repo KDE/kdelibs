@@ -37,7 +37,7 @@ public:
 
   void setEditMode( bool value );
 
-public slots:
+public Q_SLOTS:
   void loadSettings( KRES::Resource* );
   void saveSettings( KRES::Resource* );
 

@@ -181,7 +181,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      */
     QAction *action( MenuId id ) const;
 
-  public slots:
+  public Q_SLOTS:
     /**
      * Opens the help page for the application. The application name is
      * used as a key to determine what to display and the system will attempt
@@ -215,7 +215,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      */
     void reportBug();
 
-  private slots:
+  private Q_SLOTS:
     /**
      * Connected to the menu pointer (if created) to detect a delete
      * operation on the pointer. You should not delete the pointer in your
@@ -236,7 +236,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      */
     void timerExpired();
 
-  signals:
+  Q_SIGNALS:
     /**
      * This signal is emitted from aboutApplication() if no
      * "about application" string has been defined. The standard

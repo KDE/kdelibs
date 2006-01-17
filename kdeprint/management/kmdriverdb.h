@@ -49,10 +49,10 @@ protected:
 	void insertEntry(KMDBEntry *entry);
 	QString dbFile();
 
-protected slots:
+protected Q_SLOTS:
 	void slotDbCreated();
 
-signals:
+Q_SIGNALS:
 	void dbLoaded(bool reloaded);
 	void error(const QString&);
 

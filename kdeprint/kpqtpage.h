@@ -40,7 +40,7 @@ public:
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
-protected slots:
+protected Q_SLOTS:
 	void slotOrientationChanged(int);
 	void slotColorModeChanged(int);
 	void slotNupChanged(int);

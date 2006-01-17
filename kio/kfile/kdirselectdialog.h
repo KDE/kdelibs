@@ -89,10 +89,10 @@ public:
      */
     QString startDir() const { return m_startDir; }
 
-public slots:
+public Q_SLOTS:
     void setCurrentURL( const KURL& url );
 
-protected slots:
+protected Q_SLOTS:
     virtual void slotUser1();
 
 protected:
@@ -102,7 +102,7 @@ protected:
     QVBoxLayout *m_mainLayout;
     QString m_startDir;
 
-private slots:
+private Q_SLOTS:
     void slotCurrentChanged();
     void slotURLActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );

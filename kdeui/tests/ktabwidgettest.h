@@ -18,7 +18,7 @@ class Test : public KVBox
 public:
   Test( QWidget* parent=0 );
 
-private slots:
+private Q_SLOTS:
   void addTab();
   void removeCurrentTab();
   void toggleLeftButton(bool);

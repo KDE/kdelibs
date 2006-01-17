@@ -248,13 +248,13 @@ public:
    */
   virtual QSize sizeHint( void ) const;
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted whenever the selected font changes.
    */
   void fontSelected( const QFont &font );
 
-private slots:
+private Q_SLOTS:
   void toggled_checkbox();
   void family_chosen_slot(const QString&);
   void size_chosen_slot(const QString&);
@@ -473,7 +473,7 @@ public:
 			     bool makeFrame = true,
                              Qt::CheckState *sizeIsRelativeState = 0L );
 
-signals:
+Q_SIGNALS:
   /**
    * Emitted whenever the currently selected font changes.
    * Connect to this to monitor the font as it is selected if you are

@@ -239,7 +239,7 @@ public:
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString() );
 
-public slots:
+public Q_SLOTS:
     void slotEditBookmarks();
     void slotEditBookmarksAtAddress( const QString& address );
 

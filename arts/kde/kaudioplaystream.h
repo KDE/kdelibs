@@ -78,7 +78,7 @@ public:
 	 * @return The Arts::StereoEffectStack right before the Synth_AMAN_PLAY.
 	*/
 	Arts::StereoEffectStack effectStack() const;
-public slots:
+public Q_SLOTS:
 	/**
 	 * Start the stream.
 	 * @param samplingRate how many samples per second ( typically 11000/22050/44100/48000 )
@@ -96,7 +96,7 @@ public slots:
 	 * If you ignore the signal noData() it will play 0 ( silence ).
 	*/
 	void write( QByteArray& data );
-signals:
+Q_SIGNALS:
 	/**
 	 * This signal is emitted when audio should be played.
 	 * You have to fill the array with data.

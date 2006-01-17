@@ -248,7 +248,7 @@ protected:
    */
   void setQuickHelp( const QString& help );
 
-signals:
+Q_SIGNALS:
 
   /**
    * Indicate that the state of the modules contents has changed.
@@ -269,7 +269,7 @@ signals:
    */
   void quickHelpChanged();
 
-protected slots:
+protected Q_SLOTS:
 
   /**
    * Calling this slot is equivalent to emitting changed(true).

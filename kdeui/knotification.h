@@ -233,7 +233,7 @@ public:
 	 */
 	QWidget *widget() const;
 			  
-   signals:
+   Q_SIGNALS:
 	/**
 	 * Emit only when the default activation has occured
 	 */
@@ -254,7 +254,7 @@ public:
 	 */
 	void ignored();
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * @brief Active the action specified action
 	 * If the action is zero, then the default action is activated
@@ -290,7 +290,7 @@ public slots:
 	 */
 	void deref();
 
-private slots:
+private Q_SLOTS:
 	/**
 	 * emit the event to the deamon
 	 */

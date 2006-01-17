@@ -311,7 +311,7 @@ class KDECORE_EXPORT KStartupInfo
 	 * @internal
 	 */
         class Data;
-    signals:
+    Q_SIGNALS:
 	/**
 	 * Emitted when a new startup notification is created (i.e. a new application is
 	 * being started).
@@ -337,7 +337,7 @@ class KDECORE_EXPORT KStartupInfo
 	 *
 	 */
 	virtual void customEvent( QEvent* e_P );
-    private slots:
+    private Q_SLOTS:
         void startups_cleanup();
         void startups_cleanup_no_age();
         void got_message( const QString& msg );

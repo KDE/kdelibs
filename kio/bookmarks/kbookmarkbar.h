@@ -78,7 +78,7 @@ public:
      */
     QString parentAddress();
 
-signals:
+Q_SIGNALS:
     /**
      * @since 3.2
      */
@@ -88,7 +88,7 @@ signals:
      */
     void openBookmark( const QString& url, Qt::ButtonState state );
 
-public slots:
+public Q_SLOTS:
     void clear();
 
     void slotBookmarksChanged( const QString & );

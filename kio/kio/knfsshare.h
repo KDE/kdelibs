@@ -68,7 +68,7 @@ public:
    */
   QString exportsPath() const;
   
-signals:
+Q_SIGNALS:
   /**
    * Emitted when the /etc/exports file has changed
    */
@@ -79,7 +79,7 @@ private:
   static KNFSShare* _instance;
   KNFSSharePrivate* d;
   
-private slots:
+private Q_SLOTS:
   void slotFileChange(const QString&);  
 };
 

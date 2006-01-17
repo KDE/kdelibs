@@ -78,7 +78,7 @@ public:
 	 */
 	static void play(const QString &filename);
 
-public slots:
+public Q_SLOTS:
 	/**
 	 * Play function as slot.
 	 *

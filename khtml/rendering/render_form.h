@@ -142,7 +142,7 @@ public:
 
     QCheckBox *widget() const { return static_cast<QCheckBox*>(m_widget); }
 
-public slots:
+public Q_SLOTS:
     virtual void slotStateChanged(int state);
 };
 
@@ -163,7 +163,7 @@ public:
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
 
-public slots:
+public Q_SLOTS:
     virtual void slotToggled(bool);
 };
 
@@ -237,7 +237,7 @@ public:
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
     void highLightWord( unsigned int length, unsigned int pos );
 
-public slots:
+public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 protected:
@@ -264,7 +264,7 @@ protected:
     virtual void paintEvent( QPaintEvent *pe );
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void contextMenuEvent(QContextMenuEvent *e);
-private slots:
+private Q_SLOTS:
     void clearHistoryActivated();
     void slotCheckSpelling();
     void slotSpellCheckReady( KSpell *s );
@@ -319,7 +319,7 @@ public:
     DOM::HTMLInputElementImpl *element() const
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
 
-public slots:
+public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 
@@ -405,7 +405,7 @@ protected:
     bool m_ignoreSelectEvents;
     bool m_optionsChanged;
 
-protected slots:
+protected Q_SLOTS:
     void slotSelected(int index);
     void slotSelectionChanged();
 };
@@ -422,7 +422,7 @@ protected:
     virtual bool event (QEvent *e );
     virtual Q3PopupMenu *createPopupMenu(const QPoint& pos);
     virtual Q3PopupMenu* createPopupMenu() { return K3TextEdit::createPopupMenu(); }
-private slots:
+private Q_SLOTS:
     void slotFind();
     void slotDoFind();
     void slotFindNext();
@@ -471,7 +471,7 @@ public:
 
     void select();
 
-protected slots:
+protected Q_SLOTS:
     void slotTextChanged();
 
 protected:

@@ -52,11 +52,11 @@ public:
 	void setPort( int );
 	bool checkPrinter( const QString&, int );
 
-signals:
+Q_SIGNALS:
 	void scanStarted();
 	void scanFinished();
 
-protected slots:
+protected Q_SLOTS:
 	void slotConnectionSuccess( const KNetwork::KResolverEntry& );
 	void slotConnectionFailed( int );
 	void slotTimeout();
@@ -85,7 +85,7 @@ public:
 	NetworkScannerConfig(NetworkScanner *scanner, const char *name = 0);
 	~NetworkScannerConfig();
 
-protected slots:
+protected Q_SLOTS:
 	void slotOk();
 
 private:

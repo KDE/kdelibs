@@ -127,7 +127,7 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
 
     QString cacheDst() const;
 
-protected slots:
+protected Q_SLOTS:
     void entries( KIO::Job*, const KIO::UDSEntryList& );
     void data( KIO::Job*, const QByteArray& );
     void result( KIO::Job* );
@@ -137,7 +137,7 @@ protected slots:
     void saveData( KIO::Job*, QByteArray& );
     void loadCacheResult( KIO::Job* );
 
-signals:
+Q_SIGNALS:
     void leaveModality();
 
   private:

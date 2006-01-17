@@ -49,7 +49,7 @@ public:
 	virtual QString quickHelp();
 
 	virtual bool changed();
-public slots:
+public Q_SLOTS:
 
 	/**
 	 * Emits the changed(bool) DCOP signal.

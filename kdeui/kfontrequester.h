@@ -120,7 +120,7 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      */
     virtual void setTitle( const QString & title );
 
-  signals:
+  Q_SIGNALS:
     /**
      * Emitted when a new @p font has been selected in the underlying dialog
      */
@@ -131,7 +131,7 @@ class KDEUI_EXPORT KFontRequester : public QWidget
     void displaySampleText();
     void setToolTip();
 
-  protected slots:
+  protected Q_SLOTS:
 
     virtual void buttonClicked();
 

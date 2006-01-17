@@ -312,7 +312,7 @@ public:
 
 
 
-protected slots:
+protected Q_SLOTS:
   /**
    * Sets dragging the dockwidget off when the stay button is pressed down and vice versa.
    */
@@ -681,7 +681,7 @@ public:
    */
   K3DockWidget::DockPosition currentDockPosition() const;
 
-public slots:
+public Q_SLOTS:
   /**
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps
    * KDE 3.1.x oder 3.2
@@ -748,7 +748,7 @@ protected:
   /// @since 3.2
   void setFormerBrotherDockWidget(K3DockWidget *);
 
-signals:
+Q_SIGNALS:
   /**
    *@since 3.2
    *is emitted after the setWidget method has finished
@@ -787,7 +787,7 @@ signals:
    */
   void hasUndocked();
 
-protected slots:
+protected Q_SLOTS:
 
   /** Does several things here when it has noticed that the former brother widget (closest neighbor) gets lost.
    * The former brother widget is needed for a possible dockback action, to speak with the Beatles:
@@ -1074,7 +1074,7 @@ public:
   void finishReadDockConfig();
   void setReadDockConfigMode(int mode);
 
-signals:
+Q_SIGNALS:
 
   /**
    * Signals changes of the docking state of a dockwidget. Usually the dock-toolbar will be updated then.
@@ -1091,7 +1091,7 @@ signals:
    */
   void setDockDefaultPos( K3DockWidget* );
 
-private slots:
+private Q_SLOTS:
 
   /**
    * Clears the popupmenu for showing/hiding dockwidgets and fills it with the current states of all controlled dockwidgets.
@@ -1438,7 +1438,7 @@ public:
    */
   void setView( QWidget * widget );
 
-signals:
+Q_SIGNALS:
   /**
   * Signals a certain dockwidget is undocked now.
   */
@@ -1456,7 +1456,7 @@ protected:
    */
   K3DockManager* dockManager;
 
-protected slots:
+protected Q_SLOTS:
   /**
   * Called whenever one of the dockwidgets of this has been undocked.
   */
@@ -1508,7 +1508,7 @@ public:
   void makeWidgetDockVisible( QWidget* widget );
   //void setView( QWidget* );
 
-signals:
+Q_SIGNALS:
   /**
   * Signals a certain dockwidget is undocked now.
   */
@@ -1519,7 +1519,7 @@ protected:
   K3DockWidget* mainDockWidget;
   K3DockManager* dockManager;
 
-protected slots:
+protected Q_SLOTS:
   void slotDockWidgetUndocked();
 
 public:

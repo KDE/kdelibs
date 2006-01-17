@@ -41,14 +41,14 @@ public:
 	void delay(int t);
 	~KMTimer();
 
-public slots:
+public Q_SLOTS:
 	void hold();
 	void release();
 	void release(bool do_emit);
 
 	static KMTimer* self();
 
-private slots:
+private Q_SLOTS:
 	void slotTimeout();
 
 private:

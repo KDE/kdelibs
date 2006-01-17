@@ -104,7 +104,7 @@ public:
 	 */
 	void setHost(const QString& host);
 
-private slots:
+private Q_SLOTS:
 	void slotSend();
 	void slotDont();
 

@@ -108,7 +108,7 @@ namespace KSpell2
          * Returns the Settings object used by the broker.
          */
         Settings *settings() const;
-    signals:
+    Q_SIGNALS:
         /**
          * Signal is emitted whenever the Settings object
          * associated with this Broker changes.
