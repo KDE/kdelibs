@@ -95,7 +95,7 @@ QString KProgressBar::text() const
     newString.replace(QLatin1String("%p"),
                       QString::number((progress * 100) / totalSteps));
 
-    return tr("%1").arg(newString);
+    return newString;
 }
 
 void KProgressBar::virtual_hook( int, void* )
