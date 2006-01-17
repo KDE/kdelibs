@@ -1,5 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
+ *  Copyright (C) 2006 Urs Wolfer <uwolfer @ fwo.ch>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,24 +18,30 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <QTextBrowser>
 
-#include <q3popupmenu.h>
-#include <qevent.h>
-#include <ktoolinvocation.h>
-#include <kglobalsettings.h>
-#include <ktextbrowser.h>
 #include <kcursor.h>
-#include <kurl.h>
+#include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <ktextbrowser.h>
+#include <ktoolinvocation.h>
+#include <kurl.h>
 
-KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
-			    bool notifyClick )
-  : Q3TextBrowser( parent, name ), mNotifyClick(notifyClick)
+class KTextBrowser::KTextBrowserPrivate
 {
-  //
-  //1999-10-04 Espen Sand: Not required anymore ?
-  //connect( this, SIGNAL(highlighted(const QString &)),
-  //   this, SLOT(refChanged(const QString &)));
+public:
+    KTextBrowserPrivate()
+        : mNotifyClick( false )
+    { }
+    ~KTextBrowserPrivate() { }
+
+    bool mNotifyClick;
+};
+
+KTextBrowser::KTextBrowser( QWidget *parent, bool notifyClick )
+  : QTextBrowser( parent ), d( new KTextBrowserPrivate )
+{
+  d->mNotifyClick = notifyClick;
 }
 
 KTextBrowser::~KTextBrowser( void )
@@ -44,13 +51,13 @@ KTextBrowser::~KTextBrowser( void )
 
 void KTextBrowser::setNotifyClick( bool notifyClick )
 {
-  mNotifyClick = notifyClick;
+  d->mNotifyClick = notifyClick;
 }
 
 
 bool KTextBrowser::isNotifyClick() const
 {
-  return mNotifyClick;
+  return d->mNotifyClick;
 }
 
 
@@ -61,9 +68,9 @@ void KTextBrowser::setSource( const QString& name )
     return;
   }
 
-  if( name.find('@') > -1 )
+  if( name.indexOf('@') > -1 )
   {
-    if( !mNotifyClick )
+    if( !d->mNotifyClick )
     {
       KToolInvocation::invokeMailer( KURL( name ) );
     }
@@ -74,7 +81,7 @@ void KTextBrowser::setSource( const QString& name )
   }
   else
   {
-    if( !mNotifyClick )
+    if( !d->mNotifyClick )
     {
       KToolInvocation::invokeBrowser( name );
     }
@@ -86,7 +93,7 @@ void KTextBrowser::setSource( const QString& name )
 }
 
 
-void KTextBrowser::keyPressEvent(QKeyEvent *e)
+void KTextBrowser::keyPressEvent( QKeyEvent *e )
 {
   if( e->key() == Qt::Key_Escape )
   {
@@ -98,32 +105,33 @@ void KTextBrowser::keyPressEvent(QKeyEvent *e)
   }
   else
   {
-    Q3TextBrowser::keyPressEvent(e);
+    QTextBrowser::keyPressEvent( e );
   }
 }
 
-void KTextBrowser::viewportMouseMoveEvent( QMouseEvent* e)
+void KTextBrowser::mouseMoveEvent( QMouseEvent* e)
 {
   // do this first so we get the right type of cursor
-  Q3TextBrowser::viewportMouseMoveEvent(e);
+  QTextBrowser::mouseMoveEvent(e);
 
   if ( viewport()->cursor().shape() == Qt::PointingHandCursor )
     viewport()->setCursor( KCursor::handCursor() );
 }
 
-void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
+void KTextBrowser::wheelEvent( QWheelEvent *e )
 {
     if ( KGlobalSettings::wheelMouseZooms() )
-        Q3TextBrowser::contentsWheelEvent( e );
+        QTextBrowser::wheelEvent( e );
     else // thanks, we don't want to zoom, so skip QTextEdit's impl.
-        Q3ScrollView::contentsWheelEvent( e );
+        QAbstractScrollArea::wheelEvent( e );
 }
 
-Q3PopupMenu *KTextBrowser::createPopupMenu( const QPoint & pos )
+/* TODO same as in KTextEdit
+void KTextBrowser::contextMenuEvent( QContextMenuEvent *e )
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    Q3PopupMenu *popup = Q3TextBrowser::createPopupMenu( pos );
+    QMenu *popup = createStandardContextMenu();
 
     if ( isReadOnly() )
       popup->changeItem( popup->idAt(0), SmallIconSet("editcopy"), popup->text( popup->idAt(0) ) );
@@ -136,9 +144,8 @@ Q3PopupMenu *KTextBrowser::createPopupMenu( const QPoint & pos )
       popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
       popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
     }
-
-    return popup;
 }
+*/
 
 void KTextBrowser::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

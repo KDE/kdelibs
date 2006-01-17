@@ -468,8 +468,9 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
 
   if( richText )
   {
-    KTextBrowser *const browser = new KTextBrowser( page, "browser" );
-    browser->setHScrollBarMode( Q3ScrollView::AlwaysOff );
+    KTextBrowser *const browser = new KTextBrowser( page );
+    browser->setObjectName( "browser" );
+    browser->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     browser->setText( text );
     browser->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
 

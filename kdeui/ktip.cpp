@@ -249,26 +249,32 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
 
     mTipText = new KTextBrowser(topLeft);
 
-    mTipText->setWrapPolicy( Q3TextEdit::AtWordOrDocumentBoundary );
+    mTipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
+#if 0
     mTipText->mimeSourceFactory()->addFilePath(
-	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
+      KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
+#endif
     mTipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
-    mTipText->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+    mTipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+#if 0
     mTipText->setLinkUnderline(false);
 
     Q3StyleSheet *sheet = mTipText->styleSheet();
     Q3StyleSheetItem *item = sheet->item("a");
     item->setFontWeight(QFont::Bold);
     mTipText->setStyleSheet(sheet);
+#endif
     QPalette pal = mTipText->palette();
     pal.setColor( QPalette::Active, QColorGroup::Link, mBlendedColor );
     pal.setColor( QPalette::Inactive, QColorGroup::Link, mBlendedColor );
     mTipText->setPalette(pal);
 
+#if 0
     QStringList icons = KGlobal::dirs()->resourceDirs("icon");
     QStringList::Iterator it;
     for (it = icons.begin(); it != icons.end(); ++it)
         mTipText->mimeSourceFactory()->addFilePath(*it);
+#endif
 
     if (!isTipDialog)
     {
@@ -381,7 +387,9 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
      .arg(mTextColor.name())
      .arg(mBaseColor.name())
      .arg(i18n(mDatabase->tip().toUtf8())));
+#if 0
       mTipText->setContentsPos(0, 0);
+#endif
   }
 
   void KTipDialog::nextTip()
@@ -391,7 +399,9 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
         .arg(mTextColor.name())
         .arg(mBaseColor.name())
         .arg(i18n(mDatabase->tip().toUtf8())));
+#if 0
       mTipText->setContentsPos(0, 0);
+#endif
   }
 
   void KTipDialog::showOnStart(bool on)

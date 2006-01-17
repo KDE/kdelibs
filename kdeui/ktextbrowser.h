@@ -1,5 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999 Espen Sand (espensa@online.no)
+ *  Copyright (C) 2006 Urs Wolfer <uwolfer @ fwo.ch>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,10 +18,10 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KTEXT_BROWSER_H_
-#define _KTEXT_BROWSER_H_
+#ifndef KTEXTBROWSER_H
+#define KTEXTBROWSER_H
 
-#include <q3textbrowser.h>
+#include <QTextBrowser>
 
 #include <kdelibs_export.h>
 
@@ -39,7 +40,7 @@
  * @author Espen Sand (espensa@online.no)
  */
 
-class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
+class KDEUI_EXPORT KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )
@@ -49,11 +50,9 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
      * Constructor.
      *
      * @param parent Parent of the widget.
-     * @param name Widget name.
      * @param notifyClick @p true causes signals to be emitted.
      */
-    KTextBrowser( QWidget *parent=0, const char *name=0,
-		  bool notifyClick=false );
+    KTextBrowser( QWidget *parent=0, bool notifyClick=false );
 
     /**
      * Destructor.
@@ -67,6 +66,7 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
      * @param notifyClick @p true causes signals to be emitted.
      */
     void setNotifyClick( bool notifyClick );
+
     /**
      * Returns whether a click on a link should be handled internally
      * or if a signal should be emitted.
@@ -78,29 +78,29 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
        Reimplemented to NOT set the source but to do the special handling.
        Do not call.
      */
-    void setSource(const QString& name);
+    void setSource( const QString& name );
 
     /**
      * Makes sure Key_Escape is ignored
      */
-    virtual void keyPressEvent(QKeyEvent *e);
+    virtual void keyPressEvent( QKeyEvent *e );
 
     /**
      * Make sure we use our own hand cursor
      */
-    virtual void viewportMouseMoveEvent( QMouseEvent* e);
+    virtual void mouseMoveEvent( QMouseEvent* e );
 
     /**
      * Reimplemented to support Qt2 behavior (Ctrl-Wheel = fast scroll)
      */
-    virtual void contentsWheelEvent( QWheelEvent *e );
+    virtual void wheelEvent( QWheelEvent *e );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
     * See QLineEdit::createPopupMenu().
     */
-    virtual Q3PopupMenu *createPopupMenu( const QPoint &pos );
+//     virtual void contextMenuEvent( QContextMenuEvent *e );
 
   Q_SIGNALS:
     /**
@@ -119,9 +119,6 @@ class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
      * @param url The destination address.
      */
     void urlClick( const QString &url );
-
-  private:
-    bool    mNotifyClick;
 
   protected:
     virtual void virtual_hook( int id, void* data );
