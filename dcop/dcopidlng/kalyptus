@@ -471,7 +471,7 @@ sub readDecl
 	my $l = readCxxLine();
 	my ( $decl ) = "";
 
-	my $allowed_accesors = "private|public|protected|signals";
+	my $allowed_accesors = "private|public|protected|signals|Q_SIGNALS|Q_SLOTS";
 	$allowed_accesors .= "|$allowed_k_dcop_accesors_re" if $allow_k_dcop_accessors;
 
 	if( !defined $l ) {

@@ -261,7 +261,7 @@ k_dcop:
 
     ASYNC notifyConfigChanged();
 
-signals:
+Q_SIGNALS:
     /**
      * Signals that the group (or any of its children) with the address
      * @p groupAddress (e.g. "/4/5")
@@ -353,9 +353,9 @@ class KIO_EXPORT KExtendedBookmarkOwner : public QObject, virtual public KBookma
     Q_OBJECT
 public:
     typedef QList<QPair<QString,QString> > QStringPairList;
-public slots:
+public Q_SLOTS:
     void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };
-signals:
+Q_SIGNALS:
     void signalFillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list );
 private:
     class KExtendedBookmarkOwnerPrivate;
