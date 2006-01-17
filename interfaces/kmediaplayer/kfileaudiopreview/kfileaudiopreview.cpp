@@ -33,13 +33,13 @@
 
 #include <config-kfile.h>
 
-#include <kdem2m/mediaobject.h>
-#include <kdem2m/audiopath.h>
-#include <kdem2m/audiooutput.h>
-#include <kdem2m/videopath.h>
-#include <kdem2m/backendcapabilities.h>
-#include <kdem2m/ui/videowidget.h>
-#include <kdem2m/ui/mediacontrols.h>
+#include <phonon/mediaobject.h>
+#include <phonon/audiopath.h>
+#include <phonon/audiooutput.h>
+#include <phonon/videopath.h>
+#include <phonon/backendcapabilities.h>
+#include <phonon/ui/videowidget.h>
+#include <phonon/ui/mediacontrols.h>
 
 class KFileAudioPreviewFactory : public KLibFactory
 {
@@ -57,8 +57,8 @@ K_EXPORT_COMPONENT_FACTORY( kfileaudiopreview, KFileAudioPreviewFactory )
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-using namespace Kdem2m;
-using namespace Kdem2m::Ui;
+using namespace Phonon;
+using namespace Phonon::Ui;
 
 class KFileAudioPreview::Private
 {
@@ -128,12 +128,12 @@ KFileAudioPreview::~KFileAudioPreview()
     delete d;
 }
 
-void KFileAudioPreview::stateChanged( Kdem2m::State newstate, Kdem2m::State oldstate )
+void KFileAudioPreview::stateChanged( Phonon::State newstate, Phonon::State oldstate )
 {
-    if( oldstate == Kdem2m::LoadingState && newstate != Kdem2m::ErrorState )
+    if( oldstate == Phonon::LoadingState && newstate != Phonon::ErrorState )
         d->controls->setEnabled( true );
-    disconnect( d->player, SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ),
-            this, SLOT( stateChanged( Kdem2m::State, Kdem2m::State ) ) );
+    disconnect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
+            this, SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
 }
 
 void KFileAudioPreview::showPreview( const KURL &url )
@@ -141,7 +141,7 @@ void KFileAudioPreview::showPreview( const KURL &url )
     delete d->player;
     d->player = new MediaObject( this );
     d->player->setUrl( url );
-    if( d->player->state() == Kdem2m::ErrorState )
+    if( d->player->state() == Phonon::ErrorState )
     {
         delete d->player;
         d->player = 0;
@@ -149,11 +149,11 @@ void KFileAudioPreview::showPreview( const KURL &url )
     }
 
     d->controls->setMediaProducer( d->player );
-    if( d->player->state() == Kdem2m::StoppedState )
+    if( d->player->state() == Phonon::StoppedState )
         d->controls->setEnabled( true );
     else
-        connect( d->player, SIGNAL( stateChanged( Kdem2m::State, Kdem2m::State ) ),
-                SLOT( stateChanged( Kdem2m::State, Kdem2m::State ) ) );
+        connect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
+                SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
 
     if( m_autoPlay->isChecked() )
         d->player->play();

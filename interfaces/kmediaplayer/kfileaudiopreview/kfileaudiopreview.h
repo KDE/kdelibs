@@ -22,7 +22,7 @@
 
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
-#include <kdem2m/state.h>
+#include <phonon/state.h>
 
 class QCheckBox;
 class QPushButton;
@@ -48,7 +48,7 @@ public slots:
 
 private slots:
     void toggleAuto( bool );
-    void stateChanged( Kdem2m::State, Kdem2m::State );
+    void stateChanged( Phonon::State, Phonon::State );
 
 private:
     QCheckBox *m_autoPlay;
