@@ -1,0 +1,140 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+env.subdirs('tests')
+
+klauncher_sources = """
+autostart.cpp klauncher.cpp klauncher_main.cpp
+"""
+
+kdeinit_wrapper_sources = """
+wrapper.c
+"""
+
+kioslave_sources = """
+kioslave.cpp
+"""
+
+kdeinit_sources = """
+kinit.cpp setproctitle.cpp
+"""
+
+kwrapper_sources = """
+kwrapper.c
+"""
+
+kdostartupconfig_sources = """
+kdostartupconfig.cpp
+"""
+
+lnusertemp_sources = """
+lnusertemp.c
+"""
+
+kshell_sources = """
+shell.c
+"""
+
+kdeinit_shutdown_sources = """
+wrapper.c
+"""
+
+kstartupconfig_sources = """
+kstartupconfig.cpp
+"""
+
+noinst_headers = """
+autostart.h klauncher.h klauncher_cmds.h setproctitle.h
+"""
+
+includes = '../libltdl/ #/kdecore #/kdecore/network KDEINIT_XFT_INCLUDES '
+
+obj = env.kdeinitobj()
+obj.target = 'klauncher'
+obj.source = klauncher_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kdeinit'
+obj.source = kdeinit_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kdeinit_wrapper'
+obj.source = kdeinit_wrapper_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kshell'
+obj.source = kshell_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kdeinit_shutdown'
+obj.source = kdeinit_shutdown_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'lnusertemp'
+obj.source = lnusertemp_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kwrapper'
+obj.source = kwrapper_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kioslave'
+obj.source = kioslave_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kstartupconfig'
+obj.source = kstartupconfig_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+obj = env.kdeobj('program')
+obj.target = 'kdostartupconfig'
+obj.source = kdostartupconfig_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+kstartupconfig_LDADD = $(top_builddir)/kdecore/libkdefakes.la
+kioslave_LDADD = $(LIB_KIO)
+kdeinit_LDADD = $(LIB_KPARTS)
+kdeinit_wrapper_LDADD = $(LIBSOCKET)
+kshell_LDADD = $(LIBSOCKET)
+kdeinit_shutdown_LDADD = $(LIBSOCKET)
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
+kdostartupconfig_LDADD = $(LIB_KDECORE)
+kwrapper_LDADD = $(LIBSOCKET)
+"""
+
+"""Unhandled Targets 
+dummy.cpp = ###echo > dummy.cpp
+shell.o = wrapper.c
+kwrapper.o = wrapper.c
+"""
