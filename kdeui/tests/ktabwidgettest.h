@@ -6,7 +6,6 @@
 #include <ktabwidget.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <q3popupmenu.h>
 #include <stdlib.h>
 #include <kvbox.h>
 #include <time.h>

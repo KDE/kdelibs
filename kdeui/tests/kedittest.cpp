@@ -1,7 +1,8 @@
+#include <QMenu>
+
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <keditcl.h>
-#include <q3popupmenu.h>
 
 int main( int argc, char **argv )
 {

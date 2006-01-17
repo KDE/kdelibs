@@ -1,5 +1,4 @@
 #include <qmessagebox.h>
-#include <q3popupmenu.h>
 #include <qpixmap.h>
 #include <qnamespace.h>
 #include <qwidget.h>
@@ -272,7 +271,7 @@ void testWindow::slotNew()
 void testWindow::slotOpen()
 {
   if (pr == 0)
-    pr = new Q3ProgressBar (statusBar);
+    pr = new QProgressBar (statusBar);
 //  statusBar->message(pr);
   timer = new QTimer (pr);
 
@@ -282,8 +281,8 @@ void testWindow::slotOpen()
 
 void testWindow::slotGoGoGoo()
 {
-  pr->setProgress(pr->progress()+1);
-  if (pr->progress()==100)
+  pr->setValue(pr->value()+1);
+  if (pr->value()==100)
   {
     timer->stop();
     statusBar->clear();

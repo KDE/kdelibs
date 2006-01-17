@@ -1,4 +1,3 @@
-#include <q3popupmenu.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmessagebox.h>

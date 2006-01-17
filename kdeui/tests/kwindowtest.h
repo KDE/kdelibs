@@ -1,9 +1,8 @@
 #ifndef testwindow_h
 #define testwindow_h
 
-#include <q3popupmenu.h>
 #include <qtimer.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
@@ -64,7 +63,7 @@ protected:
     bool ena;
     QTextEdit *widget;
     QTimer *timer;
-    Q3ProgressBar *pr;
+    QProgressBar *pr;
     KToolBarRadioGroup *rg;
 };
 #endif

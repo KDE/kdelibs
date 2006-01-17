@@ -2,7 +2,6 @@
 #define test_kstatusbar_h
 
 #include <kmenubar.h>
-#include <q3popupmenu.h>
 #include <kstatusbar.h>
 #include <kmainwindow.h>
 

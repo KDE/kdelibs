@@ -7,14 +7,11 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qobject.h>
-#include <q3listbox.h>
-#include <q3groupbox.h>
 #include <qevent.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
-#include <q3tabdialog.h>
 #include <qtooltip.h>
 #include <qmessagebox.h>
 #include <qtabbar.h>
