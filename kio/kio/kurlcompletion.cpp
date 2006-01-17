@@ -757,7 +757,12 @@ bool KURLCompletion::userCompletion(const MyURL &url, QString *pMatch)
 // Environment variables
 //
 
+#ifdef Q_OS_WIN
+#include <stdlib.h>
+char **environ = _environ;
+#else
 extern char **environ; // Array of environment variables
+#endif
 
 bool KURLCompletion::envCompletion(const MyURL &url, QString *pMatch)
 {
