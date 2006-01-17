@@ -102,6 +102,11 @@ class KDECORE_EXPORT KCrash
    * @param name the name of the application, as shown in Dr. Konqi
    */
   static void setApplicationName (const QString &name);
+
+
+ private:
+  static void startDrKonqi( const char* argv[], int argc );
+  static void startDirectly( const char* argv[], int argc );
 };
 
 #endif

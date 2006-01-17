@@ -30,6 +30,7 @@
 #include <qwindowdefs.h>
 #include "kglobal.h"
 
+#include <kaboutdata.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcharsets.h>
@@ -105,6 +106,8 @@ KLocale	*KGlobal::locale()
 
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
+        if( _instance->aboutData())
+            _instance->aboutData()->translateInternalProgramName();
     }
 
     return _locale;

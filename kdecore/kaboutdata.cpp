@@ -154,12 +154,14 @@ public:
         , productName(0)
         , programLogo(0)
         , customAuthorTextEnabled(false)
+        , mTranslatedProgramName( 0 )
         {}
     ~Private()
         {
              if (_licenseKey == License_File)
                  delete [] _licenseText;
              delete programLogo;
+             delete[] mTranslatedProgramName;
         }
     const char *_appName;
 #define mAppName d->_appName
@@ -191,6 +193,7 @@ public:
     QImage* programLogo;
     QString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
+    const char *mTranslatedProgramName;
 };
 
 
@@ -288,6 +291,7 @@ void
 KAboutData::setProgramName( const char* _programName )
 {
   mProgramName = _programName;
+  translateInternalProgramName();
 }
 
 void
@@ -360,6 +364,27 @@ KAboutData::programName() const
    return QString();
 }
 
+const char*
+KAboutData::internalProgramName() const
+{
+   if (d->mTranslatedProgramName)
+      return d->mTranslatedProgramName;
+   else
+      return mProgramName;
+}
+
+// KCrash should call as few things as possible and should avoid e.g. malloc()
+// because it may deadlock. Since i18n() needs it, when KLocale is available
+// the i18n() call will be done here in advance.
+void
+KAboutData::translateInternalProgramName() const
+{
+  delete[] d->mTranslatedProgramName;
+  d->mTranslatedProgramName = 0;
+  if( KGlobal::locale())
+      d->mTranslatedProgramName = qstrdup( i18n( mProgramName ).toUtf8());
+}
+
 QImage
 KAboutData::programLogo() const
 {
@@ -381,6 +406,12 @@ KAboutData::version() const
    return QLatin1String(mVersion);
 }
 
+const char*
+KAboutData::internalVersion() const
+{
+   return mVersion;
+}
+
 QString
 KAboutData::shortDescription() const
 {
@@ -399,6 +430,12 @@ QString
 KAboutData::bugAddress() const
 {
    return QLatin1String(mBugEmailAddress);
+}
+
+const char*
+KAboutData::internalBugAddress() const
+{
+   return mBugEmailAddress;
 }
 
 const QList<KAboutPerson>
