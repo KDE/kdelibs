@@ -233,7 +233,8 @@ bool KPasswordEdit::event(QEvent *e) {
       case QEvent::IMEnd:
       {
         QIMEvent* const ie = (QIMEvent*) e;
-        insert( ie->text() );
+        if (!ie->text().isEmpty())
+          insert( ie->text() );
         return true;
       }
 
