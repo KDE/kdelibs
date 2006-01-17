@@ -17,7 +17,6 @@ resourcedirconfig.h
 includes = '#/kabc #/kabc # '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kabc_dir'
 obj.source = kabc_dir_sources
 obj.includes = includes

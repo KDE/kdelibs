@@ -17,7 +17,6 @@ resourceldapkioconfig.h
 includes = '#/kabc #/kabc '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kabc_ldapkio'
 obj.source = kabc_ldapkio_sources
 obj.includes = includes

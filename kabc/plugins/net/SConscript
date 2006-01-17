@@ -17,7 +17,6 @@ resourcenetconfig.h
 includes = '#/kabc #/kabc '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kabc_net'
 obj.source = kabc_net_sources
 obj.includes = includes
@@ -37,7 +36,7 @@ obj.execute()
 
 env.bksys_insttype('KDESERV', 'kresources/kabc', 'net.desktop')
 
-env.bksys_insttype('KDEINLCUDE', 'kabc', kabcinclude_headers )
+env.bksys_insttype('KDEINCLUDE', 'kabc', kabcinclude_headers )
 
 """Unhandled Defines 
 libkabc_net_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
