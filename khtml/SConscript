@@ -274,6 +274,9 @@ obj.execute()
 for i in noinst_headers.split():
 	env.Moc(i)
 
+
+env.bksys_insttype( 'KDEDATA', 'khtml', 'khtml.rc khtml_browser.rc khtml_popupmenu.rc' )
+
 """Unhandled Defines 
 LIBKJAVA = 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
@@ -281,7 +284,6 @@ EXTRA_DIST = CHANGES DESIGN README.HTMLWidget README.tags
 JAVA_SUBDIR = java
 CLEANFILES = dummy.cpp
 service_DATA = khtml.desktop khtmlimage.desktop
-rc_DATA = khtml.rc khtml_browser.rc khtml_popupmenu.rc
 libkhtml_la_METASOURCES = AUTO
 servicedir = $(kde_servicesdir)
 SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma imload . kmultipart
