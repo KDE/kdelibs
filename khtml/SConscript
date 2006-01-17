@@ -275,7 +275,7 @@ for i in noinst_headers.split():
 	env.Moc(i)
 
 
-env.bksys_insttype( 'KDEDATA', 'khtml', 'khtml.rc khtml_browser.rc khtml_popupmenu.rc' )
+env.bksys_insttype( 'KDEAPPS', 'khtml', 'khtml.rc khtml_browser.rc khtml_popupmenu.rc' )
 
 """Unhandled Defines 
 LIBKJAVA = 
