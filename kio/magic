@@ -182,6 +182,13 @@
 0       string          #!\ /usr/local/tcsh     application/x-shellscript
 0       string          #!/usr/local/bin/tcsh   application/x-shellscript
 0       string          #!\ /usr/local/bin/tcsh application/x-shellscript
+# /usr/bin paths for ksh, zsh and tcsh
+0       string          #!/usr/bin/ksh          application/x-shellscript
+0       string          #!\ /usr/bin/ksh        application/x-shellscript
+0       string          #!/usr/bin/zsh          application/x-shellscript
+0       string          #!\ /usr/bin/zsh        application/x-shellscript
+0       string          #!/usr/bin/tcsh         application/x-shellscript
+0       string          #!\ /usr/bin/tcsh       application/x-shellscript
 # bash shell magic, from Peter Tobias (tobias@server.et-inf.fho-emden.de)
 0       string          #!/bin/bash     		application/x-shellscript
 0       string          #!\ /bin/bash           application/x-shellscript
