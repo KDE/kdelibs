@@ -15,8 +15,8 @@ class KHashWidget : public QWidget
     Q_OBJECT
 
 public:
-    KHashWidget(QWidget *parent=0, const char *name=0)
-        : QWidget(parent, name){;}
+    KHashWidget(QWidget *parent=0)
+        : QWidget(parent){;}
 protected:
     void paintEvent(QPaintEvent *ev);
 private:

@@ -161,7 +161,7 @@ public:
      * chr which character should be selected and @p tableNum specifies
      * the number of the table which should be displayed.
      */
-    KCharSelect( QWidget *parent, const char *name,
+    KCharSelect( QWidget *parent,
 		 const QString &font = QString(), const QChar &chr = ' ', int tableNum = 0 );
     ~KCharSelect();
     /**

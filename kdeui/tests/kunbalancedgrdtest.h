@@ -16,7 +16,7 @@
 class KGradientWidget : public QWidget
 {
 public:
-    KGradientWidget(QWidget *parent=0, const char *name=0);
+    KGradientWidget(QWidget *parent=0);
 
     void setBalance(int a, int b) { xbalance = a; ybalance = b; }
 protected:
@@ -32,7 +32,7 @@ class myTopWidget: public QWidget
 {
   Q_OBJECT
 public:
-  myTopWidget(QWidget *parent=0, const char *name=0);
+  myTopWidget(QWidget *parent=0);
   
 private:
   QLabel *bLabel;

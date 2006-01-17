@@ -724,14 +724,13 @@ void KFontChooser::showXLFDArea(bool show)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-KFontDialog::KFontDialog( QWidget *parent, const char* name,
+KFontDialog::KFontDialog( QWidget *parent,
 			  bool onlyFixed, bool modal,
 			  const QStringList &fontList, bool makeFrame, bool diff,
                           Qt::CheckState *sizeIsRelativeState )
   : KDialog( parent, i18n("Select Font"), Ok|Cancel )
 {
- setObjectName(name);
- setModal( modal);
+  setModal( modal);
   chooser = new KFontChooser( this,
                               onlyFixed, fontList, makeFrame, 8,
                               diff, sizeIsRelativeState );
@@ -744,8 +743,9 @@ int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed,
                              QWidget *parent, bool makeFrame,
                              Qt::CheckState *sizeIsRelativeState )
 {
-  KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
+  KFontDialog dlg( parent, onlyFixed, true, QStringList(),
 		   makeFrame, true, sizeIsRelativeState );
+  dlg.setObjectName( "Font Selector" );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
@@ -763,8 +763,9 @@ int KFontDialog::getFont( QFont &theFont, bool onlyFixed,
                           QWidget *parent, bool makeFrame,
                           Qt::CheckState *sizeIsRelativeState )
 {
-  KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
+  KFontDialog dlg( parent, onlyFixed, true, QStringList(),
 		   makeFrame, false, sizeIsRelativeState );
+  dlg.setObjectName( "Font Selector" );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
@@ -783,8 +784,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 				 bool makeFrame,
                                  Qt::CheckState *sizeIsRelativeState )
 {
-  KFontDialog dlg( parent, "Font and Text Selector", onlyFixed, true,
+  KFontDialog dlg( parent, onlyFixed, true,
 		   QStringList(), makeFrame, false, sizeIsRelativeState );
+  dlg.setObjectName( "Font and Text Selector" );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();

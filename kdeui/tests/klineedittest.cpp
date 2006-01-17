@@ -18,8 +18,8 @@
 
 #include "klineedittest.h"
 
-KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
-              :QWidget( widget, name )
+KLineEditTest::KLineEditTest ( QWidget* widget )
+              :QWidget( widget )
 {
     QVBoxLayout* layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
 

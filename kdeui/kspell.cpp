@@ -373,8 +373,7 @@ KSpell::setUpDialog( bool reallyuseprogressbar )
     return;
 
   //Set up the dialog box
-  ksdlg = new KSpellDlg( parent, "dialog",
-                         progressbar && reallyuseprogressbar, modaldlg );
+  ksdlg = new KSpellDlg( parent, progressbar && reallyuseprogressbar, modaldlg );
   ksdlg->setCaption( caption );
 
   connect( ksdlg, SIGNAL(command(int)),

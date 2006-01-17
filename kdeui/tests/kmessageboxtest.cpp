@@ -19,11 +19,11 @@
 class ExampleWidget : public QLabel
 {
 public:
-    ExampleWidget( QWidget *parent = 0, const char *name = 0 );
+    ExampleWidget( QWidget *parent = 0 );
 };
 
-ExampleWidget::ExampleWidget( QWidget *parent, const char *name )
-    : QLabel(parent, name )
+ExampleWidget::ExampleWidget( QWidget *parent )
+    : QLabel(parent )
 {
     // Make the top-level layout; a vertical box to contain all widgets
     // and sub-layouts.

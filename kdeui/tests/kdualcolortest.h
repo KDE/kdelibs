@@ -8,7 +8,7 @@ class KDualColorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    KDualColorWidget(QWidget *parent=0, const char *name=0);
+    KDualColorWidget(QWidget *parent=0);
 protected slots:
     void slotFgChanged(const QColor &c);
     void slotBgChanged(const QColor &c);

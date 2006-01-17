@@ -13,7 +13,7 @@ class testWindow  : public KMainWindow
     Q_OBJECT
 
 public:
-    testWindow (QWidget *parent=0, const char *name=0);
+    testWindow (QWidget *parent=0);
     ~testWindow ();
     
 public slots:

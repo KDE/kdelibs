@@ -56,7 +56,7 @@ static bool compareKWinWindowInfo(KWin::WindowInfo* i1, KWin::WindowInfo* i2)
     return title1.compare(title2) >= 0;
 }
 
-KWindowListMenu::KWindowListMenu(QWidget *parent, const char */*name*/)
+KWindowListMenu::KWindowListMenu(QWidget *parent)
   : KMenu(parent)
 {
     kwin_module = new KWinModule(this);

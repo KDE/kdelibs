@@ -15,7 +15,7 @@ class KDesatWidget : public QWidget
 {
 Q_OBJECT
 public:
-    KDesatWidget(QWidget *parent=0, const char *name=0);
+    KDesatWidget(QWidget *parent=0);
 
 public slots:
     void change(double);

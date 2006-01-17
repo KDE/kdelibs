@@ -23,7 +23,7 @@ class MouseWidget : public QFrame
 {
 Q_OBJECT
 public:
-MouseWidget( QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
+MouseWidget( QWidget *parent=0 );
 
 signals:
   void newXPos(int);
@@ -46,7 +46,7 @@ class KRulerTest : public KMainWindow
 {
 Q_OBJECT
 public:
-KRulerTest( const char *name = 0L );
+KRulerTest();
 ~KRulerTest();
 
 private slots:

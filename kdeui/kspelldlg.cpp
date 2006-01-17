@@ -48,9 +48,9 @@ public:
   KSpellConfig* spellConfig;
 };
 
-KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bool _modal )
+KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   : KDialogBase(
-      parent, name, _modal, i18n("Check Spelling"), Help|Cancel|User1,
+      parent, 0, _modal, i18n("Check Spelling"), Help|Cancel|User1,
       Cancel, true, i18n("&Finished")
     ),
     d(0),progressbar( false )

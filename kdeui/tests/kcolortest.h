@@ -8,7 +8,7 @@
 class KColorWidget : public QWidget
 {
 public:
-    KColorWidget(QWidget *parent=0, const char *name=0);
+    KColorWidget(QWidget *parent=0);
     void doIntensityLoop();
 protected:
     void paintEvent(QPaintEvent *ev);

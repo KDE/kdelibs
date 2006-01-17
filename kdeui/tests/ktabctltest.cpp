@@ -33,8 +33,8 @@
 
 QFont default_font("Helvetica", 12);
 
-TopLevel::TopLevel(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+TopLevel::TopLevel(QWidget *parent)
+    : QWidget(parent)
 {
     setCaption("KTabCtl test application");
     setMinimumSize(300, 200);
@@ -100,7 +100,7 @@ int main( int argc, char ** argv )
 
     a.setFont(default_font);
 
-    TopLevel *toplevel = new TopLevel(0, "_ktabctl_test");
+    TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
     a.setMainWidget(toplevel);

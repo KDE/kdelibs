@@ -30,8 +30,8 @@ void TopLevel::slotPrint( double n ) {
 }
 
 #define conn(x,y) connect( x, SIGNAL(valueChanged(y)), SLOT(slotPrint(y)))
-TopLevel::TopLevel(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+TopLevel::TopLevel(QWidget *parent)
+    : QWidget(parent)
 {
     setCaption("KNumInput test application");
 
@@ -164,7 +164,7 @@ int main( int argc, char ** argv )
 
     a = new KApplication ( );
 
-    TopLevel *toplevel = new TopLevel(0, "knuminputtest");
+    TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
     a->setMainWidget(toplevel);

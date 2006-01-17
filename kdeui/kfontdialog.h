@@ -336,7 +336,6 @@ public:
    * Constructs a font selection dialog.
    *
    * @param parent The parent widget of the dialog, if any.
-   * @param name The name of the dialog.
    * @param modal Specifies whether the dialog is modal or not.
    * @param onlyFixed only display fonts which have fixed-width
    *        character sizes.
@@ -354,7 +353,7 @@ public:
    *        calling sizeIsRelative().
    *
    */
-  KFontDialog( QWidget *parent = 0L, const char *name = 0,
+  KFontDialog( QWidget *parent = 0L,
 	       bool onlyFixed = false, bool modal = false,
 	       const QStringList &fontlist = QStringList(),
 	       bool makeFrame = true, bool diff = false,

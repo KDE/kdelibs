@@ -62,7 +62,7 @@ class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialogBase
   bool progressbar;
 
 public:
-  KSpellDlg( QWidget *parent, const char *name,
+  KSpellDlg( QWidget *parent,
 	     bool _progressbar = false, bool _modal = false );
   ~KSpellDlg();
 

@@ -15,8 +15,8 @@
 bool fullscreen = false, oldway = false, intvsfade = false;
 int max = 20; // how many steps
 
-KColorWidget::KColorWidget(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+KColorWidget::KColorWidget(QWidget *parent)
+    : QWidget(parent)
 {
 
   if (fullscreen || intvsfade) {

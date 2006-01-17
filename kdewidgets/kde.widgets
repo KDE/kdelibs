@@ -12,7 +12,6 @@ Group=Display (KDE)
 ToolTip=Character Selection Widget (KDE)
 WhatsThis=A widget that allows selection a character out ot a table
 Group=Graphics (KDE)
-ConstructorArgs=(parent, "KCharSelect", QFont().family(), QChar('X'), 1)
 
 [KColorButton]
 ToolTip=Color Chooser Button (KDE)

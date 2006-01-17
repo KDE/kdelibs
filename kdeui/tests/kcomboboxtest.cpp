@@ -25,8 +25,8 @@
 #include <QVBoxLayout>
 
 
-KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
-              :QWidget(widget, name)
+KComboBoxTest::KComboBoxTest(QWidget* widget)
+              :QWidget(widget)
 {
   QVBoxLayout *vbox = new QVBoxLayout (this, KDialog::marginHint(), KDialog::spacingHint());
 

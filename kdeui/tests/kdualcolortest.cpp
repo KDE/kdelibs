@@ -10,8 +10,8 @@
 #include <QLabel>
 #include <QHBoxLayout>
 
-KDualColorWidget::KDualColorWidget(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+KDualColorWidget::KDualColorWidget(QWidget *parent)
+    : QWidget(parent)
 {
     lbl = new QLabel("Testing, testing, 1, 2, 3...", this);
     KDualColorButton *colorBtn =

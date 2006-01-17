@@ -38,7 +38,7 @@ class KDEUI_EXPORT KWindowListMenu : public KMenu
     Q_OBJECT
 
 public:
-    KWindowListMenu( QWidget *parent = 0, const char *name = 0 );
+    KWindowListMenu( QWidget *parent = 0 );
     virtual ~KWindowListMenu();
 
     void init();
@@ -50,7 +50,7 @@ public slots:
      * Should not be used when the popup is invoked using the mouse. 
      */
     void selectActiveWindow();
-    
+
 protected slots:
     void slotForceActiveWindow();
     void slotSetCurrentDesktop();

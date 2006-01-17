@@ -12,9 +12,9 @@ class KComboBox;
 class KComboBoxTest : public QWidget
 {
   Q_OBJECT
-    
+
 public:
-  KComboBoxTest ( QWidget *parent=0, const char *name=0 );
+  KComboBoxTest ( QWidget *parent=0);
   ~KComboBoxTest();
 
 private slots:
@@ -25,10 +25,10 @@ private slots:
   void slotReturnPressed(const QString&);
   void slotActivated( int );
   void slotActivated( const QString& );
-   
+
 protected:
   QComboBox* m_qc;
-  
+
   KComboBox* m_ro;
   KComboBox* m_rw;
   KComboBox* m_hc;

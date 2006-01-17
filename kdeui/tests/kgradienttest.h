@@ -13,8 +13,8 @@
 class KGradientWidget : public QWidget
 {
 public:
-    KGradientWidget(QWidget *parent=0, const char *name=0)
-        : QWidget(parent, name){;}
+    KGradientWidget(QWidget *parent=0)
+        : QWidget(parent){;}
 protected:
     void paintEvent(QPaintEvent *ev);
 private:

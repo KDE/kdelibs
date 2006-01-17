@@ -14,22 +14,22 @@ class KLineEditTest : public QWidget
     Q_OBJECT
 
 public:
-   KLineEditTest( QWidget *parent=0, const char *name=0 );
+   KLineEditTest( QWidget *parent=0 );
    ~KLineEditTest();
    KLineEdit* lineEdit() const { return m_lineedit; }
 
 public slots:
    virtual void show ();
-   
+
 private slots:
    void quitApp();
-   void slotHide();   
+   void slotHide();
    void slotEnable( bool );
-   void slotReadOnly( bool );   
+   void slotReadOnly( bool );
    void slotReturnPressed();
-   void resultOutput( const QString& );   
+   void resultOutput( const QString& );
    void slotReturnPressed( const QString& );
-   
+
 protected:
    QPointer<KLineEdit> m_lineedit;
    QPushButton* m_btnExit;

@@ -11,8 +11,8 @@
 
 int cols = 3, rows = 3; // how many
 
-KDesatWidget::KDesatWidget(QWidget *parent, const char *name)
-  :QWidget(parent, name)
+KDesatWidget::KDesatWidget(QWidget *parent)
+  :QWidget(parent)
 {
 
     image = QImage("testimage.png");

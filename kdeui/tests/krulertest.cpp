@@ -22,8 +22,8 @@ MyCheckBox::mouseReleaseEvent(QMouseEvent *e )
 }
 */
 
-MouseWidget::MouseWidget( QWidget *parent, const char *name, Qt::WFlags f )
-  : QFrame(parent, name, f)
+MouseWidget::MouseWidget( QWidget *parent )
+  : QFrame(parent)
 {
 }
 
@@ -56,8 +56,8 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 }
 
 
-KRulerTest::KRulerTest( const char *name )
-  : KMainWindow(0, name)
+KRulerTest::KRulerTest()
+  : KMainWindow(0)
 {
   mainframe = new QFrame(this);
 
@@ -374,7 +374,7 @@ int main(int argc, char **argv)
   testapp = new KApplication;
   testapp->setFont(QFont("Helvetica",12),true);
 
-  window = new KRulerTest("main");
+  window = new KRulerTest();
   testapp->setMainWidget(window);
   window->setCaption("KRulerTest");
   window->show();

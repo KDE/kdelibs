@@ -256,8 +256,8 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 /******************************************************************/
 
 //==================================================================
-KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
-  : KVBox( parent/*, name*/ ), d(new KCharSelectPrivate)
+KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_chr, int _tableNum )
+  : KVBox( parent ), d(new KCharSelectPrivate)
 {
     setSpacing( KDialog::spacingHint() );
     KHBox* const bar = new KHBox( this );
@@ -304,8 +304,6 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
     charTable = new KCharSelectTable( this, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
-
-    charTable->setObjectName( name );
 
     const QSize sz( 200,
                     200 );    

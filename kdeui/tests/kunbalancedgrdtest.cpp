@@ -13,8 +13,8 @@
 int cols = 3, rows = 3; // how many
 
 
-KGradientWidget::KGradientWidget(QWidget *parent, const char *name)
-  :QWidget(parent, name)
+KGradientWidget::KGradientWidget(QWidget *parent)
+  :QWidget(parent)
 {
   time.start();
   setMinimumSize(250 * cols, 250 * rows);
@@ -126,8 +126,8 @@ void KGradientWidget::paintEvent(QPaintEvent *)
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
 }
 
-myTopWidget::myTopWidget (QWidget *parent, const char *name)
-  :QWidget(parent, name)
+myTopWidget::myTopWidget (QWidget *parent)
+  :QWidget(parent)
 {
   QGridLayout *lay = new QGridLayout (this, 2, 3, 0);
 
