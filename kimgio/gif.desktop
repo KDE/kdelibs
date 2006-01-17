@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=gif
 X-KDE-MimeType=image/gif
+X-KDE-Read=true
+X-KDE-Write=false

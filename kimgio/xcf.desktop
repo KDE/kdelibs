@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xcf,XCF
 X-KDE-MimeType=image/x-xcf-gimp
+X-KDE-Read=true
+X-KDE-Write=false

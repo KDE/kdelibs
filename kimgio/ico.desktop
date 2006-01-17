@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=ico
 X-KDE-MimeType=image/x-ico
+X-KDE-Read=true
+X-KDE-Write=false

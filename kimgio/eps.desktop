@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=eps,EPS,EPSI,epsf,EPSF
 X-KDE-MimeType=image/x-eps
+X-KDE-Read=true
+X-KDE-Write=true

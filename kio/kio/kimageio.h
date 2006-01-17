@@ -15,7 +15,8 @@
 
 /**
  * A small convenience class to get information about image format names and
- * the corresponding mime type.
+ * the corresponding mime type. Also it can give information about supported
+ * image types without loading all the imageformat plugins.
  *
  * The image processing backends are written as image handlers compatible
  * with the QImageIOHandler format. The backends are Qt imageformat plugins. 
@@ -72,7 +73,14 @@ public:
    * @since 3.1
    */
   static QStringList typeForMime(const QString& mimeType);
-
+  /**
+   * Returns a list of all KImageIO supported formats.
+   *
+   * @param mode Tells whether to retrieve modes that can be read or written.
+   * @return a list of the type ids
+   */
+  static QStringList types(Mode mode = Writing);
+                   
   /**
    *  Returns a list of MIME types for all KImageIO supported formats.
    *

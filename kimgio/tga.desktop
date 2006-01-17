@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=tga,TGA
 X-KDE-MimeType=image/x-targa
+X-KDE-Read=true
+X-KDE-Write=true

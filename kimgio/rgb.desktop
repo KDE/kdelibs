@@ -5,3 +5,5 @@ Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat= rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI
 X-KDE-MimeType=image/x-rgb
+X-KDE-Read=true
+X-KDE-Write=true

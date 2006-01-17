@@ -9,3 +9,9 @@ Type=QStringList
 
 [PropertyDef::X-KDE-MimeType]
 Type=QString
+
+[PropertyDef::X-KDE-Read]
+Type=bool
+
+[PropertyDef::X-KDE-Write]
+Type=bool
