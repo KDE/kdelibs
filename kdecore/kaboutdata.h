@@ -464,6 +464,15 @@ class KDECORE_EXPORT KAboutData
     QString programName() const;
 
     /**
+     * @internal
+     */
+    const char* internalProgramName() const;
+    /**
+     * @internal
+     */
+    void translateInternalProgramName() const;
+
+    /**
      * Returns the program logo image. 
      * @return the program logo data or null image if there is 
      * no custom application logo defined.
@@ -476,6 +485,11 @@ class KDECORE_EXPORT KAboutData
      * @return the version string.
      */
     QString version() const;
+
+    /**
+     * @internal
+     */
+    const char* internalVersion() const { return mVersion; }
 
     /**
      * Returns a short, translated description.
@@ -496,6 +510,11 @@ class KDECORE_EXPORT KAboutData
      * @return the email address where to report bugs.
      */
     QString bugAddress() const;
+    
+    /**
+     * @internal
+     */
+    const char* internalBugAddress() const { return mBugEmailAddress; }
 
     /**
      * Returns a list of authors.

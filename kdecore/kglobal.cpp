@@ -28,7 +28,7 @@
 #include "kglobal.h"
 
 #include <kapplication.h>
-
+#include <kaboutdata.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -94,6 +94,8 @@ KLocale	*KGlobal::locale()
 
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
+        if( _instance->aboutData())
+            _instance->aboutData()->translateInternalProgramName();
     }
 
     return _locale;

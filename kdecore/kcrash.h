@@ -117,6 +117,10 @@ class KDECORE_EXPORT KCrash
    * Pointer to the emergency save function.
    */
   static HandlerType _emergencySaveFunction;
+  
+ private:
+   static void startDrKonqi( const char* argv[], int argc );
+   static void startDirectly( const char* argv[], int argc );
 };
 
 #endif
