@@ -1,0 +1,45 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+testwrite_sources = """
+testwrite.cpp
+"""
+
+testread_sources = """
+testread.cpp
+"""
+
+testread2_sources = """
+testread2.cpp testutils.cpp
+"""
+
+vcards_sources = """
+vcard.cpp vcardline.cpp vcardparser.cpp
+"""
+
+vcardsinclude_headers = """
+vcard.h vcardline.h vcardparser.h
+"""
+
+includes = '#/kabc #/kabc '
+
+obj = env.kdeobj('convenience')
+obj.target = 'vcards'
+obj.source = vcards_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+vcardsincludedir = $(includedir)/kabc
+testread_LDADD = libvcards.la $(top_builddir)/kabc/libkabc.la
+testread2_LDADD = libvcards.la $(top_builddir)/kabc/libkabc.la
+TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard6.vcf vcard7.vcf
+testwrite_LDADD = libvcards.la $(top_builddir)/kabc/libkabc.la
+"""
+
+"""Unhandled Targets 
+check-local = testread###rm -f FAILED; \###for i in $(TESTFILES); \###  do perl $(top_srcdir)/kabc/vcardparser/checkvcard.pl \###    $(top_srcdir)/kabc/vcardparser/tests/$$i; \###done; \###[ ! -e FAILED ]
+"""
