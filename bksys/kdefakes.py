@@ -3,7 +3,7 @@
 
 """
 This tool is used to find and load the libxml2 and libxslt
-neceessary compilation and link flags
+necessary compilation and link flags
 """
 
 def exists(env):
