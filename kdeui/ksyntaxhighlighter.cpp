@@ -21,7 +21,7 @@
 
 #include <qcolor.h>
 #include <qregexp.h>
-#include <q3syntaxhighlighter.h>
+#include <qsyntaxhighlighter.h>
 #include <qtimer.h>
 
 #include <klocale.h>
@@ -112,15 +112,14 @@ private:
 
 Q3Dict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
 
-
-KSyntaxHighlighter::KSyntaxHighlighter( Q3TextEdit *textEdit,
+KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
 					  bool colorQuoting,
 					  const QColor& depth0,
 					  const QColor& depth1,
 					  const QColor& depth2,
 					  const QColor& depth3,
 					  SyntaxMode mode )
-    : Q3SyntaxHighlighter( textEdit ),d(new KSyntaxHighlighterPrivate())
+    : QSyntaxHighlighter( textEdit ),d(new KSyntaxHighlighterPrivate())
 {
 
     d->enabled = colorQuoting;
@@ -138,13 +137,14 @@ KSyntaxHighlighter::~KSyntaxHighlighter()
     delete d;
 }
 
-int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
+void KSyntaxHighlighter::highlightBlock ( const QString & text )
 {
     if (!d->enabled) {
-	setFormat( 0, text.length(), textEdit()->viewport()->paletteForegroundColor() );
-	return 0;
+        //reset color.
+	//setFormat( 0, text.length(), document ()->paletteForegroundColor() );
+        setCurrentBlockState ( 0 );
+	return;
     }
-
     QString simplified = text;
     simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
     while ( simplified.startsWith( QLatin1String(">>>>") ) )
@@ -157,10 +157,11 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
 	setFormat( 0, text.length(), d->col4 );
     else
 	setFormat( 0, text.length(), d->col5 );
-    return 0;
+    setCurrentBlockState ( 0 );
 }
 
-KSpellingHighlighter::KSpellingHighlighter( Q3TextEdit *textEdit,
+
+KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
 					    const QColor& spellColor,
 					    bool colorQuoting,
 					    const QColor& depth0,
@@ -178,9 +179,9 @@ KSpellingHighlighter::~KSpellingHighlighter()
     delete d;
 }
 
-int KSpellingHighlighter::highlightParagraph( const QString &text,
-					      int paraNo )
+void KSpellingHighlighter::highlightBlock ( const QString & text )
 {
+#if 0
     if ( paraNo == -2 )
 	paraNo = 0;
     // leave #includes, diffs, and quoted replies alone
@@ -191,11 +192,11 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
     if ( !text.endsWith(" ") )
 	d->alwaysEndsWithSpace = false;
 
-    KSyntaxHighlighter::highlightParagraph( text, -2 );
+    KSyntaxHighlighter::highlightBlock ( text );
 
     if ( !isCode ) {
         int para, index;
-	textEdit()->getCursorPosition( &para, &index );
+	document ()->getCursorPosition( &para, &index );
 	int len = text.length();
 	if ( d->alwaysEndsWithSpace )
 	    len--;
@@ -223,6 +224,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
 	    flushCurrentWord();
     }
     return ++paraNo;
+#endif
 }
 
 QStringList KSpellingHighlighter::personalWords()
@@ -240,6 +242,7 @@ QStringList KSpellingHighlighter::personalWords()
     l.append( "Qt" );
     return l;
 }
+
 
 void KSpellingHighlighter::flushCurrentWord()
 {
@@ -262,9 +265,10 @@ void KSpellingHighlighter::flushCurrentWord()
     d->currentWord = "";
 }
 
+
 QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
 
-KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
+KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 						    bool spellCheckingActive ,
 						    bool autoEnable,
 						    const QColor& spellColor,
@@ -291,9 +295,10 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     d->disablePercentage = qMin( d->disablePercentage, 101 );
     d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
 
+#if 0
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
-
+#endif
     d->rehighlightRequest = new QTimer(this);
     connect( d->rehighlightRequest, SIGNAL( timeout() ),
 	     this, SLOT( slotRehighlight() ));
@@ -387,12 +392,12 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 
     if ((dict->isEmpty() || !((*dict)[word])) && d->spell ) {
 	int para, index;
-	textEdit()->getCursorPosition( &para, &index );
+	//document ()->getCursorPosition( &para, &index );
 	++d->wordCount;
 	dict->replace( word, Unknown );
 	++d->checksRequested;
-	if (currentParagraph() != para)
-	    d->completeRehighlightRequired = true;
+	//if (currentParagraph() != para)
+	//    d->completeRehighlightRequired = true;
 	d->spellTimeout->start( tenSeconds, true );
 	d->spell->checkWord( word, false );
     }
@@ -462,7 +467,7 @@ void KDictSpellingHighlighter::setActive( bool active )
         return;
 
     d->active = active;
-    rehighlight();
+    //rehighlight();
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );
     else
@@ -493,12 +498,12 @@ void KDictSpellingHighlighter::slotRehighlight()
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-	rehighlight();
+	//rehighlight();
     } else {
 	int para, index;
-	textEdit()->getCursorPosition( &para, &index );
+	//document ()->getCursorPosition( &para, &index );
 	//rehighlight the current para only (undo/redo safe)
-	textEdit()->insertAt( "", para, index );
+	//document ()->insertAt( "", para, index );
     }
     if (d->checksDone == d->checksRequested)
 	d->completeRehighlightRequired = false;
@@ -596,7 +601,7 @@ void KDictSpellingHighlighter::slotKSpellNotResponding()
 
 bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 {
-    if (o == textEdit() && (e->type() == QEvent::FocusIn)) {
+    if (o == document () && (e->type() == QEvent::FocusIn)) {
         if ( d->globalConfig ) {
             QString skey = spellKey();
             if ( d->spell && d->spellKey != skey ) {
@@ -606,7 +611,7 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
         }
     }
 
-    if (o == textEdit() && (e->type() == QEvent::KeyPress)) {
+    if (o == document () && (e->type() == QEvent::KeyPress)) {
 	QKeyEvent *k = static_cast<QKeyEvent *>(e);
 	d->autoReady = true;
 	if (d->rehighlightRequest->isActive()) // try to stay out of the users way
@@ -648,7 +653,7 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	}
     }
 
-    else if ( o == textEdit()->viewport() &&
+    else if ( /*o == document ()->viewport() &&*/
 	 ( e->type() == QEvent::MouseButtonPress )) {
 	d->autoReady = true;
 	if ( intraWordEditing() ) {
@@ -660,5 +665,4 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 
     return false;
 }
-
 #include "ksyntaxhighlighter.moc"

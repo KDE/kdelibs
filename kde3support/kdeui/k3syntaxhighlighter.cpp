@@ -32,7 +32,7 @@
 #include <q3dict.h>
 #include <QKeyEvent>
 
-#include "ksyntaxhighlighter.h"
+#include "k3syntaxhighlighter.h"
 
 static int dummy, dummy2, dummy3, dummy4;
 static int *Okay = &dummy;
@@ -41,7 +41,7 @@ static int *Ignore = &dummy3;
 static int *Unknown = &dummy4;
 static const int tenSeconds = 10*1000;
 
-class KSyntaxHighlighter::KSyntaxHighlighterPrivate
+class K3SyntaxHighlighter::K3SyntaxHighlighterPrivate
 {
 public:
     QColor col1, col2, col3, col4, col5;
@@ -49,11 +49,11 @@ public:
     bool enabled;
 };
 
-class KSpellingHighlighter::KSpellingHighlighterPrivate
+class K3SpellingHighlighter::K3SpellingHighlighterPrivate
 {
 public:
 
-    KSpellingHighlighterPrivate() :
+    K3SpellingHighlighterPrivate() :
 	alwaysEndsWithSpace( true ),
 	intraWordEditing( false ) {}
 
@@ -64,10 +64,10 @@ public:
     bool intraWordEditing;
 };
 
-class KDictSpellingHighlighter::KDictSpellingHighlighterPrivate
+class K3DictSpellingHighlighter::K3DictSpellingHighlighterPrivate
 {
 public:
-    KDictSpellingHighlighterPrivate() :
+    K3DictSpellingHighlighterPrivate() :
         mDict( 0 ),
 	spell( 0 ),
         mSpellConfig( 0 ),
@@ -78,7 +78,7 @@ public:
         globalConfig( true ),
 	spellReady( false ) {}
 
-    ~KDictSpellingHighlighterPrivate() {
+    ~K3DictSpellingHighlighterPrivate() {
 	delete rehighlightRequest;
 	delete spell;
     }
@@ -110,17 +110,17 @@ private:
 
 };
 
-Q3Dict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
+Q3Dict<int>* K3DictSpellingHighlighter::K3DictSpellingHighlighterPrivate::statDict = 0;
 
 
-KSyntaxHighlighter::KSyntaxHighlighter( Q3TextEdit *textEdit,
+K3SyntaxHighlighter::K3SyntaxHighlighter( Q3TextEdit *textEdit,
 					  bool colorQuoting,
 					  const QColor& depth0,
 					  const QColor& depth1,
 					  const QColor& depth2,
 					  const QColor& depth3,
 					  SyntaxMode mode )
-    : Q3SyntaxHighlighter( textEdit ),d(new KSyntaxHighlighterPrivate())
+    : Q3SyntaxHighlighter( textEdit ),d(new K3SyntaxHighlighterPrivate())
 {
 
     d->enabled = colorQuoting;
@@ -133,12 +133,12 @@ KSyntaxHighlighter::KSyntaxHighlighter( Q3TextEdit *textEdit,
     d->mode = mode;
 }
 
-KSyntaxHighlighter::~KSyntaxHighlighter()
+K3SyntaxHighlighter::~K3SyntaxHighlighter()
 {
     delete d;
 }
 
-int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
+int K3SyntaxHighlighter::highlightParagraph( const QString &text, int )
 {
     if (!d->enabled) {
 	setFormat( 0, text.length(), textEdit()->viewport()->paletteForegroundColor() );
@@ -160,25 +160,25 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
     return 0;
 }
 
-KSpellingHighlighter::KSpellingHighlighter( Q3TextEdit *textEdit,
+K3SpellingHighlighter::K3SpellingHighlighter( Q3TextEdit *textEdit,
 					    const QColor& spellColor,
 					    bool colorQuoting,
 					    const QColor& depth0,
 					    const QColor& depth1,
 					    const QColor& depth2,
 					    const QColor& depth3 )
-    : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),d(new KSpellingHighlighterPrivate())
+    : K3SyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),d(new K3SpellingHighlighterPrivate())
 {
 
     d->color = spellColor;
 }
 
-KSpellingHighlighter::~KSpellingHighlighter()
+K3SpellingHighlighter::~K3SpellingHighlighter()
 {
     delete d;
 }
 
-int KSpellingHighlighter::highlightParagraph( const QString &text,
+int K3SpellingHighlighter::highlightParagraph( const QString &text,
 					      int paraNo )
 {
     if ( paraNo == -2 )
@@ -191,7 +191,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
     if ( !text.endsWith(" ") )
 	d->alwaysEndsWithSpace = false;
 
-    KSyntaxHighlighter::highlightParagraph( text, -2 );
+    K3SyntaxHighlighter::highlightParagraph( text, -2 );
 
     if ( !isCode ) {
         int para, index;
@@ -225,7 +225,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
     return ++paraNo;
 }
 
-QStringList KSpellingHighlighter::personalWords()
+QStringList K3SpellingHighlighter::personalWords()
 {
     QStringList l;
     l.append( "KMail" );
@@ -241,7 +241,7 @@ QStringList KSpellingHighlighter::personalWords()
     return l;
 }
 
-void KSpellingHighlighter::flushCurrentWord()
+void K3SpellingHighlighter::flushCurrentWord()
 {
     while ( d->currentWord[0].isPunct() ) {
 	d->currentWord = d->currentWord.mid( 1 );
@@ -262,9 +262,9 @@ void KSpellingHighlighter::flushCurrentWord()
     d->currentWord = "";
 }
 
-QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
+QObject *K3DictSpellingHighlighter::K3DictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
 
-KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
+K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
 						    bool spellCheckingActive ,
 						    bool autoEnable,
 						    const QColor& spellColor,
@@ -274,8 +274,8 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
 						    const QColor& depth2,
 						    const QColor& depth3,
                                                     KSpellConfig *spellConfig )
-    : KSpellingHighlighter( textEdit, spellColor,
-			    colorQuoting, depth0, depth1, depth2, depth3 ),d(new KDictSpellingHighlighterPrivate())
+    : K3SpellingHighlighter( textEdit, spellColor,
+			    colorQuoting, depth0, depth1, depth2, depth3 ),d(new K3DictSpellingHighlighterPrivate())
 {
 
     d->mSpellConfig = spellConfig;
@@ -317,7 +317,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     startTimer( 2 * 1000 );
 }
 
-KDictSpellingHighlighter::~KDictSpellingHighlighter()
+K3DictSpellingHighlighter::~K3DictSpellingHighlighter()
 {
     delete d->spell;
     d->spell = 0;
@@ -326,7 +326,7 @@ KDictSpellingHighlighter::~KDictSpellingHighlighter()
     delete d;
 }
 
-void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
+void K3DictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
     if ( d->globalConfig ) {
@@ -339,7 +339,7 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
         d->spell = spell;
     }
     d->spellReady = true;
-    const QStringList l = KSpellingHighlighter::personalWords();
+    const QStringList l = K3SpellingHighlighter::personalWords();
     for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->spell->addPersonal( *it );
     }
@@ -353,7 +353,7 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
     d->rehighlightRequest->start( 0, true );
 }
 
-bool KDictSpellingHighlighter::isMisspelled( const QString &word )
+bool K3DictSpellingHighlighter::isMisspelled( const QString &word )
 {
     if (!d->spellReady)
 	return false;
@@ -399,17 +399,17 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
     return false;
 }
 
-bool KSpellingHighlighter::intraWordEditing() const
+bool K3SpellingHighlighter::intraWordEditing() const
 {
     return d->intraWordEditing;
 }
 
-void KSpellingHighlighter::setIntraWordEditing( bool editing )
+void K3SpellingHighlighter::setIntraWordEditing( bool editing )
 {
     d->intraWordEditing = editing;
 }
 
-void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, const QStringList &suggestions,
+void K3DictSpellingHighlighter::slotMisspelling (const QString &originalWord, const QStringList &suggestions,
                                                 unsigned int pos)
 {
     Q_UNUSED( suggestions );
@@ -424,7 +424,7 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
     emit newSuggestions( originalWord, suggestions, pos );
 }
 
-void KDictSpellingHighlighter::slotCorrected(const QString &word,
+void K3DictSpellingHighlighter::slotCorrected(const QString &word,
 					     const QString &,
 					     unsigned int)
 
@@ -442,21 +442,21 @@ void KDictSpellingHighlighter::slotCorrected(const QString &word,
     }
 }
 
-void KDictSpellingHighlighter::dictionaryChanged()
+void K3DictSpellingHighlighter::dictionaryChanged()
 {
-    QObject *oldMonitor = KDictSpellingHighlighterPrivate::sDictionaryMonitor;
-    KDictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
-    KDictSpellingHighlighterPrivate::sDict()->clear();
+    QObject *oldMonitor = K3DictSpellingHighlighterPrivate::sDictionaryMonitor;
+    K3DictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
+    K3DictSpellingHighlighterPrivate::sDict()->clear();
     delete oldMonitor;
 }
 
-void KDictSpellingHighlighter::restartBackgroundSpellCheck()
+void K3DictSpellingHighlighter::restartBackgroundSpellCheck()
 {
     kdDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
     slotDictionaryChanged();
 }
 
-void KDictSpellingHighlighter::setActive( bool active )
+void K3DictSpellingHighlighter::setActive( bool active )
 {
     if ( active == d->active )
         return;
@@ -469,12 +469,12 @@ void KDictSpellingHighlighter::setActive( bool active )
         emit activeChanged( i18n("As-you-type spell checking disabled.") );
 }
 
-bool KDictSpellingHighlighter::isActive() const
+bool K3DictSpellingHighlighter::isActive() const
 {
     return d->active;
 }
 
-void KDictSpellingHighlighter::setAutomatic( bool automatic )
+void K3DictSpellingHighlighter::setAutomatic( bool automatic )
 {
     if ( automatic == d->automatic )
         return;
@@ -484,12 +484,12 @@ void KDictSpellingHighlighter::setAutomatic( bool automatic )
         slotAutoDetection();
 }
 
-bool KDictSpellingHighlighter::automatic() const
+bool K3DictSpellingHighlighter::automatic() const
 {
     return d->automatic;
 }
 
-void KDictSpellingHighlighter::slotRehighlight()
+void K3DictSpellingHighlighter::slotRehighlight()
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
@@ -505,7 +505,7 @@ void KDictSpellingHighlighter::slotRehighlight()
     QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
 }
 
-void KDictSpellingHighlighter::slotDictionaryChanged()
+void K3DictSpellingHighlighter::slotDictionaryChanged()
 {
     delete d->spell;
     d->spellReady = false;
@@ -517,7 +517,7 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
 		SLOT( slotSpellReady( KSpell * ) ), d->mSpellConfig );
 }
 
-void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
+void K3DictSpellingHighlighter::slotLocalSpellConfigChanged()
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
     // the spell config has been changed, so we have to restart from scratch
@@ -525,7 +525,7 @@ void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
     slotDictionaryChanged();
 }
 
-QString KDictSpellingHighlighter::spellKey()
+QString K3DictSpellingHighlighter::spellKey()
 {
     KGlobal::config()->reparseConfiguration();
     KConfigGroup cg( KGlobal::config(), "KSpell" );
@@ -552,7 +552,7 @@ QString KDictSpellingHighlighter::spellKey()
 // Words in the signature and reply prefix are ignored.
 // Only unique words are counted.
 
-void KDictSpellingHighlighter::slotAutoDetection()
+void K3DictSpellingHighlighter::slotAutoDetection()
 {
     if ( !d->autoReady )
 	return;
@@ -579,12 +579,12 @@ void KDictSpellingHighlighter::slotAutoDetection()
     }
 }
 
-void KDictSpellingHighlighter::slotKSpellNotResponding()
+void K3DictSpellingHighlighter::slotKSpellNotResponding()
 {
     static int retries = 0;
     if (retries < 10) {
         if ( d->globalConfig )
-	    KDictSpellingHighlighter::dictionaryChanged();
+	    K3DictSpellingHighlighter::dictionaryChanged();
 	else
 	    slotLocalSpellConfigChanged();
     } else {
@@ -594,14 +594,14 @@ void KDictSpellingHighlighter::slotKSpellNotResponding()
     ++retries;
 }
 
-bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
+bool K3DictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 {
     if (o == textEdit() && (e->type() == QEvent::FocusIn)) {
         if ( d->globalConfig ) {
             QString skey = spellKey();
             if ( d->spell && d->spellKey != skey ) {
                 d->spellKey = skey;
-                KDictSpellingHighlighter::dictionaryChanged();
+                K3DictSpellingHighlighter::dictionaryChanged();
             }
         }
     }
@@ -661,4 +661,4 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
     return false;
 }
 
-#include "ksyntaxhighlighter.moc"
+#include "k3syntaxhighlighter.moc"

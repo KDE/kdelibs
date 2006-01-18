@@ -24,8 +24,8 @@
 #ifndef KSYNTAXHIGHLIGHTER_H
 #define KSYNTAXHIGHLIGHTER_H
 
-#include <q3textedit.h>
-#include <q3syntaxhighlighter.h>
+#include <QTextEdit>
+#include <qsyntaxhighlighter.h>
 #include <qcolor.h>
 #include <qstringlist.h>
 
@@ -39,14 +39,14 @@ class KSpellConfig;
 /**
  * \brief Syntax sensitive text highlighter
  */
-class KDEUI_EXPORT KSyntaxHighlighter : public Q3SyntaxHighlighter
+class KDEUI_EXPORT KSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
     enum SyntaxMode {
 	PlainTextMode,
 	RichTextMode
     };
-    KSyntaxHighlighter( Q3TextEdit *textEdit,
+    KSyntaxHighlighter( QTextEdit *textEdit,
 			 bool colorQuoting = false,
 			 const QColor& QuoteColor0 = Qt::black,
 			 const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
@@ -55,17 +55,18 @@ public:
 			 SyntaxMode mode = PlainTextMode );
     ~KSyntaxHighlighter();
 
-    int highlightParagraph( const QString& text, int endStateOfLastPara );
+    virtual void highlightBlock ( const QString & text );
 
 private:
     class KSyntaxHighlighterPrivate;
     KSyntaxHighlighterPrivate *const d;
 };
 
+
 class KDEUI_EXPORT KSpellingHighlighter : public KSyntaxHighlighter
 {
 public:
-    KSpellingHighlighter( Q3TextEdit *textEdit,
+    KSpellingHighlighter( QTextEdit *textEdit,
 			  const QColor& spellColor = Qt::red,
 			  bool colorQuoting = false,
 			  const QColor& QuoteColor0 = Qt::black,
@@ -73,14 +74,13 @@ public:
 			  const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
 			  const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ) );
     ~KSpellingHighlighter();
+    virtual void highlightBlock ( const QString & text );
 
-    virtual int highlightParagraph( const QString &text,
-				    int endStateOfLastPara );
+    static QStringList personalWords();
     virtual bool isMisspelled( const QString& word ) = 0;
+
     bool intraWordEditing() const;
     void setIntraWordEditing( bool editing );
-    static QStringList personalWords();
-
 private:
     void flushCurrentWord();
 
@@ -91,12 +91,12 @@ private:
 /**
  * \brief Dictionary sensitive text highlighter
  */
-class KDEUI_EXPORT KDictSpellingHighlighter : public QObject, public KSpellingHighlighter
+class KDEUI_EXPORT KDictSpellingHighlighter : public KSpellingHighlighter
 {
 Q_OBJECT
 
 public:
-    KDictSpellingHighlighter( Q3TextEdit *textEdit,
+    KDictSpellingHighlighter( QTextEdit *textEdit,
 			      bool spellCheckingActive = true,
 			      bool autoEnable = true,
 			      const QColor& spellColor = Qt::red,
@@ -180,5 +180,4 @@ private:
     class KDictSpellingHighlighterPrivate;
     KDictSpellingHighlighterPrivate *const d;
 };
-
 #endif

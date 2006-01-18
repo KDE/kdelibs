@@ -23,7 +23,7 @@
 #include <qclipboard.h>
 #include <q3popupmenu.h>
 
-#include <ksyntaxhighlighter.h>
+#include <k3syntaxhighlighter.h>
 #include <kspell.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -48,7 +48,7 @@ public:
 
     bool customPalette;
     bool checkSpellingEnabled;
-    KDictSpellingHighlighter *highlighter;
+    K3DictSpellingHighlighter *highlighter;
     KSpell *spell;
 };
 
@@ -285,7 +285,7 @@ void K3TextEdit::setCheckSpellingEnabled( bool check )
     if ( check )
     {
         if (hasFocus())
-            d->highlighter = new KDictSpellingHighlighter( this );
+            d->highlighter = new K3DictSpellingHighlighter( this );
     }
     else
     {
@@ -297,7 +297,7 @@ void K3TextEdit::setCheckSpellingEnabled( bool check )
 void K3TextEdit::focusInEvent( QFocusEvent *e )
 {
     if ( d->checkSpellingEnabled && !d->highlighter )
-        d->highlighter = new KDictSpellingHighlighter( this );
+        d->highlighter = new K3DictSpellingHighlighter( this );
 
     Q3TextEdit::focusInEvent( e );
 }
