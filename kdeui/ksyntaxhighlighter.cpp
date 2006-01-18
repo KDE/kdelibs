@@ -295,10 +295,9 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     d->disablePercentage = qMin( d->disablePercentage, 101 );
     d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
 
-#if 0
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
-#endif
+
     d->rehighlightRequest = new QTimer(this);
     connect( d->rehighlightRequest, SIGNAL( timeout() ),
 	     this, SLOT( slotRehighlight() ));
