@@ -172,7 +172,9 @@ Word Filter::wordAtPosition( unsigned int pos ) const
         --currentPosition;
     }
 
-    int start = (!currentPosition) ? 0 : ++currentPosition;
+    // currentPosition == 0 means the first char is not letter
+    // currentPosition == -1 means we reached the beginning
+    int start = (currentPosition < 0) ? 0 : ++currentPosition;
     currentPosition = pos ;
     if ( m_buffer[ currentPosition ].isLetter() ) {
         while ( m_buffer[ currentPosition ].isLetter() ) {
