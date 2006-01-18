@@ -141,7 +141,7 @@ void KSyntaxHighlighter::highlightBlock ( const QString & text )
 {
     if (!d->enabled) {
         //reset color.
-	//setFormat( 0, text.length(), document ()->paletteForegroundColor() );
+	//setFormat( 0, text.length(), document()->paletteForegroundColor() );
         setCurrentBlockState ( 0 );
 	return;
     }
@@ -291,9 +291,9 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     d->completeRehighlightRequired = false;
 
     KConfigGroup cg( KGlobal::config(), "KSpell" );
-    d->disablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", QVariant(42 )).toInt();
+    d->disablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
     d->disablePercentage = qMin( d->disablePercentage, 101 );
-    d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
+    d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
