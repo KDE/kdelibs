@@ -120,9 +120,8 @@ KSyntaxHighlighter::KSyntaxHighlighter( Q3TextEdit *textEdit,
 					  const QColor& depth2,
 					  const QColor& depth3,
 					  SyntaxMode mode )
-    : Q3SyntaxHighlighter( textEdit )
+    : Q3SyntaxHighlighter( textEdit ),d(new KSyntaxHighlighterPrivate())
 {
-    d = new KSyntaxHighlighterPrivate();
 
     d->enabled = colorQuoting;
     d->col1 = depth0;
@@ -168,9 +167,8 @@ KSpellingHighlighter::KSpellingHighlighter( Q3TextEdit *textEdit,
 					    const QColor& depth1,
 					    const QColor& depth2,
 					    const QColor& depth3 )
-    : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 )
+    : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),d(new KSpellingHighlighterPrivate())
 {
-    d = new KSpellingHighlighterPrivate();
 
     d->color = spellColor;
 }
@@ -277,9 +275,8 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
 						    const QColor& depth3,
                                                     KSpellConfig *spellConfig )
     : KSpellingHighlighter( textEdit, spellColor,
-			    colorQuoting, depth0, depth1, depth2, depth3 )
+			    colorQuoting, depth0, depth1, depth2, depth3 ),d(new KDictSpellingHighlighterPrivate())
 {
-    d = new KDictSpellingHighlighterPrivate();
 
     d->mSpellConfig = spellConfig;
     d->globalConfig = ( !spellConfig );

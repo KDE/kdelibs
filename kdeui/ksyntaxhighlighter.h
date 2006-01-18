@@ -59,7 +59,7 @@ public:
 
 private:
     class KSyntaxHighlighterPrivate;
-    KSyntaxHighlighterPrivate *d;
+    KSyntaxHighlighterPrivate *const d;
 };
 
 class KDEUI_EXPORT KSpellingHighlighter : public KSyntaxHighlighter
@@ -85,7 +85,7 @@ private:
     void flushCurrentWord();
 
     class KSpellingHighlighterPrivate;
-    KSpellingHighlighterPrivate *d;
+    KSpellingHighlighterPrivate *const d;
 };
 
 /**
@@ -178,7 +178,7 @@ protected Q_SLOTS:
 
 private:
     class KDictSpellingHighlighterPrivate;
-    KDictSpellingHighlighterPrivate *d;
+    KDictSpellingHighlighterPrivate *const d;
 };
 
 #endif
