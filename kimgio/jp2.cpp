@@ -16,7 +16,6 @@
 #include <QImage>
 #include <QVariant>
 #include <QTextStream>
-#include <kdebug.h>
 
 // dirty, but avoids a warning because jasper.h includes jas_config.h.
 #undef PACKAGE
@@ -190,11 +189,8 @@ read_image( QIODevice* io )
     jas_stream_t* in = 0;
 
     in = jas_stream_qiodevice( io );
-    kdDebug() << "in: " << in << endl;
 
-    if( !in ) {
-        return 0;
-    } // if
+    if( !in ) return 0;
 
     jas_image_t* image = jas_image_decode( in, -1, 0 );
     jas_stream_close( in );
