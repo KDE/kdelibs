@@ -20,7 +20,7 @@
 #undef HAVE__USR_SRC_SYS_I386_ISA_SOUND_AWE_VOICE_H     /* Define to 1 if you have the </usr/src/sys/i386/isa/sound/awe_voice.h>  header file. */
 
 
-/********** processor stuff *************"
+/********** processor stuff *************/
 /* Define to 1 if the assembler supports 3DNOW instructions. */
 #undef HAVE_X86_3DNOW
 /* Define to 1 if the assembler supports MMX instructions. */
@@ -179,7 +179,7 @@
 #cmakedefine HAVE_SYS_NDIR_H
 #cmakedefine HAVE_SYS_SOUNDCARD_H
 #cmakedefine HAVE_SYS_UCRED_H
-#cmakedefine HAVE_SYS_XATTR_H)
+#cmakedefine HAVE_SYS_XATTR_H
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine HAVE_UTIL_H
 #cmakedefine HAVE_VALUES_H
@@ -193,7 +193,7 @@
 #cmakedefine   HAVE_BACKTRACE
 #cmakedefine01 HAVE_BCOPY
 #cmakedefine   HAVE_CRYPT    
-#cmakedefine   HAVE_DECL_GETSERVBYNAME_R
+#cmakedefine01 HAVE_DECL_GETSERVBYNAME_R
 #cmakedefine   HAVE_FADVISE
 #cmakedefine   HAVE_FREEADDRINFO
 #cmakedefine   HAVE_FUNC__FINITE
@@ -265,7 +265,7 @@
 #cmakedefine   HAVE_STRLCAT
 #cmakedefine01 HAVE_STRRCHR
 #cmakedefine   HAVE_STRTOLL
-#cmakedefines  HAVE_UNLOCKPT
+#cmakedefine   HAVE_UNLOCKPT
 #cmakedefine   HAVE_UNSETENV
 #cmakedefine   HAVE_USLEEP
 #cmakedefine   HAVE_UTEMPTER
@@ -276,7 +276,7 @@
 #cmakedefine   HAVE___ARGZ_NEXT 
 #cmakedefine   HAVE___ARGZ_STRINGIFY
 
-#cmakedefines  HAVE_S_ISSOCK
+#cmakedefine   HAVE_S_ISSOCK
 
 #cmakedefine01 TIME_WITH_SYS_TIME
 

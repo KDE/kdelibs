@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
@@ -13,7 +13,7 @@ kde4_automoc(${dcop_SRCS})
 
 kde4_add_executable(dcop ${dcop_SRCS})
 
-target_link_libraries(dcop  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcop  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcop )
 
@@ -28,7 +28,7 @@ kde4_automoc(${dcopfind_SRCS})
 
 kde4_add_executable(dcopfind ${dcopfind_SRCS})
 
-target_link_libraries(dcopfind  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopfind  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcopfind )
 
@@ -43,7 +43,7 @@ kde4_automoc(${dcopclient_SRCS})
 
 kde4_add_executable(dcopclient ${dcopclient_SRCS})
 
-target_link_libraries(dcopclient  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopclient  ${QT_QTCORE_LIBRARY} DCOP)
 
 install_targets(/bin dcopclient )
 
@@ -58,7 +58,7 @@ kde4_automoc(${dcopobject_SRCS})
 
 kde4_add_executable(dcopobject ${dcopobject_SRCS})
 
-target_link_libraries(dcopobject  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopobject  ${QT_QTCORE_LIBRARY} DCOP )
 
 install_targets(/bin dcopobject )
 
@@ -73,7 +73,7 @@ kde4_automoc(${dcopref_SRCS})
 
 kde4_add_executable(dcopref ${dcopref_SRCS})
 
-target_link_libraries(dcopref  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopref  ${QT_QTCORE_LIBRARY} DCOP)
 
 install_targets(/bin dcopref )
 
@@ -88,7 +88,7 @@ kde4_automoc(${dcopstart_SRCS})
 
 kde4_add_executable(dcopstart ${dcopstart_SRCS})
 
-target_link_libraries(dcopstart  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopstart  ${QT_QTCORE_LIBRARY} DCOP)
 
 install_targets(/bin dcopstart )
 
@@ -103,7 +103,7 @@ kde4_automoc(${dcopquit_SRCS})
 
 kde4_add_executable(dcopquit ${dcopquit_SRCS})
 
-target_link_libraries(dcopquit  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopquit  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcopquit )
 

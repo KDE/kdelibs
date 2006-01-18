@@ -8,8 +8,9 @@ add_subdirectory( dcopidl2cpp )
 add_subdirectory( client ) 
 add_subdirectory( tests ) 
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP)
 
 ########### next target ###############
 
@@ -17,11 +18,11 @@ set(dcopserver_shutdown_SRCS
 dcopserver_shutdown.c
 )
 
-kde4_automoc(${dcopserver_shutdown_SRCS})
+#kde4_automoc(${dcopserver_shutdown_SRCS})
 
 kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
 
-target_link_libraries(dcopserver_shutdown  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopserver_shutdown )
 
 install_targets(/bin dcopserver_shutdown )
 
@@ -46,6 +47,7 @@ endif(KDE4_BUILD_TESTS)
 set(testdcopc_SRCS
 testdcopc.c
 dcopc.c
+${kICE_STAT_SRCS}
 )
 
 kde4_automoc(${testdcopc_SRCS})
@@ -53,7 +55,7 @@ kde4_automoc(${testdcopc_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testdcopc ${testdcopc_SRCS})
 
-target_link_libraries(testdcopc  ${QT_AND_KDECORE_LIBS} kICE )
+target_link_libraries(testdcopc  ${QT_AND_KDECORE_LIBS})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -64,13 +66,14 @@ dcopstub.cpp
 dcopref.cpp
 dcopobject.cpp
 dcopclient.cpp
+${kICE_STAT_SRCS}
 )
 
 kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_AND_KDECORE_LIBS} kICE )
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY})
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib DCOP )
@@ -87,7 +90,7 @@ kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
 kde4_add_klm( dcopserver ${dcopserver_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_dcopserver  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP)
 
 install_targets(/lib kdeinit_dcopserver )
 
@@ -142,14 +145,14 @@ kde4_footer()
 #libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE)
 #libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 #libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
-#libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
+#libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt
 #
 #include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h
 #noinst_HEADERS = version.h dcopglobal.h dcopserver.h testdcop.h dcopsignals.h dcop-path.h
 #
 #METASOURCES = AUTO
 #
-## dcopstub needs to go first for --enable-final to work
+# dcopstub needs to go first for --enable-final to work
 #libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp
 #
 #kdeinit_LTLIBRARIES = dcopserver.la

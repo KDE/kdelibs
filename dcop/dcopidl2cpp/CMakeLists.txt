@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
@@ -16,7 +16,7 @@ kde4_automoc(${dcopidl2cpp_SRCS})
 
 kde4_add_executable(dcopidl2cpp ${dcopidl2cpp_SRCS})
 
-target_link_libraries(dcopidl2cpp  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(dcopidl2cpp  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} DCOP)
 
 install_targets(/bin dcopidl2cpp )
 

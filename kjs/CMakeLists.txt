@@ -2,10 +2,28 @@ kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
+
+set(CREATE_HASH_TABLE ${CMAKE_CURRENT_SOURCE_DIR}/create_hash_table )
+
+macro(CREATE_LUT _in_FILE _out_FILE _dep_FILE)
+
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE}
+      ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} -i > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} )
+
+endmacro(CREATE_LUT)
+
+create_lut(date_object.cpp date_object.lut.h date_object.cpp)
+create_lut(number_object.cpp number_object.lut.h number_object.cpp)
+create_lut(string_object.cpp string_object.lut.h string_object.cpp)
+create_lut(array_object.cpp array_object.lut.h array_object.cpp)
+create_lut(math_object.cpp math_object.lut.h math_object.cpp)
+create_lut(keywords.table lexer.lut.h lexer.cpp)
 
 set(kjs_LIB_SRCS
 ustring.cpp

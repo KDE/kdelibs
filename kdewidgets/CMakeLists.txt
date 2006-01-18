@@ -3,7 +3,8 @@ kde4_header()
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 
-include_directories( ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
 
 ########### next target ###############
 
@@ -19,22 +20,28 @@ target_link_libraries(makekdewidgets  ${QT_AND_KDECORE_LIBS} kdecore )
 
 install_targets(/bin makekdewidgets )
 
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-COMMAND ${EXECUTABLE_OUTPUT_PATH}/makekdewidgets ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
-DEPENDS kde.widgets makekdewidgets)
-
-
 
 ########### next target ###############
+
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
+COMMAND ${CMAKE_BINARY_DIR}/bin/makekdewidgets
+ARGS -o kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
+DEPENDS kde.widgets makekdewidgets)
+
 
 set(kdewidgets_PART_SRCS
 classpreviews.cpp
 kdewidgets.cpp
-kdewidgets.qrc
 )
 
 kde4_automoc(${kdewidgets_PART_SRCS})
+
+set( kdewidgets_QRC
+kdewidgets.qrc
+)
+
+qt4_add_resources(kdewidgets_PART_SRCS ${kdewidgets_QRC} )
 
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
