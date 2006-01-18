@@ -144,8 +144,7 @@ void KEdit::searchdone_slot(){
   last_search = NONE;
 }
 
-/* antlarr: KDE 4: make it const QString & */
-int KEdit::doSearch(QString s_pattern, bool case_sensitive,
+int KEdit::doSearch(const QString& s_pattern, bool case_sensitive,
 		    bool wildcard, bool forward, int line, int col){
 
   (void) wildcard; // reserved for possible extension to regex
@@ -501,8 +500,7 @@ void KEdit::replacedone_slot(){
 
 
 
-/* antlarr: KDE 4: make it const QString & */
-int KEdit::doReplace(QString s_pattern, bool case_sensitive,
+int KEdit::doReplace(const QString &s_pattern, bool case_sensitive,
 	   bool wildcard, bool forward, int line, int col, bool replace_all){
 
 

@@ -351,10 +351,10 @@ private Q_SLOTS:
 
 protected:
     void computePosition();
-    int 	doSearch(QString s_pattern, bool case_sensitive,
+    int 	doSearch(const QString &s_pattern, bool case_sensitive,
 			 bool regex, bool forward,int line, int col);
 
-    int 	doReplace(QString s_pattern, bool case_sensitive,
+    int 	doReplace(const QString &s_pattern, bool case_sensitive,
 			  bool regex, bool forward,int line, int col,bool replace);
 
       /**
