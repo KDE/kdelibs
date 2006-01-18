@@ -12,10 +12,11 @@
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
-#include <ktempfile.h>
-#include <qcolor.h>
-#include <qfile.h>
-#include <qimage.h>
+
+#include <QImage>
+#include <QVariant>
+#include <QTextStream>
+#include <kdebug.h>
 
 // dirty, but avoids a warning because jasper.h includes jas_config.h.
 #undef PACKAGE
@@ -28,56 +29,175 @@
 #define MAXCMPTS 256
 
 
+/************************* JasPer QIODevice stream ***********************/
+
+//unfortunately this is declared as static in JasPer libraries
+static jas_stream_t *jas_stream_create()
+{
+        jas_stream_t *stream;
+
+        if (!(stream = (jas_stream_t*)jas_malloc(sizeof(jas_stream_t)))) {
+                return 0;
+        }
+        stream->openmode_ = 0;
+        stream->bufmode_ = 0;
+        stream->flags_ = 0;
+        stream->bufbase_ = 0;
+        stream->bufstart_ = 0;
+        stream->bufsize_ = 0;
+        stream->ptr_ = 0;
+        stream->cnt_ = 0;
+        stream->ops_ = 0;
+        stream->obj_ = 0;
+        stream->rwcnt_ = 0;
+        stream->rwlimit_ = -1;
+
+        return stream;
+}
+
+//unfortunately this is declared as static in JasPer libraries
+static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf,
+  int bufsize)
+{
+        /* If this function is being called, the buffer should not have been
+          initialized yet. */
+        assert(!stream->bufbase_);
+
+        if (bufmode != JAS_STREAM_UNBUF) {
+                /* The full- or line-buffered mode is being employed. */
+                if (!buf) {
+                        /* The caller has not specified a buffer to employ, so allocate
+                          one. */
+                        if ((stream->bufbase_ = (unsigned char*)jas_malloc(JAS_STREAM_BUFSIZE +
+                          JAS_STREAM_MAXPUTBACK))) {
+                                stream->bufmode_ |= JAS_STREAM_FREEBUF;
+                                stream->bufsize_ = JAS_STREAM_BUFSIZE;
+                        } else {
+                                /* The buffer allocation has failed.  Resort to unbuffered
+                                  operation. */
+                                stream->bufbase_ = stream->tinybuf_;
+                                stream->bufsize_ = 1;
+                        }
+                } else {
+                        /* The caller has specified a buffer to employ. */
+                        /* The buffer must be large enough to accommodate maximum
+                          putback. */
+                        assert(bufsize > JAS_STREAM_MAXPUTBACK);
+                        stream->bufbase_ = JAS_CAST(uchar *, buf);
+                        stream->bufsize_ = bufsize - JAS_STREAM_MAXPUTBACK;
+                }
+        } else {
+                /* The unbuffered mode is being employed. */
+                /* A buffer should not have been supplied by the caller. */
+                assert(!buf);
+                /* Use a trivial one-character buffer. */
+                stream->bufbase_ = stream->tinybuf_;
+                stream->bufsize_ = 1;
+        }
+        stream->bufstart_ = &stream->bufbase_[JAS_STREAM_MAXPUTBACK];
+        stream->ptr_ = stream->bufstart_;
+        stream->cnt_ = 0;
+        stream->bufmode_ |= bufmode & JAS_STREAM_BUFMODEMASK;
+}
+                                
+static int qiodevice_read(jas_stream_obj_t *obj, char *buf, int cnt)
+{
+        QIODevice *io = (QIODevice*) obj;
+        return io->read(buf, cnt);
+}
+
+static int qiodevice_write(jas_stream_obj_t *obj, char *buf, int cnt)
+{
+        QIODevice *io = (QIODevice*) obj;
+        return io->write(buf, cnt);
+}
+
+static long qiodevice_seek(jas_stream_obj_t *obj, long offset, int origin)
+{
+        QIODevice *io = (QIODevice*) obj;
+        long newpos;
+
+        switch (origin) {
+        case SEEK_SET:
+                newpos = offset;
+                break;
+        case SEEK_END:
+                newpos = io->size() - offset;
+                break;
+        case SEEK_CUR:
+                newpos = io->size() + offset;
+                break;
+        default:
+                return -1;
+        }
+        if (newpos < 0) {
+                return -1;
+        }
+        if ( io->seek(newpos) )
+            return newpos;
+        else
+            return -1;
+}
+
+static int qiodevice_close(jas_stream_obj_t *obj)
+{
+        return 0;
+}
+
+static jas_stream_ops_t jas_stream_qiodeviceops = {
+        qiodevice_read,
+        qiodevice_write,
+        qiodevice_seek,
+        qiodevice_close
+};
+
+static jas_stream_t *jas_stream_qiodevice(QIODevice *iodevice)
+{
+        jas_stream_t *stream;
+
+        if ( !iodevice ) return 0;
+        if (!(stream = jas_stream_create())) {
+                return 0;
+        }
+
+        /* A stream associated with a memory buffer is always opened
+        for both reading and writing in binary mode. */
+        stream->openmode_ = JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
+
+        jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
+
+        /* Select the operations for a memory stream. */
+        stream->obj_ = (void *)iodevice;
+        stream->ops_ = &jas_stream_qiodeviceops;
+
+        return stream;
+}
+
+/************************ End of JasPer QIODevice stream ****************/
+
 typedef struct {
     jas_image_t* image;
 
-    int	cmptlut[MAXCMPTS];
+    int cmptlut[MAXCMPTS];
 
     jas_image_t* altimage;
 } gs_t;
 
 
-jas_image_t*
-read_image( const QImageIO* io )
+static jas_image_t*
+read_image( QIODevice* io )
 {
     jas_stream_t* in = 0;
-    // for QIODevice's other than QFile, a temp. file is used.
-    KTempFile* tempf = 0;
 
-    QFile* qf = 0;
-    if( ( qf = dynamic_cast<QFile*>( io->ioDevice() ) ) ) {
-        // great, it's a QFile. Let's just take the filename.
-        in = jas_stream_fopen( QFile::encodeName( qf->name() ), "rb" );
-    } else {
-        // not a QFile. Copy the whole data to a temp. file.
-        tempf = new KTempFile();
-        if( tempf->status() != 0 ) {
-            delete tempf;
-            return 0;
-        } // if
-        tempf->setAutoDelete( true );
-        QFile* out = tempf->file();
-        // 4096 (=4k) is a common page size.
-        QByteArray b( 4096 );
-        Q_LONG size;
-        // 0 or -1 is EOF / error
-        while( ( size = io->ioDevice()->readBlock( b.data(), 4096 ) ) > 0 ) {
-            // in case of a write error, still give the decoder a try
-            if( ( out->writeBlock( b.data(), size ) ) == -1 ) break;
-        } // while
-        // flush everything out to disk
-        out->flush();
+    in = jas_stream_qiodevice( io );
+    kdDebug() << "in: " << in << endl;
 
-        in = jas_stream_fopen( QFile::encodeName( tempf->name() ), "rb" );
-    } // else
     if( !in ) {
-        delete tempf;
         return 0;
     } // if
 
     jas_image_t* image = jas_image_decode( in, -1, 0 );
     jas_stream_close( in );
-    delete tempf;
 
     // image may be 0, but that's Ok
     return image;
@@ -97,8 +217,9 @@ convert_colorspace( gs_t& gs )
 } // convert_colorspace
 
 static bool
-render_view( gs_t& gs, QImage& qti )
+render_view( gs_t& gs, QImage* outImage )
 {
+    QImage qti;
     if((gs.cmptlut[0] = jas_image_getcmptbytype(gs.altimage,
                                                 JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R))) < 0 ||
        (gs.cmptlut[1] = jas_image_getcmptbytype(gs.altimage,
@@ -141,29 +262,9 @@ render_view( gs_t& gs, QImage& qti )
             *data++ = qRgb( v[0], v[1], v[2] );
         } // for x
     } // for y
+    *outImage = qti;
     return true;
 } // render_view
-
-
-KDE_EXPORT void
-kimgio_jp2_read( QImageIO* io )
-{
-	if( jas_init() ) return;
-
-	gs_t gs;
-	if( !(gs.image = read_image( io )) ) return;
-
-	if( !convert_colorspace( gs ) ) return;
-
-	QImage image;
-	render_view( gs, image );
-
-	if( gs.image ) jas_image_destroy( gs.image );
-	if( gs.altimage ) jas_image_destroy( gs.altimage );
-
-	io->setImage( image );
-	io->setStatus( 0 );
-} // kimgio_jp2_read
 
 
 static jas_image_t*
@@ -229,87 +330,152 @@ write_components( jas_image_t* ji, const QImage& qi )
     return true;
 } // write_components
 
-KDE_EXPORT void
-kimgio_jp2_write( QImageIO* io )
+static bool
+write_image( const QImage &image, QIODevice* io, int quality )
 {
-	if( jas_init() ) return;
+        jas_stream_t* stream = 0;
+        stream = jas_stream_qiodevice( io );
 
-	// open the stream. we write directly to the file if possible, to a
-	// temporary file otherwise.
-	jas_stream_t* stream = 0;
+        // by here, a jas_stream_t is open
+        if( !stream ) return false;
 
-	QFile* qf = 0;
-	KTempFile* ktempf = 0;
-	if( ( qf = dynamic_cast<QFile*>( io->ioDevice() ) ) ) {
-		// jas_stream_fdopen works here, but not when reading...
-		stream = jas_stream_fdopen( dup( qf->handle() ), "w" );
-	} else {
-		ktempf = new KTempFile;
-		ktempf->setAutoDelete( true );
-		stream = jas_stream_fdopen( ktempf->handle(), "w" );
-	} // else
+        jas_image_t* ji = create_image( image );
+        if( !ji ) {
+                jas_stream_close( stream );
+                return false;
+        } // if
 
+        if( !write_components( ji, image ) ) {
+                jas_stream_close( stream );
+                jas_image_destroy( ji );
+                return false;
+        } // if
 
-	// by here, a jas_stream_t is open
-	if( !stream ) return;
+        // optstr:
+        // - rate=#B => the resulting file size is about # bytes
+        // - rate=0.0 .. 1.0 => the resulting file size is about the factor times
+        //                      the uncompressed size
+        QString rate;
+        QTextStream ts( &rate, QIODevice::WriteOnly );
+        ts << "rate="
+                << ( (quality < 0) ? DEFAULT_RATE : quality / 100.0F );
+        int i = jp2_encode( ji, stream, rate.toUtf8().data() );
 
-	jas_image_t* ji = create_image( io->image() );
-	if( !ji ) {
-		delete ktempf;
-		jas_stream_close( stream );
-		return;
-	} // if
+        jas_image_destroy( ji );
+        jas_stream_close( stream );
 
-	if( !write_components( ji, io->image() ) ) {
-		delete ktempf;
-		jas_stream_close( stream );
-		jas_image_destroy( ji );
-		return;
-	} // if
+        if( i != 0 ) return false;
 
-	// optstr:
-	// - rate=#B => the resulting file size is about # bytes
-	// - rate=0.0 .. 1.0 => the resulting file size is about the factor times
-	//                      the uncompressed size
-	QString rate;
-	QTextStream ts( &rate, QIODevice::WriteOnly );
-	ts << "rate="
-		<< ( (io->quality() < 0) ? DEFAULT_RATE : io->quality() / 100.0F );
-	int i = jp2_encode( ji, stream, rate.toUtf8().data() );
+        return true;
+}
 
-	jas_image_destroy( ji );
-	jas_stream_close( stream );
+JP2Handler::JP2Handler()
+{
+    quality = 75;
+    jas_init();
+}
 
-	if( i != 0 ) { delete ktempf; return; }
+JP2Handler::~JP2Handler()
+{
+    jas_cleanup();
+}
 
-	if( ktempf ) {
-		// We've written to a tempfile. Copy the data to the final destination.
-		QFile* in = ktempf->file();
+bool JP2Handler::canRead() const
+{
+    if (canRead(device())) {
+        setFormat("jp2");
+        return true;
+    }
+    return false;
+}
 
-		QByteArray b( 4096 );
-		Q_LONG size;
+bool JP2Handler::canRead(QIODevice *device)
+{
+    if (!device) {
+        return false;
+    }
+    return true;
+}
 
-		// seek to the beginning of the file.
-		if( !in->at( 0 ) ) { delete ktempf; return; }
+bool JP2Handler::read(QImage *image)
+{
+        if (!canRead()) return false;
 
-		// 0 or -1 is EOF / error
-		while( ( size = in->readBlock( b.data(), 4096 ) ) > 0 ) {
-			if( ( io->ioDevice()->writeBlock( b.data(), size ) ) == -1 ) {
-				delete ktempf;
-				return;
-			} // if
-		} // while
-		io->ioDevice()->flush();
-		delete ktempf;
+        gs_t gs;
+        if( !(gs.image = read_image( device() )) ) return false;
 
-		// see if we've left the while loop due to an error.
-		if( size == -1 ) return;
-	} // if
+        if( !convert_colorspace( gs ) ) return false;
 
+        render_view( gs, image );
 
-	// everything went fine
-	io->setStatus( IO_Ok );
-} // kimgio_jp2_write
+        if( gs.image ) jas_image_destroy( gs.image );
+        if( gs.altimage ) jas_image_destroy( gs.altimage );
+    return true;
 
+}
+
+bool JP2Handler::write(const QImage &image)
+{
+    return write_image(image, device(),quality);
+}
+
+bool JP2Handler::supportsOption(ImageOption option) const
+{
+    return option == Quality;
+}
+
+QVariant JP2Handler::option(ImageOption option) const
+{
+    if (option == Quality)
+        return quality;
+    return QVariant();
+}
+
+QByteArray JP2Handler::name() const
+{
+    return "jp2";
+}
+
+class JP2Plugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+            
+QStringList JP2Plugin::keys() const
+{
+    return QStringList() << "jp2";
+}
+                
+QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "jp2")
+        return Capabilities(CanRead | CanWrite);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+                                                    
+    Capabilities cap;
+    if (device->isReadable() && JP2Handler::canRead(device))
+    cap |= CanRead;
+    if (device->isWritable())
+    cap |= CanWrite;
+    return cap;
+}
+
+QImageIOHandler *JP2Plugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new JP2Handler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+                                                                                                    
+Q_EXPORT_STATIC_PLUGIN(JP2Plugin)
+Q_EXPORT_PLUGIN2(jp2, JP2Plugin)
+                                                                                                    
 #endif // HAVE_JASPER
 

@@ -2,12 +2,26 @@
 #ifndef KIMG_JP2_H
 #define KIMG_JP2_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-	void kimgio_jp2_read( QImageIO* io );
-	void kimgio_jp2_write( QImageIO* io );
-} // extern "C"
+class JP2Handler : public QImageIOHandler
+{
+public:
+    JP2Handler();
+    virtual ~JP2Handler();
+    
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+                
+    QByteArray name() const;
+    bool supportsOption(ImageOption option) const;
+    QVariant option(ImageOption option) const;
+                    
+    static bool canRead(QIODevice *device);
+private:
+    int quality;
+};
+                        
 
 #endif
-
