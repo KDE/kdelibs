@@ -57,6 +57,11 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
      m_btnHide->setFixedSize(100,30);
     connect( m_btnHide, SIGNAL( clicked() ), SLOT( slotHide() ) );
 
+	m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
+	m_btnClickMessage->setToggleButton (true);
+	m_btnClickMessage->setFixedSize(100,30);
+	connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
+	
     layout->addWidget( m_lineedit );
     layout->addWidget( hbox );
     setCaption( "KLineEdit Unit Test" );
@@ -108,6 +113,15 @@ void KLineEditTest::slotEnable (bool enable)
     m_lineedit->setEnabled (!enable);
     QString text = (enable) ? "En&able":"Dis&able";
     m_btnEnable->setText (text);
+}
+
+void KLineEditTest::slotClickMessage(bool click)
+{
+	if( click )
+	{
+		m_lineedit->setText(""); // Clear before to add message
+		m_lineedit->setClickMessage ("Click in this lineedit");
+	}
 }
 
 void KLineEditTest::slotHide()

@@ -29,13 +29,14 @@ private Q_SLOTS:
    void slotReturnPressed();
    void resultOutput( const QString& );
    void slotReturnPressed( const QString& );
-
+   void slotClickMessage(bool click);
 protected:
    QPointer<KLineEdit> m_lineedit;
    QPushButton* m_btnExit;
    QPushButton* m_btnReadOnly;
    QPushButton* m_btnEnable;
    QPushButton* m_btnHide;
+   QPushButton* m_btnClickMessage;
 };
 
 #endif

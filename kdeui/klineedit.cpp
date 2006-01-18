@@ -1363,6 +1363,7 @@ void KLineEdit::setClickMessage( const QString &msg )
 {
     d->enableClickMsg = true;
     d->clickMessage = msg;
+	d->drawClickMsg = text().isEmpty();
     update();
 }
 
