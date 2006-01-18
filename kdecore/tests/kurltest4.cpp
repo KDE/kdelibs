@@ -314,7 +314,7 @@ void KURLTest::testEmptyQueryOrRef()
 
   // Empty queries should be preserved!
   //QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);
-  //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi?");
+  //QCOMPARE( qurl.toEncoded(), QByteArray("http://www.kde.org/cgi/test.cgi?"));
   KUrl waba1 = "http://www.kde.org/cgi/test.cgi?";
   QCOMPARE( waba1.url(), QString( "http://www.kde.org/cgi/test.cgi?" ) );
   QCOMPARE( waba1.query(), QString( "?" ) ); // empty query
@@ -326,7 +326,7 @@ void KURLTest::testEmptyQueryOrRef()
   QVERIFY( waba1.hasHTMLRef() );
   QCOMPARE( waba1.encodedHtmlRef(), QString() );
   //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
-  //QCOMPARE( qurl.toEncoded().constData(), "http://www.kde.org/cgi/test.cgi#" );
+  //QCOMPARE( qurl.toEncoded(), QByteArray("http://www.kde.org/cgi/test.cgi#") );
 
   KUrl tobi1 = "http://host.net/path/?#http://broken-adsfk-poij31-029mu-2890zupyc-*!*'O-+-0i";
   QCOMPARE(tobi1.query(), QString("?")); // query is empty
@@ -343,8 +343,8 @@ void KURLTest::testParsingTolerance()
   QVERIFY( incorrectEncoded.isValid() );
   QVERIFY( !incorrectEncoded.toEncoded().isEmpty() );
   qDebug( "%s", incorrectEncoded.toEncoded().data() );
-  QCOMPARE( incorrectEncoded.toEncoded().constData(),
-           "http://www.kde.org/cgi/qurl.cgi?hello=My%20Value" );
+  QCOMPARE( incorrectEncoded.toEncoded(),
+           QByteArray("http://www.kde.org/cgi/qurl.cgi?hello=My%20Value") );
 
   // URLs who forgot to encode spaces in the query.
   KUrl waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
@@ -365,7 +365,7 @@ void KURLTest::testNewLine()
 {
   QUrl qurl_newline_1 = QUrl::fromEncoded( "http://www.foo.bar/foo/bar\ngnork", QUrl::TolerantMode );
   QVERIFY( qurl_newline_1.isValid() );
-  QCOMPARE( qurl_newline_1.toEncoded().constData(), "http://www.foo.bar/foo/bar%0Agnork" );
+  QCOMPARE( qurl_newline_1.toEncoded(), QByteArray("http://www.foo.bar/foo/bar%0Agnork") );
 
   KUrl url_newline_1("http://www.foo.bar/foo/bar\ngnork");
   QCOMPARE( url_newline_1.url(), QLatin1String("http://www.foo.bar/foo/bar%0Agnork") );
@@ -484,7 +484,7 @@ void KURLTest::testSetFileName() // and addPath
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
   QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
   QCOMPARE( qurl2.fileName(), QString::fromLatin1( "Print To File (PDF%2FAcrobat)" ) );
-  QCOMPARE( qurl2.toEncoded().constData(), "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" );
+  QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
   // even more tricky
   u2 = "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)";
@@ -756,7 +756,7 @@ void KURLTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   // Mimick what KUrl(2 urls) does:
   QUrl qurl;
   qurl = "http://www.foo.bar:80";
-  QCOMPARE( qurl.toEncoded().constData(), "http://www.foo.bar:80" );
+  QCOMPARE( qurl.toEncoded(), QByteArray("http://www.foo.bar:80") );
 
 #if QT_VERSION < 0x040200
   //QSKIP( "QUrl::setPort(-1) doesn't remove the port; breaks base url tests", SkipSingle );
@@ -764,9 +764,9 @@ void KURLTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
   qurl.setHost( QString() );
   qurl.setPath( QString() );
-  QCOMPARE( qurl.toEncoded().constData(), "http://:80" );
+  QCOMPARE( qurl.toEncoded(), QByteArray("http://:80") );
   qurl.setPort( -1 );
-  QCOMPARE( qurl.toEncoded().constData(), "http:" ); // hmm we have no '//' anymore
+  QCOMPARE( qurl.toEncoded(), QByteArray("http:") ); // hmm we have no '//' anymore
 
   KUrl url1 ( baseURL, relativeURL );
   QCOMPARE( url1.url(), QString("http://www1.foo.bar"));
@@ -1206,7 +1206,7 @@ void KURLTest::testBrokenStuff()
   QUrl brokenUrl( "ptal://mlc:usb:PC_970" );
   QVERIFY( !brokenUrl.isValid() );
   QCOMPARE( brokenUrl.toString(), QString("ptal://mlc:usb:PC_970") );
-  QCOMPARE( brokenUrl.toEncoded().constData(), "ptal://mlc:usb:PC_970" );
+  QCOMPARE( brokenUrl.toEncoded(), QByteArray("ptal://mlc:usb:PC_970") );
 }
 
 void KURLTest::testMailto()
@@ -1416,7 +1416,7 @@ void KURLTest::testIdn()
   //qDebug( "trying QUrl with fromEncoded" );
   QUrl qurl = QUrl::fromEncoded( "http://\303\244.de" ); // a+trema in utf8
   QVERIFY( qurl.isValid() );
-  QCOMPARE( qurl.toEncoded().constData(), "http://xn--4ca.de" );
+  QCOMPARE( qurl.toEncoded(), QByteArray( "http://xn--4ca.de" ) );
 
   //qDebug( "and now trying KUrl" );
   KUrl thiago( QString::fromUtf8( "http://\303\244.de" ) ); // a+trema in utf8
