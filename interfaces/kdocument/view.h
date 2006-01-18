@@ -29,7 +29,7 @@ namespace KDocument {
 	 * A View represents the document's content. All views of the same
 	 * document are synchronized.
 	 */
-	class KDE_EXPORT View : public QWidget, public KXMLGUIClient {
+	class KDOCUMENT_EXPORT View : public QWidget, public KXMLGUIClient {
 		Q_OBJECT
 		public:
 			/**

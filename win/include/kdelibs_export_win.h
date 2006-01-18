@@ -236,3 +236,12 @@
 #  define KDED_EXPORT KDE_IMPORT
 # endif
 #endif
+
+#ifndef KDOCUMENT_EXPORT
+# ifdef MAKE_KDOCUMENT_LIB
+#  define KDOCUMENT_EXPORT KDE_EXPORT
+# else
+#  define KDOCUMENT_EXPORT KDE_IMPORT
+# endif
+#endif
+

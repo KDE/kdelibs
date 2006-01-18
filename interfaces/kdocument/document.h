@@ -42,7 +42,7 @@ namespace KDocument {
 	 *
 	 * @see KParts::ReadWritePart
 	 */
-	class KDE_EXPORT Document : public KParts::ReadWritePart {
+	class KDOCUMENT_EXPORT Document : public KParts::ReadWritePart {
 		Q_OBJECT
 		public:
 			/**
