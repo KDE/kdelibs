@@ -310,17 +310,22 @@ void DocWordCompletionPluginView::complete( bool fw )
       QString m = d->re.cap( 1 );
       if ( m != d->lastIns )
       {
+        d->col = pos; // for next try
+
+        if ( fw )
+          d->col += m.length();
+
+        // if this is a constructed word at cursor pos, retry.
+        if ( pos + wrd.length() == ccol )
+          continue;
+
         // we got good a match! replace text and return.
         if ( d->lilen )
           ei->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
         ei->insertText( d->cline, d->ccol, m );
 
-        d->lastIns = m;
         d->lilen = m.length();
-        d->col = pos; // for next try
-
-        if ( fw )
-          d->col += m.length();
+        d->lastIns = m;
 
         return;
       }
@@ -428,6 +433,8 @@ QValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatches
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   QDict<int> seen; // maybe slow with > 17 matches
   int sawit(1);    // to ref for the dict
+  uint cline, ccol;// needed to avoid constructing a word at cursor position
+  viewCursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
 
   while( i < ei->numLines() )
   {
@@ -438,6 +445,13 @@ QValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatches
       pos = d->re.search( s, pos );
       if ( pos >= 0 )
       {
+        // do not construct a new word!
+        if ( i == cline && pos + word.length() == ccol )
+        {
+          pos += word.length();
+          continue;
+        }
+
         m = d->re.cap( 1 );
         if ( ! seen[ m ] ) {
           seen.insert( m, &sawit );
