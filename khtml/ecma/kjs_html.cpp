@@ -893,6 +893,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::AnchorType		DontDelete
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
+  click		KJS::HTMLElement::AnchorClick		DontDelete|Function 0
 @end
 @begin HTMLImageElementTable 15
   name		KJS::HTMLElement::ImageName		DontDelete
@@ -2224,6 +2225,10 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
       }
       else if (id == KJS::HTMLElement::AnchorFocus) {
         anchor.focus();
+        return Undefined();
+      }
+      else if (id == KJS::HTMLElement::AnchorClick) {
+        static_cast<DOM::HTMLAnchorElementImpl*>(anchor.handle())->click();
         return Undefined();
       }
     }
