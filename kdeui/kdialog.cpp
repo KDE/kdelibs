@@ -186,7 +186,7 @@ static QRect screenRect( QWidget *w, int screen )
         screen = desktop->screenNumber( w );
       }
     }
-    return desktop->screenGeometry(screen);
+    return desktop->availableGeometry(screen);
   } else {
     return desktop->geometry();
   }
