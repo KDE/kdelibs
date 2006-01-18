@@ -36,16 +36,18 @@ class KURLLabel::Private
 public:
   Private (const QString& url, KURLLabel* label)
     : URL (url),
-      Underline (true),
       LinkColor (KGlobalSettings::linkColor()),
       HighlightedLinkColor (Qt::red),
       Tip(url),
       Cursor (0L),
+      Underline (true),
       UseTips (false),
-      UseCursor (false),
       Glow (true),
       Float (false),
       RealUnderline (true),
+      MousePressed(false),
+      WasInsideRect(false),
+      MarginAltered(false),
       Timer (new QTimer (label))
   {
     connect (Timer, SIGNAL (timeout ()), label, SLOT (updateColor ()));
@@ -53,22 +55,25 @@ public:
 
   ~Private ()
   {
+      delete Cursor;
   }
 
   QString URL;
   QPixmap AltPixmap;
 
-  bool Underline;
   QColor LinkColor;
   QColor HighlightedLinkColor;
 
   QString Tip;
   QCursor* Cursor;
+  bool Underline:1;
   bool UseTips:1;
-  bool UseCursor:1;
   bool Glow:1;
   bool Float:1;
   bool RealUnderline:1;
+  bool MousePressed:1;
+  bool WasInsideRect:1;
+  bool MarginAltered:1;
   QPixmap RealPixmap;
 
   QTimer* Timer;
@@ -80,10 +85,10 @@ KURLLabel::KURLLabel (const QString& url, const QString& text,
     d (new Private (url, this))
 {
   setFont (font());
-  setCursor (KCursor::handCursor());
+  setUseCursor (true);
   setLinkColor (d->LinkColor);
-  setMargin(3); //better default : better look when focused
   setFocusPolicy( QWidget::StrongFocus ); //better accessibility
+  setMouseTracking (true);
 }
 
 KURLLabel::KURLLabel (QWidget* parent, const char* name)
@@ -91,10 +96,10 @@ KURLLabel::KURLLabel (QWidget* parent, const char* name)
     d (new Private (QString::null, this))
 {
   setFont (font());
-  setCursor (KCursor::handCursor());
+  setUseCursor (true);
   setLinkColor (d->LinkColor);
-  setMargin(3); //better default : better look when focused
   setFocusPolicy( QWidget::StrongFocus ); //better accessibility
+  setMouseTracking (true);
 }
 
 KURLLabel::~KURLLabel ()
@@ -105,6 +110,12 @@ KURLLabel::~KURLLabel ()
 void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 {
   QLabel::mouseReleaseEvent (e);
+  if (!d->MousePressed)
+    return;
+  d->MousePressed = false;
+  QRect r( activeRect() );
+  if (!r.contains(e->pos()))
+    return;
 
   setLinkColor (d->HighlightedLinkColor);
   d->Timer->start (300);
@@ -150,7 +161,8 @@ void KURLLabel::updateColor ()
 {
   d->Timer->stop();
 
-  if (!(d->Glow || d->Float) || !rect().contains (mapFromGlobal(QCursor::pos())))
+  QRect r( activeRect() );
+  if (!(d->Glow || d->Float) || !r.contains (mapFromGlobal(QCursor::pos())))
     setLinkColor (d->LinkColor);
 }
 
@@ -178,34 +190,43 @@ const QString& KURLLabel::url () const
   return d->URL;
 }
 
+void KURLLabel::unsetCursor ()
+{
+	delete d->Cursor;
+	d->Cursor = 0;
+}
+
+void KURLLabel::setCursor ( const QCursor& cursor )
+{
+	delete d->Cursor;
+	d->Cursor = new QCursor( cursor );
+}
+
 void KURLLabel::setUseCursor (bool on, QCursor* cursor)
 {
-  d->UseCursor = on;
-  d->Cursor = cursor;
-
   if (on)
     {
       if (cursor)
-        setCursor (*cursor);
+        KURLLabel::setCursor (*cursor);
       else
-        setCursor (KCursor::handCursor());
+        KURLLabel::setCursor (KCursor::handCursor());
     }
   else
-    unsetCursor();
+    KURLLabel::unsetCursor ();
 }
 
 bool KURLLabel::useCursor () const
 {
-  return d->UseCursor;
+  return d->Cursor;
 }
 
 void KURLLabel::setUseTips (bool on)
 {
   d->UseTips = on;
 
-  if (on)
-    QToolTip::add (this, d->Tip);
-  else
+  if (on) {
+    QToolTip::add (this, activeRect(), d->Tip);
+  } else
     QToolTip::remove (this);
 }
 
@@ -286,6 +307,10 @@ void KURLLabel::enterEvent (QEvent* e)
 {
   QLabel::enterEvent (e);
 
+  QRect r( activeRect() );
+  if (!r.contains( static_cast<QMouseEvent*>(e)->pos() ))
+    return;
+
   if (!d->AltPixmap.isNull() && pixmap())
     {
       d->RealPixmap = *pixmap();
@@ -338,23 +363,10 @@ bool KURLLabel::event (QEvent *e)
     return true;
   }
   else if (e->type() == QEvent::Paint) {
-    QPaintEvent* pe = static_cast<QPaintEvent*>(e);
-    bool result = QLabel::event(e);
+    const bool result = QLabel::event(e);
     if (result && hasFocus()) {
         QPainter p(this);
-        QRect r(contentsRect());
-        int hAlign = QApplication::horizontalAlignment( alignment() );
-        int indentX = (hAlign && indent()>0) ? indent() : 0;
-        QFontMetrics fm(font());
-        r.setWidth( QMIN(fm.width(text()), r.width()));
-        if ( hAlign & AlignLeft )
-            r.moveLeft(r.left() + indentX);
-        if ( hAlign & AlignCenter )
-            r.moveLeft((contentsRect().width()-r.width())/2+margin());
-        if ( hAlign & AlignRight )
-            r.moveLeft(contentsRect().width()-r.width()-indentX+margin());
-        int add = QMIN(3, margin());
-        r = QRect(r.left()-add, r.top()-add, r.width()+2*add, r.height()+2*add);
+        QRect r( activeRect() );
         style().drawPrimitive( QStyle::PE_FocusRect, &p, r, colorGroup() );
     }
     return result;
@@ -370,9 +382,57 @@ bool KURLLabel::event (QEvent *e)
       return true;
     }
   }
-  return QLabel::event(e);  
+  else if (e->type() == QEvent::MouseButtonPress) {
+    QRect r( activeRect() );
+    d->MousePressed = r.contains(static_cast<QMouseEvent*>(e)->pos());
+  }
+  else if (e->type() == QEvent::MouseMove) {
+    if (d->Cursor) {
+      QRect r( activeRect() );
+      bool inside = r.contains(static_cast<QMouseEvent*>(e)->pos());
+      if (d->WasInsideRect != inside) {
+        if (inside)
+          QLabel::setCursor(*d->Cursor);
+        else
+          QLabel::unsetCursor();
+        d->WasInsideRect = inside;
+      }
+    }
+  }
+  return QLabel::event(e);
 }
 
+QRect KURLLabel::activeRect() const
+{
+  QRect r( contentsRect() );
+  int hAlign = QApplication::horizontalAlignment( alignment() );
+  int indentX = (hAlign && indent()>0) ? indent() : 0;
+  QFontMetrics fm(font());
+  r.setWidth( QMIN(fm.width(text()), r.width()));
+  if ( hAlign & AlignLeft )
+      r.moveLeft(r.left() + indentX);
+  if ( hAlign & AlignCenter )
+      r.moveLeft((contentsRect().width()-r.width())/2+margin());
+  if ( hAlign & AlignRight )
+      r.moveLeft(contentsRect().width()-r.width()-indentX+margin());
+  int add = QMIN(3, margin());
+  r = QRect(r.left()-add, r.top()-add, r.width()+2*add, r.height()+2*add);
+  return r;
+}
+
+void KURLLabel::setMargin( int margin )
+{
+	QLabel::setMargin(margin);
+	d->MarginAltered = true;
+}
+
+void KURLLabel::setFocusPolicy( FocusPolicy policy )
+{
+	QLabel::setFocusPolicy(policy);
+	if (!d->MarginAltered) {
+		QLabel::setMargin(policy == NoFocus ? 0 : 3); //better default : better look when focused
+	}
+}
 
 void KURLLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -153,6 +153,16 @@ public:
    */
   const QPixmap* altPixmap () const;
 
+  /**
+   * Reimplemented for internal reasons, the API is not affected.
+   */
+  virtual void setMargin ( int margin );
+
+  /**
+   * Reimplemented for internal reasons, the API is not affected.
+   */
+  virtual void setFocusPolicy ( FocusPolicy policy );
+
 public slots:
   /**
    * Turns on or off the underlining.
@@ -222,6 +232,16 @@ public slots:
    * @see setSelectedColor()
    */
   void setSelectedColor(const QString& selcolor);
+
+  /**
+   * Overridden for internal reasons; the API remains unaffected.
+   */
+  virtual void setCursor ( const QCursor& cursor );
+
+  /**
+   * Overridden for internal reasons; the API remains unaffected.
+   */
+  virtual void unsetCursor ();
 
   /**
    * Turns the custom cursor feature on or off.
@@ -335,7 +355,7 @@ protected:
   /**
    * Overridden for internal reasons; the API remains unaffected.
    */
-  virtual void mouseReleaseEvent (QMouseEvent*);
+  virtual void mouseReleaseEvent ( QMouseEvent * e );
 
   /**
    * Overridden for internal reasons; the API remains unaffected.
@@ -351,6 +371,11 @@ protected:
    * Catch parent palette changes
    */
   virtual bool event (QEvent *e);
+
+  /**
+   * 
+   */
+  QRect activeRect() const;
 
 
 private slots:
