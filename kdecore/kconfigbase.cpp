@@ -569,11 +569,6 @@ QVariantList KConfigBase::readEntry( const char* pKey, const QVariantList& aDefa
   return QVariant(slist).toList();
 }
 
-QStringList KConfigBase::readEntry(const QString& pKey, const QStringList& aDefault, char sep) const
-{
-  return readEntry(pKey.toUtf8().constData(), aDefault, sep);
-}
-
 QStringList KConfigBase::readEntry(const char* pKey, const QStringList& aDefault, char sep) const
 {
   if( !hasKey( pKey ) )
@@ -1060,12 +1055,6 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
   writeEntry( pKey, str_list, flags );
 }
 #endif
-
-void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
-                               char sep , WriteConfigFlags pFlags )
-{
-  writeEntry(pKey.toUtf8().constData(), list, sep, pFlags);
-}
 
 void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
                                char sep , WriteConfigFlags pFlags )

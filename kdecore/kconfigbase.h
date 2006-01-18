@@ -329,16 +329,6 @@ public:
    * Reads a list from the config object.
    *
    * @copydoc readEntry(const char*, const QList<T>&) const
-   */
-  template <typename T>
-  QList<T> readEntry( const QString& pKey, const QList<T>& aDefault ) const {
-	return readEntry( pKey.toUtf8().constData(), aDefault);
-  }
-
-  /**
-   * Reads a list from the config object.
-   *
-   * @copydoc readEntry(const char*, const QList<T>&) const
    *
    * @warning This function doesn't convert the items returned
    *          to any type. It's actually a list of QVariant::String's. If you
@@ -365,7 +355,8 @@ public:
    * @copydoc readEntry(const char*, const QStringList&, char) const
    */
   QStringList readEntry(const QString& pKey, const QStringList& aDefault,
-                        char sep=',') const;
+                        char sep=',') const
+    { return readEntry(pKey.toUtf8().constData(), aDefault, sep); }
 
   /**
    * Reads a list of Integers.
@@ -977,7 +968,8 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',',
-                   WriteConfigFlags pFlags = Normal );
+                   WriteConfigFlags pFlags = Normal )
+    { writeEntry( pKey.toUtf8().constData(), rValue, sep, pFlags ); }
 
   /**
    * writeEntry() overridden to accept a list of strings.
