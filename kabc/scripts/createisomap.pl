@@ -30,3 +30,6 @@ foreach $entry (@entries) {
     }
 }
 
+# add some convenience entries which aren't part of the entry.desktop files
+
+print "Czech Republic\tcz\n";
