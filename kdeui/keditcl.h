@@ -194,8 +194,7 @@ public:
      * If @p softWrap is true soft line wrappings are ignored.
      * @since 3.1
      **/
-    void saveText(QTextStream *, bool softWrap);
-    void saveText(QTextStream *); // KDE 4.0: remove
+    void saveText(QTextStream *, bool softWrap = false);
 
     /**
      *  Let the user select a font and set the font of the textwidget to that

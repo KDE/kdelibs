@@ -229,12 +229,6 @@ KEdit::cleanWhiteSpace()
 
 
 void
-KEdit::saveText(QTextStream *stream)
-{
-   saveText(stream, false);
-}
-
-void
 KEdit::saveText(QTextStream *stream, bool softWrap)
 {
    int line_count = numLines()-1;
