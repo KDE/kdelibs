@@ -34,7 +34,7 @@ namespace Enumerate {
 
 QString toRoman( int number, bool upper )
 {
-    if (number < 1) return QString::number(number);
+    if (number < 1 || number > 3999) return QString::number(number);
     QString roman;
     static const QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
     static const QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
