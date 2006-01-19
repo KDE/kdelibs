@@ -55,6 +55,28 @@ namespace KSpell2
         class Private;
         Private* const d;
     };
+    
+    class KEMailQuotingSyntaxHighlighter : public Highlighter
+	{
+	public:
+	    enum SyntaxMode {
+		PlainTextMode,
+		RichTextMode
+	    };
+	    KEMailQuotingSyntaxHighlighter( QTextEdit *textEdit,
+				const QColor& QuoteColor0 = Qt::black,
+				const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
+				const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
+				const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ),
+				SyntaxMode mode = PlainTextMode );
+	    ~KEMailQuotingSyntaxHighlighter();
+	    
+	    virtual void highlightBlock ( const QString & text );
+	    
+	private:
+	    class KEmailQuotingSyntaxHighlighterPrivate;
+	    KEmailQuotingSyntaxHighlighterPrivate *const d;
+	};
 
 }
 

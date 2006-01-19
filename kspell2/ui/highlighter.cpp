@@ -35,6 +35,57 @@
 
 namespace KSpell2 {
 
+class KEMailQuotingSyntaxHighlighter::KEmailQuotingSyntaxHighlighterPrivate
+{
+public:
+    QColor col1, col2, col3, col4, col5;
+    SyntaxMode mode;
+    bool enabled;
+};
+
+KEMailQuotingSyntaxHighlighter::KEMailQuotingSyntaxHighlighter( QTextEdit *textEdit,
+                                                                const QColor& depth0,
+                                                                const QColor& depth1,
+                                                                const QColor& depth2,
+                                                                const QColor& depth3,
+                                                                SyntaxMode mode )
+    : Highlighter( textEdit ),d(new KEmailQuotingSyntaxHighlighterPrivate())
+{
+    d->col1 = depth0;
+    d->col2 = depth1;
+    d->col3 = depth2;
+    d->col4 = depth3;
+    d->col5 = depth0;
+
+    d->mode = mode;
+}
+
+KEMailQuotingSyntaxHighlighter::~KEMailQuotingSyntaxHighlighter()
+{
+    delete d;
+}
+
+void KEMailQuotingSyntaxHighlighter::highlightBlock ( const QString & text )
+{
+    QString simplified = text;
+    simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
+    while ( simplified.startsWith( QLatin1String(">>>>") ) )
+	simplified = simplified.mid(3);
+    if	( simplified.startsWith( QLatin1String(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
+	setFormat( 0, text.length(), d->col2 );
+    else if	( simplified.startsWith( QLatin1String(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
+	setFormat( 0, text.length(), d->col3 );
+    else if	( simplified.startsWith( QLatin1String(">") ) )
+	setFormat( 0, text.length(), d->col4 );
+    else
+    {
+	setFormat( 0, text.length(), d->col5 );
+        Highlighter::highlightBlock ( text );
+    }
+    setCurrentBlockState ( 0 );
+
+}
+
 class Highlighter::Private
 {
 public:
