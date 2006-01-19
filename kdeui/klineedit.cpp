@@ -852,7 +852,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     if (!m_bEnableMenu)
         return;
 
-    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+    //enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
     QMenu *popup = createStandardContextMenu();
 
