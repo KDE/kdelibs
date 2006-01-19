@@ -1479,6 +1479,31 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
 
+#define KCONFIG_DECLARE_ENUM_QOBJECT(Class, Enum)                         \
+template <>                                                               \
+Class::Enum KConfigBase::readEntry(const char* pKey, const Class::Enum& value) const\
+{                                                                         \
+const QMetaObject* Mobj = &Class::staticMetaObject;                       \
+const QMetaEnum Menum = Mobj->enumerator(Mobj->indexOfEnumerator(#Enum)); \
+int tmp = value;                                                          \
+if (Menum.isFlag()) {                                                     \
+  const QString str = readEntry(pKey, Menum.valueToKeys(tmp));            \
+  tmp = Menum.keysToValue(str.toLatin1().constData());                    \
+} else {                                                                  \
+  const QString str = readEntry(pKey, Menum.valueToKey(tmp));             \
+  tmp = Menum.keyToValue(str.toLatin1().constData());                     \
+}                                                                         \
+return static_cast<Class::Enum>(tmp);                                     \
+}                                                                         \
+template <>                                                               \
+void KConfigBase::writeEntry(const char* pKey, const Class::Enum& value, WriteConfigFlags flags)\
+{                                                                         \
+const QMetaObject* Mobj = &Class::staticMetaObject;                       \
+const QMetaEnum Menum = Mobj->enumerator(Mobj->indexOfEnumerator(#Enum)); \
+if (Menum.isFlag()) writeEntry(pKey, Menum.valueToKeys(value), flags);    \
+else writeEntry(pKey, Menum.valueToKey(value), flags);                    \
+}
+
 #define KCONFIG_QVARIANT_CHECK 1
 #if KCONFIG_QVARIANT_CHECK
 #include <conversion_check.h>

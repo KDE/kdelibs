@@ -115,11 +115,8 @@ void KConfigTest::initTestCase()
   KConfig sc1("kdebugrc");
   sc1.setGroup("0");
   sc1.writeEntry("AbortFatal", false);
-#ifdef NDEBUG
   sc1.writeEntry("WarnOutput", 0);
-#else
   sc1.writeEntry("FatalOutput", 0);
-#endif
   sc1.sync();
 }
 
