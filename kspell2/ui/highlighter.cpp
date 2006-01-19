@@ -59,11 +59,34 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     Q_ASSERT( d->dict );
     d->dictCache.insert( d->broker->settings()->defaultLanguage(),
                          d->dict );
+
+    //Add kde personal word
+    const QStringList l = Highlighter::personalWords();
+    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+        d->dict->addToSession( *it );
+    }
+
 }
 
 Highlighter::~Highlighter()
 {
     delete d;
+}
+
+QStringList Highlighter::personalWords()
+{
+    QStringList l;
+    l.append( "KMail" );
+    l.append( "KOrganizer" );
+    l.append( "KAddressBook" );
+    l.append( "KHTML" );
+    l.append( "KIO" );
+    l.append( "KJS" );
+    l.append( "Konqueror" );
+    l.append( "KSpell" );
+    l.append( "Kontact" );
+    l.append( "Qt" );
+    return l;
 }
 
 void Highlighter::highlightBlock ( const QString & text )
@@ -88,7 +111,7 @@ void Highlighter::highlightBlock ( const QString & text )
     }
     //QTimer::singleShot( 0, this, SLOT(checkWords()) );
 	setCurrentBlockState ( 0 );
-#endif	
+#endif
 }
 
 Filter *Highlighter::currentFilter() const

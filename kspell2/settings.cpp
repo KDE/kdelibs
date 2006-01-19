@@ -211,13 +211,13 @@ void Settings::loadConfig()
 
     //same defaults are in the default filter (filter.cpp)
     d->checkUppercase = conf.readEntry(
-        "checkUppercase", QVariant(true) ).toBool();
+        "checkUppercase", true );
 
     d->skipRunTogether = conf.readEntry(
-        "skipRunTogether", QVariant(true) ).toBool();
+        "skipRunTogether", true );
 
     d->backgroundCheckerEnabled = conf.readEntry(
-        "backgroundCheckerEnabled", QVariant(true)).toBool();
+        "backgroundCheckerEnabled", true);
 
     readIgnoreList();
 }

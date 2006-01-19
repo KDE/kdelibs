@@ -24,6 +24,7 @@
 #include "filter.h"
 
 #include <QSyntaxHighlighter>
+#include <QStringList>
 
 class QTextEdit;
 
@@ -36,14 +37,16 @@ namespace KSpell2
                      const QString& configFile = QString(),
                      Filter *filter = Filter::defaultFilter() );
         ~Highlighter();
-
-		virtual void highlightBlock ( const QString & text );
+	
+	virtual void highlightBlock ( const QString & text );
 
         Filter *currentFilter() const;
         void setCurrentFilter( Filter *filter );
 
         QString currentLanguage() const;
         void setCurrentLanguage( const QString& lang );
+	
+	static QStringList personalWords();
 
     protected:
         virtual void setMisspelled( int start, int count );
