@@ -3336,7 +3336,7 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &proper
     }
     else // remove elements
       while (diff-- > 0)
-        element.remove(newLen);
+        element.remove(newLen + diff);
 
     return;
   }

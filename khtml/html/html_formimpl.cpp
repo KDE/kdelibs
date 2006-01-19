@@ -1893,6 +1893,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     // 0 means invalid (i.e. not set)
     m_size = 0;
     m_minwidth = 0;
+    m_length   = 0;
 }
 
 HTMLSelectElementImpl::~HTMLSelectElementImpl()
@@ -1946,15 +1947,9 @@ void HTMLSelectElementImpl::setSelectedIndex( long  index )
 
 long HTMLSelectElementImpl::length() const
 {
-    int len = 0;
-    uint i;
-    QMemArray<HTMLGenericFormElementImpl*> items = listItems();
-    const uint itemsSize = items.size();
-    for (i = 0; i < itemsSize; ++i) {
-        if (items[i]->id() == ID_OPTION)
-            ++len;
-    }
-    return len;
+    if (m_recalcListItems)
+        recalcListItems();
+    return m_length;
 }
 
 void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before, int& exceptioncode )
@@ -1962,8 +1957,21 @@ void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &
     if(element.isNull() || element.handle()->id() != ID_OPTION)
         return;
 
-    insertBefore(element.handle(), before.handle(), exceptioncode );
-    if (!exceptioncode)
+    HTMLOptionElementImpl* option = static_cast<HTMLOptionElementImpl*>(element.handle());;
+    //Fast path for appending an item. Can't be done if it is selected and 
+    //we're single-select, since we may need to drop an implicitly-selected item
+    bool fastAppendLast = false;
+    if (before.handle() == 0 && (m_multiple || !option->selected()) && !m_recalcListItems)
+        fastAppendLast = true;
+
+    insertBefore(option, before.handle(), exceptioncode );
+
+    if (fastAppendLast) {
+        m_listItems.resize(m_listItems.size() + 1);
+        m_listItems[m_listItems.size() - 1] = option;
+        ++m_length;
+        m_recalcListItems = false;
+    } else if (!exceptioncode)
         setRecalcListItems();
 }
 
@@ -1976,8 +1984,22 @@ void HTMLSelectElementImpl::remove( long index )
     if(listIndex < 0 || index >= int(items.size()))
         return; // ### what should we do ? remove the last item?
 
+    //Fast path for last element, for e.g. clearing the box
+    //Note that if this is a single-select, we may have to recompute
+    //anyway if the item was selected, since we may want to set 
+    //a different one
+    bool fastRemoveLast = false;
+    if ((listIndex == items.size() - 1) && !m_recalcListItems && 
+        (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
+            fastRemoveLast = true;
+
     removeChild(items[listIndex], exceptioncode);
-    if( !exceptioncode )
+
+    if (fastRemoveLast) {
+        m_listItems.resize(m_listItems.size() - 1);
+        --m_length;
+        m_recalcListItems = false;
+    } else if( !exceptioncode)
         setRecalcListItems();
 }
 
@@ -2220,6 +2242,11 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
     if (optionIndex < 0 || optionIndex >= itemsSize)
         return -1;
 
+    //See if we're asked for the very last item, and check whether it's an <option>
+    //to fastpath clear
+    if (optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
+        return itemsSize - 1;
+
     int listIndex = 0;
     int optionIndex2 = 0;
     for (;
@@ -2247,11 +2274,12 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
     return optionIndex;
 }
 
-void HTMLSelectElementImpl::recalcListItems()
+void HTMLSelectElementImpl::recalcListItems() const
 {
     NodeImpl* current = firstChild();
     m_listItems.resize(0);
     HTMLOptionElementImpl* foundSelected = 0;
+    m_length = 0;
     while(current) {
         if (current->id() == ID_OPTGROUP && current->firstChild()) {
             // ### what if optgroup contains just comments? don't want one of no options in it...
@@ -2260,6 +2288,7 @@ void HTMLSelectElementImpl::recalcListItems()
             current = current->firstChild();
         }
         if (current->id() == ID_OPTION) {
+            ++m_length;
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
             if (!foundSelected && !m_multiple && m_size <= 1) {
