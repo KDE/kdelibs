@@ -314,3 +314,5 @@ that we would like to make for the next binary incompatible release.
   (Jaroslaw Staniek)
 
 - Increase version numbers in sonames of our libraries (*.so.version).
+
+
