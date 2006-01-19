@@ -184,6 +184,13 @@ ktnef
 <!ENTITY korganizer-narzednik    '<application>Koganizerem</application>'>
 <!ENTITY korganizer-miejscownik    '<application>Koganizerze</application>'>
 
+<!ENTITY ksysguard-mianownik    '<application>Ksysguard</application>'>
+<!ENTITY ksysguard-dopelniacz    '<application>Ksysguarda</application>'>
+<!ENTITY ksysguard-celownik    '<application>Ksysguardowi</application>'>
+<!ENTITY ksysguard-biernik    '<application>Ksysguarda</application>'>
+<!ENTITY ksysguard-narzednik    '<application>Ksysguardem</application>'>
+<!ENTITY ksysguard-miejscownik    '<application>Ksysguardzie</application>'>
+
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
 <!ENTITY kwallet-celownik    '<application>Portfelowi &kde;</application>'>
