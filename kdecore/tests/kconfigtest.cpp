@@ -24,6 +24,9 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
+KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
+KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
+
 int main(int argc, char *argv[])
 {
     setenv("LC_ALL", "C", 1);
@@ -109,6 +112,12 @@ void KConfigTest::initTestCase()
   sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
   sc.writeEntry( "variantListEntry", VARIANTLISTENTRY );
+
+  sc.setGroup( "EnumTypes" );
+  sc.writeEntry( "enum-10", KConfigTest::Tens );
+  sc.writeEntry( "enum-100", KConfigTest::Hundreds );
+  sc.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
+  sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
 
   sc.sync();
 
@@ -208,7 +217,7 @@ void KConfigTest::testLists()
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("ListTypes");
 
-  QCOMPARE( sc2.readEntry( "stringListEntry", QStringList()),
+  QCOMPARE( sc2.readEntry( QString("stringListEntry"), QStringList()),
             STRINGLISTENTRY );
 
   QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
@@ -241,6 +250,24 @@ void KConfigTest::testComplex()
   QCOMPARE( sc2.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
   QCOMPARE( sc2.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
   QCOMPARE( sc2.readEntry( "fontEntry", QFont() ), FONTENTRY );
+}
+
+void KConfigTest::testEnums()
+{
+  KConfig sc("kconfigtest");
+
+  sc.setGroup( "EnumTypes" );
+
+  QCOMPARE( sc.readEntry( "enum-10" ), QString("Tens"));
+  QVERIFY( sc.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Ones);
+  QVERIFY( sc.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Tens);
+
+  QCOMPARE( sc.readEntry( "flags-bit0" ), QString("bit0"));
+  QVERIFY( sc.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
+
+  QCOMPARE( sc.readEntry( "flags-bit0-bit1" ), QString("bit1|bit0") );
+  QVERIFY( sc.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
+           KConfigTest::bit0|KConfigTest::bit1 );
 }
 
 void KConfigTest::testInvalid()
