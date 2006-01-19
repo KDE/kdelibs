@@ -135,10 +135,13 @@
 
 #cmakedefine HAVE_LC_MESSAGES
 
+#cmakedefine01 HAVE_ERRNO_H
 #cmakedefine HAVE_STDINT_H
 #cmakedefine HAVE_SYS_STAT_H
 #cmakedefine HAVE_SYS_TYPES_H
-#cmakedefine HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE_SYS_TIME_H
+#cmakedefine01 HAVE_SYS_TIMEB_H
 #cmakedefine HAVE_SYS_SELECT_H
 #cmakedefine HAVE_SYS_STROPTS_H
 #cmakedefine HAVE_SYS_BITYPES_H

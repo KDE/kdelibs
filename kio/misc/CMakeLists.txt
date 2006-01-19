@@ -26,7 +26,7 @@ uiserver.h
 kde4_add_dcop_skels(kio_uiserver_KDEINIT_SRCS ${kio_uiserver_DCOP_SKEL_SRCS})
 
 set( kio_uiserver_DCOP_STUB_SRCS
-observer.h
+../kio/observer.h
 )
 
 kde4_add_dcop_stubs(kio_uiserver_KDEINIT_SRCS ${kio_uiserver_DCOP_STUB_SRCS})

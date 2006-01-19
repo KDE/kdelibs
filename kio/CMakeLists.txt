@@ -11,20 +11,53 @@ add_subdirectory( tests )
 add_subdirectory( kioexec ) 
 add_subdirectory( httpfilter ) 
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
+${CMAKE_SOURCE_DIR}/kwallet/client
+${CMAKE_SOURCE_DIR}/kdecore/network )
 
 
 ########### next target ###############
 
 set(kio_LIB_SRCS
-dummy.cpp
+${kiocore_STAT_SRCS}
+${kbookmarks_STAT_SRCS}
+${kfile_STAT_SRCS}
+${kssl_STAT_SRCS}
 )
+
+set(kio_STUB_HEADERS
+${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
+${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
+)
+
+kde4_add_dcop_stubs(kio_LIB_SRCS ${kio_STUB_HEADERS} )
+
+set(kio_SKEL_HEADERS
+#${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
+${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
+${CMAKE_CURRENT_SOURCE_DIR}/kio/kdirnotify.h
+${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarkmanager.h
+${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarknotifier.h
+)
+
+kde4_add_dcop_skels(kio_LIB_SRCS ${kio_SKEL_HEADERS} )
+
+kde4_add_ui3_files(kio_LIB_SRCS
+${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopbase.ui3
+${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesmimetypebase.ui3
+${CMAKE_CURRENT_SOURCE_DIR}/kfile/knotifywidgetbase.ui3
+${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui3
+${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui3
+)
+
+kde4_add_ui_files(kio_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopadvbase.ui)
 
 kde4_automoc(${kio_LIB_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} kssl kiocore kbookmarks kfile kdeui kdesu kwalletclient )
+target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kdesu kwalletclient ${ZLIB_LIBRARY})
 
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kio )

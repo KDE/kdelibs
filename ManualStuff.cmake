@@ -20,4 +20,5 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/interfaces
   ${CMAKE_SOURCE_DIR}/kio
   ${CMAKE_SOURCE_DIR}/kio/kssl
+  ${CMAKE_SOURCE_DIR}/kdefx
 )

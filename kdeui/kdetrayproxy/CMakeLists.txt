@@ -5,24 +5,26 @@ include_directories( ${CMAKE_SOURCE_DIR}/kded ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
 
 ########### next target ###############
 
-set(kded_kdetrayproxy_PART_SRCS
-kdetrayproxy.cpp
-module.cpp
-)
+MESSAGE(STATUS "kdeui/kded_kdetrayproxy disabled, undefined reference to qt_x_time")
 
-kde4_automoc(${kded_kdetrayproxy_PART_SRCS})
+#set(kded_kdetrayproxy_PART_SRCS
+#kdetrayproxy.cpp
+#module.cpp
+#)
 
-set( kded_kdetrayproxy_DCOP_SKEL_SRCS
-module.h
-)
+#kde4_automoc(${kded_kdetrayproxy_PART_SRCS})
 
-kde4_add_dcop_skels(kded_kdetrayproxy_PART_SRCS ${kded_kdetrayproxy_DCOP_SKEL_SRCS})
+#set( kded_kdetrayproxy_DCOP_SKEL_SRCS
+#module.h
+#)
 
-kde4_add_plugin(kded_kdetrayproxy ${kded_kdetrayproxy_PART_SRCS})
+#kde4_add_dcop_skels(kded_kdetrayproxy_PART_SRCS ${kded_kdetrayproxy_DCOP_SKEL_SRCS})
 
-target_link_libraries(kded_kdetrayproxy  ${QT_AND_KDECORE_LIBS} )
+#kde4_add_plugin(kded_kdetrayproxy ${kded_kdetrayproxy_PART_SRCS})
 
-install_targets(/lib/kde4 kded_kdetrayproxy )
+#target_link_libraries(kded_kdetrayproxy  ${QT_AND_KDECORE_LIBS} kdefx ${X11_LIBRARIES} )
+
+#install_targets(/lib/kde4 kded_kdetrayproxy )
 
 
 ########### install files ###############

@@ -127,6 +127,11 @@ check_include_files(punycode.h    HAVE_PUNYCODE_H)
 check_include_files(stringprep.h  HAVE_STRINGPREP_H)
 check_include_files(values.h      HAVE_VALUES_H)
 
+check_include_files(errno.h       HAVE_ERRNO_H)
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)
+check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
+
+
 check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
 check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
 check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)

@@ -61,15 +61,17 @@ install_targets(/bin kdontchangethehostname )
 
 ########### next target ###############
 
+MESSAGE(STATUS "kded/kde-menu disabled")
+
 set(kde-menu_SRCS
-dummy.cpp
+kde-menu.cpp
 )
 
 kde4_automoc(${kde-menu_SRCS})
 
 kde4_add_executable(kde-menu ${kde-menu_SRCS})
 
-target_link_libraries(kde-menu  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kde-menu  ${QT_AND_KDECORE_LIBS} kio)
 
 install_targets(/bin kde-menu )
 

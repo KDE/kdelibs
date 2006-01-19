@@ -1,37 +1,77 @@
-#find_package(KDE4 REQUIRED)
+
+find_package(KDE4 REQUIRED)
+
+find_package(Perl REQUIRED)
+
+kde4_header()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 
-#link_directories(${KDE4_LIB_DIR})
+link_directories(${KDE4_LIB_DIR})
 
 include(ConvenienceLibs.cmake)
+
+include(ManualStuff.cmake)
+
 include(ConfigureChecks.cmake)
 
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
-#add_subdirectory( dcop ) 
-#add_subdirectory( libltdl ) 
-#add_subdirectory( kdefx ) 
-#add_subdirectory( kdecore ) 
-#add_subdirectory( kdeui ) 
-#add_subdirectory( kdesu ) 
-#add_subdirectory( kjs ) 
-#add_subdirectory( kwallet ) 
-#add_subdirectory( kio ) 
+add_subdirectory( dcop )
+add_subdirectory( libltdl )
+add_subdirectory( kdefx )
+add_subdirectory( kdecore )
+add_subdirectory( kdeui )
+add_subdirectory( kdesu )
+add_subdirectory( kjs )
+add_subdirectory( kwallet )
+add_subdirectory( kio )
+add_subdirectory( kded       )
+add_subdirectory( kxmlcore     )
+add_subdirectory( kde3support  )
+add_subdirectory( dnssd        )
+add_subdirectory( kconf_update )
+add_subdirectory( kdoctools  )
+#add_subdirectory( kimgio    )
+add_subdirectory( kioslave   )
+add_subdirectory( knewstuff  )
+add_subdirectory( kparts     )
+add_subdirectory( kresources )
+add_subdirectory( kstyles    )
+add_subdirectory( kutils     )
+add_subdirectory( licenses   )
+add_subdirectory( mimetypes  )
+add_subdirectory( pics )
+add_subdirectory( doc  )
+add_subdirectory( kcert  )
+add_subdirectory( kinit  )
+add_subdirectory( kdeprint  )
+add_subdirectory( kabc  )
+add_subdirectory( kspell2  )
+add_subdirectory( kcmshell  )
+add_subdirectory( khtml  )
+add_subdirectory( interfaces  )
+add_subdirectory( kdewidgets  )
+add_subdirectory( kate  )
+add_subdirectory( knotify )
 
-#message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(TOPSUBDIRS)")
-#include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
+
+message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(TOPSUBDIRS)")
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### install files ###############
 
-#install_files(  FILES kde.pot )
+install_files(  FILES kde.pot )
 
-#kde4_placeholder()
+kde4_create_doxygen_docs(  )
+
+kde4_footer()
 
 
 

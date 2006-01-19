@@ -23,6 +23,7 @@ create_lut(number_object.cpp number_object.lut.h number_object.cpp)
 create_lut(string_object.cpp string_object.lut.h string_object.cpp)
 create_lut(array_object.cpp array_object.lut.h array_object.cpp)
 create_lut(math_object.cpp math_object.lut.h math_object.cpp)
+create_lut(regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
 create_lut(keywords.table lexer.lut.h lexer.cpp)
 
 set(kjs_LIB_SRCS
