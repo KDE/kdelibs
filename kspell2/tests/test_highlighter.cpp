@@ -25,7 +25,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include <q3textedit.h>
+#include <QTextEdit>
 
 int main( int argc, char** argv )
 {
@@ -33,7 +33,7 @@ int main( int argc, char** argv )
 
     KApplication app;
 
-    Q3TextEdit *test = new Q3TextEdit();
+    QTextEdit *test = new QTextEdit();
     KSpell2::Highlighter *hl = new KSpell2::Highlighter( test );
     Q_UNUSED( hl );
     app.setMainWidget( test );
