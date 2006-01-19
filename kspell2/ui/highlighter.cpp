@@ -31,6 +31,7 @@
 #include <qtimer.h>
 #include <qcolor.h>
 #include <QHash>
+#include <QTextCursor>
 
 namespace KSpell2 {
 
@@ -40,7 +41,8 @@ public:
     Filter     *filter;
     Broker::Ptr broker;
     Dictionary *dict;
-	QHash<QString, Dictionary*>dictCache;
+    QHash<QString, Dictionary*>dictCache;
+    QTextEdit *edit;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
@@ -49,6 +51,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     : QSyntaxHighlighter( textEdit ),d(new Private)
 {
     d->filter = filter;
+    d->edit = textEdit;
     if ( !configFile.isEmpty() )
         d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
     else
@@ -91,10 +94,11 @@ QStringList Highlighter::personalWords()
 
 void Highlighter::highlightBlock ( const QString & text )
 {
-	//port it
-#if 0
-	int para, index;
-    textEdit()->getCursorPosition( &para, &index );
+    if ( text.isEmpty() )
+        return;
+    QTextCursor cursor = d->edit->textCursor();
+    int index = cursor.position();
+
     const int lengthPosition = text.length() - 1;
 
     if ( index != lengthPosition ||
@@ -110,8 +114,7 @@ void Highlighter::highlightBlock ( const QString & text )
         }
     }
     //QTimer::singleShot( 0, this, SLOT(checkWords()) );
-	setCurrentBlockState ( 0 );
-#endif
+    setCurrentBlockState ( 0 );
 }
 
 Filter *Highlighter::currentFilter() const
