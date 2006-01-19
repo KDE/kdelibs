@@ -54,7 +54,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselect.h \
 	kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h \
 	karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h kwindowinfo.h ktextedit.h \
 	kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kscrollview.h kspell.h ksconfig.h \
-	kspelldlg.h ksyntaxhighlighter.h ktabbar.h ktabwidget.h ksplashscreen.h \
+	kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h \
 	kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h \
 	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h \
 	ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h \
@@ -85,7 +85,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	kmainwindowiface.cpp kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp kstringvalidator.cpp \
 	kactivelabel.cpp kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp ksconfig.cpp kspelldlg.cpp \
-	kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
+	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
 	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
 	klistviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
