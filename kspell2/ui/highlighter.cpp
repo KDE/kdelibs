@@ -2,6 +2,7 @@
  * highlighter.cpp
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2006  Laurent Montel <montel@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,12 +21,14 @@
  */
 
 #include "highlighter.h"
+#include "highlighter.moc"
 #include "broker.h"
 #include "dictionary.h"
 #include "settings.h"
 
 #include <kconfig.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include <qtextedit.h>
 #include <qtimer.h>
@@ -67,6 +70,9 @@ KEMailQuotingSyntaxHighlighter::~KEMailQuotingSyntaxHighlighter()
 
 void KEMailQuotingSyntaxHighlighter::highlightBlock ( const QString & text )
 {
+    if ( !isActive() )
+        return;
+
     QString simplified = text;
     simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
     while ( simplified.startsWith( QLatin1String(">>>>") ) )
@@ -94,6 +100,7 @@ public:
     Dictionary *dict;
     QHash<QString, Dictionary*>dictCache;
     QTextEdit *edit;
+    bool active;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
@@ -103,6 +110,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
 {
     d->filter = filter;
     d->edit = textEdit;
+    d->active = true;
     if ( !configFile.isEmpty() )
         d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
     else
@@ -143,9 +151,26 @@ QStringList Highlighter::personalWords()
     return l;
 }
 
+void Highlighter::setActive( bool active )
+{
+    if ( active == d->active )
+        return;
+    d->active = active;
+    //rehighlight();
+    if ( d->active )
+        emit activeChanged( i18n("As-you-type spell checking enabled.") );
+    else
+        emit activeChanged( i18n("As-you-type spell checking disabled.") );
+}
+
+bool Highlighter::isActive() const
+{
+    return d->active;
+}
+
 void Highlighter::highlightBlock ( const QString & text )
 {
-    if ( text.isEmpty() )
+    if ( text.isEmpty() || !d->active)
         return;
     QTextCursor cursor = d->edit->textCursor();
     int index = cursor.position();

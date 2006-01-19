@@ -19,6 +19,8 @@
  * 02110-1301  USA
  */
 #include "highlighter.h"
+#include "test_highlighter.h"
+#include "test_highlighter.moc"
 #include "dictionary.h"
 #include "filter.h"
 
@@ -26,6 +28,35 @@
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <QTextEdit>
+#include <QAction>
+#include <QMenu>
+TestSpell::TestSpell()
+	: QTextEdit()
+{
+    hl = new KSpell2::Highlighter( this );
+}
+
+void TestSpell::contextMenuEvent(QContextMenuEvent *e)
+{
+	kdDebug()<<"TestSpell::contextMenuEvent\n";
+	QMenu *popup = createStandardContextMenu();
+    QMenu *subMenu = new QMenu( popup );
+	connect( subMenu, SIGNAL( triggered ( QAction* ) ),
+    	this, SLOT( slotActivate( ) ) );
+	QAction *action = new QAction( "active or not", popup );
+	popup->insertSeparator();
+	popup->insertItem( "Text Completion",subMenu );
+	subMenu->addAction(action);
+	popup->exec(e->globalPos());
+	delete popup;
+			
+}
+
+void TestSpell::slotActivate()
+{
+	kdDebug()<<"Activate or not highlight :"<<endl;
+	hl->setActive(!hl->isActive());
+}
 
 int main( int argc, char** argv )
 {
@@ -33,9 +64,7 @@ int main( int argc, char** argv )
 
     KApplication app;
 
-    QTextEdit *test = new QTextEdit();
-    KSpell2::Highlighter *hl = new KSpell2::Highlighter( test );
-    Q_UNUSED( hl );
+    QTextEdit *test = new TestSpell();
     app.setMainWidget( test );
     test->show();
 

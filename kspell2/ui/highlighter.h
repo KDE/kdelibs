@@ -32,6 +32,7 @@ namespace KSpell2
 {
     class Highlighter : public QSyntaxHighlighter
     {
+	Q_OBJECT
     public:
         Highlighter( QTextEdit *textEdit,
                      const QString& configFile = QString(),
@@ -47,6 +48,32 @@ namespace KSpell2
         void setCurrentLanguage( const QString& lang );
 	
 	static QStringList personalWords();
+
+	/**
+	 * @short Enable/Disable spell checking.
+	 *
+	 * If @p active is true then spell checking is enabled; otherwise it
+	 * is disabled. Note that you have to disable automatic (de)activation
+	 * with @ref setAutomatic() before you change the state of spell checking
+	 * if you want to persistently enable/disable spell checking.
+	 *
+	 * @param active if true, then spell checking is enabled
+	 *
+	 * @see isActive(), setAutomatic()
+	 */
+	void setActive( bool active );
+	
+	/**
+	 * Returns the state of spell checking.
+	 *
+	 * @return true if spell checking is active
+	 *
+	 * @see setActive()
+	 */
+	bool isActive() const;
+    
+    Q_SIGNALS:
+	void activeChanged(const QString &);
 
     protected:
         virtual void setMisspelled( int start, int count );
