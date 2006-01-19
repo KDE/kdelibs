@@ -71,6 +71,9 @@ namespace KSpell2
 	 * @see setActive()
 	 */
 	bool isActive() const;
+
+	void rehighlight();
+
     
     Q_SIGNALS:
 	void activeChanged(const QString &);

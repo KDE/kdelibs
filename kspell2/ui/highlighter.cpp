@@ -151,12 +151,23 @@ QStringList Highlighter::personalWords()
     return l;
 }
 
+void Highlighter::rehighlight()
+{
+    QTextCursor cursor(document());
+    cursor.beginEditBlock();
+    for (QTextBlock blk = document()->begin(); blk.isValid(); blk = blk.next())
+        blk.layout()->clearAdditionalFormats();
+    cursor.endEditBlock();
+    d->edit->repaint();
+}
+
 void Highlighter::setActive( bool active )
 {
     if ( active == d->active )
         return;
     d->active = active;
-    //rehighlight();
+    rehighlight();
+
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );
     else
