@@ -63,16 +63,14 @@ public:
 
 
 KTextEdit::KTextEdit( const QString& text, QWidget *parent )
-    : QTextEdit( text, parent )
+    : QTextEdit( text, parent ), d( new KTextEditPrivate() )
 {
-    d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
 }
 
 KTextEdit::KTextEdit( QWidget *parent )
-    : QTextEdit( parent )
+    : QTextEdit( parent ), d( new KTextEditPrivate() )
 {
-    d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
 }
 
