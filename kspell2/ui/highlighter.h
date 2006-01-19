@@ -23,22 +23,21 @@
 
 #include "filter.h"
 
-#include <q3syntaxhighlighter.h>
+#include <QSyntaxHighlighter>
 
-class Q3TextEdit;
+class QTextEdit;
 
 namespace KSpell2
 {
-    class Highlighter : public Q3SyntaxHighlighter
+    class Highlighter : public QSyntaxHighlighter
     {
     public:
-        Highlighter( Q3TextEdit *textEdit,
+        Highlighter( QTextEdit *textEdit,
                      const QString& configFile = QString(),
                      Filter *filter = Filter::defaultFilter() );
         ~Highlighter();
 
-        virtual int highlightParagraph( const QString& text,
-                                        int endStateOfLastPara );
+		virtual void highlightBlock ( const QString & text );
 
         Filter *currentFilter() const;
         void setCurrentFilter( Filter *filter );

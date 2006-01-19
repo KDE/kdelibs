@@ -27,7 +27,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
-#include <q3textedit.h>
+#include <qtextedit.h>
 #include <qtimer.h>
 #include <qcolor.h>
 #include <QHash>
@@ -43,10 +43,10 @@ public:
 	QHash<QString, Dictionary*>dictCache;
 };
 
-Highlighter::Highlighter( Q3TextEdit *textEdit,
+Highlighter::Highlighter( QTextEdit *textEdit,
                           const QString& configFile,
                           Filter *filter)
-    : Q3SyntaxHighlighter( textEdit ),d(new Private)
+    : QSyntaxHighlighter( textEdit ),d(new Private)
 {
     d->filter = filter;
     if ( !configFile.isEmpty() )
@@ -66,11 +66,11 @@ Highlighter::~Highlighter()
     delete d;
 }
 
-int Highlighter::highlightParagraph( const QString& text,
-                                     int endStateOfLastPara )
+void Highlighter::highlightBlock ( const QString & text )
 {
-    Q_UNUSED( endStateOfLastPara );
-    int para, index;
+	//port it
+#if 0
+	int para, index;
     textEdit()->getCursorPosition( &para, &index );
     const int lengthPosition = text.length() - 1;
 
@@ -87,8 +87,8 @@ int Highlighter::highlightParagraph( const QString& text,
         }
     }
     //QTimer::singleShot( 0, this, SLOT(checkWords()) );
-
-    return 0;
+	setCurrentBlockState ( 0 );
+#endif	
 }
 
 Filter *Highlighter::currentFilter() const
