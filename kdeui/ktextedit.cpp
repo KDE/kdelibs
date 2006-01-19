@@ -33,13 +33,14 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdialog.h>
+#include <QMenu>
 
 class KTextEdit::KTextEditPrivate
 {
 public:
     KTextEditPrivate()
-        : customPalette( false )
-//          checkSpellingEnabled( false ),
+        : customPalette( false ),
+          checkSpellingEnabled( false )
 //          highlighter( 0 ),
 //          spell( 0 )
     {}
@@ -49,8 +50,12 @@ public:
     }
 
     bool customPalette;
-#if 0
+    QAction *autoSpellCheckAction;
+    QAction *allowTab;
+    QAction *spellCheckAction;
+
     bool checkSpellingEnabled;
+#if 0
     KDictSpellingHighlighter *highlighter;
     KSpell *spell;
 #endif
@@ -235,8 +240,39 @@ void KTextEdit::slotAllowTab()
     setTabChangesFocus( !tabChangesFocus() );
 }
 
+void KTextEdit::menuActivated( QAction* act)
+{
+    if ( act == d->spellCheckAction )
+        checkSpelling();
+    else if (  act == d->autoSpellCheckAction )
+        toggleAutoSpellCheck();
+    else if ( act == d->allowTab )
+        slotAllowTab();
+}
+
 void KTextEdit::contextMenuEvent( QContextMenuEvent *e )
 {
+    QMenu *popup = createStandardContextMenu();
+    connect( popup, SIGNAL( triggered ( QAction* ) ),
+             this, SLOT( menuActivated( QAction* ) ) );
+
+    popup->addSeparator();
+    d->spellCheckAction = popup->addAction( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ) );
+
+    if ( text().isEmpty() )
+        d->spellCheckAction->setEnabled( false );
+
+    d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
+    d->autoSpellCheckAction->setCheckable(true);
+    d->autoSpellCheckAction->setChecked(d->checkSpellingEnabled);
+    popup->addSeparator();
+    d->allowTab = popup->addAction(i18n("Allow Tabulations"));
+    d->allowTab->setCheckable(true);
+    d->allowTab->setChecked(!tabChangesFocus());
+    popup->exec(e->globalPos());
+    delete popup;
+
+
 // TODO
 /*
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
@@ -269,6 +305,7 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *e )
         menu->setItemChecked(id, !tabChangesFocus());
     }
 */
+
 }
 
 void KTextEdit::wheelEvent( QWheelEvent *e )

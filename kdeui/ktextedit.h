@@ -142,6 +142,7 @@ private Q_SLOTS:
     void spellCheckerFinished();
     void toggleAutoSpellCheck();
     void slotAllowTab();
+    void menuActivated( QAction* act);
 
 private:
     void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );
