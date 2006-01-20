@@ -22,6 +22,7 @@
 
 #include <QGroupBox>
 #include <q3listbox.h>
+#include <QStringList>
 
 #include <kdelibs_export.h>
 
@@ -45,7 +46,8 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
-   Q_SETS( Button )
+   Q_ENUMS( Button )
+   Q_FLAGS( Buttons )
    Q_PROPERTY( Button buttons READ buttons WRITE setButtons )
    Q_PROPERTY( QStringList items READ items WRITE setItems USER true )
 
@@ -65,9 +67,9 @@ public:
             : m_representationWidget( repWidget ),
               m_lineEdit( edit ) {}
         KDEUI_EXPORT CustomEditor( KComboBox *combo );
-		
-		KDEUI_EXPORT virtual ~CustomEditor() {}
-		
+
+        KDEUI_EXPORT virtual ~CustomEditor() {}
+
         KDEUI_EXPORT void setRepresentationWidget( QWidget *repWidget ) {
             m_representationWidget = repWidget;
         }
@@ -93,8 +95,14 @@ public:
        * Enumeration of the buttons, the listbox offers. Specify them in the
        * constructor in the buttons parameter, or in setButtons.
        */
-      enum Button { Add = 1, Remove = 2, UpDown = 4 };
-      enum { All = Add|Remove|UpDown }; // separated so that it doesn't appear in Qt designer
+      enum Button {
+        Add = 0x0001,
+        Remove = 0x0002,
+        UpDown = 0x0004,
+        All = Add | Remove | UpDown
+      };
+
+      Q_DECLARE_FLAGS( Buttons, Button )
 
       /**
        * Create an editable listbox.
@@ -109,7 +117,7 @@ public:
        * possible to enter items twice into the listbox.
        */
       KEditListBox(QWidget *parent = 0, const char *name = 0,
-		   bool checkAtEntering=false, int buttons = All );
+		   bool checkAtEntering=false, Button buttons = All );
       /**
        * Create an editable listbox.
        *
@@ -118,7 +126,7 @@ public:
        */
       KEditListBox(const QString& title, QWidget *parent = 0,
 		   const char *name = 0, bool checkAtEntering=false,
-		   int buttons = All );
+		   Button buttons = All );
 
       /**
        * Another constructor, which allows to use a custom editing widget
@@ -135,7 +143,7 @@ public:
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,
                     QWidget *parent = 0, const char *name = 0,
-                    bool checkAtEntering = false, int buttons = All );
+                    bool checkAtEntering = false, Button buttons = All );
 
       virtual ~KEditListBox();
 
@@ -212,12 +220,12 @@ public:
       /**
        * Returns which buttons are visible
        */
-      int buttons() const;
+      Button buttons() const;
 
       /**
        * Specifies which buttons should be visible
        */
-      void setButtons( uint buttons );
+      void setButtons( Button buttons );
 
    Q_SIGNALS:
       void changed();
@@ -252,7 +260,7 @@ public:
       KLineEdit *m_lineEdit;
 
       //this is called in both ctors, to avoid code duplication
-      void init( bool checkAtEntering, int buttons,
+      void init( bool checkAtEntering, Button buttons,
                  QWidget *representationWidget = 0L );
 
    protected:
@@ -261,5 +269,7 @@ public:
       //our lovely private d-pointer
       KEditListBoxPrivate* const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KEditListBox::Buttons)
 
 #endif

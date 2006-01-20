@@ -40,11 +40,11 @@ class KEditListBoxPrivate
 {
 public:
     bool m_checkAtEntering;
-    uint buttons;
+    KEditListBox::Button buttons;
 };
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
-			   bool checkAtEntering, int buttons )
+			   bool checkAtEntering, Button buttons )
     :QGroupBox(parent ), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -52,7 +52,7 @@ KEditListBox::KEditListBox(QWidget *parent, const char *name,
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
-			   const char *name, bool checkAtEntering, int buttons)
+			   const char *name, bool checkAtEntering, Button buttons)
     :QGroupBox(title, parent ), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -61,7 +61,7 @@ KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 
 KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            QWidget *parent, const char *name,
-                           bool checkAtEntering, int buttons)
+                           bool checkAtEntering, Button buttons)
     :QGroupBox(title, parent), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -74,7 +74,7 @@ KEditListBox::~KEditListBox()
     delete d;
 }
 
-void KEditListBox::init( bool checkAtEntering, int buttons,
+void KEditListBox::init( bool checkAtEntering, Button buttons,
                          QWidget *representationWidget )
 {
     d->m_checkAtEntering = checkAtEntering;
@@ -108,13 +108,13 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
     connect(m_lineEdit,SIGNAL(textChanged(const QString&)),this,SLOT(typedSomething(const QString&)));
     m_lineEdit->setTrapReturnKey(true);
     connect(m_lineEdit,SIGNAL(returnPressed()),this,SLOT(addItem()));
-    connect(m_listBox, SIGNAL(highlighted(int)), SLOT(enableMoveButtons(int)));
+    connect(m_listBox, SIGNAL(highlighted(int)),this,SLOT(enableMoveButtons(int)));
 
     // maybe supplied lineedit has some text already
     typedSomething( m_lineEdit->text() );
 }
 
-void KEditListBox::setButtons( uint buttons )
+void KEditListBox::setButtons( Button buttons )
 {
     if ( d->buttons == buttons )
         return;
@@ -386,7 +386,7 @@ void KEditListBox::setItems(const QStringList& items)
   m_listBox->insertStringList(items, 0);
 }
 
-int KEditListBox::buttons() const
+KEditListBox::Button KEditListBox::buttons() const
 {
   return d->buttons;
 }
