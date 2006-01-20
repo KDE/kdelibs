@@ -194,6 +194,10 @@ void KDialog::setButtonMask( ButtonCodes buttonMask ,
 		appendButton( Cancel, KStdGuiItem::cancel() );
 	if( d->buttonMask & Close )
 		appendButton( Close, KStdGuiItem::close() );
+	if( d->buttonMask & Yes )
+		appendButton( Yes, KStdGuiItem::yes() );
+	if( d->buttonMask & No )
+		appendButton( No, KStdGuiItem::no() );
 	if( d->buttonMask & Details )
 	{
 		appendButton( Details, QString() );
