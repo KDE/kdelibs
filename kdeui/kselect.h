@@ -23,9 +23,8 @@
 #ifndef KSELECT_H
 #define KSELECT_H
 
-#include <qwidget.h>
-#include <q3rangecontrol.h>
-#include <qpixmap.h>
+#include <QAbstractSlider>
+#include <QWidget>
 
 #include <kdelibs_export.h>
 
@@ -155,7 +154,7 @@ private:
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KDEUI_EXPORT KSelector : public QWidget, public Q3RangeControl
+class KDEUI_EXPORT KSelector : public QAbstractSlider
 {
   Q_OBJECT
   Q_PROPERTY( int value READ value WRITE setValue )
@@ -200,49 +199,6 @@ public:
   bool indent() const
   {	return _indent; }
 
-  /**
-   * Sets the value.
-   */
-  void setValue(int value)
-  { Q3RangeControl::setValue(value); }
-
-  /**
-   * @returns the value.
-   */
-  int value() const
-  { return Q3RangeControl::value(); }
-
-  /**
-   * Sets the min value.
-   */
-  void setMinValue(int value)
-  { Q3RangeControl::setMinValue(value); }
-
-  /**
-   * @return the min value.
-   */
-  int minValue() const
-  { return Q3RangeControl::minValue(); }
-
-  /**
-   * Sets the max value.
-   */
-  void setMaxValue(int value)
-  { Q3RangeControl::setMaxValue(value); }
-
-  /**
-   * @return the max value.
-   */
-  int maxValue() const
-  { return Q3RangeControl::maxValue(); }
-
-Q_SIGNALS:
-  /**
-   * This signal is emitted whenever the user chooses a value,
-   * e.g. by clicking with the mouse on the widget.
-   */
-  void valueChanged( int value );
-
 protected:
   /**
    * Override this function to draw the contents of the control.
@@ -260,7 +216,7 @@ protected:
    */
   virtual void drawArrow( QPainter *painter, bool show, const QPoint &pos );
 
-  virtual void valueChange();
+  virtual void sliderChange( SliderChange change );
   virtual void paintEvent( QPaintEvent * );
   virtual void mousePressEvent( QMouseEvent *e );
   virtual void mouseMoveEvent( QMouseEvent *e );
@@ -271,6 +227,7 @@ private:
   void moveArrow( const QPoint &pos );
 
   Qt::Orientation _orientation;
+  QPoint _previousPos;
   bool _indent;
 
 protected:
