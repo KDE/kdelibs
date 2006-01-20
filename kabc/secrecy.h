@@ -21,7 +21,7 @@
 #ifndef KABC_SECRECY_H
 #define KABC_SECRECY_H
 
-#include <q3valuelist.h>
+#include <QList>
 
 #include <kdelibs_export.h>
 
@@ -33,7 +33,7 @@ class KABC_EXPORT Secrecy
     friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Secrecy & );
 
 public:
-  typedef QList<int> TypeList;  
+  typedef QList<int> TypeList;
 
   /**
    * Secrecy types

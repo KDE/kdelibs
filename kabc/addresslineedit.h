@@ -22,12 +22,12 @@
 #ifndef KABC_ADDRESSLINEEDIT_H
 #define KABC_ADDRESSLINEEDIT_H
 
-#include <qobject.h>
-#include <qtimer.h>
+#include <QObject>
 
-#include "klineedit.h"
 #include "kcompletion.h"
+#include "klineedit.h"
 
+class QTimer;
 class KConfig;
 
 namespace KABC {

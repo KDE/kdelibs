@@ -24,10 +24,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qwidget.h>
-
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>

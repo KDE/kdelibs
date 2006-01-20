@@ -18,16 +18,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
-#include <QGroupBox>
 
+#include <QButtonGroup>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QLayout>
+#include <QPushButton>
+#include <QRadioButton>
+
+#include <kdebug.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kdebug.h>
 
 #include "addressbook.h"
 #include "addresseedialog.h"
@@ -51,7 +52,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
   topLayout->addWidget( box );
 
   QStringList::ConstIterator it;
-  for( it = emails.begin(); it != emails.end(); ++it ) {
+  for ( it = emails.begin(); it != emails.end(); ++it ) {
     QRadioButton *button = new QRadioButton( *it, box );
     mButtonGroup->addButton( button );
     if ( (*it) == current ) {
@@ -90,7 +91,7 @@ class EditEntryItem : public QTreeWidgetItem
       mEmail( email )
     {
       setText( 0, addressee.realName() );
-      if( email.isEmpty() ) {
+      if ( email.isEmpty() ) {
         setText( 1, addressee.preferredEmail() );
         setText( 2, i18n("Yes") );
       } else {
@@ -221,7 +222,7 @@ void DistributionListEditor::removeList()
 void DistributionListEditor::addEntry()
 {
   QList<QTreeWidgetItem*> selected = mAddresseeView->selectedItems();
-  if( selected.count() == 0 ) {
+  if ( selected.count() == 0 ) {
     kdDebug(5700) << "DLE::addEntry(): No addressee selected." << endl;
     return;
   }
@@ -258,7 +259,7 @@ void DistributionListEditor::changeEmail()
   if ( !list ) return;
 
   QList<QTreeWidgetItem*> selected = mEntryView->selectedItems();
-  if( selected.count() == 0 ) return;
+  if ( selected.count() == 0 ) return;
 
   EditEntryItem *entryItem =
       static_cast<EditEntryItem *>( selected.at( 0 ) );
@@ -279,7 +280,7 @@ void DistributionListEditor::updateEntryView()
   mEntryView->clear();
   DistributionList::Entry::List entries = list->entries();
   DistributionList::Entry::List::ConstIterator it;
-  for( it = entries.begin(); it != entries.end(); ++it ) {
+  for ( it = entries.begin(); it != entries.end(); ++it ) {
     new EditEntryItem( mEntryView, (*it).addressee, (*it).email );
   }
    QList<QTreeWidgetItem*> selected = mEntryView->selectedItems();
@@ -294,7 +295,7 @@ void DistributionListEditor::updateAddresseeView()
   mAddresseeView->clear();
 
   AddressBook::Iterator it;
-  for( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
+  for ( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
     new AddresseeItem( mAddresseeView, *it );
   }
 }

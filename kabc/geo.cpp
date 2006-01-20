@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qdatastream.h>
+#include <QDataStream>
 
 #include "geo.h"
 

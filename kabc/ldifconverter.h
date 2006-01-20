@@ -20,8 +20,8 @@
 #ifndef KABC_LDIFCONVERTER_H
 #define KABC_LDIFCONVERTER_H
 
-#include <qstring.h>
-#include <qdatetime.h>
+#include <QDateTime>
+#include <QString>
 
 #include "addressee.h"
 #include "addresseelist.h"

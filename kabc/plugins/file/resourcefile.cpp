@@ -24,10 +24,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qregexp.h>
-#include <qtimer.h>
+#include <QFile>
+#include <QFileInfo>
 
 #include <kapplication.h>
 #include <kconfig.h>

@@ -201,11 +201,11 @@ void AddresseeList::sortByTrait()
     return;
 
   iterator i2 = endIt;
-  while( i1 != endIt ) {
+  while ( i1 != endIt ) {
     iterator j1 = begin();
     iterator j2 = j1;
     ++j2;
-    while( j1 != i2 ) {
+    while ( j1 != i2 ) {
       if ( !mReverseSorting && Trait::lt( *j2, *j1 )
            || mReverseSorting && Trait::lt( *j1, *j2 ) ) {
         qSwap( *j1, *j2 );

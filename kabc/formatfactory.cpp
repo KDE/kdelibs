@@ -18,13 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QFile>
+
 #include <kdebug.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-
-#include <qfile.h>
 
 #include "vcardformat.h"
 

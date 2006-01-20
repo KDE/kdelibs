@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qdatastream.h>
-#include <qimage.h>
+#include <QDataStream>
+#include <QImage>
 
 #include <kdebug.h>
 #include <klocale.h>

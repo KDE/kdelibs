@@ -21,7 +21,7 @@
 #ifndef KABC_GEO_H
 #define KABC_GEO_H
 
-#include <qstring.h>
+#include <QString>
 
 #include <kdelibs_export.h>
 

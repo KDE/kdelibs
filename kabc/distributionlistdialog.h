@@ -21,7 +21,7 @@
 #ifndef KABC_DISTRIBUTIONLISTDIALOG_H
 #define KABC_DISTRIBUTIONLISTDIALOG_H
 
-#include <qwidget.h>
+#include <QWidget>
 
 #include <kdialogbase.h>
 

@@ -20,7 +20,7 @@
 #ifndef KABC_DISTRIBUTIONLISTEDITOR_H
 #define KABC_DISTRIBUTIONLISTEDITOR_H
 
-#include <qwidget.h>
+#include <QWidget>
 
 #include <kdialogbase.h>
 

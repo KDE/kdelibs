@@ -20,8 +20,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
 
 #include <kprocess.h>
 #include <kdebug.h>

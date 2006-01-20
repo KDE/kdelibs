@@ -26,13 +26,14 @@ class QStringList;
 class KeyNameMap; 
 
 #include <list>
-#include <qframe.h>
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qsize.h>
-#include <qvariant.h>
-#include <qmap.h>
-#include <q3cstring.h>
+
+#include <QDateTime>
+#include <QFrame>
+#include <QMap>
+#include <QString>
+#include <QSize>
+#include <QVariant>
+
 
 /**
  * The class KabKey is used to select entries out of the database file.

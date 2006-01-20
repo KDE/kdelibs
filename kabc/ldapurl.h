@@ -21,9 +21,8 @@
 #ifndef KABC_LDAPURL_H
 #define KABC_LDAPURL_H
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmap.h>
+#include <QMap>
+#include <QStringList>
 
 #include <kurl.h>
 

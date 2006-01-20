@@ -23,23 +23,25 @@
 
 #include "addresslineedit.h"
 
-#include <qapplication.h>
-#include <qobject.h>
-#include <qregexp.h>
-#include <qevent.h>
+#include <QApplication>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QObject>
+#include <QRegExp>
+#include <QTimer>
 
 #include <kcompletionbox.h>
 #include <kconfig.h>
 #include <kcursor.h>
+#include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kstdaccel.h>
 
-#include <kabc/stdaddressbook.h>
 #include <kabc/distributionlist.h>
+#include <kabc/stdaddressbook.h>
 #include "ldapclient.h"
 
-#include <kdebug.h>
 
 //=============================================================================
 //
@@ -92,8 +94,8 @@ void AddressLineEdit::init()
       s_completion->setIgnoreCase( true );
   }
 
-  if( m_useCompletion ) {
-      if( !s_LDAPTimer ) {
+  if ( m_useCompletion ) {
+      if ( !s_LDAPTimer ) {
         ldapTimerDeleter.setObject( s_LDAPTimer, new QTimer );
         ldapSearchDeleter.setObject( s_LDAPSearch, new LdapSearch );
         ldapTextDeleter.setObject( s_LDAPText, new QString );
@@ -166,14 +168,14 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
         }
     }
 
-    if( !accept )
+    if ( !accept )
         KLineEdit::keyPressEvent( e );
 
-    if( e->isAccepted())
+    if ( e->isAccepted())
     {
-        if( m_useCompletion && s_LDAPTimer != NULL )
+        if ( m_useCompletion && s_LDAPTimer != NULL )
         {
-            if( *s_LDAPText != text())
+            if ( *s_LDAPText != text())
                 stopLDAPLookup();
             *s_LDAPText = text();
             s_LDAPLineEdit = this;
@@ -297,7 +299,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         int len = s.length();
 
         // Increment past any whitespace...
-        while( n < len && s[n].isSpace() )
+        while ( n < len && s[n].isSpace() )
           n++;
 
         prevAddr = s.left(n);
@@ -338,7 +340,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             items += s_completion->substringCompletion( '<' + s );
             int beforeDollarCompletionCount = items.count();
 
-            if( s.indexOf( ' ' ) == -1 ) // one word, possibly given name
+            if ( s.indexOf( ' ' ) == -1 ) // one word, possibly given name
                 items += s_completion->allMatches( "$$" + s );
 
             if ( !items.isEmpty() )
@@ -346,12 +348,12 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                 if ( items.count() > beforeDollarCompletionCount )
                 {
                     // remove the '$$whatever$' part
-                    for( QStringList::Iterator it = items.begin();
+                    for ( QStringList::Iterator it = items.begin();
                          it != items.end();
                          ++it )
                     {
                         int pos = (*it).indexOf( '$', 2 );
-                        if( pos < 0 ) // ???
+                        if ( pos < 0 ) // ???
                             continue;
                         (*it)=(*it).mid( pos + 1 );
                     }
@@ -425,7 +427,7 @@ void AddressLineEdit::loadAddresses()
     s_addressesDirty = false;
 
     QStringList adrs = addresses();
-    for( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it)
+    for ( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it)
         addAddress( *it );
 }
 
@@ -433,18 +435,18 @@ void AddressLineEdit::addAddress( const QString& adr )
 {
     s_completion->addItem( adr );
     int pos = adr.indexOf( '<' );
-    if( pos >= 0 )
+    if ( pos >= 0 )
     {
         ++pos;
         int pos2 = adr.indexOf( pos, '>' );
-        if( pos2 >= 0 )
+        if ( pos2 >= 0 )
             s_completion->addItem( adr.mid( pos, pos2 - pos ));
     }
 }
 
 void AddressLineEdit::slotStartLDAPLookup()
 {
-    if( !s_LDAPSearch->isAvailable() || s_LDAPLineEdit != this )
+    if ( !s_LDAPSearch->isAvailable() || s_LDAPLineEdit != this )
         return;
     startLoadingLDAPEntries();
 }
@@ -466,7 +468,7 @@ void AddressLineEdit::startLoadingLDAPEntries()
         prevAddr = s.left(n+1) + ' ';
         s = s.mid(n+1,255).trimmed();
     }
-    if( s.length() == 0 )
+    if ( s.length() == 0 )
         return;
 
     loadAddresses(); // TODO reuse these?
@@ -475,9 +477,9 @@ void AddressLineEdit::startLoadingLDAPEntries()
 
 void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
 {
-    if( s_LDAPLineEdit != this )
+    if ( s_LDAPLineEdit != this )
         return;
-    for( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it ) {
+    for ( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it ) {
         QString name(*it);
         int pos = name.indexOf( " <" );
         int pos_comma = name.indexOf( ',' );
@@ -489,9 +491,9 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
         addAddress( name );
     }
 
-    if( hasFocus() || completionBox()->hasFocus())
+    if ( hasFocus() || completionBox()->hasFocus())
     {
-        if( completionMode() != KGlobalSettings::CompletionNone )
+        if ( completionMode() != KGlobalSettings::CompletionNone )
         {
             doCompletion( false );
         }
@@ -503,8 +505,8 @@ QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
     QStringList src = adrs;
     qSort( src );
     QString last;
-    for( QStringList::Iterator it = src.begin(); it != src.end(); ) {
-        if( *it == last )
+    for ( QStringList::Iterator it = src.begin(); it != src.end(); ) {
+        if ( *it == last )
         {
             it = src.erase( it );
             continue; // dupe
@@ -556,7 +558,7 @@ QStringList AddressLineEdit::addresses()
 
   KABC::AddressBook *addressBook = KABC::StdAddressBook::self();
   KABC::AddressBook::Iterator it;
-  for( it = addressBook->begin(); it != addressBook->end(); ++it ) {
+  for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
     QStringList emails = (*it).emails();
 
     QString n = (*it).prefix() + space +

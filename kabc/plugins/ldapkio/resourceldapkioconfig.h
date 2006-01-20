@@ -21,17 +21,16 @@
 #ifndef RESOURCELDAPCONFIG_H
 #define RESOURCELDAPCONFIG_H
 
-#include <qmap.h>
-#include <qradiobutton.h>
-#include <qcombobox.h>
+#include <QButtonGroup>
+#include <QComboBox>
+#include <QGroupBox>
 #include <QHash>
-#include <q3buttongroup.h>
+#include <QMap>
 
+#include <kabc/ldapconfigwidget.h>
+#include <kabc/ldif.h>
 #include <kdialogbase.h>
 #include <kresources/configwidget.h>
-#include <kabc/ldif.h>
-#include <kabc/ldapconfigwidget.h>
-
 
 class QCheckBox;
 class QPushButton;
@@ -88,7 +87,7 @@ class AttributesDialog : public KDialogBase
     KComboBox *mMapCombo, *mRDNCombo;
     QList< QMap<QString, QString> > mMapList;
     QMap<QString, QString> mDefaultMap;
-    QHash<QString,KLineEdit*> mLineEditDict;
+    QHash<QString, KLineEdit*> mLineEditDict;
     QHash<QString, QString> mNameDict;
 };
 
@@ -110,7 +109,8 @@ class OfflineDialog : public KDialogBase
   private:
     KUrl mSrc;
     QString mDst;
-    Q3ButtonGroup *mCacheGroup;
+    QGroupBox *mCacheBox;
+    QButtonGroup *mCacheGroup;
     QCheckBox *mAutoCache;
 };
 

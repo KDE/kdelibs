@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
 
 #include <kabapi.h>
 #include <kaboutdata.h>
@@ -172,7 +172,7 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
   // Strip "KMail:1.0" prefix and "[EOS]" suffix.
   QString str = dataString.mid( 11, dataString.length() - 24 );
 
-  QStringList entries = QStringList::split( "\n[EOR]\n ", str );
+  QStringList entries = str.split( "\n[EOR]\n " );
 
   Address homeAddress( Address::Home );
   Address businessAddress( Address::Work );
@@ -180,7 +180,7 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
 
   QStringList::ConstIterator it;
   for ( it = entries.begin(); it != entries.end(); ++it ) {
-    int pos = (*it).find( "\n" );
+    int pos = (*it).indexOf( "\n" );
     QString fieldName = (*it).left( pos );
     QString fieldValue = (*it).mid( pos + 2 );
 
@@ -325,7 +325,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     QStringList::ConstIterator customIt;
     for ( customIt = entry.custom.begin(); customIt != entry.custom.end(); ++customIt ) {
       if ( (*customIt).startsWith( "X-KABC-UID:" ) ) {
-        a.setUid( (*customIt).mid( (*customIt).find( ":" ) + 1 ) );
+        a.setUid( (*customIt).mid( (*customIt).indexOf( ":" ) + 1 ) );
         idFound = true;
       } else if ( (*customIt).startsWith( "KMail:1.0\n" ) ) {
         readKAddressBookEntries( *customIt, a );

@@ -27,8 +27,9 @@
 #include <kstandarddirs.h>
 #include <ktempfile.h>
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
+
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>

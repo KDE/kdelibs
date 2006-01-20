@@ -17,28 +17,26 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <qapplication.h>
 
-#include <qobject.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qspinbox.h>
+#include <QCheckBox>
 #include <QGroupBox>
-#include <qradiobutton.h>
-#include <qprogressdialog.h>
+#include <QLabel>
+#include <QLayout>
+#include <QProgressDialog>
+#include <QPushButton>
+#include <QObject>
+#include <QRadioButton>
+#include <QSpinBox>
 
-#include <kmessagebox.h>
 #include <kacceleratormanager.h>
+#include <kcombobox.h>
+#include <kdebug.h>
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <klineedit.h>
-#include <kcombobox.h>
-#include <kdebug.h>
+#include <kmessagebox.h>
 
 #include "ldapconfigwidget.h"
-#include "ldapconfigwidget.moc"
 
 using namespace KABC;
 
@@ -656,3 +654,5 @@ void LdapConfigWidget::setFeatures( LdapConfigWidget::WinFlags features )
   // Re-create child widgets according to the new flags
   initWidget();
 }
+
+#include "ldapconfigwidget.moc"

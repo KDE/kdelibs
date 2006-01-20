@@ -21,7 +21,7 @@
 #ifndef KABC_PLUGIN_H
 #define KABC_PLUGIN_H
 
-#include <qstring.h>
+#include <QString>
 
 #include <kdelibs_export.h>
 

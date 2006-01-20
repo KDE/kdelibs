@@ -32,17 +32,16 @@
                 - physicaldeliveryofficename,
 */
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>
-#include <qtextstream.h>
+#include <QRegExp>
+#include <QStringList>
 #include <QTextCodec>
+#include <QTextStream>
 
-#include <klocale.h>
 #include <kdebug.h>
+#include <klocale.h>
 
-#include "addressee.h"
 #include "address.h"
+#include "addressee.h"
 
 #include "ldif.h"
 #include "ldifconverter.h"

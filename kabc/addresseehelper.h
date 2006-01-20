@@ -20,8 +20,8 @@
 #ifndef KABC_ADDRESSEEHELPER_H
 #define KABC_ADDRESSEEHELPER_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QObject>
+#include <QStringList>
 
 #include <dcopobject.h>
 

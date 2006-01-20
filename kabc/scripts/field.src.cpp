@@ -307,9 +307,9 @@ void Field::saveFields( KConfigBase *cfg, const QString &identifier,
   
   int custom = 0;
   Field::List::ConstIterator it;
-  for( it = fields.begin(); it != fields.end(); ++it ) {
+  for ( it = fields.begin(); it != fields.end(); ++it ) {
     fieldIds.append( (*it)->mImpl->fieldId() );
-    if( (*it)->isCustom() ) {
+    if ( (*it)->isCustom() ) {
       QStringList customEntry;
       customEntry << (*it)->mImpl->label();
       customEntry << (*it)->mImpl->key();
@@ -337,7 +337,7 @@ Field::List Field::restoreFields( KConfigBase *cfg, const QString &identifier )
 
   int custom = 0;
   QList<int>::ConstIterator it;
-  for( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
+  for ( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
     FieldImpl *f = 0;
     if ( (*it) == FieldImpl::CustomField ) {
       QStringList customEntry = cfg->readListEntry( "KABC_CustomEntry_" +

@@ -18,10 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qregexp.h>
-#include <qtimer.h>
-
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -627,7 +623,7 @@ void AddressBook::dump() const
   kdDebug(5700) << "AddressBook::dump() --- begin ---" << endl;
 
   ConstIterator it;
-  for( it = begin(); it != end(); ++it ) {
+  for ( it = begin(); it != end(); ++it ) {
     (*it).dump();
   }
 

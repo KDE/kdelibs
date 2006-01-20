@@ -136,7 +136,7 @@ void AddresseeDialog::loadAddressBook()
   mAddresseeEdit->completionObject()->clear();
 
   AddressBook::Iterator it;
-  for( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
+  for ( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
     AddresseeItem *item = new AddresseeItem( mAddresseeList, (*it) );
     addCompletionItem( (*it).realName(), item );
     addCompletionItem( (*it).preferredEmail(), item );

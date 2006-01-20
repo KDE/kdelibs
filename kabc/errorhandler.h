@@ -22,7 +22,7 @@
 #ifndef KABC_ERRORHANDLER_H
 #define KABC_ERRORHANDLER_H
 
-#include <qstring.h>
+#include <QString>
 
 #include <kdelibs_export.h>
 

@@ -35,14 +35,14 @@ class Q3ListBoxItem;
   * The following code may be used to let the user select an address:
   * \code
   * KabAPI kabapi(this);
-  * if(dialog.init()!=KabAPI::NoError)
+  * if (dialog.init()!=KabAPI::NoError)
   *   {
   *     ... error handling
   *   }
   * AddressBook::Entry entry;
-  * if(kabapi.exec())
+  * if (kabapi.exec())
   *   {
-  *     if(!kabapi.getEntry(entry))
+  *     if (!kabapi.getEntry(entry))
   *       {
   *         // ... the database is empty
   *       } else {

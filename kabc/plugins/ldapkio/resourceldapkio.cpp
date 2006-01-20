@@ -20,10 +20,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-
-#include <qapplication.h>
-#include <qbuffer.h>
-#include <qfile.h>
+#include <QBuffer>
+#include <QEventLoop>
+#include <QFile>
 
 #include <kdebug.h>
 #include <kglobal.h>

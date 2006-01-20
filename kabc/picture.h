@@ -21,9 +21,9 @@
 #ifndef KABC_PICTURE_H
 #define KABC_PICTURE_H
 
-#include <qimage.h>
-#include <qstring.h>
 #include <QDataStream>
+#include <QImage>
+#include <QString>
 
 #include <kdelibs_export.h>
 

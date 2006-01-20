@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDataStream>
+
 #include <klocale.h>
 
 #include "secrecy.h"

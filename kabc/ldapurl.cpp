@@ -18,9 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDir>
+#include <QStringList>
+
 #include <kdebug.h>
-#include <qstringlist.h>
-#include <qdir.h>
 
 #include "ldapurl.h"
 

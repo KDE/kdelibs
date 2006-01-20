@@ -64,7 +64,7 @@ QByteArray LDIF::assembleLine( const QString &fieldname, const QByteArray &value
 
     if ( value.size() == 0 ) safe = true;
 
-    if( safe ) {
+    if ( safe ) {
       result = fieldname.toUtf8() + ": " + value;
     } else {
       result = fieldname.toUtf8() + ":: " + value.toBase64();
@@ -274,7 +274,7 @@ LDIF::ParseVal LDIF::nextItem()
   ParseVal retval = None;
   char c=0;
 
-  while( retval == None ) {
+  while ( retval == None ) {
     if ( mPos < (uint)mLdif.size() ) {
       c = mLdif[mPos];
       mPos++;

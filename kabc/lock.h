@@ -21,8 +21,8 @@
 #ifndef KABC_LOCK_H
 #define KABC_LOCK_H
 
-#include <qstring.h>
-#include <qobject.h>
+#include <QString>
+#include <QObject>
 
 #include <kdelibs_export.h>
 

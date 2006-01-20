@@ -17,24 +17,23 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <qapplication.h>
 
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qspinbox.h>
-#include <kvbox.h>
-#include <qradiobutton.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QRadioButton>
 
 #include <kacceleratormanager.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
+#include <kio/netaccess.h>
 #include <klocale.h>
 #include <klineedit.h>
 #include <kmessagebox.h>
-#include <kio/netaccess.h>
+#include <kvbox.h>
 
 #include "resourceldapkio.h"
 
@@ -358,14 +357,26 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
   QVBoxLayout *layout = new QVBoxLayout( page );
 
   mSrc = src; mDst = dst;
-  mCacheGroup = new Q3ButtonGroup( 1, Qt::Horizontal,
-    i18n("Offline Cache Policy"), page );
+  mCacheBox = new QGroupBox( i18n("Offline Cache Policy"), page );
+  QVBoxLayout *cacheBoxLayout = new QVBoxLayout( mCacheBox );
+
+  mCacheGroup = new QButtonGroup( this );
 
   QRadioButton *bt;
-  new QRadioButton( i18n("Do not use offline cache"), mCacheGroup );
-  bt = new QRadioButton( i18n("Use local copy if no connection"), mCacheGroup );
-  new QRadioButton( i18n("Always use local copy"), mCacheGroup );
-  mCacheGroup->setButton( cachePolicy );
+  bt = new QRadioButton( i18n("Do not use offline cache"), mCacheBox );
+  cacheBoxLayout->addWidget( bt );
+  mCacheGroup->addButton( bt );
+
+  bt = new QRadioButton( i18n("Use local copy if no connection"), mCacheBox );
+  cacheBoxLayout->addWidget( bt );
+  mCacheGroup->addButton( bt );
+
+  bt = new QRadioButton( i18n("Always use local copy"), mCacheBox );
+  cacheBoxLayout->addWidget( bt );
+  mCacheGroup->addButton( bt );
+
+  if ( mCacheGroup->button( cachePolicy ) )
+    mCacheGroup->button( cachePolicy )->setDown( true );
 
   mAutoCache = new QCheckBox( i18n("Refresh offline cache automatically"),
     page );
@@ -377,7 +388,7 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
   QPushButton *lcache = new QPushButton( i18n("Load into Cache"), page );
   connect( lcache, SIGNAL( clicked() ), SLOT( loadCache() ) );
 
-  layout->addWidget( mCacheGroup );
+  layout->addWidget( mCacheBox );
   layout->addWidget( mAutoCache );
   layout->addWidget( lcache );
 }
@@ -393,7 +404,7 @@ bool OfflineDialog::autoCache() const
 
 int OfflineDialog::cachePolicy() const
 {
-  return mCacheGroup->selectedId();
+  return mCacheGroup->checkedId();
 }
 
 void OfflineDialog::loadCache()

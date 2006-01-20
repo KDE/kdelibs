@@ -21,7 +21,7 @@
 #ifndef KABC_VCARDCONVERTER_H
 #define KABC_VCARDCONVERTER_H
 
-#include <qstring.h>
+#include <QString>
 
 #include "addressee.h"
 

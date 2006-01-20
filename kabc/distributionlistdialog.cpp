@@ -72,7 +72,7 @@ EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
   topLayout->addWidget( box );
 
   QStringList::ConstIterator it;
-  for( it = emails.begin(); it != emails.end(); ++it ) {
+  for ( it = emails.begin(); it != emails.end(); ++it ) {
     QRadioButton *button = new QRadioButton( *it, box );
     mButtonGroup->addButton( button );
     sEmailMap->insert( button, *it );
@@ -112,7 +112,7 @@ class EntryItem : public QTreeWidgetItem
       mEmail( email )
     {
       setText( 0, addressee.realName() );
-      if( email.isEmpty() ) {
+      if ( email.isEmpty() ) {
         setText( 1, addressee.preferredEmail() );
         setText( 2, i18n("Yes") );
       } else {
@@ -287,7 +287,7 @@ void DistributionListEditorWidget::removeList()
 void DistributionListEditorWidget::addEntry()
 {
   QList<QTreeWidgetItem*> selected = mAddresseeView->selectedItems();
-  if( selected.count() == 0 ) {
+  if ( selected.count() == 0 ) {
     kdDebug(5700) << "DLE::addEntry(): No addressee selected." << endl;
     return;
   }
@@ -366,7 +366,7 @@ void DistributionListEditorWidget::updateEntryView()
 
   DistributionList::Entry::List entries = list->entries();
   DistributionList::Entry::List::ConstIterator it;
-  for( it = entries.begin(); it != entries.end(); ++it ) {
+  for ( it = entries.begin(); it != entries.end(); ++it ) {
     new EntryItem( mEntryView, (*it).addressee, (*it).email );
   }
 
@@ -382,7 +382,7 @@ void DistributionListEditorWidget::updateAddresseeView()
   mAddresseeView->clear();
 
   AddressBook::Iterator it;
-  for( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
+  for ( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
     new AddresseeItem( mAddresseeView, *it );
   }
 }

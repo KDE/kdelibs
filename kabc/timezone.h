@@ -21,7 +21,7 @@
 #ifndef KABC_TIMEZONE_H
 #define KABC_TIMEZONE_H
 
-#include <qstring.h>
+#include <QString>
 
 #include <kdelibs_export.h>
 

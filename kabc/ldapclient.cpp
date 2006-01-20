@@ -20,18 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-
-
-#include <qfile.h>
-#include <qimage.h>
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qtextstream.h>
-
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kcodecs.h>
 #include <kprotocolinfo.h>
 
 #include "ldapclient.h"
@@ -304,11 +294,11 @@ void LdapSearch::startSearch( const QString& txt )
   cancelSearch();
 
   int pos = txt.indexOf( '\"' );
-  if( pos >= 0 )
+  if ( pos >= 0 )
   {
     ++pos;
     int pos2 = txt.indexOf( '\"', pos );
-    if( pos2 >= 0 )
+    if ( pos2 >= 0 )
         mSearchText = txt.mid( pos , pos2 - pos );
     else
         mSearchText = txt.mid( pos );
@@ -389,15 +379,15 @@ void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
       QString tmp = QString::fromUtf8( (*it2).first(), (*it2).first().size() );
       if ( it2.key() == "cn" )
         name = tmp; // TODO loop?
-      else if( it2.key() == "mail" )
+      else if ( it2.key() == "mail" )
         mail = tmp;
-      else if( it2.key() == "givenName" )
+      else if ( it2.key() == "givenName" )
         givenname = tmp;
-      else if( it2.key() == "sn" )
+      else if ( it2.key() == "sn" )
         sn = tmp;
     }
 
-    if( mail.isEmpty())
+    if ( mail.isEmpty())
       continue; // nothing, bad entry
     else if ( name.isEmpty() )
       ret.append( mail );

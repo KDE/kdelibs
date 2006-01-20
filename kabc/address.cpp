@@ -28,8 +28,8 @@
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
 
 using namespace KABC;
 
@@ -496,7 +496,7 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
 int Address::findBalancedBracket( const QString &tsection, int pos ) const
 {
   int balancecounter = 0;
-  for( int i = pos + 1; i < tsection.length(); i++ ) {
+  for ( int i = pos + 1; i < tsection.length(); i++ ) {
     if ( ')' == tsection[i] && 0 == balancecounter ) {
       // found end of brackets
       return i;
@@ -529,7 +529,7 @@ QString Address::countryToISO( const QString &cname )
   if ( file.open( QIODevice::ReadOnly ) ) {
     QTextStream s( &file );
     QString strbuf = s.readLine();
-    while( !strbuf.isEmpty() ) {
+    while ( !strbuf.isEmpty() ) {
       QStringList countryInfo = strbuf.split( '\t', QString::KeepEmptyParts );
       if ( countryInfo[ 0 ] == cname ) {
         file.close();

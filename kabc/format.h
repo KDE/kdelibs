@@ -21,7 +21,7 @@
 #ifndef KABC_FORMAT_H
 #define KABC_FORMAT_H
 
-#include <qfile.h>
+#include <QFile>
 
 #include "plugin.h"
 #include "resource.h"

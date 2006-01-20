@@ -28,8 +28,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
 
 #include "vcardconverter.h"
 

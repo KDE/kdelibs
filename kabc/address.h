@@ -21,8 +21,8 @@
 #ifndef KABC_ADDRESS_H
 #define KABC_ADDRESS_H
 
-#include <qmap.h>
-#include <qstring.h>
+#include <QMap>
+#include <QString>
 
 #include <kdelibs_export.h>
 

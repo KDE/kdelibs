@@ -204,7 +204,7 @@ void Addressee::setNameFromString( const QString &str )
   AddresseeHelper *helper = AddresseeHelper::self();
 
   int i = str.indexOf( ',' );
-  if( i < 0 ) {
+  if ( i < 0 ) {
     QStringList parts = str.split( spaceStr );
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;

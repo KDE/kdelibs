@@ -18,8 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
 
 #include "address.h"
 #include "addressee.h"

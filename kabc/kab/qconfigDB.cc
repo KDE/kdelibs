@@ -42,7 +42,7 @@ static bool isComment(QByteArray line)
 {
   // ############################################################################
   line=line.trimmed();
-  if(line.isEmpty())
+  if (line.isEmpty())
     {
       return false; // line is empty but not a comment
     } else  {
@@ -62,29 +62,29 @@ static void tokenize(list<QByteArray>& res, const QByteArray& text, char tr, boo
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "tokenize: partening -->%" << text.data() << "<--." << endl;
   res.erase(res.begin(), res.end());
   // -----
-  if(text.isEmpty())
+  if (text.isEmpty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "tokenize: text is an empty string, done." << endl;
       return;
     }
-  while(zwei!=-1)
+  while (zwei!=-1)
     {
       teil="";
       zwei=text.indexOf(tr, eins);
-      if(zwei!=-1)
+      if (zwei!=-1)
 	{
 	  teil=text.mid(eins, zwei-eins);
 	  res.push_back(teil);
 	} else { // last element
-	  if(!strict) // nur wenn dazwischen Zeichen sind
+	  if (!strict) // nur wenn dazwischen Zeichen sind
 	    {
 	      teil=text.mid(eins, text.length()-eins);
 	      res.push_back(teil);
 	    }
 	}
       eins=zwei+1;
-      // if((unsigned)eins>=text.length()) break;
+      // if ((unsigned)eins>=text.length()) break;
     }
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "tokenize: partened in "
 				  << res.size() << " parts.\n";
@@ -102,12 +102,12 @@ static QByteArray ReadLineFromStream(QTextStream& stream)
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: reading line." << endl;
   QByteArray line;
   // -----
-  while(!stream.atEnd())
+  while (!stream.atEnd())
     {
       line=stream.readLine().toAscii();
-      if(!line.isEmpty())
+      if (!line.isEmpty())
 	{
-	  if(isComment(line))
+	  if (isComment(line))
 	    {
 	      line="";
 	      continue;
@@ -177,7 +177,7 @@ KeyValueMap::clear()
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	     "KeyValueMap::clear: erasing map contents ... " << endl;
   // -----
-  if(!data->empty()) // erase fails on empty containers!
+  if (!data->empty()) // erase fails on empty containers!
     {
       data->erase(data->begin(), data->end());
     }
@@ -194,19 +194,19 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
   QFile file(filename);
   QByteArray line;
   // -----
-  if(file.open(QIODevice::ReadOnly))
+  if (file.open(QIODevice::ReadOnly))
     {
       QTextStream stream(&file);
       // We read/write utf8 strings, so we don't want that QTextStream uses local8bit
       // Latin1 means : no conversion, when giving char*s to a QTextStream. (DF)
       stream.setCodec( "ISO 8859-1" );
       // -----
-      while(!stream.atEnd())
+      while (!stream.atEnd())
 	{
 	  line=stream.readLine().toAscii();
-	  if(!line.isEmpty() /* && !stream.eof() */ && !isComment(line))
+	  if (!line.isEmpty() /* && !stream.eof() */ && !isComment(line))
 	    {
-	      if(!insertLine(line, force, relax, false))
+	      if (!insertLine(line, force, relax, false))
 		{
 		    kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			"KeyValueMap::fill: could not insert line "
@@ -237,21 +237,21 @@ KeyValueMap::save(const QString& filename, bool force)
   StringStringMap::iterator pos;
   QFile file(filename);
   // ----- open file, regarding existence:
-  if(!force)
+  if (!force)
     {
-      if(file.exists())
+      if (file.exists())
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "KeyValueMap::save: file exists but may not." << endl;
 	  return false;
 	}
     }
-  if(file.open(QIODevice::WriteOnly))
+  if (file.open(QIODevice::WriteOnly))
     {
       QTextStream stream(&file);
       stream.setCodec( "ISO 8859-1" ); // no conversion
       stream << "# saved by KeyValueMap object ($Revision$)" << endl;
-      for(pos=data->begin(); pos!=data->end(); ++pos)
+      for (pos=data->begin(); pos!=data->end(); ++pos)
 	{ // values do not get coded here
 	  stream << (*pos).first << '=' << (*pos).second << endl;
 	}
@@ -279,7 +279,7 @@ KeyValueMap::save(QTextStream& file, int count)
   memset(prefix, ' ', count);
   prefix[count]=0;
   // -----
-  for(pos=data->begin(); pos!=data->end(); ++pos)
+  for (pos=data->begin(); pos!=data->end(); ++pos)
     {
       file << prefix << (*pos).first << '=' << (*pos).second << endl;
     }
@@ -327,7 +327,7 @@ KeyValueMap::parseComplexString
     "KeyValueMap::parseComplexString: parsing the string -->"
 				  << orig << "<--.\n";
   // -----
-  if(orig.isEmpty())
+  if (orig.isEmpty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::parseComplexString: string is empty.\n"
@@ -339,12 +339,12 @@ KeyValueMap::parseComplexString
   temp=orig.mid(index, orig.length()-index); // remove everything before index
   mod=temp.trimmed(); // remove leading and trailing white spaces
   // ----- test some conditions:
-  if(mod.length()<2)
+  if (mod.length()<2)
     {
       kdDebug() << "KeyValueMap::parseComplexString: no pair of brackets " << endl;
       return false;
     }
-  if(mod[0]!='"')
+  if (mod[0]!='"')
     {
       kdDebug() << "KeyValueMap::parseComplexString: no opening bracket." << endl;
       return false;
@@ -352,14 +352,14 @@ KeyValueMap::parseComplexString
   // ----- now parse it:
   first=1; // first character after opening bracket
   temp="";
-  for(;;)
+  for (;;)
     {
-      if(mod[first]=='\\')
+      if (mod[first]=='\\')
 	{ // handle special characters
 	  ++first;
 	  kdDebug(GUARD, KAB_KDEBUG_AREA).form("KeyValueMap::parseComplexString: found "
 					       "a special character \"%c\".", mod.data()[first]) << endl;
-	  if(first==mod.length())
+	  if (first==mod.length())
 	    {
 		kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		    "KeyValueMap::parseComplexString: "
@@ -386,14 +386,14 @@ KeyValueMap::parseComplexString
 	  ++first;
 	} else { // it is a character
 	  ++count;
-	  if(mod[first]=='"') // end of coded string?
+	  if (mod[first]=='"') // end of coded string?
 	    {
 	      break;
 	    }
 	  temp+=mod[first];
 	  ++first;
 	}
-      if(first>=mod.length())
+      if (first>=mod.length())
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::parseComplexString: "
 	    "string lacks the closing \".\n              "
@@ -425,7 +425,7 @@ KeyValueMap::makeComplexString(const QByteArray& orig)
   int count;
   // -----
   temp+='"'; // opening bracket
-  for(count=0; count<orig.length(); count++)
+  for (count=0; count<orig.length(); count++)
     {
       switch(orig[count])
 	{ // catch all special characters:
@@ -474,7 +474,7 @@ KeyValueMap::getRaw(const QByteArray& key, QByteArray& value) const
       "KeyValueMap::getRaw: trying to get raw value for key \"" << key << "\" ...\n";
   StringStringMap::iterator pos=data->find(key);
   // -----
-  if(pos==data->end())
+  if (pos==data->end())
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "not in KeyValueMap." << endl;
       return false;
@@ -498,16 +498,16 @@ KeyValueMap::insertRaw(const QByteArray& key, const QByteArray& value, bool forc
       " for key " << key << endl;
   int n=0;
   // -----
-  if(key.isEmpty()) // empty KEYS are errors:
+  if (key.isEmpty()) // empty KEYS are errors:
     {
       kdDebug() << "KeyValueMap::insertRaw: tried to insert empty key." << endl;
       return false;
     }
-  if(force) // entry will be replaced
+  if (force) // entry will be replaced
     {
       n=data->erase(key);
     }
-  if(data->insert(StringStringMap::value_type(key, value)).second)
+  if (data->insert(StringStringMap::value_type(key, value)).second)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insertRaw: success"
 				      << (n==0 ? "" : " (forced)") << endl;
@@ -565,8 +565,8 @@ KeyValueMap::insertLine(QByteArray line, bool force, bool relax, bool encode)
   QByteArray value;
   // ----- is the line empty or does it contain only whitespaces?
   uint len = line.length();
-  for(index=0; isspace(line[index]) && (unsigned)index<len; ++index);
-  if(line.isEmpty() || (unsigned)index==len)
+  for (index=0; isspace(line[index]) && (unsigned)index<len; ++index);
+  if (line.isEmpty() || (unsigned)index==len)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	  "KeyValueMap::insertLine: line is empty." << endl;
@@ -574,7 +574,7 @@ KeyValueMap::insertLine(QByteArray line, bool force, bool relax, bool encode)
     }
   // -----
   index=line.indexOf('=');
-  if(index==-1)  // not found
+  if (index==-1)  // not found
       {
 	  kdDebug() << "KeyValueMap::insertLine: no \"=\" found in \""<<line<<"\".\n";
 	  return false;
@@ -583,19 +583,19 @@ KeyValueMap::insertLine(QByteArray line, bool force, bool relax, bool encode)
   key=line.mid(0, index); // copy from start to '='
   value=line.mid(index+1, line.length()-1-index); // copy the rest
   // ----- only alphanumerical characters are allowed in the keys:
-  for(index=key.length()-1; index>-1; /* nothing */)
+  for (index=key.length()-1; index>-1; /* nothing */)
     {
-      if(!(isalnum(key[index]) || ispunct(key[index])))
+      if (!(isalnum(key[index]) || ispunct(key[index])))
 	 {
 	   key=key.remove(index, 1); // WORK_TO_DO: optimize this (very slow)!
 	 }
       --index;
     }
   // ----- now insert it if key is still valid:
-  if(!key.isEmpty() && (relax==true ? 1 : !value.isEmpty() ) )
+  if (!key.isEmpty() && (relax==true ? 1 : !value.isEmpty() ) )
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insertLine: done." << endl;
-      if(encode)
+      if (encode)
 	{ // the usual way:
 	  return insert(key, value, force);
 	} else { // while loading from a already coded file:
@@ -618,7 +618,7 @@ KeyValueMap::get(const QByteArray& key, QByteArray& value) const
   QByteArray raw;
   QByteArray temp;
   // -----
-  if(!getRaw(key, raw))
+  if (!getRaw(key, raw))
     {
       return false; // key does not exist
     } else {
@@ -626,7 +626,7 @@ KeyValueMap::get(const QByteArray& key, QByteArray& value) const
 		 "wether this is a complex string." << endl;
       {
 	int count;
-	if(parseComplexString(raw, 0, temp, count))
+	if (parseComplexString(raw, 0, temp, count))
 	  {
 	    kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		       "KeyValueMap::get[string]: complex string found." << endl;
@@ -674,7 +674,7 @@ KeyValueMap::get(const QByteArray& key, QString& value) const
       "a QString value for key " << key << endl;
   QByteArray v;
   // ----- get string representation:
-  if(!get(key, v))
+  if (!get(key, v))
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QString]: key "
 					<< key << " not in KeyValueMap.\n";
@@ -715,7 +715,7 @@ KeyValueMap::get(const QByteArray& key, bool& value) const
       "BOOL value for key " << key << endl;
   QByteArray v;
   // ----- get string representation:
-  if(!get(key, v))
+  if (!get(key, v))
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: key "
 					<< key << " not in KeyValueMap.";
@@ -723,14 +723,14 @@ KeyValueMap::get(const QByteArray& key, bool& value) const
     }
   // ----- find its state:
   v=v.trimmed();
-  if(v=="true")
+  if (v=="true")
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: success, "
 	    "value is true." << endl;
       value=true;
       return true;
     }
-  if(v=="false")
+  if (v=="false")
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: success, "
       "value is false." << endl;
@@ -772,7 +772,7 @@ KeyValueMap::get(const QByteArray& key, long& value) const
   bool ok;
   long temp;
   // -----
-  if(!get(key, v))
+  if (!get(key, v))
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[int]: key "
 					<< key <<" not in KeyValueMap.\n";
@@ -780,7 +780,7 @@ KeyValueMap::get(const QByteArray& key, long& value) const
     }
   // -----
   temp=v.toLong(&ok);
-  if(ok)
+  if (ok)
     {
       value=temp;
       return true;
@@ -804,12 +804,12 @@ KeyValueMap::insert(const QByteArray& key, const list<long>& values, bool force)
   QByteArray value;
   list<long>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); ++pos)
+  for (pos=values.begin(); pos!=values.end(); ++pos)
     {
       temp.setNum((qlonglong)*pos);
       value=value+temp+", ";
     }
-  if(!value.isEmpty())
+  if (!value.isEmpty())
     { // remove last comma and space:
       value.remove(value.length()-2, 2);
     }
@@ -835,24 +835,24 @@ KeyValueMap::get(const QByteArray& key, list<long>& values) const
   long temp;
   bool ok;
   // -----
-  if(!get(key, value))
+  if (!get(key, value))
   {
     kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	       "KeyValueMap::get[long int list]: no such key." << endl;
     return false;
   }
   tokenize(tokens, value, ',');
-  if(tokens.empty())
+  if (tokens.empty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[long int list]: no tokens." << endl;
       return false;
     }
   // -----
-  for(pos=tokens.begin(); pos!=tokens.end(); ++pos)
+  for (pos=tokens.begin(); pos!=tokens.end(); ++pos)
     {
       temp=(*pos).toLong(&ok);
-      if(ok)
+      if (ok)
 	{
 	  values.push_back(temp);
 	} else {
@@ -879,12 +879,12 @@ KeyValueMap::insert(const QByteArray& key, const list<int>& values, bool force)
   QByteArray value;
   list<int>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); ++pos)
+  for (pos=values.begin(); pos!=values.end(); ++pos)
     {
       temp.setNum(*pos);
       value=value+temp+", ";
     }
-  if(!value.isEmpty())
+  if (!value.isEmpty())
     { // remove last comma and space:
       value.remove(value.length()-2, 2);
     }
@@ -910,24 +910,24 @@ KeyValueMap::get(const QByteArray& key, list<int>& values) const
   int temp;
   bool ok;
   // -----
-  if(!get(key, value))
+  if (!get(key, value))
   {
     kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	       "KeyValueMap::get[int list]: no such key." << endl;
     return false;
   }
   tokenize(tokens, value, ',');
-  if(tokens.empty())
+  if (tokens.empty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[int list]: no tokens." << endl;
       return false;
     }
   // -----
-  for(pos=tokens.begin(); pos!=tokens.end(); ++pos)
+  for (pos=tokens.begin(); pos!=tokens.end(); ++pos)
     {
       temp=(*pos).toInt(&ok);
-      if(ok)
+      if (ok)
 	{
 	  values.push_back(temp);
 	} else {
@@ -968,7 +968,7 @@ KeyValueMap::get(const QByteArray& key, double& value) const
   bool ok;
   double temp;
   // -----
-  if(!get(key, v))
+  if (!get(key, v))
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[int]: key "
 					<<key<<" not in "
@@ -977,7 +977,7 @@ KeyValueMap::get(const QByteArray& key, double& value) const
     }
   // -----
   temp=v.toDouble(&ok);
-  if(ok)
+  if (ok)
     {
       value=temp;
       return true;
@@ -1003,25 +1003,25 @@ KeyValueMap::get(const QByteArray& key, list<QByteArray>& values) const
   QByteArray raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
-  if(!getRaw(key, raw))
+  if (!getRaw(key, raw))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[list<string>]: key "
 				      << key << " not in KeyValueMap." << endl;
       return false;
     }
   // -----
-  for(;;)
+  for (;;)
     { // ----- parten the string down into a list, find special characters:
       second=first;
-      for(;;)
+      for (;;)
 	{
 	  second=raw.indexOf('\\', second);
 	  // ----- this may never be the last and also not the second last
 	  //       character in a complex string:
-	  if(second!=-1)
+	  if (second!=-1)
 	    { // ----- check for string end:
 	      // we use "\e" as token for the string-delimiter
-	      if(raw[second+1]=='e' // the right character
+	      if (raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
 		{
 		  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get"
@@ -1035,12 +1035,12 @@ KeyValueMap::get(const QByteArray& key, list<QByteArray>& values) const
 	      break;
 	    }
 	}
-      if(second!=-1)
+      if (second!=-1)
 	{
 	  // ----- now second points to the end of the substring:
 	  part="\""+raw.mid(first, second-first)+"\"";
 	  // ----- insert decoded value into the list:
-	  if(parseComplexString(part, 0, value, i))
+	  if (parseComplexString(part, 0, value, i))
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get"
 		  "[list<string>]: found item " << value << endl;
@@ -1049,7 +1049,7 @@ KeyValueMap::get(const QByteArray& key, list<QByteArray>& values) const
 	      kdDebug() << "KeyValueMap::get[list<string>]: parse error." << endl;
 	      return false;
 	    }
-	  if(second<raw.length()-3)
+	  if (second<raw.length()-3)
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
@@ -1078,7 +1078,7 @@ KeyValueMap::insert(const QByteArray& key, const list<QByteArray>& values, bool 
   QByteArray temp;
   list<QByteArray>::const_iterator pos;
   // ----- create coded string list:
-  for(pos=values.begin();
+  for (pos=values.begin();
       pos!=values.end();
       pos++)
     { // create strings like "abc\efgh\eijk":
@@ -1112,25 +1112,25 @@ KeyValueMap::get(const QByteArray& key, QList<QByteArray>& values) const
   QByteArray raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
-  if(!getRaw(key, raw))
+  if (!getRaw(key, raw))
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStrList]: key "
 					<< key <<" not in KeyValueMap." << endl;
       return false;
     }
   // -----
-  for(;;)
+  for (;;)
     { // ----- parten the string down into a list, find special characters:
       second=first;
-      for(;;)
+      for (;;)
 	{
 	  second=raw.indexOf('\\', second);
 	  // ----- this may never be the last and also not the second last
 	  //       character in a complex string:
-	  if(second!=-1)
+	  if (second!=-1)
 	    { // ----- check for string end:
 	      // we use "\e" as token for the string-delimiter
-	      if(raw[second+1]=='e' // the right character
+	      if (raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
 		{
 		  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStrList]:"
@@ -1143,12 +1143,12 @@ KeyValueMap::get(const QByteArray& key, QList<QByteArray>& values) const
 	      break;
 	    }
 	}
-      if(second!=-1)
+      if (second!=-1)
 	{
 	  // ----- now second points to the end of the substring:
 	  part="\""+raw.mid(first, second-first)+"\"";
 	  // ----- insert decoded value into the list:
-	  if(parseComplexString(part, 0, value, i))
+	  if (parseComplexString(part, 0, value, i))
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStrList]: "
 		  "found item " << value << endl;
@@ -1157,7 +1157,7 @@ KeyValueMap::get(const QByteArray& key, QList<QByteArray>& values) const
 		kdDebug() << "KeyValueMap::get[QStrList]: parse error." << endl;
 	      return false;
 	    }
-	  if(second<raw.length()-3)
+	  if (second<raw.length()-3)
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
@@ -1185,7 +1185,7 @@ KeyValueMap::insert(const QByteArray& key, const QList<QByteArray>& values, bool
   QByteArray value="\"";
   QByteArray temp;
   // ----- create coded string list:
-  for(int count=0; count<values.count(); ++count)
+  for (int count=0; count<values.count(); ++count)
     { // create strings like "abc\efgh\eijk":
       temp=makeComplexString(values.at(count));
       temp.remove(0, 1); // remove the leading "\""
@@ -1219,7 +1219,7 @@ KeyValueMap::get(const QByteArray& key, QStringList& values) const
       "decode QStringList for key " << key << endl;
   QList<QByteArray> temp;
   // ----- get the plain C strings:
-  if(!get(key, temp))
+  if (!get(key, temp))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStringList]: key "
 				      << key <<
@@ -1227,7 +1227,7 @@ KeyValueMap::get(const QByteArray& key, QStringList& values) const
       return false;
     }
   // ----- do the conversion:
-  for(int count=0; count<temp.count(); ++count)
+  for (int count=0; count<temp.count(); ++count)
     {
       values.append(QString::fromUtf8(temp.at(count)));
     }
@@ -1248,7 +1248,7 @@ KeyValueMap::insert(const QByteArray& key, const QStringList& values, bool force
   QList<QByteArray> utf8strings;
   int count;
   // ----- create QCString list:
-  for(count=0; count<values.count(); ++count)
+  for (count=0; count<values.count(); ++count)
     {
       utf8strings.append(values.at(count).toUtf8());
     }
@@ -1272,12 +1272,12 @@ KeyValueMap::insert(const QByteArray& key, const list<double>& values, bool forc
   QByteArray value; // WORK_TO_DO: how to reserve enough space to avoid growing?
   list<double>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); ++pos)
+  for (pos=values.begin(); pos!=values.end(); ++pos)
     {
       buffer.setNum(*pos);
       value=value+buffer+", ";
     }
-  if(!value.isEmpty())
+  if (!value.isEmpty())
     { // remove last comma and space:
       value.remove(value.length()-2, 2);
     }
@@ -1303,7 +1303,7 @@ KeyValueMap::get(const QByteArray& key, list<double>& values) const
   double temp;
   bool ok;
   // -----
-  if(!get(key, value))
+  if (!get(key, value))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[double list]: no such key." << endl;
@@ -1311,10 +1311,10 @@ KeyValueMap::get(const QByteArray& key, list<double>& values) const
     }
   // -----
   tokenize(tokens, value, ',');
-  for(pos=tokens.begin(); pos!=tokens.end(); ++pos)
+  for (pos=tokens.begin(); pos!=tokens.end(); ++pos)
     {
       temp=(*pos).toDouble(&ok);
-      if(ok)
+      if (ok)
 	{
 	  values.push_back(temp);
 	} else {
@@ -1340,11 +1340,11 @@ KeyValueMap::insert(const QByteArray& key, const QDate& value, bool force)
 	     "insert QDate into map." << endl;
   list<long> values;
   // -----
-  if(!value.isValid())
+  if (!value.isValid())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[QDate]: invalid "
 		 "date, inserting a null date." << endl;
-      for(int i=0; i<3; ++i) values.push_back(0);
+      for (int i=0; i<3; ++i) values.push_back(0);
     } else {
       values.push_back(value.year());
       values.push_back(value.month());
@@ -1366,13 +1366,13 @@ KeyValueMap::get(const QByteArray& key, QDate& date) const
   long y, m, d;
   QDate temp;
   // -----
-  if(!get(key, values))
+  if (!get(key, values))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[QDate]: no such key." << endl;
       return false;
     }
-  if(values.size()!=3)
+  if (values.size()!=3)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[QDate]: more or less than 3 values." << endl;
@@ -1382,8 +1382,8 @@ KeyValueMap::get(const QByteArray& key, QDate& date) const
   m=values.front(); values.pop_front();
   d=values.front();
   // -----
-  if(y!=0 || m!=0 || d!=0) temp.setYMD(y, m, d); // avoid QDate messages
-  if(!temp.isValid() && !temp.isNull())
+  if (y!=0 || m!=0 || d!=0) temp.setYMD(y, m, d); // avoid QDate messages
+  if (!temp.isValid() && !temp.isNull())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "KeyValueMap::get[QDate]: no valid date." << endl;
@@ -1426,19 +1426,19 @@ Section::add(const QByteArray& name)
   Section* section;
   bool rc;
   // -----
-  if(name.isEmpty())
+  if (name.isEmpty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::add: empty key." << endl;
       return false;
     }
   section=new Section; // create an empty section
-  if(section==0)
+  if (section==0)
     {
 	kdDebug() << "Section::add: out of memory." << endl;
       return false;
     }
   rc=add(name, section);
-  if(!rc)
+  if (!rc)
     {
 	kdDebug(GUARD && !rc, KAB_KDEBUG_AREA) << " failed.\n";
 	delete section;
@@ -1455,7 +1455,7 @@ Section::add(const QByteArray& name, Section* section)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  if(sections.insert(StringSectionMap::value_type(name, section)).second)
+  if (sections.insert(StringSectionMap::value_type(name, section)).second)
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	    "Section::add: added section "<<name<<" successfully.\n";
@@ -1478,7 +1478,7 @@ Section::find(const QByteArray& name, StringSectionMap::iterator& result)
   StringSectionMap::iterator pos;
   // -----
   pos=sections.find(name);
-  if(pos==sections.end())
+  if (pos==sections.end())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "failed, no such section." << endl;
       return false;
@@ -1496,7 +1496,7 @@ Section::remove(const QByteArray& name)
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
-  if(!find(name, pos))
+  if (!find(name, pos))
     {
       return false; // no such section
     } else {
@@ -1512,7 +1512,7 @@ Section::find(const QByteArray& name, Section*& section)
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
-  if(!find(name, pos))
+  if (!find(name, pos))
     {
       return false;
     } else {
@@ -1536,9 +1536,9 @@ Section::insertIndentSpace(QTextStream& file, int level)
   // ###########################################################################
   int i, j;
   // -----
-  for(i=0; i<level; i++)
+  for (i=0; i<level; i++)
     {
-      for(j=0; j<indent_width; j++)
+      for (j=0; j<indent_width; j++)
 	file << ' ';
     }
   // ###########################################################################
@@ -1551,16 +1551,16 @@ Section::save(QTextStream& stream, int level)
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
-  if(!sections.empty())
+  if (!sections.empty())
     { // ----- insert a comment:
       insertIndentSpace(stream, level);
       stream << "# subsections:" << endl;
     }
-  for(pos=sections.begin(); pos!=sections.end(); ++pos)
+  for (pos=sections.begin(); pos!=sections.end(); ++pos)
     {
       insertIndentSpace(stream, level);
       stream << '[' << (*pos).first << ']' << endl;
-      if(!(*pos).second->save(stream, level+1))
+      if (!(*pos).second->save(stream, level+1))
 	{
 	  kdDebug() << "Section::save: error saving child section \"" << (*pos).first.data() << "\"." << endl;
 	  return false;
@@ -1572,11 +1572,11 @@ Section::save(QTextStream& stream, int level)
       insertIndentSpace(stream, level);
       stream << "[END " << (*pos).first << ']' << endl;
     }
-  if(!keys.empty())
+  if (!keys.empty())
     {
       insertIndentSpace(stream, level);
       stream << "# key-value-pairs:" << endl;
-      if(!keys.save(stream, level*indent_width))
+      if (!keys.save(stream, level*indent_width))
 	{
 	  kdDebug() << "Section::save: error saving key-value-pairs." << endl;
 	  return false;
@@ -1597,21 +1597,21 @@ Section::readSection(QTextStream& file, bool finish)
   QByteArray name;
   Section* temp;
   // -----
-  for(;;)
+  for (;;)
     {
       line="";
       line=ReadLineFromStream(file);
-      if(isEndOfSection(line))
+      if (isEndOfSection(line))
 	{ // ----- eof does not matter:
 	  return true;
 	} else { // ----- verify it:
-	  if(file.atEnd())
+	  if (file.atEnd())
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		  "Section::readSection: EOF, line is \""<<line<<"\".\n";
-	      if(!line.isEmpty())
+	      if (!line.isEmpty())
 		{
-		  if(!keys.insertLine(line, false, true, false))
+		  if (!keys.insertLine(line, false, true, false))
 		    {
 		      kdWarning() << "Attention: unable to parse key-value-pair "
 			   << endl << "\t\"" << line << "\"," << endl
@@ -1620,7 +1620,7 @@ Section::readSection(QTextStream& file, bool finish)
 			   << endl;
 		    }
 		}
-	      if(finish==true)
+	      if (finish==true)
 		{
 		  kdDebug() << "Section::readSection: missing end of section." << endl;
 		  return false;
@@ -1631,19 +1631,19 @@ Section::readSection(QTextStream& file, bool finish)
 		}
 	    }
 	}
-      if(isBeginOfSection(line))
+      if (isBeginOfSection(line))
 	{
 	  name=nameOfSection(line);
 	  add(name);
 	  find(name, temp);
-	  if(!temp->readSection(file))
+	  if (!temp->readSection(file))
 	    {
 		kdDebug() << "Section::readSection: unable to read "
 		    "subsection \"" << name << "\".\n";
 	      return false;
 	    }
 	} else { // ----- it has to be a key-value-pair:
-	  if(!keys.insertLine(line, false, true, false))
+	  if (!keys.insertLine(line, false, true, false))
 	    {
 	      kdWarning() << "Attention: unable to parse key-value-pair " << endl
 		   << "\t\"" << line << "\"," << endl
@@ -1662,18 +1662,18 @@ Section::isBeginOfSection(QByteArray line)
   register bool GUARD; GUARD=false;
   // ###########################################################################
   line=line.simplified();
-  if(line.isEmpty() || line.length()<2)
+  if (line.isEmpty() || line.length()<2)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::isBeginOfSection: too short "
 		 "or empty line." << endl;
       return false;
     }
-  if(line[0]!='[' || line[line.length()-1]!=']')
+  if (line[0]!='[' || line[line.length()-1]!=']')
     {
       return false;
     }
   // -----
-  if(line.contains("END"))
+  if (line.contains("END"))
     {
       return false;
     } else {
@@ -1694,23 +1694,23 @@ Section::isEndOfSection(QByteArray line)
   QByteArray temp;
   // -----
   line=line.simplified();
-  if(line.isEmpty() || line.length()<2)
+  if (line.isEmpty() || line.length()<2)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::isBeginOfSection: too short "
 		 "or empty line." << endl;
       return false;
     }
-  if(line[0]!='[' || line[line.length()-1]!=']')
+  if (line[0]!='[' || line[line.length()-1]!=']')
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "Section::isBeginOfSection: does not match." << endl;
       return false;
     }
   // ----- find the word inside the brackets:
-  for(first=1; line[first]==' '; ++first); // find first non-whitespace character
-  for(second=first; line[second]!=' ' && line[second]!=']'; ++second);
+  for (first=1; line[first]==' '; ++first); // find first non-whitespace character
+  for (second=first; line[second]!=' ' && line[second]!=']'; ++second);
   temp=line.mid(first, second-first);
-  if(temp=="END")
+  if (temp=="END")
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "Section::isBeginOfSection: yes, it is." << endl;
@@ -1732,21 +1732,21 @@ Section::nameOfSection(const QByteArray& line)
   QByteArray temp;
   // -----
   temp=line.simplified();
-  if(temp.isEmpty() || temp.length()<=2)
+  if (temp.isEmpty() || temp.length()<=2)
     { // empty section names are not allowed
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "Section::isBeginOfSection: too short or empty line." << endl;
       return "";
     }
-  if(temp[0]!='[' || temp[temp.length()-1]!=']')
+  if (temp[0]!='[' || temp[temp.length()-1]!=']')
     {
       return "";
     }
   // ----- find the word inside the brackets:
-  for(first=1; temp[first]==' '; ++first); // find first non-whitespace character
-  for(second=first; temp[second]!=' ' && temp[second]!=']'; ++second);
+  for (first=1; temp[first]==' '; ++first); // find first non-whitespace character
+  for (second=first; temp[second]!=' ' && temp[second]!=']'; ++second);
   temp=temp.mid(first, second-first);
-  if(temp=="END")
+  if (temp=="END")
     {
       return "";
     } else {
@@ -1761,9 +1761,9 @@ Section::clear()
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
-  for(pos=sections.begin(); pos!=sections.end(); ++pos)
+  for (pos=sections.begin(); pos!=sections.end(); ++pos)
     {
-      if(!(*pos).second->clear()) return false;
+      if (!(*pos).second->clear()) return false;
       delete(*pos).second;
     }
   // sections.clear(); // seems to be not implemented
@@ -1824,15 +1824,15 @@ QConfigDB::~QConfigDB()
   // ############################################################################
   // disconnect();
   // -----
-  if(timer!=0)
+  if (timer!=0)
     {
       delete timer; timer=0;
     }
-  if(!clear()) // this will emit changed() a last time
+  if (!clear()) // this will emit changed() a last time
     {
       kdDebug() << "QConfigDB destructor: cannot remove me." << endl;
     }
-  if(locked)
+  if (locked)
     {
       unlock();
     }
@@ -1853,16 +1853,16 @@ QConfigDB::get(const list<QByteArray>& key, KeyValueMap*& map)
   Section* section=&top;
   list<QByteArray>::const_iterator pos;
   // -----
-  if(key.empty())
+  if (key.empty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "ConfigDB::get: path is empty, returning toplevel section." << endl;
       map=top.getKeys();
       return true;
     }
-  for(pos=key.begin(); pos!=key.end(); ++pos)
+  for (pos=key.begin(); pos!=key.end(); ++pos)
     {
-      if(!section->find(*pos, section))
+      if (!section->find(*pos, section))
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "failed,\n               at least the element \""
@@ -1898,12 +1898,12 @@ QConfigDB::createSection(const list<QByteArray>& key)
   bool rc;
   // -----
   pos=key.begin();
-  for(index=0; index<key.size()-1; index++)
+  for (index=0; index<key.size()-1; index++)
     {
-      if(!section->find(*pos, section))
+      if (!section->find(*pos, section))
 	{ // this section is not declared
 	  Section* temp=new Section; // WORK_TO_DO: memory hole?
-	  if(section->add(*pos, temp))
+	  if (section->add(*pos, temp))
 	    {
 	      section=temp;
 	    } else {
@@ -1965,18 +1965,18 @@ QConfigDB::stringToKeylist(const QByteArray& desc)
   int first=0, second;
   QByteArray temp;
   // -----
-  if(desc.isEmpty())
+  if (desc.isEmpty())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "QConfigDB::stringToKeylist: path is empty." << endl;
       return key;
     }
-  for(;;)
+  for (;;)
     {
       second=desc.indexOf('/', first);
-      if(second==-1)
+      if (second==-1)
 	{
-	  if(first<desc.length()+1)
+	  if (first<desc.length()+1)
 	    {
 	      temp=desc.mid(first, desc.length()-first);
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -2016,9 +2016,9 @@ QConfigDB::get(const list<QByteArray>& key, Section*& section)
   Section* temp=&top;
   list<QByteArray>::const_iterator pos;
   // -----
-  for(pos=key.begin(); pos!=key.end(); ++pos)
+  for (pos=key.begin(); pos!=key.end(); ++pos)
     {
-      if(!temp->find(*pos, temp))
+      if (!temp->find(*pos, temp))
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "failure, no such section.";
 	  return false;
@@ -2047,20 +2047,20 @@ QConfigDB::IsLocked(const QString& file)
   QString lockfile=file+".lock";
   int pid=-1;
   // -----
-  if(access(QFile::encodeName(lockfile), F_OK)==0)
+  if (access(QFile::encodeName(lockfile), F_OK)==0)
     {
       QFile f(lockfile);
       // -----
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::IsLocked: the file\n"
 				      << file <<
 	  "\nhas a lockfile.\n";
-      if(f.open(QIODevice::ReadOnly))
+      if (f.open(QIODevice::ReadOnly))
 	{
 	  QTextStream stream(&f);
 	  stream.setCodec( "ISO 8859-1" ); // no conversion
 	  // -----
 	  stream >> pid;
-	  if(pid==-1)
+	  if (pid==-1)
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::IsLocked: the file "
 			 "does not contain the ID\n        of the process that "
@@ -2087,13 +2087,13 @@ QConfigDB::lock()
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  if(locked)
+  if (locked)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::lock (current file): file "
 		 "is already locked by this object." << endl;
       return false;
     }
-  if(lock(filename))
+  if (lock(filename))
     {
       locked=true;
       return true;
@@ -2113,13 +2113,13 @@ QConfigDB::lock(const QString& file)
   QString lockfile=file+".lock";
   QFile f(lockfile);
   // -----
-  if(access(QFile::encodeName(lockfile), F_OK)==0)
+  if (access(QFile::encodeName(lockfile), F_OK)==0)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::lock: the file is locked by"
 		 " another process." << endl;
       return false;
     } else {
-      if(f.open(QIODevice::WriteOnly))
+      if (f.open(QIODevice::WriteOnly))
 	{
 	  QTextStream stream(&f);
 	  stream.setCodec( "ISO 8859-1" ); // no conversion
@@ -2148,23 +2148,23 @@ QConfigDB::unlock()
   QString lockfile=filename+".lock";
   list<QString>::iterator pos;
   // -----
-  if(!locked)
+  if (!locked)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::unlock: this app did not "
 		 "lock the file!" << endl;
       return false;
     }
-  if(access(QFile::encodeName(lockfile), F_OK | W_OK)==0)
+  if (access(QFile::encodeName(lockfile), F_OK | W_OK)==0)
     {
-      if(::remove(QFile::encodeName(lockfile))==0)
+      if (::remove(QFile::encodeName(lockfile))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::unlock: lockfile deleted." << endl;
-	  for(pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
+	  for (pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
 	    {
-	      if((*pos)==lockfile) break;
+	      if ((*pos)==lockfile) break;
 	    }
-	  if(pos!=LockFiles.end())
+	  if (pos!=LockFiles.end())
 	    {
 	      LockFiles.erase(pos); --pos;
 	    } else {
@@ -2194,9 +2194,9 @@ QConfigDB::CleanLockFiles(int)
   // -----
   kdDebug(GUARD, KAB_KDEBUG_AREA).form("QConfigDB::CleanLockFiles: removing %i "
 	     "remaining lockfiles.", LockFiles.size()) << endl;
-  for(pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
+  for (pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
     {
-      if(::remove(QFile::encodeName(*pos))==0)
+      if (::remove(QFile::encodeName(*pos))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	      "                          " << *pos << " removed.\n";
@@ -2214,16 +2214,16 @@ void
 QConfigDB::watch(bool state)
 {
   // ############################################################################
-  if(state)
+  if (state)
     { // start timer
-      if(timer==0)
+      if (timer==0)
 	{
 	  timer=new QTimer(this);
 	  connect(timer, SIGNAL(timeout()), SLOT(checkFileChanged()));
 	}
       timer->start(1000);
     } else { // stop timer
-      if(timer!=0)
+      if (timer!=0)
 	{
 	  timer->stop();
 	}
@@ -2240,20 +2240,20 @@ QConfigDB::CheckLockFile(const QString& file)
   int pid;
   // -----
   pid=IsLocked(file);
-  if(pid==0)
+  if (pid==0)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::CheckLockFile: the file is "
 		 "not locked." << endl;
       return false;
     }
-  if(pid>0)
+  if (pid>0)
     {
-      if(kill(pid, 0)!=0)
+      if (kill(pid, 0)!=0)
 	{ // ----- no such process, we may remove the lockfile:
 	  return false;
 	}
     }
-  if(pid<0)
+  if (pid<0)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::CheckLockFile: the file has "
 		 "not been created by QConfigDB::lock." << endl;
@@ -2271,16 +2271,16 @@ QConfigDB::checkFileChanged()
   register bool GUARD; GUARD=false;
   // ############################################################################
   // kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::checkFileChanged: called." << endl;
-  if(filename.isEmpty())
+  if (filename.isEmpty())
     { // ----- false, as file does not exist and thus may be stored anyway
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::checkFileChanged: no filename." << endl;
       return false;
     }
   QFileInfo file(filename);
   // -----
-  if(file.exists())
+  if (file.exists())
     {
-      if(file.lastModified() > *mtime)
+      if (file.lastModified() > *mtime)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::checkFileChanged: file has been changed.n" << endl;
@@ -2292,7 +2292,7 @@ QConfigDB::checkFileChanged()
     } else {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::checkFileChanged: could "
 		 "not stat file, file does not exist." << endl;
-      if(!mtime->isValid())
+      if (!mtime->isValid())
 	{ // the file did never exist for us:
 	  return false; // ... so it has not changed
 	} else { // it existed, and now it does no more
@@ -2311,7 +2311,7 @@ QConfigDB::storeFileAge()
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::storeFileAge: called." << endl;
   QFileInfo file(filename);
   // -----
-  if(file.exists())
+  if (file.exists())
     {
       *mtime=file.lastModified();
       return true;
@@ -2333,9 +2333,9 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
       "to \""
 				  << filename_ <<"\"" << (readonly_ ? " (read only)" : "") << endl;
   // ----- remove previous lock:
-  if(locked)
+  if (locked)
     {
-      if(!unlock())
+      if (!unlock())
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::setFileName: cannot "
 		     "release previous lock." << endl;
@@ -2343,9 +2343,9 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	}
     }
   // ----- remove possible stale lockfile:
-  if(IsLocked(filename_)!=0 && !CheckLockFile(filename_))
+  if (IsLocked(filename_)!=0 && !CheckLockFile(filename_))
     { // ----- it is stale:
-      if(::remove(QFile::encodeName(filename_+".lock"))==0)
+      if (::remove(QFile::encodeName(filename_+".lock"))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::setFileName: removed stale lockfile." << endl;
@@ -2356,15 +2356,15 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	}
     }
   // -----
-  if(mustexist)
+  if (mustexist)
     {
-      if(access(QFile::encodeName(filename_), readonly_==true ? R_OK : W_OK | R_OK)==0)
+      if (access(QFile::encodeName(filename_), readonly_==true ? R_OK : W_OK | R_OK)==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::setFileName: permission granted." << endl;
-	  if(!readonly_)
+	  if (!readonly_)
 	    { //       we need r/w access:
-	      if(lock(filename_))
+	      if (lock(filename_))
 		{
 		  locked=true;
 		} else {
@@ -2382,16 +2382,16 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	  return false;
 	}
     } else {
-      if(access(QFile::encodeName(filename_), F_OK)==0)
+      if (access(QFile::encodeName(filename_), F_OK)==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::setFileName: file exists." << endl;
-	  if(access(QFile::encodeName(filename_), W_OK | R_OK)==0)
+	  if (access(QFile::encodeName(filename_), W_OK | R_OK)==0)
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			 "QConfigDB::setFileName: permission granted." << endl;
-	      if(!readonly_)
+	      if (!readonly_)
 		{ //       we need r/w access:
-		  if(lock(filename_))
+		  if (lock(filename_))
 		    {
 		      locked=true;
 		    } else {
@@ -2414,9 +2414,9 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	  "QConfigDB::setFileName: permission granted, new file." << endl;
 	  readonly=readonly_;
 	  filename=filename_;
-	  if(!readonly)
+	  if (!readonly)
 	    {
-	      if(!lock())
+	      if (!lock())
 		{
 		  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			     "QConfigDB::setFileName: could not lock the file." << endl;
@@ -2448,15 +2448,15 @@ QConfigDB::save(const char* header, bool force)
   bool wasRO=false;
   bool rc;
   // -----
-  if(checkFileChanged())
+  if (checkFileChanged())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		 "QConfigDB::save: file is newer, not saving." << endl;
       return false;
     }
-  if(force && isRO())
+  if (force && isRO())
     {
-      if(setFileName(fileName(), true, false))
+      if (setFileName(fileName(), true, false))
 	{
 	  wasRO=true;
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -2468,21 +2468,21 @@ QConfigDB::save(const char* header, bool force)
 	}
     }
   // ----- now save it:
-  if(!isRO())
+  if (!isRO())
     {
       QFile file(filename);
-      if(file.open(QIODevice::WriteOnly))
+      if (file.open(QIODevice::WriteOnly))
 	{
 	  QTextStream stream(&file);
 	  stream.setCodec( "ISO 8859-1" ); // no conversion
 	  // -----
-	  if(header!=0)
+	  if (header!=0)
 	    {
 	      stream << "# " << header << endl;
 	    }
 	  stream << '#' << " [File created by QConfigDB object "
 		 << version() << "]" << endl;
-	  if(!top.save(stream)) // traverse tree
+	  if (!top.save(stream)) // traverse tree
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			 "QConfigDB::save: error saving subsections." << endl;
@@ -2500,9 +2500,9 @@ QConfigDB::save(const char* header, bool force)
       rc=false;
     }
   // ----- reset r/o mode:
-  if(wasRO) // only true if we switched to forced r/w mode here
+  if (wasRO) // only true if we switched to forced r/w mode here
     {
-      if(setFileName(fileName(), false, true))
+      if (setFileName(fileName(), false, true))
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::save: reset (forced) r/w mode." << endl;
@@ -2524,7 +2524,7 @@ QConfigDB::load()
   // ############################################################################
   QFile file(filename);
   // -----
-  if(file.open(QIODevice::ReadOnly))
+  if (file.open(QIODevice::ReadOnly))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::load: file access OK." << endl;
       QTextStream stream(&file);
