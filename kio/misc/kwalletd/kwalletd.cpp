@@ -521,7 +521,7 @@ bool KWalletD::isAuthorizedApp(const QByteArray& appid, const QString& wallet, W
 		if (response == 1) {
 			KConfig cfg("kwalletrc");
 			cfg.setGroup("Auto Allow");
-			QStringList apps = cfg.readListEntry(wallet);
+			QStringList apps = cfg.readEntry(wallet, QStringList());
 			if (!apps.contains(thisApp)) {
 				apps += thisApp;
 				_implicitAllowMap[wallet] += thisApp;
@@ -532,7 +532,7 @@ bool KWalletD::isAuthorizedApp(const QByteArray& appid, const QString& wallet, W
 	} else if (response == 3) {
 		KConfig cfg("kwalletrc");
 		cfg.setGroup("Auto Deny");
-		QStringList apps = cfg.readListEntry(wallet);
+		QStringList apps = cfg.readEntry(wallet, QStringList());
 		if (!apps.contains(thisApp)) {
 			apps += thisApp;
 			_implicitDenyMap[wallet] += thisApp;
@@ -1237,18 +1237,18 @@ void KWalletD::emitWalletListDirty() {
 void KWalletD::reconfigure() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
-	_firstUse = cfg.readEntry("First Use", QVariant(true)).toBool();
-	_enabled = cfg.readEntry("Enabled", QVariant(true)).toBool();
-	_launchManager = cfg.readEntry("Launch Manager", QVariant(true)).toBool();
-	_leaveOpen = cfg.readEntry("Leave Open", QVariant(false)).toBool();
+	_firstUse = cfg.readEntry("First Use", true);
+	_enabled = cfg.readEntry("Enabled", true);
+	_launchManager = cfg.readEntry("Launch Manager", true);
+	_leaveOpen = cfg.readEntry("Leave Open", false);
 	bool idleSave = _closeIdle;
-	_closeIdle = cfg.readEntry("Close When Idle", QVariant(false)).toBool();
-	_openPrompt = cfg.readEntry("Prompt on Open", QVariant(true)).toBool();
+	_closeIdle = cfg.readEntry("Close When Idle", false);
+	_openPrompt = cfg.readEntry("Prompt on Open", true);
 	int timeSave = _idleTime;
 	// in minutes!
-	_idleTime = cfg.readEntry("Idle Timeout", QVariant(10)).toInt() * 60 * 1000;
+	_idleTime = cfg.readEntry("Idle Timeout", 10) * 60 * 1000;
 
-	if (cfg.readEntry("Close on Screensaver", QVariant(false)).toBool()) {
+	if (cfg.readEntry("Close on Screensaver", false)) {
 		connectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()", false);
 	} else {
 		disconnectDCOPSignal("kdesktop", "KScreensaverIface", "KDE_start_screensaver()", "closeAllWallets()");
@@ -1278,7 +1278,7 @@ void KWalletD::reconfigure() {
 	cfg.setGroup("Auto Allow");
 	QStringList entries = cfg.entryMap("Auto Allow").keys();
 	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
-		_implicitAllowMap[*i] = cfg.readListEntry(*i);
+		_implicitAllowMap[*i] = cfg.readEntry(*i, QStringList());
 	}
 
 	// Update the implicit allow stuff
@@ -1286,7 +1286,7 @@ void KWalletD::reconfigure() {
 	cfg.setGroup("Auto Deny");
 	entries = cfg.entryMap("Auto Deny").keys();
 	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
-		_implicitDenyMap[*i] = cfg.readListEntry(*i);
+		_implicitDenyMap[*i] = cfg.readEntry(*i, QStringList());
 	}
 
 	// Update if wallet was enabled/disabled

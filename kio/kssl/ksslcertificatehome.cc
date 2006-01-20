@@ -149,10 +149,10 @@ KSimpleConfig cfg("ksslauthmap", false);
    } else {
       cfg.setGroup(KResolver::domainToAscii(host));
       if (aa) {
-         bool tmp = cfg.readEntry("send", QVariant(false)).toBool();
+         bool tmp = cfg.readEntry("send", false);
          *aa = AuthSend; 
          if (!tmp) {
-            tmp = cfg.readEntry("prompt", QVariant(false)).toBool();
+            tmp = cfg.readEntry("prompt", false);
             *aa = AuthPrompt; 
             if (!tmp) {
                *aa = AuthDont;

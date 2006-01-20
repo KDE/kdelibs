@@ -79,7 +79,8 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		cfg->setGroup(*i);
 
 		// remove it if it has expired
-		if (!cfg->readEntry("Permanent", QVariant(false)).toBool() && cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
+		if (!cfg->readEntry("Permanent", false) &&
+                     cfg->readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
 		}
@@ -92,11 +93,11 @@ static void updatePoliciesConfig(KConfig *cfg) {
 			continue;
 		}
 
-		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", QVariant(0)).toInt();
-		bool permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
-		QDateTime expires = cfg->readDateTimeEntry("Expires");
-		QStringList hosts = cfg->readListEntry("Hosts");
-		QStringList chain = cfg->readListEntry("Chain");
+		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", 0);
+		bool permanent = cfg->readEntry("Permanent", false);
+		QDateTime expires = cfg->readEntry("Expires", QDateTime());
+		QStringList hosts = cfg->readEntry("Hosts", QStringList());
+		QStringList chain = cfg->readEntry("Chain", QStringList());
 		cfg->deleteGroup(*i);
 
 		cfg->setGroup(newCert->getMD5Digest());
@@ -121,7 +122,7 @@ KSSLD::KSSLD(const QByteArray &name) : KDEDModule(name)
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
 	cfg->setGroup("General");
-	if (2 != cfg->readEntry("policies version", QVariant(0)).toInt()) {
+	if (2 != cfg->readEntry("policies version", 0)) {
 		::updatePoliciesConfig(cfg);
 	}
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
@@ -243,8 +244,8 @@ QStringList groups = cfg->groupList();
 		cfg->setGroup(*i);
 
 		// remove it if it has expired
-		if (!cfg->readEntry("Permanent", QVariant(false)).toBool() &&
-			cfg->readDateTimeEntry("Expires") <
+		if (!cfg->readEntry("Permanent", false) &&
+			cfg->readEntry("Expires", QDateTime()) <
 				QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
@@ -262,11 +263,11 @@ QStringList groups = cfg->groupList();
 
 		KSSLCNode *n = new KSSLCNode;
 		n->cert = newCert;
-		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", QVariant(0)).toInt();
-		n->permanent = cfg->readEntry("Permanent", QVariant(false)).toBool();
-		n->expires = cfg->readDateTimeEntry("Expires");
-		n->hosts = cfg->readListEntry("Hosts");
-		newCert->chain().setCertChain(cfg->readListEntry("Chain"));
+		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", 0);
+		n->permanent = cfg->readEntry("Permanent", false);
+		n->expires = cfg->readEntry("Expires", QDateTime());
+		n->hosts = cfg->readEntry("Hosts", QStringList());
+		newCert->chain().setCertChain(cfg->readEntry("Chain", QStringList()));
 		certList.append(n); 
 		searchAddCert(newCert);
 	}
@@ -621,7 +622,7 @@ void KSSLD::caVerifyUpdate() {
 	
 	cfg->setGroup(QString());
 	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
-	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", QVariant(0)).toUInt();
+	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", 0);
 	if (oldStamp != newStamp)
 	{
 		caRegenerate();
@@ -649,7 +650,7 @@ QStringList x = cfg.groupList();
 
 		cfg.setGroup(*i);
 
-		if (!cfg.readEntry("site", QVariant(false)).toBool()) continue;
+		if (!cfg.readEntry("site", false)) continue;
 
 		QString cert = cfg.readEntry("x509", "");
 		if (cert.length() <= 0) continue;
@@ -780,7 +781,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readEntry("site", QVariant(false)).toBool();
+return cfg.readEntry("site", false);
 }
 
 
@@ -792,7 +793,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readEntry("email", QVariant(false)).toBool();
+return cfg.readEntry("email", false);
 }
 
 
@@ -804,7 +805,7 @@ KConfig cfg("ksslcalist", true, false);
 		return false;
 
 	cfg.setGroup(subject);
-return cfg.readEntry("code", QVariant(false)).toBool();
+return cfg.readEntry("code", false);
 }
 
 

@@ -130,7 +130,7 @@ QString KSSLSettings::getCipherList() {
 		tcipher.sprintf("cipher_%s", sc->name);
 		int bits = d->kossl->SSL_CIPHER_get_bits(sc, 0L);
 
-		if (m_cfg->readEntry(tcipher, QVariant(bits >= 56)).toBool()) {
+		if (m_cfg->readEntry(tcipher, (bits >= 56))) {
 			CipherNode *xx = new CipherNode(sc->name,bits);
 			if (!cipherSort.contains(xx)) {
 				cipherSort.prepend(xx);
@@ -172,19 +172,19 @@ void KSSLSettings::load() {
 	m_cfg->reparseConfiguration();
 
 	m_cfg->setGroup("Warnings");
-	m_bWarnOnEnter = m_cfg->readEntry("OnEnter", QVariant(false)).toBool();
-	m_bWarnOnLeave = m_cfg->readEntry("OnLeave", QVariant(true)).toBool();
-	m_bWarnOnUnencrypted = m_cfg->readEntry("OnUnencrypted", QVariant(true)).toBool();
-	m_bWarnOnMixed = m_cfg->readEntry("OnMixed", QVariant(true)).toBool();
+	m_bWarnOnEnter = m_cfg->readEntry("OnEnter", false);
+	m_bWarnOnLeave = m_cfg->readEntry("OnLeave", true);
+	m_bWarnOnUnencrypted = m_cfg->readEntry("OnUnencrypted", true);
+	m_bWarnOnMixed = m_cfg->readEntry("OnMixed", true);
 
 	m_cfg->setGroup("Validation");
-	m_bWarnSelfSigned = m_cfg->readEntry("WarnSelfSigned", QVariant(true)).toBool();
-	m_bWarnExpired = m_cfg->readEntry("WarnExpired", QVariant(true)).toBool();
-	m_bWarnRevoked = m_cfg->readEntry("WarnRevoked", QVariant(true)).toBool();
+	m_bWarnSelfSigned = m_cfg->readEntry("WarnSelfSigned", true);
+	m_bWarnExpired = m_cfg->readEntry("WarnExpired", true);
+	m_bWarnRevoked = m_cfg->readEntry("WarnRevoked", true);
 
 	m_cfg->setGroup("EGD");
-	d->m_bUseEGD = m_cfg->readEntry("UseEGD", QVariant(false)).toBool();
-	d->m_bUseEFile = m_cfg->readEntry("UseEFile", QVariant(false)).toBool();
+	d->m_bUseEGD = m_cfg->readEntry("UseEGD", false);
+	d->m_bUseEFile = m_cfg->readEntry("UseEFile", false);
 	d->m_EGDPath = m_cfg->readPathEntry("EGDPath");
 
 	m_cfg->setGroup("Auth");
