@@ -21,7 +21,7 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qstring.h>
 #include <qobject.h>
 #include <kdelibs_export.h>
@@ -117,7 +117,7 @@ public:
      * in the menus.
      */
     KMacroCommand( const QString & name );
-    virtual ~KMacroCommand() {}
+    virtual ~KMacroCommand();
 
     /**
      * Appends a command to this macro command.
@@ -137,7 +137,7 @@ public:
     virtual void unexecute();
 
 protected:
-    Q3PtrList<KCommand> m_commands;
+    QList<KCommand *> m_commands;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
@@ -251,15 +251,6 @@ Q_SIGNALS:
      * Emitted every time a command is executed
      * (whether by addCommand, undo or redo).
      * You can use this to update the GUI, for instance.
-     *
-     * KDE4 TODO: remove
-     */
-    void commandExecuted();
-
-    /**
-     * Emitted every time a command is executed
-     * (whether by addCommand, undo or redo).
-     * You can use this to update the GUI, for instance.
      * @param command was executed
      * @since 3.5
      */
@@ -274,16 +265,15 @@ Q_SIGNALS:
 private:
     void clipCommands();  // ensures that the limits are kept
 
-    Q3PtrList<KCommand> m_commands;
+    QList<KCommand *> m_commands;
     KAction *m_undo, *m_redo;
     QMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;
-    bool m_first;  // attention: it's the first command in the list!
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KCommandHistoryPrivate;
-    KCommandHistoryPrivate *d;
+    KCommandHistoryPrivate * const d;
 };
 
 #endif

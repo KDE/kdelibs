@@ -59,6 +59,7 @@ void KCommandTest::testMacroCommand()
 
 void KCommandTest::testCommandHistoryAdd()
 {
+    KTestCommand::clearLists();
     m_commandsExecuted = 0;
     m_documentRestored = 0;
     KActionCollection actionCollection( ( QWidget*)0 );
@@ -148,11 +149,11 @@ void KCommandTest::testCommandHistoryAdd()
     QCOMPARE( m_commandsExecuted, 12 ); // every add, undo and redo
     QCOMPARE( m_documentRestored, 3 );
     QCOMPARE( KTestCommand::deletedCommands.join( "," ), QString( "2,1,3" ) ); // ok the order doesn't matter ;)
-    KTestCommand::clearLists();
 }
 
 void KCommandTest::testDocumentRestored()
 {
+    KTestCommand::clearLists();
     m_commandsExecuted = 0;
     m_documentRestored = 0;
     {
@@ -184,6 +185,7 @@ void KCommandTest::testDocumentRestored()
 
 void KCommandTest::testUndoLimit()
 {
+    KTestCommand::clearLists();
     m_commandsExecuted = 0;
     m_documentRestored = 0;
     KActionCollection actionCollection( ( QWidget*)0 );
@@ -201,6 +203,7 @@ void KCommandTest::testUndoLimit()
         // c1 should have been removed now; let's check that we can only undo twice.
         ch.undo();
         ch.undo();
+        QCOMPARE( m_documentRestored, 0 );
 
         KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
@@ -226,7 +229,16 @@ void KCommandTest::testUndoLimit()
         ch.updateActions(); // then back to readwrite, so it calls this
         QVERIFY( !undo->isEnabled() );
         QVERIFY( redo->isEnabled() );
+
+        // test clear
+        ch.clear();
+        QVERIFY( !undo->isEnabled() );
+        QVERIFY( !redo->isEnabled() );
+        QCOMPARE( undo->text(), i18n( "&Undo" ) );
+        QCOMPARE( redo->text(), i18n( "&Redo" ) );
+        QCOMPARE( KTestCommand::deletedCommands.join( "," ), QString( "1,2,3" ) );
     }
+    QCOMPARE( m_documentRestored, 0 );
 }
 
 // Helper slots
