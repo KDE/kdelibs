@@ -12,6 +12,8 @@
 <!-- Licence links -->
 <!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//ET"
   "entities/underGPL.docbook"                       ><!-- level: para -->
+<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//ET"
+  "entities/underLGPL.docbook"                      ><!-- level: para -->
 <!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//ET"
   "entities/underFDL.docbook"                       ><!-- level: para -->
 <!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//ET"
