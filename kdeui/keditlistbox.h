@@ -46,9 +46,8 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
-   Q_ENUMS( Button )
    Q_FLAGS( Buttons )
-   Q_PROPERTY( Button buttons READ buttons WRITE setButtons )
+   Q_PROPERTY( Buttons buttons READ buttons WRITE setButtons )
    Q_PROPERTY( QStringList items READ items WRITE setItems USER true )
 
 public:
@@ -117,7 +116,7 @@ public:
        * possible to enter items twice into the listbox.
        */
       KEditListBox(QWidget *parent = 0, const char *name = 0,
-		   bool checkAtEntering=false, Button buttons = All );
+		   bool checkAtEntering=false, Buttons buttons = All );
       /**
        * Create an editable listbox.
        *
@@ -126,24 +125,24 @@ public:
        */
       KEditListBox(const QString& title, QWidget *parent = 0,
 		   const char *name = 0, bool checkAtEntering=false,
-		   Button buttons = All );
+		   Buttons buttons = All );
 
       /**
        * Another constructor, which allows to use a custom editing widget
        * instead of the standard KLineEdit widget. E.g. you can use a
-       * KURLRequester or a KComboBox as input widget. The custom
+       * KUrlRequester or a KComboBox as input widget. The custom
        * editor must consist of a lineedit and optionally another widget that
-       * is used as representation. A KComboBox or a KURLRequester have a
+       * is used as representation. A KComboBox or a KUrlRequester have a
        * KLineEdit as child-widget for example, so the KComboBox is used as
        * the representation widget.
        *
-       * @see KURLRequester::customEditor()
+       * @see KUrlRequester::customEditor()
        * @since 3.1
        */
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,
                     QWidget *parent = 0, const char *name = 0,
-                    bool checkAtEntering = false, Button buttons = All );
+                    bool checkAtEntering = false, Buttons buttons = All );
 
       virtual ~KEditListBox();
 
@@ -220,12 +219,12 @@ public:
       /**
        * Returns which buttons are visible
        */
-      Button buttons() const;
+      Buttons buttons() const;
 
       /**
        * Specifies which buttons should be visible
        */
-      void setButtons( Button buttons );
+      void setButtons( Buttons buttons );
 
    Q_SIGNALS:
       void changed();
@@ -260,8 +259,8 @@ public:
       KLineEdit *m_lineEdit;
 
       //this is called in both ctors, to avoid code duplication
-      void init( bool checkAtEntering, Button buttons,
-                 QWidget *representationWidget = 0L );
+      void init( bool checkAtEntering, Buttons buttons,
+                 QWidget *representationWidget = 0 );
 
    protected:
       virtual void virtual_hook( int id, void* data );

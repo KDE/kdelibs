@@ -40,11 +40,11 @@ class KEditListBoxPrivate
 {
 public:
     bool m_checkAtEntering;
-    KEditListBox::Button buttons;
+    KEditListBox::Buttons buttons;
 };
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
-			   bool checkAtEntering, Button buttons )
+			   bool checkAtEntering, Buttons buttons )
     :QGroupBox(parent ), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -52,7 +52,7 @@ KEditListBox::KEditListBox(QWidget *parent, const char *name,
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
-			   const char *name, bool checkAtEntering, Button buttons)
+			   const char *name, bool checkAtEntering, Buttons buttons)
     :QGroupBox(title, parent ), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -61,7 +61,7 @@ KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 
 KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            QWidget *parent, const char *name,
-                           bool checkAtEntering, Button buttons)
+                           bool checkAtEntering, Buttons buttons)
     :QGroupBox(title, parent), d(new KEditListBoxPrivate)
 {
 	setObjectName(name);
@@ -74,7 +74,7 @@ KEditListBox::~KEditListBox()
     delete d;
 }
 
-void KEditListBox::init( bool checkAtEntering, Button buttons,
+void KEditListBox::init( bool checkAtEntering, Buttons buttons,
                          QWidget *representationWidget )
 {
     d->m_checkAtEntering = checkAtEntering;
@@ -114,7 +114,7 @@ void KEditListBox::init( bool checkAtEntering, Button buttons,
     typedSomething( m_lineEdit->text() );
 }
 
-void KEditListBox::setButtons( Button buttons )
+void KEditListBox::setButtons( Buttons buttons )
 {
     if ( d->buttons == buttons )
         return;
@@ -386,7 +386,7 @@ void KEditListBox::setItems(const QStringList& items)
   m_listBox->insertStringList(items, 0);
 }
 
-KEditListBox::Button KEditListBox::buttons() const
+KEditListBox::Buttons KEditListBox::buttons() const
 {
   return d->buttons;
 }
