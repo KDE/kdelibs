@@ -384,7 +384,7 @@ void Addressee::insertEmail( const QString &email, bool preferred )
 
   detach();
 
-  if ( !(mData->emails.contains( email )) ) {
+  if ( mData->emails.contains( email ) ) {
     if ( !preferred || mData->emails.first() == email )
       return;
 
