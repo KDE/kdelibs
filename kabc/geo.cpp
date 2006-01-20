@@ -90,7 +90,10 @@ bool Geo::operator!=( const Geo &g ) const
 
 QString Geo::asString() const
 {
-  return "(" + QString::number(mLatitude) + "," + QString::number(mLongitude) + ")";
+  if ( !isValid() )
+    return QString();
+  else
+    return "(" + QString::number(mLatitude) + "," + QString::number(mLongitude) + ")";
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Geo &geo )
