@@ -25,9 +25,9 @@ kde4_footer()
 #libkde3ui_la_LDFLAGS = $(all_libraries)
 #libkde3ui_la_LIBADD  = $(LIB_KPARTS)
 #
-#libkde3ui_la_SOURCES = k3dockwidget.cpp k3dockwidget_private.cpp k3popupmenu.cpp k3textedit.cpp k3colordrag.cpp
+#libkde3ui_la_SOURCES = k3dockwidget.cpp k3dockwidget_private.cpp k3popupmenu.cpp k3textedit.cpp k3colordrag.cpp k3syntaxhighlighter.cpp
 #
-#include_HEADERS = k3dockwidget.h k3popupmenu.h k3textedit.h k3colordrag.h
+#include_HEADERS = k3dockwidget.h k3popupmenu.h k3textedit.h k3colordrag.h k3syntaxhighlighter.h
 #
 #METASOURCES = AUTO
 #

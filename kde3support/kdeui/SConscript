@@ -8,7 +8,7 @@ Import('env')
 #"""
 
 include_headers = """
-k3colordrag.h k3dockwidget.h k3popupmenu.h k3textedit.h
+k3colordrag.h k3dockwidget.h k3popupmenu.h k3textedit.h k3syntaxhighlighter.h
 """
 
 #includes = '#/kutils #/kde3support/kdeui #/kde3support/kparts '
