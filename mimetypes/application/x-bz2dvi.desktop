@@ -55,6 +55,7 @@ Comment[tt]=Bzip2'lı DVI Birem
 Comment[uk]=Файл DVI, стиснутий bzip2
 Comment[uz]=Bzip2 билан қисилган DVI-файли
 Comment[zh_CN]=Bzip2 压缩的 DVI 文件
+Comment[zh_HK]=Bzip2 格式壓縮的 DVI 檔案
 Hidden=false
 Icon=tgz
 MimeType=application/x-bz2dvi

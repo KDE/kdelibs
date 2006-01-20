@@ -67,6 +67,7 @@ Name[uk]=Файл
 Name[uz]=Файл
 Name[wa]=Fitchî
 Name[zh_CN]=文件
+Name[zh_HK]=檔案
 X-KDE-Library=kabc_file
 Type=Service
 ServiceTypes=KResources/Plugin

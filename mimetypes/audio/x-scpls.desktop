@@ -73,6 +73,7 @@ Comment[ven]=Mutevhe uno tambiwa wa MP3
 Comment[vi]=Danh sách MP3 ShoutCast 
 Comment[xh]=MP3 Uluhlu lokudlala lwe ShoutCast
 Comment[zh_CN]=MP3 ShoutCast 播放列表
+Comment[zh_HK]=MP3 ShoutCast 播放清單
 Comment[zh_TW]=MP3 ShoutCast 播放列表
 Patterns=*.pls;*.PLS;
 Icon=sound

@@ -61,6 +61,7 @@ Name[tt]=KDE Resursları
 Name[uk]=Ресурси KDE
 Name[uz]=KDE имкониятлари
 Name[zh_CN]=KDE 资源
+Name[zh_HK]=KDE 資源
 
 Comment=Configure KDE Resources
 Comment[af]=Stel KDE Hulpbronne op
@@ -119,6 +120,7 @@ Comment[tt]=KDE Resursların Caylaw
 Comment[uk]=Налаштування ресурсів KDE
 Comment[uz]=KDE манбаларини мослаш
 Comment[zh_CN]=配置 KDE 资源
+Comment[zh_HK]=設定 KDE 使用的資源
 
 Keywords=resources,konnector resource,contact resource,calendar resource,notes resource,imap
 Keywords[af]=hulpbronne,konnector hulpbron,kontak hulpbron,kalender hulpbron, notas hulpbron, imap

@@ -86,6 +86,7 @@ Comment[ven]=Munwali wa PDF (I toda bammbiri la tshipuku)
 Comment[wa]=Fijheu di fitchîs PDF (a mezåjhe di Ghostscript)
 Comment[xh]=Umbhali we PDF (ufuna i Ghostscript)
 Comment[zh_CN]=PDF 书写器 (需要 GhostScript)
+Comment[zh_HK]=PDF 產生器 (需要 GhostScript)
 Comment[zh_TW]=PDF 產生器 (需要 GhostScript)
 Comment[zu]=Umbhali we-PDF (idinga i-Ghostscript)
 MimeTypeIn=application/postscript

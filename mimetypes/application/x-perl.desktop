@@ -53,6 +53,7 @@ Comment[tt]=Perl Yazılım
 Comment[uk]=Програма PERL
 Comment[uz]=Perl'да тузилган дастур
 Comment[zh_CN]=Perl 程序
+Comment[zh_HK]=Perl 程式
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl

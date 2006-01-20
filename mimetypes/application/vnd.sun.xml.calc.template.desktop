@@ -57,6 +57,7 @@ Comment[tt]=OpenOffice.org İsäpcäymä Ürçetmäse
 Comment[uk]=Шаблон електронної таблиці OpenOffice.org
 Comment[uz]=OpenOffice.org электрон жадвал намунаси
 Comment[zh_CN]=OpenOffice.org 电子表格模板
+Comment[zh_HK]=OpenOffice.org 試算表範本
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.stc;*.STC;

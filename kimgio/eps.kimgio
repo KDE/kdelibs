@@ -68,6 +68,7 @@ Name[uk]=Вбудоване зображення PostScript
 Name[uz]=EPS-расм
 Name[wa]=Imådje PostScript ecapsulêye
 Name[zh_CN]=封装后的 Postscript 图像
+Name[zh_HK]=Encapsulated Postscript 圖檔
 Name[zh_TW]=Ensapsulated Postscript 影像
 Read=true
 Write=true

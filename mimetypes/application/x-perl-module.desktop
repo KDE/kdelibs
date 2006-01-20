@@ -53,6 +53,7 @@ Comment[tt]=Perl Modulı
 Comment[uk]=Модуль мови програмування Perl
 Comment[uz]=Perl модули
 Comment[zh_CN]=Perl 模块
+Comment[zh_HK]=Perl 模組
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl-module

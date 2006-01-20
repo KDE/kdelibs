@@ -54,6 +54,7 @@ Comment[tt]=OASIS OpenDocument Formulı
 Comment[uk]=Формула OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument формула
 Comment[zh_CN]=OASIS OpenDocument 公式
+Comment[zh_HK]=OASIS OpenDocument 算式
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.odf
