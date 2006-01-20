@@ -106,7 +106,6 @@ ktimezonewidget.cpp
 ksconfig.cpp
 kspelldlg.cpp
 kspell.cpp
-ksyntaxhighlighter.cpp
 ktabbar.cpp
 ktabwidget.cpp
 ksplashscreen.cpp
