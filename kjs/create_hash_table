@@ -67,6 +67,8 @@ while (<IN>) {
       @values = ();
       @attrs = ();
       @params = ();
+      @table = ();
+      @links = ();
       $inside = 0;
     } elsif (/^(\S+)\s*(\S+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
       my $key = $1;
