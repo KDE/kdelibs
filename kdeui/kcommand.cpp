@@ -100,6 +100,9 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
 {
     if (withMenus)
     {
+        // TODO instead of a menu this should show a listbox like koffice's KoCommandHistory does,
+        // so that it's clearer that N actions will be undone together, not just action number N.
+
         KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("&Undo"), "undo",
                                           KStdAccel::shortcut(KStdAccel::Undo), this, SLOT( undo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Undo ) );

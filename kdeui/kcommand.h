@@ -189,8 +189,11 @@ public:
      * Adds a command to the history. Call this for each @p command you create.
      * Unless you set @p execute to false, this will also execute the command.
      * This means, most of the application's code will look like
-     *    MyCommand * cmd = new MyCommand(i18n("Capitalized Name"), parameters);
+     *    MyCommand * cmd = new MyCommand( parameters );
      *    m_historyCommand.addCommand( cmd );
+     *
+     * Note that the command history takes ownership of the command, it will delete
+     * it when the undo limit is reached, or when deleting the command history itself.
      */
     void addCommand(KCommand *command, bool execute=true);
 
