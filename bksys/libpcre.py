@@ -46,6 +46,6 @@ def generate(env):
 
 		env = conf.Finish()
 
-		env.write_lib_header( 'libpcre', env['CACHED_PCRE'], False )
+		env.write_lib_header( 'libpcre', env['CACHED_PCRE'], False, '', '#define HAVE_PCREPOSIX 1\n' )
 
 	opts.Save(optionFile, env)

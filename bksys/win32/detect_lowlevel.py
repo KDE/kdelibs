@@ -8,6 +8,7 @@ def detect(lenv, dest):
 	content="""
 #define HAVE_SYS_STAT_H 1
 #define HAVE_SYS_TIME_H 1
+#define HAVE_SYS_TIMEB_H 1
 #define HAVE_CTYPE_H 1 
 #define HAVE_MALLOC_H 1
 #define HAVE_STRING_H 1 

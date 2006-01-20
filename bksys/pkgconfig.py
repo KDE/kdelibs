@@ -89,13 +89,16 @@ def generate(env):
 			
 		return haveModule
 
-	if not env.has_key('HAVE_PKGCONFIG'):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('HAVE_PKGCONFIG')):
 		conf = env.Configure(custom_tests =
 				     { 'Check_pkg_config' : Check_pkg_config  }
 				     )
 		if conf.Check_pkg_config('0.15'):
 			env['HAVE_PKGCONFIG'] = 1
 		else:
+		    env['HAVE_PKGCONFIG'] = 0
+		
+		if env['WINDOWS']:
 		    env['HAVE_PKGCONFIG'] = 0
 		env = conf.Finish()
 
