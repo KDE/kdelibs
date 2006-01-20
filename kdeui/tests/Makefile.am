@@ -40,7 +40,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
 	ksqueezedtextlabeltest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
-	khboxtest kbugreporttest kdialogtest ksyntaxhighlightertest
+	khboxtest kbugreporttest kdialogtest ksyntaxhighlightertest kactivelabeltest
 
 METASOURCES = AUTO
 
@@ -102,5 +102,6 @@ ktoolbarlabelactiontest_SOURCES = ktoolbarlabelactiontest.cpp
 khboxtest_SOURCES = khboxtest.cpp
 kbugreporttest_SOURCES = kbugreporttest.cpp
 kdialogtest_SOURCES = kdialogtest.cpp
+kactivelabeltest_SOURCES = kactivelabeltest.cpp
 ksyntaxhighlightertest_SOURCES = ksyntaxhighlightertest.cpp
 
