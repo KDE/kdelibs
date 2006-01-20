@@ -353,7 +353,6 @@ void KPty::close()
 {
    if (d->masterFd < 0)
       return;
-   logout();
    // don't bother resetting unix98 pty, it will go away after closing master anyway.
    if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
       if (!geteuid()) {
@@ -361,7 +360,7 @@ void KPty::close()
          if (!stat(d->ttyName.data(), &st)) {
             chown(d->ttyName.data(), 0, st.st_gid == getgid() ? 0 : -1);
             chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
-	 }
+         }
       } else {
          fcntl(d->masterFd, F_SETFD, 0);
          chownpty(false);
