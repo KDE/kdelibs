@@ -129,6 +129,11 @@ class KDialogBaseTile;
  * inspiration you should study the code for these.
  *
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
+ *
+ * @note for KDE4, this class will probably be moved to kde3 support and renamed
+ *  to K3DialogBase.  there possibly will be a KJanusDialog, or a more complex class based
+ *  on model/view.  cf http://lists.kde.org/?l=kde-core-devel&m=113603658319144&w=2
+ *  Most of need are done by KDialog alone.
  */
 class KDEUI_EXPORT KDialogBase : public KDialog
 {

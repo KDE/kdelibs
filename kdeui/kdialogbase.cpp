@@ -101,7 +101,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 
   if( !mJanus || !mJanus->isValid() ) { return; }
 
-  setMainWidget( mJanus );
+  KDialog::setMainWidget( mJanus );
 }
 
 KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, Qt::WFlags f, QWidget *parent, const char *name,
@@ -127,7 +127,7 @@ KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, Qt::WFlags f, QWi
 
   if( !mJanus || !mJanus->isValid() ) { return; }
 
-  setMainWidget( mJanus );
+  KDialog::setMainWidget( mJanus );
 
 }
 
