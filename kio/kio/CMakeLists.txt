@@ -107,7 +107,7 @@ kde4_footer()
 #	statusbarprogress.h tcpslavebase.h \
 #	forwardingslavebase.h \
 #	observer.h chmodjob.h uiserver_stub.h \
-#        kmdbase.h authinfo.h \
+#        authinfo.h \
 #	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
 #	metainfojob.h davjob.h renamedlg.h skipdlg.h
 #
