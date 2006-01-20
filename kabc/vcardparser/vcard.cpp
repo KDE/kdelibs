@@ -83,7 +83,7 @@ VCardLine VCard::line( const QString& identifier ) const
 
 void VCard::setVersion( Version version )
 {
-  mLineMap.erase( "VERSION" );
+  mLineMap.remove( "VERSION" );
 
   VCardLine line;
   line.setIdentifier( "VERSION" );

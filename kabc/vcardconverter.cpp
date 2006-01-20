@@ -32,7 +32,7 @@ VCardConverter::~VCardConverter()
 {
 }
 
-QString VCardConverter::createVCard( const Addressee &addr, Version version )
+QByteArray VCardConverter::createVCard( const Addressee &addr, Version version )
 {
   Addressee::List list;
   list.append( addr );
@@ -40,21 +40,21 @@ QString VCardConverter::createVCard( const Addressee &addr, Version version )
   return createVCards( list, version );
 }
 
-QString VCardConverter::createVCards( Addressee::List list, Version version )
+QByteArray VCardConverter::createVCards( Addressee::List list, Version version )
 {
   VCardTool tool;
 
   return tool.createVCards( list, ( version == v3_0 ? VCard::v3_0 : VCard::v2_1 ) );
 }
 
-Addressee VCardConverter::parseVCard( const QString& vcard )
+Addressee VCardConverter::parseVCard( const QByteArray& vcard )
 {
   Addressee::List list = parseVCards( vcard );
 
   return list[ 0 ];
 }
 
-Addressee::List VCardConverter::parseVCards( const QString& vcard )
+Addressee::List VCardConverter::parseVCards( const QByteArray& vcard )
 {
   VCardTool tool;
 

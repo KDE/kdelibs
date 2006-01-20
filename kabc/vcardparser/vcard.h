@@ -21,10 +21,10 @@
 #ifndef VCARDPARSER_VCARD_H
 #define VCARDPARSER_VCARD_H
 
+#include <QMap>
+#include <QStringList>
+
 #include "vcardline.h"
-#include <qmap.h>
-#include <qstringlist.h>
-#include <q3valuelist.h>
 
 namespace KABC {
 
@@ -32,7 +32,7 @@ class VCard
 {
   public:
     typedef QList<VCard> List;
-    typedef QMap< QString, VCardLine::List > LineMap;
+    typedef QMap<QString, VCardLine::List> LineMap;
 
     enum Version { v2_1, v3_0 };
 

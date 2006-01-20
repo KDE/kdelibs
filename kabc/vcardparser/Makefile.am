@@ -1,4 +1,5 @@
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 noinst_LTLIBRARIES = libvcards.la
 libvcards_la_SOURCES = vcard.cpp vcardline.cpp vcardparser.cpp

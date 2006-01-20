@@ -63,15 +63,11 @@ int main( int argc, char **argv )
 
   QFile file( inputFile );
   if ( !file.open( QIODevice::ReadOnly ) ) {
-    qDebug( "Unable to open file '%s' for reading!", file.name().latin1() );
+    qDebug( "Unable to open file '%s' for reading!", qPrintable( file.fileName() ) );
     return 1;
   }
 
-  QString text;
-
-  QTextStream s( &file );
-  s.setEncoding( QTextStream::UnicodeUTF8 );
-  text = s.read();
+  QByteArray text = file.readAll();
   file.close();
 
   KABC::VCardConverter converter;
@@ -83,7 +79,7 @@ int main( int argc, char **argv )
     text = converter.createVCards( list ); // uses version 3.0
   }
 
-  std::cout << text.toUtf8().data();
+  std::cout << text.data();
 
   return 0;
 }

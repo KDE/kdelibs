@@ -21,11 +21,10 @@
 #ifndef VCARDLINE_H
 #define VCARDLINE_H
 
-#include <qstringlist.h>
-#include <q3valuelist.h>
-#include <qvariant.h>
-#include <qmap.h>
-#include <qstring.h>
+#include <QMap>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
 
 namespace KABC {
 
@@ -104,6 +103,7 @@ class VCardLine
   private:
     ParamMap mParamMap;
     QString mIdentifier;
+    QString mGroup;
     QVariant mValue;
 
     class VCardLinePrivate;

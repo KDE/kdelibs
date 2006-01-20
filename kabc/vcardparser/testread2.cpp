@@ -9,7 +9,7 @@ int
 main()
 {
     Addressee::List l = vCardsAsAddresseeList();
-    QString vcards = vCardsAsText();
+    QByteArray vcards = vCardsAsText();
 
     VCardConverter vct;
 

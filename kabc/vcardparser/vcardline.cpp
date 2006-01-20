@@ -22,32 +22,22 @@
 
 using namespace KABC;
 
-class VCardLine::VCardLinePrivate
-{
-  public:
-    QString mGroup;
-};
-
 VCardLine::VCardLine()
-  : d( 0 )
 {
 }
 
 VCardLine::VCardLine( const QString &identifier )
-  : d( 0 )
 {
   mIdentifier = identifier;
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
-  : d( 0 )
 {
   mIdentifier = identifier;
   mValue = value;
 }
 
 VCardLine::VCardLine( const VCardLine& line )
-  : d( 0 )
 {
   mParamMap = line.mParamMap;
   mValue = line.mValue;
@@ -56,8 +46,6 @@ VCardLine::VCardLine( const VCardLine& line )
 
 VCardLine::~VCardLine()
 {
-  delete d;
-  d = 0;
 }
 
 VCardLine& VCardLine::operator=( const VCardLine& line )
@@ -94,26 +82,17 @@ QVariant VCardLine::value() const
 
 void VCardLine::setGroup( const QString& group )
 {
-  if ( !d )
-    d = new VCardLinePrivate();
-
-  d->mGroup = group;
+  mGroup = group;
 }
 
 QString VCardLine::group() const
 {
-  if ( d )
-    return d->mGroup;
-  else
-    return QString();
+  return mGroup;
 }
 
 bool VCardLine::hasGroup() const
 {
-  if ( !d )
-    return false;
-  else
-    return d->mGroup.isEmpty();
+  return !mGroup.isEmpty();
 }
 
 QStringList VCardLine::parameterList() const
@@ -124,7 +103,7 @@ QStringList VCardLine::parameterList() const
 void VCardLine::addParameter( const QString& param, const QString& value )
 {
   QStringList &list = mParamMap[ param ];
-  if ( list.findIndex( value ) == -1 ) // not included yet
+  if ( !list.contains( value ) ) // not included yet
     list.append( value );
 }
 

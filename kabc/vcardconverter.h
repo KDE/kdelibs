@@ -29,7 +29,7 @@ namespace KABC {
 
 /**
   @short Class to converting contact objects into vCard format and vice versa.
-  
+
   This class implements reading and writing of contact using from/to the
   vCard format. Currently vCard version 2.1 and 3.0 is supported.
 
@@ -39,11 +39,8 @@ namespace KABC {
 
   QFile file( "myfile.vcf" );
   file.open( QIODevice::ReadOnly );
-  
-  QTextStream s( &file );
-  s.setEncoding( QTextStream::UnicodeUTF8 );
 
-  QString data = s.read();
+  QByteArray data = file.readAll();
 
   VCardConverter converter;
   Addressee::List list = converter.parseVCards( data );
@@ -84,7 +81,7 @@ class KABC_EXPORT VCardConverter
       @param addr The contact object
       @param version The version of the generated vCard format
      */
-    QString createVCard( const Addressee &addr, Version version = v3_0 );
+    QByteArray createVCard( const Addressee &addr, Version version = v3_0 );
 
     /**
       Creates a string in vCard format which contains the given
@@ -94,20 +91,20 @@ class KABC_EXPORT VCardConverter
       @param version The version of the generated vCard format
      */
     // FIXME: Add error handling
-    QString createVCards( Addressee::List list, Version version = v3_0 );
+    QByteArray createVCards( Addressee::List list, Version version = v3_0 );
 
     // FIXME: Add "createVCards( AddressBook * )"
 
     /**
       Parses a string in vCard format and returns the first contact.
      */
-    Addressee parseVCard( const QString& vcard );
+    Addressee parseVCard( const QByteArray& vcard );
 
     /**
       Parses a string in vCard format and returns a list of contact objects.
      */
     // FIXME: Add error handling
-    Addressee::List parseVCards( const QString& vcard );
+    Addressee::List parseVCards( const QByteArray& vcard );
 
   private:
     class VCardConverterPrivate;

@@ -18,13 +18,18 @@ testldapclient_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testldapclient_SOURCES = testldapclient.cpp
 
 EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
-  testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit
+  testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit \
+  testaddresseemodel
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabc_SOURCES = testkabc.cpp
 
 testaddressee_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testaddressee_SOURCES = testaddressee.cpp
+
+testaddresseemodel_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+testaddresseemodel_SOURCES = testaddresseemodel.cpp
+testaddresseemodel_LDADD = ../libkabc.la
 
 testaddresseelist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testaddresseelist_SOURCES = testaddresseelist.cpp

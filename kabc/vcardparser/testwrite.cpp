@@ -40,7 +40,6 @@ int main( int argc, char **argv )
   KCmdLineArgs::init( argc, argv, &aboutData );
 
   KApplication app( false );
-  
 
   KABC::Addressee addressee;
 
@@ -64,27 +63,7 @@ int main( int argc, char **argv )
   addressee.setSortString( "koenig" );
   addressee.setUrl( KUrl( "http://wgess16.dyndns.org") );
   addressee.setSecrecy(  KABC::Secrecy( KABC::Secrecy::Confidential ) );
-/*
-  QImage img;
-  img.load( "testimg.png", "PNG" );
-  KABC::Picture photo;
-  photo.setData( img );
-  addressee.setPhoto( photo );
 
-  QImage img2;
-  img2.load( "testimg.png", "PNG" );
-  KABC::Picture logo;
-  logo.setData( img2 );
-  addressee.setLogo( logo );
-
-  QFile soundFile( "testsound.wav" );
-  soundFile.open( QIODevice::ReadOnly );
-  QByteArray data = soundFile.readAll();
-  soundFile.close();
-  KABC::Sound sound;
-  sound.setData( data );
-  addressee.setSound( sound );
-*/
   addressee.insertEmail( "tokoe@kde.org", true );
   addressee.insertEmail( "tokoe82@yahoo.de", true );
 
@@ -120,14 +99,15 @@ int main( int argc, char **argv )
   }
 
   KABC::VCardConverter converter;
-  QString txt = converter.createVCards( list );
+  QByteArray txt = converter.createVCards( list );
 
   QFile file( "out.vcf" );
-  file.open( QIODevice::WriteOnly );
+  if ( !file.open( QIODevice::WriteOnly ) ) {
+    qDebug( "Can't open file '%s' fro writing", qPrintable( file.fileName() ) );
+    return 1;
+  }
 
-  QTextStream s( &file );
-  s.setEncoding( QTextStream::UnicodeUTF8 );
-  s << txt;
+  file.write( txt );
   file.close();
 
   return 0;

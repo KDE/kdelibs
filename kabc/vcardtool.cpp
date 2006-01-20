@@ -72,7 +72,7 @@ VCardTool::~VCardTool()
 {
 }
 
-QString VCardTool::createVCards( const Addressee::List& list, VCard::Version version )
+QByteArray VCardTool::createVCards( const Addressee::List& list, VCard::Version version )
 {
   VCard::List vCardList;
 
@@ -341,7 +341,7 @@ QString VCardTool::createVCards( const Addressee::List& list, VCard::Version ver
   return VCardParser::createVCards( vCardList );
 }
 
-Addressee::List VCardTool::parseVCards( const QString& vcard )
+Addressee::List VCardTool::parseVCards( const QByteArray& vcard )
 {
   static const QChar semicolonSep( ';' );
   static const QChar commaSep( ',' );
@@ -368,7 +368,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // ADR
         if ( identifier == "adr" ) {
           Address address;
-          const QStringList addrParts = splitString( semicolonSep, (*lineIt).value().asString() );
+          const QStringList addrParts = splitString( semicolonSep, (*lineIt).value().toString() );
           if ( addrParts.count() > 0 )
             address.setPostOfficeBox( addrParts[ 0 ] );
           if ( addrParts.count() > 1 )
@@ -396,11 +396,11 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // BDAY
         else if ( identifier == "bday" )
-          addr.setBirthday( parseDateTime( (*lineIt).value().asString() ) );
+          addr.setBirthday( parseDateTime( (*lineIt).value().toString() ) );
 
         // CATEGORIES
         else if ( identifier == "categories" ) {
-          const QStringList categories = splitString( commaSep, (*lineIt).value().asString() );
+          const QStringList categories = splitString( commaSep, (*lineIt).value().toString() );
           addr.setCategories( categories );
         }
 
@@ -411,18 +411,18 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // EMAIL
         else if ( identifier == "email" ) {
           const QStringList types = (*lineIt).parameters( "type" );
-          addr.insertEmail( (*lineIt).value().asString(), types.findIndex( "PREF" ) != -1 );
+          addr.insertEmail( (*lineIt).value().toString(), types.findIndex( "PREF" ) != -1 );
         }
 
         // FN
         else if ( identifier == "fn" )
-          addr.setFormattedName( (*lineIt).value().asString() );
+          addr.setFormattedName( (*lineIt).value().toString() );
 
         // GEO
         else if ( identifier == "geo" ) {
           Geo geo;
 
-          const QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
+          const QStringList geoParts = QStringList::split( ';', (*lineIt).value().toString(), true );
           geo.setLatitude( geoParts[ 0 ].toFloat() );
           geo.setLongitude( geoParts[ 1 ].toFloat() );
 
@@ -446,7 +446,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           KABC::Address::List::Iterator it;
           for ( it = addressList.begin(); it != addressList.end(); ++it ) {
             if ( (*it).type() == type ) {
-              (*it).setLabel( (*lineIt).value().asString() );
+              (*it).setLabel( (*lineIt).value().toString() );
               addr.insertAddress( *it );
               available = true;
               break;
@@ -455,7 +455,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           if ( !available ) { // a standalone LABEL tag
             KABC::Address address( type );
-            address.setLabel( (*lineIt).value().asString() );
+            address.setLabel( (*lineIt).value().toString() );
             addr.insertAddress( address );
           }
         }
@@ -466,11 +466,11 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // MAILER
         else if ( identifier == "mailer" )
-          addr.setMailer( (*lineIt).value().asString() );
+          addr.setMailer( (*lineIt).value().toString() );
 
         // N
         else if ( identifier == "n" ) {
-          const QStringList nameParts = splitString( semicolonSep, (*lineIt).value().asString() );
+          const QStringList nameParts = splitString( semicolonSep, (*lineIt).value().toString() );
           if ( nameParts.count() > 0 )
             addr.setFamilyName( nameParts[ 0 ] );
           if ( nameParts.count() > 1 )
@@ -485,19 +485,19 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // NAME
         else if ( identifier == "name" )
-          addr.setName( (*lineIt).value().asString() );
+          addr.setName( (*lineIt).value().toString() );
 
         // NICKNAME
         else if ( identifier == "nickname" )
-          addr.setNickName( (*lineIt).value().asString() );
+          addr.setNickName( (*lineIt).value().toString() );
 
         // NOTE
         else if ( identifier == "note" )
-          addr.setNote( (*lineIt).value().asString() );
+          addr.setNote( (*lineIt).value().toString() );
 
         // ORGANIZATION
         else if ( identifier == "org" )
-          addr.setOrganization( (*lineIt).value().asString() );
+          addr.setOrganization( (*lineIt).value().toString() );
 
         // PHOTO
         else if ( identifier == "photo" )
@@ -505,19 +505,19 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // PROID
         else if ( identifier == "prodid" )
-          addr.setProductId( (*lineIt).value().asString() );
+          addr.setProductId( (*lineIt).value().toString() );
 
         // REV
         else if ( identifier == "rev" )
-          addr.setRevision( parseDateTime( (*lineIt).value().asString() ) );
+          addr.setRevision( parseDateTime( (*lineIt).value().toString() ) );
 
         // ROLE
         else if ( identifier == "role" )
-          addr.setRole( (*lineIt).value().asString() );
+          addr.setRole( (*lineIt).value().toString() );
 
         // SORT-STRING
         else if ( identifier == "sort-string" )
-          addr.setSortString( (*lineIt).value().asString() );
+          addr.setSortString( (*lineIt).value().toString() );
 
         // SOUND
         else if ( identifier == "sound" )
@@ -526,7 +526,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // TEL
         else if ( identifier == "tel" ) {
           PhoneNumber phone;
-          phone.setNumber( (*lineIt).value().asString() );
+          phone.setNumber( (*lineIt).value().toString() );
 
           int type = 0;
 
@@ -541,12 +541,12 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // TITLE
         else if ( identifier == "title" )
-          addr.setTitle( (*lineIt).value().asString() );
+          addr.setTitle( (*lineIt).value().toString() );
 
         // TZ
         else if ( identifier == "tz" ) {
           TimeZone tz;
-          const QString date = (*lineIt).value().asString();
+          const QString date = (*lineIt).value().toString();
 
           int hours = date.mid( 1, 2).toInt();
           int minutes = date.mid( 4, 2 ).toInt();
@@ -559,17 +559,17 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // UID
         else if ( identifier == "uid" )
-          addr.setUid( (*lineIt).value().asString() );
+          addr.setUid( (*lineIt).value().toString() );
 
         // URL
         else if ( identifier == "url" )
-          addr.setUrl( KUrl( (*lineIt).value().asString() ) );
+          addr.setUrl( KUrl( (*lineIt).value().toString() ) );
 
         // X-
         else if ( identifier.startsWith( "x-" ) ) {
           const QString key = (*lineIt).identifier().mid( 2 );
           int dash = key.find( "-" );
-          addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().asString() );
+          addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().toString() );
         }
       }
     }
@@ -633,7 +633,7 @@ Picture VCardTool::parsePicture( const VCardLine &line )
     pic.setData( img );
   } else if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).toLower() == "uri" )
-      pic.setUrl( line.value().asString() );
+      pic.setUrl( line.value().toString() );
   }
 
   if ( params.findIndex( "type" ) != -1 )
@@ -674,7 +674,7 @@ Sound VCardTool::parseSound( const VCardLine &line )
     snd.setData( line.value().asByteArray() );
   else if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).toLower() == "uri" )
-      snd.setUrl( line.value().asString() );
+      snd.setUrl( line.value().toString() );
   }
 
 /* TODO: support sound types
@@ -711,7 +711,7 @@ Key VCardTool::parseKey( const VCardLine &line )
   if ( params.findIndex( "encoding" ) != -1 )
     key.setBinaryData( line.value().asByteArray() );
   else
-    key.setTextData( line.value().asString() );
+    key.setTextData( line.value().toString() );
 
   if ( params.findIndex( "type" ) != -1 ) {
     if ( line.parameter( "type" ).toLower() == "x509" )
@@ -753,11 +753,11 @@ Secrecy VCardTool::parseSecrecy( const VCardLine &line )
 {
   Secrecy secrecy;
 
-  if ( line.value().asString().toLower() == "public" )
+  if ( line.value().toString().toLower() == "public" )
     secrecy.setType( Secrecy::Public );
-  if ( line.value().asString().toLower() == "private" )
+  if ( line.value().toString().toLower() == "private" )
     secrecy.setType( Secrecy::Private );
-  if ( line.value().asString().toLower() == "confidential" )
+  if ( line.value().toString().toLower() == "confidential" )
     secrecy.setType( Secrecy::Confidential );
 
   return secrecy;
@@ -785,7 +785,7 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
   QString value( str );
 
   int start = 0;
-  int pos = value.find( sep, start );
+  int pos = value.indexOf( sep, start );
 
   while ( pos != -1 ) {
     if ( pos == 0 || value[ pos - 1 ] != '\\' ) {
@@ -795,13 +795,13 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
         list << QString();
 
       start = pos + 1;
-      pos = value.find( sep, start );
+      pos = value.indexOf( sep, start );
     } else {
       if ( pos != 0 ) {
         value.replace( pos - 1, 2, sep );
-        pos = value.find( sep, pos );
+        pos = value.indexOf( sep, pos );
       } else
-        pos = value.find( sep, pos + 1 );
+        pos = value.indexOf( sep, pos + 1 );
     }
   }
 

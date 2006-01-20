@@ -39,11 +39,9 @@ VCardFormat::~VCardFormat()
 
 bool VCardFormat::load( Addressee &addressee, QFile *file )
 {
-  QString data;
+  QByteArray data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
+  data = file->readAll();
 
   VCardConverter converter;
   Addressee::List l = converter.parseVCards( data );
@@ -58,11 +56,9 @@ bool VCardFormat::load( Addressee &addressee, QFile *file )
 
 bool VCardFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
-  QString data;
+  QByteArray data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
+  data = file->readAll();
 
   VCardConverter converter;
 
@@ -87,9 +83,9 @@ void VCardFormat::save( const Addressee &addressee, QFile *file )
 
   vcardlist.append( addressee );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << converter.createVCards( vcardlist );
+  QByteArray data = converter.createVCards( vcardlist );
+
+  file->write( data );
 }
 
 void VCardFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
@@ -103,9 +99,9 @@ void VCardFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
     vcardlist.append( *it );
   }
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << converter.createVCards( vcardlist );
+  QByteArray data = converter.createVCards( vcardlist );
+
+  file->write( data );
 }
 
 bool VCardFormat::checkFormat( QFile *file ) const
