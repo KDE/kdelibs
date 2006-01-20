@@ -26,22 +26,21 @@
 
 int main( int argc, char *argv[] )
 {
-	QColor color;
-
 	KLocale::setMainCatalog("kdelibs");
 	QApplication::setColorMode( QApplication::CustomColor );
 	KAboutData about("KColorDialogTest", "KColorDialogTest", "version");
 	KCmdLineArgs::init(argc, argv, &about);
+	KApplication::disableAutoDcopRegistration();
 
 	KApplication a;
 
-        KConfig aConfig;
-        aConfig.setGroup( "KColorDialog-test" );
-    
-	color = aConfig.readColorEntry( "Chosen" );
+	KConfig aConfig;
+	aConfig.setGroup( "KColorDialog-test" );
+
+	QColor color = aConfig.readColorEntry( "Chosen" );
 	int nRet = KColorDialog::getColor( color, Qt::red /*testing default color*/ );
 	aConfig.writeEntry( "Chosen", color );
-	
+
 	return nRet;
 }
 

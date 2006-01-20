@@ -38,13 +38,16 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	ktextedittest kmainwindowtest kmainwindowrestoretest \
 	kactiontest kdatetimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
-	ksqueezedtextlabeltest \
+	ksqueezedtextlabeltest kcommandtest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
 	khboxtest kbugreporttest kdialogtest ksyntaxhighlightertest kactivelabeltest
 
+# List of tests to run automatically from "make check"
+TESTS = kcommandtest
+
 METASOURCES = AUTO
 
-LDADD = ../libkdeui.la
+LDADD = ../libkdeui.la -lQtTest_debug
 
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
@@ -105,3 +108,5 @@ kdialogtest_SOURCES = kdialogtest.cpp
 kactivelabeltest_SOURCES = kactivelabeltest.cpp
 ksyntaxhighlightertest_SOURCES = ksyntaxhighlightertest.cpp
 
+# Automated unit tests
+kcommandtest_SOURCES = kcommandtest.cpp
