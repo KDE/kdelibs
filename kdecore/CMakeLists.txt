@@ -361,13 +361,9 @@ kde4_footer()
 #	$(mkinstalldirs) $(DESTDIR)$(includedir)/kio
 #	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/knotify
 #	$(INSTALL_DATA) $(srcdir)/eventsrc $(DESTDIR)$(kde_datadir)/knotify/eventsrc
-#	$(INSTALL_DATA) $(srcdir)/kmdcodec_compat.h $(DESTDIR)$(includedir)/kio/kmdcodec.h
 #	rm -f "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 #	rm -f $(DESTDIR)$(kde_confdir)/colors/Web
 #	rm -f $(DESTDIR)$(kde_confdir)/colors/Royal
-#
-#uninstall-local:
-#	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
 #
 ## If you add a color palette file here, please change kdelibs/kdeui/kcolordialog.cpp too to allow to translate the name
 #colors_DATA = 40.colors Web.colors Royal.colors Rainbow.colors
@@ -375,7 +371,7 @@ kde4_footer()
 #
 #EXTRA_DIST = generate_keys.sh $(kdebug_DATA) \
 #	DESIGN.COLOR KCONFIG_DESIGN eventsrc \
-#	kentities.c kentities.gperf makeentities kmdcodec_compat.h \
+#	kentities.c kentities.gperf makeentities \
 #	all_languages.desktop
 #
 #kcharsets.lo: kentities.c

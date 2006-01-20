@@ -257,7 +257,7 @@
 7029        kssl
 7030        kio (KEMailSettings)
 7031        KImageIO
-7032        kio (KURLCompletion)
+7032        kio (KUrlCompletion)
 7033        KFileMetaInfo
 7034        KFileMetainfo (plugins)
 7040        KZip

@@ -1,3 +1,5 @@
+ -- the information in this file is rather outdated, use svn logs to find more recent info --
+
 Matthias Kalle Dalheimer <kalle@kde.org>:
 classes KConfig, KTextStream, KColorSet, KApplication
 automake, autoconf, maintenance
@@ -9,7 +11,7 @@ Martynas Kunigelis <algikun@santaka.ktu.lt>:
 KProgress class
 
 Steffen Hansen <stefh@dit.ou.dk>:
-KURL class
+KUrl class
 
 Torben Weis <weis@stud.uni-frankfurt.de>
 DnD stuff, KSocket and KServerSocket classes, KPixmap
@@ -19,7 +21,7 @@ Read and write numerical config entries, KPanner, KTabControl,
 KPopupMenu, KMessageBox, KEdit widgets. 
 
 Martin Jones <mjones@powerup.com.au>
-Bugfixes in KPixmap and KURL, KColorDialog, KSelector
+Bugfixes in KPixmap and KUrl, KColorDialog, KSelector
 
 Keith Brown <kbrown@pdq.net>
 KTreeList class
@@ -43,7 +45,7 @@ Matthias Ettrich <ettrich@kde.org>
 KWM, Changes to KApplication and KIconLoader
 
 Stephan Kulow <coolo@kde.org>
-heavy modifications to KURL, autoconf and automake stuff
+heavy modifications to KUrl, autoconf and automake stuff
 
 Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
 KCharset* classes

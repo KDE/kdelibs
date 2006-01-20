@@ -1674,7 +1674,7 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KRestrictedLine", "text" );
     kdeMap->insert( "KTextBrowser", "source" );
     kdeMap->insert( "KTextEdit", "text" );
-    kdeMap->insert( "KURLRequester", "url" );
+    kdeMap->insert( "KUrlRequester", "url" );
     kdeMap->insert( "KPasswordEdit", "password" );
     kdeMap->insert( "KIntNumInput", "value" );
     kdeMap->insert( "KIntSpinBox", "value" );

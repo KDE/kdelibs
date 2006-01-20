@@ -42,7 +42,7 @@ class KCompletionMatches;
  *
  * This class offers easy use of "auto-completion", "manual-completion" or
  * "shell completion" on QString objects. A common use is completing filenames
- * or URLs (see KURLCompletion()).
+ * or URLs (see KUrlCompletion()).
  * But it is not limited to URL-completion -- everything should be completable!
  * The user should be able to complete email-addresses, telephone-numbers,
  * commands, SQL queries, ...
@@ -121,7 +121,7 @@ class KCompletionMatches;
  *
  * You may inherit from KCompletion and override makeCompletion() in
  * special cases (like reading directories/urls and then supplying the
- * contents to KCompletion, as KURLCompletion does), but generally, this is
+ * contents to KCompletion, as KUrlCompletion does), but generally, this is
  * not necessary.
  *
  *
@@ -240,7 +240,7 @@ public:
      * @see setItems
      */
     QStringList items() const;
-    
+
     /**
      * Returns true when the completion object contains no entries.
      */
@@ -500,7 +500,7 @@ protected:
      * This method is called after a completion is found and before the
      * matching string is emitted. You can override this method to modify the
      * string that will be emitted.
-     * This is necessary e.g. in KURLCompletion(), where files with spaces
+     * This is necessary e.g. in KUrlCompletion(), where files with spaces
      * in their names are shown escaped ("filename\ with\ spaces"), but stored
      * unescaped inside KCompletion.
      * Never delete that pointer!
@@ -684,15 +684,15 @@ public:
      * Destructor.
      */
     virtual ~KCompletionBase();
-    
+
     /**
      * Returns a pointer to the current completion object.
      *
      * If the completion object does not exist, it is automatically created and
      * by default handles all the completion signals internally unless @p hsig
      * is set to false. It is also automatically destroyed when the destructor
-     * is called. You can change this default behavior using the 
-     * @ref setAutoDeleteCompletionObject and @ref setHandleSignals member 
+     * is called. You can change this default behavior using the
+     * @ref setAutoDeleteCompletionObject and @ref setHandleSignals member
      * functions.
      *
      * See also @ref compObj.
@@ -701,12 +701,12 @@ public:
      * @return a pointer the completion object.
      */
     KCompletion* completionObject( bool hsig = true );
-    
+
     /**
      * Sets up the completion object to be used.
      *
      * This method assigns the completion object and sets it up to automatically
-     * handle the completion and rotation signals internally.  You should use 
+     * handle the completion and rotation signals internally.  You should use
      * this function if you want to share one completion object among your
      * widgets or need to use a customized completion object.
      *

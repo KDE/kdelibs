@@ -58,7 +58,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
-	kde_file.h ktimezones.h ktzfiletimezone.h kmdcodec.h kmath.h \
+	kde_file.h ktimezones.h ktzfiletimezone.h kmath.h \
 	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h \
 	kdedmodule.h
 
@@ -136,16 +136,11 @@ kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(kde_locale)
 	$(INSTALL_DATA) $(srcdir)/all_languages.desktop $(DESTDIR)$(kde_locale)/all_languages
-	$(mkinstalldirs) $(DESTDIR)$(includedir)/kio
 	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/knotify
 	$(INSTALL_DATA) $(srcdir)/eventsrc $(DESTDIR)$(kde_datadir)/knotify/eventsrc
-	$(INSTALL_DATA) $(srcdir)/kmdcodec_compat.h $(DESTDIR)$(includedir)/kio/kmdcodec.h
 	rm -f "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 	rm -f $(DESTDIR)$(kde_confdir)/colors/Web
 	rm -f $(DESTDIR)$(kde_confdir)/colors/Royal
-
-uninstall-local:
-	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
 
 # If you add a color palette file here, please change kdelibs/kdeui/kcolordialog.cpp too to allow to translate the name
 colors_DATA = 40.colors Web.colors Royal.colors Rainbow.colors
@@ -153,7 +148,7 @@ colorsdir = $(kde_confdir)/colors
 
 EXTRA_DIST = generate_keys.sh $(kdebug_DATA) \
 	DESIGN.COLOR KCONFIG_DESIGN eventsrc \
-	kentities.c kentities.gperf makeentities kmdcodec_compat.h \
+	kentities.c kentities.gperf makeentities \
 	all_languages.desktop
 
 kcharsets.lo: kentities.c
