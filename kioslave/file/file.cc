@@ -1213,8 +1213,8 @@ void FileProtocol::listDir( const KURL& url)
                              *it /* we can use the filename as relative path*/, 
                              entry, 2, true ) )
           listEntry( entry, false);
-        else
-          ;//Well, this should never happen... but with wrong encoding names
+        //else
+        // ;//Well, this should never happen... but with wrong encoding names
     }
 
     listEntry( entry, true ); // ready
