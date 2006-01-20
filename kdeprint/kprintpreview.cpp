@@ -257,10 +257,11 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			dlg.openFile(file);
 			return dlg.exec();
 		}
-		else
+		else 
+		{
 			// do nothing at that point: try to use the other way around by
 			// using an external PS viewer if possible
-			;
+		}
 	}
 
 	// Either the PS viewer component was not found, or an external
