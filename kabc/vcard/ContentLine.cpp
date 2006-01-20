@@ -270,8 +270,9 @@ ContentLine::_assemble()
 	vDebug("Adding value");
 	if (value_ != 0)
 		line += ":" + value_->asString();
-	else
+	else {
 		vDebug("No value");
+        }
 
 	// Quote newlines
 	line = line.replace( QRegExp( "\n" ), "\\n" );
