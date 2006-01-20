@@ -1,12 +1,23 @@
 KNewStuff library - application data sharing framework for KDE
 
+++++++++++++++++++++++++++++++++++
+KDE 4 intermezzo:
+- see branches/work/knewstuff2 for DXS extensions and new dialog
+- todo: factor out downloaddialog's engine code
+- todo: ability to read in existing meta-data files to solve
+        problem with distributor's packages
+- todo: d-pointers for all public classes
+- todo: non-archive md5sum (sha1?) and signature strings
+- todo: utf-8 conversion on whole data after finish, not on chunks
+++++++++++++++++++++++++++++++++++
+
 KNewStuff implements the "Get Hot New Stuff" (GHNS) architecture and
 provides KDE applications with easy-to-use upload and download mechanisms,
 with optional popularity counters, ratings, digital signatures, uncompression
 and post-installation DCOP/scripting hooks.
 
 * GHNS Standard and related software
-  http://ghns.berlios.de/
+  http://ghns.freedesktop.org/
 
 * Documentation
 - API docs
@@ -26,25 +37,13 @@ capabilities, as well as a web frontend, check out the Hotstuff scripts:
 -> http://www.kstuff.org/source/index.php?p=cvs
 For testing, feel free to use the kstuff.org infrastructure, as it is up and
 running 24x7.
+Note, that a dedicated GHNS server is now available and will be providing
+GHNS and DXS services for arbitrary projects ~ March 2006.
+(See new.kstuff.org)
 
 * Future
-Immediate plans:
-- merge download dialog engine functionality into the engine class
-- incremental updates of directories,
-  including cache
-- after installation, return QStringList of installed items so no scanning
-  will be necessary anymore
-- how to "fake" installations? (suggestions from TSDgeos)
-  knewstuff should know about already installed items
-Future plans:
-- kick-ass web interface with history and contributions
-- integration with KDE SOAP messaging framework and KWSDL to access DXS
-- hm.... :-)
+Finishing KDE 4 porting and DXS integration, and the items listed above,
+are now the most urgent tasks.
 
-Josef Spillner, 01.04.2004, last updated 07.06.2005
-
-Add d pointers to ALL public classes for KDE 4 or maintaining binary
-compatibility is a nightmare. 12/3/05.
-
-Rich.
+Josef Spillner, 01.04.2004, last updated 20.01.2006
 
