@@ -33,8 +33,6 @@ struct itimerval {
 	struct timeval it_value;    /**< current value*/
 };
 
-#include <../include/time.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif

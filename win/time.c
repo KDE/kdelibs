@@ -18,12 +18,19 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <sys/time.h>
 #include <windows.h>
+#include <kdelibs_export.h>
+
+#include <time.h>
+#include <sys/time.h>
 
 #define KDE_SECONDS_SINCE_1601	11644473600LL
 #define KDE_USEC_IN_SEC			1000000LL
 
+
+//
+// sys/time.h fnctions
+//
 KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, struct timezone *__t)
 {
 	union {
@@ -53,9 +60,19 @@ KDEWIN32_EXPORT int settimeofday(const struct timeval *__p, const struct timezon
 	return 1;
 }
 
+//
+// time.h functions
+//
 KDEWIN32_EXPORT struct tm* localtime_r(const time_t *t,struct tm *p)
 {
-	*p = *localtime(t);
+	// CE: thread safe on windows - returns a ptr inside TLS afaik
+	*p = *localtime( t );
 	return p; 
 }
 
+KDEWIN32_EXPORT struct tm* gmtime_r(const time_t *t, struct tm *p)
+{
+	// CE: thread safe on windows - returns a ptr inside TLS afaik
+	*p = *gmtime( t );
+	return p;
+}

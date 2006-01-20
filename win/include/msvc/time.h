@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2005  Ralf Habacker <ralf.habacker@freenet.de>
+   Copyright (C) 2006 Christian Ehrlicher <ch.ehrlicher@gmx.de>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,11 +16,11 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #ifndef KDE_TIME_H
 #define KDE_TIME_H
 
-#include <sys/types.h>
-#include_next <time.h>
+#include <../include/time.h>
 
 #ifdef __cplusplus
 extern "C" {
