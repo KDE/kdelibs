@@ -24,7 +24,7 @@ KActiveLabelTest::KActiveLabelTest(QWidget *parent)
   QVBoxLayout *layout = new QVBoxLayout( this );
 
   KActiveLabel *label = new KActiveLabel( this );
-  label->setText( "That's a small test text ;)" );
+  label->setText( "That's a small test text ;) <a href=\"whatsthis:click me if you can\">Click me</a>" );
 
   layout->addWidget( label );
 }
