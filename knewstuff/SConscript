@@ -53,9 +53,6 @@ obj.execute()
 
 env.bksys_insttype('KDEINCLUDE','knewstuff',kns_headers)
 
-env.bksys_insttype('KDEDATA', 'knewstuff', 'types')
-
-
 """Unhandled Defines 
 KDE_ICON = AUTO
 khotnewstuff_LDADD = libknewstuff.la

@@ -26,16 +26,13 @@ ghns_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 ghns_LDADD   = libknewstuff.la
 ghns_SOURCES = ghns.cpp
 
-knewstuffdir = $(kde_datadir)/knewstuff
-knewstuff_DATA = types
-
 kde_conf_DATA = khotnewstuffrc
 
 knsdir = $(includedir)/knewstuff
 kns_HEADERS = downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h
 noinst_HEADERS = testnewstuff.h ghns.h security.h
 
-KDE_ICON=AUTO
+KDE_ICON = AUTO
 
 include ../admin/Doxyfile.am
 

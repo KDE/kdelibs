@@ -76,7 +76,6 @@ endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/knewstuff FILES types )
 install_files( ${KDE4_CONFIG_DIR} FILES khotnewstuffrc )
 
 kde4_install_icons( hicolor )

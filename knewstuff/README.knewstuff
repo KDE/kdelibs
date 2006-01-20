@@ -9,6 +9,9 @@ KDE 4 intermezzo:
 - todo: d-pointers for all public classes
 - todo: non-archive md5sum (sha1?) and signature strings
 - todo: utf-8 conversion on whole data after finish, not on chunks
+- todo: libtool soname bump (2:0:0)
+- todo: support for new GHNS formats
+- todo: remove 'knewstuff' default directory (deprecate MasterServer?)
 ++++++++++++++++++++++++++++++++++
 
 KNewStuff implements the "Get Hot New Stuff" (GHNS) architecture and
