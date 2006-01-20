@@ -47,7 +47,7 @@ public:
   virtual void      setTime(const QTime& qtime);
   virtual void      setDateTime(const QDateTime& qdatetime);
 
-protected slots:
+protected Q_SLOTS:
 
 private:
    KPushButton *_ok, *_cancel;

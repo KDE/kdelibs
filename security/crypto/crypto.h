@@ -232,7 +232,7 @@ public:
   bool loadCiphers();
 #endif
 
-public slots:
+public Q_SLOTS:
   void configChanged();
 
   void slotGeneratePersonal();

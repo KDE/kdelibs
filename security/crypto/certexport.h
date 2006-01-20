@@ -38,7 +38,7 @@ public:
 
   void setCertificate(KSSLCertificate *c);
 
-protected slots:
+protected Q_SLOTS:
   void slotExport();
   void slotChoose();
   void slotTextChanged(const QString &);
