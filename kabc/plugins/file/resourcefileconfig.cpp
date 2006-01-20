@@ -39,8 +39,7 @@ using namespace KABC;
 ResourceFileConfig::ResourceFileConfig( QWidget* parent )
     : ConfigWidget( parent )
 {
-  QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0,
-      KDialog::spacingHint() );
+  QGridLayout *mainLayout = new QGridLayout( this );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
   mFormatBox = new KComboBox( this );
@@ -64,7 +63,7 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent )
     FormatInfo info = factory->info( *it );
     if ( !info.isNull() ) {
       mFormatTypes << (*it);
-      mFormatBox->insertItem( info.nameLabel );
+      mFormatBox->addItem( info.nameLabel );
     }
   }
 
@@ -86,7 +85,7 @@ void ResourceFileConfig::loadSettings( KRES::Resource *res  )
     return;
   }
 
-  mFormatBox->setCurrentItem( mFormatTypes.findIndex( resource->format() ) );
+  mFormatBox->setCurrentItem( mFormatTypes.indexOf( resource->format() ) );
 
   mFileNameEdit->setURL( resource->fileName() );
   if ( mFileNameEdit->url().isEmpty() )
@@ -103,7 +102,7 @@ void ResourceFileConfig::saveSettings( KRES::Resource *res )
   }
 
   if ( !mInEditMode )
-    resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
+    resource->setFormat( mFormatTypes[ mFormatBox->currentIndex() ] );
 
   resource->setFileName( mFileNameEdit->url() );
 }

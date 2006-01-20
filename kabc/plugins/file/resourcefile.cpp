@@ -347,7 +347,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/logos/" ) + addr.uid() ) );
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/sounds/" ) + addr.uid() ) );
 
-  mAddrMap.erase( addr.uid() );
+  mAddrMap.remove( addr.uid() );
 }
 
 void ResourceFile::downloadFinished( KIO::Job* )

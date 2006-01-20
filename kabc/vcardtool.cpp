@@ -34,7 +34,7 @@ static bool needsEncoding( const QString &value )
 {
   uint length = value.length();
   for ( uint i = 0; i < length; ++i ) {
-    char c = value.at( i ).latin1();
+    char c = value.at( i ).toLatin1();
     if ( (c < 33 || c > 126) && c != ' ' && c != '=' )
       return true;
   }
@@ -118,7 +118,7 @@ QByteArray VCardTool::createVCards( const Addressee::List& list, VCard::Version 
       bool hasLabel = !(*it).label().isEmpty();
       QMap<QString, int>::ConstIterator typeIt;
       for ( typeIt = mAddressTypeMap.constBegin(); typeIt != mAddressTypeMap.constEnd(); ++typeIt ) {
-        if ( typeIt.data() & (*it).type() ) {
+        if ( typeIt.value() & (*it).type() ) {
           adrLine.addParameter( "TYPE", typeIt.key() );
           if ( hasLabel )
             labelLine.addParameter( "TYPE",  typeIt.key() );
@@ -276,7 +276,7 @@ QByteArray VCardTool::createVCards( const Addressee::List& list, VCard::Version 
 
       QMap<QString, int>::ConstIterator typeIt;
       for ( typeIt = mPhoneTypeMap.constBegin(); typeIt != mPhoneTypeMap.constEnd(); ++typeIt ) {
-        if ( typeIt.data() & (*phoneIt).type() )
+        if ( typeIt.value() & (*phoneIt).type() )
           line.addParameter( "TYPE", typeIt.key() );
       }
 
@@ -322,8 +322,8 @@ QByteArray VCardTool::createVCards( const Addressee::List& list, VCard::Version 
     // X-
     const QStringList customs = (*addrIt).customs();
     for ( strIt = customs.begin(); strIt != customs.end(); ++strIt ) {
-      QString identifier = "X-" + (*strIt).left( (*strIt).find( ":" ) );
-      QString value = (*strIt).mid( (*strIt).find( ":" ) + 1 );
+      QString identifier = "X-" + (*strIt).left( (*strIt).indexOf( ":" ) );
+      QString value = (*strIt).mid( (*strIt).indexOf( ":" ) + 1 );
       if ( value.isEmpty() )
         continue;
 
@@ -411,7 +411,7 @@ Addressee::List VCardTool::parseVCards( const QByteArray& vcard )
         // EMAIL
         else if ( identifier == "email" ) {
           const QStringList types = (*lineIt).parameters( "type" );
-          addr.insertEmail( (*lineIt).value().toString(), types.findIndex( "PREF" ) != -1 );
+          addr.insertEmail( (*lineIt).value().toString(), types.contains( "PREF" ) );
         }
 
         // FN
@@ -422,7 +422,7 @@ Addressee::List VCardTool::parseVCards( const QByteArray& vcard )
         else if ( identifier == "geo" ) {
           Geo geo;
 
-          const QStringList geoParts = QStringList::split( ';', (*lineIt).value().toString(), true );
+          const QStringList geoParts = (*lineIt).value().toString().split( ';', QString::KeepEmptyParts );
           geo.setLatitude( geoParts[ 0 ].toFloat() );
           geo.setLongitude( geoParts[ 1 ].toFloat() );
 
@@ -568,7 +568,7 @@ Addressee::List VCardTool::parseVCards( const QByteArray& vcard )
         // X-
         else if ( identifier.startsWith( "x-" ) ) {
           const QString key = (*lineIt).identifier().mid( 2 );
-          int dash = key.find( "-" );
+          int dash = key.indexOf( "-" );
           addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().toString() );
         }
       }
@@ -584,11 +584,11 @@ QDateTime VCardTool::parseDateTime( const QString &str )
 {
   QDateTime dateTime;
 
-  if ( str.find( '-' ) == -1 ) { // is base format (yyyymmdd)
+  if ( str.indexOf( '-' ) == -1 ) { // is base format (yyyymmdd)
     dateTime.setDate( QDate( str.left( 4 ).toInt(), str.mid( 4, 2 ).toInt(),
                              str.mid( 6, 2 ).toInt() ) );
 
-    if ( str.find( 'T' ) ) // has time information yyyymmddThh:mm:ss
+    if ( str.indexOf( 'T' ) ) // has time information yyyymmddThh:mm:ss
       dateTime.setTime( QTime( str.mid( 11, 2 ).toInt(), str.mid( 14, 2 ).toInt(),
                                str.mid( 17, 2 ).toInt() ) );
 
@@ -596,7 +596,7 @@ QDateTime VCardTool::parseDateTime( const QString &str )
     dateTime.setDate( QDate( str.left( 4 ).toInt(), str.mid( 5, 2 ).toInt(),
                              str.mid( 8, 2 ).toInt() ) );
 
-    if ( str.find( 'T' ) ) // has time information yyyy-mm-ddThh:mm:ss
+    if ( str.indexOf( 'T' ) ) // has time information yyyy-mm-ddThh:mm:ss
       dateTime.setTime( QTime( str.mid( 11, 2 ).toInt(), str.mid( 14, 2 ).toInt(),
                                str.mid( 17, 2 ).toInt() ) );
   }
@@ -627,16 +627,16 @@ Picture VCardTool::parsePicture( const VCardLine &line )
   Picture pic;
 
   const QStringList params = line.parameterList();
-  if ( params.findIndex( "encoding" ) != -1 ) {
+  if ( params.contains( "encoding" ) ) {
     QImage img;
-    img.loadFromData( line.value().asByteArray() );
+    img.loadFromData( line.value().toByteArray() );
     pic.setData( img );
-  } else if ( params.findIndex( "value" ) != -1 ) {
+  } else if ( params.contains( "value" ) ) {
     if ( line.parameter( "value" ).toLower() == "uri" )
       pic.setUrl( line.value().toString() );
   }
 
-  if ( params.findIndex( "type" ) != -1 )
+  if ( params.contains( "type" ) )
     pic.setType( line.parameter( "type" ) );
 
   return pic;
@@ -670,9 +670,9 @@ Sound VCardTool::parseSound( const VCardLine &line )
   Sound snd;
 
   const QStringList params = line.parameterList();
-  if ( params.findIndex( "encoding" ) != -1 )
-    snd.setData( line.value().asByteArray() );
-  else if ( params.findIndex( "value" ) != -1 ) {
+  if ( params.contains( "encoding" ) )
+    snd.setData( line.value().toByteArray() );
+  else if ( params.contains( "value" ) ) {
     if ( line.parameter( "value" ).toLower() == "uri" )
       snd.setUrl( line.value().toString() );
   }
@@ -708,12 +708,12 @@ Key VCardTool::parseKey( const VCardLine &line )
   Key key;
 
   const QStringList params = line.parameterList();
-  if ( params.findIndex( "encoding" ) != -1 )
-    key.setBinaryData( line.value().asByteArray() );
+  if ( params.contains( "encoding" ) )
+    key.setBinaryData( line.value().toByteArray() );
   else
     key.setTextData( line.value().toString() );
 
-  if ( params.findIndex( "type" ) != -1 ) {
+  if ( params.contains( "type" ) ) {
     if ( line.parameter( "type" ).toLower() == "x509" )
       key.setType( Key::X509 );
     else if ( line.parameter( "type" ).toLower() == "pgp" )

@@ -18,18 +18,17 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QGroupBox>
 #include <QLayout>
 #include <QPushButton>
-#include <QGroupBox>
 #include <QRegExp>
 
-#include <klocale.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "stdaddressbook.h"
 
 #include "addresseedialog.h"
-#include "addresseedialog.moc"
 
 using namespace KABC;
 
@@ -46,7 +45,7 @@ QString AddresseeItem::key( int column, bool ) const
   if (column == Email) {
     QString value = text(Email);
     QRegExp emailRe("<\\S*>");
-    int match = emailRe.search(value);
+    int match = emailRe.indexIn(value);
     if (match > -1)
       value = value.mid(match + 1, emailRe.matchedLength() - 2);
 
@@ -270,3 +269,5 @@ void AddresseeDialog::addressBookChanged()
 {
   loadAddressBook();
 }
+
+#include "addresseedialog.moc"

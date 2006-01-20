@@ -47,8 +47,7 @@ LdapConfigWidget::LdapConfigWidget( QWidget* parent,
 {
   mProg = 0;
   mFeatures = W_ALL;
-  mainLayout = new QGridLayout( this, 12, 4, 0,
-      KDialog::spacingHint() );
+  mainLayout = new QGridLayout( this );
 }
 
 LdapConfigWidget::LdapConfigWidget( LdapConfigWidget::WinFlags flags, QWidget* parent,
@@ -56,8 +55,7 @@ LdapConfigWidget::LdapConfigWidget( LdapConfigWidget::WinFlags flags, QWidget* p
 {
   mFeatures = flags;
   mProg = 0;
-  mainLayout = new QGridLayout( this, 12, 4, 0,
-      KDialog::spacingHint() );
+  mainLayout = new QGridLayout( this );
   initWidget();
 }
 
@@ -83,55 +81,56 @@ void LdapConfigWidget::initWidget()
     mUser->setObjectName( "kcfg_ldapuser" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mUser, row, row, 1, 3 );
+    mainLayout->addWidget( mUser, row, row, 1, 3 );
     row++;
   }
 
   if ( mFeatures & W_BINDDN ) {
     label = new QLabel( i18n( "Bind DN:" ), this );
-    mBindDN = new KLineEdit( this);
+    mBindDN = new KLineEdit( this );
     mBindDN->setObjectName( "kcfg_ldapbinddn" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mBindDN, row, row, 1, 3 );
+    mainLayout->addWidget( mBindDN, row, row, 1, 3 );
     row++;
   }
 
   if ( mFeatures & W_REALM ) {
     label = new QLabel( i18n( "Realm:" ), this );
-    mRealm = new KLineEdit( this);
+    mRealm = new KLineEdit( this );
     mRealm->setObjectName("kcfg_ldaprealm" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mRealm, row, row, 1, 3 );
+    mainLayout->addWidget( mRealm, row, row, 1, 3 );
     row++;
   }
 
   if ( mFeatures & W_PASS ) {
     label = new QLabel( i18n( "Password:" ), this );
-    mPassword = new KLineEdit( this);
+    mPassword = new KLineEdit( this );
     mPassword->setObjectName( "kcfg_ldappassword" );
     mPassword->setEchoMode( KLineEdit::Password );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mPassword, row, row, 1, 3 );
+    mainLayout->addWidget( mPassword, row, row, 1, 3 );
     row++;
   }
 
   if ( mFeatures & W_HOST ) {
     label = new QLabel( i18n( "Host:" ), this );
-    mHost = new KLineEdit( this);
+    mHost = new KLineEdit( this );
     mHost->setObjectName( "kcfg_ldaphost" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mHost, row, row, 1, 3 );
+    mainLayout->addWidget( mHost, row, row, 1, 3 );
     row++;
   }
 
   col = 0;
   if ( mFeatures & W_PORT ) {
     label = new QLabel( i18n( "Port:" ), this );
-    mPort = new QSpinBox( 0, 65535, 1, this);
+    mPort = new QSpinBox( this );
+    mPort->setRange( 0, 65535 );
     mPort->setObjectName("kcfg_ldapport" );
     mPort->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mPort->setValue( 389 );
@@ -143,7 +142,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFeatures & W_VER ) {
     label = new QLabel( i18n( "LDAP version:" ), this );
-    mVer = new QSpinBox( 2, 3, 1, this);
+    mVer = new QSpinBox( this );
+    mVer->setRange( 2, 3 );
     mVer->setObjectName( "kcfg_ldapver" );
     mVer->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mVer->setValue( 3 );
@@ -155,7 +155,8 @@ void LdapConfigWidget::initWidget()
   col = 0;
   if ( mFeatures & W_SIZELIMIT ) {
     label = new QLabel( i18n( "Size limit:" ), this );
-    mSizeLimit = new QSpinBox( 0, 9999999, 1, this);
+    mSizeLimit = new QSpinBox( this );
+    mSizeLimit->setRange( 0, 9999999 );
     mSizeLimit->setObjectName("kcfg_ldapsizelimit" );
     mSizeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mSizeLimit->setValue( 0 );
@@ -167,7 +168,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFeatures & W_TIMELIMIT ) {
     label = new QLabel( i18n( "Time limit:" ), this );
-    mTimeLimit = new QSpinBox( 0, 9999999, 1, this);
+    mTimeLimit = new QSpinBox( this );
+    mTimeLimit->setRange( 0, 9999999 );
     mTimeLimit->setObjectName("kcfg_ldaptimelimit" );
     mTimeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mTimeLimit->setValue( 0 );
@@ -184,12 +186,12 @@ void LdapConfigWidget::initWidget()
     mDn->setObjectName("kcfg_ldapdn" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mDn, row, row, 1, 1 );
+    mainLayout->addWidget( mDn, row, row, 1, 1 );
     //without host query doesn't make sense
     if ( mHost ) {
       QPushButton *dnquery = new QPushButton( i18n( "Query Server" ), this );
       connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
-      mainLayout->addMultiCellWidget( dnquery, row, row, 2, 3 );
+      mainLayout->addWidget( dnquery, row, row, 2, 3 );
     }
     row++;
   }
@@ -200,7 +202,7 @@ void LdapConfigWidget::initWidget()
     mFilter->setObjectName("kcfg_ldapfilter" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addMultiCellWidget( mFilter, row, row, 1, 3 );
+    mainLayout->addWidget( mFilter, row, row, 1, 3 );
     row++;
   }
 
@@ -217,7 +219,7 @@ void LdapConfigWidget::initWidget()
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup);
     mSecSSL->setObjectName("kcfg_ldapssl" );
     hbox->addWidget( mSecSSL );
-    mainLayout->addMultiCellWidget( btgroup, row, row, 0, 3 );
+    mainLayout->addWidget( btgroup, row, row, 0, 3 );
 
     connect( mSecNO, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
     connect( mSecTLS, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
@@ -253,9 +255,9 @@ void LdapConfigWidget::initWidget()
     mMech = new KComboBox( false, authbox);
     mMech->setObjectName("kcfg_ldapsaslmech");
     mMech->setEditable( true );
-    mMech->insertItem( "DIGEST-MD5" );
-    mMech->insertItem( "GSSAPI" );
-    mMech->insertItem( "PLAIN" );
+    mMech->addItem( "DIGEST-MD5" );
+    mMech->addItem( "GSSAPI" );
+    mMech->addItem( "PLAIN" );
     hbox->addWidget( mMech );
 
     //without host query doesn't make sense
@@ -265,7 +267,7 @@ void LdapConfigWidget::initWidget()
       connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     }
 
-    mainLayout->addMultiCellWidget( authbox, row, row+1, 0, 3 );
+    mainLayout->addWidget( authbox, row, row+1, 0, 3 );
 
     connect( mAnonymous, SIGNAL( toggled(bool) ), SLOT( setAnonymous(bool) ) );
     connect( mSimple, SIGNAL( toggled(bool) ), SLOT( setSimple(bool) ) );
@@ -356,7 +358,7 @@ void LdapConfigWidget::mQueryMechClicked()
   if ( !mQResult.isEmpty() ) {
     mQResult.sort();
     mMech->clear();
-    mMech->insertStringList( mQResult );
+    mMech->addItems( mQResult );
   }
 }
 
@@ -539,10 +541,10 @@ void LdapConfigWidget::setMech( const QString &mech )
   if ( !mech.isEmpty() ) {
     int i = 0;
     while ( i < mMech->count() ) {
-      if ( mMech->text( i ) == mech ) break;
+      if ( mMech->itemText( i ) == mech ) break;
       i++;
     }
-    if ( i == mMech->count() ) mMech->insertItem( mech );
+    if ( i == mMech->count() ) mMech->addItem( mech );
     mMech->setCurrentItem( i );
   }
 }
@@ -645,14 +647,12 @@ void LdapConfigWidget::setFeatures( LdapConfigWidget::WinFlags features )
   // FIXME: I hope it's correct
   QList<QObject*> ch = children();
 
-  foreach ( QObject*obj, ch ) {
-	  QWidget *widget;
-	  widget = dynamic_cast<QWidget*> (obj);
-	  if ( widget && widget->parent() == this ) {
-		  mainLayout->remove( widget );
-		  delete ( widget );
-	  }
+  for ( int i = 0; i < ch.count(); ++i ) {
+    QWidget *widget = dynamic_cast<QWidget*>( ch[ i ] );
+    if ( widget && widget->parent() == this )
+      delete ( widget );
   }
+
   // Re-create child widgets according to the new flags
   initWidget();
 }

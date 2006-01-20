@@ -760,7 +760,7 @@ void ResourceLDAPKIO::syncLoadSaveResult( KIO::Job *job )
     mErrorMsg = "";
   activateCache();
 
-  qApp->exit_loop();
+  emit leaveModality();
 }
 
 void ResourceLDAPKIO::saveResult( KIO::Job *job )

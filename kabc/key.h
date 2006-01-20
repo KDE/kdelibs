@@ -35,7 +35,7 @@ class KABC_EXPORT Key
 
 public:
   typedef QList<Key> List;
-  typedef QList<int> TypeList;  
+  typedef QList<int> TypeList;
 
   /**
    * Key types
@@ -62,7 +62,7 @@ public:
    * Destructor.
    */
   ~Key();
-    
+
   bool operator==( const Key & ) const;
   bool operator!=( const Key & ) const;
 
@@ -125,7 +125,7 @@ public:
    * Returns a list of all available key types.
    */
   static TypeList typeList();
-  
+
   /**
    * Returns a translated label for a given key type.
    */
@@ -137,7 +137,7 @@ private:
   QString mTextData;
   QString mCustomTypeString;
 
-  int mIsBinary;
+  bool mIsBinary;
   int mType;
 };
 

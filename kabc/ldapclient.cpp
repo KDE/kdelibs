@@ -303,11 +303,11 @@ void LdapSearch::startSearch( const QString& txt )
 
   cancelSearch();
 
-  int pos = txt.find( '\"' );
+  int pos = txt.indexOf( '\"' );
   if( pos >= 0 )
   {
     ++pos;
-    int pos2 = txt.find( '\"', pos );
+    int pos2 = txt.indexOf( '\"', pos );
     if( pos2 >= 0 )
         mSearchText = txt.mid( pos , pos2 - pos );
     else
@@ -338,8 +338,10 @@ void LdapSearch::cancelSearch()
 void LdapSearch::slotLDAPResult( const KABC::LdapObject& obj )
 {
   mResults.append( obj );
-  if ( !mDataTimer.isActive() )
-    mDataTimer.start( 500, true );
+  if ( !mDataTimer.isActive() ) {
+    mDataTimer.setSingleShot( true );
+    mDataTimer.start( 500 );
+  }
 }
 
 void LdapSearch::slotLDAPError( const QString& )
@@ -405,7 +407,7 @@ void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
     }
 
     LdapResult sr;
-    sr.clientNumber = mClients.findIndex( (*it1).client );
+    sr.clientNumber = mClients.indexOf( (*it1).client );
     sr.name = name;
     sr.email = mail;
     resList.append( sr );

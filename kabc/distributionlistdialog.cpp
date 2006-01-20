@@ -145,7 +145,8 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   QBoxLayout *topLayout = new QVBoxLayout( this );
   topLayout->setSpacing( KDialog::spacingHint() );
 
-  QBoxLayout *nameLayout = new QHBoxLayout( topLayout) ;
+  QBoxLayout *nameLayout = new QHBoxLayout() ;
+  topLayout->addLayout( topLayout );
 
   mNameCombo = new QComboBox( this );
   nameLayout->addWidget( mNameCombo );
@@ -163,14 +164,15 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   nameLayout->addWidget( mRemoveButton );
   connect( mRemoveButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
-  QGridLayout *gridLayout = new QGridLayout( topLayout, 3, 3 );
-  gridLayout->setColStretch(1, 1);
+  QGridLayout *gridLayout = new QGridLayout();
+  topLayout->addLayout( gridLayout );
+  gridLayout->setColumnStretch(1, 1);
 
   QLabel *listLabel = new QLabel( i18n("Available addresses:"), this );
   gridLayout->addWidget( listLabel, 0, 0 );
 
   mListLabel = new QLabel( this );
-  gridLayout->addMultiCellWidget( mListLabel, 0, 0, 1, 2 );
+  gridLayout->addWidget( mListLabel, 0, 0, 1, 2 );
 
   mAddresseeView = new QTreeWidget( this );
   mAddresseeView->setColumnCount( 2 );
@@ -192,7 +194,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   QStringList entryLabels;
   entryLabels << i18n("Name") << i18n("Email") << i18n("Use Preferred");
   mEntryView->setEnabled(false);
-  gridLayout->addMultiCellWidget( mEntryView, 1, 1, 1, 2 );
+  gridLayout->addWidget( mEntryView, 1, 1, 1, 2 );
   connect( mEntryView, SIGNAL( itemSelectionChanged() ),
            SLOT( slotSelectionEntryViewChanged() ) );
 
@@ -241,8 +243,8 @@ void DistributionListEditorWidget::newList()
   new DistributionList( mManager, name );
 
   mNameCombo->clear();
-  mNameCombo->insertStringList( mManager->listNames() );
-  mNameCombo->setCurrentItem( mNameCombo->count() - 1 );
+  mNameCombo->addItems( mManager->listNames() );
+  mNameCombo->setCurrentIndex( mNameCombo->count() - 1 );
 
   updateEntryView();
   slotSelectionAddresseeViewChanged();
@@ -260,8 +262,8 @@ void DistributionListEditorWidget::editList()
   list->setName( name );
 
   mNameCombo->clear();
-  mNameCombo->insertStringList( mManager->listNames() );
-  mNameCombo->setCurrentItem( mNameCombo->count() - 1 );
+  mNameCombo->addItems( mManager->listNames() );
+  mNameCombo->setCurrentIndex( mNameCombo->count() - 1 );
 
   updateEntryView();
   slotSelectionAddresseeViewChanged();
@@ -276,7 +278,7 @@ void DistributionListEditorWidget::removeList()
   if ( result != KMessageBox::Continue ) return;
 
   mManager->remove( mManager->list( mNameCombo->currentText() ) );
-  mNameCombo->removeItem( mNameCombo->currentItem() );
+  mNameCombo->removeItem( mNameCombo->currentIndex() );
 
   updateEntryView();
   slotSelectionAddresseeViewChanged();
@@ -387,7 +389,7 @@ void DistributionListEditorWidget::updateAddresseeView()
 
 void DistributionListEditorWidget::updateNameCombo()
 {
-  mNameCombo->insertStringList( mManager->listNames() );
+  mNameCombo->addItems( mManager->listNames() );
 
   updateEntryView();
 }

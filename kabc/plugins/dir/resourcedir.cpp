@@ -183,7 +183,7 @@ bool ResourceDir::load()
     QFile file( mPath + "/" + (*it) );
 
     if ( !file.open( QIODevice::ReadOnly ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.name() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.fileName() ) );
       ok = false;
       continue;
     }
@@ -221,12 +221,12 @@ bool ResourceDir::save( Ticket * )
   mDirWatch.stopScan();
 
   for ( it = mAddrMap.begin(); it != mAddrMap.end(); ++it ) {
-    if ( !it.data().changed() )
+    if ( !it.value().changed() )
       continue;
 
     QFile file( mPath + "/" + (*it).uid() );
     if ( !file.open( QIODevice::WriteOnly ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.name() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.fileName() ) );
       continue;
     }
 
@@ -304,7 +304,7 @@ void ResourceDir::pathChanged()
 void ResourceDir::removeAddressee( const Addressee& addr )
 {
   QFile::remove( mPath + "/" + addr.uid() );
-  mAddrMap.erase( addr.uid() );
+  mAddrMap.remove( addr.uid() );
 }
 
 #include "resourcedir.moc"

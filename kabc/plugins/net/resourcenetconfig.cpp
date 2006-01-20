@@ -36,8 +36,7 @@ using namespace KABC;
 ResourceNetConfig::ResourceNetConfig( QWidget* parent )
     : ConfigWidget( parent ), mInEditMode( false )
 {
-  QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0,
-      KDialog::spacingHint() );
+  QGridLayout *mainLayout = new QGridLayout( this );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
   mFormatBox = new KComboBox( this );
@@ -59,7 +58,7 @@ ResourceNetConfig::ResourceNetConfig( QWidget* parent )
     FormatInfo info = factory->info( *it );
     if ( !info.isNull() ) {
       mFormatTypes << (*it);
-      mFormatBox->insertItem( info.nameLabel );
+      mFormatBox->addItem( info.nameLabel );
     }
   }
 }
@@ -79,7 +78,7 @@ void ResourceNetConfig::loadSettings( KRES::Resource *res )
     return;
   }
 
-  mFormatBox->setCurrentItem( mFormatTypes.findIndex( resource->format() ) );
+  mFormatBox->setCurrentItem( mFormatTypes.indexOf( resource->format() ) );
 
   mUrlEdit->setURL( resource->url().url() );
 }
@@ -94,7 +93,7 @@ void ResourceNetConfig::saveSettings( KRES::Resource *res )
   }
 
   if ( !mInEditMode )
-    resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
+    resource->setFormat( mFormatTypes[ mFormatBox->currentIndex() ] );
 
   resource->setUrl( KUrl( mUrlEdit->url() ) );
 }

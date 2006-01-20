@@ -18,9 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDataStream>
+
 #include <kapplication.h>
 #include <klocale.h>
 #include <krandom.h>
+
 #include "key.h"
 
 using namespace KABC;
@@ -37,14 +40,22 @@ Key::~Key()
 
 bool Key::operator==( const Key &k ) const
 {
-  if ( mIsBinary != k.mIsBinary ) return false;
+  if ( mIsBinary != k.mIsBinary )
+    return false;
+
   if ( mIsBinary )
-    if ( mBinaryData != k.mBinaryData ) return false;
+    if ( mBinaryData != k.mBinaryData )
+      return false;
   else
-    if ( mTextData != k.mTextData ) return false;
-  if ( mType != k.mType ) return false;
-  if ( mCustomTypeString != k.mCustomTypeString ) return false;
-  
+    if ( mTextData != k.mTextData )
+      return false;
+
+  if ( mType != k.mType )
+    return false;
+
+  if ( mCustomTypeString != k.mCustomTypeString )
+    return false;
+
   return true;
 }
 
@@ -116,10 +127,10 @@ Key::TypeList Key::typeList()
   list << X509;
   list << PGP;
   list << Custom;
-  
+
   return list;
 }
-  
+
 QString Key::typeLabel( int type )
 {
   switch ( type ) {
@@ -140,14 +151,14 @@ QString Key::typeLabel( int type )
 
 QDataStream &KABC::operator<<( QDataStream &s, const Key &key )
 {
-    return s << key.mId << key.mIsBinary << key.mTextData << key.mBinaryData <<
-             key.mCustomTypeString << key.mType;
+  return s << key.mId << key.mIsBinary << key.mTextData << key.mBinaryData <<
+              key.mCustomTypeString << key.mType;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Key &key )
 {
-    s >> key.mId >> key.mIsBinary >> key.mTextData >> key.mBinaryData >>
-    key.mCustomTypeString >> key.mType;
+  s >> key.mId >> key.mIsBinary >> key.mTextData >> key.mBinaryData >>
+       key.mCustomTypeString >> key.mType;
 
-    return s;
+  return s;
 }

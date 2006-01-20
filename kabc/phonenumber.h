@@ -21,7 +21,7 @@
 #ifndef KABC_PHONENUMBER_H
 #define KABC_PHONENUMBER_H
 
-#include <qstring.h>
+#include <QString>
 
 #include <kdelibs_export.h>
 
@@ -29,7 +29,7 @@ namespace KABC {
 
 /**
   @short Phonenumber information.
-  
+
   This class provides phone number information. A phone number is classified by
   a type. The following types are available, it's possible to use multiple types
  Types for a number by combining them through a logical or.

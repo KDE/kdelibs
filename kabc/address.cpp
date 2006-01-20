@@ -58,7 +58,7 @@ bool Address::operator==( const Address &a ) const
   if ( mPostalCode != a.mPostalCode ) return false;
   if ( mCountry != a.mCountry ) return false;
   if ( mLabel != a.mLabel ) return false;
-  
+
   return true;
 }
 
@@ -342,7 +342,7 @@ QString Address::formattedAddress( const QString &realName,
     // fall back to our own country
     ciso = KGlobal::locale()->country();
   }
-  KSimpleConfig entry( locate( "locale", 
+  KSimpleConfig entry( locate( "locale",
         QString( "l10n/" ) + ciso + QString( "/entry.desktop" ) ) );
   entry.setGroup( "KCM Locale" );
 
@@ -359,7 +359,7 @@ QString Address::formattedAddress( const QString &realName,
   // used:
   if ( addrTemplate.isEmpty() ) {
     kdWarning(5700) << "address format database incomplete "
-        << "(no format for locale " << ciso 
+        << "(no format for locale " << ciso
         << " found). Using default address formatting." << endl;
     addrTemplate = "%0(%n\\n)%0(%cm\\n)%0(%s\\n)%0(PO BOX %p\\n)%0(%l%w%r)%,%z";
   }
@@ -384,11 +384,11 @@ QString Address::formattedAddress( const QString &realName,
       ret = country() + "\n\n" + ret;
     }
   }
-  
+
   return ret;
 }
 
-bool Address::parseAddressTemplateSection( const QString &tsection, 
+bool Address::parseAddressTemplateSection( const QString &tsection,
     QString &result, const QString &realName, const QString &orgaName ) const
 {
   // This method first parses and substitutes any bracketed sections and
@@ -399,13 +399,13 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
   result = tsection;
   int stpos = 0;
   bool ret = false;
-  
-  // first check for brackets that have to be evaluated first 
-  int fpos = result.find( KABC_FMTTAG_purgeempty, stpos );
+
+  // first check for brackets that have to be evaluated first
+  int fpos = result.indexOf( KABC_FMTTAG_purgeempty, stpos );
   while ( -1 != fpos ) {
     int bpos1 = fpos + KABC_FMTTAG_purgeempty.length();
     int bpos2;
-    // expect opening bracket and find next balanced closing bracket. If 
+    // expect opening bracket and find next balanced closing bracket. If
     // next char is no opening bracket, continue parsing (no valid tag)
     if ( '(' == result[bpos1] ) {
       bpos2 = findBalancedBracket( result, bpos1 );
@@ -427,12 +427,12 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
           stpos = fpos + rplstr.length();
         }
       } else {
-        // unbalanced brackets:  keep on parsing (should not happen 
+        // unbalanced brackets:  keep on parsing (should not happen
         // and will result in bad formatting)
-        stpos = bpos1; 
+        stpos = bpos1;
       }
     }
-    fpos = result.find( KABC_FMTTAG_purgeempty, stpos );
+    fpos = result.indexOf( KABC_FMTTAG_purgeempty, stpos );
   }
 
   // after sorting out all purge tags, we just search'n'replace the rest,
@@ -440,7 +440,7 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
   // The following macro needs QString for R_FIELD
   // It substitutes !_P_! for empty fields so conditional tags work later
 #define REPLTAG(R_TAG,R_FIELD) \
-  if ( result.find(R_TAG, false) != -1 ) { \
+  if ( result.indexOf(R_TAG, false) != -1 ) { \
     QString rpl = R_FIELD.isEmpty() ? QString("!_P_!") : R_FIELD; \
     result.replace( R_TAG, rpl ); \
     if ( !R_FIELD.isEmpty() ) { \
@@ -461,9 +461,9 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
   REPLTAG( KABC_FMTTAG_REGION, region().toUpper() );
   result.replace( KABC_FMTTAG_newline, "\n" );
 #undef REPLTAG
- 
-  // conditional comma 
-  fpos = result.find( KABC_FMTTAG_condcomma, 0 );
+
+  // conditional comma
+  fpos = result.indexOf( KABC_FMTTAG_condcomma, 0 );
   while ( -1 != fpos ) {
     QString str1 = result.mid( fpos - 5, 5 );
     QString str2 = result.mid( fpos + 2, 5 );
@@ -472,10 +472,10 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
     } else {
       result.remove( fpos, 2 );
     }
-    fpos = result.find( KABC_FMTTAG_condcomma, fpos );
+    fpos = result.indexOf( KABC_FMTTAG_condcomma, fpos );
   }
   // conditional whitespace
-  fpos = result.find( KABC_FMTTAG_condwhite, 0 );
+  fpos = result.indexOf( KABC_FMTTAG_condwhite, 0 );
   while ( -1 != fpos ) {
     QString str1 = result.mid( fpos - 5, 5 );
     QString str2 = result.mid( fpos + 2, 5 );
@@ -484,7 +484,7 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
     } else {
       result.remove( fpos, 2 );
     }
-    fpos = result.find( KABC_FMTTAG_condwhite, fpos );
+    fpos = result.indexOf( KABC_FMTTAG_condwhite, fpos );
   }
 
   // remove purged:
@@ -512,7 +512,7 @@ int Address::findBalancedBracket( const QString &tsection, int pos ) const
 QString Address::countryToISO( const QString &cname )
 {
   // we search a map file for translations from country names to
-  // iso codes, storing caching things in a QMap for faster future 
+  // iso codes, storing caching things in a QMap for faster future
   // access.
   if ( !mISOMap )
     isoMapDeleter.setObject( mISOMap, new QMap<QString, QString>() );
@@ -520,9 +520,9 @@ QString Address::countryToISO( const QString &cname )
   QMap<QString, QString>::ConstIterator it;
   it = mISOMap->find( cname );
   if ( it != mISOMap->end() )
-    return it.data();
+    return it.value();
 
-  QString mapfile = KGlobal::dirs()->findResource( "data", 
+  QString mapfile = KGlobal::dirs()->findResource( "data",
           QLatin1String( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
@@ -530,7 +530,7 @@ QString Address::countryToISO( const QString &cname )
     QTextStream s( &file );
     QString strbuf = s.readLine();
     while( !strbuf.isEmpty() ) {
-      QStringList countryInfo = QStringList::split( '\t', strbuf, true );
+      QStringList countryInfo = strbuf.split( '\t', QString::KeepEmptyParts );
       if ( countryInfo[ 0 ] == cname ) {
         file.close();
         mISOMap->insert( cname, countryInfo[ 1 ] );
@@ -540,7 +540,7 @@ QString Address::countryToISO( const QString &cname )
     }
     file.close();
   }
-  
+
   // fall back to system country
   mISOMap->insert( cname, KGlobal::locale()->country() );
   return KGlobal::locale()->country();
@@ -552,7 +552,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
   if ( ISOname.simplified().isEmpty() )
     return QString();
 
-  QString mapfile = KGlobal::dirs()->findResource( "data", 
+  QString mapfile = KGlobal::dirs()->findResource( "data",
           QLatin1String( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
@@ -562,7 +562,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
     QString strbuf = s.readLine();
     int pos;
     while ( !strbuf.isEmpty() ) {
-      if ( (pos = strbuf.find( searchStr )) != -1 ) {
+      if ( (pos = strbuf.indexOf( searchStr )) != -1 ) {
         file.close();
         return i18n( strbuf.left( pos ).toUtf8() );
       }
@@ -576,19 +576,19 @@ QString Address::ISOtoCountry( const QString &ISOname )
 
 QDataStream &KABC::operator<<( QDataStream &s, const Address &addr )
 {
-    return s << addr.mId << addr.mType << addr.mPostOfficeBox <<
-	    addr.mExtended << addr.mStreet << addr.mLocality <<
-	    addr.mRegion << addr.mPostalCode << addr.mCountry <<
-	    addr.mLabel;
+  return s << addr.mId << addr.mType << addr.mPostOfficeBox <<
+              addr.mExtended << addr.mStreet << addr.mLocality <<
+              addr.mRegion << addr.mPostalCode << addr.mCountry <<
+              addr.mLabel;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Address &addr )
 {
-    s >> addr.mId >> addr.mType >> addr.mPostOfficeBox >> addr.mExtended >>
-	    addr.mStreet >> addr.mLocality >> addr.mRegion >>
-	    addr.mPostalCode >> addr.mCountry >> addr.mLabel;
+  s >> addr.mId >> addr.mType >> addr.mPostOfficeBox >> addr.mExtended >>
+       addr.mStreet >> addr.mLocality >> addr.mRegion >>
+       addr.mPostalCode >> addr.mCountry >> addr.mLabel;
 
-    addr.mEmpty = false;
+  addr.mEmpty = false;
 
-    return s;
+  return s;
 }

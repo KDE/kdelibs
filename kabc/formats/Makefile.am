@@ -1,4 +1,5 @@
 INCLUDES = -I$(top_srcdir)/kabc -I$(top_builddir)/kabc $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 kde_module_LTLIBRARIES = kabcformat_binary.la
 

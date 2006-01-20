@@ -177,7 +177,8 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
                 stopLDAPLookup();
             *s_LDAPText = text();
             s_LDAPLineEdit = this;
-            s_LDAPTimer->start( 500, true );
+            s_LDAPTimer->setSingleShot( true );
+            s_LDAPTimer->start( 500 );
         }
     }
 }
@@ -213,13 +214,13 @@ void AddressLineEdit::insert(const QString &t)
       KUrl u(newText);
       newText = u.path();
     }
-    else if (newText.find(" at ") != -1)
+    else if (newText.indexOf(" at ") != -1)
     {
        // Anti-spam stuff
        newText.replace( " at ", "@" );
        newText.replace( " dot ", "." );
     }
-    else if (newText.find("(at)") != -1)
+    else if (newText.indexOf("(at)") != -1)
     {
       newText.replace( QRegExp("\\s*\\(at\\)\\s*"), "@" );
     }
@@ -228,7 +229,7 @@ void AddressLineEdit::insert(const QString &t)
     int start_sel = 0;
     int end_sel = 0;
     int pos = cursorPosition();
-    if (getSelection(&start_sel, &end_sel))
+    if (!selectedText().isEmpty())
     {
        // Cut away the selection.
        if (pos > end_sel)
@@ -337,7 +338,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             items += s_completion->substringCompletion( '<' + s );
             int beforeDollarCompletionCount = items.count();
 
-            if( s.find( ' ' ) == -1 ) // one word, possibly given name
+            if( s.indexOf( ' ' ) == -1 ) // one word, possibly given name
                 items += s_completion->allMatches( "$$" + s );
 
             if ( !items.isEmpty() )
@@ -349,7 +350,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                          it != items.end();
                          ++it )
                     {
-                        int pos = (*it).find( '$', 2 );
+                        int pos = (*it).indexOf( '$', 2 );
                         if( pos < 0 ) // ???
                             continue;
                         (*it)=(*it).mid( pos + 1 );
@@ -367,7 +368,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
 
                 if (!autoSuggest)
                 {
-                    int index = items.first().find( s );
+                    int index = items.first().indexOf( s );
                     QString newText = prevAddr + items.first().mid( index );
                     //kdDebug() << "OLD TEXT: " << text() << endl;
                     //kdDebug() << "NEW TEXT: " << newText << endl;
@@ -431,11 +432,11 @@ void AddressLineEdit::loadAddresses()
 void AddressLineEdit::addAddress( const QString& adr )
 {
     s_completion->addItem( adr );
-    int pos = adr.find( '<' );
+    int pos = adr.indexOf( '<' );
     if( pos >= 0 )
     {
         ++pos;
-        int pos2 = adr.find( pos, '>' );
+        int pos2 = adr.indexOf( pos, '>' );
         if( pos2 >= 0 )
             s_completion->addItem( adr.mid( pos, pos2 - pos ));
     }
@@ -478,8 +479,8 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
         return;
     for( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it ) {
         QString name(*it);
-        int pos = name.find( " <" );
-        int pos_comma = name.find( ',' );
+        int pos = name.indexOf( " <" );
+        int pos_comma = name.indexOf( ',' );
         // put name in quotes, if we have a comma in the name
         if (pos>0 && pos_comma>0 && pos_comma<pos) {
           name.insert(pos, '\"');
@@ -505,7 +506,7 @@ QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
     for( QStringList::Iterator it = src.begin(); it != src.end(); ) {
         if( *it == last )
         {
-            it = src.remove( it );
+            it = src.erase( it );
             continue; // dupe
         }
         last = *it;
@@ -532,7 +533,7 @@ void AddressLineEdit::dropEvent(QDropEvent *e)
           ct.append( (*it).url() );
     }
     setText(ct);
-    setEdited( true );
+    setModified( true );
   }
   else {
     if (m_useCompletion)
@@ -571,18 +572,18 @@ QStringList AddressLineEdit::addresses()
     for ( mit = emails.begin(); mit != emails.end(); ++mit ) {
       email = *mit;
       if (!email.isEmpty()) {
-        if (n.isEmpty() || (email.find( '<' ) != -1))
+        if (n.isEmpty() || (email.indexOf( '<' ) != -1))
           addr.clear();
         else { /* do we really need quotes around this name ? */
-                if (n.find(needQuotes) != -1)
+                if (n.indexOf(needQuotes) != -1)
             addr = '"' + n + endQuote;
           else
             addr = n + space;
         }
 
-        if (!addr.isEmpty() && (email.find( '<' ) == -1)
-            && (email.find( '>' ) == -1)
-            && (email.find( ',' ) == -1))
+        if (!addr.isEmpty() && (email.indexOf( '<' ) == -1)
+            && (email.indexOf( '>' ) == -1)
+            && (email.indexOf( ',' ) == -1))
           addr += '<' + email + '>';
         else
           addr += email;

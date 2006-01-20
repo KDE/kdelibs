@@ -82,12 +82,12 @@ Resource::Iterator::~Iterator()
 
 const Addressee &Resource::Iterator::operator*() const
 {
-  return d->mIt.data();
+  return d->mIt.value();
 }
 
 Addressee &Resource::Iterator::operator*()
 {
-  return d->mIt.data();
+  return d->mIt.value();
 }
 
 Resource::Iterator &Resource::Iterator::operator++()
@@ -263,7 +263,7 @@ void Resource::insertAddressee( const Addressee &addr )
 
 void Resource::removeAddressee( const Addressee &addr )
 {
-  mAddrMap.erase( addr.uid() );
+  mAddrMap.remove( addr.uid() );
 }
 
 Addressee Resource::findByUid( const QString &uid )
@@ -271,7 +271,7 @@ Addressee Resource::findByUid( const QString &uid )
   Addressee::Map::ConstIterator it = mAddrMap.find( uid );
 
   if ( it != mAddrMap.end() )
-    return it.data();
+    return it.value();
 
   return Addressee();
 }

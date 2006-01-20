@@ -124,7 +124,8 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
 
-  QBoxLayout *nameLayout = new QHBoxLayout( topLayout) ;
+  QBoxLayout *nameLayout = new QHBoxLayout();
+  topLayout->addLayout( nameLayout );
 
   mNameCombo = new QComboBox( this );
   nameLayout->addWidget( mNameCombo );
@@ -172,7 +173,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
 
   updateAddresseeView();
   updateNameCombo();
-  removeButton->setEnabled(!mManager->listNames().isEmpty());
+  removeButton->setEnabled( !mManager->listNames().isEmpty() );
 }
 
 DistributionListEditor::~DistributionListEditor()
@@ -203,7 +204,7 @@ void DistributionListEditor::newList()
 
   new DistributionList( mManager, name );
 
-  mNameCombo->insertItem( name );
+  mNameCombo->addItem( name );
   removeButton->setEnabled(true);
   updateEntryView();
 }
@@ -211,7 +212,7 @@ void DistributionListEditor::newList()
 void DistributionListEditor::removeList()
 {
   mManager->remove( mManager->list( mNameCombo->currentText() ) );
-  mNameCombo->removeItem( mNameCombo->currentItem() );
+  mNameCombo->removeItem( mNameCombo->currentIndex() );
   removeButton->setEnabled(!mManager->listNames().isEmpty());
   addEntryButton->setEnabled( !mNameCombo->currentText().isEmpty());
   updateEntryView();
@@ -300,7 +301,7 @@ void DistributionListEditor::updateAddresseeView()
 
 void DistributionListEditor::updateNameCombo()
 {
-  mNameCombo->insertStringList( mManager->listNames() );
+  mNameCombo->addItems( mManager->listNames() );
 
   updateEntryView();
 }

@@ -20,9 +20,9 @@ using namespace std;
 
 #include <list>
 #include <map>
-#include <qwidget.h>
-#include <q3cstring.h>
-#include <q3strlist.h>
+
+#include <QByteArray>
+#include <QWidget>
 
 class QTimer;
 class QDate;
@@ -42,18 +42,18 @@ class QTextStream;
  * it is called with.
  */
 struct QCStringLess
-  : public binary_function<const Q3CString&, const Q3CString&, bool>
+  : public binary_function<const QByteArray&, const QByteArray&, bool>
 {
   /**
    * The function operator, inline.
    */
-  bool operator()(const Q3CString& x, const Q3CString& y) const
+  bool operator()(const QByteArray& x, const QByteArray& y) const
   {
     return x < (const char*)y; // make one Qt operator fit exactly
   }
 };
 
-typedef map<Q3CString, Q3CString, QCStringLess> StringStringMap;
+typedef map<QByteArray, QByteArray, QCStringLess> StringStringMap;
 
 /**
  *  The class KeyValueMap is used for managing key-value-pairs
@@ -125,23 +125,23 @@ protected:
    * Returns true if there where no errors while parsing.
    * @see makeComplexString
    */
-  bool parseComplexString(const Q3CString& orig, int index,
-			  Q3CString& result, int& noOfChars) const;
+  bool parseComplexString(const QByteArray& orig, int index,
+			  QByteArray& result, int& noOfChars) const;
   /**
    * Codes a normal string into a complex string.
    * @see parseComplexString
    */
-  Q3CString makeComplexString(const Q3CString& orig);
+  QByteArray makeComplexString(const QByteArray& orig);
   /**
    * Inserts a complex string into the map.
    * The string must be coded already, no tests are performed.
    * \a if force is false, an existing value will not be overridden.
    */
-  bool insertRaw(const Q3CString& key, const Q3CString& value, bool force=false);
+  bool insertRaw(const QByteArray& key, const QByteArray& value, bool force=false);
   /**
    * Retrieves the undecoded value (a complex string) of the given key.
    */
-  bool getRaw(const Q3CString& key, Q3CString& value) const;
+  bool getRaw(const QByteArray& key, QByteArray& value) const;
   // ----------------------------------------------------------------------------
 public:
   /**
@@ -200,40 +200,40 @@ public:
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString& key, Q3CString& value) const;
+  bool get(const QByteArray& key, QByteArray& value) const;
   /**
    * Insert a string value for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString& key, const Q3CString& value, bool force=false);
+  bool insert(const QByteArray& key, const QByteArray& value, bool force=false);
   /**
    * Insert a character pointer  for the given key.
    * pgcc treats character pointers as boolean objects, not as strings.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  inline bool insert(const Q3CString& key, const char* value, bool force=false);
+  inline bool insert(const QByteArray& key, const char* value, bool force=false);
   /**
    * Insert a line like "key_a="Hallo!" into the map as a key-value-pair.
    * If force is true existing keys will be overridden.
    * If relax is true the value may be empty an empty string.
    * If encode is false, the string will not be coded (do not use!).
    */
-  bool insertLine(Q3CString, bool force=false, bool relax=false, bool encode=true);
+  bool insertLine(QByteArray, bool force=false, bool relax=false, bool encode=true);
   // ---------------
   /**
    * Get the value for the key as a long integer.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, long&) const;
+  bool get(const QByteArray&, long&) const;
   /**
    * Insert a long integer value for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const long&, bool force=false);
+  bool insert(const QByteArray&, const long&, bool force=false);
   // ---------------
   /**
    * For insertion of UNICODE strings, a special method pair is created. The
@@ -244,65 +244,65 @@ public:
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, QString&) const;
+  bool get(const QByteArray&, QString&) const;
   /**
    * Insert a UNICODE string value for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const QString&, bool force=false);
+  bool insert(const QByteArray&, const QString&, bool force=false);
   // ---------------
   /**
    * Get the value for the key as a double.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, double&) const;
+  bool get(const QByteArray&, double&) const;
   /**
    * Insert a double value for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const double&, bool force=false);
+  bool insert(const QByteArray&, const double&, bool force=false);
   // ---------------
   /**
    * Get the value for the key as a boolean value.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, bool&) const;
+  bool get(const QByteArray&, bool&) const;
   /**
    * Insert a boolean value for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const bool&, bool force=false);
+  bool insert(const QByteArray&, const bool&, bool force=false);
   // ---------------
   /**
    * Get the value for the key as a list of strings.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, list<Q3CString>&) const;
+  bool get(const QByteArray&, list<QByteArray>&) const;
   /**
    * Insert a list of strings for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const list<Q3CString>&, bool force=false);
+  bool insert(const QByteArray&, const list<QByteArray>&, bool force=false);
   // --------------
   /**
    * Get the value for the key as a QStrList.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, Q3StrList&) const;
+  bool get(const QByteArray&, QList<QByteArray>&) const;
   /**
    * Insert a QStrList for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const Q3StrList&, bool force=false);
+  bool insert(const QByteArray&, const QList<QByteArray>&, bool force=false);
   // --------------
   /**
    * Get the value for the key as a QStringList. Beware of the difference -
@@ -311,39 +311,39 @@ public:
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, QStringList&) const;
+  bool get(const QByteArray&, QStringList&) const;
   /**
    * Insert a QStringList for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const QStringList&, bool force=false);
+  bool insert(const QByteArray&, const QStringList&, bool force=false);
   // --------------
   /**
    * Get the value for the key as a list of long integers.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, list<long>&) const;
+  bool get(const QByteArray&, list<long>&) const;
   /**
    * Insert a list of long integers for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const list<long>&, bool force=false);
+  bool insert(const QByteArray&, const list<long>&, bool force=false);
   // --------------
   /**
    * Get the value for the key as a list of integers.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, list<int>&) const;
+  bool get(const QByteArray&, list<int>&) const;
   /**
    * Insert a list of integers for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const list<int>&, bool force=false);
+  bool insert(const QByteArray&, const list<int>&, bool force=false);
   // -------------- some Qt high-level data types:
   /**
    * Get the value for the key as a QDate.
@@ -354,7 +354,7 @@ public:
    * insert inalid dates, it inserts null dates instead.
    * @see get(const QCString&, QDate &)
    */
-  bool get(const Q3CString&, QDate &) const;
+  bool get(const QByteArray&, QDate &) const;
   /**
    * Insert a QDate for the given key.
    * If force is true, an existing value for this key will be overridden.
@@ -364,20 +364,20 @@ public:
    * You will not be able to store an invalid date and retrieve it using
    * ::get!
    */
-  bool insert(const Q3CString&, const QDate&, bool force=false);
+  bool insert(const QByteArray&, const QDate&, bool force=false);
   // --------------
   /**
    * Get the value for the key as a list of doubles.
    * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
-  bool get(const Q3CString&, list<double>&) const;
+  bool get(const QByteArray&, list<double>&) const;
   /**
    * Insert a list of doubles for the given key.
    * If force is true, an existing value for this key will be overridden.
    * The method returns false if the key exists and \a force is false.
    */
-  bool insert(const Q3CString&, const list<double>&, bool force=false);
+  bool insert(const QByteArray&, const list<double>&, bool force=false);
   // --------------
   // end of corresponding get-insert-pairs
   /**
@@ -387,7 +387,7 @@ public:
   /**
    * Erases all key-value-pairs in the map.
    */
-  bool erase(const Q3CString& key);
+  bool erase(const QByteArray& key);
   // ############################################################################
 };
 
@@ -407,7 +407,7 @@ public:
   /**
    * The StringSectionMap type is defined to make the code more readable.
    */
-  typedef map<Q3CString, Section*, QCStringLess> StringSectionMap;
+  typedef map<QByteArray, Section*, QCStringLess> StringSectionMap;
   // ----------------------------------------------------------------------------
 protected:
   /**
@@ -430,18 +430,18 @@ protected:
    * Check whether the string (one line of the file currently read) marks the
    *  beginning of a new subsection (usually [sectionname]).
    */
-  bool isBeginOfSection(Q3CString);
+  bool isBeginOfSection(QByteArray);
   /**
    * Check whether the string (one line of the file currently read) marks the
    *  end of a new subsection (usually [END]).
    */
-  bool isEndOfSection(Q3CString);
+  bool isEndOfSection(QByteArray);
   /**
    * Extract the name of the section from the string.
    * The string must contain the line that starts the section.
    * @see ::isBeginOfSection
    */
-  Q3CString nameOfSection(const Q3CString&);
+  QByteArray nameOfSection(const QByteArray&);
   // ----------------------------------------------------------------------------
 public:
   /**
@@ -456,23 +456,23 @@ public:
   /**
    * Add an empty new section.
    */
-  bool add(const Q3CString&);
+  bool add(const QByteArray&);
   /**
    * Add the section.
    */
-  bool add(const Q3CString&, Section*);
+  bool add(const QByteArray&, Section*);
   /**
    * Search for the section, returning an iterator to it.
    */
-  bool find(const Q3CString&, StringSectionMap::iterator&);
+  bool find(const QByteArray&, StringSectionMap::iterator&);
   /**
    * Search for the section, returning a pointer to the section object.
    */
-  bool find(const Q3CString&, Section*&);
+  bool find(const QByteArray&, Section*&);
   /**
    * Remove this subsection.
    */
-  bool remove(const Q3CString&);
+  bool remove(const QByteArray&);
   /**
    * Return the key-value-pairs of this (!) section.
    */
@@ -573,21 +573,21 @@ public:
   /**
    * Get the key-value-map for the section referenced by \a key.
    */
-  bool get(const Q3CString& key, KeyValueMap*& map);
+  bool get(const QByteArray& key, KeyValueMap*& map);
   /**
    * Get the key-value-map for the section referenced by \a key as key list.
    */
-  bool get(const list<Q3CString>& key, KeyValueMap*& map);
+  bool get(const list<QByteArray>& key, KeyValueMap*& map);
   /**
    * Get the address of the specified Section object by its path.
    * Never delete the section returned to you.
    */
-  bool get(const Q3CString& key, Section*&);
+  bool get(const QByteArray& key, Section*&);
   /**
    * Get the address of the specified Section object by a path list.
    * Never delete the section returned to you.
    */
-  bool get(const list<Q3CString>& key, Section*&);
+  bool get(const list<QByteArray>& key, Section*&);
   /**
    * Get the keys of the toplevel section.
    */
@@ -596,12 +596,12 @@ public:
    * Create the section with this path.
    * All elements of the path that do not exist are created.
    */
-  bool createSection(const Q3CString& key);
+  bool createSection(const QByteArray& key);
   /**
    * Create the section with a path like the path list.
    * All elements of the path that do not exist are created.
    */
-  bool createSection(const list<Q3CString>& key);
+  bool createSection(const list<QByteArray>& key);
   /**
    * Load the file.
    * @see ::setFileName
@@ -707,7 +707,7 @@ protected:
    * Transform a given path into a list of strings.
    * All internal path handling is done with lists.
    */
-  list<Q3CString> stringToKeylist(const Q3CString&);
+  list<QByteArray> stringToKeylist(const QByteArray&);
   /**
    * The current filename.
    */
@@ -768,9 +768,9 @@ Q_SIGNALS:
 };
 
 // ----- inline functions:
-bool KeyValueMap::insert(const Q3CString& key, const char* value, bool force)
+bool KeyValueMap::insert(const QByteArray& key, const char* value, bool force)
 {
-  return insert(key, (Q3CString)value, force);
+  return insert(key, (QByteArray)value, force);
 }
 // -----
 

@@ -47,7 +47,6 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent )
     : KRES::ConfigWidget( parent )
 {
   QBoxLayout *mainLayout = new QVBoxLayout( this );
-  mainLayout->setAutoAdd( true );
   cfg = new LdapConfigWidget( 
         LdapConfigWidget::W_USER |
         LdapConfigWidget::W_PASS |
@@ -62,13 +61,17 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent )
         LdapConfigWidget::W_AUTHBOX |
         LdapConfigWidget::W_TIMELIMIT |
         LdapConfigWidget::W_SIZELIMIT,
-	this );
-   
+        this );
+
   mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
   KHBox *box = new KHBox( this );
   box->setSpacing( KDialog::spacingHint() );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), box );
   mCacheButton = new QPushButton( i18n( "Offline Use..." ), box );
+
+  mainLayout->addWidget( cfg );
+  mainLayout->addWidget( mSubTree );
+  mainLayout->addWidget( box );
 
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editAttributes() ) );
   connect( mCacheButton, SIGNAL( clicked() ), SLOT( editCache() ) );
@@ -163,8 +166,8 @@ void ResourceLDAPKIOConfig::editCache()
     QMap<QString,QString>::Iterator it;
     QStringList attr;
     for ( it = mAttributes.begin(); it != mAttributes.end(); ++it ) {
-      if ( !it.data().isEmpty() && it.key() != "objectClass" )
-        attr.append( it.data() );
+      if ( !it.value().isEmpty() && it.key() != "objectClass" )
+        attr.append( it.value() );
     }
     src.setAttributes( attr );
   }
@@ -245,27 +248,26 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapList.append( outlookMap );
 
   QFrame *page = plainPage();
-  QGridLayout *layout = new QGridLayout( page, 4, ( attributes.count() + 4 ) >> 1,
-                                         0, spacingHint() );
+  QGridLayout *layout = new QGridLayout( page );
 
   QLabel *label = new QLabel( i18n( "Template:" ), page );
   layout->addWidget( label, 0, 0 );
   mMapCombo = new KComboBox( page );
   layout->addWidget( mMapCombo, 0, 1 );
 
-  mMapCombo->insertItem( i18n( "User Defined" ) );
-  mMapCombo->insertItem( i18n( "Kolab" ) );
-  mMapCombo->insertItem( i18n( "Netscape" ) );
-  mMapCombo->insertItem( i18n( "Evolution" ) );
-  mMapCombo->insertItem( i18n( "Outlook" ) );
+  mMapCombo->addItem( i18n( "User Defined" ) );
+  mMapCombo->addItem( i18n( "Kolab" ) );
+  mMapCombo->addItem( i18n( "Netscape" ) );
+  mMapCombo->addItem( i18n( "Evolution" ) );
+  mMapCombo->addItem( i18n( "Outlook" ) );
   connect( mMapCombo, SIGNAL( activated( int ) ), SLOT( mapChanged( int ) ) );
 
   label = new QLabel( i18n( "RDN prefix attribute:" ), page );
   layout->addWidget( label, 1, 0 );
   mRDNCombo = new KComboBox( page );
   layout->addWidget( mRDNCombo, 1, 1 );
-  mRDNCombo->insertItem( i18n( "commonName" ) );
-  mRDNCombo->insertItem( i18n( "UID" ) );
+  mRDNCombo->addItem( i18n( "commonName" ) );
+  mRDNCombo->addItem( i18n( "UID" ) );
   mRDNCombo->setCurrentItem( rdnprefix );
 
   QMap<QString, QString>::ConstIterator it;
@@ -275,7 +277,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
       i--;
       continue;
     }
-    if ( (uint)(i - 2) == ( mNameDict.count()  >> 1 ) ) {
+    if ( (i - 2) == ( mNameDict.count()  >> 1 ) ) {
       i = 0;
       j = 2;
     }
@@ -283,7 +285,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
     label = new QLabel( mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );
-    lineedit->setText( it.data() );
+    lineedit->setText( it.value() );
     label->setBuddy( lineedit );
     layout->addWidget( label, i, j );
     layout->addWidget( lineedit, i, j+1 );
@@ -328,7 +330,7 @@ QMap<QString, QString> AttributesDialog::attributes() const
 
 int AttributesDialog::rdnprefix() const
 {
-  return mRDNCombo->currentItem();
+  return mRDNCombo->currentIndex();
 }
 
 void AttributesDialog::mapChanged( int pos )
@@ -337,12 +339,12 @@ void AttributesDialog::mapChanged( int pos )
   // apply first the default and than the spezific changes
   QMap<QString, QString>::Iterator it;
   for ( it = mDefaultMap.begin(); it != mDefaultMap.end(); ++it )
-    mLineEditDict[ it.key() ]->setText( it.data() );
+    mLineEditDict[ it.key() ]->setText( it.value() );
 
   for ( it = mMapList[ pos ].begin(); it != mMapList[ pos ].end(); ++it ) {
-    if ( !it.data().isEmpty() ) {
+    if ( !it.value().isEmpty() ) {
       KLineEdit *le = mLineEditDict[ it.key() ];
-      if ( le ) le->setText( it.data() );
+      if ( le ) le->setText( it.value() );
     }
   }
 }
@@ -354,7 +356,6 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
 {
   QFrame *page = plainPage();
   QVBoxLayout *layout = new QVBoxLayout( page );
-  layout->setAutoAdd( true );
 
   mSrc = src; mDst = dst;
   mCacheGroup = new Q3ButtonGroup( 1, Qt::Horizontal,
@@ -375,6 +376,10 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
 
   QPushButton *lcache = new QPushButton( i18n("Load into Cache"), page );
   connect( lcache, SIGNAL( clicked() ), SLOT( loadCache() ) );
+
+  layout->addWidget( mCacheGroup );
+  layout->addWidget( mAutoCache );
+  layout->addWidget( lcache );
 }
 
 OfflineDialog::~OfflineDialog()

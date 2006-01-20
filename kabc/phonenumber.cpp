@@ -18,9 +18,11 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDataStream>
+
 #include <kapplication.h>
-#include <krandom.h>
 #include <klocale.h>
+#include <krandom.h>
 
 #include "phonenumber.h"
 
@@ -203,12 +205,12 @@ QString PhoneNumber::typeLabel( int type )
 
 QDataStream &KABC::operator<<( QDataStream &s, const PhoneNumber &phone )
 {
-    return s << phone.mId << phone.mType << phone.mNumber;
+  return s << phone.mId << phone.mType << phone.mNumber;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, PhoneNumber &phone )
 {
-    s >> phone.mId >> phone.mType >> phone.mNumber;
+  s >> phone.mId >> phone.mType >> phone.mNumber;
 
-    return s;
+  return s;
 }

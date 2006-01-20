@@ -399,12 +399,14 @@ int AddressBook::Entry::noOfAddresses() const
 }
 
 AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
-  : QFrame(parent, name),
+  : QFrame(parent),
     config(new QConfigDB(this)),
     data(new QConfigDB(this)),
     entries(new StringKabKeyMap),
     state(NoFile)
 {
+  setObjectName( name );
+
   register bool GUARD; GUARD=true;
   // ###########################################################################
   QString dir, filename;
@@ -578,7 +580,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	      KStdGuiItem::close(), KStdGuiItem::save()))
 	    {
 	    case KMessageBox::No: // save
-	      if(!data->save(i18n("(Safety copy on file error)").ascii(), true))
+	      if(!data->save(i18n("(Safety copy on file error)").toAscii(), true))
 		{
 		  KMessageBox::information(this,
 		     i18n("Cannot save the file; will close it now."),
@@ -881,7 +883,7 @@ AddressBook::isSameFile(const QString& a, const QString& b)
   // ###########################################################################
   QFileInfo filea(a), fileb(b);
   // -----
-  return filea.absoluteFilePath()==fileb.absFilePath();
+  return filea.absoluteFilePath()==fileb.absoluteFilePath();
   // ###########################################################################
 }
 

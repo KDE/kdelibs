@@ -811,7 +811,7 @@ bool AddressBook::loadingHasFinished() const
 
 void AddressBook::resourceLoadingFinished( Resource *res )
 {
-  d->mPendingLoadResources.remove( res );
+  d->mPendingLoadResources.removeAll( res );
   emit loadingFinished( res );
 
   if ( d->mPendingLoadResources.count() == 0 )
@@ -820,7 +820,7 @@ void AddressBook::resourceLoadingFinished( Resource *res )
 
 void AddressBook::resourceSavingFinished( Resource *res )
 {
-  d->mPendingLoadResources.remove( res );
+  d->mPendingLoadResources.removeAll( res );
 
   emit savingFinished( res );
 }
@@ -829,7 +829,7 @@ void AddressBook::resourceLoadingError( Resource *res, const QString &errMsg )
 {
   error( errMsg );
 
-  d->mPendingLoadResources.remove( res );
+  d->mPendingLoadResources.removeAll( res );
   if ( d->mPendingLoadResources.count() == 0 )
     emit addressBookChanged( this );
 }
@@ -838,5 +838,5 @@ void AddressBook::resourceSavingError( Resource *res, const QString &errMsg )
 {
   error( errMsg );
 
-  d->mPendingSaveResources.remove( res );
+  d->mPendingSaveResources.removeAll( res );
 }

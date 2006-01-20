@@ -30,8 +30,8 @@
 using namespace KABC;
 
 DistributionList::DistributionList( DistributionListManager *manager,
-                                    const QString &name ) :
-  mManager( manager ), mName( name )
+                                    const QString &name )
+  : mManager( manager ), mName( name )
 {
   mManager->insert( this );
 }
@@ -56,7 +56,7 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
   Entry e( a, email );
 
   QList<Entry>::Iterator it;
-  for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
+  for ( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() ) {
       /**
         We have to check if both email addresses contains no data,
@@ -76,9 +76,9 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 void DistributionList::removeEntry( const Addressee &a, const QString &email )
 {
   QList<Entry>::Iterator it;
-  for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
+  for ( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() && (*it).email == email ) {
-      mEntries.remove( it );
+      mEntries.erase( it );
       return;
     }
   }
@@ -89,7 +89,7 @@ QStringList DistributionList::emails() const
   QStringList emails;
 
   Entry::List::ConstIterator it;
-  for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
+  for ( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     Addressee a = (*it).addressee;
     QString email = (*it).email.isEmpty() ? a.fullEmail() :
                                             a.fullEmail( (*it).email );
@@ -135,21 +135,17 @@ DistributionList *DistributionListManager::list( const QString &name, Qt::CaseSe
 {
   QListIterator<DistributionList*> it( mLists );
   bool caseSensitive = ( _caseSensitivity == Qt::CaseSensitive );
-  QString newName = caseSensitive ?  name : name.lower();
+  QString newName = caseSensitive ?  name : name.toLower();
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
-	if ( !caseSensitive )
-	{
-		if ( list->name().lower() == newName )
-		{
-				return list;
-		}
-	}
-	else
-	{
-    	if ( list->name() == newName ) 
-				return list;
-	}
+    if ( !caseSensitive ) {
+      if ( list->name().toLower() == newName ) {
+        return list;
+      }
+    } else {
+      if ( list->name() == newName )
+        return list;
+    }
   }
 
   return 0;
@@ -164,10 +160,11 @@ void DistributionListManager::insert( DistributionList *l )
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
     if ( list->name() == l->name() ) {
-      mLists.remove( list );
+      mLists.removeAll( list );
       break;
     }
   }
+
   mLists.append( l );
 }
 
@@ -180,7 +177,7 @@ void DistributionListManager::remove( DistributionList *l )
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
     if ( list->name() == l->name() ) {
-      mLists.remove( list );
+      mLists.removeAll( list );
       break;
     }
   }
@@ -212,7 +209,7 @@ bool DistributionListManager::load()
   d->mMissingEntries.clear();
 
   QMap<QString,QString>::ConstIterator it;
-  for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) {
+  for ( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) {
     QString name = it.key();
     QStringList value = cfg.readListEntry( name );
 
@@ -222,7 +219,7 @@ bool DistributionListManager::load()
 
     MissingEntryList missingEntries;
     QStringList::ConstIterator entryIt = value.constBegin();
-    while( entryIt != value.constEnd() ) {
+    while ( entryIt != value.constEnd() ) {
       QString id = *entryIt++;
       QString email = entryIt != value.constEnd() ? *entryIt : QString();
 
@@ -263,7 +260,7 @@ bool DistributionListManager::save()
     QStringList value;
     const DistributionList::Entry::List entries = list->entries();
     DistributionList::Entry::List::ConstIterator it;
-    for( it = entries.begin(); it != entries.end(); ++it ) {
+    for ( it = entries.begin(); it != entries.end(); ++it ) {
       value.append( (*it).addressee.uid() );
       value.append( (*it).email );
     }

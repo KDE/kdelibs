@@ -113,7 +113,7 @@ void BinaryFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
   }
 
   // set real number of entries
-  stream.device()->at( 2 * sizeof( quint32 ) );
+  stream.device()->seek( 2 * sizeof( quint32 ) );
   stream << counter;
 }
 
@@ -140,12 +140,12 @@ bool BinaryFormat::checkHeader( QDataStream &stream ) const
   }
 
   if ( magic != 0x2e93e ) {
-    kdError() << i18n("File '%1' is not binary format.").arg( file->name() ) << endl;
+    kdError() << i18n("File '%1' is not binary format.").arg( file->fileName() ) << endl;
     return false;
   }
 
   if ( version != BINARY_FORMAT_VERSION ) {
-    kdError() << i18n("File '%1' is the wrong version.").arg( file->name() ) << endl;
+    kdError() << i18n("File '%1' is the wrong version.").arg( file->fileName() ) << endl;
     return false;
   }
 

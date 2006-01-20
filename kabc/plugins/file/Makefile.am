@@ -1,4 +1,5 @@
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 # these are the headers for your project
 noinst_HEADERS   = resourcefileconfig.h

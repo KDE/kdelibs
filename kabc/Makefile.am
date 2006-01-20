@@ -3,6 +3,7 @@ SUBDIRS = kab vcardparser . formats plugins scripts tests
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kabc/kab \
            -I$(srcdir)/vcardparser $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 field.cpp: addressee.h addressee.cpp
 addressee.cpp: addressee.h

@@ -20,13 +20,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qregexp.h>
+#include <QList>
+#include <QRegExp>
+
+#include <kapplication.h>
+#include <kdebug.h>
+#include <klocale.h>
 #include <krandom.h>
 #include <ksharedptr.h>
-#include <kdebug.h>
-#include <kapplication.h>
-#include <klocale.h>
-#include <QList>
 
 #include "addresseehelper.h"
 #include "field.h"
@@ -198,13 +199,13 @@ void Addressee::setNameFromString( const QString &str )
   if ( str.isEmpty() )
     return;
 
-  QString spaceStr = " ";
-  QString emptyStr = "";
+  static QString spaceStr = " ";
+  static QString emptyStr = "";
   AddresseeHelper *helper = AddresseeHelper::self();
 
-  int i = str.find( ',' );
+  int i = str.indexOf( ',' );
   if( i < 0 ) {
-    QStringList parts = QStringList::split( spaceStr, str );
+    QStringList parts = str.split( spaceStr );
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;
 
@@ -234,7 +235,7 @@ void Addressee::setNameFromString( const QString &str )
     QString prefix;
     while ( leftOffset < rightOffset ) {
       if ( helper->containsTitle( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+        prefix.append( (prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
         leftOffset++;
       } else
         break;
@@ -248,7 +249,7 @@ void Addressee::setNameFromString( const QString &str )
 
     QString additionalName;
     while ( leftOffset < rightOffset ) {
-      additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+      additionalName.append( (additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
       leftOffset++;
     }
     setAdditionalName( additionalName );
@@ -256,7 +257,7 @@ void Addressee::setNameFromString( const QString &str )
     QString part1 = str.left( i );
     QString part2 = str.mid( i + 1 );
 
-    QStringList parts = QStringList::split( spaceStr, part1 );
+    QStringList parts = part1.split( spaceStr );
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;
 
@@ -265,7 +266,7 @@ void Addressee::setNameFromString( const QString &str )
       QString suffix;
       while ( rightOffset >= 0 ) {
         if ( helper->containsSuffix( parts[ rightOffset ] ) ) {
-          suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr));
+          suffix.prepend( parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr) );
           rightOffset--;
         } else
           break;
@@ -281,7 +282,7 @@ void Addressee::setNameFromString( const QString &str )
       QString prefix;
       while ( leftOffset < rightOffset ) {
         if ( helper->containsTitle( parts[ leftOffset ] ) ) {
-          prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+          prefix.append( (prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
           leftOffset++;
         } else
           break;
@@ -292,7 +293,7 @@ void Addressee::setNameFromString( const QString &str )
       setSuffix( "" );
     }
 
-    parts = QStringList::split( spaceStr, part2 );
+    parts = part2.split( spaceStr );
 
     leftOffset = 0;
     rightOffset = parts.count();
@@ -302,7 +303,7 @@ void Addressee::setNameFromString( const QString &str )
       QString prefix;
       while ( leftOffset < rightOffset ) {
         if ( helper->containsTitle( parts[ leftOffset ] ) ) {
-          prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+          prefix.append( (prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
           leftOffset++;
         } else
           break;
@@ -316,7 +317,7 @@ void Addressee::setNameFromString( const QString &str )
 
       QString additionalName;
       while ( leftOffset < rightOffset ) {
-        additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+        additionalName.append( (additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
         leftOffset++;
       }
       setAdditionalName( additionalName );
@@ -367,7 +368,7 @@ QString Addressee::fullEmail( const QString &email ) const
     text = e;
   else {
     QRegExp needQuotes( "[^ 0-9A-Za-z\\x0080-\\xFFFF]" );
-    if ( realName().find( needQuotes ) != -1 )
+    if ( realName().indexOf( needQuotes ) != -1 )
       text = "\"" + realName() + "\" <" + e + ">";
     else
       text = realName() + " <" + e + ">";
@@ -383,11 +384,11 @@ void Addressee::insertEmail( const QString &email, bool preferred )
 
   detach();
 
-  QStringList::Iterator it = mData->emails.find( email );
+  if ( !(mData->emails.contains( email )) ) {
+    if ( !preferred || mData->emails.first() == email )
+      return;
 
-  if ( it != mData->emails.end() ) {
-    if ( !preferred || it == mData->emails.begin() ) return;
-    mData->emails.remove( it );
+    mData->emails.removeAll( email );
     mData->emails.prepend( email );
   } else {
     if ( preferred ) {
@@ -400,25 +401,27 @@ void Addressee::insertEmail( const QString &email, bool preferred )
 
 void Addressee::removeEmail( const QString &email )
 {
-  detach();
-
-  QStringList::Iterator it = mData->emails.find( email );
-  if ( it == mData->emails.end() ) return;
-
-  mData->emails.remove( it );
+  if ( mData->emails.contains( email ) ) {
+    detach();
+    mData->emails.removeAll( email );
+  }
 }
 
 QString Addressee::preferredEmail() const
 {
-  if ( mData->emails.count() == 0 ) return QString();
-  else return mData->emails.first();
+  if ( mData->emails.count() == 0 )
+    return QString();
+  else
+    return mData->emails.first();
 }
 
 QStringList Addressee::emails() const
 {
   return mData->emails;
 }
-void Addressee::setEmails( const QStringList& emails ) {
+
+void Addressee::setEmails( const QStringList& emails )
+{
   detach();
 
   mData->emails = emails;
@@ -429,7 +432,7 @@ void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
   mData->empty = false;
 
   PhoneNumber::List::Iterator it;
-  for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
+  for ( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
     if ( (*it).id() == phoneNumber.id() ) {
       *it = phoneNumber;
       return;
@@ -441,12 +444,11 @@ void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
 
 void Addressee::removePhoneNumber( const PhoneNumber &phoneNumber )
 {
-  detach();
-
   PhoneNumber::List::Iterator it;
-  for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
+  for ( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
     if ( (*it).id() == phoneNumber.id() ) {
-      mData->phoneNumbers.remove( it );
+      detach();
+      mData->phoneNumbers.erase( it );
       return;
     }
   }
@@ -456,7 +458,7 @@ PhoneNumber Addressee::phoneNumber( int type ) const
 {
   PhoneNumber phoneNumber( "", type );
   PhoneNumber::List::ConstIterator it;
-  for( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
+  for ( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
     if ( matchBinaryPattern( (*it).type(), type ) ) {
       if ( (*it).type() & PhoneNumber::Pref )
         return (*it);
@@ -478,7 +480,7 @@ PhoneNumber::List Addressee::phoneNumbers( int type ) const
   PhoneNumber::List list;
 
   PhoneNumber::List::ConstIterator it;
-  for( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
+  for ( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
     if ( matchBinaryPattern( (*it).type(), type ) ) {
       list.append( *it );
     }
@@ -489,7 +491,7 @@ PhoneNumber::List Addressee::phoneNumbers( int type ) const
 PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
 {
   PhoneNumber::List::ConstIterator it;
-  for( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
+  for ( it = mData->phoneNumbers.constBegin(); it != mData->phoneNumbers.constEnd(); ++it ) {
     if ( (*it).id() == id ) {
       return *it;
     }
@@ -503,7 +505,7 @@ void Addressee::insertKey( const Key &key )
   mData->empty = false;
 
   Key::List::Iterator it;
-  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+  for ( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
     if ( (*it).id() == key.id() ) {
       *it = key;
       return;
@@ -514,12 +516,11 @@ void Addressee::insertKey( const Key &key )
 
 void Addressee::removeKey( const Key &key )
 {
-  detach();
-
   Key::List::Iterator it;
-  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+  for ( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
     if ( (*it).id() == key.id() ) {
-      mData->keys.remove( key );
+      detach();
+      mData->keys.removeAll( key );
       return;
     }
   }
@@ -528,7 +529,7 @@ void Addressee::removeKey( const Key &key )
 Key Addressee::key( int type, QString customTypeString ) const
 {
   Key::List::ConstIterator it;
-  for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
+  for ( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
     if ( (*it).type() == type ) {
       if ( type == Key::Custom ) {
         if ( customTypeString.isEmpty() ) {
@@ -561,7 +562,7 @@ Key::List Addressee::keys( int type, QString customTypeString ) const
   Key::List list;
 
   Key::List::ConstIterator it;
-  for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
+  for ( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
     if ( (*it).type() == type ) {
       if ( type == Key::Custom ) {
         if ( customTypeString.isEmpty() ) {
@@ -581,7 +582,7 @@ Key::List Addressee::keys( int type, QString customTypeString ) const
 Key Addressee::findKey( const QString &id ) const
 {
   Key::List::ConstIterator it;
-  for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
+  for ( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
     if ( (*it).id() == id ) {
       return *it;
     }
@@ -605,7 +606,7 @@ void Addressee::dump() const
   kdDebug(5700) << "  Emails {" << endl;
   const QStringList e = emails();
   QStringList::ConstIterator it;
-  for( it = e.begin(); it != e.end(); ++it ) {
+  for ( it = e.begin(); it != e.end(); ++it ) {
     kdDebug(5700) << "    " << (*it) << endl;
   }
   kdDebug(5700) << "  }" << endl;
@@ -613,21 +614,21 @@ void Addressee::dump() const
   kdDebug(5700) << "  PhoneNumbers {" << endl;
   const PhoneNumber::List p = phoneNumbers();
   PhoneNumber::List::ConstIterator it2;
-  for( it2 = p.begin(); it2 != p.end(); ++it2 ) {
+  for ( it2 = p.begin(); it2 != p.end(); ++it2 ) {
     kdDebug(5700) << "    Type: " << int((*it2).type()) << " Number: " << (*it2).number() << endl;
   }
   kdDebug(5700) << "  }" << endl;
 
   const Address::List a = addresses();
   Address::List::ConstIterator it3;
-  for( it3 = a.begin(); it3 != a.end(); ++it3 ) {
+  for ( it3 = a.begin(); it3 != a.end(); ++it3 ) {
     (*it3).dump();
   }
 
   kdDebug(5700) << "  Keys {" << endl;
   const Key::List k = keys();
   Key::List::ConstIterator it4;
-  for( it4 = k.begin(); it4 != k.end(); ++it4 ) {
+  for ( it4 = k.begin(); it4 != k.end(); ++it4 ) {
     kdDebug(5700) << "    Type: " << int((*it4).type()) <<
                      " Key: " << (*it4).textData() <<
                      " CustomString: " << (*it4).customTypeString() << endl;
@@ -647,7 +648,7 @@ void Addressee::insertAddress( const Address &address )
   mData->empty = false;
 
   Address::List::Iterator it;
-  for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
+  for ( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
     if ( (*it).id() == address.id() ) {
       *it = address;
       return;
@@ -659,12 +660,11 @@ void Addressee::insertAddress( const Address &address )
 
 void Addressee::removeAddress( const Address &address )
 {
-  detach();
-
   Address::List::Iterator it;
-  for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
+  for ( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
     if ( (*it).id() == address.id() ) {
-      mData->addresses.remove( it );
+      detach();
+      mData->addresses.erase( it );
       return;
     }
   }
@@ -674,7 +674,7 @@ Address Addressee::address( int type ) const
 {
   Address address( type );
   Address::List::ConstIterator it;
-  for( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
+  for ( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
     if ( matchBinaryPattern( (*it).type(), type ) ) {
       if ( (*it).type() & Address::Pref )
         return (*it);
@@ -696,7 +696,7 @@ Address::List Addressee::addresses( int type ) const
   Address::List list;
 
   Address::List::ConstIterator it;
-  for( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
+  for ( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
     if ( matchBinaryPattern( (*it).type(), type ) ) {
       list.append( *it );
     }
@@ -708,7 +708,7 @@ Address::List Addressee::addresses( int type ) const
 Address Addressee::findAddress( const QString &id ) const
 {
   Address::List::ConstIterator it;
-  for( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
+  for ( it = mData->addresses.constBegin(); it != mData->addresses.constEnd(); ++it ) {
     if ( (*it).id() == id ) {
       return *it;
     }
@@ -721,24 +721,23 @@ void Addressee::insertCategory( const QString &c )
   detach();
   mData->empty = false;
 
-  if ( mData->categories.findIndex( c ) != -1 ) return;
+  if ( mData->categories.contains( c ) )
+    return;
 
   mData->categories.append( c );
 }
 
-void Addressee::removeCategory( const QString &c )
+void Addressee::removeCategory( const QString &category )
 {
-  detach();
-
-  QStringList::Iterator it = mData->categories.find( c );
-  if ( it == mData->categories.end() ) return;
-
-  mData->categories.remove( it );
+  if ( mData->categories.contains( category ) ) {
+    detach();
+    mData->categories.removeAll( category );
+  }
 }
 
-bool Addressee::hasCategory( const QString &c ) const
+bool Addressee::hasCategory( const QString &category ) const
 {
-  return ( mData->categories.findIndex( c ) != -1 );
+  return mData->categories.contains( category );
 }
 
 void Addressee::setCategories( const QStringList &c )
@@ -765,7 +764,7 @@ void Addressee::insertCustom( const QString &app, const QString &name,
   QString qualifiedName = app + "-" + name + ":";
 
   QStringList::Iterator it;
-  for( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
+  for ( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
       (*it) = qualifiedName + value;
       return;
@@ -775,16 +774,15 @@ void Addressee::insertCustom( const QString &app, const QString &name,
   mData->custom.append( qualifiedName + value );
 }
 
-void Addressee::removeCustom( const QString &app, const QString &name)
+void Addressee::removeCustom( const QString &app, const QString &name )
 {
-  detach();
-
-  QString qualifiedName = app + "-" + name + ":";
+  const QString qualifiedName = app + "-" + name + ":";
 
   QStringList::Iterator it;
-  for( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
+  for ( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
-      mData->custom.remove( it );
+      detach();
+      mData->custom.erase( it );
       return;
     }
   }
@@ -796,9 +794,9 @@ QString Addressee::custom( const QString &app, const QString &name ) const
   QString value;
 
   QStringList::ConstIterator it;
-  for( it = mData->custom.constBegin(); it != mData->custom.constEnd(); ++it ) {
+  for ( it = mData->custom.constBegin(); it != mData->custom.constEnd(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
-      value = (*it).mid( (*it).find( ":" ) + 1 );
+      value = (*it).mid( (*it).indexOf( ":" ) + 1 );
       break;
     }
   }
@@ -820,7 +818,7 @@ QStringList Addressee::customs() const
 }
 
 void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
-                                   QString &email)
+                                   QString &email )
 {
   // This is a simplified version of KPIM::splitAddress().
 
@@ -1067,7 +1065,7 @@ bool listEquals( const QList<L> &list, const QList<L> &pattern )
     return false;
 
   for ( int i = 0; i < list.count(); ++i )
-    if ( pattern.find( list[ i ] ) == pattern.end() )
+    if ( !pattern.contains( list[ i ] ) )
       return false;
 
   return true;
@@ -1079,7 +1077,7 @@ bool listEquals( const QStringList &list, const QStringList &pattern )
     return false;
 
   for ( int i = 0; i < list.count(); ++i )
-    if ( pattern.find( list[ i ] ) == pattern.end() )
+    if ( !pattern.contains( list[ i ] ) )
       return false;
 
   return true;
@@ -1098,7 +1096,7 @@ bool emailsEquals( const QStringList &list, const QStringList &pattern )
 
   QStringList::ConstIterator it;
   for ( it = list.begin(); it != list.end(); ++it )
-    if ( pattern.find( *it ) == pattern.end() )
+    if ( !pattern.contains( *it ) )
       return false;
 
   return true;
