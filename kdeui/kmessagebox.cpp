@@ -258,7 +258,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                                label3, SLOT(openLink(const QString &)));
          }
        } else {
-         Q3TextEdit* te = new Q3TextEdit(details, QString(), detailsGroup);
+         QTextEdit* te = new QTextEdit(details, detailsGroup);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
        }
