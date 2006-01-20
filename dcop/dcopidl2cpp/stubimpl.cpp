@@ -208,8 +208,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    if ( async ) {
 
 		str << "    if ( !dcopClient()  ) {"<< endl;
-		str << "\tsetStatus( CallFailed );" << endl;
-		str << "\treturn;" << endl;
+		str << "        callFailed();" << endl;
+		str << "        return;" << endl;
 		str << "    }" << endl;
 	
 		str << "    QByteArray data;" << endl;
@@ -239,11 +239,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		}
 
 		str << "    if ( !dcopClient()  ) {"<< endl;
-		str << "\tsetStatus( CallFailed );" << endl;
+		str << "        callFailed();" << endl;
 		if ( result != "void" )
-		    str << "\treturn result;" << endl;
+		    str << "        return result;" << endl;
 		else
-		    str << "\treturn;" << endl;
+		    str << "        return;" << endl;
 		str << "    }" << endl;
 
 		str << "    QByteArray data, replyData;" << endl;
