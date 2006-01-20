@@ -34,7 +34,7 @@
 #include <qpixmap.h>
 #include <q3gridview.h>
 
-#include "kselect.h"
+#include "kselector.h"
 
 class QComboBox;
 class QLineEdit;

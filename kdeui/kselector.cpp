@@ -24,7 +24,7 @@
 
 #include <kimageeffect.h>
 
-#include "kselect.h"
+#include "kselector.h"
 
 //-----------------------------------------------------------------------------
 /*
@@ -477,5 +477,5 @@ void KSelector::virtual_hook( int, void* )
 void KGradientSelector::virtual_hook( int id, void* data )
 { KSelector::virtual_hook( id, data ); }
 
-#include "kselect.moc"
+#include "kselector.moc"
 
