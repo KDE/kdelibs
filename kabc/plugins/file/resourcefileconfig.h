@@ -46,7 +46,7 @@ protected Q_SLOTS:
 
 private:
   KComboBox* mFormatBox;
-  KURLRequester* mFileNameEdit;
+  KUrlRequester* mFileNameEdit;
   bool mInEditMode;
 
   QStringList mFormatTypes;

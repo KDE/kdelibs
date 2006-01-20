@@ -38,7 +38,7 @@
  * @short A combo box showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLComboBox : public KComboBox
+class KIO_EXPORT KUrlComboBox : public KComboBox
 {
     Q_OBJECT
     Q_PROPERTY(QStringList urls READ urls WRITE setURLs DESIGNABLE true)
@@ -59,7 +59,7 @@ public:
     enum OverLoadResolving { RemoveTop, RemoveBottom };
 
     /**
-     * Constructs a KURLComboBox.
+     * Constructs a KUrlComboBox.
      * @param mode is either Files, Directories or Both and controls the
      * following behavior:
      * @li Files  all inserted URLs will be treated as files, therefore the
@@ -72,12 +72,12 @@ public:
      * @li Both  Don't mess with anything, just show the url as given.
      * @param parent The parent object of this widget.
      */
-    KURLComboBox( Mode mode, QWidget *parent=0);
-    KURLComboBox( Mode mode, bool rw, QWidget *parent=0);
+    KUrlComboBox( Mode mode, QWidget *parent=0);
+    KUrlComboBox( Mode mode, bool rw, QWidget *parent=0);
     /**
      * Destructs the combo box.
      */
-    ~KURLComboBox();
+    ~KUrlComboBox();
 
     /**
      * Sets the current url. This combo handles exactly one url additionally
@@ -183,18 +183,18 @@ protected Q_SLOTS:
 
 
 protected:
-    struct _KURLComboItem {
+    struct _KUrlComboItem {
 	QString text;
 	KUrl url;
 	QIcon icon;
     };
-    typedef _KURLComboItem KURLComboItem;
-    QList<const KURLComboItem*> itemList;
-    QList<const KURLComboItem*> defaultList;
-    QMap<int,const KURLComboItem*> itemMapper;
+    typedef _KUrlComboItem KUrlComboItem;
+    QList<const KUrlComboItem*> itemList;
+    QList<const KUrlComboItem*> defaultList;
+    QMap<int,const KUrlComboItem*> itemMapper;
 
     void init( Mode mode );
-    void insertURLItem( const KURLComboItem * );
+    void insertURLItem( const KUrlComboItem * );
 
     /**
      * Uses KMimeType::pixmapForURL() to return a proper pixmap for @p url.
@@ -204,10 +204,10 @@ protected:
 
     /**
      * Updates @p item with @p pixmap and sets the url instead of the text
-     * of the KURLComboItem.
+     * of the KUrlComboItem.
      * Also works around a Qt bug.
      */
-    void updateItem( const KURLComboItem *item, int index, const QIcon& pix);
+    void updateItem( const KUrlComboItem *item, int index, const QIcon& pix);
 
     QIcon opendirIcon;
     int firstItemIndex;
@@ -220,8 +220,8 @@ private:
                  // to specify if we want a trailing slash or not
 
 private:
-    class KURLComboBoxPrivate;
-    KURLComboBoxPrivate* const d;
+    class KUrlComboBoxPrivate;
+    KUrlComboBoxPrivate* const d;
 };
 
 

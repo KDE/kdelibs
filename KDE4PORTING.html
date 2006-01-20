@@ -115,8 +115,13 @@ by QX11Info::display()</li>
 
 <H4>KCodecs</H4>
 <ul>
-<li>All methods using a Q(3)CString removed. The methods use QByteArray (and thus Q3CStrings) now. </li>
-<li><b>TODO:</b> Rename header to match classname.</li>
+<li>All methods using a QCString removed. The methods use QByteArray now. </li>
+<li>Header renamed to kcodecs.h</li>
+</ul>
+
+<H4>KConfigBackend</H4>
+<ul>
+<li>Removed filename(), use fileName()</li>
 </ul>
 
 <H4>KConfigBase</H4>
@@ -144,7 +149,7 @@ writeEntry("someKey", int(timeVal)); // ok
 <li>all read*ListEntry methods deprecated, renamed to readEntry. Most types use the template version.<br/>
 <b>template &lt;typename T&gt; readEntry(key, const QList&lt;T&gt;&amp;)</b><br/>If you just write readEntry(key, list) it should work for any type that QVariant can convert to QString.
 </li>
-<li>writeEntry, deleteGroup, and deleteEntry doesn't take anymore severals boolean options, but one QFlags</li>
+<li>writeEntry, deleteGroup, and deleteEntry doesn't take anymore severals boolean options (persistent,global,localized), but one QFlags</li>
 </ul>
 <H4>KLibFactory</H4>
 
@@ -259,21 +264,22 @@ Desktop Entry Spec</a>
 
 <H4>KURL</H4>
 <ul>
+<li>Has been renamed to KUrl, but a typedef is available for source compatibility</li>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
 <li>htmlURL() had to be removed, please use Qt::escape(url.prettyURL()) now, with #include &lt;QTextDocument&gt;.
-This requires libQtGui, which is why it can't be in KURL anymore.</li>
+This requires libQtGui, which is why it can't be in KUrl anymore.</li>
 </ul>
 
 <H4>KURLDrag</H4>
 <ul>
-<li>This class has been moved to kde3support. Use KURL::populateMimeData() and
-KURL::List::populateMimeData() in the drag/copy side,
-and the static methods KURL::List::canDecode() and KURL::List::fromMimeData()
+<li>This class has been moved to kde3support. Use KUrl::populateMimeData() and
+KUrl::List::populateMimeData() in the drag/copy side,
+and the static methods KUrl::List::canDecode() and KUrl::List::fromMimeData()
 in the drop/paste side.<br>
 Example: Replace <pre>  KURL::List uriList;
   if ( KURLDrag::canDecode(e) &amp;&amp; KURLDrag::decode( e, uriList ) ) {</pre>
-by <pre>  KURL::List uriList = KURL::List::fromMimeData( e-&gt;mimeData() );
+by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
   if ( !uriList.isEmpty() ) {</pre></li>
 </ul>
 
@@ -395,10 +401,9 @@ cg.readXXX("entry name");
 <li>checkAvailable() -&gt; isAvailable()</li>
 </ul>
 
-
-<H4>KConfigBackend</H4>
+<H4>KURLLabel</H4>
 <ul>
-<li>Removed filename(), use fileName()</li>
+<li>renamed to KUrlLabel</li>
 </ul>
 
 <H4>KConfigDialog</H4>
@@ -725,8 +730,19 @@ a listDir result.</li>
 
 <H4>KURLCombo</H4>
 <ul>
+<li>Renamed to KUrlCombo</li>
 <li>All usage of QPixmap has been replaced by usage of QIcon</li>
 <li>getPixmap() --&gt; getIcon()</li>
+</ul>
+
+<H4>KURLCompletion</H4>
+<ul>
+<li>Renamed to KUrlCompletion</li>
+</ul>
+
+<H4>KURLPixmapProvider</H4>
+<ul>
+<li>Renamed to KUrlPixmapProvider</li>
 </ul>
 
 <H4>KMimeType</H4>
@@ -748,8 +764,14 @@ a listDir result.</li>
 
 <H4>KURLRequester</H4>
 <ul>
+<li>renamed to KUrlRequester</li>
 <li>setCaption is gone, use setWindowTitle instead</li>
 </ul>
+
+<H4>KURLBar</H4>
+<ul>
+<li>renamed to KUrlBar</li>
+</H4>
 
 <H4>KFileDialog</H4>
 <ul>

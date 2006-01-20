@@ -168,7 +168,6 @@ kio/tcpslavebase.h
 kio/forwardingslavebase.h
 kio/observer.h
 kio/chmodjob.h
-kio/kmdbase.h
 kio/authinfo.h
 kio/ioslave_defaults.h
 kio/http_slave_defaults.h

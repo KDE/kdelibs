@@ -65,10 +65,10 @@ void KConfigBase::writeEntry( const char *pKey,
   writeEntry(pKey, int(aValue), flags);
 }
 
-class KURLBarItem::KURLBarItemPrivate
+class KUrlBarItem::KUrlBarItemPrivate
 {
 public:
-    KURLBarItemPrivate()
+    KUrlBarItemPrivate()
     {
         isPersistent = true;
     }
@@ -76,31 +76,31 @@ public:
     bool isPersistent;
 };
 
-KURLBarItem::KURLBarItem( KURLBar *parent,
+KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, bool persistent, const QString& description,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( ),
       m_parent( parent ),
-      m_appLocal( true ),d(new KURLBarItemPrivate)
+      m_appLocal( true ),d(new KUrlBarItemPrivate)
 {
     init( icon, group, description, persistent );
 }
 
-KURLBarItem::KURLBarItem( KURLBar *parent,
+KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, const QString& description,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap(  ),
       m_parent( parent ),
-      m_appLocal( true ),d(new KURLBarItemPrivate)
+      m_appLocal( true ),d(new KUrlBarItemPrivate)
 {
     init( icon, group, description, true /*persistent*/ );
 }
 
-void KURLBarItem::init( const QString& icon, KIcon::Group group,
+void KUrlBarItem::init( const QString& icon, KIcon::Group group,
                         const QString& description, bool persistent )
 {
     d->isPersistent = persistent;
@@ -110,19 +110,19 @@ void KURLBarItem::init( const QString& icon, KIcon::Group group,
     setDescription( description );
 }
 
-KURLBarItem::~KURLBarItem()
+KUrlBarItem::~KUrlBarItem()
 {
     delete d;
 }
 
-void KURLBarItem::setURL( const KUrl& url )
+void KUrlBarItem::setURL( const KUrl& url )
 {
     m_url = url;
     if ( m_description.isEmpty() )
         setText( url.fileName() );
 }
 
-void KURLBarItem::setIcon( const QString& icon, KIcon::Group group )
+void KUrlBarItem::setIcon( const QString& icon, KIcon::Group group )
 {
     m_icon  = icon;
     m_group = group;
@@ -134,39 +134,39 @@ void KURLBarItem::setIcon( const QString& icon, KIcon::Group group )
                                                     KIcon::DefaultState );
 }
 
-void KURLBarItem::setDescription( const QString& desc )
+void KUrlBarItem::setDescription( const QString& desc )
 {
     m_description = desc;
     setText( desc.isEmpty() ? m_url.fileName() : desc );
 }
 
-void KURLBarItem::setApplicationLocal( bool local )
+void KUrlBarItem::setApplicationLocal( bool local )
 {
     if ( !local && !isPersistent() )
     {
-        kdWarning() << "KURLBar: dynamic (non-persistent) items can not be global." << endl;
+        kdWarning() << "KUrlBar: dynamic (non-persistent) items can not be global." << endl;
         return;
     }
 
     m_appLocal = local;
 }
 
-void KURLBarItem::setToolTip( const QString& tip )
+void KUrlBarItem::setToolTip( const QString& tip )
 {
     m_toolTip = tip;
 }
 
-QString KURLBarItem::toolTip() const
+QString KUrlBarItem::toolTip() const
 {
     return m_toolTip.isEmpty() ? m_url.prettyURL() : m_toolTip;
 }
 
-int KURLBarItem::iconSize() const
+int KUrlBarItem::iconSize() const
 {
     return m_parent->iconSize();
 }
 
-void KURLBarItem::paint( QPainter *p )
+void KUrlBarItem::paint( QPainter *p )
 {
     Q3ListBox *box = listBox();
     int w = width( box );
@@ -256,11 +256,11 @@ void KURLBarItem::paint( QPainter *p )
     }
 }
 
-QSize KURLBarItem::sizeHint() const
+QSize KUrlBarItem::sizeHint() const
 {
     int wmin = 0;
     int hmin = 0;
-    const KURLBarListBox *lb =static_cast<const KURLBarListBox*>(listBox());
+    const KUrlBarListBox *lb =static_cast<const KUrlBarListBox*>(listBox());
 
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
         wmin = Q3ListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
@@ -279,23 +279,23 @@ QSize KURLBarItem::sizeHint() const
     return QSize( wmin, hmin );
 }
 
-int KURLBarItem::width( const Q3ListBox *lb ) const
+int KUrlBarItem::width( const Q3ListBox *lb ) const
 {
-    if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
+    if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
         return QMAX( sizeHint().width(), lb->viewport()->width() );
     else
         return sizeHint().width();
 }
 
-int KURLBarItem::height( const Q3ListBox *lb ) const
+int KUrlBarItem::height( const Q3ListBox *lb ) const
 {
-    if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
+    if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
         return sizeHint().height();
     else
         return QMAX( sizeHint().height(), lb->viewport()->height() );
 }
 
-bool KURLBarItem::isPersistent() const
+bool KUrlBarItem::isPersistent() const
 {
     return d->isPersistent;
 }
@@ -303,10 +303,10 @@ bool KURLBarItem::isPersistent() const
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-class KURLBar::KURLBarPrivate
+class KUrlBar::KUrlBarPrivate
 {
 public:
-    KURLBarPrivate()
+    KUrlBarPrivate()
     {
         currentURL.setPath( QDir::homePath() );
         defaultIconSize = 0;
@@ -317,14 +317,14 @@ public:
 };
 
 
-KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
+KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
     : QFrame( parent, name, f ),
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
       m_isImmutable( false ),
       m_listBox( 0L ),
-      m_iconSize( KIcon::SizeMedium ),d(new KURLBarPrivate())
+      m_iconSize( KIcon::SizeMedium ),d(new KUrlBarPrivate())
 {
 
     setListBox( 0L );
@@ -339,30 +339,30 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WF
                                "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
 }
 
-KURLBar::~KURLBar()
+KUrlBar::~KUrlBar()
 {
     delete d;
 }
 
-KURLBarItem * KURLBar::insertItem(const KUrl& url, const QString& description,
+KUrlBarItem * KUrlBar::insertItem(const KUrl& url, const QString& description,
                                   bool applicationLocal,
                                   const QString& icon, KIcon::Group group )
 {
-    KURLBarItem *item = new KURLBarItem(this, url, description, icon, group);
+    KUrlBarItem *item = new KUrlBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
     m_listBox->insertItem( item );
     return item;
 }
 
-KURLBarItem * KURLBar::insertDynamicItem(const KUrl& url, const QString& description,
+KUrlBarItem * KUrlBar::insertDynamicItem(const KUrl& url, const QString& description,
                                          const QString& icon, KIcon::Group group )
 {
-    KURLBarItem *item = new KURLBarItem(this, url, false, description, icon, group);
+    KUrlBarItem *item = new KUrlBarItem(this, url, false, description, icon, group);
     m_listBox->insertItem( item );
     return item;
 }
 
-void KURLBar::setOrientation( Qt::Orientation orient )
+void KUrlBar::setOrientation( Qt::Orientation orient )
 {
     m_listBox->setOrientation( orient );
     setSizePolicy( QSizePolicy( isVertical() ?
@@ -373,17 +373,17 @@ void KURLBar::setOrientation( Qt::Orientation orient )
                                 QSizePolicy::Maximum ));
 }
 
-Qt::Orientation KURLBar::orientation() const
+Qt::Orientation KUrlBar::orientation() const
 {
     return m_listBox->orientation();
 }
 
-void KURLBar::setListBox( KURLBarListBox *view )
+void KUrlBar::setListBox( KUrlBarListBox *view )
 {
     delete m_listBox;
 
     if ( !view ) {
-        m_listBox = new KURLBarListBox( this, "urlbar listbox" );
+        m_listBox = new KUrlBarListBox( this, "urlbar listbox" );
         setOrientation( Qt::Vertical );
     }
     else {
@@ -408,7 +408,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
              SLOT( slotSelected( Q3ListBoxItem * ) ));
 }
 
-void KURLBar::setIconSize( int size )
+void KUrlBar::setIconSize( int size )
 {
     if ( size == m_iconSize )
         return;
@@ -416,29 +416,29 @@ void KURLBar::setIconSize( int size )
     m_iconSize = size;
 
     // reload the icons with the new size
-    KURLBarItem *item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
+    KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
     while ( item ) {
         item->setIcon( item->icon(), item->iconGroup() );
-        item = static_cast<KURLBarItem*>( item->next() );
+        item = static_cast<KUrlBarItem*>( item->next() );
     }
 
     resize( sizeHint() );
     updateGeometry();
 }
 
-void KURLBar::clear()
+void KUrlBar::clear()
 {
     m_listBox->clear();
 }
 
-void KURLBar::resizeEvent( QResizeEvent *e )
+void KUrlBar::resizeEvent( QResizeEvent *e )
 {
     QFrame::resizeEvent( e );
     m_listBox->resize( width(), height() );
 }
 
 
-void KURLBar::paletteChange( const QPalette & )
+void KUrlBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
     QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
@@ -453,7 +453,7 @@ void KURLBar::paletteChange( const QPalette & )
     setPalette( pal );
 }
 
-QSize KURLBar::sizeHint() const
+QSize KUrlBar::sizeHint() const
 {
     return minimumSizeHint();
 
@@ -464,12 +464,12 @@ QSize KURLBar::sizeHint() const
     // resized to a smaller size so that scrollbars appear).
     int w = 0;
     int h = 0;
-    KURLBarItem *item;
+    KUrlBarItem *item;
     bool vertical = isVertical();
 
-    for ( item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
+    for ( item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
           item;
-          item = static_cast<KURLBarItem*>( item->next() ) ) {
+          item = static_cast<KUrlBarItem*>( item->next() ) ) {
 
         QSize sh = item->sizeHint();
 
@@ -495,7 +495,7 @@ QSize KURLBar::sizeHint() const
 #endif
 }
 
-QSize KURLBar::minimumSizeHint() const
+QSize KUrlBar::minimumSizeHint() const
 {
     QSize s       = m_listBox->sizeHint();
     int   barSize = style()->pixelMetric(QStyle::PM_ScrollBarExtent);
@@ -504,7 +504,7 @@ QSize KURLBar::minimumSizeHint() const
     return QSize( w, h );
 }
 
-void KURLBar::slotSelected( int button, Q3ListBoxItem *item )
+void KUrlBar::slotSelected( int button, Q3ListBoxItem *item )
 {
     if ( button != Qt::LeftButton )
         return;
@@ -512,10 +512,10 @@ void KURLBar::slotSelected( int button, Q3ListBoxItem *item )
     slotSelected( item );
 }
 
-void KURLBar::slotSelected( Q3ListBoxItem *item )
+void KUrlBar::slotSelected( Q3ListBoxItem *item )
 {
     if ( item && item != m_activeItem )
-        m_activeItem = static_cast<KURLBarItem*>( item );
+        m_activeItem = static_cast<KUrlBarItem*>( item );
 
     if ( m_activeItem ) {
         m_listBox->setCurrentItem( m_activeItem );
@@ -523,7 +523,7 @@ void KURLBar::slotSelected( Q3ListBoxItem *item )
     }
 }
 
-void KURLBar::setCurrentItem( const KUrl& url )
+void KUrlBar::setCurrentItem( const KUrl& url )
 {
     d->currentURL = url;
 
@@ -535,8 +535,8 @@ void KURLBar::setCurrentItem( const KUrl& url )
     bool hasURL = false;
     Q3ListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
-        if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
-            m_activeItem = static_cast<KURLBarItem*>( item );
+        if ( static_cast<KUrlBarItem*>( item )->url().url(-1) == u ) {
+            m_activeItem = static_cast<KUrlBarItem*>( item );
             m_listBox->setCurrentItem( item );
             m_listBox->setSelected( item, true );
             hasURL = true;
@@ -551,21 +551,21 @@ void KURLBar::setCurrentItem( const KUrl& url )
     }
 }
 
-KURLBarItem * KURLBar::currentItem() const
+KUrlBarItem * KUrlBar::currentItem() const
 {
     Q3ListBoxItem *item = m_listBox->item( m_listBox->currentItem() );
     if ( item )
-        return static_cast<KURLBarItem *>( item );
+        return static_cast<KUrlBarItem *>( item );
     return 0L;
 }
 
-KUrl KURLBar::currentURL() const
+KUrl KUrlBar::currentURL() const
 {
-    KURLBarItem *item = currentItem();
+    KUrlBarItem *item = currentItem();
     return item ? item->url() : KUrl();
 }
 
-void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
+void KUrlBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
     m_isImmutable = appConfig->groupIsImmutable( itemGroup );
     KConfigGroup appGroup( appConfig, itemGroup );
@@ -587,7 +587,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
     }
 }
 
-void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
+void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
     KUrl url = KUrl::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
@@ -601,7 +601,7 @@ void KURLBar::readItem( int i, KConfigBase *config, bool applicationLocal )
                 config->readEntry( QString("IconGroup_") + number, KIcon::Group() ) );
 }
 
-void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
+void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
 {
     KConfigGroup cg( config, itemGroup );
     if(!cg.hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
@@ -614,7 +614,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 
     int i = 0;
     int numLocal = 0;
-    KURLBarItem *item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
+    KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
 
     while ( item )
     {
@@ -628,7 +628,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 
             i++;
         }
-        item = static_cast<KURLBarItem*>( item->next() );
+        item = static_cast<KUrlBarItem*>( item->next() );
     }
     cg.writeEntry("Number of Entries", numLocal);
 
@@ -639,7 +639,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
         config->setGroup( itemGroup + " (Global)" );
 
         int numGlobals = 0;
-        item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
+        item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
 
         while ( item )
         {
@@ -652,7 +652,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
                 }
             }
 
-            item = static_cast<KURLBarItem*>( item->next() );
+            item = static_cast<KUrlBarItem*>( item->next() );
         }
         config->writeEntry("Number of Entries", numGlobals,
                            KConfigBase::Normal|KConfigBase::Global);
@@ -661,7 +661,7 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
     m_isModified = false;
 }
 
-void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
+void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfig *config,
                          bool global )
 {
     if ( !item->isPersistent() )
@@ -683,7 +683,7 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
 }
 
 
-void KURLBar::slotDropped( QDropEvent *e )
+void KUrlBar::slotDropped( QDropEvent *e )
 {
     KUrl::List urls = KUrl::List::fromMimeData( e->mimeData() );
     if ( !urls.isEmpty() ) {
@@ -701,12 +701,12 @@ void KURLBar::slotDropped( QDropEvent *e )
     }
 }
 
-void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos )
+void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos )
 {
     if (m_isImmutable)
         return;
 
-    KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
+    KUrlBarItem *item = dynamic_cast<KUrlBarItem*>( _item );
 
     KUrl lastURL = m_activeItem ? m_activeItem->url() : KUrl();
 
@@ -738,7 +738,7 @@ void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
         addNewItem();
 
     } else if (result == EditItem) {
-        editItem( static_cast<KURLBarItem *>( item ) );
+        editItem( static_cast<KUrlBarItem *>( item ) );
 
     } else if (result == RemoveItem) {
         delete item;
@@ -750,9 +750,9 @@ void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
     setCurrentItem( lastURL );
 }
 
-bool KURLBar::addNewItem()
+bool KUrlBar::addNewItem()
 {
-    KURLBarItem *item = new KURLBarItem( this, d->currentURL,
+    KUrlBarItem *item = new KUrlBarItem( this, d->currentURL,
                                          i18n("Enter a description") );
     if ( editItem( item ) ) {
         m_listBox->insertItem( item );
@@ -763,7 +763,7 @@ bool KURLBar::addNewItem()
     return false;
 }
 
-bool KURLBar::editItem( KURLBarItem *item )
+bool KUrlBar::editItem( KUrlBarItem *item )
 {
     if ( !item || !item->isPersistent() ) // should never happen tho
         return false;
@@ -773,7 +773,7 @@ bool KURLBar::editItem( KURLBarItem *item )
     QString icon        = item->icon();
     bool appLocal       = item->applicationLocal();
 
-    if ( KURLBarItemDialog::getInformation( m_useGlobal,
+    if ( KUrlBarItemDialog::getInformation( m_useGlobal,
                                             url, description,
                                             icon, appLocal,
                                             m_iconSize, this ))
@@ -795,33 +795,33 @@ bool KURLBar::editItem( KURLBarItem *item )
 ///////////////////////////////////////////////////////////////////
 
 
-KURLBarListBox::KURLBarListBox( QWidget *parent, const char *name )
+KUrlBarListBox::KUrlBarListBox( QWidget *parent, const char *name )
     : KListBox( parent, name )
 {
     setAcceptDrops( true );
     viewport()->setAcceptDrops( true );
 }
 
-KURLBarListBox::~KURLBarListBox()
+KUrlBarListBox::~KUrlBarListBox()
 {
 }
 
-void KURLBarListBox::paintEvent( QPaintEvent* )
+void KUrlBarListBox::paintEvent( QPaintEvent* )
 {
     QPainter p(this);
     p.setPen( colorGroup().mid() );
     p.drawRect( 0, 0, width() - 1, height() - 1 );
 }
 
-void KURLBarListBox::populateMimeData( QMimeData* mimeData )
+void KUrlBarListBox::populateMimeData( QMimeData* mimeData )
 {
     KUrl::List urls;
-    KURLBarItem *item = static_cast<KURLBarItem*>( firstItem() );
+    KUrlBarItem *item = static_cast<KUrlBarItem*>( firstItem() );
 
     while ( item ) {
         if ( item->isSelected() )
             urls.append( item->url() );
-        item = static_cast<KURLBarItem*>( item->next() );
+        item = static_cast<KUrlBarItem*>( item->next() );
     }
 
     if ( !urls.isEmpty() ) {
@@ -830,17 +830,17 @@ void KURLBarListBox::populateMimeData( QMimeData* mimeData )
     }
 }
 
-void KURLBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
+void KUrlBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
 {
     e->accept( KUrl::List::canDecode( e->mimeData() ) );
 }
 
-void KURLBarListBox::contentsDropEvent( QDropEvent *e )
+void KUrlBarListBox::contentsDropEvent( QDropEvent *e )
 {
     emit dropped( e );
 }
 
-void KURLBarListBox::contextMenuEvent( QContextMenuEvent *e )
+void KUrlBarListBox::contextMenuEvent( QContextMenuEvent *e )
 {
     if (e)
     {
@@ -849,7 +849,7 @@ void KURLBarListBox::contextMenuEvent( QContextMenuEvent *e )
     }
 }
 
-void KURLBarListBox::setOrientation( Qt::Orientation orient )
+void KUrlBarListBox::setOrientation( Qt::Orientation orient )
 {
     if ( orient == Qt::Vertical ) {
         setColumnMode( 1 );
@@ -863,14 +863,14 @@ void KURLBarListBox::setOrientation( Qt::Orientation orient )
     m_orientation = orient;
 }
 
-bool KURLBarListBox::event( QEvent* e )
+bool KUrlBarListBox::event( QEvent* e )
 {
     if ( e->type() == QEvent::ToolTip )
     {
         QHelpEvent* he = static_cast<QHelpEvent*>( e );
         Q3ListBoxItem *item = itemAt( he->pos() );
         if ( item ) {
-            QString text = static_cast<KURLBarItem*>( item )->toolTip();
+            QString text = static_cast<KUrlBarItem*>( item )->toolTip();
             if ( !text.isEmpty() )
                 QToolTip::showText( itemRect( item ).topLeft(), text, this );
         }
@@ -886,12 +886,12 @@ bool KURLBarListBox::event( QEvent* e )
 ///////////////////////////////////////////////////////////////////
 
 
-bool KURLBarItemDialog::getInformation( bool allowGlobal, KUrl& url,
+bool KUrlBarItemDialog::getInformation( bool allowGlobal, KUrl& url,
                                         QString& description, QString& icon,
                                         bool& appLocal, int iconSize,
                                         QWidget *parent )
 {
-    KURLBarItemDialog *dialog = new KURLBarItemDialog( allowGlobal, url,
+    KUrlBarItemDialog *dialog = new KUrlBarItemDialog( allowGlobal, url,
                                                        description, icon,
                                                        appLocal,
                                                        iconSize, parent );
@@ -910,7 +910,7 @@ bool KURLBarItemDialog::getInformation( bool allowGlobal, KUrl& url,
     return false;
 }
 
-KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KUrl& url,
+KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
                                       int iconSize,
@@ -941,7 +941,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KUrl& url,
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>").arg(QDir::homePath());
     label = new QLabel( i18n("&URL:"), grid );
-    m_urlEdit = new KURLRequester( url.prettyURL(), grid );
+    m_urlEdit = new KUrlRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );
     label->setBuddy( m_urlEdit );
     label->setWhatsThis(whatsThisText );
@@ -980,16 +980,16 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KUrl& url,
     setMainWidget( box );
 }
 
-KURLBarItemDialog::~KURLBarItemDialog()
+KUrlBarItemDialog::~KUrlBarItemDialog()
 {
 }
 
-void KURLBarItemDialog::urlChanged(const QString & text )
+void KUrlBarItemDialog::urlChanged(const QString & text )
 {
     enableButtonOK( !text.isEmpty() );
 }
 
-KUrl KURLBarItemDialog::url() const
+KUrl KUrlBarItemDialog::url() const
 {
     QString text = m_urlEdit->url();
     KUrl u;
@@ -1001,17 +1001,17 @@ KUrl KURLBarItemDialog::url() const
     return u;
 }
 
-QString KURLBarItemDialog::description() const
+QString KUrlBarItemDialog::description() const
 {
     return m_edit->text();
 }
 
-QString KURLBarItemDialog::icon() const
+QString KUrlBarItemDialog::icon() const
 {
     return m_iconButton->icon();
 }
 
-bool KURLBarItemDialog::applicationLocal() const
+bool KUrlBarItemDialog::applicationLocal() const
 {
     if ( !m_appLocal )
         return true;
@@ -1019,13 +1019,13 @@ bool KURLBarItemDialog::applicationLocal() const
     return m_appLocal->isChecked();
 }
 
-void KURLBarItem::virtual_hook( int, void* )
+void KUrlBarItem::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void KURLBar::virtual_hook( int, void* )
+void KUrlBar::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void KURLBarListBox::virtual_hook( int id, void* data )
+void KUrlBarListBox::virtual_hook( int id, void* data )
 { KListBox::virtual_hook( id, data ); }
 
 

@@ -10,14 +10,14 @@ int main( int argc, char **argv )
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
  
-    KURL url = KURLRequesterDlg::getURL( "ftp://ftp.kde.org" );
+    KUrl url = KUrlRequesterDlg::getURL( "ftp://ftp.kde.org" );
     qDebug( "Selected url: %s", url.url().latin1());
 
-    KURLRequester *req = new KURLRequester();
+    KUrlRequester *req = new KUrlRequester();
     KEditListBox *el = new KEditListBox( QLatin1String("Test"), req->customEditor() );
     el->show();
 
-    KURLRequester *req1 = new KURLRequester();
+    KUrlRequester *req1 = new KUrlRequester();
     req1->fileDialog();
     req1->setWindowTitle("AAAAAAAAAAAA");
     req1->show();

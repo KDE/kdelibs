@@ -375,7 +375,7 @@ bool KPropertiesDialog::canDisplay( KFileItemList _items )
          KFilePermissionsPropsPlugin::supports( _items ) ||
          KDesktopPropsPlugin::supports( _items ) ||
          KBindingPropsPlugin::supports( _items ) ||
-         KURLPropsPlugin::supports( _items ) ||
+         KUrlPropsPlugin::supports( _items ) ||
          KDevicePropsPlugin::supports( _items ) ||
          KFileMetaPropsPlugin::supports( _items ) ||
          KPreviewPropsPlugin::supports( _items );
@@ -464,9 +464,9 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-  if ( KURLPropsPlugin::supports( m_items ) )
+  if ( KUrlPropsPlugin::supports( m_items ) )
   {
-    KPropsDlgPlugin *p = new KURLPropsPlugin( this );
+    KPropsDlgPlugin *p = new KUrlPropsPlugin( this );
     insertPlugin (p);
   }
 
@@ -543,7 +543,7 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   // Same for a URL page (because of the Name= hack)
   for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
    if ( it.current()->isA("KExecPropsPlugin") || // KDE4 remove me
-        it.current()->isA("KURLPropsPlugin") ||
+        it.current()->isA("KUrlPropsPlugin") ||
         it.current()->isA("KDesktopPropsPlugin"))
    {
      //kdDebug(250) << "Setting page dirty" << endl;
@@ -2468,21 +2468,21 @@ void KFilePermissionsPropsPlugin::slotChmodResult( KIO::Job * job )
 
 
 
-class KURLPropsPlugin::KURLPropsPluginPrivate
+class KUrlPropsPlugin::KUrlPropsPluginPrivate
 {
 public:
-  KURLPropsPluginPrivate()
+  KUrlPropsPluginPrivate()
   {
   }
-  ~KURLPropsPluginPrivate()
+  ~KUrlPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props ),d(new KURLPropsPluginPrivate)
+KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props ),d(new KUrlPropsPluginPrivate)
 {
   d->m_frame = properties->addPage(i18n("U&RL"));
   QVBoxLayout *layout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
@@ -2492,7 +2492,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   l->setText( i18n("URL:") );
   layout->addWidget(l);
 
-  URLEdit = new KURLRequester( d->m_frame);
+  URLEdit = new KUrlRequester( d->m_frame);
   layout->addWidget(URLEdit);
 
   QString path = properties->kurl().path();
@@ -2515,17 +2515,17 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   layout->addStretch (1);
 }
 
-KURLPropsPlugin::~KURLPropsPlugin()
+KUrlPropsPlugin::~KUrlPropsPlugin()
 {
   delete d;
 }
 
-// QString KURLPropsPlugin::tabName () const
+// QString KUrlPropsPlugin::tabName () const
 // {
 //   return i18n ("U&RL");
 // }
 
-bool KURLPropsPlugin::supports( KFileItemList _items )
+bool KUrlPropsPlugin::supports( KFileItemList _items )
 {
   if ( _items.count() != 1 )
     return false;
@@ -2539,7 +2539,7 @@ bool KURLPropsPlugin::supports( KFileItemList _items )
   return config.hasLinkType();
 }
 
-void KURLPropsPlugin::applyChanges()
+void KUrlPropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
 

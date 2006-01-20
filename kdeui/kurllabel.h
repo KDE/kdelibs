@@ -31,19 +31,19 @@ class QPixmap;
 /**
  * @short A drop-in replacement for QLabel that displays hyperlinks.
  *
- * KURLLabel is a drop-in replacement for QLabel that handles text
+ * KUrlLabel is a drop-in replacement for QLabel that handles text
  * in a fashion similar to how an HTML widget handles hyperlinks.  The
  * text can be underlined (or not) and set to different colors.  It
  * can also "glow" (cycle colors) when the mouse passes over it.
  *
- * KURLLabel also provides signals for several events, including
+ * KUrlLabel also provides signals for several events, including
  * the mouse leaving and entering the text area and all forms of
  * mouse clicking.
  *
  * A typical usage would be something like so:
  *
  * \code
- * KURLLabel *address = new KURLLabel(this);
+ * KUrlLabel *address = new KUrlLabel(this);
  * address->setText("My homepage");
  * address->setURL("http://www.home.com/~me");
  * connect(address, SIGNAL(leftClickedURL(const QString&)),
@@ -61,7 +61,7 @@ class QPixmap;
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
  */
-class KDEUI_EXPORT KURLLabel : public QLabel
+class KDEUI_EXPORT KUrlLabel : public QLabel
 {
   Q_OBJECT
   Q_PROPERTY (QString url READ url WRITE setURL)
@@ -79,7 +79,7 @@ public:
    * Use setURL() and setText() or QListView::setPixmap()
    * to set the resp. properties.
    */
-  KURLLabel (QWidget* parent = 0L);
+  KUrlLabel (QWidget* parent = 0L);
 
   /**
    * Convenience constructor.
@@ -92,13 +92,13 @@ public:
    * @p parent and @p name are passed to QLabel, which in turn passes
    * them further down
    */
-  KURLLabel (const QString& url, const QString& text = QString(),
+  KUrlLabel (const QString& url, const QString& text = QString(),
               QWidget* parent = 0L);
 
   /**
    * Destructs the label.
    */
-  virtual ~KURLLabel ();
+  virtual ~KUrlLabel ();
 
   /**
    * Returns the URL.

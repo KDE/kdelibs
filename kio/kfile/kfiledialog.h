@@ -42,8 +42,8 @@ class QVBoxLayout;
 
 class KActionCollection;
 class KDirOperator;
-class KURLBar;
-class KURLComboBox;
+class KUrlBar;
+class KUrlComboBox;
 class KFileFilterCombo;
 class KFileView;
 class KFileItem;
@@ -706,21 +706,21 @@ public:
     KPushButton *cancelButton() const;
 
     /**
-     * @returns the KURLBar object used as the "speed bar". You can add custom
+     * @returns the KUrlBar object used as the "speed bar". You can add custom
      * entries to it like that:
      * \code
-     * KURLBar *urlBar = fileDialog->speedBar();
+     * KUrlBar *urlBar = fileDialog->speedBar();
      * if ( urlBar )
      *     urlBar->insertDynamicItem( someURL, i18n("The URL's description") );
      * \endcode
      *
      * Note that this method may return a null-pointer if the user configured
      * to not use the speed-bar.
-     * @see KURLBar
-     * @see KURLBar::insertDynamicItem
+     * @see KUrlBar
+     * @see KUrlBar::insertDynamicItem
      * @since 3.2
      */
-    KURLBar *speedBar();
+    KUrlBar *speedBar();
 
     /**
      * @returns a pointer to the action collection, holding all the used
@@ -796,7 +796,7 @@ protected:
 
     static KUrl *lastDirectory;
 
-    KURLComboBox *locationEdit;
+    KUrlComboBox *locationEdit;
 
     KFileFilterCombo *filterWidget;
 

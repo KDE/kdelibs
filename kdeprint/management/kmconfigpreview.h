@@ -23,7 +23,7 @@
 #include "kmconfigpage.h"
 
 class QCheckBox;
-class KURLRequester;
+class KUrlRequester;
 
 class KMConfigPreview : public KMConfigPage
 {
@@ -35,7 +35,7 @@ public:
 
 private:
 	QCheckBox	*m_useext;
-	KURLRequester	*m_program;
+	KUrlRequester	*m_program;
 };
 
 #endif

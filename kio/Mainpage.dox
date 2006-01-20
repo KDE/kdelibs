@@ -77,21 +77,21 @@
  *
  * @see KFileDialog:
  *   The class providing the file selector dialog. It combines a KDirOperator,
- *   KURLBar and several other widgets.
+ *   KUrlBar and several other widgets.
  *
  * @see KDirOperator:
  *   The class encapsulating different KFileViews, offering file browsing and
  *   file selection. Asynchronous, network transparent reading of directories
  *   is performed via the @see KIO library.
  *
- * @see KURLRequester:
+ * @see KUrlRequester:
  *   A widget to be used for asking for a filename/path/URL. It consists of a
  *   @see KLineEdit (or @see KComboBox) and a button. Activating the button
  *   will open a @see KFileDialog. Typing in the lineedit is aided with
  *   filename completion.
  *
- * @see KURLRequesterDlg:
- *   A dialog to ask for a filename/path/URL, using KURLRequester.
+ * @see KUrlRequesterDlg:
+ *   A dialog to ask for a filename/path/URL, using KUrlRequester.
  *
  * @see KFileView:
  *   The base class for all views to be used with KDirOperator.
@@ -106,7 +106,7 @@
  *   The KFileView, combining a widget showing preview for a selected file
  *   and another KFileView for browsing.
  *
- * @see KURLBar:
+ * @see KUrlBar:
  *   A widget offering a number of clickable entries which represent a URL,
  *   aligned horizontally or vertically. The entries are customizable by the
  *   user both on a per application basis or for all applications (URLs, their

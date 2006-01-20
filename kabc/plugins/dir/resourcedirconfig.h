@@ -43,7 +43,7 @@ public Q_SLOTS:
 
 private:
   KComboBox* mFormatBox;
-  KURLRequester* mFileNameEdit;
+  KUrlRequester* mFileNameEdit;
 
   QStringList mFormatTypes;
 

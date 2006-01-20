@@ -112,7 +112,7 @@ void KConfigDialogManager::init(bool trackChanges)
     changedMap.insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
     changedMap.insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
     changedMap.insert( "KTextEdit", SIGNAL(textChanged()));
-    changedMap.insert( "KURLRequester",  SIGNAL(textChanged (const QString& )));
+    changedMap.insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
     changedMap.insert( "KIntNumInput", SIGNAL(valueChanged (int)));
     changedMap.insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
     changedMap.insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));

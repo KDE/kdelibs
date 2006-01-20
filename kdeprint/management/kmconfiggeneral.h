@@ -23,7 +23,7 @@
 #include "kmconfigpage.h"
 
 class KIntNumInput;
-class KURLRequester;
+class KUrlRequester;
 class QCheckBox;
 class QPushButton;
 class KMConfigGeneral : public KMConfigPage
@@ -41,7 +41,7 @@ protected Q_SLOTS:
 	void setEnabledPreviewButton(bool b);
 private:
 	KIntNumInput	*m_timer;
-	KURLRequester	*m_testpage;
+	KUrlRequester	*m_testpage;
 	QCheckBox	*m_defaulttestpage;
 	QPushButton	*m_preview;
 	QCheckBox	*m_statusmsg, *m_uselast;

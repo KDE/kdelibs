@@ -40,7 +40,7 @@ class QLineEdit;
 class QCheckBox;
 class QPushButton;
 class KLineEdit;
-class KURLRequester;
+class KUrlRequester;
 class QPushButton;
 class KIconButton;
 class KPropsDlgPlugin;
@@ -662,22 +662,22 @@ private:
  * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
-class KIO_EXPORT KURLPropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KUrlPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KURLPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KURLPropsPlugin();
+  KUrlPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KUrlPropsPlugin();
 
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
 
 private:
-  KURLRequester *URLEdit;
+  KUrlRequester *URLEdit;
   KIconButton *iconBox;
 
   QString URLStr;
@@ -686,8 +686,8 @@ private:
   QPixmap pixmap;
   QString pixmapFile;
 private:
-  class KURLPropsPluginPrivate;
-  KURLPropsPluginPrivate* const d;
+  class KUrlPropsPluginPrivate;
+  KUrlPropsPluginPrivate* const d;
 };
 
 

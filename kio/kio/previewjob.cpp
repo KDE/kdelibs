@@ -379,14 +379,7 @@ bool PreviewJob::statResultThumbnail()
     KUrl url = d->currentItem.item->url();
     // Don't include the password if any
     url.setPass(QString());
-    // The TMS defines local files as file:///path/to/file instead of KDE's
-    // way (file:/path/to/file)
-#ifdef KURL_TRIPLE_SLASH_FILE_PROT
     d->origName = url.url();
-#else
-    if (url.protocol() == "file") d->origName = "file://" + url.path();
-    else d->origName = url.url();
-#endif
 
     KMD5 md5( QFile::encodeName( d->origName ) );
     d->thumbName = QFile::encodeName( md5.hexDigest() ) + ".png";

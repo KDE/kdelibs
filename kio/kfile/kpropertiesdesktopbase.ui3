@@ -230,7 +230,7 @@ Following the command, you can have several place holders which will be replaced
                 <string>Sets the working directory for your application.</string>
             </property>
         </widget>
-        <widget class="KURLRequester" row="4" column="2" rowspan="1" colspan="5">
+        <widget class="KUrlRequester" row="4" column="2" rowspan="1" colspan="5">
             <property name="name">
                 <cstring>pathEdit</cstring>
             </property>

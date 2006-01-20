@@ -34,7 +34,6 @@
 class KLineEdit;
 class QPushButton;
 class Q3VButtonGroup;
-class KURLLabel;
 
 class KCookieDetail : public Q3GroupBox
 {

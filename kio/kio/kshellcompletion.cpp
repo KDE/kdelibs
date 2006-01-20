@@ -30,7 +30,7 @@ class KShellCompletionPrivate
 {
 };
 
-KShellCompletion::KShellCompletion() : KURLCompletion()
+KShellCompletion::KShellCompletion() : KUrlCompletion()
 {
 	m_word_break_char = ' ';
 	m_quote_char1 = '\"';
@@ -71,7 +71,7 @@ QString KShellCompletion::makeCompletion(const QString &text)
 
 	// Make completion on the last part of text
 	//
-	return KURLCompletion::makeCompletion( m_text_compl );
+	return KUrlCompletion::makeCompletion( m_text_compl );
 }
 
 /*
@@ -87,7 +87,7 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 	//kDebugInfo("KShellCompletion::postProcessMatch() in: '%s'",
 	//	match->latin1());
 
-	KURLCompletion::postProcessMatch( match );
+	KUrlCompletion::postProcessMatch( match );
 
 	if ( match->isNull() )
 		return;
@@ -105,7 +105,7 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 
 void KShellCompletion::postProcessMatches( QStringList *matches ) const
 {
-	KURLCompletion::postProcessMatches( matches );
+	KUrlCompletion::postProcessMatches( matches );
 
 	for ( QStringList::Iterator it = matches->begin();
 		  it != matches->end(); it++ )
@@ -123,7 +123,7 @@ void KShellCompletion::postProcessMatches( QStringList *matches ) const
 
 void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
 {
-	KURLCompletion::postProcessMatches( matches );
+	KUrlCompletion::postProcessMatches( matches );
 
 	for ( KCompletionMatches::Iterator it = matches->begin();
 		  it != matches->end(); it++ )
@@ -305,7 +305,7 @@ QString KShellCompletion::unquote(const QString &text) const
 }
 
 void KShellCompletion::virtual_hook( int id, void* data )
-{ KURLCompletion::virtual_hook( id, data ); }
+{ KUrlCompletion::virtual_hook( id, data ); }
 
 #include "kshellcompletion.moc"
 

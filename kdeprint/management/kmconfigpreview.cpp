@@ -39,7 +39,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 	Q3GroupBox *box = new Q3GroupBox(0, Qt::Vertical, i18n("Preview Program"), this);
 
 	m_useext = new QCheckBox(i18n("&Use external preview program"), box);
-	m_program = new KURLRequester(box);
+	m_program = new KUrlRequester(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "
 					  "KDE built-in preview system. Note that if the KDE default PS viewer "

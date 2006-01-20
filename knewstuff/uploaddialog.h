@@ -24,7 +24,7 @@
 
 class QLineEdit;
 class QSpinBox;
-class KURLRequester;
+class KUrlRequester;
 class QTextEdit;
 class QComboBox;
 
@@ -88,7 +88,7 @@ class UploadDialog : public KDialogBase
     QLineEdit *mAuthorEdit;
     QLineEdit *mVersionEdit;
     QSpinBox *mReleaseSpin;
-    KURLRequester *mPreviewUrl;
+    KUrlRequester *mPreviewUrl;
     QTextEdit *mSummaryEdit;
     QComboBox *mLanguageCombo;
     QComboBox *mLicenceCombo;

@@ -30,7 +30,7 @@
 #include <kurl.h>
 
 KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
-    : KURLBar( true, parent, name )
+    : KUrlBar( true, parent, name )
 {
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
     m_initializeSpeedbar = cg.readEntry( "Set speedbar defaults", true );
@@ -90,7 +90,7 @@ void KFileSpeedBar::save( KConfig *config )
 
 QSize KFileSpeedBar::sizeHint() const
 {
-    QSize sizeHint = KURLBar::sizeHint();
+    QSize sizeHint = KUrlBar::sizeHint();
     int ems = fontMetrics().width("mmmmmmmmmmmm");
     if (sizeHint.width() < ems)
     {

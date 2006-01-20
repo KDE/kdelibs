@@ -35,7 +35,7 @@ davSearchQuery to the search query. The root element of this query should be lik
 For doing a generic webdav action, call a special request, with
 the following data:
 int, value 7 (WEBDAV generic)
-KURL url
+KUrl url
 int method - the HTTP/WEBDAV method to call
 Send the xml request and receive the xml response in the usual way.
 
@@ -43,7 +43,7 @@ Send the xml request and receive the xml response in the usual way.
 To create a lock, call a special request, with the following data:
 
 int, value 5 (LOCK request)
-KURL url - the location of the resource to lock
+KUrl url - the location of the resource to lock
 QString scope - the scope of the lock, currently "exclusive" or "shared"
 QString type - the type of the lock, currently only "write"
 QString owner (optional) - owner contact details (url)
@@ -56,7 +56,7 @@ infinity.
 To remove a lock, call a special request, with the following data:
 
 int, value 5 (LOCK request)
-KURL url - the location of the resource to unlock
+KUrl url - the location of the resource to unlock
 
 metadata required:
 davLockToken - the lock token to remove

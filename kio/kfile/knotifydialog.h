@@ -265,9 +265,9 @@ namespace KNotify
         void logfileChanged( const QString& text );
         void commandlineChanged( const QString& text );
 
-        void openSoundDialog( KURLRequester * );
-        void openLogDialog( KURLRequester * );
-        void openExecDialog( KURLRequester * );
+        void openSoundDialog( KUrlRequester * );
+        void openLogDialog( KUrlRequester * );
+        void openExecDialog( KUrlRequester * );
 
         void enableAll();
 

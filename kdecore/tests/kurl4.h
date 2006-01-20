@@ -28,7 +28,7 @@
 class QStringList;
 class QMimeData;
 
-class KURLPrivate;
+class KUrlPrivate;
 #define KUrl KUrl4
 
 // maybe we should encapsulate QUrl instead of inheriting from it.
@@ -823,7 +823,7 @@ public:
 private:
   void _setQuery( const QString& query );
 private:
-  KURLPrivate* d;
+  KUrlPrivate* d;
 };
 
 /**

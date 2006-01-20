@@ -20,7 +20,7 @@ Martynas Kunigelis <algikun@santaka.ktu.lt>:
 KProgress class
 
 Steffen Hansen <stefh@dit.ou.dk>:
-KURL class
+KUrl class
 
 Torben Weis <weis@stud.uni-frankfurt.de>
 DnD stuff, KSocket and KServerSocket classes, KPixmap
@@ -30,7 +30,7 @@ Read and write numerical config entries, KPanner, KTabControl,
 KPopupMenu, KMessageBox, KEdit widgets. 
 
 Martin Jones <mjones@powerup.com.au>
-Bugfixes in KPixmap and KURL, KColorDialog, KSelector
+Bugfixes in KPixmap and KUrl, KColorDialog, KSelector
 KColorButton
 
 Keith Brown <kbrown@pdq.net>
@@ -78,7 +78,7 @@ Jorge Monteiro <jomo@casema.net>
 KContainerLayout class
 
 Kurt Granroth <granroth@kde.org>
-KURLLabel class
+KUrlLabel class
 
 Jörg Habenicht <habenich@kbs.uni-hannover.de>
 KRuler class

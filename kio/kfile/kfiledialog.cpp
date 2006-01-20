@@ -123,7 +123,7 @@ struct KFileDialogPrivate
 
     // @deprecated remove in KDE4
     QLabel *filterLabel;
-    KURLComboBox *pathCombo;
+    KUrlComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
     KFileSpeedBar *urlBar;
     QHBoxLayout *urlBarLayout;
@@ -608,7 +608,7 @@ void KFileDialog::accept()
     QList<KUrl>::const_iterator it = list.begin();
     for ( ; it != list.end(); ++it ) {
         const KUrl& url = *it;
-        // we strip the last slash (-1) because KURLComboBox does that as well
+        // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
         // work.
         QString file = url.isLocalFile() ? url.path(-1) : url.prettyURL(-1);
@@ -788,7 +788,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     toolbar->setFlat(true);
     qInstallMsgHandler( oldHandler );
 
-    d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
+    d->pathCombo = new KUrlComboBox( KUrlComboBox::Directories, true,
                                      toolbar);
     d->pathCombo->setToolTip( i18n("Current location") );
     d->pathCombo->setWhatsThis("<qt>" + i18n("This is the currently listed location. "
@@ -930,7 +930,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     toolbar->setMovingEnabled(false);
     toolbar->adjustSize();
 
-    KURLCompletion *pathCompletionObj = new KURLCompletion( KURLCompletion::DirCompletion );
+    KUrlCompletion *pathCompletionObj = new KUrlCompletion( KUrlCompletion::DirCompletion );
     d->pathCombo->setCompletionObject( pathCompletionObj );
     d->pathCombo->setAutoDeleteCompletionObject( true );
 
@@ -943,7 +943,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), d->mainWidget);
-    locationEdit = new KURLComboBox(KURLComboBox::Files, true,
+    locationEdit = new KUrlComboBox(KUrlComboBox::Files, true,
                                     d->mainWidget);
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
@@ -952,7 +952,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->locationLabel->setBuddy(locationEdit);
 
     locationEdit->setFocus();
-    KURLCompletion *fileCompletionObj = new KURLCompletion( KURLCompletion::FileCompletion );
+    KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     QString dir = d->url.url(+1);
     pathCompletionObj->setDir( dir );
     fileCompletionObj->setDir( dir );
@@ -1125,8 +1125,8 @@ void KFileDialog::urlEntered(const KUrl& url)
     locationEdit->blockSignals( false );
 
     QString dir = url.url(+1);
-    static_cast<KURLCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
-    static_cast<KURLCompletion*>( locationEdit->completionObject() )->setDir( dir );
+    static_cast<KUrlCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
+    static_cast<KUrlCompletion*>( locationEdit->completionObject() )->setDir( dir );
 
     if ( d->urlBar )
         d->urlBar->setCurrentItem( url );
@@ -1150,7 +1150,7 @@ void KFileDialog::enterURL( const KUrl& url)
 
 void KFileDialog::enterURL( const QString& url )
 {
-    setURL( KUrl::fromPathOrURL( KURLCompletion::replacedPath( url, true, true )) );
+    setURL( KUrl::fromPathOrURL( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
@@ -1169,7 +1169,7 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-//     #warning FIXME: http URLs, e.g. from KURLCombo
+//     #warning FIXME: http URLs, e.g. from KUrlCombo
 
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
@@ -1630,8 +1630,8 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 
     ops->readConfig( kc, group );
 
-    KURLComboBox *combo = d->pathCombo;
-    combo->setURLs( kc->readPathListEntry( RecentURLs ), KURLComboBox::RemoveTop );
+    KUrlComboBox *combo = d->pathCombo;
+    combo->setURLs( kc->readPathListEntry( RecentURLs ), KUrlComboBox::RemoveTop );
     combo->setMaxItems( kc->readEntry( RecentURLsNumber,
                                        DefaultRecentURLsNumber ) );
     combo->setURL( ops->url() );
@@ -1700,7 +1700,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     locationEdit->setMaxItems( kc->readEntry( RecentFilesNumber,
                                               DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
-                           KURLComboBox::RemoveBottom );
+                           KUrlComboBox::RemoveBottom );
     locationEdit->insertItem( QString(), 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
 
@@ -1727,7 +1727,7 @@ KPushButton * KFileDialog::cancelButton() const
     return d->cancelButton;
 }
 
-KURLBar * KFileDialog::speedBar()
+KUrlBar * KFileDialog::speedBar()
 {
     return d->urlBar;
 }
@@ -2147,7 +2147,7 @@ void KFileDialog::toggleSpeedbar( bool show )
         d->urlBar->show();
 
         // check to see if they have a home item defined, if not show the home button
-        KURLBarItem *urlItem = static_cast<KURLBarItem*>( d->urlBar->listBox()->firstItem() );
+        KUrlBarItem *urlItem = static_cast<KUrlBarItem*>( d->urlBar->listBox()->firstItem() );
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
         while ( urlItem )
@@ -2158,7 +2158,7 @@ void KFileDialog::toggleSpeedbar( bool show )
                 break;
             }
 
-            urlItem = static_cast<KURLBarItem*>( urlItem->next() );
+            urlItem = static_cast<KUrlBarItem*>( urlItem->next() );
         }
     }
     else

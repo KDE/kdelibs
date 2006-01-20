@@ -264,12 +264,12 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_executePath, SIGNAL( textChanged( const QString& )),
              SLOT( commandlineChanged( const QString& ) ));
 
-    connect( m_soundPath, SIGNAL( openFileDialog( KURLRequester * )),
-             SLOT( openSoundDialog( KURLRequester * )));
-    connect( m_logfilePath, SIGNAL( openFileDialog( KURLRequester * )),
-             SLOT( openLogDialog( KURLRequester * )));
-    connect( m_executePath, SIGNAL( openFileDialog( KURLRequester * )),
-             SLOT( openExecDialog( KURLRequester * )));
+    connect( m_soundPath, SIGNAL( openFileDialog( KUrlRequester * )),
+             SLOT( openSoundDialog( KUrlRequester * )));
+    connect( m_logfilePath, SIGNAL( openFileDialog( KUrlRequester * )),
+             SLOT( openLogDialog( KUrlRequester * )));
+    connect( m_executePath, SIGNAL( openFileDialog( KUrlRequester * )),
+             SLOT( openExecDialog( KUrlRequester * )));
 
     connect( m_extension, SIGNAL( clicked() ),
              SLOT( toggleAdvanced()) );
@@ -844,11 +844,11 @@ Event * KNotifyWidget::currentEvent()
     return &static_cast<ListViewItem*>( current )->event();
 }
 
-void KNotifyWidget::openSoundDialog( KURLRequester *requester )
+void KNotifyWidget::openSoundDialog( KUrlRequester *requester )
 {
     // only need to init this once
-    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
-                           this, SLOT( openSoundDialog( KURLRequester * )));
+    requester->disconnect( SIGNAL( openFileDialog( KUrlRequester * )),
+                           this, SLOT( openSoundDialog( KUrlRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setWindowTitle( i18n("Select Sound File") );
@@ -880,11 +880,11 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
     }
 }
 
-void KNotifyWidget::openLogDialog( KURLRequester *requester )
+void KNotifyWidget::openLogDialog( KUrlRequester *requester )
 {
     // only need to init this once
-    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
-                           this, SLOT( openLogDialog( KURLRequester * )));
+    requester->disconnect( SIGNAL( openFileDialog( KUrlRequester * )),
+                           this, SLOT( openLogDialog( KUrlRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setWindowTitle( i18n("Select Log File") );
@@ -893,11 +893,11 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
     fileDialog->setMimeFilter( filters );
 }
 
-void KNotifyWidget::openExecDialog( KURLRequester *requester )
+void KNotifyWidget::openExecDialog( KUrlRequester *requester )
 {
     // only need to init this once
-    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
-                           this, SLOT( openExecDialog( KURLRequester * )));
+    requester->disconnect( SIGNAL( openFileDialog( KUrlRequester * )),
+                           this, SLOT( openExecDialog( KUrlRequester * )));
 
 
     KFileDialog *fileDialog = requester->fileDialog();

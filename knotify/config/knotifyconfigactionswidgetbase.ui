@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KURLRequester" name="Sound_select" >
+      <widget class="KUrlRequester" name="Sound_select" >
        <property name="enabled" >
         <bool>false</bool>
        </property>
@@ -95,7 +95,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KURLRequester" name="Logfile_select" >
+      <widget class="KUrlRequester" name="Logfile_select" >
        <property name="sizePolicy" >
         <sizepolicy>
          <hsizetype>7</hsizetype>
@@ -134,7 +134,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KURLRequester" name="Execute_select" >
+      <widget class="KUrlRequester" name="Execute_select" >
        <property name="sizePolicy" >
         <sizepolicy>
          <hsizetype>7</hsizetype>
@@ -168,7 +168,7 @@
  <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>KURLRequester</class>
+   <class>KUrlRequester</class>
    <extends>QWidget</extends>
    <header>kurlrequester.h</header>
    <container>1</container>

@@ -134,11 +134,11 @@ DefaultRemoteProtocol	string	Protocol to redirect file://<hostname>/ URLs to, de
 Examples:
 
 E.g. the following disables cookies:
-job = KIO::get( KURL("http://www.kde.org"), false, false);
+job = KIO::get( KUrl("http://www.kde.org"), false, false);
 job->addMetaData("cookies", "none");
 
 If you want to handle cookies yourself, you can do:
-job = KIO::get( KURL("http://www.kde.org"), false, false);
+job = KIO::get( KUrl("http://www.kde.org"), false, false);
 job->addMetaData("cookies", "manual");
 job->addMetaData("setcookies", "Cookie: foo=bar; gnat=gnork");
 

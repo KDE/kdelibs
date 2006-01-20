@@ -51,7 +51,7 @@ class KReplaceDialog;
 class KFind;
 class KReplace;
 class KAction;
-class KURLRequester;
+class KUrlRequester;
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -314,7 +314,7 @@ public:
     virtual void updateFromElement();
     void select();
 
-    KURLRequester *widget() const { return static_cast<KURLRequester*>(m_widget); }
+    KUrlRequester *widget() const { return static_cast<KUrlRequester*>(m_widget); }
 
     DOM::HTMLInputElementImpl *element() const
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }

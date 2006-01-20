@@ -68,7 +68,7 @@ public:
    KDEDModule *loadModule(const KService::Ptr& service, bool onDemand);
    DCOPCStringList loadedModules();
    bool unloadModule(const DCOPCString &obj);
-   bool isWindowRegistered(long windowId) const;
+   //bool isWindowRegistered(long windowId) const;
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
    void recreate(bool initial);

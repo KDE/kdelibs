@@ -43,7 +43,7 @@ class KABC_EXPORT ResourceNetConfig : public KRES::ConfigWidget
 
   private:
     KComboBox* mFormatBox;
-    KURLRequester* mUrlEdit;
+    KUrlRequester* mUrlEdit;
 
     QStringList mFormatTypes;
     bool mInEditMode;

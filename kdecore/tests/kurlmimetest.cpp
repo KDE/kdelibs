@@ -23,9 +23,9 @@
 
 #include "kurlmimetest.moc"
 
-QTEST_KDEMAIN( KURLMimeTest, NoGUI )
+QTEST_KDEMAIN( KUrlMimeTest, NoGUI )
 
-void KURLMimeTest::testURLList()
+void KUrlMimeTest::testURLList()
 {
     kdDebug() << k_funcinfo << endl;
     QMimeData* mimeData = new QMimeData;
@@ -53,7 +53,7 @@ void KURLMimeTest::testURLList()
     delete mimeData;
 }
 
-void KURLMimeTest::testOneURL()
+void KUrlMimeTest::testOneURL()
 {
     KUrl oneURL = "file:///tmp";
     QMimeData* mimeData = new QMimeData;

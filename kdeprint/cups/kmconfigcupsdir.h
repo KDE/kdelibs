@@ -22,7 +22,7 @@
 
 #include "kmconfigpage.h"
 
-class KURLRequester;
+class KUrlRequester;
 class QCheckBox;
 
 class KMConfigCupsDir : public KMConfigPage
@@ -34,7 +34,7 @@ public:
 	void saveConfig(KConfig*);
 
 private:
-	KURLRequester		*m_installdir;
+	KUrlRequester		*m_installdir;
 	QCheckBox		*m_stddir;
 };
 

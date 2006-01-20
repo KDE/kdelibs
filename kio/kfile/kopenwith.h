@@ -27,7 +27,7 @@
 #include <kservice.h>
 
 class KApplicationTree;
-class KURLRequester;
+class KUrlRequester;
 
 class QWidget;
 class QCheckBox;
@@ -158,7 +158,7 @@ protected:
      */
     void init( const QString& text, const QString& value );
 
-    KURLRequester * edit;
+    KUrlRequester * edit;
     QString m_command;
 
     KApplicationTree* m_pTree;

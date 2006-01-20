@@ -86,7 +86,7 @@ that we would like to make for the next binary incompatible release.
 
 - Use of the C++ keyword "explicit". Make all ctors explicit which can be used
   with one parameter to minimize wrong use of the class (i.e. have a look at 
-  Dirk's work on KURL). Another candidate: KService( KDesktopFile *config ).
+  Dirk's work on KURL).
   KGuiItem has one of these dangerous ctors, too. KUser has a whole bunch
   of them.
   (André Wöbbeking)
@@ -291,10 +291,14 @@ that we would like to make for the next binary incompatible release.
 - Replacing QPtrList with QList<*> is tricky for places where the old list used autoDelete().  It
   may be worthwhile to create a convenience class which mimics QList but allows for autoDeleting.
   (Caleb Tennis)
+  I disagree, a list property is very confusing, especially when code toggles it on and off all
+  the time, and remove() changes semantics depending on the current state of the autodelete setting...
+  Let's just port it all to QList like Qt4 did. 
+  (David)
 
-- Many instances of creating containers on the heap instead of stack, can be replaced? (Caleb Tennis)
+- Many instances of creating containers on the heap instead of stack, can be replaced? (Caleb Tennis) [where?]
 
-- Places where things like "foo = new QString" seem like prime candidates for refactoring. (Caleb Tennis)
+- Places where things like "foo = new QString" seem like prime candidates for refactoring. (Caleb Tennis) [yes; where?]
 
 - Remove all of the (const char *name) arguments to QObject derived classes. (Caleb Tennis)
 
@@ -313,6 +317,34 @@ that we would like to make for the next binary incompatible release.
   (see http://www.kolab.org/doc/kde-client-manual-0.9cvs20030801-html/c43.html).
   (Jaroslaw Staniek)
 
-- Increase version numbers in sonames of our libraries (*.so.version).
+- KIconView/KListView equivalents based on Qt4 interview. As discussed on kde-core-devel,
+  this probably means a custom QItemDelegate instead, to handle single-click/double-click,
+  execute-mode/select-mode (cf KIconView), number of lines used for wrapping, "held" signal.
+  In short, rewriting kiconview features to be based on interview.
+  For KListView we need to check if QTreeView supports both modes of drag-n-drop (dropping
+  onto items, and dropping between items like in the bookmark editor).
+  (David, Till etc.)
 
+- Increase version numbers in sonames of our libraries (*.so.version). 
+  Unless we rename them all anyway, see next item.
 
+- Keep in mind the big picture: http://developer.kde.org/~danimo/kde4foundation.png
+  components/core, components/gui, framework/core, framework/gui
+  instead of just kdecore, kdeui. Let's delay this reorganization until after
+  the QMainWindow work branch is merged in and the final build-system is chosen.
+
+  Many KIO classes are "core only" and should move to kdecore
+  KArchive and derivatives, KACL -> core (probably components/core)
+  KURIFilter, KEMailSettings, K*Share -> core  (probably framework/core)
+  So before moving things to kdecore, I want to make sure everyone's ok (at least aware :) )
+  of the planned components / framework separation and then we can start moving 
+  stuff to the right place. To do this smoothly we could start with moving everything
+  to framework for now, and considering moving individual things to components
+  as we go along. Reminder: the idea of components is simply that those classes
+  should be useable without dependencies on other kde classes. Think "would I
+  be able to use this class in a Qt-only project, by just copying it over". This excludes
+  anything KConfig/KStandardDirs-based, or anything KIO-based of course.
+
+  For KIO jobs it's more tricky, we'll have to think of a way to split core from gui, 
+  not sure how yet. Proposals welcome. (David)
+  When doing the reorganization, we could also rename the last .cc files to .cpp. (David)

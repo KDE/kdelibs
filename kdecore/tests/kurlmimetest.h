@@ -21,7 +21,7 @@
 
 #include <qobject.h>
 
-class KURLMimeTest : public QObject
+class KUrlMimeTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:

@@ -177,18 +177,18 @@ ToolTip=Improved QTextEdit (KDE)
 WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
 Group=Input (KDE)
 
-[KURLLabel]
+[KUrlLabel]
 ToolTip=URL Label (KDE)
-ConstructorArgs=("KURLLabel", QString(), parent)
+ConstructorArgs=("KUrlLabel", QString(), parent)
 Group=Display (KDE)
 
-[KURLComboRequester]
+[KUrlComboRequester]
 ToolTip=URL Requester (KDE)
 WhatsThis=A widget holding a combobox and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
 IncludeFile=kurlrequester.h
 Group=Input (KDE)
 
-[KURLRequester]
+[KUrlRequester]
 ToolTip=URL Requester (KDE)
 WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
 Group=Input (KDE)

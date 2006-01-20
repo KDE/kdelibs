@@ -23,7 +23,7 @@
 #include "kmconfigpage.h"
 
 class KListView;
-class KURLRequester;
+class KUrlRequester;
 class QPushButton;
 class QCheckBox;
 
@@ -47,7 +47,7 @@ protected Q_SLOTS:
 private:
 	QCheckBox	*m_embedfonts;
 	KListView	*m_fontpath;
-	KURLRequester	*m_addpath;
+	KUrlRequester	*m_addpath;
 	QPushButton	*m_up, *m_down, *m_add, *m_remove;
 };
 

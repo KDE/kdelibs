@@ -745,7 +745,7 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new KURLRequester( view()->viewport() );
+    KUrlRequester* w = new KUrlRequester( view()->viewport() );
     w->setObjectName( "__khtml" );
 
     w->setMode(KFile::File | KFile::ExistingOnly);
@@ -769,7 +769,7 @@ void RenderFileButton::calcMinMaxWidth()
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    KLineEdit* edit = static_cast<KURLRequester*>( m_widget )->lineEdit();
+    KLineEdit* edit = static_cast<KUrlRequester*>( m_widget )->lineEdit();
 
     QStyleOption opt;
     opt.init(edit);
@@ -777,7 +777,7 @@ void RenderFileButton::calcMinMaxWidth()
                                              &opt,
           QSize(w + 2 + 2, qMax(h, 14) + 2 + 2), edit)
         .expandedTo(QApplication::globalStrut());
-    QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
+    QSize bs = static_cast<KUrlRequester*>( m_widget )->sizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( qMax(s.height(), bs.height()) );

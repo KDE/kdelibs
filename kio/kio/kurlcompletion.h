@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Smith  <dsmith@algonet.se>
 
-    This class was inspired by a previous KURLCompletion by
+    This class was inspired by a previous KUrlCompletion by
     Henner Zeller <zeller@think.de>
 
     This library is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@
 
 class QStringList;
 class KUrl;
-class KURLCompletionPrivate;
+class KUrlCompletionPrivate;
 
 /**
  * This class does completion of URLs including user directories (~user)
@@ -38,7 +38,7 @@ class KURLCompletionPrivate;
  * @short Completion of a single URL
  * @author David Smith <dsmith@algonet.se>
  */
-class KIO_EXPORT KURLCompletion : public KCompletion
+class KIO_EXPORT KUrlCompletion : public KCompletion
 {
 	Q_OBJECT
 
@@ -53,18 +53,18 @@ public:
 	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion };
 
 	/**
-	 * Constructs a KURLCompletion object in FileCompletion mode.
+	 * Constructs a KUrlCompletion object in FileCompletion mode.
 	 */
-	KURLCompletion();
+	KUrlCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
 	 * or FileCompletion without using setMode. Default is FileCompletion.
 	 */
-	KURLCompletion(Mode);
+	KUrlCompletion(Mode);
 	/**
-	 * Destructs the KURLCompletion object.
+	 * Destructs the KUrlCompletion object.
 	 */
-	virtual ~KURLCompletion();
+	virtual ~KUrlCompletion();
 
 	/**
 	 * Finds completions to the given text.
@@ -227,7 +227,7 @@ private:
 protected:
 	virtual void virtual_hook( int id, void* data );
 private:
-	KURLCompletionPrivate* const d;
+	KUrlCompletionPrivate* const d;
 };
 
 #endif // KURLCOMPLETION_H

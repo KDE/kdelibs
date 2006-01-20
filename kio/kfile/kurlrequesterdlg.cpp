@@ -39,7 +39,7 @@
 #include "kurlrequesterdlg.h"
 
 
-KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
+KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, QWidget *parent,
         const char *name, bool modal )
     :   KDialogBase( Plain, QString(), Ok|Cancel|User1, Ok, parent, name,
                 modal, true, KStdGuiItem::clear() )
@@ -47,18 +47,18 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
   initDialog(i18n( "Location:" ), urlName);
 }
 
-KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal )
+KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal )
     :   KDialogBase( Plain, QString(), Ok|Cancel|User1, Ok, parent, name,
                 modal, true, KStdGuiItem::clear() )
 {
   initDialog(_text, urlName);
 }
 
-KURLRequesterDlg::~KURLRequesterDlg()
+KUrlRequesterDlg::~KUrlRequesterDlg()
 {
 }
 
-void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
+void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
 {
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
@@ -66,7 +66,7 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     QLabel * label = new QLabel( text , plainPage() );
     topLayout->addWidget( label );
 
-    urlRequester_ = new KURLRequester( urlName, plainPage());
+    urlRequester_ = new KUrlRequester( urlName, plainPage());
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();
@@ -83,19 +83,19 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
 }
 
-void KURLRequesterDlg::slotTextChanged(const QString & text)
+void KUrlRequesterDlg::slotTextChanged(const QString & text)
 {
     bool state = !text.trimmed().isEmpty();
     enableButtonOK( state );
     enableButton( KDialogBase::User1, state );
 }
 
-void KURLRequesterDlg::slotClear()
+void KUrlRequesterDlg::slotClear()
 {
     urlRequester_->clear();
 }
 
-KUrl KURLRequesterDlg::selectedURL() const
+KUrl KUrlRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
         return KUrl::fromPathOrURL( urlRequester_->url() );
@@ -104,10 +104,10 @@ KUrl KURLRequesterDlg::selectedURL() const
 }
 
 
-KUrl KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
+KUrl KUrlRequesterDlg::getURL(const QString& dir, QWidget *parent,
         const QString& caption)
 {
-    KURLRequesterDlg dlg(dir, parent, "filedialog", true);
+    KUrlRequesterDlg dlg(dir, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
@@ -120,12 +120,12 @@ KUrl KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
     return url;
 }
 
-KFileDialog * KURLRequesterDlg::fileDialog()
+KFileDialog * KUrlRequesterDlg::fileDialog()
 {
     return urlRequester_->fileDialog();
 }
 
-KURLRequester * KURLRequesterDlg::urlRequester()
+KUrlRequester * KUrlRequesterDlg::urlRequester()
 {
     return urlRequester_;
 }

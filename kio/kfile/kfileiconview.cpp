@@ -820,7 +820,7 @@ Q3DragObject *KFileIconView::dragObject()
     hotspot.setY( pixmap.height() / 2 );
 
 #if 0 // there is no more kurldrag, this should use urls.populateMimeData( mimeData ) instead
-    Q3DragObject* myDragObject = new KURLDrag( urls, widget() );
+    Q3DragObject* myDragObject = new KUrlDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
 #endif

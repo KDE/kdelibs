@@ -48,7 +48,7 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent )
   mainLayout->addWidget( mFormatBox, 0, 1 );
 
   label = new QLabel( i18n( "Location:" ), this );
-  mFileNameEdit = new KURLRequester( this );
+  mFileNameEdit = new KUrlRequester( this );
 
   connect( mFileNameEdit, SIGNAL( textChanged( const QString & ) ),
            SLOT( checkFilePermissions( const QString & ) ) );

@@ -106,7 +106,7 @@ class KUrl;
  *
  * \code
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
- * KURLCompletion *comp = new KURLCompletion();
+ * KUrlCompletion *comp = new KUrlCompletion();
  * edit->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));

@@ -54,7 +54,7 @@ class KFind;
 class KFindDialog;
 class KMenu;
 class KSelectAction;
-class KURLLabel;
+class KUrlLabel;
 class KJavaAppletContext;
 class KJSErrorDlg;
 
@@ -259,10 +259,10 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
-  KURLLabel* m_statusBarWalletLabel;
-  KURLLabel* m_statusBarUALabel;
-  KURLLabel* m_statusBarJSErrorLabel;
-  KURLLabel* m_statusBarPopupLabel;
+  KUrlLabel* m_statusBarWalletLabel;
+  KUrlLabel* m_statusBarUALabel;
+  KUrlLabel* m_statusBarJSErrorLabel;
+  KUrlLabel* m_statusBarPopupLabel;
   QList<KHTMLPart *> m_suppressedPopupOriginParts;
   int m_openableSuppressedPopups;
   DOM::DocumentImpl *m_doc;

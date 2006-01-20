@@ -56,7 +56,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 
 	Q3GroupBox	*m_testpagebox = new Q3GroupBox(0, Qt::Vertical, i18n("Test Page"), this);
 	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox, "TestPageCheck");
-	m_testpage = new KURLRequester(m_testpagebox);
+	m_testpage = new KUrlRequester(m_testpagebox);
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),this,SLOT(setEnabledPreviewButton(bool)));

@@ -74,7 +74,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
 
   if (!aboutData->homepage().isEmpty())
   {
-    KURLLabel *url = new KURLLabel();
+    KUrlLabel *url = new KUrlLabel();
     url->setText(aboutData->homepage());
     url->setURL(aboutData->homepage());
     appPage->addWidget( url );

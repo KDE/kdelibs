@@ -38,7 +38,7 @@
 class QLabel;
 class QVBoxLayout;
 class QTabWidget;
-class KURLLabel;
+class KUrlLabel;
 class KAboutContainer;
 class KAboutContainerBase;
 

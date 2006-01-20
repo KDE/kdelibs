@@ -113,9 +113,9 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     d->urlCombo = new KHistoryCombo( page);
     d->urlCombo->setTrapReturnKey( true );
-    d->urlCombo->setPixmapProvider( new KURLPixmapProvider() );
-    KURLCompletion *comp = new KURLCompletion();
-    comp->setMode( KURLCompletion::DirCompletion );
+    d->urlCombo->setPixmapProvider( new KUrlPixmapProvider() );
+    KUrlCompletion *comp = new KUrlCompletion();
+    comp->setMode( KUrlCompletion::DirCompletion );
     d->urlCombo->setCompletionObject( comp, true );
     d->urlCombo->setAutoDeleteCompletionObject( true );
     d->urlCombo->setDuplicatesEnabled( false );

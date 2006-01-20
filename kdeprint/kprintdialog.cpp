@@ -80,7 +80,7 @@ public:
 	TreeComboBox	*m_printers;
 	KVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
-	KURLRequester	*m_file;
+	KUrlRequester	*m_file;
 	QCheckBox	*m_persistent;
 	bool	m_reduced;
 
@@ -316,7 +316,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_preview->setWhatsThis(whatsThisPreviewCheckBox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_filelabel->setWhatsThis(whatsThisOutputFileLabel);
-	d->m_file = new KURLRequester(QDir::homePath()+"/print.ps", m_pbox);
+	d->m_file = new KUrlRequester(QDir::homePath()+"/print.ps", m_pbox);
 	d->m_file->setWhatsThis(whatsThisOutputFileLineedit);
 	d->m_file->setEnabled(false);
 	d->m_filelabel->setBuddy(d->m_file);
@@ -409,7 +409,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
 	connect(d->m_file, SIGNAL(urlSelected(const QString&)), SLOT(slotOutputFileSelected(const QString&)));
-	connect( d->m_file, SIGNAL( openFileDialog( KURLRequester* ) ), SLOT( slotOpenFileDialog() ) );
+	connect( d->m_file, SIGNAL( openFileDialog( KUrlRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
 	d->b_optionsEnabled = KAuthorized::authorize("print/options") && KAuthorized::authorize("print/selection");

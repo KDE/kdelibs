@@ -26,11 +26,11 @@
 #include <kcmdlineargs.h>
 #include <unistd.h>
 
-class KURLCompletionTest
+class KUrlCompletionTest
 {
 public:
-    KURLCompletionTest() {}
-    ~KURLCompletionTest() { teardown(); }
+    KUrlCompletionTest() {}
+    ~KUrlCompletionTest() { teardown(); }
     void setup( bool setDirAsURL );
     void teardown();
     void testLocalRelativePath();
@@ -39,16 +39,16 @@ public:
 
 private:
     void waitForCompletion();
-    KURLCompletion* m_completion;
+    KUrlCompletion* m_completion;
     KTempDir* m_tempDir;
     KUrl m_dirURL;
     QString m_dir;
 };
 
-void KURLCompletionTest::setup( bool setDirAsURL )
+void KUrlCompletionTest::setup( bool setDirAsURL )
 {
     kdDebug() << k_funcinfo << endl;
-    m_completion = new KURLCompletion;
+    m_completion = new KUrlCompletion;
     m_tempDir = new KTempDir;
     m_tempDir->setAutoDelete( true );
     m_dir = m_tempDir->name();
@@ -73,14 +73,14 @@ void KURLCompletionTest::setup( bool setDirAsURL )
     f2.close();
 }
 
-void KURLCompletionTest::teardown()
+void KUrlCompletionTest::teardown()
 {
     delete m_completion;
     m_completion = 0;
     delete m_tempDir;
     m_tempDir = 0;
 }
-void KURLCompletionTest::waitForCompletion()
+void KUrlCompletionTest::waitForCompletion()
 {
     while ( m_completion->isRunning() ) {
         kdDebug() << "waiting for thread..." << endl;
@@ -88,7 +88,7 @@ void KURLCompletionTest::waitForCompletion()
     }
 }
 
-void KURLCompletionTest::testLocalRelativePath()
+void KUrlCompletionTest::testLocalRelativePath()
 {
     kdDebug() << k_funcinfo << endl;
     // Completion from relative path, with two matches
@@ -98,7 +98,7 @@ void KURLCompletionTest::testLocalRelativePath()
     assert( comp1all.count() == 2 );
     assert( comp1all.find( "file1" ) != comp1all.end() );
     assert( comp1all.find( "file#a" ) != comp1all.end() );
-    QString comp1 = m_completion->replacedPath( "file1" ); // like KURLRequester does
+    QString comp1 = m_completion->replacedPath( "file1" ); // like KUrlRequester does
     assert( comp1 == "file1" );
 
     // Completion from relative path
@@ -109,11 +109,11 @@ void KURLCompletionTest::testLocalRelativePath()
     kdDebug() << compall << endl;
     assert( compall.count() == 1 );
     assert( compall.first() == "file#a" );
-    QString comp2 = m_completion->replacedPath( compall.first() ); // like KURLRequester does
+    QString comp2 = m_completion->replacedPath( compall.first() ); // like KUrlRequester does
     assert( comp2 == "file#a" );
 }
 
-void KURLCompletionTest::testLocalAbsolutePath()
+void KUrlCompletionTest::testLocalAbsolutePath()
 {
     // Completion from absolute path
     kdDebug() << k_funcinfo << m_dir+"file#" << endl;
@@ -124,11 +124,11 @@ void KURLCompletionTest::testLocalAbsolutePath()
     assert( compall.count() == 1 );
     QString comp = compall.first();
     assert( comp == m_dir + "file#a" );
-    comp = m_completion->replacedPath( comp ); // like KURLRequester does
+    comp = m_completion->replacedPath( comp ); // like KUrlRequester does
     assert( comp == m_dir + "file#a" );
 }
 
-void KURLCompletionTest::testLocalURL()
+void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
     kdDebug() << k_funcinfo << endl;
@@ -169,7 +169,7 @@ int main( int argc, char **argv )
     KApplication app;
 
     {
-        KURLCompletionTest test;
+        KUrlCompletionTest test;
         test.setup( false );
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();

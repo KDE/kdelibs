@@ -96,7 +96,7 @@ struct KDialog::Private {
 
 	QBoxLayout   *mTopLayout;
     QWidget      *mMainWidget;
-    KURLLabel    *mUrlHelp;
+    KUrlLabel    *mUrlHelp;
     KSeparator   *mActionSep;
 
     QString mAnchor;
@@ -1059,7 +1059,7 @@ void KDialog::enableLinkedHelp( bool state )
       return;
     }
 
-    d->mUrlHelp = new KURLLabel( this );
+    d->mUrlHelp = new KUrlLabel( this );
     d->mUrlHelp->setText( helpLinkText() );
     d->mUrlHelp->setFloat(true);
     d->mUrlHelp->setUnderline(true);

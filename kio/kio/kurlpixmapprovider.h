@@ -32,14 +32,14 @@
  * Instatiate this class and supply it to the desired class, e.g.
  * \code
  * KHistoryCombo *combo = new KHistoryCombo( this );
- * combo->setPixmapProvider( new KURLPixmapProvider );
+ * combo->setPixmapProvider( new KUrlPixmapProvider );
  * [...]
  * \endcode
  *
  * @short Resolves pixmaps for URLs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLPixmapProvider : public KPixmapProvider
+class KIO_EXPORT KUrlPixmapProvider : public KPixmapProvider
 {
 public:
     /**

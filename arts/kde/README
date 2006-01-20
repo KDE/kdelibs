@@ -6,7 +6,7 @@ libartskde is a simple KDE->aRts wrapper
 that allows the developer to use KDE
 technology to access aRts.
 ie. no need to deal with std::string's anymore
-etc.. you can just use QString's or KURL's
+etc.. you can just use QString's or KUrl's
 to play sound
 
 2. How to use it to play sounds?
@@ -14,7 +14,7 @@ to play sound
 1	KArtsDispatcher dispatcher;
 2	KArtsServer server;
 
-3	KURL file = "file:/home/nikoz/test.mp3";
+3	KUrl file = "file:/home/nikoz/test.mp3";
 
 4	KPlayObjectFactory factory(server.server());
 5	KPlayObject *playobj = factory.createPlayObject(file, true);
@@ -26,13 +26,13 @@ Line:
 1	Sets up the a KArtsDispatcher
 2	Starts a new SoundServerV2 in the running artsd process
 
-3	Simple test URL to demonstrate the use with KURL
+3	Simple test URL to demonstrate the use with KUrl
 
 4	Creates a KPlayObjectFactory, parameter: our SoundServerV2
 5	Gets a KPlayObject from the factory, containing an Arts::PlayObject
 	created in our running artsd process
 	Parameters:
-		KURL url
+		KUrl url
 			(specifies the url to be played)
 		bool createBUS
 		 	(specifies wheter to create a Synth_BUS_UPLINK or not, "false" is only interesting if you want to use EffectsStacks etc..., see Noatun)

@@ -23,7 +23,7 @@
 #include <kurl.h>
 #include <klistview.h>
 
-class KURLRequester;
+class KUrlRequester;
 
 class QWidget;
 class QCheckBox;

@@ -30,50 +30,50 @@
 
 class KConfig;
 class KConfigBase;
-class KURLBar;
+class KUrlBar;
 
 /**
- * An item to be used in KURLBar / KURLBarListBox. All the properties
+ * An item to be used in KUrlBar / KUrlBarListBox. All the properties
  * (url, icon, description, tooltip) can be changed dynamically.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
- * @see KURLBar
- * @see KURLBarListBox
+ * @see KUrlBar
+ * @see KUrlBarListBox
  */
-class KIO_EXPORT KURLBarItem : public Q3ListBoxPixmap
+class KIO_EXPORT KUrlBarItem : public Q3ListBoxPixmap
 {
 public:
     /**
-     * Creates a KURLBarItem to be used in the @p parent KURLBar. You need
+     * Creates a KUrlBarItem to be used in the @p parent KUrlBar. You need
      * to insert the item into the listbox manually, if you don't use
-     * KURLBar::insertItem().
+     * KUrlBar::insertItem().
      *
      * If description is empty, it will try to use the filename/directory
      * of @p url, which will be shown as text of the item.
      * @p url will be used as tooltip, unless you set a different tip with
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
-     * dynamic item, that is not saved with KURLBar::writeConfig().
+     * dynamic item, that is not saved with KUrlBar::writeConfig().
      * @since 3.2
      */
-    KURLBarItem( KURLBar *parent, const KUrl& url, bool persistent,
+    KUrlBarItem( KUrlBar *parent, const KUrl& url, bool persistent,
                  const QString& description = QString(),
                  const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
 
     /**
-     * Creates a persistent KURLBarItem to be used in the @p parent KURLBar. You need
+     * Creates a persistent KUrlBarItem to be used in the @p parent KUrlBar. You need
      * to insert the item into the listbox manually, if you don't use
-     * KURLBar::insertItem().
+     * KUrlBar::insertItem().
      *
      * If description is empty, it will try to use the filename/directory
      * of @p url, which will be shown as text of the item.
      * @p url will be used as tooltip, unless you set a different tip with
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
-     * dynamic item, that is not saved with KURLBar::writeConfig().
+     * dynamic item, that is not saved with KUrlBar::writeConfig().
      */
-    KURLBarItem( KURLBar *parent, const KUrl& url,
+    KUrlBarItem( KUrlBar *parent, const KUrl& url,
                  const QString& description = QString(),
                  const QString& icon = QString(),
                  KIcon::Group group = KIcon::Panel );
@@ -81,7 +81,7 @@ public:
     /**
      * Destroys the item
      */
-    ~KURLBarItem();
+    ~KUrlBarItem();
 
     /**
      * Sets @p url for this item. Also updates the visible text to the
@@ -160,7 +160,7 @@ public:
     void setApplicationLocal( bool local );
 
     /**
-     * returns whether this is a global item or a local one. KURLBar
+     * returns whether this is a global item or a local one. KUrlBar
      * can differentiate between global and local items (only for the current
      * application) for easy extensiblity.
      * @see setApplicationLocal
@@ -168,8 +168,8 @@ public:
     bool applicationLocal() const               { return m_appLocal; }
 
     /**
-     * returns whether this item is persistent (via KURLBar::writeConfig()
-     * and KURLBar::readConfig()) or not.
+     * returns whether this item is persistent (via KUrlBar::writeConfig()
+     * and KUrlBar::readConfig()) or not.
      * @since 3.2
      */
     bool isPersistent() const;
@@ -188,14 +188,14 @@ private:
     QString m_toolTip;
     QPixmap m_pixmap;
     KIcon::Group m_group;
-    KURLBar *m_parent;
+    KUrlBar *m_parent;
     bool m_appLocal :1;
 
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KURLBarItemPrivate;
-    KURLBarItemPrivate *d;
+    class KUrlBarItemPrivate;
+    KUrlBarItemPrivate *d;
 };
 
 
@@ -203,16 +203,16 @@ private:
 ///////////////////////////////////////////////////////////////////
 
 
-class KURLBarListBox;
+class KUrlBarListBox;
 
 /**
- * KURLBar is a widget that displays icons together with a description. They
+ * KUrlBar is a widget that displays icons together with a description. They
  * can be arranged either horizontally or vertically. Clicking on an item
  * will cause the activated() signal to be emitted. The user can edit
  * existing items by choosing "Edit entry" in the contextmenu. He can also
  * remove or add new entries (via drag&drop or the context menu).
  *
- * KURLBar offers the methods readConfig() and writeConfig() to
+ * KUrlBar offers the methods readConfig() and writeConfig() to
  * read and write the configuration of all the entries. It can differentiate
  * between global and local entries -- global entries will be saved in the
  * global configuration (kdeglobals), while local entries will be saved in
@@ -228,25 +228,25 @@ class KURLBarListBox;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A URL-bar widget, as used in the KFileDialog
  */
-class KIO_EXPORT KURLBar : public QFrame
+class KIO_EXPORT KUrlBar : public QFrame
 {
     Q_OBJECT
 
 public:
     /**
-     * Constructs a KURLBar. Set @p useGlobalItems to true if you want to
+     * Constructs a KUrlBar. Set @p useGlobalItems to true if you want to
      * allow global/local item separation.
      */
-    KURLBar( bool useGlobalItems,
+    KUrlBar( bool useGlobalItems,
              QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
     /**
-     * Destroys the KURLBar.
+     * Destroys the KUrlBar.
      */
-    ~KURLBar();
+    ~KUrlBar();
 
     /**
-     * Inserts a new item into the KURLBar and returns the created
-     * KURLBarItem.
+     * Inserts a new item into the KUrlBar and returns the created
+     * KUrlBarItem.
      *
      * @p url the url of the item
      * @p description the description of the item (shown in the view)
@@ -254,14 +254,14 @@ public:
      * @p icon an icon -- if empty, the default icon for the url will be used
      * @p group the icon-group for using icon-effects
      */
-    virtual KURLBarItem * insertItem( const KUrl& url,
+    virtual KUrlBarItem * insertItem( const KUrl& url,
                                       const QString& description,
                                       bool applicationLocal = true,
                                       const QString& icon = QString(),
                                       KIcon::Group group = KIcon::Panel );
     /**
-     * Inserts a new dynamic item into the KURLBar and returns the created
-     * KURLBarItem.
+     * Inserts a new dynamic item into the KUrlBar and returns the created
+     * KUrlBarItem.
      *
      * @p url the url of the item
      * @p description the description of the item (shown in the view)
@@ -269,7 +269,7 @@ public:
      * @p group the icon-group for using icon-effects
      * @since 3.2
      */
-    virtual KURLBarItem * insertDynamicItem( const KUrl& url,
+    virtual KUrlBarItem * insertDynamicItem( const KUrl& url,
                                              const QString& description,
                                              const QString& icon = QString(),
                                              KIcon::Group group = KIcon::Panel );
@@ -286,17 +286,17 @@ public:
     Qt::Orientation orientation() const;
 
     /**
-     * Allows to set a custom KURLBarListBox.
+     * Allows to set a custom KUrlBarListBox.
      * Note: The previous listbox will be deleted. Items of the previous
      * listbox will not be moved to the new box.
      * @see listBox
      */
-    virtual void setListBox( KURLBarListBox * );
+    virtual void setListBox( KUrlBarListBox * );
     /**
-     * @returns the KURLBarListBox that is used.
+     * @returns the KUrlBarListBox that is used.
      * @see setListBox
      */
-    KURLBarListBox *listBox() const { return m_listBox; }
+    KUrlBarListBox *listBox() const { return m_listBox; }
 
     /**
      * Sets the default iconsize to be used for items inserted with
@@ -342,24 +342,24 @@ public:
 
     /**
      * Called from readConfig() to read the i'th from @p config.
-     * After reading a KURLBarItem is created and initialized with the read
+     * After reading a KUrlBarItem is created and initialized with the read
      * values (as well as the given @p applicationLocal).
      */
     virtual void readItem( int i, KConfigBase *config, bool applicationLocal );
     /**
-     * Called from writeConfig() to save the KURLBarItem @p item as the
+     * Called from writeConfig() to save the KUrlBarItem @p item as the
      * i'th entry in the config-object.
      * @p global tell whether it should be saved in the global configuration
      * or not (using KConfig::writeEntry( key, value, true, global ) ).
      */
-    virtual void writeItem( KURLBarItem *item, int i, KConfig *, bool global );
+    virtual void writeItem( KUrlBarItem *item, int i, KConfig *, bool global );
 
     /**
-     * @returns the current KURLBarItem, or 0L if none.
+     * @returns the current KUrlBarItem, or 0L if none.
      * @see setCurrentItem
      * @see currentURL
      */
-    KURLBarItem * currentItem() const;
+    KUrlBarItem * currentItem() const;
     /**
      * @returns the url of the current item or an invalid url, if there is
      * no current item.
@@ -403,19 +403,19 @@ Q_SIGNALS:
 
 protected:
     /**
-     * Pops up a KURLBarItemDialog to let the user add a new item.
+     * Pops up a KUrlBarItemDialog to let the user add a new item.
      * Uses editItem() to do the job.
      * @returns false if the user aborted the dialog and no item is added.
      */
     virtual bool addNewItem();
     /**
-     * Pops up a KURLBarItemDialog to let the user edit the properties
+     * Pops up a KUrlBarItemDialog to let the user edit the properties
      * of @p item. Invoked e.g. by addNewItem(), when the user drops
      * a url  onto the bar or from the contextmenu.
      * @returns false if the user aborted the dialog and @p item is not
      * changed.
      */
-    virtual bool editItem( KURLBarItem *item );
+    virtual bool editItem( KUrlBarItem *item );
 
     virtual void resizeEvent( QResizeEvent * );
 
@@ -424,7 +424,7 @@ protected:
     /**
      * The currently active item.
      */
-    KURLBarItem * m_activeItem;
+    KUrlBarItem * m_activeItem;
     /**
      * Whether we support global entries or just local ones.
      */
@@ -456,7 +456,7 @@ protected Q_SLOTS:
 
     /**
      * Called when a url was dropped onto the bar to show a
-     * KURLBarItemDialog.
+     * KUrlBarItemDialog.
      */
     virtual void slotDropped( QDropEvent * );
 
@@ -464,15 +464,15 @@ private Q_SLOTS:
     void slotSelected( int button, Q3ListBoxItem * );
 
 private:
-    KURLBarListBox *m_listBox;
+    KUrlBarListBox *m_listBox;
     int m_iconSize;
 
 
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KURLBarPrivate;
-    KURLBarPrivate *d;
+    class KUrlBarPrivate;
+    KUrlBarPrivate *d;
 };
 
 
@@ -483,26 +483,26 @@ private:
 class QMimeData;
 
 /**
- * This is the listbox used in KURLBar. It is a subclass of KListBox to support
+ * This is the listbox used in KUrlBar. It is a subclass of KListBox to support
  * drag & drop and to set up the row / column mode.
  *
  * The widget has just one row or one column, depending on orientation().
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLBarListBox : public KListBox
+class KIO_EXPORT KUrlBarListBox : public KListBox
 {
     Q_OBJECT
 
 public:
     /**
-     * Constructs a KURLBarListBox.
+     * Constructs a KUrlBarListBox.
      */
-    KURLBarListBox( QWidget *parent = 0, const char *name = 0 );
+    KUrlBarListBox( QWidget *parent = 0, const char *name = 0 );
     /**
      * Destroys the box.
      */
-    ~KURLBarListBox();
+    ~KUrlBarListBox();
 
     /**
      * Sets the orientation of the widget. Horizontal means, all items are
@@ -544,8 +544,8 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KURLBarListBoxPrivate;
-    KURLBarListBoxPrivate *d;
+    class KUrlBarListBoxPrivate;
+    KUrlBarListBoxPrivate *d;
 };
 
 
@@ -556,16 +556,16 @@ private:
 class QCheckBox;
 class KIconButton;
 class KLineEdit;
-class KURLRequester;
+class KUrlRequester;
 
 /**
- * A dialog that allows editing entries of a KURLBar ( KURLBarItem).
+ * A dialog that allows editing entries of a KUrlBar ( KUrlBarItem).
  * The dialog offers to configure a given url, description and icon.
  * See the class-method getInformation() for easy usage.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLBarItemDialog : public KDialogBase
+class KIO_EXPORT KUrlBarItemDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -575,7 +575,7 @@ public:
      * properties via the given parameters. The parameters are used to
      * initialize the dialog and then return the user-configured values.
      *
-     * See the KURLBarItem constructor for the parameter description.
+     * See the KUrlBarItem constructor for the parameter description.
      */
     static bool getInformation( bool allowGlobal, KUrl& url,
                                 QString& description, QString& icon,
@@ -583,7 +583,7 @@ public:
                                 QWidget *parent = 0 );
 
     /**
-     * Constructs a KURLBarItemDialog.
+     * Constructs a KUrlBarItemDialog.
      *
      * @p allowGlobal if you set this to true, the dialog will have a checkbox
      *                for the user to decide if he wants the entry to be
@@ -599,7 +599,7 @@ public:
      * If you leave the icon empty, the default icon for the given url will be
      * used (KMimeType::pixmapForURL()).
      */
-    KURLBarItemDialog( bool allowGlobal, const KUrl& url,
+    KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                        const QString& description, QString icon,
                        bool appLocal = true,
                        int iconSize = KIcon::SizeMedium,
@@ -607,7 +607,7 @@ public:
     /**
      * Destroys the dialog.
      */
-    ~KURLBarItemDialog();
+    ~KUrlBarItemDialog();
 
     /**
      * @returns the configured url
@@ -633,9 +633,9 @@ public:
 
 protected:
     /**
-     * The KURLRequester used for editing the url
+     * The KUrlRequester used for editing the url
      */
-    KURLRequester * m_urlEdit;
+    KUrlRequester * m_urlEdit;
     /**
      * The KLineEdit used for editing the description
      */
@@ -653,8 +653,8 @@ public Q_SLOTS:
     void urlChanged(const QString & );
 
 private:
-    class KURLBarItemDialogPrivate;
-    KURLBarItemDialogPrivate *d;
+    class KUrlBarItemDialogPrivate;
+    KUrlBarItemDialogPrivate *d;
 };
 
 

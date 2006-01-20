@@ -22,7 +22,7 @@
 
 #include "kmwizardpage.h"
 
-class KURLRequester;
+class KUrlRequester;
 
 class KMWFile : public KMWizardPage
 {
@@ -33,7 +33,7 @@ public:
 	void updatePrinter(KMPrinter*);
 
 private:
-	KURLRequester	*m_url;
+	KUrlRequester	*m_url;
 };
 
 #endif

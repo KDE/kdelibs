@@ -161,7 +161,7 @@ The following code will create a file resource and save a contact into it:
 31:  addr.setRole( "developer" );
 32:  addr.setOrganization( "KDE e.V." );
 33:  addr.setNote( "Yet another senseless note..." );
-34:  addr.setUrl( KURL( "http://kaddressbook.org" ) );
+34:  addr.setUrl( KUrl( "http://kaddressbook.org" ) );
 35:
 36:  // CLASS
 37:  KABC::Secrecy secrecy( KABC::Secrecy::Confidential );

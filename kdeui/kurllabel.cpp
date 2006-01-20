@@ -26,10 +26,10 @@
 
 #include "kurllabel.h"
 
-class KURLLabel::Private
+class KUrlLabel::Private
 {
 public:
-  Private (const QString& url, KURLLabel* label)
+  Private (const QString& url, KUrlLabel* label)
     : URL (url),
       TextUnderline (true),
       LinkColor (KGlobalSettings::linkColor()),
@@ -69,7 +69,7 @@ public:
   QTimer* Timer;
 };
 
-KURLLabel::KURLLabel (const QString& url, const QString& text,
+KUrlLabel::KUrlLabel (const QString& url, const QString& text,
                         QWidget* parent)
   : QLabel (!text.isNull() ? text : url, parent),
     d (new Private (url, this))
@@ -79,7 +79,7 @@ KURLLabel::KURLLabel (const QString& url, const QString& text,
   setLinkColor (d->LinkColor);
 }
 
-KURLLabel::KURLLabel (QWidget* parent)
+KUrlLabel::KUrlLabel (QWidget* parent)
   : QLabel (parent),
     d (new Private (QString(), this))
 {
@@ -88,12 +88,12 @@ KURLLabel::KURLLabel (QWidget* parent)
   setLinkColor (d->LinkColor);
 }
 
-KURLLabel::~KURLLabel ()
+KUrlLabel::~KUrlLabel ()
 {
   delete d;
 }
 
-void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
+void KUrlLabel::mouseReleaseEvent (QMouseEvent* e)
 {
   QLabel::mouseReleaseEvent (e);
 
@@ -122,7 +122,7 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
     }
 }
 
-void KURLLabel::setFont (const QFont& f)
+void KUrlLabel::setFont (const QFont& f)
 {
   QFont newFont = f;
   newFont.setUnderline (d->TextUnderline);
@@ -130,14 +130,14 @@ void KURLLabel::setFont (const QFont& f)
   QLabel::setFont (newFont);
 }
 
-void KURLLabel::setUnderline (bool on)
+void KUrlLabel::setUnderline (bool on)
 {
   d->TextUnderline = on;
 
   setFont (font());
 }
 
-void KURLLabel::updateColor ()
+void KUrlLabel::updateColor ()
 {
   d->Timer->stop();
 
@@ -145,7 +145,7 @@ void KURLLabel::updateColor ()
     setLinkColor (d->LinkColor);
 }
 
-void KURLLabel::setLinkColor (const QColor& col)
+void KUrlLabel::setLinkColor (const QColor& col)
 {
   QPalette p = palette();
   p.setColor (QColorGroup::Foreground, col);
@@ -154,7 +154,7 @@ void KURLLabel::setLinkColor (const QColor& col)
   update();
 }
 
-void KURLLabel::setURL (const QString& url)
+void KUrlLabel::setURL (const QString& url)
 {
   if ( d->Tip == d->URL ) { // update the tip as well
     d->Tip = url;
@@ -164,12 +164,12 @@ void KURLLabel::setURL (const QString& url)
   d->URL = url;
 }
 
-const QString& KURLLabel::url () const
+const QString& KUrlLabel::url () const
 {
   return d->URL;
 }
 
-void KURLLabel::setUseCursor (bool on, QCursor* cursor)
+void KUrlLabel::setUseCursor (bool on, QCursor* cursor)
 {
   d->UseCursor = on;
   d->Cursor = cursor;
@@ -185,12 +185,12 @@ void KURLLabel::setUseCursor (bool on, QCursor* cursor)
     unsetCursor();
 }
 
-bool KURLLabel::useCursor () const
+bool KUrlLabel::useCursor () const
 {
   return d->UseCursor;
 }
 
-void KURLLabel::setUseTips (bool on)
+void KUrlLabel::setUseTips (bool on)
 {
   d->UseTips = on;
 
@@ -200,24 +200,24 @@ void KURLLabel::setUseTips (bool on)
     setToolTip(QString());
 }
 
-void KURLLabel::setTipText (const QString& tip)
+void KUrlLabel::setTipText (const QString& tip)
 {
   d->Tip = tip;
 
   setUseTips (d->UseTips);
 }
 
-bool KURLLabel::useTips () const
+bool KUrlLabel::useTips () const
 {
   return d->UseTips;
 }
 
-const QString& KURLLabel::tipText () const
+const QString& KUrlLabel::tipText () const
 {
   return d->Tip;
 }
 
-void KURLLabel::setHighlightedColor (const QColor& highcolor)
+void KUrlLabel::setHighlightedColor (const QColor& highcolor)
 {
   d->LinkColor = highcolor;
 
@@ -225,12 +225,12 @@ void KURLLabel::setHighlightedColor (const QColor& highcolor)
     setLinkColor (highcolor);
 }
 
-void KURLLabel::setHighlightedColor (const QString& highcolor)
+void KUrlLabel::setHighlightedColor (const QString& highcolor)
 {
   setHighlightedColor (QColor (highcolor));
 }
 
-void KURLLabel::setSelectedColor (const QColor& selcolor)
+void KUrlLabel::setSelectedColor (const QColor& selcolor)
 {
   d->HighlightedLinkColor = selcolor;
 
@@ -238,42 +238,42 @@ void KURLLabel::setSelectedColor (const QColor& selcolor)
     setLinkColor (selcolor);
 }
 
-void KURLLabel::setSelectedColor (const QString& selcolor)
+void KUrlLabel::setSelectedColor (const QString& selcolor)
 {
   setSelectedColor (QColor (selcolor));
 }
 
-void KURLLabel::setGlow (bool glow)
+void KUrlLabel::setGlow (bool glow)
 {
   d->Glow = glow;
 }
 
-void KURLLabel::setFloat (bool do_float)
+void KUrlLabel::setFloat (bool do_float)
 {
   d->Float = do_float;
 }
 
-bool KURLLabel::isGlowEnabled () const
+bool KUrlLabel::isGlowEnabled () const
 {
   return d->Glow;
 }
 
-bool KURLLabel::isFloatEnabled () const
+bool KUrlLabel::isFloatEnabled () const
 {
   return d->Float;
 }
 
-void KURLLabel::setAltPixmap (const QPixmap& altPix)
+void KUrlLabel::setAltPixmap (const QPixmap& altPix)
 {
   d->AltPixmap = altPix;
 }
 
-const QPixmap* KURLLabel::altPixmap () const
+const QPixmap* KUrlLabel::altPixmap () const
 {
   return &d->AltPixmap;
 }
 
-void KURLLabel::enterEvent (QEvent* e)
+void KUrlLabel::enterEvent (QEvent* e)
 {
   QLabel::enterEvent (e);
 
@@ -299,7 +299,7 @@ void KURLLabel::enterEvent (QEvent* e)
   emit enteredURL (d->URL);
 }
 
-void KURLLabel::leaveEvent (QEvent* e)
+void KUrlLabel::leaveEvent (QEvent* e)
 {
   QLabel::leaveEvent (e);
 
@@ -315,7 +315,7 @@ void KURLLabel::leaveEvent (QEvent* e)
   emit leftURL (d->URL);
 }
 
-bool KURLLabel::event (QEvent *e)
+bool KUrlLabel::event (QEvent *e)
 {
   if (e && e->type() == QEvent::PaletteChange)
   {
@@ -333,7 +333,7 @@ bool KURLLabel::event (QEvent *e)
 }
 
 
-void KURLLabel::virtual_hook( int, void* )
+void KUrlLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kurllabel.moc"

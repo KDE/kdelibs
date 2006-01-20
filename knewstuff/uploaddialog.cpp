@@ -91,7 +91,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
 
   QLabel *previewLabel = new QLabel( i18n("Preview URL:"), topPage );
   topLayout->addWidget( previewLabel, 6, 0 );
-  mPreviewUrl = new KURLRequester( topPage );
+  mPreviewUrl = new KUrlRequester( topPage );
   topLayout->addWidget( mPreviewUrl, 6, 1 );
 
   QLabel *summaryLabel = new QLabel( i18n("Summary:"), topPage );

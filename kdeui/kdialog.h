@@ -27,7 +27,7 @@ class QLayoutItem;
 
 class KPushButton;
 class KSeparator;
-class KURLLabel;
+class KUrlLabel;
 class QBoxLayout;
 class QPixmap;
 class KDialogBase;

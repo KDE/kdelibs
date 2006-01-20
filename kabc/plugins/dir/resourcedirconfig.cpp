@@ -46,7 +46,7 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent )
   mainLayout->addWidget( mFormatBox, 0, 1 );
 
   label = new QLabel( i18n( "Location:" ), this );
-  mFileNameEdit = new KURLRequester( this );
+  mFileNameEdit = new KUrlRequester( this );
   mFileNameEdit->setMode( KFile::Directory );
 
   mainLayout->addWidget( label, 1, 0 );

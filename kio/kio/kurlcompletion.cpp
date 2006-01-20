@@ -4,7 +4,7 @@
    Copyright (C) 2000 David Smith <dsmith@algonet.se>
    Copyright (C) 2004 Scott Wheeler <wheeler@kde.org>
 
-   This class was inspired by a previous KURLCompletion by
+   This class was inspired by a previous KUrlCompletion by
    Henner Zeller <zeller@think.de>
 
    This library is free software; you can redistribute it and/or
@@ -94,7 +94,7 @@ private:
 class CompletionThread : public QThread
 {
 protected:
-	CompletionThread( KURLCompletion *receiver ) :
+	CompletionThread( KUrlCompletion *receiver ) :
 		QThread(),
 		m_receiver( receiver ),
 		m_terminationRequested( false )
@@ -116,7 +116,7 @@ protected:
 	}
 
 private:
-	KURLCompletion *m_receiver;
+	KUrlCompletion *m_receiver;
 	QStringList m_matches;
 	bool m_terminationRequested;
 };
@@ -129,7 +129,7 @@ private:
 class UserListThread : public CompletionThread
 {
 public:
-    UserListThread( KURLCompletion *receiver ) :
+    UserListThread( KUrlCompletion *receiver ) :
 		CompletionThread( receiver )
 	{}
 
@@ -153,7 +153,7 @@ protected:
 class DirectoryListThread : public CompletionThread
 {
 public:
-	DirectoryListThread( KURLCompletion *receiver,
+	DirectoryListThread( KUrlCompletion *receiver,
 	                     const QStringList &dirList,
 	                     const QString &filter,
 	                     bool onlyExe,
@@ -302,7 +302,7 @@ void DirectoryListThread::run()
 // MyURL - wrapper for KUrl with some different functionality
 //
 
-class KURLCompletion::MyURL
+class KUrlCompletion::MyURL
 {
 public:
 	MyURL(const QString &url, const QString &cwd);
@@ -332,19 +332,19 @@ private:
 	bool m_isURL;
 };
 
-KURLCompletion::MyURL::MyURL(const QString &_url, const QString &cwd)
+KUrlCompletion::MyURL::MyURL(const QString &_url, const QString &cwd)
 {
 	init(_url, cwd);
 }
 
-KURLCompletion::MyURL::MyURL(const MyURL &_url)
+KUrlCompletion::MyURL::MyURL(const MyURL &_url)
 {
 	m_kurl = new KUrl( *(_url.m_kurl) );
 	m_url = _url.m_url;
 	m_isURL = _url.m_isURL;
 }
 
-void KURLCompletion::MyURL::init(const QString &_url, const QString &cwd)
+void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 {
 	// Save the original text
 	m_url = _url;
@@ -405,12 +405,12 @@ void KURLCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	}
 }
 
-KURLCompletion::MyURL::~MyURL()
+KUrlCompletion::MyURL::~MyURL()
 {
 	delete m_kurl;
 }
 
-void KURLCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
+void KUrlCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
 {
 	QString d = dir() + file();
 	if ( replace_user_dir ) expandTilde( d );
@@ -420,15 +420,15 @@ void KURLCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-// KURLCompletionPrivate
+// KUrlCompletionPrivate
 //
-class KURLCompletionPrivate
+class KUrlCompletionPrivate
 {
 public:
-	KURLCompletionPrivate() : url_auto_completion(true),
+	KUrlCompletionPrivate() : url_auto_completion(true),
 	                          userListThread(0),
 	                          dirListThread(0) {}
-	~KURLCompletionPrivate();
+	~KUrlCompletionPrivate();
 
 	QList<KUrl*> list_urls;
 
@@ -450,7 +450,7 @@ public:
 
 	QString cwd; // "current directory" = base dir for completion
 
-	KURLCompletion::Mode mode; // ExeCompletion, FileCompletion, DirCompletion
+	KUrlCompletion::Mode mode; // ExeCompletion, FileCompletion, DirCompletion
 	bool replace_env;
 	bool replace_home;
 	bool complete_url; // if true completing a URL (i.e. 'prepend' is a URL), otherwise a path
@@ -469,7 +469,7 @@ public:
 	CompletionThread *dirListThread;
 };
 
-KURLCompletionPrivate::~KURLCompletionPrivate()
+KUrlCompletionPrivate::~KUrlCompletionPrivate()
 {
 	if ( userListThread )
 		userListThread->requestTermination();
@@ -479,29 +479,29 @@ KURLCompletionPrivate::~KURLCompletionPrivate()
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-// KURLCompletion
+// KUrlCompletion
 //
 
-KURLCompletion::KURLCompletion() : KCompletion(),d(new KURLCompletionPrivate)
+KUrlCompletion::KUrlCompletion() : KCompletion(),d(new KUrlCompletionPrivate)
 {
 	init();
 }
 
 
-KURLCompletion::KURLCompletion( Mode _mode ) : KCompletion(),d(new KURLCompletionPrivate)
+KUrlCompletion::KUrlCompletion( Mode _mode ) : KCompletion(),d(new KUrlCompletionPrivate)
 {
 	init();
 	setMode ( _mode );
 }
 
-KURLCompletion::~KURLCompletion()
+KUrlCompletion::~KUrlCompletion()
 {
 	stop();
 	delete d;
 }
 
 
-void KURLCompletion::init()
+void KUrlCompletion::init()
 {
 
 	d->cwd = QDir::homePath();
@@ -511,7 +511,7 @@ void KURLCompletion::init()
 	d->last_no_hidden = false;
 	d->last_compl_type = 0;
 	d->list_job = 0L;
-	d->mode = KURLCompletion::FileCompletion;
+	d->mode = KUrlCompletion::FileCompletion;
 
 	// Read settings
 	KConfigGroup cg( KGlobal::config(), "URLCompletion" );
@@ -521,42 +521,42 @@ void KURLCompletion::init()
 	d->onlyLocalProto = cg.readEntry("LocalProtocolsOnly", false);
 }
 
-void KURLCompletion::setDir(const QString &_dir)
+void KUrlCompletion::setDir(const QString &_dir)
 {
     d->cwd = _dir;
 }
 
-QString KURLCompletion::dir() const
+QString KUrlCompletion::dir() const
 {
 	return d->cwd;
 }
 
-KURLCompletion::Mode KURLCompletion::mode() const
+KUrlCompletion::Mode KUrlCompletion::mode() const
 {
 	return d->mode;
 }
 
-void KURLCompletion::setMode( Mode _mode )
+void KUrlCompletion::setMode( Mode _mode )
 {
 	d->mode = _mode;
 }
 
-bool KURLCompletion::replaceEnv() const
+bool KUrlCompletion::replaceEnv() const
 {
 	return d->replace_env;
 }
 
-void KURLCompletion::setReplaceEnv( bool replace )
+void KUrlCompletion::setReplaceEnv( bool replace )
 {
 	d->replace_env = replace;
 }
 
-bool KURLCompletion::replaceHome() const
+bool KUrlCompletion::replaceHome() const
 {
 	return d->replace_home;
 }
 
-void KURLCompletion::setReplaceHome( bool replace )
+void KUrlCompletion::setReplaceHome( bool replace )
 {
 	d->replace_home = replace;
 }
@@ -566,9 +566,9 @@ void KURLCompletion::setReplaceHome( bool replace )
  *
  * Entry point for file name completion
  */
-QString KURLCompletion::makeCompletion(const QString &text)
+QString KUrlCompletion::makeCompletion(const QString &text)
 {
-	//kdDebug() << "KURLCompletion::makeCompletion: " << text << " d->cwd=" << d->cwd << endl;
+	//kdDebug() << "KUrlCompletion::makeCompletion: " << text << " d->cwd=" << d->cwd << endl;
 
 	MyURL url(text, d->cwd);
 
@@ -638,7 +638,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
  * Go on and call KCompletion.
  * Called when all matches have been added
  */
-QString KURLCompletion::finished()
+QString KUrlCompletion::finished()
 {
 	if ( d->last_compl_type == CTInfo )
 		return KCompletion::makeCompletion( d->compl_text.toLower() );
@@ -652,7 +652,7 @@ QString KURLCompletion::finished()
  * Return true if either a KIO job or the DirLister
  * is running
  */
-bool KURLCompletion::isRunning() const
+bool KUrlCompletion::isRunning() const
 {
 	return d->list_job || (d->dirListThread && !d->dirListThread->isFinished());
 }
@@ -662,7 +662,7 @@ bool KURLCompletion::isRunning() const
  *
  * Stop and delete a running KIO job or the DirLister
  */
-void KURLCompletion::stop()
+void KUrlCompletion::stop()
 {
 	if ( d->list_job ) {
 		d->list_job->kill();
@@ -682,7 +682,7 @@ void KURLCompletion::stop()
 /*
  * Keep track of the last listed directory
  */
-void KURLCompletion::setListedURL( int complType,
+void KUrlCompletion::setListedURL( int complType,
                                    const QString& directory,
                                    const QString& filter,
                                    bool no_hidden )
@@ -694,7 +694,7 @@ void KURLCompletion::setListedURL( int complType,
 	d->last_prepend = d->prepend;
 }
 
-bool KURLCompletion::isListedURL( int complType,
+bool KUrlCompletion::isListedURL( int complType,
                                   const QString& directory,
                                   const QString& filter,
                                   bool no_hidden )
@@ -713,7 +713,7 @@ bool KURLCompletion::isListedURL( int complType,
  *
  * Returns true if completion mode is Auto or Popup
  */
-bool KURLCompletion::isAutoCompletion()
+bool KUrlCompletion::isAutoCompletion()
 {
 	return completionMode() == KGlobalSettings::CompletionAuto
 	       || completionMode() == KGlobalSettings::CompletionPopup
@@ -725,7 +725,7 @@ bool KURLCompletion::isAutoCompletion()
 // User directories
 //
 
-bool KURLCompletion::userCompletion(const MyURL &url, QString *pMatch)
+bool KUrlCompletion::userCompletion(const MyURL &url, QString *pMatch)
 {
 	if ( url.protocol() != QLatin1String("file")
 	      || !url.dir().isEmpty()
@@ -764,7 +764,7 @@ char **environ = _environ;
 extern char **environ; // Array of environment variables
 #endif
 
-bool KURLCompletion::envCompletion(const MyURL &url, QString *pMatch)
+bool KUrlCompletion::envCompletion(const MyURL &url, QString *pMatch)
 {
 	if ( url.file().isEmpty() || url.file().at(0) != QLatin1Char('$') )
 		return false;
@@ -807,7 +807,7 @@ bool KURLCompletion::envCompletion(const MyURL &url, QString *pMatch)
 // Executables
 //
 
-bool KURLCompletion::exeCompletion(const MyURL &url, QString *pMatch)
+bool KUrlCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 {
 	if ( url.protocol() != QLatin1String("file") )
 		return false;
@@ -873,7 +873,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 // Local files
 //
 
-bool KURLCompletion::fileCompletion(const MyURL &url, QString *pMatch)
+bool KUrlCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 {
 	if ( url.protocol() != QLatin1String("file") )
 		return false;
@@ -952,7 +952,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 // URLs not handled elsewhere...
 //
 
-bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
+bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 {
 	//kdDebug() << "urlCompletion: url = " << *url.kurl() << endl;
 	if (d->onlyLocalProto && KProtocolInfo::protocolClass(url.protocol()) != QLatin1String(":local"))
@@ -1025,7 +1025,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *pMatch)
  *
  * Called to add matches to KCompletion
  */
-void KURLCompletion::addMatches( const QStringList &matchList )
+void KUrlCompletion::addMatches( const QStringList &matchList )
 {
 	QStringList::ConstIterator it = matchList.begin();
 	QStringList::ConstIterator end = matchList.end();
@@ -1050,7 +1050,7 @@ void KURLCompletion::addMatches( const QStringList &matchList )
  * Returns the match if available, or QString() if
  * DirLister timed out or using kio
  */
-QString KURLCompletion::listDirectories(
+QString KUrlCompletion::listDirectories(
 		const QStringList &dirList,
 		const QString &filter,
 		bool only_exe,
@@ -1114,7 +1114,7 @@ QString KURLCompletion::listDirectories(
  * addMatches() is called with the listed files
  * finished() is called when the listing is done
  */
-void KURLCompletion::listURLs(
+void KUrlCompletion::listURLs(
 		const QList<KUrl *> &urls,
 		const QString &filter,
 		bool only_exe,
@@ -1143,7 +1143,7 @@ void KURLCompletion::listURLs(
  *
  * Receive files listed by KIO and call addMatches()
  */
-void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
+void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
 	QStringList matchList;
 
@@ -1162,13 +1162,13 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 
 		QString entry_name;
 		if (!url.isEmpty()) {
-			// kdDebug() << "KURLCompletion::slotEntries url: " << url << endl;
+			// kdDebug() << "KUrlCompletion::slotEntries url: " << url << endl;
 			entry_name = KUrl(url).fileName();
 		} else {
 			entry_name = entry.stringValue( KIO::UDS_NAME );
 		}
 
-		// kdDebug() << "KURLCompletion::slotEntries name: " << name << endl;
+		// kdDebug() << "KUrlCompletion::slotEntries name: " << name << endl;
 
 		if ( entry_name.at(0) == QLatin1Char('.') &&
 		     ( d->list_urls_no_hidden ||
@@ -1202,7 +1202,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
  * Start a new list job if there are still urls in
  * d->list_urls, otherwise call finished()
  */
-void KURLCompletion::slotIOFinished( KIO::Job * job )
+void KUrlCompletion::slotIOFinished( KIO::Job * job )
 {
 //	kdDebug() << "slotIOFinished() " << endl;
 
@@ -1251,9 +1251,9 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
  * Append '/' to directories for file completion. This is
  * done here to avoid stat()'ing a lot of files
  */
-void KURLCompletion::postProcessMatch( QString *pMatch ) const
+void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 {
-//	kdDebug() << "KURLCompletion::postProcess: " << *pMatch << endl;
+//	kdDebug() << "KUrlCompletion::postProcess: " << *pMatch << endl;
 
 	if ( !pMatch->isEmpty() ) {
 
@@ -1291,21 +1291,21 @@ void KURLCompletion::postProcessMatch( QString *pMatch ) const
 	}
 }
 
-void KURLCompletion::postProcessMatches( QStringList * /*matches*/ ) const
+void KUrlCompletion::postProcessMatches( QStringList * /*matches*/ ) const
 {
 	// Maybe '/' should be added to directories here as in
 	// postProcessMatch() but it would slow things down
 	// when there are a lot of matches...
 }
 
-void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) const
+void KUrlCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) const
 {
 	// Maybe '/' should be added to directories here as in
 	// postProcessMatch() but it would slow things down
 	// when there are a lot of matches...
 }
 
-void KURLCompletion::customEvent(QEvent *e)
+void KUrlCompletion::customEvent(QEvent *e)
 {
 	if ( e->type() == CompletionMatchEvent::uniqueType() ) {
 
@@ -1332,7 +1332,7 @@ void KURLCompletion::customEvent(QEvent *e)
 }
 
 // static
-QString KURLCompletion::replacedPath( const QString& text, bool replaceHome, bool replaceEnv )
+QString KUrlCompletion::replacedPath( const QString& text, bool replaceHome, bool replaceEnv )
 {
 	if ( text.isEmpty() )
 		return text;
@@ -1346,7 +1346,7 @@ QString KURLCompletion::replacedPath( const QString& text, bool replaceHome, boo
 }
 
 
-QString KURLCompletion::replacedPath( const QString& text )
+QString KUrlCompletion::replacedPath( const QString& text )
 {
 	return replacedPath( text, d->replace_home, d->replace_env );
 }
@@ -1487,7 +1487,7 @@ static QString unescape(const QString &text)
 	return result;
 }
 
-void KURLCompletion::virtual_hook( int id, void* data )
+void KUrlCompletion::virtual_hook( int id, void* data )
 { KCompletion::virtual_hook( id, data ); }
 
 #include "kurlcompletion.moc"

@@ -42,14 +42,14 @@
 #include <kvbox.h>
 
 
-class KURLDragPushButton : public KPushButton
+class KUrlDragPushButton : public KPushButton
 {
 public:
-    KURLDragPushButton( QWidget *parent)
+    KUrlDragPushButton( QWidget *parent)
 	: KPushButton( parent) {
     	setDragEnabled( true );
     }
-    ~KURLDragPushButton() {}
+    ~KUrlDragPushButton() {}
 
     void setURL( const KUrl& url ) {
 	m_urls.clear();
@@ -83,10 +83,10 @@ private:
 *************************************************************************
 */
 
-class KURLRequester::KURLRequesterPrivate
+class KUrlRequester::KUrlRequesterPrivate
 {
 public:
-    KURLRequesterPrivate() {
+    KUrlRequesterPrivate() {
 	edit = 0L;
 	combo = 0L;
         fileDialogMode = KFile::File | KFile::ExistingOnly | KFile::LocalOnly;
@@ -138,11 +138,11 @@ public:
      */
     QString url() {
         QString txt = combo ? combo->currentText() : edit->text();
-        KURLCompletion *comp;
+        KUrlCompletion *comp;
         if ( combo )
-            comp = dynamic_cast<KURLCompletion*>(combo->completionObject());
+            comp = dynamic_cast<KUrlCompletion*>(combo->completionObject());
         else
-            comp = dynamic_cast<KURLCompletion*>(edit->completionObject());
+            comp = dynamic_cast<KUrlCompletion*>(edit->completionObject());
 
         if ( comp )
             return comp->replacedPath( txt );
@@ -158,8 +158,8 @@ public:
 
 
 
-KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
-  : KHBox( parent),d(new KURLRequesterPrivate)
+KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
+  : KHBox( parent),d(new KUrlRequesterPrivate)
 {
 
     // must have this as parent
@@ -171,22 +171,22 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
 }
 
 
-KURLRequester::KURLRequester( QWidget *parent)
-  : KHBox( parent),d(new KURLRequesterPrivate)
+KUrlRequester::KUrlRequester( QWidget *parent)
+  : KHBox( parent),d(new KUrlRequesterPrivate)
 {
     init();
 }
 
 
-KURLRequester::KURLRequester( const QString& url, QWidget *parent)
-  : KHBox( parent),d(new KURLRequesterPrivate)
+KUrlRequester::KUrlRequester( const QString& url, QWidget *parent)
+  : KHBox( parent),d(new KUrlRequesterPrivate)
 {
     init();
-    setKURL( KUrl::fromPathOrURL( url ) );
+    setKUrl( KUrl::fromPathOrURL( url ) );
 }
 
 
-KURLRequester::~KURLRequester()
+KUrlRequester::~KUrlRequester()
 {
     delete myCompletion;
     delete myFileDialog;
@@ -194,7 +194,7 @@ KURLRequester::~KURLRequester()
 }
 
 
-void KURLRequester::init()
+void KUrlRequester::init()
 {
     setMargin(0);
 
@@ -204,7 +204,7 @@ void KURLRequester::init()
     if ( !d->combo && !d->edit )
 	d->edit = new KLineEdit( this);
 
-    myButton = new KURLDragPushButton( this);
+    myButton = new KUrlDragPushButton( this);
     QIcon iconSet = SmallIconSet(QLatin1String("fileopen"));
     QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     myButton->setIcon( iconSet );
@@ -221,7 +221,7 @@ void KURLRequester::init()
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
 
-    myCompletion = new KURLCompletion();
+    myCompletion = new KUrlCompletion();
     d->setCompletionObject( myCompletion );
 
     KAccel *accel = new KAccel( this );
@@ -230,7 +230,7 @@ void KURLRequester::init()
 }
 
 
-void KURLRequester::setURL( const QString& url )
+void KUrlRequester::setURL( const QString& url )
 {
     if ( myShowLocalProt )
     {
@@ -248,7 +248,7 @@ void KURLRequester::setURL( const QString& url )
     }
 }
 
-void KURLRequester::setKURL( const KUrl& url )
+void KUrlRequester::setKUrl( const KUrl& url )
 {
     if ( myShowLocalProt )
         d->setText( url.url() );
@@ -256,7 +256,7 @@ void KURLRequester::setKURL( const KUrl& url )
         d->setText( url.pathOrURL() );
 }
 
-void KURLRequester::changeEvent(QEvent *e)
+void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
      if (myFileDialog) {
@@ -267,12 +267,12 @@ void KURLRequester::changeEvent(QEvent *e)
    KHBox::changeEvent(e);
 }
 
-QString KURLRequester::url() const
+QString KUrlRequester::url() const
 {
     return d->url();
 }
 
-void KURLRequester::slotOpenDialog()
+void KUrlRequester::slotOpenDialog()
 {
     KUrl newurl;
     if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) ||
@@ -306,40 +306,40 @@ void KURLRequester::slotOpenDialog()
       newurl = dlg->selectedURL();
     }
 
-    setKURL( newurl );
+    setKUrl( newurl );
     emit urlSelected( d->url() );
 }
 
-void KURLRequester::setMode(unsigned int mode)
+void KUrlRequester::setMode(unsigned int mode)
 {
     Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;
     if ( (mode & KFile::Directory) && !(mode & KFile::File) )
-        myCompletion->setMode( KURLCompletion::DirCompletion );
+        myCompletion->setMode( KUrlCompletion::DirCompletion );
 
     if (myFileDialog)
        myFileDialog->setMode( d->fileDialogMode );
 }
 
-unsigned int KURLRequester::mode() const
+unsigned int KUrlRequester::mode() const
 {
     return d->fileDialogMode;
 }
 
-void KURLRequester::setFilter(const QString &filter)
+void KUrlRequester::setFilter(const QString &filter)
 {
     d->fileDialogFilter = filter;
     if (myFileDialog)
        myFileDialog->setFilter( d->fileDialogFilter );
 }
 
-QString KURLRequester::filter( ) const
+QString KUrlRequester::filter( ) const
 {
     return d->fileDialogFilter;
 }
 
 
-KFileDialog * KURLRequester::fileDialog() const
+KFileDialog * KUrlRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
         QWidget *p = parentWidget();
@@ -354,44 +354,44 @@ KFileDialog * KURLRequester::fileDialog() const
 }
 
 
-void KURLRequester::setShowLocalProtocol( bool b )
+void KUrlRequester::setShowLocalProtocol( bool b )
 {
     if ( myShowLocalProt == b )
 	return;
 
     myShowLocalProt = b;
-    setKURL( url() );
+    setKUrl( url() );
 }
 
-void KURLRequester::clear()
+void KUrlRequester::clear()
 {
     d->setText( QString() );
 }
 
-KLineEdit * KURLRequester::lineEdit() const
+KLineEdit * KUrlRequester::lineEdit() const
 {
     return d->edit;
 }
 
-KComboBox * KURLRequester::comboBox() const
+KComboBox * KUrlRequester::comboBox() const
 {
     return d->combo;
 }
 
-void KURLRequester::slotUpdateURL()
+void KUrlRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
     KUrl u;
     u = KUrl( KUrl( QDir::currentPath() + '/' ), url() );
-    (static_cast<KURLDragPushButton *>( myButton ))->setURL( u );
+    (static_cast<KUrlDragPushButton *>( myButton ))->setURL( u );
 }
 
-KPushButton * KURLRequester::button() const
+KPushButton * KUrlRequester::button() const
 {
     return myButton;
 }
 
-KEditListBox::CustomEditor KURLRequester::customEditor()
+KEditListBox::CustomEditor KUrlRequester::customEditor()
 {
     setSizePolicy(QSizePolicy( QSizePolicy::Preferred,
                                QSizePolicy::Fixed));
@@ -402,18 +402,18 @@ KEditListBox::CustomEditor KURLRequester::customEditor()
 
 #ifndef NDEBUG
     if ( !edit )
-        kdWarning() << "KURLRequester's lineedit is not a KLineEdit!??\n";
+        kdWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
 #endif
 
     KEditListBox::CustomEditor editor( this, edit );
     return editor;
 }
 
-void KURLRequester::virtual_hook( int, void* )
+void KUrlRequester::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-KURLComboRequester::KURLComboRequester( QWidget *parent)
-  : KURLRequester( new KComboBox(false), parent)
+KUrlComboRequester::KUrlComboRequester( QWidget *parent)
+  : KUrlRequester( new KComboBox(false), parent)
 {
 }
 

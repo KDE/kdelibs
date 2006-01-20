@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     QStringList filter;
     filter << "all/allfiles" << "text/plain";
     dlg->setMimeFilter( filter, "all/allfiles" );
-    KURLBar *urlBar = dlg->speedBar();
+    KUrlBar *urlBar = dlg->speedBar();
     if ( urlBar )
     {
         urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"), 

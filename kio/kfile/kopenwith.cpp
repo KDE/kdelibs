@@ -425,12 +425,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
     QStringList list = cg.readEntry( QString::fromLatin1("History"), QStringList() );
     combo->setHistoryItems( list, true );
-    edit = new KURLRequester( combo, this );
+    edit = new KUrlRequester( combo, this );
   }
   else
   {
     clearButton->hide();
-    edit = new KURLRequester( this );
+    edit = new KUrlRequester( this );
     edit->lineEdit()->setReadOnly(true);
     edit->button()->hide();
   }
@@ -452,7 +452,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   hbox->addWidget(edit);
 
   if ( edit->comboBox() ) {
-    KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
+    KUrlCompletion *comp = new KUrlCompletion( KUrlCompletion::ExeCompletion );
     edit->comboBox()->setCompletionObject( comp );
     edit->comboBox()->setAutoDeleteCompletionObject( true );
   }
@@ -820,7 +820,7 @@ void KOpenWithDlg::accept()
         cg.writeEntry( QString::fromLatin1("History"), combo->historyItems() );
 	cg.writeEntry(QString::fromLatin1("CompletionMode"),
 		       combo->completionMode());
-        // don't store the completion-list, as it contains all of KURLCompletion's
+        // don't store the completion-list, as it contains all of KUrlCompletion's
         // executables
         cg.sync();
     }

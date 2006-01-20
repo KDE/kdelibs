@@ -85,8 +85,8 @@ KAboutContributor::KAboutContributor( QWidget *_parent,
   mLabel[2] = new QLabel( this );
   mLabel[3] = new QLabel( this );
   mText[0] = new QLabel( this );
-  mText[1] = new KURLLabel( this );
-  mText[2] = new KURLLabel( this );
+  mText[1] = new KUrlLabel( this );
+  mText[2] = new KUrlLabel( this );
   mText[3] = new QLabel( this );
 
   setName( _name, i18n("Author"), false );
@@ -94,13 +94,13 @@ KAboutContributor::KAboutContributor( QWidget *_parent,
   setURL( _url, i18n("Homepage"), false );
   setWork( _work, i18n("Task"), false );
 
-  KURLLabel *kurl = static_cast<KURLLabel *>(mText[1]);
+  KUrlLabel *kurl = static_cast<KUrlLabel *>(mText[1]);
   kurl->setFloat(true);
   kurl->setUnderline(true);
   connect(kurl, SIGNAL(leftClickedURL(const QString &)),
 	  SLOT(emailClickedSlot(const QString &)));
 
-  kurl = static_cast<KURLLabel *>(mText[2]);
+  kurl = static_cast<KUrlLabel *>(mText[2]);
   kurl->setFloat(true);
   kurl->setUnderline(true);
   connect(kurl, SIGNAL(leftClickedURL(const QString &)),
@@ -126,7 +126,7 @@ void KAboutContributor::setEmail( const QString &_text, const QString &_header,
 				  bool _update )
 {
   mLabel[1]->setText(_header);
-  KURLLabel* const kurl = static_cast<KURLLabel *>(mText[1]);
+  KUrlLabel* const kurl = static_cast<KUrlLabel *>(mText[1]);
   kurl->setText(_text);
   kurl->setURL(_text);
   if( _update ) { updateLayout(); }
@@ -137,7 +137,7 @@ void KAboutContributor::setURL( const QString &_text, const QString &_header,
 				bool _update )
 {
   mLabel[2]->setText(_header);
-  KURLLabel* const kurl = static_cast<KURLLabel *>(mText[2]);
+  KUrlLabel* const kurl = static_cast<KUrlLabel *>(mText[2]);
   kurl->setText(_text);
   kurl->setURL(_text);
   if( _update ) { updateLayout(); }
@@ -967,9 +967,9 @@ protected:
   QLabel *name;
   /** The clickable URL label showing the email address. It is only visible if
    *  its text is not empty. */
-  KURLLabel *email;
+  KUrlLabel *email;
   /** Another interactive part that displays the homepage URL. */
-  KURLLabel *url;
+  KUrlLabel *url;
   /** The description of the contributions of the person. */
   QString work;
   // ----------------------------------------------------------------------------
@@ -992,8 +992,8 @@ signals:
 KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
   : QFrame(parent, n),
     name(new QLabel(this)),
-    email(new KURLLabel(this)),
-    url(new KURLLabel(this))
+    email(new KUrlLabel(this)),
+    url(new KUrlLabel(this))
 {
   // ############################################################
   if(name==0 || email==0)
@@ -1110,7 +1110,7 @@ KAboutContributor::sizeHint()
   }
   maxx=qMax(maxx, url->sizeHint().width()+WORKTEXT_IDENTATION);
   // -----
-  maxy=2*(name->sizeHint().height()+Grid); // need a space above the KURLLabels
+  maxy=2*(name->sizeHint().height()+Grid); // need a space above the KUrlLabels
   maxy+=/* email */ name->sizeHint().height();
   maxy+=rect.height();
   // -----

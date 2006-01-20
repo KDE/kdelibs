@@ -27,10 +27,10 @@
 
 #include <kurlcombobox.h>
 
-class KURLComboBox::KURLComboBoxPrivate
+class KUrlComboBox::KUrlComboBoxPrivate
 {
 public:
-    KURLComboBoxPrivate() {
+    KUrlComboBoxPrivate() {
 	dirIcon = SmallIconSet(QLatin1String("folder"));
     }
 
@@ -38,21 +38,21 @@ public:
 };
 
 
-KURLComboBox::KURLComboBox( Mode mode, QWidget *parent)
-    : KComboBox( parent),d(new KURLComboBoxPrivate())
+KUrlComboBox::KUrlComboBox( Mode mode, QWidget *parent)
+    : KComboBox( parent),d(new KUrlComboBoxPrivate())
 {
     init( mode );
 }
 
 
-KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent)
-    : KComboBox( rw, parent),d(new KURLComboBoxPrivate())
+KUrlComboBox::KUrlComboBox( Mode mode, bool rw, QWidget *parent)
+    : KComboBox( rw, parent),d(new KUrlComboBoxPrivate())
 {
     init( mode );
 }
 
 
-KURLComboBox::~KURLComboBox()
+KUrlComboBox::~KUrlComboBox()
 {
     qDeleteAll( itemList );
     qDeleteAll( defaultList );
@@ -60,7 +60,7 @@ KURLComboBox::~KURLComboBox()
 }
 
 
-void KURLComboBox::init( Mode mode )
+void KUrlComboBox::init( Mode mode )
 {
 
     myMode    = mode;
@@ -76,7 +76,7 @@ void KURLComboBox::init( Mode mode )
 }
 
 
-QStringList KURLComboBox::urls() const
+QStringList KUrlComboBox::urls() const
 {
     kdDebug(250) << "::urls()" << endl;
     //static const QString &fileProt = KGlobal::staticQString("file:");
@@ -96,16 +96,16 @@ QStringList KURLComboBox::urls() const
 }
 
 
-void KURLComboBox::addDefaultURL( const KUrl& url, const QString& text )
+void KUrlComboBox::addDefaultURL( const KUrl& url, const QString& text )
 {
     addDefaultURL( url, getIcon( url ), text );
 }
 
 
-void KURLComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
+void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
                                   const QString& text )
 {
-    KURLComboItem *item = new KURLComboItem;
+    KUrlComboItem *item = new KUrlComboItem;
     item->url = url;
     item->icon = icon;
     if ( text.isEmpty() )
@@ -120,24 +120,24 @@ void KURLComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
 }
 
 
-void KURLComboBox::setDefaults()
+void KUrlComboBox::setDefaults()
 {
     clear();
     itemMapper.clear();
 
-    const KURLComboItem *item;
+    const KUrlComboItem *item;
     for ( int id = 0; id < defaultList.count(); id++ ) {
         item = defaultList.at( id );
         insertURLItem( item );
     }
 }
 
-void KURLComboBox::setURLs( QStringList urls )
+void KUrlComboBox::setURLs( QStringList urls )
 {
     setURLs( urls, RemoveBottom );
 }
 
-void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
+void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 {
     setDefaults();
     qDeleteAll( itemList );
@@ -169,7 +169,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 
     it = urls.begin();
 
-    KURLComboItem *item = 0L;
+    KUrlComboItem *item = 0L;
     KUrl u;
 
     while ( it != urls.end() ) {
@@ -179,7 +179,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         }
         u = KUrl::fromPathOrURL( *it );
 
-        item = new KURLComboItem;
+        item = new KUrlComboItem;
         item->url = u;
         item->icon = getIcon( u );
 
@@ -195,7 +195,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 }
 
 
-void KURLComboBox::setURL( const KUrl& url )
+void KUrlComboBox::setURL( const KUrl& url )
 {
     if ( url.isEmpty() )
         return;
@@ -203,7 +203,7 @@ void KURLComboBox::setURL( const KUrl& url )
     blockSignals( true );
 
     // check for duplicates
-    QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
+    QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     QString urlToInsert = url.url(-1);
     while ( mit != itemMapper.end() ) {
         if ( urlToInsert == mit.value()->url.url(-1) ) {
@@ -228,11 +228,11 @@ void KURLComboBox::setURL( const KUrl& url )
 
     setDefaults();
 
-    QListIterator<const KURLComboItem*> it( itemList );
+    QListIterator<const KUrlComboItem*> it( itemList );
     while ( it.hasNext() )
         insertURLItem( it.next() );
 
-    KURLComboItem *item = new KURLComboItem;
+    KUrlComboItem *item = new KUrlComboItem;
     item->url = url;
     item->icon = getIcon( url );
     if ( url.isLocalFile() )
@@ -257,9 +257,9 @@ void KURLComboBox::setURL( const KUrl& url )
 }
 
 
-void KURLComboBox::slotActivated( int index )
+void KUrlComboBox::slotActivated( int index )
 {
-    const KURLComboItem *item = itemMapper[ index ];
+    const KUrlComboItem *item = itemMapper[ index ];
 
     if ( item ) {
         setURL( item->url );
@@ -268,7 +268,7 @@ void KURLComboBox::slotActivated( int index )
 }
 
 
-void KURLComboBox::insertURLItem( const KURLComboItem *item )
+void KUrlComboBox::insertURLItem( const KUrlComboItem *item )
 {
 // kdDebug(250) << "insertURLItem " << item->text << endl;
     int id = count();
@@ -277,7 +277,7 @@ void KURLComboBox::insertURLItem( const KURLComboItem *item )
 }
 
 
-void KURLComboBox::setMaxItems( int max )
+void KUrlComboBox::setMaxItems( int max )
 {
     myMaximum = max;
 
@@ -286,7 +286,7 @@ void KURLComboBox::setMaxItems( int max )
 
         setDefaults();
 
-        QListIterator<const KURLComboItem*> it( itemList );
+        QListIterator<const KUrlComboItem*> it( itemList );
         int Overload = itemList.count() - myMaximum + defaultList.count();
         for ( int i = 0; i <= Overload; i++ )
             it.next();
@@ -303,9 +303,9 @@ void KURLComboBox::setMaxItems( int max )
 }
 
 
-void KURLComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
+void KUrlComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
 {
-    QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
+    QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
         if ( url.url(-1) == mit.value()->url.url(-1) ) {
             if ( !itemList.remove( mit.value() ) && checkDefaultURLs )
@@ -316,7 +316,7 @@ void KURLComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
 
     blockSignals( true );
     setDefaults();
-    QListIterator<const KURLComboItem*> it( itemList );
+    QListIterator<const KUrlComboItem*> it( itemList );
     while ( it.hasNext() ) {
         insertURLItem( it.next() );
     }
@@ -324,7 +324,7 @@ void KURLComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
 }
 
 
-QIcon KURLComboBox::getIcon( const KUrl& url ) const
+QIcon KUrlComboBox::getIcon( const KUrl& url ) const
 {
     if ( myMode == Directories )
         return d->dirIcon;
@@ -335,7 +335,7 @@ QIcon KURLComboBox::getIcon( const KUrl& url ) const
 
 // updates "item" with pixmap "pixmap" and sets the URL instead of text
 // works around a Qt bug.
-void KURLComboBox::updateItem( const KURLComboItem *item,
+void KUrlComboBox::updateItem( const KUrlComboItem *item,
                                int index, const QIcon& icon)
 {
     // QComboBox::changeItem() doesn't honor the pixmap when

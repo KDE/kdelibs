@@ -600,7 +600,7 @@ bool KHTMLPart::openURL( const KUrl &url )
     QString userAgent = KProtocolManager::userAgentForHost(host);
     if (userAgent != KProtocolManager::userAgentForHost(QString())) {
       if (!d->m_statusBarUALabel) {
-        d->m_statusBarUALabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+        d->m_statusBarUALabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
         d->m_statusBarUALabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
         d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         d->m_statusBarUALabel->setUseCursor(false);
@@ -1067,7 +1067,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   }
 
   if (!d->m_statusBarJSErrorLabel) {
-    d->m_statusBarJSErrorLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+    d->m_statusBarJSErrorLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
     d->m_statusBarJSErrorLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
     d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
@@ -7162,7 +7162,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
   connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
 
   if (!d->m_statusBarWalletLabel) {
-    d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+    d->m_statusBarWalletLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
     d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
     d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarWalletLabel->setUseCursor(false);
@@ -7301,7 +7301,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
     }
 
     if ( enable && !d->m_statusBarPopupLabel ) {
-        d->m_statusBarPopupLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
+        d->m_statusBarPopupLabel = new KUrlLabel( d->m_statusBarExtension->statusBar() );
         d->m_statusBarPopupLabel->setFixedHeight( instance()->iconLoader()->currentSize( KIcon::Small) );
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
         d->m_statusBarPopupLabel->setUseCursor( false );

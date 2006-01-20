@@ -45,7 +45,7 @@ ResourceNetConfig::ResourceNetConfig( QWidget* parent )
   mainLayout->addWidget( mFormatBox, 0, 1 );
 
   label = new QLabel( i18n( "Location:" ), this );
-  mUrlEdit = new KURLRequester( this );
+  mUrlEdit = new KUrlRequester( this );
   mUrlEdit->setMode( KFile::File );
 
   mainLayout->addWidget( label, 1, 0 );

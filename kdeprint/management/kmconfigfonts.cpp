@@ -51,7 +51,7 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	m_fontpath->header()->setStretchEnabled(true, 0);
 	m_fontpath->header()->hide();
 	m_fontpath->setSorting(-1);
-	m_addpath = new KURLRequester(box2);
+	m_addpath = new KUrlRequester(box2);
 	m_addpath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	m_up = new KPushButton(KGuiItem(i18n("&Up"), "up"), box2);
 	m_down = new KPushButton(KGuiItem(i18n("&Down"), "down"), box2);
