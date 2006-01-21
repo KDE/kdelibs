@@ -37,6 +37,26 @@ QString FakeDevice::udi() const
     return m_udi;
 }
 
+QString FakeDevice::parentUdi() const
+{
+    return m_parent;
+}
+
+void FakeDevice::setParent( const QString &udi )
+{
+    m_parent = udi;
+}
+
+QString FakeDevice::vendor() const
+{
+    return m_data["info.vendor"].toString();
+}
+
+QString FakeDevice::product() const
+{
+    return m_data["info.product"].toString();
+}
+
 bool FakeDevice::setProperty( const QString &key, const QVariant &value )
 {
     if ( m_brokenDevice ) return false;
@@ -126,6 +146,15 @@ bool FakeDevice::unlock()
     return true;
 }
 
+bool FakeDevice::isLocked() const
+{
+    return m_locked;
+}
+
+QString FakeDevice::lockReason() const
+{
+    return m_lockReason;
+}
 
 void FakeDevice::raiseCondition( const QString &condition, const QString &reason )
 {

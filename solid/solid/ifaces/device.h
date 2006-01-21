@@ -68,6 +68,28 @@ namespace Ifaces
          */
         virtual QString udi() const = 0;
 
+        /**
+         * Retrieves the Universal Device Identifier (UDI) of the Device's
+         * parent.
+         *
+         * @returns the Universal Device Identifier of the parent device
+         */
+        virtual QString parentUdi() const;
+
+
+        /**
+         * Retrieves the name of the device vendor.
+         *
+         * @return the vendor name
+         */
+        virtual QString vendor() const = 0;
+
+        /**
+         * Retrieves the name of the product corresponding to this device.
+         *
+         * @return the product name
+         */
+        virtual QString product() const = 0;
 
 
         /**
@@ -142,6 +164,20 @@ namespace Ifaces
          * @returns true if the operation succeded, false otherwise
          */
         virtual bool unlock();
+
+        /**
+         * Tests if the device is locked.
+         *
+         * @return true if the device is locked, false otherwise
+         */
+        virtual bool isLocked() const;
+
+        /**
+         * Retrieves the reason for a lock.
+         *
+         * @return the lock reason if the device is locked, QString() otherwise
+         */
+        virtual QString lockReason() const;
 
     signals:
         /**

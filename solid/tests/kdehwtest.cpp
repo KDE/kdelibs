@@ -46,6 +46,7 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "info.vendor", "Gibson Inc." );
 
     dev = fakeManager->newDevice( "/fake/storage_SONA_CD22U" );
+    dev->setParent( "/fake/computer" );
     dev->setProperty( "info.product", "CD22U" );
     dev->setProperty( "info.vendor", "Sona Inc." );
     dev->setProperty( "info.parent", "/fake/computer" );
@@ -53,6 +54,7 @@ void KdeHwTest::initTestCase()
     dev->addCapability( "storage.cdrom" );
 
     dev = fakeManager->newDevice( "/fake/volume_label_SOLIDMAN_THE_MOVIE" );
+    dev->setParent( "/fake/storage_SONA_CD22U" );
     dev->setProperty( "info.product", "SOLIDMAN_THE_MOVIE" );
     dev->setProperty( "info.parent", "/fake/storage_SONA_CD22U" );
     dev->setProperty( "volume.label", "SOLIDMAN_THE_MOVIE" );
@@ -62,6 +64,7 @@ void KdeHwTest::initTestCase()
     dev->addCapability( "volume.disc" );
 
     dev = fakeManager->newDevice( "/fake/acpi_LID0" );
+    dev->setParent( "/fake/computer" );
     dev->setProperty( "info.product", "SOLIDMAN_THE_MOVIE" );
     dev->setProperty( "info.parent", "/fake/computer" );
     dev->setProperty( "button.type", "lid" );
@@ -155,6 +158,22 @@ void KdeHwTest::testDeviceBasicFeatures()
 
     QCOMPARE( invalid_dev.queryCapability( QString() ), false );
     QCOMPARE( invalid_dev.queryCapability( "storage" ), false );
+
+
+    // Query parent
+    QCOMPARE( valid_dev.parentUdi(), QString( "/fake/computer" ) );
+    QCOMPARE( valid_dev.parent().udi(), manager.findDevice( "/fake/computer" ).udi() );
+
+    QVERIFY( !invalid_dev.parent().isValid() );
+    QVERIFY( invalid_dev.parentUdi().isEmpty() );
+
+
+    // Query vendor/product
+    QCOMPARE( valid_dev.vendor(), QString( "Sona Inc." ) );
+    QCOMPARE( valid_dev.product(), QString( "CD22U" ) );
+
+    QCOMPARE( invalid_dev.vendor(), QString() );
+    QCOMPARE( invalid_dev.product(), QString() );
 }
 
 void KdeHwTest::testDeviceLocking()
@@ -167,7 +186,11 @@ void KdeHwTest::testDeviceLocking()
     // Test locking on a device that refuses it
     fakeManager->findDevice( "/fake/computer" )->setBroken( true );
     QCOMPARE( device.lock( "need a reason?" ), false );
+    QVERIFY( !device.isLocked() );
+    QCOMPARE( device.lockReason(), QString() );
     QCOMPARE( device.lock( "really need one!?" ), false );
+    QVERIFY( !device.isLocked() );
+    QCOMPARE( device.lockReason(), QString() );
     QCOMPARE( device.unlock(), false );
     QCOMPARE( device.unlock(), false );
 
@@ -175,15 +198,24 @@ void KdeHwTest::testDeviceLocking()
     // Test locking on a "normal" device
     fakeManager->findDevice( "/fake/computer" )->setBroken( false );
     QCOMPARE( device.lock( "sure I have a good reason" ), true );
+    QVERIFY( device.isLocked() );
+    QCOMPARE( device.lockReason(), QString( "sure I have a good reason" ) );
     QCOMPARE( device.lock( "hope it won't fail" ), false );
+    QVERIFY( device.isLocked() );
     QCOMPARE( device.unlock(), true );
+    QVERIFY( !device.isLocked() );
     QCOMPARE( device.unlock(), false );
+    QVERIFY( !device.isLocked() );
 
 
     // Test locking on an invalid Device object
     device = KDEHW::Device();
     QCOMPARE( device.lock( "won't work!" ), false );
+    QVERIFY( !device.isLocked() );
+    QCOMPARE( device.lockReason(), QString() );
     QCOMPARE( device.lock( "..." ), false );
+    QVERIFY( !device.isLocked() );
+    QCOMPARE( device.lockReason(), QString() );
     QCOMPARE( device.unlock(), false );
     QCOMPARE( device.unlock(), false );
 }

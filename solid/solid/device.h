@@ -97,12 +97,49 @@ namespace KDEHW
          */
         bool isValid() const;
 
+
         /**
          * Retrieves the Universal Device Identifier (UDI).
          *
          * @return the udi of the device
          */
         QString udi() const;
+
+        /**
+         * Retrieves the Universal Device Identifier (UDI)
+         * of the Device's parent.
+         *
+         * @return the udi of the device's parent
+         */
+        QString parentUdi() const;
+
+
+        /**
+         * Retrieves the parent of the Device.
+         *
+         * @return the device's parent
+         * @see parentUdi()
+         * @see DeviceManager::findDevice()
+         */
+        Device parent() const;
+
+
+
+        /**
+         * Retrieves the name of the device vendor.
+         *
+         * @return the vendor name
+         */
+        QString vendor() const;
+
+        /**
+         * Retrieves the name of the product corresponding to this device.
+         *
+         * @return the product name
+         */
+        QString product() const;
+
+
 
 
         /**
@@ -185,6 +222,20 @@ namespace KDEHW
          * @return true if the lock has been successfully released
          */
         bool unlock();
+
+        /**
+         * Tests if the device is locked.
+         *
+         * @return true if the device is locked, false otherwise
+         */
+        bool isLocked() const;
+
+        /**
+         * Retrieves the reason for a lock.
+         *
+         * @return the lock reason if the device is locked, QString() otherwise
+         */
+        QString lockReason() const;
 
     signals:
         /**

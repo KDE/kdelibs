@@ -30,6 +30,11 @@ KDEHW::Ifaces::Device::~Device()
 
 }
 
+QString KDEHW::Ifaces::Device::parentUdi() const
+{
+    return QString();
+}
+
 bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant &/*value*/ )
 {
     return false;
@@ -53,6 +58,16 @@ bool KDEHW::Ifaces::Device::lock(const QString &/*reason*/)
 bool KDEHW::Ifaces::Device::unlock()
 {
     return false;
+}
+
+bool KDEHW::Ifaces::Device::isLocked() const
+{
+    return false;
+}
+
+QString KDEHW::Ifaces::Device::lockReason() const
+{
+    return QString();
 }
 
 #include "device.moc"

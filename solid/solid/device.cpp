@@ -18,6 +18,7 @@
 */
 
 #include "device.h"
+#include "devicemanager.h"
 
 namespace KDEHW
 {
@@ -116,6 +117,56 @@ QString KDEHW::Device::udi() const
     }
 }
 
+QString KDEHW::Device::parentUdi() const
+{
+    if ( d->data!=0 )
+    {
+        return d->data->parentUdi();
+    }
+    else
+    {
+        return QString();
+    }
+}
+
+KDEHW::Device KDEHW::Device::parent() const
+{
+    QString udi = parentUdi();
+
+    if ( udi.isEmpty() )
+    {
+        return Device();
+    }
+    else
+    {
+        return DeviceManager::self().findDevice( udi );
+    }
+}
+
+QString KDEHW::Device::vendor() const
+{
+    if ( d->data!=0 )
+    {
+        return d->data->vendor();
+    }
+    else
+    {
+        return QString();
+    }
+}
+
+QString KDEHW::Device::product() const
+{
+    if ( d->data!=0 )
+    {
+        return d->data->product();
+    }
+    else
+    {
+        return QString();
+    }
+}
+
 bool KDEHW::Device::setProperty( const QString &key, const QVariant &value )
 {
     if ( d->data!=0 )
@@ -197,6 +248,30 @@ bool KDEHW::Device::unlock()
     else
     {
         return false;
+    }
+}
+
+bool KDEHW::Device::isLocked() const
+{
+    if ( d->data!=0 )
+    {
+        return d->data->isLocked();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+QString KDEHW::Device::lockReason() const
+{
+    if ( d->data!=0 )
+    {
+        return d->data->lockReason();
+    }
+    else
+    {
+        return QString();
     }
 }
 

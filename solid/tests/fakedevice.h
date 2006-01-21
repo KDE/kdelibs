@@ -35,6 +35,11 @@ public:
     virtual ~FakeDevice();
 
     virtual QString udi() const;
+    virtual QString parentUdi() const;
+    void setParent( const QString &udi );
+
+    virtual QString vendor() const;
+    virtual QString product() const;
 
     virtual bool setProperty( const QString &key, const QVariant &value );
     virtual QVariant property( const QString &key ) const;
@@ -49,6 +54,8 @@ public:
 
     virtual bool lock(const QString &reason);
     virtual bool unlock();
+    virtual bool isLocked() const;
+    virtual QString lockReason() const;
 
     void raiseCondition( const QString &condition, const QString &reason );
 
@@ -58,6 +65,7 @@ public:
 private:
     FakeManager *m_manager;
     QString m_udi;
+    QString m_parent;
     QStringList m_capabilities;
     QMap<QString, QVariant> m_data;
     bool m_brokenDevice;
