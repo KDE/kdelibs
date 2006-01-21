@@ -112,6 +112,8 @@ void KACLTest::runAll()
   testSettingBasic();
   testSettingExtended();
   testSettingErrorHandling();
+
+  testNewMask();
 }
 
 void KACLTest::cleanup()
@@ -277,4 +279,16 @@ void KACLTest::testSettingErrorHandling()
   check( "Existing user: ", v, true );
   v = foo.setNamedUserPermissions( "jongel", 7 ); // non-existing user
   check( "Non-existing user: ", v, false );
+}
+
+void KACLTest::testNewMask()
+{
+  KACL CharlesII( "user::rw-\ngroup::rw-\nother::rw\n" );
+  bool dummy = false;
+  CharlesII.maskPermissions( dummy );
+  check( "mask exists: ", dummy, false );
+
+  CharlesII.setMaskPermissions( 6 );
+  check( "new mask set: ", QString::number( CharlesII.maskPermissions( dummy ) ), "6" );
+  check( "mask exists now: ", dummy, true );
 }

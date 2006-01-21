@@ -285,7 +285,12 @@ unsigned short KACL::maskPermissions( bool &exists ) const
 #ifdef USE_POSIX_ACL
 bool KACL::KACLPrivate::setMaskPermissions( unsigned short v )
 {
-    permissionsToEntry( entryForTag( m_acl, ACL_MASK ), v );
+    acl_entry_t entry = entryForTag( m_acl, ACL_MASK );
+    if ( entry == 0 ) {
+        acl_create_entry( &m_acl, &entry );
+        acl_set_tag_type( entry, ACL_MASK );
+    }
+    permissionsToEntry( entry, v );
     return true;
 }
 #endif
@@ -368,8 +373,10 @@ bool KACL::KACLPrivate::setNamedUserOrGroupPermissions( const QString& name, uns
     if ( allIsWell && createdNewEntry ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
         // named group entry, there needs to be a mask entry as well, so add
-        // one.
-        setMaskPermissions( acl_calc_mask( &newACL ) );
+        // one, if the user hasn't explicitely set one.
+        if ( entryForTag( newACL, ACL_MASK ) == 0 ) {
+            acl_calc_mask( &newACL );
+        }
     }
 
     if ( !allIsWell || acl_valid( newACL ) != 0 ) {
@@ -465,8 +472,10 @@ bool KACL::KACLPrivate::setAllUsersOrGroups( const QList< QPair<QString, unsigne
     if ( allIsWell && atLeastOneUserOrGroup ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
         // named group entry, there needs to be a mask entry as well, so add
-        // one.
-        setMaskPermissions( acl_calc_mask( &newACL ) );
+        // one, if the user hasn't explicitely set one.
+        if ( entryForTag( newACL, ACL_MASK ) == 0 ) {
+            acl_calc_mask( &newACL );
+        }
     }
     if ( allIsWell && ( acl_valid( newACL ) == 0 ) ) {
         acl_free( m_acl );
