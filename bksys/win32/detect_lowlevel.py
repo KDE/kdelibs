@@ -7,14 +7,15 @@ def detect(lenv, dest):
 
 	def CheckAndWrite( conf, header ):
 		have_define = 'HAVE_' + header.upper()
-		have_define = str.replace (have_define, '_', '/' )
-		have_define = str.replace( have_define, '_', '\\' )
-		have_define = str.replace( have_define, '_', '.' )
+		have_define = str.replace( have_define, '/', '_' )
+		have_define = str.replace( have_define, '\\', '_' )
+		have_define = str.replace( have_define, '.', '_' )
 
+		txt = '/* Define to 1 if you have the <' + header + '> header file. */\n'
 		if conf.CheckHeader( header ):
-			return '#define '+have_define+' 1\n'
+			return txt + '#define '+ have_define + ' 1\n\n'
 		else:
-			return '#undef '+have_define
+			return txt + '#undef ' + have_define + '\n\n'
 
 	conf = lenv.Configure()
 	content = ''
