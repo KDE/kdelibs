@@ -31,7 +31,6 @@
 #include <q3simplerichtext.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
-#include <QTextEdit>
 
 #include <kapplication.h>
 #include <kconfig.h>
