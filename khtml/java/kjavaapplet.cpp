@@ -48,8 +48,7 @@ public:
 
 KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
                           KJavaAppletContext* _context )
-    : params(),
-	d(new KJavaAppletPrivate)
+    : d(new KJavaAppletPrivate), params()
 {
 
     d->UIwidget = _parent;
