@@ -213,7 +213,7 @@ public:
 		
 	};
 	
-	Q_DECLARE_FLAGS(NotificationFlags , NotificationFlag);
+	Q_DECLARE_FLAGS(NotificationFlags , NotificationFlag)
 
 	/**
 	 * default events you can use in the event function
