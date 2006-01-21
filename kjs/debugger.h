@@ -213,6 +213,6 @@ namespace KJS {
     static int debuggersPresent;
   };
 
-};
+}
 
 #endif

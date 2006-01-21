@@ -75,6 +75,6 @@ namespace KJS {
    */
   ValueImp *mult(ExecState *exec, ValueImp *v1, ValueImp *v2, char oper);
 
-};
+}
 
 #endif

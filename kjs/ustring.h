@@ -44,7 +44,7 @@ typedef unsigned long ulong;
  */
 namespace DOM {
   class DOMString;
-};
+}
 class KJScript;
 class QString;
 class QConstString;
