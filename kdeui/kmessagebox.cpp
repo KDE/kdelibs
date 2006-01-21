@@ -31,6 +31,7 @@
 #include <q3simplerichtext.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
+#include <QTextEdit>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -39,13 +40,14 @@
 #include <kguiitem.h>
 #include <klistbox.h>
 #include <klocale.h>
-#include <kmessagebox.h>
 #include <knotification.h>
 #include <kstdguiitem.h>
 #include <kactivelabel.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
 #include <kvbox.h>
+
+#include "kmessagebox.h"
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
