@@ -262,16 +262,16 @@ void HTTPProtocol::resetSessionSettings()
                                             " Realm: " << m_strProxyRealm << endl;
   }
 
-  m_bPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", QVariant(false)).toBool();
+  m_bPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", false);
   kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
                 << m_bPersistentProxyConnection << endl;
 
-  m_request.bUseCookiejar = config()->readEntry("Cookies", QVariant(false)).toBool();
-  m_request.bUseCache = config()->readEntry("UseCache", QVariant(true)).toBool();
-  m_request.bErrorPage = config()->readEntry("errorPage", QVariant(true)).toBool();
-  m_request.bNoAuth = config()->readEntry("no-auth", QVariant(false)).toBool();
+  m_request.bUseCookiejar = config()->readEntry("Cookies", false);
+  m_request.bUseCache = config()->readEntry("UseCache", true);
+  m_request.bErrorPage = config()->readEntry("errorPage", true);
+  m_request.bNoAuth = config()->readEntry("no-auth", false);
   m_strCacheDir = config()->readPathEntry("CacheDir");
-  m_maxCacheAge = config()->readEntry("MaxCacheAge", QVariant(DEFAULT_MAX_CACHE_AGE)).toInt();
+  m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
 
   kdDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window << endl;
@@ -279,7 +279,7 @@ void HTTPProtocol::resetSessionSettings()
                 << metaData ("ssl_was_in_use") << endl;
 
   m_request.referrer.clear();
-  if ( config()->readEntry("SendReferrer", QVariant(true)).toBool() &&
+  if ( config()->readEntry("SendReferrer", true) &&
        (m_protocol == "https" || m_protocol == "webdavs" ||
         metaData ("ssl_was_in_use") != "TRUE" ) )
   {
@@ -304,7 +304,7 @@ void HTTPProtocol::resetSessionSettings()
      }
   }
 
-  if ( config()->readEntry("SendLanguageSettings", QVariant(true)).toBool() )
+  if ( config()->readEntry("SendLanguageSettings", true) )
   {
       m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
 
@@ -326,12 +326,12 @@ void HTTPProtocol::resetSessionSettings()
   else
      m_request.offset = 0;
 
-  m_request.disablePassDlg = config()->readEntry("DisablePassDlg", QVariant(false)).toBool();
-  m_request.allowCompressedPage = config()->readEntry("AllowCompressedPage", QVariant(true)).toBool();
+  m_request.disablePassDlg = config()->readEntry("DisablePassDlg", false);
+  m_request.allowCompressedPage = config()->readEntry("AllowCompressedPage", true);
   m_request.id = metaData("request-id");
 
   // Store user agent for this host.
-  if ( config()->readEntry("SendUserAgent", QVariant(true)).toBool() )
+  if ( config()->readEntry("SendUserAgent", true) )
      m_request.userAgent = metaData("UserAgent");
   else
      m_request.userAgent.clear();
@@ -2567,7 +2567,7 @@ bool HTTPProtocol::httpOpen()
 void HTTPProtocol::forwardHttpResponseHeader()
 {
   // Send the response header if it was requested
-  if ( config()->readEntry("PropagateHttpHeader", QVariant(false)).toBool() )
+  if ( config()->readEntry("PropagateHttpHeader", false) )
   {
     setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
     sendMetaData();
@@ -3721,7 +3721,7 @@ try_again:
 		kdDebug(7113) << "(" << m_pid << ") Error creating cache entry for " << m_request.url.url()<<"!\n";
 	    }
         m_request.expireDate = expireDate;
-        m_maxCacheSize = config()->readEntry("MaxCacheSize", QVariant(DEFAULT_MAX_CACHE_SIZE)).toInt() / 2;
+        m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
      }
   }
 

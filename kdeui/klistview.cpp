@@ -2059,7 +2059,7 @@ void KListView::restoreLayout(KConfigGroup & cg)
   }
 
   if (cg.hasKey("SortColumn"))
-    setSorting(cg.readEntry("SortColumn", QVariant(0)).toInt(), cg.readEntry("SortAscending", QVariant(true)).toBool());
+    setSorting(cg.readEntry("SortColumn", 0), cg.readEntry("SortAscending", true));
 }
 
 void KListView::setSorting(int column, bool ascending)

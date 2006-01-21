@@ -579,8 +579,8 @@ static QRect screenRect( QWidget *w, int screen )
   KConfig gc("kdeglobals", false, false);
   gc.setGroup("Windows");
   if (desktop->isVirtualDesktop() &&
-      gc.readEntry("XineramaEnabled", QVariant(true)).toBool() &&
-      gc.readEntry("XineramaPlacementEnabled", QVariant(true)).toBool()) {
+      gc.readEntry("XineramaEnabled", true) &&
+      gc.readEntry("XineramaPlacementEnabled", true)) {
     if ( screen < 0 || screen >= desktop->numScreens() ) {
       if ( screen == -1 ) {
         screen = desktop->primaryScreen();

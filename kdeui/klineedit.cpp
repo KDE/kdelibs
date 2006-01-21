@@ -67,7 +67,7 @@ public:
         if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
-            backspacePerformsCompletion = config.readEntry("Backspace performs completion", QVariant(false )).toBool();
+            backspacePerformsCompletion = config.readEntry("Backspace performs completion", false);
 
             initialized = true;
         }

@@ -172,7 +172,7 @@ void Kded::initModules()
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readEntry("autoload", QVariant(autoload)).toBool();
+         autoload = config->readEntry("autoload", autoload);
          if (autoload && kde_running)
             loadModule(service, false);
 
@@ -848,7 +848,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (args->isSet("check"))
      {
         config->setGroup("General");
-        checkStamps = config->readEntry("CheckFileStamps", QVariant(true)).toBool();
+        checkStamps = config->readEntry("CheckFileStamps", true);
         runBuildSycoca();
         runKonfUpdate();
         exit(0);
@@ -863,12 +863,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
      config->setGroup("General");
-     int HostnamePollInterval = config->readEntry("HostnamePollInterval", QVariant(5000)).toInt();
-     bool bCheckSycoca = config->readEntry("CheckSycoca", QVariant(true)).toBool();
-     bool bCheckUpdates = config->readEntry("CheckUpdates", QVariant(true)).toBool();
-     bool bCheckHostname = config->readEntry("CheckHostname", QVariant(true)).toBool();
-     checkStamps = config->readEntry("CheckFileStamps", QVariant(true)).toBool();
-     delayedCheck = config->readEntry("DelayedCheck", QVariant(false)).toBool();
+     int HostnamePollInterval = config->readEntry("HostnamePollInterval", 5000);
+     bool bCheckSycoca = config->readEntry("CheckSycoca", true);
+     bool bCheckUpdates = config->readEntry("CheckUpdates", true);
+     bool bCheckHostname = config->readEntry("CheckHostname", true);
+     checkStamps = config->readEntry("CheckFileStamps", true);
+     delayedCheck = config->readEntry("DelayedCheck", false);
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 

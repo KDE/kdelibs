@@ -306,22 +306,22 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "MainView Settings" );
 
     if ( reset || config->hasKey( "OpenMiddleClick" ) )
-        d->m_bOpenMiddleClick = config->readEntry( "OpenMiddleClick", QVariant(true) ).toBool();
+        d->m_bOpenMiddleClick = config->readEntry( "OpenMiddleClick", true );
 
     if ( reset || config->hasKey( "BackRightClick" ) )
-        d->m_bBackRightClick = config->readEntry( "BackRightClick", QVariant(false) ).toBool();
+        d->m_bBackRightClick = config->readEntry( "BackRightClick", false );
   }
 
   if (reset || config->hasGroup("Access Keys")) {
       config->setGroup( "Access Keys" );
-      d->m_accessKeysEnabled = config->readEntry( "Enabled", QVariant(true) ).toBool();
+      d->m_accessKeysEnabled = config->readEntry( "Enabled", true );
   }
 
   if (reset || config->hasGroup("Filter Settings"))
   {
       config->setGroup( "Filter Settings" );
-      d->m_adFilterEnabled = config->readEntry("Enabled", QVariant(false)).toBool();
-      d->m_hideAdsEnabled = config->readEntry("Shrink", QVariant(false)).toBool();
+      d->m_adFilterEnabled = config->readEntry("Enabled", false);
+      d->m_hideAdsEnabled = config->readEntry("Shrink", false);
 
       d->adFilters.clear();
 
@@ -378,44 +378,44 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     if ( reset || config->hasKey( "MinimumFontSize" ) )
-        d->m_minFontSize = config->readEntry( "MinimumFontSize", QVariant(HTML_DEFAULT_MIN_FONT_SIZE )).toInt();
+        d->m_minFontSize = config->readEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
     if ( reset || config->hasKey( "MediumFontSize" ) )
-        d->m_fontSize = config->readEntry( "MediumFontSize", QVariant(12 )).toInt();
+        d->m_fontSize = config->readEntry( "MediumFontSize", 12 );
 
-    d->fonts = config->readListEntry( "Fonts" );
+    d->fonts = config->readEntry( "Fonts", QStringList() );
 
     if ( reset || config->hasKey( "DefaultEncoding" ) )
         d->m_encoding = config->readEntry( "DefaultEncoding", "" );
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
-        d->enforceCharset = config->readEntry( "EnforceDefaultCharset", QVariant(false) ).toBool();
+        d->enforceCharset = config->readEntry( "EnforceDefaultCharset", false );
 
     // Behavior
     if ( reset || config->hasKey( "ChangeCursor" ) )
-        d->m_bChangeCursor = config->readEntry( "ChangeCursor", QVariant(KDE_DEFAULT_CHANGECURSOR) ).toBool();
+        d->m_bChangeCursor = config->readEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
     if ( reset || config->hasKey("UnderlineLinks") )
-        d->m_underlineLink = config->readEntry( "UnderlineLinks", QVariant(true) ).toBool();
+        d->m_underlineLink = config->readEntry( "UnderlineLinks", true );
 
     if ( reset || config->hasKey( "HoverLinks" ) )
     {
-        if ( (d->m_hoverLink = config->readEntry( "HoverLinks", QVariant(false) ).toBool()))
+        if ( (d->m_hoverLink = config->readEntry( "HoverLinks", false )))
             d->m_underlineLink = false;
     }
 
     if ( reset || config->hasKey( "AllowTabulation" ) )
-        d->m_allowTabulation = config->readEntry( "AllowTabulation", QVariant(false) ).toBool();
+        d->m_allowTabulation = config->readEntry( "AllowTabulation", false );
 
     if ( reset || config->hasKey( "AutoSpellCheck" ) )
-        d->m_autoSpellCheck = config->readEntry( "AutoSpellCheck", QVariant(true) ).toBool();
+        d->m_autoSpellCheck = config->readEntry( "AutoSpellCheck", true );
 
     // Other
     if ( reset || config->hasKey( "AutoLoadImages" ) )
-      d->m_bAutoLoadImages = config->readEntry( "AutoLoadImages", QVariant(true) ).toBool();
+      d->m_bAutoLoadImages = config->readEntry( "AutoLoadImages", true );
 
     if ( reset || config->hasKey( "UnfinishedImageFrame" ) )
-      d->m_bUnfinishedImageFrame = config->readEntry( "UnfinishedImageFrame", QVariant(true) ).toBool();
+      d->m_bUnfinishedImageFrame = config->readEntry( "UnfinishedImageFrame", true );
 
     if ( reset || config->hasKey( "ShowAnimations" ) )
     {
@@ -428,16 +428,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
          d->m_showAnimations = KAnimationEnabled;
     }
 
-    if ( config->readEntry( "UserStyleSheetEnabled", QVariant(false)).toBool() == true ) {
+    if ( config->readEntry( "UserStyleSheetEnabled", false ) == true ) {
         if ( reset || config->hasKey( "UserStyleSheet" ) )
             d->m_userSheet = config->readEntry( "UserStyleSheet", "" );
     }
 
-    d->m_formCompletionEnabled = config->readEntry("FormCompletion", QVariant(true)).toBool();
-    d->m_maxFormCompletionItems = config->readEntry("MaxFormCompletionItems", QVariant(10)).toInt();
-    d->m_autoDelayedActionsEnabled = config->readEntry ("AutoDelayedActions", QVariant(true)).toBool();
-    d->m_jsErrorsEnabled = config->readEntry("ReportJSErrors", QVariant(true)).toBool();
-    QStringList accesskeys = config->readListEntry("FallbackAccessKeysAssignments");
+    d->m_formCompletionEnabled = config->readEntry("FormCompletion", true);
+    d->m_maxFormCompletionItems = config->readEntry("MaxFormCompletionItems", 10);
+    d->m_autoDelayedActionsEnabled = config->readEntry ("AutoDelayedActions", true);
+    d->m_jsErrorsEnabled = config->readEntry("ReportJSErrors", true);
+    QStringList accesskeys = config->readEntry("FallbackAccessKeysAssignments", QStringList());
     d->m_fallbackAccessKeysAssignments.clear();
     for( QStringList::ConstIterator it = accesskeys.begin(); it != accesskeys.end(); ++it )
         if( (*it).length() > 2 && (*it)[ 1 ] == ':' )
@@ -447,7 +447,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   // Colors
 
   if ( reset || config->hasKey( "FollowSystemColors" ) )
-      d->m_follow_system_colors = config->readEntry( "FollowSystemColors", QVariant(false)).toBool() ;
+      d->m_follow_system_colors = config->readEntry( "FollowSystemColors", false );
 
   if ( reset || config->hasGroup( "General" ) )
   {
@@ -480,15 +480,15 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // The global setting for JavaScript debugging
     // This is currently always enabled by default
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
-      d->m_bEnableJavaScriptDebug = config->readEntry( "EnableJavaScriptDebug", QVariant(false) ).toBool();
+      d->m_bEnableJavaScriptDebug = config->readEntry( "EnableJavaScriptDebug", false );
 
     // The global setting for JavaScript error reporting
     if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )
-      d->m_bEnableJavaScriptErrorReporting = config->readEntry( "ReportJavaScriptErrors", QVariant(false )).toBool();
+      d->m_bEnableJavaScriptErrorReporting = config->readEntry( "ReportJavaScriptErrors", false );
 
     // The global setting for popup block passive popup
     if ( reset || config->hasKey( "PopupBlockerPassivePopup" ) )
-      d->m_jsPopupBlockerPassivePopup = config->readEntry("PopupBlockerPassivePopup", QVariant(true)).toBool();
+      d->m_jsPopupBlockerPassivePopup = config->readEntry("PopupBlockerPassivePopup", true );
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
@@ -509,7 +509,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       if ( reset || config->hasKey(domain_keys[i]) ) {
         if (i == 0) check_old_ecma_settings = false;
 	else if (i == 1) check_old_java_settings = false;
-        const QStringList dl = config->readListEntry( domain_keys[i] );
+        const QStringList dl = config->readEntry( domain_keys[i], QStringList() );
 	const QMap<QString,int>::Iterator notfound = domainList.end();
 	QStringList::ConstIterator it = dl.begin();
 	const QStringList::ConstIterator itEnd = dl.end();
@@ -545,7 +545,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     	&& check_old_java_settings )
     {
       check_old_java = false;
-      const QStringList domainList = config->readListEntry( "JavaDomainSettings" );
+      const QStringList domainList = config->readEntry( "JavaDomainSettings", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
@@ -567,7 +567,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	&& check_old_ecma_settings )
     {
       check_old_ecma = false;
-      const QStringList domainList = config->readListEntry( "ECMADomainSettings" );
+      const QStringList domainList = config->readEntry( "ECMADomainSettings", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
@@ -588,7 +588,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
              && ( check_old_java || check_old_ecma )
 	     && ( check_old_ecma_settings || check_old_java_settings ) )
     {
-      const QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
+      const QStringList domainList = config->readEntry( "JavaScriptDomainAdvice", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
@@ -770,7 +770,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
 
     if (rx.isValid())
     {
-        int last=config.readEntry("Count", QVariant(0)).toInt();
+        int last=config.readEntry("Count", 0);
         QString key = "Filter-" + QString::number(last);
         config.writeEntry(key, url);
         config.writeEntry("Count",last+1);

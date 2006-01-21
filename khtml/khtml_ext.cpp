@@ -428,7 +428,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
       const QString defaultEngine = config.readEntry("DefaultSearchEngine", "google");
-      const char keywordDelimiter = config.readEntry("KeywordDelimiter", QVariant(':')).toInt();
+      const char keywordDelimiter = config.readEntry("KeywordDelimiter", static_cast<int>(':'));
 
       // search text
       QString selectedText = khtml->selectedText();
@@ -469,7 +469,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       // favorite search providers
       QStringList favoriteEngines;
       favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
-      favoriteEngines = config.readListEntry("FavoriteSearchEngines", favoriteEngines);
+      favoriteEngines = config.readEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
         KActionMenu* providerList = new KActionMenu( i18n( "Search '%1' At" ).arg( selectedText ), actionCollection(), "searchProviderList" );

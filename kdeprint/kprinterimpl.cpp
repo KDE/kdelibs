@@ -226,7 +226,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	kdDebug(500) << "kdeprint: status message: " << msg << endl;
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
-	if (!conf->readEntry("ShowStatusMsg", QVariant(true)).toBool())
+	if (!conf->readEntry("ShowStatusMsg", true))
 		return;
 
 	QString	message(msg);
@@ -586,7 +586,7 @@ void KPrinterImpl::loadAppOptions()
 {
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
-	QStringList	opts = conf->readListEntry("ApplicationOptions");
+	QStringList	opts = conf->readEntry("ApplicationOptions", QStringList());
 	for (int i=0; i<opts.count(); i+=2)
 		if (opts[i].startsWith("app-"))
 			m_options[opts[i]] = opts[i+1];

@@ -177,7 +177,7 @@ void KPrinter::loadSettings()
 	pconf->setGroup("General");
 
 	// load latest used printer from config file, if required in the options
-	if (searchName().isEmpty() && pconf->readEntry("UseLast", QVariant(true)).toBool())
+	if (searchName().isEmpty() && pconf->readEntry("UseLast", true))
 		setSearchName(conf->readEntry("Printer"));
 
 	// latest used print command

@@ -331,7 +331,7 @@ KFontChooser::KFontChooser(QWidget *parent,
     setSizeIsRelative( *sizeIsRelativeState );
 
   KConfigGroup cg(KGlobal::config(), QLatin1String("General"));
-  showXLFDArea(cg.readEntry(QLatin1String("fontSelectorShowXLFD"), QVariant(false)).toBool());
+  showXLFDArea(cg.readEntry(QLatin1String("fontSelectorShowXLFD"), false));
 }
 
 KFontChooser::~KFontChooser()

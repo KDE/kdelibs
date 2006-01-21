@@ -255,7 +255,7 @@ KCookieJar::KCookieJar()
     m_cookiesChanged = false;
     
     KConfig cfg("khtml/domain_info", true, false, "data");
-    QStringList countries = cfg.readListEntry("twoLevelTLD");
+    QStringList countries = cfg.readEntry("twoLevelTLD", QStringList());
     for(QStringList::ConstIterator it = countries.begin();
         it != countries.end(); ++it)
     {
@@ -1509,14 +1509,14 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         _config->reparseConfiguration();
 
     _config->setGroup("Cookie Dialog");
-    m_showCookieDetails = _config->readEntry( "ShowCookieDetails" , QVariant(false)).toBool();
-    m_preferredPolicy = _config->readEntry( "PreferredPolicy", QVariant(0 )).toInt();
+    m_showCookieDetails = _config->readEntry( "ShowCookieDetails" , false );
+    m_preferredPolicy = _config->readEntry( "PreferredPolicy", 0 );
 
     _config->setGroup("Cookie Policy");
-    QStringList domainSettings = _config->readListEntry("CookieDomainAdvice");
-    m_rejectCrossDomainCookies = _config->readEntry("RejectCrossDomainCookies", QVariant(true )).toBool();
-    m_autoAcceptSessionCookies = _config->readEntry("AcceptSessionCookies", QVariant(true )).toBool();
-    m_ignoreCookieExpirationDate = _config->readEntry("IgnoreExpirationDate", QVariant(false )).toBool();
+    QStringList domainSettings = _config->readEntry("CookieDomainAdvice", QStringList());
+    m_rejectCrossDomainCookies = _config->readEntry("RejectCrossDomainCookies", true);
+    m_autoAcceptSessionCookies = _config->readEntry("AcceptSessionCookies", true);
+    m_ignoreCookieExpirationDate = _config->readEntry("IgnoreExpirationDate", false);
     QString value = _config->readEntry("CookieGlobalAdvice", L1("Ask"));
     m_globalAdvice = strToAdvice(value);
 

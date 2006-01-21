@@ -134,7 +134,7 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     MainMap.insert( "Destroy", input.readEntry( "Destroy", "" ) );
     ts << classHeader << endl;
 
-    QStringList includes = input.readListEntry( "Includes", ',' );
+    QStringList includes = input.readEntry( "Includes", QStringList(), ',' );
     QStringList classes = input.groupList();
     classes.remove( classes.find( "Global" ) );
 

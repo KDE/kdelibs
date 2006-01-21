@@ -91,7 +91,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 void KMConfigFilter::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
-	QStringList	m_plist = conf->readListEntry("Printers");
+	QStringList	m_plist = conf->readEntry("Printers", QStringList());
 	Q3PtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
 	for (; it.current(); ++it)
 	{

@@ -149,7 +149,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   historyConfig.setGroup( "Location Bar" );
   KCompletion * s_pCompletion = new KCompletion;
   s_pCompletion->setOrder( KCompletion::Weighted );
-  s_pCompletion->setItems( historyConfig.readListEntry( "ComboContents" ) );
+  s_pCompletion->setItems( historyConfig.readEntry( "ComboContents", QStringList() ) );
   s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
   m_konqc->setCompletionObject( s_pCompletion );
 

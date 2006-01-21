@@ -71,7 +71,7 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
   d = new ResourceLDAPKIOPrivate;
   if ( config ) {
     QMap<QString, QString> attrList;
-    QStringList attributes = config->readListEntry( "LdapAttributes" );
+    QStringList attributes = config->readEntry( "LdapAttributes", QStringList() );
     for ( int pos = 0; pos < attributes.count(); pos += 2 )
       mAttributes.insert( attributes[ pos ], attributes[ pos + 1 ] );
 
@@ -79,22 +79,22 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     mPassword = KStringHandler::obscure( config->readEntry( "LdapPassword" ) );
     mDn = config->readEntry( "LdapDn" );
     mHost = config->readEntry( "LdapHost" );
-    mPort = config->readEntry( "LdapPort", QVariant(389 )).toInt();
+    mPort = config->readEntry( "LdapPort", 389 );
     mFilter = config->readEntry( "LdapFilter" );
-    mAnonymous = config->readEntry( "LdapAnonymous" , QVariant(false)).toBool();
-    d->mTLS = config->readEntry( "LdapTLS" , QVariant(false)).toBool();
-    d->mSSL = config->readEntry( "LdapSSL" , QVariant(false)).toBool();
-    d->mSubTree = config->readEntry( "LdapSubTree" , QVariant(false)).toBool();
-    d->mSASL = config->readEntry( "LdapSASL" , QVariant(false)).toBool();
+    mAnonymous = config->readEntry( "LdapAnonymous" , false );
+    d->mTLS = config->readEntry( "LdapTLS" , false );
+    d->mSSL = config->readEntry( "LdapSSL" , false );
+    d->mSubTree = config->readEntry( "LdapSubTree" , false );
+    d->mSASL = config->readEntry( "LdapSASL" , false );
     d->mMech = config->readEntry( "LdapMech" );
     d->mRealm = config->readEntry( "LdapRealm" );
     d->mBindDN = config->readEntry( "LdapBindDN" );
-    d->mVer = config->readEntry( "LdapVer", QVariant(3 )).toInt();
-    d->mTimeLimit = config->readEntry( "LdapTimeLimit", QVariant(0 )).toInt();
-    d->mSizeLimit = config->readEntry( "LdapSizeLimit", QVariant(0 )).toInt();
-    d->mRDNPrefix = config->readEntry( "LdapRDNPrefix", QVariant(0 )).toInt();
-    d->mCachePolicy = config->readEntry( "LdapCachePolicy", QVariant(0 )).toInt();
-    d->mAutoCache = config->readEntry("LdapAutoCache", QVariant(true )).toBool();
+    d->mVer = config->readEntry( "LdapVer", 3 );
+    d->mTimeLimit = config->readEntry( "LdapTimeLimit", 0 );
+    d->mSizeLimit = config->readEntry( "LdapSizeLimit", 0 );
+    d->mRDNPrefix = config->readEntry( "LdapRDNPrefix", 0 );
+    d->mCachePolicy = config->readEntry( "LdapCachePolicy", 0 );
+    d->mAutoCache = config->readEntry("LdapAutoCache", true );
   } else {
     mPort = 389;
     mAnonymous = true;

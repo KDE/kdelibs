@@ -370,7 +370,7 @@ KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroup cg( config, grpNotifMsgs );
-    return cg.readEntry(dontShowAgainName, QVariant(true)).toBool();
+    return cg.readEntry(dontShowAgainName, true);
 }
 
 void

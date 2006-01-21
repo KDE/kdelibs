@@ -460,7 +460,7 @@ void KPrintDialog::setFlags(int f)
 {
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties) && d->b_propertiesEnabled)
 	d->m_default->hide();
-	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General")->readEntry("UseLast", QVariant(true)).toBool()))
+	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General")->readEntry("UseLast", true)))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)

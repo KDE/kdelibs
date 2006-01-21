@@ -138,7 +138,7 @@ void NotifyBySound::loadConfig()
     // load external player settings
 	KConfig *kc = KGlobal::config();
 	kc->setGroup("Misc");
-	d->useExternal = kc->readEntry( "Use external player", QVariant(false) ).toBool();
+	d->useExternal = kc->readEntry( "Use external player", false );
 	d->externalPlayer = kc->readPathEntry("External player");
 
 	// try to locate a suitable player if none is configured

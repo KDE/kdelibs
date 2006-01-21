@@ -252,7 +252,7 @@ int KMJobManager::limit()
 {
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("Jobs");
-	return conf->readEntry("Limit", QVariant(0)).toInt();
+	return conf->readEntry("Limit", 0);
 }
 
 #include "kmjobmanager.moc"

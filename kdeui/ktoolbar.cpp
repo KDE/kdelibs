@@ -1407,7 +1407,7 @@ bool KToolBar::highlightSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup cg(KGlobal::config(), grpToolbar);
-    return cg.readEntry(QLatin1String("Highlighting"), QVariant(true)).toBool();
+    return cg.readEntry(QLatin1String("Highlighting"), true);
 }
 
 //static
@@ -1415,7 +1415,7 @@ bool KToolBar::transparentSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup cg(KGlobal::config(), grpToolbar);
-    return cg.readEntry(QLatin1String("TransparentMoving"), QVariant(true)).toBool();
+    return cg.readEntry(QLatin1String("TransparentMoving"), true);
 }
 
 //static
@@ -1470,8 +1470,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         KConfigGroup cg(gconfig, grpToolbar);
 
         // first, get the generic settings
-        highlight   = cg.readEntry(attrHighlight, QVariant(true)).toBool();
-        transparent = cg.readEntry(attrTrans, QVariant(true)).toBool();
+        highlight   = cg.readEntry(attrHighlight, true);
+        transparent = cg.readEntry(attrTrans, true);
 
         // we read in the IconText property *only* if we intend on actually
         // honoring it
@@ -1481,7 +1481,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             d->IconTextDefault = "IconTextBottom";
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = cg.readEntry(attrIconSize, QVariant(d->IconSizeDefault)).toInt();
+        d->IconSizeDefault = cg.readEntry(attrIconSize, d->IconSizeDefault);
 
         iconSize = d->IconSizeDefault;
         iconText = d->IconTextDefault;
@@ -1491,8 +1491,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             config->setGroup(configGroup);
 
             // first, get the generic settings
-            highlight   = config->readEntry(attrHighlight, QVariant(highlight)).toBool();
-            transparent = config->readEntry(attrTrans, QVariant(transparent)).toBool();
+            highlight   = config->readEntry(attrHighlight, highlight);
+            transparent = config->readEntry(attrTrans, transparent);
 
             // read in the IconText property
             if ( config->hasKey( attrIconText ) ) {
@@ -1503,7 +1503,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // now get the size
             if ( config->hasKey( attrIconSize ) ) {
-                iconSize = config->readEntry(attrIconSize, QVariant(0)).toInt();
+                iconSize = config->readEntry(attrIconSize, 0);
                 applyIconSize = true;
             }
         }
@@ -1591,10 +1591,10 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
         QString position = cg.readEntry(attrPosition, d->PositionDefault);
-        int index = cg.readEntry(attrIndex, QVariant(-1)).toInt();
-        int offset = cg.readEntry(attrOffset, QVariant(d->OffsetDefault)).toInt();
-        bool newLine = cg.readEntry(attrNewLine, QVariant(d->NewLineDefault)).toBool();
-        bool hidden = cg.readEntry(attrHidden, QVariant(d->HiddenDefault)).toBool();
+        int index = cg.readEntry(attrIndex, -1);
+        int offset = cg.readEntry(attrOffset, d->OffsetDefault);
+        bool newLine = cg.readEntry(attrNewLine, d->NewLineDefault);
+        bool hidden = cg.readEntry(attrHidden, d->HiddenDefault);
 
         Qt::ToolBarDock pos(Qt::DockTop);
         if ( position == "Top" )

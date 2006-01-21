@@ -518,7 +518,7 @@ void Dialog::parseGroupFile( const QString & filename )
 		group.id = id;
 		group.name = file.readEntry( "Name" );
 		group.comment = file.readEntry( "Comment" );
-		group.weight = file.readEntry( "Weight", QVariant(100 )).toInt();
+		group.weight = file.readEntry( "Weight", 100 );
 		group.parentid = file.readEntry( "Parent" );
 		group.icon = file.readEntry( "Icon" );
 		d->pagetree.insert( group );

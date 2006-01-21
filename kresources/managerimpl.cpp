@@ -112,8 +112,8 @@ void ManagerImpl::readConfig( KConfig *cfg )
 
   mConfig->setGroup( "General" );
 
-  QStringList keys = mConfig->readListEntry( "ResourceKeys" );
-  keys += mConfig->readListEntry( "PassiveResourceKeys" );
+  QStringList keys = mConfig->readEntry( "ResourceKeys", QStringList() );
+  keys += mConfig->readEntry( "PassiveResourceKeys", QStringList() );
 
   QString standardKey = mConfig->readEntry( "Standard" );
 
@@ -346,7 +346,7 @@ Resource *ManagerImpl::readResourceConfig( const QString &identifier,
   }
 
   if ( checkActive ) {
-    QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
+    QStringList activeKeys = mConfig->readEntry( "ResourceKeys", QStringList() );
     resource->setActive( activeKeys.contains( identifier ) );
   }
   mResources.append( resource );
@@ -374,8 +374,8 @@ void ManagerImpl::writeResourceConfig( Resource *resource, bool checkActive )
     mConfig->writeEntry( "Standard", "" );
   
   if ( checkActive ) {
-    QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
-    QStringList passiveKeys = mConfig->readListEntry( "PassiveResourceKeys" );
+    QStringList activeKeys = mConfig->readEntry( "ResourceKeys", QStringList() );
+    QStringList passiveKeys = mConfig->readEntry( "PassiveResourceKeys", QStringList() );
     if ( resource->isActive() ) {
       if ( passiveKeys.contains( key ) ) { // remove it from passive list
         passiveKeys.remove( key );
@@ -407,12 +407,12 @@ void ManagerImpl::removeResource( Resource *resource )
   if ( !mConfig ) createStandardConfig();
   
   mConfig->setGroup( "General" );
-  QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
+  QStringList activeKeys = mConfig->readEntry( "ResourceKeys", QStringList() );
   if ( activeKeys.contains( key ) ) {
     activeKeys.remove( key );
     mConfig->writeEntry( "ResourceKeys", activeKeys );
   } else {
-    QStringList passiveKeys = mConfig->readListEntry( "PassiveResourceKeys" );
+    QStringList passiveKeys = mConfig->readEntry( "PassiveResourceKeys", QStringList() );
     passiveKeys.remove( key );
     mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
   }

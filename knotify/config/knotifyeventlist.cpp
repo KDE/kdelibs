@@ -56,7 +56,7 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 
 		if(!context_name.isEmpty())
 		{
-			QStringList contexts = config->readListEntry("Contexts");
+			QStringList contexts = config->readEntry("Contexts", QStringList());
 			if(!contexts.contains(context_name))
 				continue;
 			

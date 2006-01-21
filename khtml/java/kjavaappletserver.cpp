@@ -196,9 +196,9 @@ void KJavaAppletServer::freeJavaServer()
         //this is to prevent repeated loading and unloading of the jvm
         KConfig config( "konquerorrc", true );
         config.setGroup( "Java/JavaScript Settings" );
-        if( config.readEntry( "ShutdownAppletServer", QVariant(true )).toBool()  )
+        if( config.readEntry( "ShutdownAppletServer", true )  )
         {
-            const int value = config.readEntry( "AppletServerTimeout", QVariant(60 )).toInt();
+            const int value = config.readEntry( "AppletServerTimeout", 60 );
             QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
         }
     }
@@ -276,7 +276,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     const QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
-    if( config.readEntry( "UseSecurityManager", QVariant(true )).toBool() )
+    if( config.readEntry( "UseSecurityManager", true ) )
     {
         QString class_file = locate( "data", "kjava/kjava.policy" );
         p->setSystemProperty( "java.security.policy", class_file );
@@ -285,7 +285,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
                               "org.kde.kjas.server.KJASSecurityManager" );
     }
 
-    d->useKIO = config.readEntry("UseKio", QVariant(false)).toBool();
+    d->useKIO = config.readEntry("UseKio", false);
     if( d->useKIO )
     {
         p->setSystemProperty( "kjas.useKio", QString() );

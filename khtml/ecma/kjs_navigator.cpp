@@ -293,7 +293,7 @@ PluginBase::PluginBase(ExecState *exec)
 
         // FIXME: add domain support here
         KConfig kc("konquerorrc", true);
-        if (!KConfigGroup(&kc, "Java/JavaScript Settings").readEntry("EnablePlugins", QVariant(true)).toBool())
+        if (!KConfigGroup(&kc, "Java/JavaScript Settings").readEntry("EnablePlugins", true))
             return; // plugins disabled
 
         // read in using KTrader
@@ -312,8 +312,8 @@ PluginBase::PluginBase(ExecState *exec)
             }
             // read configuration
             KConfig kc( locate ("data", pluginsinfo.toString()) );
-            unsigned num = (unsigned int) kc.readEntry("number", QVariant(0)).toInt();
-            for ( unsigned n = 0; n < num; n++ ) {
+            const int num = kc.readEntry("number", 0);
+            for ( int n = 0; n < num; n++ ) {
                 kc.setGroup( QString::number(n) );
                 PluginInfo *plugin = new PluginInfo;
 
@@ -323,8 +323,7 @@ PluginBase::PluginBase(ExecState *exec)
 
                 plugins->append( plugin );
 
-                // get mime types from string
-                QStringList types = QStringList::split( ';', kc.readEntry("mime") );
+                QStringList types = kc.readEntry("mime", QStringList(), ';');
                 QStringList::Iterator type;
                 for ( type=types.begin(); type!=types.end(); ++type ) {
 

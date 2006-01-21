@@ -340,7 +340,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     else
       language = khtml::Decoder::SemiautomaticDetection;
 
-    int _id = config->readEntry( "AutomaticDetectionLanguage", QVariant(language )).toInt();
+    int _id = config->readEntry( "AutomaticDetectionLanguage", static_cast<int>(language) );
     d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
 
@@ -4686,7 +4686,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
           QString grpNotifMsgs = QLatin1String("Notification Messages");
           KConfigGroup cg( KGlobal::config(), grpNotifMsgs );
 
-          if (!cg.readEntry("WarnOnUnencryptedForm", QVariant(true)).toBool()) {
+          if (!cg.readEntry("WarnOnUnencryptedForm", true)) {
             cg.deleteEntry("WarnOnUnencryptedForm");
             cg.sync();
             kss.setWarnOnUnencrypted(false);

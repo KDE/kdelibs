@@ -916,7 +916,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
         bool hasVerBar = visibleHeight() < contentsHeight();
 
         KConfigGroup cg( KGlobal::config(), "HTML Settings" );
-        if ( cg.readEntry( "ShowMouseScrollIndicator", QVariant(true )).toBool() ) {
+        if ( cg.readEntry( "ShowMouseScrollIndicator", true ) ) {
             d->m_mouseScrollIndicator->show();
             d->m_mouseScrollIndicator->unsetCursor();
 
@@ -2987,7 +2987,7 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
         return QStringList();
     if (!d->formCompletions)
         d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
-    return d->formCompletions->readListEntry(name);
+    return d->formCompletions->readEntry(name, QStringList());
 }
 
 void KHTMLView::clearCompletionHistory(const QString& name)
@@ -3034,7 +3034,7 @@ void KHTMLView::addNonPasswordStorableSite(const QString& host)
     }
 
     d->formCompletions->setGroup("NonPasswordStorableSites");
-    QStringList sites = d->formCompletions->readListEntry("Sites");
+    QStringList sites = d->formCompletions->readEntry("Sites", QStringList());
     sites.append(host);
     d->formCompletions->writeEntry("Sites", sites);
     d->formCompletions->sync();
@@ -3047,7 +3047,7 @@ bool KHTMLView::nonPasswordStorableSite(const QString& host) const
         d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
     }
     d->formCompletions->setGroup("NonPasswordStorableSites");
-    QStringList sites =  d->formCompletions->readListEntry("Sites");
+    QStringList sites =  d->formCompletions->readEntry("Sites", QStringList());
     d->formCompletions->setGroup(QString());//reset
 
     return (sites.find(host) != sites.end());

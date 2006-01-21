@@ -243,7 +243,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	KLibFactory	*factory(0);
-	bool	externalPreview = conf->readEntry("ExternalPreview", QVariant(false)).toBool();
+	bool	externalPreview = conf->readEntry("ExternalPreview", false);
 	QWidget	*parentW = QWidget::find(parentId);
 	QString	exe;
 	if (!externalPreview && isPS && (factory = componentFactory()) != 0)

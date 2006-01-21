@@ -211,7 +211,7 @@ bool DistributionListManager::load()
   QMap<QString,QString>::ConstIterator it;
   for ( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) {
     QString name = it.key();
-    QStringList value = cfg.readListEntry( name );
+    QStringList value = cfg.readEntry( name, QStringList() );
 
     kdDebug(5700) << "DLM::load(): " << name << ": " << value.join(",") << endl;
 

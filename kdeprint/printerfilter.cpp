@@ -41,12 +41,12 @@ void PrinterFilter::update()
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("Filter");
 	m_locationRe.setPattern(conf->readEntry("LocationRe"));
-	m_printers = conf->readListEntry("Printers");
+	m_printers = conf->readEntry("Printers", QStringList());
 	// filter enable state is saved on a per application basis,
 	// so this option is retrieve from the application config file
 	conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
-	m_enabled = conf->readEntry("FilterEnabled", QVariant(false)).toBool();
+	m_enabled = conf->readEntry("FilterEnabled", false);
 }
 
 void PrinterFilter::setEnabled(bool on)

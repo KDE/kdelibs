@@ -225,8 +225,8 @@ void KXmlCommand::loadDesktop()
 	conf.setGroup("KDE Print Filter Entry");
 	d->m_description = conf.readEntry("Comment");
 	d->m_outputMime = conf.readEntry("MimeTypeOut");
-	d->m_inputMime = conf.readListEntry("MimeTypeIn");
-	d->m_requirements = conf.readListEntry("Require");
+	d->m_inputMime = conf.readEntry("MimeTypeIn", QStringList());
+	d->m_requirements = conf.readEntry("Require", QStringList());
 	d->m_comment = conf.readEntry( "Description" );
 }
 

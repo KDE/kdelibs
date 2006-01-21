@@ -145,7 +145,7 @@ KonfUpdate::KonfUpdate()
    }
    else
    {
-      if (config->readEntry("autoUpdateDisabled", QVariant(false)).toBool())
+      if (config->readEntry("autoUpdateDisabled", false))
          return;
       updateFiles = findUpdateFiles(true);
       updateAll = true;
@@ -160,7 +160,7 @@ KonfUpdate::KonfUpdate()
    }
 
    config->setGroup(QString());
-   if (updateAll && !config->readEntry("updateInfoAdded", QVariant(false)).toBool())
+   if (updateAll && !config->readEntry("updateInfoAdded", false))
    {
        config->writeEntry("updateInfoAdded", true);
        updateFiles = findUpdateFiles(false);
@@ -222,8 +222,8 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
          if (i != -1) 
             file = file.mid(i+1);
          config->setGroup(file);
-         time_t ctime = config->readUnsignedLongNumEntry("ctime");
-         time_t mtime = config->readUnsignedLongNumEntry("mtime");
+         time_t ctime = config->readEntry("ctime", 0);
+         time_t mtime = config->readEntry("mtime", 0);
          if (!dirtyOnly ||
              (ctime != buff.st_ctime) || (mtime != buff.st_mtime))
          {
@@ -282,7 +282,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
 
    KSimpleConfig cfg(file);
    cfg.setGroup("$Version");
-   QStringList ids = cfg.readListEntry("update_info");
+   QStringList ids = cfg.readEntry("update_info", QStringList());
    if (ids.contains(id))
        return;
    ids.append(id);
@@ -397,7 +397,7 @@ void KonfUpdate::gotId(const QString &_id)
    if (!id.isEmpty() && !skip)
    {
        config->setGroup(currentFilename);
-       QStringList ids = config->readListEntry("done");
+       QStringList ids = config->readEntry("done", QStringList());
        if (!ids.contains(id))
        {
           ids.append(id);
@@ -410,7 +410,7 @@ void KonfUpdate::gotId(const QString &_id)
    gotFile(QString());
 
    config->setGroup(currentFilename);
-   QStringList ids = config->readListEntry("done");
+   QStringList ids = config->readEntry("done", QStringList());
    if (!_id.isEmpty())
    {
        if (ids.contains(_id))
@@ -443,7 +443,7 @@ void KonfUpdate::gotFile(const QString &_file)
       oldConfig1 = 0;
 
       oldConfig2->setGroup("$Version");
-      QStringList ids = oldConfig2->readListEntry("update_info");
+      QStringList ids = oldConfig2->readEntry("update_info", QStringList());
       QString cfg_id = currentFilename + ":" + id;
       if (!ids.contains(cfg_id) && !skip)
       {
@@ -471,7 +471,7 @@ void KonfUpdate::gotFile(const QString &_file)
    {
       // Close new file.
       newConfig->setGroup("$Version");
-      QStringList ids = newConfig->readListEntry("update_info");
+      QStringList ids = newConfig->readEntry("update_info", QStringList());
       QString cfg_id = currentFilename + ":" + id;
       if (!ids.contains(cfg_id) && !skip)
       {
@@ -504,7 +504,7 @@ void KonfUpdate::gotFile(const QString &_file)
       oldConfig2 = new KConfig(oldFile, false, false);
       QString cfg_id = currentFilename + ":" + id;
       oldConfig2->setGroup("$Version");
-      QStringList ids = oldConfig2->readListEntry("update_info");
+      QStringList ids = oldConfig2->readEntry("update_info", QStringList());
       if (ids.contains(cfg_id))
       {
          skip = true;
@@ -516,7 +516,7 @@ void KonfUpdate::gotFile(const QString &_file)
       {
          newConfig = new KConfig(newFile, false, false);
          newConfig->setGroup("$Version");
-         ids = newConfig->readListEntry("update_info");
+         ids = newConfig->readEntry("update_info", QStringList());
          if (ids.contains(cfg_id))
          {
             skip = true;

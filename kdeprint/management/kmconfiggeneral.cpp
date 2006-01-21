@@ -107,15 +107,15 @@ void KMConfigGeneral::setEnabledPreviewButton(bool b)
 void KMConfigGeneral::loadConfig(KConfig *conf)
 {
 	conf->setGroup("General");
-	m_timer->setValue(conf->readEntry("TimerDelay", QVariant(5)).toInt());
+	m_timer->setValue(conf->readEntry("TimerDelay", 5));
 	QString	tpage = conf->readPathEntry("TestPage");
 	if (!tpage.isEmpty())
 	{
 		m_defaulttestpage->setChecked(true);
 		m_testpage->setURL(tpage);
 	}
-	m_statusmsg->setChecked(conf->readEntry("ShowStatusMsg", QVariant(true)).toBool());
-	m_uselast->setChecked(conf->readEntry("UseLast", QVariant(true)).toBool());
+	m_statusmsg->setChecked(conf->readEntry("ShowStatusMsg", true));
+	m_uselast->setChecked(conf->readEntry("UseLast", true));
 }
 
 void KMConfigGeneral::saveConfig(KConfig *conf)

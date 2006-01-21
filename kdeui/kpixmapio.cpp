@@ -93,7 +93,7 @@ KPixmapIO::KPixmapIO()
 #ifdef HAVE_MITSHM
     setShmPolicy(ShmDontKeep);
     KConfig *config = KGlobal::config();
-    if (!config->readEntry("UseMitShm", QVariant(true)).toBool())
+    if (!config->readEntry("UseMitShm", true))
 	return;
 
     int ignore;

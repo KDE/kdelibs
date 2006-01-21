@@ -84,10 +84,10 @@ void AddresseeHelper::initSettings()
   KConfig config( "kabcrc", true, false ); // readonly, no kdeglobals
   config.setGroup( "General" );
 
-  addToSet( config.readListEntry( "Prefixes" ),   mTitles );
-  addToSet( config.readListEntry( "Inclusions" ), mPrefixes );
-  addToSet( config.readListEntry( "Suffixes" ),   mSuffixes );
-  mTradeAsFamilyName = config.readEntry("TradeAsFamilyName", QVariant(true )).toBool();
+  addToSet( config.readEntry( "Prefixes", QStringList() ),   mTitles );
+  addToSet( config.readEntry( "Inclusions", QStringList() ), mPrefixes );
+  addToSet( config.readEntry( "Suffixes", QStringList() ),   mSuffixes );
+  mTradeAsFamilyName = config.readEntry("TradeAsFamilyName", true);
 }
 
 bool AddresseeHelper::containsTitle( const QString& title ) const

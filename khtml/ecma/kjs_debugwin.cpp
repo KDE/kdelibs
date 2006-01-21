@@ -860,7 +860,7 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
 
   if (dontShowAgain) {
     KConfigGroup cg(KGlobal::config(), QLatin1String("Java/JavaScript Settings"));
-    cg.writeEntry("ReportJavaScriptErrors",QVariant(false,0));
+    cg.writeEntry("ReportJavaScriptErrors",false);
     cg.sync();
     QByteArray data;
     KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );

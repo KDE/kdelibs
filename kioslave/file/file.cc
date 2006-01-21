@@ -370,7 +370,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
     KDE_struct_stat buff_orig;
     bool bOrigExists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
     bool bPartExists = false;
-    bool bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
+    bool bMarkPartial = config()->readEntry("MarkPartial", true);
 
     if (bMarkPartial)
     {
@@ -501,7 +501,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
           KDE_struct_stat buff;
           if (bMarkPartial && KDE_stat( _dest.data(), &buff ) == 0)
           {
-            int size = config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt();
+            int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
             if (buff.st_size <  size)
               remove(_dest.data());
           }

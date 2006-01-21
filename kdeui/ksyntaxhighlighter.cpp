@@ -534,17 +534,17 @@ QString KDictSpellingHighlighter::spellKey()
     KGlobal::config()->reparseConfiguration();
     KConfigGroup cg( KGlobal::config(), "KSpell" );
     QString key;
-    key += QString::number( cg.readEntry( "KSpell_NoRootAffix", QVariant(0 )).toInt());
+    key += QString::number( cg.readEntry( "KSpell_NoRootAffix", 0 ));
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_RunTogether", QVariant(0 )).toInt());
+    key += QString::number( cg.readEntry( "KSpell_RunTogether", 0 ));
     key += '/';
     key += cg.readEntry( "KSpell_Dictionary", "" );
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_DictFromList", QVariant(false )).toInt());
+    key += QString::number( int(cg.readEntry( "KSpell_DictFromList", false )) );
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Encoding", QVariant(KS_E_ASCII )).toInt());
+    key += QString::number( cg.readEntry( "KSpell_Encoding", int(KS_E_ASCII )) );
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Client", QVariant(KS_CLIENT_ISPELL )).toInt());
+    key += QString::number( cg.readEntry( "KSpell_Client", int(KS_CLIENT_ISPELL )) );
     return key;
 }
 

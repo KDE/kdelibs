@@ -374,7 +374,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
       return false;       // error emitted by ftpLogin
   }
 
-  m_bTextMode = config()->readEntry("textmode", QVariant(false)).toBool();
+  m_bTextMode = config()->readEntry("textmode", false);
   connected();
   return true;
 }
@@ -440,7 +440,7 @@ bool Ftp::ftpLogin()
   QString user = m_user;
   QString pass = m_pass;
 
-  if ( config()->readEntry("EnableAutoLogin", QVariant(false)).toBool() )
+  if ( config()->readEntry("EnableAutoLogin", false) )
   {
     QString au = config()->readEntry("autoLoginUser");
     if ( !au.isEmpty() )
@@ -495,7 +495,7 @@ bool Ftp::ftpLogin()
       info.keepPassword = true; // Prompt the user for persistence as well.
       info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
-      bool disablePassDlg = config()->readEntry( "DisablePassDlg", QVariant(false )).toBool();
+      bool disablePassDlg = config()->readEntry( "DisablePassDlg", false );
       if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
       {
         error( ERR_USER_CANCELED, m_host );
@@ -575,7 +575,7 @@ bool Ftp::ftpLogin()
   else
     kdWarning(7102) << "syst failed" << endl;
 
-  if ( config()->readEntry ("EnableAutoLoginMacro", QVariant(false)).toBool() )
+  if ( config()->readEntry ("EnableAutoLoginMacro", false) )
     ftpAutoLoginMacro ();
 
   // Get the current working directory
@@ -852,7 +852,7 @@ int Ftp::ftpOpenDataConnection()
   int  iErrCodePASV = 0;  // Remember error code from PASV
 
   // First try passive (EPSV & PASV) modes
-  if( !config()->readEntry("DisablePassiveMode", QVariant(false)).toBool() )
+  if( !config()->readEntry("DisablePassiveMode", false) )
   {
     iErrCode = ftpOpenPASVDataConnection();
     if(iErrCode == 0)
@@ -860,7 +860,7 @@ int Ftp::ftpOpenDataConnection()
     iErrCodePASV = iErrCode;
     ftpCloseDataConnection();
 
-    if( !config()->readEntry("DisableEPSV", QVariant(false)).toBool() )
+    if( !config()->readEntry("DisableEPSV", false) )
     {
       iErrCode = ftpOpenEPSVDataConnection();
       if(iErrCode == 0)
@@ -1936,7 +1936,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   if (m_user.isEmpty () || m_user == FTP_LOGIN)
     bMarkPartial = false;
   else
-    bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
+    bMarkPartial = config()->readEntry("MarkPartial", true);
 
   QString dest_orig = dest_url.path();
   QString dest_part( dest_orig );
@@ -2066,7 +2066,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
     {
       // Remove if smaller than minimum size
       if ( ftpSize( dest, 'I' ) &&
-           ( processed_size < (unsigned long) config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt() ) )
+           ( processed_size < (unsigned long) config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
       {
         QByteArray cmd = "DELE ";
         cmd += remoteEncoding()->encode(dest);
@@ -2289,7 +2289,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
   QByteArray sPart = QFile::encodeName(sCopyFile + ".part");
   bool bResume = false;
   bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
-  bool bMarkPartial = config()->readEntry("MarkPartial", QVariant(true)).toBool();
+  bool bMarkPartial = config()->readEntry("MarkPartial", true);
   if(bMarkPartial && bPartExists && buff.st_size > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
     if(S_ISDIR(buff.st_mode))
@@ -2367,7 +2367,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
     }
     else if(KDE_stat( sPart.data(), &buff ) == 0)
     { // should a very small ".part" be deleted?
-      int size = config()->readEntry("MinimumKeepSize", QVariant(DEFAULT_MINIMUM_KEEP_SIZE)).toInt();
+      int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
       if (buff.st_size <  size)
         remove(sPart.data());
     }

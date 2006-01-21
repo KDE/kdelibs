@@ -77,7 +77,7 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
     if( filename.endsWith( QString::fromAscii( ".desktop" ) ) )
     {
         file.setDesktopGroup();
-        d->hidden = file.readEntry("Hidden", QVariant(false )).toBool();
+        d->hidden = file.readEntry("Hidden", false);
         if( d->hidden )
             return;
 
@@ -91,9 +91,9 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
         d->website = file.readEntry( "X-KDE-PluginInfo-Website" );
         d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
         d->license = file.readEntry( "X-KDE-PluginInfo-License" );
-        d->dependencies = file.readListEntry( "X-KDE-PluginInfo-Depends" );
+        d->dependencies = file.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
         d->enabledbydefault = file.readEntry(
-                "X-KDE-PluginInfo-EnabledByDefault", QVariant(false) ).toBool();
+                "X-KDE-PluginInfo-EnabledByDefault", false);
     }
     else if( filename.endsWith( QString::fromAscii( ".plugin" ) ) )
     { // provided for noatun style .plugin files compatibility
@@ -108,7 +108,7 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
         d->website = file.readEntry( "Site" );
         d->category = file.readEntry( "Type" );
         d->license = file.readEntry( "License" );
-        d->dependencies = file.readListEntry( "Require" );
+        d->dependencies = file.readEntry( "Require", QStringList() );
     }
 }
 
@@ -344,10 +344,10 @@ void KPluginInfo::load( KConfigGroup * config )
             return;
         }
         d->config->setGroup( d->configgroup );
-        setPluginEnabled( d->config->readEntry( d->pluginName + "Enabled", QVariant(isPluginEnabledByDefault()) ).toBool() );
+        setPluginEnabled( d->config->readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
     }
     else
-        setPluginEnabled( config->readEntry( d->pluginName + "Enabled", QVariant(isPluginEnabledByDefault()) ).toBool() );
+        setPluginEnabled( config->readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
 }
 
 void KPluginInfo::defaults()

@@ -57,7 +57,7 @@ bool KdeprintChecker::check(KConfig *conf, const QString& group)
 {
 	if (!group.isEmpty())
 		conf->setGroup(group);
-	QStringList	uris = conf->readListEntry("Require");
+	QStringList	uris = conf->readEntry("Require", QStringList());
 	return check(uris);
 }
 

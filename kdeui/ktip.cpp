@@ -315,7 +315,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
     hbox2->addWidget(ok);
 
     KConfigGroup config(KGlobal::config(), "TipOfDay");
-    mTipOnStart->setChecked(config.readEntry("RunOnStart", QVariant(true)).toBool());
+    mTipOnStart->setChecked(config.readEntry("RunOnStart", true));
 
     connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
     connect(prev, SIGNAL(clicked()), this, SLOT(prevTip()));

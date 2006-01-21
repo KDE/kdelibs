@@ -54,7 +54,7 @@ KScrollView::~KScrollView()
 void KScrollView::scrollBy(int dx, int dy)
 {
     KConfigGroup cfg( KGlobal::config(), "KDE" );
-    if( !cfg.readEntry( "SmoothScrolling", QVariant(true )).toBool()) {
+    if( !cfg.readEntry( "SmoothScrolling", true ) ) {
         Q3ScrollView::scrollBy( dx, dy );
         return;
     }

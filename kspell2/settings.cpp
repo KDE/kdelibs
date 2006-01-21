@@ -182,7 +182,7 @@ void Settings::readIgnoreList()
 {
     KConfigGroup conf( d->config.data(), "Spelling" );
     QString ignoreEntry = QString( "ignore_%1" ).arg( d->defaultLanguage );
-    QStringList ignores = conf.readListEntry( ignoreEntry );
+    QStringList ignores = conf.readEntry( ignoreEntry, QStringList() );
     setQuietIgnoreList( ignores );
 }
 
@@ -204,7 +204,7 @@ void Settings::save()
 void Settings::loadConfig()
 {
     KConfigGroup conf( d->config.data(), "Spelling" );
-    d->defaultClient = conf.readEntry( "defaultClient",
+    d->defaultClient = conf.readEntry( "defaultClient", 
                                         QString() );
     d->defaultLanguage = conf.readEntry(
         "defaultLanguage", KGlobal::locale()->language() );

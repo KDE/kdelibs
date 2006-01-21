@@ -113,9 +113,9 @@ void CupsInfos::load()
 	KConfig	*conf_ = KMFactory::self()->printConfig();
 	conf_->setGroup("CUPS");
 	host_ = conf_->readEntry("Host",cupsServer());
-	port_ = qvariant_cast<int>(conf_->readEntry("Port",ippPort()));
+	port_ = conf_->readEntry("Port",ippPort());
 	login_ = conf_->readEntry("Login",cupsUser());
-	savepwd_ = qvariant_cast<bool>(conf_->readEntry( "SavePassword",false ));
+	savepwd_ = conf_->readEntry( "SavePassword",false );
 	if ( savepwd_ )
 	{
 		password_ = KStringHandler::obscure( conf_->readEntry( "Password" ) );

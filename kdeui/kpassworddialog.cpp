@@ -315,7 +315,7 @@ void KPasswordDialog::init()
     m_Row = 0;
 
     KConfigGroup cg(KGlobal::config(), "Passwords");
-    if (m_Keep && cg.readEntry("Keep", QVariant(false)).toBool())
+    if (m_Keep && cg.readEntry("Keep", false))
 	++m_Keep;
 
     m_pMain = new QWidget(this);

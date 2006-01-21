@@ -215,7 +215,7 @@ void ConfigPage::load()
   mFamilyCombo->clear();
   mFamilyCombo->insertStringList( familyDisplayNames );
 
-  int currentFamily = mConfig->readEntry( "CurrentFamily", QVariant(0 )).toInt();
+  int currentFamily = mConfig->readEntry( "CurrentFamily", 0 );
   mFamilyCombo->setCurrentItem( currentFamily );
   slotFamilyChanged( currentFamily );
   emit changed( false );

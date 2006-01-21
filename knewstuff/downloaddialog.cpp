@@ -330,16 +330,10 @@ int DownloadDialog::installStatus(Entry *entry)
   int installed;
 
   KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
-  QString datestring = cg.readEntry(entry->name(), QString());
-  if(datestring.isEmpty())
-    installed = 0;
-  else
-  {
-    date = QDate::fromString(datestring, Qt::ISODate);
-    if(!date.isValid()) installed = 0;
-    else if(date < entry->releaseDate()) installed = -1;
-    else installed = 1;
-  }
+  date = cg.readEntry(entry->name(), QDate());
+  if(!date.isValid()) installed = 0;
+  else if(date < entry->releaseDate()) installed = -1;
+  else installed = 1;
 
   return installed;
 }
@@ -475,7 +469,7 @@ void DownloadDialog::slotInstall()
 void DownloadDialog::install(Entry *e)
 {
   KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
-  cg.writeEntry(m_entryname, e->releaseDate().toString(Qt::ISODate));
+  cg.writeEntry(m_entryname, e->releaseDate());
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
 

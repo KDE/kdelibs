@@ -64,7 +64,7 @@ bool KMSpecialManager::savePrinters()
 
 	// first clear existing groups
 	conf.setGroup("General");
-	int	n = conf.readEntry("Number", QVariant(0)).toInt();
+	int	n = conf.readEntry("Number", 0);
 	for (int i=0;i<n;i++)
 		conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i));
 
@@ -136,7 +136,7 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 {
 	KSimpleConfig	conf(filename);
 	conf.setGroup("General");
-	int	n = conf.readEntry("Number", QVariant(0)).toInt();
+	int	n = conf.readEntry("Number", 0);
 	for (int i=0;i<n;i++)
 	{
 		QString	grpname = QString::fromLatin1("Printer %1").arg(i);

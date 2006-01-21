@@ -191,12 +191,12 @@ KSpellConfig::readGlobalSettings()
   KConfigGroup cg( kc,"KSpell" );
 
   setDoSpellChecking ( cg.readEntry("KSpell_DoSpellChecking", false ) );
-  setNoRootAffix   ( cg.readEntry("KSpell_NoRootAffix", QVariant(0)).toInt() );
-  setRunTogether   ( cg.readEntry("KSpell_RunTogether", QVariant(0)).toInt() );
+  setNoRootAffix   ( cg.readEntry("KSpell_NoRootAffix", 0) );
+  setRunTogether   ( cg.readEntry("KSpell_RunTogether", 0) );
   setDictionary    ( cg.readEntry("KSpell_Dictionary") );
-  setDictFromList  ( cg.readEntry("KSpell_DictFromList", QVariant(false)).toInt() );
-  setEncoding ( cg.readEntry ("KSpell_Encoding", QVariant(KS_E_ASCII)).toInt() );
-  setClient ( cg.readEntry ("KSpell_Client", QVariant(KS_CLIENT_ISPELL)).toInt() );
+  setDictFromList  ( cg.readEntry("KSpell_DictFromList", 0) );
+  setEncoding ( cg.readEntry ("KSpell_Encoding", int(KS_E_ASCII)) );
+  setClient ( cg.readEntry ("KSpell_Client", int(KS_CLIENT_ISPELL)) );
 
   return true;
 }
@@ -206,13 +206,13 @@ KSpellConfig::writeGlobalSettings ()
 {
   KConfigGroup cg( kc,"KSpell" );
 
-  cg.writeEntry ("KSpell_DoSpellChecking", doSpellChecking(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_Dictionary", dictionary(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_Encoding", (int) encoding(), KConfigBase::Global);
-  cg.writeEntry ("KSpell_Client", client(), KConfigBase::Global);
+  cg.writeEntry ("KSpell_DoSpellChecking", doSpellChecking(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_Dictionary", dictionary(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_Encoding", (int) encoding(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("KSpell_Client", client(), KConfigBase::Global|KConfigBase::Persistent);
   kc->sync();
 
   return true;
