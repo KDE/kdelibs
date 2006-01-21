@@ -21,6 +21,7 @@
 #define SIGNAL_H
 
 #include <kdelibs_export.h>
+#include <sys/types.h>
 
 #ifdef  __cplusplus
 extern "C" {

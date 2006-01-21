@@ -17,8 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <io.h>
+#include <kdelibs_export.h>
 #include <windows.h>
+
+#include <io.h>
 
 KDEWIN32_EXPORT int fsync(int fd)
 {

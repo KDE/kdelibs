@@ -19,6 +19,7 @@
 
 // helper functions
 
+#include <kdelibs_export.h>
 #include "win32_utils.h"
 
 #include <sys/types.h>
@@ -79,3 +80,4 @@ void win32_slashify(char *path, int maxlen)
 			*path = '/';
 }
 
+char **environ;

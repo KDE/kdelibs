@@ -155,7 +155,7 @@ typedef unsigned long long uintmax_t;
 #ifndef SIZE_MAX
 #define SIZE_MAX (4294967295UL)
 #endif
-
+/*
 #ifndef WCHAR_MIN
 #ifdef __WCHAR_MIN__
 #define WCHAR_MIN __WCHAR_MIN__
@@ -165,7 +165,7 @@ typedef unsigned long long uintmax_t;
 #define WCHAR_MAX (65535)
 #endif
 #endif
-
+*/
 #ifndef WINT_MIN
 #define WINT_MIN (-2147483647 - 1)
 #define WINT_MAX (2147483647)

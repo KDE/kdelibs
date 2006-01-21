@@ -17,8 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <sys/types.h>
+#include <kdelibs_export.h>
 #include <windows.h>
+
+#include <sys/types.h>
 #include <errno.h>
 
 KDEWIN32_EXPORT int kill(pid_t pid, int sig)

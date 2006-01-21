@@ -56,6 +56,8 @@
  * University of Illinois, Urbana-Champaign.
  */
 
+#include <kdelibs_export.h>
+
 #include <malloc.h>
 #include <string.h>
 #include <errno.h>

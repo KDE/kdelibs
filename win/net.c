@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <kdelibs_export.h>
 #include <sys/types.h>
 
 KDEWIN32_EXPORT unsigned long int

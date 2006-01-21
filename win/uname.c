@@ -18,6 +18,7 @@
 */
 
 #include <windows.h>
+#include <kdelibs_export.h>
 
 #include <sys/utsname.h>
 #include <stdio.h>

@@ -20,6 +20,7 @@
 #define _WINSOCKAPI_ /* skip winsock */
 
 #include <windows.h>
+#include <kdelibs_export.h>
 
 #include <unistd.h>
 #include <sys/stat.h>

@@ -20,11 +20,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <kdelibs_export.h>
+#include <windows.h>
+
 #include <sys/mman.h>
 #include <assert.h>
-
-//#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 #define MORECORE_FAILURE    ((void*)(-1))
 #define MUNMAP_FAILURE  (-1)
