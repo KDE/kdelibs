@@ -79,31 +79,31 @@
 // JPF: anyhow, in KDE 3.2.0 I found diffent MAX_IPC_SIZE definitions!
 namespace KIO {
     enum buffersizes
-    {   //
-        // largest buffer size that should be used to transfer data between
-        // KIO slaves using the data() function
-        //
+    {  /**
+        * largest buffer size that should be used to transfer data between
+        * KIO slaves using the data() function
+        */
         maximumIpcSize = 32 * 1024,
-         //
-         // this is a reasonable value for an initial read() that a KIO slave
-         // can do to obtain data via a slow network connection.
-         //
+        /**
+         * this is a reasonable value for an initial read() that a KIO slave
+         * can do to obtain data via a slow network connection.
+         */
         initialIpcSize =  2 * 1024,
-        //
-        // recommended size of a data block passed to findBufferFileType()
-        //
+        /**
+         * recommended size of a data block passed to findBufferFileType()
+         */
         mimimumMimeSize =     1024
     };
 
     // JPF: this helper was derived from write_all in file.cc (FileProtocol).
     static // JPF: in ftp.cc we make it static
-    //
-    // This helper handles some special issues (blocking and interrupted
-    // system call) when writing to a file handle.
-    // 
-    // @return 0 on success or an error code on failure (ERR_COULD_NOT_WRITE,
-    // ERR_DISK_FULL, ERR_CONNECTION_BROKEN).
-    // 
+    /**
+     * This helper handles some special issues (blocking and interrupted
+     * system call) when writing to a file handle.
+     *
+     * @return 0 on success or an error code on failure (ERR_COULD_NOT_WRITE,
+     * ERR_DISK_FULL, ERR_CONNECTION_BROKEN).
+     */
    int WriteToFile(int fd, const char *buf, size_t len)
    {
       while (len > 0)
@@ -190,9 +190,9 @@ int FtpSocket::connectSocket(const QString& host, const QString& port,
 }
 #endif
 
-//==============================================================================
+//===============================================================================
 // Ftp
-//==============================================================================
+//===============================================================================
 
 Ftp::Ftp( const QByteArray &pool, const QByteArray &app )
     : SlaveBase( "ftp", pool, app )
@@ -213,19 +213,19 @@ Ftp::~Ftp()
   closeConnection();
 }
 
-//
-// This closes a data connection opened by ftpOpenDataConnection().
-// 
+/**
+ * This closes a data connection opened by ftpOpenDataConnection().
+ */
 void Ftp::ftpCloseDataConnection()
 {
   delete m_data;
   m_data = NULL;
 }
 
-//
-// This closes a control connection opened by ftpOpenControlConnection() and reinits the
-// related states.  This method gets called from the constructor with m_control = NULL.
-//
+/**
+ * This closes a control connection opened by ftpOpenControlConnection() and reinits the
+ * related states.  This method gets called from the constructor with m_control = NULL.
+ */
 void Ftp::ftpCloseControlConnection()
 {
   m_extControl = 0;
@@ -237,10 +237,10 @@ void Ftp::ftpCloseControlConnection()
   m_bBusy = false;
 }
 
-//
-// Returns the last response from the server (iOffset >= 0)  -or-  reads a new response
-// (iOffset < 0). The result is returned (with iOffset chars skipped for iOffset > 0).
-//
+/**
+ * Returns the last response from the server (iOffset >= 0)  -or-  reads a new response
+ * (iOffset < 0). The result is returned (with iOffset chars skipped for iOffset > 0).
+ */
 const char* Ftp::ftpResponse(int iOffset)
 {
   assert(m_control != NULL);    // must have control connection socket
@@ -380,11 +380,11 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
 }
 
 
-//
-// Called by @ref openConnection. It opens the control connection to the ftp server.
-//
-// @return true on success.
-// 
+/**
+ * Called by @ref openConnection. It opens the control connection to the ftp server.
+ *
+ * @return true on success.
+ */
 bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port )
 {
   QString serv;
@@ -424,13 +424,13 @@ bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port
   return false;
 }
 
-//
-// Called by @ref openConnection. It logs us in.
-// @ref m_initialPath is set to the current working directory
-// if logging on was successful.
-//
-// @return true on success.
-//
+/**
+ * Called by @ref openConnection. It logs us in.
+ * @ref m_initialPath is set to the current working directory
+ * if logging on was successful.
+ *
+ * @return true on success.
+ */
 bool Ftp::ftpLogin()
 {
   infoMessage( i18n("Sending login information") );
@@ -631,15 +631,15 @@ void Ftp::ftpAutoLoginMacro ()
 }
 
 
-//
-// ftpSendCmd - send a command (@p cmd) and read response
-//
-// @param maxretries number of time it should retry. Since it recursively
-// calls itself if it can't read the answer (this happens especially after
-// timeouts), we need to limit the recursiveness ;-)
-// 
-// return true if any response received, false on error
-// 
+/**
+ * ftpSendCmd - send a command (@p cmd) and read response
+ *
+ * @param maxretries number of time it should retry. Since it recursively
+ * calls itself if it can't read the answer (this happens especially after
+ * timeouts), we need to limit the recursiveness ;-)
+ *
+ * return true if any response received, false on error
+ */
 bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
 {
   assert(m_control != NULL);    // must have control connection socket
@@ -732,13 +732,13 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
 }
 
 
-//
-// ftpOpenPASVDataConnection - set up data connection, using PASV mode
-//
-// return 1 if successful, 0 otherwise
-// doesn't set error message, since non-pasv mode will always be tried if
-// this one fails
-//
+/*
+ * ftpOpenPASVDataConnection - set up data connection, using PASV mode
+ *
+ * return 1 if successful, 0 otherwise
+ * doesn't set error message, since non-pasv mode will always be tried if
+ * this one fails
+ */
 int Ftp::ftpOpenPASVDataConnection()
 {
   assert(m_control != NULL);    // must have control connection socket
@@ -794,9 +794,9 @@ int Ftp::ftpOpenPASVDataConnection()
   return m_data->connect(address.nodeName(), address.serviceName());
 }
 
-//
-// ftpOpenEPSVDataConnection - opens a data connection via EPSV
-//
+/*
+ * ftpOpenEPSVDataConnection - opens a data connection via EPSV
+ */
 int Ftp::ftpOpenEPSVDataConnection()
 {
   assert(m_control != NULL);    // must have control connection socket
@@ -830,18 +830,18 @@ int Ftp::ftpOpenEPSVDataConnection()
   return m_data->connect(sa.nodeName(), QString::number(portnum));
 }
 
-//
-// ftpOpenDataConnection - set up data connection
-//
-// The routine calls several ftpOpenXxxxConnection() helpers to find
-// the best connection mode. If a helper cannot connect if returns
-// ERR_INTERNAL - so this is not really an error! All other error
-// codes are treated as fatal, e.g. they are passed back to the caller
-// who is responsible for calling error(). ftpOpenPortDataConnection
-// can be called as last try and it does never return ERR_INTERNAL.
-//
-// @return 0 if successful, err code otherwise
-//
+/*
+ * ftpOpenDataConnection - set up data connection
+ *
+ * The routine calls several ftpOpenXxxxConnection() helpers to find
+ * the best connection mode. If a helper cannot connect if returns
+ * ERR_INTERNAL - so this is not really an error! All other error
+ * codes are treated as fatal, e.g. they are passed back to the caller
+ * who is responsible for calling error(). ftpOpenPortDataConnection
+ * can be called as last try and it does never return ERR_INTERNAL.
+ *
+ * @return 0 if successful, err code otherwise
+ */
 int Ftp::ftpOpenDataConnection()
 {
   // make sure that we are logged on and have no data connection...
@@ -884,12 +884,12 @@ int Ftp::ftpOpenDataConnection()
   return iErrCodePASV ? iErrCodePASV : iErrCode;
 }
 
-//
-// ftpOpenPortDataConnection - set up data connection
-//
-// @return 0 if successfull, err code otherwise (but never ERR_INTERNAL
-//         because this is the last connection mode that is tried)
-// 
+/*
+ * ftpOpenPortDataConnection - set up data connection
+ *
+ * @return 0 if successfull, err code otherwise (but never ERR_INTERNAL
+ *         because this is the last connection mode that is tried)
+ */
 int Ftp::ftpOpenPortDataConnection()
 {
   assert(m_control != NULL);    // must have control connection socket
@@ -1845,73 +1845,75 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   return statusSuccess;
 }
 
-//void Ftp::mimetype( const KUrl& url )
-//{
-//  if( !ftpOpenConnection(loginImplicit) )
-//        return;
-//
-//  if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
-//    kdWarning(7102) << "Can't open for reading" << endl;
-//    return;
-//  }
-//  char buffer[ 2048 ];
-//  QByteArray array;
-//  // Get one chunk of data only and send it, KIO::Job will determine the
-//  // mimetype from it using KMimeMagic
-//  int n = m_data->read( buffer, 2048 );
-//  array.setRawData(buffer, n);
-//  data( array );
-//  array.resetRawData(buffer, n);
-//
-//  kdDebug(7102) << "aborting" << endl;
-//  ftpAbortTransfer();
-//
-//  kdDebug(7102) << "finished" << endl;
-//  finished();
-//  kdDebug(7102) << "after finished" << endl;
-//}
-//
-//void Ftp::ftpAbortTransfer()
-//{
-//  // RFC 959, page 34-35
-//  // IAC (interpret as command) = 255 ; IP (interrupt process) = 254
-//  // DM = 242 (data mark)
-//   char msg[4];
-//   // 1. User system inserts the Telnet "Interrupt Process" (IP) signal
-//   //   in the Telnet stream.
-//   msg[0] = (char) 255; //IAC
-//   msg[1] = (char) 254; //IP
-//   (void) send(sControl, msg, 2, 0);
-//   // 2. User system sends the Telnet "Sync" signal.
-//   msg[0] = (char) 255; //IAC
-//   msg[1] = (char) 242; //DM
-//   if (send(sControl, msg, 2, MSG_OOB) != 2)
-//     ; // error...
-//
-//   // Send ABOR
-//   kdDebug(7102) << "send ABOR" << endl;
-//   QCString buf = "ABOR\r\n";
-//   if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
-//     error( ERR_COULD_NOT_WRITE, QString() );
-//     return;
-//   }
-//
-//   //
-//   kdDebug(7102) << "read resp" << endl;
-//   if ( readresp() != '2' )
-//   {
-//     error( ERR_COULD_NOT_READ, QString() );
-//     return;
-//   }
-//
-//  kdDebug(7102) << "close sockets" << endl;
-//  closeSockets();
-//}
+#if 0
+  void Ftp::mimetype( const KUrl& url )
+  {
+    if( !ftpOpenConnection(loginImplicit) )
+          return;
+  
+    if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
+      kdWarning(7102) << "Can't open for reading" << endl;
+      return;
+    }
+    char buffer[ 2048 ];
+    QByteArray array;
+    // Get one chunk of data only and send it, KIO::Job will determine the
+    // mimetype from it using KMimeMagic
+    int n = m_data->read( buffer, 2048 );
+    array.setRawData(buffer, n);
+    data( array );
+    array.resetRawData(buffer, n);
+  
+    kdDebug(7102) << "aborting" << endl;
+    ftpAbortTransfer();
+  
+    kdDebug(7102) << "finished" << endl;
+    finished();
+    kdDebug(7102) << "after finished" << endl;
+  }
+  
+  void Ftp::ftpAbortTransfer()
+  {
+    // RFC 959, page 34-35
+    // IAC (interpret as command) = 255 ; IP (interrupt process) = 254
+    // DM = 242 (data mark)
+     char msg[4];
+     // 1. User system inserts the Telnet "Interrupt Process" (IP) signal
+     //   in the Telnet stream.
+     msg[0] = (char) 255; //IAC
+     msg[1] = (char) 254; //IP
+     (void) send(sControl, msg, 2, 0);
+     // 2. User system sends the Telnet "Sync" signal.
+     msg[0] = (char) 255; //IAC
+     msg[1] = (char) 242; //DM
+     if (send(sControl, msg, 2, MSG_OOB) != 2)
+       ; // error...
+  
+     // Send ABOR
+     kdDebug(7102) << "send ABOR" << endl;
+     QCString buf = "ABOR\r\n";
+     if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
+       error( ERR_COULD_NOT_WRITE, QString() );
+       return;
+     }
+  
+     //
+     kdDebug(7102) << "read resp" << endl;
+     if ( readresp() != '2' )
+     {
+       error( ERR_COULD_NOT_READ, QString() );
+       return;
+     }
+  
+    kdDebug(7102) << "close sockets" << endl;
+    closeSockets();
+  }
+#endif
 
-//==============================================================================
+//===============================================================================
 // public: put           upload file to server
 // helper: ftpPut        called from put() and copy()
-//==============================================================================
+//===============================================================================
 void Ftp::put(const KUrl& url, int permissions, bool overwrite, bool resume)
 {
   kdDebug(7102) << "Ftp::put " << url.url() << endl;
@@ -2111,8 +2113,8 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
 }
 
 
-// Use the SIZE command to get the file size.
-// Warning : the size depends on the transfer mode, hence the second arg. 
+/** Use the SIZE command to get the file size.
+    Warning : the size depends on the transfer mode, hence the second arg. */
 bool Ftp::ftpSize( const QString & path, char mode )
 {
   m_size = UnknownSize;
@@ -2184,11 +2186,11 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
 }
 
 
-//==============================================================================
+//===============================================================================
 // public: copy          don't use kio data pump if one side is a local file
 // helper: ftpCopyPut    called from copy() on upload
 // helper: ftpCopyGet    called from copy() on download
-//==============================================================================
+//===============================================================================
 void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite )
 {
   int iError = 0;
