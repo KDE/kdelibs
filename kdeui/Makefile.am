@@ -26,13 +26,9 @@ INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/interfaces $(all_includes)
 # into $(all_libraries) isn't better
 AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
-lib_LTLIBRARIES = libkdeui.la libkspell.la
+lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
-
-libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
-libkspell_la_LIBADD = libkdeui.la
-libkspell_la_SOURCES = dummy.cpp
 
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
@@ -124,13 +120,6 @@ kdepackages:
 	grep -v 'valgrind/' | sed -e "s,/00general\",\"," >> $(srcdir)/kdepackages.h
 	echo "0 };" >>  $(srcdir)/kdepackages.h
 	rm tmp_download2 tmp_download
-
-dummy.cpp:
-	echo "#ifdef _AIX" >dummy.cpp
-	echo "namespace {" >> dummy.cpp
-	echo "void *not_empty_file;" >>dummy.cpp
-	echo "}" >> dummy.cpp
-	echo "#endif" >> dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
 DOXYGEN_SET_INTERNAL_DOCS = YES

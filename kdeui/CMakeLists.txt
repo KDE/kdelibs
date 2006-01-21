@@ -24,11 +24,12 @@ kinputdialog.cpp
 knuminput.cpp
 klineedit.cpp
 klistview.cpp
-kprogress.cpp
+kprogressdialog.cpp
+kprogressbar.cpp
 kcolordialog.cpp
-kselect.cpp
+kselector.cpp
 kdatepicker.cpp
-kdatetbl.cpp
+kdatetable.cpp
 kfontrequester.cpp
 kfontdialog.cpp
 ktabctl.cpp
@@ -69,7 +70,7 @@ klistbox.cpp
 kwordwrap.cpp
 kbugreport.cpp
 kcombobox.cpp
-kpassdlg.cpp
+kpassworddialog.cpp
 kxmlguiclient.cpp
 kxmlguifactory.cpp
 kxmlguifactory_p.cpp
@@ -155,22 +156,6 @@ set_target_properties(kdeui PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kdeui )
 
 
-########### next target ###############
-
-set(kspell_LIB_SRCS
-dummy.cpp
-)
-
-kde4_automoc(${kspell_LIB_SRCS})
-
-kde4_add_library(kspell SHARED ${kspell_LIB_SRCS})
-
-target_link_libraries(kspell  ${QT_AND_KDECORE_LIBS} )
-
-set_target_properties(kspell PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib kspell )
-
-
 ########### install files ###############
 
 install_files( ${KDE4_DATA_DIR}/kdeui/pics FILES aboutkde.png ktip-bulb.png ktip-background.png )
@@ -215,10 +200,6 @@ kde4_footer()
 #lib_LTLIBRARIES = libkdeui.la libkspell.la
 #libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
 #libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
-#
-#libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
-#libkspell_la_LIBADD = libkdeui.la
-#libkspell_la_SOURCES = dummy.cpp
 #
 #picsdir = $(kde_datadir)/kdeui/pics
 #pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
@@ -310,13 +291,6 @@ kde4_footer()
 #	grep -v 'valgrind/' | sed -e "s,/00general\",\"," >> $(srcdir)/kdepackages.h
 #	echo "0 };" >>  $(srcdir)/kdepackages.h
 #	rm tmp_download2 tmp_download
-#
-#dummy.cpp:
-#	echo "#ifdef _AIX" >dummy.cpp
-#	echo "namespace {" >> dummy.cpp
-#	echo "void *not_empty_file;" >>dummy.cpp
-#	echo "}" >> dummy.cpp
-#	echo "#endif" >> dummy.cpp
 #
 #DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
 #DOXYGEN_SET_INTERNAL_DOCS = YES
