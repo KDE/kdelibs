@@ -114,8 +114,8 @@ KDateValidator::fixup( QString& ) const
 
 }
 
-KDateTable::KDateTable(QWidget *parent, const QDate &date_, const char* name, Qt::WFlags f)
-  : Q3GridView(parent, name, f)
+KDateTable::KDateTable(const QDate& date_, QWidget* parent)
+  : Q3GridView(parent)
 {
   d = new KDateTablePrivate;
   setFontSize(10);
@@ -136,8 +136,8 @@ KDateTable::KDateTable(QWidget *parent, const QDate &date_, const char* name, Qt
   initAccels();
 }
 
-KDateTable::KDateTable(QWidget *parent, const char* name, Qt::WFlags f)
-  : Q3GridView(parent, name, f)
+KDateTable::KDateTable(QWidget *parent)
+  : Q3GridView(parent)
 {
   d = new KDateTablePrivate;
   setFontSize(10);
@@ -184,7 +184,7 @@ QDate KDateTable::dateFromPos( int pos )
 {
   QDate pCellDate;
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  calendar->setYMD(pCellDate, calendar->year(date), calendar->month(date), 1);
+  calendar->setYMD(pCellDate, calendar->year(mDate), calendar->month(mDate), 1);
 
   int firstWeekDay = KGlobal::locale()->weekStartDay();
   int offset = (firstday - firstWeekDay + 7) % 7;
@@ -248,7 +248,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       QDate pCellDate = dateFromPos( pos );
       // First day of month
       text = calendar->dayString(pCellDate, true);
-      if( calendar->month(pCellDate) != calendar->month(date) )
+      if( calendar->month(pCellDate) != calendar->month(mDate) )
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
@@ -288,7 +288,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       int offset=firstday-firstWeekDay;
       if(offset<1)
         offset+=7;
-      int d = calendar->day(date);
+      int d = calendar->day(mDate);
            if( (offset+d) == (pos+1))
         {
            // draw the currently selected date
@@ -326,33 +326,33 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 void KDateTable::nextMonth()
 {
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  setDate(calendar->addMonths( date, 1 ));
+  setDate(calendar->addMonths( mDate, 1 ));
 }
 
 void KDateTable::previousMonth()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  setDate(calendar->addMonths( date, -1 ));
+  setDate(calendar->addMonths( mDate, -1 ));
 }
 
 void KDateTable::beginningOfMonth()
 {
-  setDate(date.addDays(1 - date.day()));
+  setDate(mDate.addDays(1 - mDate.day()));
 }
 
 void KDateTable::endOfMonth()
 {
-  setDate(date.addDays(date.daysInMonth() - date.day()));
+  setDate(mDate.addDays(mDate.daysInMonth() - mDate.day()));
 }
 
 void KDateTable::beginningOfWeek()
 {
-  setDate(date.addDays(1 - date.dayOfWeek()));
+  setDate(mDate.addDays(1 - mDate.dayOfWeek()));
 }
 
 void KDateTable::endOfWeek()
 {
-  setDate(date.addDays(7 - date.dayOfWeek()));
+  setDate(mDate.addDays(7 - mDate.dayOfWeek()));
 }
 
 void
@@ -360,22 +360,22 @@ KDateTable::keyPressEvent( QKeyEvent *e )
 {
     switch( e->key() ) {
     case Qt::Key_Up:
-            setDate(date.addDays(-7));
+            setDate(mDate.addDays(-7));
         break;
     case Qt::Key_Down:
-            setDate(date.addDays(7));
+            setDate(mDate.addDays(7));
         break;
     case Qt::Key_Left:
-            setDate(date.addDays(-1));
+            setDate(mDate.addDays(-1));
         break;
     case Qt::Key_Right:
-            setDate(date.addDays(1));
+            setDate(mDate.addDays(1));
         break;
     case Qt::Key_Minus:
-        setDate(date.addDays(-1));
+        setDate(mDate.addDays(-1));
 	break;
     case Qt::Key_Plus:
-        setDate(date.addDays(1));
+        setDate(mDate.addDays(1));
 	break;
     case Qt::Key_N:
         setDate(QDate::currentDate());
@@ -433,7 +433,7 @@ KDateTable::setFontSize(int size)
 void
 KDateTable::wheelEvent ( QWheelEvent * e )
 {
-    setDate(date.addMonths( -(int)(e->delta()/120)) );
+    setDate(mDate.addMonths( -(int)(e->delta()/120)) );
     e->accept();
 }
 
@@ -467,7 +467,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   // the row with the days of the week in the calculation.
 
   // old selected date:
-  temp = posFromDate( date );
+  temp = posFromDate( mDate );
   // new position and date
   pos = (7 * (row - 1)) + col;
   QDate clickedDate = dateFromPos( pos );
@@ -503,20 +503,20 @@ KDateTable::setDate(const QDate& date_)
       kdDebug() << "KDateTable::setDate: refusing to set invalid date." << endl;
       return false;
     }
-  if(date!=date_)
+  if(mDate!=date_)
     {
-      emit(dateChanged(date, date_));
-      date=date_;
-      emit(dateChanged(date));
+      emit(dateChanged(mDate, date_));
+      mDate=date_;
+      emit(dateChanged(mDate));
       changed=true;
     }
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  calendar->setYMD(temp, calendar->year(date), calendar->month(date), 1);
-  //temp.setYMD(date.year(), date.month(), 1);
+  calendar->setYMD(temp, calendar->year(mDate), calendar->month(mDate), 1);
+  //temp.setYMD(mDate.year(), mDate.month(), 1);
   //kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
   firstday=temp.dayOfWeek();
-  numdays=calendar->daysInMonth(date);
+  numdays=calendar->daysInMonth(mDate);
 
   temp = calendar->addMonths(temp, -1);
   numDaysPrevMonth=calendar->daysInMonth(temp);
@@ -528,9 +528,9 @@ KDateTable::setDate(const QDate& date_)
 }
 
 const QDate&
-KDateTable::getDate() const
+KDateTable::date() const
 {
-  return date;
+  return mDate;
 }
 
 // what are those repaintContents() good for? (pfeiffer)

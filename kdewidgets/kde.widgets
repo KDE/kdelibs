@@ -225,7 +225,6 @@ Group=Input (KDE)
 [KDateTable]
 IncludeFile=kdatetable.h
 Group=Input (KDE)
-ConstructorArgs=(parent, QDate::currentDate())
 
 [KLanguageButton]
 IncludeFile=klanguagebutton.h

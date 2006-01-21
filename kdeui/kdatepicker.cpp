@@ -257,14 +257,14 @@ void
 KDatePicker::tableClickedSlot()
 {
   kdDebug(298) << "KDatePicker::tableClickedSlot: table clicked." << endl;
-  emit(dateSelected(table->getDate()));
+  emit(dateSelected(table->date()));
   emit(tableClicked());
 }
 
 const QDate &
 KDatePicker::date() const
 {
-    return table->getDate();
+    return table->date();
 }
 
 bool
@@ -286,7 +286,7 @@ void
 KDatePicker::monthForwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addMonths( table->getDate(), 1 );
+    temp = KGlobal::locale()->calendar()->addMonths( table->date(), 1 );
 
     setDate( temp );
 }
@@ -295,7 +295,7 @@ void
 KDatePicker::monthBackwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addMonths( table->getDate(), -1 );
+    temp = KGlobal::locale()->calendar()->addMonths( table->date(), -1 );
 
     setDate( temp );
 }
@@ -304,7 +304,7 @@ void
 KDatePicker::yearForwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addYears( table->getDate(), 1 );
+    temp = KGlobal::locale()->calendar()->addYears( table->date(), 1 );
 
     setDate( temp );
 }
@@ -313,7 +313,7 @@ void
 KDatePicker::yearBackwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addYears( table->getDate(), -1 );
+    temp = KGlobal::locale()->calendar()->addYears( table->date(), -1 );
 
     setDate( temp );
 }
@@ -323,7 +323,7 @@ KDatePicker::weekSelected(int week)
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  QDate date = table->getDate();
+  QDate date = table->date();
   int year = calendar->year(date);
 
   calendar->setYMD(date, year, 1, 1);  // first day of selected year
@@ -339,7 +339,7 @@ KDatePicker::selectMonthClicked()
 {
   // every year can have different month names (in some calendar systems)
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  QDate date = table->getDate();
+  QDate date = table->date();
   const int months = calendar->monthsInYear(date);
 
   QMenu popup(selectMonth);
@@ -379,7 +379,7 @@ KDatePicker::selectYearClicked()
   KDateInternalYearSelector* picker = new KDateInternalYearSelector(popup);
   // -----
   picker->resize(picker->sizeHint());
-  picker->setYear( table->getDate().year() );
+  picker->setYear( table->date().year() );
   picker->selectAll();
   popup->setMainWidget(picker);
   connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
@@ -390,7 +390,7 @@ KDatePicker::selectYearClicked()
       int day;
       // -----
       year=picker->getYear();
-      date=table->getDate();
+      date=table->date();
       day=calendar->day(date);
       // ----- construct a valid date in this month:
       //date.setYMD(year, date.month(), 1);
@@ -478,7 +478,7 @@ KDatePicker::setFontSize(int s)
   for (int i = 1; ; ++i)
     {
       QString str = KGlobal::locale()->calendar()->monthName(i,
-         KGlobal::locale()->calendar()->year(table->getDate()), false);
+         KGlobal::locale()->calendar()->year(table->date()), false);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
       maxMonthRect.setWidth(qMax(r.width(), maxMonthRect.width()));

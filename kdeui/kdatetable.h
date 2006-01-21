@@ -250,21 +250,21 @@ public:
 class KDEUI_EXPORT KDateTable : public Q3GridView
 {
     Q_OBJECT
-    Q_PROPERTY( QDate date READ getDate WRITE setDate )
+    Q_PROPERTY( QDate date READ date WRITE setDate )
     Q_PROPERTY( bool popupMenu READ popupMenuEnabled WRITE setPopupMenuEnabled )
 
 public:
     /**
      * The constructor.
+     * @since 4.0
      */
-    KDateTable(QWidget *parent=0, const QDate &date=QDate::currentDate(),
-	       const char* name=0, Qt::WFlags f=0);
+    explicit KDateTable(QWidget* parent = 0);
 
     /**
      * The constructor.
-     * @since 3.4
+     * @since 4.0
      */
-    KDateTable(QWidget *parent, const char* name, Qt::WFlags f=0);
+    explicit KDateTable(const QDate&, QWidget* parent = 0);
 
     /**
      * The destructor.
@@ -287,8 +287,12 @@ public:
      * Select and display this date.
      */
     bool setDate(const QDate&);
-    // ### KDE 4.0 rename to date()
-    const QDate& getDate() const;
+
+    /**
+     * @returns the selected date.
+     * @since 4.0
+     */
+    const QDate& date() const;
 
     /**
      * Enables a popup menu when right clicking on a date.
@@ -359,7 +363,7 @@ protected:
     /**
      * The currently selected date.
      */
-    QDate date;
+    QDate mDate;
     /**
      * The day of the first day in the month [1..7].
      */
@@ -372,11 +376,6 @@ protected:
      * The number of days in the previous month.
      */
     int numDaysPrevMonth;
-    /**
-     * unused
-     * ### remove in KDE 4.0
-     */
-    bool unused_hasSelection;
     /**
      * Save the size of the largest used cell content.
      */
