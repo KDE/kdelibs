@@ -133,7 +133,7 @@ void KNotification::raiseWidget()
 
 void KNotification::raiseWidget(QWidget *w)
 {
-	//TODO  this funciton is far from finished.
+	//TODO  this function is far from finished.
 	if(w->isTopLevel())
 	{
 		w->raise();
