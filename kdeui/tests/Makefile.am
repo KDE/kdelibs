@@ -40,7 +40,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
 	ksqueezedtextlabeltest kcommandtest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
-	khboxtest kbugreporttest kdialogtest ksyntaxhighlightertest kactivelabeltest
+	khboxtest kbugreporttest kdialogtest kactivelabeltest
 
 # List of tests to run automatically from "make check"
 TESTS = kcommandtest
@@ -106,7 +106,6 @@ khboxtest_SOURCES = khboxtest.cpp
 kbugreporttest_SOURCES = kbugreporttest.cpp
 kdialogtest_SOURCES = kdialogtest.cpp
 kactivelabeltest_SOURCES = kactivelabeltest.cpp
-ksyntaxhighlightertest_SOURCES = ksyntaxhighlightertest.cpp
 
 # Automated unit tests
 kcommandtest_SOURCES = kcommandtest.cpp
