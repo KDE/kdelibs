@@ -55,7 +55,7 @@ namespace KJS {
     ~XMLHttpRequest();
 
     bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;;
+    ValueImp *getValueProperty(ExecState *exec, int token) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
     void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
     virtual bool toBoolean(ExecState *) const { return true; }

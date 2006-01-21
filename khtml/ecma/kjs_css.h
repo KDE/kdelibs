@@ -201,7 +201,7 @@ namespace KJS {
   public:
     DOMCSSValue(ExecState *, DOM::CSSValueImpl* v);
     virtual ~DOMCSSValue();
-    ValueImp *DOMCSSValue::getValueProperty(ExecState *exec, int token) const;
+    ValueImp* getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }

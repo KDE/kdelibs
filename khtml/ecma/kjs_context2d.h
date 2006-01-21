@@ -37,7 +37,7 @@ namespace DOM {
     class HTMLSelectElementImpl;
     class HTMLTableCaptionElementImpl;
     class HTMLTableSectionElementImpl;
-};
+}
 
 class QGradient;
 
