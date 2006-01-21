@@ -78,7 +78,7 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
        Reimplemented to NOT set the source but to do the special handling.
        Do not call.
      */
-    void setSource( const QString& name );
+    void setSource( const QUrl& name );
 
     /**
      * Makes sure Key_Escape is ignored

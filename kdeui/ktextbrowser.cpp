@@ -61,33 +61,34 @@ bool KTextBrowser::isNotifyClick() const
 }
 
 
-void KTextBrowser::setSource( const QString& name )
+void KTextBrowser::setSource( const QUrl& name )
 {
-  if( name.isNull() )
+  QString strName = name.toString();
+  if( strName.isNull() )
   {
     return;
   }
 
-  if( name.indexOf('@') > -1 )
+  if( strName.indexOf('@') > -1 )
   {
     if( !d->mNotifyClick )
     {
-      KToolInvocation::invokeMailer( KUrl( name ) );
+      KToolInvocation::invokeMailer( KUrl( strName ) );
     }
     else
     {
-      emit mailClick( QString(), name );
+      emit mailClick( QString(), strName );
     }
   }
   else
   {
     if( !d->mNotifyClick )
     {
-      KToolInvocation::invokeBrowser( name );
+      KToolInvocation::invokeBrowser( strName );
     }
     else
     {
-      emit urlClick( name );
+      emit urlClick( strName );
     }
   }
 }
