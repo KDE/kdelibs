@@ -68,7 +68,7 @@ WhatsThis=A compact font selection and preview widget
 Group=Input (KDE)
 
 [KGradientSelector]
-IncludeFile=kselect.h
+IncludeFile=kselector.h
 WhatsThis=A widget that allows the user to select two colors to form a gradient
 Group=Graphics (KDE)
 

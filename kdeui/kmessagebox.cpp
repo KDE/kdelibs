@@ -27,6 +27,7 @@
 
 #include <q3groupbox.h>
 #include <QTextDocument>
+#include <QTextEdit>
 #include <q3simplerichtext.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
