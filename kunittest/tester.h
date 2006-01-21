@@ -531,7 +531,7 @@ namespace KUnitTest
     public:
         /*! Implement this method with the tests and checks you want to perform.
          */
-        virtual void allTests() = 0L;
+        virtual void allTests() = 0;
 
     public:
         /*! @return The TestResults instance.
