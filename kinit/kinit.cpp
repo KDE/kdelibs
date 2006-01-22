@@ -291,6 +291,8 @@ static int get_current_desktop( Display* disp )
     {
 	if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
 	    desktop = *((long *) data_ret) + 1;
+        if (data_ret)
+            XFree ((char*) data_ret);
     }
 #endif
     return desktop;
