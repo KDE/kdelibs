@@ -519,6 +519,9 @@ def find_program_using_which(lenv, prog):
 		return ''
 	return os.popen("which %s 2>/dev/null" % prog).read().strip()
 
+def hasConfig(lenv, key):
+	return lenv.has_key('CACHED_'+key) and env['CACHED_'+key']
+
 #HELPER - write a header file with information if a lib is available or not
 #         and stop if the package is mandatory
 def write_lib_header(lenv, libname, test_result, mandatory=False, headername='',addcontent=''):
@@ -652,6 +655,7 @@ def generate(env):
 	SConsEnvironment.add_dump = add_dump
 	SConsEnvironment.get_dump = get_dump
 	SConsEnvironment.set_build_dir = set_build_dir
+	SConsEnvironment.hasConfig = hasConfig
 
 	# list of the modules which provide a config.h
 	env['_CONFIG_H_']=[]
