@@ -369,25 +369,31 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Color: {
-          // invalid QColor's are stored as the string "invalid"
-          // this needs to be checked first, or we will catch the
-          // asserts in readEntry for an integer list
-          if (readEntry(pKey) == QLatin1String("invalid"))
-            return QColor();
-      
-          const QList<int> list = readEntry( pKey, QList<int>() );
+          const QStringList list = readEntry( pKey, QStringList() );
           const int count = list.count();
 
           if (count != 3 && count != 4) {
+              if (count == 1 && list.first() == QLatin1String("invalid"))
+                  return QColor(); // return what was stored
+
               kcbError() << errString.arg(readEntry(pKey))
                          << formatError.arg("3' or '4").arg(count)
                          << endl;
               return aDefault;
           }
 
+          int temp[4];
+
           // bounds check components
           for(int i=0; i < count; i++) {
-              const int j = list.at(i);
+              bool ok;
+              const int j = temp[i] = list.at(i).toInt(&ok);
+              if (!ok) { // failed to convert to int
+                  kcbError() << errString.arg(readEntry(pKey))
+                             << " (integer conversion failed)"
+                             << endl;
+                  return aDefault;
+              }
               if (j < 0 || j > 255) {
                   const char *const components[] = {
                       "red", "green", "blue", "alpha"
@@ -399,9 +405,9 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                   return aDefault;
               }
           }
-          QColor color(list.at(0), list.at(1), list.at(2));
+          QColor color(temp[0], temp[1], temp[2]);
           if (count == 4)
-              color.setAlpha(list.at(3));
+              color.setAlpha(temp[3]);
 
           if ( !color.isValid() ) {
               kcbError() << errString.arg(readEntry(pKey)) << endl;
