@@ -35,11 +35,6 @@
 
 using namespace KIO;
 
-extern "C"
-{
-    KDE_EXPORT int kdemain(int argc, char **argv);
-}
-
 int kdemain(int argc, char **argv)
 {
     KAboutData about("kio_metainfo", "kio_metainfo", "");

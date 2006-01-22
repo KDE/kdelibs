@@ -20,7 +20,10 @@ obj = env.kdeobj('module')
 obj.target = 'kio_file'
 obj.source = kio_file_sources
 obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDECORE '
+if env['WINDOWS']:
+	obj.libpaths += ' ../../win '
+	obj.libs     = ' kdewin32 '
 obj.execute()
 
 env.bksys_insttype('KDESERV', '', 'file.protocol')

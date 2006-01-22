@@ -130,8 +130,6 @@ KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 using namespace KIO;
 using namespace KNetwork;
 
-extern "C" { KDE_EXPORT int kdemain(int argc, char **argv); }
-
 int kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
@@ -153,7 +151,9 @@ int kdemain( int argc, char **argv )
   return 0;
 }
 
+#ifdef __GNUC__
 #warning "FIXME: Make it possible to set KeepAlive and Linger"
+#endif
 #if 0
 int FtpSocket::connectSocket(const QString& host, const QString& port,
                              int iTimeOutSec, bool bControl)
@@ -398,7 +398,9 @@ bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port
   QString sErrorMsg;
   m_control = new KStreamSocket;
 
+#ifdef __GNUC__
 #warning "FIXME KDE4: reenable 'host not found' error"
+#endif
   // now connect to the server and read the login message ...
   m_control->setTimeout(connectTimeout() * 1000);
   int iErrorCode = m_control->connect(host, serv) ? ERR_COULD_NOT_CONNECT : 0;
@@ -770,7 +772,7 @@ int Ftp::ftpOpenPASVDataConnection()
   // The usual answer is '227 Entering Passive Mode. (160,39,200,55,6,245)'
   // but anonftpd gives '227 =160,39,200,55,6,245'
   int i[6];
-  char *start = strchr(ftpResponse(3), '(');
+  const char *start = strchr(ftpResponse(3), '(');
   if ( !start )
     start = strchr(ftpResponse(3), '=');
   if ( !start ||
@@ -820,7 +822,7 @@ int Ftp::ftpOpenEPSVDataConnection()
     return ERR_INTERNAL;
   }
 
-  char *start = strchr(ftpResponse(3), '|');
+  const char *start = strchr(ftpResponse(3), '|');
   if ( !start || sscanf(start, "|||%d|", &portnum) != 1)
     return ERR_INTERNAL;
 

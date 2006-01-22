@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -98,8 +99,6 @@ static bool isExtendedACL(  acl_t p_acl );
 static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
-
-extern "C" { KDE_EXPORT int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
@@ -210,7 +209,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-        if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
+        if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
           error( KIO::ERR_ACCESS_DENIED, url.path() );
           return;

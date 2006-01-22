@@ -31,7 +31,10 @@ obj.source = kio_http_sources
 obj.includes = includes
 obj.libpaths = '##/kio/httpfilter ##/kio/misc/kntlm '
 obj.libs = 'httpfilter kntlm '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.uselib = 'QT QTCORE QTGUI KDE4 KIO '
+if env['WINDOWS']:
+	obj.libpaths += ' ../../win '
+	obj.libs     = ' kdewin32 '
 obj.execute()
 
 env.bksys_insttype('KDESERV', '', 'http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol')
