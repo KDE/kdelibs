@@ -1,6 +1,12 @@
 kde4_header()
 
-add_subdirectory( kssl ) 
+
+if(HAVE_SSL)
+   set(KSSL_HAVE_SSL 1)
+   add_definitions(-DKSSL_HAVE_SSL )
+endif(HAVE_SSL)
+
+add_subdirectory( kssl )
 add_subdirectory( kio ) 
 add_subdirectory( bookmarks ) 
 add_subdirectory( kfile ) 
@@ -18,11 +24,6 @@ ${CMAKE_SOURCE_DIR}/kdecore/network )
 
 
 ########### next target ###############
-
-if(HAVE_SSL)
-   message(STATUS "KSSL_HAVE_SSL should go into kdelibs/config.h, will move it later")
-   add_definitions(-DKSSL_HAVE_SSL)
-endif(HAVE_SSL)
 
 set(kio_LIB_SRCS
 ${kiocore_STAT_SRCS}

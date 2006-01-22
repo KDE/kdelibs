@@ -1,5 +1,7 @@
 kde4_header()
 
+find_package(Cups)
+
 add_subdirectory( management ) 
 add_subdirectory( lpdunix ) 
 add_subdirectory( lpr ) 
@@ -10,7 +12,10 @@ add_subdirectory( pics )
 add_subdirectory( tools ) 
 add_subdirectory( tests ) 
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(CUPSSUBDIR)")
+if(CUPS_FOUND)
+   add_subdirectory(cups)
+endif(CUPS_FOUND)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kded ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 

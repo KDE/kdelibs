@@ -89,8 +89,12 @@
 
 /* from here on everything is tested for correctly (more or less) */
 
+#cmakedefine   HAVE_BZIP2_SUPPORT
+/* Define if the libbz2 functions need the BZ2_ prefix */
+#cmakedefine   NEED_BZ2_PREFIX
+
 /* Define if you have libz */
-#cmakedefine01 HAVE_LIBZ
+#cmakedefine   HAVE_LIBZ
 
 /* Define if you have libpng */
 #cmakedefine01 HAVE_LIBPNG
@@ -274,10 +278,14 @@
 #cmakedefine   HAVE_UTEMPTER
 #cmakedefine   HAVE_VSNPRINTF
 #cmakedefine   HAVE__GETPTY
-#cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine   HAVE___ARGZ_COUNT
 #cmakedefine   HAVE___ARGZ_NEXT 
 #cmakedefine   HAVE___ARGZ_STRINGIFY
+
+/* this one seems to be unused:
+#cmakedefine   HAVE__ICETRANSNOLISTEN
+*/
+
 
 #cmakedefine   HAVE_S_ISSOCK
 

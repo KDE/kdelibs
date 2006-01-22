@@ -14,6 +14,16 @@ else(ZLIB_FOUND)
    set(HAVE_LIBZ 0)
 endif(ZLIB_FOUND)
 
+find_package(BZip2)
+if(BZIP2_FOUND)
+   set(HAVE_BZIP2_SUPPORT 1)
+   if(BZIP2_NEED_PREFIX)
+      set(NEED_BZ2_PREFIX 1)
+   endif(BZIP2_NEED_PREFIX)
+else(BZIP2_FOUND)
+   set(HAVE_BZIP2_SUPPORT 0)
+endif(BZIP2_FOUND)
+
 #check for png
 find_package(PNG)
 if(PNG_FOUND)
@@ -207,8 +217,9 @@ check_library_exists(crypt crypt "" HAVE_CRYPT)
 check_library_exists(util  openpty "" HAVE_OPENPTY)
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
 
-find_library(ICE_LIB NAMES ICE PATHS /usr/X11/lib)
-check_library_exists(${ICE_LIB} _IceTransNoListen "" HAVE__ICETRANSNOLISTEN)
+# it seems this isn't used anywhere
+#find_library(ICE_LIB NAMES ICE PATHS /usr/X11/lib)
+#check_library_exists(${ICE_LIB} _IceTransNoListen "" HAVE__ICETRANSNOLISTEN)
 
 #set(CMAKE_REQUIRED_LIBRARIES crypt)
 #check_function_exists(crypt "" HAVE_CRYPT)

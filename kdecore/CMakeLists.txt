@@ -8,6 +8,9 @@ add_subdirectory( network )
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(SVGICONS)")
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+if(BZIP2_FOUND)
+  include_directories(${BZIP2_INCLUDE_DIR})
+endif(BZIP2_FOUND)
 
 ########### next target ###############
 
@@ -153,6 +156,9 @@ kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARY} ${X11_LIBRARIES} DCOP)
+if(BZIP2_FOUND)
+   target_link_libraries(kdecore  ${BZIP2_LIBRARY})
+endif(BZIP2_FOUND)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kdecore )

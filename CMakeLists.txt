@@ -17,10 +17,6 @@ include(ManualStuff.cmake)
 
 include(ConfigureChecks.cmake)
 
-if (HAVE_SSL)
-   set(KSSL_HAVE_SSL ON)
-endif (HAVE_SSL)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )

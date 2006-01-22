@@ -2,7 +2,7 @@ kde4_header()
 
 add_subdirectory( cupsdconf2 ) 
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kfile ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/kdeprint/management ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CUPS_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kfile ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/kdeprint/management ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
@@ -45,7 +45,7 @@ kde4_automoc(${kdeprint_cups_PART_SRCS})
 
 kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 
-target_link_libraries(kdeprint_cups  ${QT_AND_KDECORE_LIBS} kdeprint_management kio kdefakes )
+target_link_libraries(kdeprint_cups  ${QT_AND_KDECORE_LIBS} kdeprint_management kio kdefakes ${CUPS_LIBRARY} )
 
 install_targets(/lib/kde4 kdeprint_cups )
 
@@ -54,6 +54,7 @@ install_targets(/lib/kde4 kdeprint_cups )
 
 set(make_driver_db_cups_SRCS
 make_driver_db_cups.c
+${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c
 )
 
 kde4_automoc(${make_driver_db_cups_SRCS})
@@ -75,7 +76,7 @@ kde4_automoc(${cupsdoprint_SRCS})
 
 kde4_add_executable(cupsdoprint ${cupsdoprint_SRCS})
 
-target_link_libraries(cupsdoprint  ${QT_AND_KDECORE_LIBS} kdefakes )
+target_link_libraries(cupsdoprint  ${QT_AND_KDECORE_LIBS} kdefakes ${CUPS_LIBRARY})
 
 install_targets(/bin cupsdoprint )
 
