@@ -81,6 +81,9 @@ public:
     acl_perm_t maskPartialPermissions() const;
     void setMaskPartialPermissions( acl_perm_t maskPerms );
 
+    bool maskCanBeDeleted() const;
+    bool defaultMaskCanBeDeleted() const;
+
     const KACLListViewItem* findDefaultItemByType( EntryType type ) const;
     const KACLListViewItem* findItemByType( EntryType type,
                                             bool defaults = false ) const;
@@ -174,6 +177,9 @@ public:
     virtual QString key( int column, bool ascending ) const;
 
     void calcEffectiveRights();
+
+    bool isDeletable() const;
+    bool isAllowedToChangeType() const;
 
     void togglePerm( acl_perm_t perm );
 
