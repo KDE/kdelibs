@@ -39,7 +39,7 @@ kde4_automoc(${khotnewstuff_SRCS})
 
 kde4_add_executable(khotnewstuff ${khotnewstuff_SRCS})
 
-target_link_libraries(khotnewstuff  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(khotnewstuff  ${QT_AND_KDECORE_LIBS} knewstuff)
 
 install_targets(/bin khotnewstuff )
 
