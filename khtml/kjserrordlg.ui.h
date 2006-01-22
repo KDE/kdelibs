@@ -10,14 +10,14 @@
 
 void KJSErrorDlg::init()
 {
-    _errorText->setText("<qt>");
+    _errorText->setTextFormat(QTextEdit::LogText);
+    _errorText->setMaxLogLines(2048);//Limit to about 2K errors so we don't use much CPU
 }
 
 void KJSErrorDlg::addError( const QString & error )
 {
-    // Argh why doesn't QText* interpret html tags unless I use setText()?
-    // This is really inefficient!
-    _errorText->setText(_errorText->text() + "<br>\n" + error);
+    
+    _errorText->append(error);
 }
 
 void KJSErrorDlg::setURL( const QString & url )
@@ -28,5 +28,5 @@ void KJSErrorDlg::setURL( const QString & url )
 void KJSErrorDlg::clear()
 {
     _errorText->clear();
-    _errorText->insert("<qt>");
+    init();
 }
