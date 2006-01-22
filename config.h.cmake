@@ -176,6 +176,7 @@
 #cmakedefine HAVE_NETINET_IN_H
 #cmakedefine HAVE_NL_TYPES_H
 #cmakedefine HAVE_PATHS_H
+#cmakedefine HAVE_PTHREAD_NP_H
 #cmakedefine HAVE_PUNYCODE_H
 #cmakedefine HAVE_PTY_H
 #cmakedefine HAVE_STRINGPREP_H
@@ -283,7 +284,7 @@
 #cmakedefine   HAVE___ARGZ_STRINGIFY
 
 /* this one seems to be unused:
-#cmakedefine   HAVE__ICETRANSNOLISTEN
+cmakedefine   HAVE__ICETRANSNOLISTEN
 */
 
 

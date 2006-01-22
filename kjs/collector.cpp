@@ -46,6 +46,12 @@
 
 #include <pthread.h>
 
+#ifdef HAVE_PTHREAD_NP_H
+
+#include <pthread_np.h>
+
+#endif
+
 #endif
 
 using std::max;
@@ -310,8 +316,13 @@ void Collector::markCurrentThreadConservatively()
     pthread_t curThread = pthread_self();
     if (stackBase == 0 || curThread != stackThread) {
         pthread_attr_t sattr;
+#ifdef HAVE_PTHREAD_NP_H
+        // e.g. on FreeBSD 5.4, neundorf@kde.org
+        pthread_attr_get_np(curThread, &sattr);
+#else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
         pthread_getattr_np(curThread, &sattr);
+#endif
         // Should work but fails on Linux (?)
         //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
         pthread_attr_getstackaddr(&sattr, &stackBase);
