@@ -41,7 +41,7 @@ class EventListenerImpl;
 class EventImpl;
 class UIEventImpl;
 class MouseEventImpl;
-class TextEventImpl;
+class KeyEventBaseImpl;
 class MutationEventImpl;
 
 
@@ -547,6 +547,10 @@ protected:
  * The detail attribute inherited from UIEvent is used to indicate
  * the number of keypresses which have occurred during key repetition.
  * If this information is not available this value should be 0.
+ *
+ * ### KDE4: split this up into proper KeyboardEvent and TextEvent classes
+ * as specified in current DOM3 Events revision. This is doing heavy emulation
+ * at the moment
  */
 class KHTML_EXPORT TextEvent : public UIEvent {
 public:
@@ -618,14 +622,9 @@ public:
      * true, all modifiers have a value of false. This method has no
      * effect if called after the event has been dispatched.  The list of
      * keys below represents the allowable modifier parameters for this
-     * method:
-     *    DOM_VK_LEFT_ALT
-     *    DOM_VK_RIGHT_ALT
-     *    DOM_VK_LEFT_CONTROL
-     *    DOM_VK_RIGHT_CONTROL
-     *    DOM_VK_LEFT_SHIFT
-     *    DOM_VK_RIGHT_SHIFT
-     *    DOM_VK_META
+     * method (note: this was not documented properly in earlier versions):
+     *
+     *    Qt::ShiftButton, Qt::AltButton, Qt::ControlButton, Qt::MetaButton
      *
      * Parameters:
      *
@@ -708,14 +707,9 @@ public:
      * modifier in question is passed into the CheckModifier function. If
      * the modifier is triggered it will return true. If not, it will
      * return false.  The list of keys below represents the allowable
-     * modifier parameters for this method:
-     *     DOM_VK_LEFT_ALT
-     *     DOM_VK_RIGHT_ALT
-     *     DOM_VK_LEFT_CONTROL
-     *     DOM_VK_RIGHT_CONTROL
-     *     DOM_VK_LEFT_SHIFT
-     *     DOM_VK_RIGHT_SHIFT
-     *     DOM_VK_META
+     * modifier parameters for this method (warning: this was not documented
+     * properly in earlier versions):
+     *    Qt::ShiftButton, Qt::AltButton, Qt::ControlButton, Qt::MetaButton
      *
      * Parameters:
      *
@@ -730,7 +724,7 @@ public:
     bool checkModifier(unsigned long modifierArg); // ### KDE 4: const!
 
 protected:
-    TextEvent(TextEventImpl *impl);
+    TextEvent(KeyEventBaseImpl *impl);
 };
 
 

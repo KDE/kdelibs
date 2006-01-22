@@ -25,6 +25,7 @@
 #include "ecma/kjs_dom.h"
 #include "dom/dom2_events.h"
 #include "dom/dom_misc.h"
+#include "xml/dom2_eventsimpl.h"
 
 namespace KJS {
 
@@ -172,7 +173,21 @@ namespace KJS {
     DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
   };
 
-  class DOMTextEvent : public DOMUIEvent {
+  class DOMKeyEventBase : public DOMUIEvent {
+  public:
+    DOMKeyEventBase(const Object &proto, DOM::TextEvent ke);
+    ~DOMKeyEventBase();
+
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
+    Value getValueProperty(ExecState *, int token) const;
+    // no put - all read-only
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { Key, VirtKey, CtrlKey, ShiftKey, AltKey, MetaKey };
+    DOM::KeyEventBaseImpl* impl() const { return static_cast<DOM::KeyEventBaseImpl*>(event.handle()); }
+  };
+
+  class DOMTextEvent : public DOMKeyEventBase {
   public:
     DOMTextEvent(ExecState *exec, DOM::TextEvent ke);
     ~DOMTextEvent();
@@ -181,10 +196,35 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Key, VirtKey, OutputString, InitTextEvent, InputGenerated, NumPad,
-           CtrlKey, ShiftKey, AltKey, MetaKey };
-    DOM::TextEvent toTextEvent() const { return static_cast<DOM::TextEvent>(event); }
+    enum {Data, InitTextEvent};
+    DOM::TextEventImpl* impl() const { return static_cast<DOM::TextEventImpl*>(event.handle()); }
   };
+
+  class DOMKeyboardEvent : public DOMKeyEventBase {
+  public:
+    DOMKeyboardEvent(ExecState *exec, DOM::TextEvent ke);
+    ~DOMKeyboardEvent();
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
+    Value getValueProperty(ExecState *, int token) const;
+    // no put - all read-only
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum {KeyIdentifier, KeyLocation, GetModifierState, InitKeyboardEvent};
+    DOM::KeyboardEventImpl* impl() const { return static_cast<DOM::KeyboardEventImpl*>(event.handle()); }
+  };
+
+  // Constructor object KeyboardEvent
+  class KeyboardEventConstructor : public DOMObject {
+  public:
+    KeyboardEventConstructor(ExecState *);
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
+    Value getValueProperty(ExecState *, int token) const;
+    // no put - all read-only
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+  };
+
+  Value getKeyboardEventConstructor(ExecState *exec);
 
   // Constructor object MutationEvent
   class MutationEventConstructor : public DOMObject {

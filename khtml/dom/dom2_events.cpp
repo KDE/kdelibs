@@ -251,8 +251,8 @@ int UIEvent::keyCode() const
 {
     if ( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyCode();
+    if( impl->isTextInputEvent() || impl->isKeyboardEvent() )
+        return static_cast<KeyEventBaseImpl*>( impl )->keyCode();
 
     return 0;
 }
@@ -262,8 +262,8 @@ int UIEvent::charCode() const
     if (!impl)
         throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->charCode();
+    if( impl->isTextInputEvent() || impl->isKeyboardEvent() )
+        return static_cast<KeyEventBaseImpl*>( impl )->charCode();
 
     return 0;
 }
@@ -316,8 +316,8 @@ int UIEvent::which() const
 
     if( impl->isMouseEvent() )
         return static_cast<MouseEventImpl*>( impl )->button() + 1;
-    else if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyCode();
+    else if( impl->isTextInputEvent() ||  impl->isKeyboardEvent() )
+        return static_cast<KeyEventBaseImpl*>( impl )->keyCode();
 
     return 0;
 }
@@ -496,7 +496,7 @@ TextEvent::TextEvent(const Event &other) : UIEvent()
     (*this)=other;
 }
 
-TextEvent::TextEvent(TextEventImpl *impl) : UIEvent(impl)
+TextEvent::TextEvent(KeyEventBaseImpl *impl) : UIEvent(impl)
 {
 }
 
@@ -510,7 +510,7 @@ TextEvent &TextEvent::operator = (const Event &other)
 {
     Event e;
     e = other;
-    if (!e.isNull() && !e.handle()->isTextEvent()) {
+    if (!e.isNull() && !(e.handle()->isTextInputEvent() || e.handle()->isKeyboardEvent())) {
 	if ( impl ) impl->deref();
 	impl = 0;
     } else
@@ -526,17 +526,31 @@ void TextEvent::initTextEvent(const DOMString &typeArg,
         bool canBubbleArg,
         bool cancelableArg,
         const AbstractView &viewArg,
-        long detailArg,
+        long /*detailArg*/,
         const DOMString &outputStringArg,
         unsigned long keyValArg,
         unsigned long virtKeyValArg,
-        bool inputGeneratedArg,
+        bool /*inputGeneratedArg*/,
         bool numPadArg)
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
+    if (impl->isTextInputEvent()) {
+        //Initialize based on the outputStringArg or virtKeyValArg.
+        QString text = outputStringArg.string();
+        if (outputStringArg.length() == 0 && virtKeyValArg) {
+            text += QChar((unsigned short)virtKeyValArg);
+        }
+
+        TextEventImpl* impl = static_cast<TextEventImpl*>(impl);
+        impl->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, text);
+    } else {
+        KeyboardEventImpl* impl = static_cast<KeyboardEventImpl*>(impl);
+        impl->initKeyboardEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
+            keyValArg, virtKeyValArg, 0, numPadArg ?
+                KeyboardEventImpl::DOM_KEY_LOCATION_NUMPAD : KeyboardEventImpl::DOM_KEY_LOCATION_STANDARD);
+    }
 }
 
 unsigned long TextEvent::keyVal() const
@@ -544,7 +558,7 @@ unsigned long TextEvent::keyVal() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->keyVal();
+    return static_cast<KeyEventBaseImpl*>(impl)->keyVal();
 }
 
 DOMString TextEvent::outputString() const
@@ -552,7 +566,15 @@ DOMString TextEvent::outputString() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->outputString();
+    KeyEventBaseImpl* ke = static_cast<KeyEventBaseImpl*>(impl);
+    if (ke->isTextInputEvent())
+        return static_cast<TextEventImpl*>(ke)->data();
+    else {
+        if (ke->keyVal())
+            return QString(QChar((ushort)ke->keyVal()));
+        else
+            return DOMString();
+    }
 }
 
 unsigned long TextEvent::virtKeyVal() const
@@ -560,7 +582,7 @@ unsigned long TextEvent::virtKeyVal() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->virtKeyVal();
+    return static_cast<KeyEventBaseImpl*>(impl)->virtKeyVal();
 }
 
 void TextEvent::initModifier(unsigned long modifierArg, bool valueArg)
@@ -568,7 +590,7 @@ void TextEvent::initModifier(unsigned long modifierArg, bool valueArg)
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->initModifier(modifierArg,valueArg);
+    return static_cast<KeyEventBaseImpl*>(impl)->initModifier(modifierArg,valueArg);
 }
 
 bool TextEvent::checkModifier(unsigned long modifierArg)
@@ -576,7 +598,7 @@ bool TextEvent::checkModifier(unsigned long modifierArg)
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->checkModifier(modifierArg);
+    return static_cast<KeyEventBaseImpl*>(impl)->checkModifier(modifierArg);
 }
 
 bool TextEvent::inputGenerated() const
@@ -584,7 +606,7 @@ bool TextEvent::inputGenerated() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->inputGenerated();
+    return static_cast<KeyEventBaseImpl*>(impl)->inputGenerated();
 }
 
 bool TextEvent::numPad() const
@@ -592,7 +614,11 @@ bool TextEvent::numPad() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->numPad();
+    KeyEventBaseImpl* ke = static_cast<KeyEventBaseImpl*>(impl);
+    if (ke->isKeyboardEvent())
+        return static_cast<KeyboardEventImpl*>(ke)->keyLocation() ==
+                    KeyboardEventImpl::DOM_KEY_LOCATION_NUMPAD;
+    else return false;
 }
 // -----------------------------------------------------------------------------
 

@@ -682,6 +682,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEDOWN_EVENT:
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
+        if (!ev.isMouseEvent()) break;
         const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
         QMouseEvent* const qme = me.qEvent();
 
@@ -748,12 +749,14 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         // do nothing; see the mapping table below
         break;
     case EventImpl::KEYUP_EVENT: {
-        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
+        if (!ev.isKeyRelatedEvent()) break;
+        QKeyEvent* const ke = static_cast<const KeyEventBaseImpl &>(ev).qKeyEvent();
         static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         ret = ke->isAccepted();
         break;
     }
     case EventImpl::KEYPRESS_EVENT: {
+        if (!ev.isKeyRelatedEvent()) break;
 
         // See KHTMLView::dispatchKeyEvent: autorepeat is just keypress in the DOM
         // but it's keyrelease+keypress in Qt. So here we do the inverse mapping as
@@ -768,7 +771,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         // Qt::KeyPress is sent for DOM keypress and not DOM keydown to allow
         // sites to block a key with onkeypress, #99749
 
-        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
+        QKeyEvent* const ke = static_cast<const KeyEventBaseImpl &>(ev).qKeyEvent();
         if (ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );

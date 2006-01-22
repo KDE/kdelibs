@@ -572,7 +572,11 @@ bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 {
     int exceptioncode = 0;
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
-    TextEventImpl* const keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
+    EventImpl* keyEventImpl;
+    if (keypress)
+        keyEventImpl = new TextEventImpl(key, getDocument()->defaultView());
+    else
+        keyEventImpl = new KeyboardEventImpl(key, getDocument()->defaultView());
     keyEventImpl->ref();
     dispatchEvent(keyEventImpl,exceptioncode,true);
     bool r = keyEventImpl->defaultHandled() || keyEventImpl->defaultPrevented();

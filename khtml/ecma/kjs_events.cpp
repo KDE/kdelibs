@@ -401,8 +401,10 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   DOMObject *ret = interp->getDOMObject(ei);
   if (!ret) {
-    if (ei->isTextEvent())
+    if (ei->isTextInputEvent())
       ret = new DOMTextEvent(exec, e);
+    else if (ei->isKeyboardEvent())
+      ret = new DOMKeyboardEvent(exec, e);
     else if (ei->isMouseEvent())
       ret = new DOMMouseEvent(exec, e);
     else if (ei->isUIEvent())
@@ -697,32 +699,75 @@ Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMUIEvent::info, &DOMTextEventTable, 0 };
+const ClassInfo DOMKeyEventBase::info = { "KeyEventBase", &DOMUIEvent::info, &DOMKeyEventBaseTable, 0 };
 
 /*
-@begin DOMTextEventTable 5
-  keyVal   	 DOMTextEvent::Key	     DontDelete|ReadOnly
-  virtKeyVal	 DOMTextEvent::VirtKey        DontDelete|ReadOnly
-  outputString	 DOMTextEvent::OutputString   DontDelete|ReadOnly
-  inputGenerated DOMTextEvent::InputGenerated DontDelete|ReadOnly
-  numPad         DOMTextEvent::NumPad         DontDelete|ReadOnly
-  # actually belonging to KeyboardEvent
-  ctrlKey        DOMTextEvent::CtrlKey     DontDelete|ReadOnly
-  altKey         DOMTextEvent::AltKey      DontDelete|ReadOnly
-  shiftKey       DOMTextEvent::ShiftKey    DontDelete|ReadOnly
-  altKey         DOMTextEvent::AltKey      DontDelete|ReadOnly
+@begin DOMKeyEventBaseTable 5
+  keyVal   	 DOMKeyEventBase::Key	      DontDelete|ReadOnly
+  virtKeyVal	 DOMKeyEventBase::VirtKey     DontDelete|ReadOnly
+  ctrlKey        DOMKeyEventBase::CtrlKey     DontDelete|ReadOnly
+  altKey         DOMKeyEventBase::AltKey      DontDelete|ReadOnly
+  shiftKey       DOMKeyEventBase::ShiftKey    DontDelete|ReadOnly
+  altKey         DOMKeyEventBase::AltKey      DontDelete|ReadOnly
+@end
+*/
+
+DOMKeyEventBase::DOMKeyEventBase(const Object &proto, DOM::TextEvent ke) :
+  DOMUIEvent(proto, ke) {}
+
+DOMKeyEventBase::~DOMKeyEventBase()
+{}
+
+Value DOMKeyEventBase::tryGet(ExecState *exec,const Identifier &p) const
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMKeyEventBase::tryGet " << p.qstring() << endl;
+#endif
+  return DOMObjectLookupGetValue<DOMKeyEventBase,DOMUIEvent>(exec,p,&DOMKeyEventBaseTable,this);
+}
+
+Value DOMKeyEventBase::getValueProperty(ExecState *, int token) const
+{
+  DOM::KeyEventBaseImpl* tevent = impl();
+  switch (token) {
+  case Key:
+    return Number(tevent->keyVal());
+  case VirtKey:
+    return Number(tevent->virtKeyVal());
+  // these modifier attributes actually belong into a KeyboardEvent interface,
+  // but we want them on "keypress" as well.
+  case CtrlKey:
+    return Boolean(tevent->ctrlKey());
+  case ShiftKey:
+    return Boolean(tevent->shiftKey());
+  case AltKey:
+    return Boolean(tevent->altKey());
+  case MetaKey:
+    return Boolean(tevent->metaKey());
+  default:
+    kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
+    return KJS::Undefined();
+  }
+}
+
+// -------------------------------------------------------------------------
+const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMKeyEventBase::info, &DOMTextEventTable, 0 };
+
+/*
+@begin DOMTextEventTable 1
+  data           DOMTextEvent::Data          DontDelete|ReadOnly
 @end
 @begin DOMTextEventProtoTable 1
-  initTextEvent	DOMTextEvent::InitTextEvent	DontDelete|Function 10
-  # Missing: initTextEventNS, initModifier
+  initTextEvent	DOMTextEvent::InitTextEvent	DontDelete|Function 5
+  # Missing: initTextEventNS
 @end
 */
 DEFINE_PROTOTYPE("DOMTextEvent",DOMTextEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMTextEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto) //Note: no proto in KeyBase
 
 DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEvent ke) :
-  DOMUIEvent(DOMTextEventProto::self(exec), ke) {}
+  DOMKeyEventBase(DOMTextEventProto::self(exec), ke) {}
 
 DOMTextEvent::~DOMTextEvent()
 {
@@ -733,33 +778,15 @@ Value DOMTextEvent::tryGet(ExecState *exec, const Identifier &p) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMTextEvent::tryGet " << p.qstring() << endl;
 #endif
-  return DOMObjectLookupGetValue<DOMTextEvent,DOMUIEvent>(exec,p,&DOMTextEventTable,this);
+  return DOMObjectLookupGetValue<DOMTextEvent,DOMKeyEventBase>(exec,p,&DOMTextEventTable,this);
 }
 
 Value DOMTextEvent::getValueProperty(ExecState *, int token) const
 {
-  // ### KDE 4: use const reference
-  DOM::TextEvent tevent = static_cast<DOM::TextEvent>(event);
+  DOM::TextEventImpl* tevent = impl();
   switch (token) {
-  case Key:
-    return Number(tevent.keyVal());
-  case VirtKey:
-    return Number(tevent.virtKeyVal());
-  case OutputString:
-    return String(tevent.outputString());
-  case InputGenerated:
-    return Boolean(tevent.inputGenerated());
-  case NumPad:
-    return Boolean(tevent.numPad());
-  // these modifier attributes actually belong into a KeyboardEvent interface
-  case CtrlKey:
-    return Boolean(tevent.checkModifier(Qt::ControlButton));
-  case ShiftKey:
-    return Boolean(tevent.checkModifier(Qt::ShiftButton));
-  case AltKey:
-    return Boolean(tevent.checkModifier(Qt::AltButton));
-  case MetaKey:
-    return Boolean(tevent.checkModifier(Qt::MetaButton));
+  case Data:
+    return String(tevent->data());
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
     return KJS::Undefined();
@@ -769,19 +796,78 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
 Value DOMTextEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMTextEvent, thisObj );
-  DOM::TextEvent keyEvent = static_cast<DOMTextEvent *>(thisObj.imp())->toTextEvent();
+  DOM::TextEventImpl* keyEvent = static_cast<DOMTextEvent *>(thisObj.imp())->impl();
   switch (id) {
     case DOMTextEvent::InitTextEvent:
-      keyEvent.initTextEvent(args[0].toString(exec).string(), // typeArg
+      keyEvent->initTextEvent(args[0].toString(exec).string(), // typeArg
                             args[1].toBoolean(exec), // canBubbleArg
                             args[2].toBoolean(exec), // cancelableArg
                             toAbstractView(args[3]), // viewArg
-                            args[4].toInteger(exec), // detailArg
-                            args[5].toString(exec).string(),  // outputStringArg
-                            args[6].toInteger(exec), // keyValArg
-                            args[7].toInteger(exec), // virtKeyValArg
-                            args[8].toBoolean(exec), // inputGeneratedArg
-                            args[9].toBoolean(exec));// numPadArg
+                            args[4].toString(exec).string()); // dataArg
+
+      return Undefined();
+  }
+  return Undefined();
+}
+// -------------------------------------------------------------------------
+const ClassInfo DOMKeyboardEvent::info = { "KeyboardEvent", &DOMKeyEventBase::info, &DOMKeyboardEventTable, 0 };
+
+/*
+@begin DOMKeyboardEventTable 2
+  keyIdentifier  DOMKeyboardEvent::KeyIdentifier  DontDelete|ReadOnly
+  keyLocation    DOMKeyboardEvent::KeyLocation    DontDelete|ReadOnly
+@end
+@begin DOMKeyboardEventProtoTable 2
+  initKeyboardEvent	DOMKeyboardEvent::InitKeyboardEvent	DontDelete|Function 7
+  getModifierState      DOMKeyboardEvent::GetModifierState      DontDelete|Function 1
+@end
+*/
+DEFINE_PROTOTYPE("DOMKeyboardEvent",DOMKeyboardEventProto)
+IMPLEMENT_PROTOFUNC_DOM(DOMKeyboardEventProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMKeyboardEventProto,DOMKeyboardEventProtoFunc,DOMUIEventProto) //Note: no proto in KeyBase
+
+DOMKeyboardEvent::DOMKeyboardEvent(ExecState *exec, DOM::TextEvent ke) :
+  DOMKeyEventBase(DOMKeyboardEventProto::self(exec), ke) {}
+
+DOMKeyboardEvent::~DOMKeyboardEvent()
+{
+}
+
+Value DOMKeyboardEvent::tryGet(ExecState *exec, const Identifier &p) const
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMKeyboardEvent::tryGet " << p.qstring() << endl;
+#endif
+  return DOMObjectLookupGetValue<DOMKeyboardEvent,DOMKeyEventBase>(exec,p,&DOMKeyboardEventTable,this);
+}
+
+Value DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
+{
+  DOM::KeyboardEventImpl* tevent = impl();
+  switch (token) {
+  case KeyIdentifier:
+    return String(tevent->keyIdentifier());
+  case KeyLocation:
+    return Number(tevent->keyLocation());
+  default:
+    kdDebug(6070) << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token << endl;
+    return KJS::Undefined();
+  }
+}
+
+Value DOMKeyboardEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::DOMKeyboardEvent, thisObj );
+  DOM::KeyboardEventImpl* keyEvent = static_cast<DOMKeyboardEvent *>(thisObj.imp())->impl();
+  switch (id) {
+    case DOMKeyboardEvent::InitKeyboardEvent:
+      keyEvent->initKeyboardEvent(args[0].toString(exec).string(), // typeArg
+                            args[1].toBoolean(exec), // canBubbleArg
+                            args[2].toBoolean(exec), // cancelableArg
+                            toAbstractView(args[3]), // viewArg
+                            args[4].toString(exec).string(), // keyIdentifierArg
+                            args[5].toInteger(exec),         // keyLocationArg
+                            args[6].toString(exec).string()); //modifiersList
 
       return Undefined();
   }
@@ -789,7 +875,37 @@ Value DOMTextEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Lis
 }
 
 // -------------------------------------------------------------------------
+const ClassInfo KeyboardEventConstructor::info = { "KeyboardEventConstructor", 0, &KeyboardEventConstructorTable, 0 };
+/*
+@begin KeyboardEventConstructorTable 4
+  DOM_KEY_LOCATION_STANDARD  DOM::KeyboardEventImpl::DOM_KEY_LOCATION_STANDARD DontDelete|ReadOnly
+  DOM_KEY_LOCATION_LEFT      DOM::KeyboardEventImpl::DOM_KEY_LOCATION_LEFT     DontDelete|ReadOnly
+  DOM_KEY_LOCATION_RIGHT     DOM::KeyboardEventImpl::DOM_KEY_LOCATION_RIGHT    DontDelete|ReadOnly
+  DOM_KEY_LOCATION_NUMPAD    DOM::KeyboardEventImpl::DOM_KEY_LOCATION_NUMPAD   DontDelete|ReadOnly
+@end
+*/
+KeyboardEventConstructor::KeyboardEventConstructor(ExecState* exec)
+  : DOMObject(exec->interpreter()->builtinObjectPrototype())
+{}
 
+Value KeyboardEventConstructor::tryGet(ExecState *exec, const Identifier &p) const
+{
+  return DOMObjectLookupGetValue<KeyboardEventConstructor,DOMObject>(exec,p,&KeyboardEventConstructorTable,this);
+}
+
+Value KeyboardEventConstructor::getValueProperty(ExecState *, int token) const
+{
+  // We use the token as the value to return directly
+  return Number(token);
+}
+
+Value KJS::getKeyboardEventConstructor(ExecState *exec)
+{
+  return cacheGlobalObject<KeyboardEventConstructor>(exec, "[[keyboardEvent.constructor]]");
+}
+
+
+// -------------------------------------------------------------------------
 const ClassInfo MutationEventConstructor::info = { "MutationEventConstructor", 0, &MutationEventConstructorTable, 0 };
 /*
 @begin MutationEventConstructorTable 3

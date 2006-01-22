@@ -942,14 +942,21 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 bool HTMLGenericFormElementImpl::isFocusable() const
 {
-    return (!disabled() && m_render && m_render->isWidget() &&
-        static_cast<RenderWidget*>(m_render)->widget() &&
-        static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus) ||
-		/* INPUT TYPE="image" supports focus too */
-		(
-			id() == ID_INPUT &&
-			static_cast<const HTMLInputElementImpl *>(this)->inputType() == HTMLInputElementImpl::IMAGE
-		);
+    if (disabled())
+	return false;
+
+    //Non-widget INPUT TYPE="image" and <BUTTON> support focus, too.
+    if (id() == ID_INPUT && static_cast<const HTMLInputElementImpl *>(this)->inputType() == HTMLInputElementImpl::IMAGE)
+	return true;
+
+    if (id() == ID_BUTTON)
+	return true;
+
+    if (!m_render)
+	return false;
+
+    QWidget* widget = static_cast<RenderWidget*>(m_render)->widget();
+    return widget && widget->focusPolicy() >= QWidget::TabFocus;
 }
 
 class FocusHandleWidget : public QWidget

@@ -158,6 +158,18 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         getDocument()->setHTMLWindowEventListener(EventImpl::RESIZE_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onresize", NULL));
         break;
+    case ATTR_ONKEYUP:
+        getDocument()->setHTMLWindowEventListener(EventImpl::KEYUP_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeyup", NULL));
+        break;
+    case ATTR_ONKEYDOWN:
+        getDocument()->setHTMLWindowEventListener(EventImpl::KEYDOWN_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeydown", NULL));
+        break;
+    case ATTR_ONKEYPRESS:
+        getDocument()->setHTMLWindowEventListener(EventImpl::KEYPRESS_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", NULL));
+        break;
     case ATTR_NOSAVE:
 	break;
     default:

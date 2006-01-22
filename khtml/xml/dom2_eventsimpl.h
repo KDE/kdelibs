@@ -79,12 +79,12 @@ public:
         // keyboard events
 	KEYDOWN_EVENT,
 	KEYUP_EVENT,
+	KEYPRESS_EVENT, //Mostly corresponds to DOM3 textInput event.
 	// khtml events (not part of DOM)
 	KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
 	KHTML_ECMA_CLICK_EVENT, // for html onclick
 	KHTML_DRAGDROP_EVENT,
 	KHTML_ERROR_EVENT,
-        KEYPRESS_EVENT,
 	KHTML_MOVE_EVENT,
         // XMLHttpRequest events
         KHTML_READYSTATECHANGE_EVENT
@@ -114,7 +114,9 @@ public:
     virtual bool isUIEvent() const;
     virtual bool isMouseEvent() const;
     virtual bool isMutationEvent() const;
-    virtual bool isTextEvent() const;
+    virtual bool isTextInputEvent() const;
+    virtual bool isKeyboardEvent() const;
+    bool isKeyRelatedEvent() const { return isTextInputEvent() || isKeyboardEvent(); }
 
     bool propagationStopped() const { return m_propagationStopped; }
     bool defaultPrevented() const { return m_defaultPrevented; }
@@ -251,24 +253,8 @@ protected:
 };
 
 
-class TextEventImpl : public UIEventImpl {
+class KeyEventBaseImpl : public UIEventImpl {
 public:
-  TextEventImpl();
-  TextEventImpl(EventId _id,
-	       bool canBubbleArg,
-	       bool cancelableArg,
-	       AbstractViewImpl *viewArg,
-	       unsigned short detailArg,
-	       DOMString &outputStringArg,
-	       unsigned long keyValArg,
-	       unsigned long virtKeyValArg,
-	       bool inputGeneratedArg,
-	       bool numPadArg);
-
-  TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *view);
-
-  virtual ~TextEventImpl();
-
   // VirtualKeyCode
   enum KeyCodes  {
       DOM_VK_UNDEFINED		     = 0x0,
@@ -324,43 +310,128 @@ public:
       DOM_VK_F24		     = 0xF00B
   };
 
-  void initTextEvent(const DOMString &typeArg,
-                    bool canBubbleArg,
-                    bool cancelableArg,
-                    const AbstractView &viewArg,
-                    long detailArg,
-                    const DOMString &outputStringArg,
-                    unsigned long keyValArg,
-                    unsigned long virtKeyValArg,
-                    bool inputGeneratedArg,
-                    bool numPadArg);
-  void initModifier(unsigned long modifierArg, bool valueArg);
+  void initKeyBaseEvent(const DOMString &typeArg,
+                         bool canBubbleArg,
+                         bool cancelableArg,
+                         const AbstractView &viewArg,
+                         unsigned long keyVal,
+                         unsigned long virtKeyVal,
+                         unsigned long modifiers);
 
+  bool ctrlKey()  const { return m_modifier & Qt::ControlButton; }
+  bool shiftKey() const { return m_modifier & Qt::ShiftButton; }
+  bool altKey()   const { return m_modifier & Qt::AltButton; }
+  bool metaKey()  const { return m_modifier & Qt::MetaButton; }
+
+  bool             inputGenerated() const { return m_virtKeyVal == 0; }
+  unsigned long    keyVal() const     { return m_keyVal; }
+  unsigned long    virtKeyVal() const { return m_virtKeyVal; }
+
+  QKeyEvent *qKeyEvent() const { if (!m_keyEvent) buildQKeyEvent(); return m_keyEvent; }
+
+  //Legacy key stuff...
+  virtual int keyCode() const  = 0;
+  virtual int charCode() const = 0;
+
+  //### KDE4: remove these 2
+  void initModifier(unsigned long modifierArg, bool valueArg);
   bool checkModifier(unsigned long modifierArg);
 
- //Attributes:
-    bool             inputGenerated() const { return m_inputGenerated; }
-    unsigned long    keyVal() const { return m_keyVal; }
-    unsigned long    virtKeyVal() const { return m_virtKeyVal; }
-    bool             numPad() const { return m_numPad; }
-    DOMString        outputString() const { return m_outputString; }
+  ~KeyEventBaseImpl();
+protected:
+  KeyEventBaseImpl(): m_keyEvent(0), m_keyVal(0), m_virtKeyVal(0), m_modifier(0)
+  {  m_detail = 0; }
+
+  KeyEventBaseImpl(EventId id,
+                   bool canBubbleArg,
+                   bool cancelableArg,
+                   AbstractViewImpl *viewArg,
+                   QKeyEvent *key);
+
+
+  mutable QKeyEvent *m_keyEvent;
+  unsigned long m_keyVal;     //Unicode key value
+  unsigned long m_virtKeyVal; //Virtual key value for keys like arrows, Fn, etc.
+
+  // bitfield containing state of modifiers. not part of the dom.
+  unsigned long    m_modifier;
+
+  void buildQKeyEvent() const; //Construct a Qt key event from m_keyVal/m_virtKeyVal
+};
+
+class TextEventImpl : public KeyEventBaseImpl {
+public:
+    TextEventImpl();
+
+    TextEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view);
+    
+    void initTextEvent(const DOMString &typeArg,
+                       bool canBubbleArg,
+                       bool cancelableArg,
+                       const AbstractView &viewArg,
+                       const DOMString& text);
+
+    virtual bool isTextInputEvent() const;
+
+    //Legacy key stuff...
     int keyCode() const;
     int charCode() const;
 
-    QKeyEvent *qKeyEvent() const { return m_keyEvent; }
-
-  virtual bool isTextEvent() const;
-
+    DOMString data() const { return m_outputString; }
 private:
-  QKeyEvent *m_keyEvent;
-  unsigned long m_keyVal;
-  unsigned long m_virtKeyVal;
-  DOMString m_outputString;
-  bool m_numPad;
-  bool m_inputGenerated;
-  // bitfield containing state of modifiers. not part of the dom.
-  unsigned long    m_modifier;
+    DOMString m_outputString;
 };
+
+class KeyboardEventImpl : public KeyEventBaseImpl {
+public:
+  KeyboardEventImpl();
+  KeyboardEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view);
+
+  virtual bool isKeyboardEvent() const;
+
+  enum KeyLocation {
+    DOM_KEY_LOCATION_STANDARD      = 0x00,
+    DOM_KEY_LOCATION_LEFT          = 0x01,
+    DOM_KEY_LOCATION_RIGHT         = 0x02,
+    DOM_KEY_LOCATION_NUMPAD        = 0x03,
+  };
+
+  //Legacy key stuff...
+  int keyCode() const;
+  int charCode() const;
+
+  DOMString     keyIdentifier() const;
+  unsigned long keyLocation() const { return m_keyLocation; }
+
+  bool getModifierState(const DOMString& keyIdentifierArg) const;
+
+  void initKeyboardEvent(const DOMString &typeArg,
+                         bool canBubbleArg,
+                         bool cancelableArg,
+                         const AbstractView &viewArg,
+                         const DOMString &keyIdentifierArg,
+                         unsigned long keyLocationArg,
+                         const DOMString& modifiersList);
+
+  //### KDE4: remove this, it's only for compatibility with
+  //the old TextEvent wrapper
+  void initKeyboardEvent(const DOMString &typeArg,
+                         bool canBubbleArg,
+                         bool cancelableArg,
+                         const AbstractView &viewArg,
+                         unsigned long keyVal,
+                         unsigned long virtKeyVal,
+                         unsigned long modifiers,
+                         unsigned long keyLocationArg) {
+     initKeyBaseEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
+        keyVal, virtKeyVal, modifiers);
+     m_keyLocation = keyLocationArg;
+  }
+private:
+    unsigned long m_keyLocation;
+};
+
+
 
 class MutationEventImpl : public EventImpl {
 // ### fire these during parsing (if necessary)
