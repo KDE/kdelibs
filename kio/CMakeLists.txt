@@ -6,6 +6,15 @@ if(HAVE_SSL)
    add_definitions(-DKSSL_HAVE_SSL )
 endif(HAVE_SSL)
 
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
+${CMAKE_SOURCE_DIR}/kwallet/client
+${CMAKE_SOURCE_DIR}/kdecore/network
+${CMAKE_BINARY_DIR}/kio/kssl
+)
+
+
+
 add_subdirectory( kssl )
 add_subdirectory( kio ) 
 add_subdirectory( bookmarks ) 
@@ -16,12 +25,6 @@ add_subdirectory( pics )
 add_subdirectory( tests ) 
 add_subdirectory( kioexec ) 
 add_subdirectory( httpfilter ) 
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
-${CMAKE_SOURCE_DIR}/kwallet/client
-${CMAKE_SOURCE_DIR}/kdecore/network )
-
 
 ########### next target ###############
 
@@ -64,6 +67,12 @@ kde4_automoc(${kio_LIB_SRCS})
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kdesu kwalletclient ${ZLIB_LIBRARY})
+
+if(FAM_FOUND)
+   include_directories(${FAM_INCLUDE_DIRECTORY})
+   target_link_libraries(kio ${FAM_LIBRARY})
+endif(FAM_FOUND)
+   
 
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kio )

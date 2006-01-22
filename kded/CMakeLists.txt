@@ -27,7 +27,7 @@ kbuildsycoca.cpp
 kbuildservicetypefactory.cpp
 kbuildservicefactory.cpp
 kbuildservicegroupfactory.cpp
-kbuildimageiofactory.cpp
+#kbuildimageiofactory.cpp
 kbuildprotocolinfofactory.cpp
 kctimefactory.cpp
 vfolder_menu.cpp

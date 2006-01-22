@@ -1,7 +1,7 @@
 kde4_header()
 
 add_subdirectory( ksendbugmail ) 
-add_subdirectory( kpac ) 
+#add_subdirectory( kpac ) 
 add_subdirectory( kdesasl ) 
 add_subdirectory( kssld ) 
 add_subdirectory( kfile ) 

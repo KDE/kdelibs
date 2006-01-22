@@ -3,6 +3,9 @@ find_package(KDE4 REQUIRED)
 
 find_package(Perl REQUIRED)
 
+message(STATUS "********+ kde libs: ${QT_AND_KDECORE_LIBS} ")
+message(STATUS "********+ thread libs: ${CMAKE_THREAD_LIBS_INIT} ")
+
 kde4_header()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -21,13 +24,16 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BIN
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
+message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(TOPSUBDIRS)")
+include_directories( ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
 add_subdirectory( kdefx )
 add_subdirectory( kdecore )
 add_subdirectory( kdeui )
 add_subdirectory( kdesu )
-add_subdirectory( kjs )
+#add_subdirectory( kjs )
 add_subdirectory( kwallet )
 add_subdirectory( kio )
 add_subdirectory( kded       )
@@ -61,9 +67,6 @@ add_subdirectory( kate  )
 add_subdirectory( knotify )
 
 
-
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(TOPSUBDIRS)")
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### install files ###############
