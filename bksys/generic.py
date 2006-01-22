@@ -520,7 +520,7 @@ def find_program_using_which(lenv, prog):
 	return os.popen("which %s 2>/dev/null" % prog).read().strip()
 
 def hasConfig(lenv, key):
-	return lenv.has_key('CACHED_'+key) and env['CACHED_'+key']
+	return lenv.has_key('CACHED_'+key) and lenv['CACHED_'+key]
 
 #HELPER - write a header file with information if a lib is available or not
 #         and stop if the package is mandatory

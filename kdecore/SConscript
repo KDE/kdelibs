@@ -38,7 +38,7 @@ ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp klockfile.cpp 
 ktimezones.cpp ktzfiletimezone.cpp kmath.cpp
-kfilterbase.cpp kfilterdev.cpp kgzipfilter.cpp
+kfilterbase.cpp kfilterdev.cpp 
 ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 kdedmodule.cpp kdedmodule.skel
 network/kresolver.cpp
@@ -127,11 +127,16 @@ if env['MAC']:
 	obj.libs += ' resolv z '
 	obj.frameworks += ' Carbon '
 
-if env.has_key("CACHED_BZ2") and env['CACHED_BZ2']:
+if env.hasConfig('BZ2'):
 	obj.uselib += ' BZ2 '
 	obj.source += ' kbzip2filter.cpp'
 
-if env.has_key("CACHED_AGG") and env['CACHED_AGG']:
+if env.hasConfig('LIBZ'):
+	obj.uselib += ' Z'
+	obj.source += ' kgzipfilter.cpp'
+
+
+if env.hasConfig('AGG') and env.hasConfig('LIBZ'):
 	obj.uselib += ' QTXML AGG Z'
 	obj.source   += ' svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp'
 obj.execute()
