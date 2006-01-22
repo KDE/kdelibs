@@ -37,9 +37,7 @@ obj.target = 'knewstuff'
 obj.vnum = '1.0'
 obj.source = knewstuff_sources
 obj.includes = includes
-obj.libpaths = '../kdecore ../kdeui ../kio'
-obj.libs = 'kdecore kdeui kio'
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KIO '
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KIO '
 obj.execute()
 
 obj = env.kdeobj('program')

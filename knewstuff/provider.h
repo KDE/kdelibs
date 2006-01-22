@@ -41,7 +41,7 @@ namespace KNS {
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT Provider
+class KNEWSTUFF_EXPORT Provider
 {
   public:
     typedef QList<Provider *> List;
@@ -159,7 +159,7 @@ class KDE_EXPORT Provider
  * the main provider database for this specific application.
  * It should probably not be used directly by the application.
  */
-class KDE_EXPORT ProviderLoader : public QObject
+class KNEWSTUFF_EXPORT ProviderLoader : public QObject
 {
     Q_OBJECT
   public:

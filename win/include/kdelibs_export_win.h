@@ -245,3 +245,11 @@
 # endif
 #endif
 
+#ifndef KNEWSTUFF_EXPORT
+# ifdef MAKE_KNEWSTUFF_LIB
+#  define KNEWSTUFF_EXPORT KDE_EXPORT
+# else
+#  define KNEWSTUFF_EXPORT KDE_IMPORT
+# endif
+#endif
+

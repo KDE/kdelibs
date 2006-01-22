@@ -59,7 +59,7 @@ class Engine;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT DownloadDialog : public KDialogBase
+class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
 {
     Q_OBJECT
     struct Private;

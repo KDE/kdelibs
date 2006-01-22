@@ -162,6 +162,7 @@ struct msghdr
 #define ENETUNREACH   WSAENETUNREACH 
 #define EWOULDBLOCK   WSAEWOULDBLOCK 
 #define EADDRINUSE    WSAEADDRINUSE
+#define ENOTSUP       ENOSYS
 
 #ifdef __cplusplus
 };

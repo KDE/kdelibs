@@ -45,7 +45,11 @@ def generate(env):
 		else:
 			have_lib = env.pkgConfig_findPackage('BZ2', 'bz2', '1.0')
 
-		env.write_lib_header( 'libbz2', have_lib, False )
+		#todo: check for NEED_BZ2_PREFIX on runtime
+		if env['WINDOWS']:
+			env.write_lib_header( 'libbz2', have_lib, False, '', '#define NEED_BZ2_PREFIX 1\n' )
+		else:
+			env.write_lib_header( 'libbz2', have_lib, False )
 
 	opts.Save(optionFile, env)
 
