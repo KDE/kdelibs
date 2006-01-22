@@ -22,6 +22,7 @@ kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
 kcmoduleproxyIfaceImpl.cpp
+${ksettings_STAT_SRCS}
 )
 
 kde4_automoc(${kutils_LIB_SRCS})
@@ -34,7 +35,7 @@ kde4_add_dcop_skels(kutils_LIB_SRCS ${kutils_DCOP_SKEL_SRCS})
 
 kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 
-target_link_libraries(kutils  ${QT_AND_KDECORE_LIBS} kio ksettings )
+target_link_libraries(kutils  ${QT_AND_KDECORE_LIBS} kdeui kio)
 
 set_target_properties(kutils PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(/lib kutils )

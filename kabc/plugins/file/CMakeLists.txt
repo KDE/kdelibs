@@ -15,7 +15,7 @@ kde4_automoc(${kabc_file_LIB_SRCS})
 
 kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
 
-target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} kabc)
 
 set_target_properties(kabc_file PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(/lib kabc_file )

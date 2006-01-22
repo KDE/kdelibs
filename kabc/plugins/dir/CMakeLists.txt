@@ -8,14 +8,13 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
 set(kabc_dir_LIB_SRCS
 resourcedir.cpp
 resourcedirconfig.cpp
-resourcedirplugin.cpp
 )
 
 kde4_automoc(${kabc_dir_LIB_SRCS})
 
 kde4_add_library(kabc_dir SHARED ${kabc_dir_LIB_SRCS})
 
-target_link_libraries(kabc_dir  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kabc_dir  ${QT_AND_KDECORE_LIBS} kabc)
 
 set_target_properties(kabc_dir PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(/lib kabc_dir )
@@ -23,17 +22,17 @@ install_targets(/lib kabc_dir )
 
 ########### next target ###############
 
-set(kabc_dir_PART_SRCS
-dummy.cpp
+set(kabc_directory_PART_SRCS
+resourcedirplugin.cpp
 )
 
-kde4_automoc(${kabc_dir_PART_SRCS})
+kde4_automoc(${kabc_directory_PART_SRCS})
 
-kde4_add_plugin(kabc_dir ${kabc_dir_PART_SRCS})
+kde4_add_plugin(kabc_directory ${kabc_directory_PART_SRCS})
 
-target_link_libraries(kabc_dir  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kabc_directory  ${QT_AND_KDECORE_LIBS} kabc_dir)
 
-install_targets(/lib/kde4 kabc_dir )
+install_targets(/lib/kde4 kabc_directory )
 
 
 ########### install files ###############

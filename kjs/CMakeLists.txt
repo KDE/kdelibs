@@ -4,6 +4,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+if(PCRE_FOUND)
+   include_directories(${PCRE_INCLUDE_DIR})
+endif(PCRE_FOUND)
+
+
 
 ########### next target ###############
 
@@ -69,6 +74,10 @@ kde4_automoc(${kjs_LIB_SRCS})
 kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
 
 target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m kxmlcore pthread )
+
+if(PCRE_FOUND)
+   target_link_libraries(kjs ${PCRE_LIBRARY})
+endif(PCRE_FOUND)
 
 set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(/lib kjs )

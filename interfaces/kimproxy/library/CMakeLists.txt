@@ -20,7 +20,7 @@ kimproxyiface.h
 kde4_add_dcop_skels(kimproxy_LIB_SRCS ${kimproxy_DCOP_SKEL_SRCS})
 
 set( kimproxy_DCOP_STUB_SRCS
-kimiface.h
+${CMAKE_SOURCE_DIR}/interfaces/kimproxy/interface/kimiface.h
 )
 
 kde4_add_dcop_stubs(kimproxy_LIB_SRCS ${kimproxy_DCOP_STUB_SRCS})

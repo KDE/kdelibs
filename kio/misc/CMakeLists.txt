@@ -5,7 +5,9 @@ add_subdirectory( kpac )
 add_subdirectory( kdesasl ) 
 add_subdirectory( kssld ) 
 add_subdirectory( kfile ) 
-add_subdirectory( kwalletd ) 
+
+MESSAGE(STATUS "kio/misc/kwalletd/ excluded from build, multiple definition of functions from kwalletwizard.ui3")
+#add_subdirectory( kwalletd ) 
 add_subdirectory( kntlm ) 
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )

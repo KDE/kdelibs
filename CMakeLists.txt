@@ -17,6 +17,10 @@ include(ManualStuff.cmake)
 
 include(ConfigureChecks.cmake)
 
+if (HAVE_SSL)
+   set(KSSL_HAVE_SSL ON)
+endif (HAVE_SSL)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
@@ -53,7 +57,8 @@ add_subdirectory( kdeprint  )
 add_subdirectory( kabc  )
 add_subdirectory( kspell2  )
 add_subdirectory( kcmshell  )
-add_subdirectory( khtml  )
+message(STATUS "skipping khtml, at least gcc 3.3 required")
+#add_subdirectory( khtml  )
 add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
 add_subdirectory( kate  )

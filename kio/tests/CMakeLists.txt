@@ -470,6 +470,8 @@ endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
+if(KDE4_BUILD_TESTS)
+
 set(ktradertest_SRCS
 ktradertest.cpp
 )
@@ -482,6 +484,7 @@ target_link_libraries(ktradertest  ${QT_AND_KDECORE_LIBS} )
 
 install_targets(/bin ktradertest )
 
+endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 

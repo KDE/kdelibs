@@ -26,13 +26,14 @@ install_targets(/bin kio_http_cache_cleaner )
 
 set(kio_http_PART_SRCS
 http.cc
+${httpfilter_STAT_SRCS}
 )
 
 kde4_automoc(${kio_http_PART_SRCS})
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http  ${QT_AND_KDECORE_LIBS} kio httpfilter kntlm )
+target_link_libraries(kio_http  ${QT_AND_KDECORE_LIBS} kio kntlm )
 
 install_targets(/lib/kde4 kio_http )
 

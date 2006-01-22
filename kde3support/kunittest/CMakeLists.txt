@@ -30,7 +30,7 @@ kde4_automoc(${kunittestmodrunner_SRCS})
 
 kde4_add_executable(kunittestmodrunner ${kunittestmodrunner_SRCS})
 
-target_link_libraries(kunittestmodrunner  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kunittestmodrunner  ${QT_AND_KDECORE_LIBS} kunittest)
 
 install_targets(/bin kunittestmodrunner )
 

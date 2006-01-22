@@ -1,10 +1,5 @@
 kde4_header()
 
-if (HAVE_SSL)
-   set(KSSL_HAVE_SSL ON)
-endif (HAVE_SSL)
-set(KSSL_HAVE_SSL) # reset it, because I could not yet commit CMakeLists.txt to kssl
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
 
 add_subdirectory( kssl ) 

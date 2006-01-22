@@ -61,8 +61,6 @@ install_targets(/bin kdontchangethehostname )
 
 ########### next target ###############
 
-MESSAGE(STATUS "kded/kde-menu disabled")
-
 set(kde-menu_SRCS
 kde-menu.cpp
 )

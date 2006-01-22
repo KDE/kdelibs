@@ -2,6 +2,8 @@ kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kded ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+#remove_definitions(-DQT3_SUPPORT)
 
 ########### next target ###############
 
@@ -22,7 +24,7 @@ kde4_add_dcop_skels(kded_proxyscout_PART_SRCS ${kded_proxyscout_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs )
+target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs resolv)
 
 install_targets(/lib/kde4 kded_proxyscout )
 

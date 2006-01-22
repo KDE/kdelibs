@@ -7,12 +7,12 @@ add_subdirectory( plugins )
 add_subdirectory( scripts ) 
 add_subdirectory( tests ) 
 
-include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
-  COMMAND ${PERL_EXECUTABLE}
-  ARGS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+  COMMAND ${CMAKE_COMMAND}
+  ARGS -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
@@ -21,8 +21,8 @@ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
   )
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
-  COMMAND ${PERL_EXECUTABLE}
-  ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+  COMMAND ${CMAKE_COMMAND}
+  ARGS -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
@@ -67,6 +67,7 @@ ldif.cpp
 ldapurl.cpp
 ldapconfigwidget.cpp
 sortmode.cpp
+${vcards_STAT_SRCS}
 )
 
 kde4_automoc(${kabc_LIB_SRCS})
@@ -79,7 +80,7 @@ kde4_add_dcop_skels(kabc_LIB_SRCS ${kabc_DCOP_SKEL_SRCS})
 
 kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 
-target_link_libraries(kabc  ${QT_AND_KDECORE_LIBS} vcards kio kresources )
+target_link_libraries(kabc  ${QT_AND_KDECORE_LIBS} kio kresources )
 
 set_target_properties(kabc PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(/lib kabc )
@@ -87,17 +88,20 @@ install_targets(/lib kabc )
 
 ########### next target ###############
 
-set(kab2kabc_SRCS
-kab2kabc.cpp
-)
+message(STATUS "skipped kab2kabc, two moc files with the same name")
 
-kde4_automoc(${kab2kabc_SRCS})
+#set(kab2kabc_SRCS
+#kab2kabc.cpp
+#${kab_STAT_SRCS}
+#)
 
-kde4_add_executable(kab2kabc ${kab2kabc_SRCS})
+#kde4_automoc(${kab2kabc_SRCS})
 
-target_link_libraries(kab2kabc  ${QT_AND_KDECORE_LIBS} kab )
+#kde4_add_executable(kab2kabc ${kab2kabc_SRCS})
 
-install_targets(/bin kab2kabc )
+#target_link_libraries(kab2kabc  ${QT_AND_KDECORE_LIBS} kab kabc)
+
+#install_targets(/bin kab2kabc )
 
 
 ########### install files ###############

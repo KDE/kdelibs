@@ -84,7 +84,7 @@ kde4_automoc(${kdeprint_management_module_PART_SRCS})
 
 kde4_add_plugin(kdeprint_management_module WITH_PREFIX ${kdeprint_management_module_PART_SRCS})
 
-target_link_libraries(kdeprint_management_module  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeprint_management_module  ${QT_AND_KDECORE_LIBS} kdeprint_management)
 
 install_targets(/lib/kde4 kdeprint_management_module )
 
@@ -99,7 +99,7 @@ kde4_automoc(${kaddprinterwizard_KDEINIT_SRCS})
 
 kde4_add_klm( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kaddprinterwizard  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeinit_kaddprinterwizard  ${QT_AND_KDECORE_LIBS} kdeprint_management)
 
 install_targets(/lib kdeinit_kaddprinterwizard )
 

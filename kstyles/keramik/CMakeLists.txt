@@ -2,6 +2,17 @@ kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+#pixmaps.keramik keramikrc.h: genembed
+#	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
+#	./genembed $$pics > pixmaps.keramik
+
+file(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
+  COMMAND ${EXECUTABLE_OUTPUT_PATH}/genembed ARGS ${keramikPics} > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
+  DEPENDS genembed ${keramikPics}
+)
+
 
 ########### next target ###############
 
@@ -11,6 +22,8 @@ pixmaploader.cpp
 gradients.cpp
 colorutil.cpp
 )
+
+set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
 
 kde4_automoc(${keramik_PART_SRCS})
 

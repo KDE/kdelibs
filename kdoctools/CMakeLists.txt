@@ -1,7 +1,11 @@
 kde4_header()
 
+find_package(LibXml2 REQUIRED)
+find_package(LibXslt REQUIRED)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+include_directories(${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
 
 ########### next target ###############
 
@@ -15,7 +19,7 @@ kde4_automoc(${kio_help_PART_SRCS})
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
 install_targets(/lib/kde4 kio_help )
 
@@ -32,22 +36,27 @@ kde4_automoc(${kio_ghelp_PART_SRCS})
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
 install_targets(/lib/kde4 kio_ghelp )
 
 
 ########### next target ###############
 
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp "#define SIMPLE_XSLT 1\n #include <xslt.cpp>\n")
+endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp)
+
 set(meinproc_SRCS
 meinproc.cpp
+${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp
 )
 
 kde4_automoc(${meinproc_SRCS})
 
 kde4_add_executable(meinproc ${meinproc_SRCS})
 
-target_link_libraries(meinproc  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(meinproc  ${QT_AND_KDECORE_LIBS} ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY})
 
 install_targets(/bin meinproc )
 
@@ -57,6 +66,8 @@ install_targets(/bin meinproc )
 set(genshortcutents_SRCS
 genshortcutents.cpp
 )
+
+
 
 kde4_automoc(${genshortcutents_SRCS})
 

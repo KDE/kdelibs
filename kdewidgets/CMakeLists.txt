@@ -25,17 +25,18 @@ install_targets(/bin makekdewidgets )
 
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-COMMAND ${CMAKE_BINARY_DIR}/bin/makekdewidgets
-ARGS -o kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
-DEPENDS kde.widgets makekdewidgets)
-
+  COMMAND ${CMAKE_BINARY_DIR}/bin/makekdewidgets
+  ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
+  DEPENDS kde.widgets makekdewidgets)
 
 set(kdewidgets_PART_SRCS
 classpreviews.cpp
-kdewidgets.cpp
+${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
 )
 
-kde4_automoc(${kdewidgets_PART_SRCS})
+qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)
+
+kde4_automoc(classpreviews.cpp)
 
 set( kdewidgets_QRC
 kdewidgets.qrc

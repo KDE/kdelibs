@@ -38,6 +38,7 @@ install_targets(/lib/kde4 kdeprint_lpr )
 
 set(make_driver_db_lpr_SRCS
 make_driver_db_lpr.c
+${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c
 )
 
 kde4_automoc(${make_driver_db_lpr_SRCS})
