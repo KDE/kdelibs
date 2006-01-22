@@ -12,7 +12,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${CMA
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
   COMMAND ${CMAKE_COMMAND}
-  ARGS -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+  ARGS -E chdir ${CMAKE_CURRENT_BINARY_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
@@ -22,7 +22,7 @@ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
   COMMAND ${CMAKE_COMMAND}
-  ARGS -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+  ARGS -E chdir ${CMAKE_CURRENT_BINARY_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
