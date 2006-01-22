@@ -91,15 +91,19 @@ KACLEditWidget::KACLEditWidget( QWidget *parent, const char *name )
 
 void KACLEditWidget::slotUpdateButtons()
 {
-    int selectedItemsCount = 0;
+    bool atLeastOneIsNotDeletable = false;
+    bool atLeastOneIsNotAllowedToChangeType = false;
+    int selectedCount = 0;
     QListViewItemIterator it( m_listView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        ++it;
-        if ( ++selectedItemsCount > 1 )
-            break;
+    while ( KACLListViewItem *item = dynamic_cast<KACLListViewItem*>( it.current() ) ) {
+        ++it; ++selectedCount;
+        if ( !item->isDeletable() )
+            atLeastOneIsNotDeletable = true;
+        if ( !item->isAllowedToChangeType() )
+            atLeastOneIsNotAllowedToChangeType = true;
     }
-    m_EditBtn->setEnabled( selectedItemsCount == 1 );
-    m_DelBtn->setEnabled( selectedItemsCount > 0 );
+    m_EditBtn->setEnabled( selectedCount && !atLeastOneIsNotAllowedToChangeType );
+    m_DelBtn->setEnabled( selectedCount && !atLeastOneIsNotDeletable );
 }
 
 KACL KACLEditWidget::getACL() const
@@ -331,6 +335,28 @@ void KACLListViewItem::calcEffectiveRights()
     setText( 5, strEffective );
 }
 
+bool KACLListViewItem::isDeletable() const
+{
+    bool isMaskAndDeletable = false;
+    if (type == KACLListView::Mask ) {
+        if ( !isDefault &&  m_pACLListView->maskCanBeDeleted() )
+            isMaskAndDeletable = true;
+        else if ( isDefault &&  m_pACLListView->defaultMaskCanBeDeleted() )
+            isMaskAndDeletable = true;
+    }
+    return type != KACLListView::User &&
+           type != KACLListView::Group &&
+           type != KACLListView::Others &&
+           ( type != KACLListView::Mask || isMaskAndDeletable );
+}
+
+bool KACLListViewItem::isAllowedToChangeType() const
+{
+    return type != KACLListView::User &&
+           type != KACLListView::Group &&
+           type != KACLListView::Others &&
+           type != KACLListView::Mask;
+}
 
 void KACLListViewItem::togglePerm( acl_perm_t perm )
 {
@@ -976,8 +1002,6 @@ void KACLListView::slotEditEntry()
 
 void KACLListView::slotRemoveEntry()
 {
-    bool needsMask = findItemByType( NamedUser ) || findItemByType( NamedGroup );
-    bool needsDefaultMask = findDefaultItemByType( NamedUser ) || findDefaultItemByType( NamedGroup );
     QListViewItemIterator it( this, QListViewItemIterator::Selected );
     while ( it.current() ) {
         KACLListViewItem *item = static_cast<KACLListViewItem*>( it.current() );
@@ -987,11 +1011,11 @@ void KACLListView::slotRemoveEntry()
          * removed, or don't remove it, but reset it. That is allowed. */
         if ( item->type == Mask ) {
             bool itemWasDefault = item->isDefault;
-            if ( !itemWasDefault && !needsMask ) {
+            if ( !itemWasDefault && maskCanBeDeleted() ) {
                 m_hasMask= false;
                 m_mask = 0;
                 delete item;
-            } else if ( itemWasDefault && !needsDefaultMask ) {
+            } else if ( itemWasDefault && defaultMaskCanBeDeleted() ) {
                 delete item;
             } else {
                 item->value = 0;
@@ -1012,6 +1036,16 @@ void KACLListView::slotRemoveEntry()
             }
         }
     }
+}
+
+bool KACLListView::maskCanBeDeleted() const
+{
+   return !findItemByType( NamedUser ) && !findItemByType( NamedGroup );
+}
+
+bool KACLListView::defaultMaskCanBeDeleted() const
+{
+    return !findDefaultItemByType( NamedUser ) && !findDefaultItemByType( NamedGroup );
 }
 
 #include "kacleditwidget.moc"
