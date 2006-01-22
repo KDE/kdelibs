@@ -543,11 +543,11 @@ void TextEvent::initTextEvent(const DOMString &typeArg,
             text += QChar((unsigned short)virtKeyValArg);
         }
 
-        TextEventImpl* impl = static_cast<TextEventImpl*>(impl);
-        impl->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, text);
+        TextEventImpl* tImpl = static_cast<TextEventImpl*>(impl);
+        tImpl->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, text);
     } else {
-        KeyboardEventImpl* impl = static_cast<KeyboardEventImpl*>(impl);
-        impl->initKeyboardEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
+        KeyboardEventImpl* kbImpl = static_cast<KeyboardEventImpl*>(impl);
+        kbImpl->initKeyboardEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
             keyValArg, virtKeyValArg, 0, numPadArg ?
                 KeyboardEventImpl::DOM_KEY_LOCATION_NUMPAD : KeyboardEventImpl::DOM_KEY_LOCATION_STANDARD);
     }
