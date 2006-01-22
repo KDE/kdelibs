@@ -714,7 +714,7 @@ static const IDTranslator<QCString, unsigned, const char*>::Info keyIdentifiersT
     {0, 0}
 };
 
-MAKE_TRANSLATOR(keyIdentifiersToVirtKeys, QCString, unsigned, const char*, keyIdentifiersToVirtKeysTable);
+MAKE_TRANSLATOR(keyIdentifiersToVirtKeys, QCString, unsigned, const char*, keyIdentifiersToVirtKeysTable)
 
 /** These are the modifiers we currently support */
 static const IDTranslator<QCString, unsigned, const char*>::Info keyModifiersToCodeTable[] = {
