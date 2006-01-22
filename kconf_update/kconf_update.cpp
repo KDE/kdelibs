@@ -26,6 +26,7 @@
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qtextcodec.h>
 
 #include <kconfig.h>
 #include <ksimpleconfig.h>
@@ -246,7 +247,7 @@ bool KonfUpdate::checkFile(const QString &filename)
       return false;
 
    QTextStream ts(&file);
-   ts.setEncoding(QTextStream::Latin1);
+   ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
    int lineCount = 0;
    resetOptions();
    QString id;
@@ -322,7 +323,7 @@ bool KonfUpdate::updateFile(const QString &filename)
    log() << "Checking update-file '" << filename << "' for new updates" << endl; 
 
    QTextStream ts(&file);
-   ts.setEncoding(QTextStream::Latin1);
+   ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
    m_lineCount = 0;
    resetOptions();
    while(!ts.atEnd())
@@ -823,7 +824,7 @@ void KonfUpdate::gotScript(const QString &_script)
      if (output.open(QIODevice::ReadOnly))
      { 
        QTextStream ts( &output );
-       ts.setEncoding(QTextStream::UnicodeUTF8);
+       ts.setCodec(QTextCodec::codecForName("UTF-8"));
        while(!ts.atEnd())
        {
          QString line = ts.readLine();
@@ -854,7 +855,7 @@ void KonfUpdate::gotScript(const QString &_script)
      if (output.open(QIODevice::ReadOnly))
      { 
        QTextStream ts( &output );
-       ts.setEncoding(QTextStream::UnicodeUTF8);
+       ts.setCodec(QTextCodec::codecForName("UTF-8"));
        while(!ts.atEnd())
        {
          QString line = ts.readLine();

@@ -6,15 +6,14 @@ kconf_update_sources = """
 kconf_update.cpp
 """
 
-includes = '../kded '
-
 obj = env.kdeinitobj(env)
 obj.target   = 'kconf_update'
 obj.source = kconf_update_sources
-obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4 KDECORE KDEUI'
-obj.libpaths = "../kdecore ../kdeui ../dcop ../kdefx"
-obj.libs     = 'kdecore kdeui kdefx DCOP'
+obj.uselib   = 'QT QTCORE KDE4 KDECORE '
 obj.instdir  = env['KDEBIN']
-obj.includes = includes
+obj.includes = '../kded '
+if env['WINDOWS']:
+	obj.libs += ' kdewin32 '
+	obj.libpaths += ' ../win '
 obj.execute()
 
