@@ -6,7 +6,7 @@ kcertpart_sources = """
 kcertpart.cc
 """
 
-includes = '#/kio/kssl #/kio/kssl SSL_INCLUDES '
+includes = '#/kio/kssl '
 
 obj = env.kdeobj('module')
 obj.target = 'kcertpart'
@@ -14,7 +14,12 @@ obj.source = kcertpart_sources
 obj.includes = includes
 obj.libs += ' kdeui kparts'
 obj.libpaths += ' ../kdeui ../kparts '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.uselib = 'QT QTCORE QTGUI KDE4 KPARTS OPENSSL QT3SUPPORT'
+obj.libs += ' kdecore kdeui kio kparts'
+obj.libpaths += ' ../kdecore ../kdeui ../kio ../kparts '
+if env['WINDOWS']:
+	obj.libs += ' kdewin32 '
+	obj.libpaths += ' ../win '
 obj.execute()
 
 env.bksys_insttype('KDESERV', '', 'kcertpart.desktop')
