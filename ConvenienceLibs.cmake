@@ -447,6 +447,7 @@ set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3popupmenu.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3textedit.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3colordrag.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3syntaxhighlighter.cpp
 )
 
 # kde3support/kio/Makefile.am: k3io
