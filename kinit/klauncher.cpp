@@ -911,7 +911,7 @@ bool
 KLauncher::start_service_by_name(const QString &serviceName, const QStringList &urls,
     const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind)
 {
-   KService::Ptr service = 0;
+   KService::Ptr service;
    // Find service
    service = KService::serviceByName(serviceName);
    if (!service)
@@ -928,7 +928,7 @@ bool
 KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
     const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind)
 {
-   KService::Ptr service = 0;
+   KService::Ptr service;
    // Find service
    if (serviceName[0] == '/')
    {
