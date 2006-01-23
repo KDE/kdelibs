@@ -628,7 +628,7 @@ KRuler::paintEvent(QPaintEvent */*e*/)
 #endif
       p.drawText( END_LABEL_X, END_LABEL_Y, endlabel );
     }
-    p.resetXForm();
+    p.resetMatrix();
   }
 
   // draw the tiny marks
@@ -700,7 +700,7 @@ KRuler::paintEvent(QPaintEvent */*e*/)
     else {
       pa.setPoints(3, 10, value-5, 10, value+5, 15, value/*+0*/);
     }
-    p.setBrush( p.backgroundColor() );
+    p.setBrush( p.background().color() );
     p.drawPolygon( pa );
   }
 
