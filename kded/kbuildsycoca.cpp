@@ -192,7 +192,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    {
       timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file, true);
    }
-   KSycocaEntry::Ptr entry = 0;
+   KSycocaEntry::Ptr entry;
    if (g_allEntries)
    {
       assert(g_ctimeDict);
@@ -243,7 +243,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
          g_tempStorage.append(entry);
       return entry;
    }
-   return 0;
+   return KSycocaEntry::Ptr();
 }
 
 // Callback for VFolderMenu
@@ -384,7 +384,7 @@ bool KBuildSycoca::build()
 
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     KServiceGroup::Ptr entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
+     KServiceGroup::Ptr entry = g_bsgf->addNew("/", kdeMenu->directoryFile, KServiceGroup::Ptr(), false);
      entry->setLayoutInfo(kdeMenu->layoutList);
      createMenu(QString(), QString(), kdeMenu);
 
@@ -438,7 +438,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
         timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile, true);
      }
 
-     KServiceGroup::Ptr entry = 0;
+     KServiceGroup::Ptr entry;
      if (g_allEntries)
      {
         quint32 oldTimestamp = g_ctimeDict->value( directoryFile, 0 );

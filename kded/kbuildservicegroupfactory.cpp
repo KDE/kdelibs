@@ -60,7 +60,7 @@ KBuildServiceGroupFactory::createEntry( const QString&, const char * )
 void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KService::Ptr& newEntry)
 {
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
-  KServiceGroup::Ptr entry = 0;
+  KServiceGroup::Ptr entry;
   if (ptr && ptr->isType(KST_KServiceGroup))
     entry = KServiceGroup::Ptr::staticCast( ptr );
 
@@ -102,7 +102,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      }
 
 
-     KServiceGroup::Ptr parentEntry = 0;
+     KServiceGroup::Ptr parentEntry;
      ptr = m_entryDict->value(parent);
      if (ptr && ptr->isType(KST_KServiceGroup))
          parentEntry = KServiceGroup::Ptr::staticCast( ptr );
@@ -124,7 +124,7 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const KSycocaEntr
 {
   QString name = "#parent#"+parent;
 
-  KServiceGroup::Ptr entry = 0;
+  KServiceGroup::Ptr entry;
   KSycocaEntry::Ptr ptr = m_entryDict->value(name);
   if (ptr && ptr->isType(KST_KServiceGroup))
      entry = KServiceGroup::Ptr::staticCast( ptr );

@@ -337,7 +337,7 @@ VFolderMenu::findApplication(const QString &relPath)
             return s;
       }
    }
-   return 0;
+   return KService::Ptr();
 }
 
 void
@@ -973,7 +973,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
          if (!fn.endsWith(".desktop"))
             continue;
 
-         KService::Ptr service = 0;
+         KService::Ptr service;
          emit newService(pathfn, &service);
          if (service)
             addApplication(prefix+fn, service);
@@ -1020,7 +1020,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
       if (files.indexIn(*it) != -1)
       {
          QString name = *it;
-         KService::Ptr service = 0;
+         KService::Ptr service;
          emit newService(name, &service);
 
          if (service && !m_forcedLegacyLoad)
@@ -1092,7 +1092,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
          if (!fn.endsWith(".desktop"))
             continue;
 
-         KService::Ptr service = 0;
+         KService::Ptr service;
          emit newService(pathfn, &service);
          if (service)
          {
