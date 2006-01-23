@@ -1154,8 +1154,8 @@ static void sortByZOrder(QVector<RenderLayer*>* buffer,
                 RenderLayer* elt2 = buffer->at(j+1);
                 if (elt->zIndex() > elt2->zIndex()) {
                     sorted = false;
-                    buffer->insert(j, elt2);
-                    buffer->insert(j+1, elt);
+                    buffer->replace(j, elt2);
+                    buffer->replace(j+1, elt);
                 }
             }
             if (sorted)
@@ -1176,9 +1176,7 @@ static void sortByZOrder(QVector<RenderLayer*>* buffer,
         if (elt->zIndex() <= elt2->zIndex())
             return;
 
-        // We have to merge sort.  Ensure our merge buffer is big enough to hold
-        // all the items.
-        mergeBuffer->resize(end - start);
+        // We have to merge sort.  
         uint i1 = start;
         uint i2 = mid;
 
@@ -1187,13 +1185,13 @@ static void sortByZOrder(QVector<RenderLayer*>* buffer,
 
         while (i1 < mid || i2 < end) {
             if (i1 < mid && (i2 == end || elt->zIndex() <= elt2->zIndex())) {
-                mergeBuffer->insert(mergeBuffer->count(), elt);
+                mergeBuffer->append(elt);
                 i1++;
                 if (i1 < mid)
                     elt = buffer->at(i1);
             }
             else {
-                mergeBuffer->insert(mergeBuffer->count(), elt2);
+                mergeBuffer->append(elt2);
                 i2++;
                 if (i2 < end)
                     elt2 = buffer->at(i2);
@@ -1201,7 +1199,7 @@ static void sortByZOrder(QVector<RenderLayer*>* buffer,
         }
 
         for (uint i = start; i < end; i++)
-            buffer->insert(i, mergeBuffer->at(i-start));
+            buffer->replace(i, mergeBuffer->at(i-start));
 
         mergeBuffer->clear();
     }
@@ -1252,12 +1250,8 @@ void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<Rende
     if (!buffer)
         buffer = new QVector<RenderLayer*>();
 
-    // Resize by a power of 2 when our buffer fills up.
-    if (buffer->count() == buffer->size())
-        buffer->resize(2*(buffer->size()+1));
-
     // Append ourselves at the end of the appropriate buffer.
-    buffer->insert(buffer->count(), this);
+    buffer->append(this);
 
     // Recur into our children to collect more layers, but only if we don't establish
     // a stacking context.
