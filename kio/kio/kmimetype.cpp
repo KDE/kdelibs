@@ -62,7 +62,7 @@
 
 template class KSharedPtr<KMimeType>;
 
-KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
+KMimeType::Ptr KMimeType::s_pDefaultType;
 bool KMimeType::s_bChecked = false;
 
 void KMimeType::buildDefaultType()
