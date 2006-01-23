@@ -134,7 +134,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
    STRUCT_MNTENT fe;
    while (GETMNTENT(fstab, fe))
    {
-      KMountPoint *mp = new KMountPoint;
+      Ptr mp(new KMountPoint);
       mp->m_mountedFrom = QFile::decodeName(FSNAME(fe));
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));
@@ -335,7 +335,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
    STRUCT_MNTENT fe;
    while (GETMNTENT(mnttab, fe))
    {
-      KMountPoint *mp = new KMountPoint;
+      Ptr mp(new KMountPoint);
       mp->m_mountedFrom = QFile::decodeName(FSNAME(fe));
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));

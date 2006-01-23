@@ -268,7 +268,7 @@ void KConfig::setFileWriteMode(int mode)
 KLockFile::Ptr KConfig::lockFile(bool bGlobal)
 {
   KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
-  if (!aBackEnd) return 0;
+  if (!aBackEnd) return KLockFile::Ptr();
   return aBackEnd->lockFile(bGlobal);
 }
 
@@ -329,10 +329,10 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
         if ((*it)->backEnd->fileName() == fileName &&
                 (*it)->backEnd->bFileImmutable == immutable &&
                 (*it)->backEnd->useKDEGlobals == useKDEGlobals )
-           return (*it);
+           return Ptr(*it);
      }
   }
-  return new KSharedConfig(fileName, immutable, useKDEGlobals);
+  return Ptr(new KSharedConfig(fileName, immutable, useKDEGlobals));
 }
 
 KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals)

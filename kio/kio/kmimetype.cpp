@@ -204,7 +204,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
   if ( ! fileName.isNull() && !path.endsWith( slash ) )
   {
       // Try to find it out by looking at the filename
-      KMimeType::Ptr mime = KServiceTypeFactory::self()->findFromPattern( fileName );
+      KMimeType::Ptr mime( KServiceTypeFactory::self()->findFromPattern( fileName ) );
       if ( mime )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
@@ -294,7 +294,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
 
 KMimeType::Ptr KMimeType::diagnoseFileName(const QString &fileName, QString &pattern)
 {
-  return KServiceTypeFactory::self()->findFromPattern( fileName, &pattern );
+    return Ptr( KServiceTypeFactory::self()->findFromPattern( fileName, &pattern ) );
 }
 
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )
