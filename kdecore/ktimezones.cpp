@@ -840,7 +840,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
         else
         {
             QTextStream ts(&f);
-            ts.setEncoding(QTextStream::Latin1);
+            ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
 
             // Read the last line starting "TZ=".
             while (!ts.atEnd())
@@ -860,7 +860,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
     else
     {
         QTextStream ts(&f);
-        ts.setEncoding(QTextStream::Latin1);
+        ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
 
         // Read the first line.
         if (!ts.atEnd())

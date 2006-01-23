@@ -112,16 +112,15 @@ obj.source   = core_files
 #FIXME: DL is required for ../libltdl/libltdlc.a, although it is specified
 #when compiling libltdlc.a, we still need it here. We need a better static
 #library support (liucougar)
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN DL'
-obj.libpaths = '../libltdl ../dcop'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN DL '
+obj.libpaths = '../libltdl ../dcop '
 obj.libs     = 'ltdlc DCOP '
 obj.iskdelib = 1
 obj.includes = 'network'
 if env['WINDOWS']:
 	obj.libpaths += ' ../win '
-	obj.includes += ' ../win/3rdparty/zlib '
 	obj.libs     += ' kdewin32 ws2_32 user32 shell32 '
-	obj.ccflags += ' -DKIO_EXPORT= '
+	obj.ccflags  += ' -DKIO_EXPORT= '
 
 if env['MAC']:
 	obj.libs += ' resolv z '
@@ -131,12 +130,12 @@ if env.hasConfig('BZ2'):
 	obj.uselib += ' BZ2 '
 	obj.source += ' kbzip2filter.cpp'
 
-if env.hasConfig('LIBZ'):
+if env.hasConfig('Z'):
 	obj.uselib += ' Z'
 	obj.source += ' kgzipfilter.cpp'
 
 
-if env.hasConfig('AGG') and env.hasConfig('LIBZ'):
+if env.hasConfig('AGG') and env.hasConfig('Z'):
 	obj.uselib += ' QTXML AGG Z'
 	obj.source   += ' svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp'
 obj.execute()

@@ -47,9 +47,9 @@ def generate(env):
 
 		#todo: check for NEED_BZ2_PREFIX on runtime
 		if env['WINDOWS']:
-			env.write_lib_header( 'libbz2', have_lib, False, '', '#define NEED_BZ2_PREFIX 1\n' )
+			env.write_lib_header( 'libbz2', have_lib, False, '', '#define HAVE_BZIP2_SUPPORT 1\n#define NEED_BZ2_PREFIX 1\n' )
 		else:
-			env.write_lib_header( 'libbz2', have_lib, False )
+			env.write_lib_header( 'libbz2', have_lib, False, '', '#define HAVE_BZIP2_SUPPORT 1\n' )
 
 	opts.Save(optionFile, env)
 
