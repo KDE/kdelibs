@@ -25,7 +25,6 @@
 
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
-#include <QDebug>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
