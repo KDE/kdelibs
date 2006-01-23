@@ -799,6 +799,18 @@ and the static methods KBookmark::List::canDecode() and KBookmark::List::fromMim
 in the drop/paste side.</li>
 </ul>
 
+<H4>KImageIO classes</H4>
+<ul>
+<li>The KImageIO plugins are converted to Qt's imageformat plugins. The KImageIO class
+now a lightweight version to query the installed plugins without actually loading them.
+</li>
+<li>.kimgio files are converted to .desktop files, and contains regular KDE services,
+with ServiceType as QImageIOPlugins</li>
+<li>KImageIO::registerFormats() removed, simply remove this from your code</li>
+<li>Instead of mimeType(filename), you should use KMimeType</li>
+<li>Instead of canRead() and canWrite() you can use types(mode).contains(typename)</li>
+</ul>
+
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 <H3><A NAME="kparts">Changes in kparts</A></H3>
