@@ -28,12 +28,12 @@ QValidator::State KStringListValidator::validate( QString & input, int& ) const 
   if ( input.isEmpty() ) return Intermediate;
 
   if ( isRejecting() ) // anything not in mStringList is acceptable:
-    if ( mStringList.find( input ) == mStringList.end() )
+    if ( !mStringList.contains( input ) )
       return Acceptable;
     else
       return Intermediate;
   else // only what is in mStringList is acceptable:
-    if ( mStringList.find( input ) != mStringList.end() )
+    if ( mStringList.contains( input ) )
       return Acceptable;
     else
       for ( QStringList::ConstIterator it = mStringList.begin() ;
@@ -66,13 +66,11 @@ QValidator::State KMimeTypeValidator::validate( QString & input, int& ) const
   if ( input.isEmpty() )
     return Intermediate;
 
-  QRegExp acceptable( "[" ALLOWED_CHARS "]+/[" ALLOWED_CHARS "]+",
-		      false /*case-insens.*/);
+  QRegExp acceptable( "[" ALLOWED_CHARS "]+/[" ALLOWED_CHARS "]+", Qt::CaseInsensitive );
   if ( acceptable.exactMatch( input ) )
     return Acceptable;
 
-  QRegExp intermediate( "[" ALLOWED_CHARS "]*/?[" ALLOWED_CHARS "]*",
-			false /*case-insensitive*/);
+  QRegExp intermediate( "[" ALLOWED_CHARS "]*/?[" ALLOWED_CHARS "]*", Qt::CaseInsensitive );
   if ( intermediate.exactMatch( input ) )
     return Intermediate;
 

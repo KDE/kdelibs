@@ -40,10 +40,10 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   // So NoFrame|Plain is the best you get. the problem is that only in case of
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
-  setLineWidth  (0);
-  setFrameStyle (QFrame::NoFrame);
+  setLineWidth( 0 );
+  setFrameStyle( QFrame::NoFrame );
 
-  setAlignment( Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine );
+  setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
 
   connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
   connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));
@@ -76,7 +76,7 @@ KStatusBar::~KStatusBar ()
 {
 }
 
-void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
+void KStatusBar::insertItem( const QString& text, int id, int stretch)
 {
   if (items[id])
     kdDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
@@ -84,7 +84,7 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch, bool perm
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   l->setFixedHeight(fontMetrics().height()+2);
   items.insert(id, l);
-  addWidget (l, stretch, permanent);
+  addWidget (l, stretch);
   l->show();
 }
 
@@ -125,12 +125,12 @@ void KStatusBar::changeItem( const QString& text, int id )
     kdDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
 }
 
-void KStatusBar::setItemAlignment (int id, int align)
+void KStatusBar::setItemAlignment (int id, Qt::Alignment alignment)
 {
   KStatusBarLabel *l = items[id];
   if (l)
   {
-    l->setAlignment(align);
+    l->setAlignment(alignment);
   }
   else
     kdDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
