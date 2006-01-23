@@ -61,7 +61,7 @@
 #include <klocale.h>
 #include <kcodecs.h>
 #include <kmessagebox.h>
-#include <kpassdlg.h>
+#include <kpassworddialog.h>
 #include <kprocess.h>
 #include <kpushbutton.h>
 #include <kresolver.h>
