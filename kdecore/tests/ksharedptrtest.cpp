@@ -44,7 +44,7 @@ void KSharedPtrTest::testWithStrings()
 	SharedString s2 = QString::fromLatin1( "Foo" );
 	SharedString s3 = QString::fromLatin1( "Bar" );
 
-	KSharedPtr<SharedString> u = new SharedString( s );
+	KSharedPtr<SharedString>u(new SharedString( s ));
 	QCOMPARE( *u, s );
 	QVERIFY( u.isUnique() );
 
@@ -123,7 +123,7 @@ void KSharedPtrTest::testDeletion()
 	dtor_called = 0;
 	{
 		Base* obj = new Base;
-		KSharedPtr<Base> ptrBase = obj;
+		KSharedPtr<Base> ptrBase(obj);
 		QCOMPARE( ptrBase.data(), obj );
 		QCOMPARE( dtor_called, 0 ); // no dtor called yet
 	}
@@ -142,7 +142,7 @@ void KSharedPtrTest::testDifferentTypes()
 	dtor_called = 0;
 	{
 		Derived* obj = new Derived;
-		KSharedPtr<Base> ptrBase = obj;
+		KSharedPtr<Base> ptrBase(obj);
 		// then we call some method that takes a KSharedPtr<Base> as argument
 		// and there we downcast again:
 		KSharedPtr<Derived> ptrDerived = KSharedPtr<Derived>::staticCast( ptrBase );
