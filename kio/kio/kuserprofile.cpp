@@ -312,7 +312,7 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
     return (*itOff).service();
 
   //kdDebug(7014) << "No offers, or none allowed as default" << endl;
-  return 0L;
+  return KService::Ptr();
 }
 
 /*********************************************
