@@ -68,44 +68,44 @@ KServiceGroupFactory * KServiceGroupFactory::self()
 
 KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)
 {
-   if (!m_sycocaDict) return 0; // Error!
+   if (!m_sycocaDict) return KServiceGroup::Ptr(); // Error!
 
    // Warning : this assumes we're NOT building a database
    // But since findServiceByName isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_sycocaDict->find_string( _name );
-   if (!offset) return 0; // Not found
+   if (!offset) return KServiceGroup::Ptr(); // Not found
 
-   KServiceGroup::Ptr newGroup = createGroup(offset, deep);
+   KServiceGroup::Ptr newGroup(createGroup(offset, deep));
 
    // Check whether the dictionary was right.
    if (newGroup && (newGroup->relPath() != _name))
    {
       // No it wasn't...
-      return 0; // Not found
+      newGroup = 0; // Not found
    }
    return newGroup;
 }
 
 KServiceGroup::Ptr KServiceGroupFactory::findBaseGroup(const QString &_baseGroupName, bool deep)
 {
-   if (!m_baseGroupDict) return 0; // Error!
+   if (!m_baseGroupDict) return KServiceGroup::Ptr(); // Error!
 
    // Warning : this assumes we're NOT building a database
    // But since findServiceByName isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_baseGroupDict->find_string( _baseGroupName );
-   if (!offset) return 0; // Not found
+   if (!offset) return KServiceGroup::Ptr(); // Not found
 
-   KServiceGroup::Ptr newGroup = createGroup(offset, deep);
+   KServiceGroup::Ptr newGroup(createGroup(offset, deep));
 
    // Check whether the dictionary was right.
    if (newGroup && (newGroup->baseGroupName() != _baseGroupName))
    {
       // No it wasn't...
-      return 0; // Not found
+      newGroup = 0; // Not found
    }
    return newGroup;
 }
