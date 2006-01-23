@@ -626,7 +626,7 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
      return service;
 
   if (!QDir::isRelativePath(_storageId) && QFile::exists(_storageId))
-     return new KService(_storageId);
+     return KService::Ptr(new KService(_storageId));
 
   QString tmp = _storageId;
   tmp = tmp.mid(tmp.lastIndexOf('/')+1); // Strip dir
