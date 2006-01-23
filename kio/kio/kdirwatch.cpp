@@ -95,6 +95,10 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 #define IN_DONT_FOLLOW 0x02000000
 #endif
 
+#ifndef IN_MOVE_SELF
+#define IN_MOVE_SELF 0x00000800
+#endif
+
 #endif
 
 #include <sys/utsname.h>
@@ -271,7 +275,6 @@ KDirWatchPrivate::KDirWatchPrivate()
 
   if ( supports_inotify ) {
     available += ", INotify";
-
     fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
@@ -682,9 +685,11 @@ bool KDirWatchPrivate::useINotify( Entry* e )
     return true;
   }
 
-  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800|IN_DONT_FOLLOW;
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
   if(!e->isDir)
-    mask |= IN_MODIFY|IN_ATTRIB|IN_ONLYDIR;
+    mask |= IN_MODIFY|IN_ATTRIB;
+  else
+    mask |= IN_ONLYDIR;
 
   // if dependant is a file watch, we check for MODIFY & ATTRIB too
   foreach(Entry *dep, e->m_entries) {
