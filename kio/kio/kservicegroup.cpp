@@ -304,7 +304,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
 static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, bool &addSeparator)
 {
    if (addSeparator && !sorted.isEmpty())
-      sorted.append(new KServiceSeparator());
+      sorted.append(KSycocaEntry::Ptr(new KServiceSeparator()));
    sorted.append(p);
    addSeparator = false;
 }
