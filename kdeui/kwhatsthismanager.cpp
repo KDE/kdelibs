@@ -16,105 +16,100 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
-#include "kwhatsthismanager_p.h"
-#include "q3whatsthis.h"
-#include <qvariant.h>
-#include <kdebug.h>
-#include <q3textedit.h>
+
+#include <QApplication>
+#include <QVariant>
+#include <QWhatsThis>
+#include <QWhatsThisClickedEvent>
+
 #include <klocale.h>
 #include <ktoolinvocation.h>
 
+#include "kwhatsthismanager_p.h"
+
 KWhatsThisManager *KWhatsThisManager::s_instance = 0;
 
-class KWhatsThisUndefined : public Q3WhatsThis
+QString KWhatsThisManager::text() const
 {
-    public:
-        KWhatsThisUndefined (QWidget *);
-        QString text (const QPoint &);
-    public slots:
-        bool clicked (const QString &);
-    protected:
-        QWidget *m_widget;
-};
-
-KWhatsThisUndefined::KWhatsThisUndefined (QWidget *w)
-    : Q3WhatsThis (w)
-{
-    m_widget = w;
+  QString txt = i18n ("<b>Not Defined</b><br>There is no \"What's This\""
+          " help assigned to this widget. If you want to help us to"
+          " describe the widget, you are welcome to <a href=\"submit"
+          "-whatsthis\">send us your own \"What's This\" help</a> for it.");
+  return txt;
 }
 
-QString KWhatsThisUndefined::text (const QPoint &)
+void KWhatsThisManager::clicked( const QString& href, QWidget *widget )
 {
-    if (!m_widget)
-        return "";
-    QString txt = i18n ("<b>Not Defined</b><br>There is no \"What's This\""
-            " help assigned to this widget. If you want to help us to"
-            " describe the widget, you are welcome to <a href=\"submit"
-            "-whatsthis\">send us your own \"What's This\" help</a> for it.");
-    QString parent;
-    if (m_widget -> parentWidget ())
-        parent = m_widget -> parentWidget () -> whatsThis ();
-        if (parent != txt)
-            if (! parent . isEmpty ())
-                return parent;
-    return txt;
-}
+  if ( href == "submit-whatsthis" ) {
+    QString body;
+    body.append( QString( "Widget text: '%1'\n" ).arg( widget->property( "text" ).toString() ) );
 
-bool KWhatsThisUndefined::clicked (const QString& href)
-{
-    if (href == "submit-whatsthis") {
-        QWidget *w = m_widget;
-        QString body;
-        body . append ("Widget text: '" + (m_widget -> property ("text") . toString ()) + "'\n");
-        QString dsc = QString ("current --> ") + m_widget -> name ();
-        dsc . append (QString (" (") + m_widget -> metaObject () -> className () + ")\n");
-        for (w = m_widget; w && w != m_widget -> topLevelWidget (); w = w -> parentWidget ()) {
-            dsc . append (w -> name ());
-            dsc . append (QString (" (") + w -> metaObject () -> className () + ")\n");
-        }
-        w = m_widget -> topLevelWidget ();
-        if (w) {
-            dsc . append ("toplevel --> ");
-            dsc . append (w -> name ());
-            dsc . append (QString (" (") + w -> metaObject () -> className () + ")\n");
-        }
-        body . append (dsc);
-        QString subj ("What's This submission: ");
-        subj . append (qApp -> argv () [0]);
-        body . append ("\nPlease type in your what's this help between these lines: "
-                "\n--%-----------------------------------------------------------------------\n"
-                "\n--%-----------------------------------------------------------------------");
-        KToolInvocation::invokeMailer ("quality-whatsthis@kde.org", "", "", subj, body);
+    QString dsc = QString( "current --> %1" ).arg( widget->objectName() );
+    dsc.append( QString( " (%1)\n" ).arg( widget->metaObject()->className() ) );
+
+    QWidget *w;
+    for ( w = widget; w && w != widget->topLevelWidget(); w = w->parentWidget() ) {
+      dsc.append( w->objectName() );
+      dsc.append( QString( " (%1)\n" ).arg( w->metaObject()->className() ) );
     }
-    return true;
-}
 
-void KWhatsThisManager::init ()
-{
-    if (s_instance)
-        return;
-    s_instance = new KWhatsThisManager;
-}
+    w = widget->topLevelWidget();
 
-KWhatsThisManager::KWhatsThisManager ()
-{
-    // go away...
-    // qApp -> installEventFilter (this);
-}
-
-bool KWhatsThisManager::eventFilter (QObject * /*o*/, QEvent *e)
-{
-    if (e -> type () == QEvent::ChildInserted) {
-        QChildEvent *ce = (QChildEvent *)e;
-        // kdDebug () << "new qobject:" << ce -> child () << endl;
-        if (ce -> child () -> isWidgetType ()) {
-            QWidget *w = (QWidget *) (ce -> child ());
-            // kdDebug () << "new qwidget:" << w << endl;
-            if (w -> whatsThis () . isEmpty ())
-                new KWhatsThisUndefined (w);
-        }
+    if ( w ) {
+      dsc.append( "toplevel --> " );
+      dsc.append( w->objectName() );
+      dsc.append( QString( " (%1)\n" ).arg( w->metaObject()->className() ) );
     }
-    return false;
+
+    body.append( dsc );
+
+    QString subject( "What's This submission: " );
+    subject.append( qApp->argv()[ 0 ] );
+
+    body.append( "\nPlease type in your what's this help between these lines: "
+                 "\n--%-----------------------------------------------------------------------\n"
+                 "\n--%-----------------------------------------------------------------------" );
+
+    KToolInvocation::invokeMailer( "quality-whatsthis@kde.org", "", "", subject, body );
+  }
+}
+
+void KWhatsThisManager::init()
+{
+  if ( s_instance )
+    return;
+
+  s_instance = new KWhatsThisManager;
+}
+
+KWhatsThisManager::KWhatsThisManager()
+{
+  // go away...
+  qApp->installEventFilter( this );
+}
+
+bool KWhatsThisManager::eventFilter( QObject *object, QEvent *event )
+{
+  if ( event->type() == QEvent::ChildAdded ) {
+
+    QChildEvent *childEvent = (QChildEvent*)event;
+    if ( childEvent->added() && childEvent->child()->isWidgetType() ) {
+
+      QWidget *widget = (QWidget *)(childEvent->child());
+      if ( widget->whatsThis().isEmpty() ) {
+        widget->setWhatsThis( text() );
+      }
+    }
+  } else if ( event->type() == QEvent::WhatsThisClicked ) {
+    QWhatsThisClickedEvent *wte = (QWhatsThisClickedEvent*)event;
+    QWidget *widget = qobject_cast<QWidget*>( object );
+    if ( widget ) {
+      clicked( wte->href(), widget );
+      return true;
+    }
+  }
+
+  return false;
 }
 
 #include "kwhatsthismanager_p.moc"

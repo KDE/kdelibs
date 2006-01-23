@@ -19,12 +19,8 @@
 #ifndef KWHATSTHISMANAGER_P_H
 #define KWHATSTHISMANAGER_P_H
 
-#include <qapplication.h>
-
-#include <kdialogbase.h>
-
-class QToolButton;
-class QMenu;
+#include <QEvent>
+#include <QWidget>
 
 /**
  * This class is used automatically by KMainWindow and KDialog to attach a
@@ -42,14 +38,20 @@ class QMenu;
  **/
 class KDEUI_EXPORT KWhatsThisManager : public QObject
 {
-    Q_OBJECT
-    public:
-        static void init ();
-        bool eventFilter (QObject *o, QEvent *e);
-    protected:
-        static KWhatsThisManager *s_instance;
-    private:
-        KWhatsThisManager ();
+  Q_OBJECT
+
+  public:
+      static void init();
+      bool eventFilter( QObject *object, QEvent *event);
+
+  protected:
+      static KWhatsThisManager *s_instance;
+
+  private:
+      QString text() const;
+      void clicked( const QString&, QWidget* );
+
+      KWhatsThisManager();
 };
 
 #endif
