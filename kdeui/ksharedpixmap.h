@@ -20,8 +20,6 @@
 #include <qpixmap.h>
 #include <qwidget.h>
 
-class KSharedPixmapPrivate;
-
 /**
  * Shared pixmap client.
  *
@@ -29,8 +27,8 @@ class KSharedPixmapPrivate;
  * by a global id string, and can be accessed by all X clients.
  *
  * This class is a client class to shared pixmaps in KDE. You can use it
- * to copy (a part of) a shared pixmap into. KSharedPixmap inherits KPixmap
- * for that purpose.
+ * to copy (a part of) a shared pixmap into. KSharedPixmap provides a
+ * member of type KPixmap (@see pixmap()) for that purpose.
  *
  * The server part of shared pixmaps is not implemented here. 
  * That part is provided by KPixmapServer, in the source file:
@@ -41,13 +39,15 @@ class KSharedPixmapPrivate;
  *   KSharedPixmap *pm = new KSharedPixmap;
  *   connect(pm, SIGNAL(done(bool)), SLOT(slotDone(bool)));
  *   pm->loadFromShared("My Pixmap");
+ *
+ *   // do something with the pixmap
+ *   pm->pixmap() ...
  * \endcode
  *
  * @author Geert Jansen <jansen@kde.org>
  */
 class KDEUI_EXPORT KSharedPixmap: 
-    public QWidget,
-    public KPixmap
+    public QWidget
 {
     Q_OBJECT
 
@@ -86,6 +86,11 @@ public:
      */
     bool isAvailable(const QString & name) const;
 
+    /**
+     * Gives access to the shared pixmap data.
+     */
+    KPixmap pixmap() const;
+
 Q_SIGNALS:
     /** 
      * This signal is raised when a pixmap load operation has finished.
@@ -101,6 +106,7 @@ private:
     bool copy(const QString & id, const QRect & rect);
     void init();
 
+    class KSharedPixmapPrivate;
     KSharedPixmapPrivate *d;
 };
 #else // WIN32, Qt Embedded

@@ -12,11 +12,11 @@
 #include "kpixmapio.h"
 #include "config.h"
 
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qcolor.h>
-#include <qglobal.h>
-#include <qvector.h>
+#include <QPixmap>
+#include <QImage>
+#include <QPainter>
+#include <QPixmap>
+#include <QVector>
 
 #include <kglobal.h>
 #include <kconfig.h>
@@ -193,8 +193,7 @@ QPixmap KPixmapIO::convertToPixmap(const QImage &img)
 	return dst;
     } else
     {
-	QPixmap dst;
-	dst.convertFromImage(img);
+	QPixmap dst = QPixmap::fromImage(img);
 	return dst;
     }
 
@@ -208,7 +207,7 @@ QImage KPixmapIO::convertToImage(const QPixmap &pm)
     if (m_bShm && (d->bpp >= 8) && (size > d->threshold))
 	image = getImage(&pm, 0, 0, pm.width(), pm.height());
     else
-	image = pm.convertToImage();
+	image = pm.toImage();
     return image;
 }
 
@@ -241,9 +240,9 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
     }
     if( fallback )
     {
-	QPixmap pix;
-	pix.convertFromImage(*src);
-	bitBlt(dst, dx, dy, &pix, 0, 0, pix.width(), pix.height());
+	QPixmap pix = QPixmap::fromImage(*src);
+        QPainter p(dst);
+        p.drawPixmap( dx, dy, pix, 0, 0, pix.width(), pix.height());
     }
 }
 
@@ -273,9 +272,9 @@ QImage KPixmapIO::getImage(const QPixmap *src, int sx, int sy, int sw, int sh)
     }
     if( fallback )
     {
-	QPixmap pix(sw, sh);
-	bitBlt(&pix, 0, 0, src, sx, sy, sw, sh);
-	image = pix.convertToImage();
+        image = QImage(sw, sh, QImage::Format_ARGB32);
+        QPainter p(&image);
+        p.drawPixmap(0, 0, *src, sx, sy, sw, sh);
     }
     return image;
 }
@@ -455,7 +454,7 @@ QImage KPixmapIO::convertFromXImage()
     QImage image;
     if (d->bpp == 8)
     {
-	image.create(width, height, 8);
+	image = QImage(width, height, QImage::Format_Indexed8);
 
 	// Query color map. Don't remove unused entries as a speed
 	// optmization.
@@ -463,13 +462,13 @@ QImage KPixmapIO::convertFromXImage()
 	XColor *cmap = new XColor[ncells];
 	for (i=0; i<ncells; i++)
 	    cmap[i].pixel = i;
-	XQueryColors(QX11Info::display(), QPaintDevice::x11AppColormap(),
+	XQueryColors(QX11Info::display(), QX11Info::appColormap(-1),
 		cmap, ncells);
 	image.setNumColors(ncells);
 	for (i=0; i<ncells; i++)
 	    image.setColor(i, qRgb(cmap[i].red, cmap[i].green, cmap[i].blue >> 8));
     } else
-	image.create(width, height, 32);
+        image = QImage(width, height, QImage::Format_RGB32);
 
     switch (d->byteorder)
     {

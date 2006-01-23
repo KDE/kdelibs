@@ -55,20 +55,21 @@ extern GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
  * KSharedPixmap
  */
 
-class KSharedPixmapPrivate
+class KSharedPixmap::KSharedPixmapPrivate
 {
 public:
   Atom pixmap;
   Atom target;
   Atom selection;
   QRect rect;
+  KPixmap pixmap_data;
 };
 
 KSharedPixmap::KSharedPixmap()
-    : QWidget( 0 )
+    : QWidget( 0 ),
+      d( new KSharedPixmapPrivate )
 {
     setObjectName("shpixmap comm window");
-    d = new KSharedPixmapPrivate;
     init();
 }
 
@@ -76,6 +77,7 @@ KSharedPixmap::KSharedPixmap()
 KSharedPixmap::~KSharedPixmap()
 {
     delete d;
+    d = 0;
 }
 
 
@@ -104,6 +106,10 @@ bool KSharedPixmap::isAvailable(const QString & name) const
     return XGetSelectionOwner(QX11Info::display(), sel) != None;
 }
 
+KPixmap KSharedPixmap::pixmap() const
+{
+    return d->pixmap_data;
+}
 
 bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
 {
@@ -112,7 +118,7 @@ bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
 	// already active
 	return false;
 
-    QPixmap::resize(0, 0); // invalidate
+    d->pixmap_data = KPixmap(); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
     d->selection = XInternAtom(QX11Info::display(), str.toLatin1(), true);
@@ -174,8 +180,8 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if (d->rect.isEmpty())
     {
-	QPixmap::resize(width, height);
-	XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), kde_xget_temp_gc(inf.screen(), false),
+	d->pixmap_data = KPixmap(width, height);
+	XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
@@ -211,15 +217,15 @@ bool KSharedPixmap::x11Event(XEvent *event)
     unsigned xa = d->rect.x() % width, ya = d->rect.y() % height;
     unsigned t1w = qMin(width-xa,tw), t1h = qMin(height-ya,th);
 
-    QPixmap::resize( tw+origin.x(), th+origin.y() );
+    d->pixmap_data = KPixmap( tw+origin.x(), th+origin.y() );
 
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     XFree(pixmap_id);

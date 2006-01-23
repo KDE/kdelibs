@@ -162,14 +162,16 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     {
     case QEvent::Resize:
     case QEvent::Move:
-	m_pTimer->start(100, true);
+        m_pTimer->setSingleShot(true);
+	m_pTimer->start(100);
 	break;
 
     case QEvent::Paint:
-	m_pTimer->start(0, true);
+        m_pTimer->setSingleShot(true);
+	m_pTimer->start(0);
 	break;
 
-    case QEvent::Reparent:
+    case QEvent::ParentChange:
         d->toplevel->removeEventFilter(this);
         d->toplevel = m_pWidget->topLevelWidget();
         d->toplevel->installEventFilter(this);
@@ -310,7 +312,7 @@ void KRootPixmap::slotDone(bool success)
 
 void KRootPixmap::updateBackground( KSharedPixmap *spm )
 {
-    QPixmap pm = *spm;
+    QPixmap pm = spm->pixmap();
 
     if (m_Fade > 1e-6)
     {
@@ -320,9 +322,12 @@ void KRootPixmap::updateBackground( KSharedPixmap *spm )
 	pm = io.convertToPixmap(img);
     }
 
-    if ( !m_bCustomPaint )
-	m_pWidget->setBackgroundPixmap( pm );
-    else {
+    if ( !m_bCustomPaint ) {
+        QBrush brush( pm );
+        QPalette pal = m_pWidget->palette();
+        pal.setBrush( QPalette::Window, brush );
+	m_pWidget->setPalette( pal );
+    } else {
 	emit backgroundUpdated( pm );
     }
 }
