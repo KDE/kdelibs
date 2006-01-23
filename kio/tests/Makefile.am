@@ -74,6 +74,12 @@ kurlcompletiontest_SOURCES = kurlcompletiontest.cpp
 kmimetypetest_SOURCES = kmimetypetest.cpp
 kacltest_SOURCES = kacltest.cpp
 
+
+check_LTLIBRARIES = kunittest_kdirwatch.la
+kunittest_kdirwatch_la_SOURCES = kdirwatchunittest.cpp
+kunittest_kdirwatch_la_LIBADD = $(LIB_KUNITTEST) $(LIB_KIO)
+kunittest_kdirwatch_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
+
 # kfile meta stuff. Comment this in, if you want a small
 # metadata plugin test and "make install".
 #kde_module_LTLIBRARIES = dummymeta.la
