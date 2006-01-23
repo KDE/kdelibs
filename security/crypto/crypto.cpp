@@ -876,7 +876,7 @@ void KCryptoConfig::load()
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
                         policies->readEntry("Permanent", true),
                         policies->readEntry("Policy", 3),
-                        policies->readDateTimeEntry("Expires"), this );
+                        policies->readEntry("Expires", QDateTime()), this );
       delete cert;
     }
   }
@@ -1256,7 +1256,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
     return;
   }
 
-  cert->chain().setCertChain(policies->readListEntry("Chain"));
+  cert->chain().setCertChain(policies->readEntry("Chain", QStringList()));
 
   KSSLCertificate::KSSLValidation v = cert->revalidate(KSSLCertificate::SSLServer);
 
