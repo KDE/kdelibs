@@ -25,6 +25,7 @@
 
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
+#include <QDebug>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -913,8 +914,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 	    //has to be outside the above if because of small caps.
 	    font = &_style->htmlFont();
 
-            if(_style->color() != pI.p->pen().color())
-                pI.p->setPen(_style->color());
+            pI.p->setPen(_style->color());
 
 #ifdef APPLE_CHANGES
             // Set a text shadow if we have one.
@@ -967,8 +967,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                     }
 
                     if ( sPos < ePos ) {
-                        if (selectionColor != p->pen().color())
-                            p->setPen(selectionColor);
+                        p->setPen(selectionColor);
 
                         font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                        str->l, s->m_start, s->m_len,

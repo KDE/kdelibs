@@ -672,7 +672,7 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "Fonts", QStringList() );
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.setGroup("Java/JavaScript Settings");
-    cfg.writeEntry( "WindowOpenPolicy", KHTMLSettings::KJSWindowOpenAllow);
+    cfg.writeEntry( "WindowOpenPolicy", (int)KHTMLSettings::KJSWindowOpenAllow);
 
     cfg.sync();
 
