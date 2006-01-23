@@ -176,6 +176,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
 
     /**
      * Returns the QAction * associated with the given parameter
+     * Will return NULL pointers if menu() has not been called
      * 
      * @param action The action of which you want to get QAction * 
      */
