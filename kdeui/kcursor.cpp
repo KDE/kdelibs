@@ -379,7 +379,7 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
 
     if ( enable )
     {
-        if ( m_eventFilters.find( w ) != NULL )
+        if ( m_eventFilters.contains( w ) )
             return;
         KCursorPrivateAutoHideEventFilter* filter = new KCursorPrivateAutoHideEventFilter( w );
         m_eventFilters.insert( w, filter );
@@ -391,7 +391,7 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
     else
     {
         KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.take( w );
-        if ( filter == NULL )
+        if ( filter == 0 )
             return;
         w->removeEventFilter( filter );
         delete filter;
@@ -405,10 +405,10 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if ( !enabled )
         return false;
 
-    KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.find( o );
+    KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.value( o );
 
-    Q_ASSERT( filter != NULL );
-    if ( filter == NULL )
+    Q_ASSERT( filter != 0 );
+    if ( filter == 0 )
         return false;
 
     return filter->eventFilter( o, e );
@@ -418,7 +418,7 @@ void KCursorPrivate::slotWidgetDestroyed( QObject* o )
 {
     KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.take( o );
 
-    Q_ASSERT( filter != NULL );
+    Q_ASSERT( filter != 0 );
 
     filter->resetWidget(); // so that dtor doesn't access it
     delete filter;

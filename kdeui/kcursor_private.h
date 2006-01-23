@@ -21,11 +21,10 @@
 #ifndef KCURSOR_PRIVATE_H
 #define KCURSOR_PRIVATE_H
 
-#include <qcursor.h>
-#include <qobject.h>
-#include <q3ptrdict.h>
+#include <QCursor>
+#include <QHash>
+#include <QObject>
 
-class QPoint;
 class QTimer;
 class QWidget;
 
@@ -45,7 +44,7 @@ public:
     ~KCursorPrivateAutoHideEventFilter();
 
     virtual bool eventFilter( QObject *o, QEvent *e );
-    
+
     void resetWidget();
 
 private Q_SLOTS:
@@ -91,7 +90,7 @@ private:
     bool enabled;
     static KCursorPrivate *s_self;
 
-    Q3PtrDict<KCursorPrivateAutoHideEventFilter> m_eventFilters;
+    QHash<QObject*,KCursorPrivateAutoHideEventFilter*> m_eventFilters;
 };
 
 
