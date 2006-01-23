@@ -21,13 +21,14 @@
 #define KEDITLISTBOX_H
 
 #include <QGroupBox>
-#include <q3listbox.h>
 #include <QStringList>
+#include <QStringListModel>
 
 #include <kdelibs_export.h>
 
 class KLineEdit;
 class KComboBox;
+class QListView;
 class QPushButton;
 
 class KEditListBoxPrivate;
@@ -149,7 +150,7 @@ public:
       /**
        * Return a pointer to the embedded QListBox.
        */
-      Q3ListBox* listBox() const     { return m_listBox; }
+      QListView* listView() const     { return m_listView; }
       /**
        * Return a pointer to the embedded QLineEdit.
        */
@@ -174,7 +175,7 @@ public:
       /**
        * See QListBox::count()
        */
-      int count() const   { return int(m_listBox->count()); }
+      int count() const   { return int(m_model->rowCount()); }
       /**
        * See QListBox::insertStringList()
        */
@@ -182,11 +183,7 @@ public:
       /**
        * See QListBox::insertStrList()
        */
-      void insertStrList(const char ** list, int numStrings=-1, int index=-1);
-      /**
-       * See QListBox::insertItem()
-       */
-      void insertItem(const QString& text, int index=-1) {m_listBox->insertItem(text,index);}
+      void insertItem(const QString& text, int index=-1);
       /**
        * Clears both the listbox and the line edit.
        */
@@ -194,7 +191,7 @@ public:
       /**
        * See QListBox::text()
        */
-      QString text(int index) const { return m_listBox->text(index); }
+      QString text(int index) const;
       /**
        * See QListBox::currentItem()
        */
@@ -202,7 +199,7 @@ public:
       /**
        * See QListBox::currentText()
        */
-      QString currentText() const  { return m_listBox->currentText(); }
+      QString currentText() const;
 
       /**
        * @returns a stringlist of all items in the listbox
@@ -249,14 +246,15 @@ public:
       void moveItemDown();
       void addItem();
       void removeItem();
-      void enableMoveButtons(int index);
+      void enableMoveButtons(const QModelIndex&, const QModelIndex&);
       void typedSomething(const QString& text);
 
    private:
-      Q3ListBox *m_listBox;
+      QListView *m_listView;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
       KLineEdit *m_lineEdit;
+      QStringListModel *m_model;
 
       //this is called in both ctors, to avoid code duplication
       void init( bool checkAtEntering, Buttons buttons,

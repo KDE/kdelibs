@@ -22,8 +22,8 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <q3groupbox.h>
-#include <q3listbox.h>
 #include <qlabel.h>
+#include <QListView>
 
 #include <kcombobox.h>
 #include <kdebug.h>
@@ -96,19 +96,23 @@ void KEditListBox::init( bool checkAtEntering, Buttons buttons,
     else
         m_lineEdit=new KLineEdit(this);
 
-    m_listBox = new Q3ListBox(this);
+    m_model = new QStringListModel();
+    m_listView = new QListView(this);
+
+    m_listView->setModel(m_model);
 
     QWidget *editingWidget = representationWidget ?
                              representationWidget : m_lineEdit;
     grid->addMultiCellWidget(editingWidget,1,1,0,1);
-    grid->addMultiCellWidget(m_listBox, 2, 6, 0, 0);
+    grid->addMultiCellWidget(m_listView, 2, 6, 0, 0);
 
     setButtons( buttons );
 
     connect(m_lineEdit,SIGNAL(textChanged(const QString&)),this,SLOT(typedSomething(const QString&)));
     m_lineEdit->setTrapReturnKey(true);
     connect(m_lineEdit,SIGNAL(returnPressed()),this,SLOT(addItem()));
-    connect(m_listBox, SIGNAL(highlighted(int)),this,SLOT(enableMoveButtons(int)));
+    connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            this,SLOT(enableMoveButtons(const QModelIndex&, const QModelIndex&)));
 
     // maybe supplied lineedit has some text already
     typedSomething( m_lineEdit->text() );
@@ -173,10 +177,13 @@ void KEditListBox::typedSomething(const QString& text)
             // IMHO changeItem() shouldn't do anything with the value
             // of currentItem() ... like changing it or emitting signals ...
             // but TT disagree with me on this one (it's been that way since ages ... grrr)
-            bool block = m_listBox->signalsBlocked();
-            m_listBox->blockSignals( true );
-            m_listBox->changeItem(text, currentItem());
-            m_listBox->blockSignals( block );
+            bool block = m_listView->signalsBlocked();
+            m_listView->blockSignals( true );
+            QItemSelectionModel *selection = m_listView->selectionModel();
+            QModelIndex currentIndex = selection->currentIndex();
+            if ( currentIndex.isValid() )
+              m_model->setData(currentIndex,text);
+            m_listView->blockSignals( block );
             emit changed();
         }
     }
@@ -194,8 +201,8 @@ void KEditListBox::typedSomething(const QString& text)
         }
         else
         {
-            Q3ListBox::StringComparisonMode mode = (Q3ListBox::StringComparisonMode) (Q3ListBox::ExactMatch | Q3ListBox::CaseSensitive );
-            bool enable = (!m_listBox->findItem( text, mode ));
+            QStringList list = m_model->stringList();
+            bool enable = list.contains( text, Qt::CaseSensitive );
             servNewButton->setEnabled( enable );
         }
     }
@@ -203,46 +210,56 @@ void KEditListBox::typedSomething(const QString& text)
 
 void KEditListBox::moveItemUp()
 {
-    if (!m_listBox->isEnabled())
+    if (!m_listView->isEnabled())
     {
         KNotification::beep();
         return;
     }
 
-    const unsigned int selIndex = m_listBox->currentItem();
-    if (selIndex == 0)
-    {
-        KNotification::beep();
-        return;
-    }
+    QItemSelectionModel *selection = m_listView->selectionModel();
+    QModelIndex index = selection->currentIndex();
+    if ( index.isValid() ) {
+      if (index.row() == 0) {
+          KNotification::beep();
+          return;
+      }
 
-    Q3ListBoxItem *selItem = m_listBox->item(selIndex);
-    m_listBox->takeItem(selItem);
-    m_listBox->insertItem(selItem, selIndex-1);
-    m_listBox->setCurrentItem(selIndex - 1);
+      QModelIndex aboveIndex = m_model->index( index.row() - 1, index.column() );
+
+      QString tmp = m_model->data( aboveIndex, Qt::DisplayRole ).toString();
+      m_model->setData( aboveIndex, m_model->data( index, Qt::DisplayRole ) );
+      m_model->setData( index, tmp );
+
+      selection->setCurrentIndex( aboveIndex, QItemSelectionModel::Select | QItemSelectionModel::Clear );
+    }
 
     emit changed();
 }
 
 void KEditListBox::moveItemDown()
 {
-    if (!m_listBox->isEnabled())
+    if (!m_listView->isEnabled())
     {
         KNotification::beep();
         return;
     }
 
-    unsigned int selIndex = m_listBox->currentItem();
-    if (selIndex == m_listBox->count() - 1)
-    {
-        KNotification::beep();
-        return;
-    }
+    QItemSelectionModel *selection = m_listView->selectionModel();
+    QModelIndex index = selection->currentIndex();
+    if ( index.isValid() ) {
+      if (index.row() == m_model->rowCount() - 1) {
+          KNotification::beep();
+          return;
+      }
 
-    Q3ListBoxItem *selItem = m_listBox->item(selIndex);
-    m_listBox->takeItem(selItem);
-    m_listBox->insertItem(selItem, selIndex+1);
-    m_listBox->setCurrentItem(selIndex + 1);
+      QModelIndex belowIndex = m_model->index( index.row() + 1, index.column() );
+
+      QString tmp = m_model->data( belowIndex, Qt::DisplayRole ).toString();
+      m_model->setData( belowIndex, m_model->data( index, Qt::DisplayRole ) );
+      m_model->setData( index, tmp );
+
+      selection->setCurrentIndex( belowIndex, QItemSelectionModel::Select | QItemSelectionModel::Clear );
+    }
 
     emit changed();
 }
@@ -255,18 +272,23 @@ void KEditListBox::addItem()
     if ( !servNewButton || !servNewButton->isEnabled() )
         return;
 
+
+    QItemSelectionModel *selection = m_listView->selectionModel();
+    QModelIndex currentIndex = selection->currentIndex();
+
     const QString& currentTextLE=m_lineEdit->text();
     bool alreadyInList(false);
     //if we didn't check for dupes at the inserting we have to do it now
     if (!d->m_checkAtEntering)
     {
         // first check current item instead of dumb iterating the entire list
-        if ( m_listBox->currentText() == currentTextLE )
+        if ( currentIndex.isValid() ) {
+          if ( m_model->data( currentIndex, Qt::DisplayRole ).toString() == currentTextLE )
             alreadyInList = true;
+        }
         else
         {
-            Q3ListBox::StringComparisonMode mode = (Q3ListBox::StringComparisonMode) (Q3ListBox::ExactMatch | Q3ListBox::CaseSensitive );
-            alreadyInList =(m_listBox->findItem(currentTextLE, mode) );
+            alreadyInList = m_model->stringList().contains( currentTextLE, Qt::CaseSensitive );
         }
     }
 
@@ -278,48 +300,61 @@ void KEditListBox::addItem()
     m_lineEdit->clear();
     m_lineEdit->blockSignals(block);
 
-    m_listBox->setSelected(currentItem(), false);
+    selection->setCurrentIndex(currentIndex, QItemSelectionModel::Deselect);
 
     if (!alreadyInList)
     {
-        block = m_listBox->signalsBlocked();
-        m_listBox->blockSignals( true );
-        m_listBox->insertItem(currentTextLE);
-        m_listBox->blockSignals( block );
+        block = m_listView->signalsBlocked();
+        if ( currentIndex.isValid() ) {
+          m_model->setData( currentIndex, currentTextLE );
+        }
         emit changed();
-	emit added( currentTextLE );
+        emit added( currentTextLE );
     }
 }
 
 int KEditListBox::currentItem() const
 {
-    int nr = m_listBox->currentItem();
-    if(nr >= 0 && !m_listBox->item(nr)->isSelected()) return -1;
-    return nr;
+    QItemSelectionModel *selection = m_listView->selectionModel();
+    QModelIndex currentIndex = selection->currentIndex();
+    if ( currentIndex.isValid() )
+        return currentIndex.row();
+    else
+        return -1;
 }
 
 void KEditListBox::removeItem()
 {
-    int selected = m_listBox->currentItem();
+    QItemSelectionModel *selection = m_listView->selectionModel();
+    QModelIndex currentIndex = selection->currentIndex();
+    if ( !currentIndex.isValid() )
+      return;
 
-    if ( selected >= 0 )
+    if ( currentIndex.row() >= 0 )
     {
-	QString removedText = m_listBox->currentText();
+        QString removedText = m_model->data( currentIndex, Qt::DisplayRole ).toString();
 
-        m_listBox->removeItem( selected );
-        if ( count() > 0 )
-            m_listBox->setSelected( qMin( selected, count() - 1 ), true );
+        m_model->removeRows( currentIndex.row(), 1 );
+        if ( m_model->rowCount() > 0 ) {
+            QModelIndex aboveIndex = m_model->index( currentIndex.row() - 1, currentIndex.row() );
+            selection->setCurrentIndex( aboveIndex, QItemSelectionModel::Select );
+        }
 
         emit changed();
-	emit removed( removedText );
+
+        emit removed( removedText );
     }
 
-    if ( servRemoveButton && m_listBox->currentItem() == -1 )
+    currentIndex = selection->currentIndex();
+
+    if ( servRemoveButton && !currentIndex.isValid() )
         servRemoveButton->setEnabled(false);
 }
 
-void KEditListBox::enableMoveButtons(int index)
+void KEditListBox::enableMoveButtons(const QModelIndex &newIndex, const QModelIndex&)
 {
+    int index = newIndex.row();
+
     // Update the lineEdit when we select a different line.
     if(currentText() != m_lineEdit->text())
         m_lineEdit->setText(currentText());
@@ -328,12 +363,12 @@ void KEditListBox::enableMoveButtons(int index)
 
     if (moveEnabled )
     {
-        if (m_listBox->count() <= 1)
+        if (m_model->rowCount() <= 1)
         {
             servUpButton->setEnabled(false);
             servDownButton->setEnabled(false);
         }
-        else if ((uint) index == (m_listBox->count() - 1))
+        else if (index == (m_model->rowCount() - 1))
         {
             servUpButton->setEnabled(true);
             servDownButton->setEnabled(false);
@@ -357,33 +392,59 @@ void KEditListBox::enableMoveButtons(int index)
 void KEditListBox::clear()
 {
     m_lineEdit->clear();
-    m_listBox->clear();
+    m_model->setStringList( QStringList() );
     emit changed();
 }
 
 void KEditListBox::insertStringList(const QStringList& list, int index)
 {
-    m_listBox->insertStringList(list,index);
+    QStringList content = m_model->stringList();
+    if ( index > content.count() )
+      content += list;
+    else
+      for ( int i = 0, j = index; i < list.count(); ++i, ++j )
+        content.insert( j, list[ i ] );
+
+    m_model->setStringList( content );
 }
 
-void KEditListBox::insertStrList(const char ** list, int numStrings, int index)
+void KEditListBox::insertItem(const QString& text, int index)
 {
-    m_listBox->insertStrList(list,numStrings,index);
+  QStringList list = m_model->stringList();
+
+  if ( index == -1 )
+    list.append( text );
+  else
+    list.insert( index, text );
+
+  m_model->setStringList(list);
+}
+
+QString KEditListBox::text(int index) const
+{
+  QStringList list = m_model->stringList();
+
+  return list[ index ];
+}
+
+QString KEditListBox::currentText() const
+{
+  QItemSelectionModel *selection = m_listView->selectionModel();
+  QModelIndex index = selection->currentIndex();
+  if ( !index.isValid() )
+    return QString();
+  else
+    return text( index.row() );
 }
 
 QStringList KEditListBox::items() const
 {
-    QStringList list;
-    for (Q3ListBoxItem const * i = m_listBox->firstItem(); i != 0; i = i->next() )
-	list.append( i->text());
-
-    return list;
+    return m_model->stringList();
 }
 
 void KEditListBox::setItems(const QStringList& items)
 {
-  m_listBox->clear();
-  m_listBox->insertStringList(items, 0);
+  m_model->setStringList(items);
 }
 
 KEditListBox::Buttons KEditListBox::buttons() const
