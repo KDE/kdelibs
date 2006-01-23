@@ -47,7 +47,7 @@ class KPushButton;
 class KSSLCertBox;
 class KSSLSigners;
 class KURLLabel;
-class KURLRequester;
+class KUrlRequester;
 
 class CipherItem : public Q3CheckListItem
 {
@@ -293,7 +293,7 @@ private:
 
   /* EGD stuff */
   QLabel        *mEGDLabel;
-  KURLRequester *mEGDPath;
+  KUrlRequester *mEGDPath;
   QCheckBox     *mUseEGD;
   QCheckBox     *mUseEFile;
 
@@ -325,7 +325,7 @@ private:
   KURLLabel *untilDate;
 
   Q3GroupBox  *oInfo;
-  KURLRequester *oPath;
+  KUrlRequester *oPath;
   QPushButton *oTest;
   Q3PtrList<OtherCertItem> otherCertDelList;
   Q3PtrList<YourCertItem> yourCertDelList;
