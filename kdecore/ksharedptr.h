@@ -55,7 +55,7 @@ public:
      * Creates a new pointer.
      * @param p the pointer
      */
-    inline /*explicit*/ KSharedPtr( T* p )
+    inline explicit KSharedPtr( T* p )
         : d(p) { if(d) d->ref.ref(); }
 
     /**
